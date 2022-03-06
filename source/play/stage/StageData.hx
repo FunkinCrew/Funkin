@@ -34,7 +34,6 @@ class StageDataParser
 		clearStageCache();
 		trace("[STAGEDATA] Loading stage cache...");
 
-		#if polymod
 		//
 		// SCRIPTED STAGES
 		//
@@ -58,21 +57,15 @@ class StageDataParser
 				trace('    Failed to instantiate scripted stage class: ${stageCls}');
 			}
 		}
-		#end
 
 		//
 		// UNSCRIPTED STAGES
 		//
 		var stageIdList:Array<String> = DataAssets.listDataFilesInPath('stages/');
-		var unscriptedStageIds:Array<String> =
-			#if polymod
-			stageIdList.filter(function(stageId:String):Bool
-			{
-				return !stageCache.exists(stageId);
-			});
-			#else
-			stageIdList;
-			#end
+		var unscriptedStageIds:Array<String> = stageIdList.filter(function(stageId:String):Bool
+		{
+			return !stageCache.exists(stageId);
+		});
 		trace('  Instantiating ${unscriptedStageIds.length} non-scripted stages...');
 		for (stageId in unscriptedStageIds)
 		{

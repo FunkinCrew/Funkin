@@ -1,13 +1,11 @@
 package modding;
 
-#if polymod
 import polymod.Polymod.ModMetadata;
 import polymod.Polymod;
 import polymod.backends.OpenFLBackend;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.LinesParseFormat;
 import polymod.format.ParseRules.TextFileFormat;
-#end
 
 class PolymodHandler
 {
@@ -29,12 +27,8 @@ class PolymodHandler
 	 */
 	public static function loadAllMods()
 	{
-		#if polymod
 		trace("Initializing Polymod (using all mods)...");
 		loadModsById(getAllModIds());
-		#else
-		trace("Polymod not initialized; not supported on this platform.");
-		#end
 	}
 
 	/**
@@ -43,17 +37,12 @@ class PolymodHandler
 	public static function loadNoMods()
 	{
 		// We still need to configure the debug print calls etc.
-		#if polymod
 		trace("Initializing Polymod (using no mods)...");
 		loadModsById([]);
-		#else
-		trace("Polymod not initialized; not supported on this platform.");
-		#end
 	}
 
 	public static function loadModsById(ids:Array<String>)
 	{
-		#if polymod
 		if (ids.length == 0)
 		{
 			trace('You attempted to load zero mods.');
@@ -72,7 +61,7 @@ class PolymodHandler
 			// The current version of our API.
 			apiVersion: API_VERSION,
 			// Call this function any time an error occurs.
-			errorCallback: onPolymodError,
+			errorCallback: PolymodErrorHandler.onPolymodError,
 			// Enforce semantic version patterns for each mod.
 			// modVersions: null,
 			// A map telling Polymod what the asset type is for unfamiliar file extensions.
@@ -107,7 +96,9 @@ class PolymodHandler
 		}
 
 		for (mod in loadedModList)
+		{
 			trace('  * ${mod.title} v${mod.modVersion} [${mod.id}]');
+		}
 
 		#if debug
 		var fileList = Polymod.listModFiles("IMAGE");
@@ -130,12 +121,8 @@ class PolymodHandler
 		for (item in fileList)
 			trace('  * $item');
 		#end
-		#else
-		trace("[POLYMOD] Mods are not supported on this platform.");
-		#end
 	}
 
-	#if polymod
 	static function buildParseRules():polymod.format.ParseRules
 	{
 		var output = polymod.format.ParseRules.getDefault();
@@ -160,42 +147,12 @@ class PolymodHandler
 		}
 	}
 
-	static function onPolymodError(error:PolymodError):Void
+	public static function getAllMods():Array<ModMetadata>
 	{
-		// Perform an action based on the error code.
-		switch (error.code)
-		{
-			case MOD_LOAD_PREPARE:
-				trace('[POLYMOD] ${error.message}');
-			case MOD_LOAD_DONE:
-				trace('[POLYMOD] ${error.message}');
-			case MISSING_ICON:
-				trace('[POLYMOD] A mod is missing an icon. Please add one.');
-			default:
-				// Log the message based on its severity.
-				switch (error.severity)
-				{
-					case NOTICE:
-						trace('[POLYMOD] ${error.message}');
-					case WARNING:
-						trace('[POLYMOD] ${error.message}');
-					case ERROR:
-						trace('[POLYMOD] ${error.message}');
-				}
-		}
-	}
-	#end
-
-	public static function getAllMods()
-	{
-		#if polymod
 		trace('Scanning the mods folder...');
 		var modMetadata = Polymod.scan(MOD_FOLDER);
 		trace('Found ${modMetadata.length} mods when scanning.');
 		return modMetadata;
-		#else
-		return new Array<Dynamic>();
-		#end
 	}
 
 	public static function getAllModIds():Array<String>

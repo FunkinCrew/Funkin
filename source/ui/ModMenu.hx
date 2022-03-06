@@ -1,16 +1,16 @@
 package ui;
 
+import modding.PolymodHandler;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import polymod.Polymod;
-import sys.FileSystem;
 
 class ModMenu extends ui.OptionsState.Page
 {
 	var grpMods:FlxTypedGroup<ModMenuItem>;
-	var enabledMods:Array<String> = [];
-	var modFolders:Array<String> = [];
+	var enabledMods:Array<ModMetadata> = [];
+	var detectedMods:Array<ModMetadata> = [];
 
 	var curSelected:Int = 0;
 
@@ -62,10 +62,10 @@ class ModMenu extends ui.OptionsState.Page
 	{
 		curSelected += change;
 
-		if (curSelected >= modFolders.length)
+		if (curSelected >= detectedMods.length)
 			curSelected = 0;
 		if (curSelected < 0)
-			curSelected = modFolders.length - 1;
+			curSelected = detectedMods.length - 1;
 
 		for (txt in 0...grpMods.length)
 		{
@@ -80,8 +80,6 @@ class ModMenu extends ui.OptionsState.Page
 		organizeByY();
 	}
 
-	inline static var MOD_PATH = "./mods";
-
 	private function refreshModList():Void
 	{
 		while (grpMods.members.length > 0)
@@ -90,36 +88,17 @@ class ModMenu extends ui.OptionsState.Page
 		}
 
 		#if desktop
-		var modList = [];
-		modFolders = [];
+		detectedMods = PolymodHandler.getAllMods();
 
-		trace("mods path:" + FileSystem.absolutePath(MOD_PATH));
-		if (!FileSystem.exists(MOD_PATH))
+		trace('ModMenu: Detected ${detectedMods.length} mods');
+
+		for (index in 0...detectedMods.length)
 		{
-			FlxG.log.warn("missing mods folder, expected: " + FileSystem.absolutePath(MOD_PATH));
-			return;
-		}
-
-		for (file in FileSystem.readDirectory(MOD_PATH))
-		{
-			if (FileSystem.isDirectory(MOD_PATH + file))
-				modFolders.push(file);
-		}
-
-		enabledMods = [];
-
-		modList = Polymod.scan(MOD_PATH);
-
-		trace(modList);
-
-		var loopNum:Int = 0;
-		for (i in modFolders)
-		{
-			var txt:ModMenuItem = new ModMenuItem(0, 10 + (40 * loopNum), 0, i, 32);
-			txt.text = i;
+			var modMetadata:ModMetadata = detectedMods[index];
+			var modName:String = modMetadata.title;
+			var txt:ModMenuItem = new ModMenuItem(0, 10 + (40 * index), 0, modName, 32);
+			txt.text = modName;
 			grpMods.add(txt);
-
-			loopNum++;
 		}
 		#end
 	}

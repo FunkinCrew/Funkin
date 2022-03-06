@@ -21,7 +21,7 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [
+	var weekData:Array<Array<String>> = [
 		['Tutorial'],
 		['Bopeebo', 'Fresh', 'Dadbattle'],
 		['Spookeez', 'South', "Monster"],
@@ -430,11 +430,10 @@ class StoryMenuState extends MusicBeatState
 				// grpWeekCharacters.members[0].updateHitbox();
 		}
 
-		var stringThing:Array<String> = weekData[curWeek];
-
-		for (i in stringThing)
+		var trackNames:Array<String> = weekData[curWeek];
+		for (i in trackNames)
 		{
-			txtTracklist.text += "\n" + i;
+			txtTracklist.text += '\n${i}';
 		}
 
 		txtTracklist.text = txtTracklist.text.toUpperCase();

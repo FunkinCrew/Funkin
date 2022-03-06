@@ -10,9 +10,7 @@ import ui.PreferencesMenu;
 
 using StringTools;
 
-#if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
-#end
 
 class Note extends FlxSprite
 {

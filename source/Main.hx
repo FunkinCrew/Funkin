@@ -98,8 +98,10 @@ class Main extends Sprite
 		#if debug
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
+		#if !html5
 		memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
 		addChild(memoryCounter);
+		#end
 		#end
 
 		/* 

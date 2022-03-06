@@ -111,8 +111,6 @@ class PlayState extends MusicBeatState
 
 	var foregroundSprites:FlxTypedGroup<BGSprite>;
 
-	var tankmanRun:FlxTypedGroup<TankmenBG>;
-
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
@@ -429,13 +427,13 @@ class PlayState extends MusicBeatState
 
 		switch (curStageId)
 		{
-			case 'limo':
+			case 'limoRide':
 				gfVersion = 'gf-car';
-			case 'mall' | 'mallEvil':
+			case 'mallXmas' | 'mallEvil':
 				gfVersion = 'gf-christmas';
 			case 'school' | 'schoolEvil':
 				gfVersion = 'gf-pixel';
-			case 'tank':
+			case 'tankmanBattlefield':
 				gfVersion = 'gf-tankmen';
 		}
 
@@ -455,23 +453,6 @@ class PlayState extends MusicBeatState
 			case 'pico-speaker':
 				gf.x -= 50;
 				gf.y -= 200;
-
-				var tempTankman:TankmenBG = new TankmenBG(20, 500, true);
-				tempTankman.strumTime = 10;
-				tempTankman.resetShit(20, 600, true);
-				tankmanRun.add(tempTankman);
-
-				for (i in 0...TankmenBG.animationNotes.length)
-				{
-					if (FlxG.random.bool(16))
-					{
-						var tankman:TankmenBG = tankmanRun.recycle(TankmenBG);
-						// new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
-						tankman.strumTime = TankmenBG.animationNotes[i][0];
-						tankman.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
-						tankmanRun.add(tankman);
-					}
-				}
 		}
 
 		dad = new Character(100, 100, SONG.player2);
@@ -2020,7 +2001,11 @@ class PlayState extends MusicBeatState
 							curStage.onNoteMiss(daNote);
 						}
 						health -= 0.0775;
-						vocals.volume = 0;
+						// Practice mode doesn't mute the vocals on miss.
+						if (!practiceMode)
+						{
+							vocals.volume = 0;
+						}
 						killCombo();
 					}
 
@@ -2512,8 +2497,12 @@ class PlayState extends MusicBeatState
 		if (!practiceMode)
 			songScore -= 10;
 
-		vocals.volume = 0;
-		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+		// Practice mode doesn't mute the vocals on miss.
+		if (!practiceMode)
+		{
+			vocals.volume = 0;
+			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+		}
 
 		/* boyfriend.stunned = true;
 

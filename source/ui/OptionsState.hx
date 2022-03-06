@@ -33,9 +33,7 @@ class OptionsState extends MusicBeatState
 		var controls = addPage(Controls, new ControlsMenu());
 		// var colors = addPage(Colors, new ColorsMenu());
 
-		#if polymod
 		var mods = addPage(Mods, new ModMenu());
-		#end
 
 		if (options.hasMultipleOptions())
 		{
@@ -43,10 +41,7 @@ class OptionsState extends MusicBeatState
 			controls.onExit.add(switchPage.bind(Options));
 			// colors.onExit.add(switchPage.bind(Options));
 			preferences.onExit.add(switchPage.bind(Options));
-
-			#if polymod
 			mods.onExit.add(switchPage.bind(Options));
-			#end
 		}
 		else
 		{
@@ -180,9 +175,7 @@ class OptionsMenu extends Page
 		createItem(t("PREFERENCES"), function() switchPage(Preferences));
 		createItem(t("CONTROLS"), function() switchPage(Controls));
 		// createItem(t("COLORS"), function() switchPage(Colors));
-		#if polymod
 		createItem(t("MODS"), function() switchPage(Mods));
-		#end
 
 		#if CAN_OPEN_LINKS
 		if (showDonate)

@@ -351,17 +351,6 @@ class TitleState extends MusicBeatState
 			FlxG.switchState(new CutsceneAnimTestState());
 		#end
 
-		/* 
-			if (FlxG.keys.justPressed.R)
-			{
-				#if polymod
-				polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-				trace('reinitialized');
-				#end
-			}
-
-		 */
-
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		if (FlxG.keys.justPressed.F)

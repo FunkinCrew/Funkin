@@ -1,5 +1,7 @@
 package;
 
+import Note.NoteData;
+import SongLoad.SwagSong;
 import Section.SwagSection;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
@@ -19,7 +21,7 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
-	public var animationNotes:Array<Dynamic> = [];
+	public var animationNotes:Array<NoteData> = [];
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -584,27 +586,25 @@ class Character extends FlxSprite
 
 	public function loadMappedAnims()
 	{
-		var swagshit = SongLoad.loadFromJson('picospeaker', 'stress');
+		var swagshit:SwagSong = SongLoad.loadFromJson('stress', 'stress');
 
-		var notes = swagshit.extraNotes.get('picospeaker');
+		var notes:Array<SwagSection> = swagshit.noteMap.get('picospeaker');
 
 		for (section in notes)
 		{
-			for (idk in section.sectionNotes)
+			for (noteData in section.sectionNotes)
 			{
-				animationNotes.push(idk);
+				animationNotes.push(noteData);
 			}
 		}
-
-		TankmenBG.animationNotes = animationNotes;
 
 		trace(animationNotes);
 		animationNotes.sort(sortAnims);
 	}
 
-	function sortAnims(val1:Array<Dynamic>, val2:Array<Dynamic>):Int
+	function sortAnims(val1:NoteData, val2:NoteData):Int
 	{
-		return FlxSort.byValues(FlxSort.ASCENDING, val1[0], val2[0]);
+		return FlxSort.byValues(FlxSort.ASCENDING, val1.strumTime, val2.strumTime);
 	}
 
 	function quickAnimAdd(name:String, prefix:String)
@@ -659,13 +659,13 @@ class Character extends FlxSprite
 				// for pico??
 				if (animationNotes.length > 0)
 				{
-					if (Conductor.songPosition > animationNotes[0][0])
+					if (Conductor.songPosition > animationNotes[0].strumTime)
 					{
-						trace('played shoot anim' + animationNotes[0][1]);
+						trace('played shoot anim' + animationNotes[0].noteData);
 
 						var shootAnim:Int = 1;
 
-						if (animationNotes[0][1] >= 2)
+						if ((cast animationNotes[0].noteData) >= 2)
 							shootAnim = 3;
 
 						shootAnim += FlxG.random.int(0, 1);
