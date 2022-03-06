@@ -24,14 +24,10 @@
 	<window if="html5" resizable="true" />
 
 	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
-
-	<!-- This macro permanently silences an annoying warning. -->
-	<option flashStrict="False" />
-	<haxeflag name="--macro" value="allowPackage('flash')" />
+	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
@@ -41,76 +37,76 @@
 
 	<classpath name="source" />
 
-	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
-	
+	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web" />
+
 	<define name="PRELOAD_ALL" unless="web" />
-	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
-	
+	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL" />
+
 	<section if="PRELOAD_ALL">
-		<library name="songs"    preload="true" />
-		<library name="shared"   preload="true" />
+		<library name="songs" preload="true" />
+		<library name="shared" preload="true" />
 		<library name="tutorial" preload="true" />
-		<library name="week1"    preload="true" />
-		<library name="week2"    preload="true" />
-		<library name="week3"    preload="true" />
-		<library name="week4"    preload="true" />
-		<library name="week5"    preload="true" />
-		<library name="week6"    preload="true" />
-		<library name="week7"    preload="true" />
-		<library name="week8"    preload="true" />
+		<library name="week1" preload="true" />
+		<library name="week2" preload="true" />
+		<library name="week3" preload="true" />
+		<library name="week4" preload="true" />
+		<library name="week5" preload="true" />
+		<library name="week6" preload="true" />
+		<library name="week7" preload="true" />
+		<library name="week8" preload="true" />
 	</section>
-	
+
 	<section if="NO_PRELOAD_ALL">
-		<library name="songs"    preload="false" />
-		<library name="shared"   preload="false" />
+		<library name="songs" preload="false" />
+		<library name="shared" preload="false" />
 		<library name="tutorial" preload="false" />
-		<library name="week1"    preload="false" />
-		<library name="week2"    preload="false" />
-		<library name="week3"    preload="false" />
-		<library name="week4"    preload="false" />
-		<library name="week5"    preload="false" />
-		<library name="week6"    preload="false" />
-		<library name="week7"    preload="false" />
-		<library name="week8"    preload="false" />
+		<library name="week1" preload="false" />
+		<library name="week2" preload="false" />
+		<library name="week3" preload="false" />
+		<library name="week4" preload="false" />
+		<library name="week5" preload="false" />
+		<library name="week6" preload="false" />
+		<library name="week7" preload="false" />
+		<library name="week8" preload="false" />
 	</section>
-	
-	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.mp3" unless="web"/>
-	<assets path="assets/week8"    library="week8"    exclude="*.fla|*.ogg" if="web"/>
-	<assets path="assets/week8"    library="week8"    exclude="*.fla|*.mp3" unless="web"/>
-	
+
+	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week1" library="week1" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week1" library="week1" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week2" library="week2" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week2" library="week2" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week3" library="week3" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week3" library="week3" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week4" library="week4" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week4" library="week4" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week5" library="week5" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week5" library="week5" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week6" library="week6" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week6" library="week6" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week7" library="week7" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week7" library="week7" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week8" library="week8" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week8" library="week8" exclude="*.fla|*.mp3" unless="web" />
+
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
-	<assets path='example_mods' rename='mods' embed='false' exclude="*.md"/>
+	<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	
-	<assets path="CHANGELOG.md" rename='changelog.txt'/>
+
+	<assets path="CHANGELOG.md" rename='changelog.txt' />
 
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
 		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
-	<assets path="assets/fonts" embed='true'/>
+	<assets path="assets/fonts" embed='true' />
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="openfl" />
@@ -124,26 +120,27 @@
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
 	<!--haxelib name="newgrounds" unless="switch"/> -->
-	<haxelib name="faxe" if='switch'/>
+	<haxelib name="faxe" if='switch' />
 	<haxelib name="polymod" />
 	<haxelib name="firetongue" />
-	
+
 	<!-- <haxelib name="colyseus"/> -->
 	<!-- <haxelib name="colyseus-websocket" /> -->
 	<!-- <haxelib name="newgrounds"/> -->
-	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
-	
+	<haxelib name="hxcpp-debug-server" if="desktop debug" />
+
 	<!-- swf stufffff -->
 	<!-- <haxelib name="swf"/> -->
 	<!-- <library path="assets/tanky.swf" preload="true"/> -->
 	<!-- <library path="assets/tankBG.swf" preload="true"/> -->
-	
+
 	<!-- <haxelib name="flixel-animate" /> -->
 	<!-- <haxelib name="spinehaxe" /> -->
 	<!-- https://github.com/ninjamuffin99/Flixel-Animate-Atlas-Player -->
 
 
-	<!--<haxelib name="discord_rpc" if="cpp"/> --> <!-- foesn't work with neko -->
+	<!--<haxelib name="discord_rpc" if="cpp"/> -->
+	<!-- foesn't work with neko -->
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
@@ -184,7 +181,7 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
-  <haxeflag name="-no-traces" unless="debug" />
+	<haxeflag name="-no-traces" unless="debug" />
 	<!-- HScript relies heavily on Reflection, which means we can't use DCE. -->
 	<haxeflag name="--dce no" />
 	<haxedef name="HXCPP_CHECK_POINTER" />
@@ -193,10 +190,10 @@
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
+
+	<icon path="art/icon16.png" size='16' />
+	<icon path="art/icon32.png" size='32' />
+	<icon path="art/icon64.png" size='64' />
 	<icon path="art/iconOG.png" />
 
 	<!--
@@ -207,31 +204,31 @@
 	<haxeflag name="--macro" value="include('modding.base')" />
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	
-	<haxedef name="CAN_OPEN_LINKS" unless="switch"/>
-	<haxedef name="CAN_CHEAT" if="switch debug"/>
-	
+
+	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
+	<haxedef name="CAN_CHEAT" if="switch debug" />
+
 	<!-- Skip the Intro -->
 	<section if="debug">
 		<!-- Starts the game at the specified week, at the first song -->
 		<!-- <haxedef name="week" value="1" if="debug"/> -->
-		
+
 		<!-- Starts the game at the specified song -->
 		<!-- <haxedef name="song" value="bopeebo" if="debug"/> -->
-		
+
 		<!-- Difficulty, only used for week or song, defaults to 1 -->
 		<!-- <haxedef name="dif" value="2" if="debug"/> -->
 	</section>
-	
+
 	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
-	
+
 	<section if="newgrounds">
 		<!-- Enables Ng.core.verbose -->
 		<!-- <haxedef name="NG_VERBOSE" /> -->
-		
+
 		<!-- Enables a NG debug session, so medals don't permently unlock -->
 		<!-- <haxedef name="NG_DEBUG" /> -->
-		
+
 		<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
 		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
 	</section>
@@ -239,8 +236,8 @@
 	<!-- <prebuild haxe="trace('prebuilding');"/> -->
 	<!-- <postbuild haxe="art/Postbuild.hx"/> -->
 
-	<config:ios allow-provisioning-updates="true" team-id=""/>
-	
+	<config:ios allow-provisioning-updates="true" team-id="" />
+
 	<!-- Options for Polymod -->
 	<section if="polymod">
 		<!-- Turns on additional debug logging. -->
@@ -266,7 +263,7 @@
 	<section if='TOOLS'>
 		<!-- Compiles tool for old song conversion shit -->
 		<!-- Assumes you use it on windows/desktop!!!! -->
-		<postbuild command='haxe -main art/SongConverter.hx --cs export/songShit'/>
+		<postbuild command='haxe -main art/SongConverter.hx --cs export/songShit' />
 		<assets path='export/songShit/bin/SongConverter.exe' rename='SongConverter.exe' />
 
 		<!-- <postbuild command='ren export/songShit/bin export/songShit/tools '/> -->

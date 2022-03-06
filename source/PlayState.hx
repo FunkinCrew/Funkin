@@ -1,25 +1,17 @@
 package;
 
-import shaderslmfao.WiggleEffect;
-import play.stage.StageData;
-import play.stage.Stage;
-import Note;
-import Section.SwagSection;
-import SongLoad.SwagSong;
 import charting.ChartingState;
+import flixel.addons.effects.FlxTrail;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.addons.effects.FlxTrail;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
-import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -30,9 +22,12 @@ import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.ui.Haptic;
 import lime.utils.Assets;
-import shaderslmfao.BuildingShaders;
+import Note;
+import play.stage.Stage;
+import play.stage.StageData;
+import Section.SwagSection;
 import shaderslmfao.ColorSwap;
-import shaderslmfao.OverlayBlend;
+import SongLoad.SwagSong;
 import ui.PopUpStuff;
 import ui.PreferencesMenu;
 
@@ -106,11 +101,6 @@ class PlayState extends MusicBeatState
 
 	public static var seenCutscene:Bool = false;
 
-	var halloweenBG:FlxSprite;
-	var isHalloween:Bool = false;
-
-	var foregroundSprites:FlxTypedGroup<BGSprite>;
-
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
@@ -158,8 +148,6 @@ class PlayState extends MusicBeatState
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
-		foregroundSprites = new FlxTypedGroup<BGSprite>();
-
 		// dialogue init shit, just for week 5 really (for now...?)
 		switch (SONG.song.toLowerCase())
 		{
@@ -175,10 +163,8 @@ class PlayState extends MusicBeatState
 		initDiscord();
 		#end
 
-		initStageBullshit();
+		initStage();
 		initCharacters();
-
-		add(foregroundSprites);
 
 		if (dialogue != null)
 		{
@@ -368,56 +354,35 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 	}
 
-	// a lot of this stage code will be cleaned up more when the stage load shit is more fleshed out! For now it's still a lot of hardcoded shit!!
-	function initStageBullshit()
+	function initStage()
 	{
 		// TODO: Move stageId to the song file.
 		switch (SONG.song.toLowerCase())
 		{
 			case 'spookeez' | 'monster' | 'south':
 				curStageId = "spookyMansion";
-				loadStage(curStageId);
-
 			case 'pico' | 'blammed' | 'philly':
 				curStageId = 'phillyTrain';
-				loadStage(curStageId);
-
 			case "milf" | 'satin-panties' | 'high':
 				curStageId = 'limoRide';
-				loadStage(curStageId);
-
 			case "cocoa" | 'eggnog':
 				curStageId = 'mallXmas';
-				loadStage(curStageId);
-
 			case 'winter-horrorland':
 				curStageId = 'mallEvil';
-				loadStage(curStageId);
-
 			case 'pyro':
 				curStageId = 'pyro';
-				loadStage(curStageId);
-
 			case 'senpai' | 'roses':
 				curStageId = 'school';
-				loadStage(curStageId);
-
 			case "darnell":
 				curStageId = 'phillyStreets';
-				loadStage(curStageId);
-
 			case 'thorns':
 				curStageId = 'schoolEvil';
-				loadStage(curStageId);
-
 			case 'guns' | 'stress' | 'ugh':
 				curStageId = 'tankmanBattlefield';
-				loadStage(curStageId);
-
 			default:
 				curStageId = "mainStage";
-				loadStage(curStageId);
 		}
+		loadStage(curStageId);
 	}
 
 	function initCharacters()
@@ -640,6 +605,8 @@ class PlayState extends MusicBeatState
 	 * 
 	 * This is useful for when you want to edit a stage without reloading the whole game.
 	 * Reloading works on both the JSON and the HXC, if applicable.
+	 * 
+	 * Call this by pressing F5 on a debug build.
 	 */
 	function debug_refreshStages()
 	{
@@ -685,45 +652,6 @@ class PlayState extends MusicBeatState
 			// Add the stage to the scene.
 			this.add(curStage);
 		}
-	}
-
-	function loadStageOld(path:String)
-	{
-		curStageId = path;
-
-		var json = Assets.getText(Paths.file('data/stagedata/${curStageId}Stage.json'));
-
-		var parsed:StageData = cast Json.parse(json);
-
-		defaultCamZoom *= parsed.camZoom;
-
-		for (prop in parsed.propsBackground)
-		{
-			var funnyProp:BGSprite = new BGSprite(prop.path, prop.x, prop.y, prop.scrollX, prop.scrollY, null, false, false);
-
-			if (prop.animBullshit != null)
-				funnyProp.setupSparrow(prop.path, prop.animBullshit.anims, prop.animBullshit.isLooping);
-			else
-				funnyProp.justLoadImage(prop.path);
-
-			if (prop.updateHitbox != null && !prop.updateHitbox)
-			{
-				funnyProp.scale.set(prop.scaleX, prop.scaleY);
-			}
-			else
-			{
-				funnyProp.setGraphicSize(Std.int(funnyProp.width * prop.scaleX), Std.int(funnyProp.height * prop.scaleY));
-				funnyProp.updateHitbox();
-			}
-
-			if (prop.antialiasing != null)
-				funnyProp.antialiasing = prop.antialiasing;
-
-			funnyProp.scrollFactor.set(prop.scrollX, prop.scrollY);
-			add(funnyProp);
-		}
-
-		trace(parsed.propsBackground);
 	}
 
 	function gunsIntro()
@@ -1384,8 +1312,6 @@ class PlayState extends MusicBeatState
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
 				swagNote.data = songNotes;
-				// swagNote.data.sustainLength = songNotes.sustainLength;
-				// swagNote.data.altNote = songNotes.altNote;
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.data.sustainLength;
@@ -1728,9 +1654,11 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 
+			// There is a 1/1000 change to use a special pause menu.
+			// This prevents the player from resuming, but that's the point.
+			// It's a reference to Gitaroo Man, which doesn't let you pause the game.
 			if (FlxG.random.bool(1 / 1000))
 			{
-				// gitaroo man easter egg
 				FlxG.switchState(new GitarooPause());
 			}
 			else
@@ -1762,7 +1690,6 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
 
-		// get it like refreshing a browser
 		if (FlxG.keys.justPressed.F5)
 			debug_refreshStages();
 
@@ -2001,11 +1928,7 @@ class PlayState extends MusicBeatState
 							curStage.onNoteMiss(daNote);
 						}
 						health -= 0.0775;
-						// Practice mode doesn't mute the vocals on miss.
-						if (!practiceMode)
-						{
-							vocals.volume = 0;
-						}
+						vocals.volume = 0;
 						killCombo();
 					}
 
@@ -2497,12 +2420,8 @@ class PlayState extends MusicBeatState
 		if (!practiceMode)
 			songScore -= 10;
 
-		// Practice mode doesn't mute the vocals on miss.
-		if (!practiceMode)
-		{
-			vocals.volume = 0;
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-		}
+		vocals.volume = 0;
+		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 
 		/* boyfriend.stunned = true;
 

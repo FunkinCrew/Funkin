@@ -201,13 +201,11 @@ class Stage extends FlxSpriteGroup implements IHook
 	}
 
 	/**
-	 * A function that gets called every frame.
-	 * @param elapsed The number of 
+	 * A function that should get called every frame.
 	 */
 	public function onUpdate(elapsed:Float):Void
 	{
 		// Override me in your scripted stage to perform custom behavior!
-		// trace('Stage.onUpdate(${elapsed})');
 	}
 
 	/**
@@ -303,8 +301,6 @@ class Stage extends FlxSpriteGroup implements IHook
 
 	/**
 	 * Retrieves a given character from the stage.
-	 * @param id 
-	 * @return Character
 	 */
 	public function getCharacter(id:String):Character
 	{

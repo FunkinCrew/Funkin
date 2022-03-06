@@ -2,13 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-			// Launch in native/CPP
+      // Launch in native/CPP
       "name": "Lime",
       "type": "lime",
       "request": "launch"
     },
     {
-			// Evaluate macros with debugging enabled
+      // Evaluate macros with debugging enabled
       "name": "Haxe Eval",
       "type": "haxe-eval",
       "request": "launch"
