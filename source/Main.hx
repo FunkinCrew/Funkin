@@ -1,5 +1,7 @@
 package;
 
+import funkin.InitState;
+import funkin.MemoryCounter;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Lib;
@@ -42,9 +44,9 @@ class Main extends Sprite
 		//      A design similar to that of Minecraft resource packs would be intuitive.
 		// 3. The interface should save (to the save file) and output an ordered array of mod IDs.
 		// 4. Replace the call to PolymodHandler.loadAllMods() with a call to PolymodHandler.loadModsById(ids:Array<String>).
-		modding.PolymodHandler.loadAllMods();
+		funkin.modding.PolymodHandler.loadAllMods();
 
-		i18n.FireTongueHandler.init();
+		funkin.i18n.FireTongueHandler.init();
 
 		if (stage != null)
 		{

@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.funkin.fnf" package="com.funkin.fnf" main="Main" version="0.2.8" company="ninjamuffin99" />
+	<app title="Friday Night Funkin'" file="Funkin" packageName="com.funkin.fnf" package="com.funkin.fnf" main="Main" version="0.3.0" company="ninjamuffin99" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -181,13 +181,23 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
+	<!-- _________________________________ Custom _______________________________ -->
+
+	<!-- Disable trace() calls in release builds to bump up performance. -->
 	<haxeflag name="--no-traces" unless="debug" />
+
 	<!-- HScript relies heavily on Reflection, which means we can't use DCE. -->
-	<haxeflag name="--dce no" />
+	<haxeflag name="-dce no" />
+	<haxeflag name="--macro" value="include('funkin')" />
+
+	<!-- Necessary to provide stack traces for HScript. -->
+  <haxedef name="hscriptPos" />
 	<haxedef name="HXCPP_CHECK_POINTER" />
 	<haxedef name="HXCPP_STACK_LINE" />
 
-	<!-- _________________________________ Custom _______________________________ -->
+
+	<!-- This macro allows addition of new functionality to existing Flixel. -->
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 
@@ -195,13 +205,6 @@
 	<icon path="art/icon32.png" size='32' />
 	<icon path="art/icon64.png" size='64' />
 	<icon path="art/iconOG.png" />
-
-	<!--
-		aww yeah hackerman time, run a macro on the class rather than edit it
-		took me a while to get this working but turns out the classname comes SECOND
-	-->
-	<haxeflag name="--macro" value="addMetadata('@:build(util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
-	<haxeflag name="--macro" value="include('modding.base')" />
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 
