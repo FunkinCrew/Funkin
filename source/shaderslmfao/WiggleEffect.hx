@@ -20,7 +20,7 @@ class WiggleEffect
 	public var waveFrequency(default, set):Float = 0;
 	public var waveAmplitude(default, set):Float = 0;
 
-	public function new(speed:Float, freq:Float, amplitude:Float, effect:WiggleEffectType = DREAMY):Void
+	public function new(speed:Float, freq:Float, amplitude:Float, ?effect:WiggleEffectType = DREAMY):Void
 	{
 		shader.uTime.value = [0];
 		this.waveSpeed = speed;
