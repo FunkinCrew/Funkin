@@ -1928,7 +1928,9 @@ class PlayState extends MusicBeatState
 						{
 							curStage.onNoteMiss(daNote);
 						}
-						health -= 0.0775;
+
+						// lose less health on sustain notes!
+						health -= 0.0775 * (daNote.isSustainNote ? 0.2 : 1); // if it's sustain, multiply it by 0.2 (not checked for balence yet), else keep it same (multiply by 1)
 						vocals.volume = 0;
 						killCombo();
 					}
