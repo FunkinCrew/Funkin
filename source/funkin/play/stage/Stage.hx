@@ -1,8 +1,8 @@
 package funkin.play.stage;
 
-import flixel.math.FlxPoint;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.util.FlxSort;
 import funkin.modding.IHook;
 import funkin.play.character.Character.CharacterType;
@@ -198,6 +198,15 @@ class Stage extends FlxSpriteGroup implements IHook
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
 		trace('Stage sorted by z-index');
+	}
+
+	/**
+	 * Resets the stage and it's props (needs to be overridden with your own logic!)
+	 */
+	public function resetStage()
+	{
+		// Override me in your script to reset stage shit however you please!
+		// also note: maybe add some default behaviour to reset stage stuff?
 	}
 
 	/**
