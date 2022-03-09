@@ -1571,8 +1571,10 @@ class PlayState extends MusicBeatState
 			curStage.resetStage();
 
 			FlxG.sound.music.time = 0;
+
 			regenNoteData(); // loads the note data from start
 			health = 1;
+			songScore = 0;
 			restartCountdownTimer();
 
 			needsReset = false;
@@ -2199,7 +2201,7 @@ class PlayState extends MusicBeatState
 			{
 				case 'limo':
 					camFollow.x = boyfriend.getMidpoint().x - 300;
-				case 'mall':
+				case 'mallXmas':
 					camFollow.y = boyfriend.getMidpoint().y - 200;
 				case 'school' | 'schoolEvil':
 					camFollow.x = boyfriend.getMidpoint().x - 200;
