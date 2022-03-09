@@ -473,13 +473,10 @@ class PlayState extends MusicBeatState
 		switch (curStageId)
 		{
 			case 'schoolEvil':
-				// trailArea.scrollFactor.set();
-
 				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-				// evilTrail.changeValuesEnabled(false, false, false, false);
-				// evilTrail.changeGraphic()
+				// Go behind Spirit.
+				evilTrail.zIndex = 190;
 				add(evilTrail);
-			// evilTrail.scrollFactor.set(1.1, 1.1);
 			case "tank":
 				gf.y += 10;
 				gf.x -= 30;
