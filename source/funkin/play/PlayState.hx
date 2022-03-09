@@ -1,13 +1,12 @@
 package funkin.play;
 
-import funkin.charting.ChartingState;
-import flixel.addons.effects.FlxTrail;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.effects.FlxTrail;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -19,17 +18,18 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import funkin.Note;
+import funkin.Section.SwagSection;
+import funkin.SongLoad.SwagSong;
+import funkin.charting.ChartingState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageData;
+import funkin.shaderslmfao.ColorSwap;
+import funkin.ui.PopUpStuff;
+import funkin.ui.PreferencesMenu;
 import haxe.Json;
 import lime.ui.Haptic;
 import lime.utils.Assets;
-import funkin.Note;
-import funkin.play.stage.Stage;
-import funkin.play.stage.StageData;
-import funkin.Section.SwagSection;
-import funkin.shaderslmfao.ColorSwap;
-import funkin.SongLoad.SwagSong;
-import funkin.ui.PopUpStuff;
-import funkin.ui.PreferencesMenu;
 
 using StringTools;
 
@@ -1576,6 +1576,8 @@ class PlayState extends MusicBeatState
 
 			FlxG.sound.music.pause();
 			vocals.pause();
+
+			curStage.resetStage();
 
 			FlxG.sound.music.time = 0;
 			regenNoteData(); // loads the note data from start
