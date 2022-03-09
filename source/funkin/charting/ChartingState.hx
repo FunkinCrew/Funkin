@@ -647,8 +647,8 @@ class ChartingState extends MusicBeatState
 
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
-			trace(curStep);
-			trace((SongLoad.getSong()[curSection].lengthInSteps) * (curSection + 1));
+			// trace(curStep);
+			// trace((SongLoad.getSong()[curSection].lengthInSteps) * (curSection + 1));
 			trace('DUMBSHIT');
 
 			if (SongLoad.getSong()[curSection + 1] == null)
@@ -1065,7 +1065,7 @@ class ChartingState extends MusicBeatState
 
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
-		trace('changing section' + sec);
+		// trace('changing section' + sec);
 
 		if (SongLoad.getSong()[sec] != null)
 		{
