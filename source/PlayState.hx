@@ -1839,7 +1839,6 @@ class PlayState extends MusicBeatState
 	{
 		if (_exiting)
 			return;
-
 		vocals.pause();
 		FlxG.sound.music.play();
 		Conductor.songPosition = FlxG.sound.music.time + Conductor.offset;
@@ -2895,8 +2894,9 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
+
 		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
-			|| (SONG.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > 20))
+			|| Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 20)
 		{
 			resyncVocals();
 		}
