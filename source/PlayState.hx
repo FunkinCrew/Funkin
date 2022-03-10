@@ -1839,6 +1839,7 @@ class PlayState extends MusicBeatState
 	{
 		if (_exiting)
 			return;
+
 		vocals.pause();
 		FlxG.sound.music.play();
 		Conductor.songPosition = FlxG.sound.music.time + Conductor.offset;

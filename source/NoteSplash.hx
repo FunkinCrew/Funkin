@@ -22,6 +22,8 @@ class NoteSplash extends FlxSprite
 
 		setupNoteSplash(x, y, noteData);
 
+		antialiasing = true;
+
 		// alpha = 0.75;
 	}
 
