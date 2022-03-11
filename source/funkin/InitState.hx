@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.modding.module.ModuleHandler;
 import funkin.play.stage.StageData;
 import funkin.charting.ChartingState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -122,6 +123,8 @@ class InitState extends FlxTransitionableState
 
 		StageDataParser.loadStageCache();
 
+		ModuleHandler.loadModuleCache();
+
 		#if song
 		var song = getSong();
 
@@ -186,7 +189,7 @@ class InitState extends FlxTransitionableState
 	{
 		var dif = getDif();
 
-		PlayState.SONG = SongLoad.loadFromJson(song, song);
+		PlayState.currentSong = SongLoad.loadFromJson(song, song);
 		PlayState.isStoryMode = isStoryMode;
 		PlayState.storyDifficulty = dif;
 		SongLoad.curDiff = switch (dif)

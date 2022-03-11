@@ -122,9 +122,9 @@ class ChartingState extends MusicBeatState
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
-		if (PlayState.SONG != null)
+		if (PlayState.currentSong != null)
 		{
-			_song = SongLoad.songData = PlayState.SONG;
+			_song = SongLoad.songData = PlayState.currentSong;
 			trace("LOADED A PLAYSTATE SONGFILE");
 		}
 		else
@@ -814,7 +814,7 @@ class ChartingState extends MusicBeatState
 
 			lastSection = curSection;
 
-			PlayState.SONG = _song;
+			PlayState.currentSong = _song;
 
 			// JUST FOR DEBUG DARNELL STUFF, GENERALIZE THIS FOR BETTER LOADING ELSEWHERE TOO!
 			PlayState.storyWeek = 8;
@@ -1462,13 +1462,13 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		PlayState.SONG = SongLoad.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		PlayState.currentSong = SongLoad.loadFromJson(song.toLowerCase(), song.toLowerCase());
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
 	function loadAutosave():Void
 	{
-		PlayState.SONG = FlxG.save.data.autosave;
+		PlayState.currentSong = FlxG.save.data.autosave;
 		FlxG.resetState();
 	}
 

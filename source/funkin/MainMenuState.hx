@@ -1,5 +1,7 @@
 package funkin;
 
+import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.module.ModuleHandler;
 import funkin.NGio;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -272,6 +274,8 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
 		if (FlxG.onMobile)
 		{
 			var touch:FlxTouch = FlxG.touches.getFirst();
@@ -307,7 +311,8 @@ class MainMenuState extends MusicBeatState
 			FlxG.switchState(new TitleState());
 		}
 
-		super.update(elapsed);
+		var event:UpdateScriptEvent = new UpdateScriptEvent(elapsed);
+		ModuleHandler.callEvent(event);
 	}
 }
 

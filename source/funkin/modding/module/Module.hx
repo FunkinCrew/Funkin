@@ -1,0 +1,87 @@
+package funkin.modding.module;
+
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.events.ScriptEvent.KeyboardInputScriptEvent;
+import funkin.modding.events.ScriptEvent.NoteScriptEvent;
+import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
+import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
+import funkin.modding.IScriptedClass.IInputScriptedClass;
+
+/**
+ * A module is a scripted class which receives all events without requiring a specific context.
+ * You may have the module active at all times, or only when another script enables it.
+ */
+class Module implements IInputScriptedClass implements IPlayStateScriptedClass
+{
+	/**
+	 * Whether the module is currently active.
+	 */
+	public var active(default, set):Bool = false;
+
+	function set_active(value:Bool):Bool
+	{
+		this.active = value;
+		return value;
+	}
+
+	public var moduleId(default, null):String = 'UNKNOWN';
+
+	/**
+	 * Called when the module is initialized.
+	 * It may not be safe to reference other modules here since they may not be loaded yet.
+	 * 
+	 * @param startActive Whether to start with the module active.
+	 *   If false, the module will be inactive and must be enabled by another script,
+	 *   such as a stage or another module.
+	 */
+	public function new(moduleId:String, startActive:Bool)
+	{
+		this.moduleId = moduleId;
+		this.active = startActive;
+	}
+
+	public function toString()
+	{
+		return 'Module(' + this.moduleId + ')';
+	}
+
+	public function onScriptEvent(event:ScriptEvent) {}
+
+	public function onCreate(event:ScriptEvent) {}
+
+	public function onDestroy(event:ScriptEvent) {}
+
+	public function onUpdate(event:UpdateScriptEvent) {}
+
+	public function onKeyDown(event:KeyboardInputScriptEvent) {}
+
+	public function onKeyUp(event:KeyboardInputScriptEvent) {}
+
+	public function onPause(event:ScriptEvent) {}
+
+	public function onResume(event:ScriptEvent) {}
+
+	public function onSongStart(event:ScriptEvent) {}
+
+	public function onSongEnd(event:ScriptEvent) {}
+
+	public function onSongReset(event:ScriptEvent) {}
+
+	public function onGameOver(event:ScriptEvent) {}
+
+	public function onGameRetry(event:ScriptEvent) {}
+
+	public function onNoteHit(event:NoteScriptEvent) {}
+
+	public function onNoteMiss(event:NoteScriptEvent) {}
+
+	public function onStepHit(event:SongTimeScriptEvent) {}
+
+	public function onBeatHit(event:SongTimeScriptEvent) {}
+
+	public function onCountdownStart(event:CountdownScriptEvent) {}
+
+	public function onCountdownStep(event:CountdownScriptEvent) {}
+}

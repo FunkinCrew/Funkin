@@ -1,12 +1,18 @@
 package funkin.play.stage;
 
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.events.ScriptEvent.NoteScriptEvent;
+import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
+import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import flixel.FlxSprite;
 
 /**
  * A Bopper is a stage prop which plays a dance animation.
  * Y'know, a thingie that bops. A bopper.
  */
-class Bopper extends FlxSprite
+class Bopper extends FlxSprite implements IPlayStateScriptedClass
 {
 	/**
 	 * The bopper plays the dance animation once every `danceEvery` beats.
@@ -76,9 +82,9 @@ class Bopper extends FlxSprite
 	/**
 	 * Called once every beat of the song.
 	 */
-	public function onBeatHit(curBeat:Int):Void
+	public function onBeatHit(event:SongTimeScriptEvent):Void
 	{
-		if (curBeat % danceEvery == 0)
+		if (event.beat % danceEvery == 0)
 		{
 			dance();
 		}
@@ -87,7 +93,7 @@ class Bopper extends FlxSprite
 	/**
 	 * Called every `danceEvery` beats of the song.
 	 */
-	public function dance():Void
+	function dance():Void
 	{
 		if (this.animation == null)
 		{
@@ -116,4 +122,36 @@ class Bopper extends FlxSprite
 			this.animation.play('idle$idleSuffix');
 		}
 	}
+
+	public function onScriptEvent(event:ScriptEvent) {}
+
+	public function onCreate(event:ScriptEvent) {}
+
+	public function onDestroy(event:ScriptEvent) {}
+
+	public function onUpdate(event:UpdateScriptEvent) {}
+
+	public function onPause(event:ScriptEvent) {}
+
+	public function onResume(event:ScriptEvent) {}
+
+	public function onSongStart(event:ScriptEvent) {}
+
+	public function onSongEnd(event:ScriptEvent) {}
+
+	public function onSongReset(event:ScriptEvent) {}
+
+	public function onGameOver(event:ScriptEvent) {}
+
+	public function onGameRetry(event:ScriptEvent) {}
+
+	public function onNoteHit(event:NoteScriptEvent) {}
+
+	public function onNoteMiss(event:NoteScriptEvent) {}
+
+	public function onStepHit(event:SongTimeScriptEvent) {}
+
+	public function onCountdownStart(event:CountdownScriptEvent) {}
+
+	public function onCountdownStep(event:CountdownScriptEvent) {}
 }

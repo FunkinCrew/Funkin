@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.util.Constants;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import funkin.shaderslmfao.ColorSwap;
@@ -109,10 +110,8 @@ class Note extends FlxSprite
 
 		data.noteData = noteData;
 
-		var daStage:String = PlayState.curStageId;
-
 		// TODO: Make this logic more generic
-		switch (daStage)
+		switch (PlayState.instance.currentStageId)
 		{
 			case 'school' | 'schoolEvil':
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
@@ -137,7 +136,7 @@ class Note extends FlxSprite
 					animation.add('bluehold', [1]);
 				}
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				setGraphicSize(Std.int(width * Constants.PIXEL_ART_SCALE));
 				updateHitbox();
 
 			default:
@@ -194,7 +193,7 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			if (PlayState.curStageId.startsWith('school'))
+			if (PlayState.instance.currentStageId.startsWith('school'))
 				x += 30;
 
 			if (prevNote.isSustainNote)

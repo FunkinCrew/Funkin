@@ -57,9 +57,9 @@ class LoadingState extends MusicBeatState
 			callbacks = new MultiCallback(onLoad);
 			var introComplete = callbacks.add("introComplete");
 			checkLoadSong(getSongPath());
-			if (PlayState.SONG.needsVoices)
+			if (PlayState.currentSong.needsVoices)
 			{
-				var files = PlayState.SONG.voiceList;
+				var files = PlayState.currentSong.voiceList;
 
 				if (files == null)
 					files = [""]; // loads with no file name assumption, to load "Voices.ogg" or whatev normally
@@ -173,12 +173,12 @@ class LoadingState extends MusicBeatState
 
 	static function getSongPath()
 	{
-		return Paths.inst(PlayState.SONG.song);
+		return Paths.inst(PlayState.currentSong.song);
 	}
 
 	static function getVocalPath(?suffix:String)
 	{
-		return Paths.voices(PlayState.SONG.song, suffix);
+		return Paths.voices(PlayState.currentSong.song, suffix);
 	}
 
 	inline static public function loadAndSwitchState(target:FlxState, stopMusic = false)
@@ -198,7 +198,7 @@ class LoadingState extends MusicBeatState
 		}
 		#if NO_PRELOAD_ALL
 		var loaded = isSoundLoaded(getSongPath())
-			&& (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath()))
+			&& (!PlayState.currentSong.needsVoices || isSoundLoaded(getVocalPath()))
 			&& isLibraryLoaded("shared");
 
 		if (!loaded)

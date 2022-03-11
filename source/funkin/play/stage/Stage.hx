@@ -1,5 +1,10 @@
 package funkin.play.stage;
 
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
+import funkin.modding.events.ScriptEvent.KeyboardInputScriptEvent;
+import funkin.modding.IScriptedClass;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
@@ -14,7 +19,7 @@ import funkin.util.SortUtil;
  * 
  * A Stage is comprised of one or more props, each of which is a FlxSprite.
  */
-class Stage extends FlxSpriteGroup implements IHook
+class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScriptedClass implements IInputScriptedClass
 {
 	public final stageId:String;
 	public final stageName:String;
@@ -51,15 +56,23 @@ class Stage extends FlxSpriteGroup implements IHook
 	}
 
 	/**
+	 * Called when the player is moving into the PlayState where the song will be played.
+	 */
+	public function onCreate(event:ScriptEvent):Void
+	{
+		buildStage();
+		this.refresh();
+	}
+
+	/**
 	 * The default stage construction routine. Called when the stage is going to be played in.
 	 * Instantiates each prop and adds it to the stage, while setting its parameters.
 	 */
-	public function buildStage()
+	function buildStage()
 	{
 		trace('Building stage for display: ${this.stageId}');
 
 		this.camZoom = _data.cameraZoom;
-		// this.scrollFactor = new FlxPoint(1, 1);
 
 		for (dataProp in _data.props)
 		{
@@ -162,8 +175,6 @@ class Stage extends FlxSpriteGroup implements IHook
 			}
 			trace('    Prop placed.');
 		}
-
-		this.refresh();
 	}
 
 	/**
@@ -201,39 +212,6 @@ class Stage extends FlxSpriteGroup implements IHook
 	}
 
 	/**
-	 * Resets the stage and it's props (needs to be overridden with your own logic!)
-	 */
-	public function resetStage()
-	{
-		// Override me in your script to reset stage shit however you please!
-		// also note: maybe add some default behaviour to reset stage stuff?
-	}
-
-	/**
-	 * A function that should get called every frame.
-	 */
-	public function onUpdate(elapsed:Float):Void
-	{
-		// Override me in your scripted stage to perform custom behavior!
-	}
-
-	/**
-	 * A function that gets called when the player hits a note.
-	 */
-	public function onNoteHit(note:Note):Void
-	{
-		// Override me in your scripted stage to perform custom behavior!
-	}
-
-	/**
-	 * A function that gets called when the player hits a note.
-	 */
-	public function onNoteMiss(note:Note):Void
-	{
-		// Override me in your scripted stage to perform custom behavior!
-	}
-
-	/**
 	 * Adjusts the position and other properties of the soon-to-be child of this sprite group.
 	 * Private helper to avoid duplicate code in `add()` and `insert()`.
 	 *
@@ -251,30 +229,6 @@ class Stage extends FlxSpriteGroup implements IHook
 
 		if (clipRect != null)
 			clipRectTransform(sprite, clipRect);
-	}
-
-	/**
-	 * A function that gets called once per step in the song.
-	 * @param curStep The current step number.
-	 */
-	public function onStepHit(curStep:Int):Void
-	{
-		// Override me in your scripted stage to perform custom behavior!
-	}
-
-	/**
-	 * A function that gets called once per beat in the song (once every four steps).
-	 * @param curStep The current beat number.
-	 */
-	public function onBeatHit(curBeat:Int):Void
-	{
-		// Override me in your scripted stage to perform custom behavior!
-		// Make sure to call super.onBeatHit(curBeat) if you want to keep the boppers dancing.
-
-		for (bopper in boppers)
-		{
-			bopper.onBeatHit(curBeat);
-		}
 	}
 
 	/**
@@ -360,9 +314,11 @@ class Stage extends FlxSpriteGroup implements IHook
 	/**
 	 * Perform cleanup for when you are leaving the level.
 	 */
-	public override function kill()
+	public function onDestroy(event:ScriptEvent):Void
 	{
-		super.kill();
+		// Make sure to call kill() when returning a stage to cache,
+		// and destroy() only when performing a hard cache refresh.
+		kill();
 
 		for (prop in this.namedProps)
 		{
@@ -390,13 +346,56 @@ class Stage extends FlxSpriteGroup implements IHook
 	}
 
 	/**
-	 * Perform cleanup for when you are destroying the stage
-	 * and removing all its data from cache.
-	 * 
-	 * Call this ONLY when you are performing a hard cache clear.
+	 * A function that gets called once per step in the song.
+	 * @param curStep The current step number.
 	 */
-	public override function destroy()
+	public function onStepHit(event:SongTimeScriptEvent):Void {}
+
+	/**
+	 * A function that gets called once per beat in the song (once every four steps).
+	 * @param curStep The current beat number.
+	 */
+	public function onBeatHit(event:SongTimeScriptEvent):Void
 	{
-		super.destroy();
+		// Override me in your scripted stage to perform custom behavior!
+		// Make sure to call super.onBeatHit(curBeat) if you want to keep the boppers dancing.
+
+		ScriptEventDispatcher.callEventOnAllTargets(cast boppers, event);
 	}
+
+	public function onScriptEvent(event:ScriptEvent) {}
+
+	public function onPause(event:ScriptEvent) {}
+
+	public function onResume(event:ScriptEvent) {}
+
+	public function onSongStart(event:ScriptEvent) {}
+
+	public function onSongEnd(event:ScriptEvent) {}
+
+	/**
+	 * Resets the stage and its props.
+	 */
+	public function onSongReset(event:ScriptEvent) {}
+
+	public function onGameOver(event:ScriptEvent) {}
+
+	public function onGameRetry(event:ScriptEvent) {}
+
+	public function onCountdownStart(event:CountdownScriptEvent) {}
+
+	public function onCountdownStep(event:CountdownScriptEvent) {}
+
+	public function onKeyDown(event:KeyboardInputScriptEvent) {}
+
+	public function onKeyUp(event:KeyboardInputScriptEvent) {}
+
+	/**
+	 * A function that should get called every frame.
+	 */
+	public function onUpdate(event:UpdateScriptEvent) {}
+
+	public function onNoteHit(event:NoteScriptEvent) {}
+
+	public function onNoteMiss(event:NoteScriptEvent) {}
 }

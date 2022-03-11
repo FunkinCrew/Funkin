@@ -51,7 +51,7 @@ class PauseSubState extends MusicBeatSubstate
 		add(bg);
 
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
-		levelInfo.text += PlayState.SONG.song;
+		levelInfo.text += PlayState.currentSong.song;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
@@ -76,7 +76,7 @@ class PauseSubState extends MusicBeatSubstate
 		practiceText.setFormat(Paths.font('vcr.ttf'), 32);
 		practiceText.updateHitbox();
 		practiceText.x = FlxG.width - (practiceText.width + 20);
-		practiceText.visible = PlayState.practiceMode;
+		practiceText.visible = PlayState.isPracticeMode;
 		add(practiceText);
 
 		levelDifficulty.alpha = 0;
@@ -157,7 +157,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "EASY" | 'NORMAL' | "HARD":
-					PlayState.SONG = SongLoad.loadFromJson(PlayState.SONG.song.toLowerCase(), PlayState.SONG.song.toLowerCase());
+					PlayState.currentSong = SongLoad.loadFromJson(PlayState.currentSong.song.toLowerCase(), PlayState.currentSong.song.toLowerCase());
 					SongLoad.curDiff = daSelected.toLowerCase();
 
 					PlayState.storyDifficulty = curSelected;
@@ -167,8 +167,8 @@ class PauseSubState extends MusicBeatSubstate
 					close();
 
 				case 'Toggle Practice Mode':
-					PlayState.practiceMode = !PlayState.practiceMode;
-					practiceText.visible = PlayState.practiceMode;
+					PlayState.isPracticeMode = !PlayState.isPracticeMode;
+					practiceText.visible = PlayState.isPracticeMode;
 
 				case 'Change Difficulty':
 					menuItems = difficultyChoices;
