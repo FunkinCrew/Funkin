@@ -58,6 +58,10 @@ class TitleState extends MusicBeatState
 
 		Highscore.load();
 
+		if (FlxG.save.data.epilepsyMode == null) {
+			FlxG.switchState(new EpilepsyState());
+		}
+
 		if (FlxG.save.data.weekUnlocked != null)
 		{
 			// FIX LATER!!!
@@ -155,7 +159,12 @@ class TitleState extends MusicBeatState
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
 		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
-		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+		if (FlxG.save.data.epilepsyMode) {
+			titleText.animation.addByPrefix('press', "Press Enter to Begin", 24, false);
+		}
+		else {
+			titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+		}
 		titleText.antialiasing = true;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
@@ -269,7 +278,10 @@ class TitleState extends MusicBeatState
 
 			titleText.animation.play('press');
 
-			FlxG.camera.flash(FlxColor.WHITE, 1);
+			if (!FlxG.save.data.epilepsyMode)
+			{
+				FlxG.camera.flash(FlxColor.WHITE, 1);
+			}
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 			transitioning = true;
@@ -277,23 +289,7 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				// Check if version is outdated
-
-				var version:String = "v" + Application.current.meta.get('version');
-
-				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
-				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					trace(NGio.GAME_VER_NUMS.trim());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
+				FlxG.switchState(new MainMenuState());
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -410,7 +406,9 @@ class TitleState extends MusicBeatState
 		{
 			remove(ngSpr);
 
-			FlxG.camera.flash(FlxColor.WHITE, 4);
+			if (!FlxG.save.data.epilepsyMode) {
+				FlxG.camera.flash(FlxColor.WHITE, 4);
+			}
 			remove(credGroup);
 			skippedIntro = true;
 		}
