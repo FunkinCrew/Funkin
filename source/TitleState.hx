@@ -46,10 +46,6 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-		#end
-
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -357,10 +353,10 @@ class TitleState extends MusicBeatState
 		switch (curBeat)
 		{
 			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				// createCoolText(['thepercentageguy']);
 			// credTextShit.visible = true;
 			case 3:
-				addMoreText('present');
+				createCoolText(['thepercentageguy', 'presents']);
 			// credTextShit.text += '\npresent...';
 			// credTextShit.addText();
 			case 4:
@@ -371,12 +367,12 @@ class TitleState extends MusicBeatState
 			case 5:
 				createCoolText(['In association', 'with']);
 			case 7:
-				addMoreText('newgrounds');
-				ngSpr.visible = true;
+				addMoreText('absolutely noone');
+				// ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
 				deleteCoolText();
-				ngSpr.visible = false;
+				// ngSpr.visible = false;
 			// credTextShit.visible = false;
 
 			// credTextShit.text = 'Shoutouts Tom Fulp';
@@ -393,13 +389,13 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				addMoreText('Friday');
+				addMoreText('New');
 			// credTextShit.visible = true;
 			case 14:
-				addMoreText('Night');
+				addMoreText('UFNF');
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				addMoreText('Engine'); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipIntro();
