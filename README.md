@@ -1,6 +1,6 @@
-# Friday Night Funkin - UFNF Engine 2.0
+# Friday Night Funkin - New Unnamed FNF Engine
 
-This is the repository for UFNF engine 2.0.
+This is the repository for NUFNF Engine.
 
  (readme soon)
  
