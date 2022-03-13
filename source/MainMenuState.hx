@@ -151,7 +151,9 @@ class MainMenuState extends MusicBeatState
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 
-					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+					if (!FlxG.save.data.epilepsyMode) {
+						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+					}
 
 					menuItems.forEach(function(spr:FlxSprite)
 					{
@@ -167,10 +169,29 @@ class MainMenuState extends MusicBeatState
 						}
 						else
 						{
-							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-							{
+							if (!FlxG.save.data.epilepsyMode) {
+								FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+									{
+										var daChoice:String = optionShit[curSelected];
+		
+										switch (daChoice)
+										{
+											case 'story mode':
+												FlxG.switchState(new StoryMenuState());
+												trace("Story Menu Selected");
+											case 'freeplay':
+												FlxG.switchState(new FreeplayState());
+		
+												trace("Freeplay Menu Selected");
+		
+											case 'options':
+												FlxG.switchState(new optionshit.OptionsMenu());
+										}
+									});
+							}
+							else {
 								var daChoice:String = optionShit[curSelected];
-
+		
 								switch (daChoice)
 								{
 									case 'story mode':
@@ -182,11 +203,9 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										FlxTransitionableState.skipNextTransIn = true;
-										FlxTransitionableState.skipNextTransOut = true;
-										FlxG.switchState(new OptionsMenu());
+										FlxG.switchState(new optionshit.OptionsMenu());
 								}
-							});
+							}
 						}
 					});
 				}
