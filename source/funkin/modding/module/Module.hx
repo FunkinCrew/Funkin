@@ -29,6 +29,22 @@ class Module implements IInputScriptedClass implements IPlayStateScriptedClass
 	public var moduleId(default, null):String = 'UNKNOWN';
 
 	/**
+	 * Determines the order in which modules receive events.
+	 * You can modify this to change the order in which a given module receives events.
+	 * 
+	 * Priority 1 is processed before Priority 1000, etc.
+	 */
+	public var priority(default, set):Int;
+
+	function set_priority(value:Int):Int
+	{
+		this.priority = value;
+		@:privateAccess
+		ModuleHandler.reorderModuleCache();
+		return value;
+	}
+
+	/**
 	 * Called when the module is initialized.
 	 * It may not be safe to reference other modules here since they may not be loaded yet.
 	 * 
@@ -36,16 +52,19 @@ class Module implements IInputScriptedClass implements IPlayStateScriptedClass
 	 *   If false, the module will be inactive and must be enabled by another script,
 	 *   such as a stage or another module.
 	 */
-	public function new(moduleId:String, startActive:Bool)
+	public function new(moduleId:String, active:Bool = true, priority:Int = 1000):Void
 	{
 		this.moduleId = moduleId;
-		this.active = startActive;
+		this.active = active;
+		this.priority = priority;
 	}
 
 	public function toString()
 	{
 		return 'Module(' + this.moduleId + ')';
 	}
+
+	// TODO: Half of these aren't actually being called!!!!!!!
 
 	public function onScriptEvent(event:ScriptEvent) {}
 
@@ -84,4 +103,8 @@ class Module implements IInputScriptedClass implements IPlayStateScriptedClass
 	public function onCountdownStart(event:CountdownScriptEvent) {}
 
 	public function onCountdownStep(event:CountdownScriptEvent) {}
+
+	public function onCountdownEnd(event:CountdownScriptEvent) {}
+
+	public function onSongLoaded(eent:SongLoadScriptEvent) {}
 }

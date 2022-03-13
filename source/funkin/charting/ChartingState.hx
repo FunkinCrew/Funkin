@@ -903,7 +903,7 @@ class ChartingState extends MusicBeatState
 			{
 				if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
 				{
-					var daTime:Float = 700 * FlxG.elapsed;
+					var daTime:Float = 700 * elapsed;
 
 					if (FlxG.keys.pressed.CONTROL)
 						daTime *= 0.2;

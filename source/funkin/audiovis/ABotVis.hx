@@ -48,12 +48,12 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 	{
 		// updateViz();
 
-		updateFFT();
+		updateFFT(elapsed);
 
 		super.update(elapsed);
 	}
 
-	function updateFFT()
+	function updateFFT(elapsed:Float)
 	{
 		if (vis.snd != null)
 		{
@@ -112,7 +112,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
 					avgVel *= 10000000;
 
-					volumes[i] += avgVel - (FlxG.elapsed * (volumes[i] * 50));
+					volumes[i] += avgVel - (elapsed * (volumes[i] * 50));
 
 					var animFrame:Int = Std.int(volumes[i]);
 

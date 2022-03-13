@@ -360,7 +360,10 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		// Override me in your scripted stage to perform custom behavior!
 		// Make sure to call super.onBeatHit(curBeat) if you want to keep the boppers dancing.
 
-		ScriptEventDispatcher.callEventOnAllTargets(cast boppers, event);
+		for (bopper in boppers)
+		{
+			ScriptEventDispatcher.callEvent(bopper, event);
+		}
 	}
 
 	public function onScriptEvent(event:ScriptEvent) {}
@@ -386,6 +389,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onCountdownStep(event:CountdownScriptEvent) {}
 
+	public function onCountdownEnd(event:CountdownScriptEvent) {}
+
 	public function onKeyDown(event:KeyboardInputScriptEvent) {}
 
 	public function onKeyUp(event:KeyboardInputScriptEvent) {}
@@ -398,4 +403,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public function onNoteHit(event:NoteScriptEvent) {}
 
 	public function onNoteMiss(event:NoteScriptEvent) {}
+
+	public function onSongLoaded(eent:SongLoadScriptEvent) {}
 }

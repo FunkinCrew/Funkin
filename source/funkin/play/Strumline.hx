@@ -169,7 +169,7 @@ class Strumline extends FlxTypedGroup<FlxSprite>
 
 		arrow.x += Note.swagWidth * arrow.ID;
 
-		// TODO: Seems weird that these are hardcoded...
+		// TODO: Seems weird that these are hardcoded like this... no XML?
 		switch (Math.abs(arrow.ID))
 		{
 			case 0:

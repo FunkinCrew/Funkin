@@ -108,8 +108,8 @@ class ScriptEvent
 	 * Called when the countdown begins. This occurs before the song starts.
 	 * 
 	 * This event IS cancelable! Canceling this event will prevent the countdown from starting.
-	 * - The song will not start until you call PlayState.beginCountdown().
-	 * - Note that calling startCountdown() will trigger this event again, so be sure to add logic to ignore it.
+	 * - The song will not start until you call Countdown.performCountdown() later.
+	 * - Note that calling performCountdown() will trigger this event again, so be sure to add logic to ignore it.
 	 */
 	public static inline final COUNTDOWN_START:ScriptEventType = "COUNTDOWN_START";
 
@@ -121,6 +121,13 @@ class ScriptEvent
 	 * - The countdown will not resume until you call PlayState.resumeCountdown().
 	 */
 	public static inline final COUNTDOWN_STEP:ScriptEventType = "COUNTDOWN_STEP";
+
+	/**
+	 * Called when the countdown is done but just before the song starts.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final COUNTDOWN_END:ScriptEventType = "COUNTDOWN_END";
 
 	/**
 	 * Called when the game over screen triggers and the death animation plays.
@@ -151,6 +158,14 @@ class ScriptEvent
 	public static inline final KEY_UP:ScriptEventType = "KEY_UP";
 
 	/**
+	 * Called when the game has finished loading the notes from JSON.
+	 * This allows modders to mutate the notes before they are used in the song.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final SONG_LOADED:ScriptEventType = "SONG_LOADED";
+
+	/**
 	 * If true, the behavior associated with this event can be prevented.
 	 * For example, cancelling COUNTDOWN_BEGIN should prevent the countdown from starting,
 	 * until another script restarts it, or cancelling NOTE_HIT should cause the note to be missed.
@@ -167,13 +182,16 @@ class ScriptEvent
 	 */
 	public var shouldPropagate(default, null):Bool;
 
-	@:noCompletion private var __eventCanceled:Bool;
+	/**
+	 * Whether the event has been canceled by one of the scripts that received it.
+	 */
+	public var eventCanceled(default, null):Bool;
 
 	public function new(type:ScriptEventType, cancelable:Bool = false):Void
 	{
 		this.type = type;
 		this.cancelable = cancelable;
-		this.__eventCanceled = false;
+		this.eventCanceled = false;
 		this.shouldPropagate = true;
 	}
 
@@ -185,8 +203,14 @@ class ScriptEvent
 	{
 		if (cancelable)
 		{
-			__eventCanceled = true;
+			eventCanceled = true;
 		}
+	}
+
+	public function cancel():Void
+	{
+		// This typo happens enough that I just added this.
+		cancelEvent();
 	}
 
 	/**
@@ -292,9 +316,9 @@ class CountdownScriptEvent extends ScriptEvent
 	 */
 	public var step(default, null):CountdownStep;
 
-	public function new(type:ScriptEventType, step:CountdownStep):Void
+	public function new(type:ScriptEventType, step:CountdownStep, cancelable = true):Void
 	{
-		super(type, false);
+		super(type, cancelable);
 		this.step = step;
 	}
 
@@ -323,5 +347,41 @@ class KeyboardInputScriptEvent extends ScriptEvent
 	public override function toString():String
 	{
 		return 'KeyboardInputScriptEvent(type=' + type + ', event=' + event + ')';
+	}
+}
+
+/**
+ * An event that is fired once the song's chart has been parsed.
+ */
+class SongLoadScriptEvent extends ScriptEvent
+{
+	/**
+	 * The note associated with this event.
+	 * You cannot replace it, but you can edit it.
+	 */
+	public var notes(default, set):Array<Note>;
+
+	public var id(default, null):String;
+
+	public var difficulty(default, null):String;
+
+	function set_notes(notes:Array<Note>):Array<Note>
+	{
+		this.notes = notes;
+		return this.notes;
+	}
+
+	public function new(id:String, difficulty:String, notes:Array<Note>):Void
+	{
+		super(ScriptEvent.SONG_LOADED, false);
+		this.id = id;
+		this.difficulty = difficulty;
+		this.notes = notes;
+	}
+
+	public override function toString():String
+	{
+		var noteStr = notes == null ? 'null' : 'Array(' + notes.length + ')';
+		return 'SongLoadScriptEvent(notes=$noteStr, id=$id, difficulty=$difficulty)';
 	}
 }

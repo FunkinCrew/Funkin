@@ -11,6 +11,9 @@ class ScriptEventDispatcher
 {
 	public static function callEvent(target:IScriptedClass, event:ScriptEvent):Void
 	{
+		if (target == null || event == null)
+			return;
+
 		target.onScriptEvent(event);
 
 		// If one target says to stop propagation, stop.
@@ -85,6 +88,12 @@ class ScriptEventDispatcher
 				case ScriptEvent.COUNTDOWN_STEP:
 					t.onCountdownStep(cast event);
 					return;
+				case ScriptEvent.COUNTDOWN_END:
+					t.onCountdownEnd(cast event);
+					return;
+				case ScriptEvent.SONG_LOADED:
+					t.onSongLoaded(cast event);
+					return;
 			}
 		}
 
@@ -94,26 +103,20 @@ class ScriptEventDispatcher
 	public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>, event:ScriptEvent):Void
 	{
 		if (targets == null || event == null)
-		{
 			return;
-		}
 
 		if (Std.isOfType(targets, Array))
 		{
 			var t = cast(targets, Array<Dynamic>);
 			if (t.length == 0)
-			{
 				return;
-			}
 		}
 
 		for (target in targets)
 		{
 			var t:IScriptedClass = cast target;
 			if (t == null)
-			{
 				continue;
-			}
 
 			callEvent(t, event);
 

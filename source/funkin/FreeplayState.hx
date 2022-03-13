@@ -238,9 +238,6 @@ class FreeplayState extends MusicBeatSubstate
 			add(new DifficultySelector(20, grpDifficulties.y - 10, false, controls));
 			add(new DifficultySelector(325, grpDifficulties.y - 10, true, controls));
 
-			var animShit:ComboCounter = new ComboCounter(100, 300, 1000000);
-			// add(animShit);
-
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
 				fnfFreeplay.visible = true;
@@ -388,7 +385,7 @@ class FreeplayState extends MusicBeatSubstate
 		{
 			if (FlxG.sound.music.volume < 0.7)
 			{
-				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+				FlxG.sound.music.volume += 0.5 * elapsed;
 			}
 		}
 
@@ -435,7 +432,7 @@ class FreeplayState extends MusicBeatSubstate
 				if (touchTimer >= 1.5)
 					accepted = true;
 
-				touchTimer += FlxG.elapsed;
+				touchTimer += elapsed;
 				var touch:FlxTouch = FlxG.touches.getFirst();
 
 				velTouch = Math.abs((touch.screenY - dyTouch)) / 50;
@@ -472,24 +469,6 @@ class FreeplayState extends MusicBeatSubstate
 			else
 			{
 				touchTimer = 0;
-
-				/* if (velTouch >= 0)
-					{
-						trace(velTouch);
-						velTouch -= FlxG.elapsed;
-
-						veloctiyLoopShit += velTouch;
-
-						trace("VEL LOOP: " + veloctiyLoopShit);
-
-						if (veloctiyLoopShit >= 30)
-						{
-							veloctiyLoopShit = 0;
-							changeSelection(1);
-						}
-
-						// trace(velTouch);
-				}*/
 			}
 		}
 

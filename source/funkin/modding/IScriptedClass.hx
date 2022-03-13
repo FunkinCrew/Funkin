@@ -23,6 +23,7 @@ interface IInputScriptedClass extends IScriptedClass
 {
 	public function onKeyDown(event:KeyboardInputScriptEvent):Void;
 	public function onKeyUp(event:KeyboardInputScriptEvent):Void;
+	// TODO: OnMouseDown, OnMouseUp, OnMouseMove
 }
 
 /**
@@ -33,6 +34,7 @@ interface IPlayStateScriptedClass extends IScriptedClass
 	public function onPause(event:ScriptEvent):Void;
 	public function onResume(event:ScriptEvent):Void;
 
+	public function onSongLoaded(eent:SongLoadScriptEvent):Void;
 	public function onSongStart(event:ScriptEvent):Void;
 	public function onSongEnd(event:ScriptEvent):Void;
 	public function onSongReset(event:ScriptEvent):Void;
@@ -47,4 +49,5 @@ interface IPlayStateScriptedClass extends IScriptedClass
 
 	public function onCountdownStart(event:CountdownScriptEvent):Void;
 	public function onCountdownStep(event:CountdownScriptEvent):Void;
+	public function onCountdownEnd(event:CountdownScriptEvent):Void;
 }
