@@ -415,7 +415,7 @@ class PlayState extends MusicBeatState
 			startCountdown();
 		}
 
-		this.leftWatermarkText.text = '${currentSong.song.toUpperCase()} - ${SongLoad.curDiff.toUpperCase()}';
+		// this.leftWatermarkText.text = '${currentSong.song.toUpperCase()} - ${SongLoad.curDiff.toUpperCase()}';
 		this.rightWatermarkText.text = Constants.VERSION;
 	}
 
