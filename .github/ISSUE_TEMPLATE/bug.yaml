@@ -26,6 +26,13 @@ body:
       value: "A bug happened!"
     validations:
       required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: How do you reproduce the bug?
+    validations:
+      required: true
   - type: input
     id: version
     attributes:
