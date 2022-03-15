@@ -4,8 +4,6 @@ import funkin.util.Constants;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.FlxSprite;
-import flixel.input.actions.FlxAction.FlxActionAnalog;
-import cpp.abi.Abi;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.ModuleHandler;
 import funkin.modding.events.ScriptEvent;

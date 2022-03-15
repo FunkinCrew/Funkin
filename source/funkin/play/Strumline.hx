@@ -1,30 +1,23 @@
 package funkin.play;
 
-import funkin.ui.PreferencesMenu;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import funkin.Note.NoteColor;
 import funkin.Note.NoteDir;
 import funkin.Note.NoteType;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
+import funkin.ui.PreferencesMenu;
 import funkin.util.Constants;
-import flixel.FlxSprite;
-import flixel.math.FlxPoint;
-import flixel.group.FlxGroup.FlxTypedGroup;
 
 /**
  * A group controlling the individual notes of the strumline for a given player.
+ * 
+ * FUN FACT: Setting the X and Y of a FlxSpriteGroup will move all the sprites in the group.
  */
-class Strumline extends FlxTypedGroup<FlxSprite>
+class Strumline extends FlxTypedSpriteGroup<StrumlineArrow>
 {
-	public var offset(default, set):FlxPoint = new FlxPoint(0, 0);
-
-	function set_offset(value:FlxPoint):FlxPoint
-	{
-		this.offset = value;
-		updatePositions();
-		return value;
-	}
-
 	/**
 	 * The style of the strumline.
 	 * Options are normal and pixel.
@@ -62,132 +55,30 @@ class Strumline extends FlxTypedGroup<FlxSprite>
 
 	function createStrumlineArrow(index:Int):Void
 	{
-		var arrow:FlxSprite = new FlxSprite(0, 0);
-
-		arrow.ID = index;
-
-		// Color changing for arrows is a WIP.
-		/*
-			var colorSwapShader:ColorSwap = new ColorSwap();
-			colorSwapShader.update(Note.arrowColors[i]);
-			arrow.shader = colorSwapShader;
-		 */
-
-		switch (style)
-		{
-			case NORMAL:
-				createNormalNote(arrow);
-			case PIXEL:
-				createPixelNote(arrow);
-		}
-
-		arrow.updateHitbox();
-		arrow.scrollFactor.set();
-
-		arrow.animation.play('static');
-
-		applyFadeIn(arrow);
-
+		var arrow:StrumlineArrow = new StrumlineArrow(index, style);
 		add(arrow);
 	}
 
 	/**
 	 * Apply a small animation which moves the arrow down and fades it in.
-	 * Only plays at the start of Free Play songs I guess?
+	 * Only plays at the start of Free Play songs.
+	 * 
+	 * Note that modifying the offset of the whole strumline won't have the 
 	 * @param arrow The arrow to animate.
 	 * @param index The index of the arrow in the strumline.
 	 */
-	function applyFadeIn(arrow:FlxSprite):Void
+	function fadeInArrow(arrow:FlxSprite):Void
 	{
-		if (!PlayState.isStoryMode)
-		{
-			arrow.y -= 10;
-			arrow.alpha = 0;
-			FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * arrow.ID)});
-		}
+		arrow.y -= 10;
+		arrow.alpha = 0;
+		FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * arrow.ID)});
 	}
 
-	/**
-	 * Applies the default note style to an arrow.
-	 * @param arrow The arrow to apply the style to.
-	 * @param index The index of the arrow in the strumline.
-	 */
-	function createNormalNote(arrow:FlxSprite):Void
+	public function fadeInArrows():Void
 	{
-		arrow.frames = Paths.getSparrowAtlas('NOTE_assets');
-
-		arrow.animation.addByPrefix('green', 'arrowUP');
-		arrow.animation.addByPrefix('blue', 'arrowDOWN');
-		arrow.animation.addByPrefix('purple', 'arrowLEFT');
-		arrow.animation.addByPrefix('red', 'arrowRIGHT');
-
-		arrow.setGraphicSize(Std.int(arrow.width * 0.7));
-		arrow.antialiasing = true;
-
-		arrow.x += Note.swagWidth * arrow.ID;
-
-		switch (Math.abs(arrow.ID))
+		for (arrow in this.members)
 		{
-			case 0:
-				arrow.animation.addByPrefix('static', 'arrow static instance 1');
-				arrow.animation.addByPrefix('pressed', 'left press', 24, false);
-				arrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-			case 1:
-				arrow.animation.addByPrefix('static', 'arrow static instance 2');
-				arrow.animation.addByPrefix('pressed', 'down press', 24, false);
-				arrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-			case 2:
-				arrow.animation.addByPrefix('static', 'arrow static instance 4');
-				arrow.animation.addByPrefix('pressed', 'up press', 24, false);
-				arrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-			case 3:
-				arrow.animation.addByPrefix('static', 'arrow static instance 3');
-				arrow.animation.addByPrefix('pressed', 'right press', 24, false);
-				arrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-		}
-	}
-
-	/**
-	 * Applies the pixel note style to an arrow.
-	 * @param arrow The arrow to apply the style to.
-	 * @param index The index of the arrow in the strumline.
-	 */
-	function createPixelNote(arrow:FlxSprite):Void
-	{
-		arrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
-
-		arrow.animation.add('purplel', [4]);
-		arrow.animation.add('blue', [5]);
-		arrow.animation.add('green', [6]);
-		arrow.animation.add('red', [7]);
-
-		arrow.setGraphicSize(Std.int(arrow.width * Constants.PIXEL_ART_SCALE));
-		arrow.updateHitbox();
-
-		// Forcibly disable anti-aliasing on pixel graphics to stop blur.
-		arrow.antialiasing = false;
-
-		arrow.x += Note.swagWidth * arrow.ID;
-
-		// TODO: Seems weird that these are hardcoded like this... no XML?
-		switch (Math.abs(arrow.ID))
-		{
-			case 0:
-				arrow.animation.add('static', [0]);
-				arrow.animation.add('pressed', [4, 8], 12, false);
-				arrow.animation.add('confirm', [12, 16], 24, false);
-			case 1:
-				arrow.animation.add('static', [1]);
-				arrow.animation.add('pressed', [5, 9], 12, false);
-				arrow.animation.add('confirm', [13, 17], 24, false);
-			case 2:
-				arrow.animation.add('static', [2]);
-				arrow.animation.add('pressed', [6, 10], 12, false);
-				arrow.animation.add('confirm', [14, 18], 12, false);
-			case 3:
-				arrow.animation.add('static', [3]);
-				arrow.animation.add('pressed', [7, 11], 12, false);
-				arrow.animation.add('confirm', [15, 19], 24, false);
+			fadeInArrow(arrow);
 		}
 	}
 
@@ -208,30 +99,147 @@ class Strumline extends FlxTypedGroup<FlxSprite>
 	 * @param index The index to retrieve.
 	 * @return The corresponding FlxSprite.
 	 */
-	public inline function getArrow(value:Int):FlxSprite
+	public inline function getArrow(value:Int):StrumlineArrow
 	{
 		// members maintains the order that the arrows were added.
 		return this.members[value];
 	}
 
-	public inline function getArrowByNoteType(value:NoteType):FlxSprite
+	public inline function getArrowByNoteType(value:NoteType):StrumlineArrow
 	{
 		return getArrow(value.int);
 	}
 
-	public inline function getArrowByNoteDir(value:NoteDir):FlxSprite
+	public inline function getArrowByNoteDir(value:NoteDir):StrumlineArrow
 	{
 		return getArrow(value.int);
 	}
 
-	public inline function getArrowByNoteColor(value:NoteColor):FlxSprite
+	public inline function getArrowByNoteColor(value:NoteColor):StrumlineArrow
 	{
 		return getArrow(value.int);
 	}
 
+	/**
+	 * Get the default Y offset of the strumline.
+	 * @return Int
+	 */
 	public static inline function getYPos():Int
 	{
 		return PreferencesMenu.getPref('downscroll') ? (FlxG.height - 150) : 50;
+	}
+}
+
+class StrumlineArrow extends FlxSprite
+{
+	var style:StrumlineStyle;
+
+	public function new(id:Int, style:StrumlineStyle)
+	{
+		super(0, 0);
+
+		this.ID = id;
+		this.style = style;
+
+		// TODO: Unhardcode this. Maybe use a note style system>
+		switch (style)
+		{
+			case PIXEL:
+				buildPixelGraphic();
+			case NORMAL:
+				buildNormalGraphic();
+		}
+
+		this.updateHitbox();
+		scrollFactor.set(0, 0);
+		animation.play('static');
+	}
+
+	public function playAnimation(anim:String, force:Bool = false)
+	{
+		animation.play(anim, force);
+		centerOffsets();
+		centerOrigin();
+	}
+
+	/**
+	 * Applies the default note style to an arrow.
+	 */
+	function buildNormalGraphic():Void
+	{
+		this.frames = Paths.getSparrowAtlas('NOTE_assets');
+
+		this.animation.addByPrefix('green', 'arrowUP');
+		this.animation.addByPrefix('blue', 'arrowDOWN');
+		this.animation.addByPrefix('purple', 'arrowLEFT');
+		this.animation.addByPrefix('red', 'arrowRIGHT');
+
+		this.setGraphicSize(Std.int(this.width * 0.7));
+		this.antialiasing = true;
+
+		this.x += Note.swagWidth * this.ID;
+
+		switch (Math.abs(this.ID))
+		{
+			case 0:
+				this.animation.addByPrefix('static', 'arrow static instance 1');
+				this.animation.addByPrefix('pressed', 'left press', 24, false);
+				this.animation.addByPrefix('confirm', 'left confirm', 24, false);
+			case 1:
+				this.animation.addByPrefix('static', 'arrow static instance 2');
+				this.animation.addByPrefix('pressed', 'down press', 24, false);
+				this.animation.addByPrefix('confirm', 'down confirm', 24, false);
+			case 2:
+				this.animation.addByPrefix('static', 'arrow static instance 4');
+				this.animation.addByPrefix('pressed', 'up press', 24, false);
+				this.animation.addByPrefix('confirm', 'up confirm', 24, false);
+			case 3:
+				this.animation.addByPrefix('static', 'arrow static instance 3');
+				this.animation.addByPrefix('pressed', 'right press', 24, false);
+				this.animation.addByPrefix('confirm', 'right confirm', 24, false);
+		}
+	}
+
+	/**
+	 * Applies the pixel note style to an arrow.
+	 */
+	function buildPixelGraphic():Void
+	{
+		this.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+
+		this.animation.add('purplel', [4]);
+		this.animation.add('blue', [5]);
+		this.animation.add('green', [6]);
+		this.animation.add('red', [7]);
+
+		this.setGraphicSize(Std.int(this.width * Constants.PIXEL_ART_SCALE));
+		this.updateHitbox();
+
+		// Forcibly disable anti-aliasing on pixel graphics to stop blur.
+		this.antialiasing = false;
+
+		this.x += Note.swagWidth * this.ID;
+
+		// TODO: Seems weird that these are hardcoded like this... no XML?
+		switch (Math.abs(this.ID))
+		{
+			case 0:
+				this.animation.add('static', [0]);
+				this.animation.add('pressed', [4, 8], 12, false);
+				this.animation.add('confirm', [12, 16], 24, false);
+			case 1:
+				this.animation.add('static', [1]);
+				this.animation.add('pressed', [5, 9], 12, false);
+				this.animation.add('confirm', [13, 17], 24, false);
+			case 2:
+				this.animation.add('static', [2]);
+				this.animation.add('pressed', [6, 10], 12, false);
+				this.animation.add('confirm', [14, 18], 12, false);
+			case 3:
+				this.animation.add('static', [3]);
+				this.animation.add('pressed', [7, 11], 12, false);
+				this.animation.add('confirm', [15, 19], 24, false);
+		}
 	}
 }
 

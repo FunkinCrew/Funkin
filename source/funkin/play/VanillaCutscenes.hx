@@ -61,7 +61,8 @@ class VanillaCutscenes
 		blackScreen = null;
 
 		FlxTween.tween(FlxG.camera, {zoom: PlayState.defaultCameraZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
-		Countdown.performCountdown(false);
+		@:privateAccess
+		PlayState.instance.startCountdown();
 		@:privateAccess
 		PlayState.instance.cameraMovement();
 	}

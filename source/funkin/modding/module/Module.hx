@@ -7,13 +7,13 @@ import funkin.modding.events.ScriptEvent.NoteScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
-import funkin.modding.IScriptedClass.IInputScriptedClass;
+import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 
 /**
  * A module is a scripted class which receives all events without requiring a specific context.
  * You may have the module active at all times, or only when another script enables it.
  */
-class Module implements IInputScriptedClass implements IPlayStateScriptedClass
+class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass
 {
 	/**
 	 * Whether the module is currently active.
@@ -68,15 +68,19 @@ class Module implements IInputScriptedClass implements IPlayStateScriptedClass
 
 	public function onScriptEvent(event:ScriptEvent) {}
 
+	/**
+	 * Called when the module is first created.
+	 * This happens before the title screen appears!
+	 */
 	public function onCreate(event:ScriptEvent) {}
 
+	/**
+	 * Called when a module is destroyed.
+	 * This currently only happens when reloading modules with F5.
+	 */
 	public function onDestroy(event:ScriptEvent) {}
 
 	public function onUpdate(event:UpdateScriptEvent) {}
-
-	public function onKeyDown(event:KeyboardInputScriptEvent) {}
-
-	public function onKeyUp(event:KeyboardInputScriptEvent) {}
 
 	public function onPause(event:ScriptEvent) {}
 
@@ -107,4 +111,8 @@ class Module implements IInputScriptedClass implements IPlayStateScriptedClass
 	public function onCountdownEnd(event:CountdownScriptEvent) {}
 
 	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+
+	public function onStateChangeBegin(event:StateChangeScriptEvent) {}
+
+	public function onStateChangeEnd(event:StateChangeScriptEvent) {}
 }

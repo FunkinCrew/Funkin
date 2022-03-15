@@ -18,8 +18,17 @@ class Constants
 	public static final VERSION_SUFFIX = ' PROTOTYPE';
 	public static var VERSION(get, null):String;
 
+	#if debug
+	public static final GIT_HASH = funkin.util.macro.GitCommit.getGitCommitHash();
+
+	static function get_VERSION():String
+	{
+		return 'v${Application.current.meta.get('version')} (${GIT_HASH})' + VERSION_SUFFIX;
+	}
+	#else
 	static function get_VERSION():String
 	{
 		return 'v${Application.current.meta.get('version')}' + VERSION_SUFFIX;
 	}
+	#end
 }

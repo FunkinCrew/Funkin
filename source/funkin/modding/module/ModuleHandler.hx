@@ -96,10 +96,22 @@ class ModuleHandler
 		}
 	}
 
+	/**
+	 * Clear the module cache, forcing all modules to call shutdown events.
+	 */
 	public static function clearModuleCache():Void
 	{
 		if (moduleCache != null)
 		{
+			var event = new ScriptEvent(ScriptEvent.DESTROY, false);
+
+			// Note: Ignore stopPropagation()
+			for (key => value in moduleCache)
+			{
+				ScriptEventDispatcher.callEvent(value, event);
+				moduleCache.remove(key);
+			}
+
 			moduleCache.clear();
 			modulePriorityOrder = [];
 		}

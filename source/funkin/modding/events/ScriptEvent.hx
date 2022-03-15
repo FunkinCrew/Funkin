@@ -166,6 +166,18 @@ class ScriptEvent
 	public static inline final SONG_LOADED:ScriptEventType = "SONG_LOADED";
 
 	/**
+	 * Called when the game is entering the current FlxState.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final STATE_ENTER:ScriptEventType = "STATE_ENTER";
+
+	/**
+	 * Called when the game is exiting the current FlxState.
+	 * 
+	 * This event is not cancelable.
+	 */
+	/**
 	 * If true, the behavior associated with this event can be prevented.
 	 * For example, cancelling COUNTDOWN_BEGIN should prevent the countdown from starting,
 	 * until another script restarts it, or cancelling NOTE_HIT should cause the note to be missed.
@@ -383,5 +395,21 @@ class SongLoadScriptEvent extends ScriptEvent
 	{
 		var noteStr = notes == null ? 'null' : 'Array(' + notes.length + ')';
 		return 'SongLoadScriptEvent(notes=$noteStr, id=$id, difficulty=$difficulty)';
+	}
+}
+
+/**
+ * An event that is fired when moving out of or into an FlxState.
+ */
+class StateChangeScriptEvent extends ScriptEvent
+{
+	public function new(type:ScriptEventType):Void
+	{
+		super(type, false);
+	}
+
+	public override function toString():String
+	{
+		return 'StateChangeScriptEvent(type=' + type + ')';
 	}
 }

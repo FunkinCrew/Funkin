@@ -2,16 +2,11 @@ package funkin;
 
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
-import cpp.abi.Abi;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.Conductor.BPMChangeEvent;
-import flixel.FlxGame;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
-import flixel.math.FlxRect;
-import flixel.util.FlxTimer;
 
 class MusicBeatState extends FlxUIState
 {

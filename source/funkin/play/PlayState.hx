@@ -1,6 +1,6 @@
 package funkin.play;
 
-import funkin.play.Strumline.StrumlineStyle;
+import funkin.play.Strumline.StrumlineArrow;
 import flixel.addons.effects.FlxTrail;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
@@ -24,12 +24,13 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.IHook;
 import funkin.modding.module.ModuleHandler;
 import funkin.Note;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData;
+import funkin.play.Strumline.StrumlineStyle;
 import funkin.Section.SwagSection;
-import funkin.shaderslmfao.ColorSwap;
 import funkin.SongLoad.SwagSong;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
@@ -43,7 +44,7 @@ using StringTools;
 import Discord.DiscordClient;
 #end
 
-class PlayState extends MusicBeatState
+class PlayState extends MusicBeatState implements IHook
 {
 	/**
 	 * STATIC VARIABLES
@@ -140,11 +141,6 @@ class PlayState extends MusicBeatState
 	private var inactiveNotes:Array<Note>;
 
 	/**
-	 * An object which the strumline (and its notes) are positioned relative to.
-	 */
-	private var strumlineAnchor:FlxObject;
-
-	/**
 	 * If true, the player is allowed to pause the game.
 	 * Disabled during the ending of a song.
 	 */
@@ -231,7 +227,6 @@ class PlayState extends MusicBeatState
 	private var vocals:VoicesGroup;
 	private var vocalsFinished:Bool = false;
 
-	private var playerStrums:FlxTypedGroup<FlxSprite>;
 	private var camZooming:Bool = false;
 	private var gfSpeed:Int = 1;
 	private var combo:Int = 0;
@@ -331,8 +326,6 @@ class PlayState extends MusicBeatState
 
 		add(grpNoteSplashes);
 
-		playerStrums = new FlxTypedGroup<FlxSprite>();
-
 		generateSong();
 
 		cameraFollowPoint = new FlxObject(0, 0, 1, 1);
@@ -407,6 +400,10 @@ class PlayState extends MusicBeatState
 				case 'guns':
 					VanillaCutscenes.playGunsCutscene();
 				default:
+					// VanillaCutscenes will call startCountdown later.
+					// TODO: Alternatively: make a song script that allows startCountdown to be called,
+					// then cancels the countdown, hides the strumline, plays the cutscene,
+					// then calls Countdown.performCountdown()
 					startCountdown();
 			}
 		}
@@ -415,8 +412,9 @@ class PlayState extends MusicBeatState
 			startCountdown();
 		}
 
-		// this.leftWatermarkText.text = '${currentSong.song.toUpperCase()} - ${SongLoad.curDiff.toUpperCase()}';
+		#if debug
 		this.rightWatermarkText.text = Constants.VERSION;
+		#end
 	}
 
 	/**
@@ -936,6 +934,7 @@ class PlayState extends MusicBeatState
 		super.update(elapsed);
 
 		updateHealthBar();
+		updateScoreText();
 
 		if (needsReset)
 		{
@@ -1173,7 +1172,7 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				var strumLineMid = playerStrumline.offset.y + Note.swagWidth / 2;
+				var strumLineMid = playerStrumline.y + Note.swagWidth / 2;
 
 				if (daNote.followsTime)
 					daNote.y = (Conductor.songPosition - daNote.data.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(),
@@ -1181,7 +1180,7 @@ class PlayState extends MusicBeatState
 
 				if (PreferencesMenu.getPref('downscroll'))
 				{
-					daNote.y += playerStrumline.offset.y;
+					daNote.y += playerStrumline.y;
 					if (daNote.isSustainNote)
 					{
 						if (daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote != null)
@@ -1199,7 +1198,7 @@ class PlayState extends MusicBeatState
 				else
 				{
 					if (daNote.followsTime)
-						daNote.y = playerStrumline.offset.y - daNote.y;
+						daNote.y = playerStrumline.y - daNote.y;
 					if (daNote.isSustainNote
 						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
 						&& daNote.y + daNote.offset.y * daNote.scale.y <= strumLineMid)
@@ -1284,7 +1283,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (!isInCutscene)
-			keyShit();
+			keyShit(true);
 
 		dispatchEvent(new UpdateScriptEvent(elapsed));
 	}
@@ -1293,7 +1292,7 @@ class PlayState extends MusicBeatState
 	{
 		// clipRect is applied to graphic itself so use frame Heights
 		var swagRect:FlxRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
-		var strumLineMid = playerStrumline.offset.y + Note.swagWidth / 2;
+		var strumLineMid = playerStrumline.y + Note.swagWidth / 2;
 
 		if (PreferencesMenu.getPref('downscroll'))
 		{
@@ -1549,7 +1548,14 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	private function keyShit():Void
+	public var test:(PlayState) -> Void = function(instance:PlayState)
+	{
+		trace('test');
+		trace(instance.currentStageId);
+	};
+
+	@:hookable
+	public function keyShit(test:Bool):Void
 	{
 		// control arrays, order L D R U
 		var holdArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
@@ -1566,27 +1572,27 @@ class PlayState extends MusicBeatState
 			controls.NOTE_RIGHT_R
 		];
 		// HOLDS, check for sustain notes
-		if (holdArray.contains(true) && generatedMusic)
+		if (holdArray.contains(true) && PlayState.instance.generatedMusic)
 		{
-			activeNotes.forEachAlive(function(daNote:Note)
+			PlayState.instance.activeNotes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.data.noteData])
-					goodNoteHit(daNote);
+					PlayState.instance.goodNoteHit(daNote);
 			});
 		}
 
 		// PRESSES, check for note hits
-		if (pressArray.contains(true) && generatedMusic)
+		if (pressArray.contains(true) && PlayState.instance.generatedMusic)
 		{
 			Haptic.vibrate(100, 100);
 
-			currentStage.getBoyfriend().holdTimer = 0;
+			PlayState.instance.currentStage.getBoyfriend().holdTimer = 0;
 
 			var possibleNotes:Array<Note> = []; // notes that can be hit
 			var directionList:Array<Int> = []; // directions that can be hit
 			var dumbNotes:Array<Note> = []; // notes to kill later
 
-			activeNotes.forEachAlive(function(daNote:Note)
+			PlayState.instance.activeNotes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 				{
@@ -1621,63 +1627,60 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.log.add("killing dumb ass note at " + note.data.strumTime);
 				note.kill();
-				activeNotes.remove(note, true);
+				PlayState.instance.activeNotes.remove(note, true);
 				note.destroy();
 			}
 
 			possibleNotes.sort((a, b) -> Std.int(a.data.strumTime - b.data.strumTime));
 
-			if (perfectMode)
-				goodNoteHit(possibleNotes[0]);
+			if (PlayState.instance.perfectMode)
+				PlayState.instance.goodNoteHit(possibleNotes[0]);
 			else if (possibleNotes.length > 0)
 			{
 				for (shit in 0...pressArray.length)
 				{ // if a direction is hit that shouldn't be
 					if (pressArray[shit] && !directionList.contains(shit))
-						noteMiss(shit);
+						PlayState.instance.noteMiss(shit);
 				}
 				for (coolNote in possibleNotes)
 				{
 					if (pressArray[coolNote.data.noteData])
-						goodNoteHit(coolNote);
+						PlayState.instance.goodNoteHit(coolNote);
 				}
 			}
 			else
 			{
 				for (shit in 0...pressArray.length)
 					if (pressArray[shit])
-						noteMiss(shit);
+						PlayState.instance.noteMiss(shit);
 			}
 		}
 
-		if (currentStage == null)
+		if (PlayState.instance.currentStage == null)
 			return;
-		if (currentStage.getBoyfriend().holdTimer > Conductor.stepCrochet * 4 * 0.001 && !holdArray.contains(true))
+		if (PlayState.instance.currentStage.getBoyfriend().holdTimer > Conductor.stepCrochet * 4 * 0.001 && !holdArray.contains(true))
 		{
-			if (currentStage.getBoyfriend().animation != null
-				&& currentStage.getBoyfriend().animation.curAnim.name.startsWith('sing')
-				&& !currentStage.getBoyfriend().animation.curAnim.name.endsWith('miss'))
+			if (PlayState.instance.currentStage.getBoyfriend().animation != null
+				&& PlayState.instance.currentStage.getBoyfriend().animation.curAnim.name.startsWith('sing')
+				&& !PlayState.instance.currentStage.getBoyfriend().animation.curAnim.name.endsWith('miss'))
 			{
-				currentStage.getBoyfriend().playAnim('idle');
+				PlayState.instance.currentStage.getBoyfriend().playAnim('idle');
 			}
 		}
 
-		playerStrums.forEach(function(spr:FlxSprite)
+		for (keyId => isPressed in pressArray)
 		{
-			if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
-				spr.animation.play('pressed');
-			if (!holdArray[spr.ID])
-				spr.animation.play('static');
+			var arrow:StrumlineArrow = PlayState.instance.playerStrumline.getArrow(keyId);
 
-			if (spr.animation.curAnim.name == 'confirm' && !currentStageId.startsWith('school'))
+			if (isPressed && arrow.animation.curAnim.name != 'confirm')
 			{
-				spr.centerOffsets();
-				spr.offset.x -= 13;
-				spr.offset.y -= 13;
+				arrow.playAnimation('pressed');
 			}
-			else
-				spr.centerOffsets();
-		});
+			if (!holdArray[keyId])
+			{
+				arrow.playAnimation('static');
+			}
+		}
 	}
 
 	function noteMiss(direction:NoteDir = 1):Void
@@ -1707,13 +1710,7 @@ class PlayState extends MusicBeatState
 
 			currentStage.getBoyfriend().playAnim('sing' + note.dirNameUpper, true);
 
-			playerStrums.forEach(function(spr:FlxSprite)
-			{
-				if (Math.abs(note.data.noteData) == spr.ID)
-				{
-					spr.animation.play('confirm', true);
-				}
-			});
+			playerStrumline.getArrow(note.data.noteData).playAnimation('confirm', true);
 
 			note.wasGoodHit = true;
 			vocals.volume = 1;
@@ -1848,18 +1845,30 @@ class PlayState extends MusicBeatState
 		var strumlineYPos = Strumline.getYPos();
 
 		playerStrumline = new Strumline(0, strumlineStyle, 4);
-		playerStrumline.offset = new FlxPoint(50 + FlxG.width / 2, strumlineYPos);
+		playerStrumline.x = 50 + FlxG.width / 2;
+		playerStrumline.y = strumlineYPos;
 		// Set the z-index so they don't appear in front of notes.
 		playerStrumline.zIndex = 100;
 		add(playerStrumline);
 		playerStrumline.cameras = [camHUD];
 
+		if (!isStoryMode)
+		{
+			playerStrumline.fadeInArrows();
+		}
+
 		enemyStrumline = new Strumline(1, strumlineStyle, 4);
-		enemyStrumline.offset = new FlxPoint(50, strumlineYPos);
+		enemyStrumline.x = 50;
+		enemyStrumline.y = strumlineYPos;
 		// Set the z-index so they don't appear in front of notes.
 		enemyStrumline.zIndex = 100;
 		add(enemyStrumline);
 		enemyStrumline.cameras = [camHUD];
+
+		if (!isStoryMode)
+		{
+			enemyStrumline.fadeInArrows();
+		}
 
 		this.refresh();
 	}
@@ -1997,6 +2006,7 @@ class PlayState extends MusicBeatState
 		{
 			remove(currentStage);
 			currentStage.kill();
+			dispatchEvent(new ScriptEvent(ScriptEvent.DESTROY, false));
 			currentStage = null;
 		}
 

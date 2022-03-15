@@ -19,7 +19,7 @@ import funkin.util.SortUtil;
  * 
  * A Stage is comprised of one or more props, each of which is a FlxSprite.
  */
-class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScriptedClass implements IInputScriptedClass
+class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScriptedClass
 {
 	public final stageId:String;
 	public final stageName:String;
@@ -312,7 +312,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	}
 
 	/**
-	 * Perform cleanup for when you are leaving the level.
+	 * onDestroy gets called when the player is leaving the PlayState,
+	 * and is used to clean up any objects that need to be destroyed.
 	 */
 	public function onDestroy(event:ScriptEvent):Void
 	{
@@ -322,24 +323,32 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 		for (prop in this.namedProps)
 		{
+			remove(prop);
+			prop.kill();
 			prop.destroy();
 		}
 		namedProps.clear();
 
 		for (char in this.characters)
 		{
+			remove(char);
+			char.kill();
 			char.destroy();
 		}
 		characters.clear();
 
 		for (bopper in boppers)
 		{
+			remove(bopper);
+			bopper.kill();
 			bopper.destroy();
 		}
 		boppers = [];
 
 		for (sprite in this.group)
 		{
+			remove(sprite);
+			sprite.kill();
 			sprite.destroy();
 		}
 		group.clear();
@@ -390,10 +399,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public function onCountdownStep(event:CountdownScriptEvent) {}
 
 	public function onCountdownEnd(event:CountdownScriptEvent) {}
-
-	public function onKeyDown(event:KeyboardInputScriptEvent) {}
-
-	public function onKeyUp(event:KeyboardInputScriptEvent) {}
 
 	/**
 	 * A function that should get called every frame.

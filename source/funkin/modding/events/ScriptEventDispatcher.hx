@@ -1,7 +1,6 @@
 package funkin.modding.events;
 
 import funkin.modding.IScriptedClass;
-import funkin.modding.IScriptedClass.IInputScriptedClass;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 
 /**
@@ -36,16 +35,14 @@ class ScriptEventDispatcher
 				return;
 		}
 
-		if (Std.isOfType(target, IInputScriptedClass))
+		if (Std.isOfType(target, IStateChangingScriptedClass))
 		{
-			var t = cast(target, IInputScriptedClass);
+			var t = cast(target, IStateChangingScriptedClass);
+			var t = cast(target, IPlayStateScriptedClass);
 			switch (event.type)
 			{
-				case ScriptEvent.KEY_DOWN:
-					t.onKeyDown(cast event);
-					return;
-				case ScriptEvent.KEY_UP:
-					t.onKeyUp(cast event);
+				case ScriptEvent.NOTE_HIT:
+					t.onNoteHit(cast event);
 					return;
 			}
 		}

@@ -17,15 +17,24 @@ interface IScriptedClass
 }
 
 /**
- * Defines a set of callbacks available to scripted classes that involve player input.
+ * Defines a set of callbacks available to scripted classes which can follow the game between states.
  */
-interface IInputScriptedClass extends IScriptedClass
+interface IStateChangingScriptedClass extends IScriptedClass
 {
-	public function onKeyDown(event:KeyboardInputScriptEvent):Void;
-	public function onKeyUp(event:KeyboardInputScriptEvent):Void;
-	// TODO: OnMouseDown, OnMouseUp, OnMouseMove
+	public function onStateChangeBegin(event:StateChangeScriptEvent):Void;
+	public function onStateChangeEnd(event:StateChangeScriptEvent):Void;
 }
 
+/**
+ * Developer note:
+ * 
+ * I previously considered adding events for onKeyDown, onKeyUp, mouse events, etc.
+ * However, I realized that you can simply call something like the following within a module:
+ * `FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);`
+ * This is more efficient than adding an entire event handler for every key press.
+ *
+ * -Eric
+ */
 /**
  * Defines a set of callbacks available to scripted classes that involve the lifecycle of the Play State.
  */
