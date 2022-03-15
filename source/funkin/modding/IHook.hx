@@ -13,5 +13,4 @@ import polymod.hscript.HScriptable;
 	// ALL of these values are added to ALL scripts in the child classes.
 	context: [FlxG, FlxSprite, Math, Paths, Std]
 })
-@:autoBuild(funkin.util.macro.HookableMacro.build())
 interface IHook extends HScriptable {}
