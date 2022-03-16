@@ -2208,7 +2208,7 @@ class PlayState extends MusicBeatState
 			{
 				if (!boyfriend.stunned)
 				{
-					// fixed ghost tapping issues cuz ur dumb lol fight me
+					// fixed ghost tapping issues cuz ur dumb lol fight me (un-fixed them like you requested you meanie)
 					if (!FlxG.save.data.gtapping) {
 						misses++;
 						if (true) // TODO: GAMEMODES!!!
@@ -2236,10 +2236,26 @@ class PlayState extends MusicBeatState
 							boyfriend.stunned = false;
 						});
 					}
+
+					// Yo percentage 1 request, Make the Miss Animations only viewable on ghost tapping if ENABLED. i left the code on how to do it below. -Blue
+
+					switch (direction)
+					{
+						case 0:
+							boyfriend.playAnim('singLEFTmiss', true);
+						case 1:
+							boyfriend.playAnim('singDOWNmiss', true);
+						case 2:
+							boyfriend.playAnim('singUPmiss', true);
+						case 3:
+							boyfriend.playAnim('singRIGHTmiss', true);
+					}
+
 					//litteraly one line of code percentage.
-						if (!FlxG.save.data.gtapping){
+						/*if (!FlxG.save.data.gtapping){
 							switch (direction)
 							{
+								//subscrib to spunblue on yt rn 🔫
 								case 0:
 									boyfriend.playAnim('singLEFTmiss', true);
 								case 1:
@@ -2249,7 +2265,7 @@ class PlayState extends MusicBeatState
 								case 3:
 									boyfriend.playAnim('singRIGHTmiss', true);
 							}
-						}
+						}*/
 				}
 			}
 
