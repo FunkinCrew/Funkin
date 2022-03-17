@@ -16,6 +16,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 {
 	/**
 	 * The bopper plays the dance animation once every `danceEvery` beats.
+	 * Set to 0 to disable idle animation.
 	 */
 	public var danceEvery:Int = 1;
 
@@ -31,11 +32,19 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	/**
 	 * Set this value to define an additional horizontal offset to this sprite's position.
 	 */
-	public var xOffset:Float = 0;
+	public var xOffset(default, set):Float = 0;
 
 	override function set_x(value:Float):Float
 	{
-		this.x = value + this.xOffset;
+		this.x = this.xOffset + value;
+		return this.x;
+	}
+
+	function set_xOffset(value:Float):Float
+	{
+		var diff = value - this.xOffset;
+		this.xOffset = value;
+		this.x += diff;
 		return value;
 	}
 
@@ -55,7 +64,15 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 	override function set_y(value:Float):Float
 	{
-		this.y = value + this.yOffset;
+		this.y = this.yOffset + value;
+		return this.y;
+	}
+
+	function set_yOffset(value:Float):Float
+	{
+		var diff = value - this.yOffset;
+		this.yOffset = value;
+		this.y += diff;
 		return value;
 	}
 
@@ -73,7 +90,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 	function update_shouldAlternate():Void
 	{
-		if (this.animation.getByName('danceLeft') != null)
+		if (hasAnimation('danceLeft'))
 		{
 			this.shouldAlternate = true;
 		}
@@ -84,7 +101,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public function onBeatHit(event:SongTimeScriptEvent):Void
 	{
-		if (event.beat % danceEvery == 0)
+		if (danceEvery > 0 && event.beat % danceEvery == 0)
 		{
 			dance();
 		}
@@ -109,18 +126,40 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		{
 			if (hasDanced)
 			{
-				this.animation.play('danceRight$idleSuffix');
+				playAnimation('danceRight$idleSuffix');
 			}
 			else
 			{
-				this.animation.play('danceLeft$idleSuffix');
+				playAnimation('danceLeft$idleSuffix');
 			}
 			hasDanced = !hasDanced;
 		}
 		else
 		{
-			this.animation.play('idle$idleSuffix');
+			playAnimation('idle$idleSuffix');
 		}
+	}
+
+	public function hasAnimation(id:String):Bool
+	{
+		return this.animation.getByName(id) != null;
+	}
+
+	/*
+	 * @param   AnimName   The string name of the animation you want to play.
+	 * @param   Force      Whether to force the animation to restart.
+	 */
+	public function playAnimation(name:String, force:Bool = false):Void
+	{
+		this.animation.play(name, force, false, 0);
+	}
+
+	/**
+	 * Returns the name of the animation that is currently playing.
+	 */
+	public function getCurrentAnimation():String
+	{
+		return this.animation.curAnim.name;
 	}
 
 	public function onScriptEvent(event:ScriptEvent) {}

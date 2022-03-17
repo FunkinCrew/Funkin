@@ -1,9 +1,9 @@
 package funkin.play.stage;
 
-import openfl.Assets;
+import flixel.util.typeLimit.OneOfTwo;
 import funkin.util.assets.DataAssets;
 import haxe.Json;
-import flixel.util.typeLimit.OneOfTwo;
+import openfl.Assets;
 
 using StringTools;
 
@@ -194,9 +194,15 @@ class StageDataParser
 			return null;
 		}
 
-		if (input.version != STAGE_DATA_VERSION)
+		if (input.version == null)
 		{
 			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": missing version');
+			return null;
+		}
+
+		if (input.version != STAGE_DATA_VERSION)
+		{
+			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": bad/outdated version (got ${input.version}, expected ${STAGE_DATA_VERSION})');
 			return null;
 		}
 
@@ -301,9 +307,9 @@ class StageDataParser
 					inputAnimation.frameIndices = DEFAULT_FRAMEINDICES;
 				}
 
-				if (inputAnimation.loop == null)
+				if (inputAnimation.looped == null)
 				{
-					inputAnimation.loop = true;
+					inputAnimation.looped = true;
 				}
 
 				if (inputAnimation.flipX == null)
@@ -432,7 +438,7 @@ typedef StageDataProp =
 	 * An optional array of animations which the prop can play.
 	 * @default Prop has no animations.
 	 */
-	var animations:Array<StageDataPropAnimation>;
+	var animations:Array<AnimationData>;
 
 	/**
 	 * If animations are used, this is the name of the animation to play first.
@@ -448,52 +454,6 @@ typedef StageDataProp =
 	var animType:String;
 };
 
-typedef StageDataPropAnimation =
-{
-	/**
-	 * The name of the animation.
-	 */
-	var name:String;
-
-	/**
-	 * The common beginning of image names in atlas for this animation's frames.
-	 * For example, if the frames are named "test0001.png", "test0002.png", etc., use "test".
-	 */
-	var prefix:String;
-
-	/**
-	 * If you want this animation to use only certain frames of an animation with a given prefix,
-	 * select them here.
-	 * @example [0, 1, 2, 3] (use only the first four frames)
-	 * @default [] (all frames)
-	 */
-	var frameIndices:Array<Int>;
-
-	/**
-	 * The speed of the animation in frames per second.
-	 * @default 24
-	 */
-	var frameRate:Null<Int>;
-
-	/**
-	 * Whether the animation should loop.
-	 * @default false
-	 */
-	var loop:Null<Bool>;
-
-	/**
-	 * Whether to flip the sprite horizontally while animating.
-	 * @default false
-	 */
-	var flipX:Null<Bool>;
-
-	/**
-	 * Whether to flip the sprite vertically while animating.
-	 * @default false
-	 */
-	var flipY:Null<Bool>;
-};
-
 typedef StageDataCharacter =
 {
 	/**
@@ -505,5 +465,6 @@ typedef StageDataCharacter =
 
 	/**
 	 * The position to render the character at.
-	 */ position:Array<Float>
+	 */
+	position:Array<Float>
 };

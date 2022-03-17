@@ -1,6 +1,6 @@
 package funkin.play;
 
-import funkin.play.Strumline.StrumlineArrow;
+import funkin.play.character.CharacterBase;
 import flixel.addons.effects.FlxTrail;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
@@ -27,8 +27,10 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.IHook;
 import funkin.modding.module.ModuleHandler;
 import funkin.Note;
+import funkin.play.character.CharacterData;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData;
+import funkin.play.Strumline.StrumlineArrow;
 import funkin.play.Strumline.StrumlineStyle;
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
@@ -126,8 +128,11 @@ class PlayState extends MusicBeatState implements IHook
 	/**
 	 * An empty FlxObject contained in the scene.
 	 * The current gameplay camera will be centered on this object. Tween its position to move the camera smoothly.
+	 * 
+	 * NOTE: This must be an FlxObject, not an FlxPoint, because it needs to be added to the scene.
+	 * Once it's added to the scene, the camera can be configured to follow it.
 	 */
-	public var cameraFollowPoint:FlxObject;
+	public var cameraFollowPoint:FlxObject = new FlxObject(0, 0, 1, 1);
 
 	/**
 	 * PRIVATE INSTANCE VARIABLES
@@ -240,7 +245,6 @@ class PlayState extends MusicBeatState implements IHook
 	var songScore:Int = 0;
 	var doof:DialogueBox;
 	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
-	var camPos:FlxPoint;
 	var comboPopUps:PopUpStuff;
 	var perfectMode:Bool = false;
 	var previousFrameTime:Int = 0;
@@ -315,6 +319,14 @@ class PlayState extends MusicBeatState implements IHook
 		initDiscord();
 		#end
 
+		// Configure camera follow point.
+		if (previousCameraFollowPoint != null)
+		{
+			cameraFollowPoint.setPosition(previousCameraFollowPoint.x, previousCameraFollowPoint.y);
+			previousCameraFollowPoint = null;
+		}
+		add(cameraFollowPoint);
+
 		comboPopUps = new PopUpStuff();
 		add(comboPopUps);
 
@@ -328,16 +340,6 @@ class PlayState extends MusicBeatState implements IHook
 
 		generateSong();
 
-		cameraFollowPoint = new FlxObject(0, 0, 1, 1);
-		cameraFollowPoint.setPosition(camPos.x, camPos.y);
-
-		if (previousCameraFollowPoint != null)
-		{
-			cameraFollowPoint = previousCameraFollowPoint;
-			previousCameraFollowPoint = null;
-		}
-
-		add(cameraFollowPoint);
 		resetCamera();
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -467,7 +469,11 @@ class PlayState extends MusicBeatState implements IHook
 
 	function initCharacters()
 	{
-		// all dis is shitty, redo later for stage shit
+		//
+		// GIRLFRIEND
+		//
+
+		// TODO: Tie the GF version to the song data, not the stage ID or the current player.
 		var gfVersion:String = 'gf';
 
 		switch (currentStageId)
@@ -483,35 +489,34 @@ class PlayState extends MusicBeatState implements IHook
 		}
 
 		if (currentSong.player1 == "pico")
-		{
 			gfVersion = "nene";
-		}
 
 		if (currentSong.song.toLowerCase() == 'stress')
 			gfVersion = 'pico-speaker';
 
-		var gf = new Character(400, 130, gfVersion);
-		gf.scrollFactor.set(0.95, 0.95);
-
-		switch (gfVersion)
+		var girlfriend:Character = new Character(350, -70, gfVersion);
+		girlfriend.scrollFactor.set(0.95, 0.95);
+		if (gfVersion == 'pico-speaker')
 		{
-			case 'pico-speaker':
-				gf.x -= 50;
-				gf.y -= 200;
+			girlfriend.x -= 50;
+			girlfriend.y -= 200;
 		}
 
+		//
+		// DAD
+		//
 		var dad = new Character(100, 100, currentSong.player2);
 
-		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
 		switch (currentSong.player2)
 		{
 			case 'gf':
-				dad.setPosition(gf.x, gf.y);
-				gf.visible = false;
+				dad.setPosition(girlfriend.x, girlfriend.y);
+				girlfriend.visible = false;
 				if (isStoryMode)
 				{
-					camPos.x += 600;
+					cameraFollowPoint.x += 600;
 					tweenCamIn();
 				}
 			case "spooky":
@@ -521,25 +526,40 @@ class PlayState extends MusicBeatState implements IHook
 			case 'monster-christmas':
 				dad.y += 130;
 			case 'dad':
-				camPos.x += 400;
+				cameraFollowPoint.x += 400;
 			case 'pico':
-				camPos.x += 600;
+				cameraFollowPoint.x += 600;
 				dad.y += 300;
 			case 'parents-christmas':
 				dad.x -= 500;
 			case 'senpai' | 'senpai-angry':
 				dad.x += 150;
 				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+				cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+				cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			case 'tankman':
 				dad.y += 180;
 		}
 
-		var boyfriend = new Boyfriend(770, 450, currentSong.player1);
+		if (currentSong.player1 == "pico")
+		{
+			dad.x -= 100;
+			dad.y -= 100;
+		}
+
+		//
+		// BOYFRIEND
+		//
+		var boyfriend:CharacterBase;
+		switch (currentSong.player1)
+		{
+			default:
+				boyfriend = CharacterDataParser.fetchCharacter(currentSong.player1);
+				boyfriend.characterType = CharacterType.BF;
+		}
 
 		// REPOSITIONING PER STAGE
 		switch (currentStageId)
@@ -550,8 +570,8 @@ class PlayState extends MusicBeatState implements IHook
 				evilTrail.zIndex = 190;
 				add(evilTrail);
 			case "tank":
-				gf.y += 10;
-				gf.x -= 30;
+				girlfriend.y += 10;
+				girlfriend.x -= 30;
 				boyfriend.x += 40;
 				boyfriend.y += 0;
 				dad.y += 60;
@@ -559,8 +579,8 @@ class PlayState extends MusicBeatState implements IHook
 
 				if (gfVersion != 'pico-speaker')
 				{
-					gf.x -= 170;
-					gf.y -= 75;
+					girlfriend.x -= 170;
+					girlfriend.y -= 75;
 				}
 		}
 
@@ -568,16 +588,16 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			// We're using Eric's stage handler.
 			// Characters get added to the stage, not the main scene.
-			currentStage.addCharacter(gf, GF);
 			currentStage.addCharacter(boyfriend, BF);
-			currentStage.addCharacter(dad, DAD);
+			currentStage.addCharacterOld(girlfriend, GF);
+			currentStage.addCharacterOld(dad, DAD);
 
 			// Redo z-indexes.
 			currentStage.refresh();
 		}
 		else
 		{
-			add(gf);
+			add(girlfriend);
 			add(dad);
 			add(boyfriend);
 		}
@@ -612,6 +632,7 @@ class PlayState extends MusicBeatState implements IHook
 
 		// Reload the stages in cache. This might cause a lag spike but who cares this is a debug utility.
 		StageDataParser.loadStageCache();
+		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.loadModuleCache();
 
 		// Reload the level. This should use new data from the assets folder.
@@ -684,8 +705,6 @@ class PlayState extends MusicBeatState implements IHook
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 		senpaiEvil.x += senpaiEvil.width / 5;
-
-		cameraFollowPoint.setPosition(camPos.x, camPos.y);
 
 		if (currentSong.song.toLowerCase() == 'roses' || currentSong.song.toLowerCase() == 'thorns')
 		{
@@ -1664,7 +1683,7 @@ class PlayState extends MusicBeatState implements IHook
 				&& PlayState.instance.currentStage.getBoyfriend().animation.curAnim.name.startsWith('sing')
 				&& !PlayState.instance.currentStage.getBoyfriend().animation.curAnim.name.endsWith('miss'))
 			{
-				PlayState.instance.currentStage.getBoyfriend().playAnim('idle');
+				PlayState.instance.currentStage.getBoyfriend().playAnimation('idle');
 			}
 		}
 
@@ -1695,7 +1714,7 @@ class PlayState extends MusicBeatState implements IHook
 		vocals.volume = 0;
 		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 
-		currentStage.getBoyfriend().playAnim('sing' + direction.nameUpper + 'miss', true);
+		currentStage.getBoyfriend().playAnimation('sing' + direction.nameUpper + 'miss', true);
 	}
 
 	function goodNoteHit(note:Note):Void
@@ -1708,7 +1727,7 @@ class PlayState extends MusicBeatState implements IHook
 				popUpScore(note.data.strumTime, note);
 			}
 
-			currentStage.getBoyfriend().playAnim('sing' + note.dirNameUpper, true);
+			currentStage.getBoyfriend().playAnimation('sing' + note.dirNameUpper, true);
 
 			playerStrumline.getArrow(note.data.noteData).playAnimation('confirm', true);
 
@@ -1800,7 +1819,7 @@ class PlayState extends MusicBeatState implements IHook
 		if (curBeat % 2 == 0)
 		{
 			if (currentStage.getBoyfriend().animation != null && !currentStage.getBoyfriend().animation.curAnim.name.startsWith("sing"))
-				currentStage.getBoyfriend().playAnim('idle');
+				currentStage.getBoyfriend().playAnimation('idle');
 			if (currentStage.getDad().animation != null && !currentStage.getDad().animation.curAnim.name.startsWith("sing"))
 				currentStage.getDad().dance();
 		}
@@ -1812,7 +1831,7 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (curBeat % 8 == 7 && currentSong.song == 'Bopeebo')
 		{
-			currentStage.getBoyfriend().playAnim('hey', true);
+			currentStage.getBoyfriend().playAnimation('hey', true);
 		}
 
 		if (curBeat % 16 == 15
@@ -1821,7 +1840,7 @@ class PlayState extends MusicBeatState implements IHook
 			&& curBeat > 16
 			&& curBeat < 48)
 		{
-			currentStage.getBoyfriend().playAnim('hey', true);
+			currentStage.getBoyfriend().playAnimation('hey', true);
 			currentStage.getDad().playAnim('cheer', true);
 		}
 	}

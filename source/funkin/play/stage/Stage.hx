@@ -1,5 +1,6 @@
 package funkin.play.stage;
 
+import funkin.play.character.CharacterBase;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
@@ -10,7 +11,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSort;
 import funkin.modding.IHook;
-import funkin.play.character.Character.CharacterType;
+import funkin.play.character.CharacterBase.CharacterType;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.util.SortUtil;
 
@@ -29,7 +30,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public var camZoom:Float = 1.0;
 
 	var namedProps:Map<String, FlxSprite> = new Map<String, FlxSprite>();
-	var characters:Map<String, Character> = new Map<String, Character>();
+	var characters:Map<String, CharacterBase> = new Map<String, CharacterBase>();
+	var charactersOld:Map<String, Character> = new Map<String, Character>();
 	var boppers:Array<Bopper> = new Array<Bopper>();
 
 	/**
@@ -149,12 +151,12 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 					{
 						if (propAnim.frameIndices.length == 0)
 						{
-							propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.loop, propAnim.flipX,
+							propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.looped, propAnim.flipX,
 								propAnim.flipY);
 						}
 						else
 						{
-							propSprite.animation.addByIndices(propAnim.name, propAnim.prefix, propAnim.frameIndices, "", propAnim.frameRate, propAnim.loop,
+							propSprite.animation.addByIndices(propAnim.name, propAnim.prefix, propAnim.frameIndices, "", propAnim.frameRate, propAnim.looped,
 								propAnim.flipX, propAnim.flipY);
 						}
 					}
@@ -234,7 +236,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	/**
 	 * Used by the PlayState to add a character to the stage.
 	 */
-	public function addCharacter(character:Character, charType:CharacterType)
+	public function addCharacter(character:CharacterBase, charType:CharacterType)
 	{
 		// Apply position and z-index.
 		switch (charType)
@@ -255,7 +257,38 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 				character.x = _data.characters.dad.position[0];
 				character.y = _data.characters.dad.position[1];
 			default:
-				this.characters.set(character.curCharacter, character);
+				this.characters.set(character.characterId, character);
+		}
+
+		// Add the character to the scene.
+		this.add(character);
+	}
+
+	/**
+	 * Used by the PlayState to add a character to the stage.
+	 */
+	public function addCharacterOld(character:Character, charType:CharacterType)
+	{
+		// Apply position and z-index.
+		switch (charType)
+		{
+			case BF:
+				this.charactersOld.set("bf", character);
+				character.zIndex = _data.characters.bf.zIndex;
+				character.x = _data.characters.bf.position[0];
+				character.y = _data.characters.bf.position[1];
+			case GF:
+				this.charactersOld.set("gf", character);
+				character.zIndex = _data.characters.gf.zIndex;
+				character.x = _data.characters.gf.position[0];
+				character.y = _data.characters.gf.position[1];
+			case DAD:
+				this.charactersOld.set("dad", character);
+				character.zIndex = _data.characters.dad.zIndex;
+				character.x = _data.characters.dad.position[0];
+				character.y = _data.characters.dad.position[1];
+			default:
+				this.charactersOld.set(character.curCharacter, character);
 		}
 
 		// Add the character to the scene.
@@ -265,24 +298,25 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	/**
 	 * Retrieves a given character from the stage.
 	 */
-	public function getCharacter(id:String):Character
+	public function getCharacter(id:String):CharacterBase
 	{
 		return this.characters.get(id);
 	}
 
-	public function getBoyfriend():Character
+	public function getBoyfriend():CharacterBase
 	{
 		return getCharacter('bf');
+		// return this.charactersOld.get('bf');
 	}
 
 	public function getGirlfriend():Character
 	{
-		return getCharacter('gf');
+		return this.charactersOld.get('gf');
 	}
 
 	public function getDad():Character
 	{
-		return getCharacter('dad');
+		return this.charactersOld.get('dad');
 	}
 
 	/**

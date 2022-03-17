@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.stage.StageData;
 import funkin.charting.ChartingState;
@@ -122,7 +123,7 @@ class InitState extends FlxTransitionableState
 		FlxTransitionableState.skipNextTransIn = true;
 
 		StageDataParser.loadStageCache();
-
+		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.loadModuleCache();
 
 		#if song
