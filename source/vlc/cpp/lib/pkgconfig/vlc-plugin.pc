@@ -1,0 +1,24 @@
+prefix=/home/jb/vlc-2.1/win32/_win32
+exec_prefix=${prefix}
+includedir=${prefix}/include
+datarootdir=${prefix}/share
+libdir=${exec_prefix}/lib
+datadir=${datarootdir}
+pkgincludedir=${prefix}/include/vlc
+pkgdatadir=${datadir}/vlc
+pkglibdir=${libdir}/vlc
+pluginsdir=${pkglibdir}/plugins
+
+Name: VLC plugin API
+Description: VLC media player plugin interface
+Version: 2.1.3
+Cflags: -I${includedir} -I${pkgincludedir}/plugins \
+	-D__PLUGIN__ \
+	-D_FILE_OFFSET_BITS=64 \
+	 \
+	-D_REENTRANT \
+	-D_THREAD_SAFE
+Libs: -L${libdir} -lvlccore
+Libs.private: -L/home/jb/vlc-2.1/contrib/i686-w64-mingw32/lib -lgcrypt -lgpg-error -lwinmm  \
+	-L/home/jb/vlc-2.1/contrib/i686-w64-mingw32/lib -lintl -L/home/jb/vlc-2.1/contrib/i686-w64-mingw32/lib -liconv -L/home/jb/vlc-2.1/contrib/i686-w64-mingw32/lib -liconv \
+	-lws2_32  -lm

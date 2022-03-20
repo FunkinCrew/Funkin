@@ -139,6 +139,8 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	var video:MP4Handler;
+
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
@@ -809,6 +811,8 @@ class PlayState extends MusicBeatState
 					schoolIntro(doof);
 				case 'thorns':
 					schoolIntro(doof);
+				// If you want to play a cutscene just add a new case for your song and add either playCutscene() or playEndCutscene()
+
 				default:
 					startCountdown();
 			}
@@ -2576,6 +2580,31 @@ class PlayState extends MusicBeatState
 		{
 			lightningStrikeShit();
 		}
+	}
+
+	function playCutscene(name:String)
+	{
+		inCutscene = true;
+	
+		video = new MP4Handler();
+		video.finishCallback = function()
+		{
+			startCountdown();
+		}
+		video.playVideo(Paths.video(name));
+	}
+	
+	function playEndCutscene(name:String)
+	{
+		inCutscene = true;
+	
+		video = new MP4Handler();
+		video.finishCallback = function()
+		{
+			SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase());
+			LoadingState.loadAndSwitchState(new PlayState());
+		}
+		video.playVideo(Paths.video(name));
 	}
 
 	var curLight:Int = 0;
