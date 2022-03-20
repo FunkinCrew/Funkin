@@ -13,4 +13,4 @@ This is the repository for NUFNF Engine.
  [Build Instructions](https://github.com/thepercentageguy/UFNF-2.0/blob/master/BUILDINSTRUCTIONS.md) [Wikipedia](https://github.com/SpunBlue/NUFNF/wiki)
  
 # Resources used
- [PhantomMuff Font](https://gamebanana.com/tools/7763)  [Portrait Sprites](https://gamebanana.com/mods/44223) [MP4 Support](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support)
+ [PhantomMuff Font |](https://gamebanana.com/tools/7763)  [ Portrait Sprites |](https://gamebanana.com/mods/44223) [ MP4 Support |](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support)
