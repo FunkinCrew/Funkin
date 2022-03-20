@@ -53,12 +53,17 @@ class OptionsMenu extends MusicBeatState {
 		}
 		optionText.screenCenter();
 
-		optionDot = new FlxSprite(0, 0).makeGraphic(10, 10, FlxColor.RED);
+		optionDot = new FlxSprite(0, 0);
+		optionDot.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
+		optionDot.animation.addByPrefix("idle", "arrowRIGHT0");
+		optionDot.animation.play("idle");
+		optionDot.setGraphicSize(50);
+		optionDot.updateHitbox();
 		add(optionDot);
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y + 4; // red dot offset
+		optionDot.y = optionText.y - optionDot.height / 5; // red dot offset
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
@@ -77,7 +82,7 @@ class OptionsMenu extends MusicBeatState {
 		'RESET SETTINGS'];
 		optionText.screenCenter();
 
-		optionDot.x = optionText.x - 20;
+		optionDot.x = optionText.x - 60;
 
 		camFollow.screenCenter();
 		camFollow.y = optionDot.y - camFollow.height / 2;
