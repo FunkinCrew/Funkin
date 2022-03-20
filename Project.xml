@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' - NUFNF Engine" file="NUFNF" packageName="com.spunblue.nufnf" package="com.spunblue.nufnf" main="Main" version="2.1.0" company="thepercentageguy" />
+	<app title="Friday Night Funkin' - NUFNF Engine" file="NUFNF" packageName="com.spunblue.nufnf" package="com.spunblue.nufnf" main="Main" version="2.2.0" company="spunblue" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
