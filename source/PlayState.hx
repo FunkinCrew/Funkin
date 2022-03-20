@@ -1699,7 +1699,8 @@ class PlayState extends MusicBeatState
 				//DaNote was too late
 				if (daNote.y < -daNote.height)
 				{
-					if (daNote.tooLate && !daNote.wasGoodHit)
+					//fnf is weird
+					if (daNote.tooLate && !daNote.wasGoodHit || !daNote.wasGoodHit)
 					{
 						trace("Missed! Note was too late");
 						misses++;
@@ -2307,6 +2308,7 @@ class PlayState extends MusicBeatState
 						//trace("gtap R");
 			
 					}
+					
 				}
 
 	function noteCheck(keyP:Bool, note:Note):Void
