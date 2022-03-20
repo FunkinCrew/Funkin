@@ -30,7 +30,7 @@
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<set name="BUILD_DIR" value="export/32bit" if="32bit" /> <!--Imagine using 32Bit in 2022-->
+	<set name="BUILD_DIR" value="export/32bit" if="old" /> <!--Imagine using 32Bit in 2022-->
 
 	<classpath name="source" />
 
