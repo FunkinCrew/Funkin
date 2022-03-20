@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' - NUFNF Engine" file="NUFNF" packageName="com.thepercentageguy.nufnf" package="com.thepercentageguy.nufnf" main="Main" version="2.1.0" company="thepercentageguy" />
+	<app title="Friday Night Funkin' - NUFNF Engine" file="NUFNF" packageName="com.spunblue.nufnf" package="com.spunblue.nufnf" main="Main" version="2.1.0" company="thepercentageguy" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -36,8 +36,8 @@
 
 	<assets path="assets/preload/videos" rename="assets/videos" include="*mp4" embed='false' />
 
-	<assets path="assets/videos" exclude="*.mp3" if="web"/>
-	<assets path="assets/videos" exclude="*.ogg" unless="web"/>
+	<assets path="assets/preload/videos" exclude="*.mp4" if="web"/>
+	<assets path="assets/preload/videos" exclude="*.mp4" unless="web"/>
 
 	<assets path="plugins/" rename='' if="windows"/>
 	<assets path="dlls/" rename='' if="windows"/>
@@ -50,6 +50,7 @@
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 	
 	<section if="PRELOAD_ALL">
+		<library name="videos"	 preload="true"/>
 		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
 		<library name="tutorial" preload="true" />
@@ -62,6 +63,7 @@
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
+		<library name="videos"	 preload="false"/>
 		<library name="songs"    preload="false" />
 		<library name="shared"   preload="false" />
 		<library name="tutorial" preload="false" />

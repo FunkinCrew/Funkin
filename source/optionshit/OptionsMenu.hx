@@ -20,6 +20,7 @@ class OptionsMenu extends MusicBeatState {
 	'RESET SETTINGS'];
 
 	var optionText:FlxText;
+	var detailText:FlxText;
 	var optionDot:FlxSprite;
 	var camFollow:FlxSprite;
 
@@ -33,7 +34,7 @@ class OptionsMenu extends MusicBeatState {
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		background = new FlxSprite(0, 0, Paths.image('menuBGBlue'));
+		background = new FlxSprite(0, 0, Paths.image('menuBGMagenta'));
 
 		background.scrollFactor.x = 0;
 		background.scrollFactor.y = 0.18;
@@ -45,6 +46,7 @@ class OptionsMenu extends MusicBeatState {
 		add(background);
 
 		optionText = new FlxText(0, 0, 0, 'OPTIONS LOLOLO', 32);
+		optionText.font = 'PhantomMuff 1.5';
 		add(optionText);
 		optionText.alignment = FlxTextAlign.CENTER;
 		optionText.text = '';
@@ -60,6 +62,11 @@ class OptionsMenu extends MusicBeatState {
 		optionDot.setGraphicSize(50);
 		optionDot.updateHitbox();
 		add(optionDot);
+
+		detailText = new FlxText(0, optionDot.y - 360, 0, "Changes your Controls", 12);
+		detailText.font = 'PhantomMuff 1.5';
+		detailText.screenCenter(X);
+		add(detailText);
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
@@ -86,6 +93,9 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow.screenCenter();
 		camFollow.y = optionDot.y - camFollow.height / 2;
+
+		detailText.y = optionDot.y;
+		detailText.x = optionText.x * 2;
 
 		topText.y = optionDot.y;
 
@@ -130,6 +140,30 @@ class OptionsMenu extends MusicBeatState {
 				FlxG.save.data.noDistractions = false;
 			}
 		}
+
+		//Details
+		if (controls.UP || controls.DOWN)
+			{
+				if (options[curSelected].startsWith('Controls')) {
+					detailText.text = 'Changes your Controls';
+				}
+
+				if (options[curSelected].startsWith('Epilepsy Mode')){
+					detailText.text = 'Prevents Epilepsy if enabled';
+				}
+	
+				if (options[curSelected].startsWith('Ghost Tapping')) {
+					detailText.text = "You won't miss when tapping at the wrong time.";
+				}
+				
+				if (options[curSelected].startsWith('Disable Distractions')){
+					detailText.text = 'Disables annoying background objects';
+				}
+
+				if (options[curSelected].startsWith('RESET SETTINGS')){
+					detailText.text = 'Nukes your settings';
+				}
+			}
 
 		if (controls.BACK) {
 			FlxG.switchState(new MainMenuState());

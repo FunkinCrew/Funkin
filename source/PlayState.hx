@@ -740,12 +740,6 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 30, FlxG.width, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER);
-		scoreTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000, 2, 1);
-		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
-
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -753,6 +747,12 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
+
+		scoreTxt = new FlxText(0, healthBarBG.y + 46, FlxG.width, "", 24);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER);
+		scoreTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000, 2, 1);
+		scoreTxt.scrollFactor.set();
+		add(scoreTxt);
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -803,15 +803,23 @@ class PlayState extends MusicBeatState
 						});
 					});
 				case 'tutorial':
-					schoolIntro(doof);
+					loadDialogue(doof);
+				//yo keep a secret for once and don't spoil it
+				case 'pico':
+					if (FlxG.random.bool(25)){
+						playCutscene("cock");
+						trace('cock');
+					}
+					else
+						startCountdown();
 				case 'senpai':
-					schoolIntro(doof);
+					loadDialogue(doof);
 				case 'roses':
 					FlxG.sound.play(Paths.sound('ANGRY'));
-					schoolIntro(doof);
+					loadDialogue(doof);
 				case 'thorns':
-					schoolIntro(doof);
-				// If you want to play a cutscene just add a new case for your song and add either playCutscene() or playEndCutscene()
+					loadDialogue(doof);
+				// If you want to play a cutscene just add a new case for your song and add either playCutscene() or playEndCutscene() when i fix it
 
 				default:
 					startCountdown();
@@ -829,7 +837,7 @@ class PlayState extends MusicBeatState
 		super.create();
 	}
 
-	function schoolIntro(?dialogueBox:DialogueBox):Void
+	function loadDialogue(?dialogueBox:DialogueBox):Void
 	{
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
@@ -1686,17 +1694,30 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
+				//-strumLine.y - 16
+
+				//DaNote was too late
 				if (daNote.y < -daNote.height)
 				{
-					if (daNote.tooLate || !daNote.wasGoodHit)
+					if (daNote.tooLate && !daNote.wasGoodHit)
 					{
-						trace("missed");
+						trace("Missed! Note was too late");
 						misses++;
 						songScore -= 10;
 						combo = 0;
 						FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 						health -= 0.0475;
 						vocals.volume = 0;
+
+						daNote.active = false;
+						daNote.visible = false;
+
+						//Miss Animation
+						boyfriend.playAnim('singLEFTmiss', true);
+	
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
 					}
 
 					daNote.active = false;
@@ -1810,7 +1831,6 @@ class PlayState extends MusicBeatState
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.55;
-		//
 
 		var rating:FlxSprite = new FlxSprite();
 		var score:Int = 350;
@@ -1821,20 +1841,34 @@ class PlayState extends MusicBeatState
 		{
 			shits++;
 			daRating = 'shit';
+			health -= 0.04;
 			score = 50;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.5)
+		else if (noteDiff > Conductor.safeZoneOffset * 0.45)
 		{
 			bads++;
 			daRating = 'bad';
 			score = 100;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+		else if (noteDiff > Conductor.safeZoneOffset * 0.30)
 		{
 			goods++;
 			daRating = 'good';
 			score = 200;
 		}
+		else if (noteDiff > Conductor.safeZoneOffset * 1.55)
+			{
+				bads++;
+				daRating = 'bad';
+				score = 100;
+			}
+		else if (noteDiff > Conductor.safeZoneOffset * 1.9)
+			{
+				shits++;
+				daRating = 'shit';
+				health -= 0.04;
+				score = 50;
+			}
 		else {
 			sicks++;
 		}
@@ -2037,13 +2071,6 @@ class PlayState extends MusicBeatState
 								else
 									{
 										var inIgnoreList:Bool = false;
-										for (shit in 0...ignoreList.length)
-										{
-											if (controlArray[ignoreList[shit]])
-												inIgnoreList = true;
-											else if (controlArray2[ignoreList[shit]])
-												inIgnoreList = true;
-										}
 										// if (!inIgnoreList)
 											// badNoteCheck();
 									}
@@ -2052,13 +2079,6 @@ class PlayState extends MusicBeatState
 								else
 								{
 									var inIgnoreList:Bool = false;
-									for (shit in 0...ignoreList.length)
-									{
-										if (controlArray[ignoreList[shit]])
-											inIgnoreList = true;
-										else if (controlArray2[ignoreList[shit]])
-											inIgnoreList = true;
-									}
 									// if (!inIgnoreList)
 										// badNoteCheck();
 								}
@@ -2212,7 +2232,6 @@ class PlayState extends MusicBeatState
 			{
 				if (!boyfriend.stunned)
 				{
-					// fixed ghost tapping issues cuz ur dumb lol fight me (un-fixed them like you requested you meanie)
 					if (!FlxG.save.data.gtapping) {
 						misses++;
 						if (true) // TODO: GAMEMODES!!!
@@ -2241,35 +2260,19 @@ class PlayState extends MusicBeatState
 						});
 					}
 
-					// Yo percentage 1 request, Make the Miss Animations only viewable on ghost tapping if ENABLED. i left the code on how to do it below. -Blue
-
-					switch (direction)
-					{
-						case 0:
-							boyfriend.playAnim('singLEFTmiss', true);
-						case 1:
-							boyfriend.playAnim('singDOWNmiss', true);
-						case 2:
-							boyfriend.playAnim('singUPmiss', true);
-						case 3:
-							boyfriend.playAnim('singRIGHTmiss', true);
+					if (!FlxG.save.data.gtapping){
+						switch (direction)
+						{
+							case 0:
+								boyfriend.playAnim('singLEFTmiss', true);
+							case 1:
+								boyfriend.playAnim('singDOWNmiss', true);
+							case 2:
+								boyfriend.playAnim('singUPmiss', true);
+							case 3:
+								boyfriend.playAnim('singRIGHTmiss', true);
+						}
 					}
-
-					//litteraly one line of code percentage.
-						/*if (!FlxG.save.data.gtapping){
-							switch (direction)
-							{
-								//subscrib to spunblue on yt rn 🔫
-								case 0:
-									boyfriend.playAnim('singLEFTmiss', true);
-								case 1:
-									boyfriend.playAnim('singDOWNmiss', true);
-								case 2:
-									boyfriend.playAnim('singUPmiss', true);
-								case 3:
-									boyfriend.playAnim('singRIGHTmiss', true);
-							}
-						}*/
 				}
 			}
 
@@ -2289,19 +2292,19 @@ class PlayState extends MusicBeatState
 			
 					if (leftP || leftP2) {
 						noteMiss(0);
-						trace("gtap L");
+						//trace("gtap L");
 					}
 					if (downP || downP2) {
 						noteMiss(1);
-						trace("gtap D");
+						//trace("gtap D");
 					}
 					if (upP || upP2) {
 						noteMiss(2);
-						trace("gtap U");
+						//trace("gtap U");
 					}
 					if (rightP || rightP2) {
 						noteMiss(3);
-						trace("gtap R");
+						//trace("gtap R");
 			
 					}
 				}
@@ -2310,10 +2313,6 @@ class PlayState extends MusicBeatState
 	{
 		if (keyP)
 			goodNoteHit(note);
-		else
-		{
-			// badNoteCheck(); broken for some odd reason
-		}
 	}
 
 	function goodNoteHit(note:Note):Void
@@ -2594,7 +2593,7 @@ class PlayState extends MusicBeatState
 		video.playVideo(Paths.video(name));
 	}
 	
-	function playEndCutscene(name:String)
+	/*function playEndCutscene(name:String)
 	{
 		inCutscene = true;
 	
@@ -2605,7 +2604,7 @@ class PlayState extends MusicBeatState
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 		video.playVideo(Paths.video(name));
-	}
+	}*/
 
 	var curLight:Int = 0;
 }

@@ -344,7 +344,7 @@ class TitleState extends MusicBeatState
 				// createCoolText(['thepercentageguy']);
 			// credTextShit.visible = true;
 			case 3:
-				createCoolText(['thepercentageguy', 'presents']);
+				createCoolText(['SpunBlue', 'presents']);
 			// credTextShit.text += '\npresent...';
 			// credTextShit.addText();
 			case 4:
@@ -353,9 +353,9 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'In association \nwith';
 			// credTextShit.screenCenter();
 			case 5:
-				createCoolText(['In association', 'with']);
+				createCoolText(['originaly', 'by']);
 			case 7:
-				addMoreText('absolutely noone');
+				addMoreText('thepercentageguy');
 				// ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
