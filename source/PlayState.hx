@@ -260,18 +260,21 @@ class PlayState extends MusicBeatState
 		                  var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
 		                  bg.scrollFactor.set(0.1, 0.1);
 		                  add(bg);
-
-	                          var city:FlxSprite = new FlxSprite(-10).loadGraphic(Paths.image('philly/city'));
+						
+	                	var city:FlxSprite = new FlxSprite(-10).loadGraphic(Paths.image('philly/city'));
 		                  city.scrollFactor.set(0.3, 0.3);
 		                  city.setGraphicSize(Std.int(city.width * 0.85));
 		                  city.updateHitbox();
 		                  add(city);
 
-		                  phillyCityLights = new FlxTypedGroup<FlxSprite>();
-		                  add(phillyCityLights);
+						  if (!FlxG.save.data.epilepsyMode){
+							phillyCityLights = new FlxTypedGroup<FlxSprite>();
+							add(phillyCityLights);
+						  }
 
 		                  for (i in 0...5)
 		                  {
+							  if (!FlxG.save.data.epilepsyMode){
 		                          var light:FlxSprite = new FlxSprite(city.x).loadGraphic(Paths.image('philly/win' + i));
 		                          light.scrollFactor.set(0.3, 0.3);
 		                          light.visible = false;
@@ -279,6 +282,7 @@ class PlayState extends MusicBeatState
 		                          light.updateHitbox();
 		                          light.antialiasing = true;
 		                          phillyCityLights.add(light);
+							  }
 		                  }
 
 		                  var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));
@@ -739,6 +743,24 @@ class PlayState extends MusicBeatState
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
 		add(healthBar);
+
+		var barColor:FlxColor = 0xFF000000;
+		var barColor2:FlxColor = 0xFF000000;
+
+		for (color in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
+			if (!color.startsWith('#')) {
+				var eugh = color.split(':');
+
+				if (dad.curCharacter.toLowerCase().startsWith(eugh[0])) {
+					barColor = new FlxColor(Std.parseInt(eugh[1]));
+				}
+				if (boyfriend.curCharacter.toLowerCase().startsWith(eugh[0])) {
+					barColor2 = new FlxColor(Std.parseInt(eugh[1]));
+				}
+			}
+		}
+
+		healthBar.createFilledBar(barColor, barColor2);
 
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -1851,7 +1873,8 @@ class PlayState extends MusicBeatState
 			daRating = 'bad';
 			score = 100;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.30)
+		//I don't know if 0.25 is good so if there is any complaints i'll change it lol
+		else if (noteDiff > Conductor.safeZoneOffset * 0.25)
 		{
 			goods++;
 			daRating = 'good';
@@ -2559,15 +2582,17 @@ class PlayState extends MusicBeatState
 
 				if (curBeat % 4 == 0)
 				{
-					phillyCityLights.forEach(function(light:FlxSprite)
-					{
-						light.visible = false;
-					});
-
-					curLight = FlxG.random.int(0, phillyCityLights.length - 1);
-
-					phillyCityLights.members[curLight].visible = true;
-					// phillyCityLights.members[curLight].alpha = 1;
+					if (!FlxG.save.data.epilepsyMode){
+						phillyCityLights.forEach(function(light:FlxSprite)
+							{
+								light.visible = false;
+							});
+		
+							curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+		
+							phillyCityLights.members[curLight].visible = true;
+							// phillyCityLights.members[curLight].alpha = 1;
+					}
 				}
 
 				if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8 && !FlxG.save.data.noDistractions)
