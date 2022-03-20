@@ -166,7 +166,7 @@ class PlayState extends MusicBeatState
 		switch (SONG.song.toLowerCase())
 		{
 			case 'tutorial':
-				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
+				dialogue = [":gf:Hey you're pretty cute.", ':gf:Use the arrow keys to keep up with me singing.', ':bf:Beep!'];
 			case 'bopeebo':
 				dialogue = [
 					'HEY!',
@@ -800,6 +800,8 @@ class PlayState extends MusicBeatState
 							});
 						});
 					});
+				case 'tutorial':
+					schoolIntro(doof);
 				case 'senpai':
 					schoolIntro(doof);
 				case 'roses':
@@ -2206,7 +2208,7 @@ class PlayState extends MusicBeatState
 			{
 				if (!boyfriend.stunned)
 				{
-					// Ghost tapping still triggers miss animations for input reasons
+					// fixed ghost tapping issues cuz ur dumb lol fight me (un-fixed them like you requested you meanie)
 					if (!FlxG.save.data.gtapping) {
 						misses++;
 						if (true) // TODO: GAMEMODES!!!
@@ -2225,7 +2227,7 @@ class PlayState extends MusicBeatState
 						FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 						// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 						// FlxG.log.add('played imss note');
-		
+
 						boyfriend.stunned = true;
 		
 						// get stunned for 5 seconds
@@ -2234,7 +2236,9 @@ class PlayState extends MusicBeatState
 							boyfriend.stunned = false;
 						});
 					}
-		
+
+					// Yo percentage 1 request, Make the Miss Animations only viewable on ghost tapping if ENABLED. i left the code on how to do it below. -Blue
+
 					switch (direction)
 					{
 						case 0:
@@ -2246,6 +2250,22 @@ class PlayState extends MusicBeatState
 						case 3:
 							boyfriend.playAnim('singRIGHTmiss', true);
 					}
+
+					//litteraly one line of code percentage.
+						/*if (!FlxG.save.data.gtapping){
+							switch (direction)
+							{
+								//subscrib to spunblue on yt rn 🔫
+								case 0:
+									boyfriend.playAnim('singLEFTmiss', true);
+								case 1:
+									boyfriend.playAnim('singDOWNmiss', true);
+								case 2:
+									boyfriend.playAnim('singUPmiss', true);
+								case 3:
+									boyfriend.playAnim('singRIGHTmiss', true);
+							}
+						}*/
 				}
 			}
 
