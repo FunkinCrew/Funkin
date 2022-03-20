@@ -150,6 +150,7 @@ class Note extends FlxSprite
 			{
 				switch (prevNote.noteData)
 				{
+					//test
 					case 0:
 						prevNote.animation.play('purplehold');
 					case 1:
