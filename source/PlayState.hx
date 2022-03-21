@@ -1866,16 +1866,19 @@ class PlayState extends MusicBeatState
 			trace("Beginner Judgement");
 			if (noteDiff > Conductor.safeZoneOffset * 0.9)
 				{
+					shits++;
 					daRating = 'shit';
 					score = 50;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 				{
+					bads++;
 					daRating = 'bad';
 					score = 100;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 				{
+					goods++;
 					daRating = 'good';
 					score = 200;
 				}
