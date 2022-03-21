@@ -71,7 +71,7 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - optionDot.height / 7.5; // red dot offset (bruh i hate this options menu but idk how to make a better one)
+		optionDot.y = optionText.y - optionDot.height / 2; // red dot offset (bruh i hate this options menu but idk how to make a better one)
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
