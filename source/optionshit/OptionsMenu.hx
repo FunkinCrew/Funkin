@@ -38,22 +38,23 @@ class OptionsMenu extends MusicBeatState {
 
 		background.scrollFactor.x = 0;
 		background.scrollFactor.y = 0.18;
-		background.setGraphicSize(Std.int(background.width * 1.1));
+		background.setGraphicSize(Std.int(background.width * 1.3));
 		background.updateHitbox();
 		background.screenCenter();
 		background.antialiasing = true;
 
 		add(background);
 
-		optionText = new FlxText(0, 0, 0, 'OPTIONS LOLOLO', 32);
+		optionText = new FlxText(0, 0, 512, 'OPTIONS LOLOLO', 32);
 		optionText.font = 'PhantomMuff 1.5';
 		add(optionText);
 		optionText.alignment = FlxTextAlign.CENTER;
+		
 		optionText.text = '';
 		for (option in options) {
 			optionText.text += '${option}\n';
 		}
-		optionText.screenCenter();
+		optionText.screenCenter(X);
 
 		optionDot = new FlxSprite(0, 0);
 		optionDot.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
@@ -63,14 +64,14 @@ class OptionsMenu extends MusicBeatState {
 		optionDot.updateHitbox();
 		add(optionDot);
 
-		detailText = new FlxText(0, optionDot.y - 360, 0, "Changes your Controls", 12);
+		detailText = new FlxText(0, optionDot.y - 360, 0, "", 13);
 		detailText.font = 'PhantomMuff 1.5';
 		detailText.screenCenter(X);
 		add(detailText);
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - optionDot.height / 5; // red dot offset
+		optionDot.y = optionText.y - optionDot.height / 7; // red dot offset (bruh i hate this options menu but idk how to make a better one)
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
@@ -82,12 +83,14 @@ class OptionsMenu extends MusicBeatState {
 	}
 
 	public override function update(elapsed:Float) {
-		options = ['Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}',
+		options = ['OPTIONS', 'Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}',
 		'Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
 		'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
+		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
 		'RESET SETTINGS'];
-		optionText.screenCenter();
+
+		optionText.screenCenter(X);
 
 		optionDot.x = optionText.x - 60;
 
@@ -95,7 +98,7 @@ class OptionsMenu extends MusicBeatState {
 		camFollow.y = optionDot.y - camFollow.height / 2;
 
 		detailText.y = optionDot.y;
-		detailText.x = optionText.x * 2;
+		detailText.x = optionText.x * 2.35;
 
 		topText.y = optionDot.y;
 
@@ -133,6 +136,9 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Disable Distractions')) {
 				FlxG.save.data.noDistractions = !FlxG.save.data.noDistractions;
 			}
+			if (options[curSelected].startsWith('Custom Health Colors')) {
+				FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
+			}
 			if (options[curSelected].startsWith('RESET SETTINGS')) {
 				FlxG.save.data.dfjk = null;
 				FlxG.save.data.epilepsyMode = false;
@@ -144,12 +150,16 @@ class OptionsMenu extends MusicBeatState {
 		//Details
 		if (controls.UP || controls.DOWN)
 			{
+				if (options[curSelected].startsWith('OPTIONS')) {
+					detailText.text = '';
+				}
+
 				if (options[curSelected].startsWith('Controls')) {
-					detailText.text = 'Changes your Controls';
+					detailText.text = 'Changes your Controls.';
 				}
 
 				if (options[curSelected].startsWith('Epilepsy Mode')){
-					detailText.text = 'Prevents Epilepsy if enabled';
+					detailText.text = 'Prevents Epilepsy if enabled.';
 				}
 	
 				if (options[curSelected].startsWith('Ghost Tapping')) {
@@ -157,11 +167,15 @@ class OptionsMenu extends MusicBeatState {
 				}
 				
 				if (options[curSelected].startsWith('Disable Distractions')){
-					detailText.text = 'Disables annoying background objects';
+					detailText.text = 'Disables annoying background objects.';
+				}
+
+				if (options[curSelected].startsWith('Custom Health Colors')){
+					detailText.text = 'Disables or Enables the custom Health Bar Colors.';
 				}
 
 				if (options[curSelected].startsWith('RESET SETTINGS')){
-					detailText.text = 'Nukes your settings';
+					detailText.text = 'Nukes your settings.';
 				}
 			}
 

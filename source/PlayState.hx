@@ -760,7 +760,9 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		healthBar.createFilledBar(barColor, barColor2);
+		if (!FlxG.save.data.disablehealthColor){
+			healthBar.createFilledBar(barColor, barColor2);
+		}
 
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -2308,7 +2310,7 @@ class PlayState extends MusicBeatState
 					var rightP = FlxG.keys.justPressed.RIGHT;
 					var downP = FlxG.keys.justPressed.DOWN;
 					var leftP = FlxG.keys.justPressed.LEFT;
-			
+					
 					var upP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.J : FlxG.keys.justPressed.W;
 					var rightP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.K : FlxG.keys.justPressed.D;
 					var downP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.F : FlxG.keys.justPressed.S;

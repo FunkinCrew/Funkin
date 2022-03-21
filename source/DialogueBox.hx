@@ -23,7 +23,6 @@ class DialogueBox extends FlxSpriteGroup
 	var dialogue:Alphabet;
 	var dialogueList:Array<String> = [];
 
-	// SECOND DIALOGUE FOR THE PIXEL SHIT INSTEAD???
 	var swagDialogue:FlxTypeText;
 
 	var dropText:FlxText;
@@ -223,9 +222,10 @@ class DialogueBox extends FlxSpriteGroup
 			portraitLeft.visible = false;
 		if (PlayState.SONG.song.toLowerCase() == 'thorns')
 		{
-			portraitLeft.color = FlxColor.BLACK;
-			swagDialogue.color = FlxColor.WHITE;
-			dropText.color = FlxColor.BLACK;
+			portraitLeft.visible = false;
+			//portraitLeft.color = FlxColor.BLACK;
+			//swagDialogue.color = FlxColor.WHITE;
+			//dropText.color = FlxColor.BLACK;
 		}
 
 		if (PlayState.SONG.song.toLowerCase() != 'roses' || PlayState.SONG.song.toLowerCase() != 'thorns'){
@@ -309,12 +309,27 @@ class DialogueBox extends FlxSpriteGroup
 		//yay im not a complete idiot
 		switch (curCharacter)
 		{
+			case 'player2':
+				portraitRight.visible = false;
+				portraitLeft.visible = false;
+				if (!portraitLeft.visible)
+				{
+					//Use this for hardcoded only, Only works if sprite doesn't get changed by other character portraits. For example gf.
+					swagDialogue.color = FlxColor.BLACK;
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
 			case 'dad':
 				portraitRight.visible = false;
 				portraitLeft.visible = false;
 				if (!portraitLeft.visible)
 				{
-					swagDialogue.color = FlxColor.BLACK;
+					swagDialogue.color = FlxColor.RED;
+
+					portraitLeft.frames = Paths.getSparrowAtlas('Portraits/dadPortrait', 'shared');
+					portraitLeft.animation.addByPrefix('enter', 'Portrait Enter', 24, false);
+					portraitLeft.screenCenter(X);
+
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');
 				}
@@ -346,6 +361,7 @@ class DialogueBox extends FlxSpriteGroup
 				portraitLeft.visible = false;
 				if (!portraitLeft.visible)
 				{
+					//Pretty sure this man is a period stain sooooo color gonna be red!
 					swagDialogue.color = FlxColor.RED;
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');
