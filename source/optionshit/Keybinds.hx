@@ -257,28 +257,28 @@ class Keybinds extends MusicBeatState {
 
 		//FORBIDDEN KEYBINDS (I'm so fucking sorry about these if statements...)
 		if (FlxG.save.data.UP == "ONE" || FlxG.save.data.UP == "SEVEN" || FlxG.save.data.UP == "EIGHT" || FlxG.save.data.UP == "NINE"
-			|| FlxG.save.data.UP == "ZERO" || FlxG.save.data.UP == "ESC" || FlxG.save.data.UP == "BACKSPACE" || FlxG.save.data.UP == "SPACE" ||
+			|| FlxG.save.data.UP == "ZERO" || FlxG.save.data.UP == "ESCAPE" || FlxG.save.data.UP == "BACKSPACE" || FlxG.save.data.UP == "SPACE" ||
 			FlxG.save.data.UP == "ENTER" || FlxG.save.data.UP == "WIN"){
 				controls.unbindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.UP), FlxKey.UP]);
 				FlxG.save.data.UP = "W";
 				controls.bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.UP), FlxKey.UP]);
 			}
 		if (FlxG.save.data.DOWN == "ONE" || FlxG.save.data.DOWN == "SEVEN" || FlxG.save.data.DOWN == "EIGHT" || FlxG.save.data.DOWN == "NINE"
-			|| FlxG.save.data.DOWN == "ZERO" || FlxG.save.data.DOWN == "ESC" || FlxG.save.data.DOWN == "BACKSPACE" || FlxG.save.data.DOWN == "SPACE" ||
+			|| FlxG.save.data.DOWN == "ZERO" || FlxG.save.data.DOWN == "ESCAPE" || FlxG.save.data.DOWN == "BACKSPACE" || FlxG.save.data.DOWN == "SPACE" ||
 			FlxG.save.data.DOWN == "ENTER" || FlxG.save.data.DOWN == "WIN"){
 				controls.unbindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.DOWN), FlxKey.DOWN]);
 				FlxG.save.data.DOWN = "S";
 				controls.bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.DOWN), FlxKey.DOWN]);
 			}
 		if (FlxG.save.data.LEFT == "ONE" || FlxG.save.data.LEFT == "SEVEN" || FlxG.save.data.LEFT == "EIGHT" || FlxG.save.data.LEFT == "NINE"
-			|| FlxG.save.data.LEFT == "ZERO" || FlxG.save.data.LEFT == "ESC" || FlxG.save.data.LEFT == "BACKSPACE" || FlxG.save.data.LEFT == "SPACE" ||
+			|| FlxG.save.data.LEFT == "ZERO" || FlxG.save.data.LEFT == "ESCAPE" || FlxG.save.data.LEFT == "BACKSPACE" || FlxG.save.data.LEFT == "SPACE" ||
 			FlxG.save.data.LEFT == "ENTER" || FlxG.save.data.LEFT == "WIN"){
 				controls.unbindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.LEFT), FlxKey.LEFT]);
 				FlxG.save.data.LEFT = "A";
 				controls.bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.LEFT), FlxKey.LEFT]);
 			}
 		if (FlxG.save.data.RIGHT == "ONE" || FlxG.save.data.RIGHT == "SEVEN" || FlxG.save.data.RIGHT == "EIGHT" || FlxG.save.data.RIGHT == "NINE"
-			|| FlxG.save.data.RIGHT == "ZERO" || FlxG.save.data.RIGHT == "ESC" || FlxG.save.data.RIGHT == "BACKSPACE" || FlxG.save.data.RIGHT == "SPACE" ||
+			|| FlxG.save.data.RIGHT == "ZERO" || FlxG.save.data.RIGHT == "ESCAPE" || FlxG.save.data.RIGHT == "BACKSPACE" || FlxG.save.data.RIGHT == "SPACE" ||
 			FlxG.save.data.RIGHT == "ENTER" || FlxG.save.data.RIGHT == "WIN"){
 				controls.unbindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.RIGHT), FlxKey.RIGHT]);
 				FlxG.save.data.RIGHT = "D";
