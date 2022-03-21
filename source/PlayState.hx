@@ -2023,42 +2023,25 @@ class PlayState extends MusicBeatState
 	private function keyShit():Void
 		{
 			// HOLDING
-			var up = FlxG.keys.pressed.UP;
-			var right = FlxG.keys.pressed.RIGHT;
-			var down = FlxG.keys.pressed.DOWN;
-			var left = FlxG.keys.pressed.LEFT;
+			var up = controls.UP;
+			var right = controls.RIGHT;
+			var down = controls.DOWN;
+			var left = controls.LEFT;
 	
-			var upP = FlxG.keys.justPressed.UP;
-			var rightP = FlxG.keys.justPressed.RIGHT;
-			var downP = FlxG.keys.justPressed.DOWN;
-			var leftP = FlxG.keys.justPressed.LEFT;
+			var upP = controls.UP_P;
+			var rightP = controls.RIGHT_P;
+			var downP = controls.DOWN_P;
+			var leftP = controls.LEFT_P;
 	
-			var upR = FlxG.keys.released.UP;
-			var rightR = FlxG.keys.released.RIGHT;
-			var downR = FlxG.keys.released.DOWN;
-			var leftR = FlxG.keys.released.LEFT;
-	
-	
-			var up2 = FlxG.save.data.dfjk ? FlxG.keys.pressed.J : FlxG.keys.pressed.W;
-			var right2 = FlxG.save.data.dfjk ? FlxG.keys.pressed.K : FlxG.keys.pressed.D;
-			var down2 = FlxG.save.data.dfjk ? FlxG.keys.pressed.F : FlxG.keys.pressed.S;
-			var left2 = FlxG.save.data.dfjk ? FlxG.keys.pressed.D : FlxG.keys.pressed.A;
-	
-			var upP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.J : FlxG.keys.justPressed.W;
-			var rightP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.K : FlxG.keys.justPressed.D;
-			var downP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.F : FlxG.keys.justPressed.S;
-			var leftP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.D : FlxG.keys.justPressed.A;
-	
-			var upR2 = FlxG.save.data.dfjk ? FlxG.keys.released.J : FlxG.keys.released.W;
-			var rightR2 = FlxG.save.data.dfjk ? FlxG.keys.released.K : FlxG.keys.released.D;
-			var downR2 = FlxG.save.data.dfjk ? FlxG.keys.released.F : FlxG.keys.released.S;
-			var leftR2 = FlxG.save.data.dfjk ? FlxG.keys.released.D : FlxG.keys.released.A;
+			var upR = controls.UP_R;
+			var rightR = controls.RIGHT_R;
+			var downR = controls.DOWN_R;
+			var leftR = controls.LEFT_R;
 	
 			var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
-			var controlArray2:Array<Bool> = [leftP2, downP2, upP2, rightP2];
 	
 			// FlxG.watch.addQuick('asdfa', upP);
-			if ((upP || rightP || downP || leftP || leftP2 || downP2 || upP2 || rightP2) && !boyfriend.stunned && generatedMusic)
+			if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 			{
 				boyfriend.holdTimer = 0;
 	
@@ -2100,23 +2083,12 @@ class PlayState extends MusicBeatState
 										// if (!inIgnoreList)
 											// badNoteCheck();
 									}
-								if (controlArray2[coolNote.noteData])
-									goodNoteHit(coolNote);
-								else
-								{
-									var inIgnoreList:Bool = false;
-									// if (!inIgnoreList)
-										// badNoteCheck();
-								}
 							}
 						}
 						else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
 						{
 							if (left || up || down || right) {
 								noteCheck(controlArray[daNote.noteData], daNote);
-							}
-							if (left2 || up2 || down2 || right2) {
-								noteCheck(controlArray2[daNote.noteData], daNote);
 							}
 						}
 						else
@@ -2126,9 +2098,6 @@ class PlayState extends MusicBeatState
 								if (left || up || down || right) {
 									noteCheck(controlArray[coolNote.noteData], coolNote);
 								}
-								if (left2 || up2 || down2 || right2) {
-									noteCheck(controlArray2[coolNote.noteData], coolNote);
-								}
 							}
 						}
 					}
@@ -2136,9 +2105,6 @@ class PlayState extends MusicBeatState
 					{
 						if (left || up || down || right) {
 							noteCheck(controlArray[daNote.noteData], daNote);
-						}
-						if (left2 || up2 || down2 || right2) {
-							noteCheck(controlArray2[daNote.noteData], daNote);
 						}
 					}
 					/* 
@@ -2179,7 +2145,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 	
-			if ((up || right || down || left || up2 || right2 || down2 || left2) && !boyfriend.stunned && generatedMusic)
+			if ((up || right || down || left) && !boyfriend.stunned && generatedMusic)
 			{
 				notes.forEachAlive(function(daNote:Note)
 				{
@@ -2189,23 +2155,23 @@ class PlayState extends MusicBeatState
 						{
 							// NOTES YOU ARE HOLDING
 							case 0:
-								if ((left && !left2) || (!left && left2))
+								if ((left))
 									goodNoteHit(daNote);
 							case 1:
-								if ((down && !down2) || (!down && down2))
+								if ((down))
 									goodNoteHit(daNote);
 							case 2:
-								if ((up && !up2) || (!up && up2))
+								if ((up))
 									goodNoteHit(daNote);
 							case 3:
-								if ((right && !right2) || (!right && right2))
+								if ((right))
 									goodNoteHit(daNote);
 						}
 					}
 				});
 			}
 	
-			if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left && !up2 && !down2 && !right2 && !left2)
+			if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left)
 			{
 				if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 				{
@@ -2218,24 +2184,24 @@ class PlayState extends MusicBeatState
 				switch (spr.ID)
 				{
 					case 0:
-						if ((leftP || leftP2) && spr.animation.curAnim.name != 'confirm')
+						if ((leftP) && spr.animation.curAnim.name != 'confirm')
 							spr.animation.play('pressed');
-						if (leftR && leftR2)
+						if (leftR)
 							spr.animation.play('static');
 					case 1:
-						if ((downP || downP2) && spr.animation.curAnim.name != 'confirm')
+						if ((downP) && spr.animation.curAnim.name != 'confirm')
 							spr.animation.play('pressed');
-						if (downR && downR2)
+						if (downR)
 							spr.animation.play('static');
 					case 2:
-						if ((upP || upP2) && spr.animation.curAnim.name != 'confirm')
+						if ((upP) && spr.animation.curAnim.name != 'confirm')
 							spr.animation.play('pressed');
-						if (upR && upR2)
+						if (upR)
 							spr.animation.play('static');
 					case 3:
-						if ((rightP || rightP2) && spr.animation.curAnim.name != 'confirm')
+						if ((rightP) && spr.animation.curAnim.name != 'confirm')
 							spr.animation.play('pressed');
-						if (rightR && rightR2)
+						if (rightR)
 							spr.animation.play('static');
 				}
 	
@@ -2306,29 +2272,24 @@ class PlayState extends MusicBeatState
 				{
 					// just double pasting this shit cuz fuk u
 					// REDO THIS SYSTEM!
-					var upP = FlxG.keys.justPressed.UP;
-					var rightP = FlxG.keys.justPressed.RIGHT;
-					var downP = FlxG.keys.justPressed.DOWN;
-					var leftP = FlxG.keys.justPressed.LEFT;
-					
-					var upP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.J : FlxG.keys.justPressed.W;
-					var rightP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.K : FlxG.keys.justPressed.D;
-					var downP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.F : FlxG.keys.justPressed.S;
-					var leftP2 = FlxG.save.data.dfjk ? FlxG.keys.justPressed.D : FlxG.keys.justPressed.A;
+					var upP = controls.UP_P;
+					var rightP = controls.RIGHT_P;
+					var downP = controls.DOWN_P;
+					var leftP = controls.LEFT_P;
 			
-					if (leftP || leftP2) {
+					if (leftP ) {
 						noteMiss(0);
 						//trace("gtap L");
 					}
-					if (downP || downP2) {
+					if (downP) {
 						noteMiss(1);
 						//trace("gtap D");
 					}
-					if (upP || upP2) {
+					if (upP) {
 						noteMiss(2);
 						//trace("gtap U");
 					}
-					if (rightP || rightP2) {
+					if (rightP) {
 						noteMiss(3);
 						//trace("gtap R");
 			

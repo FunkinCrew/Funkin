@@ -83,7 +83,8 @@ class OptionsMenu extends MusicBeatState {
 	}
 
 	public override function update(elapsed:Float) {
-		options = ['OPTIONS', 'Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}',
+		//Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}
+		options = ['OPTIONS', 'Change Keybinds',
 		'Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
 		'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
@@ -124,9 +125,14 @@ class OptionsMenu extends MusicBeatState {
 		}
 
 		if (controls.ACCEPT) {
-			if (options[curSelected].startsWith('Controls')) {
+			/*if (options[curSelected].startsWith('Controls')) {
 				FlxG.save.data.dfjk = !FlxG.save.data.dfjk;
+			}*/
+
+			if (options[curSelected].startsWith('Change Keybinds')) {
+				FlxG.switchState(new Keybinds());
 			}
+
 			if (options[curSelected].startsWith('Epilepsy Mode')) {
 				FlxG.save.data.epilepsyMode = !FlxG.save.data.epilepsyMode;
 			}
@@ -140,10 +146,13 @@ class OptionsMenu extends MusicBeatState {
 				FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
 			}
 			if (options[curSelected].startsWith('RESET SETTINGS')) {
-				FlxG.save.data.dfjk = null;
 				FlxG.save.data.epilepsyMode = false;
 				FlxG.save.data.gtapping = false;
 				FlxG.save.data.noDistractions = false;
+				FlxG.save.data.UP = "W";
+				FlxG.save.data.DOWN = "S";
+				FlxG.save.data.LEFT = "A";
+				FlxG.save.data.RIGHT = "D";
 			}
 		}
 
@@ -154,8 +163,8 @@ class OptionsMenu extends MusicBeatState {
 					detailText.text = '';
 				}
 
-				if (options[curSelected].startsWith('Controls')) {
-					detailText.text = 'Changes your Controls.';
+				if (options[curSelected].startsWith('Change Keybinds')) {
+					detailText.text = 'Change your Controls.';
 				}
 
 				if (options[curSelected].startsWith('Epilepsy Mode')){
