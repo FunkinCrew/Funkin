@@ -1,5 +1,9 @@
 package funkin;
 
+import funkin.play.stage.StageData.StageDataParser;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import funkin.modding.events.ScriptEvent;
@@ -8,6 +12,10 @@ import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.Conductor.BPMChangeEvent;
 import flixel.addons.ui.FlxUIState;
 
+/**
+ * MusicBeatState actually represents the core utility FlxState of the game.
+ * It includes functionality for event handling, as well as maintaining BPM-based update events.
+ */
 class MusicBeatState extends FlxUIState
 {
 	private var curStep:Int = 0;
@@ -20,6 +28,19 @@ class MusicBeatState extends FlxUIState
 
 	public var leftWatermarkText:FlxText = null;
 	public var rightWatermarkText:FlxText = null;
+
+	public function new()
+	{
+		super();
+
+		initCallbacks();
+	}
+
+	function initCallbacks()
+	{
+		subStateOpened.add(onOpenSubstateComplete);
+		subStateClosed.add(onCloseSubstateComplete);
+	}
 
 	override function create()
 	{
@@ -34,6 +55,10 @@ class MusicBeatState extends FlxUIState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		// This can now be used in EVERY STATE YAY!
+		if (FlxG.keys.justPressed.F5)
+			debug_refreshModules();
 
 		// everyStep();
 		var oldStep:Int = curStep;
@@ -71,6 +96,23 @@ class MusicBeatState extends FlxUIState
 		ModuleHandler.callEvent(event);
 	}
 
+	function debug_refreshModules()
+	{
+		ModuleHandler.clearModuleCache();
+
+		// Forcibly reload scripts so that scripted stages can be edited.
+		polymod.hscript.PolymodScriptClass.clearScriptClasses();
+		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
+
+		// Reload the stages in cache. This might cause a lag spike but who cares this is a debug utility.
+		StageDataParser.loadStageCache();
+		CharacterDataParser.loadCharacterCache();
+		ModuleHandler.loadModuleCache();
+
+		// Create a new instance of the current state class.
+		FlxG.resetState();
+	}
+
 	private function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
@@ -102,5 +144,57 @@ class MusicBeatState extends FlxUIState
 	{
 		lastBeatHitTime = Conductor.songPosition;
 		// do literally nothing dumbass
+	}
+
+	override function switchTo(nextState:FlxState):Bool
+	{
+		var event = new StateChangeScriptEvent(ScriptEvent.STATE_CHANGE_BEGIN, nextState, true);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return false;
+		}
+
+		return super.switchTo(nextState);
+	}
+
+	public override function openSubState(targetSubstate:FlxSubState):Void
+	{
+		var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_BEGIN, targetSubstate, true);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return;
+		}
+
+		super.openSubState(targetSubstate);
+	}
+
+	function onOpenSubstateComplete(targetState:FlxSubState):Void
+	{
+		dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_END, targetState, true));
+	}
+
+	public override function closeSubState():Void
+	{
+		var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_CLOSE_BEGIN, this.subState, true);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return;
+		}
+
+		super.closeSubState();
+	}
+
+	function onCloseSubstateComplete(targetState:FlxSubState):Void
+	{
+		dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_CLOSE_END, targetState, true));
 	}
 }

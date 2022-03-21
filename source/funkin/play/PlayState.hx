@@ -1,6 +1,6 @@
 package funkin.play;
 
-import funkin.play.character.CharacterBase;
+import funkin.play.character.BaseCharacter;
 import flixel.addons.effects.FlxTrail;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
@@ -87,6 +87,12 @@ class PlayState extends MusicBeatState implements IHook
 	public static var isInCountdown:Bool = false;
 
 	/**
+	 * Gets set to true when the PlayState needs to reset (player opted to restart or died).
+	 * Gets disabled once resetting happens.
+	 */
+	public static var needsReset:Bool = false;
+
+	/**
 	 * The current "Blueball Counter" to display in the pause menu.
 	 * Resets when you beat a song or go back to the main menu.
 	 */
@@ -124,6 +130,11 @@ class PlayState extends MusicBeatState implements IHook
 	 * The default maximum health is 2.0, and the default starting health is 1.0.
 	 */
 	public var health:Float = 1;
+
+	/**
+	 * The player's current score.
+	 */
+	public var songScore:Int = 0;
 
 	/**
 	 * An empty FlxObject contained in the scene.
@@ -225,7 +236,6 @@ class PlayState extends MusicBeatState implements IHook
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
-	public static var needsReset:Bool = false;
 	public static var seenCutscene:Bool = false;
 	public static var campaignScore:Int = 0;
 
@@ -242,7 +252,6 @@ class PlayState extends MusicBeatState implements IHook
 
 	var dialogue:Array<String>;
 	var talking:Bool = true;
-	var songScore:Int = 0;
 	var doof:DialogueBox;
 	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	var comboPopUps:PopUpStuff;
@@ -377,6 +386,8 @@ class PlayState extends MusicBeatState implements IHook
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreText.cameras = [camHUD];
+		leftWatermarkText.cameras = [camHUD];
+		rightWatermarkText.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -494,26 +505,48 @@ class PlayState extends MusicBeatState implements IHook
 		if (currentSong.song.toLowerCase() == 'stress')
 			gfVersion = 'pico-speaker';
 
-		var girlfriend:Character = new Character(350, -70, gfVersion);
-		girlfriend.scrollFactor.set(0.95, 0.95);
-		if (gfVersion == 'pico-speaker')
+		if (currentSong.song.toLowerCase() == 'tutorial')
+			gfVersion = '';
+
+		//
+		// GIRLFRIEND
+		//
+		var girlfriend:BaseCharacter = CharacterDataParser.fetchCharacter(gfVersion);
+
+		if (girlfriend != null)
 		{
-			girlfriend.x -= 50;
-			girlfriend.y -= 200;
+			girlfriend.characterType = CharacterType.GF;
+			girlfriend.scrollFactor.set(0.95, 0.95);
+			if (gfVersion == 'pico-speaker')
+			{
+				girlfriend.x -= 50;
+				girlfriend.y -= 200;
+			}
+		}
+		else if (gfVersion != '')
+		{
+			trace('WARNING: Could not load girlfriend character with ID ${gfVersion}, skipping...');
 		}
 
 		//
 		// DAD
 		//
-		var dad = new Character(100, 100, currentSong.player2);
+		var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentSong.player2);
 
-		cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		if (dad != null)
+		{
+			dad.characterType = CharacterType.DAD;
+			cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		}
 
 		switch (currentSong.player2)
 		{
 			case 'gf':
-				dad.setPosition(girlfriend.x, girlfriend.y);
-				girlfriend.visible = false;
+				var gfPoint:FlxPoint = currentStage.getGirlfriendPosition();
+				dad.setPosition(gfPoint.x, gfPoint.y);
+
+				// girlfriend.visible = false;
+
 				if (isStoryMode)
 				{
 					cameraFollowPoint.x += 600;
@@ -553,12 +586,11 @@ class PlayState extends MusicBeatState implements IHook
 		//
 		// BOYFRIEND
 		//
-		var boyfriend:CharacterBase;
-		switch (currentSong.player1)
+		var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentSong.player1);
+
+		if (boyfriend != null)
 		{
-			default:
-				boyfriend = CharacterDataParser.fetchCharacter(currentSong.player1);
-				boyfriend.characterType = CharacterType.BF;
+			boyfriend.characterType = CharacterType.BF;
 		}
 
 		// REPOSITIONING PER STAGE
@@ -589,8 +621,8 @@ class PlayState extends MusicBeatState implements IHook
 			// We're using Eric's stage handler.
 			// Characters get added to the stage, not the main scene.
 			currentStage.addCharacter(boyfriend, BF);
-			currentStage.addCharacterOld(girlfriend, GF);
-			currentStage.addCharacterOld(dad, DAD);
+			currentStage.addCharacter(girlfriend, GF);
+			currentStage.addCharacter(dad, DAD);
 
 			// Redo z-indexes.
 			currentStage.refresh();
@@ -612,7 +644,7 @@ class PlayState extends MusicBeatState implements IHook
 	 * 
 	 * Call this by pressing F5 on a debug build.
 	 */
-	function debug_refreshStages()
+	override function debug_refreshModules()
 	{
 		// Remove the current stage. If the stage gets deleted while it's still in use,
 		// it'll probably crash the game or something.
@@ -624,19 +656,7 @@ class PlayState extends MusicBeatState implements IHook
 			currentStage = null;
 		}
 
-		ModuleHandler.clearModuleCache();
-
-		// Forcibly reload scripts so that scripted stages can be edited.
-		polymod.hscript.PolymodScriptClass.clearScriptClasses();
-		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
-
-		// Reload the stages in cache. This might cause a lag spike but who cares this is a debug utility.
-		StageDataParser.loadStageCache();
-		CharacterDataParser.loadCharacterCache();
-		ModuleHandler.loadModuleCache();
-
-		// Reload the level. This should use new data from the assets folder.
-		LoadingState.loadAndSwitchState(new PlayState());
+		super.debug_refreshModules();
 	}
 
 	/**
@@ -957,6 +977,8 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (needsReset)
 		{
+			dispatchEvent(new ScriptEvent(ScriptEvent.SONG_RETRY));
+
 			resetCamera();
 
 			persistentUpdate = true;
@@ -967,11 +989,10 @@ class PlayState extends MusicBeatState implements IHook
 			FlxG.sound.music.pause();
 			vocals.pause();
 
-			var event:ScriptEvent = new ScriptEvent(ScriptEvent.SONG_RESET, false);
-
 			FlxG.sound.music.time = 0;
 			regenNoteData(); // loads the note data from start
 			health = 1;
+			songScore = 0;
 			Countdown.performCountdown(currentStageId.startsWith('school'));
 
 			needsReset = false;
@@ -1058,9 +1079,6 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
-
-		if (FlxG.keys.justPressed.F5)
-			debug_refreshStages();
 
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
@@ -1158,6 +1176,8 @@ class PlayState extends MusicBeatState implements IHook
 
 				deathCounter += 1;
 
+				dispatchEvent(new ScriptEvent(ScriptEvent.GAME_OVER));
+
 				openSubState(new GameOverSubstate());
 
 				#if discord_rpc
@@ -1226,35 +1246,28 @@ class PlayState extends MusicBeatState implements IHook
 					}
 				}
 
-				if (!daNote.mustPress && daNote.wasGoodHit)
+				if (!daNote.mustPress && daNote.wasGoodHit && !daNote.tooLate)
 				{
 					if (currentSong.song != 'Tutorial')
 						camZooming = true;
 
-					var altAnim:String = "";
+					var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, daNote, true);
+					dispatchEvent(event);
 
-					if (SongLoad.getSong()[Math.floor(curStep / 16)] != null)
+					// Calling event.cancelEvent() in a module should force the CPU to miss the note.
+					// This is useful for cool shit, including but not limited to:
+					// - Making the AI ignore notes which are hazardous.
+					// - Making the AI miss notes on purpose for aesthetic reasons.
+					if (event.eventCanceled)
 					{
-						if (SongLoad.getSong()[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
+						daNote.tooLate = true;
 					}
-
-					if (daNote.data.altNote)
-						altAnim = '-alt';
-
-					if (!daNote.isSustainNote)
+					else
 					{
-						currentStage.getDad().playAnim('sing' + daNote.dirNameUpper + altAnim, true);
+						// Volume of DAD.
+						if (currentSong.needsVoices)
+							vocals.volume = 1;
 					}
-
-					currentStage.getDad().holdTimer = 0;
-
-					if (currentSong.needsVoices)
-						vocals.volume = 1;
-
-					daNote.kill();
-					activeNotes.remove(daNote, true);
-					daNote.destroy();
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue
@@ -1279,24 +1292,19 @@ class PlayState extends MusicBeatState implements IHook
 						daNote.destroy();
 					}
 				}
-				else if (daNote.tooLate || daNote.wasGoodHit)
+				if (daNote.wasGoodHit)
 				{
-					// TODO: Why the hell is the noteMiss logic in two different places?
-					if (daNote.tooLate)
-					{
-						var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, daNote, true);
-						dispatchEvent(event);
-						health -= 0.0775;
-						vocals.volume = 0;
-						killCombo();
-					}
-
 					daNote.active = false;
 					daNote.visible = false;
 
 					daNote.kill();
 					activeNotes.remove(daNote, true);
 					daNote.destroy();
+				}
+
+				if (daNote.tooLate)
+				{
+					noteMiss(daNote);
 				}
 			});
 		}
@@ -1329,8 +1337,10 @@ class PlayState extends MusicBeatState implements IHook
 
 	function killCombo():Void
 	{
-		if (combo > 5 && currentStage.getGirlfriend().animOffsets.exists('sad'))
-			currentStage.getGirlfriend().playAnim('sad');
+		// Girlfriend gets sad if you combo break after hitting 5 notes.
+		if (currentStage.getGirlfriend() != null)
+			if (combo > 5 && currentStage.getGirlfriend().hasAnimation('sad'))
+				currentStage.getGirlfriend().playAnimation('sad');
 
 		if (combo != 0)
 		{
@@ -1494,15 +1504,6 @@ class PlayState extends MusicBeatState implements IHook
 
 		health += healthMulti;
 
-		// TODO: Redo note hit logic to make sure this always gets called
-		var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, daNote, true);
-		dispatchEvent(event);
-
-		if (event.eventCanceled)
-		{
-			// TODO: Do a thing!
-		}
-
 		if (isSick)
 		{
 			var noteSplash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
@@ -1531,7 +1532,7 @@ class PlayState extends MusicBeatState implements IHook
 			cameraFollowPoint.setPosition(currentStage.getDad().getMidpoint().x + 150, currentStage.getDad().getMidpoint().y - 100);
 			// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
-			switch (currentStage.getDad().curCharacter)
+			switch (currentStage.getDad().characterId)
 			{
 				case 'mom':
 					cameraFollowPoint.y = currentStage.getDad().getMidpoint().y;
@@ -1540,7 +1541,7 @@ class PlayState extends MusicBeatState implements IHook
 					cameraFollowPoint.x = currentStage.getDad().getMidpoint().x - 100;
 			}
 
-			if (currentStage.getDad().curCharacter == 'mom')
+			if (currentStage.getDad().characterId == 'mom')
 				vocals.volume = 1;
 
 			if (currentSong.song.toLowerCase() == 'tutorial')
@@ -1573,9 +1574,11 @@ class PlayState extends MusicBeatState implements IHook
 		trace(instance.currentStageId);
 	};
 
-	@:hookable
 	public function keyShit(test:Bool):Void
 	{
+		if (PlayState.instance == null)
+			return;
+
 		// control arrays, order L D R U
 		var holdArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
 		var pressArray:Array<Bool> = [
@@ -1659,7 +1662,7 @@ class PlayState extends MusicBeatState implements IHook
 				for (shit in 0...pressArray.length)
 				{ // if a direction is hit that shouldn't be
 					if (pressArray[shit] && !directionList.contains(shit))
-						PlayState.instance.noteMiss(shit);
+						PlayState.instance.ghostNoteMiss(shit);
 				}
 				for (coolNote in possibleNotes)
 				{
@@ -1669,23 +1672,15 @@ class PlayState extends MusicBeatState implements IHook
 			}
 			else
 			{
+				// HNGGG I really want to add an option for ghost tapping
 				for (shit in 0...pressArray.length)
 					if (pressArray[shit])
-						PlayState.instance.noteMiss(shit);
+						PlayState.instance.ghostNoteMiss(shit, false);
 			}
 		}
 
 		if (PlayState.instance.currentStage == null)
 			return;
-		if (PlayState.instance.currentStage.getBoyfriend().holdTimer > Conductor.stepCrochet * 4 * 0.001 && !holdArray.contains(true))
-		{
-			if (PlayState.instance.currentStage.getBoyfriend().animation != null
-				&& PlayState.instance.currentStage.getBoyfriend().animation.curAnim.name.startsWith('sing')
-				&& !PlayState.instance.currentStage.getBoyfriend().animation.curAnim.name.endsWith('miss'))
-			{
-				PlayState.instance.currentStage.getBoyfriend().playAnimation('idle');
-			}
-		}
 
 		for (keyId => isPressed in pressArray)
 		{
@@ -1702,32 +1697,77 @@ class PlayState extends MusicBeatState implements IHook
 		}
 	}
 
-	function noteMiss(direction:NoteDir = 1):Void
+	/**
+	 * Called when a player presses a key with no note present.
+	 * Scripts can modify the amount of health/score lost, whether player animations or sounds are used,
+	 * or even cancel the event entirely.
+	 * 
+	 * @param direction 
+	 * @param hasPossibleNotes 
+	 */
+	function ghostNoteMiss(direction:NoteType = 1, hasPossibleNotes:Bool = true):Void
 	{
-		// whole function used to be encased in if (!boyfriend.stunned)
-		health -= 0.07;
-		killCombo();
+		var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
+			hasPossibleNotes, // Whether there was a note you could have hit.
+			- 0.035 * 2, // How much health to add (negative).
+			- 10 // Amount of score to add (negative).
+		);
+		dispatchEvent(event);
+
+		// Calling event.cancelEvent() skips animations and penalties. Neat!
+		if (event.eventCanceled)
+			return;
+
+		health += event.healthChange;
 
 		if (!isPracticeMode)
+			songScore += event.scoreChange;
+
+		if (event.playSound)
+		{
+			vocals.volume = 0;
+			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+		}
+	}
+
+	function noteMiss(note:Note):Void
+	{
+		var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, note, true);
+		dispatchEvent(event);
+		// Calling event.cancelEvent() skips all the other logic! Neat!
+		if (event.eventCanceled)
+			return;
+
+		health -= 0.0775;
+		if (!isPracticeMode)
 			songScore -= 10;
-
 		vocals.volume = 0;
-		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+		killCombo();
 
-		currentStage.getBoyfriend().playAnimation('sing' + direction.nameUpper + 'miss', true);
+		note.active = false;
+		note.visible = false;
+
+		note.kill();
+		activeNotes.remove(note, true);
+		note.destroy();
 	}
 
 	function goodNoteHit(note:Note):Void
 	{
 		if (!note.wasGoodHit)
 		{
+			var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, true);
+			dispatchEvent(event);
+
+			// Calling event.cancelEvent() skips all the other logic! Neat!
+			if (event.eventCanceled)
+				return;
+
 			if (!note.isSustainNote)
 			{
 				combo += 1;
 				popUpScore(note.data.strumTime, note);
 			}
-
-			currentStage.getBoyfriend().playAnimation('sing' + note.dirNameUpper, true);
 
 			playerStrumline.getArrow(note.data.noteData).playAnimation('confirm', true);
 
@@ -1813,22 +1853,6 @@ class PlayState extends MusicBeatState implements IHook
 		if (currentStage == null)
 			return;
 
-		if (curBeat % gfSpeed == 0)
-			currentStage.getGirlfriend().dance();
-
-		if (curBeat % 2 == 0)
-		{
-			if (currentStage.getBoyfriend().animation != null && !currentStage.getBoyfriend().animation.curAnim.name.startsWith("sing"))
-				currentStage.getBoyfriend().playAnimation('idle');
-			if (currentStage.getDad().animation != null && !currentStage.getDad().animation.curAnim.name.startsWith("sing"))
-				currentStage.getDad().dance();
-		}
-		else if (currentStage.getDad().curCharacter == 'spooky')
-		{
-			if (!currentStage.getDad().animation.curAnim.name.startsWith("sing"))
-				currentStage.getDad().dance();
-		}
-
 		if (curBeat % 8 == 7 && currentSong.song == 'Bopeebo')
 		{
 			currentStage.getBoyfriend().playAnimation('hey', true);
@@ -1836,12 +1860,12 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (curBeat % 16 == 15
 			&& currentSong.song == 'Tutorial'
-			&& currentStage.getDad().curCharacter == 'gf'
+			&& currentStage.getDad().characterId == 'gf'
 			&& curBeat > 16
 			&& curBeat < 48)
 		{
 			currentStage.getBoyfriend().playAnimation('hey', true);
-			currentStage.getDad().playAnim('cheer', true);
+			currentStage.getDad().playAnimation('cheer', true);
 		}
 	}
 
@@ -1976,12 +2000,20 @@ class PlayState extends MusicBeatState implements IHook
 
 	override function dispatchEvent(event:ScriptEvent):Void
 	{
+		// ORDER: Module, Stage, Character, Song, Note
+		// Modules should get the first chance to cancel the event.
+
+		// super.dispatchEvent(event) dispatches event to module scripts.
+		super.dispatchEvent(event);
+
+		// Dispatch event to stage script.
 		ScriptEventDispatcher.callEvent(currentStage, event);
 
-		// TODO: Dispatch event to song script
-		// TODO: Dispatch events to character scripts
+		// Dispatch event to character script(s).
+		if (currentStage != null)
+			currentStage.dispatchToCharacters(event);
 
-		super.dispatchEvent(event);
+		// TODO: Dispatch event to song script
 	}
 
 	/**
@@ -2045,11 +2077,17 @@ class PlayState extends MusicBeatState implements IHook
 
 	/**
 	 * This function is called whenever Flixel switches switching to a new FlxState.
+	 * @return Whether to actually switch to the new state.
 	 */
 	override function switchTo(nextState:FlxState):Bool
 	{
-		performCleanup();
+		var result = super.switchTo(nextState);
 
-		return super.switchTo(nextState);
+		if (result)
+		{
+			performCleanup();
+		}
+
+		return result;
 	}
 }

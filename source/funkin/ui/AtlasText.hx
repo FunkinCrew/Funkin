@@ -15,7 +15,8 @@ abstract BoldText(AtlasText) from AtlasText to AtlasText
 }
 
 /**
- * Alphabet.hx has a ton of bugs and does a bunch of stuff I don't need, fuck that class
+ * AtlasText is an improved version of Alphabet and FlxBitmapText.
+ * It supports animations on the letters, and is less buggy than Alphabet.
  */
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {

@@ -46,8 +46,6 @@ class Main extends Sprite
 		// 4. Replace the call to PolymodHandler.loadAllMods() with a call to PolymodHandler.loadModsById(ids:Array<String>).
 		funkin.modding.PolymodHandler.loadAllMods();
 
-		funkin.i18n.FireTongueHandler.init();
-
 		if (stage != null)
 		{
 			init();

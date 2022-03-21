@@ -1,8 +1,13 @@
 package funkin;
 
+import funkin.modding.module.ModuleHandler;
+import funkin.modding.events.ScriptEvent;
 import funkin.Conductor.BPMChangeEvent;
 import flixel.FlxSubState;
 
+/**
+ * MusicBeatSubstate reincorporates the functionality of MusicBeatState into an FlxSubState.
+ */
 class MusicBeatSubstate extends FlxSubState
 {
 	public function new()
@@ -51,6 +56,11 @@ class MusicBeatSubstate extends FlxSubState
 	{
 		if (curStep % 4 == 0)
 			beatHit();
+	}
+
+	function dispatchEvent(event:ScriptEvent)
+	{
+		ModuleHandler.callEvent(event);
 	}
 
 	public function beatHit():Void

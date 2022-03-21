@@ -37,6 +37,9 @@ class Countdown
 		PlayState.isInCountdown = true;
 		Conductor.songPosition = Conductor.crochet * -5;
 		countdownStep = BEFORE;
+		// Handle onBeatHit events manually
+		@:privateAccess
+		PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
 		var cancelled:Bool = propagateCountdownEvent(countdownStep);
 		if (cancelled)
@@ -49,9 +52,9 @@ class Countdown
 		{
 			countdownStep = decrement(countdownStep);
 
-			// Play the dance animations manually.
+			// Handle onBeatHit events manually
 			@:privateAccess
-			PlayState.instance.danceOnBeat();
+			PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
 			// Countdown graphic.
 			showCountdownGraphic(countdownStep, isPixelStyle);

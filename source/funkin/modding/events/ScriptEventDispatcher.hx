@@ -35,18 +35,6 @@ class ScriptEventDispatcher
 				return;
 		}
 
-		if (Std.isOfType(target, IStateChangingScriptedClass))
-		{
-			var t = cast(target, IStateChangingScriptedClass);
-			var t = cast(target, IPlayStateScriptedClass);
-			switch (event.type)
-			{
-				case ScriptEvent.NOTE_HIT:
-					t.onNoteHit(cast event);
-					return;
-			}
-		}
-
 		if (Std.isOfType(target, IPlayStateScriptedClass))
 		{
 			var t = cast(target, IPlayStateScriptedClass);
@@ -57,6 +45,9 @@ class ScriptEventDispatcher
 					return;
 				case ScriptEvent.NOTE_MISS:
 					t.onNoteMiss(cast event);
+					return;
+				case ScriptEvent.NOTE_GHOST_MISS:
+					t.onNoteGhostMiss(cast event);
 					return;
 				case ScriptEvent.SONG_BEAT_HIT:
 					t.onBeatHit(cast event);
@@ -70,8 +61,11 @@ class ScriptEventDispatcher
 				case ScriptEvent.SONG_END:
 					t.onSongEnd(event);
 					return;
-				case ScriptEvent.SONG_RESET:
-					t.onSongReset(event);
+				case ScriptEvent.SONG_RETRY:
+					t.onSongRetry(event);
+					return;
+				case ScriptEvent.GAME_OVER:
+					t.onGameOver(event);
 					return;
 				case ScriptEvent.PAUSE:
 					t.onPause(event);
@@ -94,7 +88,38 @@ class ScriptEventDispatcher
 			}
 		}
 
-		throw "No helper for event type: " + event.type;
+		if (Std.isOfType(target, IStateChangingScriptedClass))
+		{
+			var t = cast(target, IStateChangingScriptedClass);
+			switch (event.type)
+			{
+				case ScriptEvent.STATE_CHANGE_BEGIN:
+					t.onStateChangeBegin(cast event);
+					return;
+				case ScriptEvent.STATE_CHANGE_END:
+					t.onStateChangeEnd(cast event);
+					return;
+				case ScriptEvent.SUBSTATE_OPEN_BEGIN:
+					t.onSubstateOpenBegin(cast event);
+					return;
+				case ScriptEvent.SUBSTATE_OPEN_END:
+					t.onSubstateOpenEnd(cast event);
+					return;
+				case ScriptEvent.SUBSTATE_CLOSE_BEGIN:
+					t.onSubstateCloseBegin(cast event);
+					return;
+				case ScriptEvent.SUBSTATE_CLOSE_END:
+					t.onSubstateCloseEnd(cast event);
+					return;
+			}
+		}
+		else
+		{
+			// Prevent "NO HELPER error."
+			return;
+		}
+
+		throw "No function called for event type: " + event.type;
 	}
 
 	public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>, event:ScriptEvent):Void

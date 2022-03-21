@@ -122,7 +122,8 @@
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch' />
 	<haxelib name="polymod" />
-	<haxelib name="firetongue" />
+
+	<haxelib name="thx.semver" />
 
 	<!-- <haxelib name="colyseus"/> -->
 	<!-- <haxelib name="colyseus-websocket" /> -->

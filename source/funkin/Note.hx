@@ -227,6 +227,7 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 
+		// mustPress indicates the player is the one pressing the key
 		if (mustPress)
 		{
 			// miss on the NEXT frame so lag doesnt make u miss notes
@@ -244,7 +245,8 @@ class Note extends FlxSprite
 				}
 
 				if (data.strumTime > Conductor.songPosition - HIT_WINDOW)
-				{ // * 0.5 if sustain note, so u have to keep holding it closer to all the way thru!
+				{
+					// * 0.5 if sustain note, so u have to keep holding it closer to all the way thru!
 					if (data.strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.5 : 1)))
 						canBeHit = true;
 				}
@@ -455,7 +457,12 @@ enum abstract NoteColor(NoteType) from Int to Int from NoteType
 
 enum abstract NoteKind(String) from String to String
 {
+	/**
+	 * The default note type.
+	 */
 	var NORMAL = "normal";
+
+	// Testing shiz
 	var PYRO_LIGHT = "pyro_light";
 	var PYRO_KICK = "pyro_kick";
 	var PYRO_TOSS = "pyro_toss";

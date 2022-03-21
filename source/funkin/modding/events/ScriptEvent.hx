@@ -1,5 +1,8 @@
 package funkin.modding.events;
 
+import flixel.FlxState;
+import flixel.FlxSubState;
+import funkin.Note.NoteDir;
 import funkin.play.Countdown.CountdownStep;
 import openfl.events.EventType;
 import openfl.events.KeyboardEvent;
@@ -84,6 +87,15 @@ class ScriptEvent
 	public static inline final NOTE_MISS:ScriptEventType = "NOTE_MISS";
 
 	/**
+	 * Called when a character presses a note when there was none there, causing them to lose health.
+	 * Important information such as direction pressed, etc. are all provided.
+	 *
+	 * This event IS cancelable! Canceling this event prevents the note from being considered missed,
+	 *   avoiding lost health/score and preventing the miss animation.
+	 */
+	public static inline final NOTE_GHOST_MISS:ScriptEventType = "NOTE_GHOST_MISS";
+
+	/**
 	 * Called when the song starts. This occurs as the countdown ends and the instrumental and vocals begin.
 	 * 
 	 * This event is not cancelable.
@@ -96,13 +108,6 @@ class ScriptEvent
 	 * This event is not cancelable.
 	 */
 	public static inline final SONG_END:ScriptEventType = "SONG_END";
-
-	/**
-	 * Called when the song is reset. This can happen from the pause menu or the game over screen.
-	 * 
-	 * This event is not cancelable.
-	 */
-	public static inline final SONG_RESET:ScriptEventType = "SONG_RESET";
 
 	/**
 	 * Called when the countdown begins. This occurs before the song starts.
@@ -130,18 +135,19 @@ class ScriptEvent
 	public static inline final COUNTDOWN_END:ScriptEventType = "COUNTDOWN_END";
 
 	/**
-	 * Called when the game over screen triggers and the death animation plays.
+	 * Called before the game over screen triggers and the death animation plays.
 	 * 
 	 * This event is not cancelable.
 	 */
 	public static inline final GAME_OVER:ScriptEventType = "GAME_OVER";
 
 	/**
-	 * Called when the player presses a key to restart the game after the death animation.
+	 * Called when the player presses a key to restart the game.
+	 * This can happen from the pause menu or the game over screen.
 	 * 
 	 * This event IS cancelable! Canceling this event will prevent the game from restarting.
 	 */
-	public static inline final GAME_RETRY:ScriptEventType = "GAME_RETRY";
+	public static inline final SONG_RETRY:ScriptEventType = "SONG_RETRY";
 
 	/**
 	 * Called when the player pushes down any key on the keyboard.
@@ -166,11 +172,46 @@ class ScriptEvent
 	public static inline final SONG_LOADED:ScriptEventType = "SONG_LOADED";
 
 	/**
-	 * Called when the game is entering the current FlxState.
+	 * Called when the game is about to switch the current FlxState.
 	 * 
 	 * This event is not cancelable.
 	 */
-	public static inline final STATE_ENTER:ScriptEventType = "STATE_ENTER";
+	public static inline final STATE_CHANGE_BEGIN:ScriptEventType = "STATE_CHANGE_BEGIN";
+
+	/**
+	 * Called when the game has finished switching the current FlxState.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final STATE_CHANGE_END:ScriptEventType = "STATE_CHANGE_END";
+
+	/**
+	 * Called when the game is about to open a new FlxSubState.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final SUBSTATE_OPEN_BEGIN:ScriptEventType = "SUBSTATE_OPEN_BEGIN";
+
+	/**
+	 * Called when the game has finished opening a new FlxSubState.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final SUBSTATE_OPEN_END:ScriptEventType = "SUBSTATE_OPEN_END";
+
+	/**
+	 * Called when the game is about to close the current FlxSubState.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final SUBSTATE_CLOSE_BEGIN:ScriptEventType = "SUBSTATE_CLOSE_BEGIN";
+
+	/**
+	 * Called when the game has finished closing the current FlxSubState.
+	 * 
+	 * This event is not cancelable.
+	 */
+	public static inline final SUBSTATE_CLOSE_END:ScriptEventType = "SUBSTATE_CLOSE_END";
 
 	/**
 	 * Called when the game is exiting the current FlxState.
@@ -262,6 +303,59 @@ class NoteScriptEvent extends ScriptEvent
 	public override function toString():String
 	{
 		return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ')';
+	}
+}
+
+/**
+ * An event that is fired when you press a key with no note present.
+ */
+class GhostMissNoteScriptEvent extends ScriptEvent
+{
+	/**
+	 * The direction that was mistakenly pressed.
+	 */
+	public var dir(default, null):NoteDir;
+
+	/**
+	 * Whether there was a note within judgement range when this ghost note was pressed.
+	 */
+	public var hasPossibleNotes(default, null):Bool;
+
+	/**
+	 * How much health should be lost when this ghost note is pressed.
+	 * Remember that max health is 2.00.
+	 */
+	public var healthChange(default, default):Float;
+
+	/**
+	 * How much score should be lost when this ghost note is pressed.
+	 */
+	public var scoreChange(default, default):Int;
+
+	/**
+	 * Whether to play the record scratch sound.
+	 */
+	public var playSound(default, default):Bool;
+
+	/**
+	 * Whether to play the miss animation on the player.
+	 */
+	public var playAnim(default, default):Bool;
+
+	public function new(dir:NoteDir, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int):Void
+	{
+		super(ScriptEvent.NOTE_GHOST_MISS, true);
+		this.dir = dir;
+		this.hasPossibleNotes = hasPossibleNotes;
+		this.healthChange = healthChange;
+		this.scoreChange = scoreChange;
+		this.playSound = true;
+		this.playAnim = true;
+	}
+
+	public override function toString():String
+	{
+		return 'GhostMissNoteScriptEvent(dir=' + dir + ', hasPossibleNotes=' + hasPossibleNotes + ')';
 	}
 }
 
@@ -403,13 +497,41 @@ class SongLoadScriptEvent extends ScriptEvent
  */
 class StateChangeScriptEvent extends ScriptEvent
 {
-	public function new(type:ScriptEventType):Void
+	/**
+	 * The state the game is moving into.
+	 */
+	public var targetState(default, null):FlxState;
+
+	public function new(type:ScriptEventType, targetState:FlxState, cancelable:Bool = false):Void
 	{
-		super(type, false);
+		super(type, cancelable);
+		this.targetState = targetState;
 	}
 
 	public override function toString():String
 	{
-		return 'StateChangeScriptEvent(type=' + type + ')';
+		return 'StateChangeScriptEvent(type=' + type + ', targetState=' + targetState + ')';
+	}
+}
+
+/**
+ * An event that is fired when moving out of or into an FlxSubState.
+ */
+class SubStateScriptEvent extends ScriptEvent
+{
+	/**
+	 * The state the game is moving into.
+	 */
+	public var targetState(default, null):FlxSubState;
+
+	public function new(type:ScriptEventType, targetState:FlxSubState, cancelable:Bool = false):Void
+	{
+		super(type, cancelable);
+		this.targetState = targetState;
+	}
+
+	public override function toString():String
+	{
+		return 'SubStateScriptEvent(type=' + type + ', targetState=' + targetState + ')';
 	}
 }

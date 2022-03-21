@@ -1,5 +1,6 @@
 package funkin.play.stage;
 
+import funkin.util.VersionUtil;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.util.assets.DataAssets;
 import haxe.Json;
@@ -17,7 +18,12 @@ class StageDataParser
 	 * Handle breaking changes by incrementing this value
 	 * and adding migration to the `migrateStageData()` function.
 	 */
-	public static final STAGE_DATA_VERSION:String = "1.0";
+	public static final STAGE_DATA_VERSION:String = "1.0.0";
+
+	/**
+	 * The current version rule check for the stage data format.
+	 */
+	public static final STAGE_DATA_VERSION_RULE:String = "1.0.x";
 
 	static final stageCache:Map<String, Stage> = new Map<String, Stage>();
 
@@ -163,16 +169,16 @@ class StageDataParser
 		}
 	}
 
-	static final DEFAULT_NAME:String = "Untitled Stage";
-	static final DEFAULT_CAMERAZOOM:Float = 1.0;
-	static final DEFAULT_ZINDEX:Int = 0;
-	static final DEFAULT_DANCEEVERY:Int = 0;
-	static final DEFAULT_SCALE:Float = 1.0;
-	static final DEFAULT_ISPIXEL:Bool = false;
-	static final DEFAULT_POSITION:Array<Float> = [0, 0];
-	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
-	static final DEFAULT_FRAMEINDICES:Array<Int> = [];
 	static final DEFAULT_ANIMTYPE:String = "sparrow";
+	static final DEFAULT_CAMERAZOOM:Float = 1.0;
+	static final DEFAULT_DANCEEVERY:Int = 0;
+	static final DEFAULT_ISPIXEL:Bool = false;
+	static final DEFAULT_NAME:String = "Untitled Stage";
+	static final DEFAULT_OFFSETS:Array<Int> = [0, 0];
+	static final DEFAULT_POSITION:Array<Float> = [0, 0];
+	static final DEFAULT_SCALE:Float = 1.0;
+	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
+	static final DEFAULT_ZINDEX:Int = 0;
 
 	static final DEFAULT_CHARACTER_DATA:StageDataCharacter = {
 		zIndex: DEFAULT_ZINDEX,
@@ -200,9 +206,9 @@ class StageDataParser
 			return null;
 		}
 
-		if (input.version != STAGE_DATA_VERSION)
+		if (!VersionUtil.validateVersion(input.version, STAGE_DATA_VERSION_RULE))
 		{
-			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": bad/outdated version (got ${input.version}, expected ${STAGE_DATA_VERSION})');
+			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": bad version (got ${input.version}, expected ${STAGE_DATA_VERSION_RULE})');
 			return null;
 		}
 
@@ -302,9 +308,9 @@ class StageDataParser
 					inputAnimation.frameRate = 24;
 				}
 
-				if (inputAnimation.frameIndices == null)
+				if (inputAnimation.offsets == null)
 				{
-					inputAnimation.frameIndices = DEFAULT_FRAMEINDICES;
+					inputAnimation.offsets = DEFAULT_OFFSETS;
 				}
 
 				if (inputAnimation.looped == null)
@@ -362,8 +368,12 @@ class StageDataParser
 
 typedef StageData =
 {
-	// Uses semantic versioning.
+	/**
+	 * The sematic version number of the stage data JSON format.
+	 * Supports fancy comparisons like NPM does it's neat.
+	 */
 	var version:String;
+
 	var name:String;
 	var cameraZoom:Null<Float>;
 	var props:Array<StageDataProp>;

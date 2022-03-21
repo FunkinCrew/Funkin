@@ -1,6 +1,7 @@
 package funkin.play.stage;
 
-import funkin.play.character.CharacterBase;
+import funkin.util.assets.FlxAnimationUtil;
+import funkin.play.character.BaseCharacter;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
@@ -11,7 +12,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSort;
 import funkin.modding.IHook;
-import funkin.play.character.CharacterBase.CharacterType;
+import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.util.SortUtil;
 
@@ -30,7 +31,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public var camZoom:Float = 1.0;
 
 	var namedProps:Map<String, FlxSprite> = new Map<String, FlxSprite>();
-	var characters:Map<String, CharacterBase> = new Map<String, CharacterBase>();
+	var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
 	var charactersOld:Map<String, Character> = new Map<String, Character>();
 	var boppers:Array<Bopper> = new Array<Bopper>();
 
@@ -145,21 +146,22 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 					for (propAnim in dataProp.animations)
 					{
 						propSprite.animation.add(propAnim.name, propAnim.frameIndices);
+
+						if (Std.isOfType(propSprite, Bopper))
+						{
+							cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
+						}
 					}
 				default: // "sparrow"
-					for (propAnim in dataProp.animations)
-					{
-						if (propAnim.frameIndices.length == 0)
-						{
-							propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.looped, propAnim.flipX,
-								propAnim.flipY);
-						}
-						else
-						{
-							propSprite.animation.addByIndices(propAnim.name, propAnim.prefix, propAnim.frameIndices, "", propAnim.frameRate, propAnim.looped,
-								propAnim.flipX, propAnim.flipY);
-						}
-					}
+					FlxAnimationUtil.addSparrowAnimations(propSprite, dataProp.animations);
+			}
+
+			if (Std.isOfType(propSprite, Bopper))
+			{
+				for (propAnim in dataProp.animations)
+				{
+					cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
+				}
 			}
 
 			if (dataProp.startingAnimation != null)
@@ -236,8 +238,11 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	/**
 	 * Used by the PlayState to add a character to the stage.
 	 */
-	public function addCharacter(character:CharacterBase, charType:CharacterType)
+	public function addCharacter(character:BaseCharacter, charType:CharacterType)
 	{
+		if (character == null)
+			return;
+
 		// Apply position and z-index.
 		switch (charType)
 		{
@@ -264,59 +269,63 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		this.add(character);
 	}
 
-	/**
-	 * Used by the PlayState to add a character to the stage.
-	 */
-	public function addCharacterOld(character:Character, charType:CharacterType)
+	public inline function getGirlfriendPosition():FlxPoint
 	{
-		// Apply position and z-index.
-		switch (charType)
-		{
-			case BF:
-				this.charactersOld.set("bf", character);
-				character.zIndex = _data.characters.bf.zIndex;
-				character.x = _data.characters.bf.position[0];
-				character.y = _data.characters.bf.position[1];
-			case GF:
-				this.charactersOld.set("gf", character);
-				character.zIndex = _data.characters.gf.zIndex;
-				character.x = _data.characters.gf.position[0];
-				character.y = _data.characters.gf.position[1];
-			case DAD:
-				this.charactersOld.set("dad", character);
-				character.zIndex = _data.characters.dad.zIndex;
-				character.x = _data.characters.dad.position[0];
-				character.y = _data.characters.dad.position[1];
-			default:
-				this.charactersOld.set(character.curCharacter, character);
-		}
+		return new FlxPoint(_data.characters.gf.position[0], _data.characters.gf.position[1]);
+	}
 
-		// Add the character to the scene.
-		this.add(character);
+	public inline function getBoyfriendPosition():FlxPoint
+	{
+		return new FlxPoint(_data.characters.bf.position[0], _data.characters.bf.position[1]);
+	}
+
+	public inline function getDadPosition():FlxPoint
+	{
+		return new FlxPoint(_data.characters.dad.position[0], _data.characters.dad.position[1]);
 	}
 
 	/**
 	 * Retrieves a given character from the stage.
 	 */
-	public function getCharacter(id:String):CharacterBase
+	public function getCharacter(id:String):BaseCharacter
 	{
 		return this.characters.get(id);
 	}
 
-	public function getBoyfriend():CharacterBase
+	/**
+	 * Retrieve the Boyfriend character.
+	 * @param pop If true, the character will be removed from the stage as well.
+	 */
+	public function getBoyfriend(?pop:Bool = false):BaseCharacter
 	{
-		return getCharacter('bf');
+		if (pop)
+		{
+			var boyfriend:BaseCharacter = getCharacter("bf");
+
+			// Remove the character from the stage.
+			this.remove(boyfriend);
+			this.characters.remove("bf");
+
+			return boyfriend;
+		}
+		else
+		{
+			return getCharacter('bf');
+		}
+
 		// return this.charactersOld.get('bf');
 	}
 
-	public function getGirlfriend():Character
+	public function getGirlfriend():BaseCharacter
 	{
-		return this.charactersOld.get('gf');
+		return getCharacter('gf');
+		// return this.charactersOld.get('gf');
 	}
 
-	public function getDad():Character
+	public function getDad():BaseCharacter
 	{
-		return this.charactersOld.get('dad');
+		return getCharacter('dad');
+		// return this.charactersOld.get('dad');
 	}
 
 	/**
@@ -343,6 +352,32 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			result.push(Paths.image(dataProp.assetPath));
 		}
 		return result;
+	}
+
+	/**
+	 * Dispatch an event to all the characters in the stage.
+	 * @param event The script event to dispatch.
+	 */
+	public function dispatchToCharacters(event:ScriptEvent):Void
+	{
+		for (characterId in characters.keys())
+		{
+			dispatchToCharacter(characterId, event);
+		}
+	}
+
+	/**
+	 * Dispatch an event to a specific character.
+	 * @param characterId The ID of the character to dispatch to.
+	 * @param event The script event to dispatch.
+	 */
+	public function dispatchToCharacter(characterId:String, event:ScriptEvent):Void
+	{
+		var character:BaseCharacter = getCharacter(characterId);
+		if (character != null)
+		{
+			ScriptEventDispatcher.callEvent(character, event);
+		}
 	}
 
 	/**
@@ -419,14 +454,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onSongEnd(event:ScriptEvent) {}
 
-	/**
-	 * Resets the stage and its props.
-	 */
-	public function onSongReset(event:ScriptEvent) {}
-
 	public function onGameOver(event:ScriptEvent) {}
-
-	public function onGameRetry(event:ScriptEvent) {}
 
 	public function onCountdownStart(event:CountdownScriptEvent) {}
 
@@ -443,5 +471,9 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onNoteMiss(event:NoteScriptEvent) {}
 
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+
 	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+
+	public function onSongRetry(event:ScriptEvent) {}
 }

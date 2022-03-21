@@ -1,14 +1,20 @@
 package funkin.play.character;
 
-import openfl.Assets;
-import haxe.Json;
-import funkin.play.character.render.PackerCharacter;
-import funkin.play.character.render.SparrowCharacter;
-import funkin.util.assets.DataAssets;
-import funkin.play.character.CharacterBase;
-import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
-import funkin.play.character.ScriptedCharacter.ScriptedPackerCharacter;
 import flixel.util.typeLimit.OneOfTwo;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.MultiSparrowCharacter;
+import funkin.play.character.PackerCharacter;
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.ScriptedCharacter.ScriptedBaseCharacter;
+import funkin.play.character.ScriptedCharacter.ScriptedMultiSparrowCharacter;
+import funkin.play.character.ScriptedCharacter.ScriptedPackerCharacter;
+import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
+import funkin.util.assets.DataAssets;
+import funkin.util.VersionUtil;
+import haxe.Json;
+import openfl.utils.Assets;
 
 using StringTools;
 
@@ -19,9 +25,15 @@ class CharacterDataParser
 	 * Handle breaking changes by incrementing this value
 	 * and adding migration to the `migrateStageData()` function.
 	 */
-	public static final CHARACTER_DATA_VERSION:String = "1.0";
+	public static final CHARACTER_DATA_VERSION:String = "1.0.0";
 
-	static final characterCache:Map<String, CharacterBase> = new Map<String, CharacterBase>();
+	/**
+	 * The current version rule check for the stage data format.
+	 */
+	public static final CHARACTER_DATA_VERSION_RULE:String = "1.0.x";
+
+	static final characterCache:Map<String, CharacterData> = new Map<String, CharacterData>();
+	static final characterScriptedClass:Map<String, String> = new Map<String, String>();
 
 	static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
 
@@ -37,73 +49,23 @@ class CharacterDataParser
 		trace("[CHARDATA] Loading character cache...");
 
 		//
-		// SCRIPTED CHARACTERS
-		//
-
-		// Generic (Sparrow) characters
-		var scriptedCharClassNames:Array<String> = ScriptedCharacter.listScriptClasses();
-		trace('  Instantiating ${scriptedCharClassNames.length} scripted characters...');
-		for (charCls in scriptedCharClassNames)
-		{
-			_storeChar(ScriptedCharacter.init(charCls, DEFAULT_CHAR_ID), charCls);
-		}
-
-		// Sparrow characters
-		scriptedCharClassNames = ScriptedSparrowCharacter.listScriptClasses();
-		if (scriptedCharClassNames.length > 0)
-		{
-			trace('  Instantiating ${scriptedCharClassNames.length} scripted characters (SPARROW)...');
-			for (charCls in scriptedCharClassNames)
-			{
-				_storeChar(ScriptedSparrowCharacter.init(charCls, DEFAULT_CHAR_ID), charCls);
-			}
-		}
-
-		//		// Packer characters
-		//		scriptedCharClassNames = ScriptedPackerCharacter.listScriptClasses();
-		//		if (scriptedCharClassNames.length > 0)
-		//		{
-		//			trace('  Instantiating ${scriptedCharClassNames.length} scripted characters (PACKER)...');
-		//			for (charCls in scriptedCharClassNames)
-		//			{
-		//				_storeChar(ScriptedPackerCharacter.init(charCls, DEFAULT_CHAR_ID), charCls);
-		//			}
-		//		}
-
-		// TODO: Add more character types.
-
-		//
-		// UNSCRIPTED STAGES
+		// UNSCRIPTED CHARACTERS
 		//
 		var charIdList:Array<String> = DataAssets.listDataFilesInPath('characters/');
 		var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool
 		{
 			return !characterCache.exists(charId);
 		});
-		trace('  Instantiating ${unscriptedCharIds.length} non-scripted characters...');
+		trace('  Fetching data for ${unscriptedCharIds.length} characters...');
 		for (charId in unscriptedCharIds)
 		{
-			var char:CharacterBase = null;
 			try
 			{
 				var charData:CharacterData = parseCharacterData(charId);
 				if (charData != null)
 				{
-					switch (charData.renderType)
-					{
-						case CharacterRenderType.PACKER:
-							char = new PackerCharacter(charId);
-						case CharacterRenderType.SPARROW:
-							// default
-							char = new SparrowCharacter(charId);
-						default:
-							trace('    Failed to instantiate character: ${charId} (Bad render type ${charData.renderType})');
-					}
-				}
-				if (char != null)
-				{
-					trace('    Loaded character data: ${char.characterName}');
-					characterCache.set(charId, char);
+					trace('    Loaded character data: ${charId}');
+					characterCache.set(charId, charData);
 				}
 			}
 			catch (e)
@@ -113,39 +75,140 @@ class CharacterDataParser
 			}
 		}
 
+		//
+		// SCRIPTED CHARACTERS
+		//
+
+		// Fuck I wish scripted classes supported static functions.
+
+		var scriptedCharClassNames1:Array<String> = ScriptedSparrowCharacter.listScriptClasses();
+		if (scriptedCharClassNames1.length > 0)
+		{
+			trace('  Instantiating ${scriptedCharClassNames1.length} (Sparrow) scripted characters...');
+			for (charCls in scriptedCharClassNames1)
+			{
+				var character = ScriptedSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
+				characterScriptedClass.set(character.characterId, charCls);
+			}
+		}
+
+		var scriptedCharClassNames2:Array<String> = ScriptedPackerCharacter.listScriptClasses();
+		if (scriptedCharClassNames2.length > 0)
+		{
+			trace('  Instantiating ${scriptedCharClassNames2.length} (Packer) scripted characters...');
+			for (charCls in scriptedCharClassNames2)
+			{
+				var character = ScriptedPackerCharacter.init(charCls, DEFAULT_CHAR_ID);
+				characterScriptedClass.set(character.characterId, charCls);
+			}
+		}
+
+		var scriptedCharClassNames3:Array<String> = ScriptedMultiSparrowCharacter.listScriptClasses();
+		trace('  Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
+		for (charCls in scriptedCharClassNames3)
+		{
+			var character = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID);
+			if (character == null)
+			{
+				trace('    Failed to instantiate scripted character: ${charCls}');
+				continue;
+			}
+			characterScriptedClass.set(character.characterId, charCls);
+		}
+
+		// NOTE: Only instantiate the ones not populated above.
+		// ScriptedBaseCharacter.listScriptClasses() will pick up scripts extending the other classes.
+		var scriptedCharClassNames:Array<String> = ScriptedBaseCharacter.listScriptClasses();
+		scriptedCharClassNames.filter(function(charCls:String):Bool
+		{
+			return !scriptedCharClassNames1.contains(charCls)
+				&& !scriptedCharClassNames2.contains(charCls)
+				&& !scriptedCharClassNames3.contains(charCls);
+		});
+
+		trace('  Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
+		for (charCls in scriptedCharClassNames)
+		{
+			var character = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID);
+			if (character == null)
+			{
+				trace('    Failed to instantiate scripted character: ${charCls}');
+				continue;
+			}
+			characterScriptedClass.set(character.characterId, charCls);
+		}
+
 		trace('  Successfully loaded ${Lambda.count(characterCache)} stages.');
 	}
 
-	static function _storeChar(char:CharacterBase, charCls:String):Void
+	public static function fetchCharacter(charId:String):Null<BaseCharacter>
 	{
-		if (char != null)
+		if (charId == null || charId == '')
 		{
-			trace('    Loaded scripted character: ${char.characterName}');
-			// Disable the rendering logic for stage until it's loaded.
-			// Note that kill() =/= destroy()
-			char.kill();
+			// Gracefully handle songs that don't use this character.
+			return null;
+		}
 
-			// Then store it.
-			characterCache.set(char.characterId, char);
+		if (characterCache.exists(charId))
+		{
+			var charData:CharacterData = characterCache.get(charId);
+			var charScriptClass:String = characterScriptedClass.get(charId);
+
+			var char:BaseCharacter;
+
+			if (charScriptClass != null)
+			{
+				switch (charData.renderType)
+				{
+					case CharacterRenderType.MULTISPARROW:
+						char = ScriptedMultiSparrowCharacter.init(charScriptClass, charId);
+					case CharacterRenderType.SPARROW:
+						char = ScriptedSparrowCharacter.init(charScriptClass, charId);
+					case CharacterRenderType.PACKER:
+						char = ScriptedPackerCharacter.init(charScriptClass, charId);
+					default:
+						// We're going to assume that the script class does the rendering.
+						char = ScriptedBaseCharacter.init(charScriptClass, charId);
+				}
+			}
+			else
+			{
+				switch (charData.renderType)
+				{
+					case CharacterRenderType.MULTISPARROW:
+						char = new MultiSparrowCharacter(charId);
+					case CharacterRenderType.SPARROW:
+						char = new SparrowCharacter(charId);
+					case CharacterRenderType.PACKER:
+						char = new PackerCharacter(charId);
+					default:
+						trace('[WARN] Creating character with undefined renderType ${charData.renderType}');
+						char = new BaseCharacter(charId);
+				}
+			}
+
+			trace('[CHARDATA] Successfully instantiated character: ${charId}');
+
+			// Call onCreate only in the fetchCharacter() function, not at application initialization.
+			ScriptEventDispatcher.callEvent(char, new ScriptEvent(ScriptEvent.CREATE));
+
+			return char;
 		}
 		else
 		{
-			trace('    Failed to instantiate scripted character class: ${charCls}');
+			trace('[CHARDATA] Failed to build character, not found in cache: ${charId}');
+			return null;
 		}
 	}
 
-	public static function fetchCharacter(charId:String):Null<CharacterBase>
+	public static function fetchCharacterData(charId:String):Null<CharacterData>
 	{
 		if (characterCache.exists(charId))
 		{
-			trace('[CHARDATA] Successfully fetch stage: ${charId}');
-			var character:CharacterBase = characterCache.get(charId);
-			character.revive();
-			return character;
+			return characterCache.get(charId);
 		}
 		else
 		{
-			trace('[CHARDATA] Failed to fetch character, not found in cache: ${charId}');
 			return null;
 		}
 	}
@@ -154,11 +217,11 @@ class CharacterDataParser
 	{
 		if (characterCache != null)
 		{
-			for (char in characterCache)
-			{
-				char.destroy();
-			}
 			characterCache.clear();
+		}
+		if (characterScriptedClass != null)
+		{
+			characterScriptedClass.clear();
 		}
 	}
 
@@ -180,9 +243,9 @@ class CharacterDataParser
 	static function loadCharacterFile(charPath:String):String
 	{
 		var charFilePath:String = Paths.json('characters/${charPath}');
-		var rawJson = Assets.getText(charFilePath).trim();
+		var rawJson = StringTools.trim(Assets.getText(charFilePath));
 
-		while (!rawJson.endsWith("}"))
+		while (!StringTools.endsWith(rawJson, "}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
 		}
@@ -208,18 +271,26 @@ class CharacterDataParser
 		}
 	}
 
-	static final DEFAULT_NAME:String = "Untitled Character";
-	static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.SPARROW;
-	static final DEFAULT_STARTINGANIM:String = "idle";
-	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
-	static final DEFAULT_ISPIXEL:Bool = false;
+	/**
+	 * The default time the character should sing for, in beats.
+	 * Values that are too low will cause the character to stop singing between notes.
+	 * Originally, this value was set to 1, but it was changed to 2 because that became
+	 * too low after some other code changes.
+	 */
+	static final DEFAULT_SINGTIME:Float = 2.0;
+
 	static final DEFAULT_DANCEEVERY:Int = 1;
-	static final DEFAULT_FRAMERATE:Int = 24;
 	static final DEFAULT_FLIPX:Bool = false;
-	static final DEFAULT_SCALE:Float = 1;
 	static final DEFAULT_FLIPY:Bool = false;
+	static final DEFAULT_FRAMERATE:Int = 24;
+	static final DEFAULT_ISPIXEL:Bool = false;
 	static final DEFAULT_LOOP:Bool = false;
-	static final DEFAULT_FRAMEINDICES:Array<Int> = [];
+	static final DEFAULT_NAME:String = "Untitled Character";
+	static final DEFAULT_OFFSETS:Array<Int> = [0, 0];
+	static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.SPARROW;
+	static final DEFAULT_SCALE:Float = 1;
+	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
+	static final DEFAULT_STARTINGANIM:String = "idle";
 
 	/**
 	 * Set unspecified parameters to their defaults.
@@ -238,13 +309,13 @@ class CharacterDataParser
 
 		if (input.version == null)
 		{
-			trace('[CHARDATA] ERROR: Could not load character data for "$id": missing version');
-			return null;
+			trace('[CHARDATA] WARN: No semantic version specified for character data file "$id", assuming ${CHARACTER_DATA_VERSION}');
+			input.version = CHARACTER_DATA_VERSION;
 		}
 
-		if (input.version == CHARACTER_DATA_VERSION)
+		if (!VersionUtil.validateVersion(input.version, CHARACTER_DATA_VERSION_RULE))
 		{
-			trace('[CHARDATA] ERROR: Could not load character data for "$id": bad/outdated version (got ${input.version}, expected ${CHARACTER_DATA_VERSION})');
+			trace('[CHARDATA] ERROR: Could not load character data for "$id": bad version (got ${input.version}, expected ${CHARACTER_DATA_VERSION_RULE})');
 			return null;
 		}
 
@@ -285,6 +356,11 @@ class CharacterDataParser
 			input.danceEvery = DEFAULT_DANCEEVERY;
 		}
 
+		if (input.singTime == null)
+		{
+			input.singTime = DEFAULT_SINGTIME;
+		}
+
 		if (input.animations == null || input.animations.length == 0)
 		{
 			trace('[CHARDATA] ERROR: Could not load character data for "$id": missing animations');
@@ -309,9 +385,9 @@ class CharacterDataParser
 				inputAnimation.frameRate = DEFAULT_FRAMERATE;
 			}
 
-			if (inputAnimation.frameIndices == null)
+			if (inputAnimation.offsets == null)
 			{
-				inputAnimation.frameIndices = DEFAULT_FRAMEINDICES;
+				inputAnimation.offsets = DEFAULT_OFFSETS;
 			}
 
 			if (inputAnimation.looped == null)
@@ -339,15 +415,20 @@ enum abstract CharacterRenderType(String) from String to String
 {
 	var SPARROW = 'sparrow';
 	var PACKER = 'packer';
-	// TODO: Aesprite?
+	var MULTISPARROW = 'multisparrow';
+	// TODO: FlxSpine?
+	//   https://api.haxeflixel.com/flixel/addons/editors/spine/FlxSpine.html
+	// TODO: Aseprite?
+	//   https://lib.haxe.org/p/openfl-aseprite/
 	// TODO: Animate?
-	// TODO: Experimental...
+	//   https://lib.haxe.org/p/flxanimate
+	// TODO: REDACTED
 }
 
 typedef CharacterData =
 {
 	/**
-	 * The sematic version of the chart data format.
+	 * The sematic version number of the character data JSON format.
 	 */
 	var version:String;
 

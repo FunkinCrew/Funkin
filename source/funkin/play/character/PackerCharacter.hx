@@ -1,15 +1,16 @@
-package funkin.play.character.render;
+package funkin.play.character;
 
-import funkin.play.character.CharacterBase.CharacterType;
+import funkin.play.character.BaseCharacter.CharacterType;
 
 /**
  * A PackerCharacter is a Character which is rendered by
  * displaying an animation derived from a Packer spritesheet file.
  */
-class PackerCharacter extends CharacterBase
+class PackerCharacter extends BaseCharacter
 {
 	public function new(id:String)
 	{
 		super(id);
 	}
+	// TODO: Put code here, dumbass!
 }

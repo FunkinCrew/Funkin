@@ -30,24 +30,14 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	public var shouldAlternate:Null<Bool> = null;
 
 	/**
-	 * Set this value to define an additional horizontal offset to this sprite's position.
+	 * Offset the character's sprite by this much when playing each animation.
 	 */
-	public var xOffset(default, set):Float = 0;
+	var animationOffsets:Map<String, Array<Int>> = new Map<String, Array<Int>>();
 
-	override function set_x(value:Float):Float
-	{
-		this.x = this.xOffset + value;
-		return this.x;
-	}
-
-	function set_xOffset(value:Float):Float
-	{
-		var diff = value - this.xOffset;
-		this.xOffset = value;
-		this.x += diff;
-		return value;
-	}
-
+	/**
+	 * Add a suffix to the `idle` animation (or `danceLeft` and `danceRight` animations)
+	 * that this bopper will play.
+	 */
 	public var idleSuffix(default, set):String = "";
 
 	function set_idleSuffix(value:String):String
@@ -110,7 +100,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	/**
 	 * Called every `danceEvery` beats of the song.
 	 */
-	function dance():Void
+	function dance(force:Bool = false):Void
 	{
 		if (this.animation == null)
 		{
@@ -142,23 +132,95 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 	public function hasAnimation(id:String):Bool
 	{
+		if (this.animation == null)
+			return false;
+
 		return this.animation.getByName(id) != null;
 	}
 
-	/*
-	 * @param   AnimName   The string name of the animation you want to play.
-	 * @param   Force      Whether to force the animation to restart.
+	/**
+	 * Ensure that a given animation exists before playing it.
+	 * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
+	 * @param name 
 	 */
-	public function playAnimation(name:String, force:Bool = false):Void
+	function correctAnimationName(name:String)
 	{
-		this.animation.play(name, force, false, 0);
+		// If the animation exists, we're good.
+		if (hasAnimation(name))
+			return name;
+
+		trace('[BOPPER] Animation "$name" does not exist!');
+
+		// Attempt to strip a `-alt` suffix, if it exists.
+		if (name.lastIndexOf('-') != -1)
+		{
+			var correctName = name.substring(0, name.lastIndexOf('-'));
+			trace('[BOPPER] Attempting to fallback to "$correctName"');
+			return correctAnimationName(correctName);
+		}
+		else
+		{
+			if (name != 'idle')
+			{
+				trace('[BOPPER] Attempting to fallback to "idle"');
+				return correctAnimationName('idle');
+			}
+			else
+			{
+				trace('[BOPPER] Failing animation playback.');
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * @param name The name of the animation to play.
+	 * @param restart Whether to restart the animation if it is already playing.
+	 */
+	public function playAnimation(name:String, restart:Bool = false):Void
+	{
+		var correctName = correctAnimationName(name);
+		if (correctName == null)
+			return;
+
+		this.animation.play(correctName, restart, false, 0);
+
+		applyAnimationOffsets(correctName);
+	}
+
+	function applyAnimationOffsets(name:String)
+	{
+		var offsets = animationOffsets.get(name);
+		if (offsets != null)
+		{
+			this.offset.set(offsets[0], offsets[1]);
+		}
+		else
+		{
+			this.offset.set(0, 0);
+		}
+	}
+
+	public function isAnimationFinished():Bool
+	{
+		return this.animation.finished;
+	}
+
+	public function setAnimationOffsets(name:String, xOffset:Int, yOffset:Int):Void
+	{
+		animationOffsets.set(name, [xOffset, yOffset]);
+		applyAnimationOffsets(name);
 	}
 
 	/**
 	 * Returns the name of the animation that is currently playing.
+	 * If no animation is playing (usually this means the character is BROKEN!),
+	 *   returns an empty string to prevent NPEs.
 	 */
 	public function getCurrentAnimation():String
 	{
+		if (this.animation == null || this.animation.curAnim == null)
+			return "";
 		return this.animation.curAnim.name;
 	}
 
@@ -178,15 +240,13 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 	public function onSongEnd(event:ScriptEvent) {}
 
-	public function onSongReset(event:ScriptEvent) {}
-
 	public function onGameOver(event:ScriptEvent) {}
-
-	public function onGameRetry(event:ScriptEvent) {}
 
 	public function onNoteHit(event:NoteScriptEvent) {}
 
 	public function onNoteMiss(event:NoteScriptEvent) {}
+
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
 
 	public function onStepHit(event:SongTimeScriptEvent) {}
 
@@ -197,4 +257,6 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	public function onCountdownEnd(event:CountdownScriptEvent) {}
 
 	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+
+	public function onSongRetry(event:ScriptEvent) {}
 }

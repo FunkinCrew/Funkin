@@ -47,6 +47,16 @@ class ModuleHandler
 		trace("[MODULEHANDLER] Module cache loaded.");
 	}
 
+	public static function buildModuleCallbacks():Void
+	{
+		FlxG.signals.postStateSwitch.add(onStateSwitchComplete);
+	}
+
+	static function onStateSwitchComplete():Void
+	{
+		callEvent(new StateChangeScriptEvent(ScriptEvent.STATE_CHANGE_END, FlxG.state, true));
+	}
+
 	static function addToModuleCache(module:Module):Void
 	{
 		moduleCache.set(module.moduleId, module);
