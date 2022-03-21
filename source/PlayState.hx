@@ -1862,41 +1862,50 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
-		if (noteDiff > Conductor.safeZoneOffset * 0.75)
-		{
-			shits++;
-			daRating = 'shit';
-			health -= 0.04;
-			score = 50;
+		if (FlxG.save.data.judgeHits){
+			trace("Beginner Judgement");
+			if (noteDiff > Conductor.safeZoneOffset * 0.9)
+				{
+					daRating = 'shit';
+					score = 50;
+				}
+				else if (noteDiff > Conductor.safeZoneOffset * 0.75)
+				{
+					daRating = 'bad';
+					score = 100;
+				}
+				else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+				{
+					daRating = 'good';
+					score = 200;
+				}
+				else {
+					sicks++;
+				}
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.45)
-		{
-			bads++;
-			daRating = 'bad';
-			score = 100;
-		}
-		//I don't know if 0.25 is good so if there is any complaints i'll change it lol
-		else if (noteDiff > Conductor.safeZoneOffset * 0.25)
-		{
-			goods++;
-			daRating = 'good';
-			score = 200;
-		}
-		else if (noteDiff > Conductor.safeZoneOffset * 1.55)
-			{
-				bads++;
-				daRating = 'bad';
-				score = 100;
-			}
-		else if (noteDiff > Conductor.safeZoneOffset * 1.9)
-			{
-				shits++;
-				daRating = 'shit';
-				health -= 0.04;
-				score = 50;
-			}
-		else {
-			sicks++;
+		else{
+			if (noteDiff > Conductor.safeZoneOffset * 0.75)
+				{
+					shits++;
+					daRating = 'shit';
+					health -= 0.04;
+					score = 50;
+				}
+				else if (noteDiff > Conductor.safeZoneOffset * 0.38)
+				{
+					bads++;
+					daRating = 'bad';
+					score = 100;
+				}
+				else if (noteDiff > Conductor.safeZoneOffset * 0.175) //this game is making me lose my sanity
+				{
+					goods++;
+					daRating = 'good';
+					score = 200;
+				}
+				else {
+					sicks++;
+				}
 		}
 
 		songScore += score;
@@ -2141,7 +2150,6 @@ class PlayState extends MusicBeatState
 				else
 				{
 					badNoteCheck();
-					trace("uhh what");
 				}
 			}
 	

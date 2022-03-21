@@ -34,7 +34,7 @@ class OptionsMenu extends MusicBeatState {
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		background = new FlxSprite(0, 0, Paths.image('menuBGMagenta'));
+		background = new FlxSprite(0, 0, Paths.image('menuBGBlue'));
 
 		background.scrollFactor.x = 0;
 		background.scrollFactor.y = 0.18;
@@ -71,7 +71,7 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - optionDot.height / 7; // red dot offset (bruh i hate this options menu but idk how to make a better one)
+		optionDot.y = optionText.y - optionDot.height / 7.5; // red dot offset (bruh i hate this options menu but idk how to make a better one)
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
@@ -89,6 +89,7 @@ class OptionsMenu extends MusicBeatState {
 		'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
+		'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
 		'RESET SETTINGS'];
 
 		optionText.screenCenter(X);
@@ -145,10 +146,14 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Custom Health Colors')) {
 				FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
 			}
+			if (options[curSelected].startsWith('Judgement Type')) {
+				FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
+			}
 			if (options[curSelected].startsWith('RESET SETTINGS')) {
 				FlxG.save.data.epilepsyMode = false;
 				FlxG.save.data.gtapping = false;
 				FlxG.save.data.noDistractions = false;
+				FlxG.save.data.disablehealthColor = false;
 				FlxG.save.data.UP = "W";
 				FlxG.save.data.DOWN = "S";
 				FlxG.save.data.LEFT = "A";
@@ -181,6 +186,10 @@ class OptionsMenu extends MusicBeatState {
 
 				if (options[curSelected].startsWith('Custom Health Colors')){
 					detailText.text = 'Disables or Enables the custom Health Bar Colors.';
+				}
+
+				if (options[curSelected].startsWith('Judgement Type')){
+					detailText.text = 'Changes the difficulty on hitting notes.';
 				}
 
 				if (options[curSelected].startsWith('RESET SETTINGS')){

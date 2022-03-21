@@ -92,7 +92,7 @@ class Keybinds extends MusicBeatState {
 
 		optionText.screenCenter(X);
 
-		optionDot.x = optionText.x - 60;
+		optionDot.x = optionText.x - 32;
 
 		camFollow.screenCenter();
 		camFollow.y = optionDot.y - camFollow.height / 2;
@@ -101,8 +101,6 @@ class Keybinds extends MusicBeatState {
 		detailText.x = optionText.x * 2.35;
 
 		topText.y = optionDot.y;
-
-		// OLD! -- FlxG.camera.y = -FlxMath.lerp(-FlxG.height * 2, optionDot.y, 0.8); // camera following the red dot
 
 		background.screenCenter();
 
