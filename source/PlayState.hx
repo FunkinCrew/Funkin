@@ -129,6 +129,7 @@ class PlayState extends MusicBeatState
 	public static var daPixelZoom:Float = 6;
 
 	var inCutscene:Bool = false;
+	var playedEndCutscene:Bool = false;
 
 	#if desktop
 	// Discord RPC variables
@@ -143,6 +144,7 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		trace('ENDCUTSCENE PLAYED? ' + playedEndCutscene);
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -828,14 +830,6 @@ class PlayState extends MusicBeatState
 					});
 				case 'tutorial':
 					loadDialogue(doof);
-				//yo keep a secret for once and don't spoil it
-				case 'pico':
-					if (FlxG.random.bool(25)){
-						playCutscene("cock");
-						trace('cock');
-					}
-					else
-						startCountdown();
 				case 'senpai':
 					loadDialogue(doof);
 				case 'roses':
@@ -843,7 +837,7 @@ class PlayState extends MusicBeatState
 					loadDialogue(doof);
 				case 'thorns':
 					loadDialogue(doof);
-				// If you want to play a cutscene just add a new case for your song and add either playCutscene() or playEndCutscene() when i fix it
+				// If you want to play a cutscene just add a new case for your song and add playCutscene()
 
 				default:
 					startCountdown();
@@ -1758,80 +1752,91 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		canPause = false;
-		FlxG.sound.music.volume = 0;
-		vocals.volume = 0;
-		if (SONG.validScore)
-		{
-			#if !switch
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-			#end
+		//Do playEndCutscene here (Do something like this but minus the random chance for it to actually play the cutscene)
+		if (curSong.toLowerCase() == 'pico' && playedEndCutscene == false){
+			//If you want you could also make it so it can only run on Story Mode but i chose not to in this example
+			if (FlxG.random.bool(25)){
+				playEndCutscene("cock");
+				trace('cock');
+			}
 		}
 
-		if (isStoryMode)
-		{
-			campaignScore += songScore;
-
-			storyPlaylist.remove(storyPlaylist[0]);
-
-			if (storyPlaylist.length <= 0)
+		if (inCutscene == false){
+			canPause = false;
+			FlxG.sound.music.volume = 0;
+			vocals.volume = 0;
+			if (SONG.validScore)
 			{
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				#if !switch
+				Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+				#end
+			}
 
-				transIn = FlxTransitionableState.defaultTransIn;
-				transOut = FlxTransitionableState.defaultTransOut;
+			if (isStoryMode)
+			{
+				campaignScore += songScore;
 
-				FlxG.switchState(new StoryMenuState());
+				storyPlaylist.remove(storyPlaylist[0]);
 
-				// if ()
-				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
-				if (SONG.validScore)
+				if (storyPlaylist.length <= 0)
 				{
-					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
-				}
+					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 
-				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-				FlxG.save.flush();
+					transIn = FlxTransitionableState.defaultTransIn;
+					transOut = FlxTransitionableState.defaultTransOut;
+
+					FlxG.switchState(new StoryMenuState());
+
+					// if ()
+					StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
+
+					if (SONG.validScore)
+					{
+						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+					}
+
+					FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+					FlxG.save.flush();
+				}
+				else
+				{
+					var difficulty:String = "";
+
+					if (storyDifficulty == 0)
+						difficulty = '-easy';
+
+					if (storyDifficulty == 2)
+						difficulty = '-hard';
+
+					trace('LOADING NEXT SONG');
+					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);	
+
+					if (SONG.song.toLowerCase() == 'eggnog')
+					{
+						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
+							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+						blackShit.scrollFactor.set();
+						add(blackShit);
+						camHUD.visible = false;
+
+						FlxG.sound.play(Paths.sound('Lights_Shut_off'));
+					}
+
+					FlxTransitionableState.skipNextTransIn = true;
+					FlxTransitionableState.skipNextTransOut = true;
+					prevCamFollow = camFollow;
+
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+					FlxG.sound.music.stop();
+
+					LoadingState.loadAndSwitchState(new PlayState());
+				}
 			}
 			else
 			{
-				var difficulty:String = "";
-
-				if (storyDifficulty == 0)
-					difficulty = '-easy';
-
-				if (storyDifficulty == 2)
-					difficulty = '-hard';
-
-				trace('LOADING NEXT SONG');
-				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
-
-				if (SONG.song.toLowerCase() == 'eggnog')
-				{
-					var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-						-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-					blackShit.scrollFactor.set();
-					add(blackShit);
-					camHUD.visible = false;
-
-					FlxG.sound.play(Paths.sound('Lights_Shut_off'));
-				}
-
-				FlxTransitionableState.skipNextTransIn = true;
-				FlxTransitionableState.skipNextTransOut = true;
-				prevCamFollow = camFollow;
-
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
-				FlxG.sound.music.stop();
-
-				LoadingState.loadAndSwitchState(new PlayState());
+				trace('WENT BACK TO FREEPLAY??');
+				FlxG.switchState(new FreeplayState());
 			}
-		}
-		else
-		{
-			trace('WENT BACK TO FREEPLAY??');
-			FlxG.switchState(new FreeplayState());
 		}
 	}
 
@@ -2586,18 +2591,23 @@ class PlayState extends MusicBeatState
 		video.playVideo(Paths.video(name));
 	}
 	
-	/*function playEndCutscene(name:String)
+	function playEndCutscene(name:String)
 	{
+		//Doesn't check if the song is ending sense it gets called to play WHILE the song is ending.
 		inCutscene = true;
+
+		//KILL THE MUSIC!!! (wait what does this even do)
+		FlxG.sound.music.kill();
 	
 		video = new MP4Handler();
 		video.finishCallback = function()
 		{
-			SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase());
-			LoadingState.loadAndSwitchState(new PlayState());
+			inCutscene = false;
+			playedEndCutscene = true;
+			endSong();
 		}
 		video.playVideo(Paths.video(name));
-	}*/
+	}
 
 	var curLight:Int = 0;
 }
