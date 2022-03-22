@@ -3,7 +3,7 @@ description: Suggest a feature
 title: "[Enhancement]: "
 labels: ["enhancement"]
 assignees:
-  - thepercentageguy
+  - spunblue
 body:
   - type: input
     id: contact
