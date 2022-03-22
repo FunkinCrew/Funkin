@@ -3,7 +3,7 @@ description: Ask for help while compiling
 title: "[Compiling]: "
 labels: ["compile help"]
 assignees:
-  - thepercentageguy
+  - spunblue
 body:
   - type: input
     id: contact
