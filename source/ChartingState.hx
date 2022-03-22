@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxTimer;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
@@ -34,8 +35,12 @@ import openfl.utils.ByteArray;
 
 using StringTools;
 
+
 class ChartingState extends MusicBeatState
 {
+	var hitSound:FlxSound;
+	var enableHitsounds = false;
+
 	var _file:FileReference;
 
 	var UI_box:FlxUITabMenu;
@@ -83,6 +88,9 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		hitSound = new FlxSound();
+		hitSound.loadEmbedded(Paths.sound('hit', 'shared'));
+
 		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -125,7 +133,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		FlxG.mouse.visible = true;
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+		FlxG.save.bind('funkin', 'spunblue');
 
 		tempBpm = _song.bpm;
 
@@ -242,6 +250,9 @@ class ChartingState extends MusicBeatState
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
 
+		var check_hitSounds = new FlxUICheckBox(10, check_mute_inst.y + 20, null, null, "Enable Hitsounds", 100);
+
+		tab_group_song.add(check_hitSounds);
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
@@ -339,6 +350,8 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(applyLength);
 
 		UI_box.addGroup(tab_group_note);
+
+		updateHeads();
 	}
 
 	function loadSong(daSong:String):Void
@@ -405,6 +418,8 @@ class ChartingState extends MusicBeatState
 					FlxG.log.add('changed bpm shit');
 				case "Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
+				case "Enable Hitsounds":
+					enableHitsounds = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -466,9 +481,22 @@ class ChartingState extends MusicBeatState
 		}
 		return daPos;
 	}
-
+	
 	override function update(elapsed:Float)
 	{
+		for (note in curRenderedNotes) {
+			if (FlxG.overlap(note, strumLine) && FlxG.sound.music.playing) {
+				if (enableHitsounds && note.alpha == 1) {
+					hitSound.play(true);
+					note.alpha = 0.2;
+					trace("played hit");
+				}
+			} else {
+				note.alpha = 1;
+				// playedHit = false;
+			}
+		}
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -646,6 +674,11 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		//lol jus incase
+		if (FlxG.keys.pressed.CONTROL){
+			FlxG.mouse.visible = true;
+		}
+
 		_song.bpm = tempBpm;
 
 		/* if (FlxG.keys.justPressed.UP)
@@ -791,13 +824,13 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.animation.play('bf');
-			rightIcon.animation.play('dad');
+			leftIcon.animation.play(PlayState.SONG.player1);
+			rightIcon.animation.play(PlayState.SONG.player2);
 		}
 		else
 		{
-			leftIcon.animation.play('dad');
-			rightIcon.animation.play('bf');
+			leftIcon.animation.play(PlayState.SONG.player2);
+			rightIcon.animation.play(PlayState.SONG.player1);
 		}
 	}
 
