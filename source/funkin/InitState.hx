@@ -177,7 +177,7 @@ class InitState extends FlxTransitionableState
 		#elseif FIGHT
 		FlxG.switchState(new PicoFight());
 		#elseif ANIMDEBUG
-		FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
+		FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
 		#elseif NETTEST
 		FlxG.switchState(new netTest.NetTest());
 		#else

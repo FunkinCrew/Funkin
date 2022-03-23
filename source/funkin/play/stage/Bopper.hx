@@ -32,7 +32,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	/**
 	 * Offset the character's sprite by this much when playing each animation.
 	 */
-	var animationOffsets:Map<String, Array<Int>> = new Map<String, Array<Int>>();
+	public var animationOffsets:Map<String, Array<Int>> = new Map<String, Array<Int>>();
 
 	/**
 	 * Add a suffix to the `idle` animation (or `danceLeft` and `danceRight` animations)

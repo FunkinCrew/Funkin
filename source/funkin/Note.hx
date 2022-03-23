@@ -283,14 +283,14 @@ typedef RawNoteData =
 	var strumTime:Float;
 	var noteData:NoteType;
 	var sustainLength:Float;
-	var altNote:Bool;
+	var altNote:String;
 	var noteKind:NoteKind;
 }
 
 @:forward
 abstract NoteData(RawNoteData)
 {
-	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = false, noteKind = NORMAL)
+	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = "", noteKind = NORMAL)
 	{
 		this = {
 			strumTime: strumTime,

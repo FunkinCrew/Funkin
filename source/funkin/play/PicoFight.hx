@@ -179,7 +179,7 @@ class PicoFight extends MusicBeatState
 			pico.punch();
 		}
 		if (controls.NOTE_LEFT_R)
-			pico.playAnim('idle');
+			pico.playAnimation('idle');
 
 		super.update(elapsed);
 	}

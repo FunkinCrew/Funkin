@@ -86,7 +86,6 @@ class MultiSparrowCharacter extends BaseCharacter
 		{
 			var texture:FlxFramesCollection = Paths.getSparrowAtlas(asset, 'shared');
 			// If we don't do this, the unused textures will be removed as soon as they're loaded.
-			texture.parent.destroyOnNoUse = false;
 
 			if (texture == null)
 			{
@@ -95,6 +94,7 @@ class MultiSparrowCharacter extends BaseCharacter
 			else
 			{
 				trace('Adding multi-sparrow atlas: ${asset}');
+				texture.parent.destroyOnNoUse = false;
 				members.set(asset, texture);
 			}
 		}
@@ -163,7 +163,7 @@ class MultiSparrowCharacter extends BaseCharacter
 			trace('Using frames: ${anim.name}');
 			loadFramesByAnimName(anim.name);
 			trace('Adding animation');
-			FlxAnimationUtil.addSparrowAnimation(this, anim);
+			FlxAnimationUtil.addAtlasAnimation(this, anim);
 
 			if (anim.offsets == null)
 			{

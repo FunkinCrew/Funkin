@@ -1012,7 +1012,7 @@ class ChartingState extends MusicBeatState
 		if (curSelectedNote != null)
 		{
 			trace('ALT NOTE SHIT');
-			curSelectedNote.altNote = !curSelectedNote.altNote;
+			curSelectedNote.altNote = (curSelectedNote.altNote == "alt") ? "" : "alt";
 			trace(curSelectedNote.altNote);
 		}
 	}
@@ -1348,7 +1348,7 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
-		var noteAlt = false;
+		var noteAlt = "";
 
 		justPlacedNote = true;
 

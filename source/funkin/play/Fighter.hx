@@ -1,19 +1,22 @@
 package funkin.play;
 
+import funkin.play.character.BaseCharacter;
 import flixel.FlxSprite;
 
-class Fighter extends Character
+class Fighter extends BaseCharacter
 {
 	public function new(?x:Float = 0, ?y:Float = 0, ?char:String = "pico-fighter")
 	{
-		super(x, y, char);
+		super(char);
+		this.x = x;
+		this.y = y;
 
 		animation.finishCallback = function(anim:String)
 		{
 			switch anim
 			{
 				case "punch low" | "punch high" | "block" | 'dodge':
-					dance();
+					dance(true);
 			}
 		};
 	}
@@ -42,20 +45,20 @@ class Fighter extends Character
 
 	function dodge()
 	{
-		playAnim('dodge');
+		playAnimation('dodge');
 		curAction = DODGE;
 	}
 
 	public function block()
 	{
-		playAnim('block');
+		playAnimation('block');
 		curAction = BLOCK;
 	}
 
 	public function punch()
 	{
 		curAction = PUNCH;
-		playAnim('punch ' + (FlxG.random.bool() ? "low" : "high"));
+		playAnimation('punch ' + (FlxG.random.bool() ? "low" : "high"));
 	}
 }
 

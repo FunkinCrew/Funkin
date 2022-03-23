@@ -1471,7 +1471,7 @@ class PlayState extends MusicBeatState implements IHook
 	private function popUpScore(strumtime:Float, daNote:Note):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
-		// boyfriend.playAnim('hey');
+		// boyfriend.playAnimation('hey');
 		vocals.volume = 1;
 
 		var score:Int = 350;

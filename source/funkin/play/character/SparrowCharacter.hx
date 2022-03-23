@@ -61,7 +61,7 @@ class SparrowCharacter extends BaseCharacter
 	{
 		trace('[SPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
 
-		FlxAnimationUtil.addSparrowAnimations(this, _data.animations);
+		FlxAnimationUtil.addAtlasAnimations(this, _data.animations);
 
 		for (anim in _data.animations)
 		{

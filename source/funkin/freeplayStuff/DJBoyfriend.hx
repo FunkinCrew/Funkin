@@ -23,14 +23,14 @@ class DJBoyfriend extends FlxSprite
 		addOffset('intro', 0, 0);
 		addOffset('idle', -4, -426);
 
-		playAnim('intro');
+		playAnimation('intro');
 		animation.finishCallback = function(anim)
 		{
 			switch (anim)
 			{
 				case "intro":
 					animHITsignal.dispatch();
-					playAnim('idle'); // plays idle anim after playing intro
+					playAnimation('idle'); // plays idle anim after playing intro
 			}
 		};
 	}
@@ -38,7 +38,7 @@ class DJBoyfriend extends FlxSprite
 	// playAnim stolen from Character.hx, cuz im lazy lol!
 	public var animOffsets:Map<String, Array<Dynamic>>;
 
-	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
+	public function playAnimation(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		animation.play(AnimName, Force, Reversed, Frame);
 

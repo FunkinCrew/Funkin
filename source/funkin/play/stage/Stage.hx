@@ -32,7 +32,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	var namedProps:Map<String, FlxSprite> = new Map<String, FlxSprite>();
 	var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
-	var charactersOld:Map<String, Character> = new Map<String, Character>();
 	var boppers:Array<Bopper> = new Array<Bopper>();
 
 	/**
@@ -153,7 +152,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 						}
 					}
 				default: // "sparrow"
-					FlxAnimationUtil.addSparrowAnimations(propSprite, dataProp.animations);
+					FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
 			}
 
 			if (Std.isOfType(propSprite, Bopper))
@@ -243,27 +242,48 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		if (character == null)
 			return;
 
+		var debugMarker:FlxSprite = new FlxSprite(0, 0);
+
 		// Apply position and z-index.
 		switch (charType)
 		{
 			case BF:
 				this.characters.set("bf", character);
 				character.zIndex = _data.characters.bf.zIndex;
-				character.x = _data.characters.bf.position[0];
-				character.y = _data.characters.bf.position[1];
+				// Subtracting the origin ensures characters are positioned relative to their feet.
+				trace('Data: ' + _data.characters.bf.position[0] + ', ' + _data.characters.bf.position[1]);
+				character.x = _data.characters.bf.position[0] - character.characterOrigin.x;
+				character.y = _data.characters.bf.position[1] - character.characterOrigin.y;
+				trace('Character position: ' + character.x + ', ' + character.y);
+				debugMarker.x = _data.characters.bf.position[0];
+				debugMarker.y = _data.characters.bf.position[1];
+				trace('Debug marker position: ' + debugMarker.x + ', ' + debugMarker.y);
 			case GF:
 				this.characters.set("gf", character);
 				character.zIndex = _data.characters.gf.zIndex;
-				character.x = _data.characters.gf.position[0];
-				character.y = _data.characters.gf.position[1];
+				// Subtracting the origin ensures characters are positioned relative to their feet.
+				character.x = _data.characters.gf.position[0] - character.characterOrigin.x;
+				character.y = _data.characters.gf.position[1] - character.characterOrigin.y;
+				debugMarker.x = _data.characters.gf.position[0];
+				debugMarker.y = _data.characters.gf.position[1];
 			case DAD:
 				this.characters.set("dad", character);
 				character.zIndex = _data.characters.dad.zIndex;
-				character.x = _data.characters.dad.position[0];
-				character.y = _data.characters.dad.position[1];
+				// Subtracting the origin ensures characters are positioned relative to their feet.
+				character.x = _data.characters.dad.position[0] - character.characterOrigin.x;
+				character.y = _data.characters.dad.position[1] - character.characterOrigin.y;
+				debugMarker.x = _data.characters.dad.position[0];
+				debugMarker.y = _data.characters.dad.position[1];
 			default:
 				this.characters.set(character.characterId, character);
 		}
+
+		#if debug
+		// Add a DEBUG marker for the character's origin.
+		debugMarker.makeGraphic(10, 10, 0xFFFF00FF);
+		debugMarker.zIndex = 10000;
+		this.add(debugMarker);
+		#end
 
 		// Add the character to the scene.
 		this.add(character);
@@ -312,20 +332,16 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		{
 			return getCharacter('bf');
 		}
-
-		// return this.charactersOld.get('bf');
 	}
 
 	public function getGirlfriend():BaseCharacter
 	{
 		return getCharacter('gf');
-		// return this.charactersOld.get('gf');
 	}
 
 	public function getDad():BaseCharacter
 	{
 		return getCharacter('dad');
-		// return this.charactersOld.get('dad');
 	}
 
 	/**

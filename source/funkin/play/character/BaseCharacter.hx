@@ -1,5 +1,6 @@
 package funkin.play.character;
 
+import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -25,8 +26,6 @@ class BaseCharacter extends Bopper
 	 */
 	public var characterType:CharacterType = OTHER;
 
-	final _data:CharacterData;
-
 	/**
 	 * Tracks how long, in seconds, the character has been playing the current `sing` animation.
 	 * This is used to ensure that characters play the `sing` animations for at least one beat,
@@ -34,9 +33,29 @@ class BaseCharacter extends Bopper
 	 */
 	public var holdTimer:Float = 0;
 
+	public var isDead:Bool = false;
+	public var debugMode:Bool = false;
+
+	final _data:CharacterData;
 	final singTimeCrochet:Float;
 
-	public var isDead:Bool = false;
+	/**
+	 * The x and y position to subtract from the stage's X value to get the character's proper rendering position.
+	 */
+	public var characterOrigin(get, null):FlxPoint;
+
+	function get_characterOrigin():FlxPoint
+	{
+		var xPos = (width / 2); // Horizontal center
+		var yPos = (height); // Vertical bottom
+		trace('Origin: ${characterId} (${xPos}, ${yPos})');
+		return new FlxPoint(xPos, yPos);
+	}
+
+	override function set_x(value:Float):Float
+	{
+		return super.set_x(value);
+	}
 
 	public function new(id:String)
 	{
@@ -69,6 +88,17 @@ class BaseCharacter extends Bopper
 		{
 			playDeathAnimation();
 		}
+
+		if (hasAnimation('idle-end') && getCurrentAnimation() == "idle" && isAnimationFinished())
+			playAnimation('idle-end');
+		if (hasAnimation('singLEFT-end') && getCurrentAnimation() == "singLEFT" && isAnimationFinished())
+			playAnimation('singLEFT-end');
+		if (hasAnimation('singDOWN-end') && getCurrentAnimation() == "singDOWN" && isAnimationFinished())
+			playAnimation('singDOWN-end');
+		if (hasAnimation('singUP-end') && getCurrentAnimation() == "singUP" && isAnimationFinished())
+			playAnimation('singUP-end');
+		if (hasAnimation('singRIGHT-end') && getCurrentAnimation() == "singRIGHT" && isAnimationFinished())
+			playAnimation('singRIGHT-end');
 
 		// Handle character note hold time.
 		if (getCurrentAnimation().startsWith("sing"))
@@ -109,6 +139,10 @@ class BaseCharacter extends Bopper
 
 	override function dance(force:Bool = false)
 	{
+		// Prevent default dancing behavior.
+		if (debugMode)
+			return;
+
 		if (!force)
 		{
 			if (getCurrentAnimation().startsWith("sing"))
@@ -202,12 +236,12 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote ? "alt" : null);
+			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote ? "alt" : null);
+			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
 		}
 	}
 
@@ -222,12 +256,12 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote ? "alt" : null);
+			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote);
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote ? "alt" : null);
+			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote);
 		}
 	}
 
