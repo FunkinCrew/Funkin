@@ -79,8 +79,8 @@ class Note extends FlxSprite
 	public static var RED_NOTE:Int = 3;
 
 	// SCORING STUFF
-	public static var safeFrames:Int = 10;
-	public static var HIT_WINDOW:Float = (safeFrames / 60) * 1000; // 166.67 ms hit window
+	public static var HIT_WINDOW:Float = (10 / 60) * 1000; // 166.67 ms hit window (10 frames at 60fps)
+	// thresholds are fractions of HIT_WINDOW ^^
 	// anything above bad threshold is shit
 	public static var BAD_THRESHOLD:Float = 0.8; // 	125ms	, 8 frames
 	public static var GOOD_THRESHOLD:Float = 0.55; // 	91.67ms	, 5.5 frames
