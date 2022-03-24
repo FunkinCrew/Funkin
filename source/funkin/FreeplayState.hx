@@ -1,6 +1,5 @@
 package funkin;
 
-import funkin.Controls.Control;
 import flash.text.TextField;
 import flixel.FlxCamera;
 import flixel.FlxGame;
@@ -21,16 +20,17 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import funkin.Controls.Control;
 import funkin.freeplayStuff.BGScrollingText;
 import funkin.freeplayStuff.DJBoyfriend;
 import funkin.freeplayStuff.FreeplayScore;
 import funkin.freeplayStuff.SongMenuItem;
-import lime.app.Future;
-import lime.utils.Assets;
+import funkin.play.PlayState;
 import funkin.shaderslmfao.AngleMask;
 import funkin.shaderslmfao.PureColor;
 import funkin.shaderslmfao.StrokeShader;
-import funkin.play.PlayState;
+import lime.app.Future;
+import lime.utils.Assets;
 
 using StringTools;
 
@@ -498,6 +498,9 @@ class FreeplayState extends MusicBeatSubstate
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
 			FlxG.switchState(new MainMenuState());
 		}
 
