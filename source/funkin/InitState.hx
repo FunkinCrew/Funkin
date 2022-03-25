@@ -1,7 +1,5 @@
 package funkin;
 
-import funkin.play.stage.StageData;
-import funkin.charting.ChartingState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -9,12 +7,15 @@ import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
-import openfl.display.BitmapData;
+import funkin.charting.ChartingState;
 import funkin.play.PicoFight;
+import funkin.play.PlayState;
+import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
+import funkin.ui.animDebugShit.DebugBoundingState;
 import funkin.ui.stageBuildShit.StageBuilderState;
 import funkin.util.macro.MacroUtil;
-import funkin.play.PlayState;
+import openfl.display.BitmapData;
 
 using StringTools;
 
@@ -173,7 +174,7 @@ class InitState extends FlxTransitionableState
 		#elseif FIGHT
 		FlxG.switchState(new PicoFight());
 		#elseif ANIMDEBUG
-		FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
+		FlxG.switchState(new DebugBoundingState());
 		#elseif NETTEST
 		FlxG.switchState(new netTest.NetTest());
 		#else
