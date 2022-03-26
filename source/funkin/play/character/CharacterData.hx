@@ -135,7 +135,11 @@ class CharacterDataParser
 				trace('    Failed to instantiate scripted character: ${charCls}');
 				continue;
 			}
-			characterScriptedClass.set(character.characterId, charCls);
+			else
+			{
+				trace('    Successfully instantiated scripted character: ${charCls}');
+				characterScriptedClass.set(character.characterId, charCls);
+			}
 		}
 
 		trace('  Successfully loaded ${Lambda.count(characterCache)} stages.');
@@ -290,6 +294,7 @@ class CharacterDataParser
 	static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.SPARROW;
 	static final DEFAULT_SCALE:Float = 1;
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
+	static final DEFAULT_CAMERAOFFSET:Array<Float> = [0, 0];
 	static final DEFAULT_STARTINGANIM:String = "idle";
 
 	/**
@@ -303,7 +308,7 @@ class CharacterDataParser
 	{
 		if (input == null)
 		{
-			trace('[CHARDATA] ERROR: Could not parse character data for "${id}".');
+			// trace('[CHARDATA] ERROR: Could not parse character data for "${id}".');
 			return null;
 		}
 
@@ -344,6 +349,11 @@ class CharacterDataParser
 		if (input.scale == null)
 		{
 			input.scale = DEFAULT_SCALE;
+		}
+
+		if (input.cameraOffset == null)
+		{
+			input.cameraOffset = DEFAULT_CAMERAOFFSET;
 		}
 
 		if (input.isPixel == null)
@@ -451,11 +461,18 @@ typedef CharacterData =
 	var assetPath:String;
 
 	/**
-	 * Either the scale of the graphic as a float, or the [w, h] scale as an array of two floats.
+	 * The scale of the graphic as a float.
 	 * Pro tip: On pixel-art levels, save the sprites small and set this value to 6 or so to save memory.
 	 * @default 1
 	 */
-	var scale:OneOfTwo<Float, Array<Float>>;
+	var scale:Null<Float>;
+
+	/**
+	 * The amount to offset the camera by while focusing on this character.
+	 * Default value focuses on the character directly.
+	 * @default [0, 0]
+	 */
+	var cameraOffset:Array<Float>;
 
 	/**
 	 * Setting this to true disables anti-aliasing for the character.

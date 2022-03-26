@@ -136,6 +136,8 @@ class PolymodHandler
 		// Ensure script files have merge support.
 		output.addType("hscript", TextFileFormat.PLAINTEXT);
 		output.addType("hxs", TextFileFormat.PLAINTEXT);
+		output.addType("hxc", TextFileFormat.PLAINTEXT);
+		output.addType("hx", TextFileFormat.PLAINTEXT);
 
 		// You can specify the format of a specific file, with file extension.
 		// output.addFile("data/introText.txt", TextFileFormat.LINES)
@@ -146,8 +148,8 @@ class PolymodHandler
 	{
 		return {
 			assetLibraryPaths: [
-				"songs" => "songs", "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1", "week2" => "week2",
-				"week3" => "week3", "week4" => "week4", "week5" => "week5", "week6" => "week6", "week7" => "week7", "week8" => "week8",
+				"songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1", "week2" => "week2",
+				"week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "week8" => "week8",
 			]
 		}
 	}

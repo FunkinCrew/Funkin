@@ -24,6 +24,8 @@ class PackerCharacter extends BaseCharacter
 		loadAnimations();
 
 		playAnimation(_data.startingAnimation);
+
+		super.onCreate(event);
 	}
 
 	function loadSpritesheet()
@@ -48,11 +50,7 @@ class PackerCharacter extends BaseCharacter
 			this.antialiasing = true;
 		}
 
-		if (_data.scale != null)
-		{
-			this.setGraphicSize(Std.int(this.width * this.scale.x));
-			this.updateHitbox();
-		}
+		this.setScale(_data.scale);
 	}
 
 	function loadAnimations()

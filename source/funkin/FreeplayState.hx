@@ -25,6 +25,7 @@ import funkin.freeplayStuff.BGScrollingText;
 import funkin.freeplayStuff.DJBoyfriend;
 import funkin.freeplayStuff.FreeplayScore;
 import funkin.freeplayStuff.SongMenuItem;
+import funkin.play.HealthIcon;
 import lime.app.Future;
 import lime.utils.Assets;
 import funkin.shaderslmfao.AngleMask;
@@ -295,7 +296,7 @@ class FreeplayState extends MusicBeatSubstate
 			// grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			icon.sprTracker = songText;
+			// icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);

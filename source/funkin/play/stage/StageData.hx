@@ -223,10 +223,9 @@ class StageDataParser
 			input.cameraZoom = DEFAULT_CAMERAZOOM;
 		}
 
-		if (input.props == null || input.props.length == 0)
+		if (input.props == null)
 		{
-			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": missing props');
-			return null;
+			input.props = [];
 		}
 
 		for (inputProp in input.props)

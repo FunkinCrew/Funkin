@@ -8,6 +8,7 @@ import funkin.audiovis.ABotVis;
 import funkin.audiovis.PolygonSpectogram;
 import funkin.audiovis.SpectogramSprite;
 import flixel.FlxSprite;
+import funkin.play.HealthIcon;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
@@ -705,7 +706,7 @@ class ChartingState extends MusicBeatState
 				{
 					if (FlxG.mouse.overlaps(leftIcon))
 					{
-						if (leftIcon.char == _song.player1)
+						if (leftIcon.characterId == _song.player1)
 						{
 							p1Muted = !p1Muted;
 							leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
@@ -727,7 +728,7 @@ class ChartingState extends MusicBeatState
 					// sloppy copypaste lol deal with it!
 					if (FlxG.mouse.overlaps(rightIcon))
 					{
-						if (rightIcon.char == _song.player1)
+						if (rightIcon.characterId == _song.player1)
 						{
 							p1Muted = !p1Muted;
 							rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
@@ -1129,16 +1130,16 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.changeIcon(_song.player1);
-			rightIcon.changeIcon(_song.player2);
+			leftIcon.characterId = (_song.player1);
+			rightIcon.characterId = (_song.player2);
 
 			leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
 			rightIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
 		}
 		else
 		{
-			leftIcon.changeIcon(_song.player2);
-			rightIcon.changeIcon(_song.player1);
+			leftIcon.characterId = (_song.player2);
+			rightIcon.characterId = (_song.player1);
 
 			leftIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
 			rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;

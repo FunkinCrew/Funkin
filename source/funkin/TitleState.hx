@@ -189,8 +189,6 @@ class TitleState extends MusicBeatState
 		gfDance.antialiasing = true;
 		add(gfDance);
 
-		trace('MACRO TEST: ${gfDance.zIndex}');
-
 		// alphaShader.shader.funnyShit.input = gfDance.pixels; // old shit
 
 		logoBl.shader = alphaShader.shader;

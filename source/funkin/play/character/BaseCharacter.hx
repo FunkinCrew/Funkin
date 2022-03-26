@@ -1,5 +1,6 @@
 package funkin.play.character;
 
+import funkin.play.character.CharacterData.CharacterDataParser;
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
@@ -40,7 +41,8 @@ class BaseCharacter extends Bopper
 	final singTimeCrochet:Float;
 
 	/**
-	 * The x and y position to subtract from the stage's X value to get the character's proper rendering position.
+	 * Character position in stage file is at the bottom center of the character.
+	 * Position from stage file - character origin is at the top left corner of the character.
 	 */
 	public var characterOrigin(get, null):FlxPoint;
 
@@ -48,13 +50,62 @@ class BaseCharacter extends Bopper
 	{
 		var xPos = (width / 2); // Horizontal center
 		var yPos = (height); // Vertical bottom
-		trace('Origin: ${characterId} (${xPos}, ${yPos})');
 		return new FlxPoint(xPos, yPos);
 	}
 
+	/**
+	 * Returns the point the camera should focus on.
+	 * Should be approximately centered on the character, and should not move based on the current animation.
+	 * 
+	 * Set the position of this rather than reassigning it, so that anything referencing it will not be affected.
+	 */
+	public var cameraFocusPoint(default, null):FlxPoint = new FlxPoint(0, 0);
+
+	override function set_animOffset(value:Array<Float>)
+	{
+		if (animOffset == null)
+			animOffset = [0, 0];
+		if (animOffset == value)
+			return value;
+
+		var xDiff = animOffset[0] - value[0];
+		var yDiff = animOffset[1] - value[1];
+
+		// Call the super function so that camera focus point is not affected.
+		super.set_x(this.x + xDiff);
+		super.set_y(this.y + yDiff);
+
+		return animOffset = value;
+	}
+
+	/**
+	 * If the x position changes, other than via changing the animation offset,
+	 *  then we need to update the camera focus point.
+	 */
 	override function set_x(value:Float):Float
 	{
+		if (value == this.x)
+			return value;
+
+		var xDiff = value - this.x;
+		this.cameraFocusPoint.x += xDiff;
+
 		return super.set_x(value);
+	}
+
+	/**
+	 * If the y position changes, other than via changing the animation offset,
+	 *  then we need to update the camera focus point.
+	 */
+	override function set_y(value:Float):Float
+	{
+		if (value == this.y)
+			return value;
+
+		var yDiff = value - this.y;
+		this.cameraFocusPoint.y += yDiff;
+
+		return super.set_y(value);
 	}
 
 	public function new(id:String)
@@ -72,6 +123,26 @@ class BaseCharacter extends Bopper
 			this.characterName = _data.name;
 			this.singTimeCrochet = _data.singTime;
 		}
+	}
+
+	/**
+	 * Set the sprite scale to the appropriate value.
+	 * @param scale 
+	 */
+	function setScale(scale:Null<Float>):Void
+	{
+		if (scale == null)
+			scale = 1.0;
+
+		this.scale.x = scale;
+		this.scale.y = scale;
+		this.updateHitbox();
+	}
+
+	override function onCreate(event:ScriptEvent):Void
+	{
+		this.cameraFocusPoint = new FlxPoint(this.x + this.width / 2 + _data.cameraOffset[0], this.y + this.height / 2 + _data.cameraOffset[0]);
+		super.onCreate(event);
 	}
 
 	public override function onUpdate(event:UpdateScriptEvent):Void
@@ -112,7 +183,7 @@ class BaseCharacter extends Bopper
 			FlxG.watch.addQuick('singTimeMs-${characterId}', singTimeMs);
 			if (holdTimer > singTimeMs && shouldStopSinging)
 			{
-				trace('holdTimer reached ${holdTimer}sec (> ${singTimeMs}), stopping sing animation');
+				// trace('holdTimer reached ${holdTimer}sec (> ${singTimeMs}), stopping sing animation');
 				holdTimer = 0;
 				dance(true);
 			}
@@ -228,8 +299,6 @@ class BaseCharacter extends Bopper
 	public override function onNoteHit(event:NoteScriptEvent)
 	{
 		super.onNoteHit(event);
-
-		trace('HIT NOTE: ${event.note.data.dir} : ${event.note.isSustainNote}');
 
 		holdTimer = 0;
 

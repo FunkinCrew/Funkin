@@ -32,7 +32,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	/**
 	 * Offset the character's sprite by this much when playing each animation.
 	 */
-	public var animationOffsets:Map<String, Array<Int>> = new Map<String, Array<Int>>();
+	public var animationOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
 
 	/**
 	 * Add a suffix to the `idle` animation (or `danceLeft` and `danceRight` animations)
@@ -47,23 +47,22 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		return value;
 	}
 
-	/**
-	 * Set this value to define an additional vertical offset to this sprite's position.
-	 */
-	public var yOffset:Float = 0;
+	private var animOffset(default, set):Array<Float> = [0, 0];
 
-	override function set_y(value:Float):Float
+	function set_animOffset(value:Array<Float>)
 	{
-		this.y = this.yOffset + value;
-		return this.y;
-	}
+		if (animOffset == null)
+			animOffset = [0, 0];
+		if (animOffset == value)
+			return value;
 
-	function set_yOffset(value:Float):Float
-	{
-		var diff = value - this.yOffset;
-		this.yOffset = value;
-		this.y += diff;
-		return value;
+		var xDiff = animOffset[0] - value[0];
+		var yDiff = animOffset[1] - value[1];
+
+		this.x += xDiff;
+		this.y += yDiff;
+
+		return animOffset = value;
 	}
 
 	/**
@@ -193,11 +192,11 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		var offsets = animationOffsets.get(name);
 		if (offsets != null)
 		{
-			this.offset.set(offsets[0], offsets[1]);
+			this.animOffset = offsets;
 		}
 		else
 		{
-			this.offset.set(0, 0);
+			this.animOffset = [0, 0];
 		}
 	}
 

@@ -2,14 +2,13 @@ package funkin.play;
 
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 
 /**
  * Static methods for playing cutscenes in the PlayState.
- * TODO: Softcode this shit!!!!!1!
+ * TODO: Un-hardcode this shit!!!!!1!
  */
 class VanillaCutscenes
 {
@@ -64,7 +63,7 @@ class VanillaCutscenes
 		@:privateAccess
 		PlayState.instance.startCountdown();
 		@:privateAccess
-		PlayState.instance.cameraMovement();
+		PlayState.instance.controlCamera();
 	}
 
 	public static function playHorrorStartCutscene()

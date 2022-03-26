@@ -41,15 +41,16 @@ class MultiSparrowCharacter extends BaseCharacter
 	{
 		trace('Creating MULTI SPARROW CHARACTER: ' + this.characterId);
 
-		buildSprite();
-
-		playAnimation(_data.startingAnimation);
+		buildSprites();
+		super.onCreate(event);
 	}
 
-	function buildSprite()
+	function buildSprites()
 	{
 		buildSpritesheets();
 		buildAnimations();
+
+		playAnimation(_data.startingAnimation);
 
 		if (_data.isPixel)
 		{
@@ -58,12 +59,6 @@ class MultiSparrowCharacter extends BaseCharacter
 		else
 		{
 			this.antialiasing = true;
-		}
-
-		if (_data.scale != null)
-		{
-			this.setGraphicSize(Std.int(this.width * this.scale.x));
-			this.updateHitbox();
 		}
 	}
 
@@ -115,26 +110,28 @@ class MultiSparrowCharacter extends BaseCharacter
 		}
 		if (assetPath == null)
 		{
-			trace('Asset path is null, falling back to default. This is normal!');
+			// trace('Asset path is null, falling back to default. This is normal!');
 			loadFramesByAssetPath(_data.assetPath);
 			return;
 		}
 
 		if (this.activeMember == assetPath)
 		{
-			trace('Already using this asset path: ${assetPath}');
+			// trace('Already using this asset path: ${assetPath}');
 			return;
 		}
 
 		if (members.exists(assetPath))
 		{
+			// Switch to a new set of sprites.
 			trace('Loading frames from asset path: ${assetPath}');
 			this.frames = members.get(assetPath);
 			this.activeMember = assetPath;
+			this.setScale(_data.scale);
 		}
 		else
 		{
-			trace('Multi-Sparrow could not find asset path: ${assetPath}');
+			trace('[WARN] MultiSparrow character ${characterId} could not find asset path: ${assetPath}');
 		}
 	}
 
@@ -149,20 +146,18 @@ class MultiSparrowCharacter extends BaseCharacter
 		}
 		else
 		{
-			trace('Multi-Sparrow could not find animation: ${animName}');
+			trace('[WARN] MultiSparrow character ${characterId} could not find animation: ${animName}');
 		}
 	}
 
 	function buildAnimations()
 	{
-		trace('[SPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+		trace('[MULTISPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
 
 		// We need to swap to the proper frame collection before adding the animations, I think?
 		for (anim in _data.animations)
 		{
-			trace('Using frames: ${anim.name}');
 			loadFramesByAnimName(anim.name);
-			trace('Adding animation');
 			FlxAnimationUtil.addAtlasAnimation(this, anim);
 
 			if (anim.offsets == null)
@@ -176,7 +171,7 @@ class MultiSparrowCharacter extends BaseCharacter
 		}
 
 		var animNames = this.animation.getNameList();
-		trace('[SPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
+		trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
 	}
 
 	public override function playAnimation(name:String, restart:Bool = false):Void

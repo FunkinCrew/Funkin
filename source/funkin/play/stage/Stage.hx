@@ -211,7 +211,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public function refresh()
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-		trace('Stage sorted by z-index');
 	}
 
 	/**
@@ -242,8 +241,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		if (character == null)
 			return;
 
-		var debugMarker:FlxSprite = new FlxSprite(0, 0);
-
 		// Apply position and z-index.
 		switch (charType)
 		{
@@ -251,39 +248,23 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 				this.characters.set("bf", character);
 				character.zIndex = _data.characters.bf.zIndex;
 				// Subtracting the origin ensures characters are positioned relative to their feet.
-				trace('Data: ' + _data.characters.bf.position[0] + ', ' + _data.characters.bf.position[1]);
 				character.x = _data.characters.bf.position[0] - character.characterOrigin.x;
 				character.y = _data.characters.bf.position[1] - character.characterOrigin.y;
-				trace('Character position: ' + character.x + ', ' + character.y);
-				debugMarker.x = _data.characters.bf.position[0];
-				debugMarker.y = _data.characters.bf.position[1];
-				trace('Debug marker position: ' + debugMarker.x + ', ' + debugMarker.y);
 			case GF:
 				this.characters.set("gf", character);
 				character.zIndex = _data.characters.gf.zIndex;
 				// Subtracting the origin ensures characters are positioned relative to their feet.
 				character.x = _data.characters.gf.position[0] - character.characterOrigin.x;
 				character.y = _data.characters.gf.position[1] - character.characterOrigin.y;
-				debugMarker.x = _data.characters.gf.position[0];
-				debugMarker.y = _data.characters.gf.position[1];
 			case DAD:
 				this.characters.set("dad", character);
 				character.zIndex = _data.characters.dad.zIndex;
 				// Subtracting the origin ensures characters are positioned relative to their feet.
 				character.x = _data.characters.dad.position[0] - character.characterOrigin.x;
 				character.y = _data.characters.dad.position[1] - character.characterOrigin.y;
-				debugMarker.x = _data.characters.dad.position[0];
-				debugMarker.y = _data.characters.dad.position[1];
 			default:
 				this.characters.set(character.characterId, character);
 		}
-
-		#if debug
-		// Add a DEBUG marker for the character's origin.
-		debugMarker.makeGraphic(10, 10, 0xFFFF00FF);
-		debugMarker.zIndex = 10000;
-		this.add(debugMarker);
-		#end
 
 		// Add the character to the scene.
 		this.add(character);

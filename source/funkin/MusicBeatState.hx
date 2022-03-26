@@ -46,9 +46,6 @@ class MusicBeatState extends FlxUIState
 	{
 		super.create();
 
-		if (transIn != null)
-			trace('reg ' + transIn.region);
-
 		createWatermarkText();
 	}
 

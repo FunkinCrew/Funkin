@@ -1,5 +1,7 @@
 package funkin.ui.animDebugShit;
 
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.character.SparrowCharacter;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIDropDownMenu;
@@ -392,7 +394,7 @@ class DebugBoundingState extends FlxState
 		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
 		{
 			var animName = animDropDownMenu.selectedLabel;
-			var coolValues:Array<Int> = swagChar.animationOffsets.get(animName);
+			var coolValues:Array<Float> = swagChar.animationOffsets.get(animName);
 
 			var multiplier:Int = 5;
 
@@ -443,7 +445,7 @@ class DebugBoundingState extends FlxState
 			swagChar.destroy();
 		}
 
-		swagChar = new BaseCharacter(char);
+		swagChar = CharacterDataParser.fetchCharacter(char);
 		swagChar.x = 100;
 		swagChar.y = 100;
 		// swagChar.debugMode = true;

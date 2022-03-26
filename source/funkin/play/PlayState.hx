@@ -1,7 +1,6 @@
 package funkin.play;
 
 import funkin.play.character.BaseCharacter;
-import flixel.addons.effects.FlxTrail;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
@@ -29,6 +28,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.Note;
 import funkin.play.character.CharacterData;
 import funkin.play.stage.Stage;
+import funkin.play.HealthIcon;
 import funkin.play.stage.StageData;
 import funkin.play.Strumline.StrumlineArrow;
 import funkin.play.Strumline.StrumlineStyle;
@@ -143,7 +143,7 @@ class PlayState extends MusicBeatState implements IHook
 	 * NOTE: This must be an FlxObject, not an FlxPoint, because it needs to be added to the scene.
 	 * Once it's added to the scene, the camera can be configured to follow it.
 	 */
-	public var cameraFollowPoint:FlxObject = new FlxObject(0, 0, 1, 1);
+	public var cameraFollowPoint:FlxSprite = new FlxSprite(0, 0);
 
 	/**
 	 * PRIVATE INSTANCE VARIABLES
@@ -275,6 +275,10 @@ class PlayState extends MusicBeatState implements IHook
 
 		instance = this;
 
+		// TEMP: For testing
+		cameraFollowPoint.makeGraphic(8, 8, 0xFFFF00FF);
+		cameraFollowPoint.zIndex = 1000000;
+
 		// Reduce physics accuracy (who cares!!!) to improve animation quality.
 		FlxG.fixedTimestep = false;
 
@@ -370,11 +374,11 @@ class PlayState extends MusicBeatState implements IHook
 		scoreText.scrollFactor.set();
 		add(scoreText);
 
-		iconP1 = new HealthIcon(currentSong.player1, true);
+		iconP1 = new HealthIcon(currentSong.player1, 0);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(currentSong.player2, false);
+		iconP2 = new HealthIcon(currentSong.player2, 1);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
@@ -536,51 +540,17 @@ class PlayState extends MusicBeatState implements IHook
 		if (dad != null)
 		{
 			dad.characterType = CharacterType.DAD;
-			cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+			cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
 		}
 
 		switch (currentSong.player2)
 		{
 			case 'gf':
-				var gfPoint:FlxPoint = currentStage.getGirlfriendPosition();
-				dad.setPosition(gfPoint.x, gfPoint.y);
-
-				// girlfriend.visible = false;
-
 				if (isStoryMode)
 				{
 					cameraFollowPoint.x += 600;
 					tweenCamIn();
 				}
-			case "spooky":
-				dad.y += 200;
-			case "monster":
-				dad.y += 100;
-			case 'monster-christmas':
-				dad.y += 130;
-			case 'dad':
-				cameraFollowPoint.x += 400;
-			case 'pico':
-				cameraFollowPoint.x += 600;
-				dad.y += 300;
-			case 'parents-christmas':
-				dad.x -= 500;
-			case 'senpai' | 'senpai-angry':
-				dad.x += 150;
-				dad.y += 360;
-				cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'spirit':
-				dad.x -= 150;
-				dad.y += 100;
-				cameraFollowPoint.setPosition(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'tankman':
-				dad.y += 180;
-		}
-
-		if (currentSong.player1 == "pico")
-		{
-			dad.x -= 100;
-			dad.y -= 100;
 		}
 
 		//
@@ -596,11 +566,6 @@ class PlayState extends MusicBeatState implements IHook
 		// REPOSITIONING PER STAGE
 		switch (currentStageId)
 		{
-			case 'schoolEvil':
-				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-				// Go behind Spirit.
-				evilTrail.zIndex = 190;
-				add(evilTrail);
 			case "tank":
 				girlfriend.y += 10;
 				girlfriend.x -= 30;
@@ -1081,7 +1046,7 @@ class PlayState extends MusicBeatState implements IHook
 			FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
 
 		if (FlxG.keys.justPressed.NINE)
-			iconP1.swapOldIcon();
+			iconP1.toggleOldIcon();
 
 		iconP1.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP1.width, 150, 0.15)));
 		iconP2.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP2.width, 150, 0.15)));
@@ -1097,16 +1062,6 @@ class PlayState extends MusicBeatState implements IHook
 		if (health > 2)
 			health = 2;
 
-		if (healthBar.percent < 20)
-			iconP1.animation.curAnim.curFrame = 1;
-		else
-			iconP1.animation.curAnim.curFrame = 0;
-
-		if (healthBar.percent > 80)
-			iconP2.animation.curAnim.curFrame = 1;
-		else
-			iconP2.animation.curAnim.curFrame = 0;
-
 		#if debug
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
@@ -1121,7 +1076,7 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			cameraRightSide = SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection;
 
-			cameraMovement();
+			controlCamera();
 		}
 
 		if (camZooming)
@@ -1195,7 +1150,7 @@ class PlayState extends MusicBeatState implements IHook
 			inactiveNotes.shift();
 		}
 
-		if (generatedMusic)
+		if (generatedMusic && playerStrumline != null)
 		{
 			activeNotes.forEachAlive(function(daNote:Note)
 			{
@@ -1522,57 +1477,35 @@ class PlayState extends MusicBeatState implements IHook
 			comboPopUps.displayCombo(combo);
 	}
 
-	function cameraMovement()
+	function controlCamera()
 	{
 		if (currentStage == null)
 			return;
 
-		if (cameraFollowPoint.x != currentStage.getDad().getMidpoint().x + 150 && !cameraRightSide)
+		var isFocusedOnDad = cameraFollowPoint.x == currentStage.getDad().cameraFocusPoint.x;
+		var isFocusedOnBF = cameraFollowPoint.x == currentStage.getBoyfriend().cameraFocusPoint.x;
+
+		if (cameraRightSide && !isFocusedOnBF)
 		{
-			cameraFollowPoint.setPosition(currentStage.getDad().getMidpoint().x + 150, currentStage.getDad().getMidpoint().y - 100);
-			// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+			// Focus the camera on the player.
+			cameraFollowPoint.setPosition(currentStage.getBoyfriend().cameraFocusPoint.x, currentStage.getBoyfriend().cameraFocusPoint.y);
 
-			switch (currentStage.getDad().characterId)
-			{
-				case 'mom':
-					cameraFollowPoint.y = currentStage.getDad().getMidpoint().y;
-				case 'senpai' | 'senpai-angry':
-					cameraFollowPoint.y = currentStage.getDad().getMidpoint().y - 430;
-					cameraFollowPoint.x = currentStage.getDad().getMidpoint().x - 100;
-			}
-
-			if (currentStage.getDad().characterId == 'mom')
-				vocals.volume = 1;
-
-			if (currentSong.song.toLowerCase() == 'tutorial')
-				tweenCamIn();
-		}
-
-		if (cameraRightSide && cameraFollowPoint.x != currentStage.getBoyfriend().getMidpoint().x - 100)
-		{
-			cameraFollowPoint.setPosition(currentStage.getBoyfriend().getMidpoint().x - 100, currentStage.getBoyfriend().getMidpoint().y - 100);
-
-			switch (currentStageId)
-			{
-				case 'limo':
-					cameraFollowPoint.x = currentStage.getBoyfriend().getMidpoint().x - 300;
-				case 'mall':
-					cameraFollowPoint.y = currentStage.getBoyfriend().getMidpoint().y - 200;
-				case 'school' | 'schoolEvil':
-					cameraFollowPoint.x = currentStage.getBoyfriend().getMidpoint().x - 200;
-					cameraFollowPoint.y = currentStage.getBoyfriend().getMidpoint().y - 200;
-			}
-
+			// TODO: Un-hardcode this.
 			if (currentSong.song.toLowerCase() == 'tutorial')
 				FlxTween.tween(FlxG.camera, {zoom: 1 * FlxCamera.defaultZoom}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 		}
-	}
+		else if (!cameraRightSide && !isFocusedOnDad)
+		{
+			// Focus the camera on the opponent.
+			cameraFollowPoint.setPosition(currentStage.getDad().cameraFocusPoint.x, currentStage.getDad().cameraFocusPoint.y);
 
-	public var test:(PlayState) -> Void = function(instance:PlayState)
-	{
-		trace('test');
-		trace(instance.currentStageId);
-	};
+			// TODO: Un-hardcode this stuff.
+			if (currentStage.getDad().characterId == 'mom')
+				vocals.volume = 1;
+			if (currentSong.song.toLowerCase() == 'tutorial')
+				tweenCamIn();
+		}
+	}
 
 	public function keyShit(test:Bool):Void
 	{
@@ -1684,6 +1617,8 @@ class PlayState extends MusicBeatState implements IHook
 
 		for (keyId => isPressed in pressArray)
 		{
+			if (playerStrumline == null)
+				continue;
 			var arrow:StrumlineArrow = PlayState.instance.playerStrumline.getArrow(keyId);
 
 			if (isPressed && arrow.animation.curAnim.name != 'confirm')
@@ -2072,7 +2007,6 @@ class PlayState extends MusicBeatState implements IHook
 	public function refresh()
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-		trace('Stage sorted by z-index');
 	}
 
 	/**

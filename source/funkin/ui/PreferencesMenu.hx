@@ -157,16 +157,17 @@ class PreferencesMenu extends Page
 		});
 	}
 
-	private static function preferenceCheck(prefString:String, prefValue:Dynamic):Void
+	private static function preferenceCheck(prefString:String, defaultValue:Dynamic):Void
 	{
 		if (preferences.get(prefString) == null)
 		{
-			preferences.set(prefString, prefValue);
-			trace('set preference!');
+			// Set the value to default.
+			preferences.set(prefString, defaultValue);
+			trace('Set preference to default: ${prefString} = ${defaultValue}');
 		}
 		else
 		{
-			trace('found preference: ' + preferences.get(prefString));
+			trace('Found preference: ${prefString} = ${preferences.get(prefString)}');
 		}
 	}
 }
