@@ -1,7 +1,9 @@
 package funkin.play;
 
-import funkin.play.character.CharacterData.CharacterDataParser;
+import flixel.math.FlxMath;
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import openfl.utils.Assets;
 
 /**
@@ -31,9 +33,24 @@ class HealthIcon extends FlxSprite
 
 	/**
 	 * Whether this health icon should automatically update its state based on the character's health.
-	 * You can set this to false if you want to manually forc
+	 * Note that turning this off means you have to manually do the following:
+	 * - Bumping the icon on the beat.
+	 * - Switching between winning/losing/idle animations.
+	 * - Repositioning the icon as health changes.
 	 */
 	public var autoUpdate:Bool = true;
+
+	/**
+	 * Since the `scale` of the sprite dynamically changes over time,
+	 * this value allows you to set a relative scale for the icon.
+	 * @default 1x scale
+	 */
+	public var size:FlxPoint = new FlxPoint(1, 1);
+
+	/**
+	 * Apply the "bump" animation once every X steps.
+	 */
+	public var bumpEvery:Int = 4;
 
 	/**
 	 * The player the health icon is attached to.
@@ -45,6 +62,11 @@ class HealthIcon extends FlxSprite
 	 * Calculated when loading an icon.
 	 */
 	var isPixel:Bool = false;
+
+	/**
+	 * Whether this is a legacy icon or not.
+	 */
+	var isLegacyStyle:Bool = false;
 
 	/**
 	 * At this amount of health, play the Winning animation instead of the idle.
@@ -127,10 +149,57 @@ class HealthIcon extends FlxSprite
 			switch (playerId)
 			{
 				case 0: // Boyfriend
+					// Update the animation based on the current state.
 					updateHealthIcon(PlayState.instance.health);
+					// Update the position to match the health bar.
+					this.x = PlayState.instance.healthBar.x
+						+ (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01));
 				case 1: // Dad
+					// Update the animation based on the current state.
 					updateHealthIcon(MAXIMUM_HEALTH - PlayState.instance.health);
+					// Update the position to match the health bar.
+					this.x = PlayState.instance.healthBar.x
+						+ (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01))
+						- (this.width);
 			}
+
+			// Lerp the health icon back to its normal size,
+			// while maintaining aspect ratio.
+			if (this.width > this.height)
+			{
+				// Apply linear interpolation while accounting for frame rate.
+				var targetSize = Std.int(CoolUtil.coolLerp(this.width, 150 * this.size.x, 0.15));
+
+				setGraphicSize(targetSize, 0);
+			}
+			else
+			{
+				var targetSize = Std.int(CoolUtil.coolLerp(this.height, 150 * this.size.y, 0.15));
+
+				setGraphicSize(0, targetSize);
+			}
+			this.updateHitbox();
+		}
+	}
+
+	public function onStepHit(curStep:Int)
+	{
+		if (curStep % bumpEvery == 0 && isLegacyStyle)
+		{
+			// Make the health icons bump (the update function causes them to lerp back down).
+			if (this.width > this.height)
+			{
+				var targetSize = Std.int(CoolUtil.coolLerp(this.width + 30, 150, 0.15));
+
+				setGraphicSize(targetSize, 0);
+			}
+			else
+			{
+				var targetSize = Std.int(CoolUtil.coolLerp(this.height + 30, 150, 0.15));
+
+				setGraphicSize(0, targetSize);
+			}
+			this.updateHitbox();
 		}
 	}
 
@@ -169,6 +238,10 @@ class HealthIcon extends FlxSprite
 			case FROM_LOSING | FROM_WINNING:
 				if (isAnimationFinished())
 					playAnimation(IDLE);
+			case "":
+				playAnimation(IDLE);
+			default:
+				playAnimation(IDLE);
 		}
 	}
 
@@ -200,7 +273,7 @@ class HealthIcon extends FlxSprite
 
 	function correctCharacterId(charId:String):String
 	{
-		if (!Assets.exists(Paths.image('icons/icon-' + charId)))
+		if (!Assets.exists(Paths.image('icons/icon-$charId')))
 		{
 			FlxG.log.warn('No icon for character: $charId : using default placeholder face instead!');
 			return "face";
@@ -211,7 +284,7 @@ class HealthIcon extends FlxSprite
 
 	function isNewSpritesheet(charId:String):Bool
 	{
-		return Assets.exists(Paths.xml('icons/icon-' + characterId));
+		return Assets.exists(Paths.file('images/icons/icon-$characterId.xml'));
 	}
 
 	function fetchIsPixel(charId:String):Bool
@@ -235,7 +308,9 @@ class HealthIcon extends FlxSprite
 
 		isPixel = fetchIsPixel(charId);
 
-		if (isNewSpritesheet(charId))
+		isLegacyStyle = !isNewSpritesheet(charId);
+
+		if (!isLegacyStyle)
 		{
 			frames = Paths.getSparrowAtlas('icons/icon-$charId');
 
@@ -290,11 +365,17 @@ class HealthIcon extends FlxSprite
 	{
 		// Attempt to play the animation
 		if (hasAnimation(name))
+		{
 			this.animation.play(name, restart, false, 0);
+			return;
+		}
 
 		// Play the fallback animation if the requested animation was not found
 		if (fallback != null && hasAnimation(fallback))
+		{
 			this.animation.play(fallback, restart, false, 0);
+			return;
+		}
 
 		// If we don't have an animation, we're done.
 	}

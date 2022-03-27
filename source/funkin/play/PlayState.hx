@@ -185,13 +185,23 @@ class PlayState extends MusicBeatState implements IHook
 	 * The bar which displays the player's health.
 	 * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
 	 */
-	private var healthBar:FlxBar;
+	public var healthBar:FlxBar;
 
 	/**
 	 * The background image used for the health bar.
 	 * Emma says the image is slightly skewed so I'm leaving it as an image instead of a `createGraphic`.
 	 */
 	public var healthBarBG:FlxSprite;
+
+	/**
+	 * The health icon representing the player.
+	 */
+	public var iconP1:HealthIcon;
+
+	/**
+	 * The health icon representing the opponent.
+	 */
+	public var iconP2:HealthIcon;
 
 	/**
 	 * The sprite group containing active player's strumline notes.
@@ -247,8 +257,6 @@ class PlayState extends MusicBeatState implements IHook
 	private var combo:Int = 0;
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
-	private var iconP1:HealthIcon;
-	private var iconP2:HealthIcon;
 
 	var dialogue:Array<String>;
 	var talking:Bool = true;
@@ -275,8 +283,9 @@ class PlayState extends MusicBeatState implements IHook
 
 		instance = this;
 
-		// TEMP: For testing
-		cameraFollowPoint.makeGraphic(8, 8, 0xFFFF00FF);
+		// Displays the camera follow point as a sprite for debug purposes.
+		// TODO: Put this on a toggle?
+		cameraFollowPoint.makeGraphic(8, 8, 0xFF00FF00);
 		cameraFollowPoint.zIndex = 1000000;
 
 		// Reduce physics accuracy (who cares!!!) to improve animation quality.
@@ -326,6 +335,18 @@ class PlayState extends MusicBeatState implements IHook
 
 		// Once the song is loaded, we can continue and initialize the stage.
 
+		var healthBarYPos:Float = PreferencesMenu.getPref('downscroll') ? FlxG.height * 0.1 : FlxG.height * 0.9;
+		healthBarBG = new FlxSprite(0, healthBarYPos).loadGraphic(Paths.image('healthBar'));
+		healthBarBG.screenCenter(X);
+		healthBarBG.scrollFactor.set(0, 0);
+		add(healthBarBG);
+
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+			'healthLerp', 0, 2);
+		healthBar.scrollFactor.set();
+		healthBar.createFilledBar(Constants.HEALTH_BAR_RED, Constants.HEALTH_BAR_GREEN);
+		add(healthBar);
+
 		initStage();
 		initCharacters();
 		#if discord_rpc
@@ -357,30 +378,10 @@ class PlayState extends MusicBeatState implements IHook
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
-		var healthBarYPos:Float = PreferencesMenu.getPref('downscroll') ? FlxG.height * 0.1 : FlxG.height * 0.9;
-		healthBarBG = new FlxSprite(0, healthBarYPos).loadGraphic(Paths.image('healthBar'));
-		healthBarBG.screenCenter(X);
-		healthBarBG.scrollFactor.set(0, 0);
-		add(healthBarBG);
-
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'healthLerp', 0, 2);
-		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(Constants.HEALTH_BAR_RED, Constants.HEALTH_BAR_GREEN);
-		add(healthBar);
-
 		scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
 		scoreText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreText.scrollFactor.set();
 		add(scoreText);
-
-		iconP1 = new HealthIcon(currentSong.player1, 0);
-		iconP1.y = healthBar.y - (iconP1.height / 2);
-		add(iconP1);
-
-		iconP2 = new HealthIcon(currentSong.player2, 1);
-		iconP2.y = healthBar.y - (iconP2.height / 2);
-		add(iconP2);
 
 		// Attach the groups to the HUD camera so they are rendered independent of the stage.
 		grpNoteSplashes.cameras = [camHUD];
@@ -475,6 +476,9 @@ class PlayState extends MusicBeatState implements IHook
 				currentStageId = 'schoolEvil';
 			case 'guns' | 'stress' | 'ugh':
 				currentStageId = 'tankmanBattlefield';
+			case 'experimental-phase' | 'perfection':
+				// SERIOUSLY REVAMP THE CHART FORMAT ALREADY
+				currentStageId = "breakout";
 			default:
 				currentStageId = "mainStage";
 		}
@@ -484,6 +488,14 @@ class PlayState extends MusicBeatState implements IHook
 
 	function initCharacters()
 	{
+		iconP1 = new HealthIcon(currentSong.player1, 0);
+		iconP1.y = healthBar.y - (iconP1.height / 2);
+		add(iconP1);
+
+		iconP2 = new HealthIcon(currentSong.player2, 1);
+		iconP2.y = healthBar.y - (iconP2.height / 2);
+		add(iconP2);
+
 		//
 		// GIRLFRIEND
 		//
@@ -501,6 +513,9 @@ class PlayState extends MusicBeatState implements IHook
 				gfVersion = 'gf-pixel';
 			case 'tankmanBattlefield':
 				gfVersion = 'gf-tankmen';
+			case 'breakout':
+				// SERIOUSLY PUT THIS SHIT IN THE CHART
+				gfVersion = '';
 		}
 
 		if (currentSong.player1 == "pico")
@@ -585,8 +600,8 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			// We're using Eric's stage handler.
 			// Characters get added to the stage, not the main scene.
-			currentStage.addCharacter(boyfriend, BF);
 			currentStage.addCharacter(girlfriend, GF);
+			currentStage.addCharacter(boyfriend, BF);
 			currentStage.addCharacter(dad, DAD);
 
 			// Redo z-indexes.
@@ -1048,17 +1063,6 @@ class PlayState extends MusicBeatState implements IHook
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.toggleOldIcon();
 
-		iconP1.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP1.width, 150, 0.15)));
-		iconP2.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP2.width, 150, 0.15)));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
-
-		var iconOffset:Int = 26;
-
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.value, 0, 2, 100, 0) * 0.01) - iconOffset);
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.value, 0, 2, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
-
 		if (health > 2)
 			health = 2;
 
@@ -1293,7 +1297,7 @@ class PlayState extends MusicBeatState implements IHook
 	function killCombo():Void
 	{
 		// Girlfriend gets sad if you combo break after hitting 5 notes.
-		if (currentStage.getGirlfriend() != null)
+		if (currentStage != null && currentStage.getGirlfriend() != null)
 			if (combo > 5 && currentStage.getGirlfriend().hasAnimation('sad'))
 				currentStage.getGirlfriend().playAnimation('sad');
 
@@ -1727,6 +1731,9 @@ class PlayState extends MusicBeatState implements IHook
 			resyncVocals();
 		}
 
+		iconP1.onStepHit(curStep);
+		iconP2.onStepHit(curStep);
+
 		dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep));
 	}
 
@@ -1764,12 +1771,6 @@ class PlayState extends MusicBeatState implements IHook
 				camHUD.zoom += 0.03;
 			}
 		}
-
-		// Make the health icons bump (the update function causes them to lerp back down).
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
 
 		// Make the characters dance on the beat
 		danceOnBeat();

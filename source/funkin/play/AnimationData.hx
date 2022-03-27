@@ -27,7 +27,7 @@ typedef AnimationData =
 	 * Offset the character's position by this amount when playing this animation.
 	 * @default [0, 0]
 	 */
-	var offsets:Null<Array<Int>>;
+	var offsets:Null<Array<Float>>;
 
 	/**
 	 * Whether the animation should loop when it finishes.

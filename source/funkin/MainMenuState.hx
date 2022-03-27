@@ -1,14 +1,10 @@
 package funkin;
 
-import funkin.util.Constants;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.module.ModuleHandler;
-import funkin.NGio;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.effects.FlxFlicker;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
@@ -18,14 +14,19 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import lime.app.Application;
-import openfl.filters.ShaderFilter;
+import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.module.ModuleHandler;
+import funkin.NGio;
 import funkin.shaderslmfao.ScreenWipeShader;
 import funkin.ui.AtlasMenuList;
 import funkin.ui.MenuList;
 import funkin.ui.OptionsState;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;
+import funkin.util.Constants;
+import funkin.util.WindowUtil;
+import lime.app.Application;
+import openfl.filters.ShaderFilter;
 
 using StringTools;
 
@@ -185,17 +186,7 @@ class MainMenuState extends MusicBeatState
 	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
-		#if linux
-		// Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-		Sys.command('/usr/bin/xdg-open', [
-			"https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/",
-			"&"
-		]);
-		#else
-		// FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-
-		FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/');
-		#end
+		WindowUtil.openURL(Constants.URL_KICKSTARTER);
 	}
 	#end
 

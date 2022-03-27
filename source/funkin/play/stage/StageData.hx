@@ -174,7 +174,7 @@ class StageDataParser
 	static final DEFAULT_DANCEEVERY:Int = 0;
 	static final DEFAULT_ISPIXEL:Bool = false;
 	static final DEFAULT_NAME:String = "Untitled Stage";
-	static final DEFAULT_OFFSETS:Array<Int> = [0, 0];
+	static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
 	static final DEFAULT_POSITION:Array<Float> = [0, 0];
 	static final DEFAULT_SCALE:Float = 1.0;
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -183,6 +183,7 @@ class StageDataParser
 	static final DEFAULT_CHARACTER_DATA:StageDataCharacter = {
 		zIndex: DEFAULT_ZINDEX,
 		position: DEFAULT_POSITION,
+		cameraOffsets: DEFAULT_OFFSETS,
 	}
 
 	/**
@@ -358,6 +359,10 @@ class StageDataParser
 			{
 				inputCharacter.position = [0, 0];
 			}
+			if (inputCharacter.cameraOffsets == null || inputCharacter.cameraOffsets.length != 2)
+			{
+				inputCharacter.cameraOffsets = [0, 0];
+			}
 		}
 
 		// All good!
@@ -475,5 +480,11 @@ typedef StageDataCharacter =
 	/**
 	 * The position to render the character at.
 	 */
-	position:Array<Float>
+	position:Array<Float>,
+
+	/**
+	 * The camera offsets to apply when focusing on the character on this stage.
+	 * @default [0, 0]
+	 */
+	cameraOffsets:Array<Float>,
 };

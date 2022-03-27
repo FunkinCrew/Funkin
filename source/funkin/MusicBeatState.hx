@@ -95,10 +95,14 @@ class MusicBeatState extends FlxUIState
 
 	function debug_refreshModules()
 	{
+		// Forcibly clear scripts so that scripts can be edited.
 		ModuleHandler.clearModuleCache();
-
-		// Forcibly reload scripts so that scripted stages can be edited.
 		polymod.hscript.PolymodScriptClass.clearScriptClasses();
+
+		// Forcibly reload Polymod so it finds any new files.
+		polymod.Polymod.reload();
+
+		// Reload scripted classes so stages and modules will update.
 		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
 
 		// Reload the stages in cache. This might cause a lag spike but who cares this is a debug utility.
@@ -106,7 +110,7 @@ class MusicBeatState extends FlxUIState
 		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.loadModuleCache();
 
-		// Create a new instance of the current state class.
+		// Restart the current state, so old data is cleared.
 		FlxG.resetState();
 	}
 

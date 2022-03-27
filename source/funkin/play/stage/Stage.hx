@@ -241,33 +241,70 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		if (character == null)
 			return;
 
+		#if debug
+		// Temporary marker that shows where the character's location is relative to.
+		// Should display at the stage position of the character (before any offsets).
+		// TODO: Make this a toggle? It's useful to turn on from time to time.
+		var debugIcon:FlxSprite = new FlxSprite(0, 0);
+		debugIcon.makeGraphic(8, 8, 0xffff00ff);
+		debugIcon.zIndex = 1000000;
+		#end
+
 		// Apply position and z-index.
 		switch (charType)
 		{
 			case BF:
 				this.characters.set("bf", character);
 				character.zIndex = _data.characters.bf.zIndex;
+
+				// Start with the per-stage character position.
 				// Subtracting the origin ensures characters are positioned relative to their feet.
-				character.x = _data.characters.bf.position[0] - character.characterOrigin.x;
-				character.y = _data.characters.bf.position[1] - character.characterOrigin.y;
+				// Subtracting the global offset allows positioning on a per-character basis.
+				character.x = _data.characters.bf.position[0] - character.characterOrigin.x + character.globalOffsets[0];
+				character.y = _data.characters.bf.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+
+				character.cameraFocusPoint.x += _data.characters.bf.cameraOffsets[0];
+				character.cameraFocusPoint.y += _data.characters.bf.cameraOffsets[1];
+
+				debugIcon.x = _data.characters.bf.position[0];
+				debugIcon.y = _data.characters.bf.position[1];
+
+				character.initHealthIcon(false);
 			case GF:
 				this.characters.set("gf", character);
 				character.zIndex = _data.characters.gf.zIndex;
-				// Subtracting the origin ensures characters are positioned relative to their feet.
-				character.x = _data.characters.gf.position[0] - character.characterOrigin.x;
-				character.y = _data.characters.gf.position[1] - character.characterOrigin.y;
+
+				character.x = _data.characters.gf.position[0] - character.characterOrigin.x + character.globalOffsets[0];
+				character.y = _data.characters.gf.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+
+				character.cameraFocusPoint.x += _data.characters.gf.cameraOffsets[0];
+				character.cameraFocusPoint.y += _data.characters.gf.cameraOffsets[1];
+
+				// Draw the debug icon at the character's feet.
+				debugIcon.x = _data.characters.gf.position[0];
+				debugIcon.y = _data.characters.gf.position[1];
 			case DAD:
 				this.characters.set("dad", character);
 				character.zIndex = _data.characters.dad.zIndex;
-				// Subtracting the origin ensures characters are positioned relative to their feet.
-				character.x = _data.characters.dad.position[0] - character.characterOrigin.x;
-				character.y = _data.characters.dad.position[1] - character.characterOrigin.y;
+
+				character.x = _data.characters.dad.position[0] - character.characterOrigin.x + character.globalOffsets[0];
+				character.y = _data.characters.dad.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+
+				character.cameraFocusPoint.x += _data.characters.dad.cameraOffsets[0];
+				character.cameraFocusPoint.y += _data.characters.dad.cameraOffsets[1];
+
+				// Draw the debug icon at the character's feet.
+				debugIcon.x = _data.characters.dad.position[0];
+				debugIcon.y = _data.characters.dad.position[1];
+
+				character.initHealthIcon(true);
 			default:
 				this.characters.set(character.characterId, character);
 		}
 
 		// Add the character to the scene.
 		this.add(character);
+		this.add(debugIcon);
 	}
 
 	public inline function getGirlfriendPosition():FlxPoint

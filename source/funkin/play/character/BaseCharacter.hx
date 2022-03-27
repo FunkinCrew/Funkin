@@ -61,21 +61,21 @@ class BaseCharacter extends Bopper
 	 */
 	public var cameraFocusPoint(default, null):FlxPoint = new FlxPoint(0, 0);
 
-	override function set_animOffset(value:Array<Float>)
+	override function set_animOffsets(value:Array<Float>)
 	{
-		if (animOffset == null)
-			animOffset = [0, 0];
-		if (animOffset == value)
+		if (animOffsets == null)
+			animOffsets = [0, 0];
+		if (animOffsets == value)
 			return value;
 
-		var xDiff = animOffset[0] - value[0];
-		var yDiff = animOffset[1] - value[1];
+		var xDiff = animOffsets[0] - value[0];
+		var yDiff = animOffsets[1] - value[1];
 
 		// Call the super function so that camera focus point is not affected.
 		super.set_x(this.x + xDiff);
 		super.set_y(this.y + yDiff);
 
-		return animOffset = value;
+		return animOffsets = value;
 	}
 
 	/**
@@ -122,6 +122,7 @@ class BaseCharacter extends Bopper
 		{
 			this.characterName = _data.name;
 			this.singTimeCrochet = _data.singTime;
+			this.globalOffsets = _data.offsets;
 		}
 	}
 
@@ -139,10 +140,41 @@ class BaseCharacter extends Bopper
 		this.updateHitbox();
 	}
 
+	/**
+	 * The per-character camera offset.
+	 */
+	var characterCameraOffsets(get, null):Array<Float>;
+
+	function get_characterCameraOffsets():Array<Float>
+	{
+		return _data.cameraOffsets;
+	}
+
 	override function onCreate(event:ScriptEvent):Void
 	{
-		this.cameraFocusPoint = new FlxPoint(this.x + this.width / 2 + _data.cameraOffset[0], this.y + this.height / 2 + _data.cameraOffset[0]);
+		// Camera focus point
+		var charCenterX = this.x + this.width / 2;
+		var charCenterY = this.y + this.height / 2;
+		this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
 		super.onCreate(event);
+	}
+
+	public function initHealthIcon(isOpponent:Bool):Void
+	{
+		if (!isOpponent)
+		{
+			PlayState.instance.iconP1.characterId = _data.healthIcon.id;
+			PlayState.instance.iconP1.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
+			PlayState.instance.iconP1.offset.x = _data.healthIcon.offsets[0];
+			PlayState.instance.iconP1.offset.y = _data.healthIcon.offsets[1];
+		}
+		else
+		{
+			PlayState.instance.iconP2.characterId = _data.healthIcon.id;
+			PlayState.instance.iconP2.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
+			PlayState.instance.iconP2.offset.x = _data.healthIcon.offsets[0];
+			PlayState.instance.iconP2.offset.y = _data.healthIcon.offsets[1];
+		}
 	}
 
 	public override function onUpdate(event:UpdateScriptEvent):Void

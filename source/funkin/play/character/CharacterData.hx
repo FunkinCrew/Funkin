@@ -290,11 +290,11 @@ class CharacterDataParser
 	static final DEFAULT_ISPIXEL:Bool = false;
 	static final DEFAULT_LOOP:Bool = false;
 	static final DEFAULT_NAME:String = "Untitled Character";
-	static final DEFAULT_OFFSETS:Array<Int> = [0, 0];
+	static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
+	static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
 	static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.SPARROW;
 	static final DEFAULT_SCALE:Float = 1;
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
-	static final DEFAULT_CAMERAOFFSET:Array<Float> = [0, 0];
 	static final DEFAULT_STARTINGANIM:String = "idle";
 
 	/**
@@ -341,6 +341,40 @@ class CharacterDataParser
 			return null;
 		}
 
+		if (input.offsets == null)
+		{
+			input.offsets = DEFAULT_OFFSETS;
+		}
+
+		if (input.cameraOffsets == null)
+		{
+			input.cameraOffsets = DEFAULT_OFFSETS;
+		}
+
+		if (input.healthIcon == null)
+		{
+			input.healthIcon = {
+				id: null,
+				scale: null,
+				offsets: null
+			};
+		}
+
+		if (input.healthIcon.id == null)
+		{
+			input.healthIcon.id = id;
+		}
+
+		if (input.healthIcon.scale == null)
+		{
+			input.healthIcon.scale = DEFAULT_SCALE;
+		}
+
+		if (input.healthIcon.offsets == null)
+		{
+			input.healthIcon.offsets = DEFAULT_OFFSETS;
+		}
+
 		if (input.startingAnimation == null)
 		{
 			input.startingAnimation = DEFAULT_STARTINGANIM;
@@ -349,11 +383,6 @@ class CharacterDataParser
 		if (input.scale == null)
 		{
 			input.scale = DEFAULT_SCALE;
-		}
-
-		if (input.cameraOffset == null)
-		{
-			input.cameraOffset = DEFAULT_CAMERAOFFSET;
 		}
 
 		if (input.isPixel == null)
@@ -468,11 +497,22 @@ typedef CharacterData =
 	var scale:Null<Float>;
 
 	/**
+	 * Optional data about the health icon for the character.
+	 */
+	var healthIcon:Null<HealthIconData>;
+
+	/**
+	 * The global offset to the character's position, in pixels.
+	 * @default [0, 0]
+	 */
+	var offsets:Null<Array<Float>>;
+
+	/**
 	 * The amount to offset the camera by while focusing on this character.
 	 * Default value focuses on the character directly.
 	 * @default [0, 0]
 	 */
-	var cameraOffset:Array<Float>;
+	var cameraOffsets:Array<Float>;
 
 	/**
 	 * Setting this to true disables anti-aliasing for the character.
@@ -510,3 +550,23 @@ typedef CharacterData =
 	 */
 	var startingAnimation:Null<String>;
 };
+
+typedef HealthIconData =
+{
+	/**
+	 * The ID to use for the health icon.
+	 * @default The character's ID
+	 */
+	var id:Null<String>;
+
+	/**
+	 * The scale of the health icon.
+	 */
+	var scale:Null<Float>;
+
+	/**
+	 * The offset of the health icon, in pixels.
+	 * @default [0, 25]
+	 */
+	var offsets:Null<Array<Float>>;
+}

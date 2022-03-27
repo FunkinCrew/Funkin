@@ -31,4 +31,7 @@ class Constants
 		return 'v${Application.current.meta.get('version')}' + VERSION_SUFFIX;
 	}
 	#end
+
+	public static final URL_KICKSTARTER:String = "https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/";
+	public static final URL_ITCH:String = "https://ninja-muffin24.itch.io/funkin";
 }

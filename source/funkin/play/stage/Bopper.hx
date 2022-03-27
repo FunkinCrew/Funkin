@@ -47,22 +47,27 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		return value;
 	}
 
-	private var animOffset(default, set):Array<Float> = [0, 0];
+	/**
+	 * The offset of the character relative to the position specified by the stage.
+	 */
+	public var globalOffsets(default, null):Array<Float> = [0, 0];
 
-	function set_animOffset(value:Array<Float>)
+	private var animOffsets(default, set):Array<Float> = [0, 0];
+
+	function set_animOffsets(value:Array<Float>)
 	{
-		if (animOffset == null)
-			animOffset = [0, 0];
-		if (animOffset == value)
+		if (animOffsets == null)
+			animOffsets = [0, 0];
+		if (animOffsets == value)
 			return value;
 
-		var xDiff = animOffset[0] - value[0];
-		var yDiff = animOffset[1] - value[1];
+		var xDiff = animOffsets[0] - value[0];
+		var yDiff = animOffsets[1] - value[1];
 
 		this.x += xDiff;
 		this.y += yDiff;
 
-		return animOffset = value;
+		return animOffsets = value;
 	}
 
 	/**
@@ -192,11 +197,11 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		var offsets = animationOffsets.get(name);
 		if (offsets != null)
 		{
-			this.animOffset = offsets;
+			this.animOffsets = [offsets[0] + globalOffsets[0], offsets[1] + globalOffsets[1]];
 		}
 		else
 		{
-			this.animOffset = [0, 0];
+			this.animOffsets = globalOffsets;
 		}
 	}
 
@@ -205,7 +210,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		return this.animation.finished;
 	}
 
-	public function setAnimationOffsets(name:String, xOffset:Int, yOffset:Int):Void
+	public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
 	{
 		animationOffsets.set(name, [xOffset, yOffset]);
 		applyAnimationOffsets(name);
