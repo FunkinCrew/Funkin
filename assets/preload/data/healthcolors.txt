@@ -9,3 +9,5 @@ parents-christmas:0xFFFF7795
 monster:0xFFFFE016
 senpai:0xFFFFA647
 spirit:0xFF9B0200
+bf-holding-gf:0xFF23F0FF
+tankman:0xFFFF793F

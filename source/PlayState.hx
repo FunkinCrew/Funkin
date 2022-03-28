@@ -553,6 +553,58 @@ class PlayState extends MusicBeatState
 		                            add(waveSpriteFG);
 		                    */
 		          }
+				  case 'ugh' | 'guns' | 'stress':{
+					  //imagine knowing what you are doing
+					defaultCamZoom = 0.7;
+					curStage = 'tankStage';
+
+					var bg:FlxSprite = new FlxSprite(-450, -200).loadGraphic(Paths.image('Tankman/tankSky'));
+					bg.setGraphicSize(Std.int(bg.width * 1.8));
+					bg.antialiasing = true;
+					bg.scrollFactor.set(0.9, 0.9);
+					bg.active = false;
+					add(bg);
+
+					var stageCurtains:FlxSprite = new FlxSprite(-800, -140).loadGraphic(Paths.image('Tankman/tankMountains'));
+					stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 2));
+					stageCurtains.updateHitbox();
+					stageCurtains.antialiasing = true;
+					stageCurtains.scrollFactor.set(0.5, 0.5);
+					stageCurtains.active = false;
+					add(stageCurtains);
+
+					var stageRuins:FlxSprite = new FlxSprite(-870, -260).loadGraphic(Paths.image('Tankman/tankRuins'));
+					stageRuins.setGraphicSize(Std.int(stageRuins.width * 2));
+					stageRuins.updateHitbox();
+					stageRuins.antialiasing = true;
+					stageRuins.scrollFactor.set(0.5, 0.5);
+					stageRuins.active = false;
+					add(stageRuins);
+
+					var stageBuildings:FlxSprite = new FlxSprite(-870, -260).loadGraphic(Paths.image('Tankman/tankBuildings'));
+					stageBuildings.setGraphicSize(Std.int(stageBuildings.width * 2));
+					stageBuildings.updateHitbox();
+					stageBuildings.antialiasing = true;
+					stageBuildings.scrollFactor.set(0.5, 0.5);
+					stageBuildings.active = false;
+					add(stageBuildings);
+
+					var guardTower = new FlxSprite(-300, -100);
+					guardTower.frames = Paths.getSparrowAtlas('Tankman/tankWatchtower');
+					guardTower.animation.addByPrefix('color', 'watchtower gradient color instance', 24, false);
+					guardTower.setGraphicSize(Std.int(guardTower.width * 1.35));
+					guardTower.antialiasing = true;
+					guardTower.updateHitbox();
+					add(guardTower);
+
+					var stageFront:FlxSprite = new FlxSprite(-1060, -530).loadGraphic(Paths.image('Tankman/tankGround'));
+					stageFront.setGraphicSize(Std.int(stageFront.width * 1.75));
+					stageFront.updateHitbox();
+					stageFront.antialiasing = true;
+					stageFront.scrollFactor.set(0.9, 0.9);
+					stageFront.active = false;
+					add(stageFront);
+				}
 		          default:
 		          {
 		                  defaultCamZoom = 0.9;
@@ -594,6 +646,11 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf-pixel';
 			case 'schoolEvil':
 				gfVersion = 'gf-pixel';
+			case 'tankStage':
+				if (SONG.song == 'Stress')
+					gfVersion = 'picoSpeaker';
+				else
+					gfVersion = 'tankGF';
 		}
 
 		if (curStage == 'limo')
@@ -642,6 +699,9 @@ class PlayState extends MusicBeatState
 				dad.x -= 150;
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			case "tankman":
+				dad.y += 240;
+				dad.x -= 70;
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
@@ -680,6 +740,18 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
+
+			case 'tankStage':
+				boyfriend.x +=150;
+				dad.x -=60;
+				if (SONG.song != 'Stress'){
+					gf.x -= 180;
+					gf.y -= -10;
+				}
+				else {//if stress
+					gf.x -= 40;
+					gf.y -= 100;
+				}
 		}
 
 		add(gf);
@@ -838,6 +910,12 @@ class PlayState extends MusicBeatState
 				case 'thorns':
 					loadDialogue(doof);
 				// If you want to play a cutscene just add a new case for your song and add playCutscene()
+				case 'ugh':
+					playCutscene("ughCutscene");
+				case 'guns':
+					playCutscene("gunsCutscene");
+				case 'stress':
+					playCutscene("stressCutscene");
 
 				default:
 					startCountdown();
@@ -1082,7 +1160,7 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
-		if (SONG.needsVoices)
+		if (SONG.needsVoices && inCutscene == false)
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 		else
 			vocals = new FlxSound();
@@ -1730,13 +1808,6 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
-
-					daNote.active = false;
-					daNote.visible = false;
-
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
 				}
 			});
 		}
@@ -1759,6 +1830,10 @@ class PlayState extends MusicBeatState
 				playEndCutscene("cock");
 				trace('cock');
 			}
+		}
+
+		if (curSong.toLowerCase() == 'stress' && playedEndCutscene == false && isStoryMode == true){
+			playEndCutscene("kickstarterTrailer");
 		}
 
 		if (inCutscene == false){
@@ -2496,6 +2571,34 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
+		if (curSong.toLowerCase() == 'ugh') 
+			{
+				switch (curBeat)
+				{
+					//doesnt work and i dont feel like fixing it
+					case 15:
+						dad.playAnim('ugh', true);
+						trace('test');
+					case 111:
+						dad.playAnim('ugh', true);
+					case 131:
+						dad.playAnim('ugh', true);
+					case 135:
+						dad.playAnim('ugh', true);
+					case 207:
+						dad.playAnim('ugh', true);
+				 }
+			}
+
+		if (curSong.toLowerCase() == 'stress') 
+			{
+				switch (curBeat)
+				{
+					case 184:
+						dad.playAnim('prettygood', true);
+				 }
+			}
+
 		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
 		{
 			FlxG.camera.zoom += 0.015;
@@ -2598,7 +2701,8 @@ class PlayState extends MusicBeatState
 
 		//KILL THE MUSIC!!! (wait what does this even do)
 		FlxG.sound.music.kill();
-	
+		vocals.kill();
+
 		video = new MP4Handler();
 		video.finishCallback = function()
 		{

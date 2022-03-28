@@ -26,6 +26,11 @@ class GameOverSubstate extends MusicBeatSubstate
 			case 'schoolEvil':
 				stageSuffix = '-pixel';
 				daBf = 'bf-pixel-dead';
+			case 'tankStage':
+				if (PlayState.SONG.song == 'Stress')
+					daBf = 'bf-holding-gf-dead';
+				else
+					daBf = 'bf';
 			default:
 				daBf = 'bf';
 		}
@@ -77,7 +82,14 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			if (PlayState.curStage != 'tankStage')
+				FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			else
+				FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), 0.1);
+
+			if (PlayState.curStage == 'tankStage'){
+				FlxG.sound.play((Paths.sound('Tankman/jeffGameover-' + FlxG.random.int(1, 25))));
+			}
 		}
 
 		if (FlxG.sound.music.playing)
