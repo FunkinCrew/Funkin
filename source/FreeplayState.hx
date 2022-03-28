@@ -231,6 +231,7 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 			{
+				FlxG.sound.music.fadeOut(1, 0);
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 	
 				trace(poop);

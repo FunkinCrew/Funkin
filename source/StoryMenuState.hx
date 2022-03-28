@@ -276,6 +276,7 @@ class StoryMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
+				FlxG.sound.music.fadeOut(1, 0);
 				selectWeek();
 			}
 		}
