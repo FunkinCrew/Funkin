@@ -1,6 +1,5 @@
-# Friday Night Funkin': Super Engine
+# Friday Night Funkin'
 
-This is the repository for Super Engine, a mod for Friday Night Funkin
 
 Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
@@ -9,7 +8,6 @@ Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN SOURCE YOUR MOD AS WELL
 
 ## Credits / shoutouts
-- [SuperDev-funkin](https://github.com/SuperDev-funkin) - Creator of Super Engine
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer of Friday Night Funkin
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art for friday night funkin
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician for Friday Night Funkin
