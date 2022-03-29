@@ -1,5 +1,6 @@
 bf
 dad
+exe
 gf
 spooky
 pico
