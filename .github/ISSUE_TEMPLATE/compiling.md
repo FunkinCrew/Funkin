@@ -1,8 +1,11 @@
 ---
 name: Compiling help
-about: If you need help compiling the game, and you're running into issues. (Look through the 'compiling help' label in case it's been solved!)
+about: If you need help compiling the game, and you're running into issues. (Look
+  through the 'compiling help' label in case it's been solved!)
 title: 'Compiling help: [BRIEF DESCRIPTION / ERROR MESSAGE OUTPUT]'
-labels: compiling help
+labels: ''
+assignees: ''
+
 ---
 
 [weed]: <> (FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE)
@@ -22,4 +25,3 @@ labels: compiling help
 - [ ] HTML5
 
 ## Please describe your issue. Provide extensive detail and images if possible.
-
