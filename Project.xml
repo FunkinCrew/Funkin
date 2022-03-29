@@ -7,6 +7,8 @@
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
+	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB"/>
+
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
 	<!-- <app preloader="Preloader" resizable="true" /> -->
@@ -57,6 +59,7 @@
 		<library name="week4"    preload="true" />
 		<library name="week5"    preload="true" />
 		<library name="week6"    preload="true" />
+		<library name="sm"    preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
@@ -69,6 +72,7 @@
 		<library name="week4"    preload="false" />
 		<library name="week5"    preload="false" />
 		<library name="week6"    preload="false" />
+		<library name="sm"    preload="false" />
 	</section>
 	
 	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
@@ -89,12 +93,15 @@
 	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
-	
+	<assets path="assets/sm"    library="sm"    exclude="*.ogg" if="web"/>
+	<assets path="assets/sm"    library="sm"    exclude="*.mp3" unless="web"/>
+
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path='LICENSE' rename='LICENSE.txt' />
 	<!-- <template path='mods' /> -->
 	
-	<assets path="CHANGELOG.md" rename='changelog.txt'/>
+	<!-- <assets path="CHANGELOG.md" rename='changelog.txt'/> -->
 
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
@@ -111,12 +118,16 @@
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
 
+	<haxelib name="actuate" />
+	<haxelib name="extension-webm"/> <!-- Make sure to use https://github.com/KadeDev/extension-webm/ -->
+
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
 	<haxelib name="discord_rpc" if="desktop"/>
+	<haxelib name="linc_luajit" if="desktop"/>
+	<haxelib name="hxvm-luajit" if="desktop"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
@@ -154,6 +165,8 @@
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
 
+	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
+
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
@@ -161,13 +174,35 @@
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	
+	<icon path="art/icon8.png" size='8'/>
 	<icon path="art/icon16.png" size='16'/>
 	<icon path="art/icon32.png" size='32'/>
 	<icon path="art/icon64.png" size='64'/>
+	<icon path="art/icon128.png" size='128'/>
+	<icon path="art/icon256.png" size='256'/>
+	<icon path="art/icon512.png" size='512'/>
 	<icon path="art/iconOG.png" />
 
+	<haxeflag name="--no-traces" unless="debug" />
+	<haxeflag name="--dce full" if="release" />
 
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
-	
+  <!-- Use defines to ensure compile-time definitions have readable context. -->
+  <!-- Allowed inputs are mobile,desktop,web,ios,android,windows,mac,linux,switch,html5,cpp,neko,flash,js -->
+
+  <!-- Defines whether the Discord client should be enabled. Only works on desktop. -->
+  <haxedef name="FEATURE_DISCORD" if="desktop" />
+  <!-- Defines whether the file system can be read/written directly. Does not work in browser. -->
+  <haxedef name="FEATURE_FILESYSTEM" if="desktop" />
+  <!-- Defines whether Lua Modcharts should be enabled. Only works on Windows. -->
+  <haxedef name="FEATURE_LUAMODCHART" if="windows" />
+  <!-- Defines whether WebM videos should be enabled. Currently only enabled on Windows. -->
+  <haxedef name="FEATURE_WEBM" if="windows" />
+  <!-- Defines whether StepMania files can be loaded. -->
+  <haxedef name="FEATURE_STEPMANIA" if="desktop" />
+  <!-- Defines whether the Thread class can be used. -->
+  <haxedef name="FEATURE_MULTITHREADING" if="cpp" />
+
+  <!-- Defines whether the Mods menu will display before launching. -->
+  <haxedef name="FEATURE_MODCORE" if="desktop" />
+
 </project>
