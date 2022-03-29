@@ -22,7 +22,7 @@
 	 - `haxelib git faxe https://github.com/uhrobots/faxe`
 	 - `haxelib git polymod https://github.com/MasterEric/polymod.git`
 	 - `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc`
-	 - `haxelib git extension-webm https://github.com/KadeDev/extension-webm`
+	 - `haxelib git extension-webm https://github.com/SuperDev-funkin/extension-webm`
 	 - `lime rebuild extension-webm <ie. windows, macos, linux>`
 	      - Note: for Linux, you need to install the `g++-multilib` and `gcc-multilib` packages respectively. (use apt to install them.)
 
