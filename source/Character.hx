@@ -139,6 +139,24 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 0, -30);
 
 				playAnim('idle');
+			case 'exe':
+				// EXE ANIMATION LOADING CODE
+				tex = Paths.getSparrowAtlas('characters/P2Sonic_Assets');
+				frames = tex;
+				animation.addByPrefix('idle', 'NewPhase2Sonic Idle', 24);
+				animation.addByPrefix('singUP', 'NewPhase2Sonic Up', 24);
+				animation.addByPrefix('singRIGHT', 'NewPhase2Sonic Right', 24);
+				animation.addByPrefix('singDOWN', 'NewPhase2Sonic Down', 24);
+				animation.addByPrefix('singLEFT', 'NewPhase2Sonic Left', 24);
+				animation.addByPrefix('singDOWN-alt', 'NewPhase2Sonic Laugh', 24);
+
+				addOffset("idle", 0, 47);
+				addOffset("singUP", 120, 230);
+				addOffset("singRIGHT", -4, 109);
+				addOffset("singLEFT", 248, 15);
+				addOffset("singDOWN", 240, -90);
+
+				playAnim('idle');
 			case 'spooky':
 				tex = Paths.getSparrowAtlas('spooky_kids_assets');
 				frames = tex;
