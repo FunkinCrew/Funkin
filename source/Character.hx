@@ -32,7 +32,7 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				// GIRLFRIEND CODE
-				tex = Paths.getSparrowAtlas('GF_assets');
+				tex = Paths.getSparrowAtlas('characters/GF_assets');
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
@@ -124,7 +124,7 @@ class Character extends FlxSprite
 
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
-				tex = Paths.getSparrowAtlas('DADDY_DEAREST');
+				tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST');
 				frames = tex;
 				animation.addByPrefix('idle', 'Dad idle dance', 24);
 				animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);
@@ -137,6 +137,24 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", 0, 27);
 				addOffset("singLEFT", -10, 10);
 				addOffset("singDOWN", 0, -30);
+
+				playAnim('idle');
+			case 'exe':
+				// EXE ANIMATION LOADING CODE
+				tex = Paths.getSparrowAtlas('characters/P2Sonic_Assets');
+				frames = tex;
+				animation.addByPrefix('idle', 'NewPhase2Sonic Idle', 24);
+				animation.addByPrefix('singUP', 'NewPhase2Sonic Up', 24);
+				animation.addByPrefix('singRIGHT', 'NewPhase2Sonic Right', 24);
+				animation.addByPrefix('singDOWN', 'NewPhase2Sonic Down', 24);
+				animation.addByPrefix('singLEFT', 'NewPhase2Sonic Left', 24);
+				animation.addByPrefix('singDOWN-alt', 'NewPhase2Sonic Laugh', 24);
+
+				addOffset("idle", 0, 47);
+				addOffset("singUP", 120, 230);
+				addOffset("singRIGHT", -4, 109);
+				addOffset("singLEFT", 248, 15);
+				addOffset("singDOWN", 240, -90);
 
 				playAnim('idle');
 			case 'spooky':
@@ -267,7 +285,7 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'bf':
-				var tex = Paths.getSparrowAtlas('BOYFRIEND');
+				var tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
 				frames = tex;
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);

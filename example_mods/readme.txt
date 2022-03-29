@@ -1,2 +1,5 @@
-THIS MOD FOLDER DOES NOT ENTIRELY WORK JUST YET!!!
-DONT EXPECT MUCH OUT OF IT RIGHT NOW!!!
+You can either edit files or add entirely new ones here.
+
+ABOUT EDITTING:
+It doesn't matter if you want to edit something in assets/shared/images/ or assets/preload/images/,
+you will have to put the editted files in mods/images/, it will be handled automatically by the engine.

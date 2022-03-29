@@ -3,6 +3,8 @@ name: Question
 about: Ask a general question
 title: 'Question: '
 labels: question
+assignees: ''
+
 ---
 
 [weed]: <> (This isn't a place for AMA type questions, if you want to ask any of the devs something, reach out to them on twitter prob )

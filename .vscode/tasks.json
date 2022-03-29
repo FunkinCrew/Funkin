@@ -1,0 +1,65 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+    {
+      "label": "Build Windows (Debug)",
+      "type": "lime",
+      "targetConfiguration": "Build Windows (Debug)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Windows (Release)",
+      "type": "lime",
+      "targetConfiguration": "Build Windows (Release)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build HTML5 (Debug)",
+      "type": "lime",
+      "targetConfiguration": "Build HTML5 (Debug)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build HTML5 (Release)",
+      "type": "lime",
+      "targetConfiguration": "Build HTML5 (Release)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Linux (Debug)",
+      "type": "lime",
+      "targetConfiguration": "Build Linux (Debug)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Linux (Release)",
+      "type": "lime",
+      "targetConfiguration": "Build Linux (Release)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+	]
+}
