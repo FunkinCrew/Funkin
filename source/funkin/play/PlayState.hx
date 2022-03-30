@@ -140,8 +140,9 @@ class PlayState extends MusicBeatState implements IHook
 	 * An empty FlxObject contained in the scene.
 	 * The current gameplay camera will be centered on this object. Tween its position to move the camera smoothly.
 	 * 
-	 * NOTE: This must be an FlxObject, not an FlxPoint, because it needs to be added to the scene.
-	 * Once it's added to the scene, the camera can be configured to follow it.
+	 * This is an FlxSprite for two reasons:
+	 * 1. It needs to be an object in the scene for the camera to be configured to follow it.
+	 * 2. It needs to be an FlxSprite to allow a graphic (optionally, for debug purposes) to be drawn on it.
 	 */
 	public var cameraFollowPoint:FlxSprite = new FlxSprite(0, 0);
 
@@ -286,6 +287,7 @@ class PlayState extends MusicBeatState implements IHook
 		// Displays the camera follow point as a sprite for debug purposes.
 		// TODO: Put this on a toggle?
 		cameraFollowPoint.makeGraphic(8, 8, 0xFF00FF00);
+		cameraFollowPoint.visible = false;
 		cameraFollowPoint.zIndex = 1000000;
 
 		// Reduce physics accuracy (who cares!!!) to improve animation quality.
@@ -313,7 +315,7 @@ class PlayState extends MusicBeatState implements IHook
 			currentSong = SongLoad.loadFromJson('tutorial');
 
 		Conductor.mapBPMChanges(currentSong);
-		Conductor.changeBPM(currentSong.bpm);
+		Conductor.bpm = currentSong.bpm;
 
 		switch (currentSong.song.toLowerCase())
 		{
@@ -555,7 +557,6 @@ class PlayState extends MusicBeatState implements IHook
 		if (dad != null)
 		{
 			dad.characterType = CharacterType.DAD;
-			cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
 		}
 
 		switch (currentSong.player2)
@@ -578,24 +579,6 @@ class PlayState extends MusicBeatState implements IHook
 			boyfriend.characterType = CharacterType.BF;
 		}
 
-		// REPOSITIONING PER STAGE
-		switch (currentStageId)
-		{
-			case "tank":
-				girlfriend.y += 10;
-				girlfriend.x -= 30;
-				boyfriend.x += 40;
-				boyfriend.y += 0;
-				dad.y += 60;
-				dad.x -= 80;
-
-				if (gfVersion != 'pico-speaker')
-				{
-					girlfriend.x -= 170;
-					girlfriend.y -= 75;
-				}
-		}
-
 		if (currentStage != null)
 		{
 			// We're using Eric's stage handler.
@@ -604,14 +587,11 @@ class PlayState extends MusicBeatState implements IHook
 			currentStage.addCharacter(boyfriend, BF);
 			currentStage.addCharacter(dad, DAD);
 
+			// Camera starts at dad.
+			cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+
 			// Redo z-indexes.
 			currentStage.refresh();
-		}
-		else
-		{
-			add(girlfriend);
-			add(dad);
-			add(boyfriend);
 		}
 	}
 
@@ -802,7 +782,7 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		// FlxG.log.add(ChartParser.parse());
 
-		Conductor.changeBPM(currentSong.bpm);
+		Conductor.bpm = currentSong.bpm;
 
 		currentSong.song = currentSong.song;
 
@@ -1024,28 +1004,35 @@ class PlayState extends MusicBeatState implements IHook
 
 		if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame)
 		{
-			persistentUpdate = false;
-			persistentDraw = true;
+			var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
-			// There is a 1/1000 change to use a special pause menu.
-			// This prevents the player from resuming, but that's the point.
-			// It's a reference to Gitaroo Man, which doesn't let you pause the game.
-			if (FlxG.random.bool(1 / 1000))
-			{
-				FlxG.switchState(new GitarooPause());
-			}
-			else
-			{
-				var boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-				var pauseSubState = new PauseSubState(boyfriendPos.x, boyfriendPos.y);
-				openSubState(pauseSubState);
-				pauseSubState.camera = camHUD;
-				boyfriendPos.put();
-			}
+			dispatchEvent(event);
 
-			#if discord_rpc
-			DiscordClient.changePresence(detailsPausedText, currentSong.song + " (" + storyDifficultyText + ")", iconRPC);
-			#end
+			if (!event.eventCanceled)
+			{
+				persistentUpdate = false;
+				persistentDraw = true;
+
+				// There is a 1/1000 change to use a special pause menu.
+				// This prevents the player from resuming, but that's the point.
+				// It's a reference to Gitaroo Man, which doesn't let you pause the game.
+				if (event.gitaroo)
+				{
+					FlxG.switchState(new GitarooPause());
+				}
+				else
+				{
+					var boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
+					var pauseSubState = new PauseSubState(boyfriendPos.x, boyfriendPos.y);
+					openSubState(pauseSubState);
+					pauseSubState.camera = camHUD;
+					boyfriendPos.put();
+				}
+
+				#if discord_rpc
+				DiscordClient.changePresence(detailsPausedText, currentSong.song + " (" + storyDifficultyText + ")", iconRPC);
+				#end
+			}
 		}
 
 		if (FlxG.keys.justPressed.SEVEN)
@@ -1076,13 +1063,6 @@ class PlayState extends MusicBeatState implements IHook
 			changeSection(-1);
 		#end
 
-		if (generatedMusic && SongLoad.getSong()[Std.int(curStep / 16)] != null)
-		{
-			cameraRightSide = SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection;
-
-			controlCamera();
-		}
-
 		if (camZooming)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCameraZoom, FlxG.camera.zoom, 0.95);
@@ -1091,6 +1071,7 @@ class PlayState extends MusicBeatState implements IHook
 
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
+		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
 		if (currentSong.song == 'Fresh')
 		{
@@ -1722,10 +1703,14 @@ class PlayState extends MusicBeatState implements IHook
 		}
 	}
 
-	override function stepHit()
+	override function stepHit():Bool
 	{
-		super.stepHit();
-		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
+		// super.stepHit() returns false if a module cancelled the event.
+		if (!super.stepHit())
+			return false;
+
+		if (!isInCutscene
+			&& Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
 			|| (currentSong.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > 20))
 		{
 			resyncVocals();
@@ -1734,23 +1719,32 @@ class PlayState extends MusicBeatState implements IHook
 		iconP1.onStepHit(curStep);
 		iconP2.onStepHit(curStep);
 
-		dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep));
+		return true;
 	}
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
-		super.beatHit();
+		// super.beatHit() returns false if a module cancelled the event.
+		if (!super.beatHit())
+			return false;
 
 		if (generatedMusic)
 		{
 			activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
 		}
 
+		// Moving this code into the `beatHit` function allows for scripts and modules to control the camera better.
+		if (generatedMusic && SongLoad.getSong()[Std.int(curStep / 16)] != null)
+		{
+			cameraRightSide = SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection;
+			controlCamera();
+		}
+
 		if (SongLoad.getSong()[Math.floor(curStep / 16)] != null)
 		{
 			if (SongLoad.getSong()[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SongLoad.getSong()[Math.floor(curStep / 16)].bpm);
+				Conductor.bpm = SongLoad.getSong()[Math.floor(curStep / 16)].bpm;
 				FlxG.log.add('CHANGED BPM!');
 			}
 		}
@@ -1772,11 +1766,34 @@ class PlayState extends MusicBeatState implements IHook
 			}
 		}
 
+		// That combo counter that got spoiled that one time.
+		// Comes with NEAT visual and audio effects.
+
+		var shouldShowComboText:Bool = (curBeat % 8 == 7) // End of measure. TODO: Is this always the correct time?
+			&& (SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection) // Current section is BF's.
+			&& (combo > 5) // Don't want to show on small combos.
+			&& ((SongLoad.getSong().length < Std.int(curStep / 16)) // Show at the end of the song.
+				|| (!SongLoad.getSong()[Std.int(curStep / 16) + 1].mustHitSection) // Or when the next section is Dad's.
+			);
+
+		if (shouldShowComboText)
+		{
+			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
+			animShit.scrollFactor.set(0.6, 0.6);
+			add(animShit);
+
+			var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
+
+			new FlxTimer().start(((Conductor.crochet / 1000) * 1.25) - frameShit, function(tmr)
+			{
+				animShit.forceFinish();
+			});
+		}
+
 		// Make the characters dance on the beat
 		danceOnBeat();
 
-		// Call any relevant event handlers.
-		dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep));
+		return true;
 	}
 
 	/**
@@ -1876,13 +1893,6 @@ class PlayState extends MusicBeatState implements IHook
 			Countdown.pauseCountdown();
 		}
 
-		var event:ScriptEvent = new ScriptEvent(ScriptEvent.PAUSE, true);
-
-		dispatchEvent(event);
-
-		if (event.eventCanceled)
-			return;
-
 		super.openSubState(subState);
 	}
 
@@ -1894,7 +1904,14 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		if (isGamePaused)
 		{
-			if (FlxG.sound.music != null && !startingSong)
+			var event:ScriptEvent = new ScriptEvent(ScriptEvent.RESUME, true);
+
+			dispatchEvent(event);
+
+			if (event.eventCanceled)
+				return;
+
+			if (FlxG.sound.music != null && !startingSong && !isInCutscene)
 				resyncVocals();
 
 			// Resume the countdown.
@@ -1909,13 +1926,6 @@ class PlayState extends MusicBeatState implements IHook
 			#end
 		}
 
-		var event:ScriptEvent = new ScriptEvent(ScriptEvent.RESUME, true);
-
-		dispatchEvent(event);
-
-		if (event.eventCanceled)
-			return;
-
 		super.closeSubState();
 	}
 
@@ -1925,13 +1935,15 @@ class PlayState extends MusicBeatState implements IHook
 	 */
 	function startCountdown():Void
 	{
+		var result = Countdown.performCountdown(currentStageId.startsWith('school'));
+		if (!result)
+			return;
+
 		isInCutscene = false;
 		camHUD.visible = true;
 		talking = false;
 
 		buildStrumlines();
-
-		Countdown.performCountdown(currentStageId.startsWith('school'));
 	}
 
 	override function dispatchEvent(event:ScriptEvent):Void
@@ -1999,15 +2011,6 @@ class PlayState extends MusicBeatState implements IHook
 
 		// Clear the static reference to this state.
 		instance = null;
-	}
-
-	/**
-	 * Refreshes the state, by redoing the render order of all elements.
-	 * It does this based on the `zIndex` of each element.
-	 */
-	public function refresh()
-	{
-		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
 	}
 
 	/**

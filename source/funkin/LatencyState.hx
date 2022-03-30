@@ -31,7 +31,7 @@ class LatencyState extends FlxState
 		strumLine = new FlxSprite(FlxG.width / 2, 100).makeGraphic(FlxG.width, 5);
 		add(strumLine);
 
-		Conductor.changeBPM(120);
+		Conductor.bpm = 120;
 
 		super.create();
 	}

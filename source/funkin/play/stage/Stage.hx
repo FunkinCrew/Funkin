@@ -247,6 +247,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		// TODO: Make this a toggle? It's useful to turn on from time to time.
 		var debugIcon:FlxSprite = new FlxSprite(0, 0);
 		debugIcon.makeGraphic(8, 8, 0xffff00ff);
+		debugIcon.visible = false;
 		debugIcon.zIndex = 1000000;
 		#end
 
@@ -480,7 +481,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onScriptEvent(event:ScriptEvent) {}
 
-	public function onPause(event:ScriptEvent) {}
+	public function onPause(event:PauseScriptEvent) {}
 
 	public function onResume(event:ScriptEvent) {}
 

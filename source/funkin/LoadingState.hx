@@ -117,9 +117,11 @@ class LoadingState extends MusicBeatState
 		}
 	}
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
-		super.beatHit();
+		// super.beatHit() returns false if a module cancelled the event.
+		if (!super.beatHit())
+			return false;
 
 		// logo.animation.play('bump');
 		danceLeft = !danceLeft;
@@ -128,6 +130,8 @@ class LoadingState extends MusicBeatState
 				gfDance.animation.play('danceRight');
 			else
 				gfDance.animation.play('danceLeft'); */
+
+		return true;
 	}
 
 	var targetShit:Float = 0;

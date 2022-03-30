@@ -68,7 +68,7 @@ class ScriptEventDispatcher
 					t.onGameOver(event);
 					return;
 				case ScriptEvent.PAUSE:
-					t.onPause(event);
+					t.onPause(cast event);
 					return;
 				case ScriptEvent.RESUME:
 					t.onResume(event);

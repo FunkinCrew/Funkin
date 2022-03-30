@@ -1,5 +1,7 @@
 package funkin;
 
+import flixel.util.FlxSort;
+import funkin.util.SortUtil;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import flixel.FlxState;
@@ -135,16 +137,46 @@ class MusicBeatState extends FlxUIState
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
-	public function stepHit():Void
+	public function stepHit():Bool
 	{
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return false;
+		}
+
 		if (curStep % 4 == 0)
 			beatHit();
+
+		return true;
 	}
 
-	public function beatHit():Void
+	public function beatHit():Bool
 	{
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return false;
+		}
+
 		lastBeatHitTime = Conductor.songPosition;
-		// do literally nothing dumbass
+
+		return true;
+	}
+
+	/**
+	 * Refreshes the state, by redoing the render order of all sprites.
+	 * It does this based on the `zIndex` of each prop.
+	 */
+	public function refresh()
+	{
+		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
 	}
 
 	override function switchTo(nextState:FlxState):Bool

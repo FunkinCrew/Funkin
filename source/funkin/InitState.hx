@@ -124,6 +124,7 @@ class InitState extends FlxTransitionableState
 
 		StageDataParser.loadStageCache();
 		CharacterDataParser.loadCharacterCache();
+		ModuleHandler.buildModuleCallbacks();
 		ModuleHandler.loadModuleCache();
 
 		#if song

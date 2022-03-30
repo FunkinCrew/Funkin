@@ -54,7 +54,7 @@ interface INoteScriptedClass extends IScriptedClass
  */
 interface IPlayStateScriptedClass extends IScriptedClass
 {
-	public function onPause(event:ScriptEvent):Void;
+	public function onPause(event:PauseScriptEvent):Void;
 	public function onResume(event:ScriptEvent):Void;
 
 	public function onSongLoaded(eent:SongLoadScriptEvent):Void;

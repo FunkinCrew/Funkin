@@ -194,7 +194,7 @@ class OptionsMenu extends Page
 
 	function createItem(name:String, callback:Void->Void, fireInstantly = false)
 	{
-		var item = items.createItem(0, 100 + items.length * 100, name, Bold, callback);
+		var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
 		item.fireInstantly = fireInstantly;
 		item.screenCenter(X);
 		return item;

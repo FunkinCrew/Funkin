@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.ui.AtlasText.BoldText;
 import funkin.audiovis.SpectogramSprite;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -160,7 +161,7 @@ class TitleState extends MusicBeatState
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
-		Conductor.changeBPM(102);
+		Conductor.bpm = 102;
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -218,6 +219,7 @@ class TitleState extends MusicBeatState
 
 		blackScreen = bg.clone();
 		credGroup.add(blackScreen);
+		credGroup.add(textGroup);
 
 		// var atlasBullShit:FlxSprite = new FlxSprite();
 		// atlasBullShit.frames = CoolUtil.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
@@ -495,39 +497,48 @@ class TitleState extends MusicBeatState
 		var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
 		add(spec);
 
-		Conductor.changeBPM(190);
+		Conductor.bpm = 190;
 		FlxG.camera.flash(FlxColor.WHITE, 1);
 		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 	}
 
 	function createCoolText(textArray:Array<String>)
 	{
+		if (credGroup == null || textGroup == null)
+			return;
+
 		for (i in 0...textArray.length)
 		{
-			var money:Alphabet = new Alphabet(0, 0, textArray[i], true, false);
+			var money:BoldText = new BoldText(0, 0, textArray[i]);
 			money.screenCenter(X);
 			money.y += (i * 60) + 200;
-			credGroup.add(money);
+			// credGroup.add(money);
 			textGroup.add(money);
 		}
 	}
 
 	function addMoreText(text:String)
 	{
+		if (credGroup == null || textGroup == null)
+			return;
+
 		lime.ui.Haptic.vibrate(100, 100);
 
-		var coolText:Alphabet = new Alphabet(0, 0, text, true, false);
+		var coolText:BoldText = new BoldText(0, 0, text);
 		coolText.screenCenter(X);
 		coolText.y += (textGroup.length * 60) + 200;
-		credGroup.add(coolText);
+		// credGroup.add(coolText);
 		textGroup.add(coolText);
 	}
 
 	function deleteCoolText()
 	{
+		if (credGroup == null || textGroup == null)
+			return;
+
 		while (textGroup.members.length > 0)
 		{
-			credGroup.remove(textGroup.members[0], true);
+			// credGroup.remove(textGroup.members[0], true);
 			textGroup.remove(textGroup.members[0], true);
 		}
 	}
@@ -535,9 +546,11 @@ class TitleState extends MusicBeatState
 	var isRainbow:Bool = false;
 	var skippedIntro:Bool = false;
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
-		super.beatHit();
+		// super.beatHit() returns false if a module cancelled the event.
+		if (!super.beatHit())
+			return false;
 
 		if (!skippedIntro)
 		{
@@ -597,6 +610,8 @@ class TitleState extends MusicBeatState
 			else
 				gfDance.animation.play('danceLeft');
 		}
+
+		return true;
 	}
 
 	function skipIntro():Void

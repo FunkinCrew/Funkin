@@ -220,7 +220,7 @@ class ScriptEvent
 	 */
 	/**
 	 * If true, the behavior associated with this event can be prevented.
-	 * For example, cancelling COUNTDOWN_BEGIN should prevent the countdown from starting,
+	 * For example, cancelling COUNTDOWN_START should prevent the countdown from starting,
 	 * until another script restarts it, or cancelling NOTE_HIT should cause the note to be missed.
 	 */
 	public var cancelable(default, null):Bool;
@@ -250,7 +250,7 @@ class ScriptEvent
 
 	/**
 	 * Call this function on a cancelable event to cancel the associated behavior.
-	 * For example, cancelling COUNTDOWN_BEGIN will prevent the countdown from starting.
+	 * For example, cancelling COUNTDOWN_START will prevent the countdown from starting.
 	 */
 	public function cancelEvent():Void
 	{
@@ -400,7 +400,7 @@ class SongTimeScriptEvent extends ScriptEvent
 
 	public function new(type:ScriptEventType, beat:Int, step:Int):Void
 	{
-		super(type, false);
+		super(type, true);
 		this.beat = beat;
 		this.step = step;
 	}
@@ -533,5 +533,22 @@ class SubStateScriptEvent extends ScriptEvent
 	public override function toString():String
 	{
 		return 'SubStateScriptEvent(type=' + type + ', targetState=' + targetState + ')';
+	}
+}
+
+/**
+ * An event which is called when the player attempts to pause the game.
+ */
+class PauseScriptEvent extends ScriptEvent
+{
+	/**
+	 * Whether to use the Gitaroo Man pause.
+	 */
+	public var gitaroo(default, default):Bool;
+
+	public function new(gitaroo:Bool):Void
+	{
+		super(ScriptEvent.PAUSE, true);
+		this.gitaroo = gitaroo;
 	}
 }

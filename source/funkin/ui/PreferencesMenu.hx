@@ -84,7 +84,7 @@ class PreferencesMenu extends Page
 
 	private function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
 	{
-		items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.Bold, function()
+		items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function()
 		{
 			preferenceCheck(prefString, prefValue);
 

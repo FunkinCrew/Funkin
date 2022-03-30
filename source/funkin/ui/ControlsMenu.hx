@@ -66,11 +66,11 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
 
 			var item;
 
-			item = deviceList.createItem("Keyboard", Bold, selectDevice.bind(Keys));
+			item = deviceList.createItem("Keyboard", AtlasFont.BOLD, selectDevice.bind(Keys));
 			item.x = FlxG.width / 2 - item.width - 30;
 			item.y = (devicesBg.height - item.height) / 2;
 
-			item = deviceList.createItem("Gamepad", Bold, selectDevice.bind(Gamepad(FlxG.gamepads.firstActive.id)));
+			item = deviceList.createItem("Gamepad", AtlasFont.BOLD, selectDevice.bind(Gamepad(FlxG.gamepads.firstActive.id)));
 			item.x = FlxG.width / 2 + 30;
 			item.y = (devicesBg.height - item.height) / 2;
 		}
@@ -317,7 +317,7 @@ class InputItem extends TextMenuItem
 		this.index = index;
 		this.input = getInput();
 
-		super(x, y, getLabel(input), Default, callback);
+		super(x, y, getLabel(input), DEFAULT, callback);
 	}
 
 	public function updateDevice(device:Device)

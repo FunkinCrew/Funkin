@@ -79,7 +79,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
 	public function onUpdate(event:UpdateScriptEvent) {}
 
-	public function onPause(event:ScriptEvent) {}
+	public function onPause(event:PauseScriptEvent) {}
 
 	public function onResume(event:ScriptEvent) {}
 

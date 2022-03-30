@@ -236,7 +236,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 	public function onUpdate(event:UpdateScriptEvent) {}
 
-	public function onPause(event:ScriptEvent) {}
+	public function onPause(event:PauseScriptEvent) {}
 
 	public function onResume(event:ScriptEvent) {}
 

@@ -104,41 +104,47 @@ class CharacterDataParser
 		}
 
 		var scriptedCharClassNames3:Array<String> = ScriptedMultiSparrowCharacter.listScriptClasses();
-		trace('  Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
-		for (charCls in scriptedCharClassNames3)
+		if (scriptedCharClassNames3.length > 0)
 		{
-			var character = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID);
-			if (character == null)
+			trace('  Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
+			for (charCls in scriptedCharClassNames3)
 			{
-				trace('    Failed to instantiate scripted character: ${charCls}');
-				continue;
+				var character = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID);
+				if (character == null)
+				{
+					trace('    Failed to instantiate scripted character: ${charCls}');
+					continue;
+				}
+				characterScriptedClass.set(character.characterId, charCls);
 			}
-			characterScriptedClass.set(character.characterId, charCls);
 		}
 
 		// NOTE: Only instantiate the ones not populated above.
 		// ScriptedBaseCharacter.listScriptClasses() will pick up scripts extending the other classes.
 		var scriptedCharClassNames:Array<String> = ScriptedBaseCharacter.listScriptClasses();
-		scriptedCharClassNames.filter(function(charCls:String):Bool
+		scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool
 		{
-			return !scriptedCharClassNames1.contains(charCls)
-				&& !scriptedCharClassNames2.contains(charCls)
-				&& !scriptedCharClassNames3.contains(charCls);
+			return !(scriptedCharClassNames1.contains(charCls)
+				|| scriptedCharClassNames2.contains(charCls)
+				|| scriptedCharClassNames3.contains(charCls));
 		});
 
-		trace('  Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
-		for (charCls in scriptedCharClassNames)
+		if (scriptedCharClassNames.length > 0)
 		{
-			var character = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID);
-			if (character == null)
+			trace('  Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
+			for (charCls in scriptedCharClassNames)
 			{
-				trace('    Failed to instantiate scripted character: ${charCls}');
-				continue;
-			}
-			else
-			{
-				trace('    Successfully instantiated scripted character: ${charCls}');
-				characterScriptedClass.set(character.characterId, charCls);
+				var character = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID);
+				if (character == null)
+				{
+					trace('    Failed to instantiate scripted character: ${charCls}');
+					continue;
+				}
+				else
+				{
+					trace('    Successfully instantiated scripted character: ${charCls}');
+					characterScriptedClass.set(character.characterId, charCls);
+				}
 			}
 		}
 
