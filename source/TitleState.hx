@@ -193,7 +193,7 @@ class TitleState extends MusicBeatState
 
 		credTextShit.visible = false;
 
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('newgrounds_logo'));
+		ngSpr = new FlxSprite(0, FlxG.height * 0.55).loadGraphic(Paths.image('percentage_logo'));
 		add(ngSpr);
 		ngSpr.visible = false;
 		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
@@ -280,9 +280,36 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.music.stop();
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
-			{
-				FlxG.switchState(new MainMenuState());
-			});
+				{
+					// Get current version of Kade Engine
+					
+					var http = new haxe.Http("https://raw.githubusercontent.com/SpunBlue/NUFNF/master/version.Update");
+					var returnedData:Array<String> = [];
+					
+					http.onData = function (data:String)
+					{
+						returnedData[0] = data.substring(0, data.indexOf(';'));
+						returnedData[1] = data.substring(data.indexOf('-'), data.length);
+						  if (!MainMenuState.gameVer.contains(returnedData[0].trim()) && !OutdatedSubState.leftState && MainMenuState.nightly == "")
+						{
+							trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.gameVer);
+							OutdatedSubState.needVer = returnedData[0];
+							OutdatedSubState.currChanges = returnedData[1];
+							FlxG.switchState(new OutdatedSubState());
+						}
+						else
+						{
+							FlxG.switchState(new MainMenuState());
+						}
+					}
+					
+					http.onError = function (error) {
+					  trace('error: $error');
+					  FlxG.switchState(new MainMenuState()); // fail but we go anyway
+					}
+					
+					http.request();
+				});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
@@ -356,10 +383,12 @@ class TitleState extends MusicBeatState
 				createCoolText(['originaly', 'by']);
 			case 7:
 				addMoreText('thepercentageguy');
+				ngSpr.visible = true;
 				// ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
 				deleteCoolText();
+				ngSpr.visible = false;
 				// ngSpr.visible = false;
 			// credTextShit.visible = false;
 

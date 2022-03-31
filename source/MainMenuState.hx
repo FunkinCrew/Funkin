@@ -35,6 +35,10 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 	var video:MP4Handler;
 
+	//VERSION
+	public static var nightly:String = "";
+	public static var gameVer:String = "2.7.0";
+
 	override function create()
 	{
 		#if desktop
@@ -97,7 +101,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'v${Application.current.meta.get('version')} -- New UFNF Engine', 14);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'v${gameVer} -- New UFNF Engine', 14);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -149,6 +153,7 @@ class MainMenuState extends MusicBeatState
 					{
 						selectedSomethin = false;
 						#if linux
+						trace('linux moment');
 						Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game", "&"]);
 						#else
 						FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
