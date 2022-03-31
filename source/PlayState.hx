@@ -1480,7 +1480,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = 'Score: $songScore | Misses: $misses | S/G/B/S: $sicks/$goods/$bads/$shits | Combo: $combo';
+		scoreTxt.text = 'Score: $songScore | Misses: $misses | S/G/B/S: $sicks/$goods/$bads/$shits | Combo: $combo | ${calculateRating()}';
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -2680,6 +2680,37 @@ class PlayState extends MusicBeatState
 		{
 			lightningStrikeShit();
 		}
+	}
+
+	public function calculateRating() {
+		if (misses == 0) {
+			if (goods < 1 && bads < 1 && shits < 1){
+				return 'PERFECT FC (${calculateLetter()} | ${calcAcc()})';
+			}
+			else{
+				return 'FC (${calculateLetter()} | ${calcAcc()})';
+			}
+		}
+		else if (misses > 0 && misses <= 10) {
+			return 'SDM (${calculateLetter()} | ${calcAcc()})';
+		}
+		else {
+			return 'Clear (${calculateLetter()} | ${calcAcc()})';
+		}
+	}
+
+	function calculateLetter() {
+		if (sicks > 0 || goods > 0 || bads > 0 || shits > 0 || misses > 0)
+			return '${sicks > goods ? 'A' : ''}${sicks > bads ? 'A' : ''}${sicks > shits ? 'A': ''}${sicks > misses ? 'A' : ''}';
+		else
+			return '?';
+	}
+
+	function calcAcc() {
+		if (sicks > 0 || goods > 0 || bads > 0 || shits > 0 || misses > 0)
+			return '${Math.floor((((sicks + goods + bads + shits) / 100) / ((misses + sicks + goods + bads + shits) / 100)) * 100)}%';
+		else
+			return '?';
 	}
 
 	function playCutscene(name:String)

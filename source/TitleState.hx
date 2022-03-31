@@ -380,7 +380,7 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'In association \nwith';
 			// credTextShit.screenCenter();
 			case 5:
-				createCoolText(['originaly', 'by']);
+				createCoolText(['originally', 'by']);
 			case 7:
 				addMoreText('thepercentageguy');
 				ngSpr.visible = true;
