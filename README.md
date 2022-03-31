@@ -8,7 +8,7 @@ This is the repository for NUFNF Engine.
 
 ## Special Thanks
  Thanks to ThePercentageGuy for giving me ownership of NUFNF Engine.
- Thanks to SmugValor for making a Logo for the Engine.
+ \nThanks to SmugValor for making a Logo for the Engine.
 
 ## Building & Wiki
  [Build Instructions | ](https://github.com/SpunBlue/NUFNF/wiki/Build-Instructions) [Wiki | ](https://github.com/SpunBlue/NUFNF/wiki) [Discord Server](https://discord.gg/wdNrAPxcHN)
