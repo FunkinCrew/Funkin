@@ -7,8 +7,8 @@ This is the repository for NUFNF Engine.
  It's also designed to be simple and easy to use for people who are new to Friday Night Funkin'
 
 ## Special Thanks
- Thanks to ThePercentageGuy for giving me ownership of NUFNF Engine.
- \nThanks to SmugValor for making a Logo for the Engine.
+ ###Thanks to ThePercentageGuy for giving me ownership of NUFNF Engine.
+ ###Thanks to SmugValor for making a Logo for the Engine.
 
 ## Building & Wiki
  [Build Instructions | ](https://github.com/SpunBlue/NUFNF/wiki/Build-Instructions) [Wiki | ](https://github.com/SpunBlue/NUFNF/wiki) [Discord Server](https://discord.gg/wdNrAPxcHN)
