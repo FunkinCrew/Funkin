@@ -71,7 +71,7 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - optionDot.height / 2; // red dot offset (bruh i hate this options menu but idk how to make a better one)
+		optionDot.y = optionText.y - optionDot.height / 3; // red dot offset (bruh i hate this options menu but idk how to make a better one)
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
@@ -90,6 +90,7 @@ class OptionsMenu extends MusicBeatState {
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
 		'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
+		'Credits',
 		'RESET SETTINGS'];
 
 		optionText.screenCenter(X);
@@ -149,6 +150,9 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Judgement Type')) {
 				FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
 			}
+			if (options[curSelected].startsWith('Credits')){
+				FlxG.switchState(new InformationState());
+			}
 			if (options[curSelected].startsWith('RESET SETTINGS')) {
 				FlxG.save.data.epilepsyMode = false;
 				FlxG.save.data.gtapping = false;
@@ -190,6 +194,10 @@ class OptionsMenu extends MusicBeatState {
 
 				if (options[curSelected].startsWith('Judgement Type')){
 					detailText.text = 'Changes the difficulty on hitting notes.';
+				}
+
+				if (options[curSelected].startsWith('Credits')){
+					detailText.text = 'Shows the Credits of the Engine / Mod';
 				}
 
 				if (options[curSelected].startsWith('RESET SETTINGS')){

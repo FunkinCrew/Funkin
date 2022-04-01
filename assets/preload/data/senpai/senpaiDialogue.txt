@@ -1,3 +1,3 @@
-:player2:Ah, a new fair maiden has come in search of true love!
-:player2:A serenade between gentlemen shall decide where her beautiful heart shall reside.
+:dad:Ah, a new fair maiden has come in search of true love!
+:dad:A serenade between gentlemen shall decide where her beautiful heart shall reside.
 :bf:Beep bo bop

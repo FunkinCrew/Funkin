@@ -14,18 +14,15 @@ import lime.app.Application;
 
 // i may or may have not slightly stole this from kade engine, maybe i didnt and im just messing wtih you? who knows.
 
-class OutdatedSubState extends MusicBeatState
+class InformationState extends MusicBeatState
 {
 	var logoBl:FlxSprite;
-
-	public static var leftState:Bool = false;
-	                                // vvvv meant to confuse people
-	public static var needVer:String = "oopsie woopsie";
-	public static var currChanges:String = "x3";
+	var credits:String = 'thepercentageguy - Original Programmer\nSpunBlue - Programmer\n';
 	
 	override function create()
 	{
 		super.create();
+
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('stageback', 'shared'));
 		bg.screenCenter();
 		add(bg);
@@ -39,22 +36,12 @@ class OutdatedSubState extends MusicBeatState
 		logoBl.updateHitbox();
 		add(logoBl);
 
-		/*var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
-		logo.screenCenter(X);
-		add(logo);*/
-
-		var tint:FlxSprite = new FlxSprite().makeGraphic(1280, 720, FlxColor.BLACK);
+		var tint:FlxSprite = new FlxSprite().makeGraphic(1280, 720, FlxColor.CYAN);
 		tint.alpha = 0.3;
 		add(tint);
 		
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"NUFNF is outdated!\nYou are on v" + MainMenuState.gameVer
-			+ "\nand the latest version is, v" + needVer + "."
-			+ "\n\nChangelog:\n\n"
-			+ currChanges
-			+ "\nThere may be more in the Changelog"
-			+ "\n\nPress Space to Update or Escape to ignore.",
-			32);
+			"NUFNF Engine Credits\n" + credits + '\n\nPress Space or Escape to Exit',32);
 		
 		txt.setFormat("PhantomMuff 1.5", 32, FlxColor.WHITE, CENTER);
 		txt.borderColor = FlxColor.BLACK;
@@ -68,12 +55,11 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT)
 		{
-			FlxG.openURL("https://github.com/SpunBlue/NUFNF/releases/tag/v" + needVer);
+			FlxG.switchState(new optionshit.OptionsMenu());
 		}
 		if (controls.BACK)
 		{
-			leftState = true;
-			FlxG.switchState(new MainMenuState());
+			FlxG.switchState(new optionshit.OptionsMenu());
 		}
 		super.update(elapsed);
 	}

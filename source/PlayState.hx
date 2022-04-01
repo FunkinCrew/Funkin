@@ -2682,10 +2682,11 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	//honestly, no idea how this works. just stole it from the old version of ufnf.
 	public function calculateRating() {
 		if (misses == 0) {
 			if (goods < 1 && bads < 1 && shits < 1){
-				return 'PERFECT FC (${calculateLetter()} | ${calcAcc()})';
+				return 'MFC (${calculateLetter()} | ${calcAcc()})';
 			}
 			else{
 				return 'FC (${calculateLetter()} | ${calcAcc()})';
@@ -2730,7 +2731,7 @@ class PlayState extends MusicBeatState
 		//Doesn't check if the song is ending sense it gets called to play WHILE the song is ending.
 		inCutscene = true;
 
-		//KILL THE MUSIC!!! (wait what does this even do)
+		//KILL THE MUSIC!!!
 		FlxG.sound.music.kill();
 		vocals.kill();
 
