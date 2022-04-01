@@ -90,7 +90,7 @@ class OptionsMenu extends MusicBeatState {
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
 		'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
-		'Credits',
+		'CREDITS',
 		'RESET SETTINGS'];
 
 		optionText.screenCenter(X);
@@ -150,7 +150,7 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Judgement Type')) {
 				FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
 			}
-			if (options[curSelected].startsWith('Credits')){
+			if (options[curSelected].startsWith('CREDITS')){
 				FlxG.switchState(new InformationState());
 			}
 			if (options[curSelected].startsWith('RESET SETTINGS')) {
@@ -196,7 +196,7 @@ class OptionsMenu extends MusicBeatState {
 					detailText.text = 'Changes the difficulty on hitting notes.';
 				}
 
-				if (options[curSelected].startsWith('Credits')){
+				if (options[curSelected].startsWith('CREDITS')){
 					detailText.text = 'Shows the Credits of the Engine / Mod';
 				}
 
