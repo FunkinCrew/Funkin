@@ -9,8 +9,7 @@ class OptionsMenu extends Page
 	override public function new(showDonate:Bool)
 	{
 		super();
-		items = new TextMenuList();
-		add(items);
+		add(items = new TextMenuList());
 		createItem('preferences', function()
 		{
 			onSwitch.dispatch(PageName.Preferences);
@@ -74,7 +73,7 @@ class OptionsMenu extends Page
 
 	// function openNgPrompt(prompt:Prompt, ?callback:Dynamic)
 	// {
-	// 	var func:Dynamic = checkLoginStatus;
+	// 	var func:Dynamic = checkLoginStatus();
 	// 	if (callback != null)
 	// 	{
 	// 		func = function()
@@ -88,5 +87,21 @@ class OptionsMenu extends Page
 
 	// function checkLoginStatus()
 	// {
+	// 	var hasLogout:Bool = items.has('logout');
+	// 	if (hasLogout)
+	// 	{
+	// 		if (NG.core != null)
+	// 		{
+	// 			if (NG.core.loggedIn)
+	// 			{
+	// 				if (!hasLogout && NG.core != null && NG.core.loggedIn)
+	// 					items.resetItem('logout', 'login', selectLogin);
+	// 			}
+	// 			else
+	// 			{
+	// 				items.resetItem('login', 'logout', selectLogout);
+	// 			}
+	// 		}
+	// 	}
 	// }
 }

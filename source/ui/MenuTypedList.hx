@@ -58,10 +58,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 			throw "No item named:" + name;
 		}
 		var item:T = byName.get(name);
-		if (byName.exists(name))
-		{
-			byName.remove(name);
-		}
+		byName.remove(name);
 		byName.set(newName, item);
 		item.setItem(newName, callback);
 		return item;
@@ -121,29 +118,28 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		}
 	}
 
-	function navAxis(curSelected:Int, maxLength:Int, goBack:Bool, goForward:Bool, doWrap:Bool)
+	function navAxis(selected:Int, maxLength:Int, goBack:Bool, goForward:Bool, doWrap:Bool)
 	{
 		if (goBack == goForward)
 		{
-			return curSelected;
+			return selected;
 		}
 
-		var next:Int = curSelected;
 		if (goBack)
 		{
-			if (next > 0)
-				next--;
+			if (selected > 0)
+				selected--;
 			else if (doWrap)
-				next = maxLength - 1;
+				selected = maxLength - 1;
 		}
-		else if (goForward)
+		else
 		{
-			if (next < maxLength - 1)
-				next++;
+			if (selected < maxLength - 1)
+				selected++;
 			else if (doWrap)
-				next = 0;
+				selected = 0;
 		}
-		return next;
+		return selected;
 	}
 
 	function navGrid(gridLength:Int, hBack:Bool, hForward:Bool, hWrap:Bool, vBack:Bool, vForward:Bool, vWrap:Bool)
@@ -151,9 +147,9 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		var itemLength:Int = Math.ceil(length / gridLength);
 		var curItem:Int = Math.floor(selectedIndex / gridLength);
 		var curGrid:Int = selectedIndex % gridLength;
-		var selected1:Int = navAxis(curGrid, gridLength, hBack, hForward, hWrap);
-		var selected2:Int = navAxis(curItem, itemLength, vBack, vForward, vWrap);
-		return Std.int(Math.min(length - 1, selected2 * gridLength + selected1));
+		var selectedX:Int = navAxis(curGrid, gridLength, hBack, hForward, hWrap);
+		var selectedY:Int = navAxis(curItem, itemLength, vBack, vForward, vWrap);
+		return Std.int(Math.min(length - 1, selectedY * gridLength + selectedX));
 	}
 
 	public function accept()

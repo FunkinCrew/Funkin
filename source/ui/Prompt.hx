@@ -38,7 +38,8 @@ class Prompt extends FlxSubState
 
 	public function createBg(width:Int, height:Int, color:FlxColor = 0xFF808080)
 	{
-		back = new FlxSprite().makeGraphic(width, height, color, false, 'prompt-bg');
+		back = new FlxSprite();
+		back.makeGraphic(width, height, color, false, 'prompt-bg');
 		back.screenCenter(XY);
 		add(back);
 		members.unshift(members.pop());

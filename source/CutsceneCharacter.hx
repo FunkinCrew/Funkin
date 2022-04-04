@@ -9,7 +9,7 @@ using StringTools;
 
 class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 {
-	var coolPos:FlxPoint;
+	var coolPos:FlxPoint = FlxPoint.get();
 	var animShit:StringMap<FlxPoint> = new StringMap<FlxPoint>();
 	var arrayLMFAOOOO:Array<String> = [];
 	var imageShit:String;
@@ -20,7 +20,7 @@ class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 	{
 		super();
 
-		coolPos = FlxPoint.get(x, y);
+		coolPos.set(x, y);
 		imageShit = image;
 		parseOffsets();
 		createCutscene(0);
@@ -28,7 +28,7 @@ class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 
 	function parseOffsets()
 	{
-		var swag:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/cutsceneStuff/' + this.imageShit + 'CutscenOffsets.txt', TEXT, null));
+		var swag:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/cutsceneStuff/' + imageShit + 'CutscenOffsets.txt', TEXT, null));
 		for (stuff in swag)
 		{
 			var point:FlxPoint = FlxPoint.get();

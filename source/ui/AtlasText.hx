@@ -25,24 +25,24 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
 	function set_text(text:String = '')
 	{
-		var casedTextNew:String = restrictCase(text);
-		var casedText:String = restrictCase(this.text);
+		var casedText:String = restrictCase(text);
+		var casedTextOld:String = restrictCase(this.text);
 		this.text = text;
-		if (casedTextNew == casedText)
+		if (casedText == casedTextOld)
 		{
 			return text;
 		}
-		if (casedTextNew.indexOf(casedText) == 0)
+		if (casedText.indexOf(casedTextOld) == 0)
 		{
-			appendTextCased(casedTextNew.substr(casedText.length));
+			appendTextCased(casedText.substr(casedTextOld.length));
 			return this.text;
 		}
 		group.kill();
-		if (casedTextNew == '')
+		if (casedText == '')
 		{
 			return this.text;
 		}
-		appendTextCased(casedTextNew);
+		appendTextCased(casedText);
 		return this.text;
 	}
 
@@ -70,12 +70,11 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 		}
 		else if (length > 0)
 		{
-			var member:AtlasChar = group.members[length - 1];
-			nextX = member.x + member.width - x;
-			nextY = member.y + member.height - font.maxHeight - y;
+			var char:AtlasChar = group.members[length - 1];
+			nextX = char.x + char.width - x;
+			nextY = char.y + char.height - font.maxHeight - y;
 		}
 		var split:Array<String> = text.split('');
-		var spr:AtlasChar;
 		for (char in split)
 		{
 			switch (char)
@@ -86,6 +85,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 				case ' ':
 					nextX += 40;
 				default:
+					var spr:AtlasChar;
 					if (length >= group.members.length)
 					{
 						spr = new AtlasChar(null, null, font.atlas, char);
@@ -117,8 +117,8 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
 class AtlasFontData
 {
-	public static var upperChar:EReg = new EReg("^[A-Z]\\d+$","");
-	public static var lowerChar:EReg = new EReg("^[a-z]\\d+$","");
+	public static var upperChar:EReg = new EReg("^[A-Z]\\d+$", "");
+	public static var lowerChar:EReg = new EReg("^[a-z]\\d+$", "");
 
 	public var atlas:FlxAtlasFrames;
 	public var maxHeight:Float = 0;

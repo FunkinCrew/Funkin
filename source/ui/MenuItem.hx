@@ -32,7 +32,14 @@ class MenuItem extends FlxSprite
 	public function setItem(name:String, ?callback:Dynamic)
 	{
 		setData(name, callback);
-		selected ? select() : idle();
+		if (selected)
+		{
+			select();
+		}
+		else
+		{
+			idle();
+		}
 	}
 
 	public function idle()

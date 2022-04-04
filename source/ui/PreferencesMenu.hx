@@ -9,7 +9,7 @@ import haxe.ds.StringMap;
 
 class PreferencesMenu extends Page
 {
-	public static var preferences:StringMap<Bool> = new StringMap<Bool>();
+	public static var preferences:StringMap<Dynamic> = new StringMap<Dynamic>();
 
 	var checkboxes:Array<CheckboxThingie> = [];
 	var menuCamera:FlxCamera;
@@ -23,8 +23,7 @@ class PreferencesMenu extends Page
 		FlxG.cameras.add(menuCamera, false);
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		camera = menuCamera;
-		items = new TextMenuList();
-		add(items);
+		add(items = new TextMenuList());
 		createPrefItem('naughtyness', 'censor-naughty', true);
 		createPrefItem('downscroll', 'downscroll', false);
 		createPrefItem('flashing menu', 'flashing-menu', true);
@@ -79,12 +78,12 @@ class PreferencesMenu extends Page
 		}
 	}
 
-	public function createPrefItem(label:String, identifier:String, value:Bool)
+	public function createPrefItem(label:String, identifier:String, value:Dynamic)
 	{
 		items.createItem(120, 120 * items.length + 30, label, Bold, function()
 		{
 			preferenceCheck(identifier, value);
-			if (Type.typeof(value).getName() == 'TBool')
+			if (Type.typeof(value) == TBool)
 			{
 				prefToggle(identifier);
 			}
@@ -93,7 +92,7 @@ class PreferencesMenu extends Page
 				trace('swag');
 			}
 		});
-		if (Type.typeof(value).getName() == 'TBool')
+		if (Type.typeof(value) == TBool)
 		{
 			createCheckbox(identifier);
 		}
@@ -101,7 +100,7 @@ class PreferencesMenu extends Page
 		{
 			trace('swag');
 		}
-		trace(Type.typeof(value).getName());
+		trace(Type.typeof(value));
 	}
 
 	public function createCheckbox(identifier:String)

@@ -17,7 +17,7 @@ class InputItem extends TextMenuItem
 		control = ctrl;
 		this.index = index;
 		input = getInput();
-		super(x, y, getLabel(this.input), Default, callback);
+		super(x, y, getLabel(input), Default, callback);
 	}
 
 	public function updateDevice(dev:Device)

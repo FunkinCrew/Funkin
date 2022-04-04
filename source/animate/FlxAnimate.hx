@@ -1,5 +1,8 @@
 package animate;
 
+import flixel.graphics.FlxGraphic;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxPoint;
 import openfl.geom.Rectangle;
 import flixel.math.FlxRect;
@@ -7,14 +10,6 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxG;
 import lime.utils.Assets;
 import haxe.Json;
-import openfl.utils.Assets as OpenFlAssets;
-
-// I sincerely apologize for the rather shitty variable names and the error preventers.
-// The variables are not named in the code, and I have no fucking idea what they are doing. Typedefs don't exist either.
-// If you have a general understanding of the variables and have good names, please reach out to me via an issue marked as an "enhancement", or a pull request.
-// 
-// - AngelDTF, programmer of the Newgrounds Port
-// https://github.com/AngelDTF/FNF-NewgroundsPort
 
 class FlxAnimate extends FlxSymbol
 {
@@ -29,31 +24,51 @@ class FlxAnimate extends FlxSymbol
 		frames = fromAnimate(Paths.getPath('images/tightBars/spritemap1.png', TEXT, null), Paths.getPath('images/tightBars/spritemap1.json', TEXT, null));
 	}
 
-	public static function fromAnimate(img:String, json:String)
+	/**
+	 * Parsing method for Animate texture atlases
+	 * 
+	 * @param Source 		  The image source (can be `FlxGraphic`, `String` or `BitmapData`).
+	 * @param Description	  Contents of the JSON file with atlas description.
+	 *                        You can get it with `Assets.getText(path/to/description.json)`.
+	 *                        Or you can just pass a path to the JSON file in the assets directory.
+	 * @return  Newly created `FlxAtlasFrames` collection.
+	 */
+	 public static function fromAnimate(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
 	{
-		var c1 = FlxG.bitmap.add(img);
-		if (c1 == null)
+		var graphic:FlxGraphic = FlxG.bitmap.add(Source);
+		if (graphic == null)
 			return null;
-		var a1 = FlxAtlasFrames.findFrame(c1);
-		if (a1 != null)
-			return a1;
-		if (c1 == null || json == null)
+
+		// No need to parse data again
+		var frames:FlxAtlasFrames = FlxAtlasFrames.findFrame(graphic);
+		if (frames != null)
+			return frames;
+
+		if (graphic == null || Description == null)
 			return null;
-		var a2 = new FlxAtlasFrames(c1);
-		trace(json);
-		if (OpenFlAssets.exists(json))
-			json = OpenFlAssets.getText(json);
-		var c2:Array<Dynamic> = Json.parse(json).ATLAS.SPRITES;
-		for (d1 in c2)
+
+		frames = new FlxAtlasFrames(graphic);
+
+		trace(Description);
+		if (Assets.exists(Description))
+			Description = Assets.getText(Description);
+
+		var data:AnimateAtlas = Json.parse(Description);
+
+		for (sprites in data.ATLAS.SPRITES)
 		{
-			var d2 = d1.SPRITE;
-			var n = FlxRect.get(d2.x, d2.y, d2.w, d2.h);
-			var m1 = new Rectangle(0, 0, n.width, n.height);
-			var e = FlxPoint.get(-m1.left, -m1.top);
-			var m2 = FlxPoint.get(m1.width, m1.height);
-			a2.addAtlasFrame(n, m2, e, d2.name);
+			var spr:AnimateSpriteData = sprites.SPRITE;
+
+			var rect:FlxRect = FlxRect.get(spr.x, spr.y, spr.w, spr.h);
+			var size:Rectangle = new Rectangle(0, 0, rect.width, rect.height);
+
+			var offset = FlxPoint.get(-size.left, -size.top);
+			var sourceSize = FlxPoint.get(size.width, size.height);
+
+			frames.addAtlasFrame(rect, sourceSize, offset, spr.name);
 		}
-		return a2;
+
+		return frames;
 	}
 
 	override function draw()
@@ -64,11 +79,11 @@ class FlxAnimate extends FlxSymbol
 		
 		if (FlxG.keys.justPressed.E)
 		{
-			for (i in FlxSymbol.nestedShit.keys())
+			for (key in FlxSymbol.nestedShit.keys())
 			{
-				for (j in FlxSymbol.nestedShit.get(i))
+				for (symbol in FlxSymbol.nestedShit.get(key))
 				{
-					j.draw();
+					symbol.draw();
 				}
 			}
 			FlxSymbol.nestedShit.clear();
@@ -105,3 +120,28 @@ class FlxAnimate extends FlxSymbol
 		}
 	}
 }
+
+typedef AnimateAtlas =
+{
+	var ATLAS:AnimateSprites;
+};
+
+typedef AnimateSprites =
+{
+	var SPRITES:Array<AnimateSprite>;
+};
+
+typedef AnimateSprite =
+{
+	var SPRITE:AnimateSpriteData;
+};
+
+typedef AnimateSpriteData =
+{
+	var name:String;
+	var x:Float;
+	var y:Float;
+	var w:Float;
+	var h:Float;
+	var rotated:Bool;
+};

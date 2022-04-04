@@ -49,6 +49,7 @@ class Page extends FlxTypedGroup<Dynamic>
 			if (callback != null)
 				callback();
 		}
+		FlxG.state.openSubState(prompt);
 	}
 
 	override public function destroy()

@@ -193,22 +193,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
-		
-		// Sorry about this, but I'm basically copying and pasting the compiled code here. If someone could simplify this but keep the exact same function, please do.
-		var b = Std.parseInt(bg.color.toHexString()),
-			c = coolColors[songs[curSelected].week % coolColors.length],
-			d = CoolUtil.camLerpShit(0.045);
-		var e = Std.int(((c >> 0x10 & 0xFF) - (b >> 0x10 & 0xFF)) * d + (b >> 0x10 & 0xFF)),
-			f = Std.int(((c >> 0x8 & 0xFF) - (b >> 0x8 & 0xFF)) * d + (b >> 0x8 & 0xFF)),
-			h = Std.int(((c & 0xFF) - (b & 0xFF)) * d + (b & 0xFF)),
-			i = Std.int(((c >> 0x18 & 0xFF) - (b >> 0x18 & 0xFF)) * d + (b >> 0x18 & 0xFF));
-		b = (b & 0xFF00FFFF | (0xFF < e ? 0xFF : 0x0 > e ? 0x0 : e) << 0x10) & 0xFFFF00FF | (0xFF < f ? 0xFF : 0x0 > f ? 0x0 : f) << 0x8;
-		b &= 0xFFFFFF00;
-		b |= 0xFF < h ? 0xFF : 0x0 > h ? 0x0 : h;
-		b &= 0xFFFFFF;
-		b |= (0xFF < i ? 0xFF : 0x0 > i ? 0x0 : i) << 0x18;
-		bg.color = b;
-		// Alright, shit's over. Sincere apologies yet again, but at least it works.
+		bg.color = FlxColor.interpolate(bg.color, coolColors[songs[curSelected].week % coolColors.length], CoolUtil.camLerpShit(0.045));
 
 		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
 		positionHighscore();

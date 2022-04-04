@@ -20,4 +20,10 @@ class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 			this.atlas = atlas;
 		}
 	}
+
+	override public function destroy()
+	{
+		super.destroy();
+		atlas = null;
+	}
 }

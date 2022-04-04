@@ -1,5 +1,6 @@
 package;
 
+import animate.FlxAnimate;
 import shaderslmfao.BuildingShaders;
 import ui.PreferencesMenu;
 import shaderslmfao.ColorSwap;
@@ -8,7 +9,6 @@ import Discord.DiscordClient;
 #end
 import Section.SwagSection;
 import Song.SwagSong;
-import WiggleEffect.WiggleEffectType;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -129,8 +129,8 @@ class PlayState extends MusicBeatState
 	var tankGround:BGSprite;
 	var tankmanRun:FlxTypedGroup<TankmenBG>;
 
-	var gfCutsceneLayer:FlxTypedGroup<FlxSprite>;
-	var bfTankCutsceneLayer:FlxTypedGroup<FlxSprite>;
+	var gfCutsceneLayer:FlxTypedGroup<FlxAnimate>;
+	var bfTankCutsceneLayer:FlxTypedGroup<FlxAnimate>;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -572,7 +572,7 @@ class PlayState extends MusicBeatState
 		                            add(waveSpriteFG);
 		                    */
 		          }
-				  case 'ugh' | 'guns' | 'stress':
+				  case 'guns' | 'stress' | 'ugh':
 				  {
 						defaultCamZoom = 0.9;
 
@@ -803,10 +803,10 @@ class PlayState extends MusicBeatState
 
 		add(gf);
 
-		gfCutsceneLayer = new FlxTypedGroup<FlxSprite>();
+		gfCutsceneLayer = new FlxTypedGroup<FlxAnimate>();
 		add(gfCutsceneLayer);
 		
-		bfTankCutsceneLayer = new FlxTypedGroup<FlxSprite>();
+		bfTankCutsceneLayer = new FlxTypedGroup<FlxAnimate>();
 		add(bfTankCutsceneLayer);
 
 		// Shitty layering but whatev it works LOL
@@ -840,7 +840,7 @@ class PlayState extends MusicBeatState
 
 		// startCountdown();
 
-		generateSong(SONG.song);
+		generateSong();
 
 		// add(strumLine);
 
@@ -1183,7 +1183,7 @@ class PlayState extends MusicBeatState
 
 			{
 				case 0:
-					FlxG.sound.play(Paths.sound('intro3'), 0.6);
+					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.scrollFactor.set();
@@ -1201,7 +1201,7 @@ class PlayState extends MusicBeatState
 							ready.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('intro2'), 0.6);
+					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
 				case 2:
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 					set.scrollFactor.set();
@@ -1218,7 +1218,7 @@ class PlayState extends MusicBeatState
 							set.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('intro1'), 0.6);
+					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
 				case 3:
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 					go.scrollFactor.set();
@@ -1237,7 +1237,7 @@ class PlayState extends MusicBeatState
 							go.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('introGo'), 0.6);
+					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
 			}
 
@@ -1273,7 +1273,7 @@ class PlayState extends MusicBeatState
 
 	var debugNum:Int = 0;
 
-	private function generateSong(dataPath:String):Void
+	private function generateSong():Void
 	{
 		// FlxG.log.add(ChartParser.parse());
 
@@ -1538,9 +1538,9 @@ class PlayState extends MusicBeatState
 		super.closeSubState();
 	}
 
+	#if desktop
 	override public function onFocus():Void
 	{
-		#if desktop
 		if (health > 0 && !paused)
 		{
 			if (Conductor.songPosition > 0.0)
@@ -1552,22 +1552,20 @@ class PlayState extends MusicBeatState
 				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 			}
 		}
-		#end
 
 		super.onFocus();
 	}
 	
 	override public function onFocusLost():Void
 	{
-		#if desktop
 		if (health > 0 && !paused)
 		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		}
-		#end
 
 		super.onFocusLost();
 	}
+	#end
 
 	function resyncVocals():Void
 	{
@@ -1672,7 +1670,8 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				var pauseMenu = new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y);
+				var screenPos:FlxPoint = boyfriend.getScreenPosition();
+				var pauseMenu:PauseSubState = new PauseSubState(screenPos.x, screenPos.y);
 				openSubState(pauseMenu);
 				pauseMenu.camera = camHUD;
 			}
@@ -2425,10 +2424,10 @@ class PlayState extends MusicBeatState
 	{
 		// just double pasting this shit cuz fuk u
 		// REDO THIS SYSTEM!
+		var leftP = controls.NOTE_LEFT_P;
+		var downP = controls.NOTE_DOWN_P;
 		var upP = controls.NOTE_UP_P;
 		var rightP = controls.NOTE_RIGHT_P;
-		var downP = controls.NOTE_DOWN_P;
-		var leftP = controls.NOTE_LEFT_P;
 
 		if (leftP)
 			noteMiss(0);

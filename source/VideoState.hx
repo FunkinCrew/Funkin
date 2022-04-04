@@ -19,6 +19,8 @@ class VideoState extends MusicBeatState
 
 	override function create()
 	{
+		super.create();
+
 		seenVideo = true;
 		FlxG.save.data.seenVideo = true;
 		FlxG.save.flush();
@@ -32,12 +34,12 @@ class VideoState extends MusicBeatState
 		video = new Video();
 		FlxG.addChildBelowMouse(video);
 
-		var connection:NetConnection = new NetConnection();
-		connection.connect(null);
-		netStream = new NetStream(connection);
+		var netConnection:NetConnection = new NetConnection();
+		netConnection.connect(null);
+		netStream = new NetStream(netConnection);
 		netStream.client = {onMetaData: client_onMetaData};
 		netStream.addEventListener('asyncError', netStream_onAsyncError);
-		connection.addEventListener('netStatus', netConnection_onNetStatus);
+		netConnection.addEventListener('netStatus', netConnection_onNetStatus);
 		netStream.play(Paths.video('kickstarterTrailer'));
 
 		overlay = new Sprite();

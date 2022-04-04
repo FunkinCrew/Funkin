@@ -1,97 +1,100 @@
 package animate;
 
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxMatrix;
 import flixel.FlxCamera;
-import haxe.ds.IntMap;
 import openfl.geom.Matrix;
-import haxe.ds.StringMap;
 import flixel.FlxSprite;
-
-// I sincerely apologize for the rather shitty variable names and the error preventers.
-// The variables are not named in the code, and I have no fucking idea what they are doing. Typedefs don't exist either.
-// If you have a general understanding of the variables and have good names, please reach out to me via an issue marked as an "enhancement", or a pull request.
-// 
-// - AngelDTF, programmer of the Newgrounds Port
-// https://github.com/AngelDTF/FNF-NewgroundsPort
 
 class FlxSymbol extends FlxSprite
 {
-	public var hasFrameByPass:Bool = false;
-	public var symbolAtlasShit:StringMap<Dynamic> = new StringMap<Dynamic>();
-	public var symbolMap:StringMap<Dynamic> = new StringMap<Dynamic>();
+	var hasFrameByPass:Bool;
+	var symbolAtlasShit:Map<String, String> = new Map();
+	var symbolMap:Map<String, Animation> = new Map();
 	public var drawQueue:Array<Dynamic> = [];
-	public var daFrame:Int = 0;
-	public var nestDepth:Int = 0;
+	public var daFrame:Int;
+	public var nestDepth:Int;
 	public var transformMatrix:Matrix = new Matrix();
 	
 	var _skewMatrix = new Matrix();
 	
-	public var matrixExposed = false;
-	public var coolParse:Dynamic;
+	public var matrixExposed:Bool;
+	public var coolParse:Parsed;
 
-	public static var nestedShit:IntMap<Array<FlxSymbol>> = new IntMap<Array<FlxSymbol>>();
+	public static var nestedShit:Map<Int, Array<FlxSymbol>> = new Map<Int, Array<FlxSymbol>>();
 	
-	override public function new(x:Float, y:Float, c:Dynamic)
+	public function new(x:Float, y:Float, coolParsed:Parsed)
 	{
 		super(x, y);
-		coolParse = c;
-		if (Reflect.hasField(coolParse, 'SD'))
+
+		this.coolParse = coolParsed;
+
+		var hasSymbolDictionary:Bool = Reflect.hasField(coolParse, "SD");
+
+		if (hasSymbolDictionary)
 			symbolAtlasShit = parseSymbolDictionary(coolParse);
 	}
 
-	override public function draw()
+	public override function draw()
 	{
 		super.draw();
 	}
 
-	public function renderFrame(a, b, ?c:Bool)
+	function renderFrame(TL:Timeline, coolParsed:Parsed, ?traceShit:Bool = false)
 	{
 		drawQueue = [];
-		var _a_L:Array<Dynamic> = a.L; // error preventer, sorry I don't have the typedefs
-		for (d in _a_L)
+		for (layer in TL.L)
 		{
-			var _d_FR:Array<Dynamic> = d.FR; // another error preventer
-			for (f in _d_FR)
+			for (swagFrame in layer.FR)
 			{
-				if (daFrame >= f.I && daFrame < f.I + f.DU)
+				if (daFrame >= swagFrame.I && daFrame < swagFrame.I + swagFrame.DU)
 				{
-					var _f_E:Array<Dynamic> = f.E; // last error preventer for this function
-					for (m in _f_E)
+					for (element in swagFrame.E)
 					{
-						if (Reflect.hasField(m, 'ASI'))
+						if (Reflect.hasField(element, 'ASI'))
 						{
-							var n1 = m.ASI.M3D;
-							var k = new Matrix(n1[0], n1[1], n1[4], n1[5], n1[12], n1[13]);
-							var n2 = new FlxSymbol(0, 0, b);
+							var m3d = element.ASI.M3D;
+							var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
+	
+							var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
 							matrixExposed = true;
-							n2.frames = frames;
-							n2.frame = n2.frames.framesHash.get(m.ASI.N);
-							k.concat(_matrix);
-							n2.matrixExposed = true;
-							n2.transformMatrix.concat(k);
-							n2.origin.set();
-							n2.origin.x += origin.x;
-							n2.origin.y += origin.y;
-							n2.antialiasing = true;
-							n2.draw();
+							spr.frames = frames;
+							spr.frame = spr.frames.getByName(element.ASI.N);
+	
+							dumbassMatrix.concat(_matrix);
+							spr.matrixExposed = true;
+							spr.transformMatrix.concat(dumbassMatrix);
+	
+							spr.origin.set();
+
+							spr.origin.x += origin.x;
+							spr.origin.y += origin.y;
+							
+							spr.antialiasing = true;
+							spr.draw();
 						}
 						else
 						{
-							var n = symbolMap.get(m.SI.SN);
-							var k = new FlxSymbol(0, 0, coolParse);
-							k.frames = frames;
-							var g = new FlxMatrix(m.SI.M3D[0], m.SI.M3D[1], m.SI.M3D[4], m.SI.M3D[5], m.SI.M3D[12], m.SI.M3D[13]);
-							g.concat(_matrix);
-							k._matrix.concat(g);
-							k.origin.set(m.SI.TRP.x, m.SI.TRP.y);
-							if (symbolAtlasShit.exists(n.SN))
+							var nestedSymbol = symbolMap.get(element.SI.SN);
+							var nestedShit:FlxSymbol = new FlxSymbol(0, 0, coolParse);
+							nestedShit.frames = frames;
+	
+							var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12], element.SI.M3D[13]);
+
+							swagMatrix.concat(_matrix);
+
+							nestedShit._matrix.concat(swagMatrix);
+							nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
+
+							if (symbolAtlasShit.exists(nestedSymbol.SN))
 							{
 								// empty if statement???
 								// perhaps it was later commented out code, idfk
 							}
-							k.hasFrameByPass = true;
-							k.nestDepth = nestDepth + 1;
-							k.renderFrame(n.TL, b);
+
+							nestedShit.hasFrameByPass = true;
+							nestedShit.nestDepth = nestDepth + 1;
+							nestedShit.renderFrame(nestedSymbol.TL, coolParsed);
 						}
 					}
 				}
@@ -99,85 +102,174 @@ class FlxSymbol extends FlxSprite
 		}
 	}
 
-	private function changeFrame(?change:Int = 0)
+	public function changeFrame(frameChange:Int = 0):Void
 	{
-		daFrame += change;
+		daFrame += frameChange;
 	}
 
-	private function parseSymbolDictionary(a):StringMap<Dynamic>
+	function parseSymbolDictionary(coolParsed:Parsed):Map<String, String>
 	{
-		var b = new StringMap<Dynamic>();
-		var _a_SD_S:Array<Dynamic> = a.SD.S; // error preventer
-		for (d in _a_SD_S)
+		var awesomeMap:Map<String, String> = new Map();
+
+		for (symbol in coolParsed.SD.S)
 		{
-			symbolMap.set(d.SN, d);
-			var e = d.SN;
-			var _d_TL_L:Array<Dynamic> = d.TL.L; // error preventer
-			for (h in _d_TL_L)
+			symbolMap.set(symbol.SN, symbol);
+
+			var symbolName = symbol.SN;
+
+			for (layer in symbol.TL.L)
 			{
-				var _h_FR:Array<Dynamic> = h.FR; // error preventer
-				for (n in _h_FR)
+				for (frame in layer.FR)
 				{
-					var _n_E:Array<Dynamic> = n.E; // error preventer
-					for (g in _n_E)
+					for (element in frame.E)
 					{
-						if (Reflect.hasField(g, 'ASI'))
-							b.set(e, g.ASI.N);
+						if (Reflect.hasField(element, 'ASI'))
+						{
+							awesomeMap.set(symbolName, element.ASI.N);
+						}
 					}
 				}
 			}
 		}
-		return b;
+
+		return awesomeMap;
 	}
 
-	override public function drawComplex(a:FlxCamera)
+	override function drawComplex(camera:FlxCamera):Void
 	{
-		var b1 = flipX != _frame.flipX;
-		var c1 = flipY != _frame.flipY;
-		_frame.prepareMatrix(_matrix, 0, animation.curAnim != null ? b1 != animation.curAnim.flipX : b1, animation.curAnim != null ? c1 != animation.curAnim.flipY : c1);
+		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
 		_matrix.translate(-origin.x, -origin.y);
 		_matrix.scale(scale.x, scale.y);
+
 		if (matrixExposed)
-		{
 			_matrix.concat(transformMatrix);
-		}
 		else
 		{
 			if (bakedRotationAngle <= 0)
 			{
-				if (_angleChanged)
-				{
-					var b = Math.PI / 180 * angle;
-					_sinAngle = Math.sin(b);
-					_cosAngle = Math.cos(b);
-					_angleChanged = false;
-				}
+				updateTrig();
+	
 				if (angle != 0)
-				{
-					// this looks like actual fucking shit
-					var b = _matrix;
-					var c = _cosAngle;
-					var d = _sinAngle;
-					var e = b.a * c - b.b * d;
-					b.b = b.a * d + b.b * c;
-					b.a = e;
-					e = b.c * c - b.d * d;
-					b.d = b.c * d + b.d * c;
-					b.c = e;
-					e = b.tx * c - b.ty * d;
-					b.ty = b.tx * d + b.ty * c;
-					b.tx = e;
-				}
+					_matrix.rotateWithTrig(_cosAngle, _sinAngle);
 			}
 			_matrix.concat(_skewMatrix);
 		}
+		
 		_point.addPoint(origin);
-		if (isPixelPerfectRender(a))
+
+		if (isPixelPerfectRender(camera))
 		{
 			_point.x = Math.floor(_point.x);
 			_point.y = Math.floor(_point.y);
 		}
+
 		_matrix.translate(_point.x, _point.y);
-		a.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing);
+
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing);
 	}
 }
+
+typedef Parsed =
+{
+	var AN:Animation;
+	var SD:SymbolDictionary;
+	var MD:AtlasMetaData;
+}
+
+/**
+ * Basically treated like one big symbol
+ */
+ typedef Animation =
+ {
+	 /**
+	  * Symbol Name
+	  */
+	 var SN:String;
+ 
+	 var TL:Timeline;
+ 
+	 /**
+	  * Symbol Type Instance
+	  * NOT used in symbols, only the main AN animation.
+	  */
+	 var STI:Dynamic;
+ }
+ 
+ typedef SymbolDictionary =
+ {
+	 var S:Array<Animation>;
+ }
+ 
+ typedef Timeline =
+ {
+	 /**
+	  * Layers
+	  */
+	 var L:Array<Layer>;
+ }
+ 
+ typedef Layer =
+ {
+	 var LN:String;
+ 
+	 /**
+	  * Frames
+	  */
+	 var FR:Array<Frame>;
+ }
+ 
+ typedef Frame =
+ {
+	 var I:Int;
+ 
+	 /**
+	  * Duration, in frames
+	  */
+	 var DU:Int;
+ 
+	 /**
+	  * Elements
+	  */
+	 var E:Array<Element>;
+ }
+ 
+ typedef Element =
+ {
+	 var SI:SymbolInstance;
+	 var ASI:AtlasSymbolInstance;
+ }
+ 
+ /**
+  * Symbol instance, for SYMBOLS and refers to SYMBOLS
+  */
+ typedef SymbolInstance =
+ {
+	 var SN:String;
+ 
+	 /**
+	  * SymbolType (Graphic, Movieclip, Button)
+	  */
+	 var ST:String;
+ 
+	 var FFP:Int;
+	 var LP:String;
+	 var TRP:TransformationPoint;
+	 var M3D:Array<Float>;
+ }
+ 
+ typedef AtlasSymbolInstance =
+ {
+	 var N:String;
+	 var M3D:Array<Float>;
+ }
+ 
+ typedef TransformationPoint =
+ {
+	 var x:Float;
+	 var y:Float;
+ }
+ 
+ typedef AtlasMetaData =
+ {
+	 var FRT:Int;
+ }

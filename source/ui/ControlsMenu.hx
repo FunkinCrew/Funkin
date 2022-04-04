@@ -47,7 +47,8 @@ class ControlsMenu extends Page
 		add(controlGrid);
 		if (FlxG.gamepads.numActiveGamepads > 0)
 		{
-			var spr:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
+			var spr:FlxSprite = new FlxSprite();
+			spr.makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
 			add(spr);
 			deviceList = new TextMenuList(Horizontal, None);
 			add(deviceList);
@@ -58,10 +59,9 @@ class ControlsMenu extends Page
 			});
 			kbItem.x = FlxG.width / 2 - kbItem.width - 30;
 			kbItem.y = (spr.height - kbItem.height) / 2;
-			var gp:Device = Device.Gamepad(FlxG.gamepads.firstActive.id);
 			var gpItem:TextMenuItem = deviceList.createItem(null, null, 'Gamepad', Bold, function()
 			{
-				selectDevice(gp);
+				selectDevice(Device.Gamepad(FlxG.gamepads.firstActive.id));
 			});
 			gpItem.x = FlxG.width / 2 + 30;
 			gpItem.y = (spr.height - gpItem.height) / 2;
@@ -90,7 +90,7 @@ class ControlsMenu extends Page
 				name = name.substr(curSection.length);
 			}
 			var text:AtlasText = new AtlasText(150, ypos, name, Bold);
-			labels.add(text);
+			text = labels.add(text);
 			text.alpha = 0.6;
 			createItem(text.x + 400, ypos, ctrl, 0);
 			createItem(text.x + 400 + 300, ypos, ctrl, 1);
@@ -108,10 +108,7 @@ class ControlsMenu extends Page
 			camFollow.y = controlGrid.members[controlGrid.selectedIndex].y;
 		}
 		menuCamera.follow(camFollow, null, 0.06);
-		menuCamera.deadzone.x = 0;
-		menuCamera.deadzone.y = 100;
-		menuCamera.deadzone.width = menuCamera.width;
-		menuCamera.deadzone.height = menuCamera.height - 200;
+		menuCamera.deadzone.set(0, 100, menuCamera.width, menuCamera.height - 200);
 		menuCamera.minScrollY = 0;
 		controlGrid.onChange.add(function(item:InputItem)
 		{
@@ -126,11 +123,11 @@ class ControlsMenu extends Page
 		prompt.create();
 		prompt.createBgFromMargin(100, 0xFFFAFD6D);
 		prompt.back.scrollFactor.set(0, 0);
-		prompt.set_exists(false);
+		prompt.exists = false;
 		add(prompt);
 	}
 
-	public function createItem(?x:Float = 0, ?y:Float = 0, control:Control, index:Int)
+	function createItem(?x:Float = 0, ?y:Float = 0, control:Control, index:Int)
 	{
 		var item:InputItem = new InputItem(x, y, currentDevice, control, index, onSelect);
 		for (i in 0...controlGroups.length)
@@ -141,14 +138,14 @@ class ControlsMenu extends Page
 		return controlGrid.addItem(item.name, item);
 	}
 
-	public function onSelect()
+	function onSelect()
 	{
 		canExit = false;
 		controlGrid.enabled = false;
 		prompt.exists = true;
 	}
 
-	public function goToDeviceList()
+	function goToDeviceList()
 	{
 		controlGrid.members[controlGrid.selectedIndex].idle();
 		labels.members[Std.int(controlGrid.selectedIndex / 2)].alpha = 0.6;
@@ -159,7 +156,7 @@ class ControlsMenu extends Page
 		deviceListSelected = true;
 	}
 
-	public function selectDevice(dev:Device)
+	function selectDevice(dev:Device)
 	{
 		currentDevice = dev;
 		for (item in controlGrid.members)
@@ -216,23 +213,23 @@ class ControlsMenu extends Page
 		}
 	}
 
-	public function onInputSelect(input:Int)
+	function onInputSelect(input:Int)
 	{
 		var selected:InputItem = controlGrid.members[controlGrid.selectedIndex];
 		var index:Int = 2 * Math.floor(controlGrid.selectedIndex / 2);
 		if (controlGrid.members[index].input != input && controlGrid.members[index + 1].input != input)
 		{
-			for (i in itemGroups)
+			for (group in itemGroups)
 			{
-				if (i.contains(selected))
+				if (group.contains(selected))
 				{
-					for (j in i)
+					for (item in group)
 					{
-						if (j != selected && j.input == input)
+						if (item != selected && item.input == input)
 						{
-							PlayerSettings.player1.controls.replaceBinding(j.control, currentDevice, selected.input, j.input);
-							j.input = selected.input;
-							j.label.text = selected.label.text;
+							PlayerSettings.player1.controls.replaceBinding(item.control, currentDevice, selected.input, item.input);
+							item.input = selected.input;
+							item.label.text = selected.label.text;
 						}
 					}
 				}
@@ -244,7 +241,7 @@ class ControlsMenu extends Page
 		}
 	}
 
-	public function closePrompt()
+	function closePrompt()
 	{
 		prompt.exists = false;
 		controlGrid.enabled = true;
@@ -258,7 +255,7 @@ class ControlsMenu extends Page
 	{
 		super.destroy();
 		itemGroups = null;
-		if (FlxG.cameras.list.indexOf(menuCamera) != -1)
+		if (FlxG.cameras.list.contains(menuCamera))
 			FlxG.cameras.remove(menuCamera);
 	}
 

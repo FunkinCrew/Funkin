@@ -55,7 +55,7 @@ class PlayerSettings
 			if (keys != null)
 			{
 				setDefault = false;
-				trace("loaded key data: " + Json.stringify(keys));
+				trace('loaded key data: ' + Json.stringify(keys));
 				controls.fromSaveData(keys, Device.Keys);
 			}
 		}
@@ -71,20 +71,20 @@ class PlayerSettings
 		var saveControls = FlxG.save.data.controls;
 		if (saveControls != null)
 		{
-			var keys = null;
+			var pad = null;
 			if (id == 0 && saveControls.p1 != null && saveControls.p1.pad != null)
 			{
-				keys = saveControls.p1.pad;
+				pad = saveControls.p1.pad;
 			}
 			else if (id == 1 && saveControls.p2 != null && saveControls.p2.pad != null)
 			{
-				keys = saveControls.p2.pad;
+				pad = saveControls.p2.pad;
 			}
-			if (keys != null)
+			if (pad != null)
 			{
 				setDefault = false;
-				trace("loaded pad data: " + Json.stringify(keys));
-				controls.addGamepadWithSaveData(pad.id, keys);
+				trace('loaded pad data: ' + Json.stringify(pad));
+				controls.addGamepadWithSaveData(pad.id, pad);
 			}
 		}
 		if (setDefault)
@@ -120,14 +120,14 @@ class PlayerSettings
 		if (savedata != null)
 		{
 			keydata.keys = savedata;
-			trace("saving key data: " + Json.stringify(savedata));
+			trace('saving key data: ' + Json.stringify(savedata));
 		}
 		if (controls.gamepadsAdded.length > 0)
 		{
 			savedata = this.controls.createSaveData(Device.Gamepad(controls.gamepadsAdded[0]));
 			if (savedata != null)
 			{
-				trace("saving pad data: " + Json.stringify(savedata));
+				trace('saving pad data: ' + Json.stringify(savedata));
 				keydata.pad = savedata;
 			}
 		}
@@ -155,12 +155,5 @@ class PlayerSettings
 	static public function onGamepadAdded(pad):Void
 	{
 		player1.addGamepad(pad);
-	}
-
-	static public function reset()
-	{
-		player1 = null;
-		player2 = null;
-		numPlayers = 0;
 	}
 }

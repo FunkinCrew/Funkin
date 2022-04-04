@@ -99,10 +99,6 @@ class GameOverSubstate extends MusicBeatSubstate
 				coolStartDeath(0.2);
 				FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + randomGameover), 1, false, null, true, function()
 				{
-					if (!FlxG.sound.music.playing)
-						FlxG.sound.music.play();
-					if (FlxG.sound.music.fadeTween != null)
-						FlxG.sound.music.fadeTween.cancel();
 					FlxG.sound.music.fadeIn(4, 0.2, 1);
 				});
 			}

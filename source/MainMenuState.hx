@@ -55,7 +55,7 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBG'));
+		var bg:FlxSprite = new FlxSprite(null, null, Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.17;
 		bg.setGraphicSize(Std.int(bg.width * 1.2));
@@ -67,7 +67,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		magenta = new FlxSprite(null, null, Paths.image('menuDesat'));
 		magenta.scrollFactor.x = bg.scrollFactor.x;
 		magenta.scrollFactor.y = bg.scrollFactor.y;
 		magenta.setGraphicSize(Std.int(bg.width));
@@ -112,10 +112,12 @@ class MainMenuState extends MusicBeatState
 			startExitState(new OptionsState());
 		});
 
+		var pos:Float = (FlxG.height - 160 * (menuItems.length - 1)) / 2;
 		for (i in 0...menuItems.length)
 		{
-			menuItems.members[i].x = FlxG.width / 2;
-			menuItems.members[i].y = ((FlxG.height - 160 * (menuItems.length - 1)) / 2) + (160 * i);
+			var item:MainMenuItem = menuItems.members[i];
+			item.x = FlxG.width / 2;
+			item.y = pos + (160 * i);
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
@@ -154,7 +156,7 @@ class MainMenuState extends MusicBeatState
 	function startExitState(nextState:FlxState)
 	{
 		menuItems.enabled = false;
-		menuItems.forEach(function(item)
+		menuItems.forEach(function(item:MainMenuItem)
 		{
 			if (menuItems.selectedIndex != item.ID)
 			{
@@ -196,19 +198,17 @@ class MainMenuState extends MusicBeatState
 
 class MainMenuItem extends AtlasMenuItem
 {
-	public function new(?X:Float = 0, ?Y:Float = 0, name:String, atlas:FlxAtlasFrames, callback:Dynamic)
+	public function new(?x:Float = 0, ?y:Float = 0, name:String, atlas:FlxAtlasFrames, callback:Dynamic)
 	{
-		super(X, Y, name, atlas, callback);
+		super(x, y, name, atlas, callback);
 		this.scrollFactor.set();
 	}
 
 	override public function changeAnim(anim:String)
 	{
 		super.changeAnim(anim);
-		origin.set(0.5 * frameWidth, 0.5 * frameHeight);
-		offset.x = origin.x;
-		offset.y = origin.y;
-		origin.putWeak();
+		origin.set(frameWidth * 0.5, frameHeight * 0.5);
+		offset.copyFrom(origin);
 	}
 }
 
@@ -222,11 +222,11 @@ class MainMenuList extends MenuTypedList<MainMenuItem>
 		super(Vertical);
 	}
 
-	public function createItem(?X:Float = 0, ?Y:Float = 0, name:String, callback:Dynamic = null, fireInstantly:Bool = false)
+	public function createItem(?x:Float = 0, ?y:Float = 0, name:String, callback:Dynamic = null, fireInstantly:Bool = false)
 	{
-		var a = new MainMenuItem(X, Y, name, atlas, callback);
-		a.fireInstantly = fireInstantly;
-		a.ID = length;
-		return addItem(name, a);
+		var item:MainMenuItem = new MainMenuItem(x, y, name, atlas, callback);
+		item.fireInstantly = fireInstantly;
+		item.ID = length;
+		return addItem(name, item);
 	}
 }

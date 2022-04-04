@@ -122,18 +122,6 @@ enum KeyboardScheme
  */
 class Controls extends FlxActionSet
 {
-	var _note_downR = new FlxActionDigital(Action.NOTE_DOWN_R);
-	var _note_rightR = new FlxActionDigital(Action.NOTE_RIGHT_R);
-	var _note_leftR = new FlxActionDigital(Action.NOTE_LEFT_R);
-	var _note_upR = new FlxActionDigital(Action.NOTE_UP_R);
-	var _note_downP = new FlxActionDigital(Action.NOTE_DOWN_P);
-	var _note_rightP = new FlxActionDigital(Action.NOTE_RIGHT_P);
-	var _note_leftP = new FlxActionDigital(Action.NOTE_LEFT_P);
-	var _note_upP = new FlxActionDigital(Action.NOTE_UP_P);
-	var _note_down = new FlxActionDigital(Action.NOTE_DOWN);
-	var _note_right = new FlxActionDigital(Action.NOTE_RIGHT);
-	var _note_left = new FlxActionDigital(Action.NOTE_LEFT);
-	var _note_up = new FlxActionDigital(Action.NOTE_UP);
 	var _ui_up = new FlxActionDigital(Action.UI_UP);
 	var _ui_left = new FlxActionDigital(Action.UI_LEFT);
 	var _ui_right = new FlxActionDigital(Action.UI_RIGHT);
@@ -146,6 +134,18 @@ class Controls extends FlxActionSet
 	var _ui_leftR = new FlxActionDigital(Action.UI_LEFT_R);
 	var _ui_rightR = new FlxActionDigital(Action.UI_RIGHT_R);
 	var _ui_downR = new FlxActionDigital(Action.UI_DOWN_R);
+	var _note_up = new FlxActionDigital(Action.NOTE_UP);
+	var _note_left = new FlxActionDigital(Action.NOTE_LEFT);
+	var _note_right = new FlxActionDigital(Action.NOTE_RIGHT);
+	var _note_down = new FlxActionDigital(Action.NOTE_DOWN);
+	var _note_upP = new FlxActionDigital(Action.NOTE_UP_P);
+	var _note_leftP = new FlxActionDigital(Action.NOTE_LEFT_P);
+	var _note_rightP = new FlxActionDigital(Action.NOTE_RIGHT_P);
+	var _note_downP = new FlxActionDigital(Action.NOTE_DOWN_P);
+	var _note_upR = new FlxActionDigital(Action.NOTE_UP_R);
+	var _note_leftR = new FlxActionDigital(Action.NOTE_LEFT_R);
+	var _note_rightR = new FlxActionDigital(Action.NOTE_RIGHT_R);
+	var _note_downR = new FlxActionDigital(Action.NOTE_DOWN_R);
 	var _accept = new FlxActionDigital(Action.ACCEPT);
 	var _back = new FlxActionDigital(Action.BACK);
 	var _pause = new FlxActionDigital(Action.PAUSE);
@@ -159,66 +159,6 @@ class Controls extends FlxActionSet
 
 	public var gamepadsAdded:Array<Int> = [];
 	public var keyboardScheme = KeyboardScheme.None;
-
-	public var NOTE_UP(get, never):Bool;
-
-	inline function get_NOTE_UP()
-		return _note_up.check();
-
-	public var NOTE_LEFT(get, never):Bool;
-
-	inline function get_NOTE_LEFT()
-		return _note_left.check();
-
-	public var NOTE_RIGHT(get, never):Bool;
-
-	inline function get_NOTE_RIGHT()
-		return _note_right.check();
-
-	public var NOTE_DOWN(get, never):Bool;
-
-	inline function get_NOTE_DOWN()
-		return _note_down.check();
-
-	public var NOTE_UP_P(get, never):Bool;
-
-	inline function get_NOTE_UP_P()
-		return _note_upP.check();
-
-	public var NOTE_LEFT_P(get, never):Bool;
-
-	inline function get_NOTE_LEFT_P()
-		return _note_leftP.check();
-
-	public var NOTE_RIGHT_P(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_P()
-		return _note_rightP.check();
-
-	public var NOTE_DOWN_P(get, never):Bool;
-
-	inline function get_NOTE_DOWN_P()
-		return _note_downP.check();
-
-	public var NOTE_UP_R(get, never):Bool;
-
-	inline function get_NOTE_UP_R()
-		return _note_upR.check();
-
-	public var NOTE_LEFT_R(get, never):Bool;
-
-	inline function get_NOTE_LEFT_R()
-		return _note_leftR.check();
-
-	public var NOTE_RIGHT_R(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_R()
-		return _note_rightR.check();
-
-	public var NOTE_DOWN_R(get, never):Bool;
-
-	inline function get_NOTE_DOWN_R()
-		return _note_downR.check();
 
 	public var UI_UP(get, never):Bool;
 
@@ -279,6 +219,66 @@ class Controls extends FlxActionSet
 
 	inline function get_UI_DOWN_R()
 		return _ui_downR.check();
+
+	public var NOTE_UP(get, never):Bool;
+
+	inline function get_NOTE_UP()
+		return _note_up.check();
+
+	public var NOTE_LEFT(get, never):Bool;
+
+	inline function get_NOTE_LEFT()
+		return _note_left.check();
+
+	public var NOTE_RIGHT(get, never):Bool;
+
+	inline function get_NOTE_RIGHT()
+		return _note_right.check();
+
+	public var NOTE_DOWN(get, never):Bool;
+
+	inline function get_NOTE_DOWN()
+		return _note_down.check();
+
+	public var NOTE_UP_P(get, never):Bool;
+
+	inline function get_NOTE_UP_P()
+		return _note_upP.check();
+
+	public var NOTE_LEFT_P(get, never):Bool;
+
+	inline function get_NOTE_LEFT_P()
+		return _note_leftP.check();
+
+	public var NOTE_RIGHT_P(get, never):Bool;
+
+	inline function get_NOTE_RIGHT_P()
+		return _note_rightP.check();
+
+	public var NOTE_DOWN_P(get, never):Bool;
+
+	inline function get_NOTE_DOWN_P()
+		return _note_downP.check();
+
+	public var NOTE_UP_R(get, never):Bool;
+
+	inline function get_NOTE_UP_R()
+		return _note_upR.check();
+
+	public var NOTE_LEFT_R(get, never):Bool;
+
+	inline function get_NOTE_LEFT_R()
+		return _note_leftR.check();
+
+	public var NOTE_RIGHT_R(get, never):Bool;
+
+	inline function get_NOTE_RIGHT_R()
+		return _note_rightR.check();
+
+	public var NOTE_DOWN_R(get, never):Bool;
+
+	inline function get_NOTE_DOWN_R()
+		return _note_downR.check();
 
 	public var ACCEPT(get, never):Bool;
 
@@ -476,11 +476,8 @@ class Controls extends FlxActionSet
 		for (i in 0...action.inputs.length)
 		{
 			var input = action.inputs[i];
-			if (input.device == FlxInputDevice.KEYBOARD && input.inputID == toRemove)
-			{
-				var bypasslol = cast action.inputs[i];
-				bypasslol.inputID = toAdd;
-			}
+			if (input.device == KEYBOARD && input.inputID == toRemove)
+				@:privateAccess action.inputs[i].inputID = toAdd;
 		}
 	}
 
@@ -489,10 +486,8 @@ class Controls extends FlxActionSet
 		for (i in 0...action.inputs.length)
 		{
 			var input = action.inputs[i];
-			if (input.device == FlxInputDevice.GAMEPAD && id != -1 && input.deviceID == id && input.inputID == toRemove)
-			{
-				(cast action.inputs[i]).inputID = toAdd; // bypassing it cause I don't know how else to replace the input IDs
-			}
+			if (input.device == GAMEPAD && id != -1 && input.deviceID == id && input.inputID == toRemove)
+				@:privateAccess action.inputs[i].inputID = toAdd;
 		}
 	}
 	/**
@@ -502,14 +497,14 @@ class Controls extends FlxActionSet
 	public function bindKeys(control:Control, keys:Array<FlxKey>)
 	{
 		#if (haxe >= "4.0.0")
-		inline forEachBound(control, (action, state) -> for (i in 0...keys.length)
+		inline forEachBound(control, (action, state) -> for (key in keys)
 		{
-			action.addKey(keys[i], state);
+			action.addKey(key, state);
 		});
 		#else
-		forEachBound(control, function(action, state) for (i in 0...keys.length)
+		forEachBound(control, function(action, state) for (key in keys)
 		{
-			action.addKey(keys[i], state);
+			action.addKey(key, state);
 		});
 		#end
 	}
@@ -680,17 +675,17 @@ class Controls extends FlxActionSet
 	 * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
 	 * If binder is a literal you can inline this
 	 */
-	public function bindButtons(a, b, c:Dynamic)
+	public function bindButtons(control:Control, id, buttons:Array<FlxGamepadInputID>)
 	{
 		#if (haxe >= "4.0.0")
-		inline forEachBound(a, (action, state) -> for (i in 0...c.length)
+		inline forEachBound(control, (action, state) -> for (button in buttons)
 		{
-			action.addGamepad(c[i], state, b);
+			action.addGamepad(button, state, id);
 		});
 		#else
-		forEachBound(control, function(action, state) for (i in 0...c.length)
+		forEachBound(control, function(action, state) for (button in buttons)
 		{
-			action.addGamepad(c[i], state, b);
+			action.addGamepad(button, state, id);
 		});
 		#end
 	}
@@ -718,32 +713,30 @@ class Controls extends FlxActionSet
 		return list;
 	}
 
-	public function fromSaveData(data, dev:Device)
+	public function fromSaveData(data, device:Device)
 	{
-		var buttons = Control.createAll();
-		for (btn in buttons)
+		for (button in Control.createAll())
 		{
-			var inputs = Reflect.field(data, btn.getName());
-			if (inputs != null) switch (dev)
+			var inputs:Dynamic = Reflect.field(data, button.getName());
+			if (inputs != null) switch (device)
 			{
 				case Keys:
-					bindKeys(btn, inputs);
+					bindKeys(button, inputs);
 				case Gamepad(id):
-					bindButtons(btn, id, inputs);
+					bindButtons(button, id, inputs);
 			}
 		}
 	}
 
-	public function createSaveData(dev:Device)
+	public function createSaveData(device:Device)
 	{
-		var buttons = Control.createAll();
 		var cannotReturn = true;
 		var obj:DynamicAccess<Dynamic> = {};
-		for (btn in buttons)
+		for (button in Control.createAll())
 		{
-			var inputs = getInputsFor(btn, dev);
+			var inputs = getInputsFor(button, device);
 			cannotReturn = cannotReturn && inputs.length == 0;
-			obj[btn.getName()] = inputs;
+			obj[button.getName()] = inputs;
 		}
 		return cannotReturn ? null : obj;
 	}

@@ -27,7 +27,15 @@ class HealthIcon extends FlxSprite
 	public function swapOldIcon()
 	{
 		isOldIcon = !isOldIcon;
-		changeIcon(isOldIcon ? 'bf-old' : 'bf');
+		
+		if (isOldIcon)
+		{
+			changeIcon('bf-old');
+		}
+		else
+		{
+			changeIcon('bf');
+		}
 	}
 
 	public function changeIcon(char:String)

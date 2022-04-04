@@ -10,7 +10,7 @@ class OptionsState extends MusicBeatState
 	public var currentName:PageName = Options;
 	public var currentPage(get, never):Page;
 
-	function get_currentPage()
+	inline function get_currentPage()
 		return pages.get(currentName);
 
 	override function create()
@@ -22,9 +22,9 @@ class OptionsState extends MusicBeatState
 		bg.screenCenter();
 		bg.scrollFactor.set(0, 0);
 		add(bg);
-		var optionsmenu = addPage(Options, new OptionsMenu(false));
-		var preferencesmenu = addPage(Preferences, new PreferencesMenu());
-		var controlsmenu = addPage(Controls, new ControlsMenu());
+		var optionsmenu:OptionsMenu = addPage(Options, new OptionsMenu(false));
+		var preferencesmenu:PreferencesMenu = addPage(Preferences, new PreferencesMenu());
+		var controlsmenu:ControlsMenu = addPage(Controls, new ControlsMenu());
 		if (optionsmenu.hasMultipleOptions())
 		{
 			optionsmenu.onExit.add(exitToMainMenu);
@@ -42,32 +42,36 @@ class OptionsState extends MusicBeatState
 			controlsmenu.onExit.add(exitToMainMenu);
 			setPage(Controls);
 		}
-		pages.get(currentName).enabled = false;
+		currentPage.enabled = false;
 		super.create();
 	}
 
-	function addPage(name:PageName, menu:Dynamic)
+	function addPage(name:PageName, page:Page):Dynamic
 	{
-		menu.onSwitch.add(switchPage);
-		pages.set(name, menu);
-		add(menu);
-		menu.exists = currentName == name;
-		return menu;
+		page.onSwitch.add(switchPage);
+		pages.set(name, page);
+		add(page);
+		page.exists = name == currentName;
+		return page;
 	}
 
 	function setPage(name:PageName)
 	{
 		if (pages.exists(currentName))
-			pages.get(currentName).exists = false;
+		{
+			currentPage.exists = false;
+		}
 		currentName = name;
 		if (pages.exists(currentName))
-			pages.get(currentName).exists = true;
+		{
+			currentPage.exists = true;
+		}
 	}
 
 	override function finishTransIn()
 	{
 		super.finishTransIn();
-		pages.get(currentName).enabled = true;
+		currentPage.enabled = true;
 	}
 
 	function switchPage(name:PageName)
@@ -77,7 +81,7 @@ class OptionsState extends MusicBeatState
 
 	function exitToMainMenu()
 	{
-		pages.get(currentName).enabled = false;
+		currentPage.enabled = false;
 		FlxG.switchState(new MainMenuState());
 	}
 }

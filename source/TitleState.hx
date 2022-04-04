@@ -124,28 +124,28 @@ class TitleState extends MusicBeatState
 	}
 
 	#if web
-	function client_onMetaData(a)
+	function client_onMetaData(e)
 	{
 		video.attachNetStream(netStream);
 		video.width = video.videoWidth;
 		video.height = video.videoHeight;
 	}
 
-	function netStream_onAsyncError(a)
+	function netStream_onAsyncError(e)
 	{
 		trace("Error loading video");
 	}
 
-	function netConnection_onNetStatus(a)
+	function netConnection_onNetStatus(e)
 	{
-		if (a.info.code == 'NetStream.Play.Complete')
+		if (e.info.code == 'NetStream.Play.Complete')
 		{
 			startIntro();
 		}
-		trace(a.toString());
+		trace(e.toString());
 	}
 
-	function overlay_onMouseDown(a)
+	function overlay_onMouseDown(e)
 	{
 		netStream.soundTransform.volume = 0.2;
 		netStream.soundTransform.pan = -1;
@@ -292,6 +292,8 @@ class TitleState extends MusicBeatState
 
 	var transitioning:Bool = false;
 
+	var isRainbow:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		if (FlxG.keys.justPressed.EIGHT)
@@ -378,11 +380,11 @@ class TitleState extends MusicBeatState
 
 		if (controls.UI_LEFT)
 		{
-			swagShader.update(0.1 * -elapsed);
+			swagShader.update(elapsed * 0.1);
 		}
 		if (controls.UI_RIGHT)
 		{
-			swagShader.update(0.1 * elapsed);
+			swagShader.update(-elapsed * 0.1);
 		}
 
 		super.update(elapsed);
@@ -487,11 +489,11 @@ class TitleState extends MusicBeatState
 						skipIntro();
 				}
 			}
-			lastBeat = curBeat;
 		}
+		
+		lastBeat = curBeat;
 	}
 
-	var isRainbow:Bool = false;
 	var skippedIntro:Bool = false;
 
 	function skipIntro():Void

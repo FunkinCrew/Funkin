@@ -351,6 +351,7 @@ class Character extends FlxSprite
 				quickAnimAdd('singLEFTmiss', 'BF NOTE LEFT MISS');
 				quickAnimAdd('singRIGHTmiss', 'BF NOTE RIGHT MISS');
 				quickAnimAdd('singUPmiss', 'BF NOTE UP MISS');
+
 				quickAnimAdd('bfCatch', 'BF catches GF');
 
 				loadOffsetFile(curCharacter);
@@ -459,6 +460,7 @@ class Character extends FlxSprite
 				quickAnimAdd('singDOWN', 'Tankman DOWN note ');
 				quickAnimAdd('singUPmiss', 'Tankman UP note MISS');
 				quickAnimAdd('singDOWNmiss', 'Tankman DOWN note MISS');
+
 				quickAnimAdd('singDOWN-alt', 'PRETTY GOOD');
 				quickAnimAdd('singUP-alt', 'TANKMAN UGH');
 
@@ -523,10 +525,10 @@ class Character extends FlxSprite
 	function loadOffsetFile(char:String)
 	{
 		var offsets:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/characters/' + char + 'Offsets.txt', TEXT, null));
-		for (i in 0...offsets.length)
+		for (i in offsets)
 		{
-			var offset = offsets[i].split(' ');
-			addOffset(offset[0], Std.parseInt(offset[1]), Std.parseInt(offset[2]));
+			var split = i.split(' ');
+			addOffset(split[0], Std.parseInt(split[1]), Std.parseInt(split[2]));
 		}
 	}
 
@@ -564,7 +566,7 @@ class Character extends FlxSprite
 				if (animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
 				{
 					trace("played shoot anim" + animationNotes[0][1]);
-					var shotDirection = 1;
+					var shotDirection:Int = 1;
 					if (animationNotes[0][1] >= 2)
 					{
 						shotDirection = 3;
