@@ -1,5 +1,3 @@
-<p align="center">⚠️ <strong>WARNING: WIP!</strong> ⚠️<br>This project is still a work in progress.<br>You may look around and build the code yourself if you want, but don't expect anything to be finished or polished yet!</p>
-
 # Friday Night Funkin v0.2.8 (Newgrounds Exclusive)
 
 This is the repository for Friday Night Funkin' v0.2.8, a game in which lies on a singular web page on the internet with no open-source code.
