@@ -1,6 +1,5 @@
 package funkin;
 
-import funkin.audiovis.SpectogramSprite;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -16,6 +15,11 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.audiovis.SpectogramSprite;
+import funkin.shaderslmfao.BuildingShaders;
+import funkin.shaderslmfao.ColorSwap;
+import funkin.shaderslmfao.TitleOutline;
+import funkin.ui.PreferencesMenu;
 import lime.app.Application;
 import lime.graphics.Image;
 import lime.media.AudioContext;
@@ -29,10 +33,6 @@ import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
-import funkin.shaderslmfao.BuildingShaders;
-import funkin.shaderslmfao.ColorSwap;
-import funkin.shaderslmfao.TitleOutline;
-import funkin.ui.PreferencesMenu;
 
 using StringTools;
 
@@ -382,6 +382,13 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			#end
 		}
+
+		// a faster intro thing lol!
+		if (pressedEnter && transitioning && skippedIntro)
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
 			if (FlxG.sound.music != null)
@@ -427,7 +434,6 @@ class TitleState extends MusicBeatState
 				Assets.cache.clear(Paths.image('logoBumpin'));
 				Assets.cache.clear(Paths.image('titleEnter'));
 				// ngSpr??
-				FlxG.switchState(targetState);
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}

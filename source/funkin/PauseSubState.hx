@@ -1,6 +1,5 @@
 package funkin;
 
-import funkin.Controls.Control;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
@@ -11,6 +10,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import funkin.Controls.Control;
 import funkin.play.PlayState;
 
 class PauseSubState extends MusicBeatSubstate
@@ -33,6 +33,9 @@ class PauseSubState extends MusicBeatSubstate
 
 	var practiceText:FlxText;
 
+	var exitingToMenu:Bool = false;
+	var bg:FlxSprite;
+
 	public function new(x:Float, y:Float)
 	{
 		super();
@@ -45,7 +48,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		FlxG.sound.list.add(pauseMusic);
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);
@@ -130,71 +133,93 @@ class PauseSubState extends MusicBeatSubstate
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
 
-		if (upP)
+		if (!exitingToMenu)
 		{
-			changeSelection(-1);
-		}
-		if (downP)
-		{
-			changeSelection(1);
-		}
-
-		var androidPause:Bool = false;
-
-		#if android
-		androidPause = FlxG.android.justPressed.BACK;
-		#end
-
-		if (androidPause)
-			close();
-
-		if (accepted)
-		{
-			var daSelected:String = menuItems[curSelected];
-
-			switch (daSelected)
+			if (upP)
 			{
-				case "Resume":
-					close();
-				case "EASY" | 'NORMAL' | "HARD":
-					PlayState.currentSong = SongLoad.loadFromJson(PlayState.currentSong.song.toLowerCase(), PlayState.currentSong.song.toLowerCase());
-					SongLoad.curDiff = daSelected.toLowerCase();
-
-					PlayState.storyDifficulty = curSelected;
-
-					PlayState.needsReset = true;
-
-					close();
-
-				case 'Toggle Practice Mode':
-					PlayState.isPracticeMode = !PlayState.isPracticeMode;
-					practiceText.visible = PlayState.isPracticeMode;
-
-				case 'Change Difficulty':
-					menuItems = difficultyChoices;
-					regenMenu();
-				case 'BACK':
-					menuItems = pauseOG;
-					regenMenu();
-				case "Restart Song":
-					PlayState.needsReset = true;
-
-					close();
-				// FlxG.resetState();
-				case "Exit to menu":
-					PlayState.seenCutscene = false;
-					PlayState.deathCounter = 0;
-					if (PlayState.isStoryMode)
-						FlxG.switchState(new StoryMenuState());
-					else
-						FlxG.switchState(new FreeplayState());
+				changeSelection(-1);
 			}
-		}
+			if (downP)
+			{
+				changeSelection(1);
+			}
 
-		if (FlxG.keys.justPressed.J)
-		{
-			// for reference later!
-			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
+			var androidPause:Bool = false;
+
+			#if android
+			androidPause = FlxG.android.justPressed.BACK;
+			#end
+
+			if (androidPause)
+				close();
+
+			if (accepted)
+			{
+				var daSelected:String = menuItems[curSelected];
+
+				switch (daSelected)
+				{
+					case "Resume":
+						close();
+					case "EASY" | 'NORMAL' | "HARD":
+						PlayState.currentSong = SongLoad.loadFromJson(PlayState.currentSong.song.toLowerCase(), PlayState.currentSong.song.toLowerCase());
+						SongLoad.curDiff = daSelected.toLowerCase();
+
+						PlayState.storyDifficulty = curSelected;
+
+						PlayState.needsReset = true;
+
+						close();
+
+					case 'Toggle Practice Mode':
+						PlayState.isPracticeMode = !PlayState.isPracticeMode;
+						practiceText.visible = PlayState.isPracticeMode;
+
+					case 'Change Difficulty':
+						menuItems = difficultyChoices;
+						regenMenu();
+					case 'BACK':
+						menuItems = pauseOG;
+						regenMenu();
+					case "Restart Song":
+						PlayState.needsReset = true;
+
+						close();
+					// FlxG.resetState();
+					case "Exit to menu":
+						exitingToMenu = true;
+						PlayState.seenCutscene = false;
+						PlayState.deathCounter = 0;
+
+						for (item in grpMenuShit.members)
+						{
+							item.targetY = -3;
+							item.alpha = 0.6;
+						}
+
+						FlxTween.tween(bg, {alpha: 1}, 0.4, {
+							ease: FlxEase.quartInOut,
+							onComplete: function(_)
+							{
+								FlxTransitionableState.skipNextTransIn = true;
+								FlxTransitionableState.skipNextTransOut = true;
+
+								FlxG.cameras.list[1].alpha = 0; // bullshit for the UI camera???
+
+								if (PlayState.isStoryMode)
+									FlxG.switchState(new StoryMenuState());
+								else
+									FlxG.switchState(new FreeplayState());
+							}
+						});
+				}
+			}
+
+			if (FlxG.keys.justPressed.J)
+			{
+				// for reference later!
+				// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
+			}
 		}
 	}
 
@@ -216,12 +241,9 @@ class PauseSubState extends MusicBeatSubstate
 		if (curSelected >= menuItems.length)
 			curSelected = 0;
 
-		var bullShit:Int = 0;
-
-		for (item in grpMenuShit.members)
+		for (index => item in grpMenuShit.members)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+			item.targetY = index - curSelected;
 
 			item.alpha = 0.6;
 			// item.setGraphicSize(Std.int(item.width * 0.8));

@@ -1,9 +1,5 @@
 package funkin;
 
-import funkin.util.Constants;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.module.ModuleHandler;
-import funkin.NGio;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -18,14 +14,18 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import lime.app.Application;
-import openfl.filters.ShaderFilter;
+import funkin.NGio;
+import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.module.ModuleHandler;
 import funkin.shaderslmfao.ScreenWipeShader;
 import funkin.ui.AtlasMenuList;
 import funkin.ui.MenuList;
 import funkin.ui.OptionsState;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;
+import funkin.util.Constants;
+import lime.app.Application;
+import openfl.filters.ShaderFilter;
 
 using StringTools;
 
@@ -33,8 +33,8 @@ using StringTools;
 import Discord.DiscordClient;
 #end
 #if newgrounds
-import io.newgrounds.NG;
 import funkin.ui.NgPrompt;
+import io.newgrounds.NG;
 #end
 
 class MainMenuState extends MusicBeatState
@@ -102,7 +102,7 @@ class MainMenuState extends MusicBeatState
 			}
 		});
 
-		menuItems.enabled = false; // disable for intro
+		menuItems.enabled = true; // can move on intro
 		menuItems.createItem('story mode', function() startExitState(new StoryMenuState()));
 		menuItems.createItem('freeplay', function()
 		{
@@ -169,7 +169,7 @@ class MainMenuState extends MusicBeatState
 	{
 		super.finishTransIn();
 
-		menuItems.enabled = true;
+		// menuItems.enabled = true;
 
 		// #if newgrounds
 		// if (NGio.savedSessionFailed)
