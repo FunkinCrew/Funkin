@@ -38,6 +38,31 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 		}
 	}
 
+	/**
+	 * Finds the largest deviation from the desired time inside this VoicesGroup.
+	 * 
+	 * @param targetTime	The time to check against.
+	 * 						If none is provided, it checks the time of all members against the first member of this VoicesGroup.
+	 * @return The largest deviation from the target time found.
+	 */
+	public function checkSyncError(?targetTime:Float):Float
+	{
+		var error:Float = 0;
+
+		forEachAlive(function(snd)
+		{
+			if (targetTime == null)
+				targetTime = snd.time;
+			else
+			{
+				var diff:Float = snd.time - targetTime;
+				if (Math.abs(diff) > Math.abs(error))
+					error = diff;
+			}
+		});
+		return error;
+	}
+
 	// prob a better / cleaner way to do all these forEach stuff?
 	public function pause()
 	{

@@ -43,7 +43,10 @@ class PauseSubState extends MusicBeatSubstate
 
 		menuItems = pauseOG;
 
-		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+		if (PlayState.storyWeek == 6) // consistent with logic that decides asset lib!!
+			pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast-pixel'), true, true);
+		else
+			pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
 
