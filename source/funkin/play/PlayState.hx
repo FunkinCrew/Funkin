@@ -832,10 +832,7 @@ class PlayState extends MusicBeatState implements IHook
 				// swagNote.data = songNotes;
 				swagNote.data.sustainLength = songNotes.sustainLength;
 				swagNote.data.altNote = songNotes.altNote;
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.data.sustainLength;
