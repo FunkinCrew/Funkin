@@ -35,6 +35,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	var exitingToMenu:Bool = false;
 	var bg:FlxSprite;
+	var metaDataGrp:FlxTypedGroup<FlxSprite>;
 
 	public function new(x:Float, y:Float)
 	{
@@ -53,26 +54,29 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
+		metaDataGrp = new FlxTypedGroup<FlxSprite>();
+		add(metaDataGrp);
+
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
 		levelInfo.text += PlayState.currentSong.song;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
-		add(levelInfo);
+		metaDataGrp.add(levelInfo);
 
 		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
 		levelDifficulty.text += CoolUtil.difficultyString();
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 		levelDifficulty.updateHitbox();
-		add(levelDifficulty);
+		metaDataGrp.add(levelDifficulty);
 
 		var deathCounter:FlxText = new FlxText(20, 15 + 64, 0, "", 32);
 		deathCounter.text = "Blue balled: " + PlayState.deathCounter;
 		deathCounter.scrollFactor.set();
 		deathCounter.setFormat(Paths.font('vcr.ttf'), 32);
 		deathCounter.updateHitbox();
-		add(deathCounter);
+		metaDataGrp.add(deathCounter);
 
 		practiceText = new FlxText(20, 15 + 64 + 32, 0, "PRACTICE MODE", 32);
 		practiceText.scrollFactor.set();
@@ -80,7 +84,7 @@ class PauseSubState extends MusicBeatSubstate
 		practiceText.updateHitbox();
 		practiceText.x = FlxG.width - (practiceText.width + 20);
 		practiceText.visible = PlayState.isPracticeMode;
-		add(practiceText);
+		metaDataGrp.add(practiceText);
 
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
@@ -132,6 +136,16 @@ class PauseSubState extends MusicBeatSubstate
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
+
+		#if debug
+		// to pause the game and get screenshots easy, press H on pause menu!
+		if (FlxG.keys.justPressed.H)
+		{
+			bg.visible = !bg.visible;
+			grpMenuShit.visible = !grpMenuShit.visible;
+			metaDataGrp.visible = !metaDataGrp.visible;
+		}
+		#end
 
 		if (!exitingToMenu)
 		{
