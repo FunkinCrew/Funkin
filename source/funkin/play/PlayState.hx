@@ -1,13 +1,12 @@
 package funkin.play;
 
-import funkin.play.Strumline.StrumlineArrow;
-import flixel.addons.effects.FlxTrail;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.effects.FlxTrail;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -19,19 +18,17 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
-import funkin.charting.ChartingState;
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.events.ScriptEventDispatcher;
-import funkin.modding.IHook;
-import funkin.modding.module.ModuleHandler;
 import funkin.Note;
-import funkin.play.stage.Stage;
-import funkin.play.stage.StageData;
-import funkin.play.Strumline.StrumlineStyle;
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
+import funkin.charting.ChartingState;
+import funkin.modding.IHook;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.Strumline.StrumlineArrow;
+import funkin.play.Strumline.StrumlineStyle;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageData;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.util.Constants;
@@ -287,7 +284,7 @@ class PlayState extends MusicBeatState implements IHook
 			currentSong = SongLoad.loadFromJson('tutorial');
 
 		Conductor.mapBPMChanges(currentSong);
-		Conductor.changeBPM(currentSong.bpm);
+		Conductor.bpm = currentSong.bpm;
 
 		switch (currentSong.song.toLowerCase())
 		{
@@ -592,7 +589,7 @@ class PlayState extends MusicBeatState implements IHook
 	 * 
 	 * Call this by pressing F5 on a debug build.
 	 */
-	function debug_refreshStages()
+	override function debug_refreshModules()
 	{
 		// Remove the current stage. If the stage gets deleted while it's still in use,
 		// it'll probably crash the game or something.
@@ -604,18 +601,7 @@ class PlayState extends MusicBeatState implements IHook
 			currentStage = null;
 		}
 
-		ModuleHandler.clearModuleCache();
-
-		// Forcibly reload scripts so that scripted stages can be edited.
-		polymod.hscript.PolymodScriptClass.clearScriptClasses();
-		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
-
-		// Reload the stages in cache. This might cause a lag spike but who cares this is a debug utility.
-		StageDataParser.loadStageCache();
-		ModuleHandler.loadModuleCache();
-
-		// Reload the level. This should use new data from the assets folder.
-		LoadingState.loadAndSwitchState(new PlayState());
+		super.debug_refreshModules();
 	}
 
 	/**
@@ -783,7 +769,7 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		// FlxG.log.add(ChartParser.parse());
 
-		Conductor.changeBPM(currentSong.bpm);
+		Conductor.bpm = currentSong.bpm;
 
 		currentSong.song = currentSong.song;
 
@@ -849,7 +835,9 @@ class PlayState extends MusicBeatState implements IHook
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				swagNote.data = songNotes;
+				// swagNote.data = songNotes;
+				swagNote.data.sustainLength = songNotes.sustainLength;
+				swagNote.data.altNote = songNotes.altNote;
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.data.sustainLength;
@@ -938,6 +926,8 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (needsReset)
 		{
+			dispatchEvent(new ScriptEvent(ScriptEvent.SONG_RETRY));
+
 			resetCamera();
 
 			persistentUpdate = true;
@@ -948,11 +938,10 @@ class PlayState extends MusicBeatState implements IHook
 			FlxG.sound.music.pause();
 			vocals.pause();
 
-			var event:ScriptEvent = new ScriptEvent(ScriptEvent.SONG_RESET, false);
-
 			FlxG.sound.music.time = 0;
 			regenNoteData(); // loads the note data from start
 			health = 1;
+			songScore = 0;
 			Countdown.performCountdown(currentStageId.startsWith('school'));
 
 			needsReset = false;
@@ -1004,28 +993,35 @@ class PlayState extends MusicBeatState implements IHook
 
 		if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame)
 		{
-			persistentUpdate = false;
-			persistentDraw = true;
+			var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
-			// There is a 1/1000 change to use a special pause menu.
-			// This prevents the player from resuming, but that's the point.
-			// It's a reference to Gitaroo Man, which doesn't let you pause the game.
-			if (FlxG.random.bool(1 / 1000))
-			{
-				FlxG.switchState(new GitarooPause());
-			}
-			else
-			{
-				var boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-				var pauseSubState = new PauseSubState(boyfriendPos.x, boyfriendPos.y);
-				openSubState(pauseSubState);
-				pauseSubState.camera = camHUD;
-				boyfriendPos.put();
-			}
+			dispatchEvent(event);
 
-			#if discord_rpc
-			DiscordClient.changePresence(detailsPausedText, currentSong.song + " (" + storyDifficultyText + ")", iconRPC);
-			#end
+			if (!event.eventCanceled)
+			{
+				persistentUpdate = false;
+				persistentDraw = true;
+
+				// There is a 1/1000 change to use a special pause menu.
+				// This prevents the player from resuming, but that's the point.
+				// It's a reference to Gitaroo Man, which doesn't let you pause the game.
+				if (event.gitaroo)
+				{
+					FlxG.switchState(new GitarooPause());
+				}
+				else
+				{
+					var boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
+					var pauseSubState = new PauseSubState(boyfriendPos.x, boyfriendPos.y);
+					openSubState(pauseSubState);
+					pauseSubState.camera = camHUD;
+					boyfriendPos.put();
+				}
+
+				#if discord_rpc
+				DiscordClient.changePresence(detailsPausedText, currentSong.song + " (" + storyDifficultyText + ")", iconRPC);
+				#end
+			}
 		}
 
 		if (FlxG.keys.justPressed.SEVEN)
@@ -1039,9 +1035,6 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
-
-		if (FlxG.keys.justPressed.F5)
-			debug_refreshStages();
 
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
@@ -1656,7 +1649,7 @@ class PlayState extends MusicBeatState implements IHook
 			}
 		}
 
-		if (PlayState.instance.currentStage == null)
+		if (PlayState.instance == null || PlayState.instance.currentStage == null)
 			return;
 		if (PlayState.instance.currentStage.getBoyfriend().holdTimer > Conductor.stepCrochet * 4 * 0.001 && !holdArray.contains(true))
 		{
@@ -1724,9 +1717,12 @@ class PlayState extends MusicBeatState implements IHook
 		}
 	}
 
-	override function stepHit()
+	override function stepHit():Bool
 	{
-		super.stepHit();
+		// super.stepHit() returns false if a module cancelled the event.
+		if (!super.stepHit())
+			return false;
+
 		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
 			|| (currentSong.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > 20))
 		{
@@ -1734,11 +1730,15 @@ class PlayState extends MusicBeatState implements IHook
 		}
 
 		dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep));
+
+		return true;
 	}
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
-		super.beatHit();
+		// super.beatHit() returns false if a module cancelled the event.
+		if (!super.beatHit())
+			return false;
 
 		if (generatedMusic)
 		{
@@ -1749,7 +1749,7 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			if (SongLoad.getSong()[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SongLoad.getSong()[Math.floor(curStep / 16)].bpm);
+				Conductor.bpm = SongLoad.getSong()[Math.floor(curStep / 16)].bpm;
 				FlxG.log.add('CHANGED BPM!');
 			}
 		}
@@ -1780,8 +1780,7 @@ class PlayState extends MusicBeatState implements IHook
 		// Make the characters dance on the beat
 		danceOnBeat();
 
-		// Call any relevant event handlers.
-		dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep));
+		return true;
 	}
 
 	/**
@@ -1897,13 +1896,6 @@ class PlayState extends MusicBeatState implements IHook
 			Countdown.pauseCountdown();
 		}
 
-		var event:ScriptEvent = new ScriptEvent(ScriptEvent.PAUSE, true);
-
-		dispatchEvent(event);
-
-		if (event.eventCanceled)
-			return;
-
 		super.openSubState(subState);
 	}
 
@@ -1915,6 +1907,13 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		if (isGamePaused)
 		{
+			var event:ScriptEvent = new ScriptEvent(ScriptEvent.RESUME, true);
+
+			dispatchEvent(event);
+
+			if (event.eventCanceled)
+				return;
+
 			if (FlxG.sound.music != null && !startingSong)
 				resyncVocals();
 
@@ -1929,13 +1928,6 @@ class PlayState extends MusicBeatState implements IHook
 				DiscordClient.changePresence(detailsText, currentSong.song + " (" + storyDifficultyText + ")", iconRPC);
 			#end
 		}
-
-		var event:ScriptEvent = new ScriptEvent(ScriptEvent.RESUME, true);
-
-		dispatchEvent(event);
-
-		if (event.eventCanceled)
-			return;
 
 		super.closeSubState();
 	}
@@ -1957,12 +1949,16 @@ class PlayState extends MusicBeatState implements IHook
 
 	override function dispatchEvent(event:ScriptEvent):Void
 	{
+		// ORDER: Module, Stage, Character, Song, Note
+		// Modules should get the first chance to cancel the event.
+
+		// super.dispatchEvent(event) dispatches event to module scripts.
+		super.dispatchEvent(event);
+
+		// Dispatch event to stage script.
 		ScriptEventDispatcher.callEvent(currentStage, event);
 
 		// TODO: Dispatch event to song script
-		// TODO: Dispatch events to character scripts
-
-		super.dispatchEvent(event);
 	}
 
 	/**
@@ -2012,16 +2008,6 @@ class PlayState extends MusicBeatState implements IHook
 
 		// Clear the static reference to this state.
 		instance = null;
-	}
-
-	/**
-	 * Refreshes the state, by redoing the render order of all elements.
-	 * It does this based on the `zIndex` of each element.
-	 */
-	public function refresh()
-	{
-		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-		trace('Stage sorted by z-index');
 	}
 
 	/**

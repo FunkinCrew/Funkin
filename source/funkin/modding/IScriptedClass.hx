@@ -23,6 +23,20 @@ interface IStateChangingScriptedClass extends IScriptedClass
 {
 	public function onStateChangeBegin(event:StateChangeScriptEvent):Void;
 	public function onStateChangeEnd(event:StateChangeScriptEvent):Void;
+
+	public function onSubstateOpenBegin(event:SubStateScriptEvent):Void;
+	public function onSubstateOpenEnd(event:SubStateScriptEvent):Void;
+	public function onSubstateCloseBegin(event:SubStateScriptEvent):Void;
+	public function onSubstateCloseEnd(event:SubStateScriptEvent):Void;
+}
+
+/**
+ * Defines a set of callbacks available to scripted classes which represent notes.
+ */
+interface INoteScriptedClass extends IScriptedClass
+{
+	public function onNoteHit(event:NoteScriptEvent):Void;
+	public function onNoteMiss(event:NoteScriptEvent):Void;
 }
 
 /**
@@ -40,18 +54,18 @@ interface IStateChangingScriptedClass extends IScriptedClass
  */
 interface IPlayStateScriptedClass extends IScriptedClass
 {
-	public function onPause(event:ScriptEvent):Void;
+	public function onPause(event:PauseScriptEvent):Void;
 	public function onResume(event:ScriptEvent):Void;
 
 	public function onSongLoaded(eent:SongLoadScriptEvent):Void;
 	public function onSongStart(event:ScriptEvent):Void;
 	public function onSongEnd(event:ScriptEvent):Void;
-	public function onSongReset(event:ScriptEvent):Void;
 	public function onGameOver(event:ScriptEvent):Void;
-	public function onGameRetry(event:ScriptEvent):Void;
+	public function onSongRetry(event:ScriptEvent):Void;
 
 	public function onNoteHit(event:NoteScriptEvent):Void;
 	public function onNoteMiss(event:NoteScriptEvent):Void;
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void;
 
 	public function onStepHit(event:SongTimeScriptEvent):Void;
 	public function onBeatHit(event:SongTimeScriptEvent):Void;

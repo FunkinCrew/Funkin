@@ -1,12 +1,5 @@
 package funkin.charting;
 
-import funkin.Conductor.BPMChangeEvent;
-import funkin.Note.NoteData;
-import funkin.Section.SwagSection;
-import funkin.SongLoad.SwagSong;
-import funkin.audiovis.ABotVis;
-import funkin.audiovis.PolygonSpectogram;
-import funkin.audiovis.SpectogramSprite;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
@@ -23,14 +16,21 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
+import funkin.Conductor.BPMChangeEvent;
+import funkin.Note.NoteData;
+import funkin.Section.SwagSection;
+import funkin.SongLoad.SwagSong;
+import funkin.audiovis.ABotVis;
+import funkin.audiovis.PolygonSpectogram;
+import funkin.audiovis.SpectogramSprite;
+import funkin.play.PlayState;
+import funkin.rendering.MeshRender;
 import haxe.Json;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
-import funkin.rendering.MeshRender;
-import funkin.play.PlayState;
 
 using Lambda;
 using StringTools;
@@ -144,7 +144,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 
 		loadSong(_song.song);
-		Conductor.changeBPM(_song.bpm);
+		Conductor.bpm = _song.bpm;
 		Conductor.mapBPMChanges(_song);
 
 		bpmTxt = new FlxText(1000, 50, 0, "", 16);
@@ -545,7 +545,7 @@ class ChartingState extends MusicBeatState
 			{
 				tempBpm = nums.value;
 				Conductor.mapBPMChanges(_song);
-				Conductor.changeBPM(nums.value);
+				Conductor.bpm = nums.value;
 			}
 			else if (wname == 'note_susLength')
 			{
@@ -975,9 +975,9 @@ class ChartingState extends MusicBeatState
 		_song.bpm = tempBpm;
 
 		/* if (FlxG.keys.justPressed.UP)
-				Conductor.changeBPM(Conductor.bpm + 1);
+				Conductor.bpm = Conductor.bpm + 1;
 			if (FlxG.keys.justPressed.DOWN)
-				Conductor.changeBPM(Conductor.bpm - 1); */
+				Conductor.bpm = Conductor.bpm - 1; */
 
 		var shiftThing:Int = 1;
 		if (FlxG.keys.pressed.SHIFT)
@@ -1213,7 +1213,7 @@ class ChartingState extends MusicBeatState
 
 		if (SongLoad.getSong()[curSection].changeBPM && SongLoad.getSong()[curSection].bpm > 0)
 		{
-			Conductor.changeBPM(SongLoad.getSong()[curSection].bpm);
+			Conductor.bpm = SongLoad.getSong()[curSection].bpm;
 			FlxG.log.add('CHANGED BPM!');
 		}
 		else
@@ -1223,7 +1223,7 @@ class ChartingState extends MusicBeatState
 			for (i in 0...curSection)
 				if (SongLoad.getSong()[i].changeBPM)
 					daBPM = SongLoad.getSong()[i].bpm;
-			Conductor.changeBPM(daBPM);
+			Conductor.bpm = daBPM;
 		}
 
 		/* // PORT BULLSHIT, INCASE THERE'S NO SUSTAIN DATA FOR A NOTE

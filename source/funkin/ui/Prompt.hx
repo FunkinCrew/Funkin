@@ -1,12 +1,12 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import funkin.ui.AtlasText;
+import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.MenuList;
 
+/**
+ * Opens a yes/no dialog box as a substate over the current state.
+ */
 class Prompt extends flixel.FlxSubState
 {
 	inline static var MARGIN = 100;
@@ -26,7 +26,7 @@ class Prompt extends flixel.FlxSubState
 
 		buttons = new TextMenuList(Horizontal);
 
-		field = new BoldText(text);
+		field = new AtlasText(text, AtlasFont.BOLD);
 		field.scrollFactor.set(0, 0);
 	}
 

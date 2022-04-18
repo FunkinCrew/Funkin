@@ -1,10 +1,9 @@
 package funkin.modding;
 
-import polymod.Polymod.ModMetadata;
+import funkin.modding.module.ModuleHandler;
+import funkin.play.stage.StageData;
 import polymod.Polymod;
-import polymod.backends.OpenFLBackend;
 import polymod.backends.PolymodAssets.PolymodAssetType;
-import polymod.format.ParseRules.LinesParseFormat;
 import polymod.format.ParseRules.TextFileFormat;
 
 class PolymodHandler
@@ -29,6 +28,15 @@ class PolymodHandler
 	{
 		trace("Initializing Polymod (using all mods)...");
 		loadModsById(getAllModIds());
+	}
+
+	/**
+	 * Loads the game with configured mods enabled with Polymod.
+	 */
+	public static function loadEnabledMods()
+	{
+		trace("Initializing Polymod (using configured mods)...");
+		loadModsById(getEnabledModIds());
 	}
 
 	/**
@@ -146,8 +154,8 @@ class PolymodHandler
 	{
 		return {
 			assetLibraryPaths: [
-				"songs" => "songs", "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1", "week2" => "week2",
-				"week3" => "week3", "week4" => "week4", "week5" => "week5", "week6" => "week6", "week7" => "week7", "week8" => "week8",
+				"songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1", "week2" => "week2",
+				"week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "week8" => "week8",
 			]
 		}
 	}
@@ -164,5 +172,62 @@ class PolymodHandler
 	{
 		var modIds = [for (i in getAllMods()) i.id];
 		return modIds;
+	}
+
+	public static function setEnabledMods(newModList:Array<String>):Void
+	{
+		FlxG.save.data.enabledMods = newModList;
+		// Make sure to COMMIT the changes.
+		FlxG.save.flush();
+	}
+
+	/**
+	 * Returns the list of enabled mods.
+	 * @return Array<String>
+	 */
+	public static function getEnabledModIds():Array<String>
+	{
+		if (FlxG.save.data.enabledMods == null)
+		{
+			// NOTE: If the value is null, the enabled mod list is unconfigured.
+			// Currently, we default to disabling newly installed mods.
+			// If we want to auto-enable new mods, but otherwise leave the configured list in place,
+			// we will need some custom logic.
+			FlxG.save.data.enabledMods = [];
+		}
+		return FlxG.save.data.enabledMods;
+	}
+
+	public static function getEnabledMods():Array<ModMetadata>
+	{
+		var modIds = getEnabledModIds();
+		var modMetadata = getAllMods();
+		var enabledMods = [];
+		for (item in modMetadata)
+		{
+			if (modIds.indexOf(item.id) != -1)
+			{
+				enabledMods.push(item);
+			}
+		}
+		return enabledMods;
+	}
+
+	public static function forceReloadAssets()
+	{
+		// Forcibly clear scripts so that scripts can be edited.
+		ModuleHandler.clearModuleCache();
+		polymod.hscript.PolymodScriptClass.clearScriptClasses();
+
+		// Forcibly reload Polymod so it finds any new files.
+		loadEnabledMods();
+
+		// Reload scripted classes so stages and modules will update.
+		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
+
+		// Reload the stages in cache.
+		// TODO: Currently this causes lag since you're reading a lot of files, how to fix?
+		StageDataParser.loadStageCache();
+		ModuleHandler.loadModuleCache();
 	}
 }

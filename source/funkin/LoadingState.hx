@@ -2,9 +2,9 @@ package funkin;
 
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
+import funkin.play.PlayState;
 import haxe.io.Path;
 import lime.app.Future;
 import lime.app.Promise;
@@ -12,7 +12,6 @@ import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
 import lime.utils.Assets as LimeAssets;
 import openfl.utils.Assets;
-import funkin.play.PlayState;
 
 class LoadingState extends MusicBeatState
 {
@@ -21,7 +20,6 @@ class LoadingState extends MusicBeatState
 	var target:FlxState;
 	var stopMusic = false;
 	var callbacks:MultiCallback;
-
 	var danceLeft = false;
 
 	var loadBar:FlxSprite;
@@ -117,17 +115,15 @@ class LoadingState extends MusicBeatState
 		}
 	}
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
-		super.beatHit();
+		// super.beatHit() returns false if a module cancelled the event.
+		if (!super.beatHit())
+			return false;
 
-		// logo.animation.play('bump');
 		danceLeft = !danceLeft;
-		/* 
-			if (danceLeft)
-				gfDance.animation.play('danceRight');
-			else
-				gfDance.animation.play('danceLeft'); */
+
+		return true;
 	}
 
 	var targetShit:Float = 0;

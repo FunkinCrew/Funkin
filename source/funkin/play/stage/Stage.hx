@@ -1,18 +1,16 @@
 package funkin.play.stage;
 
-import funkin.modding.events.ScriptEventDispatcher;
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
-import funkin.modding.events.ScriptEvent.KeyboardInputScriptEvent;
-import funkin.modding.IScriptedClass;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxPoint;
 import flixel.util.FlxSort;
 import funkin.modding.IHook;
+import funkin.modding.IScriptedClass;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.Character.CharacterType;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.util.SortUtil;
+import funkin.util.assets.FlxAnimationUtil;
 
 /**
  * A Stage is a group of objects rendered in the PlayState.
@@ -143,19 +141,19 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 					for (propAnim in dataProp.animations)
 					{
 						propSprite.animation.add(propAnim.name, propAnim.frameIndices);
+
+						if (Std.isOfType(propSprite, Bopper))
+						{
+							cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
+						}
 					}
 				default: // "sparrow"
-					for (propAnim in dataProp.animations)
+					FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
+					if (Std.isOfType(propSprite, Bopper))
 					{
-						if (propAnim.frameIndices.length == 0)
+						for (propAnim in dataProp.animations)
 						{
-							propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.loop, propAnim.flipX,
-								propAnim.flipY);
-						}
-						else
-						{
-							propSprite.animation.addByIndices(propAnim.name, propAnim.prefix, propAnim.frameIndices, "", propAnim.frameRate, propAnim.loop,
-								propAnim.flipX, propAnim.flipY);
+							cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
 						}
 					}
 			}
@@ -377,7 +375,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onScriptEvent(event:ScriptEvent) {}
 
-	public function onPause(event:ScriptEvent) {}
+	public function onPause(event:PauseScriptEvent) {}
 
 	public function onResume(event:ScriptEvent) {}
 
@@ -385,14 +383,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onSongEnd(event:ScriptEvent) {}
 
-	/**
-	 * Resets the stage and its props.
-	 */
-	public function onSongReset(event:ScriptEvent) {}
-
 	public function onGameOver(event:ScriptEvent) {}
-
-	public function onGameRetry(event:ScriptEvent) {}
 
 	public function onCountdownStart(event:CountdownScriptEvent) {}
 
@@ -400,14 +391,15 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onCountdownEnd(event:CountdownScriptEvent) {}
 
-	/**
-	 * A function that should get called every frame.
-	 */
 	public function onUpdate(event:UpdateScriptEvent) {}
 
 	public function onNoteHit(event:NoteScriptEvent) {}
 
 	public function onNoteMiss(event:NoteScriptEvent) {}
 
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+
 	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+
+	public function onSongRetry(event:ScriptEvent) {}
 }

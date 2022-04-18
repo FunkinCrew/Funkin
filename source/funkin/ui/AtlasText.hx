@@ -1,21 +1,13 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxStringUtil;
 
-@:forward
-abstract BoldText(AtlasText) from AtlasText to AtlasText
-{
-	inline public function new(x = 0.0, y = 0.0, text:String)
-	{
-		this = new AtlasText(x, y, text, Bold);
-	}
-}
-
 /**
- * Alphabet.hx has a ton of bugs and does a bunch of stuff I don't need, fuck that class
+ * AtlasText is an improved version of Alphabet and FlxBitmapText.
+ * It supports animations on the letters, and is less buggy than Alphabet.
  */
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
@@ -41,7 +33,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 	inline function get_maxHeight()
 		return font.maxHeight;
 
-	public function new(x = 0.0, y = 0.0, text:String, fontName:AtlasFont = Default)
+	public function new(x = 0.0, y = 0.0, text:String, fontName:AtlasFont = AtlasFont.DEFAULT)
 	{
 		if (!fonts.exists(fontName))
 			fonts[fontName] = new AtlasFontData(fontName);
@@ -246,7 +238,14 @@ private class AtlasFontData
 
 	public function new(name:AtlasFont)
 	{
-		atlas = Paths.getSparrowAtlas("fonts/" + name.getName().toLowerCase());
+		var fontName:String = name;
+		atlas = Paths.getSparrowAtlas('fonts/${fontName.toLowerCase()}');
+		if (atlas == null)
+		{
+			FlxG.log.warn('Could not find font atlas for font "${fontName}".');
+			return;
+		}
+
 		atlas.parent.destroyOnNoUse = false;
 		atlas.parent.persist = true;
 
@@ -276,8 +275,8 @@ enum Case
 	Lower;
 }
 
-enum AtlasFont
+enum abstract AtlasFont(String) from String to String
 {
-	Default;
-	Bold;
+	var DEFAULT = "default";
+	var BOLD = "bold";
 }

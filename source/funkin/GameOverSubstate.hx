@@ -1,14 +1,11 @@
 package funkin;
 
 import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import haxe.display.Display;
-import funkin.ui.PreferencesMenu;
 import funkin.play.PlayState;
+import funkin.ui.PreferencesMenu;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -57,7 +54,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		add(camFollow);
 
 		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
-		// Conductor.changeBPM(100);
+		// Conductor.bpm = 100;
 
 		switch (PlayState.currentSong.player1)
 		{

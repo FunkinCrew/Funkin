@@ -12,6 +12,21 @@
       "name": "Haxe Eval",
       "type": "haxe-eval",
       "request": "launch"
-    }
+    },
+    {
+      "name": "HTML5 Debug",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:3001",
+      "sourceMaps": true,
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "debug: html"
+    },
+    {
+      "name": "Mac (Debug)",
+      "type": "hxcpp",
+      "request": "launch",
+      "program": "${workspaceRoot}/export/debug/macos/bin/Funkin.app/Contents/MacOS/Funkin",
+      "preLaunchTask": "debug: mac"
   ]
 }

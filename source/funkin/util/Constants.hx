@@ -1,7 +1,7 @@
 package funkin.util;
 
-import lime.app.Application;
 import flixel.util.FlxColor;
+import lime.app.Application;
 
 class Constants
 {
@@ -18,6 +18,8 @@ class Constants
 	public static final VERSION_SUFFIX = ' PROTOTYPE';
 	public static var VERSION(get, null):String;
 
+	public static final FREAKY_MENU_BPM = 102;
+
 	#if debug
 	public static final GIT_HASH = funkin.util.macro.GitCommit.getGitCommitHash();
 
@@ -31,4 +33,7 @@ class Constants
 		return 'v${Application.current.meta.get('version')}' + VERSION_SUFFIX;
 	}
 	#end
+
+	public static final URL_KICKSTARTER:String = "https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/";
+	public static final URL_ITCH:String = "https://ninja-muffin24.itch.io/funkin";
 }

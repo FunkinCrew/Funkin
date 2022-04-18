@@ -1,13 +1,8 @@
 package funkin.modding.module;
 
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.events.ScriptEvent.KeyboardInputScriptEvent;
-import funkin.modding.events.ScriptEvent.NoteScriptEvent;
-import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
-import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * A module is a scripted class which receives all events without requiring a specific context.
@@ -18,7 +13,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 	/**
 	 * Whether the module is currently active.
 	 */
-	public var active(default, set):Bool = false;
+	public var active(default, set):Bool = true;
 
 	function set_active(value:Bool):Bool
 	{
@@ -48,14 +43,11 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 	 * Called when the module is initialized.
 	 * It may not be safe to reference other modules here since they may not be loaded yet.
 	 * 
-	 * @param startActive Whether to start with the module active.
-	 *   If false, the module will be inactive and must be enabled by another script,
-	 *   such as a stage or another module.
+	 * NOTE: To make the module start inactive, call `this.active = false` in the constructor.
 	 */
-	public function new(moduleId:String, active:Bool = true, priority:Int = 1000):Void
+	public function new(moduleId:String, priority:Int = 1000):Void
 	{
 		this.moduleId = moduleId;
-		this.active = active;
 		this.priority = priority;
 	}
 
@@ -82,7 +74,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
 	public function onUpdate(event:UpdateScriptEvent) {}
 
-	public function onPause(event:ScriptEvent) {}
+	public function onPause(event:PauseScriptEvent) {}
 
 	public function onResume(event:ScriptEvent) {}
 
@@ -90,15 +82,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
 	public function onSongEnd(event:ScriptEvent) {}
 
-	public function onSongReset(event:ScriptEvent) {}
-
 	public function onGameOver(event:ScriptEvent) {}
-
-	public function onGameRetry(event:ScriptEvent) {}
 
 	public function onNoteHit(event:NoteScriptEvent) {}
 
 	public function onNoteMiss(event:NoteScriptEvent) {}
+
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
 
 	public function onStepHit(event:SongTimeScriptEvent) {}
 
@@ -110,9 +100,19 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
 	public function onCountdownEnd(event:CountdownScriptEvent) {}
 
-	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+	public function onSongLoaded(event:SongLoadScriptEvent) {}
 
 	public function onStateChangeBegin(event:StateChangeScriptEvent) {}
 
 	public function onStateChangeEnd(event:StateChangeScriptEvent) {}
+
+	public function onSubstateOpenBegin(event:SubStateScriptEvent) {}
+
+	public function onSubstateOpenEnd(event:SubStateScriptEvent) {}
+
+	public function onSubstateCloseBegin(event:SubStateScriptEvent) {}
+
+	public function onSubstateCloseEnd(event:SubStateScriptEvent) {}
+
+	public function onSongRetry(event:ScriptEvent) {}
 }
