@@ -4,7 +4,9 @@ import haxe.format.JsonParser;
 import openfl.Assets;
 import openfl.geom.Matrix3D;
 import openfl.geom.Matrix;
+#if sys
 import sys.io.File;
+#end
 
 /**
  * Generally designed / written in a way that can be easily taken out of FNF and used elsewhere
