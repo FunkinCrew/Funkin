@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.util.Constants;
 import funkin.Note.NoteData;
 import funkin.SongLoad.SwagSong;
 import funkin.Section.SwagSection;
@@ -128,7 +129,7 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				setGraphicSize(Std.int(width * Constants.PIXEL_ART_SCALE));
 				updateHitbox();
 				antialiasing = false;
 

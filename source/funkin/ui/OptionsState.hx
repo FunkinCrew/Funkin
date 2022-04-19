@@ -5,10 +5,9 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
-import funkin.i18n.FireTongueHandler.t;
+import funkin.util.Constants;
+import funkin.util.WindowUtil;
 
-// typedef OptionsState = OptionsMenu_old;
-// class OptionsState_new extends MusicBeatState
 class OptionsState extends MusicBeatState
 {
 	var pages = new Map<PageName, Page>();
@@ -31,17 +30,12 @@ class OptionsState extends MusicBeatState
 		var options = addPage(Options, new OptionsMenu(false));
 		var preferences = addPage(Preferences, new PreferencesMenu());
 		var controls = addPage(Controls, new ControlsMenu());
-		// var colors = addPage(Colors, new ColorsMenu());
-
-		var mods = addPage(Mods, new ModMenu());
 
 		if (options.hasMultipleOptions())
 		{
 			options.onExit.add(exitToMainMenu);
 			controls.onExit.add(switchPage.bind(Options));
-			// colors.onExit.add(switchPage.bind(Options));
 			preferences.onExit.add(switchPage.bind(Options));
-			mods.onExit.add(switchPage.bind(Options));
 		}
 		else
 		{
@@ -67,12 +61,18 @@ class OptionsState extends MusicBeatState
 	function setPage(name:PageName)
 	{
 		if (pages.exists(currentName))
+		{
 			currentPage.exists = false;
+			currentPage.visible = false;
+		}
 
 		currentName = name;
 
 		if (pages.exists(currentName))
+		{
 			currentPage.exists = true;
+			currentPage.visible = true;
+		}
 	}
 
 	override function finishTransIn()
@@ -91,7 +91,7 @@ class OptionsState extends MusicBeatState
 	function exitToMainMenu()
 	{
 		currentPage.enabled = false;
-		// Todo animate?
+		// TODO: Animate this transition?
 		FlxG.switchState(new MainMenuState());
 	}
 }
@@ -172,30 +172,29 @@ class OptionsMenu extends Page
 		super();
 
 		add(items = new TextMenuList());
-		createItem(t("PREFERENCES"), function() switchPage(Preferences));
-		createItem(t("CONTROLS"), function() switchPage(Controls));
-		// createItem(t("COLORS"), function() switchPage(Colors));
-		createItem(t("MODS"), function() switchPage(Mods));
+		createItem("PREFERENCES", function() switchPage(Preferences));
+		createItem("CONTROLS", function() switchPage(Controls));
+		// createItem("COLORS", function() switchPage(Colors));
 
 		#if CAN_OPEN_LINKS
 		if (showDonate)
 		{
 			var hasPopupBlocker = #if web true #else false #end;
-			createItem(t("DONATE"), selectDonate, hasPopupBlocker);
+			createItem("DONATE", selectDonate, hasPopupBlocker);
 		}
 		#end
 		#if newgrounds
 		if (NGio.isLoggedIn)
-			createItem(t("LOGOUT"), selectLogout);
+			createItem("LOGOUT", selectLogout);
 		else
-			createItem(t("LOGIN"), selectLogin);
+			createItem("LOGIN", selectLogin);
 		#end
-		createItem(t("EXIT"), exit);
+		createItem("EXIT", exit);
 	}
 
 	function createItem(name:String, callback:Void->Void, fireInstantly = false)
 	{
-		var item = items.createItem(0, 100 + items.length * 100, name, Bold, callback);
+		var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
 		item.fireInstantly = fireInstantly;
 		item.screenCenter(X);
 		return item;
@@ -219,11 +218,7 @@ class OptionsMenu extends Page
 	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
-		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-		#else
-		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-		#end
+		WindowUtil.openURL(Constants.URL_ITCH);
 	}
 	#end
 

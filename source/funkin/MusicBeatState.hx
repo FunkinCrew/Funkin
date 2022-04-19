@@ -1,12 +1,21 @@
 package funkin;
 
-import funkin.Conductor.BPMChangeEvent;
-import flixel.FlxGame;
-import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.addons.ui.FlxUIState;
-import flixel.math.FlxRect;
-import flixel.util.FlxTimer;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.FlxSort;
+import funkin.Conductor.BPMChangeEvent;
+import funkin.modding.PolymodHandler;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ModuleHandler;
+import funkin.util.SortUtil;
 
+/**
+ * MusicBeatState actually represents the core utility FlxState of the game.
+ * It includes functionality for event handling, as well as maintaining BPM-based update events.
+ */
 class MusicBeatState extends FlxUIState
 {
 	private var curStep:Int = 0;
@@ -17,16 +26,37 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
+	public var leftWatermarkText:FlxText = null;
+	public var rightWatermarkText:FlxText = null;
+
+	public function new()
+	{
+		super();
+
+		initCallbacks();
+	}
+
+	function initCallbacks()
+	{
+		subStateOpened.add(onOpenSubstateComplete);
+		subStateClosed.add(onCloseSubstateComplete);
+	}
+
 	override function create()
 	{
-		if (transIn != null)
-			trace('reg ' + transIn.region);
-
 		super.create();
+
+		createWatermarkText();
 	}
 
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
+		// This can now be used in EVERY STATE YAY!
+		if (FlxG.keys.justPressed.F5)
+			debug_refreshModules();
+
 		// everyStep();
 		var oldStep:Int = curStep;
 
@@ -36,7 +66,41 @@ class MusicBeatState extends FlxUIState
 		if (oldStep != curStep && curStep >= 0)
 			stepHit();
 
-		super.update(elapsed);
+		FlxG.watch.addQuick("songPos", Conductor.songPosition);
+
+		dispatchEvent(new UpdateScriptEvent(elapsed));
+	}
+
+	function createWatermarkText()
+	{
+		// Both have an xPos of 0, but a width equal to the full screen.
+		// The rightWatermarkText is right aligned, which puts the text in the correct spot.
+		leftWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
+		rightWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
+
+		// 100,000 should be good enough.
+		leftWatermarkText.zIndex = 100000;
+		rightWatermarkText.zIndex = 100000;
+		leftWatermarkText.scrollFactor.set(0, 0);
+		rightWatermarkText.scrollFactor.set(0, 0);
+		leftWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		rightWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+		add(leftWatermarkText);
+		add(rightWatermarkText);
+	}
+
+	function dispatchEvent(event:ScriptEvent)
+	{
+		ModuleHandler.callEvent(event);
+	}
+
+	function debug_refreshModules()
+	{
+		PolymodHandler.forceReloadAssets();
+
+		// Restart the current state, so old data is cleared.
+		FlxG.resetState();
 	}
 
 	private function updateBeat():Void
@@ -60,15 +124,97 @@ class MusicBeatState extends FlxUIState
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
-	public function stepHit():Void
+	public function stepHit():Bool
 	{
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return false;
+		}
+
 		if (curStep % 4 == 0)
 			beatHit();
+
+		return true;
 	}
 
-	public function beatHit():Void
+	public function beatHit():Bool
 	{
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return false;
+		}
+
 		lastBeatHitTime = Conductor.songPosition;
-		// do literally nothing dumbass
+
+		return true;
+	}
+
+	/**
+	 * Refreshes the state, by redoing the render order of all sprites.
+	 * It does this based on the `zIndex` of each prop.
+	 */
+	public function refresh()
+	{
+		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+	}
+
+	override function switchTo(nextState:FlxState):Bool
+	{
+		var event = new StateChangeScriptEvent(ScriptEvent.STATE_CHANGE_BEGIN, nextState, true);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return false;
+		}
+
+		return super.switchTo(nextState);
+	}
+
+	public override function openSubState(targetSubstate:FlxSubState):Void
+	{
+		var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_BEGIN, targetSubstate, true);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return;
+		}
+
+		super.openSubState(targetSubstate);
+	}
+
+	function onOpenSubstateComplete(targetState:FlxSubState):Void
+	{
+		dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_END, targetState, true));
+	}
+
+	public override function closeSubState():Void
+	{
+		var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_CLOSE_BEGIN, this.subState, true);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+		{
+			return;
+		}
+
+		super.closeSubState();
+	}
+
+	function onCloseSubstateComplete(targetState:FlxSubState):Void
+	{
+		dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_CLOSE_END, targetState, true));
 	}
 }

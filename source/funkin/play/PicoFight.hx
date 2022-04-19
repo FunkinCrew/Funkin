@@ -1,14 +1,13 @@
 package funkin.play;
 
-import funkin.Note.NoteData;
-import funkin.audiovis.PolygonSpectogram;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
+import funkin.Note.NoteData;
+import funkin.audiovis.PolygonSpectogram;
 
 class PicoFight extends MusicBeatState
 {
@@ -37,7 +36,7 @@ class PicoFight extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst("blazin"));
 
 		SongLoad.loadFromJson('blazin', "blazin");
-		Conductor.changeBPM(SongLoad.songData.bpm);
+		Conductor.bpm = SongLoad.songData.bpm;
 
 		for (dumbassSection in SongLoad.songData.noteMap['hard'])
 		{
@@ -184,13 +183,15 @@ class PicoFight extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	override function stepHit()
+	override function stepHit():Bool
 	{
-		super.stepHit();
+		return super.stepHit();
 	}
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
+		if (!super.beatHit())
+			return false;
 		funnyWave.thickness = 10;
 		funnyWave.waveAmplitude = 300;
 		funnyWave.realtimeVisLenght = 0.1;
@@ -198,7 +199,6 @@ class PicoFight extends MusicBeatState
 		picoHealth += 1;
 
 		makeNotes();
-		// trace(picoHealth);
-		super.beatHit();
+		return true;
 	}
 }

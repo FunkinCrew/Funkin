@@ -37,7 +37,7 @@ class HealthIcon extends FlxSprite
 		if (isOldIcon)
 			changeIcon('bf-old');
 		else
-			changeIcon(PlayState.SONG.player1);
+			changeIcon(PlayState.currentSong.player1);
 	}
 
 	var pixelArrayFunny:Array<String> = CoolUtil.coolTextFile(Paths.file('images/icons/pixelIcons.txt'));

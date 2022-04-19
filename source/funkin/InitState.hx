@@ -8,8 +8,11 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import funkin.charting.ChartingState;
+import funkin.charting.ChartingState;
+import funkin.modding.module.ModuleHandler;
 import funkin.play.PicoFight;
 import funkin.play.PlayState;
+import funkin.play.stage.StageData;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.animDebugShit.DebugBoundingState;
@@ -123,6 +126,8 @@ class InitState extends FlxTransitionableState
 
 		StageDataParser.loadStageCache();
 
+		ModuleHandler.loadModuleCache();
+
 		#if song
 		var song = getSong();
 
@@ -187,7 +192,7 @@ class InitState extends FlxTransitionableState
 	{
 		var dif = getDif();
 
-		PlayState.SONG = SongLoad.loadFromJson(song, song);
+		PlayState.currentSong = SongLoad.loadFromJson(song, song);
 		PlayState.isStoryMode = isStoryMode;
 		PlayState.storyDifficulty = dif;
 		SongLoad.curDiff = switch (dif)

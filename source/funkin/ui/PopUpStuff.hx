@@ -1,5 +1,6 @@
 package funkin.ui;
 
+import funkin.util.Constants;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
@@ -22,7 +23,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		var rating:FlxSprite = new FlxSprite();
 		var ratingPath:String = daRating;
 
-		if (PlayState.curStageId.startsWith('school'))
+		if (PlayState.instance.currentStageId.startsWith('school'))
 			ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
 		rating.loadGraphic(Paths.image(ratingPath));
@@ -40,9 +41,9 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
 		add(rating);
 
-		if (PlayState.curStageId.startsWith('school'))
+		if (PlayState.instance.currentStageId.startsWith('school'))
 		{
-			rating.setGraphicSize(Std.int(rating.width * PlayState.daPixelZoom * 0.7));
+			rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
 		}
 		else
 		{
@@ -69,7 +70,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
-		if (PlayState.curStageId.startsWith('school'))
+		if (PlayState.instance.currentStageId.startsWith('school'))
 		{
 			pixelShitPart1 = 'weeb/pixelUI/';
 			pixelShitPart2 = '-pixel';
@@ -90,9 +91,9 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
 		add(comboSpr);
 
-		if (PlayState.curStageId.startsWith('school'))
+		if (PlayState.instance.currentStageId.startsWith('school'))
 		{
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * PlayState.daPixelZoom * 0.7));
+			comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 0.7));
 		}
 		else
 		{
@@ -129,9 +130,9 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
 			numScore.y = comboSpr.y;
 
-			if (PlayState.curStageId.startsWith('school'))
+			if (PlayState.instance.currentStageId.startsWith('school'))
 			{
-				numScore.setGraphicSize(Std.int(numScore.width * PlayState.daPixelZoom));
+				numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE));
 			}
 			else
 			{

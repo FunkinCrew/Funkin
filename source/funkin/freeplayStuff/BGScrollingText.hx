@@ -60,7 +60,7 @@ class BGScrollingText extends FlxSpriteGroup
 	{
 		for (txt in grpTexts.group)
 		{
-			txt.x -= 1 * (speed * (FlxG.elapsed / (1 / 60)));
+			txt.x -= 1 * (speed * (elapsed / (1 / 60)));
 
 			if (speed > 0)
 			{

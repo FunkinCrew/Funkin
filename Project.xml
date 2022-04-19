@@ -96,7 +96,13 @@
 
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
-	<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
+	<!--
+		AUTOMATICALLY MOVING EXAMPLE MODS INTO THE BUILD CAUSES ISSUES
+		Currently, this line will add the mod files to the library manifest,
+		which causes issues if the mod is not enabled.
+		If we can exclude the `mods` folder from the manifest, we can re-enable this line.
+		<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
+	-->
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 
 	<assets path="CHANGELOG.md" rename='changelog.txt' />
@@ -122,7 +128,7 @@
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch' />
 	<haxelib name="polymod" />
-	<haxelib name="firetongue" />
+	<haxelib name="thx.semver" />
 
 	<!-- <haxelib name="colyseus"/> -->
 	<!-- <haxelib name="colyseus-websocket" /> -->
@@ -191,7 +197,7 @@
 	<haxeflag name="--macro" value="include('funkin')" />
 
 	<!-- Necessary to provide stack traces for HScript. -->
-  <haxedef name="hscriptPos" />
+	<haxedef name="hscriptPos" />
 	<haxedef name="HXCPP_CHECK_POINTER" />
 	<haxedef name="HXCPP_STACK_LINE" />
 

@@ -1,9 +1,10 @@
 package funkin.play.stage;
 
-import openfl.Assets;
+import flixel.util.typeLimit.OneOfTwo;
+import funkin.util.VersionUtil;
 import funkin.util.assets.DataAssets;
 import haxe.Json;
-import flixel.util.typeLimit.OneOfTwo;
+import openfl.Assets;
 
 using StringTools;
 
@@ -17,7 +18,12 @@ class StageDataParser
 	 * Handle breaking changes by incrementing this value
 	 * and adding migration to the `migrateStageData()` function.
 	 */
-	public static final STAGE_DATA_VERSION:String = "1.0";
+	public static final STAGE_DATA_VERSION:String = "1.0.0";
+
+	/**
+	 * The current version rule check for the stage data format.
+	 */
+	public static final STAGE_DATA_VERSION_RULE:String = "1.0.x";
 
 	static final stageCache:Map<String, Stage> = new Map<String, Stage>();
 
@@ -163,20 +169,21 @@ class StageDataParser
 		}
 	}
 
-	static final DEFAULT_NAME:String = "Untitled Stage";
-	static final DEFAULT_CAMERAZOOM:Float = 1.0;
-	static final DEFAULT_ZINDEX:Int = 0;
-	static final DEFAULT_DANCEEVERY:Int = 0;
-	static final DEFAULT_SCALE:Float = 1.0;
-	static final DEFAULT_ISPIXEL:Bool = false;
-	static final DEFAULT_POSITION:Array<Float> = [0, 0];
-	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
-	static final DEFAULT_FRAMEINDICES:Array<Int> = [];
 	static final DEFAULT_ANIMTYPE:String = "sparrow";
+	static final DEFAULT_CAMERAZOOM:Float = 1.0;
+	static final DEFAULT_DANCEEVERY:Int = 0;
+	static final DEFAULT_ISPIXEL:Bool = false;
+	static final DEFAULT_NAME:String = "Untitled Stage";
+	static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
+	static final DEFAULT_POSITION:Array<Float> = [0, 0];
+	static final DEFAULT_SCALE:Float = 1.0;
+	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
+	static final DEFAULT_ZINDEX:Int = 0;
 
 	static final DEFAULT_CHARACTER_DATA:StageDataCharacter = {
 		zIndex: DEFAULT_ZINDEX,
 		position: DEFAULT_POSITION,
+		cameraOffsets: DEFAULT_OFFSETS,
 	}
 
 	/**
@@ -194,9 +201,15 @@ class StageDataParser
 			return null;
 		}
 
-		if (input.version != STAGE_DATA_VERSION)
+		if (input.version == null)
 		{
 			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": missing version');
+			return null;
+		}
+
+		if (!VersionUtil.validateVersion(input.version, STAGE_DATA_VERSION_RULE))
+		{
+			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": bad version (got ${input.version}, expected ${STAGE_DATA_VERSION_RULE})');
 			return null;
 		}
 
@@ -211,10 +224,9 @@ class StageDataParser
 			input.cameraZoom = DEFAULT_CAMERAZOOM;
 		}
 
-		if (input.props == null || input.props.length == 0)
+		if (input.props == null)
 		{
-			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": missing props');
-			return null;
+			input.props = [];
 		}
 
 		for (inputProp in input.props)
@@ -296,14 +308,14 @@ class StageDataParser
 					inputAnimation.frameRate = 24;
 				}
 
-				if (inputAnimation.frameIndices == null)
+				if (inputAnimation.offsets == null)
 				{
-					inputAnimation.frameIndices = DEFAULT_FRAMEINDICES;
+					inputAnimation.offsets = DEFAULT_OFFSETS;
 				}
 
-				if (inputAnimation.loop == null)
+				if (inputAnimation.looped == null)
 				{
-					inputAnimation.loop = true;
+					inputAnimation.looped = true;
 				}
 
 				if (inputAnimation.flipX == null)
@@ -347,6 +359,10 @@ class StageDataParser
 			{
 				inputCharacter.position = [0, 0];
 			}
+			if (inputCharacter.cameraOffsets == null || inputCharacter.cameraOffsets.length != 2)
+			{
+				inputCharacter.cameraOffsets = [0, 0];
+			}
 		}
 
 		// All good!
@@ -356,8 +372,12 @@ class StageDataParser
 
 typedef StageData =
 {
-	// Uses semantic versioning.
+	/**
+	 * The sematic version number of the stage data JSON format.
+	 * Supports fancy comparisons like NPM does it's neat.
+	 */
 	var version:String;
+
 	var name:String;
 	var cameraZoom:Null<Float>;
 	var props:Array<StageDataProp>;
@@ -432,7 +452,7 @@ typedef StageDataProp =
 	 * An optional array of animations which the prop can play.
 	 * @default Prop has no animations.
 	 */
-	var animations:Array<StageDataPropAnimation>;
+	var animations:Array<AnimationData>;
 
 	/**
 	 * If animations are used, this is the name of the animation to play first.
@@ -448,52 +468,6 @@ typedef StageDataProp =
 	var animType:String;
 };
 
-typedef StageDataPropAnimation =
-{
-	/**
-	 * The name of the animation.
-	 */
-	var name:String;
-
-	/**
-	 * The common beginning of image names in atlas for this animation's frames.
-	 * For example, if the frames are named "test0001.png", "test0002.png", etc., use "test".
-	 */
-	var prefix:String;
-
-	/**
-	 * If you want this animation to use only certain frames of an animation with a given prefix,
-	 * select them here.
-	 * @example [0, 1, 2, 3] (use only the first four frames)
-	 * @default [] (all frames)
-	 */
-	var frameIndices:Array<Int>;
-
-	/**
-	 * The speed of the animation in frames per second.
-	 * @default 24
-	 */
-	var frameRate:Null<Int>;
-
-	/**
-	 * Whether the animation should loop.
-	 * @default false
-	 */
-	var loop:Null<Bool>;
-
-	/**
-	 * Whether to flip the sprite horizontally while animating.
-	 * @default false
-	 */
-	var flipX:Null<Bool>;
-
-	/**
-	 * Whether to flip the sprite vertically while animating.
-	 * @default false
-	 */
-	var flipY:Null<Bool>;
-};
-
 typedef StageDataCharacter =
 {
 	/**
@@ -505,5 +479,12 @@ typedef StageDataCharacter =
 
 	/**
 	 * The position to render the character at.
-	 */ position:Array<Float>
+	 */
+	position:Array<Float>,
+
+	/**
+	 * The camera offsets to apply when focusing on the character on this stage.
+	 * @default [0, 0]
+	 */
+	cameraOffsets:Array<Float>,
 };

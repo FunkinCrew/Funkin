@@ -1,6 +1,5 @@
 package funkin;
 
-import funkin.Controls.Control;
 import flash.text.TextField;
 import flixel.FlxCamera;
 import flixel.FlxGame;
@@ -21,16 +20,17 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import funkin.Controls.Control;
 import funkin.freeplayStuff.BGScrollingText;
 import funkin.freeplayStuff.DJBoyfriend;
 import funkin.freeplayStuff.FreeplayScore;
 import funkin.freeplayStuff.SongMenuItem;
-import lime.app.Future;
-import lime.utils.Assets;
+import funkin.play.PlayState;
 import funkin.shaderslmfao.AngleMask;
 import funkin.shaderslmfao.PureColor;
 import funkin.shaderslmfao.StrokeShader;
-import funkin.play.PlayState;
+import lime.app.Future;
+import lime.utils.Assets;
 
 using StringTools;
 
@@ -238,9 +238,6 @@ class FreeplayState extends MusicBeatSubstate
 			add(new DifficultySelector(20, grpDifficulties.y - 10, false, controls));
 			add(new DifficultySelector(325, grpDifficulties.y - 10, true, controls));
 
-			var animShit:ComboCounter = new ComboCounter(100, 300, 1000000);
-			// add(animShit);
-
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
 				fnfFreeplay.visible = true;
@@ -388,7 +385,7 @@ class FreeplayState extends MusicBeatSubstate
 		{
 			if (FlxG.sound.music.volume < 0.7)
 			{
-				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+				FlxG.sound.music.volume += 0.5 * elapsed;
 			}
 		}
 
@@ -435,7 +432,7 @@ class FreeplayState extends MusicBeatSubstate
 				if (touchTimer >= 1.5)
 					accepted = true;
 
-				touchTimer += FlxG.elapsed;
+				touchTimer += elapsed;
 				var touch:FlxTouch = FlxG.touches.getFirst();
 
 				velTouch = Math.abs((touch.screenY - dyTouch)) / 50;
@@ -472,24 +469,6 @@ class FreeplayState extends MusicBeatSubstate
 			else
 			{
 				touchTimer = 0;
-
-				/* if (velTouch >= 0)
-					{
-						trace(velTouch);
-						velTouch -= FlxG.elapsed;
-
-						veloctiyLoopShit += velTouch;
-
-						trace("VEL LOOP: " + veloctiyLoopShit);
-
-						if (veloctiyLoopShit >= 30)
-						{
-							veloctiyLoopShit = 0;
-							changeSelection(1);
-						}
-
-						// trace(velTouch);
-				}*/
 			}
 		}
 
@@ -519,6 +498,9 @@ class FreeplayState extends MusicBeatSubstate
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -538,7 +520,7 @@ class FreeplayState extends MusicBeatSubstate
 					curDifficulty = 1;
 			}*/
 
-			PlayState.SONG = SongLoad.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState.currentSong = SongLoad.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			// SongLoad.curDiff = Highscore.formatSong()

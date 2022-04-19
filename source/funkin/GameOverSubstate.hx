@@ -1,14 +1,11 @@
 package funkin;
 
 import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import haxe.display.Display;
-import funkin.ui.PreferencesMenu;
 import funkin.play.PlayState;
+import funkin.ui.PreferencesMenu;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -20,12 +17,12 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	var gameOverMusic:FlxSound;
 
-	public function new(x:Float, y:Float)
+	public function new()
 	{
 		gameOverMusic = new FlxSound();
 		FlxG.sound.list.add(gameOverMusic);
 
-		var daStage = PlayState.curStageId;
+		var daStage = PlayState.instance.currentStageId;
 		var daBf:String = '';
 		switch (daStage)
 		{
@@ -36,7 +33,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				daBf = 'bf';
 		}
 
-		var daSong = PlayState.SONG.song.toLowerCase();
+		var daSong = PlayState.currentSong.song.toLowerCase();
 
 		switch (daSong)
 		{
@@ -48,16 +45,18 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		Conductor.songPosition = 0;
 
-		bf = new Boyfriend(x, y, daBf);
+		var bfXPos = PlayState.instance.currentStage.getBoyfriend().getScreenPosition().x;
+		var bfYPos = PlayState.instance.currentStage.getBoyfriend().getScreenPosition().y;
+		bf = new Boyfriend(bfXPos, bfYPos, daBf);
 		add(bf);
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
 		add(camFollow);
 
 		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
-		// Conductor.changeBPM(100);
+		// Conductor.bpm = 100;
 
-		switch (PlayState.SONG.player1)
+		switch (PlayState.currentSong.player1)
 		{
 			case 'pico':
 				stageSuffix = 'Pico';

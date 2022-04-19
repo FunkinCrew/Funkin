@@ -4,8 +4,8 @@ import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import funkin.ui.AtlasText.AtlasFont;
-import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.OptionsState.Page;
+import funkin.ui.TextMenuList.TextMenuItem;
 
 class PreferencesMenu extends Page
 {
@@ -84,7 +84,7 @@ class PreferencesMenu extends Page
 
 	private function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
 	{
-		items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.Bold, function()
+		items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function()
 		{
 			preferenceCheck(prefString, prefValue);
 
@@ -157,16 +157,17 @@ class PreferencesMenu extends Page
 		});
 	}
 
-	private static function preferenceCheck(prefString:String, prefValue:Dynamic):Void
+	private static function preferenceCheck(prefString:String, defaultValue:Dynamic):Void
 	{
 		if (preferences.get(prefString) == null)
 		{
-			preferences.set(prefString, prefValue);
-			trace('set preference!');
+			// Set the value to default.
+			preferences.set(prefString, defaultValue);
+			trace('Set preference to default: ${prefString} = ${defaultValue}');
 		}
 		else
 		{
-			trace('found preference: ' + preferences.get(prefString));
+			trace('Found preference: ${prefString} = ${preferences.get(prefString)}');
 		}
 	}
 }

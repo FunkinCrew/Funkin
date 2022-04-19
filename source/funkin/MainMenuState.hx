@@ -1,6 +1,5 @@
 package funkin;
 
-import funkin.NGio;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -15,14 +14,18 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import lime.app.Application;
-import openfl.filters.ShaderFilter;
+import funkin.NGio;
+import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.module.ModuleHandler;
 import funkin.shaderslmfao.ScreenWipeShader;
 import funkin.ui.AtlasMenuList;
 import funkin.ui.MenuList;
 import funkin.ui.OptionsState;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;
+import funkin.util.Constants;
+import lime.app.Application;
+import openfl.filters.ShaderFilter;
 
 using StringTools;
 
@@ -30,8 +33,8 @@ using StringTools;
 import Discord.DiscordClient;
 #end
 #if newgrounds
-import io.newgrounds.NG;
 import funkin.ui.NgPrompt;
+import io.newgrounds.NG;
 #end
 
 class MainMenuState extends MusicBeatState
@@ -99,7 +102,7 @@ class MainMenuState extends MusicBeatState
 			}
 		});
 
-		menuItems.enabled = false; // disable for intro
+		menuItems.enabled = true; // can move on intro
 		menuItems.createItem('story mode', function() startExitState(new StoryMenuState()));
 		menuItems.createItem('freeplay', function()
 		{
@@ -138,17 +141,21 @@ class MainMenuState extends MusicBeatState
 		FlxG.camera.follow(camFollow, null, 0.06);
 		// FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
-		var versionStr = 'v${Application.current.meta.get('version')}';
-		versionStr += ' (secret week 8 build do not leak)';
+		super.create();
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, versionStr, 12);
-		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(versionShit);
+		// This has to come AFTER!
+		this.leftWatermarkText.text = Constants.VERSION;
+		this.rightWatermarkText.text = "blablabla test";
+
+		// var versionStr = 'v${Application.current.meta.get('version')}';
+		// versionStr += ' (secret week 8 build do not leak)';
+		//
+		// var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, versionStr, 12);
+		// versionShit.scrollFactor.set();
+		// versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		// add(versionShit);
 
 		// NG.core.calls.event.logEvent('swag').send();
-
-		super.create();
 	}
 
 	override function closeSubState()
@@ -162,7 +169,7 @@ class MainMenuState extends MusicBeatState
 	{
 		super.finishTransIn();
 
-		menuItems.enabled = true;
+		// menuItems.enabled = true;
 
 		// #if newgrounds
 		// if (NGio.savedSessionFailed)
@@ -272,6 +279,8 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
 		if (FlxG.onMobile)
 		{
 			var touch:FlxTouch = FlxG.touches.getFirst();
@@ -295,7 +304,7 @@ class MainMenuState extends MusicBeatState
 
 		if (FlxG.sound.music.volume < 0.8)
 		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			FlxG.sound.music.volume += 0.5 * elapsed;
 		}
 
 		if (_exiting)
@@ -306,8 +315,6 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new TitleState());
 		}
-
-		super.update(elapsed);
 	}
 }
 
