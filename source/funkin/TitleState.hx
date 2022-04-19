@@ -366,6 +366,13 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			#end
 		}
+
+		// a faster intro thing lol!
+		if (pressedEnter && transitioning && skippedIntro)
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
 			if (FlxG.sound.music != null)
