@@ -1,10 +1,12 @@
 package funkin.play;
 
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import flixel.util.FlxColor;
 import flixel.FlxSprite;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 /**
  * Static methods for playing cutscenes in the PlayState.
@@ -43,8 +45,8 @@ class VanillaCutscenes
 		PlayState.instance.add(blackScreen);
 
 		#if html5
-		vid:FlxVideo = new FlxVideo(path);
-		vid.finishCallback = finishVideoCutscene();
+		var vid:FlxVideo = new FlxVideo(path);
+		vid.finishCallback = finishVideoCutscene;
 		#else
 		finishVideoCutscene();
 		#end

@@ -1,7 +1,7 @@
 package funkin.util;
 
-import lime.app.Application;
 import flixel.util.FlxColor;
+import lime.app.Application;
 
 class Constants
 {
@@ -17,6 +17,8 @@ class Constants
 
 	public static final VERSION_SUFFIX = ' PROTOTYPE';
 	public static var VERSION(get, null):String;
+
+	public static final FREAKY_MENU_BPM = 102;
 
 	#if debug
 	public static final GIT_HASH = funkin.util.macro.GitCommit.getGitCommitHash();

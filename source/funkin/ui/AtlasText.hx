@@ -1,18 +1,9 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxStringUtil;
-
-@:forward
-abstract BoldText(AtlasText) from AtlasText to AtlasText
-{
-	inline public function new(x = 0.0, y = 0.0, text:String)
-	{
-		this = new AtlasText(x, y, text, AtlasFont.BOLD);
-	}
-}
 
 /**
  * AtlasText is an improved version of Alphabet and FlxBitmapText.

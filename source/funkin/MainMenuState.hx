@@ -1,10 +1,10 @@
 package funkin;
 
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.effects.FlxFlicker;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
@@ -14,13 +14,13 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.NGio;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.modding.module.ModuleHandler;
-import funkin.NGio;
 import funkin.shaderslmfao.ScreenWipeShader;
 import funkin.ui.AtlasMenuList;
-import funkin.ui.MenuList;
 import funkin.ui.MenuList.MenuItem;
+import funkin.ui.MenuList;
 import funkin.ui.OptionsState;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;
@@ -35,8 +35,8 @@ using StringTools;
 import Discord.DiscordClient;
 #end
 #if newgrounds
-import io.newgrounds.NG;
 import funkin.ui.NgPrompt;
+import io.newgrounds.NG;
 #end
 
 class MainMenuState extends MusicBeatState
@@ -104,14 +104,9 @@ class MainMenuState extends MusicBeatState
 			}
 		});
 
-		menuItems.enabled = false; // disable for intro
-
-		createMenuItem('storymode', 'mainmenu/storymode', function()
-		{
-			startExitState(new StoryMenuState());
-		});
-
-		createMenuItem('freeplay', 'mainmenu/freeplay', function()
+		menuItems.enabled = true; // can move on intro
+		menuItems.createItem('story mode', function() startExitState(new StoryMenuState()));
+		menuItems.createItem('freeplay', function()
 		{
 			persistentDraw = true;
 			persistentUpdate = false;
@@ -184,7 +179,7 @@ class MainMenuState extends MusicBeatState
 	{
 		super.finishTransIn();
 
-		menuItems.enabled = true;
+		// menuItems.enabled = true;
 
 		// #if newgrounds
 		// if (NGio.savedSessionFailed)

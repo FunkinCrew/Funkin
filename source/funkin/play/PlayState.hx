@@ -1,12 +1,12 @@
 package funkin.play;
 
-import funkin.play.character.BaseCharacter;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -18,22 +18,27 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
-import funkin.charting.ChartingState;
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.events.ScriptEventDispatcher;
-import funkin.modding.IHook;
-import funkin.modding.module.ModuleHandler;
 import funkin.Note;
-import funkin.play.character.CharacterData;
-import funkin.play.stage.Stage;
-import funkin.play.HealthIcon;
-import funkin.play.stage.StageData;
-import funkin.play.Strumline.StrumlineArrow;
-import funkin.play.Strumline.StrumlineStyle;
+import funkin.Note;
+import funkin.Section.SwagSection;
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
+import funkin.SongLoad.SwagSong;
+import funkin.charting.ChartingState;
+import funkin.modding.IHook;
+import funkin.modding.IHook;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.module.ModuleHandler;
+import funkin.play.HealthIcon;
+import funkin.play.Strumline.StrumlineArrow;
+import funkin.play.Strumline.StrumlineArrow;
+import funkin.play.Strumline.StrumlineStyle;
+import funkin.play.Strumline.StrumlineStyle;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterData;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageData;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.util.Constants;
@@ -838,7 +843,7 @@ class PlayState extends MusicBeatState implements IHook
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes.highStakes)
+				if (songNotes.highStakes) // noteData > 3
 					gottaHitNote = !section.mustHitSection;
 
 				var oldNote:Note;
@@ -848,7 +853,9 @@ class PlayState extends MusicBeatState implements IHook
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				swagNote.data = songNotes;
+				// swagNote.data = songNotes;
+				swagNote.data.sustainLength = songNotes.sustainLength;
+				swagNote.data.altNote = songNotes.altNote;
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.data.sustainLength;
@@ -950,6 +957,7 @@ class PlayState extends MusicBeatState implements IHook
 			vocals.pause();
 
 			FlxG.sound.music.time = 0;
+
 			regenNoteData(); // loads the note data from start
 			health = 1;
 			songScore = 0;
@@ -1597,7 +1605,7 @@ class PlayState extends MusicBeatState implements IHook
 			}
 		}
 
-		if (PlayState.instance.currentStage == null)
+		if (PlayState.instance == null || PlayState.instance.currentStage == null)
 			return;
 
 		for (keyId => isPressed in pressArray)
@@ -1709,9 +1717,8 @@ class PlayState extends MusicBeatState implements IHook
 		if (!super.stepHit())
 			return false;
 
-		if (!isInCutscene
-			&& Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
-			|| (currentSong.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > 20))
+		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
+			|| Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 20)
 		{
 			resyncVocals();
 		}

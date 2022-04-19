@@ -5,9 +5,9 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
+import funkin.util.Constants;
+import funkin.util.WindowUtil;
 
-// typedef OptionsState = OptionsMenu_old;
-// class OptionsState_new extends MusicBeatState
 class OptionsState extends MusicBeatState
 {
 	var pages = new Map<PageName, Page>();
@@ -30,17 +30,12 @@ class OptionsState extends MusicBeatState
 		var options = addPage(Options, new OptionsMenu(false));
 		var preferences = addPage(Preferences, new PreferencesMenu());
 		var controls = addPage(Controls, new ControlsMenu());
-		// var colors = addPage(Colors, new ColorsMenu());
-
-		var mods = addPage(Mods, new ModMenu());
 
 		if (options.hasMultipleOptions())
 		{
 			options.onExit.add(exitToMainMenu);
 			controls.onExit.add(switchPage.bind(Options));
-			// colors.onExit.add(switchPage.bind(Options));
 			preferences.onExit.add(switchPage.bind(Options));
-			mods.onExit.add(switchPage.bind(Options));
 		}
 		else
 		{
@@ -66,12 +61,18 @@ class OptionsState extends MusicBeatState
 	function setPage(name:PageName)
 	{
 		if (pages.exists(currentName))
+		{
 			currentPage.exists = false;
+			currentPage.visible = false;
+		}
 
 		currentName = name;
 
 		if (pages.exists(currentName))
+		{
 			currentPage.exists = true;
+			currentPage.visible = true;
+		}
 	}
 
 	override function finishTransIn()
@@ -90,7 +91,7 @@ class OptionsState extends MusicBeatState
 	function exitToMainMenu()
 	{
 		currentPage.enabled = false;
-		// Todo animate?
+		// TODO: Animate this transition?
 		FlxG.switchState(new MainMenuState());
 	}
 }
@@ -174,7 +175,6 @@ class OptionsMenu extends Page
 		createItem("PREFERENCES", function() switchPage(Preferences));
 		createItem("CONTROLS", function() switchPage(Controls));
 		// createItem("COLORS", function() switchPage(Colors));
-		createItem("MODS", function() switchPage(Mods));
 
 		#if CAN_OPEN_LINKS
 		if (showDonate)
@@ -218,11 +218,7 @@ class OptionsMenu extends Page
 	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
-		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-		#else
-		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-		#end
+		WindowUtil.openURL(Constants.URL_ITCH);
 	}
 	#end
 

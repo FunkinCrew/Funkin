@@ -1,7 +1,7 @@
 package funkin.util;
 
-import thx.semver.VersionRule;
 import thx.semver.Version;
+import thx.semver.VersionRule;
 
 /**
  * Remember, increment the patch version (1.0.x) if you make a bugfix,

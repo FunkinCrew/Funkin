@@ -1,14 +1,13 @@
 package funkin.play;
 
-import funkin.Note.NoteData;
-import funkin.audiovis.PolygonSpectogram;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
+import funkin.Note.NoteData;
+import funkin.audiovis.PolygonSpectogram;
 
 class PicoFight extends MusicBeatState
 {
@@ -202,7 +201,6 @@ class PicoFight extends MusicBeatState
 		picoHealth += 1;
 
 		makeNotes();
-
 		return true;
 	}
 }

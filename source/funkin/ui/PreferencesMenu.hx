@@ -4,8 +4,8 @@ import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import funkin.ui.AtlasText.AtlasFont;
-import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.OptionsState.Page;
+import funkin.ui.TextMenuList.TextMenuItem;
 
 class PreferencesMenu extends Page
 {

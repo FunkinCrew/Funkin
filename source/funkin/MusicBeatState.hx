@@ -1,18 +1,18 @@
 package funkin;
 
-import flixel.util.FlxSort;
-import funkin.util.SortUtil;
-import funkin.play.stage.StageData.StageDataParser;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.util.FlxColor;
+import flixel.addons.ui.FlxUIState;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.FlxSort;
+import funkin.Conductor.BPMChangeEvent;
+import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.Conductor.BPMChangeEvent;
-import flixel.addons.ui.FlxUIState;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.stage.StageData.StageDataParser;
+import funkin.util.SortUtil;
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -68,6 +68,8 @@ class MusicBeatState extends FlxUIState
 		if (oldStep != curStep && curStep >= 0)
 			stepHit();
 
+		FlxG.watch.addQuick("songPos", Conductor.songPosition);
+
 		dispatchEvent(new UpdateScriptEvent(elapsed));
 	}
 
@@ -97,20 +99,7 @@ class MusicBeatState extends FlxUIState
 
 	function debug_refreshModules()
 	{
-		// Forcibly clear scripts so that scripts can be edited.
-		ModuleHandler.clearModuleCache();
-		polymod.hscript.PolymodScriptClass.clearScriptClasses();
-
-		// Forcibly reload Polymod so it finds any new files.
-		polymod.Polymod.reload();
-
-		// Reload scripted classes so stages and modules will update.
-		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
-
-		// Reload the stages in cache. This might cause a lag spike but who cares this is a debug utility.
-		StageDataParser.loadStageCache();
-		CharacterDataParser.loadCharacterCache();
-		ModuleHandler.loadModuleCache();
+		PolymodHandler.forceReloadAssets();
 
 		// Restart the current state, so old data is cleared.
 		FlxG.resetState();

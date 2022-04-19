@@ -1,13 +1,8 @@
 package funkin.modding.module;
 
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.events.ScriptEvent.KeyboardInputScriptEvent;
-import funkin.modding.events.ScriptEvent.NoteScriptEvent;
-import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
-import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * A module is a scripted class which receives all events without requiring a specific context.

@@ -1,12 +1,8 @@
 package funkin.play.stage;
 
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.events.ScriptEvent.NoteScriptEvent;
-import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
-import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
-import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import flixel.FlxSprite;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * A Bopper is a stage prop which plays a dance animation.
@@ -97,14 +93,14 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	{
 		if (danceEvery > 0 && event.beat % danceEvery == 0)
 		{
-			dance();
+			dance(true);
 		}
 	}
 
 	/**
 	 * Called every `danceEvery` beats of the song.
 	 */
-	function dance(force:Bool = false):Void
+	public function dance(force:Bool = false):Void
 	{
 		if (this.animation == null)
 		{
@@ -120,17 +116,17 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		{
 			if (hasDanced)
 			{
-				playAnimation('danceRight$idleSuffix');
+				playAnimation('danceRight$idleSuffix', force);
 			}
 			else
 			{
-				playAnimation('danceLeft$idleSuffix');
+				playAnimation('danceLeft$idleSuffix', force);
 			}
 			hasDanced = !hasDanced;
 		}
 		else
 		{
-			playAnimation('idle$idleSuffix');
+			playAnimation('idle$idleSuffix', force);
 		}
 	}
 
@@ -213,7 +209,6 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
 	{
 		animationOffsets.set(name, [xOffset, yOffset]);
-		applyAnimationOffsets(name);
 	}
 
 	/**

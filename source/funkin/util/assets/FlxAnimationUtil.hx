@@ -1,7 +1,7 @@
 package funkin.util.assets;
 
-import funkin.play.AnimationData;
 import flixel.FlxSprite;
+import funkin.play.AnimationData;
 
 class FlxAnimationUtil
 {

@@ -1,9 +1,9 @@
 package funkin;
 
-import funkin.modding.module.ModuleHandler;
-import funkin.modding.events.ScriptEvent;
-import funkin.Conductor.BPMChangeEvent;
 import flixel.FlxSubState;
+import funkin.Conductor.BPMChangeEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ModuleHandler;
 
 /**
  * MusicBeatSubstate reincorporates the functionality of MusicBeatState into an FlxSubState.

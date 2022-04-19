@@ -1,14 +1,6 @@
 package funkin.charting;
 
-import funkin.Conductor.BPMChangeEvent;
-import funkin.Note.NoteData;
-import funkin.Section.SwagSection;
-import funkin.SongLoad.SwagSong;
-import funkin.audiovis.ABotVis;
-import funkin.audiovis.PolygonSpectogram;
-import funkin.audiovis.SpectogramSprite;
 import flixel.FlxSprite;
-import funkin.play.HealthIcon;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
@@ -24,14 +16,22 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
+import funkin.Conductor.BPMChangeEvent;
+import funkin.Note.NoteData;
+import funkin.Section.SwagSection;
+import funkin.SongLoad.SwagSong;
+import funkin.audiovis.ABotVis;
+import funkin.audiovis.PolygonSpectogram;
+import funkin.audiovis.SpectogramSprite;
+import funkin.play.HealthIcon;
+import funkin.play.PlayState;
+import funkin.rendering.MeshRender;
 import haxe.Json;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
-import funkin.rendering.MeshRender;
-import funkin.play.PlayState;
 
 using Lambda;
 using StringTools;
@@ -976,9 +976,9 @@ class ChartingState extends MusicBeatState
 		_song.bpm = tempBpm;
 
 		/* if (FlxG.keys.justPressed.UP)
-				Conductor.bpm += 1;
+				Conductor.bpm = Conductor.bpm + 1;
 			if (FlxG.keys.justPressed.DOWN)
-				Conductor.bpm -= 1; */
+				Conductor.bpm = Conductor.bpm - 1; */
 
 		var shiftThing:Int = 1;
 		if (FlxG.keys.pressed.SHIFT)

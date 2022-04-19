@@ -1,17 +1,14 @@
 package funkin;
 
-import funkin.modding.events.ScriptEventDispatcher;
-import funkin.modding.events.ScriptEvent;
-import funkin.play.character.BaseCharacter;
 import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import haxe.display.Display;
-import funkin.ui.PreferencesMenu;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
+import funkin.play.character.BaseCharacter;
+import funkin.ui.PreferencesMenu;
 
 using StringTools;
 

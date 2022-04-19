@@ -1,6 +1,5 @@
 package funkin.ui;
 
-import funkin.Controls;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -8,6 +7,7 @@ import flixel.group.FlxGroup;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import funkin.Controls;
 import funkin.ui.AtlasText;
 import funkin.ui.MenuList;
 import funkin.ui.TextMenuList;
@@ -87,20 +87,20 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
 			if (currentHeader != "UI_" && name.indexOf("UI_") == 0)
 			{
 				currentHeader = "UI_";
-				headers.add(new BoldText(0, y, "UI")).screenCenter(X);
+				headers.add(new AtlasText(0, y, "UI", AtlasFont.BOLD)).screenCenter(X);
 				y += spacer;
 			}
 			else if (currentHeader != "NOTE_" && name.indexOf("NOTE_") == 0)
 			{
 				currentHeader = "NOTE_";
-				headers.add(new BoldText(0, y, "NOTES")).screenCenter(X);
+				headers.add(new AtlasText(0, y, "NOTES", AtlasFont.BOLD)).screenCenter(X);
 				y += spacer;
 			}
 
 			if (currentHeader != null && name.indexOf(currentHeader) == 0)
 				name = name.substr(currentHeader.length);
 
-			var label = labels.add(new BoldText(150, y, name));
+			var label = labels.add(new AtlasText(150, y, name, AtlasFont.BOLD));
 			label.alpha = 0.6;
 			for (i in 0...COLUMNS)
 				createItem(label.x + 400 + i * 300, y, control, i);

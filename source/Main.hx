@@ -1,9 +1,9 @@
 package;
 
-import funkin.InitState;
-import funkin.MemoryCounter;
 import flixel.FlxGame;
 import flixel.FlxState;
+import funkin.InitState;
+import funkin.MemoryCounter;
 import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
@@ -37,13 +37,7 @@ class Main extends Sprite
 	{
 		super();
 
-		// TODO: Ideally this should change to utilize a user interface.
-		// 1. Call PolymodHandler.getAllMods(). This gives you an array of ModMetadata items,
-		//      each of which contains information about the mod including an icon.
-		// 2. Provide an interface to enable, disable, and reorder enabled mods.
-		//      A design similar to that of Minecraft resource packs would be intuitive.
-		// 3. The interface should save (to the save file) and output an ordered array of mod IDs.
-		// 4. Replace the call to PolymodHandler.loadAllMods() with a call to PolymodHandler.loadModsById(ids:Array<String>).
+		// TODO: Replace this with loadEnabledMods().
 		funkin.modding.PolymodHandler.loadAllMods();
 
 		if (stage != null)
