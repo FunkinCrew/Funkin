@@ -321,33 +321,45 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 		for (prop in this.namedProps)
 		{
-			remove(prop);
-			prop.kill();
-			prop.destroy();
+			if (prop != null)
+			{
+				remove(prop);
+				prop.kill();
+				prop.destroy();
+			}
 		}
 		namedProps.clear();
 
 		for (char in this.characters)
 		{
-			remove(char);
-			char.kill();
-			char.destroy();
+			if (char != null)
+			{
+				remove(char);
+				char.kill();
+				char.destroy();
+			}
 		}
 		characters.clear();
 
 		for (bopper in boppers)
 		{
-			remove(bopper);
-			bopper.kill();
-			bopper.destroy();
+			if (bopper != null)
+			{
+				remove(bopper);
+				bopper.kill();
+				bopper.destroy();
+			}
 		}
 		boppers = [];
 
 		for (sprite in this.group)
 		{
-			remove(sprite);
-			sprite.kill();
-			sprite.destroy();
+			if (sprite != null)
+			{
+				sprite.kill();
+				sprite.destroy();
+				remove(sprite);
+			}
 		}
 		group.clear();
 	}
