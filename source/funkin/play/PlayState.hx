@@ -832,7 +832,6 @@ class PlayState extends MusicBeatState implements IHook
 				// swagNote.data = songNotes;
 				swagNote.data.sustainLength = songNotes.sustainLength;
 				swagNote.data.altNote = songNotes.altNote;
-
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.data.sustainLength;
@@ -938,11 +937,7 @@ class PlayState extends MusicBeatState implements IHook
 			regenNoteData(); // loads the note data from start
 			health = 1;
 			songScore = 0;
-<<<<<<< HEAD
 			Countdown.performCountdown(currentStageId.startsWith('school'));
-=======
-			restartCountdownTimer();
->>>>>>> origin/master
 
 			needsReset = false;
 		}
@@ -1258,19 +1253,11 @@ class PlayState extends MusicBeatState implements IHook
 					// TODO: Why the hell is the noteMiss logic in two different places?
 					if (daNote.tooLate)
 					{
-<<<<<<< HEAD
 						var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, daNote, true);
 						dispatchEvent(event);
-						health -= 0.0775;
-=======
-						if (curStage != null)
-						{
-							curStage.onNoteMiss(daNote);
-						}
 
 						// lose less health on sustain notes!
 						health -= 0.0775 * (daNote.isSustainNote ? 0.2 : 1); // if it's sustain, multiply it by 0.2 (not checked for balence yet), else keep it same (multiply by 1)
->>>>>>> origin/master
 						vocals.volume = 0;
 						killCombo();
 					}
@@ -1538,15 +1525,9 @@ class PlayState extends MusicBeatState implements IHook
 			switch (currentStageId)
 			{
 				case 'limo':
-<<<<<<< HEAD
 					cameraFollowPoint.x = currentStage.getBoyfriend().getMidpoint().x - 300;
 				case 'mall':
 					cameraFollowPoint.y = currentStage.getBoyfriend().getMidpoint().y - 200;
-=======
-					camFollow.x = boyfriend.getMidpoint().x - 300;
-				case 'mallXmas':
-					camFollow.y = boyfriend.getMidpoint().y - 200;
->>>>>>> origin/master
 				case 'school' | 'schoolEvil':
 					cameraFollowPoint.x = currentStage.getBoyfriend().getMidpoint().x - 200;
 					cameraFollowPoint.y = currentStage.getBoyfriend().getMidpoint().y - 200;
@@ -1739,17 +1720,8 @@ class PlayState extends MusicBeatState implements IHook
 		if (!super.stepHit())
 			return false;
 
-<<<<<<< HEAD
-		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
-			|| (currentSong.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > 20))
-=======
-	override function stepHit()
-	{
-		super.stepHit();
-
 		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 20
 			|| Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 20)
->>>>>>> origin/master
 		{
 			resyncVocals();
 		}
