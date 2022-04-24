@@ -200,7 +200,7 @@ class ModchartUtilities
         setVar("noDeath", utilities.Options.getData("noDeath"));
         setVar("downscroll", utilities.Options.getData("downscroll") == true ? 1 : 0); // fuck you compatibility
         setVar("downscrollBool", utilities.Options.getData("downscroll"));
-	setVar("middlescroll", utilities.Options.getData("middlescroll"));
+	    setVar("middlescroll", utilities.Options.getData("middlescroll"));
         setVar("flashingLights", utilities.Options.getData("flashingLights"));
         setVar("flashing", utilities.Options.getData("flashingLights"));
         //setVar("distractions", .distractions);

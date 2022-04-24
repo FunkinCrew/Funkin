@@ -1479,8 +1479,9 @@ class PlayState extends MusicBeatState
 			vocals = new FlxSound();
 
 		// LOADING MUSIC FOR CUSTOM SONGS
-		if(FlxG.sound.music.active)
-			FlxG.sound.music.stop();
+		if(FlxG.sound.music != null)
+			if(FlxG.sound.music.active)
+				FlxG.sound.music.stop();
 
 		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(SONG.song, (SONG.specialAudioName == null ? storyDifficultyStr.toLowerCase() : SONG.specialAudioName)));
 		FlxG.sound.music.persist = true;
