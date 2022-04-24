@@ -2492,7 +2492,7 @@ class PlayState extends MusicBeatState
 
 				if(Conductor.songPosition - Conductor.safeZoneOffset > daNote.strumTime)
 				{
-					if(daNote.mustPress && daNote.playMissOnMiss)
+					if(daNote.mustPress && daNote.playMissOnMiss && !(daNote.isSustainNote && daNote.animation.curAnim.name == "holdend"))
 					{
 						vocals.volume = 0;
 						noteMiss(daNote.noteData, daNote);
