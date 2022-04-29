@@ -1,7 +1,7 @@
 package funkin.play;
 
-import flixel.math.FlxMath;
 import flixel.FlxSprite;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import openfl.utils.Assets;
@@ -95,6 +95,11 @@ class HealthIcon extends FlxSprite
 	 */
 	static final LEGACY_PIXEL_SIZE = 32;
 
+	/**
+	 * shitty hardcoded value for a specific positioning!!!
+	 */
+	static final POSITION_OFFSET = 26;
+
 	public function new(char:String = 'bf', playerId:Int = 0)
 	{
 		super(0, 0);
@@ -153,14 +158,15 @@ class HealthIcon extends FlxSprite
 					updateHealthIcon(PlayState.instance.health);
 					// Update the position to match the health bar.
 					this.x = PlayState.instance.healthBar.x
-						+ (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01));
+						+ (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01)
+							- POSITION_OFFSET);
 				case 1: // Dad
 					// Update the animation based on the current state.
 					updateHealthIcon(MAXIMUM_HEALTH - PlayState.instance.health);
 					// Update the position to match the health bar.
 					this.x = PlayState.instance.healthBar.x
 						+ (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01))
-						- (this.width);
+						- (this.width - POSITION_OFFSET);
 			}
 
 			// Lerp the health icon back to its normal size,
