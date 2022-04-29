@@ -105,7 +105,7 @@ class MainMenuState extends MusicBeatState
 		});
 
 		menuItems.enabled = true; // can move on intro
-		createMenuItem('story mode', 'mainmenu/storymode', function() startExitState(new StoryMenuState()));
+		createMenuItem('storymode', 'mainmenu/storymode', function() startExitState(new StoryMenuState()));
 		createMenuItem('freeplay', 'mainmenu/freeplay', function()
 		{
 			persistentDraw = true;
