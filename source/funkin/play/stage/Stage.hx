@@ -2,12 +2,13 @@ package funkin.play.stage;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.util.FlxSort;
 import funkin.modding.IHook;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.character.Character.CharacterType;
+import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
@@ -145,8 +146,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 						if (Std.isOfType(propSprite, Bopper))
 						{
 							cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
-<<<<<<< HEAD
-=======
 						}
 					}
 				default: // "sparrow"
@@ -156,11 +155,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 						for (propAnim in dataProp.animations)
 						{
 							cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
->>>>>>> origin/feature/scripted-modules
 						}
 					}
-				default: // "sparrow"
-					FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
 			}
 
 			if (Std.isOfType(propSprite, Bopper))
