@@ -36,6 +36,12 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public var idleSuffix(default, set):String = "";
 
+	/**
+	 * Whether this bopper should bop every beat. By default it's true, but when used
+	 * for characters/players, it should be false so it doesn't cut off their animations!!!!!
+	 */
+	public var shouldBop:Bool = true;
+
 	function set_idleSuffix(value:String):String
 	{
 		this.idleSuffix = value;
@@ -93,7 +99,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	{
 		if (danceEvery > 0 && event.beat % danceEvery == 0)
 		{
-			dance(true);
+			dance(shouldBop);
 		}
 	}
 

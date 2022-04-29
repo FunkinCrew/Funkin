@@ -1,12 +1,12 @@
 package funkin.play.character;
 
-import funkin.play.character.CharacterData.CharacterDataParser;
 import flixel.math.FlxPoint;
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.Note.NoteDir;
 import funkin.modding.events.ScriptEvent.NoteScriptEvent;
+import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.stage.Bopper;
 
 using StringTools;
@@ -124,6 +124,8 @@ class BaseCharacter extends Bopper
 			this.singTimeCrochet = _data.singTime;
 			this.globalOffsets = _data.offsets;
 		}
+
+		shouldBop = false;
 	}
 
 	/**
@@ -213,8 +215,9 @@ class BaseCharacter extends Bopper
 			var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
 
 			FlxG.watch.addQuick('singTimeMs-${characterId}', singTimeMs);
-			if (holdTimer > singTimeMs && shouldStopSinging)
+			if (holdTimer > singTimeMs && shouldStopSinging && !getCurrentAnimation().endsWith("miss"))
 			{
+				trace(getCurrentAnimation());
 				// trace('holdTimer reached ${holdTimer}sec (> ${singTimeMs}), stopping sing animation');
 				holdTimer = 0;
 				dance(true);
