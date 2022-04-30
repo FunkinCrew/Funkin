@@ -2,10 +2,7 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.Note.NoteDir;
-import funkin.modding.events.ScriptEvent.NoteScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.stage.Bopper;
 
@@ -41,8 +38,8 @@ class BaseCharacter extends Bopper
 	final singTimeCrochet:Float;
 
 	/**
-	 * Character position in stage file is at the bottom center of the character.
-	 * Position from stage file - character origin is at the top left corner of the character.
+	 * The offset between the corner of the sprite and the origin of the sprite (at the character's feet).
+	 * cornerPosition = stageData - characterOrigin
 	 */
 	public var characterOrigin(get, null):FlxPoint;
 
@@ -51,6 +48,27 @@ class BaseCharacter extends Bopper
 		var xPos = (width / 2); // Horizontal center
 		var yPos = (height); // Vertical bottom
 		return new FlxPoint(xPos, yPos);
+	}
+
+	/**
+	 * The absolute position of the top-left of the character.
+	 * @return 
+	 */
+	public var cornerPosition(get, null):FlxPoint;
+
+	function get_cornerPosition():FlxPoint
+	{
+		return new FlxPoint(x, y);
+	}
+
+	/**
+	 * The absolute position of the character's feet, at the bottom-center of the sprite.
+	 */
+	public var feetPosition(get, null):FlxPoint;
+
+	function get_feetPosition():FlxPoint
+	{
+		return new FlxPoint(x + characterOrigin.x, y + characterOrigin.y);
 	}
 
 	/**
