@@ -41,6 +41,7 @@ import funkin.play.stage.Stage;
 import funkin.play.stage.StageData;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
+import funkin.ui.stageBuildShit.StageOffsetSubstate;
 import funkin.util.Constants;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;
@@ -625,6 +626,15 @@ class PlayState extends MusicBeatState implements IHook
 	}
 
 	/**
+	 * Pauses music and vocals easily.
+	 */
+	public function pauseMusic()
+	{
+		FlxG.sound.music.pause();
+		vocals.pause();
+	}
+
+	/**
 	 * Loads stage data from cache, assembles the props,
 	 * and adds it to the state.
 	 * @param id 
@@ -939,6 +949,11 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		super.update(elapsed);
 
+		if (FlxG.keys.justPressed.U)
+		{
+			openSubState(new StageOffsetSubstate());
+		}
+
 		updateHealthBar();
 		updateScoreText();
 
@@ -1071,7 +1086,7 @@ class PlayState extends MusicBeatState implements IHook
 			changeSection(-1);
 		#end
 
-		if (camZooming)
+		if (camZooming && subState == null)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCameraZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1 * FlxCamera.defaultZoom, camHUD.zoom, 0.95);
@@ -1776,6 +1791,8 @@ class PlayState extends MusicBeatState implements IHook
 		// That combo counter that got spoiled that one time.
 		// Comes with NEAT visual and audio effects.
 
+		// bruh this var is bonkers i thot it was a function lmfaooo
+
 		var shouldShowComboText:Bool = (curBeat % 8 == 7) // End of measure. TODO: Is this always the correct time?
 			&& (SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection) // Current section is BF's.
 			&& (combo > 5) // Don't want to show on small combos.
@@ -1991,9 +2008,10 @@ class PlayState extends MusicBeatState implements IHook
 	/**
 	 * Resets the camera's zoom level and focus point.
 	 */
-	function resetCamera():Void
+	public function resetCamera():Void
 	{
 		FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
+		FlxG.camera.targetOffset.set();
 		FlxG.camera.zoom = defaultCameraZoom;
 		FlxG.camera.focusOn(cameraFollowPoint.getPosition());
 	}
