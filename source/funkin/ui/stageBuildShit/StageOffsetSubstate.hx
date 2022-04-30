@@ -3,6 +3,9 @@ package funkin.ui.stageBuildShit;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
 import funkin.play.PlayState;
+import funkin.play.stage.StageData;
+import haxe.Json;
+import openfl.Assets;
 
 class StageOffsetSubstate extends MusicBeatSubstate
 {
@@ -15,6 +18,28 @@ class StageOffsetSubstate extends MusicBeatSubstate
 
 		var btn:FlxButton = new FlxButton(10, 10, "SAVE COMPILE", function()
 		{
+			var stageLol:StageData = StageDataParser.parseStageData(PlayState.instance.currentStageId);
+
+			var bfPos = PlayState.instance.currentStage.getBoyfriend().feetPosition;
+			stageLol.characters.bf.position[0] = Std.int(bfPos.x);
+			stageLol.characters.bf.position[1] = Std.int(bfPos.y);
+
+			var dadPos = PlayState.instance.currentStage.getDad().feetPosition;
+
+			stageLol.characters.dad.position[0] = Std.int(dadPos.x);
+			stageLol.characters.dad.position[1] = Std.int(dadPos.y);
+
+			var outputJson = CoolUtil.jsonStringify(stageLol);
+
+			#if sys
+			// save "local" to the current export.
+			sys.io.File.saveContent('./assets/data/stages/' + PlayState.instance.currentStageId + '.json', outputJson);
+
+			// save to the dev version
+			sys.io.File.saveContent('../../../../assets/preload/data/stages/' + PlayState.instance.currentStageId + '.json', outputJson);
+			#end
+			// trace(dipshitJson);
+
 			// put character position data to a file of some sort
 		});
 		btn.scrollFactor.set();

@@ -135,6 +135,16 @@ class CoolUtil
 	}
 
 	/**
+	 * Just saves the json with some default values hehe
+	 * @param json 
+	 * @return String
+	 */
+	public static inline function jsonStringify(data:Dynamic):String
+	{
+		return Json.stringify(data, null, "\t");
+	}
+
+	/**
 	 * Hashlink json encoding fix for some wacky bullshit
 	 * https://github.com/HaxeFoundation/haxe/issues/6930#issuecomment-384570392
 	 */
