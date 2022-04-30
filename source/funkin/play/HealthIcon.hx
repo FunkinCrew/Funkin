@@ -111,6 +111,8 @@ class HealthIcon extends FlxSprite
 		this.antialiasing = !isPixel;
 
 		this.flipX = playerId == 0;
+
+		initTargetSize();
 	}
 
 	function set_characterId(value:String):String
@@ -207,6 +209,12 @@ class HealthIcon extends FlxSprite
 			}
 			this.updateHitbox();
 		}
+	}
+
+	inline function initTargetSize()
+	{
+		setGraphicSize(150);
+		updateHitbox();
 	}
 
 	function updateHealthIcon(health:Float)
