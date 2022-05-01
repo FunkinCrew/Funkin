@@ -76,8 +76,11 @@ class StageOffsetSubstate extends MusicBeatSubstate
 						char = cast thing;
 				}
 
-				sprOld.x = char.x;
-				sprOld.y = char.y;
+				if (char != null)
+				{
+					sprOld.x = char.x;
+					sprOld.y = char.y;
+				}
 
 				mosPosOld.x = FlxG.mouse.x;
 				mosPosOld.y = FlxG.mouse.y;

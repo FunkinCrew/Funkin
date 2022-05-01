@@ -1490,6 +1490,10 @@ class PlayState extends MusicBeatState implements IHook
 		if (currentStage == null)
 			return;
 
+		// HARDCODED +150, CHANGE LATER???
+		var camPosOffsetDad:Float = 150;
+		var camPosOffsetBF:Float = -100;
+
 		var isFocusedOnDad = cameraFollowPoint.x == currentStage.getDad().cameraFocusPoint.x;
 		var isFocusedOnBF = cameraFollowPoint.x == currentStage.getBoyfriend().cameraFocusPoint.x;
 
@@ -1497,6 +1501,20 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			// Focus the camera on the player.
 			cameraFollowPoint.setPosition(currentStage.getBoyfriend().cameraFocusPoint.x, currentStage.getBoyfriend().cameraFocusPoint.y);
+
+			FlxG.camera.targetOffset.x = camPosOffsetBF;
+			FlxG.camera.targetOffset.y = camPosOffsetBF;
+
+			switch (currentStageId)
+			{
+				case 'limo':
+					FlxG.camera.targetOffset.x = -300;
+				case 'mall':
+					FlxG.camera.targetOffset.y = -200;
+				case 'school' | 'schoolEvil':
+					FlxG.camera.targetOffset.x = -200;
+					FlxG.camera.targetOffset.y = -200;
+			}
 
 			// TODO: Un-hardcode this.
 			if (currentSong.song.toLowerCase() == 'tutorial')
@@ -1507,9 +1525,21 @@ class PlayState extends MusicBeatState implements IHook
 			// Focus the camera on the opponent.
 			cameraFollowPoint.setPosition(currentStage.getDad().cameraFocusPoint.x, currentStage.getDad().cameraFocusPoint.y);
 
+			FlxG.camera.targetOffset.x = camPosOffsetDad;
+
 			// TODO: Un-hardcode this stuff.
 			if (currentStage.getDad().characterId == 'mom')
+			{
 				vocals.volume = 1;
+				FlxG.camera.targetOffset.x = 0;
+			}
+
+			if (currentStage.getDad().characterId == "senpai" || currentStage.getDad().characterId == 'senpai-angry')
+			{
+				FlxG.camera.targetOffset.y = -430;
+				FlxG.camera.targetOffset.x = 100;
+			}
+
 			if (currentSong.song.toLowerCase() == 'tutorial')
 				tweenCamIn();
 		}
