@@ -3,6 +3,7 @@ package funkin.ui.stageBuildShit;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
 import funkin.play.PlayState;
+import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData;
 import haxe.Json;
 import openfl.Assets;
@@ -29,6 +30,10 @@ class StageOffsetSubstate extends MusicBeatSubstate
 			stageLol.characters.dad.position[0] = Std.int(dadPos.x);
 			stageLol.characters.dad.position[1] = Std.int(dadPos.y);
 
+			var GF_FEET_SNIIIIIIIIIIIIIFFFF = PlayState.instance.currentStage.getGirlfriend().feetPosition;
+			stageLol.characters.gf.position[0] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.x);
+			stageLol.characters.gf.position[1] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.y);
+
 			var outputJson = CoolUtil.jsonStringify(stageLol);
 
 			#if sys
@@ -49,6 +54,8 @@ class StageOffsetSubstate extends MusicBeatSubstate
 	var mosPosOld:FlxPoint = new FlxPoint();
 	var sprOld:FlxPoint = new FlxPoint();
 
+	var char:BaseCharacter = null;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -62,30 +69,24 @@ class StageOffsetSubstate extends MusicBeatSubstate
 		{
 			if (FlxG.mouse.justPressed)
 			{
-				sprOld.x = PlayState.instance.currentStage.getBoyfriend().x;
-				sprOld.y = PlayState.instance.currentStage.getBoyfriend().y;
+				for (thing in PlayState.instance.currentStage)
+				{
+					if (FlxG.mouse.overlaps(thing) && Std.isOfType(thing, BaseCharacter))
+						char = cast thing;
+				}
+
+				sprOld.x = char.x;
+				sprOld.y = char.y;
 
 				mosPosOld.x = FlxG.mouse.x;
 				mosPosOld.y = FlxG.mouse.y;
 			}
 
-			PlayState.instance.currentStage.getBoyfriend().x = sprOld.x - (mosPosOld.x - FlxG.mouse.x);
-			PlayState.instance.currentStage.getBoyfriend().y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
-		}
-
-		if (FlxG.mouse.pressedRight)
-		{
-			if (FlxG.mouse.justPressedRight)
+			if (char != null)
 			{
-				sprOld.x = PlayState.instance.currentStage.getDad().x;
-				sprOld.y = PlayState.instance.currentStage.getDad().y;
-
-				mosPosOld.x = FlxG.mouse.x;
-				mosPosOld.y = FlxG.mouse.y;
+				char.x = sprOld.x - (mosPosOld.x - FlxG.mouse.x);
+				char.y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
 			}
-
-			PlayState.instance.currentStage.getDad().x = sprOld.x - (mosPosOld.x - FlxG.mouse.x);
-			PlayState.instance.currentStage.getDad().y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
 		}
 
 		if (FlxG.keys.justPressed.Y)
