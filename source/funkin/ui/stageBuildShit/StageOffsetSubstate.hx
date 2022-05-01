@@ -17,7 +17,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
 		PlayState.instance.pauseMusic();
 		FlxG.camera.target = null;
 
-		var btn:FlxButton = new FlxButton(10, 10, "SAVE COMPILE", function()
+		var btn:FlxButton = new FlxButton(100, 10, "SAVE COMPILE", function()
 		{
 			var stageLol:StageData = StageDataParser.parseStageData(PlayState.instance.currentStageId);
 
@@ -49,6 +49,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
 		});
 		btn.scrollFactor.set();
 		add(btn);
+		btn.cameras = [PlayState.instance.camHUD];
 	}
 
 	var mosPosOld:FlxPoint = new FlxPoint();
