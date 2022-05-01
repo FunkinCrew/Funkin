@@ -1491,7 +1491,7 @@ class PlayState extends MusicBeatState implements IHook
 			return;
 
 		// HARDCODED +150, CHANGE LATER???
-		var camPosOffsetDad:Float = 150;
+		var camPosOffsetDad:FlxPoint = FlxPoint.get(150, -100);
 		var camPosOffsetBF:Float = -100;
 
 		var isFocusedOnDad = cameraFollowPoint.x == currentStage.getDad().cameraFocusPoint.x;
@@ -1525,13 +1525,13 @@ class PlayState extends MusicBeatState implements IHook
 			// Focus the camera on the opponent.
 			cameraFollowPoint.setPosition(currentStage.getDad().cameraFocusPoint.x, currentStage.getDad().cameraFocusPoint.y);
 
-			FlxG.camera.targetOffset.x = camPosOffsetDad;
+			FlxG.camera.targetOffset.set(camPosOffsetDad.x, camPosOffsetDad.y);
 
 			// TODO: Un-hardcode this stuff.
 			if (currentStage.getDad().characterId == 'mom')
 			{
 				vocals.volume = 1;
-				FlxG.camera.targetOffset.x = 0;
+				FlxG.camera.targetOffset.y = 0;
 			}
 
 			if (currentStage.getDad().characterId == "senpai" || currentStage.getDad().characterId == 'senpai-angry')
