@@ -175,6 +175,8 @@ class StageDataParser
 	static final DEFAULT_ISPIXEL:Bool = false;
 	static final DEFAULT_NAME:String = "Untitled Stage";
 	static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
+	static final DEFAULT_CAMERA_OFFSETS_BF:Array<Float> = [-100, -100];
+	static final DEFAULT_CAMERA_OFFSETS_DAD:Array<Float> = [150, -100];
 	static final DEFAULT_POSITION:Array<Float> = [0, 0];
 	static final DEFAULT_SCALE:Float = 1.0;
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -339,10 +341,12 @@ class StageDataParser
 		if (input.characters.bf == null)
 		{
 			input.characters.bf = DEFAULT_CHARACTER_DATA;
+			input.characters.bf.cameraOffsets = DEFAULT_CAMERA_OFFSETS_BF;
 		}
 		if (input.characters.dad == null)
 		{
 			input.characters.dad = DEFAULT_CHARACTER_DATA;
+			input.characters.dad.cameraOffsets = DEFAULT_CAMERA_OFFSETS_DAD;
 		}
 		if (input.characters.gf == null)
 		{
@@ -361,7 +365,14 @@ class StageDataParser
 			}
 			if (inputCharacter.cameraOffsets == null || inputCharacter.cameraOffsets.length != 2)
 			{
-				inputCharacter.cameraOffsets = [0, 0];
+				if (inputCharacter == input.characters.bf)
+					inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_BF;
+				if (inputCharacter == input.characters.dad)
+					inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_DAD;
+				else
+				{
+					inputCharacter.cameraOffsets = [0, 0];
+				}
 			}
 		}
 
@@ -484,7 +495,7 @@ typedef StageDataCharacter =
 
 	/**
 	 * The camera offsets to apply when focusing on the character on this stage.
-	 * @default [0, 0]
+	 * @default [-100, -100] for BF, [100, -100] for DAD/OPPONENT, [0, 0] for GF
 	 */
 	cameraOffsets:Array<Float>,
 };
