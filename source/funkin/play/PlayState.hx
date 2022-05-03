@@ -1514,6 +1514,7 @@ class PlayState extends MusicBeatState implements IHook
 			// Focus the camera on the player.
 			cameraFollowPoint.setPosition(currentStage.getBoyfriend().cameraFocusPoint.x, currentStage.getBoyfriend().cameraFocusPoint.y);
 
+			// ALSO UNHARDCODE THIS CAMERA BULLSHIT TOO
 			FlxG.camera.targetOffset.x = camPosOffsetBF;
 			FlxG.camera.targetOffset.y = camPosOffsetBF;
 
@@ -1525,7 +1526,7 @@ class PlayState extends MusicBeatState implements IHook
 					FlxG.camera.targetOffset.y = -200;
 				case 'school' | 'schoolEvil':
 					FlxG.camera.targetOffset.x = -200;
-					FlxG.camera.targetOffset.y = -200;
+					FlxG.camera.targetOffset.y = 0;
 			}
 
 			// TODO: Un-hardcode this.
@@ -1548,8 +1549,7 @@ class PlayState extends MusicBeatState implements IHook
 
 			if (currentStage.getDad().characterId == "senpai" || currentStage.getDad().characterId == 'senpai-angry')
 			{
-				FlxG.camera.targetOffset.y = -430;
-				FlxG.camera.targetOffset.x = 100;
+				FlxG.camera.targetOffset.y = -30;
 			}
 
 			if (currentSong.song.toLowerCase() == 'tutorial')
