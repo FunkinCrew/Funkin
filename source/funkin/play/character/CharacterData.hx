@@ -6,13 +6,13 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.MultiSparrowCharacter;
 import funkin.play.character.PackerCharacter;
-import funkin.play.character.SparrowCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedBaseCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedMultiSparrowCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedPackerCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
-import funkin.util.assets.DataAssets;
+import funkin.play.character.SparrowCharacter;
 import funkin.util.VersionUtil;
+import funkin.util.assets.DataAssets;
 import haxe.Json;
 import openfl.utils.Assets;
 
@@ -412,6 +412,11 @@ class CharacterDataParser
 			input.animations = [];
 		}
 
+		if (input.flipX == null)
+		{
+			input.flipX = DEFAULT_FLIPX;
+		}
+
 		if (input.animations.length == 0 && input.startingAnimation != null)
 		{
 			return null;
@@ -555,6 +560,14 @@ typedef CharacterData =
 	 * @default idle
 	 */
 	var startingAnimation:Null<String>;
+
+	/**
+	 * Whether or not the whole ass sprite is flipped by default.
+	 * Useful for characters that could also be played (Pico)
+	 * 
+	 * @default false
+	 */
+	var flipX:Null<Bool>;
 };
 
 typedef HealthIconData =
