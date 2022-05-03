@@ -1,11 +1,12 @@
 package funkin;
 
-import funkin.util.Constants;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
+import funkin.play.PlayState;
+import funkin.play.Strumline.StrumlineStyle;
 import funkin.shaderslmfao.ColorSwap;
 import funkin.ui.PreferencesMenu;
-import funkin.play.PlayState;
+import funkin.util.Constants;
 
 using StringTools;
 
@@ -93,7 +94,10 @@ class Note extends FlxSprite
 	// anything below sick threshold is sick
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
-	public function new(strumTime:Float = 0, noteData:NoteType, ?prevNote:Note, ?sustainNote:Bool = false)
+	// Which note asset to load?
+	public var style:StrumlineStyle = NORMAL;
+
+	public function new(strumTime:Float = 0, noteData:NoteType, ?prevNote:Note, ?sustainNote:Bool = false, ?style:StrumlineStyle = NORMAL)
 	{
 		super();
 
@@ -110,10 +114,15 @@ class Note extends FlxSprite
 
 		data.noteData = noteData;
 
+		this.style = style;
+
+		if (this.style == null)
+			this.style = StrumlineStyle.NORMAL;
+
 		// TODO: Make this logic more generic
-		switch (PlayState.instance.currentStageId)
+		switch (this.style)
 		{
-			case 'school' | 'schoolEvil':
+			case PIXEL:
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
 
 				animation.add('greenScroll', [6]);

@@ -862,7 +862,18 @@ class PlayState extends MusicBeatState implements IHook
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+				var strumlineStyle:StrumlineStyle = NORMAL;
+
+				// TODO: Put this in the chart or something?
+				switch (currentStageId)
+				{
+					case 'school':
+						strumlineStyle = PIXEL;
+					case 'schoolEvil':
+						strumlineStyle = PIXEL;
+				}
+
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, strumlineStyle);
 				// swagNote.data = songNotes;
 				swagNote.data.sustainLength = songNotes.sustainLength;
 				swagNote.data.altNote = songNotes.altNote;
@@ -877,7 +888,8 @@ class PlayState extends MusicBeatState implements IHook
 				{
 					oldNote = inactiveNotes[Std.int(inactiveNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
+					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,
+						strumlineStyle);
 					sustainNote.scrollFactor.set();
 					inactiveNotes.push(sustainNote);
 
