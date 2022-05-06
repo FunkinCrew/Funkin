@@ -133,7 +133,11 @@ class Alphabet extends FlxSpriteGroup
 				curRow += 1;
 			}
 
-			var charAtLoop = splitChars[loopNum];
+			#if (haxe >= "4.0.0")
+			static inline final charAtLoop = splitChars[loopNum];
+			#else
+			static inline var charAtLoop = splitChars[loopNum];
+			#end
 
 			if (charAtLoop == " ")
 			{
