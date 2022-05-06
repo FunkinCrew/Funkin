@@ -50,14 +50,7 @@ class Alphabet extends FlxSpriteGroup
 
 		if (text != "")
 		{
-			if (typed)
-			{
-				startTypedText();
-			}
-			else
-			{
-				addText();
-			}
+			typed ? startTypedText() : addText();
 		}
 	}
 
@@ -113,6 +106,7 @@ class Alphabet extends FlxSpriteGroup
 	function doSplitWords():Void
 	{
 		splitWords = _finalText.split("");
+		// holup the var name is misleading, these are actually chars
 	}
 
 	public var personTalking:String = 'gf';
@@ -145,6 +139,7 @@ class Alphabet extends FlxSpriteGroup
 				lastWasSpace = true;
 			}
 
+			// why isn't this used in the other ones?
 			#if (haxe >= "4.0.0")
 			var isNumber:Bool = AlphaCharacter.numbers.contains(splitWords[loopNum]);
 			var isSymbol:Bool = AlphaCharacter.symbols.contains(splitWords[loopNum]);
@@ -152,6 +147,14 @@ class Alphabet extends FlxSpriteGroup
 			var isNumber:Bool = AlphaCharacter.numbers.indexOf(splitWords[loopNum]) != -1;
 			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(splitWords[loopNum]) != -1;
 			#end
+
+			// we should refactor this to make it more concise
+			// maybe something like this
+			/*
+			function charInAlpha(char:String):Bool {
+				return AlphaCharacter.alphabet.contains(char);
+			};
+			*/
 
 			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
 				// if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
