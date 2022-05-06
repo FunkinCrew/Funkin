@@ -36,7 +36,7 @@ class Alphabet extends FlxSpriteGroup
 	var xPosResetted:Bool = false;
 	var lastWasSpace:Bool = false;
 
-	var splitWords:Array<String> = [];
+	var splitChars:Array<String> = [];
 
 	var isBold:Bool = false;
 
@@ -56,10 +56,10 @@ class Alphabet extends FlxSpriteGroup
 
 	public function addText()
 	{
-		doSplitWords();
+		doSplitChars();
 
 		var xPos:Float = 0;
-		for (character in splitWords)
+		for (character in splitChars)
 		{
 			// if (character.fastCodeAt() == " ")
 			// {
@@ -103,10 +103,9 @@ class Alphabet extends FlxSpriteGroup
 		}
 	}
 
-	function doSplitWords():Void
+	function doSplitChars():Void
 	{
-		splitWords = _finalText.split("");
-		// holup the var name is misleading, these are actually chars
+		splitChars = _finalText.split("");
 	}
 
 	public var personTalking:String = 'gf';
@@ -114,7 +113,7 @@ class Alphabet extends FlxSpriteGroup
 	public function startTypedText():Void
 	{
 		_finalText = text;
-		doSplitWords();
+		doSplitChars();
 
 		// trace(arrayShit);
 
@@ -134,18 +133,20 @@ class Alphabet extends FlxSpriteGroup
 				curRow += 1;
 			}
 
-			if (splitWords[loopNum] == " ")
+			var charAtLoop = splitChars[loopNum];
+
+			if (charAtLoop == " ")
 			{
 				lastWasSpace = true;
 			}
 
 			// why isn't this used in the other ones?
 			#if (haxe >= "4.0.0")
-			var isNumber:Bool = AlphaCharacter.numbers.contains(splitWords[loopNum]);
-			var isSymbol:Bool = AlphaCharacter.symbols.contains(splitWords[loopNum]);
+			var isNumber:Bool = AlphaCharacter.numbers.contains(charAtLoop);
+			var isSymbol:Bool = AlphaCharacter.symbols.contains(charAtLoop);
 			#else
-			var isNumber:Bool = AlphaCharacter.numbers.indexOf(splitWords[loopNum]) != -1;
-			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(splitWords[loopNum]) != -1;
+			var isNumber:Bool = AlphaCharacter.numbers.indexOf(charAtLoop) != -1;
+			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(charAtLoop) != -1;
 			#end
 
 			// we should refactor this to make it more concise
@@ -156,8 +157,8 @@ class Alphabet extends FlxSpriteGroup
 			};
 			*/
 
-			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
-				// if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
+			if (AlphaCharacter.alphabet.indexOf(charAtLoop.toLowerCase()) != -1 || isNumber || isSymbol)
+				// if (AlphaCharacter.alphabet.contains(charAtLoop.toLowerCase()) || isNumber || isSymbol)
 
 			{
 				if (lastSprite != null && !xPosResetted)
@@ -184,21 +185,21 @@ class Alphabet extends FlxSpriteGroup
 				letter.row = curRow;
 				if (isBold)
 				{
-					letter.createBold(splitWords[loopNum]);
+					letter.createBold(charAtLoop);
 				}
 				else
 				{
 					if (isNumber)
 					{
-						letter.createNumber(splitWords[loopNum]);
+						letter.createNumber(charAtLoop);
 					}
 					else if (isSymbol)
 					{
-						letter.createSymbol(splitWords[loopNum]);
+						letter.createSymbol(charAtLoop);
 					}
 					else
 					{
-						letter.createLetter(splitWords[loopNum]);
+						letter.createLetter(charAtLoop);
 					}
 
 					letter.x += 90;
@@ -218,7 +219,7 @@ class Alphabet extends FlxSpriteGroup
 			loopNum += 1;
 
 			tmr.time = FlxG.random.float(0.04, 0.09);
-		}, splitWords.length);
+		}, splitChars.length);
 	}
 
 	override function update(elapsed:Float)
