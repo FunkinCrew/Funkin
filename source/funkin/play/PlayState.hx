@@ -650,7 +650,7 @@ class PlayState extends MusicBeatState implements IHook
 			ScriptEventDispatcher.callEvent(currentStage, event);
 
 			// Apply camera zoom.
-			defaultCameraZoom *= currentStage.camZoom;
+			defaultCameraZoom = currentStage.camZoom;
 
 			// Add the stage to the scene.
 			this.add(currentStage);

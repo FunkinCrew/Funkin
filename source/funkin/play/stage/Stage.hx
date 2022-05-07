@@ -9,6 +9,7 @@ import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
+import funkin.play.stage.StageData.StageDataCharacter;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
@@ -256,55 +257,39 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		#end
 
 		// Apply position and z-index.
+		var charData:StageDataCharacter = null;
 		switch (charType)
 		{
 			case BF:
 				this.characters.set("bf", character);
-				character.zIndex = _data.characters.bf.zIndex;
-
-				// Start with the per-stage character position.
-				// Subtracting the origin ensures characters are positioned relative to their feet.
-				// Subtracting the global offset allows positioning on a per-character basis.
-				character.x = _data.characters.bf.position[0] - character.characterOrigin.x + character.globalOffsets[0];
-				character.y = _data.characters.bf.position[1] - character.characterOrigin.y + character.globalOffsets[1];
-
-				character.cameraFocusPoint.x += _data.characters.bf.cameraOffsets[0];
-				character.cameraFocusPoint.y += _data.characters.bf.cameraOffsets[1];
-
-				debugIcon.x = _data.characters.bf.position[0];
-				debugIcon.y = _data.characters.bf.position[1];
-
+				charData = _data.characters.bf;
 				character.initHealthIcon(false);
 			case GF:
 				this.characters.set("gf", character);
-				character.zIndex = _data.characters.gf.zIndex;
-
-				character.x = _data.characters.gf.position[0] - character.characterOrigin.x + character.globalOffsets[0];
-				character.y = _data.characters.gf.position[1] - character.characterOrigin.y + character.globalOffsets[1];
-
-				character.cameraFocusPoint.x += _data.characters.gf.cameraOffsets[0];
-				character.cameraFocusPoint.y += _data.characters.gf.cameraOffsets[1];
-
-				// Draw the debug icon at the character's feet.
-				debugIcon.x = _data.characters.gf.position[0];
-				debugIcon.y = _data.characters.gf.position[1];
+				charData = _data.characters.gf;
 			case DAD:
 				this.characters.set("dad", character);
-				character.zIndex = _data.characters.dad.zIndex;
-
-				character.x = _data.characters.dad.position[0] - character.characterOrigin.x + character.globalOffsets[0];
-				character.y = _data.characters.dad.position[1] - character.characterOrigin.y + character.globalOffsets[1];
-
-				character.cameraFocusPoint.x += _data.characters.dad.cameraOffsets[0];
-				character.cameraFocusPoint.y += _data.characters.dad.cameraOffsets[1];
-
-				// Draw the debug icon at the character's feet.
-				debugIcon.x = _data.characters.dad.position[0];
-				debugIcon.y = _data.characters.dad.position[1];
-
+				charData = _data.characters.dad;
 				character.initHealthIcon(true);
 			default:
 				this.characters.set(character.characterId, character);
+		}
+		if (charData != null)
+		{
+			character.zIndex = charData.zIndex;
+
+			// Start with the per-stage character position.
+			// Subtracting the origin ensures characters are positioned relative to their feet.
+			// Subtracting the global offset allows positioning on a per-character basis.
+			character.x = charData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
+			character.y = charData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+
+			character.cameraFocusPoint.x += charData.cameraOffsets[0];
+			character.cameraFocusPoint.y += charData.cameraOffsets[1];
+
+			// Draw the debug icon at the character's feet.
+			debugIcon.x = charData.position[0];
+			debugIcon.y = charData.position[1];
 		}
 
 		// Add the character to the scene.

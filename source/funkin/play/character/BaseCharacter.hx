@@ -156,9 +156,13 @@ class BaseCharacter extends Bopper
 		if (scale == null)
 			scale = 1.0;
 
+		var feetPos:FlxPoint = feetPosition;
 		this.scale.x = scale;
 		this.scale.y = scale;
 		this.updateHitbox();
+		// Reposition with newly scaled sprite.
+		this.x = feetPos.x - characterOrigin.x + globalOffsets[0];
+		this.y = feetPos.y - characterOrigin.y + globalOffsets[1];
 	}
 
 	/**
