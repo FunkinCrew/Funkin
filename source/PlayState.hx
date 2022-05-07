@@ -142,6 +142,9 @@ class PlayState extends MusicBeatState
 
 	var video:MP4Handler;
 
+	var ogBF = SONG.player1;
+	var inPanic = false;
+
 	override public function create()
 	{
 		trace('ENDCUTSCENE PLAYED? ' + playedEndCutscene);
@@ -1524,6 +1527,29 @@ class PlayState extends MusicBeatState
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+
+		// Panic the BF
+		if (!FlxG.save.data.disablePanicableBF){
+			if (ogBF == 'bf' || ogBF == 'bf-christmas'){
+				if(health >= 0.48 && !inPanic){
+					remove(boyfriend);
+					boyfriend = new Boyfriend(boyfriend.x, boyfriend.y, ogBF);
+					add(boyfriend);
+	
+					inPanic = true;
+				}
+				
+				if (health <= 0.48 && inPanic){
+					remove(boyfriend);
+					boyfriend = new Boyfriend(boyfriend.x, boyfriend.y, 'panic' + ogBF);
+					add(boyfriend);
+	
+					inPanic = false;
+				}
+	
+				//trace(inPanic + " lmao");
+			}
+		}
 
 		if (health > 2)
 			health = 2;

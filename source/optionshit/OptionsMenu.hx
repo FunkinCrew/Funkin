@@ -71,7 +71,7 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - optionDot.height / 3; // red dot offset (bruh i hate this options menu but idk how to make a better one)
+		optionDot.y = optionText.y - optionDot.height / 2.5; // red dot offset (bruh i hate this options menu but idk how to make a better one)
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
@@ -90,6 +90,7 @@ class OptionsMenu extends MusicBeatState {
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
 		'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
+		'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
 		'CREDITS',
 		'RESET SETTINGS'];
 
@@ -150,6 +151,9 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Judgement Type')) {
 				FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
 			}
+			if (options[curSelected].startsWith('Panicable Boyfriend')) {
+				FlxG.save.data.disablePanicableBF = !FlxG.save.data.disablePanicableBF;
+			}
 			if (options[curSelected].startsWith('CREDITS')){
 				FlxG.switchState(new InformationState());
 			}
@@ -194,6 +198,10 @@ class OptionsMenu extends MusicBeatState {
 
 				if (options[curSelected].startsWith('Judgement Type')){
 					detailText.text = 'Changes the difficulty on hitting notes.';
+				}
+
+				if (options[curSelected].startsWith('Panicable Boyfriend')){
+					detailText.text = 'Makes the BF Panic when low on Health';
 				}
 
 				if (options[curSelected].startsWith('CREDITS')){
