@@ -141,6 +141,7 @@ class PlayState extends MusicBeatState
 	#end
 
 	var video:MP4Handler;
+	var strumUnderlay:FlxSprite;
 
 	var ogBF = SONG.player1;
 	var inPanic = false;
@@ -743,7 +744,7 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
-
+			
 			case 'tankStage':
 				boyfriend.x +=150;
 				dad.x -=60;
@@ -773,6 +774,13 @@ class PlayState extends MusicBeatState
 		doof.finishThing = startCountdown;
 
 		Conductor.songPosition = -5000;
+
+		//Player Strums underlay (idc if this is a dumb way of doing this)
+		strumUnderlay = new FlxSprite(692, 0).makeGraphic(443, 720, FlxColor.BLACK);
+		strumUnderlay.alpha = 0.4;
+		strumUnderlay.scrollFactor.set();
+		if(FlxG.save.data.laneUnderlay)
+			add(strumUnderlay);
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
@@ -854,8 +862,9 @@ class PlayState extends MusicBeatState
 		scoreTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, 0xFF000000, 2, 1);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
-
+		
 		strumLineNotes.cameras = [camHUD];
+		strumUnderlay.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
@@ -1272,6 +1281,8 @@ class PlayState extends MusicBeatState
 					babyArrow.updateHitbox();
 					babyArrow.antialiasing = false;
 
+					strumUnderlay.setPosition(688, 0);
+
 					switch (Math.abs(i))
 					{
 						case 0:
@@ -1482,6 +1493,7 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+
 
 		scoreTxt.text = 'Score: $songScore | Misses: $misses | S/G/B/S: $sicks/$goods/$bads/$shits | Combo: $combo | ${calculateRating()}';
 

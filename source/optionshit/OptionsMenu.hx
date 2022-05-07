@@ -87,9 +87,10 @@ class OptionsMenu extends MusicBeatState {
 		options = ['OPTIONS', 'Change Keybinds',
 		'Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
 		'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
+		'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
+		'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
-		'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
 		'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
 		'CREDITS',
 		'RESET SETTINGS'];
@@ -154,6 +155,9 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Panicable Boyfriend')) {
 				FlxG.save.data.disablePanicableBF = !FlxG.save.data.disablePanicableBF;
 			}
+			if (options[curSelected].startsWith('Lane Underlay')) {
+				FlxG.save.data.laneUnderlay = !FlxG.save.data.laneUnderlay;
+			}
 			if (options[curSelected].startsWith('CREDITS')){
 				FlxG.switchState(new InformationState());
 			}
@@ -202,6 +206,10 @@ class OptionsMenu extends MusicBeatState {
 
 				if (options[curSelected].startsWith('Panicable Boyfriend')){
 					detailText.text = 'Makes the BF Panic when low on Health';
+				}
+
+				if (options[curSelected].startsWith('Lane Underlay')){
+					detailText.text = 'Shows a lane under the Notes.';
 				}
 
 				if (options[curSelected].startsWith('CREDITS')){
