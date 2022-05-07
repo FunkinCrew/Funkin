@@ -1861,17 +1861,16 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		//Do playEndCutscene here (Do something like this but minus the random chance for it to actually play the cutscene)
-		if (curSong.toLowerCase() == 'pico' && playedEndCutscene == false){
-			//If you want you could also make it so it can only run on Story Mode but i chose not to in this example
-			if (FlxG.random.bool(25)){
-				playEndCutscene("cock");
-				trace('cock');
+		// Play EndCutscene
+		if (playedEndCutscene == false && isStoryMode == true){
+			switch (curSong.toLowerCase())
+			{
+				case 'pico':
+					if (FlxG.random.bool(25))
+						playEndCutscene("cock");
+				case 'stress':
+					playEndCutscene("kickstarterTrailer");
 			}
-		}
-
-		if (curSong.toLowerCase() == 'stress' && playedEndCutscene == false && isStoryMode == true){
-			playEndCutscene("kickstarterTrailer");
 		}
 
 		if (inCutscene == false){
