@@ -49,36 +49,12 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 
-		var daStage:String = PlayState.curStage;
+		//var daStage:String = PlayState.curStage;
+		var noteskin:String = PlayState.SONG.noteskin;
 
-		switch (daStage)
+		// Note Skin (Sustain)
+		switch (noteskin)
 		{
-			case 'school' | 'schoolEvil':
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
-
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
-
-				if (isSustainNote)
-				{
-					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
-
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
-
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
-				}
-
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
-
 			default:
 				frames = Paths.getSparrowAtlas('NOTE_assets');
 
@@ -100,6 +76,33 @@ class Note extends FlxSprite
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 				antialiasing = true;
+
+			case 'pixel':
+				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+
+				animation.add('greenScroll', [6]);
+				animation.add('redScroll', [7]);
+				animation.add('blueScroll', [5]);
+				animation.add('purpleScroll', [4]);
+
+				if (isSustainNote)
+				{
+					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+
+					animation.add('purpleholdend', [4]);
+					animation.add('greenholdend', [6]);
+					animation.add('redholdend', [7]);
+					animation.add('blueholdend', [5]);
+	
+					animation.add('purplehold', [0]);
+					animation.add('greenhold', [2]);
+					animation.add('redhold', [3]);
+					animation.add('bluehold', [1]);
+				}
+	
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				updateHitbox();
+	
 		}
 
 		switch (noteData)
@@ -141,10 +144,13 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			x -= width / 2;
-
-			if (PlayState.curStage.startsWith('school'))
-				x += 30;
+			//Note Skin Sustain Offset
+			switch (noteskin){
+				default:
+					x -= width / 2;
+				case 'pixel':
+					x += 15;
+			}
 
 			if (prevNote.isSustainNote)
 			{

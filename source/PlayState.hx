@@ -1268,46 +1268,10 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			switch (curStage)
+			//Note Skin (Regular Notes - For Sustain, Open Note.hx)
+			switch (SONG.noteskin)
 			{
-				case 'school' | 'schoolEvil':
-					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
-					babyArrow.animation.add('green', [6]);
-					babyArrow.animation.add('red', [7]);
-					babyArrow.animation.add('blue', [5]);
-					babyArrow.animation.add('purplel', [4]);
-
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
-					babyArrow.updateHitbox();
-					babyArrow.antialiasing = false;
-
-					strumUnderlay.setPosition(688, 0);
-
-					switch (Math.abs(i))
-					{
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.add('static', [0]);
-							babyArrow.animation.add('pressed', [4, 8], 12, false);
-							babyArrow.animation.add('confirm', [12, 16], 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.add('static', [1]);
-							babyArrow.animation.add('pressed', [5, 9], 12, false);
-							babyArrow.animation.add('confirm', [13, 17], 24, false);
-						case 2:
-							babyArrow.x += Note.swagWidth * 2;
-							babyArrow.animation.add('static', [2]);
-							babyArrow.animation.add('pressed', [6, 10], 12, false);
-							babyArrow.animation.add('confirm', [14, 18], 12, false);
-						case 3:
-							babyArrow.x += Note.swagWidth * 3;
-							babyArrow.animation.add('static', [3]);
-							babyArrow.animation.add('pressed', [7, 11], 12, false);
-							babyArrow.animation.add('confirm', [15, 19], 24, false);
-					}
-
-				default:
+				 default:
 					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
@@ -1339,6 +1303,42 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+					}
+				case 'pixel':
+					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					babyArrow.animation.add('green', [6]);
+					babyArrow.animation.add('red', [7]);
+					babyArrow.animation.add('blue', [5]);
+					babyArrow.animation.add('purplel', [4]);
+
+					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
+					babyArrow.updateHitbox();
+					babyArrow.antialiasing = false;
+	
+					strumUnderlay.setPosition(688, 0);
+
+					switch (Math.abs(i))
+					{
+						case 0:
+							babyArrow.x += Note.swagWidth * 0;
+							babyArrow.animation.add('static', [0]);
+							babyArrow.animation.add('pressed', [4, 8], 12, false);
+							babyArrow.animation.add('confirm', [12, 16], 24, false);
+						case 1:
+							babyArrow.x += Note.swagWidth * 1;
+							babyArrow.animation.add('static', [1]);
+							babyArrow.animation.add('pressed', [5, 9], 12, false);
+							babyArrow.animation.add('confirm', [13, 17], 24, false);
+						case 2:
+							babyArrow.x += Note.swagWidth * 2;
+							babyArrow.animation.add('static', [2]);
+							babyArrow.animation.add('pressed', [6, 10], 12, false);
+							babyArrow.animation.add('confirm', [14, 18], 12, false);
+						case 3:
+							babyArrow.x += Note.swagWidth * 3;
+							babyArrow.animation.add('static', [3]);
+							babyArrow.animation.add('pressed', [7, 11], 12, false);
+							babyArrow.animation.add('confirm', [15, 19], 24, false);
 					}
 			}
 
@@ -2032,14 +2032,19 @@ class PlayState extends MusicBeatState
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
+		var pixelShitLibrary:String = 'shared';
 
-		if (curStage.startsWith('school'))
-		{
-			pixelShitPart1 = 'weeb/pixelUI/';
-			pixelShitPart2 = '-pixel';
+		// NoteSkin (pixelShit) it is multiple string's that is used to determine the asset path of the note skin.
+		switch(SONG.noteskin){
+			default:
+				//not needed
+			case 'pixel':
+				pixelShitPart1 = 'weeb/pixelUI/';
+				pixelShitPart2 = '-pixel';
+				pixelShitLibrary = 'week6';
 		}
 
-		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2));
+		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, pixelShitLibrary));
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -2047,7 +2052,7 @@ class PlayState extends MusicBeatState
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, pixelShitLibrary));
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
@@ -2056,17 +2061,17 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
 
-		if (!curStage.startsWith('school'))
-		{
-			rating.setGraphicSize(Std.int(rating.width * 0.7));
-			rating.antialiasing = true;
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-			comboSpr.antialiasing = true;
-		}
-		else
-		{
-			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
+		// Increase Graphic Size for NoteSkin (pixelShit)
+		switch(SONG.noteskin){
+			default:
+				rating.setGraphicSize(Std.int(rating.width * 0.7));
+				rating.antialiasing = true;
+				comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+				comboSpr.antialiasing = true;
+			case 'pixel':
+				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
+				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
+
 		}
 
 		comboSpr.updateHitbox();
@@ -2081,20 +2086,20 @@ class PlayState extends MusicBeatState
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
+			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, pixelShitLibrary));
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (!curStage.startsWith('school'))
-			{
-				numScore.antialiasing = true;
-				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+			switch(SONG.noteskin){
+				default:
+					numScore.antialiasing = true;
+					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+				case 'pixel':
+					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+	
 			}
-			else
-			{
-				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-			}
+
 			numScore.updateHitbox();
 
 			numScore.acceleration.y = FlxG.random.int(200, 300);
@@ -2326,14 +2331,22 @@ class PlayState extends MusicBeatState
 				}
 	
 				try {
-					if (spr.animation.curAnim.name == 'confirm' && storyWeek != 6)
+					if (spr.animation.curAnim.name == 'confirm')
 						{
-							spr.centerOffsets();
-							spr.offset.x -= 13;
-							spr.offset.y -= 13;
+							// NoteSkin Confirm Offsets
+							switch (SONG.noteskin){
+								default:
+									spr.centerOffsets();
+									spr.offset.x -= 13;
+									spr.offset.y -= 13;
+								case 'pixel':
+									// not needed
+							}
 						}
-						else
+						else{
 							spr.centerOffsets();
+						}
+					
 				} catch (e) {
 					trace('FUCK! ${e.details}');
 				}
