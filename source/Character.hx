@@ -305,7 +305,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 
-			case 'panicbf':
+			case 'bfpanic':
 				var tex = Paths.getSparrowAtlas('BOYFRIEND');
 				frames = tex;
 
@@ -374,7 +374,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 
-			case 'panicbf-christmas':
+			case 'bf-christmaspanic':
 				var tex = Paths.getSparrowAtlas('christmas/bfChristmas');
 				frames = tex;
 				animation.addByPrefix('idle', 'BF PANIC idle dance', 24, false);

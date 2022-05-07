@@ -1553,7 +1553,7 @@ class PlayState extends MusicBeatState
 				
 				if (health <= 0.48 && inPanic){
 					remove(boyfriend);
-					boyfriend = new Boyfriend(boyfriend.x, boyfriend.y, 'panic' + ogBF);
+					boyfriend = new Boyfriend(boyfriend.x, boyfriend.y, ogBF + 'panic');
 					add(boyfriend);
 	
 					inPanic = false;
