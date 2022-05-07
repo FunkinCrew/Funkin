@@ -264,8 +264,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 				this.characters.set("bf", character);
 				charData = _data.characters.bf;
 				character.flipX = !character.flipX;
-				if (character.flipX)
-					character.flipAnimationOffsets();
+				// flip offsets if flipX
 				character.initHealthIcon(false);
 			case GF:
 				this.characters.set("gf", character);
@@ -273,8 +272,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			case DAD:
 				this.characters.set("dad", character);
 				charData = _data.characters.dad;
-				if (character.flipX)
-					character.flipAnimationOffsets();
+				// flip offsets if flipX
 				character.initHealthIcon(true);
 			default:
 				this.characters.set(character.characterId, character);
