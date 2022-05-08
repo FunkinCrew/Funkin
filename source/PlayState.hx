@@ -2511,6 +2511,12 @@ class PlayState extends MusicBeatState
 			note.wasGoodHit = true;
 			vocals.volume = 1;
 
+<<<<<<< Updated upstream
+=======
+			if (note.wasGoodHit && note.daRating == 'sick')
+				noteSplash(note.x, note.y, note.noteData, false);
+
+>>>>>>> Stashed changes
 			if (!note.isSustainNote)
 			{
 				note.kill();
