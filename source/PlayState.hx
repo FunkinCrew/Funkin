@@ -577,7 +577,7 @@ class PlayState extends MusicBeatState
 					stageCurtains.active = false;
 					add(stageCurtains);
 
-					var stageRuins:FlxSprite = new FlxSprite(-870, -260).loadGraphic(Paths.image('Tankman/tankRuins'));
+					var stageRuins:FlxSprite = new FlxSprite(-1070, -260).loadGraphic(Paths.image('Tankman/tankRuins'));
 					stageRuins.setGraphicSize(Std.int(stageRuins.width * 2));
 					stageRuins.updateHitbox();
 					stageRuins.antialiasing = true;
@@ -585,7 +585,7 @@ class PlayState extends MusicBeatState
 					stageRuins.active = false;
 					add(stageRuins);
 
-					var stageBuildings:FlxSprite = new FlxSprite(-870, -260).loadGraphic(Paths.image('Tankman/tankBuildings'));
+					var stageBuildings:FlxSprite = new FlxSprite(-1070, -260).loadGraphic(Paths.image('Tankman/tankBuildings'));
 					stageBuildings.setGraphicSize(Std.int(stageBuildings.width * 2));
 					stageBuildings.updateHitbox();
 					stageBuildings.antialiasing = true;
@@ -601,8 +601,8 @@ class PlayState extends MusicBeatState
 					guardTower.updateHitbox();
 					add(guardTower);
 
-					var stageFront:FlxSprite = new FlxSprite(-1060, -530).loadGraphic(Paths.image('Tankman/tankGround'));
-					stageFront.setGraphicSize(Std.int(stageFront.width * 1.75));
+					var stageFront:FlxSprite = new FlxSprite(-685, -350).loadGraphic(Paths.image('Tankman/tankGround'));
+					stageFront.setGraphicSize(Std.int(stageFront.width * 1.4));
 					stageFront.updateHitbox();
 					stageFront.antialiasing = true;
 					stageFront.scrollFactor.set(0.9, 0.9);
@@ -1350,7 +1350,7 @@ class PlayState extends MusicBeatState
 					babyArrow.updateHitbox();
 					babyArrow.antialiasing = false;
 	
-					strumUnderlay.setPosition(688, 0);
+					strumUnderlay.setPosition(686, 0);
 
 					switch (Math.abs(i))
 					{
