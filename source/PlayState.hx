@@ -1943,7 +1943,7 @@ class PlayState extends MusicBeatState
 				{
 					spr.animation.play('static');
 					spr.centerOffsets();
-					trace('confirm animation finished');
+					// trace('confirm animation finished');
 				}
 			});
 
