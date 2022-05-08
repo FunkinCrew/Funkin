@@ -791,10 +791,10 @@ class PlayState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
-		add(noteSplashes);
-
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
+
+		add(noteSplashes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
