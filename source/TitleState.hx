@@ -57,6 +57,7 @@ class TitleState extends MusicBeatState
 		FlxG.save.bind('funkin', 'spunblue');
 
 		Highscore.load();
+		
 
 		if (FlxG.save.data.epilepsyMode == null) {
 			FlxG.switchState(new EpilepsyState());

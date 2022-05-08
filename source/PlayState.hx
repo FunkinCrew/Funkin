@@ -1876,7 +1876,9 @@ class PlayState extends MusicBeatState
 							if (Math.abs(daNote.noteData) == spr.ID)
 							{	
 								spr.animation.play('confirm', true);
-								noteSplash(daNote.x, daNote.y, daNote.noteData, true);										
+								
+								if (!daNote.isSustainNote)
+									noteSplash(daNote.x, daNote.y, daNote.noteData, true);										
 							}
 
 							//CPUSTRUM NoteSkin Confirm Offsets
