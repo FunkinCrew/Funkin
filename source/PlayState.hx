@@ -776,7 +776,7 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = -5000;
 
 		//Player Strums underlay (idc if this is a dumb way of doing this)
-		strumUnderlay = new FlxSprite(692, 0).makeGraphic(443, 720, FlxColor.BLACK);
+		strumUnderlay = new FlxSprite(690, 0).makeGraphic(445, 720, FlxColor.BLACK);
 		strumUnderlay.alpha = 0.4;
 		strumUnderlay.scrollFactor.set();
 		if(FlxG.save.data.laneUnderlay)
@@ -1268,7 +1268,7 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			//Note Skin (Regular Notes - For Sustain, Open Note.hx)
+			//NoteSkin (Regular Notes - For Sustain, Open Note.hx)
 			switch (SONG.noteskin)
 			{
 				 default:
@@ -1304,6 +1304,41 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
 					}
+				
+				case 'circle':
+					babyArrow.frames = Paths.getSparrowAtlas('NOTE_CIRCLE_assets');
+					babyArrow.animation.addByPrefix('green', 'arrowUP');
+					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+
+					babyArrow.antialiasing = true;
+					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+
+					switch (Math.abs(i))
+					{
+						case 0:
+							babyArrow.x += Note.swagWidth * 0;
+							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+						case 1:
+							babyArrow.x += Note.swagWidth * 1;
+							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+						case 2:
+							babyArrow.x += Note.swagWidth * 2;
+							babyArrow.animation.addByPrefix('static', 'arrowUP');
+							babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+						case 3:
+							babyArrow.x += Note.swagWidth * 3;
+							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+					}
+
 				case 'pixel':
 					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
 					babyArrow.animation.add('green', [6]);
@@ -2341,6 +2376,8 @@ class PlayState extends MusicBeatState
 									spr.offset.y -= 13;
 								case 'pixel':
 									// not needed
+								case 'circle':
+									spr.centerOffsets();
 							}
 						}
 						else{

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="NOTE_CIRCLE_assets.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="arrowDOWN0000" x="0" y="0" width="157" height="160" pivotX="0" pivotY="0.15"/>
+	<SubTexture name="arrowLEFT0000" x="181" y="0" width="157" height="160" pivotX="0" pivotY="3.05"/>
+	<SubTexture name="arrowRIGHT0000" x="181" y="0" width="157" height="160" pivotX="0" pivotY="3.05"/>
+	<SubTexture name="arrowUP0000" x="181" y="0" width="157" height="160" pivotX="0" pivotY="3.05"/>
+	<SubTexture name="blue0000" x="510" y="0" width="157" height="159" pivotX="0" pivotY="2.6"/>
+	<SubTexture name="blue hold end0000" x="362" y="0" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="blue hold piece0000" x="436" y="0" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="down confirm0000" x="510" y="0" width="157" height="159" pivotX="0" pivotY="2.6"/>
+	<SubTexture name="down press0000" x="691" y="0" width="157" height="159" pivotX="0" pivotY="2.6"/>
+	<SubTexture name="green0000" x="872" y="0" width="157" height="159" pivotX="0" pivotY="2.85"/>
+	<SubTexture name="green hold end0000" x="1053" y="0" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="green hold piece0000" x="1127" y="0" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="left confirm0000" x="1201" y="0" width="157" height="160" pivotX="1.5" pivotY="1.25"/>
+	<SubTexture name="left press0000" x="1382" y="0" width="157" height="160" pivotX="1.5" pivotY="1.25"/>
+	<SubTexture name="pruple end hold0000" x="1563" y="0" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="purple0000" x="1201" y="0" width="157" height="160" pivotX="1.5" pivotY="1.25"/>
+	<SubTexture name="purple hold piece0000" x="1637" y="0" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="red0000" x="1711" y="0" width="157" height="160" pivotX="1.5" pivotY="1.25"/>
+	<SubTexture name="red hold end0000" x="1892" y="0" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="red hold piece0000" x="1966" y="0" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="right confirm0000" x="1711" y="0" width="157" height="160" pivotX="1.5" pivotY="1.25"/>
+	<SubTexture name="right press0000" x="0" y="184" width="157" height="160" pivotX="1.5" pivotY="1.25"/>
+	<SubTexture name="up confirm0000" x="872" y="0" width="157" height="159" pivotX="0" pivotY="2.85"/>
+	<SubTexture name="up press0000" x="181" y="184" width="157" height="159" pivotX="0" pivotY="2.85"/>
+</TextureAtlas>
