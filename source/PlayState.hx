@@ -74,6 +74,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
+	private var cpuStrums:FlxTypedGroup<FlxSprite>;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -794,6 +795,9 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
+		cpuStrums = new FlxTypedGroup<FlxSprite>();
+		add(cpuStrums);
+
 		add(noteSplashes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
@@ -872,6 +876,7 @@ class PlayState extends MusicBeatState
 		add(scoreTxt);
 
 		noteSplashes.cameras = [camHUD];
+		cpuStrums.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
 		strumUnderlay.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -1398,14 +1403,22 @@ class PlayState extends MusicBeatState
 
 			babyArrow.ID = i;
 
-			if (player == 1)
+			switch (player)
 			{
-				playerStrums.add(babyArrow);
+				case 0:
+					cpuStrums.add(babyArrow);
+				case 1:
+					playerStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
+
+			cpuStrums.forEach(function(spr:FlxSprite)
+				{
+					spr.centerOffsets();
+				});
 
 			strumLineNotes.add(babyArrow);
 		}
@@ -1856,6 +1869,36 @@ class PlayState extends MusicBeatState
 					if (SONG.needsVoices)
 						vocals.volume = 1;
 
+					//CPUSTRUM CONFIRM ANIMATION
+					cpuStrums.forEach(function(spr:FlxSprite)
+						{
+							
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{	
+								spr.animation.play('confirm', true);
+								noteSplash(daNote.x, daNote.y, daNote.noteData, true);										
+							}
+
+							//CPUSTRUM NoteSkin Confirm Offsets
+							if (spr.animation.curAnim.name == 'confirm')
+							{
+								switch (SONG.noteskin){
+									default:
+										spr.centerOffsets();
+										spr.offset.x -= 13;
+										spr.offset.y -= 13;
+									case 'pixel':
+										// not needed
+									case 'circle':
+										spr.centerOffsets();
+								}
+							}
+							else{
+								spr.centerOffsets();
+							}
+						});
+
+
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
@@ -1893,6 +1936,16 @@ class PlayState extends MusicBeatState
 				}
 			});
 		}
+
+		cpuStrums.forEach(function(spr:FlxSprite)
+			{
+				if (spr.animation.finished && spr.animation.curAnim.name == 'confirm')
+				{
+					spr.animation.play('static');
+					spr.centerOffsets();
+					trace('confirm animation finished');
+				}
+			});
 
 		if (!inCutscene)
 			keyShit();
@@ -2377,7 +2430,7 @@ class PlayState extends MusicBeatState
 				try {
 					if (spr.animation.curAnim.name == 'confirm')
 						{
-							// NoteSkin Confirm Offsets
+							// Player NoteSkin Confirm Offsets
 							switch (SONG.noteskin){
 								default:
 									spr.centerOffsets();
@@ -2849,6 +2902,9 @@ class PlayState extends MusicBeatState
 			var recycledNote = noteSplashes.recycle(NoteSplash);
 			if (!isDad)    
 				recycledNote.makeSplash(playerStrums.members[nData].x, playerStrums.members[nData].y, nData);
+			else
+				recycledNote.makeSplash(cpuStrums.members[nData].x, cpuStrums.members[nData].y, nData);
+			noteSplashes.add(recycledNote);
 		}
 
 	var curLight:Int = 0;
