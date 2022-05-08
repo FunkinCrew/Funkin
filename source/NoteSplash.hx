@@ -46,6 +46,7 @@ class NoteSplash extends FlxSprite
         }
         animation.play('splash ${FlxG.random.int(0,1)} ${colors[color]}', true);
 		//animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2);
+        //aaa
     	//offset.set(90, 80);
         updateHitbox();
     }
