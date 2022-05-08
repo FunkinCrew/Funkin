@@ -28,7 +28,7 @@ class MainMenuState extends MusicBeatState
 	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
 	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
 	#end
 
 	var magenta:FlxSprite;
@@ -36,7 +36,7 @@ class MainMenuState extends MusicBeatState
 	var video:MP4Handler;
 
 	//VERSION
-	public static var nightly:String = "";
+	public static var nightly:String = "Pre-Release 1";
 	public static var gameVer:String = "2.10.0";
 
 	override function create()
@@ -101,7 +101,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'v${gameVer} -- New UFNF Engine', 14);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'v${gameVer} ${nightly} -- New UFNF Engine', 14);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
