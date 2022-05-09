@@ -12,6 +12,8 @@ import flixel.util.FlxTimer;
 
 using StringTools;
 
+//Yo percentage i recommend changing some shit, Don't gotta tho -Blue
+
 class DialogueBox extends FlxSpriteGroup
 {
 	var box:FlxSprite;
@@ -359,7 +361,7 @@ class DialogueBox extends FlxSpriteGroup
 				portraitLeft.visible = false;
 				if (!portraitLeft.visible)
 				{
-					//Pretty sure this man is a period blood stain sooooo color gonna be red!
+					//Pretty sure this man is a period stain sooooo color gonna be red!
 					swagDialogue.color = FlxColor.RED;
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');
