@@ -15,4 +15,4 @@ Thanks to ThePercentageGuy for giving me ownership of NUFNF Engine.
  [Build Instructions | ](https://github.com/SpunBlue/NUFNF/wiki/Build-Instructions) [Wiki | ](https://github.com/SpunBlue/NUFNF/wiki) [Discord Server](https://discord.gg/wdNrAPxcHN)
  
 # Resources used
- [PhantomMuff Font |](https://gamebanana.com/tools/7763)  [ Portrait Sprites |](https://gamebanana.com/mods/44223) [ MP4 Support](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support)
+ [PhantomMuff Font |](https://gamebanana.com/tools/7763)  [ Portrait Sprites |](https://gamebanana.com/mods/44223) [ MP4 Support |](https://github.com/brightfyregit/Friday-Night-Funkin-Mp4-Video-Support) [ Pixel Note Splashes](https://gamebanana.com/mods/360401)
