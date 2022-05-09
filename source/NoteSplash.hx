@@ -18,7 +18,14 @@ class NoteSplash extends FlxSprite
 		x = nX;
 		y = nY;
 		super(x, y);
-		frames = Paths.getSparrowAtlas('noteSplashes', 'shared');
+
+		switch (PlayState.SONG.noteskin){
+			default:
+				frames = Paths.getSparrowAtlas('noteSplashes', 'shared');
+			case 'pixel':
+				frames = Paths.getSparrowAtlas('weeb/pixelUI/noteSplashes', 'week6');
+		}
+
 		for (i in 0...colorsThatDontChange.length)
 		{
 			animation.addByPrefix('splash 0 ' + colorsThatDontChange[i], 'note impact 1 ' + colorsThatDontChange[i], 24, false);
@@ -37,12 +44,12 @@ class NoteSplash extends FlxSprite
 	{
         switch (PlayState.SONG.noteskin){
             default:
-                setPosition(nX - 76, nY - 76);
+                setPosition(nX - 76, nY - 76); //offsets for the splash except i cant make it perfect sadly
                 angle = FlxG.random.int(0, 360);
                 alpha = 0.6;
             case 'pixel':
-                kill(); // No splash for pixel
-                return;
+				setPosition(nX - 104, nY - 108);
+				alpha = 0.6;
         }
         animation.play('splash ${FlxG.random.int(0,1)} ${colors[color]}', true);
 		//animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2);

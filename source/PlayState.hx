@@ -380,7 +380,8 @@ class PlayState extends MusicBeatState
 		                  upperBoppers.scrollFactor.set(0.33, 0.33);
 		                  upperBoppers.setGraphicSize(Std.int(upperBoppers.width * 0.85));
 		                  upperBoppers.updateHitbox();
-		                  add(upperBoppers);
+						  if (!FlxG.save.data.noDistractions)
+		                  	add(upperBoppers);
 
 		                  var bgEscalator:FlxSprite = new FlxSprite(-1100, -600).loadGraphic(Paths.image('christmas/bgEscalator'));
 		                  bgEscalator.antialiasing = true;
@@ -402,7 +403,8 @@ class PlayState extends MusicBeatState
 	                          bottomBoppers.scrollFactor.set(0.9, 0.9);
 	                          bottomBoppers.setGraphicSize(Std.int(bottomBoppers.width * 1));
 		                  bottomBoppers.updateHitbox();
-		                  add(bottomBoppers);
+						  if (!FlxG.save.data.noDistractions)
+		                  	add(bottomBoppers);
 
 		                  var fgSnow:FlxSprite = new FlxSprite(-600, 700).loadGraphic(Paths.image('christmas/fgSnow'));
 		                  fgSnow.active = false;
@@ -1852,16 +1854,18 @@ class PlayState extends MusicBeatState
 							altAnim = '-alt';
 					}
 
-					switch (Math.abs(daNote.noteData))
-					{
-						case 0:
-							dad.playAnim('singLEFT' + altAnim, true);
-						case 1:
-							dad.playAnim('singDOWN' + altAnim, true);
-						case 2:
-							dad.playAnim('singUP' + altAnim, true);
-						case 3:
-							dad.playAnim('singRIGHT' + altAnim, true);
+					if (daNote.disableSingAnim == 1){
+						switch (Math.abs(daNote.noteData))
+						{
+							case 0:
+								dad.playAnim('singLEFT' + altAnim, true);
+							case 1:
+								dad.playAnim('singDOWN' + altAnim, true);
+							case 2:
+								dad.playAnim('singUP' + altAnim, true);
+							case 3:
+								dad.playAnim('singRIGHT' + altAnim, true);
+						}
 					}
 
 					dad.holdTimer = 0;
@@ -1953,8 +1957,10 @@ class PlayState extends MusicBeatState
 			keyShit();
 
 		#if debug
-		if (FlxG.keys.justPressed.ONE)
+		if (FlxG.keys.justPressed.ONE){
 			endSong();
+			trace('fucking cheating ass bitch');
+		}
 		#end
 	}
 
