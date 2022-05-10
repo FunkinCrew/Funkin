@@ -108,6 +108,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
+					PlayState.secretMode = false; // reset secret mode
 					FlxG.switchState(new MainMenuState());
 			}
 		}

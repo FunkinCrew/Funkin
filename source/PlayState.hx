@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxRandom;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -147,6 +148,8 @@ class PlayState extends MusicBeatState
 
 	var ogBF = SONG.player1;
 	var inPanic = false;
+
+	public static var secretMode:Bool = false;
 
 	override public function create()
 	{
@@ -1931,7 +1934,19 @@ class PlayState extends MusicBeatState
 						daNote.visible = false;
 
 						//Miss Animation
-						boyfriend.playAnim('singLEFTmiss', true);
+						switch (Math.abs(daNote.noteData)){
+							case 0:
+								boyfriend.playAnim('singLEFTmiss', true);
+							case 1:
+								boyfriend.playAnim('singDOWNmiss', true);
+							case 2:
+								boyfriend.playAnim('singUPmiss', true);
+							case 3:
+								boyfriend.playAnim('singRIGHTmiss', true);
+							default:
+								boyfriend.playAnim('singLEFTmiss', true); // just in case lmao
+						}
+						
 	
 						daNote.kill();
 						notes.remove(daNote, true);
@@ -1978,6 +1993,7 @@ class PlayState extends MusicBeatState
 
 		if (inCutscene == false){
 			canPause = false;
+			secretMode = false;
 			FlxG.sound.music.volume = 0;
 			vocals.volume = 0;
 			if (SONG.validScore)
@@ -2736,7 +2752,7 @@ class PlayState extends MusicBeatState
 					//doesnt work and i dont feel like fixing it
 					case 15:
 						dad.playAnim('ugh', true);
-						trace('test');
+						trace('Ugh! - Needs Fixing');
 					case 111:
 						dad.playAnim('ugh', true);
 					case 131:
@@ -2747,6 +2763,28 @@ class PlayState extends MusicBeatState
 						dad.playAnim('ugh', true);
 				 }
 			}
+
+		if (curSong.toLowerCase() == 'guns' && secretMode){
+			// i don't really care if this is coded properly cuz its just a dumb lil easteregg
+			if (curBeat >= 224 && curBeat < 256)
+				dad.y -= 25;
+			if (curBeat >= 256 && curBeat < 288)
+				boyfriend.y -= 25;
+			if (curBeat >= 288 && curBeat < 320)
+				dad.y -= 25;
+			if (curBeat >= 320 && curBeat < 353)
+				boyfriend.y -= 25;
+			if (curBeat >= 353 && curBeat < 385){
+				boyfriend.y += 55;
+				dad.y += 55;
+			}
+
+			//Cam Y
+			if (curBeat >= 224 && curBeat < 353)
+				camFollow.y -= 25;
+			if (curBeat >= 353 && curBeat < 385)
+				camFollow.y += 55;
+		}
 
 		if (curSong.toLowerCase() == 'stress') 
 			{

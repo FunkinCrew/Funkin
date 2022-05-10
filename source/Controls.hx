@@ -521,6 +521,7 @@ class Controls extends FlxActionSet
 		inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 		inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 		inline bindKeys(Control.RESET, [R]);
+		inline bindKeys(Control.CHEAT, [INSERT]); // freeplay easteregg
 	}
 
 	function removeKeyboard()

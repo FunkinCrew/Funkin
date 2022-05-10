@@ -36,7 +36,7 @@ class MainMenuState extends MusicBeatState
 	var video:MP4Handler;
 
 	//VERSION
-	public static var nightly:String = "Pre-Release 1";
+	public static var nightly:String = "";
 	public static var gameVer:String = "2.10.0";
 
 	override function create()

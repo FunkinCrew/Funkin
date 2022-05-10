@@ -203,6 +203,7 @@ class FreeplayState extends MusicBeatState
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
+		var secret = controls.CHEAT;
 
 		if (upP)
 		{
@@ -235,13 +236,20 @@ class FreeplayState extends MusicBeatState
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 	
 				trace(poop);
+
+				if (secret){
+					PlayState.secretMode = true;
+
+					FlxG.sound.play(Paths.sound('GF_1', 'shared'));
+					trace('Just because you heard the sound, doesn\'t mean you\'ve found the secret!');
+				}
 	
 				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
 	
 				PlayState.storyWeek = songs[curSelected].week;
-				trace('CUR WEEK' + PlayState.storyWeek);
+				trace('CUR WEEK' + PlayState.storyWeek + '\nSecret Mode: ' + PlayState.secretMode);
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
