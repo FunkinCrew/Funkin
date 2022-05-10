@@ -1,7 +1,2 @@
-2.9.0;
-- Improved the End Cutscene Feature (It's in the same spot but faster to do now).
-- Improved the Note Assets.
-- Improved Week 7's Stage.
-- Added support to add Custom Note Skins (Search for "Circle" in Playstate.hx & Note.hx to see how to add them).
-- Made Week 6's "1" Sprite look more like a "1".
-- Made it so you can't hit Notes very early.
+2.10.0;
+- I don't feel like writing the changelog again lol
