@@ -2912,6 +2912,9 @@ class PlayState extends MusicBeatState
 
 	function playCutscene(name:String)
 	{
+		#if !cpp
+		startCountdown();
+		#else
 		inCutscene = true;
 	
 		video = new MP4Handler();
@@ -2920,10 +2923,15 @@ class PlayState extends MusicBeatState
 			startCountdown();
 		}
 		video.playVideo(Paths.video(name));
+		#end
 	}
 	
 	function playEndCutscene(name:String)
 	{
+		#if !cpp
+		playedEndCutscene = true;
+		endSong();
+		#else
 		//Doesn't check if the song is ending sense it gets called to play WHILE the song is ending.
 		inCutscene = true;
 
@@ -2939,6 +2947,7 @@ class PlayState extends MusicBeatState
 			endSong();
 		}
 		video.playVideo(Paths.video(name));
+		#end
 	}
 
 	function noteSplash(noteX:Float, noteY:Float, nData:Int, ?isDad = false)
