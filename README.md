@@ -3,8 +3,7 @@
 This is the repository for NUFNF Engine.
 
 ## About NUFNF
- NUFNF is a Friday Night Funkin' engine designed for Modders who prefer hard-coding without having to deal with stuff they don't need!
- It's also designed to be simple and easy to use for people who are new to Friday Night Funkin'
+NUFNF is a Friday Night Funkin' engine designed to not change everything about Friday Night Funkin' but still having new options and new features, Good for Modders who prefer a light-weight engine that isn't terribly bloated with unnecessary options and features. Please keep in mind that this is being programmed by someone who barerly understands how to code in HaxeFlixel and can't do everything.
  
  You can find it on GameJolt here: https://gamejolt.com/games/nufnf/702060
  
