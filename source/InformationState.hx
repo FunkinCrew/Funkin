@@ -41,7 +41,7 @@ class InformationState extends MusicBeatState
 		add(tint);
 		
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"NUFNF Engine Credits\n" + credits + '\n\nPress Space or Escape to Exit',32);
+			"FNFSL Engine Credits\n" + credits + '\n\nPress Space or Escape to Exit',32);
 		
 		txt.setFormat("PhantomMuff 1.5", 32, FlxColor.WHITE, CENTER);
 		txt.borderColor = FlxColor.BLACK;
