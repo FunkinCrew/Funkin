@@ -12,12 +12,10 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 
-// i may or may have not slightly stole this from kade engine, maybe i didnt and im just messing wtih you? who knows.
-
 class InformationState extends MusicBeatState
 {
 	var logoBl:FlxSprite;
-	var credits:String = 'thepercentageguy - Original Programmer\nSpunBlue - Programmer\n';
+	var credits:String = 'SpunBlue - Programmer\nthepercentageguy - Created the original version of this Engine';
 	
 	override function create()
 	{
