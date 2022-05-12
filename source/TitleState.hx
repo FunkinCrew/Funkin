@@ -284,7 +284,7 @@ class TitleState extends MusicBeatState
 				{
 					// Get current version of Kade Engine
 					
-					var http = new haxe.Http("https://raw.githubusercontent.com/SpunBlue/NUFNF/master/version.Update");
+					var http = new haxe.Http("https://raw.githubusercontent.com/SpunBlue/Friday-Night-Funkin-Sublime-Engine/master/version.Update");
 					var returnedData:Array<String> = [];
 					
 					http.onData = function (data:String)
@@ -381,10 +381,9 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'In association \nwith';
 			// credTextShit.screenCenter();
 			case 5:
-				createCoolText(['originally', 'by']);
+				createCoolText(['Newgrounds']);
 			case 7:
-				addMoreText('thepercentageguy');
-				ngSpr.visible = true;
+				addMoreText('Holyshit');
 				// ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
@@ -407,10 +406,10 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				addMoreText('New');
+				addMoreText('FNF');
 			// credTextShit.visible = true;
 			case 14:
-				addMoreText('UFNF');
+				addMoreText('Sublime');
 			// credTextShit.text += '\nNight';
 			case 15:
 				addMoreText('Engine'); // credTextShit.text += '\nFunkin';

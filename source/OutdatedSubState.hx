@@ -48,7 +48,7 @@ class OutdatedSubState extends MusicBeatState
 		add(tint);
 		
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"NUFNF is outdated!\nYou are on v" + MainMenuState.gameVer
+			"Sublime Engine is outdated!\nYou are on v" + MainMenuState.gameVer
 			+ "\nand the latest version is, v" + needVer + "."
 			+ "\n\nChangelog:\n\n"
 			+ currChanges
@@ -68,7 +68,7 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT)
 		{
-			FlxG.openURL("https://github.com/SpunBlue/NUFNF/releases/tag/v" + needVer);
+			FlxG.openURL("https://github.com/SpunBlue/Friday-Night-Funkin-Sublime-Engine/releases/tag/v" + needVer);
 		}
 		if (controls.BACK)
 		{
