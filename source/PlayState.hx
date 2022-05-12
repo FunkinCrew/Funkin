@@ -1602,10 +1602,6 @@ class PlayState extends MusicBeatState
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
-		if (FlxG.keys.justPressed.O){
-			trace("health: " + health);
-		}
-
 		// Panic the BF
 		if (!FlxG.save.data.disablePanicableBF){
 			if (ogBF == 'bf' || ogBF == 'bf-christmas'){
