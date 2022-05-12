@@ -158,7 +158,6 @@ class Keybinds extends MusicBeatState {
 
 					FlxG.save.data.LEFT = FlxG.keys.getIsDown()[0].ID.toString();
 					trace(FlxG.keys.getIsDown()[0].ID.toString() + " " + FlxG.keys.getIsDown());
-					detailText.text = "";
 
 					controls.bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.LEFT), FlxKey.LEFT]);
 
@@ -176,7 +175,6 @@ class Keybinds extends MusicBeatState {
 
 					FlxG.save.data.DOWN = FlxG.keys.getIsDown()[0].ID.toString();
 					trace(FlxG.keys.getIsDown()[0].ID.toString() + " " + FlxG.keys.getIsDown());
-					detailText.text = "";
 
 					controls.bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.DOWN), FlxKey.DOWN]);
 
@@ -194,7 +192,6 @@ class Keybinds extends MusicBeatState {
 
 					FlxG.save.data.UP = FlxG.keys.getIsDown()[0].ID.toString();
 					trace(FlxG.keys.getIsDown()[0].ID.toString() + " " + FlxG.keys.getIsDown()[0]);
-					detailText.text = "";
 
 					controls.bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.UP), FlxKey.UP]);
 
@@ -212,7 +209,6 @@ class Keybinds extends MusicBeatState {
 
 					FlxG.save.data.RIGHT = FlxG.keys.getIsDown()[0].ID.toString();
 					trace(FlxG.keys.getIsDown()[0].ID.toString() + " " + FlxG.keys.getIsDown()[0]);
-					detailText.text = "";
 
 					controls.bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.RIGHT), FlxKey.RIGHT]);
 
