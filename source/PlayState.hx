@@ -1778,8 +1778,13 @@ class PlayState extends MusicBeatState
 		// CHEAT = brandon's a pussy
 		if (controls.CHEAT)
 		{
+			#if !DEBUG
+			trace('player is NOT allowed to cheat, he is a pussy');
+			health -= 99;
+			#else
+			trace('player is allowed to cheat, he is still a pussy');
 			health += 1;
-			trace("User is cheating!");
+			#end
 		}
 
 		if (health <= 0)
