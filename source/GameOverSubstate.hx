@@ -72,6 +72,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			if (PlayState.isStoryMode)
 				FlxG.switchState(new StoryMenuState());
 			else
+				PlayState.secretMode = false; //disable this shit
 				FlxG.switchState(new FreeplayState());
 		}
 
