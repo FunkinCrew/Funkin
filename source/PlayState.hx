@@ -1602,10 +1602,14 @@ class PlayState extends MusicBeatState
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
+		if (FlxG.keys.justPressed.O){
+			trace("health: " + health);
+		}
+
 		// Panic the BF
 		if (!FlxG.save.data.disablePanicableBF){
 			if (ogBF == 'bf' || ogBF == 'bf-christmas'){
-				if(health >= 0.48 && !inPanic){
+				if(health >= 0.715 && !inPanic){
 					remove(boyfriend);
 					boyfriend = new Boyfriend(boyfriend.x, boyfriend.y, ogBF);
 					add(boyfriend);
@@ -1613,7 +1617,7 @@ class PlayState extends MusicBeatState
 					inPanic = true;
 				}
 				
-				if (health <= 0.48 && inPanic){
+				if (health <= 0.715 && inPanic){
 					remove(boyfriend);
 					boyfriend = new Boyfriend(boyfriend.x, boyfriend.y, ogBF + 'panic');
 					add(boyfriend);
