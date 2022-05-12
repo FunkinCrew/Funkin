@@ -8,7 +8,7 @@ class EpilepsyState extends FlxState {
     public override function create() {
         super.create();
         
-        var text = new FlxText(0, 0, FlxG.width, "NUFNF Engine contains flashing lights.\n\nPress ENTER to turn on epilepsy mode.\nPress ESC to ignore this message.");
+        var text = new FlxText(0, 0, FlxG.width, "FNFSL Engine contains flashing lights.\n\nPress ENTER to turn on epilepsy mode.\nPress ESC to ignore this message.");
         text.setFormat("VCR OSD Mono", 32, 0xffffffff, CENTER);
         text.screenCenter();
         add(text);
