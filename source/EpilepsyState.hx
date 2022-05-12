@@ -26,5 +26,9 @@ class EpilepsyState extends FlxState {
             FlxG.save.data.epilepsyMode = false;
             FlxG.switchState(new TitleState());
         }
+
+        if (FlxG.keys.justPressed.F)
+            FlxG.sound.play(Paths.sound('GF_2', 'shared'));
+
     }
 }
