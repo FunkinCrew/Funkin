@@ -1,7 +1,7 @@
 name: learn-github-actions
 on: [push]
 jobs:
-  create-nightly-linux:
+  create-nightly-html5:
     runs-on: ubuntu-latest
     steps:
       - uses: krdlab/setup-haxe@v1.1.6
@@ -23,6 +23,7 @@ jobs:
           haxelib install firetongue --quiet
           haxelib install hxcpp-debug-server --quiet
           haxelib install hxcpp --quiet
+          haxelib install thx.semver --quiet
           haxelib git polymod https://github.com/larsiusprime/polymod develop --quiet
           haxelib run lime setup linux
       - name: Build game?
