@@ -14,17 +14,9 @@ jobs:
       - name: Installing Haxe lol
         run: |
           haxe -version
-          haxelib install openfl --quiet
-          haxelib install lime --quiet
-          haxelib install flixel --quiet
-          haxelib install flixel-addons --quiet
-          haxelib install hscript --quiet
-          haxelib install flixel-ui --quiet
-          haxelib install firetongue --quiet
-          haxelib install hxcpp-debug-server --quiet
-          haxelib install hxcpp --quiet
-          haxelib install thx.semver --quiet
-          haxelib git polymod https://github.com/larsiusprime/polymod develop --quiet
+          haxelib --global install hmm
+          haxelib --global run hmm setup
+          hmm install --quiet
           haxelib run lime setup linux
       - name: Build game?
         run: |
