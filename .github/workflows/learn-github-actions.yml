@@ -11,7 +11,7 @@ jobs:
       - name: Cache Haxe Stuff
         run: |
           haxelib config
-      - name: Installing Haxe Stuff
+      - name: Installing Haxe lol
         run: |
           haxe -version
           haxelib install openfl --quiet
