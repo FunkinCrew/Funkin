@@ -1,0 +1,74 @@
+{
+  "dependencies": [
+    {
+      "name": "discord_rpc",
+      "type": "git",
+      "dir": null,
+      "ref": "master",
+      "url": "https://github.com/Aidan63/linc_discord-rpc"
+    },
+    {
+      "name": "firetongue",
+      "type": "git",
+      "dir": null,
+      "ref": "dev",
+      "url": "https://github.com/larsiusprime/firetongue"
+    },
+    {
+      "name": "flixel",
+      "type": "git",
+      "dir": null,
+      "ref": "dev",
+      "url": "https://github.com/haxeflixel/flixel"
+    },
+    {
+      "name": "flixel-addons",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "flixel-ui",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "hscript",
+      "type": "git",
+      "dir": null,
+      "ref": "master",
+      "url": "https://github.com/mastereric/hscript"
+    },
+    {
+      "name": "hxcpp",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "hxcpp-debug-server",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "lime",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "openfl",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "polymod",
+      "type": "git",
+      "dir": null,
+      "ref": "develop",
+      "url": "https://github.com/larsiusprime/polymod"
+    },
+    {
+      "name": "thx.semver",
+      "type": "haxelib",
+      "version": null
+    }
+  ]
+}
