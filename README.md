@@ -13,7 +13,8 @@ You can find it on GameJolt here: https://gamejolt.com/games/Friday-Night-Funkin
 This engine was originally named "NUFNF (New Unnamed Friday Night Funkin' Engine)", We are in the process of changing the name.
  
 ## Special Thanks
-I want to thank everyone who has helped me make this Engine better by giving me Feature idea's and other related help, Thank you so much.
+Special Thanks to ThePercentageGuy for giving me Ownership of NUFNF which started this Engine.
+I also want to thank everyone who has helped me make this Engine better, Thank you.
 
 ## Building & Wiki
  [Build Instructions](https://github.com/SpunBlue/Friday-Night-Funkin-Sublime-Engine/wiki/Build-Instructions) | [Wiki](https://github.com/SpunBlue/Friday-Night-Funkin-Sublime-Engine/wiki) | [Discord Server](https://discord.gg/wdNrAPxcHN)
