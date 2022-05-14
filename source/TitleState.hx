@@ -63,6 +63,11 @@ class TitleState extends MusicBeatState
 			FlxG.switchState(new EpilepsyState());
 		}
 
+		if (FlxG.save.data.frameRate != null) {
+			FlxG.updateFramerate = FlxG.save.data.frameRate;
+			FlxG.drawFramerate = FlxG.save.data.frameRate;
+		}
+
 		if (FlxG.save.data.weekUnlocked != null)
 		{
 			// FIX LATER!!!

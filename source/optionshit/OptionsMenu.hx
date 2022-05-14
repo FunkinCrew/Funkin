@@ -1,5 +1,6 @@
 package optionshit;
 
+import flixel.util.FlxTimer;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxBasic;
 import flixel.math.FlxMath;
@@ -29,6 +30,9 @@ class OptionsMenu extends MusicBeatState {
 	var curSelected:Int = 0;
 
 	var background:FlxSprite;
+
+	var startListening:Bool = true;
+	var endedCheck:Bool = true;
 
 	public override function create() {
 		transIn = FlxTransitionableState.defaultTransIn;
@@ -92,6 +96,7 @@ class OptionsMenu extends MusicBeatState {
 		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
 		'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
+		'Framerate ${FlxG.save.data.frameRate} FPS',
 		'CREDITS',
 		'RESET SETTINGS'];
 
@@ -127,6 +132,14 @@ class OptionsMenu extends MusicBeatState {
 		if (FlxG.save.data.sspeed < 0.1) {
 			FlxG.save.data.sspeed = 0;
 		}
+
+		if (FlxG.save.data.frameRate == null) FlxG.save.data.frameRate = 60;
+
+		if (FlxG.save.data.frameRate < 30)
+			FlxG.save.data.frameRate = 30;
+
+		if (FlxG.save.data.frameRate > 256)
+			FlxG.save.data.frameRate = 256;
 
 		if (controls.ACCEPT) {
 			/*if (options[curSelected].startsWith('Controls')) {
@@ -173,6 +186,29 @@ class OptionsMenu extends MusicBeatState {
 			}
 		}
 
+		if (options[curSelected].startsWith('Framerate') && startListening) {
+			if (controls.LEFT) {
+				FlxG.save.data.frameRate -= 1;
+			}
+			else if (controls.RIGHT)
+				FlxG.save.data.frameRate += 1;
+
+			if (controls.LEFT || controls.RIGHT){
+				updateFPS();
+				startListening = false;
+			}
+		}
+
+		if (!startListening && endedCheck){
+			!endedCheck;
+
+			new FlxTimer().start(1, function(tmr:FlxTimer)
+				{
+					startListening = true;
+					endedCheck;
+			});
+		}
+
 		//Details
 		if (controls.UP || controls.DOWN)
 			{
@@ -216,6 +252,10 @@ class OptionsMenu extends MusicBeatState {
 					detailText.text = 'Shows the Credits of the Engine / Mod';
 				}
 
+				if (options[curSelected].startsWith('Framerate')){
+					detailText.text = 'Changes your Framerate, Slightly unstable though.';
+				}
+
 				if (options[curSelected].startsWith('RESET SETTINGS')){
 					detailText.text = 'Nukes your settings.';
 				}
@@ -247,5 +287,10 @@ class OptionsMenu extends MusicBeatState {
 		}
 
 		super.update(elapsed);
+	}
+
+	function updateFPS() {
+		FlxG.updateFramerate = FlxG.save.data.frameRate;
+		FlxG.drawFramerate = FlxG.save.data.frameRate;
 	}
 }
