@@ -64,8 +64,14 @@ class TitleState extends MusicBeatState
 		}
 
 		if (FlxG.save.data.frameRate != null) {
-			FlxG.updateFramerate = FlxG.save.data.frameRate;
-			FlxG.drawFramerate = FlxG.save.data.frameRate;
+			if (FlxG.save.data.frameRate > FlxG.drawFramerate){
+				FlxG.updateFramerate = FlxG.save.data.frameRate;
+				FlxG.drawFramerate = FlxG.save.data.frameRate;
+			}
+			else{
+				FlxG.drawFramerate = FlxG.save.data.frameRate;
+				FlxG.updateFramerate = FlxG.save.data.frameRate;
+			}
 		}
 
 		if (FlxG.save.data.weekUnlocked != null)

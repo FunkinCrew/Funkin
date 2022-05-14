@@ -133,6 +133,7 @@ class OptionsMenu extends MusicBeatState {
 			FlxG.save.data.sspeed = 0;
 		}
 
+		// framerate shit
 		if (FlxG.save.data.frameRate == null) FlxG.save.data.frameRate = 60;
 
 		if (FlxG.save.data.frameRate < 30)
@@ -290,7 +291,13 @@ class OptionsMenu extends MusicBeatState {
 	}
 
 	function updateFPS() {
-		FlxG.updateFramerate = FlxG.save.data.frameRate;
-		FlxG.drawFramerate = FlxG.save.data.frameRate;
+		if (FlxG.save.data.frameRate > FlxG.drawFramerate){
+			FlxG.updateFramerate = FlxG.save.data.frameRate;
+			FlxG.drawFramerate = FlxG.save.data.frameRate;
+		}
+		else{
+			FlxG.drawFramerate = FlxG.save.data.frameRate;
+			FlxG.updateFramerate = FlxG.save.data.frameRate;
+		}
 	}
 }
