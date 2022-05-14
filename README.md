@@ -5,7 +5,7 @@ This is the repository for FNFSL Engine.
 ![alt text](https://github.com/SpunBlue/Friday-Night-Funkin-Sublime-Engine/blob/master/assets/shared/images/sublimeengine.png?raw=true)
 
 ## About FNFSL
-FNFSL is a Friday Night Funkin' engine designed to not change everything about Friday Night Funkin' but still having new options and new features, Good for Modders who prefer a light-weight engine that isn't terribly bloated with unnecessary options and features. Please keep in mind that this is being programmed by someone who barerly understands how to code in HaxeFlixel and can't do everything.
+FNFSL is a Friday Night Funkin' engine designed to not change everything about Friday Night Funkin' but still having new options and new features, Good for Modders who prefer a smaller engine that isn't terribly bloated with unnecessary options and features. Please keep in mind that this is being programmed by someone who barerly understands how to code in HaxeFlixel and can't do everything.
  
 You can find it on GameJolt here: https://gamejolt.com/games/Friday-Night-Funkin-Sublime-Engine/702060
 
