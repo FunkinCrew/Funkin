@@ -14,10 +14,16 @@ import Controls.Control;
 using StringTools;
 
 class OptionsMenu extends MusicBeatState {
-	var options:Array<String> = ['Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}',
+	var options:Array<String> = ['OPTIONS', 'Change Keybinds',
 	'Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
 	'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
+	'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
+	'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
 	'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
+	'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
+	'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
+	'Framerate ${FlxG.save.data.frameRate} FPS',
+	'CREDITS',
 	'RESET SETTINGS'];
 
 	var optionText:FlxText;
@@ -75,7 +81,7 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - optionDot.height / 2.5; // red dot offset (bruh i hate this options menu but idk how to make a better one)
+		optionDot.y = optionText.y - optionDot.height / 3; // red dot offset (bruh i hate this options menu but idk how to make a better one)
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
