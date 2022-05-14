@@ -1,299 +1,294 @@
 package optionshit;
 
+import flixel.FlxState;
 import flixel.util.FlxTimer;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.FlxBasic;
-import flixel.math.FlxMath;
+import flixel.tweens.motion.LinearMotion;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.FlxG;
-import flixel.FlxState;
-import Controls.Control;
+import flixel.group.FlxGroup;
+import flixel.FlxSubState;
 
 using StringTools;
 
 class OptionsMenu extends MusicBeatState {
-	var options:Array<String> = ['OPTIONS', 'Change Keybinds',
-	'Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
-	'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
-	'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
-	'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
-	'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
-	'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
-	'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
-	'Framerate ${FlxG.save.data.frameRate} FPS',
-	'CREDITS',
-	'RESET SETTINGS'];
+	var options:Array<String> = ["option shit"];
+	var lastOptionType:String = "default";
 
-	var optionText:FlxText;
-	var detailText:FlxText;
-	var optionDot:FlxSprite;
-	var camFollow:FlxSprite;
-
-	var topText:FlxText;
-
-	var curSelected:Int = 0;
-
-	var background:FlxSprite;
-
+	var optionGroup = new FlxTypedGroup<FlxText>();
+	
+	var inOptionSelector:Bool = true;
+	var inTween:Bool = false;
 	var startListening:Bool = true;
 	var endedCheck:Bool = true;
 
-	public override function create() {
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
+	var curSelected:Int = 0;
+
+	var lastOptionY:Float = 0;
+	var optionYoffset:Float = 0;
+
+	var selected:FlxText;
+
+	var background:FlxSprite;
+	var text:FlxText;
+
+	var tween:FlxTween;
+
+	override function create() {
+		super.create();
 
 		background = new FlxSprite(0, 0, Paths.image('menuBGBlue'));
-
-		background.scrollFactor.x = 0;
-		background.scrollFactor.y = 0.18;
-		background.setGraphicSize(Std.int(background.width * 1.3));
+		//background.setGraphicSize(Std.int(background.width * 1.3));
 		background.updateHitbox();
 		background.screenCenter();
 		background.antialiasing = true;
-
 		add(background);
 
-		optionText = new FlxText(0, 0, 512, 'OPTIONS LOLOLO', 32);
-		optionText.font = 'PhantomMuff 1.5';
-		add(optionText);
-		optionText.alignment = FlxTextAlign.CENTER;
+		createOptions();
 		
-		optionText.text = '';
-		for (option in options) {
-			optionText.text += '${option}\n';
-		}
-		optionText.screenCenter(X);
-
-		optionDot = new FlxSprite(0, 0);
-		optionDot.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
-		optionDot.animation.addByPrefix("idle", "arrowRIGHT0");
-		optionDot.animation.play("idle");
-		optionDot.setGraphicSize(50);
-		optionDot.updateHitbox();
-		add(optionDot);
-
-		detailText = new FlxText(0, optionDot.y - 360, 0, "", 13);
-		detailText.font = 'PhantomMuff 1.5';
-		detailText.screenCenter(X);
-		add(detailText);
-
-		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
-
-		optionDot.y = optionText.y - optionDot.height / 3; // red dot offset (bruh i hate this options menu but idk how to make a better one)
-
-		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
-		topText.screenCenter(X);
-		// add(topText);
-
-		FlxG.camera.follow(camFollow, null, 0.06);
-
-		super.create();
+		/*selected = new FlxText(0, lastOptionY, FlxG.width, options[curSelected]);
+		selected.setFormat("PhantomMuff 1.5", 16, FlxColor.WHITE, "center");
+		selected.y = lastOptionY;
+		lastOptionY += selected.height;
+		add(selected);*/
 	}
 
-	public override function update(elapsed:Float) {
-		//Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}
-		options = ['OPTIONS', 'Change Keybinds',
-		'Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
-		'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
-		'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
-		'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
-		'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
-		'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
-		'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
-		'Framerate ${FlxG.save.data.frameRate} FPS',
-		'CREDITS',
-		'RESET SETTINGS'];
+	override function update(elapsed:Float) {
+		super.update(elapsed);
 
-		optionText.screenCenter(X);
+		if (controls.UP_P && !inTween) {
+			curSelected--;
 
-		optionDot.x = optionText.x - 60;
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			changeTextAlpha();
 
-		camFollow.screenCenter();
-		camFollow.y = optionDot.y - camFollow.height / 2;
-
-		detailText.y = optionDot.y;
-		detailText.x = optionText.x * 2.35;
-
-		topText.y = optionDot.y;
-
-		// OLD! -- FlxG.camera.y = -FlxMath.lerp(-FlxG.height * 2, optionDot.y, 0.8); // camera following the red dot
-
-		background.screenCenter();
-
-		optionText.text = '';
-		for (option in options) {
-			optionText.text += '${option}\n';
+			if (curSelected < 0) {
+				curSelected = 0;
+			}
+			else{
+				changeTextAlpha();
+				for (i in 0...optionGroup.members.length) {
+					if (optionGroup.members[i] != null){
+						inTween = true;
+						FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
+							optionGroup.members[i].x, optionGroup.members[i].y + optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
+					}
+				}
+			}
 		}
+		else if (controls.DOWN_P && !inTween){
+			curSelected++;
 
-		if (FlxG.save.data.offset == null) FlxG.save.data.offset = 0;
+			FlxG.sound.play(Paths.sound('scrollMenu'));
 
-		if (FlxG.save.data.offset < 0.1 && FlxG.save.data.offset > -10) {
-			FlxG.save.data.offset = 0;
-		}
-
-		if (FlxG.save.data.sspeed == null) FlxG.save.data.sspeed = 0;
-
-		if (FlxG.save.data.sspeed < 0.1) {
-			FlxG.save.data.sspeed = 0;
-		}
-
-		// framerate shit
-		if (FlxG.save.data.frameRate == null) FlxG.save.data.frameRate = 60;
-
-		if (FlxG.save.data.frameRate < 30)
-			FlxG.save.data.frameRate = 30;
-
-		if (FlxG.save.data.frameRate > 256)
-			FlxG.save.data.frameRate = 256;
-
-		if (controls.ACCEPT) {
-			/*if (options[curSelected].startsWith('Controls')) {
-				FlxG.save.data.dfjk = !FlxG.save.data.dfjk;
-			}*/
-
-			if (options[curSelected].startsWith('Change Keybinds')) {
-				FlxG.switchState(new Keybinds());
+			if (curSelected > options.length - 1) {
+				curSelected = options.length - 1;
 			}
-
-			if (options[curSelected].startsWith('Epilepsy Mode')) {
-				FlxG.save.data.epilepsyMode = !FlxG.save.data.epilepsyMode;
-			}
-			if (options[curSelected].startsWith('Ghost Tapping')) {
-				FlxG.save.data.gtapping = !FlxG.save.data.gtapping;
-			}
-			if (options[curSelected].startsWith('Disable Distractions')) {
-				FlxG.save.data.noDistractions = !FlxG.save.data.noDistractions;
-			}
-			if (options[curSelected].startsWith('Custom Health Colors')) {
-				FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
-			}
-			if (options[curSelected].startsWith('Judgement Type')) {
-				FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
-			}
-			if (options[curSelected].startsWith('Panicable Boyfriend')) {
-				FlxG.save.data.disablePanicableBF = !FlxG.save.data.disablePanicableBF;
-			}
-			if (options[curSelected].startsWith('Lane Underlay')) {
-				FlxG.save.data.laneUnderlay = !FlxG.save.data.laneUnderlay;
-			}
-			if (options[curSelected].startsWith('CREDITS')){
-				FlxG.switchState(new InformationState());
-			}
-			if (options[curSelected].startsWith('RESET SETTINGS')) {
-				FlxG.save.data.epilepsyMode = false;
-				FlxG.save.data.gtapping = false;
-				FlxG.save.data.noDistractions = false;
-				FlxG.save.data.disablehealthColor = false;
-				FlxG.save.data.UP = "W";
-				FlxG.save.data.DOWN = "S";
-				FlxG.save.data.LEFT = "A";
-				FlxG.save.data.RIGHT = "D";
+			else{
+				changeTextAlpha();
+				for (i in 0...optionGroup.members.length) {
+					if (optionGroup.members[i] != null){
+						inTween = true;
+						FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
+							optionGroup.members[i].x, optionGroup.members[i].y - optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
+					}
+				}
 			}
 		}
 
-		if (options[curSelected].startsWith('Framerate') && startListening) {
-			if (controls.LEFT) {
-				FlxG.save.data.frameRate -= 1;
-			}
-			else if (controls.RIGHT)
-				FlxG.save.data.frameRate += 1;
-
-			if (controls.LEFT || controls.RIGHT){
-				updateFPS();
-				startListening = false;
-			}
+		if (controls.ACCEPT && !inTween) {
+			optionSelected();
 		}
 
-		if (!startListening && endedCheck){
-			!endedCheck;
+		if (controls.BACK && !inTween) {
+			if (!inOptionSelector)
+				optionSelected(true);
+			else
+				FlxG.switchState(new MainMenuState());
 
-			new FlxTimer().start(1, function(tmr:FlxTimer)
-				{
-					startListening = true;
-					endedCheck;
-			});
-		}
-
-		//Details
-		if (controls.UP || controls.DOWN)
-			{
-				if (options[curSelected].startsWith('OPTIONS')) {
-					detailText.text = '';
-				}
-
-				if (options[curSelected].startsWith('Change Keybinds')) {
-					detailText.text = 'Change your Controls.';
-				}
-
-				if (options[curSelected].startsWith('Epilepsy Mode')){
-					detailText.text = 'Prevents Epilepsy if enabled.';
-				}
-	
-				if (options[curSelected].startsWith('Ghost Tapping')) {
-					detailText.text = "You won't miss when tapping at the wrong time.";
-				}
-				
-				if (options[curSelected].startsWith('Disable Distractions')){
-					detailText.text = 'Disables annoying background objects.';
-				}
-
-				if (options[curSelected].startsWith('Custom Health Colors')){
-					detailText.text = 'Disables or Enables the custom Health Bar Colors.';
-				}
-
-				if (options[curSelected].startsWith('Judgement Type')){
-					detailText.text = 'Changes the difficulty on hitting notes.';
-				}
-
-				if (options[curSelected].startsWith('Panicable Boyfriend')){
-					detailText.text = 'Makes the BF Panic when low on Health';
-				}
-
-				if (options[curSelected].startsWith('Lane Underlay')){
-					detailText.text = 'Shows a lane under the Notes.';
-				}
-
-				if (options[curSelected].startsWith('CREDITS')){
-					detailText.text = 'Shows the Credits of the Engine / Mod';
-				}
-
-				if (options[curSelected].startsWith('Framerate')){
-					detailText.text = 'Changes your Framerate, Slightly unstable though.';
-				}
-
-				if (options[curSelected].startsWith('RESET SETTINGS')){
-					detailText.text = 'Nukes your settings.';
-				}
-			}
-
-		if (controls.BACK) {
-			FlxG.switchState(new MainMenuState());
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
 
-		if (controls.UP_P) {
-			curSelected--;
-			optionDot.y -= 16 * 2.5;
-			FlxG.sound.play(Paths.sound('scrollMenu'));
-		}
-		if (controls.DOWN_P) {
-			curSelected++;
-			optionDot.y += 16 * 2.5;
-			FlxG.sound.play(Paths.sound('scrollMenu'));
-		}
-
-		if (curSelected < 0) {
-			curSelected = 0;
-			optionDot.y += 16 * 2.5;
-		}
-		if (curSelected > options.length - 1) {
-			curSelected = options.length - 1;
-			optionDot.y -= 16 * 2.5;
+		for (i in 0...optionGroup.members.length) {
+			if (optionGroup.members[i] != null){
+				if (optionGroup.members[curSelected].text.startsWith("Framerate") && startListening) {
+					if (controls.LEFT) {
+						FlxG.save.data.frameRate -= 1;
+					}
+					else if (controls.RIGHT)
+						FlxG.save.data.frameRate += 1;
+		
+					if (controls.LEFT || controls.RIGHT){
+						updateFPS();
+						updateOptions();
+						startListening = false;
+					}
+				}
+			}
 		}
 
-		super.update(elapsed);
+
+		if (!startListening && endedCheck){
+			endedCheck = false;
+
+			new FlxTimer().start(0.1, function(tmr:FlxTimer)
+				{
+					startListening = true;
+					endedCheck = true;
+			});
+		}
+
+		//selected.text = options[curSelected];
+	}
+
+	function createOptions(type:String = 'default') {
+		var ready:Bool = false;
+		lastOptionY = 0;
+
+		if (inOptionSelector)
+			curSelected = 0; // lol don't want this changing when we're not in the option selector
+
+		trace(type);
+
+		switch(type.toLowerCase()) {
+			default:
+				inOptionSelector = true;
+
+				options = ["Gameplay", "Graphics", "Keybinds"];
+				ready = true;
+			case 'gameplay':
+				inOptionSelector = false;
+
+				options = ['Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
+				'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
+				'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
+				'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}'];
+				ready = true;
+			case 'graphics':
+				inOptionSelector = false;
+
+				options = ['Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
+				'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
+				'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
+				'Framerate ${FlxG.save.data.frameRate} FPS'];
+				ready = true;
+			case 'keybinds':
+				FlxG.switchState(new Keybinds()); // dumb but works
+		}
+
+		lastOptionType = type.toLowerCase();
+
+		if (ready){
+			for (i in 0...options.length) {
+				text = new FlxText(0, lastOptionY, FlxG.width, options[i]);
+				text.setFormat("PhantomMuff 1.5", 72, FlxColor.WHITE, "center");
+				text.alpha = 0.6;
+				text.screenCenter(Y);
+				text.y += lastOptionY - (curSelected * text.height);
+				optionGroup.add(text);
+				add(text);
+				lastOptionY += text.height;
+			}
+		}
+
+		changeTextAlpha();
+	}
+
+	function updateOptions() {
+		if (optionGroup.members.length > 0) {
+			for (i in 0...optionGroup.members.length) {
+				if (optionGroup.members[i] != null){
+					optionGroup.members[i].kill();
+					optionGroup.remove(optionGroup.members[i]);
+				}
+			}
+		}
+
+		if (!inOptionSelector){
+			createOptions(lastOptionType);
+			trace(lastOptionType);
+		}
+		else{
+			optionYoffset = 0;
+		}
+	}
+
+	function optionSelected(goingBack:Bool = false) {
+		if (goingBack){
+			inOptionSelector = true;
+			updateOptions();
+			createOptions('default');
+		}
+		else{
+			if (inOptionSelector) {
+				trace('entering options ' + options[curSelected]);
+				updateOptions();
+				
+				createOptions(options[curSelected]);
+			}
+			else{
+				trace('already in options');
+	
+				if (options[curSelected].startsWith('Ghost Tapping')) {
+					FlxG.save.data.gtapping = !FlxG.save.data.gtapping;
+				}
+				else if (options[curSelected].startsWith('Judgement Type')) {
+					FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
+				}
+				else if (options[curSelected].startsWith('Disable Distractions')) {
+					FlxG.save.data.noDistractions = !FlxG.save.data.noDistractions;
+				}
+				else if (options[curSelected].startsWith('Panicable Boyfriend')) {
+					FlxG.save.data.disablePanicableBF = !FlxG.save.data.disablePanicableBF;
+				}
+				else if (options[curSelected].startsWith('Epilepsy Mode')) {
+					FlxG.save.data.epilepsyMode = !FlxG.save.data.epilepsyMode;
+				}
+				else if (options[curSelected].startsWith('Lane Underlay')) {
+					FlxG.save.data.laneUnderlay = !FlxG.save.data.laneUnderlay;
+				}
+				else if (options[curSelected].startsWith('Custom Health Colors')) {
+					FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
+				}
+				else if (options[curSelected].startsWith('Framerate')) {
+					trace('dumbass');
+				}
+				
+				updateOptions();
+			}
+		}
+	}
+
+	function disableInTween(tween:FlxTween):Void
+		{
+			//optionYoffset = optionGroup.members[optionGroup.length].y;
+			for (i in 0...optionGroup.members.length) {
+				if (optionGroup.members[i] != null){
+					optionYoffset = optionGroup.members[i].y; //asdhdfh
+				}
+			}
+
+			inTween = false;
+		}
+
+	function changeTextAlpha(){
+		if (curSelected == -1 || curSelected >= options.length) { // why do i have to do it like this???
+			return;
+		}
+		else{
+			for (text in 0...optionGroup.members.length) {
+				trace(text);
+				if (text == curSelected && optionGroup.members[text] != null) {
+					optionGroup.members[text].alpha = 1;
+				}
+	
+				if (text != curSelected && optionGroup.members[text] != null) {
+					optionGroup.members[text].alpha = 0.6;
+				}
+			}
+		}
 	}
 
 	function updateFPS() {

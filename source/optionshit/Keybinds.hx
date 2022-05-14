@@ -1,5 +1,6 @@
 package optionshit;
 
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKeyboard.FlxKeyInput;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxBasic;
@@ -15,21 +16,17 @@ import flixel.util.FlxTimer;
 
 using StringTools;
 
-//Stole the options menu code lmao
+//didn't feel like redoing this
 class Keybinds extends MusicBeatState {
-	var options:Array<String> = ['LEFT | ' + FlxG.save.data.LEFT, 'DOWN | ' + FlxG.save.data.DOWN, 'UP | ' + FlxG.save.data.UP,
-	'RIGHT | ' + FlxG.save.data.RIGHT];
+	var options:Array<String> = ['shit'];
 
 	var optionText:FlxText;
 	var detailText:FlxText;
 	var optionDot:FlxSprite;
-	var camFollow:FlxSprite;
 
 	var topText:FlxText;
 
 	var curSelected:Int = 0;
-
-	var background:FlxSprite;
 
 	var startListening = false;
 	var selectedKey = "LEFT";
@@ -38,18 +35,13 @@ class Keybinds extends MusicBeatState {
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		background = new FlxSprite(0, 0, Paths.image('menuBGMagenta'));
-
-		background.scrollFactor.x = 0;
-		background.scrollFactor.y = 0.18;
-		background.setGraphicSize(Std.int(background.width * 1.3));
+		var background = new FlxSprite(0, 0, Paths.image('menuBGBlue'));
 		background.updateHitbox();
 		background.screenCenter();
 		background.antialiasing = true;
-
 		add(background);
 
-		optionText = new FlxText(0, 0, 512, 'OPTIONS LOLOLO', 32);
+		optionText = new FlxText(0, FlxG.height / 3, 512, 'OPTIONS LOLOLO', 32);
 		optionText.font = 'PhantomMuff 1.5';
 		add(optionText);
 		optionText.alignment = FlxTextAlign.CENTER;
@@ -60,28 +52,27 @@ class Keybinds extends MusicBeatState {
 		}
 		optionText.screenCenter(X);
 
+		bgColor = FlxColor.GRAY;
+
 		optionDot = new FlxSprite(0, 0);
 		optionDot.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
 		optionDot.animation.addByPrefix("idle", "arrowRIGHT0");
+		optionDot.animation.addByPrefix("confirm", "right confirm");
 		optionDot.animation.play("idle");
 		optionDot.setGraphicSize(50);
 		optionDot.updateHitbox();
 		add(optionDot);
 
-		detailText = new FlxText(0, optionDot.y - 360, 0, "", 24);
+		detailText = new FlxText(0, optionText.y + optionText.width + 24, 0, "", 24);
 		detailText.font = 'PhantomMuff 1.5';
 		detailText.screenCenter(X);
 		add(detailText);
-
-		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
 		optionDot.y = optionText.y - optionDot.height / 5;
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
 		// add(topText);
-
-		FlxG.camera.follow(camFollow, null, 0.06);
 
 		super.create();
 	}
@@ -94,15 +85,13 @@ class Keybinds extends MusicBeatState {
 
 		optionDot.x = optionText.x - 32;
 
-		camFollow.screenCenter();
-		camFollow.y = optionDot.y - camFollow.height / 2;
-
+		detailText.x = optionText.x + 512;
 		detailText.y = optionDot.y;
-		detailText.x = optionText.x * 2.35;
+
+		/*camFollow.screenCenter();
+		camFollow.y = optionDot.y - camFollow.height / 2;*/
 
 		topText.y = optionDot.y;
-
-		background.screenCenter();
 
 		optionText.text = '';
 		for (option in options) {
