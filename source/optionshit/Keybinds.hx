@@ -41,6 +41,12 @@ class Keybinds extends MusicBeatState {
 		background.antialiasing = true;
 		add(background);
 
+		var backtext = new FlxSprite().makeGraphic(1024, 208, FlxColor.BLACK);
+		backtext.alpha = 0.6;
+		backtext.screenCenter();
+		backtext.y -= 48;
+		add(backtext);
+
 		optionText = new FlxText(0, FlxG.height / 3, 512, 'OPTIONS LOLOLO', 32);
 		optionText.font = 'PhantomMuff 1.5';
 		add(optionText);

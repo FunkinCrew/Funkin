@@ -1,5 +1,6 @@
 package optionshit;
 
+import openfl.system.System;
 import flixel.FlxState;
 import flixel.util.FlxTimer;
 import flixel.tweens.motion.LinearMotion;
@@ -23,6 +24,7 @@ class OptionsMenu extends MusicBeatState {
 	var inTween:Bool = false;
 	var startListening:Bool = true;
 	var endedCheck:Bool = true;
+	var forceCheck:Bool = false;
 
 	var curSelected:Int = 0;
 
@@ -33,6 +35,7 @@ class OptionsMenu extends MusicBeatState {
 
 	var background:FlxSprite;
 	var text:FlxText;
+	var detailText:FlxText;
 
 	var tween:FlxTween;
 
@@ -47,6 +50,11 @@ class OptionsMenu extends MusicBeatState {
 		add(background);
 
 		createOptions();
+
+		detailText = new FlxText(0, 0, FlxG.width, "Options");
+		detailText.setFormat("PhantomMuff 1.5", 16, FlxColor.LIME, "center");
+		detailText.screenCenter(X);
+		add(detailText);
 		
 		/*selected = new FlxText(0, lastOptionY, FlxG.width, options[curSelected]);
 		selected.setFormat("PhantomMuff 1.5", 16, FlxColor.WHITE, "center");
@@ -72,8 +80,12 @@ class OptionsMenu extends MusicBeatState {
 				for (i in 0...optionGroup.members.length) {
 					if (optionGroup.members[i] != null){
 						inTween = true;
-						FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
-							optionGroup.members[i].x, optionGroup.members[i].y + optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
+						//FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
+						//	optionGroup.members[i].x, optionGroup.members[i].y + optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
+						FlxTween.cubicMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, optionGroup.members[i].x,
+							optionGroup.members[i].y + (optionGroup.members[i].height * 0.3), optionGroup.members[i].x,
+							optionGroup.members[i].y + optionGroup.members[i].height, optionGroup.members[i].x, optionGroup.members[i].y + optionGroup.members[i].height, 0.3,
+							{onComplete: disableInTween});
 					}
 				}
 			}
@@ -91,8 +103,12 @@ class OptionsMenu extends MusicBeatState {
 				for (i in 0...optionGroup.members.length) {
 					if (optionGroup.members[i] != null){
 						inTween = true;
-						FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
-							optionGroup.members[i].x, optionGroup.members[i].y - optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
+						//FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
+						//	optionGroup.members[i].x, optionGroup.members[i].y - optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
+						FlxTween.cubicMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, optionGroup.members[i].x,
+							optionGroup.members[i].y - (optionGroup.members[i].height * 0.3), optionGroup.members[i].x,
+							optionGroup.members[i].y - optionGroup.members[i].height, optionGroup.members[i].x, optionGroup.members[i].y - optionGroup.members[i].height, 0.3,
+							{onComplete: disableInTween});
 					}
 				}
 			}
@@ -129,6 +145,60 @@ class OptionsMenu extends MusicBeatState {
 			}
 		}
 
+		if (curSelected > 3)
+			detailText.y = FlxG.height - detailText.height;
+		else
+			detailText.y = 0;
+
+		if (controls.DOWN_P || controls.UP_P || forceCheck){
+			if (options[curSelected] == null){
+				return;
+			}
+
+			// im so fucking sorry for this
+			if (options[curSelected].startsWith('Keybinds')) {
+				detailText.text = 'Change your Controls.';
+			}
+			if (options[curSelected].startsWith('Epilepsy Mode')){
+				detailText.text = 'Prevents Epilepsy if enabled.';
+			}
+			if (options[curSelected].startsWith('Ghost Tapping')) {
+				detailText.text = "You won't miss when tapping at the wrong time.";
+			}		
+			if (options[curSelected].startsWith('Disable Distractions')){
+				detailText.text = 'Disables annoying background objects.';
+			}
+			if (options[curSelected].startsWith('Custom Health Colors')){
+				detailText.text = 'Disables or Enables the custom Health Bar Colors.';
+			}
+			if (options[curSelected].startsWith('Judgement Type')){
+				detailText.text = 'Changes the difficulty on hitting notes.';
+			}
+			if (options[curSelected].startsWith('Panicable Boyfriend')){
+				detailText.text = 'Makes the BF Panic when low on Health';
+			}
+			if (options[curSelected].startsWith('Lane Underlay')){
+				detailText.text = 'Shows a lane under the Notes.';
+			}
+			if (options[curSelected].startsWith('Framerate')){
+				detailText.text = 'Changes your Framerate.';
+			}
+
+			// menu details
+			if (options[curSelected].startsWith('Gameplay')){
+				detailText.text = 'Change Gameplay Options.';
+			}
+			if (options[curSelected].startsWith('Graphics')){
+				detailText.text = 'Change Graphical Options.';
+			}
+			if (options[curSelected].startsWith('Nothing here!')){
+				detailText.text = 'Nothing here, Don\'t click me.';
+			}
+
+			if (forceCheck)
+				!forceCheck;
+			// god it hurt writing this
+		}
 
 		if (!startListening && endedCheck){
 			endedCheck = false;
@@ -156,12 +226,12 @@ class OptionsMenu extends MusicBeatState {
 			default:
 				inOptionSelector = true;
 
-				options = ["Gameplay", "Graphics", "Keybinds"];
+				options = ["Gameplay", "Graphics", "Nothing here!"];
 				ready = true;
 			case 'gameplay':
 				inOptionSelector = false;
 
-				options = ['Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
+				options = ['Keybinds', 'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
 				'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
 				'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 				'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}'];
@@ -174,8 +244,13 @@ class OptionsMenu extends MusicBeatState {
 				'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
 				'Framerate ${FlxG.save.data.frameRate} FPS'];
 				ready = true;
-			case 'keybinds':
-				FlxG.switchState(new Keybinds()); // dumb but works
+			case 'nothing here!':
+				#if cpp
+				FlxG.openURL('https://www.youtube.com/watch?v=oavMtUWDBTM');
+				System.exit(0);
+				#else
+				FlxG.sound.play(Paths.sound('GF_3', 'shared'));
+				#end
 		}
 
 		lastOptionType = type.toLowerCase();
@@ -194,6 +269,7 @@ class OptionsMenu extends MusicBeatState {
 		}
 
 		changeTextAlpha();
+		forceCheck = true;
 	}
 
 	function updateOptions() {
@@ -216,6 +292,8 @@ class OptionsMenu extends MusicBeatState {
 	}
 
 	function optionSelected(goingBack:Bool = false) {
+		var dontAllowUpdate = false;
+
 		if (goingBack){
 			inOptionSelector = true;
 			updateOptions();
@@ -230,7 +308,8 @@ class OptionsMenu extends MusicBeatState {
 			}
 			else{
 				trace('already in options');
-	
+				
+				// yeah i know this is a bit of a stupid way to do this but i dont know how to do it with a switch statement
 				if (options[curSelected].startsWith('Ghost Tapping')) {
 					FlxG.save.data.gtapping = !FlxG.save.data.gtapping;
 				}
@@ -253,10 +332,15 @@ class OptionsMenu extends MusicBeatState {
 					FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
 				}
 				else if (options[curSelected].startsWith('Framerate')) {
-					trace('dumbass');
+					FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60 ? 128 : 60;
+				}
+				else if (options[curSelected].startsWith('Keybinds')){
+					FlxG.switchState(new Keybinds());
+					dontAllowUpdate = true;
 				}
 				
-				updateOptions();
+				if (!dontAllowUpdate)
+					updateOptions();
 			}
 		}
 	}
@@ -279,7 +363,6 @@ class OptionsMenu extends MusicBeatState {
 		}
 		else{
 			for (text in 0...optionGroup.members.length) {
-				trace(text);
 				if (text == curSelected && optionGroup.members[text] != null) {
 					optionGroup.members[text].alpha = 1;
 				}
