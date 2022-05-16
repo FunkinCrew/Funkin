@@ -3,8 +3,6 @@ package optionshit;
 import openfl.system.System;
 import flixel.FlxState;
 import flixel.util.FlxTimer;
-import flixel.tweens.motion.LinearMotion;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
@@ -21,7 +19,6 @@ class OptionsMenu extends MusicBeatState {
 	var optionGroup = new FlxTypedGroup<FlxText>();
 	
 	var inOptionSelector:Bool = true;
-	var inTween:Bool = false;
 	var startListening:Bool = true;
 	var endedCheck:Bool = true;
 	var forceCheck:Bool = false;
@@ -29,21 +26,21 @@ class OptionsMenu extends MusicBeatState {
 	var curSelected:Int = 0;
 
 	var lastOptionY:Float = 0;
-	var optionYoffset:Float = 0;
 
 	var selected:FlxText;
 
 	var background:FlxSprite;
 	var text:FlxText;
 	var detailText:FlxText;
-
-	var tween:FlxTween;
+	var camFollow:FlxSprite;
 
 	override function create() {
 		super.create();
 
 		background = new FlxSprite(0, 0, Paths.image('menuBGBlue'));
 		//background.setGraphicSize(Std.int(background.width * 1.3));
+		background.scrollFactor.x = 0;
+		background.scrollFactor.y = 0;
 		background.updateHitbox();
 		background.screenCenter();
 		background.antialiasing = true;
@@ -52,6 +49,8 @@ class OptionsMenu extends MusicBeatState {
 		createOptions();
 
 		detailText = new FlxText(0, 0, FlxG.width, "Options");
+		detailText.scrollFactor.x = 0;
+		detailText.scrollFactor.y = 0;
 		detailText.setFormat("PhantomMuff 1.5", 16, FlxColor.LIME, "center");
 		detailText.screenCenter(X);
 		add(detailText);
@@ -61,12 +60,24 @@ class OptionsMenu extends MusicBeatState {
 		selected.y = lastOptionY;
 		lastOptionY += selected.height;
 		add(selected);*/
+
+		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionGroup.members[0].width), Std.int(optionGroup.members[0].height), 0xAAFF0000);
+		FlxG.camera.follow(camFollow, null, 0.06);
 	}
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+		
+		camFollow.screenCenter();
+		if (optionGroup.members[curSelected] != null) {
+			camFollow.y = optionGroup.members[curSelected].y - camFollow.height / 2;
+		}
 
-		if (controls.UP_P && !inTween) {
+		if (controls.CHEAT){
+			FlxG.save.data.frameRate = 1000;
+		}
+
+		if (controls.UP_P) {
 			curSelected--;
 
 			FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -77,20 +88,9 @@ class OptionsMenu extends MusicBeatState {
 			}
 			else{
 				changeTextAlpha();
-				for (i in 0...optionGroup.members.length) {
-					if (optionGroup.members[i] != null){
-						inTween = true;
-						//FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
-						//	optionGroup.members[i].x, optionGroup.members[i].y + optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
-						FlxTween.cubicMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, optionGroup.members[i].x,
-							optionGroup.members[i].y + (optionGroup.members[i].height * 0.3), optionGroup.members[i].x,
-							optionGroup.members[i].y + optionGroup.members[i].height, optionGroup.members[i].x, optionGroup.members[i].y + optionGroup.members[i].height, 0.3,
-							{onComplete: disableInTween});
-					}
-				}
 			}
 		}
-		else if (controls.DOWN_P && !inTween){
+		else if (controls.DOWN_P){
 			curSelected++;
 
 			FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -100,25 +100,14 @@ class OptionsMenu extends MusicBeatState {
 			}
 			else{
 				changeTextAlpha();
-				for (i in 0...optionGroup.members.length) {
-					if (optionGroup.members[i] != null){
-						inTween = true;
-						//FlxTween.linearMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, 
-						//	optionGroup.members[i].x, optionGroup.members[i].y - optionGroup.members[i].height, 0.3, true, {onComplete: disableInTween});
-						FlxTween.cubicMotion(optionGroup.members[i], optionGroup.members[i].x, optionGroup.members[i].y, optionGroup.members[i].x,
-							optionGroup.members[i].y - (optionGroup.members[i].height * 0.3), optionGroup.members[i].x,
-							optionGroup.members[i].y - optionGroup.members[i].height, optionGroup.members[i].x, optionGroup.members[i].y - optionGroup.members[i].height, 0.3,
-							{onComplete: disableInTween});
-					}
-				}
 			}
 		}
 
-		if (controls.ACCEPT && !inTween) {
+		if (controls.ACCEPT) {
 			optionSelected();
 		}
 
-		if (controls.BACK && !inTween) {
+		if (controls.BACK) {
 			if (!inOptionSelector)
 				optionSelected(true);
 			else
@@ -143,6 +132,15 @@ class OptionsMenu extends MusicBeatState {
 					}
 				}
 			}
+		}
+
+		if (FlxG.save.data.frameRate > 256){
+			FlxG.save.data.frameRate = 256;
+			updateOptions();
+		}
+		else if (FlxG.save.data.frameRate < 30){
+			FlxG.save.data.frameRate = 30;
+			updateOptions();
 		}
 
 		if (curSelected > 3)
@@ -220,8 +218,6 @@ class OptionsMenu extends MusicBeatState {
 		if (inOptionSelector)
 			curSelected = 0; // lol don't want this changing when we're not in the option selector
 
-		trace(type);
-
 		switch(type.toLowerCase()) {
 			default:
 				inOptionSelector = true;
@@ -284,10 +280,6 @@ class OptionsMenu extends MusicBeatState {
 
 		if (!inOptionSelector){
 			createOptions(lastOptionType);
-			trace(lastOptionType);
-		}
-		else{
-			optionYoffset = 0;
 		}
 	}
 
@@ -333,6 +325,7 @@ class OptionsMenu extends MusicBeatState {
 				}
 				else if (options[curSelected].startsWith('Framerate')) {
 					FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60 ? 128 : 60;
+					updateFPS();
 				}
 				else if (options[curSelected].startsWith('Keybinds')){
 					FlxG.switchState(new Keybinds());
@@ -344,18 +337,6 @@ class OptionsMenu extends MusicBeatState {
 			}
 		}
 	}
-
-	function disableInTween(tween:FlxTween):Void
-		{
-			//optionYoffset = optionGroup.members[optionGroup.length].y;
-			for (i in 0...optionGroup.members.length) {
-				if (optionGroup.members[i] != null){
-					optionYoffset = optionGroup.members[i].y; //asdhdfh
-				}
-			}
-
-			inTween = false;
-		}
 
 	function changeTextAlpha(){
 		if (curSelected == -1 || curSelected >= options.length) { // why do i have to do it like this???
