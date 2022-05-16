@@ -58,8 +58,6 @@ class Keybinds extends MusicBeatState {
 		}
 		optionText.screenCenter(X);
 
-		bgColor = FlxColor.GRAY;
-
 		#if desktop
 		optionDot = new FlxSprite(0, 0);
 		optionDot.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');

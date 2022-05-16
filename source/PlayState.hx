@@ -250,6 +250,8 @@ class PlayState extends MusicBeatState
 		daSplash.alpha = 0;
 		noteSplashes.add(daSplash);
 		if (!FlxG.save.data.liteMode){
+			bgColor = FlxColor.BLACK;
+
 			switch (SONG.song.toLowerCase())
 		{
                         case 'spookeez' | 'monster' | 'south': 
@@ -650,8 +652,10 @@ class PlayState extends MusicBeatState
 		          }
               }
 		}
-		else
+		else{
 			curStage = 'none';
+			bgColor = FlxColor.GRAY;
+		}
 
 		var gfVersion:String = 'gf';
 		
