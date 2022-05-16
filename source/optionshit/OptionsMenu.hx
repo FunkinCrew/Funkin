@@ -63,6 +63,13 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionGroup.members[0].width), Std.int(optionGroup.members[0].height), 0xAAFF0000);
 		FlxG.camera.follow(camFollow, null, 0.06);
+
+		// check if save data is null
+
+		if (FlxG.save.data.frameRate == null) {
+			FlxG.save.data.frameRate = 60;
+		}
+
 	}
 
 	override function update(elapsed:Float) {
@@ -73,8 +80,12 @@ class OptionsMenu extends MusicBeatState {
 			camFollow.y = optionGroup.members[curSelected].y - camFollow.height / 2;
 		}
 
-		if (controls.CHEAT){
-			FlxG.save.data.frameRate = 1000;
+		if (controls.CHEAT && !controls.RIGHT){
+			/*FlxG.save.data.frameRate = 1000; // push the games limit
+			updateFPS();*/
+
+			FlxG.save.data.frameRate = 16; // testing purposes
+			updateFPS();
 		}
 
 		if (controls.UP_P) {
@@ -129,18 +140,18 @@ class OptionsMenu extends MusicBeatState {
 						updateFPS();
 						updateOptions();
 						startListening = false;
+
+						if (FlxG.save.data.frameRate > 256){
+							FlxG.save.data.frameRate = 256;
+							updateOptions();
+						}
+						else if (FlxG.save.data.frameRate < 30){
+							FlxG.save.data.frameRate = 30;
+							updateOptions();
+						}
 					}
 				}
 			}
-		}
-
-		if (FlxG.save.data.frameRate > 256){
-			FlxG.save.data.frameRate = 256;
-			updateOptions();
-		}
-		else if (FlxG.save.data.frameRate < 30){
-			FlxG.save.data.frameRate = 30;
-			updateOptions();
 		}
 
 		if (curSelected > 3)
@@ -178,8 +189,11 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Lane Underlay')){
 				detailText.text = 'Shows a lane under the Notes.';
 			}
-			if (options[curSelected].startsWith('Framerate')){
+			if (options[curSelected].startsWith('Framerate Cap')){
 				detailText.text = 'Changes your Framerate.';
+			}
+			if (options[curSelected].startsWith('Lite Mode')){
+				detailText.text = 'Makes the game run faster on some low-end devices by disabling almost all features.';
 			}
 
 			// menu details
@@ -229,16 +243,17 @@ class OptionsMenu extends MusicBeatState {
 
 				options = ['Keybinds', 'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
 				'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
-				'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 				'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}'];
 				ready = true;
 			case 'graphics':
 				inOptionSelector = false;
 
 				options = ['Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
+				'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
+				'Lite Mode ${FlxG.save.data.liteMode ? 'ON' : 'OFF'}',
 				'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
 				'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
-				'Framerate ${FlxG.save.data.frameRate} FPS'];
+				'Framerate Cap ${FlxG.save.data.frameRate} FPS'];
 				ready = true;
 			case 'nothing here!':
 				#if cpp
@@ -323,13 +338,16 @@ class OptionsMenu extends MusicBeatState {
 				else if (options[curSelected].startsWith('Custom Health Colors')) {
 					FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
 				}
-				else if (options[curSelected].startsWith('Framerate')) {
+				else if (options[curSelected].startsWith('Framerate Cap')) {
 					FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60 ? 128 : 60;
 					updateFPS();
 				}
 				else if (options[curSelected].startsWith('Keybinds')){
 					FlxG.switchState(new Keybinds());
 					dontAllowUpdate = true;
+				}
+				else if(options[curSelected].startsWith('Lite Mode')){
+					FlxG.save.data.liteMode = !FlxG.save.data.liteMode;
 				}
 				
 				if (!dontAllowUpdate)
