@@ -1,3 +1,6 @@
-2.10.1;
-- Name Change
-- Simple Bug Fixes
+2.11.0;
+* Redid the Options Menu from Scratch
+* Added a FPS Cap Option
+* Added a Lite Mode Option
+* Fixed some issues related to the Name Change
+* Fixed a issue when Missing Notes where if Player 2 Missed you would Miss, Even though this isn't likely to happen.
