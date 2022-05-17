@@ -40,7 +40,7 @@ class MainMenuState extends MusicBeatState
 
 	//VERSION
 	public static var nightly:String = "";
-	public static var gameVer:String = "2.11.0";
+	public static var gameVer:String = "2.12.0";
 
 	override function create()
 	{
