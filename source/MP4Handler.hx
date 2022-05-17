@@ -7,6 +7,7 @@ import flixel.FlxG;
  * Play a video using cpp.
  * Use bitmap to connect to a graphic or use `MP4Sprite`.
  */
+#if !linux
 class MP4Handler extends vlc.VlcBitmap
 {
 	public var readyCallback:Void->Void;
@@ -116,3 +117,4 @@ class MP4Handler extends vlc.VlcBitmap
 		#end
 	}
 }
+#end

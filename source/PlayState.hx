@@ -1,5 +1,7 @@
 package;
 
+import flixel.input.actions.FlxActionManager.ActionSetJson;
+import Controls.Action;
 import flixel.math.FlxRandom;
 #if desktop
 import Discord.DiscordClient;
@@ -143,7 +145,10 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	#if !linux
 	var video:MP4Handler;
+	#end
+
 	var strumUnderlay:FlxSprite;
 
 	var ogBF = SONG.player1;
@@ -249,15 +254,8 @@ class PlayState extends MusicBeatState
 		var daSplash = new NoteSplash(100, 100, 0);
 		daSplash.alpha = 0;
 		noteSplashes.add(daSplash);
-<<<<<<< HEAD
-		if (!FlxG.save.data.liteMode){
-			bgColor = FlxColor.BLACK;
-
-			switch (SONG.song.toLowerCase())
-=======
 
 		switch (SONG.song.toLowerCase())
->>>>>>> parent of 144779d (2.10.11)
 		{
                         case 'spookeez' | 'monster' | 'south': 
                         {
@@ -656,14 +654,6 @@ class PlayState extends MusicBeatState
 		                  add(stageCurtains);
 		          }
               }
-<<<<<<< HEAD
-		}
-		else{
-			curStage = 'none';
-			bgColor = FlxColor.GRAY;
-		}
-=======
->>>>>>> parent of 144779d (2.10.11)
 
 		var gfVersion:String = 'gf';
 
@@ -2932,7 +2922,9 @@ class PlayState extends MusicBeatState
 
 	function playCutscene(name:String)
 	{
-		#if !cpp
+		#if linux
+		startCountdown();
+		#elseif !cpp
 		startCountdown();
 		#else
 		inCutscene = true;
@@ -2948,7 +2940,10 @@ class PlayState extends MusicBeatState
 	
 	function playEndCutscene(name:String)
 	{
-		#if !cpp
+		#if linux
+		playedEndCutscene = true;
+		endSong();
+		#elseif !cpp
 		playedEndCutscene = true;
 		endSong();
 		#else

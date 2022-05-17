@@ -33,7 +33,10 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+
+	#if !linux
 	var video:MP4Handler;
+	#end
 
 	//VERSION
 	public static var nightly:String = "";
@@ -145,7 +148,9 @@ class MainMenuState extends MusicBeatState
 			{
 				if (optionShit[curSelected] == 'donate')
 				{
+					#if !linux
 					//kickstarter go brr [i mean the game is gonna be released in 4/30 so why did i add this]
+					//                                                            ^^^^ well that was a lie
 					FlxG.sound.music.stop();
 					selectedSomethin = true;
 					video = new MP4Handler();
@@ -161,6 +166,7 @@ class MainMenuState extends MusicBeatState
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					}
 					video.playVideo(Paths.video("kickstarterTrailer"));
+					#end
 				}
 				else
 				{
