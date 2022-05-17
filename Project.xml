@@ -34,7 +34,9 @@
 
 	<classpath name="source" />
 
-	<assets path="assets/preload/videos" rename="assets/videos" include="*mp4" embed='false' unless='web' />
+	<assets path="assets/preload/videos" rename="assets/videos" include="*mp4" embed='false' />
+
+	<assets path="assets/preload/videos" exclude="*.mp4" if="web"/>
 	<assets path="assets/preload/videos" exclude="*.mp4" unless="web"/>
 
 	<assets path="plugins/" rename='' if="windows"/>

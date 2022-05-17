@@ -58,20 +58,20 @@ class Keybinds extends MusicBeatState {
 		}
 		optionText.screenCenter(X);
 
+<<<<<<< HEAD
 		#if desktop
+=======
+		bgColor = FlxColor.GRAY;
+
+>>>>>>> parent of 144779d (2.10.11)
 		optionDot = new FlxSprite(0, 0);
 		optionDot.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
 		optionDot.animation.addByPrefix("idle", "arrowRIGHT0");
+		optionDot.animation.addByPrefix("confirm", "right confirm");
 		optionDot.animation.play("idle");
 		optionDot.setGraphicSize(50);
 		optionDot.updateHitbox();
 		add(optionDot);
-		#else
-		optionDot = new FlxSprite().makeGraphic(50, 50, FlxColor.RED);
-		optionDot.setGraphicSize(50);
-		optionDot.updateHitbox();
-		add(optionDot);
-		#end
 
 		detailText = new FlxText(0, optionText.y + optionText.width + 24, 0, "", 24);
 		detailText.font = 'PhantomMuff 1.5';

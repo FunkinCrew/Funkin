@@ -249,10 +249,15 @@ class PlayState extends MusicBeatState
 		var daSplash = new NoteSplash(100, 100, 0);
 		daSplash.alpha = 0;
 		noteSplashes.add(daSplash);
+<<<<<<< HEAD
 		if (!FlxG.save.data.liteMode){
 			bgColor = FlxColor.BLACK;
 
 			switch (SONG.song.toLowerCase())
+=======
+
+		switch (SONG.song.toLowerCase())
+>>>>>>> parent of 144779d (2.10.11)
 		{
                         case 'spookeez' | 'monster' | 'south': 
                         {
@@ -651,14 +656,17 @@ class PlayState extends MusicBeatState
 		                  add(stageCurtains);
 		          }
               }
+<<<<<<< HEAD
 		}
 		else{
 			curStage = 'none';
 			bgColor = FlxColor.GRAY;
 		}
+=======
+>>>>>>> parent of 144779d (2.10.11)
 
 		var gfVersion:String = 'gf';
-		
+
 		switch (curStage)
 		{
 			case 'limo':
@@ -777,15 +785,14 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (!FlxG.save.data.liteMode){
-			add(gf);
+		add(gf);
 
-			if (curStage == 'limo') // Shitty layering but whatev it works LOL
-				add(limo);
+		// Shitty layering but whatev it works LOL
+		if (curStage == 'limo')
+			add(limo);
 
-			add(dad);
-			add(boyfriend);
-		}
+		add(dad);
+		add(boyfriend);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
@@ -1611,7 +1618,7 @@ class PlayState extends MusicBeatState
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		// Panic the BF
-		if (!FlxG.save.data.disablePanicableBF && !FlxG.save.data.liteMode){
+		if (!FlxG.save.data.disablePanicableBF){
 			if (ogBF == 'bf' || ogBF == 'bf-christmas'){
 				if(health >= 0.715 && !inPanic){
 					remove(boyfriend);
@@ -1686,64 +1693,62 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		if (!FlxG.save.data.liteMode){
-			if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		{
+			if (curBeat % 4 == 0)
+			{
+				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
+			}
+
+			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			{
+				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
+				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+
+				switch (dad.curCharacter)
 				{
-					if (curBeat % 4 == 0)
-					{
-						// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
-					}
-		
-					if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
-					{
-						camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
-						// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-		
-						switch (dad.curCharacter)
-						{
-							case 'mom':
-								camFollow.y = dad.getMidpoint().y;
-							case 'senpai':
-								camFollow.y = dad.getMidpoint().y - 430;
-								camFollow.x = dad.getMidpoint().x - 100;
-							case 'senpai-angry':
-								camFollow.y = dad.getMidpoint().y - 430;
-								camFollow.x = dad.getMidpoint().x - 100;
-						}
-		
-						if (dad.curCharacter == 'mom')
-							vocals.volume = 1;
-		
-						if (SONG.song.toLowerCase() == 'tutorial')
-						{
-							tweenCamIn();
-						}
-					}
-		
-					if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
-					{
-						camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
-		
-						switch (curStage)
-						{
-							case 'limo':
-								camFollow.x = boyfriend.getMidpoint().x - 300;
-							case 'mall':
-								camFollow.y = boyfriend.getMidpoint().y - 200;
-							case 'school':
-								camFollow.x = boyfriend.getMidpoint().x - 200;
-								camFollow.y = boyfriend.getMidpoint().y - 200;
-							case 'schoolEvil':
-								camFollow.x = boyfriend.getMidpoint().x - 200;
-								camFollow.y = boyfriend.getMidpoint().y - 200;
-						}
-		
-						if (SONG.song.toLowerCase() == 'tutorial')
-						{
-							FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
-						}
-					}
+					case 'mom':
+						camFollow.y = dad.getMidpoint().y;
+					case 'senpai':
+						camFollow.y = dad.getMidpoint().y - 430;
+						camFollow.x = dad.getMidpoint().x - 100;
+					case 'senpai-angry':
+						camFollow.y = dad.getMidpoint().y - 430;
+						camFollow.x = dad.getMidpoint().x - 100;
 				}
+
+				if (dad.curCharacter == 'mom')
+					vocals.volume = 1;
+
+				if (SONG.song.toLowerCase() == 'tutorial')
+				{
+					tweenCamIn();
+				}
+			}
+
+			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
+			{
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+
+				switch (curStage)
+				{
+					case 'limo':
+						camFollow.x = boyfriend.getMidpoint().x - 300;
+					case 'mall':
+						camFollow.y = boyfriend.getMidpoint().y - 200;
+					case 'school':
+						camFollow.x = boyfriend.getMidpoint().x - 200;
+						camFollow.y = boyfriend.getMidpoint().y - 200;
+					case 'schoolEvil':
+						camFollow.x = boyfriend.getMidpoint().x - 200;
+						camFollow.y = boyfriend.getMidpoint().y - 200;
+				}
+
+				if (SONG.song.toLowerCase() == 'tutorial')
+				{
+					FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+				}
+			}
 		}
 
 		if (camZooming)
@@ -1935,7 +1940,7 @@ class PlayState extends MusicBeatState
 				if (daNote.y < -daNote.height)
 				{
 					//fnf is weird
-					if (daNote.tooLate && !daNote.wasGoodHit && daNote.mustPress || !daNote.wasGoodHit && daNote.mustPress)
+					if (daNote.tooLate && !daNote.wasGoodHit || !daNote.wasGoodHit)
 					{
 						trace("Missed! Note was too late");
 						misses++;
