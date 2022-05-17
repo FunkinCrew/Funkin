@@ -249,15 +249,8 @@ class PlayState extends MusicBeatState
 		var daSplash = new NoteSplash(100, 100, 0);
 		daSplash.alpha = 0;
 		noteSplashes.add(daSplash);
-<<<<<<< HEAD
-		if (!FlxG.save.data.liteMode){
-			bgColor = FlxColor.BLACK;
-
-			switch (SONG.song.toLowerCase())
-=======
 
 		switch (SONG.song.toLowerCase())
->>>>>>> parent of 144779d (2.10.11)
 		{
                         case 'spookeez' | 'monster' | 'south': 
                         {
@@ -656,14 +649,6 @@ class PlayState extends MusicBeatState
 		                  add(stageCurtains);
 		          }
               }
-<<<<<<< HEAD
-		}
-		else{
-			curStage = 'none';
-			bgColor = FlxColor.GRAY;
-		}
-=======
->>>>>>> parent of 144779d (2.10.11)
 
 		var gfVersion:String = 'gf';
 

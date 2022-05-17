@@ -58,12 +58,6 @@ class Keybinds extends MusicBeatState {
 		}
 		optionText.screenCenter(X);
 
-<<<<<<< HEAD
-		#if desktop
-=======
-		bgColor = FlxColor.GRAY;
-
->>>>>>> parent of 144779d (2.10.11)
 		optionDot = new FlxSprite(0, 0);
 		optionDot.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
 		optionDot.animation.addByPrefix("idle", "arrowRIGHT0");
