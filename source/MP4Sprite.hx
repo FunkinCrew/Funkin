@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 /**
  * Compared to `MP4Handler`. This loads slower!!
  */
+#if !linux
 class MP4Sprite extends FlxSprite
 {
 	public var readyCallback:Void->Void;
@@ -57,3 +58,4 @@ class MP4Sprite extends FlxSprite
 		video.resume();
 	}
 }
+#end

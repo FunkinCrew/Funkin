@@ -39,11 +39,20 @@
 	<assets path="assets/preload/videos" exclude="*.mp4" if="web"/>
 	<assets path="assets/preload/videos" exclude="*.mp4" unless="web"/>
 
+	<!--Linux compatability things-->
+	<assets path="plugins/" exclude="*" if="linux"/>
+	<assets path="dlls/" exclude="*" if="linux"/>
+	<assets path="source/vlc" exclude="*" if="linux"/>
+	<assets path="assets/preload/videos" exclude="*" if="linux"/>
+
+	<section if="linux">
 	<assets path="plugins/" rename='' if="windows"/>
 	<assets path="dlls/" rename='' if="windows"/>
+	</section>
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />

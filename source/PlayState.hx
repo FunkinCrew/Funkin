@@ -1,5 +1,7 @@
 package;
 
+import flixel.input.actions.FlxActionManager.ActionSetJson;
+import Controls.Action;
 import flixel.math.FlxRandom;
 #if desktop
 import Discord.DiscordClient;
@@ -143,7 +145,10 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	#if !linux
 	var video:MP4Handler;
+	#end
+
 	var strumUnderlay:FlxSprite;
 
 	var ogBF = SONG.player1;
@@ -2917,7 +2922,9 @@ class PlayState extends MusicBeatState
 
 	function playCutscene(name:String)
 	{
-		#if !cpp
+		#if linux
+		startCountdown();
+		#elseif !cpp
 		startCountdown();
 		#else
 		inCutscene = true;
@@ -2933,7 +2940,10 @@ class PlayState extends MusicBeatState
 	
 	function playEndCutscene(name:String)
 	{
-		#if !cpp
+		#if linux
+		playedEndCutscene = true;
+		endSong();
+		#elseif !cpp
 		playedEndCutscene = true;
 		endSong();
 		#else
