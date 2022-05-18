@@ -33,5 +33,5 @@ jobs:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY}}
         run: |
           ./butler login
-          ./butler push export/debug/html5/bin ninja-muffin24/funkin-secret:html5
+          ./butler push export/debug/html5/bin ninja-muffin24/funkin-secret:html5-${GITHUB_REF##*/}
 
