@@ -63,6 +63,12 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionGroup.members[0].width), Std.int(optionGroup.members[0].height), 0xAAFF0000);
 		FlxG.camera.follow(camFollow, null, 0.06);
+
+		// Fix Options if Null
+
+		if (FlxG.save.data.frameRate = null){
+			FlxG.save.data.frameRate = 60;
+		}
 	}
 
 	override function update(elapsed:Float) {
