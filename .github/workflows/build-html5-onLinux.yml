@@ -1,22 +1,12 @@
-name: learn-github-actions
+name: build-upload-html5
 on: [push]
 jobs:
   create-nightly-html5:
     runs-on: ubuntu-latest
     steps:
-      - uses: krdlab/setup-haxe@v1.1.6
-        with:
-          haxe-version: 4.2.4
-      - uses: actions/checkout@v2
-      - name: Cache Haxe Stuff
+      - uses: ninjamuffin99/action-hmm-setup@v1
+      - name: Setting up linux
         run: |
-          haxelib config
-      - name: Installing Haxe lol
-        run: |
-          haxe -version
-          haxelib --global install hmm
-          haxelib --global run hmm setup
-          hmm install --quiet
           haxelib run lime setup linux
       - name: Build game?
         run: |
