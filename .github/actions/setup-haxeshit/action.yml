@@ -6,10 +6,6 @@ runs:
       - uses: krdlab/setup-haxe@v1.1.6
         with:
           haxe-version: 4.2.4
-      - uses: actions/cache@v3
-        with:
-          path: .haxelib/
-          key: ${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
       - name: Config haxelib
         run: |
           haxelib config
