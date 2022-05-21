@@ -15,4 +15,4 @@ IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN 
 - ...
 - yeah that's it
 
-This game was made with love to Newgrounds and its community. Extra love to Tom Fulp.
+This engine was made with love to the original game and it's devs.
