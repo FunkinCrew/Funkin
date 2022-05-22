@@ -1,1 +1,20 @@
-Tutorial
+# FORMAT: SONGNAME:CHARACTER:BPM:WEEK
+Tutorial:gf:100:1
+Bopeebo:dad:100:1
+Fresh:dad:120:1
+Dadbattle:dad:180:1
+Spookeez:spooky:150:2
+South:spooky:165:2
+Monster:monster:127:2
+Pico:pico:150:3
+Philly:pico:175:3
+Blammed:pico:165:3
+Satin-Panties:mom:95:4
+High:mom:125:4
+Milf:mom:180:4
+Cocoa:parents-christmas:100:5
+Eggnog:parents-christmas:150:5
+Winter-Horrorland:monster:159:5
+Senpai:senpai:144:6
+Roses:senpai:120:6
+Thorns:spirit:190:6

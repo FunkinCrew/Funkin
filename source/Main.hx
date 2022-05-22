@@ -1,5 +1,6 @@
 package;
 
+import states.menu.TitleState;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
