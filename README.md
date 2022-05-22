@@ -21,3 +21,6 @@ IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN 
 - yeah that's it
 
 This engine was made with love to the original game and it's devs.
+
+## Resources
+[PhantomMuff font by Cracsthor](https://gamebanana.com/tools/7763)
