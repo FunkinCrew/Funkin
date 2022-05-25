@@ -158,6 +158,8 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		// A-AA-AAA O E O AH E I O E A-AA-AAA
+
 		trace('ENDCUTSCENE PLAYED? ' + playedEndCutscene);
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();

@@ -24,6 +24,7 @@ class OptionsMenu extends MusicBeatState {
 	var forceCheck:Bool = false;
 
 	var curSelected:Int = 0;
+	var curOptionSelected:String = 'Gameplay';
 
 	var lastOptionY:Float = 0;
 
@@ -63,16 +64,17 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionGroup.members[0].width), Std.int(optionGroup.members[0].height), 0xAAFF0000);
 		FlxG.camera.follow(camFollow, null, 0.06);
-
-		// Fix Options if Null
-
-		if (FlxG.save.data.frameRate = null){
-			FlxG.save.data.frameRate = 60;
-		}
 	}
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+
+		/*if (FlxG.save.data.frameRate == null){
+			FlxG.save.data.frameRate == 60;
+			updateFPS();
+		}*/
+
+		curOptionSelected = options[curSelected].split(" ")[0];
 		
 		camFollow.screenCenter();
 		if (optionGroup.members[curSelected] != null) {
@@ -159,49 +161,35 @@ class OptionsMenu extends MusicBeatState {
 				return;
 			}
 
-			// im so fucking sorry for this
-			if (options[curSelected].startsWith('Keybinds')) {
-				detailText.text = 'Change your Controls.';
-			}
-			if (options[curSelected].startsWith('Epilepsy Mode')){
-				detailText.text = 'Prevents Epilepsy if enabled.';
-			}
-			if (options[curSelected].startsWith('Ghost Tapping')) {
-				detailText.text = "You won't miss when tapping at the wrong time.";
-			}		
-			if (options[curSelected].startsWith('Disable Distractions')){
-				detailText.text = 'Disables annoying background objects.';
-			}
-			if (options[curSelected].startsWith('Custom Health Colors')){
-				detailText.text = 'Disables or Enables the custom Health Bar Colors.';
-			}
-			if (options[curSelected].startsWith('Judgement Type')){
-				detailText.text = 'Changes the difficulty on hitting notes.';
-			}
-			if (options[curSelected].startsWith('Panicable Boyfriend')){
-				detailText.text = 'Makes the BF Panic when low on Health';
-			}
-			if (options[curSelected].startsWith('Lane Underlay')){
-				detailText.text = 'Shows a lane under the Notes.';
-			}
-			if (options[curSelected].startsWith('Framerate')){
-				detailText.text = 'Changes your Framerate.';
-			}
-
-			// menu details
-			if (options[curSelected].startsWith('Gameplay')){
-				detailText.text = 'Change Gameplay Options.';
-			}
-			if (options[curSelected].startsWith('Graphics')){
-				detailText.text = 'Change Graphical Options.';
-			}
-			if (options[curSelected].startsWith('Nothing here!')){
-				detailText.text = 'Nothing here, Don\'t click me.';
+			switch(curOptionSelected){
+				case 'Keybinds':
+					detailText.text = 'Change your Controls.';
+				case 'Epilepsy':
+					detailText.text = 'Prevents Epilepsy if enabled.';
+				case 'Ghost':
+					detailText.text = "You won't miss when tapping at the wrong time.";
+				case 'Disable':
+					detailText.text = 'Disables annoying background objects.';
+				case 'Custom':
+					detailText.text = 'Disables or Enables the custom Health Bar Colors.';
+				case 'Judgement':
+					detailText.text = 'Changes the difficulty on hitting notes.';
+				case 'Panicable':
+					detailText.text = 'Makes the BF Panic when low on Health';
+				case 'Lane':
+					detailText.text = 'Shows a lane under the Notes.';
+				case 'Framerate':
+					detailText.text = 'Changes your Framerate.';
+				case 'Gameplay':
+					detailText.text = 'Change Gameplay Options.';
+				case 'Graphics':
+					detailText.text = 'Change Graphical Options.';
+				case 'Credits':
+					detailText.text = 'View Credits.';
 			}
 
 			if (forceCheck)
 				!forceCheck;
-			// god it hurt writing this
 		}
 
 		if (!startListening && endedCheck){
@@ -228,7 +216,7 @@ class OptionsMenu extends MusicBeatState {
 			default:
 				inOptionSelector = true;
 
-				options = ["Gameplay", "Graphics", "Nothing here!"];
+				options = ["Gameplay", "Graphics", "Credits"];
 				ready = true;
 			case 'gameplay':
 				inOptionSelector = false;
@@ -246,13 +234,8 @@ class OptionsMenu extends MusicBeatState {
 				'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
 				'Framerate ${FlxG.save.data.frameRate} FPS'];
 				ready = true;
-			case 'nothing here!':
-				#if cpp
-				FlxG.openURL('https://www.youtube.com/watch?v=oavMtUWDBTM');
-				System.exit(0);
-				#else
-				FlxG.sound.play(Paths.sound('GF_3', 'shared'));
-				#end
+			case 'credits':
+				FlxG.switchState(new InformationState());
 		}
 
 		lastOptionType = type.toLowerCase();
@@ -275,6 +258,7 @@ class OptionsMenu extends MusicBeatState {
 	}
 
 	function updateOptions() {
+		
 		if (optionGroup.members.length > 0) {
 			for (i in 0...optionGroup.members.length) {
 				if (optionGroup.members[i] != null){
@@ -306,36 +290,35 @@ class OptionsMenu extends MusicBeatState {
 			}
 			else{
 				trace('already in options');
-				
-				// yeah i know this is a bit of a stupid way to do this but i dont know how to do it with a switch statement
-				if (options[curSelected].startsWith('Ghost Tapping')) {
-					FlxG.save.data.gtapping = !FlxG.save.data.gtapping;
-				}
-				else if (options[curSelected].startsWith('Judgement Type')) {
-					FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
-				}
-				else if (options[curSelected].startsWith('Disable Distractions')) {
-					FlxG.save.data.noDistractions = !FlxG.save.data.noDistractions;
-				}
-				else if (options[curSelected].startsWith('Panicable Boyfriend')) {
-					FlxG.save.data.disablePanicableBF = !FlxG.save.data.disablePanicableBF;
-				}
-				else if (options[curSelected].startsWith('Epilepsy Mode')) {
-					FlxG.save.data.epilepsyMode = !FlxG.save.data.epilepsyMode;
-				}
-				else if (options[curSelected].startsWith('Lane Underlay')) {
-					FlxG.save.data.laneUnderlay = !FlxG.save.data.laneUnderlay;
-				}
-				else if (options[curSelected].startsWith('Custom Health Colors')) {
-					FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
-				}
-				else if (options[curSelected].startsWith('Framerate')) {
-					FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60 ? 128 : 60;
-					updateFPS();
-				}
-				else if (options[curSelected].startsWith('Keybinds')){
-					FlxG.switchState(new Keybinds());
-					dontAllowUpdate = true;
+
+				switch(curOptionSelected){
+					case 'Ghost': // ghost tapping
+						FlxG.save.data.gtapping = !FlxG.save.data.gtapping;
+						options[curSelected] = 'Ghost Tapping ${FlxG.save.data.gtapping ? "ON" : "OFF"}';
+					case 'Judgement': // judgement type
+						FlxG.save.data.judgeHits = !FlxG.save.data.judgeHits;
+						options[curSelected] = 'Judgement Type ${FlxG.save.data.judgeHits ? "UNMODIFIED" : "MODIFIED"}';
+					case 'Disable': // disable distractions
+						FlxG.save.data.noDistractions = !FlxG.save.data.noDistractions;
+						options[curSelected] = 'Disable Distractions ${FlxG.save.data.noDistractions ? "ON" : "OFF"}';
+					case 'Panicable': // panicable boyfriend
+						FlxG.save.data.disablePanicableBF = !FlxG.save.data.disablePanicableBF;
+						options[curSelected] = 'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? "OFF" : "ON"}';
+					case 'Epilepsy': // epilepsy mode
+						FlxG.save.data.epilepsyMode = !FlxG.save.data.epilepsyMode;
+						options[curSelected] = 'Epilepsy Mode ${FlxG.save.data.epilepsyMode ? "ON" : "OFF"}';
+					case 'Lane': // lane underlay
+						FlxG.save.data.laneUnderlay = !FlxG.save.data.laneUnderlay;
+						options[curSelected] = 'Lane Underlay ${FlxG.save.data.laneUnderlay ? "ON" : "OFF"}';
+					case 'Custom': // Custom Health Colors
+						FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
+						options[curSelected] = 'Custom Health Colors ${FlxG.save.data.disablehealthColor ? "OFF" : "ON"}';
+					case 'Framerate': // framerate
+						FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60 ? 128 : 60;
+						updateFPS();
+					case 'Keybinds': // keybinds
+						FlxG.switchState(new Keybinds());
+						dontAllowUpdate = true;
 				}
 				
 				if (!dontAllowUpdate)
