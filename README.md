@@ -14,7 +14,7 @@ Well let me list out a few reasons why:
 * We listen to the users who use ths Engine and try to add whatever cool features you recommend us adding.
 * We try to not give up while fixing bugs and adding features.
 * We have Lite version of Week 7.
-* We have Cutscene Support.
+* We have Cutscene Support (Windows Only).
 * We have a pretty good Input System.
 
 If this hasn't convinced you, Then i don't mind. You really don't have to use this engine.
