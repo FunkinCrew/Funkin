@@ -20,3 +20,4 @@ Thorns:spirit:6
 Ugh:tankman:7
 Guns:tankman:7
 Stress:tankman:7
+Ugh-Swagmix:tankman:0

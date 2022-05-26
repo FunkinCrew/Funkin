@@ -15,7 +15,7 @@ import lime.app.Application;
 class InformationState extends MusicBeatState
 {
 	var logoBl:FlxSprite;
-	var credits:String = 'SpunBlue - Programmer\nthepercentageguy - Created the original version of this Engine';
+	var credits:String = 'SpunBlue - Programmer\nthepercentageguy - Created the original version of this Engine\nSwaggus - Created the Remixes';
 	
 	override function create()
 	{
