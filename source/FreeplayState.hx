@@ -188,6 +188,26 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		switch (songs[curSelected].songName){
+			case 'Ugh-Swagmix':
+				if (diffText.text != "< SWAGMIX >"){
+					curDifficulty = 2;
+					loadScoreData();
+					diffText.text = "< SWAGMIX >";
+					trace("LETS SWAGMIX");
+				}
+			default:
+				if (diffText.text == "< SWAGMIX >"){
+					curDifficulty = 1;
+					diffText.text = "< NORMAL >";
+				}
+
+				if (controls.LEFT_P)
+					changeDiff(-1);
+				if (controls.RIGHT_P)
+					changeDiff(1);
+		}
+
 		if (FlxG.sound.music.volume < 0.7)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
@@ -219,11 +239,6 @@ class FreeplayState extends MusicBeatState
 				updateColor();
 			}
 		}
-
-		if (controls.LEFT_P)
-			changeDiff(-1);
-		if (controls.RIGHT_P)
-			changeDiff(1);
 
 		if (controls.BACK)
 		{
@@ -264,7 +279,7 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 0;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		loadScoreData();
 		#end
 
 		switch (curDifficulty)
@@ -276,6 +291,10 @@ class FreeplayState extends MusicBeatState
 			case 2:
 				diffText.text = "< HARD >";
 		}
+	}
+
+	function loadScoreData(){
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 	}
 
 	function changeSelection(change:Int = 0)
