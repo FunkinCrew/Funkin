@@ -8,7 +8,10 @@ import flixel.util.FlxColor;
 class InformationState extends MusicBeatState
 {
 	var logoBl:FlxSprite;
-	var credits:String = 'SpunBlue - Programmer\nthepercentageguy - Created the original version of this Engine\nSwaggus - Created the Remixes';
+	var credits:String =	'SpunBlue - Programmer\n'+
+							'Swaggus - Made the Remixes\n'+
+							'thepercentageguy - Created the Original Version of this Engine\n'+
+							'thepercentageguy - Added Linux Support'; //percentage forced me to make it like this
 	
 	override function create()
 	{

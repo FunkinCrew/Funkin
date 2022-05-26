@@ -10,6 +10,7 @@ import flash.Lib;
 import flixel.FlxG;
  
 @:bitmap("art/preloaderArt.png") class LogoImage extends BitmapData { }
+@:bitmap("art/spunbluelogo.png") class SpunLogoImage extends BitmapData { }
  
 class Preloader extends FlxBasePreloader
 {
@@ -33,6 +34,13 @@ class Preloader extends FlxBasePreloader
         logo.x = ((this._width) / 2) - ((logo.width) / 2);
         logo.y = (this._height / 2) - ((logo.height) / 2);
         addChild(logo); //Adds the graphic to the NMEPreloader's buffer.
+
+        var spunLogo:Sprite = new Sprite();
+        spunLogo.addChild(new Bitmap(new SpunLogoImage(0,0)));
+        spunLogo.scaleX = spunLogo.scaleY = ratio;
+        spunLogo.x = ((this._width) / 1) - ((spunLogo.width) / 1);
+        spunLogo.y = (this._height / 1) - ((spunLogo.height) / 1);
+        addChild(spunLogo);
          
         super.create();
     }
@@ -51,7 +59,7 @@ class Preloader extends FlxBasePreloader
             logo.x = ((this._width) / 2) - ((logo.width) / 2);
             logo.y = (this._height / 2) - ((logo.height) / 2);
         }
-        
+
         super.update(Percent);
     }
 }
