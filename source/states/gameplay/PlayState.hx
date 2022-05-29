@@ -1853,10 +1853,8 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(offset:Float):Void
 	{
-		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
-		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
 		var placement:String = Std.string(combo);
@@ -1871,17 +1869,17 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
-		if (noteDiff > Conductor.safeZoneOffset * 0.9)
+		if (offset > Std.int(Option.recieveValue("DEBUG_shitTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_shitTiming")))
 		{
 			daRating = 'shit';
 			score = 50;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
+		else if (offset > Std.int(Option.recieveValue("DEBUG_badTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_badTiming")))
 		{
 			daRating = 'bad';
 			score = 100;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+		else if (offset > Std.int(Option.recieveValue("DEBUG_goodTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_goodTiming")))
 		{
 			daRating = 'good';
 			score = 200;
@@ -2009,7 +2007,13 @@ class PlayState extends MusicBeatState
 
 	private function keyShit():Void
 	{
-		// HOLDING
+		// re-writing this from scratch because the old input system fucking sucks
+		// this input system is distance-based.
+		// it compares the notes to the Y position of the strum line to get the rating.
+
+		var strumY = strumLine.y;
+		
+		// vars for easier reading of the code
 		var up = controls.UP;
 		var right = controls.RIGHT;
 		var down = controls.DOWN;
@@ -2025,143 +2029,180 @@ class PlayState extends MusicBeatState
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
 
-		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
-
-		// FlxG.watch.addQuick('asdfa', upP);
-		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
+		if (upP)
 		{
-			boyfriend.holdTimer = 0;
-
-			var possibleNotes:Array<Note> = [];
-
-			var ignoreList:Array<Int> = [];
-
-			notes.forEachAlive(function(daNote:Note)
+			if (!FlxG.overlap(notes, playerStrums))
 			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
-				{
-					// the sorting probably doesn't need to be in here? who cares lol
-					possibleNotes.push(daNote);
-					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+				// we didn't hit shit.
 
-					ignoreList.push(daNote.noteData);
-				}
-			});
-
-			if (possibleNotes.length > 0)
-			{
-				var daNote = possibleNotes[0];
-
-				if (perfectMode)
-					noteCheck(true, daNote);
-
-				// Jump notes
-				if (possibleNotes.length >= 2)
-				{
-					if (possibleNotes[0].strumTime == possibleNotes[1].strumTime)
-					{
-						for (coolNote in possibleNotes)
-						{
-							if (controlArray[coolNote.noteData])
-								goodNoteHit(coolNote);
-							else
-							{
-								var inIgnoreList:Bool = false;
-								for (shit in 0...ignoreList.length)
-								{
-									if (controlArray[ignoreList[shit]])
-										inIgnoreList = true;
-								}
-								if (!inIgnoreList)
-									badNoteCheck();
-							}
-						}
-					}
-					else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
-					{
-						noteCheck(controlArray[daNote.noteData], daNote);
-					}
-					else
-					{
-						for (coolNote in possibleNotes)
-						{
-							noteCheck(controlArray[coolNote.noteData], coolNote);
-						}
-					}
-				}
-				else // regular notes?
-				{
-					noteCheck(controlArray[daNote.noteData], daNote);
-				}
-				/* 
-					if (controlArray[daNote.noteData])
-						goodNoteHit(daNote);
-				 */
-				// trace(daNote.noteData);
-				/* 
-						switch (daNote.noteData)
-						{
-							case 2: // NOTES YOU JUST PRESSED
-								if (upP || rightP || downP || leftP)
-									noteCheck(upP, daNote);
-							case 3:
-								if (upP || rightP || downP || leftP)
-									noteCheck(rightP, daNote);
-							case 1:
-								if (upP || rightP || downP || leftP)
-									noteCheck(downP, daNote);
-							case 0:
-								if (upP || rightP || downP || leftP)
-									noteCheck(leftP, daNote);
-						}
-
-					//this is already done in noteCheck / goodNoteHit
-					if (daNote.wasGoodHit)
-					{
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
-					}
-				 */
+				noteMiss(2);
 			}
-			else
+			notes.forEachAlive(function(note:Note)
 			{
-				badNoteCheck();
-			}
-		}
-
-		if ((up || right || down || left) && !boyfriend.stunned && generatedMusic)
-		{
-			notes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
+				if (note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
 				{
-					switch (daNote.noteData)
-					{
-						// NOTES YOU ARE HOLDING
-						case 0:
-							if (left)
-								goodNoteHit(daNote);
-						case 1:
-							if (down)
-								goodNoteHit(daNote);
-						case 2:
-							if (up)
-								goodNoteHit(daNote);
-						case 3:
-							if (right)
-								goodNoteHit(daNote);
-					}
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					var timing = note.y - strumY;
+					trace('UP TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					popUpScore(timing);
 				}
 			});
 		}
 
-		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left)
+		if (downP)
 		{
-			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+			if (!FlxG.overlap(notes, playerStrums))
 			{
-				boyfriend.playAnim('idle');
+				// we didn't hit shit.
+
+				noteMiss(1);
 			}
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
+				{
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					var timing = note.y - strumY;
+					trace('DOWN TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					popUpScore(timing);
+				}
+			});
+		}
+
+		if (leftP)
+		{
+			if (!FlxG.overlap(notes, playerStrums))
+			{
+				// we didn't hit shit.
+
+				noteMiss(0);
+			}
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
+				{
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					var timing = note.y - strumY;
+					trace('LEFT TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					popUpScore(timing);
+				}
+			});
+		}
+
+		if (rightP)
+		{
+			if (!FlxG.overlap(notes, playerStrums))
+			{
+				// we didn't hit shit.
+
+				noteMiss(3);
+			}
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
+				{
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					var timing = note.y - strumY;
+					trace('RIGHT TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					popUpScore(timing);
+				}
+			});
+		}
+
+		if (up)
+		{
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && note.isSustainNote)
+				{
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					// var timing = note.y - strumY;
+					// trace('UP HOLD TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					// popUpScore(timing);
+				}
+			});
+		}
+
+		if (left)
+		{
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && note.isSustainNote)
+				{
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					// var timing = note.y - strumY;
+					// trace('LEFT HOLD TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					// popUpScore(timing);
+				}
+			});
+		}
+
+		if (right)
+		{
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && note.isSustainNote)
+				{
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					// var timing = note.y - strumY;
+					// trace('RIGHT HOLD TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					// popUpScore(timing);
+				}
+			});
+		}
+
+		if (down)
+		{
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && note.isSustainNote)
+				{
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					// var timing = note.y - strumY;
+					// trace('BLUE HOLD TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					// popUpScore(timing);
+				}
+			});
 		}
 
 		playerStrums.forEach(function(spr:FlxSprite)
@@ -2190,17 +2231,14 @@ class PlayState extends MusicBeatState
 						spr.animation.play('static');
 			}
 
-			if (spr.animation.curAnim != null)
+			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
 			{
-				if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-				{
-					spr.centerOffsets();
-					spr.offset.x -= 13;
-					spr.offset.y -= 13;
-				}
-				else
-					spr.centerOffsets();
+				spr.centerOffsets();
+				spr.offset.x -= 13;
+				spr.offset.y -= 13;
 			}
+			else
+				spr.centerOffsets();
 		});
 	}
 
@@ -2244,42 +2282,13 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function badNoteCheck()
-	{
-		// just double pasting this shit cuz fuk u
-		// REDO THIS SYSTEM!
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-
-		if (leftP)
-			noteMiss(0);
-		if (downP)
-			noteMiss(1);
-		if (upP)
-			noteMiss(2);
-		if (rightP)
-			noteMiss(3);
-	}
-
-	function noteCheck(keyP:Bool, note:Note):Void
-	{
-		if (keyP)
-			goodNoteHit(note);
-		else
-		{
-			badNoteCheck();
-		}
-	}
-
 	function goodNoteHit(note:Note):Void
 	{
 		if (!note.wasGoodHit)
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime);
+				// popUpScore(note.strumTime);
 				combo += 1;
 			}
 

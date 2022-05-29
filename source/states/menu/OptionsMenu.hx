@@ -67,7 +67,14 @@ class OptionsMenu extends MusicBeatState
 			]),
 			new OptionGroup("Misc", [
 				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions)
+			]),
+			#if debug
+			new OptionGroup("Debug", [
+				new RangeOption("Good Timing %v", "Controls the timing window of good", 40, 100, 5, "DEBUG_goodTiming"),
+				new RangeOption("Bad Timing %v", "Controls the timing window of bad", 60, 100, 5, "DEBUG_badTiming"),
+				new RangeOption("Shit Timing %v", "Controls the timing window of shit", 75, 100, 5, "DEBUG_shitTiming"),
 			])
+			#end
 		];
 
 		transIn = FlxTransitionableState.defaultTransIn;
