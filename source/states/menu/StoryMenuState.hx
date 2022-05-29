@@ -80,6 +80,15 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+			{
+				FlxG.camera.antialiasing = true;
+			}
+			else
+			{
+				FlxG.camera.antialiasing = false;
+			}
+
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
@@ -133,7 +142,7 @@ class StoryMenuState extends MusicBeatState
 			grpWeekText.add(weekThing);
 
 			weekThing.screenCenter(X);
-			weekThing.antialiasing = true;
+			weekThing.antialiasing = false;
 			// weekThing.updateHitbox();
 
 			// Needs an offset thingie
@@ -144,7 +153,7 @@ class StoryMenuState extends MusicBeatState
 				lock.animation.addByPrefix('lock', 'lock');
 				lock.animation.play('lock');
 				lock.ID = i;
-				lock.antialiasing = true;
+				lock.antialiasing = false;
 				grpLocks.add(lock);
 			}
 		}
@@ -155,7 +164,7 @@ class StoryMenuState extends MusicBeatState
 		{
 			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[curWeek][char]);
 			weekCharacterThing.y += 70;
-			weekCharacterThing.antialiasing = true;
+			weekCharacterThing.antialiasing = false;
 			switch (weekCharacterThing.character)
 			{
 				case 'dad':
@@ -216,7 +225,7 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist = new FlxText(FlxG.width * 0.05, yellowBG.x + yellowBG.height + 100, 0, "Tracks:", 32);
 		txtTracklist.alignment = CENTER;
 		txtTracklist.font = Paths.font("PhantomMuff.ttf");
-		txtTracklist.antialiasing = true;
+		txtTracklist.antialiasing = false;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
 		// add(rankText);

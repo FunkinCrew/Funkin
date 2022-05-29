@@ -21,6 +21,15 @@ class GitarooPause extends MusicBeatState
 
 	override function create()
 	{
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+		{
+			FlxG.camera.antialiasing = true;
+		}
+		else
+		{
+			FlxG.camera.antialiasing = false;
+		}
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 

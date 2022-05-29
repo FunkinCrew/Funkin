@@ -26,6 +26,15 @@ class GameOverState extends FlxTransitionableState
 
 	override function create()
 	{
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+			{
+				FlxG.camera.antialiasing = true;
+			}
+			else
+			{
+				FlxG.camera.antialiasing = false;
+			}
+
 		/* var loser:FlxSprite = new FlxSprite(100, 100);
 			var loseTex = FlxAtlasFrames.fromSparrow(AssetPaths.lose.png, AssetPaths.lose.xml);
 			loser.frames = loseTex;
@@ -44,7 +53,7 @@ class GameOverState extends FlxTransitionableState
 			restart.setGraphicSize(Std.int(restart.width * 0.6));
 			restart.updateHitbox();
 			restart.alpha = 0;
-			restart.antialiasing = true;
+			restart.antialiasing = false;
 			// add(restart); */
 
 		FlxG.sound.music.fadeOut(2, FlxG.sound.music.volume * 0.6);

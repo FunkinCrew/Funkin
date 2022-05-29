@@ -31,6 +31,16 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+			{
+				FlxG.camera.antialiasing = true;
+			}
+			else
+			{
+				FlxG.camera.antialiasing = false;
+			}
+
+
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));

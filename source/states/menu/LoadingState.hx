@@ -39,9 +39,18 @@ class LoadingState extends MusicBeatState
 	
 	override function create()
 	{
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+			{
+				FlxG.camera.antialiasing = true;
+			}
+			else
+			{
+				FlxG.camera.antialiasing = false;
+			}
+
 		logo = new FlxSprite(-150, -100);
 		logo.frames = Paths.getSparrowAtlas('logoBumpin');
-		logo.antialiasing = true;
+		logo.antialiasing = false;
 		logo.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logo.animation.play('bump');
 		logo.updateHitbox();
@@ -52,7 +61,7 @@ class LoadingState extends MusicBeatState
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-		gfDance.antialiasing = true;
+		gfDance.antialiasing = false;
 		add(gfDance);
 		add(logo);
 		

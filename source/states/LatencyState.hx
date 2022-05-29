@@ -17,6 +17,15 @@ class LatencyState extends FlxState
 
 	override function create()
 	{
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+			{
+				FlxG.camera.antialiasing = true;
+			}
+			else
+			{
+				FlxG.camera.antialiasing = false;
+			}
+
 		FlxG.sound.playMusic(Paths.sound('soundTest'));
 
 		noteGrp = new FlxTypedGroup<Note>();

@@ -48,9 +48,18 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+			{
+				FlxG.camera.antialiasing = true;
+			}
+			else
+			{
+				FlxG.camera.antialiasing = false;
+			}
+
 		optionGroups = [
 			new OptionGroup("Graphics", [
-				new CycleOption("Global Antialiasing %v", "Enables Antialiasing on everything.", ["Off", "On"], "GRAPHICS_globalAA"),
+				new CycleOption("Antialiasing %v", "Decides whether edges on sprites should be smooth. Affects performance.", ["Off", "On"], "GRAPHICS_globalAA"),
 			]),
 			new OptionGroup("Gameplay", [
 				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["Off", "On"], "GAMEPLAY_showScoreTxt"),
@@ -68,7 +77,7 @@ class OptionsMenu extends MusicBeatState
 		stateBG.setGraphicSize(Std.int(stateBG.width * 1.1));
 		stateBG.updateHitbox();
 		stateBG.screenCenter();
-		stateBG.antialiasing = true;
+		stateBG.antialiasing = false;
 		add(stateBG);
 
 		var menuBG:FlxSprite = new FlxSprite().makeGraphic(Std.int(FlxG.width * 0.9), Std.int(FlxG.height * 0.9), 0xAA000000);
@@ -264,6 +273,7 @@ class OptionsMenu extends MusicBeatState
 			if (Std.isOfType(optionGroups[curSelectedGroup].options[curSelectedOption], CycleOption))
 			{
 				// bro what even is this code
+				(optionGroups[curSelectedGroup].options[curSelectedOption] : CycleOption).curValue = valueMap[(optionGroups[curSelectedGroup].options[curSelectedOption] : CycleOption).saveTo];
 				if ((optionGroups[curSelectedGroup].options[curSelectedOption] : CycleOption).curValue > (optionGroups[curSelectedGroup].options[curSelectedOption] : CycleOption).possibleValues.length - 2)
 					(optionGroups[curSelectedGroup].options[curSelectedOption] : CycleOption).curValue = 0;
 				else

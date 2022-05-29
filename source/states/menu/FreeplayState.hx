@@ -1,5 +1,6 @@
 package states.menu;
 
+import engine.functions.Option;
 import engine.functions.Conductor;
 import engine.functions.Song;
 import engine.util.Highscore;
@@ -44,6 +45,15 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+		{
+			FlxG.camera.antialiasing = true;
+		}
+		else
+		{
+			FlxG.camera.antialiasing = false;
+		}
+
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		for (i in 1...initSonglist.length) // skip line 1 cause the help thingy is there
