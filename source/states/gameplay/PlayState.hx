@@ -187,6 +187,12 @@ class PlayState extends MusicBeatState
 			camHUD.antialiasing = false;
 		}
 
+		if (Option.recieveValue("GRAPHICS_liteMode") == 1)
+		{
+			// just make it invisible lol
+			camGame.visible = false;
+		}
+
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 

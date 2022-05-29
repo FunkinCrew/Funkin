@@ -60,6 +60,7 @@ class OptionsMenu extends MusicBeatState
 		optionGroups = [
 			new OptionGroup("Graphics", [
 				new CycleOption("Antialiasing %v", "Decides whether edges on sprites should be smooth. Affects performance.", ["Off", "On"], "GRAPHICS_globalAA"),
+				new CycleOption("Lite Mode %v", "Only draws HUD elements when enabled.", ["Off", "On"], "GRAPHICS_liteMode"),
 			]),
 			new OptionGroup("Gameplay", [
 				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["Off", "On"], "GAMEPLAY_showScoreTxt"),
@@ -188,7 +189,7 @@ class OptionsMenu extends MusicBeatState
 			if (!focusedOnRange)
 			{
 				inGroup = false;
-				descriptionText.text = "Please select an option to view it's description.";
+				descriptionText.text = "Please select an option to view its description.";
 			}
 			else
 			{
@@ -315,7 +316,7 @@ class OptionsMenu extends MusicBeatState
 		else if (focusedOnRange)
 			descriptionText.text = "Focused on option. Press ENTER again to apply.";
 		else
-			descriptionText.text = "Please select an option to view it's description.";
+			descriptionText.text = "Please select an option to view its description.";
 
 		// idk how shit this math is, copilot made it. but it works :)
 		if (selectorSprite != null)
