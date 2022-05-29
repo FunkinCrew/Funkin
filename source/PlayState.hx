@@ -2880,11 +2880,7 @@ class PlayState extends MusicBeatState
 
 	function playCutscene(name:String)
 	{
-		#if linux
-		startCountdown();
-		#elseif !cpp
-		startCountdown();
-		#else
+		#if windows
 		inCutscene = true;
 	
 		video = new MP4Handler();
@@ -2893,18 +2889,14 @@ class PlayState extends MusicBeatState
 			startCountdown();
 		}
 		video.playVideo(Paths.video(name));
+		#else
+		startCountdown();
 		#end
 	}
 	
 	function playEndCutscene(name:String)
 	{
-		#if linux
-		playedEndCutscene = true;
-		endSong();
-		#elseif !cpp
-		playedEndCutscene = true;
-		endSong();
-		#else
+		#if windows
 		//Doesn't check if the song is ending sense it gets called to play WHILE the song is ending.
 		inCutscene = true;
 
@@ -2920,6 +2912,9 @@ class PlayState extends MusicBeatState
 			endSong();
 		}
 		video.playVideo(Paths.video(name));
+		#else
+		playedEndCutscene = true;
+		endSong();
 		#end
 	}
 

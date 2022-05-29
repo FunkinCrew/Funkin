@@ -44,6 +44,11 @@
 	<assets path="dlls/" exclude="*" if="linux"/>
 	<assets path="source/vlc" exclude="*" if="linux"/>
 	<assets path="assets/preload/videos" exclude="*" if="linux"/>
+	<!--MacOS compatability things-->
+	<assets path="plugins/" exclude="*" if="mac"/>
+	<assets path="dlls/" exclude="*" if="mac"/>
+	<assets path="source/vlc" exclude="*" if="mac"/>
+	<assets path="assets/preload/videos" exclude="*" if="mac"/>
 
 	<assets path="plugins/" rename='' if="windows"/>
 	<assets path="dlls/" rename='' if="windows"/>
