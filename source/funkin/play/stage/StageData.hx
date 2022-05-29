@@ -367,7 +367,7 @@ class StageDataParser
 			{
 				if (inputCharacter == input.characters.bf)
 					inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_BF;
-				if (inputCharacter == input.characters.dad)
+				else if (inputCharacter == input.characters.dad)
 					inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_DAD;
 				else
 				{
