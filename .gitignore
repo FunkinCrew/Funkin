@@ -1,3 +1,4 @@
 export/
 .vscode/
+.VSCodeCounter/
 APIStuff.hx

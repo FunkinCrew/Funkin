@@ -22,17 +22,8 @@ import lime.utils.Assets;
 using StringTools;
 class OptionsMenu extends MusicBeatState
 {
-	// you shouldn't have to change anything besides this array for custom options.
-	
-	var optionGroups:Array<OptionGroup> = [
-		new OptionGroup("Graphics", [
-			new CycleOption("Global Antialiasing %v", "Enables Antialiasing on everything.", ["Off", "On"], "GRAPHICS_globalAA"),
-			new RangeOption("FPS cap << %v >>", "How high the FPS can go.", 0, 100, 10, "GRAPHICS_fpsCap"),
-		]),
-		new OptionGroup("Gameplay", [
-			new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["Off", "On"], "GAMEPLAY_showScoreTxt"),
-		])
-	];
+	// options are at the top of create() now	
+	var optionGroups:Array<OptionGroup> = [];
 	
 
 	var curDisplayed:FlxTypedGroup<FlxText>;
@@ -57,6 +48,19 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
+		optionGroups = [
+			new OptionGroup("Graphics", [
+				new CycleOption("Global Antialiasing %v", "Enables Antialiasing on everything.", ["Off", "On"], "GRAPHICS_globalAA"),
+				new RangeOption("FPS cap << %v >>", "How high the FPS can go.", 60, 100, 10, "GRAPHICS_fpsCap"),
+			]),
+			new OptionGroup("Gameplay", [
+				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["Off", "On"], "GAMEPLAY_showScoreTxt"),
+			]),
+			new OptionGroup("Misc", [
+				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions)
+			])
+		];
+
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
@@ -282,6 +286,10 @@ class OptionsMenu extends MusicBeatState
 				}
 				focusedOnRange = !focusedOnRange;
 			}
+			else if (Std.isOfType(optionGroups[curSelectedGroup].options[curSelectedOption], FunctionOption))
+			{
+				(optionGroups[curSelectedGroup].options[curSelectedOption] : FunctionOption).func();
+			}
 		}
 
 		super.update(elapsed);
@@ -336,8 +344,6 @@ class OptionsMenu extends MusicBeatState
 	{
 		if (valueMap == null)
 			return null;
-		if (valueMap[name] == null)
-			valueMap[name] = 0;
 
 		trace('getOptionValue: ${name}, ISCYCLE: ${isCycle}');
 
@@ -345,6 +351,9 @@ class OptionsMenu extends MusicBeatState
 		{
 			try
 			{
+				if (valueMap[name] == null)
+					valueMap[name] = 0;
+
 				return (option : CycleOption).possibleValues[valueMap[name]];
 			}
 			catch (e)
@@ -355,8 +364,17 @@ class OptionsMenu extends MusicBeatState
 		}
 		else
 		{
+			if (valueMap[name] == null)
+				valueMap[name] = (option : RangeOption).min;
+
 			return valueMap[name];
 		}
+	}
+
+	function clearOptions()
+	{
+		valueMap.clear();
+		updateMenu();
 	}
 }
 
@@ -418,6 +436,25 @@ class RangeOption
 		this.curValue = defaultValue;
 		this.stepSize = stepSize;
 		this.saveTo = saveTo;
+	}
+}
+
+/**
+ * An option type that calls a function when interacted with.
+ * @param label The text displayed in the options menu.
+ * @param description The description of the option.
+ * @param func The function to call.
+ */
+class FunctionOption {
+	public var label:String;
+	public var description:String;
+	public var func:Void -> Void;
+
+	public function new(label:String, description:String, func:Void -> Void)
+	{
+		this.label = label;
+		this.description = description;
+		this.func = func;
 	}
 }
 
