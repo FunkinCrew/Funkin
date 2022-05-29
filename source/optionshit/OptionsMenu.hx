@@ -232,7 +232,7 @@ class OptionsMenu extends MusicBeatState {
 				options = ['Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
 				'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
 				'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
-				'Framerate ${FlxG.save.data.frameRate} FPS'];
+				'Framerate ' + FlxG.save.data.frameRate + ' FPS'];
 				ready = true;
 			case 'credits':
 				FlxG.switchState(new InformationState());
@@ -314,13 +314,15 @@ class OptionsMenu extends MusicBeatState {
 						FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
 						options[curSelected] = 'Custom Health Colors ${FlxG.save.data.disablehealthColor ? "OFF" : "ON"}';
 					case 'Framerate': // framerate
-						FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60 ? 128 : 60;
+						FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60;
 						updateFPS();
 					case 'Keybinds': // keybinds
 						FlxG.switchState(new Keybinds());
 						dontAllowUpdate = true;
 				}
 				
+				FlxG.save.data.push();
+
 				if (!dontAllowUpdate)
 					updateOptions();
 			}

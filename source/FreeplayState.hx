@@ -190,12 +190,7 @@ class FreeplayState extends MusicBeatState
 
 		switch (songs[curSelected].songName){
 			case 'Ugh-Swagmix':
-				if (diffText.text != "< SWAGMIX >"){
-					curDifficulty = 2;
-					loadScoreData();
-					diffText.text = "< SWAGMIX >";
-					trace("LETS SWAGMIX");
-				}
+				setSwagmixDifficulty();
 			default:
 				if (diffText.text == "< SWAGMIX >"){
 					curDifficulty = 1;
@@ -278,9 +273,7 @@ class FreeplayState extends MusicBeatState
 		if (curDifficulty > 2)
 			curDifficulty = 0;
 
-		#if !switch
 		loadScoreData();
-		#end
 
 		switch (curDifficulty)
 		{
@@ -294,8 +287,22 @@ class FreeplayState extends MusicBeatState
 	}
 
 	function loadScoreData(){
+		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		#end
 	}
+
+	function setSwagmixDifficulty(){
+		if (diffText.text != "< SWAGMIX >"){
+			curDifficulty = 2;
+			loadScoreData();
+			diffText.text = "< SWAGMIX >";
+			trace("LETS SWAGMIX");
+		}
+		else{
+			return;
+		}
+	} // i like putting stuff in functions xD
 
 	function changeSelection(change:Int = 0)
 	{
@@ -317,10 +324,7 @@ class FreeplayState extends MusicBeatState
 
 		// selector.y = (70 * curSelected) + 30;
 
-		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		// lerpScore = 0;
-		#end
+		loadScoreData();
 
 		#if PRELOAD_ALL
 		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
