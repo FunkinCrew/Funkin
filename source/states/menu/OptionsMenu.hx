@@ -51,7 +51,6 @@ class OptionsMenu extends MusicBeatState
 		optionGroups = [
 			new OptionGroup("Graphics", [
 				new CycleOption("Global Antialiasing %v", "Enables Antialiasing on everything.", ["Off", "On"], "GRAPHICS_globalAA"),
-				new RangeOption("FPS cap << %v >>", "How high the FPS can go.", 60, 100, 10, "GRAPHICS_fpsCap"),
 			]),
 			new OptionGroup("Gameplay", [
 				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["Off", "On"], "GAMEPLAY_showScoreTxt"),
@@ -260,7 +259,7 @@ class OptionsMenu extends MusicBeatState
 			}
 		}
 
-		if (controls.ACCEPT)
+		if (controls.ACCEPT && inGroup)
 		{
 			if (Std.isOfType(optionGroups[curSelectedGroup].options[curSelectedOption], CycleOption))
 			{
@@ -298,7 +297,9 @@ class OptionsMenu extends MusicBeatState
 
 	function updateMenu()
 	{
-		
+		// not copied from sublim engine, at all.	
+		// updateFPS();
+
 		if (inGroup && !focusedOnRange)
 			descriptionText.text = optionGroups[curSelectedGroup].options[curSelectedOption].description;
 		else if (focusedOnRange)
@@ -364,7 +365,7 @@ class OptionsMenu extends MusicBeatState
 		}
 		else
 		{
-			if (valueMap[name] == null)
+			if (valueMap[name] == null && Std.isOfType(option, RangeOption))
 				valueMap[name] = (option : RangeOption).min;
 
 			return valueMap[name];
@@ -375,6 +376,17 @@ class OptionsMenu extends MusicBeatState
 	{
 		valueMap.clear();
 		updateMenu();
+	}
+
+	function updateFPS() {
+		if (FlxG.save.data.frameRate > FlxG.drawFramerate){
+			FlxG.updateFramerate = valueMap["GRAPHICS_fpsCap"];
+			FlxG.drawFramerate = valueMap["GRAPHICS_fpsCap"];
+		}
+		else{
+			FlxG.drawFramerate = valueMap["GRAPHICS_fpsCap"];
+			FlxG.updateFramerate = valueMap["GRAPHICS_fpsCap"];
+		}
 	}
 }
 
