@@ -15,8 +15,8 @@ IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN 
 
 ## Credits / shoutouts
 
-- [thepercentageguy](https://twitter.com/PercentageGuy) - Main Developer
-- ...
+- [thepercentageguy](https://twitter.com/PercentageGuy) - Mod Developer, Engine Creator
+- [Trigger_](https://twitter.com/Oculus_eyeball) Director, Artist, Animator of the mod
 - ...
 - yeah that's it
 
