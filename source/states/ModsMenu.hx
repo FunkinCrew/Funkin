@@ -159,7 +159,9 @@ class ModsMenu extends MusicBeatState
 			if(x.Alphabet_Text.targetY == 0)
 			{
 				descriptionText.screenCenter(X);
-				descriptionText.text = ModList.modMetadatas.get(x.Option_Value).description + "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value).author + "\n";
+
+				@:privateAccess
+				descriptionText.text = ModList.modMetadatas.get(x.Option_Value).description + "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value)._author + "\n";
 			}
 
 			bruh++;

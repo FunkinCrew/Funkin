@@ -14,9 +14,12 @@ class PolymodHandler
 		Polymod.init({
 			modRoot:"mods/",
 			dirs: ModList.getActiveMods(metadataArrays),
+            framework: OPENFL,
 			errorCallback: function(error:PolymodError)
 			{
-				//trace(error.message);
+				#if debug
+                trace(error.message);
+                #end
 			},
             frameworkParams: {
                 assetLibraryPaths: [
@@ -35,7 +38,9 @@ class PolymodHandler
         metadataArrays = [];
 
         var tempArray = Polymod.scan("mods/","*.*.*",function(error:PolymodError) {
-			//trace(error.message);
+            #if debug
+			trace(error.message);
+            #end
 		});
 
         for(metadata in tempArray)

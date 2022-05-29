@@ -1875,8 +1875,54 @@ class PlayState extends MusicBeatState
 
 	public var ratingStr:String = "";
 
+	/**
+		Update that runs every 120 frames (for health icon bounce and shit :D)
+	**/
+	public function fixedUpdate()
+	{
+		var icon_Zoom_Lerp = 0.045;
+
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, iconP1.startWidth, icon_Zoom_Lerp * songMultiplier)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, iconP2.startWidth, icon_Zoom_Lerp * songMultiplier)));
+
+		iconP1.updateHitbox();
+		iconP2.updateHitbox();
+
+		iconP1.setGraphicSize(Std.int(CoolUtil.boundTo(iconP1.width, 0, iconP1.startWidth + 30)));
+		iconP2.setGraphicSize(Std.int(CoolUtil.boundTo(iconP2.width, 0, iconP2.startWidth + 30)));
+
+		iconP1.updateHitbox();
+		iconP2.updateHitbox();
+
+		var iconOffset:Int = 26;
+
+		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - iconP2.offsetX;
+
+		if(utilities.Options.getData("cameraZooms") && camZooming && !switchedStates)
+		{
+			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.975);
+			camHUD.zoom = FlxMath.lerp(defaultHudCamZoom, camHUD.zoom, 0.975);
+		}
+		else if(!utilities.Options.getData("cameraZooms"))
+		{
+			FlxG.camera.zoom = defaultCamZoom;
+			camHUD.zoom = 1;
+		}
+	}
+
+	public var fixedUpdateTimer:Float = 0.0;
+
 	override public function update(elapsed:Float)
 	{
+		fixedUpdateTimer += elapsed;
+
+		if(fixedUpdateTimer >= 1 / 120)
+		{
+			fixedUpdate();
+			fixedUpdateTimer = 0;
+		}
+
 		updateSongInfoText();
 
 		if(stopSong && !switchedStates)
@@ -2001,19 +2047,6 @@ class PlayState extends MusicBeatState
 			"Accuracy: " + accuracy + "% | " +
 			ratingStr
 		);
-
-		var icon_Zoom_Lerp = 0.09;
-
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, iconP1.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, iconP2.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
-
-		var iconOffset:Int = 26;
-
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - iconP2.offsetX;
 
 		if (health > maxHealth)
 			health = maxHealth;
@@ -2162,17 +2195,6 @@ class PlayState extends MusicBeatState
 					executeALuaState("playerOneTurn", []);
 				}
 			}
-		}
-
-		if(utilities.Options.getData("cameraZooms") && camZooming && !switchedStates)
-		{
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-			camHUD.zoom = FlxMath.lerp(defaultHudCamZoom, camHUD.zoom, 0.95);
-		}
-		else if(!utilities.Options.getData("cameraZooms"))
-		{
-			FlxG.camera.zoom = defaultCamZoom;
-			camHUD.zoom = 1;
 		}
 
 		// RESET = Quick Game Over Screen
@@ -3835,6 +3857,17 @@ class PlayState extends MusicBeatState
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
+
+		iconP1.setGraphicSize(Std.int(CoolUtil.boundTo(iconP1.width, 0, iconP1.startWidth + 30)));
+		iconP2.setGraphicSize(Std.int(CoolUtil.boundTo(iconP2.width, 0, iconP2.startWidth + 30)));
+
+		iconP1.updateHitbox();
+		iconP2.updateHitbox();
+
+		var iconOffset:Int = 26;
+
+		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - iconP2.offsetX;
 
 		if(gfSpeed < 1)
 			gfSpeed = 1;

@@ -29,6 +29,15 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
+	override public function new()
+	{
+		#if polymod
+		polymod.Polymod.clearCache();
+		#end
+
+		super();
+	}
+
 	override function update(elapsed:Float)
 	{
 		//everyStep();
