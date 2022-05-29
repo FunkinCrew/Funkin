@@ -176,7 +176,8 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 
-		if (Option.recieveValue("GRAPHICS_globalAA") == 1 && SONG.song.toLowerCase() != "senpai" && SONG.song.toLowerCase() != "roses" && SONG.song.toLowerCase() != "thorns")
+		// globalAA is inverted lol.
+		if (Option.recieveValue("GRAPHICS_globalAA") == 0 && SONG.song.toLowerCase() != "senpai" && SONG.song.toLowerCase() != "roses" && SONG.song.toLowerCase() != "thorns")
 		{
 			camGame.antialiasing = true;
 			camHUD.antialiasing = true;
@@ -785,6 +786,13 @@ class PlayState extends MusicBeatState
 		scoreBG = new FlxSprite(0, 0).makeGraphic(FlxG.width, 45, 0xAA000000);
 		scoreBG.y = scoreTxt.y - 45 / 2 + scoreTxt.height / 2; // wtf is this shit
 		scoreBG.scrollFactor.set();
+
+		// showScoreTxt is inverted lol
+		if (Option.recieveValue("GAMEPLAY_showScoreTxt") == 1)
+		{
+			scoreTxt.visible = false;
+			scoreBG.visible = false;
+		}
 
 		add(scoreBG);
 		add(scoreTxt);

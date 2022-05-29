@@ -59,11 +59,11 @@ class OptionsMenu extends MusicBeatState
 
 		optionGroups = [
 			new OptionGroup("Graphics", [
-				new CycleOption("Antialiasing %v", "Decides whether edges on sprites should be smooth. Affects performance.", ["Off", "On"], "GRAPHICS_globalAA"),
+				new CycleOption("Antialiasing %v", "Decides whether edges on sprites should be smooth. Affects performance.", ["On", "Off"], "GRAPHICS_globalAA"),
 				new CycleOption("Lite Mode %v", "Only draws HUD elements when enabled.", ["Off", "On"], "GRAPHICS_liteMode"),
 			]),
 			new OptionGroup("Gameplay", [
-				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["Off", "On"], "GAMEPLAY_showScoreTxt"),
+				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["On", "Off"], "GAMEPLAY_showScoreTxt"),
 			]),
 			new OptionGroup("Misc", [
 				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions)
