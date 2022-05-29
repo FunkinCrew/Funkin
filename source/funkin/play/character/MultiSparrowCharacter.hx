@@ -1,8 +1,8 @@
 package funkin.play.character;
 
+import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
-import flixel.graphics.frames.FlxFramesCollection;
 
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
@@ -174,10 +174,10 @@ class MultiSparrowCharacter extends BaseCharacter
 		trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
 	}
 
-	public override function playAnimation(name:String, restart:Bool = false):Void
+	public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
 	{
 		loadFramesByAnimName(name);
-		super.playAnimation(name, restart);
+		super.playAnimation(name, restart, ignoreOther);
 	}
 
 	override function set_frames(value:FlxFramesCollection):FlxFramesCollection
