@@ -320,11 +320,11 @@ class OptionsMenu extends MusicBeatState {
 						FlxG.switchState(new Keybinds());
 						dontAllowUpdate = true;
 				}
-				
-				FlxG.save.data.push();
 
-				if (!dontAllowUpdate)
+				if (!dontAllowUpdate){
+					FlxG.save.data.push();
 					updateOptions();
+				}
 			}
 		}
 	}
