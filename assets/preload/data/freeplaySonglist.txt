@@ -20,5 +20,5 @@ Thorns:spirit:6
 Ugh:tankman:7
 Guns:tankman:7
 Stress:tankman:7
-Roses-Swagmix:senpai:0
+Roses-Swagmix:senpai:6
 Ugh-Swagmix:tankman:0
