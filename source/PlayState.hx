@@ -2109,14 +2109,6 @@ class PlayState extends MusicBeatState
 		daNote.daRating = daRating;
 		songScore += score;
 
-		/* if (combo > 60)
-				daRating = 'sick';
-			else if (combo > 12)
-				daRating = 'good'
-			else if (combo > 4)
-				daRating = 'bad';
-		 */
-
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 		var pixelShitLibrary:String = 'shared';
@@ -2806,21 +2798,20 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	//honestly, no idea how this works. just stole it from the old version of ufnf.
 	public function calculateRating() {
 		if (misses == 0) {
 			if (goods < 1 && bads < 1 && shits < 1){
-				return 'MFC (${calculateLetter()} | ${calcAcc()})';
+				return 'PERFECT! (MFC) (${calculateLetter()} | ${calcAcc()})';
 			}
 			else{
-				return 'FC (${calculateLetter()} | ${calcAcc()})';
+				return 'SICK! (FC) (${calculateLetter()} | ${calcAcc()})';
 			}
 		}
 		else if (misses > 0 && misses <= 10) {
-			return 'SDM (${calculateLetter()} | ${calcAcc()})';
+			return 'GOOD! (SDM) (${calculateLetter()} | ${calcAcc()})';
 		}
 		else {
-			return 'Clear (${calculateLetter()} | ${calcAcc()})';
+			return 'BAD (Clear) (${calculateLetter()} | ${calcAcc()})';
 		}
 	}
 
