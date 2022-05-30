@@ -447,7 +447,7 @@ class PlayState extends MusicBeatState
 	                          evilSnow.antialiasing = true;
 		                  add(evilSnow);
                         }
-		          case 'senpai' | 'roses':
+		          case 'senpai' | 'roses' | 'roses-swagmix':
 		          {
 		                  curStage = 'school';
 
@@ -505,10 +505,10 @@ class PlayState extends MusicBeatState
 		                  bgGirls = new BackgroundGirls(-100, 190);
 		                  bgGirls.scrollFactor.set(0.9, 0.9);
 
-		                  if (SONG.song.toLowerCase() == 'roses')
-	                          {
-		                          bgGirls.getScared();
-		                  }
+		                if (SONG.song.toLowerCase() == 'roses' || SONG.song.toLowerCase() == 'roses-swagmix')
+	                    {
+		                	bgGirls.getScared();
+	  					}
 
 		                  bgGirls.setGraphicSize(Std.int(bgGirls.width * daPixelZoom));
 		                  bgGirls.updateHitbox();
@@ -937,7 +937,7 @@ class PlayState extends MusicBeatState
 		red.scrollFactor.set();
 
 		var senpaiEvil:FlxSprite = new FlxSprite();
-		senpaiEvil.frames = Paths.getSparrowAtlas('weeb/senpaiCrazy');
+		senpaiEvil.frames = Paths.getSparrowAtlas('weeb/senpaiCrazy', 'week6');
 		senpaiEvil.animation.addByPrefix('idle', 'Senpai Pre Explosion', 24, false);
 		senpaiEvil.setGraphicSize(Std.int(senpaiEvil.width * 6));
 		senpaiEvil.scrollFactor.set();
