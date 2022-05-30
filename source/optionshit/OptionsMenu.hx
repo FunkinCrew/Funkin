@@ -240,6 +240,7 @@ class OptionsMenu extends MusicBeatState {
 				options = ['Epilepsy Mode ${FlxG.save.data.epilepsyMode ? 'ON' : 'OFF'}',
 				'Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}',
 				'Custom Health Colors ${FlxG.save.data.disablehealthColor ? 'OFF' : 'ON'}',
+				'Lite Mode ${FlxG.save.data.liteMode ? 'ON' : 'OFF'}',
 				'Framerate ' + FlxG.save.data.frameRate + ' FPS'];
 				ready = true;
 			case 'credits':
@@ -324,6 +325,9 @@ class OptionsMenu extends MusicBeatState {
 					case 'Framerate': // framerate
 						FlxG.save.data.frameRate = 60;
 						updateFPS();
+					case 'Lite': // lite mode
+						FlxG.save.data.liteMode = !FlxG.save.data.liteMode;
+						options[curSelected] = 'Lite Mode ${FlxG.save.data.liteMode ? "ON" : "OFF"}';
 					case 'Keybinds': // keybinds
 						FlxG.switchState(new Keybinds());
 						dontAllowUpdate = true;

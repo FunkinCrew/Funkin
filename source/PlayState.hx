@@ -257,8 +257,13 @@ class PlayState extends MusicBeatState
 		daSplash.alpha = 0;
 		noteSplashes.add(daSplash);
 
-		switch (SONG.song.toLowerCase())
-		{
+		if (FlxG.save.data.liteMode == null){
+			FlxG.save.data.liteMode = false;
+		}
+
+		if (!FlxG.save.data.liteMode){
+			switch (SONG.song.toLowerCase())
+			{
                         case 'spookeez' | 'monster' | 'south': 
                         {
                                 curStage = 'spooky';
@@ -610,8 +615,10 @@ class PlayState extends MusicBeatState
 		                  stageCurtains.active = false;
 
 		                  add(stageCurtains);
-		          }
-              }
+		        }
+            }	
+		}
+		
 
 		var gfVersion:String = 'gf';
 
@@ -733,14 +740,17 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		add(gf);
+		if (!FlxG.save.data.liteMode){
+			add(gf);
 
-		// Shitty layering but whatev it works LOL
-		if (curStage == 'limo')
-			add(limo);
+			// Shitty layering but whatev it works LOL
+			if (curStage == 'limo')
+				add(limo);
+	
+			add(dad);
+			add(boyfriend);
+		}
 
-		add(dad);
-		add(boyfriend);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
