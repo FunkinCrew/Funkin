@@ -2232,10 +2232,8 @@ class PlayState extends MusicBeatState
 		curSection += 1;
 	}
 
-	// literally the same system old UFNF had cause it (mostly) worked
 	private function keyShit():Void
 		{
-			// HOLDING
 			var up = controls.UP;
 			var right = controls.RIGHT;
 			var down = controls.DOWN;
@@ -2253,7 +2251,6 @@ class PlayState extends MusicBeatState
 	
 			var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 	
-			// FlxG.watch.addQuick('asdfa', upP);
 			if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 			{
 				boyfriend.holdTimer = 0;
@@ -2266,7 +2263,6 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 					{
-						// the sorting probably doesn't need to be in here? who cares lol
 						possibleNotes.push(daNote);
 						possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 	
@@ -2290,12 +2286,6 @@ class PlayState extends MusicBeatState
 							{
 								if (controlArray[coolNote.noteData])
 									goodNoteHit(coolNote);
-								else
-									{
-										var inIgnoreList:Bool = false;
-										// if (!inIgnoreList)
-											// badNoteCheck();
-									}
 							}
 						}
 						else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
@@ -2320,36 +2310,6 @@ class PlayState extends MusicBeatState
 							noteCheck(controlArray[daNote.noteData], daNote);
 						}
 					}
-					/* 
-						if (controlArray[daNote.noteData])
-							goodNoteHit(daNote);
-					 */
-					// trace(daNote.noteData);
-					/* 
-							switch (daNote.noteData)
-							{
-								case 2: // NOTES YOU JUST PRESSED
-									if (upP || rightP || downP || leftP)
-										noteCheck(upP, daNote);
-								case 3:
-									if (upP || rightP || downP || leftP)
-										noteCheck(rightP, daNote);
-								case 1:
-									if (upP || rightP || downP || leftP)
-										noteCheck(downP, daNote);
-								case 0:
-									if (upP || rightP || downP || leftP)
-										noteCheck(leftP, daNote);
-							}
-	
-						//this is already done in noteCheck / goodNoteHit
-						if (daNote.wasGoodHit)
-						{
-							daNote.kill();
-							notes.remove(daNote, true);
-							daNote.destroy();
-						}
-					 */
 				}
 				else
 				{
