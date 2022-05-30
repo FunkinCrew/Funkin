@@ -191,6 +191,8 @@ class FreeplayState extends MusicBeatState
 		switch (songs[curSelected].songName){
 			case 'Ugh-Swagmix':
 				setSwagmixDifficulty();
+			case 'Roses-Swagmix':
+				setSwagmixDifficulty();
 			default:
 				if (diffText.text == "< SWAGMIX >"){
 					curDifficulty = 1;
