@@ -145,7 +145,7 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
-	#if !linux
+	#if windows
 	var video:MP4Handler;
 	#end
 

@@ -34,7 +34,7 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
-	#if !linux
+	#if windows
 	var video:MP4Handler;
 	#end
 
@@ -148,7 +148,7 @@ class MainMenuState extends MusicBeatState
 			{
 				if (optionShit[curSelected] == 'donate')
 				{
-					#if !linux
+					#if windows
 					//kickstarter go brr [i mean the game is gonna be released in 4/30 so why did i add this]
 					//                                                            ^^^^ well that was a lie
 					FlxG.sound.music.stop();
@@ -157,15 +157,14 @@ class MainMenuState extends MusicBeatState
 					video.finishCallback = function()
 					{
 						selectedSomethin = false;
-						#if linux
-						trace('linux moment');
-						Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game", "&"]);
-						#else
 						FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
-						#end
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					}
 					video.playVideo(Paths.video("kickstarterTrailer"));
+					#elseif linux
+					Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game", "&"]);
+					#elseif mac
+					FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
 					#end
 				}
 				else

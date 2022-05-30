@@ -39,16 +39,20 @@
 	<assets path="assets/preload/videos" exclude="*.mp4" if="web"/>
 	<assets path="assets/preload/videos" exclude="*.mp4" unless="web"/>
 
-	<!--Linux compatability things-->
-	<assets path="plugins/" exclude="*" if="linux"/>
-	<assets path="dlls/" exclude="*" if="linux"/>
-	<assets path="source/vlc" exclude="*" if="linux"/>
-	<assets path="assets/preload/videos" exclude="*" if="linux"/>
-	<!--MacOS compatability things-->
-	<assets path="plugins/" exclude="*" if="mac"/>
-	<assets path="dlls/" exclude="*" if="mac"/>
-	<assets path="source/vlc" exclude="*" if="mac"/>
-	<assets path="assets/preload/videos" exclude="*" if="mac"/>
+	<!--compatability things-->
+	<section if="linux">
+		<assets path="plugins/" exclude="*"/>
+		<assets path="dlls/" exclude="*"/>
+		<assets path="source/vlc/" exclude="*"/>
+		<assets path="assets/preload/videos" exclude="*"/>
+	</section>
+	<section if="mac">
+		<assets path="plugins/" exclude="*"/>
+		<assets path="dlls/" exclude="*"/>
+		<assets path="source/vlc/" exclude="*"/>
+		<assets path="assets/preload/videos" exclude="*"/>
+	</section>
+
 
 	<assets path="plugins/" rename='' if="windows"/>
 	<assets path="dlls/" rename='' if="windows"/>
