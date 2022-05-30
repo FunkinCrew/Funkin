@@ -176,6 +176,9 @@ class MultiSparrowCharacter extends BaseCharacter
 
 	public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
 	{
+		if (!this.canPlayOtherAnims)
+			return;
+
 		loadFramesByAnimName(name);
 		super.playAnimation(name, restart, ignoreOther);
 	}

@@ -1,6 +1,5 @@
 package funkin.play.stage;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -196,9 +195,6 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
 	{
-		if (ignoreOther == null)
-			ignoreOther = false;
-
 		if (!canPlayOtherAnims)
 			return;
 

@@ -6,10 +6,8 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -19,21 +17,14 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.Note;
-import funkin.Note;
 import funkin.Section.SwagSection;
-import funkin.Section.SwagSection;
-import funkin.SongLoad.SwagSong;
 import funkin.SongLoad.SwagSong;
 import funkin.charting.ChartingState;
 import funkin.modding.IHook;
-import funkin.modding.IHook;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.modding.module.ModuleHandler;
 import funkin.play.HealthIcon;
 import funkin.play.Strumline.StrumlineArrow;
-import funkin.play.Strumline.StrumlineArrow;
-import funkin.play.Strumline.StrumlineStyle;
 import funkin.play.Strumline.StrumlineStyle;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData;
@@ -1106,6 +1097,10 @@ class PlayState extends MusicBeatState implements IHook
 
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
+		if (currentStage != null)
+		{
+			FlxG.watch.addQuick("bfAnim", currentStage.getBoyfriend().getCurrentAnimation());
+		}
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
 		if (currentSong.song == 'Fresh')
