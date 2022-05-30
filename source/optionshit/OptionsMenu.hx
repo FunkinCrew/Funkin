@@ -322,7 +322,6 @@ class OptionsMenu extends MusicBeatState {
 				}
 
 				if (!dontAllowUpdate){
-					FlxG.save.data.push();
 					updateOptions();
 				}
 			}
