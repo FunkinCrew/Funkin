@@ -150,6 +150,14 @@ class OptionsMenu extends MusicBeatState {
 			FlxG.save.data.frameRate = 30;
 			updateOptions();
 		}
+		else if (FlxG.save.data.frameRate == null){
+			FlxG.save.data.frameRate = 60;
+			updateOptions();
+		}
+		
+		if (options[curSelected].startsWith("null")){
+			updateOptions();
+		}
 
 		if (curSelected > 3)
 			detailText.y = FlxG.height - detailText.height;
@@ -314,7 +322,7 @@ class OptionsMenu extends MusicBeatState {
 						FlxG.save.data.disablehealthColor = !FlxG.save.data.disablehealthColor;
 						options[curSelected] = 'Custom Health Colors ${FlxG.save.data.disablehealthColor ? "OFF" : "ON"}';
 					case 'Framerate': // framerate
-						FlxG.save.data.frameRate = FlxG.save.data.frameRate == 60;
+						FlxG.save.data.frameRate = 60;
 						updateFPS();
 					case 'Keybinds': // keybinds
 						FlxG.switchState(new Keybinds());
