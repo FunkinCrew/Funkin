@@ -48,7 +48,7 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
-		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 0)
 			{
 				FlxG.camera.antialiasing = true;
 			}
@@ -64,6 +64,7 @@ class OptionsMenu extends MusicBeatState
 			]),
 			new OptionGroup("Gameplay", [
 				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["On", "Off"], "GAMEPLAY_showScoreTxt"),
+				new CycleOption("Difficult Jacks %v", "With this option turned off, you only need to press once to trigger both notes.", ["On", "Off"], "GAMEPLAY_difficultJacks"),
 			]),
 			new OptionGroup("Misc", [
 				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions)

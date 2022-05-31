@@ -2007,6 +2007,8 @@ class PlayState extends MusicBeatState
 
 	private function keyShit():Void
 	{
+		// don't touch, it works and is weirdly fragile
+		
 		// re-writing this from scratch because the old input system fucking sucks
 		// this input system is distance-based.
 		// it compares the notes to the Y position of the strum line to get the rating.
@@ -2029,18 +2031,25 @@ class PlayState extends MusicBeatState
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
 
+		var upPressed = false;
+		var rightPressed = false;
+		var downPressed = false;
+		var leftPressed = false;
+
 		if (upP)
 		{
 			if (!FlxG.overlap(notes, playerStrums))
 			{
 				// we didn't hit shit.
-
+				
 				noteMiss(2);
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
+				if (note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed)
 				{
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+						upPressed = true;
 					// if all conditions are met, then we hit the note.
 					
 					// find timing.
@@ -2059,13 +2068,15 @@ class PlayState extends MusicBeatState
 			if (!FlxG.overlap(notes, playerStrums))
 			{
 				// we didn't hit shit.
-
+				
 				noteMiss(1);
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
+				if (note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed)
 				{
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+						downPressed = true;
 					// if all conditions are met, then we hit the note.
 					
 					// find timing.
@@ -2089,8 +2100,10 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
+				if (note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed)
 				{
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+						leftPressed = true;
 					// if all conditions are met, then we hit the note.
 					
 					// find timing.
@@ -2114,8 +2127,10 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote)
+				if (note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed)
 				{
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+						rightPressed = true;
 					// if all conditions are met, then we hit the note.
 					
 					// find timing.

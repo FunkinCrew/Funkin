@@ -39,7 +39,7 @@ class LoadingState extends MusicBeatState
 	
 	override function create()
 	{
-		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 1)
+		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 0)
 			{
 				FlxG.camera.antialiasing = true;
 			}
