@@ -192,6 +192,8 @@ class OptionsMenu extends MusicBeatState {
 					detailText.text = 'Change Gameplay Options.';
 				case 'Graphics':
 					detailText.text = 'Change Graphical Options.';
+				case 'Lite':
+					detailText.text = 'Better performance for low-end devices.';
 				case 'Credits':
 					detailText.text = 'View Credits.';
 			}
