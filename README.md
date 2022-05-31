@@ -15,10 +15,9 @@ IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN 
 
 ## Credits / shoutouts
 
-- [thepercentageguy](https://twitter.com/PercentageGuy) - Mod Developer, Engine Creator
-- [Trigger_](https://twitter.com/Oculus_eyeball) Director, Artist, Animator of the mod
-- ...
-- yeah that's it
+- [thepercentageguy](https://twitter.com/PercentageGuy) - Mod Programmer, Engine Creator
+- [Trigger_](https://www.instagram.com/trigger_drawings/) - Director, Artist, Animator of the mod
+- [TheHipOne](https://twitter.com/thehipone1) - Musician
 
 This engine was made with love to the original game and it's devs.
 
