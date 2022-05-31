@@ -1879,9 +1879,11 @@ class PlayState extends MusicBeatState
 									spr.centerOffsets();
 								}
 						});
-
-					combo++;
-					sicks++;
+					
+					if (!daNote.isSustainNote){
+						combo++;
+						sicks++;
+					}
 					
 					daNote.kill();
 					notes.remove(daNote, true);
