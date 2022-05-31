@@ -64,7 +64,8 @@ class OptionsMenu extends MusicBeatState
 			]),
 			new OptionGroup("Gameplay", [
 				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["On", "Off"], "GAMEPLAY_showScoreTxt"),
-				new CycleOption("Difficult Jacks %v", "With this option turned off, you only need to press once to trigger both notes.", ["On", "Off"], "GAMEPLAY_difficultJacks"),
+				//! broken! new CycleOption("Difficult Jacks %v", "With this option turned off, you only need to press once to trigger both notes.", ["On", "Off"], "GAMEPLAY_difficultJacks"),
+				new CycleOption("Ghost Tapping %v", "When enabled, you will not get a miss for pressing a key without a note.", ["On", "Off"], "GAMEPLAY_ghostTapping"),
 			]),
 			new OptionGroup("Misc", [
 				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions)

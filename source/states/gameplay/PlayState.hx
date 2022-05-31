@@ -149,6 +149,11 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
+	var sicks:Int;
+	var goods:Int;
+	var bads:Int;
+	var shits:Int;
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -1431,7 +1436,8 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = 'Score: ${songScore} - '+
 		'Combo: ${combo} - '+
-		'Misses: ${misses}';
+		'Misses: ${misses} - ' +
+		'Hit %: ${(sicks + goods + bads + shits + misses == 0) ? 0 : (sicks + goods + bads + shits) / (sicks + goods + bads + shits + misses) * 100}%';
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1749,6 +1755,7 @@ class PlayState extends MusicBeatState
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
 						misses++;
+						combo = 0;
 						health -= 0.0475;
 						vocals.volume = 0;
 					}
@@ -1872,18 +1879,23 @@ class PlayState extends MusicBeatState
 		if (offset > Std.int(Option.recieveValue("DEBUG_shitTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_shitTiming")))
 		{
 			daRating = 'shit';
+			shits++;
 			score = 50;
 		}
 		else if (offset > Std.int(Option.recieveValue("DEBUG_badTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_badTiming")))
 		{
 			daRating = 'bad';
+			bads++;
 			score = 100;
 		}
 		else if (offset > Std.int(Option.recieveValue("DEBUG_goodTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_goodTiming")))
 		{
 			daRating = 'good';
+			goods++;
 			score = 200;
 		}
+		else
+			sicks++;
 
 		songScore += score;
 
@@ -2039,7 +2051,7 @@ class PlayState extends MusicBeatState
 		if (upP)
 		{
 			boyfriend.holdTimer = 0;
-			if (!FlxG.overlap(notes, playerStrums))
+			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
 			{
 				// we didn't hit shit.
 				
@@ -2067,7 +2079,7 @@ class PlayState extends MusicBeatState
 		if (downP)
 		{
 			boyfriend.holdTimer = 0;
-			if (!FlxG.overlap(notes, playerStrums))
+			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
 			{
 				// we didn't hit shit.
 				
@@ -2095,7 +2107,7 @@ class PlayState extends MusicBeatState
 		if (leftP)
 		{
 			boyfriend.holdTimer = 0;
-			if (!FlxG.overlap(notes, playerStrums))
+			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
 			{
 				// we didn't hit shit.
 
@@ -2123,7 +2135,7 @@ class PlayState extends MusicBeatState
 		if (rightP)
 		{
 			boyfriend.holdTimer = 0;
-			if (!FlxG.overlap(notes, playerStrums))
+			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
 			{
 				// we didn't hit shit.
 
