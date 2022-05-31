@@ -196,6 +196,8 @@ class OptionsMenu extends MusicBeatState {
 					detailText.text = 'Better performance for low-end devices.';
 				case 'Credits':
 					detailText.text = 'View Credits.';
+				case 'Botplay':
+					detailText.text = 'Plays the game for you.';
 			}
 
 			if (forceCheck)
@@ -234,7 +236,8 @@ class OptionsMenu extends MusicBeatState {
 				options = ['Keybinds', 'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
 				'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
 				'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
-				'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}'];
+				'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
+				'Botplay ${FlxG.save.data.botplay ? 'ON' : 'OFF'}'];
 				ready = true;
 			case 'graphics':
 				inOptionSelector = false;
@@ -333,6 +336,9 @@ class OptionsMenu extends MusicBeatState {
 					case 'Keybinds': // keybinds
 						FlxG.switchState(new Keybinds());
 						dontAllowUpdate = true;
+					case 'Botplay': // botplay
+						FlxG.save.data.botplay = !FlxG.save.data.botplay;
+						options[curSelected] = 'Botplay ${FlxG.save.data.botplay ? "ON" : "OFF"}';
 				}
 
 				if (!dontAllowUpdate){

@@ -1837,6 +1837,57 @@ class PlayState extends MusicBeatState
 					daNote.clipRect = swagRect;
 				}
 
+				if (daNote.mustPress && daNote.y <= strumLine.y && FlxG.save.data.botplay)
+				{
+					switch (Math.abs(daNote.noteData))
+					{
+						case 0:
+							boyfriend.playAnim('singLEFT', true);
+						case 1:
+							boyfriend.playAnim('singDOWN', true);
+						case 2:
+							boyfriend.playAnim('singUP', true);
+						case 3:
+							boyfriend.playAnim('singRIGHT', true);
+					}
+
+					playerStrums.forEach(function(spr:FlxSprite)
+						{
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{	
+								spr.animation.play('confirm', true);
+								
+								if (!daNote.isSustainNote)
+									noteSplash(daNote.x, daNote.y, daNote.noteData, false);
+							}
+
+							// CPU PlayerStrum NoteSkin Confirm Offsets
+							if (spr.animation.curAnim.name == 'confirm')
+								{
+									switch (SONG.noteskin){
+										default:
+											spr.centerOffsets();
+											spr.offset.x -= 13;
+											spr.offset.y -= 13;
+										case 'pixel':
+											// not needed
+										case 'circle':
+											spr.centerOffsets();
+									}
+								}
+								else{
+									spr.centerOffsets();
+								}
+						});
+
+					combo++;
+					sicks++;
+					
+					daNote.kill();
+					notes.remove(daNote, true);
+					daNote.destroy();
+				}
+
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
 					if (SONG.song != 'Tutorial')
@@ -1870,7 +1921,6 @@ class PlayState extends MusicBeatState
 					//CPUSTRUM CONFIRM ANIMATION
 					cpuStrums.forEach(function(spr:FlxSprite)
 						{
-							
 							if (Math.abs(daNote.noteData) == spr.ID)
 							{	
 								spr.animation.play('confirm', true);
@@ -1958,8 +2008,23 @@ class PlayState extends MusicBeatState
 					// trace('confirm animation finished');
 				}
 			});
+		
+		if (FlxG.save.data.botplay){
+			playerStrums.forEach(function(spr:FlxSprite)
+				{
+					if (spr.animation.finished && spr.animation.curAnim.name == 'confirm')
+					{
+						spr.animation.play('static');
+						spr.centerOffsets();
+					}
+				});
+			
+			if (boyfriend.animation.finished && boyfriend.animation.curAnim.name != 'idle'){
+				boyfriend.playAnim('idle', true);
+			}
+		}
 
-		if (!inCutscene)
+		if (!inCutscene && !FlxG.save.data.botplay)
 			keyShit();
 
 		#if debug
