@@ -1,11 +1,12 @@
 package funkin;
 
-import funkin.util.Constants;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
+import funkin.play.PlayState;
+import funkin.play.Strumline.StrumlineStyle;
 import funkin.shaderslmfao.ColorSwap;
 import funkin.ui.PreferencesMenu;
-import funkin.play.PlayState;
+import funkin.util.Constants;
 
 using StringTools;
 
@@ -93,7 +94,10 @@ class Note extends FlxSprite
 	// anything below sick threshold is sick
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
-	public function new(strumTime:Float = 0, noteData:NoteType, ?prevNote:Note, ?sustainNote:Bool = false)
+	// Which note asset to load?
+	public var style:StrumlineStyle = NORMAL;
+
+	public function new(strumTime:Float = 0, noteData:NoteType, ?prevNote:Note, ?sustainNote:Bool = false, ?style:StrumlineStyle = NORMAL)
 	{
 		super();
 
@@ -110,10 +114,15 @@ class Note extends FlxSprite
 
 		data.noteData = noteData;
 
+		this.style = style;
+
+		if (this.style == null)
+			this.style = StrumlineStyle.NORMAL;
+
 		// TODO: Make this logic more generic
-		switch (PlayState.instance.currentStageId)
+		switch (this.style)
 		{
-			case 'school' | 'schoolEvil':
+			case PIXEL:
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
 
 				animation.add('greenScroll', [6]);
@@ -227,6 +236,7 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 
+		// mustPress indicates the player is the one pressing the key
 		if (mustPress)
 		{
 			// miss on the NEXT frame so lag doesnt make u miss notes
@@ -244,7 +254,8 @@ class Note extends FlxSprite
 				}
 
 				if (data.strumTime > Conductor.songPosition - HIT_WINDOW)
-				{ // * 0.5 if sustain note, so u have to keep holding it closer to all the way thru!
+				{
+					// * 0.5 if sustain note, so u have to keep holding it closer to all the way thru!
 					if (data.strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.5 : 1)))
 						canBeHit = true;
 				}
@@ -281,14 +292,14 @@ typedef RawNoteData =
 	var strumTime:Float;
 	var noteData:NoteType;
 	var sustainLength:Float;
-	var altNote:Bool;
+	var altNote:String;
 	var noteKind:NoteKind;
 }
 
 @:forward
 abstract NoteData(RawNoteData)
 {
-	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = false, noteKind = NORMAL)
+	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = "", noteKind = NORMAL)
 	{
 		this = {
 			strumTime: strumTime,
@@ -455,7 +466,12 @@ enum abstract NoteColor(NoteType) from Int to Int from NoteType
 
 enum abstract NoteKind(String) from String to String
 {
+	/**
+	 * The default note type.
+	 */
 	var NORMAL = "normal";
+
+	// Testing shiz
 	var PYRO_LIGHT = "pyro_light";
 	var PYRO_KICK = "pyro_kick";
 	var PYRO_TOSS = "pyro_toss";

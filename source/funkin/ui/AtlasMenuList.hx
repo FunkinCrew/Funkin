@@ -5,6 +5,9 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 typedef AtlasAsset = flixel.util.typeLimit.OneOfTwo<String, FlxAtlasFrames>;
 
+/**
+ * A menulist whose items share a single texture atlas.
+ */
 class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 {
 	public var atlas:FlxAtlasFrames;
@@ -33,11 +36,16 @@ class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 	}
 }
 
+/**
+ * A menu list item which uses single texture atlas.
+ */
 class AtlasMenuItem extends MenuItem
 {
 	var atlas:FlxAtlasFrames;
 
-	public function new(x = 0.0, y = 0.0, name:String, atlas:FlxAtlasFrames, callback)
+	public var centered:Bool = false;
+
+	public function new(x = 0.0, y = 0.0, name:String, atlas, callback)
 	{
 		this.atlas = atlas;
 		super(x, y, name, callback);
@@ -52,10 +60,17 @@ class AtlasMenuItem extends MenuItem
 		super.setData(name, callback);
 	}
 
-	function changeAnim(animName:String)
+	public function changeAnim(animName:String)
 	{
 		animation.play(animName);
 		updateHitbox();
+
+		if (centered)
+		{
+			// position by center
+			centerOrigin();
+			offset.copyFrom(origin);
+		}
 	}
 
 	override function idle()

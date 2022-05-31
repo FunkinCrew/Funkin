@@ -1,11 +1,13 @@
 package funkin.ui.animDebugShit;
 
-import flixel.FlxCamera;
-import flixel.FlxSprite;
-import flixel.FlxState;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.character.SparrowCharacter;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIDropDownMenu;
+import flixel.FlxCamera;
+import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
@@ -15,6 +17,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import funkin.play.character.BaseCharacter;
 import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
 import openfl.events.Event;
@@ -249,7 +252,7 @@ class DebugBoundingState extends FlxState
 				swagChar.offset.x = (FlxG.mouse.x - mouseOffset.x) * -1;
 				swagChar.offset.y = (FlxG.mouse.y - mouseOffset.y) * -1;
 
-				swagChar.animOffsets.set(animDropDownMenu.selectedLabel, [swagChar.offset.x, swagChar.offset.y]);
+				swagChar.animationOffsets.set(animDropDownMenu.selectedLabel, [Std.int(swagChar.offset.x), Std.int(swagChar.offset.y)]);
 
 				txtOffsetShit.text = 'Offset: ' + swagChar.offset;
 			}
@@ -391,9 +394,9 @@ class DebugBoundingState extends FlxState
 		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
 		{
 			var animName = animDropDownMenu.selectedLabel;
-			var coolValues:Array<Dynamic> = swagChar.animOffsets.get(animName);
+			var coolValues:Array<Float> = swagChar.animationOffsets.get(animName);
 
-			var multiplier:Float = 5;
+			var multiplier:Int = 5;
 
 			if (FlxG.keys.pressed.CONTROL)
 				multiplier = 1;
@@ -410,8 +413,8 @@ class DebugBoundingState extends FlxState
 			else if (FlxG.keys.justPressed.DOWN)
 				coolValues[1] -= 1 * multiplier;
 
-			swagChar.animOffsets.set(animDropDownMenu.selectedLabel, coolValues);
-			swagChar.playAnim(animName);
+			swagChar.animationOffsets.set(animDropDownMenu.selectedLabel, coolValues);
+			swagChar.playAnimation(animName);
 
 			txtOffsetShit.text = 'Offset: ' + coolValues;
 
@@ -422,9 +425,9 @@ class DebugBoundingState extends FlxState
 		{
 			var outputString:String = "";
 
-			for (i in swagChar.animOffsets.keys())
+			for (i in swagChar.animationOffsets.keys())
 			{
-				outputString += i + " " + swagChar.animOffsets.get(i)[0] + " " + swagChar.animOffsets.get(i)[1] + "\n";
+				outputString += i + " " + swagChar.animationOffsets.get(i)[0] + " " + swagChar.animationOffsets.get(i)[1] + "\n";
 			}
 
 			outputString.trim();
@@ -432,7 +435,7 @@ class DebugBoundingState extends FlxState
 		}
 	}
 
-	var swagChar:Character;
+	var swagChar:BaseCharacter;
 
 	function loadAnimShit(char:String)
 	{
@@ -442,8 +445,10 @@ class DebugBoundingState extends FlxState
 			swagChar.destroy();
 		}
 
-		swagChar = new Character(100, 100, char);
-		swagChar.debugMode = true;
+		swagChar = CharacterDataParser.fetchCharacter(char);
+		swagChar.x = 100;
+		swagChar.y = 100;
+		// swagChar.debugMode = true;
 		offsetView.add(swagChar);
 
 		generateOutlines(swagChar.frames.frames);
@@ -451,11 +456,11 @@ class DebugBoundingState extends FlxState
 
 		var animThing:Array<String> = [];
 
-		for (i in swagChar.animOffsets.keys())
+		for (i in swagChar.animationOffsets.keys())
 		{
 			animThing.push(i);
 			trace(i);
-			trace(swagChar.animOffsets[i]);
+			trace(swagChar.animationOffsets[i]);
 		}
 
 		animDropDownMenu.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animThing, true));
@@ -468,8 +473,8 @@ class DebugBoundingState extends FlxState
 			onionSkinChar.alpha = 0.6;
 
 			var animName = animThing[Std.parseInt(str)];
-			swagChar.playAnim(animName, true); // trace();
-			trace(swagChar.animOffsets.get(animName));
+			swagChar.playAnimation(animName, true); // trace();
+			trace(swagChar.animationOffsets.get(animName));
 
 			txtOffsetShit.text = 'Offset: ' + swagChar.offset;
 		};
@@ -486,7 +491,7 @@ class DebugBoundingState extends FlxState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(saveString, swagChar.curCharacter + "Offsets.txt");
+			_file.save(saveString, swagChar.characterId + "Offsets.txt");
 		}
 	}
 

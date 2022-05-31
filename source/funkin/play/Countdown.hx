@@ -28,19 +28,23 @@ class Countdown
 	 * Performs the countdown.
 	 * Pauses the song, plays the countdown graphics/sound, and then starts the song.
 	 * This will automatically stop and restart the countdown if it is already running.
+	 * @returns `false` if the countdown was cancelled by a script.
 	 */
-	public static function performCountdown(isPixelStyle:Bool):Void
+	public static function performCountdown(isPixelStyle:Bool):Bool
 	{
+		countdownStep = BEFORE;
+		var cancelled:Bool = propagateCountdownEvent(countdownStep);
+		if (cancelled)
+			return false;
+
 		// Stop any existing countdown.
 		stopCountdown();
 
 		PlayState.isInCountdown = true;
 		Conductor.songPosition = Conductor.crochet * -5;
-		countdownStep = BEFORE;
-
-		var cancelled:Bool = propagateCountdownEvent(countdownStep);
-		if (cancelled)
-			return;
+		// Handle onBeatHit events manually
+		@:privateAccess
+		PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
 		// The timer function gets called based on the beat of the song.
 		countdownTimer = new FlxTimer();
@@ -49,9 +53,9 @@ class Countdown
 		{
 			countdownStep = decrement(countdownStep);
 
-			// Play the dance animations manually.
+			// Handle onBeatHit events manually
 			@:privateAccess
-			PlayState.instance.danceOnBeat();
+			PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
 			// Countdown graphic.
 			showCountdownGraphic(countdownStep, isPixelStyle);
@@ -69,7 +73,9 @@ class Countdown
 			{
 				stopCountdown();
 			}
-		}, 6); // Before, 3, 2, 1, GO!, After
+		}, 5); // Before, 3, 2, 1, GO!, After
+
+		return true;
 	}
 
 	/**
@@ -91,11 +97,9 @@ class Countdown
 				return true;
 		}
 
-		// Stage
-		ScriptEventDispatcher.callEvent(PlayState.instance.currentStage, event);
-
-		// Modules
-		ModuleHandler.callEvent(event);
+		// Modules, stages, characters.
+		@:privateAccess
+		PlayState.instance.dispatchEvent(event);
 
 		return event.eventCanceled;
 	}

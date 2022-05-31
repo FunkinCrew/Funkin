@@ -1,0 +1,44 @@
+name: upload-itch
+description: "installs Butler, and uploads to itch.io!"
+inputs:
+  butler-key:
+    description: "Butler API secret key"
+    required: true
+  build-dir:
+    description: "Directory of the game build"
+    required: true
+  target:
+    description: "Target (html5, win, linux, mac)"
+    required: true
+runs:
+  using: "composite"
+  steps:
+      - name: Install butler Windows
+        if: runner.os == 'Windows'
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/windows-amd64/LATEST/archive/default
+          7z x butler.zip
+          ./butler -v
+        shell: bash
+      - name: Install butler Mac
+        if: runner.os == 'macOS'
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/darwin-amd64/LATEST/archive/default
+          unzip butler.zip
+          ./butler -V
+        shell: bash
+      - name: Install butler Linux
+        if: runner.os == 'Linux'
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+        shell: bash
+      - name: Upload game to itch.io
+        env: 
+          BUTLER_API_KEY: ${{inputs.butler-key}}
+        run: |
+          ./butler login
+          ./butler push ${{inputs.build-dir}} ninja-muffin24/funkin-secret:${{inputs.target}}-${GITHUB_REF##*/}
+        shell: bash

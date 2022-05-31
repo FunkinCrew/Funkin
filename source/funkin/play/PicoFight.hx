@@ -178,7 +178,7 @@ class PicoFight extends MusicBeatState
 			pico.punch();
 		}
 		if (controls.NOTE_LEFT_R)
-			pico.playAnim('idle');
+			pico.playAnimation('idle');
 
 		super.update(elapsed);
 	}
@@ -190,8 +190,10 @@ class PicoFight extends MusicBeatState
 
 	override function beatHit():Bool
 	{
+		// super.beatHit() returns false if a module cancelled the event.
 		if (!super.beatHit())
 			return false;
+
 		funnyWave.thickness = 10;
 		funnyWave.waveAmplitude = 300;
 		funnyWave.realtimeVisLenght = 0.1;

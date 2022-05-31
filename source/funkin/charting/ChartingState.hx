@@ -23,6 +23,7 @@ import funkin.SongLoad.SwagSong;
 import funkin.audiovis.ABotVis;
 import funkin.audiovis.PolygonSpectogram;
 import funkin.audiovis.SpectogramSprite;
+import funkin.play.HealthIcon;
 import funkin.play.PlayState;
 import funkin.rendering.MeshRender;
 import haxe.Json;
@@ -109,6 +110,9 @@ class ChartingState extends MusicBeatState
 
 		leftIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
+
+		leftIcon.autoUpdate = false;
+		rightIcon.autoUpdate = false;
 
 		add(leftIcon);
 		add(rightIcon);
@@ -705,7 +709,7 @@ class ChartingState extends MusicBeatState
 				{
 					if (FlxG.mouse.overlaps(leftIcon))
 					{
-						if (leftIcon.char == _song.player1)
+						if (leftIcon.characterId == _song.player1)
 						{
 							p1Muted = !p1Muted;
 							leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
@@ -727,7 +731,7 @@ class ChartingState extends MusicBeatState
 					// sloppy copypaste lol deal with it!
 					if (FlxG.mouse.overlaps(rightIcon))
 					{
-						if (rightIcon.char == _song.player1)
+						if (rightIcon.characterId == _song.player1)
 						{
 							p1Muted = !p1Muted;
 							rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
@@ -1012,7 +1016,7 @@ class ChartingState extends MusicBeatState
 		if (curSelectedNote != null)
 		{
 			trace('ALT NOTE SHIT');
-			curSelectedNote.altNote = !curSelectedNote.altNote;
+			curSelectedNote.altNote = (curSelectedNote.altNote == "alt") ? "" : "alt";
 			trace(curSelectedNote.altNote);
 		}
 	}
@@ -1129,19 +1133,25 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.changeIcon(_song.player1);
-			rightIcon.changeIcon(_song.player2);
+			leftIcon.characterId = (_song.player1);
+			rightIcon.characterId = (_song.player2);
 
-			leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
-			rightIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
+			// leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
+			// rightIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
+
+			leftIcon.playAnimation(p1Muted ? LOSING : IDLE);
+			rightIcon.playAnimation(p2Muted ? LOSING : IDLE);
 		}
 		else
 		{
-			leftIcon.changeIcon(_song.player2);
-			rightIcon.changeIcon(_song.player1);
+			leftIcon.characterId = (_song.player2);
+			rightIcon.characterId = (_song.player1);
 
-			leftIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
-			rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
+			leftIcon.playAnimation(p2Muted ? LOSING : IDLE);
+			rightIcon.playAnimation(p1Muted ? LOSING : IDLE);
+
+			// leftIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
+			// rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
 		}
 		leftIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
@@ -1348,7 +1358,7 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
-		var noteAlt = false;
+		var noteAlt = "";
 
 		justPlacedNote = true;
 

@@ -2,12 +2,14 @@ package funkin.play.stage;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.util.FlxSort;
 import funkin.modding.IHook;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.character.Character.CharacterType;
+import funkin.play.character.BaseCharacter;
+import funkin.play.stage.StageData.StageDataCharacter;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
@@ -27,7 +29,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public var camZoom:Float = 1.0;
 
 	var namedProps:Map<String, FlxSprite> = new Map<String, FlxSprite>();
-	var characters:Map<String, Character> = new Map<String, Character>();
+	var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
 	var boppers:Array<Bopper> = new Array<Bopper>();
 
 	/**
@@ -158,6 +160,14 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 					}
 			}
 
+			if (Std.isOfType(propSprite, Bopper))
+			{
+				for (propAnim in dataProp.animations)
+				{
+					cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
+				}
+			}
+
 			if (dataProp.startingAnimation != null)
 			{
 				propSprite.animation.play(dataProp.startingAnimation);
@@ -206,7 +216,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public function refresh()
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-		trace('Stage sorted by z-index');
 	}
 
 	/**
@@ -232,53 +241,116 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	/**
 	 * Used by the PlayState to add a character to the stage.
 	 */
-	public function addCharacter(character:Character, charType:CharacterType)
+	public function addCharacter(character:BaseCharacter, charType:CharacterType)
 	{
+		if (character == null)
+			return;
+
+		#if debug
+		// Temporary marker that shows where the character's location is relative to.
+		// Should display at the stage position of the character (before any offsets).
+		// TODO: Make this a toggle? It's useful to turn on from time to time.
+		var debugIcon:FlxSprite = new FlxSprite(0, 0);
+		debugIcon.makeGraphic(8, 8, 0xffff00ff);
+		debugIcon.visible = false;
+		debugIcon.zIndex = 1000000;
+		#end
+
 		// Apply position and z-index.
+		var charData:StageDataCharacter = null;
 		switch (charType)
 		{
 			case BF:
 				this.characters.set("bf", character);
-				character.zIndex = _data.characters.bf.zIndex;
-				character.x = _data.characters.bf.position[0];
-				character.y = _data.characters.bf.position[1];
+				charData = _data.characters.bf;
+				character.flipX = !character.flipX;
+				// flip offsets if flipX
+				character.initHealthIcon(false);
 			case GF:
 				this.characters.set("gf", character);
-				character.zIndex = _data.characters.gf.zIndex;
-				character.x = _data.characters.gf.position[0];
-				character.y = _data.characters.gf.position[1];
+				charData = _data.characters.gf;
 			case DAD:
 				this.characters.set("dad", character);
-				character.zIndex = _data.characters.dad.zIndex;
-				character.x = _data.characters.dad.position[0];
-				character.y = _data.characters.dad.position[1];
+				charData = _data.characters.dad;
+				// flip offsets if flipX
+				character.initHealthIcon(true);
 			default:
-				this.characters.set(character.curCharacter, character);
+				this.characters.set(character.characterId, character);
+		}
+		if (charData != null)
+		{
+			character.zIndex = charData.zIndex;
+
+			// Start with the per-stage character position.
+			// Subtracting the origin ensures characters are positioned relative to their feet.
+			// Subtracting the global offset allows positioning on a per-character basis.
+			character.x = charData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
+			character.y = charData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+
+			character.cameraFocusPoint.x += charData.cameraOffsets[0];
+			character.cameraFocusPoint.y += charData.cameraOffsets[1];
+
+			// Draw the debug icon at the character's feet.
+			debugIcon.x = charData.position[0];
+			debugIcon.y = charData.position[1];
 		}
 
 		// Add the character to the scene.
 		this.add(character);
+		this.add(debugIcon);
+	}
+
+	public inline function getGirlfriendPosition():FlxPoint
+	{
+		return new FlxPoint(_data.characters.gf.position[0], _data.characters.gf.position[1]);
+	}
+
+	public inline function getBoyfriendPosition():FlxPoint
+	{
+		return new FlxPoint(_data.characters.bf.position[0], _data.characters.bf.position[1]);
+	}
+
+	public inline function getDadPosition():FlxPoint
+	{
+		return new FlxPoint(_data.characters.dad.position[0], _data.characters.dad.position[1]);
 	}
 
 	/**
 	 * Retrieves a given character from the stage.
 	 */
-	public function getCharacter(id:String):Character
+	public function getCharacter(id:String):BaseCharacter
 	{
 		return this.characters.get(id);
 	}
 
-	public function getBoyfriend():Character
+	/**
+	 * Retrieve the Boyfriend character.
+	 * @param pop If true, the character will be removed from the stage as well.
+	 */
+	public function getBoyfriend(?pop:Bool = false):BaseCharacter
 	{
-		return getCharacter('bf');
+		if (pop)
+		{
+			var boyfriend:BaseCharacter = getCharacter("bf");
+
+			// Remove the character from the stage.
+			this.remove(boyfriend);
+			this.characters.remove("bf");
+
+			return boyfriend;
+		}
+		else
+		{
+			return getCharacter('bf');
+		}
 	}
 
-	public function getGirlfriend():Character
+	public function getGirlfriend():BaseCharacter
 	{
 		return getCharacter('gf');
 	}
 
-	public function getDad():Character
+	public function getDad():BaseCharacter
 	{
 		return getCharacter('dad');
 	}
@@ -307,6 +379,32 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			result.push(Paths.image(dataProp.assetPath));
 		}
 		return result;
+	}
+
+	/**
+	 * Dispatch an event to all the characters in the stage.
+	 * @param event The script event to dispatch.
+	 */
+	public function dispatchToCharacters(event:ScriptEvent):Void
+	{
+		for (characterId in characters.keys())
+		{
+			dispatchToCharacter(characterId, event);
+		}
+	}
+
+	/**
+	 * Dispatch an event to a specific character.
+	 * @param characterId The ID of the character to dispatch to.
+	 * @param event The script event to dispatch.
+	 */
+	public function dispatchToCharacter(characterId:String, event:ScriptEvent):Void
+	{
+		var character:BaseCharacter = getCharacter(characterId);
+		if (character != null)
+		{
+			ScriptEventDispatcher.callEvent(character, event);
+		}
 	}
 
 	/**

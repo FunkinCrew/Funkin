@@ -21,7 +21,10 @@ class DataAssets
 			{
 				var pathNoSuffix = textPath.substring(0, textPath.length - ext.length);
 				var pathNoPrefix = pathNoSuffix.substring(queryPath.length);
-				results.push(pathNoPrefix);
+
+				// No duplicates! Why does this happen?
+				if (!results.contains(pathNoPrefix))
+					results.push(pathNoPrefix);
 			}
 		}
 

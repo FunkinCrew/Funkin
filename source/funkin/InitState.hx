@@ -8,11 +8,10 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import funkin.charting.ChartingState;
-import funkin.charting.ChartingState;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.PicoFight;
 import funkin.play.PlayState;
-import funkin.play.stage.StageData;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.animDebugShit.DebugBoundingState;
@@ -125,7 +124,8 @@ class InitState extends FlxTransitionableState
 		FlxTransitionableState.skipNextTransIn = true;
 
 		StageDataParser.loadStageCache();
-
+		CharacterDataParser.loadCharacterCache();
+		ModuleHandler.buildModuleCallbacks();
 		ModuleHandler.loadModuleCache();
 
 		#if song
@@ -179,7 +179,11 @@ class InitState extends FlxTransitionableState
 		#elseif FIGHT
 		FlxG.switchState(new PicoFight());
 		#elseif ANIMDEBUG
+<<<<<<< HEAD
+		FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+=======
 		FlxG.switchState(new DebugBoundingState());
+>>>>>>> origin/feature/scripted-modules
 		#elseif NETTEST
 		FlxG.switchState(new netTest.NetTest());
 		#else

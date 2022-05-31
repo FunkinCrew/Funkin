@@ -515,7 +515,7 @@ class TitleState extends MusicBeatState
 
 		lime.ui.Haptic.vibrate(100, 100);
 
-		var coolText:AtlasText = new AtlasText(0, 0, text, AtlasFont.BOLD);
+		var coolText:AtlasText = new AtlasText(0, 0, text.trim(), AtlasFont.BOLD);
 		coolText.screenCenter(X);
 		coolText.y += (textGroup.length * 60) + 200;
 		textGroup.add(coolText);
@@ -554,7 +554,7 @@ class TitleState extends MusicBeatState
 					switch (i + 1)
 					{
 						case 1:
-							createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+							createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8r']);
 						case 3:
 							addMoreText('present');
 						case 4:

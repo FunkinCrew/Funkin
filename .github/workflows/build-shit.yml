@@ -1,0 +1,63 @@
+name: build-upload
+on: [push, workflow_dispatch]
+jobs:
+  create-nightly-html5:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - uses: ./.github/actions/setup-haxeshit
+        - name: Build game?
+          run: |
+            haxelib run lime build html5 -debug
+            ls
+        - uses: ./.github/actions/upload-itch
+          with:
+            butler-key: ${{ secrets.BUTLER_API_KEY}}
+            build-dir: export/debug/html5/bin
+            target: html5
+  create-nightly-win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-haxeshit
+      - name: Build game
+        run: |
+          haxelib run lime build windows -debug
+          dir
+      - uses: ./.github/actions/upload-itch
+        with:
+          butler-key: ${{ secrets.BUTLER_API_KEY}}
+          build-dir: export/debug/windows/bin
+          target: win
+  create-nightly-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-haxeshit
+      - name: Build game?
+        run: |
+          haxelib run lime build mac -debug
+          ls
+      - uses: ./.github/actions/upload-itch
+        with:
+          butler-key: ${{ secrets.BUTLER_API_KEY}}
+          build-dir: export/debug/macos/bin
+          target: mac
+  create-nightly-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-haxeshit
+      - name: Setting up Linux
+        run: |
+          haxelib run lime setup linux
+      - name: Build game?
+        run: |
+          haxelib run lime build linux -debug
+          ls
+      - uses: ./.github/actions/upload-itch
+        with:
+          butler-key: ${{ secrets.BUTLER_API_KEY}}
+          build-dir: export/debug/linux/bin
+          target: linux
+

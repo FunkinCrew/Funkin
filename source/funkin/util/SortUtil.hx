@@ -13,6 +13,8 @@ class SortUtil
 	 */
 	public static inline function byZIndex(Order:Int, Obj1:FlxBasic, Obj2:FlxBasic):Int
 	{
+		if (Obj1 == null || Obj2 == null)
+			return 0;
 		return FlxSort.byValues(Order, Obj1.zIndex, Obj2.zIndex);
 	}
 

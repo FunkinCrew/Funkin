@@ -19,11 +19,13 @@ import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.shaderslmfao.ScreenWipeShader;
 import funkin.ui.AtlasMenuList;
+import funkin.ui.MenuList.MenuItem;
 import funkin.ui.MenuList;
 import funkin.ui.OptionsState;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;
 import funkin.util.Constants;
+import funkin.util.WindowUtil;
 import lime.app.Application;
 import openfl.filters.ShaderFilter;
 
@@ -39,7 +41,7 @@ import io.newgrounds.NG;
 
 class MainMenuState extends MusicBeatState
 {
-	var menuItems:MainMenuList;
+	var menuItems:MenuTypedList<AtlasMenuItem>;
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -87,7 +89,7 @@ class MainMenuState extends MusicBeatState
 			add(magenta);
 		// magenta.scrollFactor.set();
 
-		menuItems = new MainMenuList();
+		menuItems = new MenuTypedList<AtlasMenuItem>();
 		add(menuItems);
 		menuItems.onChange.add(onMenuItemChange);
 		menuItems.onAcceptPress.add(function(_)
@@ -103,31 +105,32 @@ class MainMenuState extends MusicBeatState
 		});
 
 		menuItems.enabled = true; // can move on intro
-		menuItems.createItem('story mode', function() startExitState(new StoryMenuState()));
-		menuItems.createItem('freeplay', function()
+		createMenuItem('storymode', 'mainmenu/storymode', function() startExitState(new StoryMenuState()));
+		createMenuItem('freeplay', 'mainmenu/freeplay', function()
 		{
 			persistentDraw = true;
 			persistentUpdate = false;
 			openSubState(new FreeplayState());
 		});
-		// addMenuItem('options', function () startExitState(new OptionMenu()));
 		#if CAN_OPEN_LINKS
 		var hasPopupBlocker = #if web true #else false #end;
 
 		if (VideoState.seenVideo)
-			menuItems.createItem('kickstarter', selectDonate, hasPopupBlocker);
+		{
+			createMenuItem('kickstarter', 'mainmenu/kickstarter', selectDonate, hasPopupBlocker);
+		}
 		else
-			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
+		{
+			createMenuItem('donate', 'mainmenu/donate', selectDonate, hasPopupBlocker);
+		}
 		#end
-		menuItems.createItem('options', function() startExitState(new OptionsState()));
-		// #if newgrounds
-		// 	if (NGio.isLoggedIn)
-		// 		menuItems.createItem("logout", selectLogout);
-		// 	else
-		// 		menuItems.createItem("login", selectLogin);
-		// #end
 
-		// center vertically
+		createMenuItem('options', 'mainmenu/options', function()
+		{
+			startExitState(new OptionsState());
+		});
+
+		// Reset position of menu items.
 		var spacing = 160;
 		var top = (FlxG.height - (spacing * (menuItems.length - 1))) / 2;
 		for (i in 0...menuItems.length)
@@ -145,17 +148,24 @@ class MainMenuState extends MusicBeatState
 
 		// This has to come AFTER!
 		this.leftWatermarkText.text = Constants.VERSION;
-		this.rightWatermarkText.text = "blablabla test";
-
-		// var versionStr = 'v${Application.current.meta.get('version')}';
-		// versionStr += ' (secret week 8 build do not leak)';
-		//
-		// var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, versionStr, 12);
-		// versionShit.scrollFactor.set();
-		// versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		// add(versionShit);
+		// this.rightWatermarkText.text = "blablabla test";
 
 		// NG.core.calls.event.logEvent('swag').send();
+	}
+
+	function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
+	{
+		var item = new AtlasMenuItem(name, Paths.getSparrowAtlas(atlas), callback);
+		item.fireInstantly = fireInstantly;
+		item.ID = menuItems.length;
+
+		item.scrollFactor.set();
+
+		// Set the offset of the item so the sprite is centered on the origin.
+		item.centered = true;
+		item.changeAnim('idle');
+
+		menuItems.addItem(name, item);
 	}
 
 	override function closeSubState()
@@ -185,17 +195,7 @@ class MainMenuState extends MusicBeatState
 	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
-		#if linux
-		// Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-		Sys.command('/usr/bin/xdg-open', [
-			"https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/",
-			"&"
-		]);
-		#else
-		// FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-
-		FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/');
-		#end
+		WindowUtil.openURL(Constants.URL_KICKSTARTER);
 	}
 	#end
 
@@ -315,48 +315,5 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new TitleState());
 		}
-	}
-}
-
-private class MainMenuList extends MenuTypedList<MainMenuItem>
-{
-	public var atlas:FlxAtlasFrames;
-
-	public function new()
-	{
-		atlas = Paths.getSparrowAtlas('main_menu');
-		super(Vertical);
-	}
-
-	public function createItem(x = 0.0, y = 0.0, name:String, callback, fireInstantly = false)
-	{
-		var item = new MainMenuItem(x, y, name, atlas, callback);
-		item.fireInstantly = fireInstantly;
-		item.ID = length;
-
-		return addItem(name, item);
-	}
-
-	override function destroy()
-	{
-		super.destroy();
-		atlas = null;
-	}
-}
-
-private class MainMenuItem extends AtlasMenuItem
-{
-	public function new(x = 0.0, y = 0.0, name, atlas, callback)
-	{
-		super(x, y, name, atlas, callback);
-		scrollFactor.set();
-	}
-
-	override function changeAnim(anim:String)
-	{
-		super.changeAnim(anim);
-		// position by center
-		centerOrigin();
-		offset.copyFrom(origin);
 	}
 }

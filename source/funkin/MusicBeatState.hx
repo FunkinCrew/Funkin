@@ -10,6 +10,8 @@ import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.stage.StageData.StageDataParser;
 import funkin.util.SortUtil;
 
 /**

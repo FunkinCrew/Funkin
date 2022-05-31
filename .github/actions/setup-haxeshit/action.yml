@@ -1,0 +1,18 @@
+name: setup-haxeshit
+description: "sets up haxe shit, using HMM!"
+runs:
+  using: "composite"
+  steps:
+      - uses: krdlab/setup-haxe@v1.1.6
+        with:
+          haxe-version: 4.2.4
+      - name: Config haxelib
+        run: |
+          haxelib config
+        shell: bash
+      - name: Installing Haxe lol
+        run: |
+          haxe -version
+          haxelib --global install hmm
+          haxelib --global run hmm install --quiet
+        shell: bash

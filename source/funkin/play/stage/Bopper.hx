@@ -1,5 +1,6 @@
 package funkin.play.stage;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -35,6 +36,14 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 * that this bopper will play.
 	 */
 	public var idleSuffix(default, set):String = "";
+
+	/**
+	 * Whether this bopper should bop every beat. By default it's true, but when used
+	 * for characters/players, it should be false so it doesn't cut off their animations!!!!!
+	 */
+	public var shouldBop:Bool = true;
+
+	public var finishCallbackMap:Map<String, Void->Void> = new Map<String, Void->Void>();
 
 	function set_idleSuffix(value:String):String
 	{
@@ -76,6 +85,11 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	{
 		super();
 		this.danceEvery = danceEvery;
+		this.animation.finishCallback = function(name)
+		{
+			if (finishCallbackMap[name] != null)
+				finishCallbackMap[name]();
+		};
 	}
 
 	function update_shouldAlternate():Void
@@ -93,14 +107,14 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	{
 		if (danceEvery > 0 && event.beat % danceEvery == 0)
 		{
-			dance(true);
+			dance(shouldBop);
 		}
 	}
 
 	/**
 	 * Called every `danceEvery` beats of the song.
 	 */
-	public function dance(force:Bool = false):Void
+	public function dance(forceRestart:Bool = false):Void
 	{
 		if (this.animation == null)
 		{
@@ -116,17 +130,17 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		{
 			if (hasDanced)
 			{
-				playAnimation('danceRight$idleSuffix', true);
+				playAnimation('danceRight$idleSuffix', forceRestart);
 			}
 			else
 			{
-				playAnimation('danceLeft$idleSuffix', true);
+				playAnimation('danceLeft$idleSuffix', forceRestart);
 			}
 			hasDanced = !hasDanced;
 		}
 		else
 		{
-			playAnimation('idle$idleSuffix', true);
+			playAnimation('idle$idleSuffix', forceRestart);
 		}
 	}
 
@@ -173,17 +187,38 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		}
 	}
 
+	public var canPlayOtherAnims:Bool = true;
+
 	/**
 	 * @param name The name of the animation to play.
 	 * @param restart Whether to restart the animation if it is already playing.
+	 * @param ignoreOther Whether to ignore all other animation inputs, until this one is done playing
 	 */
-	public function playAnimation(name:String, restart:Bool = false):Void
+	public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
 	{
+		if (ignoreOther == null)
+			ignoreOther = false;
+
+		if (!canPlayOtherAnims)
+			return;
+
 		var correctName = correctAnimationName(name);
 		if (correctName == null)
 			return;
 
 		this.animation.play(correctName, restart, false, 0);
+
+		if (ignoreOther)
+		{
+			canPlayOtherAnims = false;
+
+			// doing it with this funny map, since overriding the animation.finishCallback is a bit messier IMO
+			finishCallbackMap[name] = function()
+			{
+				canPlayOtherAnims = true;
+				finishCallbackMap[name] = null;
+			};
+		}
 
 		applyAnimationOffsets(correctName);
 	}
