@@ -2038,6 +2038,7 @@ class PlayState extends MusicBeatState
 
 		if (upP)
 		{
+			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums))
 			{
 				// we didn't hit shit.
@@ -2065,6 +2066,7 @@ class PlayState extends MusicBeatState
 
 		if (downP)
 		{
+			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums))
 			{
 				// we didn't hit shit.
@@ -2092,6 +2094,7 @@ class PlayState extends MusicBeatState
 
 		if (leftP)
 		{
+			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums))
 			{
 				// we didn't hit shit.
@@ -2119,6 +2122,7 @@ class PlayState extends MusicBeatState
 
 		if (rightP)
 		{
+			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums))
 			{
 				// we didn't hit shit.
@@ -2218,6 +2222,14 @@ class PlayState extends MusicBeatState
 					// popUpScore(timing);
 				}
 			});
+		}
+
+		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left)
+		{
+			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+			{
+				boyfriend.playAnim('idle');
+			}
 		}
 
 		playerStrums.forEach(function(spr:FlxSprite)

@@ -71,9 +71,9 @@ class OptionsMenu extends MusicBeatState
 			]),
 			#if debug
 			new OptionGroup("Debug", [
-				new RangeOption("Good Timing %v", "Controls the timing window of good", 40, 100, 5, "DEBUG_goodTiming"),
-				new RangeOption("Bad Timing %v", "Controls the timing window of bad", 60, 100, 5, "DEBUG_badTiming"),
-				new RangeOption("Shit Timing %v", "Controls the timing window of shit", 75, 100, 5, "DEBUG_shitTiming"),
+				new RangeOption("Good Timing %v", "Controls the timing window of good", 22, 100, 2, "DEBUG_goodTiming"),
+				new RangeOption("Bad Timing %v", "Controls the timing window of bad", 38, 100, 2, "DEBUG_badTiming"),
+				new RangeOption("Shit Timing %v", "Controls the timing window of shit", 56, 100, 2, "DEBUG_shitTiming"),
 			])
 			#end
 		];
