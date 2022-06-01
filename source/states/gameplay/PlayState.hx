@@ -2055,7 +2055,7 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.mustPress && FlxG.overlap(playerStrums, note) && note.y <= strumY)
+				if (note.mustPress && FlxG.overlap(playerStrums, note) && note.y <= strumY && !note.isSustainNote)
 				{
 					boyfriend.holdTimer = 0;
 					// if all conditions are met, then we hit the note.
@@ -2069,7 +2069,17 @@ class PlayState extends MusicBeatState
 					popUpScore(timing);
 
 					new FlxTimer().start(0.2, (_) -> {
-						playerStrums.members[note.noteData].animation.play("static");
+						if (!FlxG.overlap(playerStrums.members[note.noteData], notes))
+							playerStrums.members[note.noteData].animation.play("static");
+					});
+				}
+				else if (note.mustPress && FlxG.overlap(playerStrums, note) && note.isSustainNote)
+				{
+					goodNoteHit(note);
+
+					new FlxTimer().start(0.2, (_) -> {
+						if (!FlxG.overlap(playerStrums.members[note.noteData], notes))
+							playerStrums.members[note.noteData].animation.play("static");
 					});
 				}
 			});
