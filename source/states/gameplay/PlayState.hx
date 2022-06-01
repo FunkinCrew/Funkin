@@ -163,6 +163,8 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	var botplay:Bool = Option.recieveValue("GAMEPLAY_botplay") == 1;
+
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
@@ -1434,10 +1436,11 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = 'Score: ${songScore} - '+
+		scoreTxt.text = !botplay ? 'Score: ${songScore} - '+
 		'Combo: ${combo} - '+
 		'Misses: ${misses} - ' +
-		'Hit %: ${(sicks + goods + bads + shits + misses == 0) ? 0 : (sicks + goods + bads + shits) / (sicks + goods + bads + shits + misses) * 100}%';
+		'Hit %: ${(sicks + goods + bads + shits + misses == 0) ? 0 : (sicks + goods + bads + shits) / (sicks + goods + bads + shits + misses) * 100}%'
+		: 'BOTPLAY ENABLED';
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -2048,7 +2051,31 @@ class PlayState extends MusicBeatState
 		var downPressed = false;
 		var leftPressed = false;
 
-		if (upP)
+		if (botplay)
+		{
+			notes.forEachAlive(function(note:Note)
+			{
+				if (note.mustPress && FlxG.overlap(playerStrums, note) && note.y <= strumY)
+				{
+					boyfriend.holdTimer = 0;
+					// if all conditions are met, then we hit the note.
+					
+					// find timing.
+					var timing = note.y - strumY;
+					trace('BP TIMING ' + timing);
+
+					goodNoteHit(note);
+
+					popUpScore(timing);
+
+					new FlxTimer().start(0.2, (_) -> {
+						playerStrums.members[note.noteData].animation.play("static");
+					});
+				}
+			});
+		}
+
+		if (upP && !botplay)
 		{
 			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
@@ -2061,7 +2088,7 @@ class PlayState extends MusicBeatState
 			{
 				if (note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed)
 				{
-					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						upPressed = true;
 					// if all conditions are met, then we hit the note.
 					
@@ -2076,7 +2103,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (downP)
+		if (downP && !botplay)
 		{
 			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
@@ -2089,7 +2116,7 @@ class PlayState extends MusicBeatState
 			{
 				if (note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed)
 				{
-					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						downPressed = true;
 					// if all conditions are met, then we hit the note.
 					
@@ -2104,7 +2131,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (leftP)
+		if (leftP && !botplay)
 		{
 			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
@@ -2117,7 +2144,7 @@ class PlayState extends MusicBeatState
 			{
 				if (note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed)
 				{
-					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						leftPressed = true;
 					// if all conditions are met, then we hit the note.
 					
@@ -2132,7 +2159,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (rightP)
+		if (rightP && !botplay)
 		{
 			boyfriend.holdTimer = 0;
 			if (!FlxG.overlap(notes, playerStrums) && Option.recieveValue("GAMEPLAY_ghostTapping") == 1)
@@ -2145,7 +2172,7 @@ class PlayState extends MusicBeatState
 			{
 				if (note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed)
 				{
-					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 0)
+					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						rightPressed = true;
 					// if all conditions are met, then we hit the note.
 					
@@ -2160,7 +2187,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (up)
+		if (up && !botplay)
 		{
 			notes.forEachAlive(function(note:Note)
 			{
@@ -2179,7 +2206,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (left)
+		if (left && !botplay)
 		{
 			notes.forEachAlive(function(note:Note)
 			{
@@ -2198,7 +2225,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (right)
+		if (right && !botplay)
 		{
 			notes.forEachAlive(function(note:Note)
 			{
@@ -2217,7 +2244,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (down)
+		if (down && !botplay)
 		{
 			notes.forEachAlive(function(note:Note)
 			{
