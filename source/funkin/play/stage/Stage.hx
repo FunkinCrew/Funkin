@@ -166,6 +166,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 				{
 					cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
 				}
+				cast(propSprite, Bopper).originalPosition.x = dataProp.position[0];
+				cast(propSprite, Bopper).originalPosition.y = dataProp.position[1];
 			}
 
 			if (dataProp.startingAnimation != null)

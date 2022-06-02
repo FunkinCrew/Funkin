@@ -1,6 +1,8 @@
 package funkin.play.stage;
 
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
@@ -42,7 +44,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public var shouldBop:Bool = true;
 
-	public var finishCallbackMap:Map<String, Void->Void> = new Map<String, Void->Void>();
+	private var finishCallbackMap:Map<String, Void->Void> = new Map<String, Void->Void>();
 
 	function set_idleSuffix(value:String):String
 	{
@@ -54,9 +56,27 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	/**
 	 * The offset of the character relative to the position specified by the stage.
 	 */
-	public var globalOffsets(default, null):Array<Float> = [0, 0];
+	public var globalOffsets(default, set):Array<Float> = [0, 0];
+
+	function set_globalOffsets(value:Array<Float>)
+	{
+		if (globalOffsets == null)
+			globalOffsets = [0, 0];
+		if (globalOffsets == value)
+			return value;
+
+		var xDiff = globalOffsets[0] - value[0];
+		var yDiff = globalOffsets[1] - value[1];
+
+		this.x += xDiff;
+		this.y += yDiff;
+
+		return animOffsets = value;
+	}
 
 	private var animOffsets(default, set):Array<Float> = [0, 0];
+
+	public var originalPosition:FlxPoint = new FlxPoint(0, 0);
 
 	function set_animOffsets(value:Array<Float>)
 	{
@@ -89,6 +109,15 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 			if (finishCallbackMap[name] != null)
 				finishCallbackMap[name]();
 		};
+	}
+
+	/**
+	 * If this Bopper was defined by the stage, return the prop to its original position.
+	 */
+	public function resetPosition()
+	{
+		this.x = originalPosition.x + animOffsets[0];
+		this.y = originalPosition.y + animOffsets[1];
 	}
 
 	function update_shouldAlternate():Void
@@ -217,6 +246,31 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		}
 
 		applyAnimationOffsets(correctName);
+	}
+
+	var forceAnimationTimer:FlxTimer = new FlxTimer();
+
+	/**
+	 * @param name The animation to play.
+	 * @param duration The duration in which other (non-forced) animations will be skipped, in seconds.
+	 */
+	public function forceAnimationForDuration(name:String, duration:Float):Void
+	{
+		if (this.animation == null)
+			return;
+
+		var correctName = correctAnimationName(name);
+		if (correctName == null)
+			return;
+
+		this.animation.play(correctName, false, false);
+		applyAnimationOffsets(correctName);
+
+		canPlayOtherAnims = false;
+		forceAnimationTimer.start(duration, (timer) ->
+		{
+			canPlayOtherAnims = true;
+		}, 1);
 	}
 
 	function applyAnimationOffsets(name:String)

@@ -40,7 +40,11 @@ class Conductor
 		return crochet / 4;
 	}
 
+	/**
+	 * The current position in the song in milliseconds.
+	 */
 	public static var songPosition:Float;
+
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
 
