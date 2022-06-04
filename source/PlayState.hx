@@ -1962,7 +1962,7 @@ class PlayState extends MusicBeatState
 				//-strumLine.y - 16
 
 				//DaNote was too late
-				if (daNote.y < -daNote.height)
+				if (daNote.y < -daNote.height && !FlxG.save.data.botplay)
 				{
 					//fnf is weird
 					if (daNote.tooLate && !daNote.wasGoodHit || !daNote.wasGoodHit)
