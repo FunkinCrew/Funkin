@@ -1,5 +1,6 @@
 package states.menu;
 
+import engine.functions.Option;
 import flixel.addons.transition.FlxTransitionableState;
 import engine.base.MusicBeatState;
 import flixel.FlxState;
@@ -30,6 +31,11 @@ class RatingState extends MusicBeatState
 
     public override function create()
     {
+        if (Option.recieveValue("GRAPHICS_globalAA") == 0)
+            FlxG.camera.antialiasing = true;
+        else
+            FlxG.camera.antialiasing = false;
+
         transIn = FlxTransitionableState.defaultTransIn;
         transOut = FlxTransitionableState.defaultTransOut;
 
@@ -47,7 +53,7 @@ class RatingState extends MusicBeatState
             "Shits: " + shits + "\n" +
             "Hit: " + (sicks + goods + bads + shits) + "/" + (misses + sicks + goods + bads + shits) +
             " (that's " + ((sicks + goods + bads + shits) / (misses + sicks + goods + bads + shits)) * 100 + "%)");
-        text.setFormat("assets/fonts/PhantomMuff.ttf", 16, 0xFFFFFFFF, LEFT);
+        text.setFormat("assets/fonts/PhantomMuff.ttf", 32, 0xFFFFFFFF, LEFT);
         add(text);
     }
 
