@@ -157,6 +157,15 @@ class OptionsMenu extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		
+		if (FlxG.save.data.UP == null)
+			FlxG.save.data.UP = "W";
+		if (FlxG.save.data.DOWN == null)
+			FlxG.save.data.DOWN = "S";
+		if (FlxG.save.data.LEFT == null)
+			FlxG.save.data.LEFT = "A";
+		if (FlxG.save.data.RIGHT == null)
+			FlxG.save.data.RIGHT = "D";
+
 		selectorSprite.y = categoryBG.y + (curSelectedGroup * Std.int(FlxG.height * 0.05)) + curSelectedGroup * 2;
 
 		if (inGroup)
@@ -403,6 +412,26 @@ class OptionsMenu extends MusicBeatState
 	{
 		valueMap.clear();
 		updateMenu();
+		for (group in optionGroups)
+		{
+			for (option in group.options)
+			{
+				if (Std.isOfType(option, CycleOption))
+				{
+					(option : CycleOption).curValue = 0;
+					valueMap[option.saveTo] = 0;
+				}
+				else if (Std.isOfType(option, RangeOption))
+				{
+					(option : RangeOption).curValue = (option : RangeOption).min;
+					valueMap[option.saveTo] = (option : RangeOption).min;
+				}
+			}
+		}
+		FlxG.save.data.UP = "W";
+		FlxG.save.data.DOWN = "S";
+		FlxG.save.data.LEFT = "A";
+		FlxG.save.data.RIGHT = "D";
 	}
 
 	function updateFPS() {

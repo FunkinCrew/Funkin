@@ -52,6 +52,15 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		if (FlxG.save.data.UP == null)
+			FlxG.save.data.UP = "W";
+		if (FlxG.save.data.DOWN == null)
+			FlxG.save.data.DOWN = "S";
+		if (FlxG.save.data.LEFT == null)
+			FlxG.save.data.LEFT = "A";
+		if (FlxG.save.data.RIGHT == null)
+			FlxG.save.data.RIGHT = "D";
+
 		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 0)
 			{
 				FlxG.camera.antialiasing = true;
