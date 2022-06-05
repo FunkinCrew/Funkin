@@ -1,5 +1,8 @@
 package modding;
 
+import flixel.addons.ui.FlxUIInputText;
+import ui.HealthIcon;
+import flixel.ui.FlxBar;
 import ui.FlxUIDropDownMenuCustom;
 import utilities.CoolUtil;
 import flixel.FlxSprite;
@@ -44,6 +47,14 @@ class CharacterCreationState extends MusicBeatState
     var charDropDown:FlxUIDropDownMenuCustom;
     var modDropDown:FlxUIDropDownMenuCustom;
 
+    // health bar shit
+    var healthBarBG:FlxSprite;
+    var healthBar:FlxBar;
+    var icons:HealthIcon;
+
+    // animation shit
+    var animationBox:FlxUIInputText;
+
     override public function new(?char:String = "bf")
     {
         super();
@@ -83,7 +94,7 @@ class CharacterCreationState extends MusicBeatState
 
         reloadCharacterStuff();
 
-        animList = new FlxText(0,0,0,"Corn", 24);
+        animList = new FlxText(8,8,0,"Corn", 24);
         animList.color = FlxColor.CYAN;
         animList.cameras = [camHUD];
         animList.font = Paths.font("vcr.ttf");
@@ -93,6 +104,31 @@ class CharacterCreationState extends MusicBeatState
         updateAnimList();
         
         add(animList);
+
+        healthBarBG = new FlxSprite(8, FlxG.height - 75).loadGraphic(Paths.image('ui skins/default/other/healthBar', 'shared'));
+        healthBarBG.scrollFactor.set();
+        healthBarBG.cameras = [camHUD];
+
+        add(healthBarBG);
+
+        healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this);
+        healthBar.scrollFactor.set();
+        healthBar.createFilledBar(character.barColor, character.barColor);
+        healthBar.cameras = [camHUD];
+
+        add(healthBar);
+
+        icons = new HealthIcon(character.icon, false);
+
+        icons.loadGraphic(icons.graphic);
+        icons.setGraphicSize(0, 150);
+        icons.updateHitbox();
+        icons.cameras = [camHUD];
+
+        icons.y = healthBar.y - (icons.height / 2) - icons.offsetY;
+        icons.x = healthBar.x;
+
+        add(icons);
 
         var characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
@@ -270,36 +306,56 @@ class CharacterCreationState extends MusicBeatState
             character.loadOffsetFile(character.curCharacter);
         }
 
-        add(character);
-
-        add(funnyBox);
-
-        if(modDropDown != null)
-            add(modDropDown);
-        if(charDropDown != null)
-            add(charDropDown);
-
-        animations = character.animation.getNameList();
-
-        if(animations.length < 1)
-            animations = ["idle"];
-
-        var coolPos:Array<Float> = stage.getCharacterPos(character.isPlayer ? 0 : 1, character);
-
-        if(character.isPlayer)
-            funnyBox.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+        if(character.config == null)
+        {
+            charStr = "bf";
+            reloadCharacterStuff();
+        }
         else
-            funnyBox.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+        {
+            add(character);
 
-        character.setPosition(coolPos[0], coolPos[1]);
+            add(funnyBox);
+    
+            if(modDropDown != null)
+                add(modDropDown);
+            if(charDropDown != null)
+                add(charDropDown);
+    
+            animations = character.animation.getNameList();
+    
+            if(animations.length < 1)
+                animations = ["idle"];
+    
+            var coolPos:Array<Float> = stage.getCharacterPos(character.isPlayer ? 0 : 1, character);
+    
+            if(character.isPlayer)
+                funnyBox.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+            else
+                funnyBox.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+    
+            character.setPosition(coolPos[0], coolPos[1]);
+    
+            if(animList != null)
+                updateAnimList();
 
-        if(animList != null)
-            updateAnimList();
+            if(healthBar != null)
+                healthBar.createFilledBar(character.barColor, character.barColor);
+
+            if(icons != null)
+            {
+                icons.changeIconSet(character.icon);
+
+                icons.loadGraphic(icons.graphic);
+                icons.setGraphicSize(0, 150);
+                icons.updateHitbox();
+            }
+        }
     }
 
     function updateAnimList()
     {
-        animList.text = (Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n") + "\n").replace(animations[curAnimation % animations.length]
+        animList.text = "Animations:\n" + (Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n") + "\n").replace(animations[curAnimation % animations.length]
             + "\n", '>${animations[curAnimation % animations.length]}<\n');
     }
 }

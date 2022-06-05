@@ -46,6 +46,8 @@ class Character extends FlxSprite
 
 	var isDeathCharacter:Bool = false;
 
+	public var config:CharacterConfig;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, ?isDeathCharacter:Bool = false)
 	{
 		super(x, y);
@@ -324,9 +326,9 @@ class Character extends FlxSprite
 
 		var rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 
-		var config:CharacterConfig = cast Json.parse(rawJson);
+		this.config = cast Json.parse(rawJson);
 
-		loadCharacterConfiguration(config);
+		loadCharacterConfiguration(this.config);
 	}
 
 	public function loadCharacterConfiguration(config:CharacterConfig)
