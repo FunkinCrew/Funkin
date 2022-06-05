@@ -74,6 +74,7 @@ class OptionsMenu extends MusicBeatState
 			new OptionGroup("Misc", [
 				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions),
 				new FunctionOption("Reset Everything", "Resets everything stored in the save file.", () -> {
+					resetBinds();
 					FlxG.save.erase();
 				})
 			]),
@@ -428,10 +429,7 @@ class OptionsMenu extends MusicBeatState
 				}
 			}
 		}
-		FlxG.save.data.UP = "W";
-		FlxG.save.data.DOWN = "S";
-		FlxG.save.data.LEFT = "A";
-		FlxG.save.data.RIGHT = "D";
+		resetBinds();
 	}
 
 	function updateFPS() {
@@ -443,6 +441,21 @@ class OptionsMenu extends MusicBeatState
 			FlxG.drawFramerate = valueMap["GRAPHICS_fpsCap"];
 			FlxG.updateFramerate = valueMap["GRAPHICS_fpsCap"];
 		}
+	}
+
+	function resetBinds()
+	{
+		controls.unbindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.LEFT), FlxKey.LEFT]);
+		controls.bindKeys(Control.LEFT, [FlxKey.fromString("A"), FlxKey.LEFT]);
+
+		controls.unbindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.RIGHT), FlxKey.RIGHT]);
+		controls.bindKeys(Control.RIGHT, [FlxKey.fromString("D"), FlxKey.RIGHT]);
+
+		controls.unbindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.UP), FlxKey.UP]);
+		controls.bindKeys(Control.UP, [FlxKey.fromString("W"), FlxKey.UP]);
+
+		controls.unbindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.DOWN), FlxKey.DOWN]);
+		controls.bindKeys(Control.DOWN, [FlxKey.fromString("S"), FlxKey.DOWN]);
 	}
 }
 
