@@ -1901,19 +1901,19 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
-		if (offset > Std.int(Option.recieveValue("DEBUG_shitTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_shitTiming")))
+		if (offset > 70 || offset < -70)
 		{
 			daRating = 'shit';
 			shits++;
 			score = 50;
 		}
-		else if (offset > Std.int(Option.recieveValue("DEBUG_badTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_badTiming")))
+		else if (offset > 50 || offset < -50)
 		{
 			daRating = 'bad';
 			bads++;
 			score = 100;
 		}
-		else if (offset > Std.int(Option.recieveValue("DEBUG_goodTiming")) || offset < -Std.int(Option.recieveValue("DEBUG_goodTiming")))
+		else if (offset > 36 || offset < -36)
 		{
 			daRating = 'good';
 			goods++;

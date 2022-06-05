@@ -79,13 +79,6 @@ class OptionsMenu extends MusicBeatState
 					FlxG.save.erase();
 				})
 			]),
-			#if debug
-			new OptionGroup("Debug", [
-				new RangeOption("Good Timing %v", "Controls the timing window of good",36, 100, 2, "DEBUG_goodTiming"),
-				new RangeOption("Bad Timing %v", "Controls the timing window of bad", 50, 100, 2, "DEBUG_badTiming"),
-				new RangeOption("Shit Timing %v", "Controls the timing window of shit", 70, 100, 2, "DEBUG_shitTiming"),
-			])
-			#end
 		];
 
 		transIn = FlxTransitionableState.defaultTransIn;
