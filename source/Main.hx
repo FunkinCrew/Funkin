@@ -1,5 +1,6 @@
 package;
 
+import lime.app.Application;
 import states.menu.TitleState;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -29,6 +30,14 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
+
+		Application.current.window.title += ' (V-${Application.current.meta.get("version")} ';
+
+		#if LITE // LITE = 32bit
+		Application.current.window.title += "x86)";
+		#else
+		Application.current.window.title += "x64)";
+		#end
 
 		if (stage != null)
 		{
