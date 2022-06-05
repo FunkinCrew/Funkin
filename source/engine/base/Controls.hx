@@ -494,7 +494,7 @@ class Controls extends FlxActionSet
 
 		keyboardScheme = scheme;
 
-		FlxG.save.bind('funkin', 'spunblue');
+		FlxG.save.bind('funkin', 'thepercentageguy');
 
 		if(FlxG.save.data.UP == null){
             FlxG.save.data.UP = "W";
