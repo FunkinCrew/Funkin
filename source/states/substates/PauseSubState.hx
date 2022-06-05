@@ -31,6 +31,7 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 
+		/* github is high and doesn't recognize the comment alone as a change so here's this text.
 		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 0)
 			{
 				FlxG.camera.antialiasing = true;
@@ -39,6 +40,7 @@ class PauseSubState extends MusicBeatSubstate
 			{
 				FlxG.camera.antialiasing = false;
 			}
+		*/
 
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
