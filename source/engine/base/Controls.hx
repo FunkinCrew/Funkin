@@ -1,4 +1,4 @@
-package;
+package engine.base;
 
 import flixel.FlxG;
 import flixel.input.FlxInput;
