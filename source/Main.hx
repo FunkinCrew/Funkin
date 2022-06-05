@@ -31,14 +31,7 @@ class Main extends Sprite
 	{
 		super();
 
-		Application.current.window.title += ' (V-${Application.current.meta.get("version")} ';
-
-		#if LITE // LITE = 32bit
-		Application.current.window.title += "x86)";
-		#else
-		Application.current.window.title += "x64)";
-		#end
-
+		
 		if (stage != null)
 		{
 			init();
@@ -47,6 +40,14 @@ class Main extends Sprite
 		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
+
+		Application.current.window.title = 'Friday Night Funkin\' Sharp Engine (V-${Application.current.meta.get("version")} ';
+
+		#if LITE // LITE = 32bit
+		Application.current.window.title += "x86)";
+		#else
+		Application.current.window.title += "x64)";
+		#end
 	}
 
 	private function init(?E:Event):Void

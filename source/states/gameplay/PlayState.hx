@@ -1,5 +1,6 @@
 package states.gameplay;
 
+import states.menu.RatingState;
 import engine.functions.Option;
 import states.menu.FreeplayState;
 import states.menu.LoadingState;
@@ -1806,8 +1807,13 @@ class PlayState extends MusicBeatState
 
 				transIn = FlxTransitionableState.defaultTransIn;
 				transOut = FlxTransitionableState.defaultTransOut;
-
-				FlxG.switchState(new StoryMenuState());
+				
+				FlxG.switchState(new RatingState(misses, sicks, goods, bads, shits, new StoryMenuState()));
+				misses = 0;
+				sicks = 0;
+				goods = 0;
+				bads = 0;
+				shits = 0;
 
 				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
@@ -1857,7 +1863,12 @@ class PlayState extends MusicBeatState
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
-			FlxG.switchState(new FreeplayState());
+			FlxG.switchState(new RatingState(misses, sicks, goods, bads, shits, new StoryMenuState()));
+			misses = 0;
+			sicks = 0;
+			goods = 0;
+			bads = 0;
+			shits = 0;
 		}
 	}
 
@@ -2096,7 +2107,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed)
+				if (note.exists && note.alive && note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						upPressed = true;
@@ -2124,7 +2135,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed)
+				if (note.exists && note.alive && note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						downPressed = true;
@@ -2152,7 +2163,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed)
+				if (note.exists && note.alive && note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						leftPressed = true;
@@ -2180,7 +2191,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed)
+				if (note.exists && note.alive && note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						rightPressed = true;
