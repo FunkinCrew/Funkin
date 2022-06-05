@@ -67,6 +67,7 @@ class OptionsMenu extends MusicBeatState
 				//! broken! new CycleOption("Difficult Jacks %v", "With this option turned off, you only need to press once to trigger both notes.", ["On", "Off"], "GAMEPLAY_difficultJacks"),
 				new CycleOption("Ghost Tapping %v", "When enabled, you will not get a miss for pressing a key without a note.", ["On", "Off"], "GAMEPLAY_ghostTapping"),
 				new CycleOption("Botplay %v", "Whether the game plays itself or not", ["Off", "On"], "GAMEPLAY_botplay"),
+				new CycleOption("Downscroll %v", "Downscroll.", ["Off", "On"], "GAMEPLAY_downscroll"),
 				new FunctionOption("Set Keybinds", "Opens the keybind menu.", () -> {
 					FlxG.switchState(new KeybindState());
 				}),
