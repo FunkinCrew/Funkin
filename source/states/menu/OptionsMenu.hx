@@ -66,10 +66,16 @@ class OptionsMenu extends MusicBeatState
 				new CycleOption("Show Score Text %v", "Whether to show the score text or not", ["On", "Off"], "GAMEPLAY_showScoreTxt"),
 				//! broken! new CycleOption("Difficult Jacks %v", "With this option turned off, you only need to press once to trigger both notes.", ["On", "Off"], "GAMEPLAY_difficultJacks"),
 				new CycleOption("Ghost Tapping %v", "When enabled, you will not get a miss for pressing a key without a note.", ["On", "Off"], "GAMEPLAY_ghostTapping"),
-				new CycleOption("Botplay %v", "Whether the game plays itself or not", ["Off", "On"], "GAMEPLAY_botplay")
+				new CycleOption("Botplay %v", "Whether the game plays itself or not", ["Off", "On"], "GAMEPLAY_botplay"),
+				new FunctionOption("Set Keybinds", "Opens the keybind menu.", () -> {
+					FlxG.switchState(new KeybindState());
+				}),
 			]),
 			new OptionGroup("Misc", [
-				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions)
+				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions),
+				new FunctionOption("Reset Everything", "Resets everything stored in the save file.", () -> {
+					FlxG.save.erase();
+				})
 			]),
 			#if debug
 			new OptionGroup("Debug", [

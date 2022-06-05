@@ -2107,7 +2107,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.exists && note.alive && note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed)
+				if (!note.wasGoodHit && note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						upPressed = true;
@@ -2135,7 +2135,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.exists && note.alive && note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed)
+				if (!note.wasGoodHit && note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						downPressed = true;
@@ -2163,7 +2163,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.exists && note.alive && note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed)
+				if (!note.wasGoodHit && note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						leftPressed = true;
@@ -2191,7 +2191,7 @@ class PlayState extends MusicBeatState
 			}
 			notes.forEachAlive(function(note:Note)
 			{
-				if (note.exists && note.alive && note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed)
+				if (!note.wasGoodHit && note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						rightPressed = true;
