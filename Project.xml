@@ -42,12 +42,6 @@
 	<assets path="assets/preload/videos" exclude="*.mp4" unless="web"/>
 
 	<!--compatability things-->
-	<section if="linux">
-		<assets path="plugins/" exclude="*"/>
-		<assets path="dlls/" exclude="*"/>
-		<assets path="source/vlc/" exclude="*"/>
-		<assets path="assets/preload/videos" exclude="*"/>
-	</section>
 	<section if="mac">
 		<assets path="plugins/" exclude="*"/>
 		<assets path="dlls/" exclude="*"/>
@@ -55,7 +49,8 @@
 		<assets path="assets/preload/videos" exclude="*"/>
 	</section>
 
-
+	<assets path="plugins/" rename='' if="linux"/>
+	<assets path="dlls/" rename='' if="linux"/>
 	<assets path="plugins/" rename='' if="windows"/>
 	<assets path="dlls/" rename='' if="windows"/>
 
@@ -121,6 +116,7 @@
 	<assets path="assets/week7"    library="week7"    exclude="*.mp3" unless="web"/>
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path='art/linuxinfo.txt' rename='Important Linux Information.txt' if="linux"/>
 	<!-- <template path='mods' /> -->
 
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
@@ -133,6 +129,10 @@
 
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
+
+	<!--Video Shit-->
+	<haxelib name="hxCodec"/>
+	<haxedef name="HXC_DEBUG_TRACE" if="debug" />
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />

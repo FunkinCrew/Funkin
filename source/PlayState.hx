@@ -1,11 +1,19 @@
 package;
 
+import openfl.media.Video;
 import flixel.input.actions.FlxActionManager.ActionSetJson;
 import Controls.Action;
 import flixel.math.FlxRandom;
 #if desktop
 import Discord.DiscordClient;
 #end
+
+#if windows
+import vlc.VideoHandler;
+#elseif linux
+import vlc.VideoHandler;
+#end
+
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
@@ -143,10 +151,6 @@ class PlayState extends MusicBeatState
 	var songLength:Float = 0;
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
-	#end
-
-	#if windows
-	var video:MP4Handler;
 	#end
 
 	var strumUnderlay:FlxSprite;
@@ -2923,10 +2927,10 @@ class PlayState extends MusicBeatState
 
 	function playCutscene(name:String)
 	{
-		#if windows
+		#if (windows || linux)
 		inCutscene = true;
-	
-		video = new MP4Handler();
+
+		var video:VideoHandler = new VideoHandler();
 		video.finishCallback = function()
 		{
 			startCountdown();
@@ -2939,7 +2943,6 @@ class PlayState extends MusicBeatState
 	
 	function playEndCutscene(name:String)
 	{
-		#if windows
 		//Doesn't check if the song is ending sense it gets called to play WHILE the song is ending.
 		inCutscene = true;
 
@@ -2947,7 +2950,10 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.kill();
 		vocals.kill();
 
-		video = new MP4Handler();
+		#if (windows || linux)
+		inCutscene = true;
+
+		var video:VideoHandler = new VideoHandler();
 		video.finishCallback = function()
 		{
 			inCutscene = false;
@@ -2956,6 +2962,7 @@ class PlayState extends MusicBeatState
 		}
 		video.playVideo(Paths.video(name));
 		#else
+		inCutscene = false;
 		playedEndCutscene = true;
 		endSong();
 		#end
