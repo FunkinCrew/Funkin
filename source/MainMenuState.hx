@@ -34,10 +34,6 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
-	#if windows
-	var video:MP4Handler;
-	#end
-
 	//VERSION
 	public static var nightly:String = "";
 	public static var gameVer:String = "2.13.1";
