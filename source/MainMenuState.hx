@@ -146,7 +146,6 @@ class MainMenuState extends MusicBeatState
 				{
 					#if windows
 					FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
-					video.playVideo(Paths.video("kickstarterTrailer"));
 					#elseif linux
 					Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game", "&"]);
 					#elseif mac
