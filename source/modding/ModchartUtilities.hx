@@ -1,5 +1,6 @@
 package modding;
 
+import flixel.addons.effects.FlxTrail;
 import flixel.text.FlxText;
 import utilities.Options;
 import openfl.display.BlendMode;
@@ -147,6 +148,8 @@ class ModchartUtilities
 	}
 
     var oldMultiplier:Float = PlayState.songMultiplier;
+
+    public var trails:Map<String, FlxTrail> = [];
 
     function new(?path:Null<String>)
     {
@@ -477,6 +480,56 @@ class ModchartUtilities
             }
 
             return false;
+        });
+
+        Lua_helper.add_callback(lua,"addActorTrail", function(id:String, length:Int = 10, delay:Int = 3, alpha:Float = 0.4, diff:Float = 0.05) {
+            if(!trails.exists(id) && getActorByName(id) != null)
+            {
+                var trail = new FlxTrail(getActorByName(id), null, length, delay, alpha, diff);
+
+                PlayState.instance.insert(PlayState.instance.members.indexOf(getActorByName(id)) - 1, trail);
+
+                trails.set(id, trail);
+            }
+            else
+                trace("Trail " + id + " already exists (or actor is null)!!!");
+        });
+
+        Lua_helper.add_callback(lua,"removeActorTrail", function(id:String) {
+            if(trails.exists(id))
+            {
+                PlayState.instance.remove(trails.get(id));
+
+                trails.get(id).destroy();
+                trails.remove(id);
+            }
+            else
+                trace("Trail " + id + " doesn't exist!!!");
+        });
+
+        Lua_helper.add_callback(lua,"getActorLayer", function(id:String) {
+            var actor = getActorByName(id);
+
+            if(actor != null)
+                return PlayState.instance.members.indexOf(actor);
+            else
+                return -1;
+        });
+
+        Lua_helper.add_callback(lua,"setActorLayer", function(id:String, layer:Int) {
+            var actor = getActorByName(id);
+            
+            if(actor != null)
+            {
+                if(trails.exists(id))
+                {
+                    PlayState.instance.remove(trails.get(id));
+                    PlayState.instance.insert(layer - 1, trails.get(id));
+                }
+                
+                PlayState.instance.remove(actor);
+                PlayState.instance.insert(layer, actor);
+            }
         });
 
         // health

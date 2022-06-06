@@ -22,7 +22,7 @@ discord_rpc
 polymod
 linc_luajit
 ```
-So for each of those type `haxelib install [library]` so shit like `haxelib install polymod 1.3.0`
+So for each of those type `haxelib install [library]` so shit like `haxelib install polymod 1.5.2`
 
 ## IMPORTANT: use polymod 1.5.2 please
 
