@@ -116,7 +116,6 @@
 	<assets path="assets/week7"    library="week7"    exclude="*.mp3" unless="web"/>
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<assets path='art/linuxinfo.txt' rename='Important Linux Information.txt' if="linux"/>
 	<!-- <template path='mods' /> -->
 
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
