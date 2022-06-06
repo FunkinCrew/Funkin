@@ -340,10 +340,11 @@ class StoryMenuState extends MusicBeatState
 			rightArrow.x = difficultySprite.x + difficultySprite.width + 4;
 
 		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
-		difficultySprite.y = leftArrow.y - 15;
+		difficultySprite.y = leftArrow.y - (difficultySprite.height - leftArrow.height) - 40;
+
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulties[curDifficulty][0], currentGroup.pathName + "Week");
 
-		FlxTween.tween(difficultySprite, {y: leftArrow.y + 15, alpha: 1}, 0.07);
+		FlxTween.tween(difficultySprite, {y: difficultySprite.y + 30, alpha: 1}, 0.07);
 	}
 
 	var lerpScore:Int = 0;

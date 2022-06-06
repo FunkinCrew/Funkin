@@ -881,9 +881,7 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"setActorY", function(y:Float,id:String) {
             if(getActorByName(id) != null)
-            {
-                getActorByName(id).y = y;
-            }
+                Reflect.setProperty(getActorByName(id), "y", y);
         });
 
         Lua_helper.add_callback(lua,"setActorAccelerationY", function(y:Float,id:String) {
