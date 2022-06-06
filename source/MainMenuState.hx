@@ -146,20 +146,10 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (optionShit[curSelected] == 'donate')
+				if (optionShit[curSelected] == 'donate') // fuck da cutscene, removed it!!!
 				{
 					#if windows
-					//kickstarter go brr [i mean the game is gonna be released in 4/30 so why did i add this]
-					//                                                            ^^^^ well that was a lie
-					FlxG.sound.music.stop();
-					selectedSomethin = true;
-					video = new MP4Handler();
-					video.finishCallback = function()
-					{
-						selectedSomethin = false;
-						FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
-						FlxG.sound.playMusic(Paths.music('freakyMenu'));
-					}
+					FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
 					video.playVideo(Paths.video("kickstarterTrailer"));
 					#elseif linux
 					Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game", "&"]);
