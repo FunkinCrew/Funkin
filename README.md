@@ -16,7 +16,7 @@ IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN 
 ## Credits / shoutouts
 
 - [thepercentageguy](https://twitter.com/PercentageGuy) - Main Developer
-- ...
+- [SpunBlue](https://twitter.com/SpunBlue) - MacOS and Windows builds
 - ...
 - yeah that's it
 
