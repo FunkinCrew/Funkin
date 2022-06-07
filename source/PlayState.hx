@@ -7,13 +7,9 @@ import flixel.math.FlxRandom;
 #if desktop
 import Discord.DiscordClient;
 #end
-
-#if windows
-import vlc.VideoHandler;
-#elseif linux
+#if (windows || linux)
 import vlc.VideoHandler;
 #end
-
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
@@ -148,10 +144,11 @@ class PlayState extends MusicBeatState
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
-	var songLength:Float = 0;
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
+
+	var songLength:Float = 1;
 
 	var strumUnderlay:FlxSprite;
 
@@ -849,12 +846,29 @@ class PlayState extends MusicBeatState
 			healthBar.createFilledBar(barColor, barColor2);
 		}
 
+		songBarBG = new FlxSprite(0, FlxG.height * 0.85).makeGraphic(Std.int(healthBarBG.width), Std.int(healthBarBG.height), 0xFF000000);
+		songBarBG.setGraphicSize(Std.int(songBarBG.width * 0.5), Std.int(songBarBG.height * 1.5));
+		songBarBG.updateHitbox();
+		songBarBG.screenCenter(X);
+		songBarBG.scrollFactor.set();
+		add(songBarBG);
+		
+		songBar = new FlxBar(songBarBG.x + 4, songBarBG.y + 4, LEFT_TO_RIGHT, Std.int(songBarBG.width - 8), Std.int(songBarBG.height - 8), this,
+		'songTime', 0, songLength);
+		songBar.scrollFactor.set();
+		songBar.createFilledBar(FlxColor.fromRGB(0, 51, 0), FlxColor.fromRGB(0, 153, 51));
+		add(songBar);
+
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
+		iconP1.setGraphicSize(20);
+		iconP1.updateHitbox();
 		add(iconP1);
 
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
+		iconP2.setGraphicSize(20);
+		iconP2.updateHitbox();
 		add(iconP2);
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 46, FlxG.width, "", 24);
@@ -870,6 +884,8 @@ class PlayState extends MusicBeatState
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
+		songBar.cameras = [camHUD];
+		songBarBG.cameras = [camHUD];
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
@@ -1163,10 +1179,11 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
-		#if desktop
 		// Song duration in a float, useful for the time left feature
 		songLength = FlxG.sound.music.length;
+		songBar.setRange(songTime, songLength);
 
+		#if desktop
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
 		#end
@@ -1583,16 +1600,33 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width - 50, 0.50)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width - 50, 0.50)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
-		var iconOffset:Int = 26;
+		iconP1.y = healthBar.y - (iconP1.height / 2);
+		iconP2.y = healthBar.y - (iconP2.height / 2);
+
+		var iconOffset:Int = 20;
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+
+		if (iconP1.overlaps(songBar)){
+			iconP1.alpha = 0.65;
+		}
+		else{
+			iconP1.alpha = 1;
+		}
+
+		if (iconP2.overlaps(songBar)){
+			iconP2.alpha = 0.65;
+		}
+		else{
+			iconP2.alpha = 1;
+		}
 
 		// Panic the BF
 		if (!FlxG.save.data.disablePanicableBF && !FlxG.save.data.liteMode){
@@ -1887,6 +1921,7 @@ class PlayState extends MusicBeatState
 					if (!daNote.isSustainNote){
 						combo++;
 						sicks++;
+						health += 0.1;
 					}
 					
 					daNote.kill();
@@ -1917,6 +1952,52 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singUP' + altAnim, true);
 						case 3:
 							dad.playAnim('singRIGHT' + altAnim, true);
+					}
+
+					// Custom Singing Animations
+					switch (SONG.song.toLowerCase()){
+						case 'ugh':
+							switch (curStep)
+							{
+								case 60:
+									dad.playAnim('ugh', true);
+								case 444:
+									dad.playAnim('ugh', true);
+								case 524:
+									dad.playAnim('ugh', true);
+								case 828:
+									dad.playAnim('ugh', true);
+							}
+						case 'ugh-swagmix':
+							switch (curStep)
+							{
+								case 60:
+									dad.playAnim('ugh', true);
+								case 62:
+									dad.playAnim('ugh', true);
+								case 63:
+									dad.playAnim('ugh', true);
+								case 444:
+									dad.playAnim('ugh', true);
+								case 446:
+									dad.playAnim('ugh', true);
+								case 447:
+									dad.playAnim('ugh', true);
+								case 524:
+									dad.playAnim('ugh', true);
+								case 525:
+									dad.playAnim('ugh', true);
+								case 540:
+									dad.playAnim('ugh', true);
+								case 542:
+									dad.playAnim('ugh', true);
+								case 828:
+									dad.playAnim('ugh', true);
+								case 830:
+									dad.playAnim('ugh', true);
+								case 831:
+									dad.playAnim('ugh', true);
+							}
 					}
 
 					dad.holdTimer = 0;
@@ -2066,6 +2147,8 @@ class PlayState extends MusicBeatState
 				Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 				#end
 			}
+
+			camHUD.fade(FlxColor.TRANSPARENT, 0.5, false, null, true);
 
 			if (isStoryMode)
 			{
@@ -2254,9 +2337,9 @@ class PlayState extends MusicBeatState
 
 		var seperatedScore:Array<Int> = [];
 
-		seperatedScore.push(Math.floor(combo / 100));
-		seperatedScore.push(Math.floor((combo - (seperatedScore[0] * 100)) / 10));
-		seperatedScore.push(combo % 10);
+		for (_i in Std.string(combo).split("")) {
+			seperatedScore.push(Std.parseInt(_i));
+		}
 
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
@@ -2761,25 +2844,6 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		if (curSong.toLowerCase() == 'ugh') 
-			{
-				switch (curBeat)
-				{
-					//doesnt work and i dont feel like fixing it
-					case 15:
-						dad.playAnim('ugh', true);
-						trace('Ugh! - Needs Fixing');
-					case 111:
-						dad.playAnim('ugh', true);
-					case 131:
-						dad.playAnim('ugh', true);
-					case 135:
-						dad.playAnim('ugh', true);
-					case 207:
-						dad.playAnim('ugh', true);
-				 }
-			}
-
 		if (curSong.toLowerCase() == 'guns' && secretMode){
 			// i don't really care if this is coded properly cuz its just a dumb lil easteregg
 			if (curBeat >= 224 && curBeat < 256)
@@ -2979,4 +3043,7 @@ class PlayState extends MusicBeatState
 		}
 
 	var curLight:Int = 0;
+
+	var songBarBG:FlxSprite;
+	var songBar:FlxBar;
 }
