@@ -200,6 +200,8 @@ class OptionsMenu extends MusicBeatState {
 					detailText.text = 'Plays the game for you.';
 				case 'Downscroll':
 					detailText.text = 'Makes the Notes scroll down.';
+				case 'Mods':
+					detailText.text = 'Play a Mod in a Freeplay menu.';
 			}
 
 			if (forceCheck)
@@ -230,7 +232,7 @@ class OptionsMenu extends MusicBeatState {
 			default:
 				inOptionSelector = true;
 
-				options = ["Gameplay", "Graphics", "Credits"];
+				options = ["Gameplay", "Graphics", "Credits", "Mods"];
 				ready = true;
 			case 'gameplay':
 				inOptionSelector = false;
@@ -253,6 +255,8 @@ class OptionsMenu extends MusicBeatState {
 				ready = true;
 			case 'credits':
 				FlxG.switchState(new InformationState());
+			case 'mods':
+				FlxG.switchState(new CustomSongListState());
 		}
 
 		lastOptionType = type.toLowerCase();

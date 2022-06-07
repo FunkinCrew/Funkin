@@ -373,10 +373,16 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
+		if (!PlayState.isMod)
+			FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
+		else
+			FlxG.sound.playMusic(Sound.fromFile("mods/songs/" + PlayState.SONG.song.toLowerCase() + "/Inst.ogg"), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		if (!PlayState.isMod)
+			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		else
+			vocals = new FlxSound().loadEmbedded(Sound.fromFile("mods/songs/" + PlayState.SONG.song.toLowerCase() + "/Voices.ogg"));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();

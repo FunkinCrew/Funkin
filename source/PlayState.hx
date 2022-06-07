@@ -1,5 +1,7 @@
 package;
 
+import openfl.media.Sound;
+import sys.io.File;
 import openfl.media.Video;
 import flixel.input.actions.FlxActionManager.ActionSetJson;
 import Controls.Action;
@@ -154,6 +156,8 @@ class PlayState extends MusicBeatState
 
 	var ogBF = SONG.player1;
 	var inPanic = false;
+
+	public static var isMod:Bool = false;
 
 	public static var secretMode:Bool = false;
 
@@ -1176,8 +1180,10 @@ class PlayState extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
-		if (!paused)
+		if (!paused && !isMod)
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+		else if (!paused && isMod)
+			FlxG.sound.playMusic(Sound.fromFile("mods/songs/" + PlayState.SONG.song.toLowerCase() + "/Inst.ogg"), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
@@ -1202,8 +1208,10 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
-		if (SONG.needsVoices && inCutscene == false)
+		if (SONG.needsVoices && inCutscene == false && !isMod)
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+		else if (SONG.needsVoices && inCutscene == false && isMod)
+			vocals = new FlxSound().loadEmbedded(Sound.fromFile("mods/songs/" + PlayState.SONG.song.toLowerCase() + "/Voices.ogg"));
 		else
 			vocals = new FlxSound();
 
@@ -2220,7 +2228,8 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				trace('WENT BACK TO FREEPLAY??');
+				trace('WENT BACK TO FREEPLAY?? ' + isMod);
+				isMod = false;
 				FlxG.switchState(new FreeplayState());
 			}
 		}

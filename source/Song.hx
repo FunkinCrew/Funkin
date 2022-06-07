@@ -1,5 +1,6 @@
 package;
 
+import sys.io.File;
 import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -48,27 +49,23 @@ class Song
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
-
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
-
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
 
 		return parseJSONshit(rawJson);
 	}
+
+	public static function loadFromModJson(jsonInput:String, ?folder:String):SwagSong
+		{
+			// load a json from a mod folder (not the main folder)
+			var rawJson = File.getContent("mods/data/" + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
+			
+			while (!rawJson.endsWith("}"))
+			{
+				rawJson = rawJson.substr(0, rawJson.length - 1);
+			}
+	
+			return parseJSONshit(rawJson);
+		}
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
