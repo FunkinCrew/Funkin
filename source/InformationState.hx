@@ -10,7 +10,8 @@ class InformationState extends MusicBeatState
 	var logoBl:FlxSprite;
 	var credits:String =	'SpunBlue - Programmer\n'+
 							'Swaggus - Made the Remixes\n'+
-							'thepercentageguy - Created the Original Version of this Engine\n';
+							'thepercentageguy - Created the Original Version of this Engine\n'+
+							'thepercentageguy - Helped with additional features (Downscroll, Old Linux Support, etc.)\n';
 	
 	override function create()
 	{
