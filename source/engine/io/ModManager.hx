@@ -35,7 +35,7 @@ class ModManager
                 }
             }
         }
-        trace("Found " + loaded.length + " mods.");
+        trace("Found " + loaded.length + " mod(s).");
     }
 }
 
