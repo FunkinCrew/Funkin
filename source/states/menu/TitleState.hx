@@ -1,5 +1,6 @@
 package states.menu;
 
+import engine.io.ModManager;
 import states.substates.OutdatedSubState;
 import engine.io.Paths;
 import engine.functions.Conductor;
@@ -50,8 +51,14 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
+	var mm:ModManager;
+
 	override public function create():Void
 	{
+		mm = new ModManager();
+		mm.init("./mods/");
+		trace(mm.loaded);
+
 		if (FlxG.save.data.UP == null)
 			FlxG.save.data.UP = "W";
 		if (FlxG.save.data.DOWN == null)

@@ -1,0 +1,14 @@
+{
+    "Weeks":
+    [
+        {
+            "name": "TestWeek",
+            "songs":
+            [
+                "Song1",
+                "Song2",
+                "Song3"
+            ]
+        }
+    ]
+}
