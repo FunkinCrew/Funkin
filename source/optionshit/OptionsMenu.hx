@@ -343,7 +343,7 @@ class OptionsMenu extends MusicBeatState {
 						FlxG.save.data.botplay = !FlxG.save.data.botplay;
 						options[curSelected] = 'Botplay ${FlxG.save.data.botplay ? "ON" : "OFF"}';
 					case 'Downscroll': // downscroll
-						FlxG.save.data.downScroll = !FlxG.save.data.downscroll;
+						FlxG.save.data.downScroll = !FlxG.save.data.downScroll;
 						options[curSelected] = 'Downscroll ${FlxG.save.data.downscroll ? "ON" : "OFF"}';
 				}
 

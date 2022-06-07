@@ -199,7 +199,7 @@ class Note extends FlxSprite
 
 		if (FlxG.save.data.downScroll && isSustainNote){
 			flipY = true;
-			y -= height;
+			y += height;
 		}
 	}
 
