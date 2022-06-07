@@ -774,6 +774,8 @@ class PlayState extends MusicBeatState
 			add(strumUnderlay);
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
+		if (FlxG.save.data.downScroll)
+			strumLine.y = FlxG.height - 130;
 		strumLine.scrollFactor.set();
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -814,7 +816,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, (FlxG.save.data.downScroll == false) ? FlxG.height * 0.9 : 50).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -846,7 +848,7 @@ class PlayState extends MusicBeatState
 			healthBar.createFilledBar(barColor, barColor2);
 		}
 
-		songBarBG = new FlxSprite(0, FlxG.height * 0.85).makeGraphic(Std.int(healthBarBG.width), Std.int(healthBarBG.height), 0xFF000000);
+		songBarBG = new FlxSprite(0, (FlxG.save.data.downScroll == false) ? FlxG.height * 0.85 : 150).makeGraphic(Std.int(healthBarBG.width), Std.int(healthBarBG.height), 0xFF000000);
 		songBarBG.setGraphicSize(Std.int(songBarBG.width * 0.5), Std.int(songBarBG.height * 1.5));
 		songBarBG.updateHitbox();
 		songBarBG.screenCenter(X);
@@ -1861,11 +1863,16 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				if (!FlxG.save.data.downScroll)
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				else
+					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
 				// i am so fucking sorry for this if condition
-				if (daNote.isSustainNote
+				if (FlxG.save.data.downScroll == false ? daNote.isSustainNote
 					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
+					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))) : daNote.isSustainNote
+					&& daNote.y + daNote.offset.y >= strumLine.y + Note.swagWidth / 1
 					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 				{
 					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
@@ -1875,7 +1882,8 @@ class PlayState extends MusicBeatState
 					daNote.clipRect = swagRect;
 				}
 
-				if (daNote.mustPress && daNote.y <= strumLine.y && FlxG.save.data.botplay)
+				if ((FlxG.save.data.downScroll == false) ? daNote.mustPress && daNote.y <= strumLine.y && FlxG.save.data.botplay :
+					daNote.mustPress && daNote.y >= strumLine.y && FlxG.save.data.botplay)
 				{
 					switch (Math.abs(daNote.noteData))
 					{
@@ -2047,7 +2055,7 @@ class PlayState extends MusicBeatState
 				//-strumLine.y - 16
 
 				//DaNote was too late
-				if (daNote.y < -daNote.height && !FlxG.save.data.botplay)
+				if ((FlxG.save.data.downScroll == false) ? daNote.y < -daNote.height && !FlxG.save.data.botplay : daNote.y > FlxG.height + daNote.height && !FlxG.save.data.botplay)
 				{
 					//fnf is weird
 					if (daNote.tooLate && !daNote.wasGoodHit || !daNote.wasGoodHit)
@@ -2579,7 +2587,7 @@ class PlayState extends MusicBeatState
 				{
 					if (!FlxG.save.data.gtapping) {
 						misses++;
-						if (true) // TODO: GAMEMODES!!!
+						if (true)
 							health -= 0.04;
 						else
 							health = 0;

@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -122,7 +123,7 @@ class Note extends FlxSprite
 					animation.add('redhold', [3]);
 					animation.add('bluehold', [1]);
 				}
-	
+				
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 	
@@ -194,6 +195,11 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
+		}
+
+		if (FlxG.save.data.downScroll && isSustainNote){
+			flipY = true;
+			y -= height;
 		}
 	}
 

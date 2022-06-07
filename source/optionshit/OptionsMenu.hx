@@ -198,6 +198,8 @@ class OptionsMenu extends MusicBeatState {
 					detailText.text = 'View Credits.';
 				case 'Botplay':
 					detailText.text = 'Plays the game for you.';
+				case 'Downscroll':
+					detailText.text = 'Makes the Notes scroll down.';
 			}
 
 			if (forceCheck)
@@ -234,6 +236,7 @@ class OptionsMenu extends MusicBeatState {
 				inOptionSelector = false;
 
 				options = ['Keybinds', 'Ghost Tapping ${FlxG.save.data.gtapping ? 'ON' : 'OFF'}',
+				'Downscroll ${FlxG.save.data.downScroll ? 'ON' : 'OFF'}',
 				'Judgement Type ${FlxG.save.data.judgeHits ? 'UNMODIFIED' : 'MODIFIED'}',
 				'Disable Distractions ${FlxG.save.data.noDistractions ? 'ON' : 'OFF'}',
 				'Panicable Boyfriend ${FlxG.save.data.disablePanicableBF ? 'OFF' : 'ON'}',
@@ -339,6 +342,9 @@ class OptionsMenu extends MusicBeatState {
 					case 'Botplay': // botplay
 						FlxG.save.data.botplay = !FlxG.save.data.botplay;
 						options[curSelected] = 'Botplay ${FlxG.save.data.botplay ? "ON" : "OFF"}';
+					case 'Downscroll': // downscroll
+						FlxG.save.data.downScroll = !FlxG.save.data.downscroll;
+						options[curSelected] = 'Downscroll ${FlxG.save.data.downscroll ? "ON" : "OFF"}';
 				}
 
 				if (!dontAllowUpdate){
