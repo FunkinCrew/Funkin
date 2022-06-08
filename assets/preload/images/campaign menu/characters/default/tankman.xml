@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="tankman.png">
+	<!-- Created with Adobe Animate version 22.0.2.168 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="tank guy0000" x="230" y="597" width="228" height="292" frameX="-4" frameY="-9" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0001" x="230" y="597" width="228" height="292" frameX="-4" frameY="-9" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0002" x="230" y="303" width="229" height="293" frameX="-3" frameY="-8" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0003" x="230" y="303" width="229" height="293" frameX="-3" frameY="-8" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0004" x="1" y="303" width="228" height="295" frameX="-1" frameY="-6" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0005" x="1" y="303" width="228" height="295" frameX="-1" frameY="-6" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0006" x="232" y="1" width="229" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0007" x="232" y="1" width="229" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0008" x="1" y="1" width="230" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0009" x="1" y="1" width="230" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0010" x="1" y="1" width="230" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0011" x="1" y="1" width="230" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0012" x="1" y="1" width="230" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+	<SubTexture name="tank guy0013" x="1" y="1" width="230" height="301" frameX="0" frameY="0" frameWidth="232" frameHeight="301"/>
+</TextureAtlas>

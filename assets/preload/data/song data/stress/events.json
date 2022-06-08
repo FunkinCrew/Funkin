@@ -1,0 +1,3054 @@
+{
+    "song": {
+      "events": [
+        [
+          "Play Character Animation",
+          0,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          168.539325842697,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          252.808988764045,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          421.348314606742,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          589.887640449438,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          758.426966292135,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          842.696629213483,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          1011.23595505618,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          1179.77528089888,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          1264.04494382022,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          2359.55056179775,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          1348.31460674157,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          1516.85393258427,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          1601.12359550562,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          1853.93258426966,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          2022.47191011236,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          2106.74157303371,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          2191.01123595506,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          2696.62921348315,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          2865.16853932584,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          2949.43820224719,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          3117.97752808989,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          3286.51685393258,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          3455.05617977528,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          3539.32584269663,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          3707.86516853933,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          3876.40449438202,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          3960.67415730337,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          4044.94382022472,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          4213.48314606742,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          4297.75280898876,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          4550.56179775281,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          4719.10112359551,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          4803.37078651685,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          4887.6404494382,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          5056.1797752809,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          5140.44943820225,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          5224.7191011236,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          5393.25842696629,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          5561.79775280899,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          5646.06741573034,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          5814.60674157303,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          5983.14606741573,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          6151.68539325843,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          6235.95505617978,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          6404.49438202247,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          6573.03370786517,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          6657.30337078652,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          7752.80898876405,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          6741.57303370786,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          6910.11235955056,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          6994.38202247191,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          7247.19101123595,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          7415.73033707865,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          7500,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          7584.26966292135,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          8089.88764044944,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          8258.42696629213,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          8342.69662921348,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          8511.23595505618,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          8679.77528089888,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          8848.31460674157,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          8932.58426966292,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          9101.12359550562,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          9269.66292134831,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          9353.93258426966,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          9438.20224719101,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          9606.74157303371,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          9691.01123595505,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          9943.8202247191,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          10112.3595505618,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          10196.6292134831,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          10280.8988764045,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          10449.4382022472,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          21235.9550561798,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          21320.2247191011,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          21404.4943820225,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          21573.0337078652,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          21910.1123595506,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          22247.191011236,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          22584.2696629213,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          22921.3483146067,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          23258.4269662921,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          23595.5056179775,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          23932.5842696629,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          24269.6629213483,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          24606.7415730337,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          24943.8202247191,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          25280.8988764045,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          25617.9775280899,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          25955.0561797753,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          26292.1348314607,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          26629.2134831461,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          26713.4831460674,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          26797.7528089888,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          27303.3707865169,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          27977.5280898876,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          26966.2921348315,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          27640.4494382022,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          28651.6853932584,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          29325.8426966292,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          28314.606741573,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          28988.7640449438,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          29662.9213483146,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          30000,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          30337.0786516854,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          30674.1573033708,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          29831.4606741573,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          30168.5393258427,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          30505.6179775281,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          30842.6966292135,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          31011.2359550562,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          31348.3146067416,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          31853.9325842697,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          31685.393258427,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          32359.5505617978,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          32696.6292134831,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          33370.7865168539,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          33202.2471910112,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          33033.7078651685,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          33707.8651685393,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          34044.9438202247,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          34719.1011235955,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          34550.5617977528,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          34382.0224719101,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          35056.1797752809,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          35393.2584269663,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          36067.4157303371,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          35898.8764044944,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          35730.3370786517,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          36404.4943820225,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          36741.5730337079,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          37415.7303370787,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          37247.191011236,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          37078.6516853933,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          37752.808988764,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          38089.8876404494,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          38764.0449438202,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          38595.5056179775,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          38426.9662921348,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          39101.1235955056,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          39438.202247191,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          40112.3595505618,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          39943.8202247191,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          39775.2808988764,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          40449.4382022472,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          40786.5168539326,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          41460.6741573034,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          41292.1348314607,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          41123.595505618,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          41797.7528089888,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          42808.9887640449,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          42640.4494382022,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          42134.8314606742,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          42471.9101123596,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          42977.5280898876,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          42893.2584269663,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          43146.0674157303,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          43483.1460674157,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          44157.3033707865,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          43988.7640449438,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          43820.2247191011,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          44494.3820224719,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          44831.4606741573,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          45505.6179775281,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          45337.0786516854,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          45168.5393258427,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          45842.6966292135,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          46179.7752808989,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          46853.9325842697,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          46685.393258427,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          46516.8539325843,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          47191.0112359551,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          47528.0898876404,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          48202.2471910112,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          48033.7078651685,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          47865.1685393258,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          48539.3258426966,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          48876.404494382,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          49550.5617977528,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          49382.0224719101,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          49213.4831460674,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          49887.6404494382,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          50224.7191011236,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          50898.8764044944,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          50730.3370786517,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          50561.797752809,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          51235.9550561798,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          51573.0337078652,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          52247.191011236,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          52078.6516853933,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          51910.1123595506,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          52584.2696629213,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          53595.5056179775,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          53426.9662921348,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          52921.3483146067,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          53258.4269662921,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          53764.0449438202,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          53679.7752808989,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          53932.5842696629,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          54101.1235955056,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          54185.393258427,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          54353.9325842697,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          54522.4719101124,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          54691.0112359551,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          54775.2808988764,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          54943.8202247191,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          55112.3595505618,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          55196.6292134831,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          56292.1348314607,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          55280.8988764045,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          55449.4382022472,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          55533.7078651685,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          55786.5168539326,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          55955.0561797753,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          56039.3258426966,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          56123.595505618,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          56629.2134831461,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          56797.7528089888,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          56882.0224719101,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          57050.5617977528,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          57219.1011235955,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          57387.6404494382,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          57471.9101123595,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          57640.4494382022,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          57808.9887640449,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          57893.2584269663,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          57977.5280898876,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          58146.0674157303,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          58230.3370786517,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          58483.1460674157,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          58651.6853932584,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          58735.9550561798,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          58820.2247191011,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          58988.7640449438,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          59073.0337078652,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          59157.3033707865,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          59325.8426966292,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          59494.3820224719,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          59578.6516853933,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          59747.191011236,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          59915.7303370786,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          60084.2696629213,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          60168.5393258427,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          60337.0786516854,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          60505.6179775281,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          60589.8876404494,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          61685.393258427,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          60674.1573033708,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          60842.6966292135,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          60926.9662921348,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          61179.7752808989,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          61348.3146067416,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          61432.5842696629,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          61516.8539325843,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          62191.0112359551,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          62275.2808988764,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          62443.8202247191,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          62612.3595505618,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          62780.8988764045,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          62865.1685393258,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          63033.7078651685,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          63202.2471910112,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          63286.5168539326,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          63370.7865168539,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          63539.3258426966,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          63623.595505618,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          63876.404494382,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          64044.9438202247,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          64129.2134831461,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          64213.4831460674,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          64382.0224719101,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          64719.1011235955,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          65056.1797752809,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          65393.2584269663,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          65730.3370786517,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          66067.4157303371,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          66404.4943820225,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          66741.5730337079,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          67078.6516853933,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          67415.7303370787,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          67752.808988764,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          68089.8876404494,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          68426.9662921348,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          68764.0449438202,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          69101.1235955056,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          69438.202247191,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          69775.2808988764,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          69859.5505617978,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          69943.8202247191,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          70112.3595505618,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          70449.4382022472,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          70786.5168539326,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          71123.595505618,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          71460.6741573034,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          71797.7528089888,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          72134.8314606741,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          72471.9101123595,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          72556.1797752809,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          72640.4494382023,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          72808.9887640449,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          73146.0674157303,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          73483.1460674157,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          73820.2247191011,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          72893.2584269663,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          73230.3370786517,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          73567.4157303371,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          73904.4943820225,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          72977.5280898877,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          73314.6067415731,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          73651.6853932585,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          73988.7640449438,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          74157.3033707866,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          74241.5730337079,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          74325.8426966292,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          74410.1123595506,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          74494.382022472,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          74578.6516853933,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          74662.9213483146,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          74747.191011236,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          74831.4606741573,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          74915.7303370787,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          75000,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          75084.2696629214,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          75168.5393258427,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          75505.6179775281,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          75842.6966292135,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          76179.7752808989,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          76516.8539325843,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          76853.9325842697,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          77191.0112359551,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          77528.0898876405,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          77865.1685393259,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          78033.7078651686,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          78202.2471910113,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          78539.3258426967,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          78876.4044943821,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          79213.4831460675,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          79550.5617977529,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          79887.6404494383,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          80140.4494382023,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          80224.7191011237,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          80308.988764045,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          80477.5280898877,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          80730.3370786517,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          80898.8764044945,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          81067.4157303371,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          81235.9550561799,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          81404.4943820225,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          81573.0337078652,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          81741.5730337079,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          81910.1123595506,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          82078.6516853933,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          82247.191011236,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          82415.7303370787,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          82584.2696629214,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          82752.8089887641,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          82921.3483146068,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          83089.8876404495,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          83258.4269662922,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          83426.9662921349,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          83595.5056179776,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          83764.0449438203,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          83932.584269663,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          84269.6629213484,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          84606.7415730338,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          84775.2808988765,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          84943.8202247192,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          85280.8988764046,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          85617.97752809,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          85702.2471910113,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          85870.786516854,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          86039.3258426967,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          86292.1348314607,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          86629.2134831461,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          87303.3707865169,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          87134.8314606741,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          87640.4494382023,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          87977.5280898877,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          88651.6853932584,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          88483.1460674157,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          88988.7640449438,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          89325.8426966292,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          90000,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          89831.4606741573,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          90337.0786516854,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          90674.1573033708,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          91348.3146067416,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          91179.7752808989,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          91685.393258427,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          92022.4719101124,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          92696.6292134832,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          92528.0898876405,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          93033.7078651686,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          93370.786516854,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          94044.9438202248,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          93876.404494382,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          94382.0224719102,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          94719.1011235956,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          95393.2584269663,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          95224.7191011236,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          95730.3370786517,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          96741.5730337079,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          96573.0337078652,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          96067.4157303371,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          96404.4943820225,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          96910.1123595505,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          96825.8426966292,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          97078.6516853933,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          97415.7303370787,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          98089.8876404494,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          97921.3483146067,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          97752.808988764,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          98426.9662921348,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          98764.0449438202,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          99438.202247191,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          99269.6629213483,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          99101.1235955056,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          99775.2808988764,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          100112.359550562,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          100786.516853933,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          100617.97752809,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          100449.438202247,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          101123.595505618,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          101460.674157303,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          102134.831460674,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          101966.292134831,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          101797.752808989,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          102471.91011236,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          102808.988764045,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          103483.146067416,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          103314.606741573,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          103146.06741573,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          103820.224719101,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          104157.303370787,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          104831.460674157,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          104662.921348315,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          104494.382022472,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          105168.539325843,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          105505.617977528,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          106179.775280899,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          106011.235955056,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          105842.696629213,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          106516.853932584,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          107528.08988764,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          106853.93258427,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          107191.011235955,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          107865.168539326,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          108202.247191011,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          108539.325842697,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          108876.404494382,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          109213.483146068,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          109550.561797753,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          109887.640449438,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          110224.719101124,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          110561.797752809,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          110898.876404495,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          110730.337078652,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          111235.95505618,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          111573.033707865,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          111910.112359551,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          112247.191011236,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          112584.269662922,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          112921.348314607,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          113258.426966292,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          113932.584269663,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          114269.662921349,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          114438.202247191,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          114606.741573034,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          114943.820224719,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          115280.898876405,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          115617.97752809,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          115786.516853933,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          115955.056179776,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          116123.595505618,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          116292.134831461,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          116629.213483146,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          116966.292134832,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          117303.370786517,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          117640.449438203,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          117977.528089888,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          118061.797752809,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          118314.606741573,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          118398.876404495,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          118651.685393258,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          118820.224719101,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          118904.494382022,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          119073.033707865,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          119241.573033708,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          119410.112359551,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          119494.382022472,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          119662.921348315,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          119831.460674157,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          119915.730337079,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          120000,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          120168.539325843,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          120252.808988764,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          120505.617977528,
+          "gf",
+          "shoot4"
+        ],
+        [
+          "Play Character Animation",
+          120674.157303371,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          120758.426966292,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          120842.696629213,
+          "gf",
+          "shoot3"
+        ],
+        [
+          "Play Character Animation",
+          121011.235955056,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          121095.505617978,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Play Character Animation",
+          121179.775280899,
+          "gf",
+          "shoot2"
+        ],
+        [
+          "Character Will Idle?",
+          62011.9382022472,
+          "Dad",
+          "false"
+        ],
+        [
+          "Play Character Animation",
+          62051.9662921348,
+          "gf",
+          "shoot1"
+        ],
+        [
+          "Play Character Animation",
+          62022.4719101124,
+          "dad",
+          "hehPrettyGood"
+        ],
+        [
+          "Character Will Idle?",
+          64634.8314606742,
+          "Dad",
+          "true"
+        ]
+      ]
+    }
+  }

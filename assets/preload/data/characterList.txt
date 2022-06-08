@@ -16,3 +16,7 @@ gf-pixel:default
 senpai:default
 senpai-angry:default
 spirit:default
+tankman:default
+gf-tankmen:default
+pico-speaker:default
+bf-holding-gf:default

@@ -1,0 +1,41 @@
+{
+    "defaultFlipX": false,
+    "dancesLeftAndRight": false,
+    "imagePath": "picoSpeaker",
+    "spritesheetType": "SPARROW",
+    "barColor": [205, 229, 112],
+    "healthIcon": "pico",
+    "positionOffset": [235, 5],
+    "animations": [
+        {
+            "name": "idle",
+            "animation_name": "Pico shoot 1",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "shoot1",
+            "animation_name": "Pico shoot 1",
+            "fps": 24,
+            "looped": true
+        },
+        {
+            "name": "shoot2",
+            "animation_name": "Pico shoot 2",
+            "fps": 24,
+            "looped": true
+        },
+        {
+            "name": "shoot3",
+            "animation_name": "Pico shoot 3",
+            "fps": 24,
+            "looped": true
+        },
+        {
+            "name": "shoot4",
+            "animation_name": "Pico shoot 4",
+            "fps": 24,
+            "looped": true
+        }
+    ]
+}

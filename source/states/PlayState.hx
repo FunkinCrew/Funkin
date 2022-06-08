@@ -1883,6 +1883,13 @@ class PlayState extends MusicBeatState
 	public function fixedUpdate()
 	{
 		var icon_Zoom_Lerp = 0.045;
+		var camera_Zoom_Lerp = 0.025;
+
+		if(Main.display.currentFPS < 120)
+		{
+			icon_Zoom_Lerp = 0.09 / (Main.display.currentFPS / 60);
+			camera_Zoom_Lerp = 0.05 / (Main.display.currentFPS / 60);
+		}
 
 		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, iconP1.startWidth, icon_Zoom_Lerp * songMultiplier)));
 		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, iconP2.startWidth, icon_Zoom_Lerp * songMultiplier)));
@@ -1903,8 +1910,8 @@ class PlayState extends MusicBeatState
 
 		if(utilities.Options.getData("cameraZooms") && camZooming && !switchedStates)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.975);
-			camHUD.zoom = FlxMath.lerp(defaultHudCamZoom, camHUD.zoom, 0.975);
+			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, defaultCamZoom, camera_Zoom_Lerp);
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHudCamZoom, camera_Zoom_Lerp);
 		}
 		else if(!utilities.Options.getData("cameraZooms"))
 		{

@@ -1,0 +1,319 @@
+{
+	"objects": [
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				0,
+				0
+			],
+			"position": [
+				-400,
+				-400
+			],
+			"file_Name": "tankSky",
+			"scale": 1
+		},
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.1,
+				0.1
+			],
+			"position": [
+				-400,
+				0
+			],
+			"file_Name": "tankClouds",
+			"scale": 1,
+			"object_Name": "clouds"
+		},
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.2,
+				0.2
+			],
+			"position": [
+				-300,
+				-20
+			],
+			"file_Name": "tankMountains",
+			"scale": 1.2
+		},
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.3,
+				0.3
+			],
+			"position": [
+				-200,
+				0
+			],
+			"file_Name": "tankMountains",
+			"scale": 1.1
+		},
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.35,
+				0.35
+			],
+			"position": [
+				-200,
+				0
+			],
+			"file_Name": "tankRuins",
+			"scale": 1.1
+		},
+		{
+			"is_Animated": true,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.4,
+				0.4
+			],
+			"position": [
+				1100,
+				-100
+			],
+			"file_Name": "smokeRight",
+			"scale": 1,
+			"start_Animation": "default",
+			"animations": [
+				{
+					"animation_name": "SmokeRight",
+					"looped": true,
+					"fps": 24,
+					"name": "default"
+				}
+			]
+		},
+		{
+			"is_Animated": true,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.5,
+				0.5
+			],
+			"position": [
+				100,
+				50
+			],
+			"file_Name": "tankWatchtower",
+			"scale": 1,
+			"start_Animation": "beatHit",
+			"animations": [
+				{
+					"animation_name": "watchtower gradient color",
+					"looped": false,
+					"fps": 24,
+					"name": "beatHit"
+				}
+			]
+		},
+		{
+			"is_Animated": true,
+			"scroll_Factor": [
+				0.5,
+				0.5
+			],
+			"position": [
+				300,
+				300
+			],
+			"scale": 1,
+			"object_Name": "tank",
+			"antialiased": true,
+			"file_Name": "tankRolling",
+			"animations": [
+				{
+					"animation_name": "BG tank w lighting",
+					"looped": true,
+					"fps": 24,
+					"name": "idle"
+				}
+			],
+			"start_Animation": "idle"
+		},
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				1,
+				1
+			],
+			"position": [
+				-420,
+				-150
+			],
+			"file_Name": "tankGround",
+			"scale": 1.15
+		},
+		{
+			"is_Animated": true,
+			"layer": "foreground",
+			"scroll_Factor": [
+				1.7,
+				1.5
+			],
+			"position": [
+				-500,
+				650
+			],
+			"scale": 1,
+			"antialiased": true,
+			"file_Name": "tank0",
+			"animations": [
+				{
+					"animation_name": "fg",
+					"looped": false,
+					"fps": 24,
+					"name": "beatHit"
+				}
+			],
+			"start_Animation": "beatHit"
+		},
+		{
+			"is_Animated": true,
+			"layer": "foreground",
+			"scroll_Factor": [
+				2,
+				0.2
+			],
+			"position": [
+				-300,
+				750
+			],
+			"scale": 1,
+			"antialiased": true,
+			"file_Name": "tank1",
+			"animations": [
+				{
+					"animation_name": "fg",
+					"looped": false,
+					"fps": 24,
+					"name": "beatHit"
+				}
+			],
+			"start_Animation": "beatHit"
+		},
+		{
+			"is_Animated": true,
+			"layer": "foreground",
+			"scroll_Factor": [
+				1.5,
+				1.5
+			],
+			"position": [
+				451,
+				941
+			],
+			"scale": 1,
+			"antialiased": true,
+			"file_Name": "tank2",
+			"animations": [
+				{
+					"animation_name": "foreground",
+					"looped": false,
+					"fps": 24,
+					"name": "beatHit"
+				}
+			],
+			"start_Animation": "beatHit"
+		},
+		{
+			"is_Animated": true,
+			"layer": "foreground",
+			"scroll_Factor": [
+				1.5,
+				1.5
+			],
+			"position": [
+				1300,
+				1200
+			],
+			"scale": 1,
+			"antialiased": true,
+			"file_Name": "tank3",
+			"animations": [
+				{
+					"animation_name": "fg",
+					"looped": false,
+					"fps": 24,
+					"name": "beatHit"
+				}
+			],
+			"start_Animation": "beatHit"
+		},
+		{
+			"is_Animated": true,
+			"layer": "foreground",
+			"scroll_Factor": [
+				1.5,
+				1.5
+			],
+			"position": [
+				1300,
+				900
+			],
+			"scale": 1,
+			"antialiased": true,
+			"file_Name": "tank4",
+			"animations": [
+				{
+					"animation_name": "fg",
+					"looped": false,
+					"fps": 24,
+					"name": "beatHit"
+				}
+			],
+			"start_Animation": "beatHit"
+		},
+		{
+			"is_Animated": true,
+			"layer": "foreground",
+			"scroll_Factor": [
+				1.5,
+				1.5
+			],
+			"position": [
+				1620,
+				700
+			],
+			"scale": 1,
+			"antialiased": true,
+			"file_Name": "tank5",
+			"animations": [
+				{
+					"animation_name": "fg",
+					"looped": false,
+					"fps": 24,
+					"name": "beatHit"
+				}
+			],
+			"start_Animation": "beatHit"
+		}
+	],
+	"character_Positions": [
+		[
+			1065,
+			920
+		],
+		[
+			238,
+			918
+		],
+		[
+			655,
+			727
+		]
+	],
+	"scriptName": "wasteland",
+	"camera_Zoom": 0.9
+}

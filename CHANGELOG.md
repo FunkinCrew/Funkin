@@ -1,6 +1,14 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.4.2] - ?/?/????
+### Added
+- Week 7 Lmfao (took like 1 year to be allowed to add it back but here we are)
+- Story Mode Difficulty Offsets
+### Fixed
+- Cutscenes playing on Game Overs
+- Health Icon Bounce and Camera Bounce being effected by really high fps
+
 ## [0.4.1] - 2/26/2022
 ### Added
 - Copy and Paste Section.

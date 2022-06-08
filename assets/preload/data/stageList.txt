@@ -7,3 +7,4 @@ evil-mall
 school
 school-mad
 evil-school
+wasteland

@@ -139,6 +139,26 @@
                 ["normal", "default/normal"],
                 ["hard", "default/hard"]
             ]
+        },
+        {
+            "imagePath": "week7",
+            "songs": [
+                "Ugh",
+                "Guns",
+                "Stress"
+            ],
+            "characters": [
+                "tankman",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": "Tankman",
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         }
     ]
 }

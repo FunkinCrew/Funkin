@@ -17,3 +17,6 @@ Winter Horrorland:monster:5:Easy,Normal,Hard:#F5FF6B
 Senpai:senpai:6:Easy,Normal,Hard:#FFAA6F
 Roses:senpai-angry:6:Easy,Normal,Hard:#FFAA6F
 Thorns:spirit:6:Easy,Normal,Hard:#FF3C6E
+Ugh:tankman:7:Easy,Normal,Hard:#F6B604
+Guns:tankman:7:Easy,Normal,Hard:#F6B604
+Stress:tankman:7:Easy,Normal,Hard:#F6B604

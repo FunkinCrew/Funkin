@@ -1,0 +1,9 @@
+{
+    "Animation_Name": "tank guy",
+    "Animation_Looped": true,
+    "FPS": 24,
+    "Size": 1,
+    "Offsets": [50, -40],
+    "File_Name": "default/tankman",
+    "Flipped": false
+}
