@@ -133,6 +133,8 @@ class PlayState extends MusicBeatState
 	var shits:Int = 0;
 	var scoreTxt:FlxText;
 
+	var songScrollSpeed:Float = SONG.speed;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -161,6 +163,8 @@ class PlayState extends MusicBeatState
 	public static var isMod:Bool = false;
 	var events = [];
 
+	var alreadyLoaded:Bool = false;
+
 	public static var secretMode:Bool = false;
 
 	override public function create()
@@ -188,7 +192,7 @@ class PlayState extends MusicBeatState
 			SONG = Song.loadFromJson('tutorial');
 
 		if (FlxG.save.data.downScroll == null)
-			FlxG.save.data.downScroll = !FlxG.save.data.downScroll;
+			FlxG.save.data.downScroll = false;
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -665,6 +669,9 @@ class PlayState extends MusicBeatState
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
+		var daCamY:Int = 0;
+		var daCamX:Int = 0;
+
 		switch (SONG.player2)
 		{
 			case 'gf':
@@ -815,6 +822,9 @@ class PlayState extends MusicBeatState
 		}
 		else if (FileSystem.exists(Paths.file("data/" + SONG.song.toLowerCase() + "/events.txt")))
 			events = CoolUtil.coolTextFile(Paths.file('data/' + SONG.song.toLowerCase() + '/events.txt'));
+
+		if (songScrollSpeed != PlayState.SONG.speed)
+			songScrollSpeed = PlayState.SONG.speed;
 
 		// add(strumLine);
 
@@ -1595,7 +1605,6 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-
 		scoreTxt.text = 'Score: $songScore | Misses: $misses | S/G/B/S: $sicks/$goods/$bads/$shits | Combo: $combo | ${calculateRating()}';
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
@@ -1892,9 +1901,9 @@ class PlayState extends MusicBeatState
 				}
 
 				if (!FlxG.save.data.downScroll)
-					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(songScrollSpeed, 2)));
 				else
-					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(songScrollSpeed, 2)));
 
 				// i am so fucking sorry for this if condition
 				if (FlxG.save.data.downScroll == false ? daNote.isSustainNote
@@ -2078,7 +2087,7 @@ class PlayState extends MusicBeatState
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue
-				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * songScrollSpeed));
 
 				//-strumLine.y - 16
 
@@ -2856,8 +2865,8 @@ class PlayState extends MusicBeatState
 			if (Std.parseInt(tempStep[0]) == curStep){
 				switch(tempStep[1].toLowerCase()){
 					case 'setsongspeed':
-						PlayState.SONG.speed = Std.parseFloat(tempStep[2]);
-						trace("SET SPEED TO " + PlayState.SONG.speed);
+						songScrollSpeed = Std.parseFloat(tempStep[2]);
+						trace("SET SPEED TO " + songScrollSpeed);
 					case 'gfcheer':
 						gf.playAnim('cheer', true);
 						trace("GF CHEER");

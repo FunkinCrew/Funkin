@@ -86,6 +86,8 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
+	var stepText:FlxText;
+
 	override function create()
 	{
 		hitSound = new FlxSound();
@@ -151,6 +153,11 @@ class ChartingState extends MusicBeatState
 		bpmTxt = new FlxText(1000, 50, 0, "", 16);
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
+
+		// current step text
+		stepText = new FlxText(1000, 150, 0, "", 16);
+		stepText.scrollFactor.set();
+		add(stepText);
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
@@ -513,6 +520,9 @@ class ChartingState extends MusicBeatState
 				// playedHit = false;
 			}
 		}
+
+		// set step text to current step
+		stepText.text = "Step: " + curStep;
 
 		curStep = recalculateSteps();
 

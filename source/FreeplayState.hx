@@ -69,7 +69,8 @@ class FreeplayState extends MusicBeatState
 
 		for (song in FileSystem.readDirectory("mods/data/")) {
 			var tempArray = song.split(':');
-			addSong(tempArray[0], 69420, "none"); //if the week is 69420, its a mod.
+
+			addSong(tempArray[0], 69420, "MOD"); //if the week is 69420, its a mod.
 		}
 
 		// LOAD MUSIC
@@ -104,22 +105,15 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i;
 			grpSongs.add(songText);
 
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			icon.sprTracker = songText;
+			if (songs[i].songCharacter.toLowerCase() != "mod"){
+				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+				icon.sprTracker = songText;
+
+				iconArray.push(icon);
+				add(icon);
+			}
 
 			var array = CoolUtil.coolTextFile(Paths.txt('healthcolors'));
-
-			/*for (i in 0...array.length) {
-				var eugh = array[i].split(':');
-
-				if (songs[i].songCharacter.toLowerCase().startsWith(eugh[0])) {
-					colors.push(Std.parseInt(eugh[1]));
-				}
-			}*/
-
-			// using a FlxGroup is too much fuss!
-			iconArray.push(icon);
-			add(icon);
 
 			updateColor();
 
@@ -264,6 +258,7 @@ class FreeplayState extends MusicBeatState
 
 				if (songs[curSelected].week == 69420){
 					PlayState.SONG = Song.loadFromModJson(poop, songs[curSelected].songName.toLowerCase());
+
 					PlayState.isMod = true;
 				}
 				else{
@@ -276,7 +271,7 @@ class FreeplayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('GF_1', 'shared'));
 					trace('Just because you heard the sound, doesn\'t mean you\'ve found the secret!');
 				}
-	
+				
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
 	
@@ -363,7 +358,8 @@ class FreeplayState extends MusicBeatState
 			iconArray[i].alpha = 0.6;
 		}
 
-		iconArray[curSelected].alpha = 1;
+		if (iconArray[curSelected] != null)
+			iconArray[curSelected].alpha = 1;
 
 		for (item in grpSongs.members)
 		{
@@ -385,8 +381,13 @@ class FreeplayState extends MusicBeatState
 			if (!bruh.startsWith('#')) {
 				var eugh = bruh.split(':');
 
-				if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
-					tcolor = new FlxColor(Std.parseInt(eugh[1]));
+				if (songs[curSelected].songCharacter.toLowerCase() != "mod"){
+					if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
+						tcolor = new FlxColor(Std.parseInt(eugh[1]));
+					}
+				}
+				else{
+					tcolor = new FlxColor(FlxColor.LIME);
 				}
 			}
 		}

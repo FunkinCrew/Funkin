@@ -53,7 +53,7 @@
 	<assets path="dlls/" rename='' if="linux"/>
 	<assets path="plugins/" rename='' if="windows"/>
 	<assets path="dlls/" rename='' if="windows"/>
-	<assets path="include/" rename=''/>
+	<assets path="include/" rename='' embed="false"/>
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>

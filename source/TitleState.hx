@@ -278,6 +278,13 @@ class TitleState extends MusicBeatState
 			#end
 		}
 
+		#if debug
+		if (controls.CHEAT){
+			FlxG.save.erase();
+			FlxG.resetState();
+		}
+		#end
+
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
 			titleText.animation.play('press');

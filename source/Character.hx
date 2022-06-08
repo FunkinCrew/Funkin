@@ -1,9 +1,14 @@
 package;
 
+import openfl.display.Graphics;
+import openfl.display.GraphicsPath;
+import sys.io.File;
+import sys.FileSystem;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import openfl.display.Graphics;
 
 using StringTools;
 

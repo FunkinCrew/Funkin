@@ -35,7 +35,7 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	//VERSION
-	public static var nightly:String = "PRE-RELEASE | Modding Update";
+	public static var nightly:String = "";
 	public static var gameVer:String = "2.15.0";
 
 	override function create()
