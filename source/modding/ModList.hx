@@ -19,7 +19,7 @@ class ModList
 	public static function getModEnabled(mod:String):Bool
 	{
 		if (!modList.exists(mod))
-			setModEnabled(mod, false);
+			setModEnabled(mod, true);
 
 		return modList.get(mod);
 	}
