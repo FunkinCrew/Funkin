@@ -187,7 +187,7 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
-		if (FlxG.save.data.downScroll = null || FlxG.save.data.downScroll == null)
+		if (FlxG.save.data.downScroll == null)
 			FlxG.save.data.downScroll = !FlxG.save.data.downScroll;
 
 		Conductor.mapBPMChanges(SONG);
