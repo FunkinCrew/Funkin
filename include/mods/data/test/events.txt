@@ -1,0 +1,3 @@
+150:setSongSpeed:3.5
+170:gfCheer
+200:lightningStrike

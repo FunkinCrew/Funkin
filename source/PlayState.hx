@@ -1,5 +1,6 @@
 package;
 
+import sys.FileSystem;
 import openfl.media.Sound;
 import sys.io.File;
 import openfl.media.Video;
@@ -158,6 +159,7 @@ class PlayState extends MusicBeatState
 	var inPanic = false;
 
 	public static var isMod:Bool = false;
+	var events = [];
 
 	public static var secretMode:Bool = false;
 
@@ -268,6 +270,8 @@ class PlayState extends MusicBeatState
 
 		if (!FlxG.save.data.liteMode){
 			FlxG.camera.bgColor = FlxColor.BLACK;
+
+			
 			switch (SONG.song.toLowerCase())
 			{
                         case 'spookeez' | 'monster' | 'south': 
@@ -596,40 +600,39 @@ class PlayState extends MusicBeatState
 					add(stageFront);
 				}
 		          default:
-		          {
-		                  defaultCamZoom = 0.9;
-		                  curStage = 'stage';
-		                  var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
-		                  bg.antialiasing = true;
-		                  bg.scrollFactor.set(0.9, 0.9);
-		                  bg.active = false;
-		                  add(bg);
-
-		                  var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
-		                  stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-		                  stageFront.updateHitbox();
-		                  stageFront.antialiasing = true;
-		                  stageFront.scrollFactor.set(0.9, 0.9);
-		                  stageFront.active = false;
-		                  add(stageFront);
-
-		                  var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
-		                  stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-		                  stageCurtains.updateHitbox();
-		                  stageCurtains.antialiasing = true;
-		                  stageCurtains.scrollFactor.set(1.3, 1.3);
-		                  stageCurtains.active = false;
-
-		                  add(stageCurtains);
+		          {	
+							defaultCamZoom = 0.9;
+							curStage = 'stage';
+							var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+							bg.antialiasing = true;
+							bg.scrollFactor.set(0.9, 0.9);
+							bg.active = false;
+							add(bg);
+  
+							var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+							stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+							stageFront.updateHitbox();
+							stageFront.antialiasing = true;
+							stageFront.scrollFactor.set(0.9, 0.9);
+							stageFront.active = false;
+							add(stageFront);
+  
+							var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+							stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+							stageCurtains.updateHitbox();
+							stageCurtains.antialiasing = true;
+							stageCurtains.scrollFactor.set(1.3, 1.3);
+							stageCurtains.active = false;
+  
+							add(stageCurtains);
 		        }
             }	
 		}
-		else{
+		else if (FlxG.save.data.liteMode){
 			curStage = 'litestage';
 			FlxG.camera.bgColor = FlxColor.GRAY;
 		}
 		
-
 		var gfVersion:String = 'gf';
 
 		switch (curStage)
@@ -795,6 +798,20 @@ class PlayState extends MusicBeatState
 		// startCountdown();
 
 		generateSong(SONG.song);
+
+		if (isMod && FileSystem.exists("mods/data/" + SONG.song.toLowerCase() + "/events.txt")){
+			var daList:Array<String> = File.getContent("mods/data/" + SONG.song.toLowerCase() + "/events.txt").trim().split('\n');
+	
+			for (i in 0...daList.length)
+			{
+				daList[i] = daList[i].trim();
+			}
+
+			events = daList;
+			trace(events);
+		}
+		else if (FileSystem.exists(Paths.file("data/" + SONG.song.toLowerCase() + "/events.txt")))
+			events = CoolUtil.coolTextFile(Paths.file('data/' + SONG.song.toLowerCase() + '/events.txt'));
 
 		// add(strumLine);
 
@@ -2164,6 +2181,8 @@ class PlayState extends MusicBeatState
 				#end
 			}
 
+			isMod = false;
+
 			camHUD.fade(FlxColor.TRANSPARENT, 0.5, false, null, true);
 
 			if (isStoryMode)
@@ -2229,7 +2248,6 @@ class PlayState extends MusicBeatState
 			else
 			{
 				trace('WENT BACK TO FREEPLAY?? ' + isMod);
-				isMod = false;
 				FlxG.switchState(new FreeplayState());
 			}
 		}
@@ -2823,6 +2841,35 @@ class PlayState extends MusicBeatState
 		{
 			// dad.dance();
 		}
+
+		//events lol
+		for (event in events){
+			var tempStep = event.split(":");
+
+			//trace(event);
+			//trace(tempStep[0] + " " + tempStep[1]);
+
+			//curStep in 0, event in 1
+			if (Std.parseInt(tempStep[0]) == curStep){
+				switch(tempStep[1].toLowerCase()){
+					case 'setsongspeed':
+						PlayState.SONG.speed = Std.parseFloat(tempStep[2]);
+						trace("SET SPEED TO " + PlayState.SONG.speed);
+					case 'gfcheer':
+						gf.playAnim('cheer', true);
+						trace("GF CHEER");
+					case 'playanimation.dad':
+						dad.playAnim(tempStep[2], true);
+						trace("DAD ANIM " + tempStep[2]);
+					case 'playanimation.boyfriend':
+						boyfriend.playAnim(tempStep[2], true);
+						trace("BOYFRIEND ANIM " + tempStep[2]);
+					case 'playanimation.girlfriend':
+						gf.playAnim(tempStep[2], true);
+						trace("GIRLFRIEND ANIM " + tempStep[2]);
+				}
+			}
+		}
 	}
 
 	var lightningStrikeBeat:Int = 0;
@@ -2909,7 +2956,7 @@ class PlayState extends MusicBeatState
 			gf.dance();
 		}
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+		if (boyfriend.animation.curAnim.name.startsWith("idle"))
 		{
 			boyfriend.playAnim('idle');
 		}
