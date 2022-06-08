@@ -2968,7 +2968,7 @@ class PlayState extends MusicBeatState
 			gf.dance();
 		}
 
-		if (boyfriend.animation.curAnim.name.startsWith("idle"))
+		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 		{
 			boyfriend.playAnim('idle');
 		}
