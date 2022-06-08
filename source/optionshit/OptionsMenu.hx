@@ -152,7 +152,7 @@ class OptionsMenu extends MusicBeatState {
 		}
 		else if (FlxG.save.data.frameRate == null){
 			FlxG.save.data.frameRate = 60;
-			updateOptions();
+			FlxG.switchState(new OptionsMenu()); // reload the state
 		}
 		
 		if (options[curSelected].startsWith("null")){
