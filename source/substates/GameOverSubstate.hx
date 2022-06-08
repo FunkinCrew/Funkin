@@ -163,6 +163,7 @@ class GameOverSubstate extends MusicBeatSubstate
 					}
 					#end
 
+					PlayState.fromPauseMenu = true;
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 
 					if(PlayState.playingReplay && Replay.getReplayList().length > 0)

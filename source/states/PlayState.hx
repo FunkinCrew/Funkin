@@ -881,6 +881,7 @@ class PlayState extends MusicBeatState
 			var cutscenePlays = utilities.Options.getData("cutscenePlaysOn");
 
 			playCutsceneLmao = (!playingReplay && ((isStoryMode && cutscenePlays == "story") || (!isStoryMode && cutscenePlays == "freeplay") || (cutscenePlays == "both")) && !fromPauseMenu);
+			playCutsceneOnPauseLmao = !playingReplay && ((isStoryMode && cutscenePlays == "story") || (!isStoryMode && cutscenePlays == "freeplay") || (cutscenePlays == "both"));
 
 			if (playCutsceneLmao)
 			{
@@ -1023,6 +1024,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public static var playCutsceneLmao:Bool = false;
+	public static var playCutsceneOnPauseLmao:Bool = false;
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
@@ -2653,7 +2655,7 @@ class PlayState extends MusicBeatState
 				#end
 			}
 	
-			if(playCutsceneLmao)
+			if(playCutsceneOnPauseLmao)
 			{
 				if(SONG.endCutscene != null && SONG.endCutscene != "")
 				{

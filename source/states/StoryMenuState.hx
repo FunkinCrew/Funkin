@@ -85,15 +85,13 @@ class StoryMenuState extends MusicBeatState
 		{
 			if (!selectedWeek)
 			{
-				if (controls.UP_P)
-				{
-					changeWeek(-1);
-				}
+				if(-1 * Math.floor(FlxG.mouse.wheel) != 0)
+					changeWeek(-1 * Math.floor(FlxG.mouse.wheel));
 
+				if (controls.UP_P)
+					changeWeek(-1);
 				if (controls.DOWN_P)
-				{
 					changeWeek(1);
-				}
 
 				if (controls.RIGHT)
 					rightArrow.animation.play('press')
@@ -336,11 +334,31 @@ class StoryMenuState extends MusicBeatState
 		difficultySprite.updateHitbox();
 		difficultySprite.alpha = 0;
 
+		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
+		difficultySprite.x = leftArrow.x + leftArrow.width + 4;
+		difficultySprite.y = leftArrow.y - (difficultySprite.height - leftArrow.height) - 40;
+
 		if(rightArrow != null)
 			rightArrow.x = difficultySprite.x + difficultySprite.width + 4;
 
-		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
-		difficultySprite.y = leftArrow.y - (difficultySprite.height - leftArrow.height) - 40;
+		if(currentGroup != null)
+		{
+			if(currentGroup.weeks.length - 1 >= curWeek)
+			{
+				var offsets = currentGroup.weeks[curWeek].difficultyOffsets;
+
+				if(offsets != null)
+				{
+					var difficulty = curDifficulties[curDifficulty][0];
+		
+					if(offsets.exists(difficulty))
+					{
+						difficultySprite.x += offsets.get(difficulty)[0];
+						difficultySprite.y += offsets.get(difficulty)[1];
+					}
+				}
+			}
+		}
 
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulties[curDifficulty][0], currentGroup.pathName + "Week");
 
@@ -452,7 +470,26 @@ class StoryMenuState extends MusicBeatState
 
 	function loadJSON(name:String)
 	{
-		groups.push(cast Json.parse(Assets.getText(Paths.json("week data/" + name))));
+		var group:StoryGroup = cast Json.parse(Assets.getText(Paths.json("week data/" + name)));
+
+		for(week in group.weeks)
+		{
+			var offsets:Map<String, Array<Float>> = [];
+
+			if(week.difficultyOffsets != null)
+			{
+				var week_offsets:Array<Array<Dynamic>> = week.difficultyOffsets;
+
+				for(offset in week_offsets)
+				{
+					offsets.set(offset[0], offset[1]);
+				}
+			}
+
+			week.difficultyOffsets = offsets;
+		}
+
+		groups.push(group);
 	}
 
 	function loadGroups()
@@ -485,4 +522,6 @@ typedef StoryWeek =
 	var backgroundColor:Array<Int>;
 
 	var difficulties:Null<Array<Array<String>>>;
+
+	var difficultyOffsets:Null<Dynamic>;
 }
