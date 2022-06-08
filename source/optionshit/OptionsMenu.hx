@@ -232,11 +232,7 @@ class OptionsMenu extends MusicBeatState {
 			default:
 				inOptionSelector = true;
 
-				#if (windows || linux)
-				options = ["Gameplay", "Graphics", "Credits", "Mods"];
-				#else
 				options = ["Gameplay","Graphics","Credits"];
-				#end
 				ready = true;
 			case 'gameplay':
 				inOptionSelector = false;
@@ -259,8 +255,6 @@ class OptionsMenu extends MusicBeatState {
 				ready = true;
 			case 'credits':
 				FlxG.switchState(new InformationState());
-			case 'mods':
-				FlxG.switchState(new CustomSongListState());
 		}
 
 		lastOptionType = type.toLowerCase();

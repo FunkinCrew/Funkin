@@ -140,10 +140,6 @@ class MainMenuState extends MusicBeatState
 				FlxG.switchState(new TitleState());
 			}
 
-			if (controls.CHEAT){
-				FlxG.switchState(new CustomSongListState());
-			}
-
 			if (controls.ACCEPT)
 			{
 				if (optionShit[curSelected] == 'donate') // fuck da cutscene, removed it!!!
