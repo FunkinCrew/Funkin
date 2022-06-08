@@ -1,5 +1,6 @@
 package states.menu;
 
+import engine.io.Modding;
 import engine.functions.Song;
 import engine.util.Highscore;
 import states.gameplay.PlayState;
@@ -62,6 +63,8 @@ class StoryMenuState extends MusicBeatState
 		"hating simulator ft. moawling"
 	];
 
+	var weekModded:Map<String, String>;
+
 	var txtWeekTitle:FlxText;
 
 	var curWeek:Int = 0;
@@ -80,6 +83,8 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		weekModded = new Map<String, String>();
+
 		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 0)
 			{
 				FlxG.camera.antialiasing = true;
@@ -155,6 +160,38 @@ class StoryMenuState extends MusicBeatState
 				lock.ID = i;
 				lock.antialiasing = false;
 				grpLocks.add(lock);
+			}
+		}
+
+		var index = weekData.length + 1;
+
+		// mod weeks
+		for (mod in Modding.api.loaded)
+		{
+			for (weeks in Modding.weeks)
+			{
+				if (weeks.mod == mod.name)
+				{
+					for (week in weeks.weeks)
+					{
+						trace("week: " + week.name + " of mod: " + mod.name);
+						var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, 0, mod.path + "/images/" + week.graphic + ".png");
+						weekThing.y += ((weekThing.height + 20) * index);
+						weekThing.targetY = index;
+						grpWeekText.add(weekThing);
+			
+						weekThing.screenCenter(X);
+						weekThing.antialiasing = false;
+						// weekThing.updateHitbox();
+						weekData.push(week.songs);
+						weekCharacters.push(["dad", "bf", "gf"]);
+						weekUnlocked.push(true);
+						weekNames.push(week.name);
+						weekModded.set(week.name, mod.name);
+						index++;
+					}
+				}
+
 			}
 		}
 
@@ -337,7 +374,8 @@ class StoryMenuState extends MusicBeatState
 
 			PlayState.storyDifficulty = curDifficulty;
 
-			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
+			PlayState.mod = weekModded[weekNames[curWeek]];
+			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase(), weekModded[weekNames[curWeek]] != null ? Modding.findModOfName(weekModded[weekNames[curWeek]]) : null);
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)

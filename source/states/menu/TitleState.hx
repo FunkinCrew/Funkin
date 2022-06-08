@@ -1,6 +1,5 @@
 package states.menu;
 
-import engine.io.ModManager;
 import states.substates.OutdatedSubState;
 import engine.io.Paths;
 import engine.functions.Conductor;
@@ -36,6 +35,8 @@ import lime.app.Application;
 import openfl.Assets;
 
 using StringTools;
+// simplicity.
+using engine.io.Modding;
 
 class TitleState extends MusicBeatState
 {
@@ -51,13 +52,10 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
-	var mm:ModManager;
-
 	override public function create():Void
 	{
-		mm = new ModManager();
-		mm.init("./mods/");
-		trace(mm.loaded);
+		Modding.init();
+		trace(Modding.weeks);
 
 		if (FlxG.save.data.UP == null)
 			FlxG.save.data.UP = "W";

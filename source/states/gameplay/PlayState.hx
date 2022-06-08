@@ -1,5 +1,7 @@
 package states.gameplay;
 
+import engine.io.Modding;
+import sys.FileSystem;
 import states.menu.RatingState;
 import engine.functions.Option;
 import states.menu.FreeplayState;
@@ -164,6 +166,8 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	public static var mod:String = "";
+
 	var botplay:Bool = Option.recieveValue("GAMEPLAY_botplay") == 1;
 
 	override public function create()
@@ -203,7 +207,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial');
+			SONG = Song.loadFromJson('tutorial', null, null);
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -1095,7 +1099,23 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+		{
+			if (FileSystem.exists(Paths.inst(PlayState.SONG.song)))
+			{
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			}
+			else
+			{
+				if (mod != "")
+				{
+					FlxG.sound.playMusic(Modding.api.getSoundShit("/songs/" + PlayState.SONG.song + "/Inst." + Paths.SOUND_EXT, Modding.findModOfName(mod)));
+				}
+				else
+				{
+					FlxG.sound.playMusic(Modding.api.getSoundShit("/songs/" + PlayState.SONG.song + "/Inst." + Paths.SOUND_EXT));
+				}
+			}
+		}
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
@@ -1120,7 +1140,23 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+		{
+			if (FileSystem.exists(Paths.voices(PlayState.SONG.song)))
+			{
+				vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			}
+			else
+			{
+				if (mod != "")
+				{
+					vocals = new FlxSound().loadEmbedded(Modding.api.getSoundShit("/songs/" + PlayState.SONG.song + "/Voices." + Paths.SOUND_EXT, Modding.findModOfName(mod)));
+				}
+				else
+				{
+					vocals = new FlxSound().loadEmbedded(Modding.api.getSoundShit("/songs/" + PlayState.SONG.song + "/Voices." + Paths.SOUND_EXT));
+				}
+			}
+		}
 		else
 			vocals = new FlxSound();
 
@@ -1865,7 +1901,8 @@ class PlayState extends MusicBeatState
 				FlxTransitionableState.skipNextTransOut = true;
 				prevCamFollow = camFollow;
 
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				// TODO: ADD THIS
+				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0], null);
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());

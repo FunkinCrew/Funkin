@@ -1,5 +1,6 @@
 package states.debug;
 
+import engine.io.Modding;
 import engine.util.CoolUtil;
 import game.Note;
 import engine.functions.Song.SwagSong;
@@ -1024,7 +1025,8 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		// TODO: add this shit
+		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase(), null);
 		FlxG.resetState();
 	}
 

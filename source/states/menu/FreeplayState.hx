@@ -1,5 +1,6 @@
 package states.menu;
 
+import engine.io.Modding;
 import engine.functions.Option;
 import engine.functions.Conductor;
 import engine.functions.Song;
@@ -229,7 +230,8 @@ class FreeplayState extends MusicBeatState
 
 			trace(poop);
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			// TODO: add this shit
+			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase(), null);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 

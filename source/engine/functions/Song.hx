@@ -1,5 +1,7 @@
 package engine.functions;
 
+import engine.base.ModAPI.Mod;
+import engine.io.Modding;
 import engine.definitions.Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -38,9 +40,18 @@ class Song
 		this.bpm = bpm;
 	}
 
-	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
+	public static function loadFromJson(jsonInput:String, ?folder:String, fromMod:Mod):SwagSong
 	{
-		var rawJson = Assets.getText(engine.io.Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
+		var rawJson = "";
+
+		if (Assets.exists(engine.io.Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())))
+		{
+			rawJson = Assets.getText(engine.io.Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
+		}
+		else
+		{
+			rawJson = Modding.api.getTextShit('/charts/' + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + ".json", fromMod);
+		}	
 
 		while (!rawJson.endsWith("}"))
 		{
