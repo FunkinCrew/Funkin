@@ -183,7 +183,8 @@ class StoryMenuState extends MusicBeatState
 						weekThing.screenCenter(X);
 						weekThing.antialiasing = false;
 						// weekThing.updateHitbox();
-						weekData.push(week.songs);
+						trace(week);
+						weekData.push(week.songs.copy());
 						weekCharacters.push(["dad", "bf", "gf"]);
 						weekUnlocked.push(true);
 						weekNames.push(week.name);
@@ -194,6 +195,9 @@ class StoryMenuState extends MusicBeatState
 
 			}
 		}
+
+		trace(weekData);
+		trace(weekModded);
 
 		trace("Line 96");
 
