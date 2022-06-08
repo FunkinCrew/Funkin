@@ -34,11 +34,11 @@ class ModAPI
             if (FileSystem.isDirectory(modFolderPath + file))
             {
                 trace("Found mod folder: " + file);
-                if (file.startsWith("mod_"))
+                if (file.startsWith("SM."))
                 {
                     trace("found mod: " + file);
                     loaded.push({
-                        name: file.split("mod_")[1],
+                        name: file.split("SM.")[1],
                         path: modFolderPath + file
                     });
                 }

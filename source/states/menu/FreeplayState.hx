@@ -1,5 +1,7 @@
 package states.menu;
 
+import sys.FileSystem;
+import sys.io.File;
 import engine.io.Modding;
 import engine.functions.Option;
 import engine.functions.Conductor;
@@ -44,8 +46,12 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 
+	var modSongs:Map<String, String>;
+
 	override function create()
 	{
+		modSongs = new Map<String, String>();
+
 		if (engine.functions.Option.recieveValue("GRAPHICS_globalAA") == 0)
 		{
 			FlxG.camera.antialiasing = true;
@@ -61,6 +67,18 @@ class FreeplayState extends MusicBeatState
 		{
 			var thing = initSonglist[i].split(':');
 			songs.push(new SongMetadata(thing[0], Std.parseInt(thing[3]), thing[1], Std.parseInt(thing[2])));
+		}
+
+		// mod shit
+		for (mod in Modding.api.loaded)
+		{
+			var txtFile = File.getContent(mod.path + "/freeplay.txt").trim();
+			var split = txtFile.split("\n");
+			for (line in split)
+			{
+				modSongs.set(line.split(":")[0], mod.name);
+				songs.push(new SongMetadata(line.split(":")[0], 0, line.split(":")[1], Std.parseInt(line.split(":")[2])));
+			}
 		}
 
 		/* 
@@ -230,8 +248,7 @@ class FreeplayState extends MusicBeatState
 
 			trace(poop);
 
-			// TODO: add this shit
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase(), null);
+			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase(), modSongs[poop] != null ? Modding.findModOfName(modSongs[poop]) : null);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 
@@ -286,7 +303,13 @@ class FreeplayState extends MusicBeatState
 
 		#if PRELOAD_ALL
 		Conductor.changeBPM(songs[curSelected].bpm);
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		if (FileSystem.exists(Paths.inst(songs[curSelected].songName)) || modSongs[songs[curSelected].songName] == null)
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		else
+		{
+			trace("cursong " + songs[curSelected].songName);
+			FlxG.sound.playMusic(Modding.api.getSoundShit("/songs/" + songs[curSelected].songName + "/Inst." + Paths.SOUND_EXT, modSongs[songs[curSelected].songName] != null ? Modding.findModOfName(modSongs[songs[curSelected].songName]) : null), 0);
+		}
 		#end
 
 		var bullShit:Int = 0;

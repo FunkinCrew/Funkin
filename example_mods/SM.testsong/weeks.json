@@ -1,0 +1,14 @@
+{
+    "weeks":
+    [
+        {
+            "name": "Test",
+            "graphic":"TestWeek",
+            "using":["week6"],
+            "songs":
+            [
+                "Test"
+            ]
+        }
+    ]
+}
