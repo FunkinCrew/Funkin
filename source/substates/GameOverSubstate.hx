@@ -25,6 +25,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new(x:Float, y:Float)
 	{
 		super();
+		
+		PlayState.fromPauseMenu = true;
 
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
@@ -163,7 +165,6 @@ class GameOverSubstate extends MusicBeatSubstate
 					}
 					#end
 
-					PlayState.fromPauseMenu = true;
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 
 					if(PlayState.playingReplay && Replay.getReplayList().length > 0)
