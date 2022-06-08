@@ -5,9 +5,11 @@ All notable changes will be documented in this file.
 ### Added
 - Week 7 Lmfao (took like 1 year to be allowed to add it back but here we are)
 - Story Mode Difficulty Offsets
+- Trails in Modcharts
 ### Fixed
 - Cutscenes playing on Game Overs
 - Health Icon Bounce and Camera Bounce being effected by really high fps
+- End Piece of Sustains Giving Misses
 
 ## [0.4.1] - 2/26/2022
 ### Added
