@@ -1902,7 +1902,7 @@ class PlayState extends MusicBeatState
 				prevCamFollow = camFollow;
 
 				// TODO: ADD THIS
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0], null);
+				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0], mod != "" ? Modding.findModOfName(mod) : null);
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());
