@@ -22,10 +22,11 @@ class Constants
 
 	#if debug
 	public static final GIT_HASH = funkin.util.macro.GitCommit.getGitCommitHash();
+	public static final GIT_BRANCH = funkin.util.macro.GitCommit.getGitBranch();
 
 	static function get_VERSION():String
 	{
-		return 'v${Application.current.meta.get('version')} (${GIT_HASH})' + VERSION_SUFFIX;
+		return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH})' + VERSION_SUFFIX;
 	}
 	#else
 	static function get_VERSION():String

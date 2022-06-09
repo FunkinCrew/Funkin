@@ -31,5 +31,31 @@ class GitCommit
 		return macro $v{commitHashSplice};
 		#end
 	}
+
+	public static macro function getGitBranch():haxe.macro.Expr.ExprOf<String>
+	{
+		#if !display
+		// Get the current line number.
+		var pos = haxe.macro.Context.currentPos();
+		var branchProcess = new sys.io.Process('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
+
+		if (branchProcess.exitCode() != 0)
+		{
+			var message = branchProcess.stderr.readAll().toString();
+			haxe.macro.Context.info('[WARN] Could not determine current git commit; is this a proper Git repository?', pos);
+		}
+
+		var branchName:String = branchProcess.stdout.readLine();
+		trace('Current Working Branch: ${branchName}');
+
+		// Generates a string expression
+		return macro $v{branchName};
+		#else
+		// `#if display` is used for code completion. In this case returning an
+		// empty string is good enough; We don't want to call git on every hint.
+		var branchName:String = "";
+		return macro $v{branchName};
+		#end
+	}
 }
 #end
