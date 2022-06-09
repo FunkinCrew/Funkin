@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-2.15.0;
-* kill me
-=======
 2.14.0;
 * Added a Progress Bar for the Song
 * Added Downscroll
 * Changed the Size of the Player Icons
 * Fixed the issue with being unable to play Custom Animations at current Beats/Steps
 * Made the Combo Assets not show multiple numbers if its just 0
->>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0

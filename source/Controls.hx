@@ -492,33 +492,6 @@ class Controls extends FlxActionSet
 		if (reset)
 			removeKeyboard();
 
-<<<<<<< HEAD
-		keyboardScheme = scheme;
-
-		FlxG.save.bind('funkin', 'spunblue');
-
-		if(FlxG.save.data.UP == null){
-            FlxG.save.data.UP = "W";
-            trace("No UP");
-        }
-        if(FlxG.save.data.DOWN == null){
-            FlxG.save.data.DOWN = "S";
-            trace("No DOWN");
-        }
-        if(FlxG.save.data.LEFT == null){
-            FlxG.save.data.LEFT = "A";
-            trace("No LEFT");
-        }
-        if(FlxG.save.data.RIGHT == null){
-            FlxG.save.data.RIGHT = "D";
-            trace("No RIGHT");
-        }
-
-		inline bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.UP), FlxKey.UP]);
-		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.DOWN), FlxKey.DOWN]);
-		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.LEFT), FlxKey.LEFT]);
-		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.RIGHT), FlxKey.RIGHT]);
-=======
 		FlxG.save.bind('funkin', 'spunblue');
 
 		if (FlxG.save.data.left == null || FlxG.save.data.right == null || FlxG.save.data.up == null || FlxG.save.data.down == null){
@@ -532,15 +505,10 @@ class Controls extends FlxActionSet
 		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.down), FlxKey.DOWN]);
 		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.left), FlxKey.LEFT]);
 		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.right), FlxKey.RIGHT]);
->>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 		inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 		inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 		inline bindKeys(Control.RESET, [R]);
-<<<<<<< HEAD
-		inline bindKeys(Control.CHEAT, [INSERT]); // freeplay easteregg
-=======
->>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 	}
 
 	function removeKeyboard()

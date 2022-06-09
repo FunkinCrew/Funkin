@@ -1,14 +1,9 @@
 package;
 
-import openfl.display.Graphics;
-import openfl.display.GraphicsPath;
-import sys.io.File;
-import sys.FileSystem;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
-import openfl.display.Graphics;
 
 using StringTools;
 
@@ -310,46 +305,6 @@ class Character extends FlxSprite
 
 				flipX = true;
 
-			case 'bfpanic':
-				var tex = Paths.getSparrowAtlas('BOYFRIEND');
-				frames = tex;
-
-				animation.addByPrefix('idle', 'BF PANIC idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF PANIC NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF PANIC NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF PANIC NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF PANIC NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
-
-				animation.addByPrefix('firstDeath', "BF dies", 24, false);
-				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
-
-				animation.addByPrefix('scared', 'BF idle shaking', 24);
-
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-				addOffset('firstDeath', 37, 11);
-				addOffset('deathLoop', 37, 5);
-				addOffset('deathConfirm', 37, 69);
-				addOffset('scared', -4);
-
-				playAnim('idle');
-
-				flipX = true;
-
 			case 'bf-christmas':
 				var tex = Paths.getSparrowAtlas('christmas/bfChristmas', 'week5');
 				frames = tex;
@@ -378,36 +333,6 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
-
-			case 'bf-christmaspanic':
-				var tex = Paths.getSparrowAtlas('christmas/bfChristmas');
-				frames = tex;
-				animation.addByPrefix('idle', 'BF PANIC idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF PANIC NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF PANIC NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF PANIC NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF PANIC NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
-
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-
-				playAnim('idle');
-
-				flipX = true;
-
 			case 'bf-car':
 				var tex = Paths.getSparrowAtlas('bfCar', 'week4');
 				frames = tex;
@@ -570,104 +495,6 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
-
-			case 'tankman':
-				tex = Paths.getSparrowAtlas('Tankman/characters/Tank', 'shared');
-				frames = tex;
-				animation.addByPrefix('idle', 'Tankman Idle Dance instance', 24);
-				animation.addByPrefix('singUP', 'Tankman UP note instance', 24);
-				animation.addByPrefix('singDOWN', 'Tankman DOWN note instance', 24);
-				animation.addByPrefix('singLEFT', 'Tankman Right Note instance', 24);
-				animation.addByPrefix('singRIGHT', 'Tankman Note Left instance', 24);
-				//animation.addByPrefix('singRIGHT', 'Tankman Right Note instance', 24);
-				//animation.addByPrefix('singLEFT', 'Tankman Note Left instance', 24);
-
-				animation.addByPrefix('ugh', 'TANKMAN UGH instance', 24);
-				animation.addByPrefix('prettygood', 'PRETTY GOOD tankman instance', 24);
-
-				addOffset('idle');
-				addOffset("singUP", 24, 60);
-				addOffset("singRIGHT", -20, -13);
-				addOffset("singLEFT", 70, -18);
-				addOffset("singDOWN",50, -102);
-				addOffset('ugh');
-				addOffset('prettygood');
-
-				playAnim('idle');
-				flipX = true;
-
-			case 'bf-holding-gf':
-				//happy couple moment
-				var tex = Paths.getSparrowAtlas('Tankman/characters/bfAndGF', 'shared');
-				frames = tex;
-				animation.addByPrefix('idle', 'BF idle dance w gf', 24, false);
-				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 14);
-				addOffset("singRIGHT", -38, 13);
-				addOffset("singLEFT", 12, -2);
-				addOffset("singDOWN", -10, -3);
-				addOffset("singUPmiss", -39, 7);
-				addOffset("singRIGHTmiss", -30, 41);
-				addOffset("singLEFTmiss", 12, 14);
-				addOffset("singDOWNmiss", -21, 1);
-
-				playAnim('idle');
-
-				flipX = true;
-
-			case 'bf-holding-gf-dead':
-				//holy shit the couple is fucking dead im gonna fucking cry
-				var tex = Paths.getSparrowAtlas('Tankman/characters/theyre-DEAD');
-				frames = tex;
-
-				animation.addByPrefix('singUP', "BF Dies with GF", 24, false);
-				animation.addByPrefix('firstDeath', "BF Dies with GF", 24, false);
-				animation.addByPrefix('deathLoop', "BF Dead with GF Loop", 24, true);
-				animation.addByPrefix('deathConfirm', "RETRY confirm holding gf", 24, false);
-				animation.play('firstDeath');
-
-				addOffset('firstDeath', 37, 11);
-				addOffset('deathLoop', 37, 7);
-				addOffset('deathConfirm', 37, 11);
-
-				playAnim('firstDeath');
-
-				flipX = true;
-
-			case 'tankGF':
-				tex = Paths.getSparrowAtlas('Tankman/characters/gfTankmen');
-				frames = tex;
-				animation.addByIndices('danceLeft', 'GF Dancing at Gunpoint', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing at Gunpoint', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
-					false);
-
-				addOffset('danceLeft', 0);
-				addOffset('danceRight', 0);
-
-				playAnim('danceRight');
-			
-			case 'picoSpeaker':
-				//hes just kinda there cuz idk how to do this shit lol
-				tex = Paths.getSparrowAtlas('Tankman/characters/picoSpeaker');
-				frames = tex;
-				animation.addByIndices('dance', 'Pico shoot 1', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
-					false);
-				animation.addByIndices('dance2', 'Pico shoot 1', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
-					false);
-
-				addOffset('dance', 0);
-				addOffset('dance2', 0);
-
-				playAnim('dance');
 		}
 
 		dance();
@@ -769,26 +596,6 @@ class Character extends FlxSprite
 							playAnim('danceLeft');
 					}
 				case 'gf-pixel':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-				case 'picoSpeaker':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('dance');
-						else
-							playAnim('dance2');
-					}
-				case 'tankGF':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;

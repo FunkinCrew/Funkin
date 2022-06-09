@@ -26,19 +26,9 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
-<<<<<<< HEAD
-	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
-	#end
-=======
->>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
-
-	//VERSION
-	public static var nightly:String = "";
-	public static var gameVer:String = "2.15.0";
 
 	override function create()
 	{
@@ -60,7 +50,7 @@ class MainMenuState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
-		bg.setGraphicSize(Std.int(bg.width * 1.2));
+		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
@@ -72,7 +62,7 @@ class MainMenuState extends MusicBeatState
 		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
-		magenta.setGraphicSize(Std.int(magenta.width * 1.21));
+		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
 		magenta.updateHitbox();
 		magenta.screenCenter();
 		magenta.visible = false;
@@ -102,7 +92,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, 'v${gameVer} ${nightly} -- Friday Night Funkin\' Sublime Engine', 14);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -144,18 +134,20 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (optionShit[curSelected] == 'donate') // fuck da cutscene, removed it!!!
+				if (optionShit[curSelected] == 'donate')
 				{
-					FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
+					#if linux
+					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+					#else
+					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+					#end
 				}
 				else
 				{
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 
-					if (!FlxG.save.data.epilepsyMode) {
-						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
-					}
+					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
 					menuItems.forEach(function(spr:FlxSprite)
 					{
@@ -171,29 +163,10 @@ class MainMenuState extends MusicBeatState
 						}
 						else
 						{
-							if (!FlxG.save.data.epilepsyMode) {
-								FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-									{
-										var daChoice:String = optionShit[curSelected];
-		
-										switch (daChoice)
-										{
-											case 'story mode':
-												FlxG.switchState(new StoryMenuState());
-												trace("Story Menu Selected");
-											case 'freeplay':
-												FlxG.switchState(new FreeplayState());
-		
-												trace("Freeplay Menu Selected");
-		
-											case 'options':
-												FlxG.switchState(new optionshit.OptionsMenu());
-										}
-									});
-							}
-							else {
+							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+							{
 								var daChoice:String = optionShit[curSelected];
-		
+
 								switch (daChoice)
 								{
 									case 'story mode':
@@ -205,13 +178,9 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-<<<<<<< HEAD
-										FlxG.switchState(new optionshit.OptionsMenu());
-=======
 										FlxG.switchState(new optionsmenu.OptionsMenu());
->>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 								}
-							}
+							});
 						}
 					});
 				}

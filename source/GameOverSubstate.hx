@@ -26,11 +26,6 @@ class GameOverSubstate extends MusicBeatSubstate
 			case 'schoolEvil':
 				stageSuffix = '-pixel';
 				daBf = 'bf-pixel-dead';
-			case 'tankStage':
-				if (PlayState.SONG.song == 'Stress')
-					daBf = 'bf-holding-gf-dead';
-				else
-					daBf = 'bf';
 			default:
 				daBf = 'bf';
 		}
@@ -69,18 +64,10 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			FlxG.sound.music.stop();
 
-			if (PlayState.isStoryMode){
-				PlayState.secretMode = false; // reset secret mode
-				PlayState.isMod = false;
-				
+			if (PlayState.isStoryMode)
 				FlxG.switchState(new StoryMenuState());
-			}
-			else{
-				PlayState.secretMode = false; // reset secret mode
-				PlayState.isMod = false;
-
+			else
 				FlxG.switchState(new FreeplayState());
-			}
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
@@ -90,14 +77,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
-			if (PlayState.curStage != 'tankStage')
-				FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
-			else
-				FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), 0.1);
-
-			if (PlayState.curStage == 'tankStage'){
-				FlxG.sound.play((Paths.sound('Tankman/jeffGameover-' + FlxG.random.int(1, 25))));
-			}
+			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
 		}
 
 		if (FlxG.sound.music.playing)

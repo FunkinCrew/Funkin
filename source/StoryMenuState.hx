@@ -29,12 +29,11 @@ class StoryMenuState extends MusicBeatState
 		['Pico', 'Philly', "Blammed"],
 		['Satin-Panties', "High", "Milf"],
 		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
-		['Senpai', 'Roses', 'Thorns'],
-		['Ugh', 'Guns', 'Stress']
+		['Senpai', 'Roses', 'Thorns']
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
@@ -43,8 +42,7 @@ class StoryMenuState extends MusicBeatState
 		['pico', 'bf', 'gf'],
 		['mom', 'bf', 'gf'],
 		['parents-christmas', 'bf', 'gf'],
-		['senpai', 'bf', 'gf'],
-		['tankman', 'bf', 'gf']
+		['senpai', 'bf', 'gf']
 	];
 
 	var weekNames:Array<String> = [
@@ -54,8 +52,7 @@ class StoryMenuState extends MusicBeatState
 		"PICO",
 		"MOMMY MUST MURDER",
 		"RED SNOW",
-		"hating simulator ft. moawling",
-		"TANKMAN"
+		"hating simulator ft. moawling"
 	];
 
 	var txtWeekTitle:FlxText;
@@ -276,7 +273,6 @@ class StoryMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				FlxG.sound.music.fadeOut(1, 0);
 				selectWeek();
 			}
 		}
@@ -303,9 +299,7 @@ class StoryMenuState extends MusicBeatState
 			{
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 
-				if (!FlxG.save.data.epilepsyMode) {
-					grpWeekText.members[curWeek].startFlashing();
-				}
+				grpWeekText.members[curWeek].startFlashing();
 				grpWeekCharacters.members[1].animation.play('bfConfirm');
 				stopspamming = true;
 			}
@@ -407,7 +401,7 @@ class StoryMenuState extends MusicBeatState
 		grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
 		grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
 		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
-		txtTracklist.text = "Tracks\n\n";
+		txtTracklist.text = "Tracks\n";
 
 		switch (grpWeekCharacters.members[0].animation.curAnim.name)
 		{
@@ -426,10 +420,6 @@ class StoryMenuState extends MusicBeatState
 			case 'dad':
 				grpWeekCharacters.members[0].offset.set(120, 200);
 				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
-			
-			case 'tankman':
-				grpWeekCharacters.members[0].offset.set(0, -75);
-				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1.3));
 
 			default:
 				grpWeekCharacters.members[0].offset.set(100, 100);
@@ -441,7 +431,7 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in stringThing)
 		{
-			txtTracklist.text += i + "\n";
+			txtTracklist.text += "\n" + i;
 		}
 
 		txtTracklist.text = txtTracklist.text.toUpperCase();
