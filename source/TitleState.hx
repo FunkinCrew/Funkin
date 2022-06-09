@@ -53,7 +53,18 @@ class TitleState extends MusicBeatState
 		// DEBUG BULLSHIT
 
 		super.create();
+<<<<<<< HEAD
 		
+=======
+
+		NGio.noLogin(APIStuff.API);
+
+		#if ng
+		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
+		trace('NEWGROUNDS LOL');
+		#end
+
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		FlxG.save.bind('funkin', 'spunblue');
 
 		Highscore.load();

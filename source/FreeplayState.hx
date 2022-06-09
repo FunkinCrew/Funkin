@@ -70,7 +70,14 @@ class FreeplayState extends MusicBeatState
 		for (song in FileSystem.readDirectory("mods/data/")) {
 			var tempArray = song.split(':');
 
+<<<<<<< HEAD
 			addSong(tempArray[0], 69420, "MOD"); //if the week is 69420, its a mod.
+=======
+			var poop = Highscore.formatSong(tempArray[0].toLowerCase(), curDifficulty);
+			var tempSongData = Song.loadFromModJson(poop, tempArray[0].toLowerCase());
+
+			addSong(tempArray[0], 69420, tempSongData.player2); //if the week is 69420, its a mod.
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		}
 
 		// LOAD MUSIC
@@ -89,15 +96,23 @@ class FreeplayState extends MusicBeatState
 			
 			/*
 			var tcolor:FlxColor = 0;
+<<<<<<< HEAD
 
 			for (col in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
 				var eugh = col.split(':');
 
+=======
+			for (col in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
+				var eugh = col.split(':');
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 				if (songs[i].songCharacter.toLowerCase().startsWith(eugh[0])) {
 					tcolor = new FlxColor(Std.parseInt(eugh[1]));
 				}
 			}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 			songText.color = new FlxColor(tcolor);
 			*/
 
@@ -109,9 +124,18 @@ class FreeplayState extends MusicBeatState
 				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 				icon.sprTracker = songText;
 
+<<<<<<< HEAD
 				iconArray.push(icon);
 				add(icon);
 			}
+
+			var array = CoolUtil.coolTextFile(Paths.txt('healthcolors'));
+
+			updateColor();
+=======
+			iconArray.push(icon);
+			add(icon);
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 
 			var array = CoolUtil.coolTextFile(Paths.txt('healthcolors'));
 
@@ -154,17 +178,13 @@ class FreeplayState extends MusicBeatState
 		// JUST DOIN THIS SHIT FOR TESTING!!!
 		/* 
 			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
 			var texFel:TextField = new TextField();
 			texFel.width = FlxG.width;
 			texFel.height = FlxG.height;
 			// texFel.
 			texFel.htmlText = md;
-
 			FlxG.stage.addChild(texFel);
-
 			// scoreText.textField.htmlText = md;
-
 			trace(md);
 		 */
 
@@ -264,6 +284,7 @@ class FreeplayState extends MusicBeatState
 				else{
 					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 				}
+<<<<<<< HEAD
 
 				if (secret){
 					PlayState.secretMode = true;
@@ -271,12 +292,18 @@ class FreeplayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('GF_1', 'shared'));
 					trace('Just because you heard the sound, doesn\'t mean you\'ve found the secret!');
 				}
+=======
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 				
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
 	
 				PlayState.storyWeek = songs[curSelected].week;
+<<<<<<< HEAD
 				trace('CUR WEEK' + PlayState.storyWeek + '\nSecret Mode: ' + PlayState.secretMode);
+=======
+				trace('CUR WEEK' + PlayState.storyWeek);
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
@@ -305,7 +332,12 @@ class FreeplayState extends MusicBeatState
 
 	function loadScoreData(){
 		#if !switch
+<<<<<<< HEAD
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+=======
+		intendedScore = Highscore.getScore(songs[curSelected].songName.toLowerCase(), curDifficulty);
+		trace('score: ' + Highscore.getScore(songs[curSelected].songName.toLowerCase(), curDifficulty));
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		#end
 	}
 
@@ -387,7 +419,11 @@ class FreeplayState extends MusicBeatState
 					}
 				}
 				else{
+<<<<<<< HEAD
 					tcolor = new FlxColor(FlxColor.LIME);
+=======
+					tcolor = new FlxColor(FlxColor.BLUE);
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 				}
 			}
 		}

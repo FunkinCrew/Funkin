@@ -129,6 +129,9 @@ class ChartingState extends MusicBeatState
 				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
+				player3: 'gf',
+				stage: 'stage',
+				noteskin: 'default',
 				speed: 1,
 				noteskin: 'default',
 				validScore: false
@@ -239,22 +242,46 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
+<<<<<<< HEAD
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+=======
+		var dadCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('dadList'));
+		var bfCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('bfList'));
+		var gfCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('gfList'));
+		var stagelist:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		var noteskins:Array<String> = CoolUtil.coolTextFile(Paths.txt('noteskinList'));
 
-		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(bfCharacters, true), function(character:String)
 		{
-			_song.player1 = characters[Std.parseInt(character)];
+			_song.player1 = bfCharacters[Std.parseInt(character)];
 		});
 		player1DropDown.selectedLabel = _song.player1;
 
-		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(dadCharacters, true), function(character:String)
 		{
-			_song.player2 = characters[Std.parseInt(character)];
+			_song.player2 = dadCharacters[Std.parseInt(character)];
+		});
+
+		var player3DropDown = new FlxUIDropDownMenu(10, 125, FlxUIDropDownMenu.makeStrIdLabelArray(gfCharacters, true), function(character:String)
+		{
+			_song.player3 = gfCharacters[Std.parseInt(character)];
+		});
+
+		var stageDropDown = new FlxUIDropDownMenu(140, 125, FlxUIDropDownMenu.makeStrIdLabelArray(stagelist, true), function(stage:String)
+		{
+			_song.stage = stagelist[Std.parseInt(stage)];
+		});
+
+		// noteskin dropdown
+		var noteskinDropDown = new FlxUIDropDownMenu(10, 150, FlxUIDropDownMenu.makeStrIdLabelArray(noteskins, true), function(noteskin:String)
+		{
+			_song.noteskin = noteskins[Std.parseInt(noteskin)];
 		});
 
 		player2DropDown.selectedLabel = _song.player2;
 
+<<<<<<< HEAD
 		var noteskinDropDown = new FlxUIDropDownMenu(10, 150, FlxUIDropDownMenu.makeStrIdLabelArray(noteskins, true), function(noteskin:String)
 		{
 			_song.noteskin = noteskins[Std.parseInt(noteskin)];
@@ -262,13 +289,19 @@ class ChartingState extends MusicBeatState
 
 		noteskinDropDown.selectedLabel = _song.noteskin;
 
+=======
+		var check_hitSounds = new FlxUICheckBox(10, check_mute_inst.y + 20, null, null, "Enable Hitsounds", 100);
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
+<<<<<<< HEAD
 
 		var check_hitSounds = new FlxUICheckBox(10, check_mute_inst.y + 20, null, null, "Enable Hitsounds", 100);
 
+=======
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		tab_group_song.add(check_hitSounds);
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
@@ -278,7 +311,13 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+<<<<<<< HEAD
 		tab_group_song.add(noteskinDropDown);
+=======
+		tab_group_song.add(player3DropDown);
+		tab_group_song.add(noteskinDropDown);
+		tab_group_song.add(stageDropDown);
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
 
@@ -293,6 +332,7 @@ class ChartingState extends MusicBeatState
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
+	var check_gfSection:FlxUICheckBox;
 
 	function addSectionUI():Void
 	{
@@ -335,6 +375,9 @@ class ChartingState extends MusicBeatState
 		check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alt Animation", 100);
 		check_altAnim.name = 'check_altAnim';
 
+		check_gfSection = new FlxUICheckBox(10, 430, null, null, "Girlfriend Section (NOT FULLY WORKING)", 100);
+		check_gfSection.name = 'check_gfSection';
+
 		check_changeBPM = new FlxUICheckBox(10, 60, null, null, 'Change BPM', 100);
 		check_changeBPM.name = 'check_changeBPM';
 
@@ -343,6 +386,7 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(stepperCopy);
 		tab_group_section.add(check_mustHitSection);
 		tab_group_section.add(check_altAnim);
+		tab_group_section.add(check_gfSection);
 		tab_group_section.add(check_changeBPM);
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
@@ -442,6 +486,11 @@ class ChartingState extends MusicBeatState
 					FlxG.log.add('changed bpm shit');
 				case "Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
+<<<<<<< HEAD
+=======
+				case "Girlfriend Section (NOT FULLY WORKING)":
+					_song.notes[curSection].gfSection = check.checked;
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 				case "Enable Hitsounds":
 					enableHitsounds = check.checked;
 			}
@@ -521,9 +570,12 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+<<<<<<< HEAD
 		// set step text to current step
 		stepText.text = "Step: " + curStep;
 
+=======
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -841,6 +893,7 @@ class ChartingState extends MusicBeatState
 		stepperLength.value = sec.lengthInSteps;
 		check_mustHitSection.checked = sec.mustHitSection;
 		check_altAnim.checked = sec.altAnim;
+		check_gfSection.checked = sec.gfSection;
 		check_changeBPM.checked = sec.changeBPM;
 		stepperSectionBPM.value = sec.bpm;
 
@@ -943,7 +996,8 @@ class ChartingState extends MusicBeatState
 			mustHitSection: true,
 			sectionNotes: [],
 			typeOfSection: 0,
-			altAnim: false
+			altAnim: false,
+			gfSection: false
 		};
 
 		_song.notes.push(sec);

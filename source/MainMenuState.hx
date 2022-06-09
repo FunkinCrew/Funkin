@@ -25,11 +25,13 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
-	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
+<<<<<<< HEAD
 	#else
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
 	#end
+=======
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -203,7 +205,11 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
+<<<<<<< HEAD
 										FlxG.switchState(new optionshit.OptionsMenu());
+=======
+										FlxG.switchState(new optionsmenu.OptionsMenu());
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 								}
 							}
 						}

@@ -17,8 +17,13 @@ Winter-Horrorland:monster:5
 Senpai:senpai:6
 Roses:senpai:6
 Thorns:spirit:6
+<<<<<<< HEAD
 Ugh:tankman:7
 Guns:tankman:7
 Stress:tankman:7
 Roses-Swagmix:senpai:6
 Ugh-Swagmix:tankman:0
+=======
+Roses-Swagmix:senpai:6
+Ugh-Swagmix:tankman:7
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0

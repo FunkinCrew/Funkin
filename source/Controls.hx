@@ -232,7 +232,7 @@ class Controls extends FlxActionSet
 		for (action in digitalActions)
 			byName[action.name] = action;
 
-		setKeyboardScheme(scheme, false);
+		setKeyboardScheme(false);
 	}
 	#else
 	public function new(name, scheme:KeyboardScheme = null)
@@ -487,11 +487,12 @@ class Controls extends FlxActionSet
 		}
 	}
 
-	public function setKeyboardScheme(scheme:KeyboardScheme, reset = true)
+	public function setKeyboardScheme(reset = true)
 	{
 		if (reset)
 			removeKeyboard();
 
+<<<<<<< HEAD
 		keyboardScheme = scheme;
 
 		FlxG.save.bind('funkin', 'spunblue');
@@ -517,11 +518,29 @@ class Controls extends FlxActionSet
 		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.DOWN), FlxKey.DOWN]);
 		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.LEFT), FlxKey.LEFT]);
 		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.RIGHT), FlxKey.RIGHT]);
+=======
+		FlxG.save.bind('funkin', 'spunblue');
+
+		if (FlxG.save.data.left == null || FlxG.save.data.right == null || FlxG.save.data.up == null || FlxG.save.data.down == null){
+			FlxG.save.data.left = 'A';
+			FlxG.save.data.right = 'D';
+			FlxG.save.data.up = 'W';
+			FlxG.save.data.down = 'S';
+		}
+		
+		inline bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.up), FlxKey.UP]);
+		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.down), FlxKey.DOWN]);
+		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.left), FlxKey.LEFT]);
+		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.right), FlxKey.RIGHT]);
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 		inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 		inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 		inline bindKeys(Control.RESET, [R]);
+<<<<<<< HEAD
 		inline bindKeys(Control.CHEAT, [INSERT]); // freeplay easteregg
+=======
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 	}
 
 	function removeKeyboard()
@@ -681,7 +700,7 @@ class Controls extends FlxActionSet
 		switch (device)
 		{
 			case Keys:
-				setKeyboardScheme(None);
+				setKeyboardScheme();
 			case Gamepad(id):
 				removeGamepad(id);
 		}

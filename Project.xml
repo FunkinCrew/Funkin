@@ -36,6 +36,7 @@
 
 	<classpath name="source" />
 
+<<<<<<< HEAD
 	<assets path="assets/preload/videos" rename="assets/videos" include="*mp4" embed='false' />
 
 	<assets path="assets/preload/videos" exclude="*.mp4" if="web"/>
@@ -43,6 +44,15 @@
 
 	<!--compatability things-->
 	<section if="mac">
+=======
+	<!--<assets path="assets/preload/videos" rename="assets/videos" include="*mp4" embed='false' />
+
+	<assets path="assets/preload/videos" exclude="*.mp4" if="web"/>
+	<assets path="assets/preload/videos" exclude="*.mp4" unless="web"/>-->
+
+	<!--compatability things-->
+	<!--<section if="mac">
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 		<assets path="plugins/" exclude="*"/>
 		<assets path="dlls/" exclude="*"/>
 		<assets path="source/vlc/" exclude="*"/>
@@ -52,7 +62,12 @@
 	<assets path="plugins/" rename='' if="linux"/>
 	<assets path="dlls/" rename='' if="linux"/>
 	<assets path="plugins/" rename='' if="windows"/>
+<<<<<<< HEAD
 	<assets path="dlls/" rename='' if="windows"/>
+=======
+	<assets path="dlls/" rename='' if="windows"/>-->
+
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 	<assets path="include/" rename='' embed="false"/>
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>

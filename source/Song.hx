@@ -18,6 +18,11 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
+<<<<<<< HEAD
+=======
+	var player3:String;
+	var stage:String;
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
 	var noteskin:String;
 	var validScore:Bool;
 }
@@ -33,6 +38,10 @@ class Song
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
+	public var player3:String = 'gf';
+
+	public var stage:String = 'stage';
+	public var noteskin:String = 'default';
 
 	public function new(song, notes, bpm, noteskin)
 	{
@@ -43,11 +52,8 @@ class Song
 	}
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
-	{
-		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
-
-		while (!rawJson.endsWith("}"))
 		{
+<<<<<<< HEAD
 			rawJson = rawJson.substr(0, rawJson.length - 1);
 		}
 
@@ -74,3 +80,35 @@ class Song
 		return swagShit;
 	}
 }
+=======
+			var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
+	
+			while (!rawJson.endsWith("}"))
+			{
+				rawJson = rawJson.substr(0, rawJson.length - 1);
+			}
+	
+			return parseJSONshit(rawJson);
+		}
+	
+		public static function loadFromModJson(jsonInput:String, ?folder:String):SwagSong
+			{
+				// load a json from a mod folder (not the main folder)
+				var rawJson = File.getContent("mods/data/" + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
+				
+				while (!rawJson.endsWith("}"))
+				{
+					rawJson = rawJson.substr(0, rawJson.length - 1);
+				}
+		
+				return parseJSONshit(rawJson);
+			}
+	
+		public static function parseJSONshit(rawJson:String):SwagSong
+		{
+			var swagShit:SwagSong = cast Json.parse(rawJson).song;
+			swagShit.validScore = true;
+			return swagShit;
+		}
+	}
+>>>>>>> 5a9111935e8cc5e121a763756f38d66d560b89a0
