@@ -1,5 +1,6 @@
 package states.menu;
 
+import flixel.math.FlxMath;
 import states.substates.OutdatedSubState;
 import engine.io.Paths;
 import engine.functions.Conductor;
@@ -155,11 +156,11 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.list.add(music);
 			// music.play();
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+			Conductor.changeBPM(102);
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
-		Conductor.changeBPM(102);
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -168,12 +169,21 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
+		/*
 		logoBl = new FlxSprite(-150, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = false;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
+		*/
+
+		logoBl = new FlxSprite(0, 0);
+		logoBl.loadGraphic(Paths.image("newLogo"));
+		logoBl.antialiasing = false;
+		logoBl.updateHitbox();
+		logoBl.screenCenter();
+
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
@@ -182,7 +192,7 @@ class TitleState extends MusicBeatState
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = false;
-		add(gfDance);
+		// add(gfDance);
 		add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
@@ -254,8 +264,22 @@ class TitleState extends MusicBeatState
 
 	var transitioning:Bool = false;
 
+	var i = 0.00;
+
 	override function update(elapsed:Float)
 	{
+		if (logoBl != null)
+		{
+			trace(logoBl);
+			// bro these params are painful to get right
+			logoBl.setGraphicSize(Std.int(FlxMath.lerp(680, logoBl.width - 20, 0.80)));
+			logoBl.updateHitbox();
+			logoBl.screenCenter();
+
+			logoBl.angle = Math.sin(i) * 10;
+			i += 0.01;
+		}
+
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
@@ -365,7 +389,14 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logoBl.animation.play('bump');
+		// logoBl.animation.play('bump');
+		if (logoBl != null)
+		{
+			logoBl.setGraphicSize(650);
+			logoBl.updateHitbox();
+			logoBl.screenCenter();
+		}
+
 		danceLeft = !danceLeft;
 
 		if (danceLeft)

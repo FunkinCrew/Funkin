@@ -135,5 +135,6 @@ typedef Week =
 {
     name:String,
     graphic:String,
+    libInclude:Array<String>,
     songs:Array<String>
 }

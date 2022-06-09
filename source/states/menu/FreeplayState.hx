@@ -1,5 +1,7 @@
 package states.menu;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import sys.FileSystem;
 import sys.io.File;
 import engine.io.Modding;
@@ -47,6 +49,8 @@ class FreeplayState extends MusicBeatState
 	private var iconArray:Array<HealthIcon> = [];
 
 	var modSongs:Map<String, String>;
+
+	var bg:FlxSprite;
 
 	override function create()
 	{
@@ -104,7 +108,7 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -204,6 +208,7 @@ class FreeplayState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 
 		camera.zoom = FlxMath.lerp(camera.zoom, camera.initialZoom, 0.1);
+		bg.alpha = FlxMath.lerp(bg.alpha, 0.5, 0.1);
 
 		super.update(elapsed);
 
@@ -303,6 +308,11 @@ class FreeplayState extends MusicBeatState
 
 		#if PRELOAD_ALL
 		Conductor.changeBPM(songs[curSelected].bpm);
+
+		// new
+		FlxG.sound.playMusic(Modding.getInst(songs[curSelected].songName, Modding.findModOfName(modSongs[songs[curSelected].songName])), 0);
+
+		/* old
 		if (FileSystem.exists(Paths.inst(songs[curSelected].songName)) || modSongs[songs[curSelected].songName] == null)
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		else
@@ -310,6 +320,7 @@ class FreeplayState extends MusicBeatState
 			trace("cursong " + songs[curSelected].songName);
 			FlxG.sound.playMusic(Modding.api.getSoundShit("/songs/" + songs[curSelected].songName + "/Inst." + Paths.SOUND_EXT, modSongs[songs[curSelected].songName] != null ? Modding.findModOfName(modSongs[songs[curSelected].songName]) : null), 0);
 		}
+		*/
 		#end
 
 		var bullShit:Int = 0;
@@ -335,6 +346,26 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+
+		updateColor();
+	}
+
+	var tcolor:FlxColor;
+
+	function updateColor() {
+		for (bruh in CoolUtil.coolTextFile(Paths.txt('charcolors'))) {
+			if (!bruh.startsWith('#')) {
+				var eugh = bruh.split(':');
+
+				if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
+					tcolor = new FlxColor(Std.parseInt(eugh[1]));
+				}
+			}
+		}
+
+		// FlxTween.tween(bg, {color: tcolor}, 0.5, {ease: FlxEase.quadInOut, type: ONESHOT});
+		FlxTween.color(bg, 0.5, bg.color, tcolor, {ease: FlxEase.quadInOut, type: ONESHOT});
+		// bg.color = tcolor;	
 	}
 
 	public override function beatHit() {
@@ -342,7 +373,9 @@ class FreeplayState extends MusicBeatState
 		if (curBeat % 8 == 0)
 		{
 			camera.zoom += 0.05;
+			bg.alpha = 1;
 		}
+
 
 		super.beatHit();
 	}

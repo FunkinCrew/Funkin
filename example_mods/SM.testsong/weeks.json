@@ -4,7 +4,7 @@
         {
             "name": "Test",
             "graphic":"TestWeek",
-            "using":["week6"],
+            "libInclude":["week6"],
             "songs":
             [
                 "Test"

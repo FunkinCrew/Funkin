@@ -1,5 +1,7 @@
 package engine.io;
 
+import openfl.media.Sound;
+import sys.FileSystem;
 import engine.base.ModAPI;
 
 /**
@@ -44,5 +46,55 @@ class Modding
             }
         }
         return null;
+    }
+
+    /**
+     * Seeks for an asset.
+     * 
+     * Looks through normal assets first, then through the mods.
+     * 
+     * Doesn't obey the `libInclude` week attribute.
+     * @param key the song to look for
+     * @param mod the specific mod to look in, if null the first occurance is returned
+     * @return the asset, null if not found
+     */
+    public static function getInst(key:String, ?mod:Mod):Sound
+    {
+        trace("./assets/songs/" + key.toLowerCase() + "/Inst." + Paths.SOUND_EXT + "=>" + FileSystem.exists("./assets/songs/" + key.toLowerCase() + "/Inst." + Paths.SOUND_EXT));
+        if (FileSystem.exists("./assets/songs/" + key.toLowerCase() + "/Inst." + Paths.SOUND_EXT))
+        {
+            trace("Found file in normal assets: " + key.toLowerCase());
+            return Sound.fromFile("./assets/songs/" + key.toLowerCase() + "/Inst." + Paths.SOUND_EXT);
+        }
+        else
+        {
+            trace("Looking for file in mods: " + key);
+            return api.getSoundShit("/songs/" + key + "/Inst." + Paths.SOUND_EXT, mod);
+        }
+    }
+
+    /**
+     * Seeks for an asset.
+     * 
+     * Looks through normal assets first, then through the mods.
+     * 
+     * Doesn't obey the `libInclude` week attribute.
+     * @param key the song to look for
+     * @param mod the specific mod to look in, if null the first occurance is returned
+     * @return the asset, null if not found
+     */
+    public static function getVoices(key:String, ?mod:Mod):Sound
+    {
+        trace("./assets/songs/" + key.toLowerCase() + "/Voices." + Paths.SOUND_EXT + "=>" + FileSystem.exists("./assets/songs/" + key.toLowerCase() + "/Voices." + Paths.SOUND_EXT));
+        if (FileSystem.exists("./assets/songs/" + key.toLowerCase() + "/Voices." + Paths.SOUND_EXT))
+        {
+            trace("Found file in normal assets: " + key.toLowerCase());
+            return Sound.fromFile("./assets/songs/" + key.toLowerCase() + "/Voices." + Paths.SOUND_EXT);
+        }
+        else
+        {
+            trace("Looking for file in mods: " + key);
+            return api.getSoundShit("/songs/" + key + "/Voices." + Paths.SOUND_EXT, mod);
+        }
     }
 }

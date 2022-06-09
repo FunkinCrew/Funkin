@@ -1100,6 +1100,9 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
+			FlxG.sound.playMusic(Modding.getInst(PlayState.SONG.song, Modding.findModOfName(mod)));
+
+			/*
 			if (FileSystem.exists(Paths.inst(PlayState.SONG.song)))
 			{
 				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
@@ -1115,6 +1118,7 @@ class PlayState extends MusicBeatState
 					FlxG.sound.playMusic(Modding.api.getSoundShit("/songs/" + PlayState.SONG.song + "/Inst." + Paths.SOUND_EXT));
 				}
 			}
+			*/
 		}
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
@@ -1141,12 +1145,17 @@ class PlayState extends MusicBeatState
 
 		if (SONG.needsVoices)
 		{
+			vocals = new FlxSound().loadEmbedded(Modding.getVoices(PlayState.SONG.song, Modding.findModOfName(mod)));
+			
+			/*
 			if (FileSystem.exists(Paths.voices(PlayState.SONG.song)))
 			{
 				vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 			}
 			else
 			{
+
+				/*
 				if (mod != "")
 				{
 					vocals = new FlxSound().loadEmbedded(Modding.api.getSoundShit("/songs/" + PlayState.SONG.song + "/Voices." + Paths.SOUND_EXT, Modding.findModOfName(mod)));
@@ -1156,6 +1165,7 @@ class PlayState extends MusicBeatState
 					vocals = new FlxSound().loadEmbedded(Modding.api.getSoundShit("/songs/" + PlayState.SONG.song + "/Voices." + Paths.SOUND_EXT));
 				}
 			}
+			*/
 		}
 		else
 			vocals = new FlxSound();
