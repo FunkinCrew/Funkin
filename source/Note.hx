@@ -197,4 +197,6 @@ class Note extends FlxSprite
 				alpha = 0.3;
 		}
 	}
+
+	public var daRating:String;
 }

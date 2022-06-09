@@ -1,5 +1,6 @@
 package optionsmenu;
 
+import Controls.Action;
 import cpp.abi.Abi;
 import haxe.ds.Option;
 import openfl.system.System;
@@ -170,7 +171,7 @@ class OptionsMenu extends MusicBeatState {
 			case 'graphics':
 				inOptionSelector = false;
 
-                // array stuff here
+                options = ['Lane Underlay ${FlxG.save.data.laneUnderlay ? 'ON' : 'OFF'}'];
 				ready = true;
 		}
 
@@ -234,6 +235,8 @@ class OptionsMenu extends MusicBeatState {
                         FlxG.switchState(new KeybindsState());
                     case 'ghost-tapping':
                         FlxG.save.data.ghostTap = !FlxG.save.data.ghostTap;
+                    case 'lane':
+                        FlxG.save.data.laneUnderlay = !FlxG.save.data.laneUnderlay;
 				}
 
 				if (!dontAllowUpdate){

@@ -1,5 +1,9 @@
 package;
 
+import openfl.media.Sound;
+import sys.io.File;
+import sys.FileSystem;
+import lime.system.System;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 #if desktop
@@ -56,7 +60,20 @@ class FreeplayState extends MusicBeatState
 
 		for (song in CoolUtil.coolTextFile(Paths.txt('freeplaySonglist', 'preload'))) {
 			var tempArray = song.split(':');
+
+			if (Std.parseInt(tempArray[2]) == 69420)
+				tempArray[2] = "0";
+
 			addSong(tempArray[0], Std.parseInt(tempArray[2]), tempArray[1]);
+		}
+
+		for (song in FileSystem.readDirectory("mods/data/")) {
+			var tempArray = song.split(':');
+
+			var poop = Highscore.formatSong(tempArray[0].toLowerCase(), curDifficulty);
+			var tempSongData = Song.loadFromModJson(poop, tempArray[0].toLowerCase());
+
+			addSong(tempArray[0], 69420, tempSongData.player2); //if the week is 69420, its a mod.
 		}
 
 		// LOAD MUSIC
@@ -91,11 +108,10 @@ class FreeplayState extends MusicBeatState
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
 
-			var array = CoolUtil.coolTextFile(Paths.txt('healthcolors'));
-
-			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
 			add(icon);
+
+			var array = CoolUtil.coolTextFile(Paths.txt('healthcolors'));
 
 			updateColor();
 
@@ -230,15 +246,24 @@ class FreeplayState extends MusicBeatState
 		if (accepted)
 			{
 				FlxG.sound.music.fadeOut(1, 0);
+
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
-	
 				trace(poop);
-	
-				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+
+				if (songs[curSelected].week == 69420){
+					PlayState.SONG = Song.loadFromModJson(poop, songs[curSelected].songName.toLowerCase());
+
+					PlayState.isMod = true;
+				}
+				else{
+					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+				}
+				
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
 	
 				PlayState.storyWeek = songs[curSelected].week;
+				trace('CUR WEEK' + PlayState.storyWeek);
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
@@ -267,7 +292,8 @@ class FreeplayState extends MusicBeatState
 
 	function loadScoreData(){
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName.toLowerCase(), curDifficulty);
+		trace('score: ' + Highscore.getScore(songs[curSelected].songName.toLowerCase(), curDifficulty));
 		#end
 	}
 
@@ -306,7 +332,11 @@ class FreeplayState extends MusicBeatState
 		loadScoreData();
 
 		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		if (songs[curSelected].week == 69420){
+			FlxG.sound.playMusic(Sound.fromFile("mods/songs/" + songs[curSelected].songName.toLowerCase() + "/Inst.ogg"), 0, true);
+		}
+		else
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
 
 		var bullShit:Int = 0;
@@ -316,7 +346,8 @@ class FreeplayState extends MusicBeatState
 			iconArray[i].alpha = 0.6;
 		}
 
-		iconArray[curSelected].alpha = 1;
+		if (iconArray[curSelected] != null)
+			iconArray[curSelected].alpha = 1;
 
 		for (item in grpSongs.members)
 		{
@@ -338,8 +369,13 @@ class FreeplayState extends MusicBeatState
 			if (!bruh.startsWith('#')) {
 				var eugh = bruh.split(':');
 
-				if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
-					tcolor = new FlxColor(Std.parseInt(eugh[1]));
+				if (songs[curSelected].songCharacter.toLowerCase() != "mod"){
+					if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
+						tcolor = new FlxColor(Std.parseInt(eugh[1]));
+					}
+				}
+				else{
+					tcolor = new FlxColor(FlxColor.BLUE);
 				}
 			}
 		}

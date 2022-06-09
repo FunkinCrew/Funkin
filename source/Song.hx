@@ -1,5 +1,6 @@
 package;
 
+import sys.io.File;
 import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -44,21 +45,34 @@ class Song
 	}
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
-	{
-		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
-
-		while (!rawJson.endsWith("}"))
 		{
-			rawJson = rawJson.substr(0, rawJson.length - 1);
+			var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
+	
+			while (!rawJson.endsWith("}"))
+			{
+				rawJson = rawJson.substr(0, rawJson.length - 1);
+			}
+	
+			return parseJSONshit(rawJson);
 		}
-
-		return parseJSONshit(rawJson);
+	
+		public static function loadFromModJson(jsonInput:String, ?folder:String):SwagSong
+			{
+				// load a json from a mod folder (not the main folder)
+				var rawJson = File.getContent("mods/data/" + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
+				
+				while (!rawJson.endsWith("}"))
+				{
+					rawJson = rawJson.substr(0, rawJson.length - 1);
+				}
+		
+				return parseJSONshit(rawJson);
+			}
+	
+		public static function parseJSONshit(rawJson:String):SwagSong
+		{
+			var swagShit:SwagSong = cast Json.parse(rawJson).song;
+			swagShit.validScore = true;
+			return swagShit;
+		}
 	}
-
-	public static function parseJSONshit(rawJson:String):SwagSong
-	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-		swagShit.validScore = true;
-		return swagShit;
-	}
-}

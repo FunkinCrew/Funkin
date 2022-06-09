@@ -1,0 +1,3 @@
+For Cutscenes to work n' shit install this in terminal:
+sudo apt-get install libvlc-dev
+sudo apt-get install libvlccore-dev
