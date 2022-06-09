@@ -127,6 +127,7 @@ class ChartingState extends MusicBeatState
 				player2: 'dad',
 				player3: 'gf',
 				stage: 'stage',
+				noteskin: 'default',
 				speed: 1,
 				validScore: false
 			};
@@ -235,6 +236,7 @@ class ChartingState extends MusicBeatState
 		var bfCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('bfList'));
 		var gfCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('gfList'));
 		var stagelist:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
+		var noteskins:Array<String> = CoolUtil.coolTextFile(Paths.txt('noteskinList'));
 
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(bfCharacters, true), function(character:String)
 		{
@@ -257,6 +259,12 @@ class ChartingState extends MusicBeatState
 			_song.stage = stagelist[Std.parseInt(stage)];
 		});
 
+		// noteskin dropdown
+		var noteskinDropDown = new FlxUIDropDownMenu(10, 150, FlxUIDropDownMenu.makeStrIdLabelArray(noteskins, true), function(noteskin:String)
+		{
+			_song.noteskin = noteskins[Std.parseInt(noteskin)];
+		});
+
 		player2DropDown.selectedLabel = _song.player2;
 
 		var check_hitSounds = new FlxUICheckBox(10, check_mute_inst.y + 20, null, null, "Enable Hitsounds", 100);
@@ -274,6 +282,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(player3DropDown);
+		tab_group_song.add(noteskinDropDown);
 		tab_group_song.add(stageDropDown);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
