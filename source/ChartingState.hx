@@ -36,6 +36,9 @@ using StringTools;
 
 class ChartingState extends MusicBeatState
 {
+	var hitSound:FlxSound;
+	var enableHitsounds = false;
+
 	var _file:FileReference;
 
 	var UI_box:FlxUITabMenu;
@@ -83,6 +86,9 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		hitSound = new FlxSound();
+		hitSound.loadEmbedded(Paths.sound('hit', 'shared'));
+
 		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -119,13 +125,15 @@ class ChartingState extends MusicBeatState
 				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
+				player3: 'gf',
+				stage: 'stage',
 				speed: 1,
 				validScore: false
 			};
 		}
 
 		FlxG.mouse.visible = true;
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+		FlxG.save.bind('funkin', 'spunblue');
 
 		tempBpm = _song.bpm;
 
@@ -223,25 +231,40 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var dadCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('dadList'));
+		var bfCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('bfList'));
+		var gfCharacters:Array<String> = CoolUtil.coolTextFile(Paths.txt('gfList'));
+		var stagelist:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
-		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(bfCharacters, true), function(character:String)
 		{
-			_song.player1 = characters[Std.parseInt(character)];
+			_song.player1 = bfCharacters[Std.parseInt(character)];
 		});
 		player1DropDown.selectedLabel = _song.player1;
 
-		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(dadCharacters, true), function(character:String)
 		{
-			_song.player2 = characters[Std.parseInt(character)];
+			_song.player2 = dadCharacters[Std.parseInt(character)];
+		});
+
+		var player3DropDown = new FlxUIDropDownMenu(10, 125, FlxUIDropDownMenu.makeStrIdLabelArray(gfCharacters, true), function(character:String)
+		{
+			_song.player3 = gfCharacters[Std.parseInt(character)];
+		});
+
+		var stageDropDown = new FlxUIDropDownMenu(140, 125, FlxUIDropDownMenu.makeStrIdLabelArray(stagelist, true), function(stage:String)
+		{
+			_song.stage = stagelist[Std.parseInt(stage)];
 		});
 
 		player2DropDown.selectedLabel = _song.player2;
 
+		var check_hitSounds = new FlxUICheckBox(10, check_mute_inst.y + 20, null, null, "Enable Hitsounds", 100);
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
-
+		tab_group_song.add(check_hitSounds);
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
@@ -250,6 +273,8 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		tab_group_song.add(player3DropDown);
+		tab_group_song.add(stageDropDown);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
 
@@ -405,6 +430,8 @@ class ChartingState extends MusicBeatState
 					FlxG.log.add('changed bpm shit');
 				case "Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
+				case "Enable Hitsounds":
+					enableHitsounds = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -469,6 +496,19 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		for (note in curRenderedNotes) {
+			if (FlxG.overlap(note, strumLine) && FlxG.sound.music.playing) {
+				if (enableHitsounds && note.alpha == 1) {
+					hitSound.play(true);
+					note.alpha = 0.2;
+					trace("played hit");
+				}
+			} else {
+				note.alpha = 1;
+				// playedHit = false;
+			}
+		}
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;

@@ -232,7 +232,7 @@ class Controls extends FlxActionSet
 		for (action in digitalActions)
 			byName[action.name] = action;
 
-		setKeyboardScheme(scheme, false);
+		setKeyboardScheme(false);
 	}
 	#else
 	public function new(name, scheme:KeyboardScheme = null)
@@ -487,80 +487,28 @@ class Controls extends FlxActionSet
 		}
 	}
 
-	public function setKeyboardScheme(scheme:KeyboardScheme, reset = true)
+	public function setKeyboardScheme(reset = true)
 	{
 		if (reset)
 			removeKeyboard();
 
-		keyboardScheme = scheme;
+		FlxG.save.bind('funkin', 'spunblue');
+
+		if (FlxG.save.data.left == null || FlxG.save.data.right == null || FlxG.save.data.up == null || FlxG.save.data.down == null){
+			FlxG.save.data.left = 'A';
+			FlxG.save.data.right = 'D';
+			FlxG.save.data.up = 'W';
+			FlxG.save.data.down = 'S';
+		}
 		
-		#if (haxe >= "4.0.0")
-		switch (scheme)
-		{
-			case Solo:
-				inline bindKeys(Control.UP, [W, FlxKey.UP]);
-				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
-				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
-				inline bindKeys(Control.RIGHT, [D, FlxKey.RIGHT]);
-				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
-				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
-				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-				inline bindKeys(Control.RESET, [R]);
-			case Duo(true):
-				inline bindKeys(Control.UP, [W]);
-				inline bindKeys(Control.DOWN, [S]);
-				inline bindKeys(Control.LEFT, [A]);
-				inline bindKeys(Control.RIGHT, [D]);
-				inline bindKeys(Control.ACCEPT, [G, Z]);
-				inline bindKeys(Control.BACK, [H, X]);
-				inline bindKeys(Control.PAUSE, [ONE]);
-				inline bindKeys(Control.RESET, [R]);
-			case Duo(false):
-				inline bindKeys(Control.UP, [FlxKey.UP]);
-				inline bindKeys(Control.DOWN, [FlxKey.DOWN]);
-				inline bindKeys(Control.LEFT, [FlxKey.LEFT]);
-				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT]);
-				inline bindKeys(Control.ACCEPT, [O]);
-				inline bindKeys(Control.BACK, [P]);
-				inline bindKeys(Control.PAUSE, [ENTER]);
-				inline bindKeys(Control.RESET, [BACKSPACE]);
-			case None: // nothing
-			case Custom: // nothing
-		}
-		#else
-		switch (scheme)
-		{
-			case Solo:
-				bindKeys(Control.UP, [W, FlxKey.UP]);
-				bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
-				bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
-				bindKeys(Control.RIGHT, [D, FlxKey.RIGHT]);
-				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
-				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
-				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-				bindKeys(Control.RESET, [R]);
-			case Duo(true):
-				bindKeys(Control.UP, [W]);
-				bindKeys(Control.DOWN, [S]);
-				bindKeys(Control.LEFT, [A]);
-				bindKeys(Control.RIGHT, [D]);
-				bindKeys(Control.ACCEPT, [G, Z]);
-				bindKeys(Control.BACK, [H, X]);
-				bindKeys(Control.PAUSE, [ONE]);
-				bindKeys(Control.RESET, [R]);
-			case Duo(false):
-				bindKeys(Control.UP, [FlxKey.UP]);
-				bindKeys(Control.DOWN, [FlxKey.DOWN]);
-				bindKeys(Control.LEFT, [FlxKey.LEFT]);
-				bindKeys(Control.RIGHT, [FlxKey.RIGHT]);
-				bindKeys(Control.ACCEPT, [O]);
-				bindKeys(Control.BACK, [P]);
-				bindKeys(Control.PAUSE, [ENTER]);
-				bindKeys(Control.RESET, [BACKSPACE]);
-			case None: // nothing
-			case Custom: // nothing
-		}
-		#end
+		inline bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.up), FlxKey.UP]);
+		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.down), FlxKey.DOWN]);
+		inline bindKeys(Control.LEFT, [FlxKey.fromString(FlxG.save.data.left), FlxKey.LEFT]);
+		inline bindKeys(Control.RIGHT, [FlxKey.fromString(FlxG.save.data.right), FlxKey.RIGHT]);
+		inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+		inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+		inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+		inline bindKeys(Control.RESET, [R]);
 	}
 
 	function removeKeyboard()
@@ -720,7 +668,7 @@ class Controls extends FlxActionSet
 		switch (device)
 		{
 			case Keys:
-				setKeyboardScheme(None);
+				setKeyboardScheme();
 			case Gamepad(id):
 				removeGamepad(id);
 		}
