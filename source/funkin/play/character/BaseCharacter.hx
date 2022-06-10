@@ -34,6 +34,16 @@ class BaseCharacter extends Bopper
 	public var isDead:Bool = false;
 	public var debugMode:Bool = false;
 
+	/**
+	 * This character plays a given animation when hitting these specific combo numbers.
+	 */
+	public var comboNoteCounts(default, null):Array<Int>;
+
+	/**
+	 * This character plays a given animation when dropping combos larger than these numbers.
+	 */
+	public var dropNoteCounts(default, null):Array<Int>;
+
 	final _data:CharacterData;
 	final singTimeCrochet:Float;
 
@@ -147,6 +157,25 @@ class BaseCharacter extends Bopper
 		shouldBop = false;
 	}
 
+	function findCountAnimations(prefix:String):Array<Int> {
+		var animNames:Array<String> = this.animation.getNameList();
+
+		var result:Array<Int> = [];
+
+		for (anim in animNames) {
+			if (anim.startsWith(prefix)) {
+				var comboNum:Null<Int> = Std.parseInt(anim.substring(prefix.length));
+				if (comboNum != null) {
+					result.push(comboNum);
+				}
+			}
+		}
+
+		// Sort numerically.
+		result.sort((a, b) -> a - b);
+		return result;
+	}
+
 	/**
 	 * Set the sprite scale to the appropriate value.
 	 * @param scale 
@@ -181,6 +210,15 @@ class BaseCharacter extends Bopper
 		var charCenterX = this.x + this.width / 2;
 		var charCenterY = this.y + this.height / 2;
 		this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
+
+		// Child class should have created animations by now,
+		// so we can query which ones are available.
+		this.comboNoteCounts = findCountAnimations('combo'); // example: combo50
+		this.dropNoteCounts = findCountAnimations('drop'); // example: drop50
+		trace('${this.animation.getNameList()}');
+		trace('Combo note counts: ' + this.comboNoteCounts);
+		trace('Drop note counts: ' + this.dropNoteCounts);
+
 		super.onCreate(event);
 	}
 
@@ -369,6 +407,11 @@ class BaseCharacter extends Bopper
 		{
 			// If the note is from the same strumline, play the sing animation.
 			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
+		} else if (characterType == GF) {
+			if (this.comboNoteCounts.contains(event.comboCount)) {
+				trace('Playing GF combo animation: combo${event.comboCount}');
+				this.playAnimation('combo${event.comboCount}', true, true);
+			}
 		}
 	}
 
@@ -389,6 +432,22 @@ class BaseCharacter extends Bopper
 		{
 			// If the note is from the same strumline, play the sing animation.
 			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote);
+		} else if (event.note.mustPress && characterType == GF) {
+			var dropAnim = '';
+
+			// Choose the combo drop anim to play.
+			// If there are several (for example, drop10 and drop50) the highest one will be used.
+			// If the combo count is too low, no animation will be played.
+			for (count in dropNoteCounts) {
+				if (event.comboCount >= count) {
+					dropAnim = 'drop${count}';
+				}
+			}
+
+			if (dropAnim != '') {
+				trace('Playing GF combo drop animation: ${dropAnim}');
+				this.playAnimation(dropAnim, true, true);
+			}
 		}
 	}
 
@@ -435,8 +494,37 @@ class BaseCharacter extends Bopper
 
 enum CharacterType
 {
+	/**
+	 * The BF character has the following behaviors.
+	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
+	 * - When the player hits a note, plays the appropriate `singDIR` animation until BF is done singing.
+	 * - If there is a `singDIR-end` animation, the `singDIR` animation will play once before looping the `singDIR-end` animation until BF is done singing.
+	 * - If the player misses or hits a ghost note, plays the appropriate `singDIR-miss` animation until BF is done singing.
+	 */
 	BF;
+	/**
+	 * The DAD character has the following behaviors.
+	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
+	 * - When the CPU hits a note, plays the appropriate `singDIR` animation until DAD is done singing.
+	 * - If there is a `singDIR-end` animation, the `singDIR` animation will play once before looping the `singDIR-end` animation until DAD is done singing.
+	 * - When the CPU misses a note (NOTE: This only happens via script, not by default), plays the appropriate `singDIR-miss` animation until DAD is done singing.
+	 */
 	DAD;
+	/**
+	 * The GF character has the following behaviors.
+	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
+	 * - If available, `combo###` animations will play when certain combo counts are reached.
+	 *   - For example, `combo50` will play when the player hits 50 notes in a row.
+	 *   - Multiple combo animations can be provided for different thresholds.
+	 * - If available, `drop###` animations will play when combos are dropped above certain thresholds.
+	 *   - For example, `drop10` will play when the player drops a combo larger than 10.
+	 *   - Multiple drop animations can be provided for different thresholds (i.e. dropping larger combos).
+	 *   - No drop animation will play if one isn't applicable (i.e. if the combo count is too low).
+	 */
 	GF;
+	/**
+	 * The OTHER character will only perform the `danceLeft`/`danceRight` or `idle` animation by default, depending on what's available.
+	 * Additional behaviors can be performed via scripts.
+	 */
 	OTHER;
 }

@@ -979,6 +979,7 @@ class PlayState extends MusicBeatState implements IHook
 			regenNoteData(); // loads the note data from start
 			health = 1;
 			songScore = 0;
+			combo = 0;
 			Countdown.performCountdown(currentStageId.startsWith('school'));
 
 			needsReset = false;
@@ -1221,7 +1222,7 @@ class PlayState extends MusicBeatState implements IHook
 					if (currentSong.song != 'Tutorial')
 						camZooming = true;
 
-					var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, daNote, true);
+					var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, daNote, combo, true);
 					dispatchEvent(event);
 
 					// Calling event.cancelEvent() in a module should force the CPU to miss the note.
@@ -1303,19 +1304,6 @@ class PlayState extends MusicBeatState implements IHook
 		}
 
 		daNote.clipRect = swagRect;
-	}
-
-	function killCombo():Void
-	{
-		// Girlfriend gets sad if you combo break after hitting 5 notes.
-		if (currentStage != null && currentStage.getGirlfriend() != null)
-			if (combo > 5 && currentStage.getGirlfriend().hasAnimation('sad'))
-				currentStage.getGirlfriend().playAnimation('sad');
-
-		if (combo != 0)
-		{
-			combo = comboPopUps.displayCombo(0);
-		}
 	}
 
 	#if debug
@@ -1685,7 +1673,7 @@ class PlayState extends MusicBeatState implements IHook
 
 	function noteMiss(note:Note):Void
 	{
-		var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, note, true);
+		var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, note, combo, true);
 		dispatchEvent(event);
 		// Calling event.cancelEvent() skips all the other logic! Neat!
 		if (event.eventCanceled)
@@ -1695,7 +1683,11 @@ class PlayState extends MusicBeatState implements IHook
 		if (!isPracticeMode)
 			songScore -= 10;
 		vocals.volume = 0;
-		killCombo();
+
+		if (combo != 0)
+		{
+			combo = comboPopUps.displayCombo(0);
+		}
 
 		note.active = false;
 		note.visible = false;
@@ -1709,7 +1701,7 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		if (!note.wasGoodHit)
 		{
-			var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, true);
+			var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, combo + 1, true);
 			dispatchEvent(event);
 
 			// Calling event.cancelEvent() skips all the other logic! Neat!

@@ -294,15 +294,22 @@ class NoteScriptEvent extends ScriptEvent
 	 */
 	public var note(default, null):Note;
 
-	public function new(type:ScriptEventType, note:Note, cancelable:Bool = false):Void
+	/**
+	 * The combo count as it is with this event.
+	 * Will be (combo) on miss events and (combo + 1) on hit events (the stored combo count won't update if the event is cancelled).
+	 */
+	public var comboCount(default, null):Int;
+
+	public function new(type:ScriptEventType, note:Note, comboCount:Int = 0, cancelable:Bool = false):Void
 	{
 		super(type, cancelable);
 		this.note = note;
+		this.comboCount = comboCount;
 	}
 
 	public override function toString():String
 	{
-		return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ')';
+		return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ', comboCount=' + comboCount + ')';
 	}
 }
 
