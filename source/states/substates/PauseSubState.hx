@@ -1,5 +1,7 @@
 package states.substates;
 
+import engine.functions.Conductor;
+import flixel.util.FlxTimer;
 import states.menu.MainMenuState;
 import engine.util.CoolUtil;
 import states.gameplay.PlayState;
@@ -27,6 +29,12 @@ class PauseSubState extends MusicBeatSubstate
 
 	var pauseMusic:FlxSound;
 
+	var noSpam:Bool = false;
+
+	var bg:FlxSprite;
+	var levelInfo:FlxText;
+	var levelDifficulty:FlxText;
+
 	public function new(x:Float, y:Float)
 	{
 		super();
@@ -49,19 +57,19 @@ class PauseSubState extends MusicBeatSubstate
 
 		FlxG.sound.list.add(pauseMusic);
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);
 
-		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
+		levelInfo = new FlxText(20, 15, 0, "", 32);
 		levelInfo.text += PlayState.SONG.song;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
 		add(levelInfo);
 
-		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
+		levelDifficulty = new FlxText(20, 15 + 32, 0, "", 32);
 		levelDifficulty.text += CoolUtil.difficultyString();
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
@@ -114,14 +122,14 @@ class PauseSubState extends MusicBeatSubstate
 			changeSelection(1);
 		}
 
-		if (accepted)
+		if (accepted && !noSpam)
 		{
 			var daSelected:String = menuItems[curSelected];
 
 			switch (daSelected)
 			{
 				case "Resume":
-					close();
+					returnToGame();
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
@@ -139,6 +147,96 @@ class PauseSubState extends MusicBeatSubstate
 			// for reference later!
 			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
 		}
+	}
+
+	function returnToGame()
+	{
+		noSpam = true;
+
+		var swagCounter:Int = 0;
+
+		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		{
+			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
+			introAssets.set('default', ['ready', "set", "go"]);
+
+			var introAlts:Array<String> = introAssets.get('default');
+			var altSuffix:String = "";
+
+			switch (swagCounter)
+
+			{
+				case 0:
+					FlxG.sound.play(Paths.sound('intro3'), 0.6);
+					var ready:FlxText = new FlxText(0, 0, FlxG.width, "3", 32);
+					ready.setFormat("assets/fonts/PhantomMuff.ttf", 64, FlxColor.WHITE, CENTER);
+					ready.scrollFactor.set();
+					ready.updateHitbox();
+
+					ready.screenCenter();
+					ready.y -= 100;
+					add(ready);
+					FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							ready.destroy();
+						}
+					});
+				case 1:
+					FlxG.sound.play(Paths.sound('intro2'), 0.6);
+					var set:FlxText = new FlxText(0, 0, FlxG.width, "2", 32);
+					set.setFormat("assets/fonts/PhantomMuff.ttf", 64, FlxColor.WHITE, CENTER);
+					set.scrollFactor.set();
+
+					set.screenCenter();
+					set.y -= 100;
+					add(set);
+					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							set.destroy();
+						}
+					});
+				case 2:
+					FlxG.sound.play(Paths.sound('intro1'), 0.6);
+					var go:FlxText = new FlxText(0, 0, FlxG.width, "1", 32);
+					go.setFormat("assets/fonts/PhantomMuff.ttf", 64, FlxColor.WHITE, CENTER);
+					go.scrollFactor.set();
+
+					go.updateHitbox();
+
+					go.screenCenter();
+					go.y -= 100;
+					add(go);
+					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							go.destroy();
+						}
+					});
+				case 3:
+					FlxG.sound.play(Paths.sound('introGo'), 0.6);
+					for (object in this.members)
+					{
+						if (Std.isOfType(object, FlxSprite) || Std.isOfType(object, FlxText))
+						{
+							FlxTween.tween(object, {alpha: 0}, 0.2, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween)
+								{
+									close();
+								}});
+						}
+					}
+					// close();
+			}
+
+			swagCounter += 1;
+			// generateSong('fresh');
+		}, 5);
 	}
 
 	override function destroy()
