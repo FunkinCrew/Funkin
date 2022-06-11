@@ -89,6 +89,7 @@ class Modding
      */
     public static function getVoices(key:String, ?mod:Mod):Sound
     {
+        
         trace("./assets/songs/" + key.toLowerCase() + "/Voices." + Paths.SOUND_EXT + "=>" + FileSystem.exists("./assets/songs/" + key.toLowerCase() + "/Voices." + Paths.SOUND_EXT));
         if (FileSystem.exists("./assets/songs/" + key.toLowerCase() + "/Voices." + Paths.SOUND_EXT))
         {
@@ -114,6 +115,8 @@ class Modding
      */
     public static function getSparrow(key:String, ?seekIn:Array<String>, ?mod:Mod):FlxAtlasFrames
     {
+        trace("GETTING SPARROW: " + key);
+
         if (FileSystem.exists("./assets/images/" + key + ".png"))
         {
             trace("Found file in preload: " + key);
@@ -169,6 +172,8 @@ class Modding
      */
      public static function getPacker(key:String, ?seekIn:Array<String>, ?mod:Mod):FlxAtlasFrames
     {
+        trace("GETTING PACKER: " + key);
+
         if (FileSystem.exists("./assets/images/" + key + ".png"))
         {
             trace("Found file in preload: " + key);
