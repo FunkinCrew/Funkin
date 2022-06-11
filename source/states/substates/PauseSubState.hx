@@ -131,13 +131,10 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					returnToGame();
 				case "Restart Song":
+					PlayState.resetShit();
 					FlxG.resetState();
 				case "Exit to menu":
-					PlayState.misses = 0;
-					PlayState.sicks = 0;
-					PlayState.goods = 0;
-					PlayState.bads = 0;
-					PlayState.shits = 0;
+					PlayState.resetShit();
 					FlxG.switchState(new MainMenuState());
 			}
 		}

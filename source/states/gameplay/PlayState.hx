@@ -1767,11 +1767,7 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 
-			misses = 0;
-			sicks = 0;
-			goods = 0;
-			bads = 0;
-			shits = 0;
+			resetShit();
 
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
@@ -1976,11 +1972,7 @@ class PlayState extends MusicBeatState
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			FlxG.switchState(new RatingState(misses, sicks, goods, bads, shits, new StoryMenuState()));
-			misses = 0;
-			sicks = 0;
-			goods = 0;
-			bads = 0;
-			shits = 0;
+			resetShit();
 		}
 	}
 
@@ -2748,4 +2740,13 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+
+	public static function resetShit()
+	{
+		misses = 0;
+		sicks = 0;
+		goods = 0;
+		bads = 0;
+		shits = 0;
+	}
 }
