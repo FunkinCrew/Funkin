@@ -48,6 +48,10 @@ class Main extends Sprite
 		#else
 		Application.current.window.title += "x64)";
 		#end
+
+		#if debug
+		Application.current.window.title += " [DEBUG]";
+		#end
 	}
 
 	private function init(?E:Event):Void
