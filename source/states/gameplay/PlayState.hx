@@ -143,6 +143,15 @@ class PlayState extends MusicBeatState
 	var scoreBG:FlxSprite;
 	var scoreTxt:FlxText;
 
+	// ALT SCORE TEXTS
+	var scoreBigTxt:FlxText;
+	var scoreSmallTxt:FlxText;
+	var scoreAccBar:FlxBar;
+	var scoreAccTxt:FlxText;
+	var altScoreBG:FlxSprite;
+
+	public static var accuracy:Float = 100;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -801,12 +810,38 @@ class PlayState extends MusicBeatState
 		scoreBG.y = scoreTxt.y - 45 / 2 + scoreTxt.height / 2; // wtf is this shit
 		scoreBG.scrollFactor.set();
 
-		// showScoreTxt is inverted lol
-		if (Option.recieveValue("GAMEPLAY_showScoreTxt") == 1)
+		// scoreTxtMode 2 = alt, 3 = hidden
+		if (Option.recieveValue("GAMEPLAY_scoreTxtMode") == 0 || Option.recieveValue("GAMEPLAY_scoreTxtMode") == 2)
 		{
 			scoreTxt.visible = false;
 			scoreBG.visible = false;
 		}
+
+		altScoreBG = new FlxSprite(FlxG.width - 250, FlxG.height - 150).makeGraphic(250, 370, 0xAA000000);
+		altScoreBG.scrollFactor.set();
+		altScoreBG.visible = Option.recieveValue("GAMEPLAY_scoreTxtMode") == 0;
+		add(altScoreBG);
+
+		scoreBigTxt = new FlxText(altScoreBG.x, altScoreBG.y + 2, altScoreBG.width, "000000", 32);
+		scoreBigTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
+		scoreBigTxt.borderColor = 0xFF000000;
+		scoreBigTxt.borderSize = 1;
+		scoreBigTxt.borderQuality = 1;
+		scoreBigTxt.scrollFactor.set();
+		scoreBigTxt.antialiasing = false;
+		scoreBigTxt.visible = Option.recieveValue("GAMEPLAY_scoreTxtMode") == 0;
+		add(scoreBigTxt);
+
+		scoreSmallTxt = new FlxText(altScoreBG.x, altScoreBG.y + scoreBigTxt.height + 6, altScoreBG.width, "000000", 16);
+		scoreSmallTxt.setFormat(Paths.font("vcr.ttf"), 12, FlxColor.WHITE, CENTER);
+		scoreSmallTxt.borderColor = 0xFF000000;
+		scoreSmallTxt.borderSize = 1;
+		scoreSmallTxt.borderQuality = 1;
+		scoreSmallTxt.scrollFactor.set();
+		scoreSmallTxt.antialiasing = false;
+		scoreSmallTxt.visible = Option.recieveValue("GAMEPLAY_scoreTxtMode") == 0;
+		add(scoreSmallTxt);
+
 
 		add(scoreBG);
 		add(scoreTxt);
@@ -833,6 +868,9 @@ class PlayState extends MusicBeatState
 		scoreTxt.cameras = [camHUD];
 		scoreBG.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		altScoreBG.cameras = [camHUD];
+		scoreBigTxt.cameras = [camHUD];
+		scoreSmallTxt.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1485,11 +1523,27 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = !botplay ? 'Score: ${songScore} - '+
-		'Combo: ${combo} - '+
-		'Misses: ${misses} - ' +
-		'Hit %: ${(sicks + goods + bads + shits + misses == 0) ? 0 : (sicks + goods + bads + shits) / (sicks + goods + bads + shits + misses) * 100}%'
-		: 'BOTPLAY ENABLED';
+		accuracy = (songScore == 0) ? 0 : FlxMath.roundDecimal(((350 * sicks) / (songScore) * 100), 2);
+
+		if (Option.recieveValue("GAMEPLAY_scoreTxtMode") == 0)
+		{
+			scoreBigTxt.text = Std.string(combo);
+			scoreSmallTxt.text = 'SCORE: $songScore\n'+
+			'S: $sicks - G: $goods - B: $bads - S: $shits\n' +
+			'M: $misses\n' +
+			'A: $accuracy%';
+		}
+		
+		// scoreTextMode 1 = compact
+		if (Option.recieveValue("GAMEPLAY_scoreTxtMode") == 1)
+		{
+			scoreTxt.text = !botplay ? 'Score: ${songScore} - '+
+			'Combo: ${combo} - '+
+			'Misses: ${misses} - ' +
+			// 'Hit %: ${(sicks + goods + bads + shits + misses == 0) ? 0 : (sicks + goods + bads + shits) / (sicks + goods + bads + shits + misses) * 100}% - ' +
+			'Accuracy: ${accuracy}%'
+			: 'BOTPLAY ENABLED';
+		}
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{

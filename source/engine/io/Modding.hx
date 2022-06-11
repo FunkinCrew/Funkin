@@ -1,5 +1,9 @@
 package engine.io;
 
+import sys.io.File;
+import openfl.display.BitmapData;
+import lime.app.Application;
+import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.media.Sound;
 import sys.FileSystem;
 import engine.base.ModAPI;
@@ -96,5 +100,115 @@ class Modding
             trace("Looking for file in mods: " + key);
             return api.getSoundShit("/songs/" + key + "/Voices." + Paths.SOUND_EXT, mod);
         }
+    }
+
+    /**
+     * Seeks for an asset.
+     * 
+     * Looks through normal assets first, then through the mods.
+     * 
+     * Obeys the `libInclude` week attribute.
+     * @param key 
+     * @param mod 
+     * @return FlxAtlasFrames
+     */
+    public static function getSparrow(key:String, ?seekIn:Array<String>, ?mod:Mod):FlxAtlasFrames
+    {
+        if (FileSystem.exists("./assets/images/" + key + ".png"))
+        {
+            trace("Found file in preload: " + key);
+            return Paths.getSparrowAtlas(key, 'preload');
+        }
+
+        if (FileSystem.exists("./assets/shared/images/" + key + ".png"))
+        {
+            trace("Found file in shared: " + key);
+            return Paths.getSparrowAtlas(key, 'shared');
+        }
+
+        for (weeksT in weeks)
+        {
+            for (week in weeksT.weeks)
+            {
+                for (included in week.libInclude)
+                {
+                    trace("Seeking included lib: " + included);
+                    if (FileSystem.exists("./assets/" + included + "/images/" + key + ".png"))
+                    {
+                        trace("Found file in included lib: " + included);
+                        return FlxAtlasFrames.fromSparrow(BitmapData.fromFile("./assets/" + included + "/images/" + key + ".png"), File.getContent("./assets/" + included + "/images/" + key + ".xml"));
+                    }
+                }
+                if (seekIn != null)
+                {
+                    for (included in seekIn)
+                    {
+                        trace("Seeking forced lib: " + included);
+                        if (FileSystem.exists("./assets/" + included + "/images/" + key + ".png"))
+                        {
+                            trace("Found file in forced lib: " + included);
+                            return FlxAtlasFrames.fromSparrow(BitmapData.fromFile("./assets/" + included + "/images/" + key + ".png"), File.getContent("./assets/" + included + "/images/" + key + ".xml"));
+                        }
+                    }
+                }
+            }
+        }
+        trace("Couldn't find file in included assets: " + key);
+        return api.getSparrowShit("/images/" + key + ".png", "/images/" + key + ".xml", mod);
+    }
+
+    /**
+     * Seeks for an asset.
+     * 
+     * Looks through normal assets first, then through the mods.
+     * 
+     * Obeys the `libInclude` week attribute.
+     * @param key 
+     * @param mod 
+     * @return FlxAtlasFrames
+     */
+     public static function getPacker(key:String, ?seekIn:Array<String>, ?mod:Mod):FlxAtlasFrames
+    {
+        if (FileSystem.exists("./assets/images/" + key + ".png"))
+        {
+            trace("Found file in preload: " + key);
+            return Paths.getPackerAtlas(key, 'preload');
+        }
+
+        if (FileSystem.exists("./assets/shared/images/" + key + ".png"))
+        {
+            trace("Found file in shared: " + key);
+            return Paths.getPackerAtlas(key, 'shared');
+        }
+
+        for (weeksT in weeks)
+        {
+            for (week in weeksT.weeks)
+            {
+                for (included in week.libInclude)
+                {
+                    trace("Seeking included lib: " + included);
+                    if (FileSystem.exists("./assets/" + included + "/images/" + key + ".png"))
+                    {
+                        trace("Found file in included lib: " + included);
+                        return FlxAtlasFrames.fromSpriteSheetPacker(BitmapData.fromFile("./assets/" + included + "/images/" + key + ".png"), File.getContent("./assets/" + included + "/images/" + key + ".txt"));
+                    }
+                }
+                if (seekIn != null)
+                {
+                    for (included in seekIn)
+                    {
+                        trace("Seeking forced lib: " + included);
+                        if (FileSystem.exists("./assets/" + included + "/images/" + key + ".png"))
+                        {
+                            trace("Found file in forced lib: " + included);
+                            return FlxAtlasFrames.fromSpriteSheetPacker(BitmapData.fromFile("./assets/" + included + "/images/" + key + ".png"), File.getContent("./assets/" + included + "/images/" + key + ".txt"));
+                        }
+                    }
+                }
+            }
+        }
+        trace("Couldn't find file in included assets: " + key);
+        return api.getPackerShit("/images/" + key + ".png", "/images/" + key + ".xml", mod);
     }
 }

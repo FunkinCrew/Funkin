@@ -1,5 +1,7 @@
 package engine.base;
 
+import openfl.display.BitmapData;
+import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.media.Sound;
 import haxe.Json;
 import sys.io.File;
@@ -111,6 +113,81 @@ class ModAPI
                 {
                     trace("getting the path: " + mod.path + path);
                     shit = Sound.fromFile(mod.path + path);
+                    break;
+                }
+            }
+        }
+        return shit;
+    }
+
+    public function getImageShit(path:String, ?mod:Mod):BitmapData
+    {
+        trace("looking for image file: " + path);
+        var shit:BitmapData = null;
+        if (mod != null)
+        {
+            trace("getting the path: " + mod.path + path);
+            shit = BitmapData.fromFile(mod.path + path);
+        }
+        else
+        {
+            for (mod in loaded)
+            {
+                trace("scanning mod: " + mod.name);
+                if (FileSystem.exists(mod.path + path))
+                {
+                    trace("getting the path: " + mod.path + path);
+                    shit = BitmapData.fromFile(mod.path + path);
+                    break;
+                }
+            }
+        }
+        return shit;
+    }
+
+    public function getSparrowShit(pathPng:String, pathXml:String, ?mod:Mod):FlxAtlasFrames
+    {
+        trace("looking for sparrow file: " + pathPng);
+        var shit:FlxAtlasFrames = null;
+        if (mod != null)
+        {
+            trace("getting the path: " + pathPng);
+            shit = FlxAtlasFrames.fromSparrow(getImageShit(pathPng, mod), getTextShit(pathXml, mod));
+        }
+        else 
+        {
+            for (mod in loaded)
+            {
+                trace("scanning mod: " + mod.name);
+                if (FileSystem.exists(pathPng))
+                {
+                    trace("getting the path: " +  pathPng);
+                    shit = FlxAtlasFrames.fromSparrow(getImageShit(pathPng, mod), getTextShit(pathXml, mod));
+                    break;
+                }
+            }
+        }
+        return shit;
+    }
+
+    public function getPackerShit(pathPng:String, pathXml:String, ?mod:Mod):FlxAtlasFrames
+    {
+        trace("looking for sparrow file: " + pathPng);
+        var shit:FlxAtlasFrames = null;
+        if (mod != null)
+        {
+            trace("getting the path: " + pathPng);
+            shit = FlxAtlasFrames.fromSpriteSheetPacker(getImageShit(pathPng, mod), getTextShit(pathXml, mod));
+        }
+        else 
+        {
+            for (mod in loaded)
+            {
+                trace("scanning mod: " + mod.name);
+                if (FileSystem.exists(pathPng))
+                {
+                    trace("getting the path: " +  pathPng);
+                    shit = FlxAtlasFrames.fromSpriteSheetPacker(getImageShit(pathPng, mod), getTextShit(pathXml, mod));
                     break;
                 }
             }
