@@ -1,4 +1,6 @@
-# Friday Night Funkin Sharp Engine
+<img src="https://raw.githubusercontent.com/thepercentageguy/FNFSharp/master/assets/preload/images/newLogo.png" height="200" />
+
+---
 
 Yes, the name is a music joke and a programming joke at the same time.
 
