@@ -49,7 +49,7 @@
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 
 	<!-- LEATHER ENGINE CUSTOMIZATION -->
-	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bit"/>
+	<define name="VIDEOS_ALLOWED" if="web || windows || linux" unless="32bit"/>
 
 	<assets path="mods" embed="false" exclude="*.ogg" if="web"/>
 	<assets path="mods" embed="false" exclude="*.mp3" unless="web"/>
@@ -115,6 +115,7 @@
 	
 	<haxelib name="discord_rpc" if="desktop"/>
 	<haxelib name="linc_luajit" if="desktop"/>
+	<haxelib name="hxCodec" if="VIDEOS_ALLOWED"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
@@ -156,6 +157,9 @@
 	<icon path="art/icon32.png" size='32'/>
 	<icon path="art/icon64.png" size='64'/>
 	<icon path="art/iconOG.png" />
+
+	<!-- Show debug traces for hxCodec -->
+	<haxedef name="HXC_DEBUG_TRACE" if="debug" />
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<!-- <haxedef name="NG_LOGIN" if="newgrounds" /> -->

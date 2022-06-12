@@ -1,2 +1,4 @@
-You need the 'luajit' package to run the game correctly (at least on Ubuntu).
-Basically if you get an error about lua stuff, try installing it with your package manager (something like 'sudo apt install luajit')
+Packages needed:
+    - luajit (sudo apt install luajit) (For Lua Functions)
+    - libvlc-dev (sudo apt-get install libvlc-dev) (For Video Playback)
+    - libvlccore-dev (sudo apt-get install libvlccore-dev) (For Video Playback)
