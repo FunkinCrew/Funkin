@@ -33,6 +33,13 @@ body:
       description: How do you reproduce the bug?
     validations:
       required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Console Logs
+      description: Run the game through a console and paste the relevant console output here.
+    validations:
+      required: true
   - type: input
     id: version
     attributes:
