@@ -5,10 +5,15 @@ labels: ["bug"]
 assignees:
   - thepercentageguy
 body:
-  - type: markdown
+  - type: dropdown
+    id: platform
     attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
+      label: Platform
+      description: On what platforms are you experiancing this bug?
+      options:
+        - Windows
+        - Linux
+        - Mac
   - type: input
     id: contact
     attributes:
