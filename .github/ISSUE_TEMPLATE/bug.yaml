@@ -3,7 +3,7 @@ description: File a bug report
 title: "[Bug]: "
 labels: ["bug"]
 assignees:
-  - spunblue
+  - thepercentageguy
 body:
   - type: markdown
     attributes:
