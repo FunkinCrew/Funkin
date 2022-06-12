@@ -224,7 +224,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
 	{
-		if (!canPlayOtherAnims)
+		if (!canPlayOtherAnims && !ignoreOther)
 			return;
 
 		var correctName = correctAnimationName(name);
@@ -252,10 +252,12 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 	/**
 	 * @param name The animation to play.
-	 * @param duration The duration in which other (non-forced) animations will be skipped, in seconds.
+	 * @param duration The duration in which other (non-forced) animations will be skipped, in seconds (NOT MILLISECONDS).
 	 */
 	public function forceAnimationForDuration(name:String, duration:Float):Void
 	{
+		// TODO: Might be nice to rework this function, maybe have a numbered priority system?
+
 		if (this.animation == null)
 			return;
 
