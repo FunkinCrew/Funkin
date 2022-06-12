@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.util.FlxDirectionFlags;
 import flixel.FlxObject;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
@@ -544,7 +545,7 @@ class Controls extends FlxActionSet
 		forEachBound(control, function(action, state) addKeys(action, keys, state));
 	}
 
-	public function bindSwipe(control:Control, swipeDir:Int = FlxObject.UP, ?swpLength:Float = 90)
+	public function bindSwipe(control:Control, swipeDir:Int = FlxDirectionFlags.UP, ?swpLength:Float = 90)
 	{
 		forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press, swpLength)));
 	}
@@ -635,16 +636,16 @@ class Controls extends FlxActionSet
 		#if FLX_TOUCH
 		// MAKE BETTER TOUCH BIND CODE
 
-		bindSwipe(Control.NOTE_UP, FlxObject.UP, 40);
-		bindSwipe(Control.NOTE_DOWN, FlxObject.DOWN, 40);
-		bindSwipe(Control.NOTE_LEFT, FlxObject.LEFT, 40);
-		bindSwipe(Control.NOTE_RIGHT, FlxObject.RIGHT, 40);
+		bindSwipe(Control.NOTE_UP, FlxDirectionFlags.UP, 40);
+		bindSwipe(Control.NOTE_DOWN, FlxDirectionFlags.DOWN, 40);
+		bindSwipe(Control.NOTE_LEFT, FlxDirectionFlags.LEFT, 40);
+		bindSwipe(Control.NOTE_RIGHT, FlxDirectionFlags.RIGHT, 40);
 
 		// feels more like drag when up/down are inversed
-		bindSwipe(Control.UI_UP, FlxObject.DOWN);
-		bindSwipe(Control.UI_DOWN, FlxObject.UP);
-		bindSwipe(Control.UI_LEFT, FlxObject.LEFT);
-		bindSwipe(Control.UI_RIGHT, FlxObject.RIGHT);
+		bindSwipe(Control.UI_UP, FlxDirectionFlags.DOWN);
+		bindSwipe(Control.UI_DOWN, FlxDirectionFlags.UP);
+		bindSwipe(Control.UI_LEFT, FlxDirectionFlags.LEFT);
+		bindSwipe(Control.UI_RIGHT, FlxDirectionFlags.RIGHT);
 		#end
 
 		#if android
@@ -870,7 +871,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 	var activateLength:Float = 90;
 	var hapticPressure:Int = 100;
 
-	public function new(swipeDir:Int = FlxObject.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
+	public function new(swipeDir:Int = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
 	{
 		super(OTHER, swipeDir, Trigger);
 
@@ -933,9 +934,9 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 
 			/* switch (inputID)
 				{
-					case FlxObject.UP:
+					case FlxDirectionFlags.UP:
 						return
-					case FlxObject.DOWN:
+					case FlxDirectionFlags.DOWN:
 				}
 			 */
 		}
@@ -955,13 +956,13 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 					{
 						switch (inputID)
 						{
-							case FlxObject.UP:
+							case FlxDirectionFlags.UP:
 								if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
-							case FlxObject.DOWN:
+							case FlxDirectionFlags.DOWN:
 								if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
-							case FlxObject.LEFT:
+							case FlxDirectionFlags.LEFT:
 								if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
-							case FlxObject.RIGHT:
+							case FlxDirectionFlags.RIGHT:
 								if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
 						}
 					}

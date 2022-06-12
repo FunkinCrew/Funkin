@@ -8,17 +8,10 @@
       "url": "https://github.com/Aidan63/linc_discord-rpc"
     },
     {
-      "name": "firetongue",
-      "type": "git",
-      "dir": null,
-      "ref": "c5666c8",
-      "url": "https://github.com/larsiusprime/firetongue"
-    },
-    {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "93a049d6",
+      "ref": "0637ac4",
       "url": "https://github.com/haxeflixel/flixel"
     },
     {
@@ -35,8 +28,8 @@
       "name": "hscript",
       "type": "git",
       "dir": null,
-      "ref": "1f5c498",
-      "url": "https://github.com/mastereric/hscript"
+      "ref": "7124b6c",
+      "url": "https://github.com/HaxeFoundation/hscript"
     },
     {
       "name": "hxcpp",
@@ -62,7 +55,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "cd4600c",
+      "ref": "4c2c949",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import funkin.Note.NoteData;
 import funkin.audiovis.PolygonSpectogram;
+import flixel.util.FlxDirectionFlags;
 
 class PicoFight extends MusicBeatState
 {
@@ -88,12 +89,12 @@ class PicoFight extends MusicBeatState
 			if (notes.strumTime < Conductor.songPosition + (Conductor.crochet * 4))
 			{
 				spawnNote(notes);
-				spawnNote(notes, FlxObject.RIGHT);
+				spawnNote(notes, FlxDirectionFlags.RIGHT);
 			}
 		}
 	}
 
-	function spawnNote(note:NoteData, facing:Int = FlxObject.LEFT)
+	function spawnNote(note:NoteData, facing:Int = FlxDirectionFlags.LEFT)
 	{
 		var spr:FlxSprite = new FlxSprite(0, (FlxG.height / 2) - 60).makeGraphic(10, 120, Note.codeColors[note.noteData]);
 		spr.ID = Std.int(note.strumTime); // using ID as strum, lol!
