@@ -21,7 +21,6 @@ hscript
 discord_rpc
 polymod
 linc_luajit
-hxCodec
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install polymod 1.5.2`
 
@@ -32,7 +31,6 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 2. Follow instructions to install the application properly.
 3. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
 4. Run `haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit` to install Linc_LuaJIT (lua stuff, only desktop tho).
-5. Run `haxelib git hxCodec https://github.com/polybiusproxy/hxCodec.git` to install hxCodec (required for playing videos lol).
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
