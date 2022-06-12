@@ -1918,12 +1918,23 @@ class PlayState extends MusicBeatState
 			FlxG.camera.zoom = defaultCamZoom;
 			camHUD.zoom = 1;
 		}
+
+		#if linc_luajit
+		setLuaVar("songPos", Conductor.songPosition);
+		setLuaVar("hudZoom", camHUD.zoom);
+		setLuaVar("curBeat", currentBeat);
+		setLuaVar("cameraZoom", FlxG.camera.zoom);
+
+		executeALuaState("fixedUpdate", [1 / 120]);
+		#end
 	}
 
 	public var fixedUpdateTimer:Float = 0.0;
 
 	override public function update(elapsed:Float)
 	{
+		super.update(elapsed);
+		
 		fixedUpdateTimer += elapsed;
 
 		if(fixedUpdateTimer >= 1 / 120)
@@ -1956,8 +1967,6 @@ class PlayState extends MusicBeatState
 					altAnim = "";
 			}
 		}
-
-		super.update(elapsed);
 
 		if (generatedMusic)
 		{
