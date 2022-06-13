@@ -41,6 +41,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import lime.app.Application;
 
 using StringTools;
 
@@ -80,6 +81,7 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
 	private var combo:Int = 0;
+	private var misses:Int = 0;
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
@@ -115,6 +117,8 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
+	var SETxt:FlxText;
+	var ver = "v" + Application.current.meta.get('version');
 
 	public static var campaignScore:Int = 0;
 
@@ -502,13 +506,11 @@ class PlayState extends MusicBeatState
 		                           // bg.setGraphicSize(Std.int(bg.width * 6));
 		                           // bg.updateHitbox();
 		                           add(bg);
-
 		                           var fg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolFG'));
 		                           fg.scale.set(6, 6);
 		                           // fg.setGraphicSize(Std.int(fg.width * 6));
 		                           // fg.updateHitbox();
 		                           add(fg);
-
 		                           wiggleShit.effectType = WiggleEffectType.DREAMY;
 		                           wiggleShit.waveAmplitude = 0.01;
 		                           wiggleShit.waveFrequency = 60;
@@ -521,21 +523,17 @@ class PlayState extends MusicBeatState
 		                  /* 
 		                            var waveSprite = new FlxEffectSprite(bg, [waveEffectBG]);
 		                            var waveSpriteFG = new FlxEffectSprite(fg, [waveEffectFG]);
-
 		                            // Using scale since setGraphicSize() doesnt work???
 		                            waveSprite.scale.set(6, 6);
 		                            waveSpriteFG.scale.set(6, 6);
 		                            waveSprite.setPosition(posX, posY);
 		                            waveSpriteFG.setPosition(posX, posY);
-
 		                            waveSprite.scrollFactor.set(0.7, 0.8);
 		                            waveSpriteFG.scrollFactor.set(0.9, 0.8);
-
 		                            // waveSprite.setGraphicSize(Std.int(waveSprite.width * 6));
 		                            // waveSprite.updateHitbox();
 		                            // waveSpriteFG.setGraphicSize(Std.int(fg.width * 6));
 		                            // waveSpriteFG.updateHitbox();
-
 		                            add(waveSprite);
 		                            add(waveSpriteFG);
 		                    */
@@ -731,12 +729,63 @@ class PlayState extends MusicBeatState
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
+
+	//char health colors
+		if (SONG.player2 == 'gf')
+		healthBar.createFilledBar(0xFFA5004D, 0xFF31B0D1);
+
+		if (SONG.player2 == 'dad')
+		healthBar.createFilledBar(0xFFAF66CE, 0xFF31B0D1);
+
+		if (SONG.player2 == 'pico')
+		healthBar.createFilledBar(0xFFB7D855, 0xFF31B0D1);
+
+		if (SONG.player2 == 'spooky')
+		healthBar.createFilledBar(0xFFD57E00, 0xFF31B0D1);
+
+		if (SONG.player2 == 'mom')
+		healthBar.createFilledBar(0xFFD8558E, 0xFF31B0D1);
+
+		if (SONG.player2 == 'mom-car')
+		healthBar.createFilledBar(0xFFD8558E, 0xFF31B0D1);
+
+		if (SONG.player2 == 'mom-car')
+		healthBar.createFilledBar(0xFFD8558E, 0xFF31B0D1);
+
+		if (SONG.player2 == 'parents-christmas')
+		healthBar.createFilledBar(0xFFAF66CE, 0xFF31B0D1);
+
+		if (SONG.player2 == 'monster-christmas')
+		healthBar.createFilledBar(0xFFF9FF70, 0xFF31B0D1);
+
+		if (SONG.player2 == 'monster')
+		healthBar.createFilledBar(0xFFF9FF70, 0xFF31B0D1);
+
+		if (SONG.player2 == 'senpai')
+		healthBar.createFilledBar(0xFFFFAA6F, 0xFF7BD6F6);
+
+		if (SONG.player2 == 'senpai-angry')
+		healthBar.createFilledBar(0xFFFFAA6F, 0xFF7BD6F6);
+
+		if (SONG.player2 == 'spirit')
+		healthBar.createFilledBar(0xFFFF3C6E, 0xFF7BD6F6);
+
+		if (SONG.player2 == 'tankman')
+		healthBar.createFilledBar(0xFF000000, 0xFF31B0D1);
+
+		if (SONG.player2 == 'bf-pixel')
+		healthBar.createFilledBar(0xFF7BD6F6, 0xFF31B0D1);
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 454, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
+
+		SETxt = new FlxText(healthBarBG.x + healthBarBG.width - 920, healthBarBG.y + 30, 0, "", 20);
+		SETxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		SETxt.scrollFactor.set();
+		add(SETxt);
 
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -753,6 +802,7 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		SETxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1364,7 +1414,8 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text ='Score:' + songScore + ' | Combo:' + combo + ' | Misses:' + misses;  //score misss and combo info
+		SETxt.text = 'Dike Engine | ' + ver + ' | ' + SONG.song + ' - ' + storyDifficultyText; //song and engine info
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1425,10 +1476,23 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
-		#if debug
-		if (FlxG.keys.justPressed.EIGHT)
+		if (FlxG.keys.justPressed.FIVE)
+		{
 			FlxG.switchState(new AnimationDebug(SONG.player2));
-		#end
+
+			#if desktop
+			DiscordClient.changePresence("Animation Debug", SONG.player2, null, true);
+			#end
+		}
+
+		if (FlxG.keys.justPressed.SIX)
+		{
+			FlxG.switchState(new AnimationDebug(SONG.player1));
+
+			#if desktop
+			DiscordClient.changePresence("Animation Debug", SONG.player1, null, true);
+			#end
+		}
 
 		if (startingSong)
 		{
@@ -1679,6 +1743,10 @@ class PlayState extends MusicBeatState
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
 						health -= 0.0475;
+						combo = 0;
+						misses += 1;
+						songScore -= 10;
+
 						vocals.volume = 0;
 					}
 
@@ -2044,13 +2112,18 @@ class PlayState extends MusicBeatState
 								if (upP || rightP || downP || leftP)
 									noteCheck(leftP, daNote);
 						}
-
 					//this is already done in noteCheck / goodNoteHit
 					if (daNote.wasGoodHit)
 					{
 						daNote.kill();
 						notes.remove(daNote, true);
 						daNote.destroy();
+						combo += 1;
+						UI_camera.zoom += 1;
+						UI_camera.zoom += -0.9;
+						UI_camera.zoom += -0.8;
+						UI_camera.zoom += -0.7;
+						UI_camera.zoom = 1;
 					}
 				 */
 			}
@@ -2135,20 +2208,20 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.04;
+			// health -= 0.04;
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
-				gf.playAnim('sad');
+				// gf.playAnim('sad');
 			}
-			combo = 0;
+			// combo = 0;
+			// songScore -= 10;
 
-			songScore -= 10;
+			// FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+			// misses += 1;
+			// combo = 0;
+			FlxG.log.add('ghost tapp lol');
 
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
-
-			boyfriend.stunned = true;
+			// boyfriend.stunned = true;
 
 			// get stunned for 5 seconds
 			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
@@ -2159,13 +2232,13 @@ class PlayState extends MusicBeatState
 			switch (direction)
 			{
 				case 0:
-					boyfriend.playAnim('singLEFTmiss', true);
+					misses += 0;
 				case 1:
-					boyfriend.playAnim('singDOWNmiss', true);
+					misses += 0;
 				case 2:
-					boyfriend.playAnim('singUPmiss', true);
+					misses += 0;
 				case 3:
-					boyfriend.playAnim('singRIGHTmiss', true);
+					misses += 0;
 			}
 		}
 	}

@@ -13,20 +13,7 @@ class OutdatedSubState extends MusicBeatState
 
 	override function create()
 	{
-		super.create();
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		add(bg);
-		var ver = "v" + Application.current.meta.get('version');
-		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"HEY! You're running an outdated version of the game!\nCurrent version is "
-			+ ver
-			+ " while the most recent version is "
-			+ NGio.GAME_VER
-			+ "! Press Space to go to itch.io, or ESCAPE to ignore this!!",
-			32);
-		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
-		txt.screenCenter();
-		add(txt);
+	FlxG.switchState(new MainMenuState());	
 	}
 
 	override function update(elapsed:Float)

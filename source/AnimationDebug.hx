@@ -1,5 +1,8 @@
 package;
 
+#if desktop
+import Discord.DiscordClient;
+#end
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -35,9 +38,28 @@ class AnimationDebug extends FlxState
 	{
 		FlxG.sound.music.stop();
 
-		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
-		gridBG.scrollFactor.set(0.5, 0.5);
-		add(gridBG);
+						  var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
+		                  bg.antialiasing = true;
+		                  bg.scrollFactor.set(0.9, 0.9);
+		                  bg.active = false;
+		                  add(bg);
+
+		                  var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
+		                  stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+		                  stageFront.updateHitbox();
+		                  stageFront.antialiasing = true;
+		                  stageFront.scrollFactor.set(0.9, 0.9);
+		                  stageFront.active = false;
+		                  add(stageFront);
+
+		                  var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
+		                  stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+		                  stageCurtains.updateHitbox();
+		                  stageCurtains.antialiasing = true;
+		                  stageCurtains.scrollFactor.set(1.3, 1.3);
+		                  stageCurtains.active = false;
+
+		                  add(stageCurtains);
 
 		if (daAnim == 'bf')
 			isDad = false;
@@ -90,7 +112,7 @@ class AnimationDebug extends FlxState
 		{
 			var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
 			text.scrollFactor.set();
-			text.color = FlxColor.BLUE;
+			text.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			dumbTexts.add(text);
 
 			if (pushList)
@@ -161,6 +183,15 @@ class AnimationDebug extends FlxState
 
 			updateTexts();
 			genBoyOffsets(false);
+		}
+
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			FlxG.switchState(new MainMenuState());
+
+			#if desktop
+			DiscordClient.changePresence("In The Menus", null, null, true);
+			#end
 		}
 
 		var upP = FlxG.keys.anyJustPressed([UP]);
