@@ -2,8 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Leather Engine" file="Leather Engine" packageName="com.leather128.funkin" package="com.leather128.funkin" main="Main" version="0.4.1" company="leather128" unless="vsync"/>
-	<app title="Leather Engine" file="Leather Engine" packageName="com.leather128.funkin" package="com.leather128.funkin" main="Main" version="0.4.1" company="leather128" if="vsync"/>
+	<app title="Leather Engine" file="Leather Engine" packageName="com.leather128.funkin" package="com.leather128.funkin" main="Main" version="0.4.2" company="leather128"/>
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -21,15 +20,13 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false" unless="vsync"/>
-	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="true" if="vsync"/>
+	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false"/>
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
 
 	<!--Desktop-specific-->
-	<window if="desktop" unless="vsync" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
-	<window if="desktop vsync" orientation="landscape" fullscreen="false" resizable="true" vsync="true"/>
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>

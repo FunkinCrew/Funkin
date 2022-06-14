@@ -350,55 +350,39 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				var http = new haxe.Http("https://raw.githubusercontent.com/Leather128/LeatherEngine/master/version.txt");
+				var http = new haxe.Http("https://raw.githubusercontent.com/Leather128/LeatherEngine/main/version.txt");
 				
 				http.onData = function(data:String)
 				{
 					trace(data);
-					
-					var new_Vers:Array<String> = data.split(".");
-					var old_Vers:Array<String> = Assets.getText("version.txt").split(".");
-
-					var new_Ver:FlxVersion = new FlxVersion(Std.parseInt(new_Vers[0]), Std.parseInt(new_Vers[1]), Std.parseInt(new_Vers[2]));
-					var old_Ver:FlxVersion = new FlxVersion(Std.parseInt(old_Vers[0]), Std.parseInt(old_Vers[1]), Std.parseInt(old_Vers[2]));
 
 					var older:Bool = false;
 
-					if(
-						new_Ver.patch > old_Ver.patch && new_Ver.minor >= old_Ver.minor && new_Ver.major >= old_Ver.major || 
-						new_Ver.minor > old_Ver.minor && new_Ver.major >= old_Ver.major || 
-						new_Ver.major > old_Ver.major
-					)
+					if(Assets.getText("version.txt") != data)
 						older = true;
 
 				  	if(older)
 					{
-						trace('outdated lmao! ' + new_Vers + ' != ' + old_Vers);
+						trace('outdated lmao! ' + data + ' != ' + Assets.getText("version.txt"));
 
 						version_New = "v" + data;
 						FlxG.switchState(new OutdatedSubState());
 					}
 					else
-					{
 						FlxG.switchState(new MainMenuState());
-					}
 				}
 				
-				http.onError = function (error) {
+				http.onError = function(error) {
 					trace('error: $error');
 					FlxG.switchState(new MainMenuState()); // fail so we go anyway
 				}
 				
 				http.request();
 			});
-
-			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
 		if (pressedEnter && !skippedIntro)
-		{
 			skipIntro();
-		}
 
 		super.update(elapsed);
 	}
