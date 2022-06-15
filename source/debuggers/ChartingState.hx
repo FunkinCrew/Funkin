@@ -120,6 +120,11 @@ class ChartingState extends MusicBeatState
 	var eventList:Array<String> = [];
 	var eventListData:Array<Array<String>> = [];
 
+	var zoom_level:Float = 1;
+
+	var min_zoom:Float = 0.5;
+	var max_zoom:Float = 16;
+
 	override function create()
 	{
 		#if NO_PRELOAD_ALL
@@ -1280,7 +1285,7 @@ class ChartingState extends MusicBeatState
 				if (FlxG.mouse.x > gridBG.x
 					&& FlxG.mouse.x < gridBG.x + gridBG.width
 					&& FlxG.mouse.y > gridBG.y
-					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * Conductor.stepsPerSection))
+					&& FlxG.mouse.y < gridBG.y + gridBG.height)
 				{
 					addNote();
 				}
@@ -1290,7 +1295,7 @@ class ChartingState extends MusicBeatState
 		if (FlxG.mouse.x > gridBG.x
 			&& FlxG.mouse.x < gridBG.x + gridBG.width
 			&& FlxG.mouse.y > gridBG.y
-			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * Conductor.stepsPerSection))
+			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * (Conductor.stepsPerSection * zoom_level)))
 		{
 			var snappedGridSize = (GRID_SIZE / (beatSnap / Conductor.stepsPerSection));
 
@@ -1319,6 +1324,21 @@ class ChartingState extends MusicBeatState
 				changeNoteSustain(Conductor.stepCrochet);
 			if (FlxG.keys.justPressed.Q)
 				changeNoteSustain(-Conductor.stepCrochet);
+
+			if (FlxG.keys.justPressed.X)
+				zoom_level *= 2;
+			if (FlxG.keys.justPressed.Z)
+				zoom_level /= 2;
+
+			if (FlxG.keys.justPressed.X || FlxG.keys.justPressed.Z)
+			{
+				if(zoom_level < min_zoom)
+					zoom_level = min_zoom;
+				if(zoom_level > max_zoom)
+					zoom_level = max_zoom;
+
+				updateGrid();
+			}
 
 			if (FlxG.keys.justPressed.TAB)
 			{
@@ -1460,6 +1480,8 @@ class ChartingState extends MusicBeatState
 			+ curBeat
 			+ "\nNote Snap: "
 			+ beatSnap + (FlxG.keys.pressed.SHIFT ? "\n(DISABLED)" : "\n(CONTROL + ARROWS)")
+			+ "\nZoom Level: "
+			+ zoom_level
 			+ "\n"
 		);
 
@@ -1670,7 +1692,7 @@ class ChartingState extends MusicBeatState
 		gridBG.kill();
 		gridBG.destroy();
 
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * (_song.keyCount + _song.playerKeyCount + 1), GRID_SIZE * Conductor.stepsPerSection);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * (_song.keyCount + _song.playerKeyCount + 1), Std.int((GRID_SIZE * Conductor.stepsPerSection) * zoom_level));
 		add(gridBG);
 
 		remove(gridBlackLine);
@@ -2087,7 +2109,7 @@ class ChartingState extends MusicBeatState
 
 	function getYfromStrum(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, Conductor.stepsPerSection * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+		return FlxMath.remapToRange(strumTime * zoom_level, 0, (Conductor.stepsPerSection * zoom_level) * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 	}
 
 	private var daSpacing:Float = 0.3;
