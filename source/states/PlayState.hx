@@ -2571,7 +2571,7 @@ class PlayState extends MusicBeatState
 
 		if(!utilities.Options.getData("disableDebugMenus"))
 		{
-			if (FlxG.keys.justPressed.SEVEN && !switchedStates)
+			if (FlxG.keys.justPressed.SEVEN && !switchedStates && !inCutscene)
 			{
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
@@ -2596,7 +2596,7 @@ class PlayState extends MusicBeatState
 			}
 	
 			#if debug
-			if (FlxG.keys.justPressed.EIGHT && !switchedStates)
+			if (FlxG.keys.justPressed.EIGHT && !switchedStates && !inCutscene)
 			{
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
