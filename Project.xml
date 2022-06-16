@@ -77,7 +77,7 @@
 	<assets path="assets/songs"    library="songs"    exclude="*.mp3|*.mp4" unless="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.mp3|*.mp4" unless="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3|*.mp4" unless="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
 	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3|*.mp4" unless="web"/>
 	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week1"    library="week1"    exclude="*.mp3|*.mp4" unless="web"/>
