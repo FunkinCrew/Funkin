@@ -1,0 +1,22 @@
+name: Enhancement
+description: Suggest a feature
+title: "[Enhancement]: "
+labels: ["enhancement"]
+assignees:
+  - thepercentageguy
+body:
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: What do you want to see?
+      description: Also tell us, why you want it
+    validations:
+      required: true

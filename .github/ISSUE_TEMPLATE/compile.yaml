@@ -1,0 +1,26 @@
+name: Compiling Help
+description: Ask for help with compilation
+title: "[Compiling]: "
+labels: ["question"]
+assignees:
+  - thepercentageguy
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: What platform are you trying to compile to?
+      options:
+        - Windows
+        - Mac
+        - Linux
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: true
