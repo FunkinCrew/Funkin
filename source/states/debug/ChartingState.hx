@@ -510,12 +510,30 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
+
+		for (note in curRenderedNotes)
+		{
+			if (strumLine.overlaps(note) && !note.wasStrummed && FlxG.sound.music.playing)
+			{
+				note.wasStrummed = true;
+				note.alpha = 0.5;
+				FlxG.sound.play(Paths.sound('click', 'shared'), 2);
+			}
+
+			if (!FlxG.sound.music.playing)
+			{
+				note.wasStrummed = false;
+				note.alpha = 1;
+			}
+		}
 
 		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{

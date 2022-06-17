@@ -17,6 +17,9 @@ class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 
+	// used only in the chart editor
+	public var wasStrummed:Bool = false;
+
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
