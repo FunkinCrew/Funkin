@@ -178,7 +178,7 @@ class ChartingState extends MusicBeatState
 		UI_box.y = 20;
 		add(UI_box);
 
-		var helperTxt = new FlxText(UI_box.x, UI_box.y + UI_box.height + 10, 0, "", 32);
+		var helperTxt = new FlxText(UI_box.x, UI_box.y + UI_box.height + 10, 0, "", 16);
 		helperTxt.scrollFactor.set();
 		helperTxt.text =
 		"CONTROLS:\n" + 
