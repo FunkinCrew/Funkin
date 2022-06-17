@@ -95,8 +95,10 @@ class ChartingState extends MusicBeatState
 	var dumbShitNotesLEFT:FlxTypedGroup<FlxSprite>;
 	var dumbShitNotesRIGHT:FlxTypedGroup<FlxSprite>;
 
+	var speed:Float = 1;
+
 	override function create()
-	{
+	{	
 		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -175,6 +177,17 @@ class ChartingState extends MusicBeatState
 		UI_box.x = FlxG.width / 2;
 		UI_box.y = 20;
 		add(UI_box);
+
+		var helperTxt = new FlxText(UI_box.x, UI_box.y + UI_box.height + 10, 0, "", 32);
+		helperTxt.scrollFactor.set();
+		helperTxt.text =
+		"CONTROLS:\n" + 
+		"\n" +
+		"W/S: Scroll\n" +
+		"SHIFT + W/S: Change song speed\n" +
+		"A/D: Change section\n" +
+		"ENTER: Exit\n";
+		add(helperTxt);
 
 		addSongUI();
 		addSectionUI();
@@ -559,6 +572,32 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.sound.music != null)
+		{
+			if (FlxG.sound.music.playing)
+			{
+				@:privateAccess
+				{
+					#if desktop
+					// The __backend.handle attribute is only available on native.
+					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+					try
+					{
+						// We need to make CERTAIN vocals exist and are non-empty
+						// before we try to play them. Otherwise the game crashes.
+						if (vocals != null && vocals.length > 0)
+						{
+							lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+						}
+					}
+					catch (e)
+					{
+						// Debug.logTrace("failed to pitch vocals (probably cuz they don't exist)");
+					}
+					#end
+				}
+			}
+		}
 
 
 		curStep = recalculateSteps();
@@ -727,6 +766,19 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		if (FlxG.keys.pressed.SHIFT)
+		{
+			if (FlxG.keys.justPressed.W)
+				speed += 0.1;
+			else if (FlxG.keys.justPressed.S)
+				speed -= 0.1;
+
+			if (speed > 3)
+				speed = 3;
+			if (speed <= 0.01)
+				speed = 0.1;
+		}
+
 		if (!typingShit.hasFocus)
 		{
 			if (FlxG.keys.justPressed.SPACE)
@@ -819,7 +871,9 @@ class ChartingState extends MusicBeatState
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ "\nSection: "
-			+ curSection;
+			+ curSection
+			+ "\nSpeed: "
+			+ Std.string(FlxMath.roundDecimal(speed, 2));
 		super.update(elapsed);
 	}
 
