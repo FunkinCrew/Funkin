@@ -1,5 +1,6 @@
 package states.debug;
 
+import flixel.util.FlxTimer;
 import engine.base.ModAPI;
 import engine.io.Modding;
 import engine.util.CoolUtil;
@@ -91,6 +92,9 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
+	var dumbShitNotesLEFT:FlxTypedGroup<FlxSprite>;
+	var dumbShitNotesRIGHT:FlxTypedGroup<FlxSprite>;
+
 	override function create()
 	{
 		curSection = lastSection;
@@ -178,6 +182,51 @@ class ChartingState extends MusicBeatState
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
+
+		// idk this fixes a weird bug
+		changeSection(1);
+		changeSection(0);
+
+		dumbShitNotesLEFT = new FlxTypedGroup<FlxSprite>();
+		dumbShitNotesRIGHT = new FlxTypedGroup<FlxSprite>();
+
+		for (i in 0...8)
+		{
+			var dumbShitNote:FlxSprite = new FlxSprite(0, 0);
+			dumbShitNote.y = strumLine.y + strumLine.height;
+			dumbShitNote.frames = Paths.getSparrowAtlas("NOTE_assets", 'shared');
+			switch (i % 4)
+			{
+				case 0:
+					dumbShitNote.x = gridBG.x + (GRID_SIZE * i);
+					dumbShitNote.animation.addByPrefix("idle", "arrowLEFT0");
+					dumbShitNote.animation.addByPrefix("pressed", "left confirm0");
+				case 2:
+					dumbShitNote.x = gridBG.x + (GRID_SIZE * i);
+					dumbShitNote.animation.addByPrefix("idle", "arrowUP0");
+					dumbShitNote.animation.addByPrefix("pressed", "up confirm0");
+				case 1:
+					dumbShitNote.x = gridBG.x + (GRID_SIZE * i);
+					dumbShitNote.animation.addByPrefix("idle", "arrowDOWN0");
+					dumbShitNote.animation.addByPrefix("pressed", "down confirm0");
+				case 3:
+					dumbShitNote.x = gridBG.x + (GRID_SIZE * i);
+					dumbShitNote.animation.addByPrefix("idle", "arrowRIGHT0");
+					dumbShitNote.animation.addByPrefix("pressed", "right confirm0");
+			}
+			dumbShitNote.animation.play("idle");
+			dumbShitNote.ID = i % 4;
+			if (i < 4)
+				dumbShitNotesLEFT.add(dumbShitNote);
+			else
+				dumbShitNotesRIGHT.add(dumbShitNote);
+
+			dumbShitNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
+			dumbShitNote.updateHitbox();
+		}
+
+		add(dumbShitNotesLEFT);
+		add(dumbShitNotesRIGHT);
 
 		super.create();
 	}
@@ -519,6 +568,15 @@ class ChartingState extends MusicBeatState
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
+		for (note in dumbShitNotesLEFT)
+		{
+			note.y = strumLine.y;
+		}
+		for (note in dumbShitNotesRIGHT)
+		{
+			note.y = strumLine.y;
+		}
+
 		for (note in curRenderedNotes)
 		{
 			if (strumLine.overlaps(note) && !note.wasStrummed && FlxG.sound.music.playing)
@@ -526,6 +584,43 @@ class ChartingState extends MusicBeatState
 				note.wasStrummed = true;
 				note.alpha = 0.5;
 				FlxG.sound.play(Paths.sound('click', 'shared'), 2);
+				var mustStrum = note.mustPress;
+				if (note.x / GRID_SIZE < 4)
+					mustStrum = true;
+				if (mustStrum)
+				{
+					for (noteT in dumbShitNotesLEFT)
+					{
+						if (noteT.ID == note.noteData)
+						{
+							noteT.animation.play("pressed");
+							noteT.centerOffsets();
+							noteT.offset.x -= 30;
+							noteT.offset.y -= 30;
+							new FlxTimer().start(0.15, (_) -> {
+								noteT.animation.play("idle");
+								noteT.centerOffsets();
+							});
+						}
+					}
+				}
+				else
+				{
+					for (noteT in dumbShitNotesRIGHT)
+					{
+						if (noteT.ID == note.noteData)
+						{
+							noteT.animation.play("pressed");
+							noteT.centerOffsets();
+							noteT.offset.x -= 30;
+							noteT.offset.y -= 30;
+							new FlxTimer().start(0.15, (_) -> {
+								noteT.animation.play("idle");
+								noteT.centerOffsets();
+							});
+						}
+					}
+				}
 			}
 
 			if (!FlxG.sound.music.playing)
