@@ -1,5 +1,6 @@
 package states.debug;
 
+import engine.base.ModAPI;
 import engine.io.Modding;
 import engine.util.CoolUtil;
 import game.Note;
@@ -181,8 +182,37 @@ class ChartingState extends MusicBeatState
 		super.create();
 	}
 
+	function findChars():Array<String>
+	{
+		var chars:Array<String> = [];
+		chars = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		for (mod in Modding.api.loaded)
+		{
+			var shit:CharJSON = Json.parse(Modding.api.getTextShit("/chars.json", mod));
+			for (char in shit.chars)
+			{
+				chars.push(char.name);
+			}
+		}
+		return chars;
+	}
+
+	var stepperSection:FlxUINumericStepper;
+
 	function addSongUI():Void
 	{
+		var tab_group_movement = new FlxUI(null, UI_box);
+		tab_group_movement.name = 'Movement';
+
+		stepperSection = new FlxUINumericStepper(10, 350, 1, 0, 0, _song.notes.length - 1);
+		stepperSection.value = curSection;
+		stepperSection.name = 'movement_section';
+
+		var moveButton:FlxButton = new FlxButton(110, 350, "Jump Section", function()
+		{
+			changeSection(Std.int(stepperSection.value));
+		});
+
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
@@ -232,7 +262,7 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var characters:Array<String> = findChars();
 
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
@@ -261,6 +291,8 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
+		tab_group_song.add(stepperSection);
+		tab_group_song.add(moveButton);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -358,10 +390,10 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
+		FlxG.sound.playMusic(Modding.getInst(daSong), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		vocals = new FlxSound().loadEmbedded(Modding.getVoices(daSong));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
