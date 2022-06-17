@@ -270,7 +270,6 @@ class TitleState extends MusicBeatState
 	{
 		if (logoBl != null)
 		{
-			trace(logoBl);
 			// bro these params are painful to get right
 			logoBl.setGraphicSize(Std.int(FlxMath.lerp(680, logoBl.width - 20, 0.80)));
 			logoBl.updateHitbox();
