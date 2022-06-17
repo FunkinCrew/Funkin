@@ -1,0 +1,17 @@
+{
+	"chars":
+	[
+		{
+			"name":"test",
+			"graphic":"test",
+			"animations":
+			[
+				{"name":"singUP", "anim":"Dad Sing Note UP0", "offsetX":-6, "offsetY":50},
+				{"name":"singDOWN", "anim":"Dad Sing Note DOWN0", "offsetX":0, "offsetY":-30},
+				{"name":"singLEFT", "anim":"Dad Sing Note LEFT0", "offsetX":-10, "offsetY":10},
+				{"name":"singRIGHT", "anim":"Dad Sing Note RIGHT0", "offsetX":0, "offsetY":27},
+				{"name":"idle", "anim":"Dad idle dance0", "offsetX":0, "offsetY":0}
+			]
+		}
+	]
+}

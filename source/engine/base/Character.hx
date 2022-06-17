@@ -1,5 +1,8 @@
 package engine.base;
 
+import engine.base.ModAPI.CusChar;
+import engine.base.ModAPI.CharJSON;
+import haxe.Json;
 import states.gameplay.PlayState;
 import engine.io.Modding;
 import engine.io.Paths;
@@ -498,6 +501,15 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+			default:
+				// custom character alert
+				var curchar:CusChar = Modding.api.getCharShit(character);
+				frames = Modding.getSparrow(curchar.graphic, null, Modding.findModOfName(PlayState.mod));
+				for (anim in curchar.animations)
+				{
+					animation.addByPrefix(anim.name, anim.anim, 24, false);
+					addOffset(anim.name, anim.offsetX, anim.offsetY);
+				}
 		}
 
 		dance();

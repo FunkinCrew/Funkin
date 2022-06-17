@@ -1,5 +1,7 @@
 package engine.base;
 
+import states.gameplay.PlayState;
+import engine.io.Modding;
 import flixel.FlxSprite;
 
 class HealthIcon extends FlxSprite
@@ -34,6 +36,12 @@ class HealthIcon extends FlxSprite
 		animation.add('parents-christmas', [17], 0, false, isPlayer);
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
+		if (!animation.exists(char))
+		{
+			// custom character
+			loadGraphic(Modding.api.getImageShit("/images/" + char + "-icon.png", Modding.findModOfName(PlayState.mod)), true, 150, 150);
+			animation.add(char, [0, 1], 0, false, isPlayer);
+		}
 		animation.play(char);
 		scrollFactor.set();
 	}

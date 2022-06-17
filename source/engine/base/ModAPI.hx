@@ -91,7 +91,6 @@ class ModAPI
                 }
             }
         }
-        trace("Final shit: " + shit);
         return shit;
     }
 
@@ -159,7 +158,8 @@ class ModAPI
             for (mod in loaded)
             {
                 trace("scanning mod: " + mod.name);
-                if (FileSystem.exists(pathPng))
+                trace("looking for image file: " + mod.path + pathPng);
+                if (FileSystem.exists(mod.path + pathPng))
                 {
                     trace("getting the path: " +  pathPng);
                     shit = FlxAtlasFrames.fromSparrow(getImageShit(pathPng, mod), getTextShit(pathXml, mod));
@@ -194,6 +194,28 @@ class ModAPI
         }
         return shit;
     }
+
+    public function getCharShit(charName:String):CusChar
+    {
+        var char:CusChar = null;
+        for (mod in loaded)
+        {
+            var rawJson = File.getContent(mod.path + "/chars.json");
+            trace("Parsing chars.json for mod: " + mod.name);
+            var thing:CharJSON = Json.parse(rawJson);
+            for (charT in thing.chars)
+            {
+                if (charT.name == charName)
+                {
+                    char = charT;
+                    break;
+                }
+            }
+            if (char != null)
+                break;
+        }
+        return char;
+    }
 }
 
 typedef Mod = 
@@ -214,4 +236,21 @@ typedef Week =
     graphic:String,
     libInclude:Array<String>,
     songs:Array<String>
+}
+
+typedef CharJSON = {
+	var chars:Array<CusChar>;
+}
+
+typedef CusChar = {
+	var name:String;
+	var graphic:String;
+	var animations:Array<CharAnim>;
+}
+
+typedef CharAnim = {
+	var name:String;
+	var anim:String;
+	var offsetX:Int;
+	var offsetY:Int;
 }
