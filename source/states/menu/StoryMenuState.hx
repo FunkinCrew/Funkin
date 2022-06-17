@@ -187,7 +187,7 @@ class StoryMenuState extends MusicBeatState
 						weekData.push(week.songs.copy());
 						weekCharacters.push(["dad", "bf", "gf"]);
 						weekUnlocked.push(true);
-						weekNames.push(week.name);
+						weekNames.push('[MOD] ' + week.name);
 						weekModded.set(week.name, mod.name);
 						index++;
 					}

@@ -73,6 +73,9 @@ class OptionsMenu extends MusicBeatState
 				}),
 			]),
 			new OptionGroup("Misc", [
+				new FunctionOption("Mod Manager", "Opens the mod manager.", () -> {
+					FlxG.switchState(new ModManagerState());
+				}),
 				new FunctionOption("Reset Option", "Resets all options to their default values.", clearOptions),
 				new FunctionOption("Reset Everything", "Resets everything stored in the save file.", () -> {
 					resetBinds();
@@ -330,6 +333,8 @@ class OptionsMenu extends MusicBeatState
 	{
 		// not copied from sublim engine, at all.	
 		// updateFPS();
+
+		headerText.text = optionGroups[curSelectedGroup].name;
 
 		if (inGroup && !focusedOnRange)
 			descriptionText.text = optionGroups[curSelectedGroup].options[curSelectedOption].description;
