@@ -1091,10 +1091,13 @@ class ChartingState extends MusicBeatState
 			note.updateHitbox();
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
-			if (curSelectedNote[0] == daStrumTime && curSelectedNote[1] == daNoteInfo)
+			if (curSelectedNote != null)
 			{
-				selecNoteSprite.setPosition(note.x, note.y);
-				selecNoteSprite.visible = true;
+				if (curSelectedNote[0] == daStrumTime && curSelectedNote[1] == daNoteInfo)
+				{
+					selecNoteSprite.setPosition(note.x, note.y);
+					selecNoteSprite.visible = true;
+				}
 			}
 
 			curRenderedNotes.add(note);
