@@ -1091,7 +1091,7 @@ class ChartingState extends MusicBeatState
 			note.updateHitbox();
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
-			if (curSelectedNote[0] == daStrumTime)
+			if (curSelectedNote[0] == daStrumTime && curSelectedNote[1] == daNoteInfo)
 			{
 				selecNoteSprite.setPosition(note.x, note.y);
 				selecNoteSprite.visible = true;
@@ -1101,7 +1101,7 @@ class ChartingState extends MusicBeatState
 
 			if (daSus > 0)
 			{
-				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
+				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2) - 4,
 					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
 				curRenderedSustains.add(sustainVis);
 			}
@@ -1140,12 +1140,13 @@ class ChartingState extends MusicBeatState
 		*/
 
 		for (i in _song.notes[curSection].sectionNotes)
-		{
-			if (i[0] == note.strumTime && i[1] == note.x / GRID_SIZE)
 			{
+			if (i[0] == note.strumTime && i[1] == Math.floor(note.x / GRID_SIZE))
+			{
+				trace("NOTE: " + note.x / GRID_SIZE + " THINGY: " + i[1]);
 				trace('FOUND IT!');
 				curSelectedNote = i;
-				selecNoteSprite.setPosition(note.x, note.y);
+				selecNoteSprite.setPosition(i[1] * GRID_SIZE, note.y);
 				selecNoteSprite.visible = true;
 			}
 		}
