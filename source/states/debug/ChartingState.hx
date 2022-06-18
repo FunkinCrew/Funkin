@@ -84,6 +84,7 @@ class ChartingState extends MusicBeatState
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
 	var curSelectedNote:Array<Dynamic>;
+	var selecNoteSprite:FlxSprite;
 
 	var tempBpm:Int = 0;
 
@@ -186,6 +187,8 @@ class ChartingState extends MusicBeatState
 		"W/S: Scroll\n" +
 		"SHIFT + W/S: Change song speed\n" +
 		"A/D: Change section\n" +
+		"CTRL + Click note: Select note\n" +
+		"Click note: Delete note\n" +
 		"ENTER: Exit\n";
 		add(helperTxt);
 
@@ -240,6 +243,12 @@ class ChartingState extends MusicBeatState
 
 		add(dumbShitNotesLEFT);
 		add(dumbShitNotesRIGHT);
+
+		selecNoteSprite = new FlxSprite(0,0);
+		selecNoteSprite.makeGraphic(GRID_SIZE, GRID_SIZE, 0xCCFF0000);
+		selecNoteSprite.visible = false;
+		// selecNoteSprite.scrollFactor.set();
+		add(selecNoteSprite);
 
 		super.create();
 	}
@@ -570,8 +579,16 @@ class ChartingState extends MusicBeatState
 		return daPos;
 	}
 
+	var sini:Float = 0;
+
 	override function update(elapsed:Float)
 	{
+		if (selecNoteSprite != null)
+		{
+			selecNoteSprite.alpha = Math.sin(sini);
+			sini += 0.1;
+		}
+
 		if (FlxG.sound.music != null)
 		{
 			if (FlxG.sound.music.playing)
@@ -696,6 +713,7 @@ class ChartingState extends MusicBeatState
 					{
 						if (FlxG.keys.pressed.CONTROL)
 						{
+							trace("selecting note");
 							selectNote(note);
 						}
 						else
@@ -938,6 +956,9 @@ class ChartingState extends MusicBeatState
 	{
 		trace('changing section' + sec);
 
+		if (selecNoteSprite != null)
+			selecNoteSprite.visible = false;
+
 		if (_song.notes[sec] != null)
 		{
 			curSection = sec;
@@ -1070,6 +1091,11 @@ class ChartingState extends MusicBeatState
 			note.updateHitbox();
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+			if (curSelectedNote[0] == daStrumTime)
+			{
+				selecNoteSprite.setPosition(note.x, note.y);
+				selecNoteSprite.visible = true;
+			}
 
 			curRenderedNotes.add(note);
 
@@ -1099,16 +1125,29 @@ class ChartingState extends MusicBeatState
 
 	function selectNote(note:Note):Void
 	{
-		var swagNum:Int = 0;
-
+		/*
 		for (i in _song.notes[curSection].sectionNotes)
 		{
 			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
 			{
 				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
+				selecNoteSprite.setPosition(note.x, note.y);
+				selecNoteSprite.visible = true;
 			}
 
 			swagNum += 1;
+		}
+		*/
+
+		for (i in _song.notes[curSection].sectionNotes)
+		{
+			if (i[0] == note.strumTime && i[1] == note.x / GRID_SIZE)
+			{
+				trace('FOUND IT!');
+				curSelectedNote = i;
+				selecNoteSprite.setPosition(note.x, note.y);
+				selecNoteSprite.visible = true;
+			}
 		}
 
 		updateGrid();
@@ -1119,10 +1158,11 @@ class ChartingState extends MusicBeatState
 	{
 		for (i in _song.notes[curSection].sectionNotes)
 		{
-			if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
+			if (i[0] == note.strumTime && i[1] == note.x / GRID_SIZE)
 			{
 				FlxG.log.add('FOUND EVIL NUMBER');
 				_song.notes[curSection].sectionNotes.remove(i);
+				selecNoteSprite.visible = false;
 			}
 		}
 
@@ -1133,6 +1173,8 @@ class ChartingState extends MusicBeatState
 	{
 		_song.notes[curSection].sectionNotes = [];
 
+		selecNoteSprite.visible = false;
+
 		updateGrid();
 	}
 
@@ -1142,6 +1184,8 @@ class ChartingState extends MusicBeatState
 		{
 			_song.notes[daSection].sectionNotes = [];
 		}
+
+		selecNoteSprite.visible = false;
 
 		updateGrid();
 	}
