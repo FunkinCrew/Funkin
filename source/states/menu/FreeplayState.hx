@@ -1,5 +1,7 @@
 package states.menu;
 
+import haxe.Json;
+import engine.base.ModAPI.CharJSON;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import sys.FileSystem;
@@ -353,12 +355,23 @@ class FreeplayState extends MusicBeatState
 	var tcolor:FlxColor;
 
 	function updateColor() {
-		for (bruh in CoolUtil.coolTextFile(Paths.txt('charcolors'))) {
+		var colorShit:Array<String> = CoolUtil.coolTextFile(Paths.txt("charcolors"));
+		for (mod in Modding.api.loaded)
+		{
+			var shit:CharJSON = Json.parse(Modding.api.getTextShit("/chars.json", mod));
+			for (char in shit.chars)
+			{
+				colorShit.push(char.name + ":" + char.color);
+			}
+		}
+
+		for (bruh in colorShit) {
 			if (!bruh.startsWith('#')) {
 				var eugh = bruh.split(':');
 
 				if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
 					tcolor = new FlxColor(Std.parseInt(eugh[1]));
+					trace(tcolor);
 				}
 			}
 		}

@@ -245,6 +245,7 @@ typedef CharJSON = {
 typedef CusChar = {
 	var name:String;
 	var graphic:String;
+    var color:String;
 	var animations:Array<CharAnim>;
 }
 

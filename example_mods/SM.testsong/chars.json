@@ -4,6 +4,7 @@
 		{
 			"name":"test",
 			"graphic":"test",
+			"color":"0xFFAAFFAA",
 			"animations":
 			[
 				{"name":"singUP", "anim":"Dad Sing Note UP0", "offsetX":-6, "offsetY":50},
