@@ -2166,6 +2166,18 @@ class PlayState extends MusicBeatState
 		var downPressed = false;
 		var leftPressed = false;
 
+		var possibleNotes:Array<Note> = [];
+
+		notes.forEachAlive(function(daNote:Note)
+		{
+			if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+			{
+				// this fixes jacks somehow
+				possibleNotes.push(daNote);
+				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+			}
+		});
+
 		if (botplay)
 		{
 			notes.forEachAlive(function(note:Note)
@@ -2209,9 +2221,8 @@ class PlayState extends MusicBeatState
 				
 				noteMiss(2);
 			}
-			notes.forEachAlive(function(note:Note)
-			{
-				if (!note.wasGoodHit && note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed)
+			for (note in possibleNotes) {
+				if (!note.wasGoodHit && note.noteData == 2 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !upPressed && note.alive)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						upPressed = true;
@@ -2220,12 +2231,12 @@ class PlayState extends MusicBeatState
 					// find timing.
 					var timing = note.y - strumY;
 					trace('UP TIMING ' + timing);
-
+	
 					goodNoteHit(note);
-
+	
 					popUpScore(timing);
 				}
-			});
+			}
 		}
 
 		if (downP && !botplay)
@@ -2237,9 +2248,8 @@ class PlayState extends MusicBeatState
 				
 				noteMiss(1);
 			}
-			notes.forEachAlive(function(note:Note)
-			{
-				if (!note.wasGoodHit && note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed)
+			for (note in possibleNotes) {
+				if (!note.wasGoodHit && note.noteData == 1 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !downPressed && note.alive)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						downPressed = true;
@@ -2248,12 +2258,12 @@ class PlayState extends MusicBeatState
 					// find timing.
 					var timing = note.y - strumY;
 					trace('DOWN TIMING ' + timing);
-
+	
 					goodNoteHit(note);
-
+	
 					popUpScore(timing);
 				}
-			});
+			}
 		}
 
 		if (leftP && !botplay)
@@ -2265,9 +2275,8 @@ class PlayState extends MusicBeatState
 
 				noteMiss(0);
 			}
-			notes.forEachAlive(function(note:Note)
-			{
-				if (!note.wasGoodHit && note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed)
+			for (note in possibleNotes) {
+				if (!note.wasGoodHit && note.noteData == 0 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !leftPressed && note.alive)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						leftPressed = true;
@@ -2276,12 +2285,12 @@ class PlayState extends MusicBeatState
 					// find timing.
 					var timing = note.y - strumY;
 					trace('LEFT TIMING ' + timing);
-
+	
 					goodNoteHit(note);
-
+	
 					popUpScore(timing);
 				}
-			});
+			}
 		}
 
 		if (rightP && !botplay)
@@ -2293,9 +2302,8 @@ class PlayState extends MusicBeatState
 
 				noteMiss(3);
 			}
-			notes.forEachAlive(function(note:Note)
-			{
-				if (!note.wasGoodHit && note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed)
+			for (note in possibleNotes) {
+				if (!note.wasGoodHit && note.noteData == 3 && note.mustPress && FlxG.overlap(playerStrums, note) && !note.isSustainNote && !rightPressed && note.alive)
 				{
 					if (Option.recieveValue("GAMEPLAY_difficultJacks") == 1)
 						rightPressed = true;
@@ -2304,12 +2312,12 @@ class PlayState extends MusicBeatState
 					// find timing.
 					var timing = note.y - strumY;
 					trace('RIGHT TIMING ' + timing);
-
+	
 					goodNoteHit(note);
-
+	
 					popUpScore(timing);
 				}
-			});
+			}
 		}
 
 		if (up && !botplay)
