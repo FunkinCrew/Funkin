@@ -187,6 +187,7 @@ class ChartingState extends MusicBeatState
 		"W/S: Scroll\n" +
 		"SHIFT + W/S: Change song speed\n" +
 		"A/D: Change section\n" +
+		"E/Q: Change Sustain length\n" +
 		"CTRL + Click note: Select note\n" +
 		"Click note: Delete note\n" +
 		"ENTER: Exit\n";
