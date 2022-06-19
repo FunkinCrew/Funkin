@@ -82,7 +82,10 @@ class SimpleInfoDisplay extends TextField
 
     function memory_Function()
     {
-		var mem:Float = Math.abs(Math.round(System.totalMemory / 1024 / 1024 * 100)/100);
+		var mem:Float = Math.fround(System.totalMemory / 1024.0 / 1024.0 * 100.0) / 100.0;
+
+		if(mem != Math.abs(mem))
+			mem = 2048.0 + (2048.0 - Math.abs(mem));
 		
 		if(mem > memPeak) memPeak = mem;
 
