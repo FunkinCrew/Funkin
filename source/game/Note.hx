@@ -179,7 +179,7 @@ class Note extends FlxSprite
 
 		if (mustPress)
 		{
-			var funcyOffset:Float = FlxMath.remapToRange(PlayState.SONG.speed, 1, 3, 0.75, 0.6);
+			var funcyOffset:Float = FlxMath.remapToRange(PlayState.SONG.speed, 1, 3, 0.75, 0.5);
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
 				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * funcyOffset))
 				canBeHit = true;
