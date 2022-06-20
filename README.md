@@ -32,7 +32,7 @@ IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN 
 
 - [thepercentageguy](https://twitter.com/PercentageGuy) - Main Developer
 
-- [SpunBlue](https://twitter.com/SpunBlue) - MacOS and Windows builds
+- [SpunBlue](https://twitter.com/SpunBlue) - Windows builds
 
 - [Trigger](https://www.instagram.com/trigger_drawings/) - Logo
 
