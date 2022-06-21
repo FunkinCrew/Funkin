@@ -42,7 +42,7 @@ body:
     id: logs
     attributes:
       label: Relevant Console Logs
-      description: Run the game through a console and paste the relevant console output here.
+      description: Please attach the log.txt file here
     validations:
       required: true
   - type: input
