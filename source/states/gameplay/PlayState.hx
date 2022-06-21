@@ -70,6 +70,8 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	public static var startFrom:Float;
+
 	public static var misses:Int;
 
 	public static var curStage:String = '';
@@ -1138,7 +1140,7 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
-			FlxG.sound.music.play();
+			FlxG.sound.music.play(true, startFrom);
 
 			/*
 			if (FileSystem.exists(Paths.inst(PlayState.SONG.song)))
@@ -1159,7 +1161,7 @@ class PlayState extends MusicBeatState
 			*/
 		}
 		FlxG.sound.music.onComplete = endSong;
-		vocals.play();
+		vocals.play(true, startFrom);
 
 		#if desktop
 		// Song duration in a float, useful for the time left feature
@@ -1182,11 +1184,11 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		// preloading :OOO
-		FlxG.sound.music.loadEmbedded(Modding.getInst(PlayState.SONG.song, Modding.findModOfName(mod)));
+		FlxG.sound.music.loadEmbedded(Modding.getInst(SONG.song, Modding.findModOfName(mod)));
 
 		if (SONG.needsVoices)
 		{
-			vocals = new FlxSound().loadEmbedded(Modding.getVoices(PlayState.SONG.song, Modding.findModOfName(mod)));
+			vocals = new FlxSound().loadEmbedded(Modding.getVoices(SONG.song, Modding.findModOfName(mod)));
 			
 			/*
 			if (FileSystem.exists(Paths.voices(PlayState.SONG.song)))
@@ -1648,14 +1650,14 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		if (generatedMusic && SONG.notes[Std.int(curStep / 16)] != null)
 		{
 			if (curBeat % 4 == 0)
 			{
 				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
 
-			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if (camFollow.x != dad.getMidpoint().x + 150 && !SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
@@ -1681,7 +1683,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
+			if (SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
 				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
 
@@ -1974,9 +1976,10 @@ class PlayState extends MusicBeatState
 				prevCamFollow = camFollow;
 
 				// TODO: ADD THIS
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0], mod != "" ? Modding.findModOfName(mod) : null);
+				SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0], mod != "" ? Modding.findModOfName(mod) : null);
 				FlxG.sound.music.stop();
 
+				startFrom = 0;
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}

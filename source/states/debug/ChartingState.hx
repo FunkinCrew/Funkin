@@ -198,7 +198,8 @@ class ChartingState extends MusicBeatState
 		"ALT + Click: Add alt note\n" +
 		"C: Copy note data\n" +
 		"V: Paste note data\n" +
-		"ENTER: Exit\n";
+		"ENTER: Start Song\n" +
+		"CTRL + ENTER: Start Song here";
 		add(helperTxt);
 
 		addSongUI();
@@ -770,12 +771,20 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.ENTER)
 		{
-			lastSection = curSection;
-
+			if (FlxG.keys.pressed.CONTROL)
+			{
+				PlayState.startFrom = Conductor.songPosition;
+			}
+			else
+			{
+				PlayState.startFrom = 0;
+			}
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new PlayState());
+			lastSection = curSection;
+
 		}
 
 		if (FlxG.keys.justPressed.C)

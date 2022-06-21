@@ -382,6 +382,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase(), weekModded[weekNames[curWeek]] != null ? Modding.findModOfName(weekModded[weekNames[curWeek]]) : null);
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
+			PlayState.startFrom = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				LoadingState.loadAndSwitchState(new PlayState(), true);
