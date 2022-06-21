@@ -1,5 +1,7 @@
 package;
 
+import sys.io.File;
+import sys.FileSystem;
 import lime.app.Application;
 import states.menu.TitleState;
 import flixel.FlxGame;
@@ -31,6 +33,8 @@ class Main extends Sprite
 	{
 		super();
 
+		if (FileSystem.exists("./log.txt"))
+			FileSystem.deleteFile("./log.txt");
 		
 		if (stage != null)
 		{
@@ -52,6 +56,24 @@ class Main extends Sprite
 		#if debug
 		Application.current.window.title += " [DEBUG]";
 		#end
+
+		// custom function to replace trace() calls
+		haxe.Log.trace = function(v:Dynamic, ?infos:haxe.PosInfos)
+		{
+			var date = new Date(2022, 6, 21, 7, 21, 0);
+			date = Date.now();
+			
+			var finalStr = '(${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()})[${infos.className} -> ${infos.methodName} at ${infos.lineNumber}]: $v';
+			Sys.println(finalStr);
+			if (!FileSystem.exists("./log.txt"))
+			{
+				File.saveContent('./log.txt', 'LOG FILE\n${date.getUTCDate()}.${date.getUTCMonth()}.${date.getUTCFullYear()} at ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()} (All times are kept in UTC)\n');
+			}
+
+			var fHandle = File.append("./log.txt");
+			fHandle.writeString(finalStr + '\n');
+			fHandle.close();
+		}
 	}
 
 	private function init(?E:Event):Void

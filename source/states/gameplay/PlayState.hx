@@ -2189,7 +2189,7 @@ class PlayState extends MusicBeatState
 					
 					// find timing.
 					var timing = note.y - strumY;
-					trace('BP TIMING ' + timing);
+					//trace('BP TIMING ' + timing);
 
 					goodNoteHit(note);
 
@@ -2230,7 +2230,7 @@ class PlayState extends MusicBeatState
 					
 					// find timing.
 					var timing = note.y - strumY;
-					trace('UP TIMING ' + timing);
+					//trace('UP TIMING ' + timing);
 	
 					goodNoteHit(note);
 	
@@ -2257,7 +2257,7 @@ class PlayState extends MusicBeatState
 					
 					// find timing.
 					var timing = note.y - strumY;
-					trace('DOWN TIMING ' + timing);
+					//trace('DOWN TIMING ' + timing);
 	
 					goodNoteHit(note);
 	
@@ -2284,7 +2284,7 @@ class PlayState extends MusicBeatState
 					
 					// find timing.
 					var timing = note.y - strumY;
-					trace('LEFT TIMING ' + timing);
+					//trace('LEFT TIMING ' + timing);
 	
 					goodNoteHit(note);
 	
@@ -2311,7 +2311,7 @@ class PlayState extends MusicBeatState
 					
 					// find timing.
 					var timing = note.y - strumY;
-					trace('RIGHT TIMING ' + timing);
+					//trace('RIGHT TIMING ' + timing);
 	
 					goodNoteHit(note);
 	
