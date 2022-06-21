@@ -1,6 +1,10 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.4.3] - ?/?/????
+### Added
+- Zoom in the chart edtior.
+
 ## [0.4.2] - 6/14/2022
 ### Added
 - Week 7 Lmfao (took like 1 year to be allowed to add it back but here we are)
