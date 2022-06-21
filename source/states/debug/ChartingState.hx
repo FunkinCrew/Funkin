@@ -85,6 +85,7 @@ class ChartingState extends MusicBeatState
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
 	var curSelectedNote:Array<Dynamic>;
+	var curCopiedNote:Array<Dynamic>;
 	var selecNoteSprite:FlxSprite;
 
 	var tempBpm:Int = 0;
@@ -180,7 +181,7 @@ class ChartingState extends MusicBeatState
 		UI_box.y = 20;
 		add(UI_box);
 
-		var helperTxt = new FlxText(UI_box.x, UI_box.y + UI_box.height + 10, 0, "", 16);
+		var helperTxt = new FlxText(UI_box.x, UI_box.y + UI_box.height + 10, 0, "", 12);
 		helperTxt.scrollFactor.set();
 		helperTxt.text =
 		"CONTROLS:\n" + 
@@ -195,6 +196,8 @@ class ChartingState extends MusicBeatState
 		"SHIFT + Click: Add note off-grid\n" +
 		"CTRL + Click: Add note on both sides\n" +
 		"ALT + Click: Add alt note\n" +
+		"C: Copy note data\n" +
+		"V: Paste note data\n" +
 		"ENTER: Exit\n";
 		add(helperTxt);
 
@@ -773,6 +776,24 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new PlayState());
+		}
+
+		if (FlxG.keys.justPressed.C)
+		{
+			if (curSelectedNote != null)
+			{
+				curCopiedNote = curSelectedNote;
+			}
+		}
+
+		if (FlxG.keys.justPressed.V)
+		{
+			if (curSelectedNote != null)
+			{
+				curSelectedNote[2] = curCopiedNote[2];
+				curSelectedNote[3] = curCopiedNote[3];
+				updateNoteUI();
+			}
 		}
 
 		if (FlxG.keys.justPressed.E)

@@ -1138,7 +1138,7 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
-			FlxG.sound.playMusic(Modding.getInst(PlayState.SONG.song, Modding.findModOfName(mod)));
+			FlxG.sound.music.play();
 
 			/*
 			if (FileSystem.exists(Paths.inst(PlayState.SONG.song)))
@@ -1180,6 +1180,9 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;
+
+		// preloading :OOO
+		FlxG.sound.music.loadEmbedded(Modding.getInst(PlayState.SONG.song, Modding.findModOfName(mod)));
 
 		if (SONG.needsVoices)
 		{
