@@ -398,7 +398,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 			case 'bf-pixel-dead':
-				frames = Modding.getSparrow("weeb/bfPixelDEAD", ["week6"], Modding.findModOfName(PlayState.mod));
+				frames = Modding.getSparrow("weeb/bfPixelsDEAD", ["week6"], Modding.findModOfName(PlayState.mod));
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
 				animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
 				animation.addByPrefix('deathLoop', "Retry Loop", 24, true);

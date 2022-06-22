@@ -1537,7 +1537,8 @@ class PlayState extends MusicBeatState
 			scoreSmallTxt.text = 'SCORE: $songScore\n'+
 			'S: $sicks - G: $goods - B: $bads - S: $shits\n' +
 			'M: $misses\n' +
-			'A: $accuracy%';
+			'A: $accuracy%\n' +
+			(Option.recieveValue("FUN_instadeath") == 1 ? "INSTADEATH ENABLED" : "");
 		}
 		
 		// scoreTextMode 1 = compact
@@ -1547,7 +1548,8 @@ class PlayState extends MusicBeatState
 			'Combo: ${combo} - '+
 			'Misses: ${misses} - ' +
 			// 'Hit %: ${(sicks + goods + bads + shits + misses == 0) ? 0 : (sicks + goods + bads + shits) / (sicks + goods + bads + shits + misses) * 100}% - ' +
-			'Accuracy: ${accuracy}%'
+			'Accuracy: ${accuracy}%' +
+			(Option.recieveValue("FUN_instadeath") == 1 ? " - INSTADEATH ENABLED" : "")
 			: 'BOTPLAY ENABLED';
 		}
 
@@ -1879,6 +1881,8 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
+						if (Option.recieveValue("FUN_instadeath") == 1)
+							health = 0;
 						misses++;
 						combo = 0;
 						health -= 0.0475;
@@ -2458,6 +2462,9 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
+		if (Option.recieveValue("FUN_instadeath") == 1)
+			health = 0;
+
 		if (!boyfriend.stunned)
 		{
 			misses++;

@@ -72,6 +72,9 @@ class OptionsMenu extends MusicBeatState
 					FlxG.switchState(new KeybindState());
 				}),
 			]),
+			new OptionGroup("Fun", [
+				new CycleOption("Instadeath %v", "For those who want an actual challenge", ["Off", "On"], "FUN_instadeath")
+			]),
 			new OptionGroup("Misc", [
 				new FunctionOption("Mod Manager", "Opens the mod manager.", () -> {
 					FlxG.switchState(new ModManagerState());
