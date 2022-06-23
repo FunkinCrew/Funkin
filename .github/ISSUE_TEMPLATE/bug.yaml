@@ -42,9 +42,9 @@ body:
     id: logs
     attributes:
       label: Relevant Console Logs
-      description: Please attach the log.txt file here
+      description: Please attach the log.txt file here, if you are on a version without logs, leave this blank.
     validations:
-      required: true
+      required: false
   - type: input
     id: version
     attributes:
