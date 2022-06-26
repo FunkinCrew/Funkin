@@ -1,0 +1,1 @@
+JS Builds are not officially supported, i know there will be a shitton of errors, and i won't help you fix them. the mod API is not designed to be JS compatable!
