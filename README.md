@@ -2,6 +2,8 @@
 
 ---
 
+[![Build](https://github.com/thepercentageguy/FNFSharp/actions/workflows/main.yml/badge.svg)](https://github.com/thepercentageguy/FNFSharp/actions/workflows/main.yml)
+
 Yes, the name is a music joke and a programming joke at the same time.
 
 No, I won't change it.
