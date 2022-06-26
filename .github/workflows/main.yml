@@ -61,7 +61,7 @@ jobs:
     runs-on: windows-latest
   
     steps:
-     - uses: actions/checkout@2.3.0
+     - uses: actions/checkout@v2.3.0
    
      - uses: krdlab/setup-haxe@master
        with:
@@ -100,7 +100,7 @@ jobs:
     runs-on: macos-latest
   
     steps:
-     - uses: actions/checkout@2.3.0
+     - uses: actions/checkout@v2.3.0
    
      - uses: krdlab/setup-haxe@master
        with:
