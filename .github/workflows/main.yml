@@ -52,7 +52,7 @@ jobs:
       - name: Compile
         run: haxelib run lime build Project.xml linux --app-version="4.0.0-${{ github.run_id}}"
       - name: Publish Artifact
-        uses: actions/upload-artifact@2.2.4
+        uses: actions/upload-artifact@v2.2.4
         with:
           name: linuxBuild
           path: 'export/release/linux/bin'
@@ -91,7 +91,7 @@ jobs:
      - name: Compile
        run: haxelib run lime build Project.xml windows --app-version="4.0.0-${{ github.run_id}}"
      - name: Publish Artifact
-       uses: actions/upload-artifact@2.2.4
+       uses: actions/upload-artifact@v2.2.4
        with:
         name: windowsBuild
         path: 'export/release/windows/bin'
@@ -129,7 +129,7 @@ jobs:
      - name: Compile
        run: haxelib run lime build Project.xml mac --app-version="4.0.0-${{ github.run_id}}"
      - name: Publish Artifact
-       uses: actions/upload-artifact@2.2.4
+       uses: actions/upload-artifact@v2.2.4
        with:
         name: macBuild
         path: 'export/release/macos/bin'
