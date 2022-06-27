@@ -49,6 +49,6 @@ body:
     id: version
     attributes:
       label: Version
-      description: What version of our software are you running?
+      description: What version of our software are you running? (If using a non-release build, just type WB-[build number])
     validations:
       required: true
