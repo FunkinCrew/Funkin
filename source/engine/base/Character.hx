@@ -510,6 +510,7 @@ class Character extends FlxSprite
 					animation.addByPrefix(anim.name, anim.anim, 24, false);
 					addOffset(anim.name, anim.offsetX, anim.offsetY);
 				}
+				flipX = curchar.flipX;
 		}
 
 		dance();

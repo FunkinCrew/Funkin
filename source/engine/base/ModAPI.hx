@@ -246,6 +246,7 @@ typedef CusChar = {
 	var name:String;
 	var graphic:String;
     var color:String;
+    var flipX:Bool;
 	var animations:Array<CharAnim>;
 }
 
