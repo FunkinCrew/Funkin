@@ -14,7 +14,7 @@ class DiscordClient
 		#if cpp
 		trace("Discord Client starting...");
 		DiscordRpc.start({
-			clientID: "814588678700924999",
+			clientID: "991042339101347860",
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected
@@ -76,9 +76,8 @@ class DiscordClient
 		#end
 	}
 
-	public static function changePresence(details:String, state:Null<String>, ?smallImageKey : String, ?hasStartTimestamp : Bool, ?endTimestamp: Float)
+	public static function changePresence(details:String, state:Null<String>, ?hasStartTimestamp : Bool, ?endTimestamp: Float)
 	{
-		#if
 		var startTimestamp:Float = if(hasStartTimestamp) Date.now().getTime() else 0;
 
 		if (endTimestamp > 0)
@@ -91,13 +90,12 @@ class DiscordClient
 			state: state,
 			largeImageKey: 'icon',
 			largeImageText: "Friday Night Funkin'",
-			smallImageKey : smallImageKey,
+			// smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp : Std.int(startTimestamp / 1000),
             endTimestamp : Std.int(endTimestamp / 1000)
 		});
 
 		//trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
-		#end
 	}
 }

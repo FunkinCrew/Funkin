@@ -77,6 +77,7 @@ class PlayState extends MusicBeatState
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
+	public static var isModded:Bool = false;
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
@@ -289,7 +290,7 @@ class PlayState extends MusicBeatState
 		detailsPausedText = "Paused - " + detailsText;
 		
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")");
 		#end
 
 		switch (SONG.song.toLowerCase())
@@ -651,7 +652,7 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			gfVersion = 'gf-car';
 		
-		if (SONG.gf != null || SONG.gf != "")
+		if (SONG.gf.length > 0)
 			gfVersion = SONG.gf;
 			
 		gf = new Character(400, 130, gfVersion);
@@ -1171,7 +1172,7 @@ class PlayState extends MusicBeatState
 		songLength = FlxG.sound.music.length;
 
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", true, songLength);
 		#end
 	}
 
@@ -1443,11 +1444,11 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", true, songLength - Conductor.songPosition);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")");
 			}
 			#end
 		}
@@ -1462,11 +1463,11 @@ class PlayState extends MusicBeatState
 		{
 			if (Conductor.songPosition > 0.0)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", true, songLength - Conductor.songPosition);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")");
 			}
 		}
 		#end
@@ -1479,7 +1480,7 @@ class PlayState extends MusicBeatState
 		#if desktop
 		if (health > 0 && !paused)
 		{
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")");
 		}
 		#end
 
@@ -1572,7 +1573,7 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
 			#if desktop
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")");
 			#end
 		}
 
@@ -1581,7 +1582,7 @@ class PlayState extends MusicBeatState
 			FlxG.switchState(new ChartingState());
 
 			#if desktop
-			DiscordClient.changePresence("Chart Editor", null, null, true);
+			DiscordClient.changePresence("Chart Editor", null, null);
 			#end
 		}
 
@@ -1786,7 +1787,7 @@ class PlayState extends MusicBeatState
 			
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
-			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")");
 			#end
 		}
 
