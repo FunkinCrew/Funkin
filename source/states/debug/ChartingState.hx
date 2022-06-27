@@ -198,7 +198,7 @@ class ChartingState extends MusicBeatState
 		"ENTER: Start Song\n" +
 		"CTRL + ENTER: Start Song here";
 		add(helperTxt);
-		
+
 		add(UI_box);
 		
 		addSongUI();
@@ -488,16 +488,12 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.music.onComplete = function()
 		{
-			// idk this fixes things
-			if (FlxG.sound.music.time >= FlxG.sound.music.length)
-			{
-				vocals.pause();
-				vocals.time = 0;
-				FlxG.sound.music.pause();
-				FlxG.sound.music.time = 0;
-				trace("I think we're done lol");
-				changeSection();
-			}
+			vocals.pause();
+			vocals.time = 0;
+			FlxG.sound.music.pause();
+			FlxG.sound.music.time = 0;
+			trace("I think we're done lol");
+			changeSection();
 		};
 	}
 
@@ -604,17 +600,6 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		// idk this fixes things
-		if (FlxG.sound.music.time >= FlxG.sound.music.length)
-		{
-			vocals.pause();
-			vocals.time = 0;
-			FlxG.sound.music.pause();
-			FlxG.sound.music.time = 0;
-			trace("I think we're done lol");
-			changeSection();
-		}
-
 		if (selecNoteSprite != null)
 		{
 			selecNoteSprite.alpha = Math.sin(sini);
