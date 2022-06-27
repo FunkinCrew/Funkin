@@ -83,7 +83,8 @@ class OptionsMenu extends MusicBeatState
 				new FunctionOption("Reset Everything", "Resets everything stored in the save file.", () -> {
 					resetBinds();
 					FlxG.save.erase();
-				})
+				}),
+				// new CycleOption("Enable experimental charter %v", "Enable new charter", ["Off", "On"], "MISC_newCharter")
 			]),
 		];
 
