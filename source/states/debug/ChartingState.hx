@@ -177,8 +177,7 @@ class ChartingState extends MusicBeatState
 		UI_box.resize(300, 400);
 		UI_box.x = FlxG.width / 2;
 		UI_box.y = 20;
-		add(UI_box);
-
+		
 		var helperTxt = new FlxText(UI_box.x, UI_box.y + UI_box.height + 10, 0, "", 12);
 		helperTxt.scrollFactor.set();
 		helperTxt.text =
@@ -199,7 +198,9 @@ class ChartingState extends MusicBeatState
 		"ENTER: Start Song\n" +
 		"CTRL + ENTER: Start Song here";
 		add(helperTxt);
-
+		
+		add(UI_box);
+		
 		addSongUI();
 		addSectionUI();
 		addNoteUI();
@@ -368,10 +369,10 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
-		tab_group_song.add(player1DropDown);
-		tab_group_song.add(player2DropDown);
 		tab_group_song.add(stepperSection);
 		tab_group_song.add(moveButton);
+		tab_group_song.add(player1DropDown);
+		tab_group_song.add(player2DropDown);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
