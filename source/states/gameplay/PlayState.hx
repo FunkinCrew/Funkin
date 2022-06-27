@@ -647,10 +647,13 @@ class PlayState extends MusicBeatState
 			case 'schoolEvil':
 				gfVersion = 'gf-pixel';
 		}
-
+		
 		if (curStage == 'limo')
 			gfVersion = 'gf-car';
-
+		
+		if (SONG.gf != null || SONG.gf != "")
+			gfVersion = SONG.gf;
+			
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
