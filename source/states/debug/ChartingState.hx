@@ -98,8 +98,6 @@ class ChartingState extends MusicBeatState
 	var dumbShitNotesLEFT:FlxTypedGroup<FlxSprite>;
 	var dumbShitNotesRIGHT:FlxTypedGroup<FlxSprite>;
 
-	var speed:Float = 1;
-
 	override function create()
 	{	
 		curSection = lastSection;
@@ -187,7 +185,7 @@ class ChartingState extends MusicBeatState
 		"CONTROLS:\n" + 
 		"\n" +
 		"W/S: Scroll\n" +
-		"SHIFT + W/S: Change song speed\n" +
+		// buggy *insert shrug* "SHIFT + W/S: Change song speed\n" +
 		"A/D: Change section\n" +
 		"E/Q: Change Sustain length\n" +
 		"CTRL + Click note: Select note\n" +
@@ -489,11 +487,16 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.music.onComplete = function()
 		{
-			vocals.pause();
-			vocals.time = 0;
-			FlxG.sound.music.pause();
-			FlxG.sound.music.time = 0;
-			changeSection();
+			// idk this fixes things
+			if (FlxG.sound.music.time >= FlxG.sound.music.length)
+			{
+				vocals.pause();
+				vocals.time = 0;
+				FlxG.sound.music.pause();
+				FlxG.sound.music.time = 0;
+				trace("I think we're done lol");
+				changeSection();
+			}
 		};
 	}
 
@@ -600,12 +603,24 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		// idk this fixes things
+		if (FlxG.sound.music.time >= FlxG.sound.music.length)
+		{
+			vocals.pause();
+			vocals.time = 0;
+			FlxG.sound.music.pause();
+			FlxG.sound.music.time = 0;
+			trace("I think we're done lol");
+			changeSection();
+		}
+
 		if (selecNoteSprite != null)
 		{
 			selecNoteSprite.alpha = Math.sin(sini);
 			sini += 0.1;
 		}
 
+		/* buggy AF
 		if (FlxG.sound.music != null)
 		{
 			if (FlxG.sound.music.playing)
@@ -632,6 +647,7 @@ class ChartingState extends MusicBeatState
 				}
 			}
 		}
+		*/
 
 
 		curStep = recalculateSteps();
@@ -830,19 +846,6 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		if (FlxG.keys.pressed.SHIFT)
-		{
-			if (FlxG.keys.justPressed.W)
-				speed += 0.1;
-			else if (FlxG.keys.justPressed.S)
-				speed -= 0.1;
-
-			if (speed > 3)
-				speed = 3;
-			if (speed <= 0.01)
-				speed = 0.1;
-		}
-
 		if (!typingShit.hasFocus && !funnyBox.hasFocus)
 		{
 			if (FlxG.keys.justPressed.SPACE)
@@ -935,9 +938,7 @@ class ChartingState extends MusicBeatState
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ "\nSection: "
-			+ curSection
-			+ "\nSpeed: "
-			+ Std.string(FlxMath.roundDecimal(speed, 2));
+			+ curSection;
 		super.update(elapsed);
 	}
 
