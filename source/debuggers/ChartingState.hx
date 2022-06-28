@@ -926,17 +926,19 @@ class ChartingState extends MusicBeatState
 		if (vocals != null)
 			vocals.stop();
 
-		if(openfl.Assets.cache.hasSound(Paths.inst(daSong, difficulty.toLowerCase())))
-			openfl.Assets.cache.removeSound(Paths.inst(daSong, difficulty.toLowerCase()));
+		var difficulty_name:String =  _song.specialAudioName == null ? difficulty.toLowerCase() : _song.specialAudioName;
 
-		if(openfl.Assets.cache.hasSound(Paths.voices(daSong, difficulty.toLowerCase())))
-			openfl.Assets.cache.removeSound(Paths.voices(daSong, difficulty.toLowerCase()));
+		if(openfl.Assets.cache.hasSound(Paths.inst(daSong, difficulty_name)))
+			openfl.Assets.cache.removeSound(Paths.inst(daSong, difficulty_name));
 
-		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong, difficulty.toLowerCase()));
+		if(openfl.Assets.cache.hasSound(Paths.voices(daSong, difficulty_name)))
+			openfl.Assets.cache.removeSound(Paths.voices(daSong, difficulty_name));
+
+		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong, difficulty_name));
 		FlxG.sound.music.persist = true;
 		
 		if (_song.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong, difficulty.toLowerCase()));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong, difficulty_name));
 		else
 			vocals = new FlxSound();
 
