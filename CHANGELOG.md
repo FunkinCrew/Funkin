@@ -1,6 +1,12 @@
 # Changelog
 All notable changes will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+
 ## [0.4.2] - 6/14/2022
 ### Added
 - Week 7 Lmfao (took like 1 year to be allowed to add it back but here we are)
@@ -173,7 +179,7 @@ All notable changes will be documented in this file.
 - Version System (aka if newer version out, game tell u :DDDDDDDD)!
 - Custom Storymode Difficulties
 
-## [0.3] - 10/23/2021
+## [0.3.0] - 10/23/2021
 ### Added
 - Revamped options menu with checkboxes and other things.
 - A rank while playing.
@@ -212,7 +218,7 @@ All notable changes will be documented in this file.
 ### Removed
 - Week 7 has been removed because gamebanana and stuff.
 
-## [0.2] - 7/7/2021
+## [0.2.0] - 7/7/2021
 ### Added
 - A stage editor / stage viewer.
 - Note splashes when you hit a sick!
@@ -244,7 +250,7 @@ All notable changes will be documented in this file.
 - When hitting notes REALLY close together on the new input system, the game may sometimes allow you to hit multiple notes at once.
 - Pressing "Beat Hit" in the stage editor on "Spooky" stage, may cause the game to crash.
 
-## [0.1] - 6/18/2021
+## [0.1.0] - 6/18/2021
 ### Added
 - An Options Menu.
 - Custom controls option.
@@ -272,6 +278,6 @@ All notable changes will be documented in this file.
 ### Known Issues
 - I do know that GF's layering on the limo stage is broken, but I have not found a solution to fixing this yet without just seperating the limo from it's stage.
 
-## [0.0] - 6/18/2021
+## [0.0.0] - 6/18/2021
 ### Added
-- Nothing this is just 0.2.7.1 of FnF
+- Nothing this is just v0.2.7.1 of FnF
