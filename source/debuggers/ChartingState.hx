@@ -957,18 +957,6 @@ class ChartingState extends MusicBeatState
 		};
 	}
 
-	function generateUI():Void
-	{
-		while (bullshitUI.members.length > 0)
-		{
-			bullshitUI.remove(bullshitUI.members[0], true);
-		}
-
-		// general shit
-		var title:FlxText = new FlxText(UI_box.x + 20, UI_box.y + 20, 0);
-		bullshitUI.add(title);
-	}
-
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
 	{
 		if (id == FlxUICheckBox.CLICK_EVENT)
@@ -1573,14 +1561,6 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 
-				/*var daNum:Int = 0;
-					var daLength:Float = 0;
-					while (daNum <= sec)
-					{
-						daLength += lengthBpmBullshit();
-						daNum++;
-				}*/
-
 				FlxG.sound.music.time = sectionStartTime();
 				vocals.time = FlxG.sound.music.time;
 				updateCurStep();
@@ -2039,16 +2019,6 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	function clearSong():Void
-	{
-		for (daSection in 0..._song.notes.length)
-		{
-			_song.notes[daSection].sectionNotes = [];
-		}
-
-		updateGrid();
-	}
-
 	var eventName:String = "Change Character";
 	var eventValue1:String = "Dad";
 	var eventValue2:String = "spooky";
@@ -2112,25 +2082,6 @@ class ChartingState extends MusicBeatState
 	function getYfromStrum(strumTime:Float):Float
 	{
 		return FlxMath.remapToRange(strumTime * zoom_level, 0, (Conductor.stepsPerSection * zoom_level) * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
-	}
-
-	private var daSpacing:Float = 0.3;
-
-	function loadLevel():Void
-	{
-		trace(_song.notes);
-	}
-
-	function getNotes():Array<Dynamic>
-	{
-		var noteData:Array<Dynamic> = [];
-
-		for (i in _song.notes)
-		{
-			noteData.push(i.sectionNotes);
-		}
-
-		return noteData;
 	}
 
 	function loadJson(song:String, ?diff:String):Void
