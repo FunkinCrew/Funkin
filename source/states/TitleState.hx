@@ -5,7 +5,6 @@ import utilities.NoteVariables;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
-
 import flixel.system.FlxVersion;
 import substates.OutdatedSubState;
 import openfl.Lib;
@@ -63,13 +62,13 @@ class TitleState extends MusicBeatState
 	{
 		MusicBeatState.windowNameSuffix = "";
 
-		if(!firstTimeStarting)
+		if (!firstTimeStarting)
 		{
 			persistentUpdate = true;
 			persistentDraw = true;
-	
+
 			FlxG.fixedTimestep = false;
-	
+
 			SaveData.init();
 
 			#if desktop
@@ -82,26 +81,28 @@ class TitleState extends MusicBeatState
 
 			Options.fixBinds();
 
-			if(utilities.Options.getData("flashingLights") == null)
+			if (utilities.Options.getData("flashingLights") == null)
 				FlxG.switchState(new FlashingLightsMenu());
-	
+
 			curWacky = FlxG.random.getObject(getIntroTextShit());
 
 			super.create();
-	
+
 			#if discord_rpc
-			if(!DiscordClient.started && utilities.Options.getData("discordRPC"))
+			if (!DiscordClient.started && utilities.Options.getData("discordRPC"))
 				DiscordClient.initialize();
 
-			Application.current.onExit.add(function (exitCode) {
+			Application.current.onExit.add(function(exitCode)
+			{
 				DiscordClient.shutdown();
 			}, false, 100);
 			#end
 
-			Application.current.onExit.add(function (exitCode) {
-				for(key in Options.saves.keys())
+			Application.current.onExit.add(function(exitCode)
+			{
+				for (key in Options.saves.keys())
 				{
-					if(key != null)
+					if (key != null)
 						Options.saves.get(key).close();
 				}
 			}, false, 101);
@@ -109,10 +110,7 @@ class TitleState extends MusicBeatState
 			firstTimeStarting = true;
 		}
 
-		new FlxTimer().start(1, function(tmr:FlxTimer)
-		{
-			startIntro();
-		});
+		new FlxTimer().start(1, function(tmr:FlxTimer) startIntro());
 	}
 
 	var old_logo:FlxSprite;
@@ -153,15 +151,15 @@ class TitleState extends MusicBeatState
 			// https://github.com/HaxeFlixel/flixel-addons/pull/348
 
 			if (utilities.Options.getData("oldTitle"))
-			{
 				playTitleMusic();
-			}
-			else {
+			else
+			{
 				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || utilities.Options.getData("nightMusic"))
 				{
 					playTitleMusic();
 					Conductor.changeBPM(117);
-				} else
+				}
+				else
 				{
 					playTitleMusic();
 					Conductor.changeBPM(102);
@@ -177,7 +175,7 @@ class TitleState extends MusicBeatState
 			Main.changeFont(utilities.Options.getData("infoDisplayFont"));
 		}
 
-		version = MusicBeatState.windowNamePrefix + " Release v" + Assets.getText("version.txt");
+		version = '${MusicBeatState.windowNamePrefix}-git (v${Assets.getText("version.txt")})';
 
 		persistentUpdate = true;
 
@@ -209,8 +207,8 @@ class TitleState extends MusicBeatState
 		else
 		{
 			logoBl = new FlxSprite(0, 0);
-			
-			if(utilities.Options.getData("watermarks"))
+
+			if (utilities.Options.getData("watermarks"))
 				logoBl.frames = Paths.getSparrowAtlas('title/leatherLogoBumpin');
 			else
 				logoBl.frames = Paths.getSparrowAtlas('title/logoBumpin');
@@ -241,8 +239,7 @@ class TitleState extends MusicBeatState
 			add(gfDance);
 			add(titleText);
 		}
-
-		if (utilities.Options.getData("oldTitle"))
+		else
 		{
 			add(old_logo_black);
 			add(old_logo);
@@ -268,7 +265,7 @@ class TitleState extends MusicBeatState
 
 		FlxG.mouse.visible = false;
 
-		if(utilities.Options.getData("watermarks"))
+		if (utilities.Options.getData("watermarks"))
 			titleTextData = CoolUtil.coolTextFile(Paths.txt("watermarkTitleText", "preload"));
 		else
 			titleTextData = CoolUtil.coolTextFile(Paths.txt("titleText", "preload"));
@@ -300,12 +297,9 @@ class TitleState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
 		if (FlxG.keys.justPressed.F)
-		{
 			FlxG.fullscreen = !FlxG.fullscreen;
-		}
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
@@ -334,10 +328,10 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			if(titleText != null)
+			if (titleText != null)
 				titleText.animation.play('press');
 
-			if(utilities.Options.getData("flashingLights"))
+			if (utilities.Options.getData("flashingLights"))
 				FlxG.camera.flash(FlxColor.WHITE, 1);
 
 			if (utilities.Options.getData("oldTitle"))
@@ -346,22 +340,21 @@ class TitleState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 			transitioning = true;
-			// FlxG.sound.music.stop();
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				var http = new haxe.Http("https://raw.githubusercontent.com/Leather128/LeatherEngine/main/version.txt");
-				
+
 				http.onData = function(data:String)
 				{
 					trace(data);
 
 					var older:Bool = false;
 
-					if(Assets.getText("version.txt") != data)
+					if (Assets.getText("version.txt") != data)
 						older = true;
 
-				  	if(older)
+					if (older)
 					{
 						trace('outdated lmao! ' + data + ' != ' + Assets.getText("version.txt"));
 
@@ -371,12 +364,13 @@ class TitleState extends MusicBeatState
 					else
 						FlxG.switchState(new MainMenuState());
 				}
-				
-				http.onError = function(error) {
+
+				http.onError = function(error)
+				{
 					trace('error: $error');
 					FlxG.switchState(new MainMenuState()); // fail so we go anyway
 				}
-				
+
 				http.request();
 			});
 		}
@@ -417,9 +411,9 @@ class TitleState extends MusicBeatState
 	{
 		var lineText:Null<String> = titleTextData[line];
 
-		if(lineText != null)
+		if (lineText != null)
 		{
-			if(lineText.contains("~"))
+			if (lineText.contains("~"))
 			{
 				var coolText = lineText.split("~");
 				createCoolText(coolText);
@@ -439,92 +433,94 @@ class TitleState extends MusicBeatState
 		{
 			logoBl.animation.play('bump');
 			danceLeft = !danceLeft;
-	
+
 			if (danceLeft)
 				gfDance.animation.play('danceRight');
 			else
 				gfDance.animation.play('danceLeft');
-	
+
 			switch (curBeat)
 			{
 				case 1:
 					textDataText(0);
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 12";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 3:
 					textDataText(1);
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 11";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 4:
 					deleteCoolText();
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 10";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 5:
 					textDataText(2);
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 9";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 7:
 					textDataText(3);
 					ngSpr.visible = true;
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 8";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 8:
 					deleteCoolText();
 					ngSpr.visible = false;
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 7";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 9:
 					createCoolText([curWacky[0]]);
-					if(!skippedIntro)	
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 6";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 11:
 					addMoreText(curWacky[1]);
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 5";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 12:
 					deleteCoolText();
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 4";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 13:
 					textDataText(4);
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 3";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 14:
 					textDataText(5);
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 2";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 15:
 					textDataText(6);
-					if(!skippedIntro)
+					if (!skippedIntro)
 						MusicBeatState.windowNameSuffix = " 1";
 					else
 						MusicBeatState.windowNameSuffix = "";
 				case 16:
 					skipIntro();
 			}
-		} else {
+		}
+		else
+		{
 			remove(ngSpr);
 			remove(credGroup);
 			skippedIntro = true;
@@ -539,8 +535,8 @@ class TitleState extends MusicBeatState
 		if (!skippedIntro)
 		{
 			MusicBeatState.windowNameSuffix = "";
-			
-			if(utilities.Options.getData("flashingLights"))
+
+			if (utilities.Options.getData("flashingLights"))
 				FlxG.camera.flash(FlxColor.WHITE, 4);
 
 			remove(ngSpr);
