@@ -57,7 +57,7 @@ class TitleState extends MusicBeatState
 		// DEBUG BULLSHIT
 
 		super.create();
-		
+
 		NGio.noLogin(APIStuff.API);
 
 		#if ng
