@@ -1,15 +1,11 @@
 package;
 
 import openfl.text.TextFormat;
-import flixel.FlxG;
 import ui.SimpleInfoDisplay;
-import ui.MemoryCounter;
 import states.TitleState;
 import flixel.FlxGame;
 import flixel.FlxState;
-import openfl.Assets;
 import openfl.Lib;
-import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 
@@ -35,21 +31,15 @@ class Main extends Sprite
 		super();
 
 		if (stage != null)
-		{
 			init();
-		}
 		else
-		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
-		}
 	}
 
 	private function init(?E:Event):Void
 	{
 		if (hasEventListener(Event.ADDED_TO_STAGE))
-		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-		}
 
 		setupGame();
 	}
@@ -63,18 +53,12 @@ class Main extends Sprite
 		{
 			var ratioX:Float = stageWidth / gameWidth;
 			var ratioY:Float = stageHeight / gameHeight;
+
 			zoom = Math.min(ratioX, ratioY);
+
 			gameWidth = Math.ceil(stageWidth / zoom);
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
-
-		#if !cpp
-		framerate = 60;
-		#end
-
-		#if !debug
-		initialState = TitleState;
-		#end
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
@@ -87,33 +71,14 @@ class Main extends Sprite
 	public static var display:SimpleInfoDisplay;
 
 	public static function toggleFPS(fpsEnabled:Bool):Void
-	{
 		display.infoDisplayed[0] = fpsEnabled;
-	}
 
 	public static function toggleMem(memEnabled:Bool):Void
-	{
 		display.infoDisplayed[1] = memEnabled;
-	}
 	
 	public static function toggleVers(versEnabled:Bool):Void
-	{
 		display.infoDisplayed[2] = versEnabled;
-	}
 
 	public static function changeFont(font:String):Void
-	{
 		display.defaultTextFormat = new TextFormat(font, (font == "_sans" ? 12 : 14), display.textColor);
-	}
-
-	/* cool kade functions D) */
-	public function setFPSCap(cap:Float)
-	{
-		openfl.Lib.current.stage.frameRate = cap;
-	}
-
-	public function getFPSCap():Float
-	{
-		return openfl.Lib.current.stage.frameRate;
-	}
 }

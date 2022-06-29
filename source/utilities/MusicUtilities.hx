@@ -1,7 +1,5 @@
 package utilities;
 
-import flixel.FlxG;
-
 class MusicUtilities
 {
 
