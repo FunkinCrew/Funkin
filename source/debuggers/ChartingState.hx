@@ -1454,6 +1454,8 @@ class ChartingState extends MusicBeatState
 
 		if(Conductor.songPosition < 0)
 			Conductor.songPosition = 0;
+		if(FlxG.sound.music.time < 0)
+			FlxG.sound.music.time = 0;
 
 		bpmTxt.text = (
 			"Time: "
