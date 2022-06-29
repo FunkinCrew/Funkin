@@ -1,4 +1,4 @@
-name: Superlinter
+name: superlinter
 on: push
 jobs:
   lint:
