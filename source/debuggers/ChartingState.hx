@@ -1226,9 +1226,6 @@ class ChartingState extends MusicBeatState
 		if(_song.notes[curSection] == null)
 			addSection();
 
-		FlxG.watch.addQuick('daBeat', curBeat);
-		FlxG.watch.addQuick('daStep', curStep);
-
 		if (FlxG.mouse.justPressed)
 		{
 			var coolNess = true;
@@ -1454,6 +1451,9 @@ class ChartingState extends MusicBeatState
 
 		if(_song.notes[curSection].bpm <= 0)
 			_song.notes[curSection].bpm = 0.1;
+
+		if(Conductor.songPosition < 0)
+			Conductor.songPosition = 0;
 
 		bpmTxt.text = (
 			"Time: "

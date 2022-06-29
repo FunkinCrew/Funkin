@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Zoom in the chart edtior.
 ### Fixed
 - Bugs with charting state (specifically `specialAudioName` not working in it).
+- Bug where you can go to negative song position in the charter.
 
 ## [0.4.2] - 6/14/2022
 
