@@ -52,6 +52,7 @@ class ResultsScreenSubstate extends MusicBeatSubstate
         var graph:NoteGraph = new NoteGraph(PlayState.instance.replay, FlxG.width - 550, 25);
         add(graph);
 
+        FlxG.cameras.list[FlxG.cameras.list.length - 1].zoom = 1;
         cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
     }
 

@@ -67,7 +67,7 @@ class Character extends FlxSprite
 		switch (curCharacter)
 		{
 			case 'monster':
-				frames = Paths.getSparrowAtlas('characters/Monster_Assets', 'shared');
+				frames = Paths.getSparrowAtlas('characters/Monster_Assets');
 				animation.addByPrefix('idle', 'monster idle', 24, false);
 				animation.addByPrefix('singUP', 'monster up note', 24, false);
 				animation.addByPrefix('singDOWN', 'monster down', 24, false);
@@ -78,7 +78,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 				barColor = FlxColor.fromRGB(245, 255, 105);
 			case 'monster-christmas':
-				frames = Paths.getSparrowAtlas('characters/monsterChristmas', 'shared');
+				frames = Paths.getSparrowAtlas('characters/monsterChristmas');
 				animation.addByPrefix('idle', 'monster idle', 24, false);
 				animation.addByPrefix('singUP', 'monster up note', 24, false);
 				animation.addByPrefix('singDOWN', 'monster down', 24, false);
@@ -91,9 +91,9 @@ class Character extends FlxSprite
 				icon = "monster";
 			case 'pico':
 				if(Options.getData("optimizedChars"))
-					frames = Paths.getSparrowAtlas('characters/Optimized_Pico_FNF_assetss', 'shared');
+					frames = Paths.getSparrowAtlas('characters/Optimized_Pico_FNF_assetss');
 				else
-					frames = Paths.getSparrowAtlas('characters/Pico_FNF_assetss', 'shared');
+					frames = Paths.getSparrowAtlas('characters/Pico_FNF_assetss');
 
 				animation.addByPrefix('idle', "Pico Idle Dance", 24);
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
@@ -126,7 +126,7 @@ class Character extends FlxSprite
 			case 'bf-pixel':
 				swapLeftAndRightSingPlayer = false;
 
-				frames = Paths.getSparrowAtlas('characters/bfPixel', 'shared');
+				frames = Paths.getSparrowAtlas('characters/bfPixel');
 				animation.addByPrefix('idle', 'BF IDLE', 24, false);
 				animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
 				animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
@@ -161,7 +161,7 @@ class Character extends FlxSprite
 			case 'bf-pixel-dead':
 				swapLeftAndRightSingPlayer = false;
 
-				frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD', 'shared');
+				frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD');
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
 				animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
 				animation.addByPrefix('deathLoop', "Retry Loop", 24, true);
@@ -175,7 +175,7 @@ class Character extends FlxSprite
 				flipX = true;
 				barColor = FlxColor.fromRGB(123, 214, 246);
 			case 'senpai':
-				frames = Paths.getSparrowAtlas('characters/senpai', 'shared');
+				frames = Paths.getSparrowAtlas('characters/senpai');
 				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
 				animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
 				animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
@@ -193,7 +193,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 170, 111);
 			case 'senpai-angry':
-				frames = Paths.getSparrowAtlas('characters/senpai', 'shared');
+				frames = Paths.getSparrowAtlas('characters/senpai');
 				animation.addByPrefix('idle', 'Angry Senpai Idle', 24, false);
 				animation.addByPrefix('singUP', 'Angry Senpai UP NOTE', 24, false);
 				animation.addByPrefix('singLEFT', 'Angry Senpai LEFT NOTE', 24, false);
@@ -211,7 +211,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 170, 111);
 			case 'spirit':
-				frames = Paths.getPackerAtlas('characters/spirit', 'shared');
+				frames = Paths.getPackerAtlas('characters/spirit');
 				animation.addByPrefix('idle', "idle spirit_", 24, false);
 				animation.addByPrefix('singUP', "up_", 24, false);
 				animation.addByPrefix('singRIGHT', "right_", 24, false);
@@ -230,7 +230,7 @@ class Character extends FlxSprite
 
 				coolTrail = new FlxTrail(this, null, 4, 24, 0.3, 0.069);
 			case 'parents-christmas':
-				frames = Paths.getSparrowAtlas('characters/mom_dad_christmas_assets', 'shared');
+				frames = Paths.getSparrowAtlas('characters/mom_dad_christmas_assets');
 				animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
 				animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
 				animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);
@@ -363,11 +363,11 @@ class Character extends FlxSprite
 			dancesLeftAndRight = config.dancesLeftAndRight;
 
 			if(Assets.exists(Paths.file("images/characters/" + config.imagePath + ".txt", TEXT, "shared")))
-				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
+				frames = Paths.getPackerAtlas('characters/' + config.imagePath);
 			else if(Assets.exists(Paths.file("images/characters/" + config.imagePath + "/Animation.json", TEXT, "shared")))
 				frames = AtlasFrameMaker.construct("characters/" + config.imagePath);
 			else
-				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+				frames = Paths.getSparrowAtlas('characters/' + config.imagePath);
 
 			var size:Null<Float> = config.graphicSize;
 

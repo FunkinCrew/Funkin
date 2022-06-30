@@ -11,7 +11,7 @@ class HealthIcon extends TrackerSprite
 	public var offsetX:Float = 0.0;
 	public var offsetY:Float = 0.0;
 
-	public var startWidth:Float = 150;
+	public var startSize:Float = 1;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
@@ -88,7 +88,7 @@ class HealthIcon extends TrackerSprite
 
 		animation.play(char);
 
-		startWidth = width;
+		startSize = scale.x;
 
 		// antialiasing override
 		switch(char)

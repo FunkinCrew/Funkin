@@ -121,7 +121,7 @@ class ModchartUtilities
             if (p != null)
             {
                 /*
-                Application.current.window.alert("LUA ERROR:\n" + p + "\nhaxe things: " + e,"Leather's Funkin' Engine Modcharts");
+                CoolUtil.coolError("LUA ERROR:\n" + p + "\nhaxe things: " + e,"Leather's Funkin' Engine Modcharts");
                 lua = null; 
                 LoadingState.loadAndSwitchState(new MainMenuState());
                 */
@@ -182,7 +182,7 @@ class ModchartUtilities
 
         if (result != 0)
         {
-            Application.current.window.alert("lua COMPILE ERROR:\n" + Lua.tostring(lua,result),"Leather Engine Modcharts");
+            CoolUtil.coolError("lua COMPILE ERROR:\n" + Lua.tostring(lua,result),"Leather Engine Modcharts");
             //FlxG.switchState(new MainMenuState());
         }
 
@@ -319,7 +319,7 @@ class ModchartUtilities
                 PlayState.instance.stage.add(Sprite);
             }
             else
-                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+                CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
         Lua_helper.add_callback(lua,"makeStageAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
@@ -340,7 +340,7 @@ class ModchartUtilities
                 PlayState.instance.stage.add(Sprite);
             }
             else
-                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+                CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
         Lua_helper.add_callback(lua,"makeStageDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
@@ -361,7 +361,7 @@ class ModchartUtilities
                 PlayState.instance.stage.add(Sprite);
             }
             else
-                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+                CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
         // regular
@@ -393,7 +393,7 @@ class ModchartUtilities
                 PlayState.instance.add(Sprite);
             }
             else
-                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+                CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
         Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
@@ -412,7 +412,7 @@ class ModchartUtilities
                 PlayState.instance.add(Sprite);
             }
             else
-                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+                CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
         Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
@@ -431,7 +431,7 @@ class ModchartUtilities
                 PlayState.instance.add(Sprite);
             }
             else
-                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+                CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
         Lua_helper.add_callback(lua,"makeDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
@@ -450,7 +450,7 @@ class ModchartUtilities
                 PlayState.instance.add(Sprite);
             }
             else
-                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+                CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
         Lua_helper.add_callback(lua, "destroySprite", function(id:String) {

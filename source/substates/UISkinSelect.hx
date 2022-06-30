@@ -1,6 +1,5 @@
 package substates;
 
-import states.LoadingState;
 import flixel.graphics.frames.FlxAtlasFrames;
 import lime.utils.Assets;
 import flixel.text.FlxText;
@@ -43,12 +42,20 @@ class UISkinSelect extends MusicBeatSubstate
         bg.scrollFactor.set();
         add(bg);
 
-        current_UI_Skin = new FlxText(0, 50, 0, "Selected Skin: > " + ui_Skin + " <", 32, true);
+        current_UI_Skin = new FlxText(0, 50, 0, "", 32, true);
         current_UI_Skin.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
         current_UI_Skin.screenCenter(X);
         add(current_UI_Skin);
 
         FlxTween.tween(bg, {alpha: 0.5}, 1, {ease: FlxEase.circOut, startDelay: 0});
+
+        if(!ui_Skins.contains(ui_Skin))
+        {
+            utilities.Options.setData("default", "uiSkin");
+            ui_Skin = "default";
+        }
+
+        current_UI_Skin.text = "Selected Skin: > " + ui_Skin + " <";
 
         #if PRELOAD_ALL
         create_Arrows();

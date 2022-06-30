@@ -104,28 +104,31 @@ class FreeplayState extends MusicBeatState
 		// Loops through all songs in freeplaySonglist.txt
 		for (i in 0...initSonglist.length)
 		{
-			// Creates an array of their strings
-			var listArray = initSonglist[i].split(":");
+			if(initSonglist[i].trim() != "")
+			{
+				// Creates an array of their strings
+				var listArray = initSonglist[i].split(":");
 
-			// Variables I like yes mmmm tasty
-			var week = Std.parseInt(listArray[2]);
-			var icon = listArray[1];
-			var song = listArray[0];
-			
-			var diffsStr = listArray[3];
-			var diffs = ["easy", "normal", "hard"];
+				// Variables I like yes mmmm tasty
+				var week = Std.parseInt(listArray[2]);
+				var icon = listArray[1];
+				var song = listArray[0];
+				
+				var diffsStr = listArray[3];
+				var diffs = ["easy", "normal", "hard"];
 
-			var color = listArray[4];
-			var actualColor:Null<FlxColor> = null;
+				var color = listArray[4];
+				var actualColor:Null<FlxColor> = null;
 
-			if(color != null)
-				actualColor = FlxColor.fromString(color);
+				if(color != null)
+					actualColor = FlxColor.fromString(color);
 
-			if(diffsStr != null)
-				diffs = diffsStr.split(",");
+				if(diffsStr != null)
+					diffs = diffsStr.split(",");
 
-			// Creates new song data accordingly
-			songs.push(new SongMetadata(song, week, icon, diffs, actualColor));
+				// Creates new song data accordingly
+				songs.push(new SongMetadata(song, week, icon, diffs, actualColor));
+			}
 		}
 
 		if(utilities.Options.getData("menuBGs"))
@@ -471,15 +474,15 @@ class FreeplayState extends MusicBeatState
 					else
 					{
 						if(Assets.exists(Paths.inst(songs[curSelected].songName.toLowerCase(), curDiffString)))
-							Application.current.window.alert(PlayState.SONG.song.toLowerCase() + " (JSON) != " + songs[curSelected].songName.toLowerCase() + " (FREEPLAY)\nTry making them the same.",
+							CoolUtil.coolError(PlayState.SONG.song.toLowerCase() + " (JSON) != " + songs[curSelected].songName.toLowerCase() + " (FREEPLAY)\nTry making them the same.",
 						"Leather Engine's No Crash, We Help Fix Stuff Tool");
 						else
-							Application.current.window.alert("Something is wrong with your song names, I'm not sure what, but I'm sure you can figure it out.",
+							CoolUtil.coolError("Something is wrong with your song names, I'm not sure what, but I'm sure you can figure it out.",
 					"Leather Engine's No Crash, We Help Fix Stuff Tool");
 					}
 				}
 				else
-					Application.current.window.alert(songs[curSelected].songName.toLowerCase() + " doesn't match with any song audio files!\nTry fixing it's name in freeplaySonglist.txt",
+					CoolUtil.coolError(songs[curSelected].songName.toLowerCase() + " doesn't match with any song audio files!\nTry fixing it's name in freeplaySonglist.txt",
 				"Leather Engine's No Crash, We Help Fix Stuff Tool");
 			}
 		}

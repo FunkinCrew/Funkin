@@ -9,30 +9,38 @@ import flixel.FlxSprite;
 
 class NoteSplash extends FlxSprite
 {
-    var target:FlxSprite;
+	public var target:FlxSprite;
 
-    public var colorSwap:ColorSwap;
+	public var colorSwap:ColorSwap;
 
-    public function new(x:Float = 0, y:Float = 0, noteData:Int, target:FlxSprite, ?isPlayer:Bool = false) {
-        super(x, y);
+	public function setup_splash(noteData:Int, target:FlxSprite, ?isPlayer:Bool = false)
+	{
+		this.target = target;
 
-        this.target = target;
+		var localKeyCount = isPlayer ? PlayState.SONG.playerKeyCount : PlayState.SONG.keyCount;
 
-        var localKeyCount = isPlayer ? PlayState.SONG.playerKeyCount : PlayState.SONG.keyCount;
+		alpha = 0.8;
 
-        alpha = 0.8;
-        frames = PlayState.instance.splash_Texture;
+		if (frames == null)
+		{
+			if (Std.parseInt(PlayState.instance.ui_Settings[6]) == 1)
+				frames = Paths.getSparrowAtlas('ui skins/' + PlayState.SONG.ui_Skin + "/arrows/Note_Splashes");
+			else
+				frames = Paths.getSparrowAtlas("ui skins/default/arrows/Note_Splashes");
+		}
 
-        animation.addByPrefix("default", "note splash " + NoteVariables.Other_Note_Anim_Stuff[localKeyCount - 1][noteData] + "0", FlxG.random.int(22, 26), false);
-        animation.play("default", true);
+		graphic.destroyOnNoUse = false;
 
-        setGraphicSize(Std.int(target.width * 2.5));
+		animation.addByPrefix("default", "note splash " + NoteVariables.Other_Note_Anim_Stuff[localKeyCount - 1][noteData] + "0", FlxG.random.int(22, 26),
+			false);
+		animation.play("default", true);
 
-        updateHitbox();
-        centerOrigin();
-        centerOffsets();
+		setGraphicSize(Std.int(target.width * 2.5));
 
-        colorSwap = new ColorSwap();
+		updateHitbox();
+		centerOffsets();
+
+		colorSwap = new ColorSwap();
 		shader = colorSwap.shader;
 
 		var noteColor = NoteColors.getNoteColor(NoteVariables.Other_Note_Anim_Stuff[localKeyCount - 1][noteData]);
@@ -40,26 +48,25 @@ class NoteSplash extends FlxSprite
 		colorSwap.hue = noteColor[0] / 360;
 		colorSwap.saturation = noteColor[1] / 100;
 		colorSwap.brightness = noteColor[2] / 100;
-    }
 
-    override function update(elapsed:Float)
-    {
-        if(animation.curAnim.finished)
-        {
-            kill();
-            alpha = 0;
-        }
-        
-        x = target.x - (target.width / 1.5);
-        y = target.y - (target.height / 1.5);
+		update(0);
+	}
 
-        color = target.color;
-        
-        flipX = target.flipX;
-        flipY = target.flipY;
+	override function update(elapsed:Float)
+	{
+		if (target != null)
+		{
+			x = target.x - (target.width / 1.5);
+			y = target.y - (target.height / 1.5);
 
-        angle = target.angle;
+			color = target.color;
 
-        super.update(elapsed);
-    }
+			flipX = target.flipX;
+			flipY = target.flipY;
+
+			angle = target.angle;
+		}
+
+		super.update(elapsed);
+	}
 }

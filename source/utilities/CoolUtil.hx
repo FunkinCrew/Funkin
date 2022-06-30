@@ -1,5 +1,9 @@
 package utilities;
 
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
+import lime.app.Application;
 import flixel.FlxG;
 import states.PlayState;
 import lime.utils.Assets;
@@ -56,29 +60,11 @@ class CoolUtil
 	public static function coolTextFileFromSystem(path:String):Array<String>
 	{
 		return coolTextFile(path);
-		/*
-		var daList:Array<String> = File.getContent(Sys.getCwd() + "assets/" + path + ".txt").trim().split('\n');
-
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		return daList;*/
 	}
 
 	public static function coolTextFilePolymod(path:String):Array<String>
 	{
 		return coolTextFile(path);
-		/*
-		var daList:Array<String> = PolymodAssets.getText(path).trim().split('\n');
-
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		return daList;*/
 	}
 	#end
 
@@ -160,5 +146,32 @@ class CoolUtil
 		}
 
 		return maxKey;
+	}
+
+	/**
+		Funny handler for `Application.current.window.alert` that *doesn't* crash on Linux and shit.
+	**/
+	public static function coolError(message:Null<String> = null, title:Null<String> = null)
+	{
+		#if !linux
+		Application.current.window.alert(message, title);
+		#else
+		trace("ALERT: " + title + " - " + message);
+
+		var text:FlxText = new FlxText(8,8,1280,title + " - " + message,24);
+		text.color = FlxColor.RED;
+		text.borderSize = 2.5;
+		text.borderStyle = OUTLINE;
+		text.borderColor = FlxColor.BLACK;
+		text.scrollFactor.set();
+		text.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		
+		FlxG.state.add(text);
+
+		FlxTween.tween(text, { alpha: 0 }, 5, { onComplete: function(_) {
+			FlxG.state.remove(text);
+			text.destroy();
+		}});
+		#end
 	}
 }

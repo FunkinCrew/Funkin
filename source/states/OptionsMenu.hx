@@ -42,15 +42,14 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Gameplay", 0, "Gameplay"),
 			new PageOption("Graphics", 1, "Graphics"),
 			new PageOption("Tools (Very WIP)", 2, "Tools"),
-			new PageOption("Misc", 3, "Misc"),
-			new ImportOldHighscoreOption("Import Old Scores", "Import Old Scores", 4)
+			new PageOption("Misc", 3, "Misc")
 		],
 		[
 			"Gameplay",
 			new PageOption("Back", 0, "Categories"),
-			new ControlMenuSubStateOption("Binds", 1),
+			new GameSubstateOption("Binds", 1, substates.ControlMenuSubstate),
 			new BoolOption("Key Bind Reminders", "extraKeyReminders", 2),
-			new SongOffsetOption("Song Offset", 2),
+			new GameSubstateOption("Song Offset", 2, substates.SongOffsetMenu),
 			new PageOption("Judgements", 3, "Judgements"),
 			new PageOption("Input Options", 4, "Input Options"),
 			new BoolOption("Downscroll", "downscroll", 4),
@@ -59,7 +58,7 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Quick Restart", "quickRestart", 9),
 			new BoolOption("No Death", "noDeath", 10),
 			new BoolOption("Use Custom Scrollspeed", "useCustomScrollSpeed", 11),
-			new ScrollSpeedMenuOption("Custom Scroll Speed", 12),
+			new GameSubstateOption("Custom Scroll Speed", 12, substates.ScrollSpeedMenu),
 			new StringSaveOption("Hitsound", CoolUtil.coolTextFile(Paths.txt("hitsoundList")), 13, "hitsound")
 		],
 		[
@@ -68,7 +67,7 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Note Options", 1, "Note Options"),
 			new PageOption("Info Display", 2, "Info Display"),
 			new PageOption("Optimizations", 3, "Optimizations"),
-			new MaxFPSOption("Max FPS", 4),
+			new GameSubstateOption("Max FPS", 4, substates.MaxFPSMenu),
 			new BoolOption("Bigger Score Text", "biggerScoreInfo", 5),
 			new BoolOption("Bigger Info Text", "biggerInfoText", 6),
 			new StringSaveOption("Time Bar Style", ["leather engine", "psych engine", "new kade engine", "old kade engine"], 7, "timeBarStyle"),
@@ -98,7 +97,8 @@ class OptionsMenu extends MusicBeatState
 			new StringSaveOption("Cutscenes Play On", ["story","freeplay","both"], 6, "cutscenePlaysOn"),
 			new StringSaveOption("Play As", ["bf", "opponent"], 7, "playAs"),
 			new BoolOption("Disable Debug Menus", "disableDebugMenus", 10),
-			new BoolOption("Invisible Notes", "invisibleNotes", 11)
+			new BoolOption("Invisible Notes", "invisibleNotes", 11),
+			new GameSubstateOption("Import Old Scores", 12, substates.ImportHighscoresSubstate)
 		],
 		[
 			"Optimizations",
@@ -122,7 +122,7 @@ class OptionsMenu extends MusicBeatState
 		[
 			"Judgements",
 			new PageOption("Back", 0, "Gameplay"),
-			new JudgementMenuOption("Timings", 1),
+			new GameSubstateOption("Timings", 1, substates.JudgementMenu),
 			new StringSaveOption("Rating Mode", ["psych", "simple", "complex"], 2, "ratingType"),
 			new BoolOption("Marvelous Ratings", "marvelousRatings", 3),
 			new BoolOption("Show Rating Count", "sideRatings", 4)
@@ -141,13 +141,13 @@ class OptionsMenu extends MusicBeatState
 		[
 			"Note Options",
 			new PageOption("Back", 0, "Graphics"),
-			new NoteBGAlphaMenuOption("Note BG Alpha", 1),
+			new GameSubstateOption("Note BG Alpha", 1, substates.NoteBGAlphaMenu),
 			new BoolOption("Enemy Note Glow", "enemyStrumsGlow", 2),
 			new BoolOption("Player Note Splashes", "playerNoteSplashes", 3),
 			new BoolOption("Enemy Note Splashes", "opponentNoteSplashes", 3),
 			new BoolOption("Note Accuracy Text", "displayMs", 4),
-			new NoteColorMenuOption("Note Colors", 5),
-			new UISkinSelectOption("UI Skin", 6)
+			new GameSubstateOption("Note Colors", 5, substates.NoteColorSubstate),
+			new GameSubstateOption("UI Skin", 6, substates.UISkinSelect)
 		],
 		[
 			"Screen Effects",
@@ -206,14 +206,6 @@ class OptionsMenu extends MusicBeatState
 		inMenu = true;
 		instance.curSelected = 0;
 
-		var bruh = 0;
-
-		for (x in instance.page.members)
-		{
-			x.Alphabet_Text.targetY = bruh - instance.curSelected;
-			bruh++;
-		}
-
 		var curPage = instance.page;
 
 		curPage.clear();
@@ -238,6 +230,14 @@ class OptionsMenu extends MusicBeatState
 		}
 
 		inMenu = false;
+
+		var bruh = 0;
+
+		for (x in instance.page.members)
+		{
+			x.Alphabet_Text.targetY = bruh - instance.curSelected;
+			bruh++;
+		}
 	}
 
 	override function update(elapsed:Float)

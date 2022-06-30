@@ -8,9 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Zoom in the chart edtior.
+
 ### Fixed
 - Bugs with charting state (specifically `specialAudioName` not working in it).
 - Bug where you can go to negative song position in the charter.
+- Bug where the ui skin menu opens when opening the `Note Options` section in the options menu.
+- Bug where the game would crash in the pause menu when `Prototype Title Screen` is on.
+- Bug where the game would crash when opening the ui skin menu with an invalid ui skin in your save data.
+- Bug with anything that would normally open the 'application error' window that crashed on Linux.
+
+### Changed
+- The option `Import Old Scores` is now in `Misc`.
+- Optimized Note Splash spawning.
+- Optimized Score text and Info text in PlayState.
 
 ## [0.4.2] - 6/14/2022
 
@@ -18,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Week 7 Lmfao (took like 1 year to be allowed to add it back but here we are)
 - Story Mode Difficulty Offsets
 - Trails in Modcharts
+
 ### Fixed
 - Cutscenes playing on Game Overs
 - Health Icon Bounce and Camera Bounce being effected by really high fps

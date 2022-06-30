@@ -1,5 +1,6 @@
 package states;
 
+import utilities.CoolUtil;
 import lime.app.Application;
 import openfl.Assets;
 import ui.Alphabet;
@@ -68,7 +69,7 @@ class ReplaySelectorState extends MusicBeatState
                 LoadingState.loadAndSwitchState(new PlayState(replay));
             }
             else
-                Application.current.window.alert("It seems this replay's song doesn't exist, maybe try enabling the mod for it?", "Leather Engine's No Crash Tool");
+                CoolUtil.coolError("It seems this replay's song doesn't exist, maybe try enabling the mod for it?", "Leather Engine's No Crash Tool");
         }
 
         if(controls.DOWN_P)
