@@ -1,0 +1,81 @@
+# This is a basic workflow to help you get started with Actions
+
+# Based on Kade engine ci
+# Made by luckydog7 for https://github.com/luckydog7/Funkin-android
+
+name: Android Build CI
+
+# Controls when the workflow will run
+on: [push, pull_request, workflow_dispatch]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.3
+          
+      - name: Cache haxelib path
+        uses: actions/cache@v2
+        with:
+          path: |
+            %HAXELIB_ROOT%
+          key: ${{ runner.os }}-android
+          
+      - name: Setup Android SDK Tools
+        uses: android-actions/setup-android@v2.0.2
+        
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2.3.1
+        with:
+          distribution: 'zulu' # See 'Supported distributions' for available options
+          java-version: '11'
+        
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r15c
+
+      # Runs a set of commands using the runners shell
+      - name: script run line haha
+        run: |
+          mkdir -p "%HAXELIB_ROOT%"
+          haxelib setup "%HAXELIB_ROOT%"
+          haxelib install lime 7.9.0 --quiet
+          haxelib install openfl --quiet
+          haxelib install flixel 4.9.0 --quiet
+          haxelib install hxcpp --quiet
+          haxelib run lime setup flixel
+          haxelib remove flixel-addons --quiet
+          haxelib run lime setup
+          haxelib run lime config ANDROID_SDK $ANDROID_SDK_ROOT
+          haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_ROOT
+          haxelib run lime config JAVA_HOME $JAVA_HOME
+          haxelib run lime config ANDROID_SETUP true
+          haxelib install flixel-tools --quiet
+          haxelib install flixel-ui --quiet
+          haxelib install flixel-addons 2.10.0 --quiet
+          haxelib install hscript --quiet
+          haxelib git faxe https://github.com/uhrobots/faxe --quiet
+          haxelib git polymod https://github.com/MasterEric/polymod.git --quiet
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --quiet
+          haxelib git extension-webm https://github.com/luckydog7/extension-webm --quiet
+          haxelib git linc_luajit https://github.com/MasterEric/linc_luajit.git --quiet
+          haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit.git --quiet
+          haxelib install actuate 
+          haxelib list
+          
+      - name: funni build logs
+        run: haxelib run lime build android -Dci
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Android Build
+          path: export/release/android/bin/app/build/outputs/apk/debug
