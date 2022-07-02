@@ -63,6 +63,8 @@ jobs:
           haxelib install flixel-ui --quiet
           haxelib install flixel-addons 2.10.0 --quiet
           haxelib install hscript --quiet
+          haxelib install hxCodec --quiet
+          haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate/ --quiet
           haxelib git faxe https://github.com/uhrobots/faxe --quiet
           haxelib git polymod https://github.com/MasterEric/polymod.git --quiet
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --quiet
