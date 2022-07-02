@@ -1,11 +1,12 @@
 package;
 
+import ui.Mobilecontrols;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
-import Config;
+// import Config;
 
 import flixel.util.FlxSave;
 
@@ -45,9 +46,7 @@ class OptionsMenu extends MusicBeatState
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
 
-		#if mobileC
-		addVirtualPad(UP_DOWN, A_B);
-		#end
+		Mobilecontrols.addVirtualPad(UP_DOWN, A_B);
 
 		changeSelection();
 		
@@ -64,17 +63,17 @@ class OptionsMenu extends MusicBeatState
 			switch (daSelected)
 			{
 				case "preferences":
-					FlxG.switchState(new options.PreferencesState());
+					FlxG.switchState(new option.PreferencesState());
 				case "controls":
-					FlxG.switchState(new options.CustomControlsState());
+					FlxG.switchState(new ControlEditorState());
 				case "about":
-					FlxG.switchState(new options.AboutState());
+					FlxG.switchState(new option.AboutState());
 				case "exit":
 					FlxG.switchState(new MainMenuState());
 				case "discord":
 					FlxG.openURL('https://discord.gg/eGwJnUvZ9H');
 				case "special thanks":
-					FlxG.switchState(new options.CreditState());
+					FlxG.switchState(new option.CreditState());
 					//FlxG.openURL('https://youtu.be/2IdJzGZ70r4');
 			}
 		}

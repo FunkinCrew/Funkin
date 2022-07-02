@@ -1,6 +1,5 @@
 package;
 
-import utils.TextureUtil;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;

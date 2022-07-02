@@ -1,6 +1,6 @@
 package;
 
-import flixel.FlxCamera;
+import ui.Mobilecontrols;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -27,8 +27,6 @@ class GameOverSubstate extends MusicBeatSubstate
 			case 'schoolEvil':
 				stageSuffix = '-pixel';
 				daBf = 'bf-pixel-dead';
-			case 'tankStage2':
-			    daBf = 'bf-holding-gf-dead';
 			default:
 				daBf = 'bf';
 		}
@@ -53,19 +51,13 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		bf.playAnim('firstDeath');
 
-		#if mobileC
-		addVirtualPad(NONE, A_B);
-		var camcontrol = new FlxCamera();
-		FlxG.cameras.add(camcontrol);
-		camcontrol.bgColor.alpha = 0;
-		_virtualpad.cameras = [camcontrol];
-		#end
+		Mobilecontrols.addVirtualPad(NONE, A_B);
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		var daStage = PlayState.curStage;
+
 		if (controls.ACCEPT)
 		{
 			endBullshit();
@@ -74,7 +66,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (controls.BACK)
 		{
 			FlxG.sound.music.stop();
-			MusicBeatSubstate.deaths = 0;
 
 			if (PlayState.isStoryMode)
 				FlxG.switchState(new StoryMenuState());
@@ -84,16 +75,12 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
 		{
-			FlxG.camera.follow(camFollow, LOCKON, MusicBeatState.camMove);
+			FlxG.camera.follow(camFollow, LOCKON, 0.01);
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
 			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
-			if (daStage == 'tankStage' || daStage == 'tankStage2')
-			{
-			    FlxG.sound.play(Paths.sound('jeffGameover-' + FlxG.random.int(1, 25), 'shared'));
-			}
 		}
 
 		if (FlxG.sound.music.playing)

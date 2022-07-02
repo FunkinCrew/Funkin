@@ -150,7 +150,8 @@ class TankmenBG extends FlxSprite
         }
         if(animation.curAnim.name == "shot" && animation.curAnim.curFrame >= animation.curAnim.frames.length - 1)
         {
-            destroy();
+            kill();
+            // destroy();
         }
     }
 	

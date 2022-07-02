@@ -6,188 +6,154 @@ import flixel.util.FlxSave;
 import flixel.math.FlxPoint;
 
 class Config {
-	var save:FlxSave;
 
-	// ---- new config
-
-	/**
-		how to use:
-
-		config.downscroll = true; // set downscroll
-
-		trace(config.downscroll); // get downscroll
-
-	**/
+    public static var ghost(get, set):Bool;
+    public static var downscroll(get, set):Bool;
+    public static var splash(get, set):Bool;
+    public static var cutscenes(get, set):Bool;
+    public static var cam(get, set):Float;
+    public static var frameRate(get, set):Int;
+    public static var controlMode(get, set):Int;
+    public static var osu(get, set):Bool;
+    public static var icon(get, set):Bool;
+    public static var glow(get, set):Bool;
+    public static var mid(get, set):Bool;
 
 	// ghost tapping
 
-	public var ghost(get, set):Bool;
+	static function get_ghost()
+		return if (FlxG.save.data.ghost != null) FlxG.save.data.ghost else false;
 
-	function get_ghost()
-		return if (save.data.ghost != null) save.data.ghost else false;
-
-	function set_ghost(bool:Bool){
-		save.data.ghost = bool;
-		save.flush();
-		return save.data.ghost;
+	static function set_ghost(bool:Bool){
+		FlxG.save.data.ghost = bool;
+		FlxG.save.flush();
+		return FlxG.save.data.ghost;
 	}
 
 	// downscroll
-	public var downscroll(get, set):Bool;
 	
-	function get_downscroll():Bool
-		return getdownscroll();
+	static function get_downscroll():Bool
+    {
+        if (FlxG.save.data.isdownscroll != null) return FlxG.save.data.isdownscroll;
+		return false;
+    }
 	
-	function set_downscroll(downscroll:Bool):Bool
-		return setdownscroll(downscroll);
+	static function set_downscroll(downscroll:Bool):Bool
+    {
+        if (FlxG.save.data.isdownscroll == null) FlxG.save.data.isdownscroll = false;
+		
+		FlxG.save.data.isdownscroll = downscroll;
+		FlxG.save.flush();
+		return FlxG.save.data.isdownscroll;
+    }
 
 
 	// splash settings
-	public var splash(get, set):Bool;
 	
-	function get_splash():Bool
-		return getsplash();
+	static function get_splash():Bool{
+		if (FlxG.save.data.splash != null) return FlxG.save.data.splash;
+		return false;//i hate flx save.
+	}
 	
-	function set_splash(splash:Bool):Bool
-		return setsplash(splash);
+	static function set_splash(splash:Bool):Bool{
+		if (FlxG.save.data.splash == null) FlxG.save.data.splash = true;
+		
+		FlxG.save.data.splash = !FlxG.save.data.splash;
+		FlxG.save.flush();
+		return FlxG.save.data.splash;
+	}
 
 	// cutscenes settings
-
-	public var cutscenes(get, set):Bool;
 	
-	function get_cutscenes():Bool
-		return getcutscenes();
+	static function get_cutscenes():Bool
+    {
+        if (FlxG.save.data.cutscenes != null) return FlxG.save.data.cutscenes;
+		return false;
+    }
 	
-	function set_cutscenes(cutscenes:Bool):Bool
-		return setcutscenes(cutscenes);
-
-	// ---- end
-
-	public function new() 
-	{
-		save = new FlxSave();
-		save.bind("saveconrtol");
-	}
-
-	// --- old config
-	public function setdownscroll(?value:Bool):Bool {
-		if (save.data.isdownscroll == null) save.data.isdownscroll = false;
+	static function set_cutscenes(cutscenes:Bool):Bool
+    {
+        if (FlxG.save.data.cutscenes == null) FlxG.save.data.cutscenes = true;
 		
-		save.data.isdownscroll = !save.data.isdownscroll;
-		save.flush();
-		return save.data.isdownscroll;
-	}
+		FlxG.save.data.cutscenes = !FlxG.save.data.cutscenes;
+		FlxG.save.flush();
+		return FlxG.save.data.cutscenes;
+    }
 
-	public function setcutscenes(?value:Bool):Bool {
-		if (save.data.cutscenes == null) save.data.cutscenes = true;
+	public static function set_cam(value:Float):Float {
+		if (FlxG.save.data.cam == null) FlxG.save.data.cam = 0.06;
 		
-		save.data.cutscenes = !save.data.cutscenes;
-		save.flush();
-		return save.data.cutscenes;
+		FlxG.save.data.cam = value;
+		FlxG.save.flush();
+		return FlxG.save.data.cam;
 	}
 
-	public function setsplash(?value:Bool):Bool {
-		if (save.data.splash == null) save.data.splash = true;
-		
-		save.data.splash = !save.data.splash;
-		save.flush();
-		return save.data.splash;
-	}
-
-	public function camSave(value:Float):Float {
-		if (save.data.cam == null) save.data.cam = 0.06;
-		
-		save.data.cam = value;
-		save.flush();
-		return save.data.cam;
-	}
-
-	public function camLoad():Float {
-		if (save.data.cam != null) {
-			return save.data.cam;
+	public static function get_cam():Float {
+		if (FlxG.save.data.cam != null) {
+			return FlxG.save.data.cam;
 		}
 		else {
 			return 0.06;
 		}
 	}
 
-	public function getdownscroll():Bool {
-		if (save.data.isdownscroll != null) return save.data.isdownscroll;
-		return false;
+	public static function set_frameRate(fps:Int = 60):Int {
+		if (fps < 10) return FlxG.save.data.framerate;
+		
+		FlxG.stage.frameRate = fps;
+		FlxG.save.data.framerate = fps;
+		FlxG.save.flush();
+        return fps;
 	}
 
-	public function getcutscenes():Bool {
-		if (save.data.cutscenes != null) return save.data.cutscenes;
-		return false;
+	public static function get_frameRate():Int {
+		if (FlxG.save.data.framerate != null) return FlxG.save.data.framerate;
+		return 60;
 	}
 
-	public function getsplash():Bool {
-		if (save.data.splash != null) return save.data.splash;
-		return false;//i hate flx save.
-	}
-
-	public function getcontrolmode():Int {
+	public static function get_controlMode():Int {
 		// load control mode num from FlxSave
-		if (save.data.buttonsmode != null) return save.data.buttonsmode[0];
+		if (FlxG.save.data.controlmode != null) return FlxG.save.data.controlmode;
 		return 0;
 	}
 
-	public function setcontrolmode(mode:Int = 0):Int {
+	public static function set_controlMode(mode:Int = 0):Int {
 		// save control mode num from FlxSave
-		if (save.data.buttonsmode == null) save.data.buttonsmode = new Array();
-		save.data.buttonsmode[0] = mode;
-		save.flush();
+		if (FlxG.save.data.controlmode == null) FlxG.save.data.controlmode = mode;
+		FlxG.save.flush();
 
-		return save.data.buttonsmode[0];
+		return FlxG.save.data.controlmode;
 	}
 
-	public function savecustom(_pad:FlxVirtualPad) {
-		trace("saved");
-
-		if (save.data.buttons == null)
-		{
-			save.data.buttons = new Array();
-
-			for (buttons in _pad)
-			{
-				save.data.buttons.push(FlxPoint.get(buttons.x, buttons.y));
-			}
-		}else
-		{
-			var tempCount:Int = 0;
-			for (buttons in _pad)
-			{
-				save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
-				tempCount++;
-			}
-		}
-		save.flush();
+	static function get_osu():Bool {
+		return if (FlxG.save.data.osu != null) FlxG.save.data.osu else false;
 	}
 
-	public function loadcustom(_pad:FlxVirtualPad):FlxVirtualPad {
-		//load pad
-		if (save.data.buttons == null) return _pad;
-		var tempCount:Int = 0;
-
-		for(buttons in _pad)
-		{
-			buttons.x = save.data.buttons[tempCount].x;
-			buttons.y = save.data.buttons[tempCount].y;
-			tempCount++;
-		}	
-		return _pad;
+	static function set_osu(value:Bool):Bool {
+		return FlxG.save.data.osu = value;
 	}
 
-	public function setFrameRate(fps:Int = 60) {
-		if (fps < 10) return;
-		
-		FlxG.stage.frameRate = fps;
-		save.data.framerate = fps;
-		save.flush();
+	static function get_icon():Bool {
+		return if (FlxG.save.data.icon2 != null) FlxG.save.data.icon2 else false;
 	}
 
-	public function getFrameRate():Int {
-		if (save.data.framerate != null) return save.data.framerate;
-		return 60;
+	static function set_icon(value:Bool):Bool {
+		return FlxG.save.data.icon2 = value;
+	}
+
+	static function get_glow():Bool {
+		return if (FlxG.save.data.glow != null) FlxG.save.data.glow else false;
+	}
+
+	static function set_glow(value:Bool):Bool {
+		return FlxG.save.data.glow = value;
+	}
+
+	static function get_mid():Bool {
+		return if (FlxG.save.data.mid != null) FlxG.save.data.mid else false;
+	}
+
+	static function set_mid(value:Bool):Bool {
+		return FlxG.save.data.mid = value;
 	}
 }

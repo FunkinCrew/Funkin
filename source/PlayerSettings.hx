@@ -4,7 +4,6 @@ import Controls;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.util.FlxSignal;
-import utils.AndroidData;
 
 // import ui.DeviceManager;
 // import props.Player;
@@ -14,7 +13,6 @@ class PlayerSettings
 	static public var numAvatars(default, null) = 0;
 	static public var player1(default, null):PlayerSettings;
 	static public var player2(default, null):PlayerSettings;
-	var data:AndroidData = new AndroidData();
 
 	#if (haxe >= "4.0.0")
 	static public final onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();

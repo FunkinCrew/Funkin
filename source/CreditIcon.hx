@@ -1,7 +1,7 @@
 package;
 
 import flixel.FlxSprite;
-import utils.AndroidData;
+// import utils.AndroidData;
 
 class CreditIcon extends FlxSprite
 {
@@ -9,7 +9,7 @@ class CreditIcon extends FlxSprite
 	 * Used for CreditState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
-	var data:AndroidData = new AndroidData();
+	// var data:AndroidData = new AndroidData();
 
 	public var iconScale:Float = 1;
 	public var iconSize:Float;
@@ -20,7 +20,7 @@ class CreditIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		var shit:Bool = data.getIcon();
+		// var shit:Bool = data.getIcon();
 		
 	    loadGraphic(Paths.image('credIcon'), true, 150, 150);
 

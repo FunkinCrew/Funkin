@@ -1,20 +1,25 @@
 package;
 
-import lime.app.Application;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxState;
+import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.system.FlxSound;
+import flixel.system.ui.FlxSoundTray;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -22,11 +27,8 @@ import flixel.util.FlxTimer;
 #if newgrounds
 import io.newgrounds.NG;
 #end
+import lime.app.Application;
 import openfl.Assets;
-import utils.AndroidData;
-import flixel.math.FlxMath;
-import haxe.Http;
-import haxe.Json;
 
 using StringTools;
 
@@ -39,8 +41,6 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
-	var defaultCamZoom:Float = 1;
-	var data:AndroidData = new AndroidData();
 
 	var curWacky:Array<String> = [];
 
@@ -48,16 +48,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if android
-		FlxG.android.preventDefaultKeys = [BACK];
+		#if polymod
+		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
-		
-		//#if polymod
-		//polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-		//#end
-
-		// FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.2);
-		// FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.1);
 
 		PlayerSettings.init();
 
@@ -79,7 +72,6 @@ class TitleState extends MusicBeatState
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		Highscore.load();
-		data.startData();
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -113,7 +105,6 @@ class TitleState extends MusicBeatState
 			DiscordClient.shutdown();
 		 });
 		#end
-
 	}
 
 	var logoBl:FlxSprite;
@@ -145,17 +136,7 @@ class TitleState extends MusicBeatState
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
 			// music.play();
-			#if PRELOAD_ALL
-			var songlist = Assets.getLibrary('songs').list("MUSIC").filter(song -> song.endsWith("Inst.ogg"));
-			for (i in 0...songlist.length)
-				songlist[i] = 'songs:${songlist[i]}';
-			songlist.push(Paths.music('freakyMenu'));
-			songlist.push(Paths.music('freshchill'));
-			songlist.remove("songs:assets/songs/tutorial/Inst.ogg");
-			FlxG.sound.playMusic(FlxG.random.getObject(songlist), 0);
-			#else
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-			#end
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
@@ -168,13 +149,12 @@ class TitleState extends MusicBeatState
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
 		add(bg);
-//-150, 100 <- original x and y
+
 		logoBl = new FlxSprite(-150, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
-		//logoBl.scale.set(0.7, 0.7);//yrses
 		logoBl.updateHitbox();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
@@ -269,7 +249,7 @@ class TitleState extends MusicBeatState
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
-		//#if mobile removed because it bugs higher-android phones.
+		#if mobile
 		for (touch in FlxG.touches.list)
 		{
 			if (touch.justPressed)
@@ -277,7 +257,7 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			}
 		}
-		//#end
+		#end
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
@@ -294,14 +274,12 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if newgrounds
-			#if !switch
+			#if (!switch && newgrounds)
 			NGio.unlockMedal(60960);
 
 			// If it's Friday according to da clock
 			if (Date.now().getDay() == 5)
 				NGio.unlockMedal(61034);
-			#end
 			#end
 
 			titleText.animation.play('press');
@@ -315,44 +293,24 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				#if newgrounds
-				// var version:String = "v" + Application.current.meta.get('version');
 
-				// if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState && APIStuff.API != "")
-				// {
-				// 	FlxG.switchState(new OutdatedSubState());
-				// 	trace('OLD VERSION!');
-				// 	trace('old ver');
-				// 	trace(version.trim());
-				// 	trace('cur ver');
-				// 	trace(NGio.GAME_VER_NUMS.trim());
-				// }
-				// else
-				// {
-				 	FlxG.switchState(new MainMenuState());
-				// }
-				#else
-				var http = new Http('https://raw.githubusercontent.com/luckydog7/Funkin-android/master/version.json');
+				var version:String = "v" + Application.current.meta.get('version');
 
-				http.onError = _ -> FlxG.switchState(new MainMenuState());
-				http.onData = (data:String) ->
+				var curVersion = #if newgrounds NGio.GAME_VER_NUMS.trim() #else version.trim() #end;
+
+				if (version.trim() != curVersion && !OutdatedSubState.leftState)
 				{
-					var build:Null<Float> = Json.parse(data).build;
-
-					if (build != null)
-						if (build == utils.Version.get().build)
-							FlxG.switchState(new MainMenuState());
-						else
-							FlxG.switchState(new OutdatedSubState(build));
+					FlxG.switchState(new OutdatedSubState());
+					trace('OLD VERSION!');
+					trace('old ver');
+					trace(version.trim());
+					trace('cur ver');
+					trace(curVersion);
 				}
-				if (FlxG.save.data.dontaskupdate != null)
-					if (FlxG.save.data.dontaskupdate)
-						http.onError('')
-					else
-						http.request();
 				else
-					http.request();
-				#end
+				{
+					FlxG.switchState(new MainMenuState());
+				}
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -363,7 +321,6 @@ class TitleState extends MusicBeatState
 		}
 
 		super.update(elapsed);
-		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 	}
 
 	function createCoolText(textArray:Array<String>)
@@ -399,7 +356,6 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		FlxG.camera.zoom += 0.015;
 
 		logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
@@ -410,7 +366,6 @@ class TitleState extends MusicBeatState
 			gfDance.animation.play('danceLeft');
 
 		FlxG.log.add(curBeat);
-		var lite:Bool = FlxG.random.bool(20);//easter egg.
 
 		switch (curBeat)
 		{
@@ -451,28 +406,13 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				if (lite){
-				    addMoreText('FNF LITE');
-				}
-				else{
-			    	addMoreText('Friday');
-				}
+				addMoreText('Friday');
 			// credTextShit.visible = true;
 			case 14:
-				if (lite){
-				    addMoreText('DEV');
-				}
-				else{
-				    addMoreText('Night');
-				}
+				addMoreText('Night');
 			// credTextShit.text += '\nNight';
 			case 15:
-				if (lite){
-				    addMoreText('IS SHIT');
-				}
-				else{
-			    	addMoreText('Funkin\nAndroid');
-				}
+				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipIntro();

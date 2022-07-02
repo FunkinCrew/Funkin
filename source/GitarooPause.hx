@@ -1,5 +1,6 @@
 package;
 
+import ui.Mobilecontrols;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -46,10 +47,8 @@ class GitarooPause extends MusicBeatState
 		add(cancelButton);
 
 		changeThing();
-
-		#if mobileC
-		addVirtualPad(LEFT_RIGHT, A_B);
-		#end
+		
+		Mobilecontrols.addVirtualPad(LEFT_RIGHT, A);
 
 		super.create();
 	}

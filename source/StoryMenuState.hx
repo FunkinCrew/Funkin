@@ -1,5 +1,6 @@
 package;
 
+import ui.Mobilecontrols;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -30,7 +31,7 @@ class StoryMenuState extends MusicBeatState
 		['Satin-Panties', "High", "Milf"],
 		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
 		['Senpai', 'Roses', 'Thorns'],
-		['Ugh', 'Guns', 'Stress']
+		['ugh', 'guns', 'stress']
 	];
 	var curDifficulty:Int = 1;
 
@@ -48,7 +49,7 @@ class StoryMenuState extends MusicBeatState
 	];
 
 	var weekNames:Array<String> = [
-		"How To Funk",
+		"",
 		"Daddy Dearest",
 		"Spooky Month",
 		"PICO",
@@ -222,9 +223,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 165");
 
-		#if mobileC
-		addVirtualPad(FULL, A_B);
-		#end
+		Mobilecontrols.addVirtualPad(FULL, A_B);
 
 		super.create();
 	}
@@ -426,10 +425,6 @@ class StoryMenuState extends MusicBeatState
 
 			case 'dad':
 				grpWeekCharacters.members[0].offset.set(120, 200);
-				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
-
-			case 'tankman':
-				grpWeekCharacters.members[0].offset.set(60,-20);
 				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
 
 			default:

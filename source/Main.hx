@@ -29,10 +29,6 @@ class Main extends Sprite
 	{
 		super();
 
-		#if android
-		Sys.setCwd(lime.system.System.applicationStorageDirectory);
-		#end
-
 		if (stage != null)
 		{
 			init();
@@ -71,18 +67,10 @@ class Main extends Sprite
 		initialState = TitleState;
 		#end
 
-		#if android
-		zoom = 1;
-		gameWidth = 1280;
-		gameHeight = 720;
-		#end//ldog is mad >:)
-
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
-		//#if !mobile
-		var fps:FPS;
-		addChild(fps = new FPS(10, 3, 0xFFFFFF));
-		fps.scaleX = fps.scaleY = 2;
-		//#end
+		#if !mobile
+		addChild(new FPS(10, 3, 0xFFFFFF));
+		#end
 	}
 }
