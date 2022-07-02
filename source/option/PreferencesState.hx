@@ -8,6 +8,7 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import Config;
+import ui.Mobilecontrols;
 // import utils.AndroidData;
 
 class PreferencesState extends MusicBeatState
@@ -87,9 +88,7 @@ class PreferencesState extends MusicBeatState
 		add(noticebg);
 		add(notice);
 
-		#if mobileC
-		addVirtualPad(FULL, A_B);
-		#end
+		Mobilecontrols.addVirtualPad(FULL, A_B);
 
 		changeSelection();
 	}
