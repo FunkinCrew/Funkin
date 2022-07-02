@@ -71,7 +71,8 @@ https://github.com/luckydog7/Funkin-android/releases
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
-- [luckydog (me!)](https://github.com/luckydog7) - android port
+- [luckydog](https://github.com/luckydog7) - android port
+- [Poyo](https://youtube.com/channel/UCRB_pRbpYPjrUpnQyPUVG5w) android port revival
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
