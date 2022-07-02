@@ -10,6 +10,7 @@ import openfl.geom.Rectangle;
 import flixel.math.FlxRect;
 import haxe.xml.Access;
 import openfl.system.System;
+import flixel.graphics.FlxGraphic;
 
 class Paths
 {
