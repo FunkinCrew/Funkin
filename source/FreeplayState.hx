@@ -36,6 +36,9 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+	  Paths.clearStoredMemory();
+		Paths.clearUnusedMemory();
+
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		// for (i in 0...initSonglist.length)
@@ -142,7 +145,7 @@ class FreeplayState extends MusicBeatState
 			trace(md);
 		 */
 
-		Mobilecontrols.addVirtualPad(UP_DOWN, A_B);
+		Mobilecontrols.addVirtualPad(FULL, A_B);
 
 		super.create();
 	}

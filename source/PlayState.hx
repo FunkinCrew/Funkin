@@ -8,6 +8,7 @@ import flixel.group.FlxSpriteGroup;
 #if desktop
 import Discord.DiscordClient;
 #end
+import flixel.graphics.FlxGraphic;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
@@ -155,6 +156,7 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+	  Paths.clearStoredMemory();
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -1043,6 +1045,7 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
+		Paths.clearUnusedMemory();
 	}
 
 	function videoIntro(path:String)
