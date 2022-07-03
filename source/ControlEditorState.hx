@@ -87,7 +87,7 @@ class ControlEditorState extends FlxState
 		var exitSavebutton = new FlxUIButton((exitbutton.x + exitbutton.width + 25),25,"exit and save",() -> 
 		{
 			saveCustomPosition();
-			// config.setcontrolmode(curSelected);
+			config.setcontrolmode(curSelected);
 			exit();
 		});
 		exitSavebutton.resize(250,50);
