@@ -16,3 +16,6 @@ singLEFT singDOWN singUP singRIGHT singLEFT singRIGHT singUP singUP singUP singL
 singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT
 singLEFT singDOWN singUP singRIGHT singUP singLEFT singUP singDOWN singUP singUP singUP singRIGHT singUP singLEFT singDOWN singUP singRIGHT
 singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singUP singUP singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT
+singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singUP singUP singDOWN singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT
+singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT
+singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singUP singRIGHT singLEFT singDOWN singUP singRIGHT singLEFT singDOWN singUP singRIGHT
