@@ -28,7 +28,7 @@ class Mobilecontrols extends FlxSpriteGroup
 
 	public static var isEnabled(get, never):Bool;
 
-	// var config:Config;
+	var config:Config;
 
 	public function new() 
 	{
