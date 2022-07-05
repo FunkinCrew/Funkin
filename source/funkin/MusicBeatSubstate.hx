@@ -45,7 +45,7 @@ class MusicBeatSubstate extends FlxSubState
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
-			if (Conductor.songPosition > Conductor.bpmChangeMap[i].songTime)
+			if (Conductor.songPosition - Conductor.offset > Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 

@@ -1,15 +1,17 @@
 package funkin;
 
 import flixel.FlxSprite;
-import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 
-class LatencyState extends FlxState
+class LatencyState extends MusicBeatSubstate
 {
 	var offsetText:FlxText;
 	var noteGrp:FlxTypedGroup<Note>;
 	var strumLine:FlxSprite;
+
+	var block:FlxSprite;
 
 	override function create()
 	{
@@ -17,6 +19,9 @@ class LatencyState extends FlxState
 
 		noteGrp = new FlxTypedGroup<Note>();
 		add(noteGrp);
+
+		block = new FlxSprite().makeGraphic(100, 100);
+		add(block);
 
 		for (i in 0...32)
 		{
@@ -34,6 +39,13 @@ class LatencyState extends FlxState
 		Conductor.bpm = 120;
 
 		super.create();
+	}
+
+	override function beatHit()
+	{
+		block.visible = !block.visible;
+
+		super.beatHit();
 	}
 
 	override function update(elapsed:Float)
@@ -65,7 +77,13 @@ class LatencyState extends FlxState
 			daNote.x = strumLine.x + 30;
 
 			if (daNote.y < strumLine.y)
-				daNote.kill();
+				daNote.alpha = 0.5;
+
+			if (daNote.y < 0 - daNote.height)
+			{
+				daNote.alpha = 1;
+				// daNote.data.strumTime += Conductor.crochet * 8;
+			}
 		});
 
 		super.update(elapsed);
