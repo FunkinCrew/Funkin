@@ -25,8 +25,8 @@ class LatencyState extends MusicBeatSubstate
 		var musSpec:PolygonSpectogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height, Math.floor(FlxG.height / 2));
 		musSpec.x += 170;
 		musSpec.scrollFactor.set();
-		musSpec.waveAmplitude = 50;
-		musSpec.realtimeVisLenght = 0.6;
+		musSpec.waveAmplitude = 100;
+		musSpec.realtimeVisLenght = 0.45;
 		// musSpec.visType = FREQUENCIES;
 		add(musSpec);
 
