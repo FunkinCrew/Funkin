@@ -4,6 +4,8 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import funkin.audiovis.PolygonSpectogram;
 
 class LatencyState extends MusicBeatSubstate
 {
@@ -19,6 +21,14 @@ class LatencyState extends MusicBeatSubstate
 
 		noteGrp = new FlxTypedGroup<Note>();
 		add(noteGrp);
+
+		var musSpec:PolygonSpectogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height, Math.floor(FlxG.height / 2));
+		musSpec.x += 170;
+		musSpec.scrollFactor.set();
+		musSpec.waveAmplitude = 50;
+		musSpec.realtimeVisLenght = 0.6;
+		// musSpec.visType = FREQUENCIES;
+		add(musSpec);
 
 		block = new FlxSprite().makeGraphic(100, 100);
 		add(block);
