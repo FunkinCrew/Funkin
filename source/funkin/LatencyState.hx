@@ -3,6 +3,8 @@ package funkin;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audiovis.PolygonSpectogram;
@@ -13,25 +15,52 @@ class LatencyState extends MusicBeatSubstate
 	var noteGrp:FlxTypedGroup<Note>;
 	var strumLine:FlxSprite;
 
-	var block:FlxSprite;
+	var blocks:FlxGroup;
+
+	var songPosVis:FlxSprite;
+
+	var beatTrail:FlxSprite;
 
 	override function create()
 	{
 		FlxG.sound.playMusic(Paths.sound('soundTest'));
+		Conductor.bpm = 120;
 
 		noteGrp = new FlxTypedGroup<Note>();
 		add(noteGrp);
 
-		var musSpec:PolygonSpectogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height, Math.floor(FlxG.height / 2));
-		musSpec.x += 170;
-		musSpec.scrollFactor.set();
-		musSpec.waveAmplitude = 100;
-		musSpec.realtimeVisLenght = 0.45;
-		// musSpec.visType = FREQUENCIES;
-		add(musSpec);
+		// var musSpec:PolygonSpectogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height, Math.floor(FlxG.height / 2));
+		// musSpec.x += 170;
+		// musSpec.scrollFactor.set();
+		// musSpec.waveAmplitude = 100;
+		// musSpec.realtimeVisLenght = 0.45;
+		// // musSpec.visType = FREQUENCIES;
+		// add(musSpec);
 
-		block = new FlxSprite().makeGraphic(100, 100);
-		add(block);
+		for (beat in 0...Math.floor(FlxG.sound.music.length / Conductor.crochet))
+		{
+			var beatTick:FlxSprite = new FlxSprite(songPosToX(beat * Conductor.crochet), FlxG.height - 15);
+			beatTick.makeGraphic(2, 15);
+			beatTick.alpha = 0.3;
+			add(beatTick);
+		}
+
+		songPosVis = new FlxSprite(0, FlxG.height - 20).makeGraphic(2, 20, FlxColor.RED);
+		add(songPosVis);
+
+		beatTrail = new FlxSprite(0, songPosVis.y).makeGraphic(2, 20, FlxColor.PURPLE);
+		beatTrail.alpha = 0.7;
+		add(beatTrail);
+
+		blocks = new FlxGroup();
+		add(blocks);
+
+		for (i in 0...8)
+		{
+			var block = new FlxSprite(2, 50 * i).makeGraphic(48, 48);
+			block.visible = false;
+			blocks.add(block);
+		}
 
 		for (i in 0...32)
 		{
@@ -46,33 +75,49 @@ class LatencyState extends MusicBeatSubstate
 		strumLine = new FlxSprite(FlxG.width / 2, 100).makeGraphic(FlxG.width, 5);
 		add(strumLine);
 
-		Conductor.bpm = 120;
-
 		super.create();
 	}
 
 	override function beatHit()
 	{
-		block.visible = !block.visible;
+		beatTrail.x = songPosVis.x;
+
+		if (curBeat % 8 == 0)
+			blocks.forEach(blok ->
+			{
+				blok.visible = false;
+			});
+
+		blocks.members[curBeat % 8].visible = true;
+		// block.visible = !block.visible;
 
 		super.beatHit();
 	}
 
 	override function update(elapsed:Float)
 	{
-		offsetText.text = "Offset: " + Conductor.offset + "ms";
+		songPosVis.x = songPosToX(Conductor.songPosition);
+
+		offsetText.text = "Offset: " + Conductor.visualOffset + "ms";
+		offsetText.text += "\ncurStep: " + curStep;
+		offsetText.text += "\ncurBeat: " + curBeat;
 
 		Conductor.songPosition = FlxG.sound.music.time - Conductor.offset;
 
-		var multiply:Float = 1;
+		var multiply:Float = 10;
 
 		if (FlxG.keys.pressed.SHIFT)
-			multiply = 10;
+			multiply = 1;
 
 		if (FlxG.keys.justPressed.RIGHT)
-			Conductor.offset += 1 * multiply;
+		{
+			Conductor.visualOffset += 1 * multiply;
+		}
+
 		if (FlxG.keys.justPressed.LEFT)
-			Conductor.offset -= 1 * multiply;
+		{
+			Conductor.visualOffset -= 1 * multiply;
+		}
 
 		if (FlxG.keys.justPressed.SPACE)
 		{
@@ -97,5 +142,10 @@ class LatencyState extends MusicBeatSubstate
 		});
 
 		super.update(elapsed);
+	}
+
+	function songPosToX(pos:Float):Float
+	{
+		return FlxMath.remapToRange(pos, 0, FlxG.sound.music.length, 0, FlxG.width);
 	}
 }

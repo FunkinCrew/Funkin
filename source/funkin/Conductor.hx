@@ -42,6 +42,8 @@ class Conductor
 
 	public static var songPosition:Float;
 	public static var lastSongPos:Float;
+	public static var visualOffset:Float = 0;
+	public static var audioOffset:Float = 0;
 	public static var offset:Float = 0;
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
