@@ -18,6 +18,7 @@ class LatencyState extends MusicBeatSubstate
 	var blocks:FlxGroup;
 
 	var songPosVis:FlxSprite;
+	var songVisFollow:FlxSprite;
 
 	var beatTrail:FlxSprite;
 
@@ -44,6 +45,9 @@ class LatencyState extends MusicBeatSubstate
 			beatTick.alpha = 0.3;
 			add(beatTick);
 		}
+
+		songVisFollow = new FlxSprite(0, FlxG.height - 20).makeGraphic(2, 20, FlxColor.YELLOW);
+		add(songVisFollow);
 
 		songPosVis = new FlxSprite(0, FlxG.height - 20).makeGraphic(2, 20, FlxColor.RED);
 		add(songPosVis);
@@ -96,13 +100,25 @@ class LatencyState extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			if (FlxG.sound.music.playing)
+				FlxG.sound.music.pause();
+			else
+				FlxG.sound.music.resume();
+		}
+
+		if (FlxG.keys.pressed.D)
+			FlxG.sound.music.time += 1000 * FlxG.elapsed;
+
+		Conductor.songPosition = FlxG.sound.music.time - Conductor.offset;
+
 		songPosVis.x = songPosToX(Conductor.songPosition);
+		songVisFollow.x = songPosToX(Conductor.songPosition - Conductor.visualOffset);
 
 		offsetText.text = "Offset: " + Conductor.visualOffset + "ms";
 		offsetText.text += "\ncurStep: " + curStep;
 		offsetText.text += "\ncurBeat: " + curBeat;
-
-		Conductor.songPosition = FlxG.sound.music.time - Conductor.offset;
 
 		var multiply:Float = 10;
 
@@ -119,12 +135,12 @@ class LatencyState extends MusicBeatSubstate
 			Conductor.visualOffset -= 1 * multiply;
 		}
 
-		if (FlxG.keys.justPressed.SPACE)
-		{
-			FlxG.sound.music.stop();
+		/* if (FlxG.keys.justPressed.SPACE)
+			{
+				FlxG.sound.music.stop();
 
-			FlxG.resetState();
-		}
+				FlxG.resetState();
+		}*/
 
 		noteGrp.forEach(function(daNote:Note)
 		{
