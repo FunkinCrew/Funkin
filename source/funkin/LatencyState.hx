@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audiovis.PolygonSpectogram;
+import haxe.Timer;
 import openfl.events.KeyboardEvent;
 
 class LatencyState extends MusicBeatSubstate
@@ -29,7 +30,7 @@ class LatencyState extends MusicBeatSubstate
 	{
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key ->
 		{
-			trace("EVENT PRESS: " + FlxG.sound.music.time + " " + Sys.time());
+			trace("EVENT PRESS: " + FlxG.sound.music.time + " " + Timer.stamp());
 			// trace("EVENT LISTENER: " + key);
 		});
 
@@ -119,7 +120,7 @@ class LatencyState extends MusicBeatSubstate
 	{
 		if (FlxG.keys.justPressed.S)
 		{
-			trace("UPDATE PRESS: " + FlxG.sound.music.time + " " + Sys.time());
+			trace("UPDATE PRESS: " + FlxG.sound.music.time + " " + Timer.stamp());
 		}
 
 		if (FlxG.keys.justPressed.X)
