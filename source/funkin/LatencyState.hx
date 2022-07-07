@@ -30,7 +30,7 @@ class LatencyState extends MusicBeatSubstate
 	{
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key ->
 		{
-			trace("EVENT PRESS: " + FlxG.sound.music.time + " " + Timer.stamp());
+			trace("\tEVENT PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
 			// trace("EVENT LISTENER: " + key);
 		});
 
@@ -120,7 +120,7 @@ class LatencyState extends MusicBeatSubstate
 	{
 		if (FlxG.keys.justPressed.S)
 		{
-			trace("UPDATE PRESS: " + FlxG.sound.music.time + " " + Timer.stamp());
+			trace("\tUPDATE PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
 		}
 
 		if (FlxG.keys.justPressed.X)
