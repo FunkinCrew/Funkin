@@ -110,8 +110,6 @@ class HealthIcon extends FlxSprite
 
 		this.antialiasing = !isPixel;
 
-		this.flipX = playerId == 0;
-
 		initTargetSize();
 	}
 

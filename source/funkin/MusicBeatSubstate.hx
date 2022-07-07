@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.util.FlxColor;
 import flixel.FlxSubState;
 import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.events.ScriptEvent;
@@ -10,9 +11,9 @@ import funkin.modding.module.ModuleHandler;
  */
 class MusicBeatSubstate extends FlxSubState
 {
-	public function new()
+	public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)
 	{
-		super();
+		super(bgColor);
 	}
 
 	private var curStep:Int = 0;

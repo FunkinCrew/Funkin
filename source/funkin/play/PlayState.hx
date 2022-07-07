@@ -28,6 +28,7 @@ import funkin.play.Strumline.StrumlineArrow;
 import funkin.play.Strumline.StrumlineStyle;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData;
+import funkin.play.scoring.Scoring;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData;
 import funkin.ui.PopUpStuff;
@@ -279,6 +280,14 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		super.create();
 
+		if (currentSong == null) {
+			lime.app.Application.current.window.alert(
+				"There was a critical error while accessing the selected song. Click OK to return to the main menu.",
+				"Error loading PlayState"
+			);
+			FlxG.switchState(new MainMenuState());
+		}
+
 		instance = this;
 
 		// Displays the camera follow point as a sprite for debug purposes.
@@ -465,12 +474,13 @@ class PlayState extends MusicBeatState implements IHook
 				currentStageId = 'mallXmas';
 			case 'winter-horrorland':
 				currentStageId = 'mallEvil';
+				case 'senpai' | 'roses':
+					currentStageId = 'school';
+			case "darnell" | "lit-up" | "2hot":
+				// currentStageId = 'phillyStreets';
+				currentStageId = 'pyro';
 			case 'pyro':
 				currentStageId = 'pyro';
-			case 'senpai' | 'roses':
-				currentStageId = 'school';
-			case "darnell":
-				currentStageId = 'phillyStreets';
 			case 'thorns':
 				currentStageId = 'schoolEvil';
 			case 'guns' | 'stress' | 'ugh':
@@ -504,6 +514,8 @@ class PlayState extends MusicBeatState implements IHook
 
 		switch (currentStageId)
 		{
+			case 'pyro' | 'phillyStreets':
+				gfVersion = 'nene';
 			case 'limoRide':
 				gfVersion = 'gf-car';
 			case 'mallXmas' | 'mallEvil':
@@ -580,12 +592,19 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			// We're using Eric's stage handler.
 			// Characters get added to the stage, not the main scene.
-			currentStage.addCharacter(girlfriend, GF);
-			currentStage.addCharacter(boyfriend, BF);
-			currentStage.addCharacter(dad, DAD);
+			if (girlfriend != null) {
+				currentStage.addCharacter(girlfriend, GF);
+			}
 
-			// Camera starts at dad.
-			cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+			if (boyfriend != null) {
+				currentStage.addCharacter(boyfriend, BF);
+			}
+
+			if (dad != null) {
+				currentStage.addCharacter(dad, DAD);
+				// Camera starts at dad.
+				cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+			}
 
 			// Redo z-indexes.
 			currentStage.refresh();
@@ -867,7 +886,7 @@ class PlayState extends MusicBeatState implements IHook
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, strumlineStyle);
 				// swagNote.data = songNotes;
 				swagNote.data.sustainLength = songNotes.sustainLength;
-				swagNote.data.altNote = songNotes.altNote;
+				swagNote.data.noteKind = songNotes.noteKind;
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.data.sustainLength;
@@ -881,6 +900,7 @@ class PlayState extends MusicBeatState implements IHook
 
 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true,
 						strumlineStyle);
+					sustainNote.data.noteKind = songNotes.noteKind;
 					sustainNote.scrollFactor.set();
 					inactiveNotes.push(sustainNote);
 
@@ -976,6 +996,8 @@ class PlayState extends MusicBeatState implements IHook
 
 			FlxG.sound.music.time = 0;
 
+			currentStage.resetStage();
+
 			regenNoteData(); // loads the note data from start
 			health = 1;
 			songScore = 0;
@@ -1037,7 +1059,9 @@ class PlayState extends MusicBeatState implements IHook
 
 			if (!event.eventCanceled)
 			{
+				// Pause updates while the substate is open, preventing the game state from advancing. 
 				persistentUpdate = false;
+				// Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
 				persistentDraw = true;
 
 				// There is a 1/1000 change to use a special pause menu.
@@ -1062,6 +1086,21 @@ class PlayState extends MusicBeatState implements IHook
 			}
 		}
 
+		#if debug
+		// 1: End the song immediately.
+		if (FlxG.keys.justPressed.ONE)
+			endSong();
+
+		// 2: Gain 10% health.
+		if (FlxG.keys.justPressed.TWO)
+			health += 0.1 * 2.0;
+
+		// 3: Lose 5% health.
+		if (FlxG.keys.justPressed.THREE)
+			health -= 0.05 * 2.0;
+		#end
+
+		// 7: Move to the charter.
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			FlxG.switchState(new ChartingState());
@@ -1071,24 +1110,25 @@ class PlayState extends MusicBeatState implements IHook
 			#end
 		}
 
+		// 8: Move to the offset editor.
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
 
+		// 9: Toggle the old icon.
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.toggleOldIcon();
 
-		if (health > 2)
-			health = 2;
-
 		#if debug
-		if (FlxG.keys.justPressed.ONE)
-			endSong();
-
 		if (FlxG.keys.justPressed.PAGEUP)
 			changeSection(1);
 		if (FlxG.keys.justPressed.PAGEDOWN)
 			changeSection(-1);
 		#end
+
+		if (health > 2.0)
+			health = 2.0;
+		if (health < 0.0)
+			health = 0.0;
 
 		if (camZooming && subState == null)
 		{
@@ -1139,9 +1179,6 @@ class PlayState extends MusicBeatState implements IHook
 
 			if (health <= 0 && !isPracticeMode)
 			{
-				persistentUpdate = false;
-				persistentDraw = false;
-
 				vocals.pause();
 				FlxG.sound.music.pause();
 
@@ -1149,7 +1186,22 @@ class PlayState extends MusicBeatState implements IHook
 
 				dispatchEvent(new ScriptEvent(ScriptEvent.GAME_OVER));
 
-				openSubState(new GameOverSubstate());
+				// Disable updates, preventing animations in the background from playing.
+				persistentUpdate = false;
+				#if debug
+				if (FlxG.keys.pressed.THREE) {
+					// TODO: Change the key or delete this?
+					// In debug builds, pressing 3 to kill the player makes the background transparent.
+					persistentDraw = true;
+				} else {
+				#end
+					persistentDraw = false;
+				#if debug
+				}
+				#end
+
+				var gameOverSubstate = new GameOverSubstate();
+				openSubState(gameOverSubstate);
 
 				#if discord_rpc
 				// Game Over doesn't get his own variable because it's only used here
@@ -1307,6 +1359,11 @@ class PlayState extends MusicBeatState implements IHook
 	}
 
 	#if debug
+	/**
+	 * Jumps forward or backward a number of sections in the song.
+	 * Accounts for BPM changes, does not prevent death from skipped notes.
+	 * @param sec 
+	 */
 	function changeSection(sec:Int):Void
 	{
 		FlxG.sound.music.pause();
@@ -1432,30 +1489,22 @@ class PlayState extends MusicBeatState implements IHook
 		// boyfriend.playAnimation('hey');
 		vocals.volume = 1;
 
-		var score:Int = 350;
-		var daRating:String = "sick";
 		var isSick:Bool = false;
-		var healthMulti:Float = 1;
-
-		healthMulti *= daNote.lowStakes ? 0.002 : 0.033;
+		var score = Scoring.scoreNote(noteDiff, PBOT1);
+		var daRating = Scoring.judgeNote(noteDiff, PBOT1);
+		var healthMulti:Float = daNote.lowStakes ? 0.002 : 0.033;
 
 		if (noteDiff > Note.HIT_WINDOW * Note.BAD_THRESHOLD)
 		{
 			healthMulti *= 0; // no health on shit note
-			daRating = 'shit';
-			score = 50;
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.GOOD_THRESHOLD)
 		{
 			healthMulti *= 0.2;
-			daRating = 'bad';
-			score = 100;
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.SICK_THRESHOLD)
 		{
 			healthMulti *= 0.78;
-			daRating = 'good';
-			score = 200;
 		}
 		else
 			isSick = true;
@@ -1795,6 +1844,7 @@ class PlayState extends MusicBeatState implements IHook
 
 		// bruh this var is bonkers i thot it was a function lmfaooo
 
+
 		var shouldShowComboText:Bool = (curBeat % 8 == 7) // End of measure. TODO: Is this always the correct time?
 			&& (SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection) // Current section is BF's.
 			&& (combo > 5) // Don't want to show on small combos.
@@ -1832,11 +1882,13 @@ class PlayState extends MusicBeatState implements IHook
 		if (currentStage == null)
 			return;
 
+		// TODO: Move this to a song event.
 		if (curBeat % 8 == 7 && currentSong.song == 'Bopeebo')
 		{
 			currentStage.getBoyfriend().playAnimation('hey', true);
 		}
 
+		// TODO: Move this to a song event.
 		if (curBeat % 16 == 15
 			&& currentSong.song == 'Tutorial'
 			&& currentStage.getDad().characterId == 'gf'

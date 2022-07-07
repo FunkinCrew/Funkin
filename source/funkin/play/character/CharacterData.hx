@@ -109,7 +109,7 @@ class CharacterDataParser
 			trace('  Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
 			for (charCls in scriptedCharClassNames3)
 			{
-				var character = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID);
+				var character = ScriptedMultiSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
 				if (character == null)
 				{
 					trace('    Failed to instantiate scripted character: ${charCls}');
@@ -362,6 +362,7 @@ class CharacterDataParser
 			input.healthIcon = {
 				id: null,
 				scale: null,
+				flipX: null,
 				offsets: null
 			};
 		}
@@ -374,6 +375,11 @@ class CharacterDataParser
 		if (input.healthIcon.scale == null)
 		{
 			input.healthIcon.scale = DEFAULT_SCALE;
+		}
+
+		if (input.healthIcon.flipX == null)
+		{
+			input.healthIcon.flipX = DEFAULT_FLIPX;
 		}
 
 		if (input.healthIcon.offsets == null)
@@ -582,6 +588,12 @@ typedef HealthIconData =
 	 * The scale of the health icon.
 	 */
 	var scale:Null<Float>;
+
+	/**
+	 * Whether to flip the health icon horizontally.
+	 * @default false
+	 */
+	var flipX:Null<Bool>;
 
 	/**
 	 * The offset of the health icon, in pixels.

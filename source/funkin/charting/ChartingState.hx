@@ -1016,8 +1016,8 @@ class ChartingState extends MusicBeatState
 		if (curSelectedNote != null)
 		{
 			trace('ALT NOTE SHIT');
-			curSelectedNote.altNote = (curSelectedNote.altNote == "alt") ? "" : "alt";
-			trace(curSelectedNote.altNote);
+			curSelectedNote.noteKind = (curSelectedNote.noteKind == "alt") ? "" : "alt";
+			trace(curSelectedNote.noteKind);
 		}
 	}
 
@@ -1358,7 +1358,7 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
-		var noteAlt = "";
+		var noteKind = "";
 
 		justPlacedNote = true;
 
@@ -1399,7 +1399,7 @@ class ChartingState extends MusicBeatState
 
 		var daNewNote:Note = new Note(noteStrum, noteData);
 		daNewNote.data.sustainLength = noteSus;
-		daNewNote.data.altNote = noteAlt;
+		daNewNote.data.noteKind = noteKind;
 		SongLoad.getSong()[curSection].sectionNotes.push(daNewNote.data);
 
 		curSelectedNote = SongLoad.getSong()[curSection].sectionNotes[SongLoad.getSong()[curSection].sectionNotes.length - 1];

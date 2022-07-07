@@ -171,7 +171,7 @@ class InitState extends FlxTransitionableState
 		#elseif FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif ANIMATE
-		FlxG.switchState(new animate.AnimTestStage());
+		FlxG.switchState(new funkin.animate.dotstuff.DotStuffTestStage());
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
 		#elseif STAGEBUILD
@@ -179,11 +179,7 @@ class InitState extends FlxTransitionableState
 		#elseif FIGHT
 		FlxG.switchState(new PicoFight());
 		#elseif ANIMDEBUG
-<<<<<<< HEAD
 		FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
-=======
-		FlxG.switchState(new DebugBoundingState());
->>>>>>> origin/feature/scripted-modules
 		#elseif NETTEST
 		FlxG.switchState(new netTest.NetTest());
 		#else

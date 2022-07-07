@@ -283,7 +283,9 @@ class Note extends FlxSprite
 
 	static public function fromData(data:NoteData, prevNote:Note, isSustainNote = false)
 	{
-		return new Note(data.strumTime, data.noteData, prevNote, isSustainNote);
+		var result = new Note(data.strumTime, data.noteData, prevNote, isSustainNote);
+		result.data = data;
+		return result;
 	}
 }
 
@@ -292,20 +294,18 @@ typedef RawNoteData =
 	var strumTime:Float;
 	var noteData:NoteType;
 	var sustainLength:Float;
-	var altNote:String;
 	var noteKind:NoteKind;
 }
 
 @:forward
 abstract NoteData(RawNoteData)
 {
-	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = "", noteKind = NORMAL)
+	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, noteKind = NORMAL)
 	{
 		this = {
 			strumTime: strumTime,
 			noteData: noteData,
 			sustainLength: sustainLength,
-			altNote: altNote,
 			noteKind: noteKind
 		}
 	}
@@ -470,11 +470,5 @@ enum abstract NoteKind(String) from String to String
 	 * The default note type.
 	 */
 	var NORMAL = "normal";
-
-	// Testing shiz
-	var PYRO_LIGHT = "pyro_light";
-	var PYRO_KICK = "pyro_kick";
-	var PYRO_TOSS = "pyro_toss";
-	var PYRO_COCK = "pyro_cock"; // lol
-	var PYRO_SHOOT = "pyro_shoot";
+	var ALT = "alt";
 }

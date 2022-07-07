@@ -28,7 +28,7 @@ class PicoFight extends MusicBeatState
 
 	override function create()
 	{
-		Paths.setCurrentLevel("week8");
+		Paths.setCurrentLevel("weekend1");
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height);
 		bg.scrollFactor.set();

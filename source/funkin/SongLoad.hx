@@ -191,11 +191,7 @@ class SongLoad
 					noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
 					if (arrayDipshit.length > 3)
 					{
-						noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
-					}
-					if (arrayDipshit.length > 4)
-					{
-						noteStuff[sectionIndex].sectionNotes[noteIndex].noteKind = arrayDipshit[4];
+						noteStuff[sectionIndex].sectionNotes[noteIndex].noteKind = arrayDipshit[3];
 					}
 				}
 				else if (noteDataArray != null)
@@ -227,7 +223,7 @@ class SongLoad
 					noteTypeDefShit.strumTime,
 					noteTypeDefShit.noteData,
 					noteTypeDefShit.sustainLength,
-					noteTypeDefShit.altNote
+					noteTypeDefShit.noteKind
 				];
 
 				noteStuff[sectionIndex].sectionNotes[noteIndex] = cast dipshitArray;
@@ -252,7 +248,15 @@ class SongLoad
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var songParsed:Dynamic = Json.parse(rawJson);
+		var songParsed:Dynamic;
+		try {
+			songParsed = Json.parse(rawJson);
+		} catch (e) {
+			FlxG.log.warn("Error parsing JSON: " + e.message);
+			trace("Error parsing JSON: " + e.message);
+			return null;
+		}
+		
 		var swagShit:SwagSong = cast songParsed.song;
 		swagShit.difficulties = []; // reset it to default before load
 		swagShit.noteMap = new Map();

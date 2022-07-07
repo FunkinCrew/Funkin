@@ -64,6 +64,36 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		this.refresh();
 	}
 
+	public function resetStage():Void {
+		// Reset positions of characters.
+		if (getBoyfriend() != null) {
+			getBoyfriend().resetCharacter(false);
+		} else {
+			trace('STAGE RESET: No boyfriend found.');
+		}
+		if (getGirlfriend() != null) {
+			getGirlfriend().resetCharacter(false);
+		}
+		if (getDad() != null) {
+			getDad().resetCharacter(false);
+		}
+
+		// Reset positions of named props.
+		for (dataProp in _data.props) {
+			// Fetch the prop.
+			var prop:FlxSprite = getNamedProp(dataProp.name);
+
+			if (prop != null) {
+				// Reset the position.
+				prop.x = dataProp.position[0];
+				prop.y = dataProp.position[1];
+				prop.zIndex = dataProp.zIndex;
+			}
+		}
+
+		// We can assume unnamed props are not moving.
+	}
+
 	/**
 	 * The default stage construction routine. Called when the stage is going to be played in.
 	 * Instantiates each prop and adds it to the stage, while setting its parameters.
@@ -253,9 +283,13 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		// Should display at the stage position of the character (before any offsets).
 		// TODO: Make this a toggle? It's useful to turn on from time to time.
 		var debugIcon:FlxSprite = new FlxSprite(0, 0);
+		var debugIcon2:FlxSprite = new FlxSprite(0, 0);
 		debugIcon.makeGraphic(8, 8, 0xffff00ff);
-		debugIcon.visible = false;
+		debugIcon2.makeGraphic(8, 8, 0xff00ffff);
+		debugIcon.visible = true;
+		debugIcon2.visible = true;
 		debugIcon.zIndex = 1000000;
+		debugIcon2.zIndex = 1000000;
 		#end
 
 		// Apply position and z-index.
@@ -265,20 +299,25 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			case BF:
 				this.characters.set("bf", character);
 				charData = _data.characters.bf;
-				character.flipX = !character.flipX;
-				// flip offsets if flipX
+				character.flipX = !character.getDataFlipX();
 				character.initHealthIcon(false);
 			case GF:
 				this.characters.set("gf", character);
 				charData = _data.characters.gf;
+				character.flipX = character.getDataFlipX();
 			case DAD:
 				this.characters.set("dad", character);
 				charData = _data.characters.dad;
-				// flip offsets if flipX
+				character.flipX = character.getDataFlipX();
 				character.initHealthIcon(true);
 			default:
 				this.characters.set(character.characterId, character);
 		}
+
+		// Reset the character before adding it to the stage.
+		// This ensures positioning is based on the idle animation.
+		character.resetCharacter(true);
+
 		if (charData != null)
 		{
 			character.zIndex = charData.zIndex;
@@ -289,17 +328,28 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			character.x = charData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
 			character.y = charData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
 
+			character.originalPosition.x = character.x;
+			character.originalPosition.y = character.y;
+
 			character.cameraFocusPoint.x += charData.cameraOffsets[0];
 			character.cameraFocusPoint.y += charData.cameraOffsets[1];
 
+			#if debug
 			// Draw the debug icon at the character's feet.
-			debugIcon.x = charData.position[0];
-			debugIcon.y = charData.position[1];
+			if (charType == BF || charType == DAD)
+			{
+				debugIcon.x = charData.position[0];
+				debugIcon.y = charData.position[1];
+				debugIcon2.x = character.x;
+				debugIcon2.y = character.y;
+			}
+			#end
 		}
 
 		// Add the character to the scene.
 		this.add(character);
 		this.add(debugIcon);
+		this.add(debugIcon2);
 	}
 
 	public inline function getGirlfriendPosition():FlxPoint

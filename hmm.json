@@ -25,6 +25,13 @@
       "version": "2.4.0"
     },
     {
+      "name": "flxanimate",
+      "type": "git",
+      "dir": null,
+      "ref": "master",
+      "url": "https://github.com/Dot-Stuff/flxanimate"
+    },
+    {
       "name": "hscript",
       "type": "git",
       "dir": null,

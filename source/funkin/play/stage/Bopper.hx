@@ -104,11 +104,36 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	{
 		super();
 		this.danceEvery = danceEvery;
-		this.animation.finishCallback = function(name)
-		{
-			if (finishCallbackMap[name] != null)
-				finishCallbackMap[name]();
-		};
+
+		this.animation.callback = this.onAnimationFrame;
+		this.animation.finishCallback = this.onAnimationFinished;
+	}
+
+	/**
+	 * Called when an animation finishes.
+	 * @param name The name of the animation that just finished.
+	 */
+	function onAnimationFinished(name:String) {
+		if (!canPlayOtherAnims) {
+			canPlayOtherAnims = true;
+		}
+	}
+
+	/**
+	 * Called when the current animation's frame changes.
+	 * @param name The name of the current animation.
+	 * @param frameNumber The number of the current frame.
+	 * @param frameIndex The index of the current frame.
+	 * 
+	 * For example, if an animation was defined as having the indexes [3, 0, 1, 2],
+	 * then the first callback would have frameNumber = 0 and frameIndex = 3.
+	 */
+	function onAnimationFrame(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1) {
+		// Do nothing by default.
+		// This can be overridden by, for example, scripted characters.
+		// Try not to do anything expensive here, it runs many times a second.
+
+		// Sometimes this gets called with empty values? IDK why but adding defaults keeps it from crashing.
 	}
 
 	/**
@@ -236,13 +261,6 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		if (ignoreOther)
 		{
 			canPlayOtherAnims = false;
-
-			// doing it with this funny map, since overriding the animation.finishCallback is a bit messier IMO
-			finishCallbackMap[name] = function()
-			{
-				canPlayOtherAnims = true;
-				finishCallbackMap[name] = null;
-			};
 		}
 
 		applyAnimationOffsets(correctName);

@@ -92,7 +92,7 @@ class BaseCharacter extends Bopper
 	override function set_animOffsets(value:Array<Float>)
 	{
 		if (animOffsets == null)
-			animOffsets = [0, 0];
+			value = [0, 0];
 		if (animOffsets == value)
 			return value;
 
@@ -157,6 +157,15 @@ class BaseCharacter extends Bopper
 		shouldBop = false;
 	}
 
+	/**
+	 * Gets the value of flipX from the character data.
+	 * `!getFlipX()` is the direction Boyfriend should face.
+	 */
+	public function getDataFlipX():Bool
+	{
+		return _data.flipX;
+	}
+
 	function findCountAnimations(prefix:String):Array<Int> {
 		var animNames:Array<String> = this.animation.getNameList();
 
@@ -176,6 +185,27 @@ class BaseCharacter extends Bopper
 		return result;
 	}
 
+	/**
+	 * Reset the character so it can be used at the start of the level.
+	 * Call this when restarting the level.
+	 */
+	public function resetCharacter(resetCamera:Bool = true):Void {
+		// Reset the animation offsets. This will modify x and y to be the absolute position of the character.
+		this.animOffsets = [0, 0];
+		
+		// Now we can set the x and y to be their original values without having to account for animOffsets.
+		this.resetPosition();
+		
+		// Make sure we are playing the idle animation (to reapply animOffsets)...
+		this.dance();
+		// ...then update the hitbox so that this.width and this.height are correct.
+		this.updateHitbox();
+
+		// Reset the camera focus point while we're at it.
+		if (resetCamera)
+			this.resetCameraFocusPoint();
+	}
+	
 	/**
 	 * Set the sprite scale to the appropriate value.
 	 * @param scale 
@@ -206,10 +236,14 @@ class BaseCharacter extends Bopper
 
 	override function onCreate(event:ScriptEvent):Void
 	{
-		// Camera focus point
-		var charCenterX = this.x + this.width / 2;
-		var charCenterY = this.y + this.height / 2;
-		this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
+		// Make sure we are playing the idle animation...
+		this.dance();
+		// ...then update the hitbox so that this.width and this.height are correct.
+		this.updateHitbox();
+		// Without the above code, width and height (and therefore character position)
+		// will be based on the first animation in the sheet rather than the default animation.
+
+		this.resetCameraFocusPoint();
 
 		// Child class should have created animations by now,
 		// so we can query which ones are available.
@@ -218,8 +252,16 @@ class BaseCharacter extends Bopper
 		trace('${this.animation.getNameList()}');
 		trace('Combo note counts: ' + this.comboNoteCounts);
 		trace('Drop note counts: ' + this.dropNoteCounts);
-
+			
 		super.onCreate(event);
+	}
+
+	function resetCameraFocusPoint():Void
+	{
+		// Calculate the camera focus point
+		var charCenterX = this.x + this.width / 2;
+		var charCenterY = this.y + this.height / 2;
+		this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
 	}
 
 	public function initHealthIcon(isOpponent:Bool):Void
@@ -230,6 +272,7 @@ class BaseCharacter extends Bopper
 			PlayState.instance.iconP1.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
 			PlayState.instance.iconP1.offset.x = _data.healthIcon.offsets[0];
 			PlayState.instance.iconP1.offset.y = _data.healthIcon.offsets[1];
+			PlayState.instance.iconP1.flipX = !_data.healthIcon.flipX;
 		}
 		else
 		{
@@ -237,6 +280,7 @@ class BaseCharacter extends Bopper
 			PlayState.instance.iconP2.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
 			PlayState.instance.iconP2.offset.x = _data.healthIcon.offsets[0];
 			PlayState.instance.iconP2.offset.y = _data.healthIcon.offsets[1];
+			PlayState.instance.iconP1.flipX = _data.healthIcon.flipX;
 		}
 	}
 
@@ -255,16 +299,16 @@ class BaseCharacter extends Bopper
 			playDeathAnimation();
 		}
 
-		if (hasAnimation('idle-end') && getCurrentAnimation() == "idle" && isAnimationFinished())
-			playAnimation('idle-end');
-		if (hasAnimation('singLEFT-end') && getCurrentAnimation() == "singLEFT" && isAnimationFinished())
-			playAnimation('singLEFT-end');
-		if (hasAnimation('singDOWN-end') && getCurrentAnimation() == "singDOWN" && isAnimationFinished())
-			playAnimation('singDOWN-end');
-		if (hasAnimation('singUP-end') && getCurrentAnimation() == "singUP" && isAnimationFinished())
-			playAnimation('singUP-end');
-		if (hasAnimation('singRIGHT-end') && getCurrentAnimation() == "singRIGHT" && isAnimationFinished())
-			playAnimation('singRIGHT-end');
+		if (hasAnimation('idle-hold') && getCurrentAnimation() == "idle" && isAnimationFinished())
+			playAnimation('idle-hold');
+		if (hasAnimation('singLEFT-hold') && getCurrentAnimation() == "singLEFT" && isAnimationFinished())
+			playAnimation('singLEFT-hold');
+		if (hasAnimation('singDOWN-hold') && getCurrentAnimation() == "singDOWN" && isAnimationFinished())
+			playAnimation('singDOWN-hold');
+		if (hasAnimation('singUP-hold') && getCurrentAnimation() == "singUP" && isAnimationFinished())
+			playAnimation('singUP-hold');
+		if (hasAnimation('singRIGHT-hold') && getCurrentAnimation() == "singRIGHT" && isAnimationFinished())
+			playAnimation('singRIGHT-hold');
 
 		// Handle character note hold time.
 		if (getCurrentAnimation().startsWith("sing"))
@@ -276,9 +320,8 @@ class BaseCharacter extends Bopper
 			var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
 
 			FlxG.watch.addQuick('singTimeMs-${characterId}', singTimeMs);
-			if (holdTimer > singTimeMs && shouldStopSinging && !getCurrentAnimation().endsWith("miss"))
+			if (holdTimer > singTimeMs && shouldStopSinging) //  && !getCurrentAnimation().endsWith("miss")
 			{
-				trace(getCurrentAnimation());
 				// trace('holdTimer reached ${holdTimer}sec (> ${singTimeMs}), stopping sing animation');
 				holdTimer = 0;
 				dance(true);
@@ -401,14 +444,14 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, false);
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, false);
 		} else if (characterType == GF) {
-			if (this.comboNoteCounts.contains(event.comboCount)) {
+			if (event.note.mustPress && this.comboNoteCounts.contains(event.comboCount)) {
 				trace('Playing GF combo animation: combo${event.comboCount}');
 				this.playAnimation('combo${event.comboCount}', true, true);
 			}
@@ -426,12 +469,12 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, true);
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, true);
 		} else if (event.note.mustPress && characterType == GF) {
 			var dropAnim = '';
 
@@ -466,9 +509,9 @@ class BaseCharacter extends Bopper
 
 		if (characterType == BF)
 		{
-			trace('Playing ghost miss animation...');
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.dir, true, null);
+			// trace('Playing ghost miss animation...');
+			this.playSingAnimation(event.dir, true);
 		}
 	}
 

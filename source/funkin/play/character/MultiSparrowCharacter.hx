@@ -50,8 +50,6 @@ class MultiSparrowCharacter extends BaseCharacter
 		buildSpritesheets();
 		buildAnimations();
 
-		playAnimation(_data.startingAnimation);
-
 		if (_data.isPixel)
 		{
 			this.antialiasing = false;
@@ -124,7 +122,7 @@ class MultiSparrowCharacter extends BaseCharacter
 		if (members.exists(assetPath))
 		{
 			// Switch to a new set of sprites.
-			trace('Loading frames from asset path: ${assetPath}');
+			// trace('Loading frames from asset path: ${assetPath}');
 			this.frames = members.get(assetPath);
 			this.activeMember = assetPath;
 			this.setScale(_data.scale);
@@ -176,7 +174,9 @@ class MultiSparrowCharacter extends BaseCharacter
 
 	public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
 	{
-		if (!this.canPlayOtherAnims)
+		// Make sure we ignore other animations if we're currently playing a forced one,
+		// unless we're forcing a new animation.
+		if (!this.canPlayOtherAnims && !ignoreOther)
 			return;
 
 		loadFramesByAnimName(name);

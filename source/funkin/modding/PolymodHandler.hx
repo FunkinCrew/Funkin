@@ -1,5 +1,6 @@
 package funkin.modding;
 
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.stage.StageData;
 import polymod.Polymod;
@@ -157,7 +158,7 @@ class PolymodHandler
 		return {
 			assetLibraryPaths: [
 				"songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1", "week2" => "week2",
-				"week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "week8" => "week8",
+				"week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
 			]
 		}
 	}
@@ -227,9 +228,10 @@ class PolymodHandler
 		// Reload scripted classes so stages and modules will update.
 		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
 
-		// Reload the stages in cache.
-		// TODO: Currently this causes lag since you're reading a lot of files, how to fix?
+		// Reload everything that is cached.
+		// Currently this freezes the game for a second but I guess that's tolerable?
 		StageDataParser.loadStageCache();
+		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.loadModuleCache();
 	}
 }

@@ -44,7 +44,7 @@ interface INoteScriptedClass extends IScriptedClass
  * 
  * I previously considered adding events for onKeyDown, onKeyUp, mouse events, etc.
  * However, I realized that you can simply call something like the following within a module:
- * `FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);`
+ * `FlxG.state.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);`
  * This is more efficient than adding an entire event handler for every key press.
  *
  * -Eric

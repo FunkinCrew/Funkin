@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
@@ -50,7 +51,11 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new()
 	{
 		super();
+	}
 
+	override public function create()
+	{
+		super.create();
 		FlxG.sound.list.add(gameOverMusic);
 		gameOverMusic.stop();
 
@@ -73,13 +78,22 @@ class GameOverSubstate extends MusicBeatSubstate
 				}
 		}
 
+		// By adding a background we can make it transparent for testing.
+		var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg.alpha = 0.25;
+		bg.scrollFactor.set();
+		add(bg);
+
 		// We have to remove boyfriend from the stage. Then we can add him back at the end.
 		boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
 		boyfriend.isDead = true;
-		boyfriend.playAnimation('firstDeath');
 		add(boyfriend);
+		boyfriend.resetCharacter();
+		boyfriend.playAnimation('firstDeath');
 
 		cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
+		cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
+		cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
 		add(cameraFollowPoint);
 
 		// FlxG.camera.scroll.set();
@@ -124,11 +138,10 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		// Start panning the camera to BF after 12 frames.
 		// TODO: Should this be de-hardcoded?
-		if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.animation.curAnim.curFrame == 12)
-		{
-			cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
-			cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
-		}
+		//if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.animation.curAnim.curFrame == 12)
+		//{
+//
+		//}
 
 		if (gameOverMusic.playing)
 		{

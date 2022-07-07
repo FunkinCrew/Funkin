@@ -142,7 +142,7 @@ class ScriptEvent
 	public static inline final GAME_OVER:ScriptEventType = "GAME_OVER";
 
 	/**
-	 * Called when the player presses a key to restart the game.
+	 * Called after the player presses a key to restart the game.
 	 * This can happen from the pause menu or the game over screen.
 	 * 
 	 * This event IS cancelable! Canceling this event will prevent the game from restarting.
