@@ -32,7 +32,6 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
 		var oldStep:Int = curStep;
 
 		updateCurStep();
@@ -44,7 +43,7 @@ class MusicBeatSubstate extends FlxSubState
 		super.update(elapsed);
 
 		if(FlxG.stage != null)
-			FlxG.stage.frameRate = utilities.Options.getData("maxFPS");
+			FlxG.stage.frameRate = flixel.math.FlxMath.bound(utilities.Options.getData("maxFPS"), 0.1, 1000);
 
 		if(!utilities.Options.getData("antialiasing"))
 		{
