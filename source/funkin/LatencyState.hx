@@ -125,7 +125,7 @@ class LatencyState extends MusicBeatSubstate
 
 		if (FlxG.keys.justPressed.X)
 		{
-			var closestBeat:Int = Math.round(Conductor.songPosition / Conductor.crochet);
+			var closestBeat:Int = Math.round(Conductor.songPosition / Conductor.crochet) % diffGrp.members.length;
 			var getDiff:Float = Conductor.songPosition - (closestBeat * Conductor.crochet);
 			getDiff -= Conductor.visualOffset;
 
