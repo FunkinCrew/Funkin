@@ -25,6 +25,7 @@ class LatencyState extends MusicBeatSubstate
 
 	var beatTrail:FlxSprite;
 	var diffGrp:FlxTypedGroup<FlxText>;
+	var offsetsPerBeat:Array<Int> = [];
 
 	override function create()
 	{
@@ -61,6 +62,8 @@ class LatencyState extends MusicBeatSubstate
 			var offsetTxt:FlxText = new FlxText(songPosToX(beat * Conductor.crochet), FlxG.height - 26, 0, "swag");
 			offsetTxt.alpha = 0.5;
 			diffGrp.add(offsetTxt);
+
+			offsetsPerBeat.push(0);
 		}
 
 		songVisFollowAudio = new FlxSprite(0, FlxG.height - 20).makeGraphic(2, 20, FlxColor.YELLOW);
@@ -129,11 +132,16 @@ class LatencyState extends MusicBeatSubstate
 			var getDiff:Float = Conductor.songPosition - (closestBeat * Conductor.crochet);
 			getDiff -= Conductor.visualOffset;
 
+			// lil fix for end of song
+			if (closestBeat == 0 && getDiff >= Conductor.crochet * 2)
+				getDiff -= FlxG.sound.music.length;
+
 			trace("\tDISTANCE TO CLOSEST BEAT: " + getDiff + "ms");
 			trace("\tCLOSEST BEAT: " + closestBeat);
 			beatTrail.x = songPosVis.x;
-			if (closestBeat < FlxG.sound.music.length / Conductor.crochet)
-				diffGrp.members[closestBeat].text = getDiff + "ms";
+
+			diffGrp.members[closestBeat].text = getDiff + "ms";
+			offsetsPerBeat[closestBeat] = Std.int(getDiff);
 		}
 
 		if (FlxG.keys.justPressed.SPACE)
@@ -157,6 +165,15 @@ class LatencyState extends MusicBeatSubstate
 		offsetText.text += "\nVIDOE Offset: " + Conductor.visualOffset + "ms";
 		offsetText.text += "\ncurStep: " + curStep;
 		offsetText.text += "\ncurBeat: " + curBeat;
+
+		var avgOffsetInput:Float = 0;
+
+		for (offsetThing in offsetsPerBeat)
+			avgOffsetInput += offsetThing;
+
+		avgOffsetInput /= offsetsPerBeat.length;
+
+		offsetText.text += "\naverage input offset needed: " + avgOffsetInput;
 
 		var multiply:Float = 10;
 
