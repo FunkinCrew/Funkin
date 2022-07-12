@@ -5,9 +5,12 @@ import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
+import flixel.system.FlxSound;
+import flixel.system.debug.stats.StatsGraph;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audiovis.PolygonSpectogram;
+import funkin.ui.CoolStatsGraph;
 import haxe.Timer;
 import openfl.events.KeyboardEvent;
 
@@ -26,16 +29,47 @@ class LatencyState extends MusicBeatSubstate
 	var beatTrail:FlxSprite;
 	var diffGrp:FlxTypedGroup<FlxText>;
 	var offsetsPerBeat:Array<Int> = [];
+	var swagSong:HomemadeMusic;
+
+	var funnyStatsGraph:CoolStatsGraph;
+	var realStats:CoolStatsGraph;
 
 	override function create()
 	{
+		swagSong = new HomemadeMusic();
+		swagSong.loadEmbedded(Paths.sound('soundTest'), true);
+
+		FlxG.sound.music = swagSong;
+		FlxG.sound.music.play();
+
+		funnyStatsGraph = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.PINK, "time");
+		FlxG.addChildBelowMouse(funnyStatsGraph);
+
+		realStats = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.YELLOW, "REAL");
+		FlxG.addChildBelowMouse(realStats);
+
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key ->
 		{
+			trace(key.charCode);
+
+			if (key.charCode == 120)
+				generateBeatStuff();
+
 			trace("\tEVENT PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
+			// trace(FlxG.sound.music.prevTimestamp);
+			trace(FlxG.sound.music.time);
+			trace("\tFR FR PRESS: \t" + swagSong.getTimeWithDiff());
+
+			// trace("\tREDDIT: \t" + swagSong.frfrTime + " " + Timer.stamp());
+			@:privateAccess
+			trace("\tREDDIT: \t" + FlxG.sound.music._channel.position + " " + Timer.stamp());
 			// trace("EVENT LISTENER: " + key);
 		});
 
-		FlxG.sound.playMusic(Paths.sound('soundTest'));
+		// FlxG.sound.playMusic(Paths.sound('soundTest'));
+
+		// funnyStatsGraph.hi
+
 		Conductor.bpm = 60;
 
 		noteGrp = new FlxTypedGroup<Note>();
@@ -121,27 +155,17 @@ class LatencyState extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		/* trace("1: " + swagSong.frfrTime);
+			@:privateAccess
+			trace(FlxG.sound.music._channel.position);
+		 */
+
+		funnyStatsGraph.update(FlxG.sound.music.time % 500);
+		realStats.update(swagSong.getTimeWithDiff() % 500);
+
 		if (FlxG.keys.justPressed.S)
 		{
 			trace("\tUPDATE PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
-		}
-
-		if (FlxG.keys.justPressed.X)
-		{
-			var closestBeat:Int = Math.round(Conductor.songPosition / Conductor.crochet) % diffGrp.members.length;
-			var getDiff:Float = Conductor.songPosition - (closestBeat * Conductor.crochet);
-			getDiff -= Conductor.visualOffset;
-
-			// lil fix for end of song
-			if (closestBeat == 0 && getDiff >= Conductor.crochet * 2)
-				getDiff -= FlxG.sound.music.length;
-
-			trace("\tDISTANCE TO CLOSEST BEAT: " + getDiff + "ms");
-			trace("\tCLOSEST BEAT: " + closestBeat);
-			beatTrail.x = songPosVis.x;
-
-			diffGrp.members[closestBeat].text = getDiff + "ms";
-			offsetsPerBeat[closestBeat] = Std.int(getDiff);
 		}
 
 		if (FlxG.keys.justPressed.SPACE)
@@ -155,7 +179,8 @@ class LatencyState extends MusicBeatSubstate
 		if (FlxG.keys.pressed.D)
 			FlxG.sound.music.time += 1000 * FlxG.elapsed;
 
-		Conductor.songPosition = FlxG.sound.music.time - Conductor.offset;
+		Conductor.songPosition = swagSong.getTimeWithDiff() - Conductor.offset;
+		// Conductor.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
 		songPosVis.x = songPosToX(Conductor.songPosition);
 		songVisFollowAudio.x = songPosToX(Conductor.songPosition - Conductor.audioOffset);
@@ -230,8 +255,56 @@ class LatencyState extends MusicBeatSubstate
 		super.update(elapsed);
 	}
 
+	function generateBeatStuff()
+	{
+		Conductor.songPosition = swagSong.getTimeWithDiff();
+
+		var closestBeat:Int = Math.round(Conductor.songPosition / Conductor.crochet) % diffGrp.members.length;
+		var getDiff:Float = Conductor.songPosition - (closestBeat * Conductor.crochet);
+		getDiff -= Conductor.visualOffset;
+
+		// lil fix for end of song
+		if (closestBeat == 0 && getDiff >= Conductor.crochet * 2)
+			getDiff -= FlxG.sound.music.length;
+
+		trace("\tDISTANCE TO CLOSEST BEAT: " + getDiff + "ms");
+		trace("\tCLOSEST BEAT: " + closestBeat);
+		beatTrail.x = songPosVis.x;
+
+		diffGrp.members[closestBeat].text = getDiff + "ms";
+		offsetsPerBeat[closestBeat] = Std.int(getDiff);
+	}
+
 	function songPosToX(pos:Float):Float
 	{
 		return FlxMath.remapToRange(pos, 0, FlxG.sound.music.length, 0, FlxG.width);
+	}
+}
+
+class HomemadeMusic extends FlxSound
+{
+	public var prevTimestamp:Int = 0;
+	public var timeWithDiff:Float = 0;
+
+	public function new()
+	{
+		super();
+	}
+
+	var prevTime:Float = 0;
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		if (prevTime != time)
+		{
+			prevTime = time;
+			prevTimestamp = Std.int(Timer.stamp() * 1000);
+		}
+	}
+
+	public function getTimeWithDiff():Float
+	{
+		return time + (Std.int(Timer.stamp() * 1000) - prevTimestamp);
 	}
 }
