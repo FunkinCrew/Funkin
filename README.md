@@ -18,9 +18,9 @@ For build instructions go to [Build.md](https://github.com/Leather128/LeatherEng
 
 ## Features
 
-> 1-INF Key Support
+> 1-21+ Key Support
 
-What does this mean? Well, now if you want, you can choose a different amount of arrows / keys! (Aka different from 4), this feature goes up to infinity because you can add your own sets of keys, but the default limit is 18 (also yes 1 key is a thing lol).
+What does this mean? Well, now if you want, you can choose a different amount of arrows / keys! (Aka different from 4), this feature goes up to 21 by default, but can be increased with mods (no source code required).
 
 > Full mod support with Polymod (with a mod loader)!
 
