@@ -561,7 +561,7 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
 
-	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+	public function onSongLoaded(event:SongLoadScriptEvent) {}
 
 	public function onSongRetry(event:ScriptEvent) {}
 }

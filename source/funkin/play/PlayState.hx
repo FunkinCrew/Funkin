@@ -779,6 +779,8 @@ class PlayState extends MusicBeatState implements IHook
 
 	function startSong():Void
 	{
+		dispatchEvent(new ScriptEvent(ScriptEvent.SONG_START));
+
 		startingSong = false;
 
 		previousFrameTime = FlxG.game.ticks;
@@ -1387,6 +1389,8 @@ class PlayState extends MusicBeatState implements IHook
 
 	function endSong():Void
 	{
+		dispatchEvent(new ScriptEvent(ScriptEvent.SONG_END));
+
 		seenCutscene = false;
 		deathCounter = 0;
 		mayPauseGame = false;
@@ -1844,13 +1848,15 @@ class PlayState extends MusicBeatState implements IHook
 
 		// bruh this var is bonkers i thot it was a function lmfaooo
 
+		// Break up into individual lines to aid debugging.
+		var shouldShowComboText:Bool = (curBeat % 8 == 7);
+		var daSection = SongLoad.getSong()[Std.int(curStep / 16)];
+		shouldShowComboText = shouldShowComboText && (daSection != null && daSection.mustHitSection);
+		shouldShowComboText = shouldShowComboText && (combo > 5);
 
-		var shouldShowComboText:Bool = (curBeat % 8 == 7) // End of measure. TODO: Is this always the correct time?
-			&& (SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection) // Current section is BF's.
-			&& (combo > 5) // Don't want to show on small combos.
-			&& ((SongLoad.getSong().length < Std.int(curStep / 16)) // Show at the end of the song.
-				|| (!SongLoad.getSong()[Std.int(curStep / 16) + 1].mustHitSection) // Or when the next section is Dad's.
-			);
+		var daNextSection = SongLoad.getSong()[Std.int(curStep / 16) + 1];
+		var isEndOfSong = SongLoad.getSong().length < Std.int(curStep / 16);
+		shouldShowComboText = shouldShowComboText && (isEndOfSong || (daNextSection != null && !daNextSection.mustHitSection));
 
 		if (shouldShowComboText)
 		{

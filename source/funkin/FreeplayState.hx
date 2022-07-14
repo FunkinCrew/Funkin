@@ -80,7 +80,7 @@ class FreeplayState extends MusicBeatSubstate
 		#if debug
 		isDebug = true;
 		addSong('Test', 1, 'bf-pixel');
-		addSong('Pyro', 4, 'bf');
+		addSong('Pyro', 8, 'darnell');
 		#end
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -127,7 +127,6 @@ class FreeplayState extends MusicBeatSubstate
 		trace(FlxG.camera.zoom);
 		trace(FlxG.camera.initialZoom);
 		trace(FlxCamera.defaultZoom);
-		trace(FlxG.initialZoom);
 
 		var pinkBack:FlxSprite = new FlxSprite().loadGraphic(Paths.image('freeplay/pinkBack'));
 		pinkBack.color = 0xFFffd4e9; // sets it to pink!

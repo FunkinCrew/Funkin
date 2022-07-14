@@ -61,6 +61,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		Conductor.songPosition = 0;
 
+		// TODO: Make SFX and music easily overriden by scripts.
 		playBlueBalledSFX();
 
 		switch (PlayState.instance.currentStageId)
@@ -68,7 +69,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			case 'school' | 'schoolEvil':
 				musicVariant = "-pixel";
 			default:
-				if (PlayState.instance.currentStage.getBoyfriend().characterId == 'pico')
+				if (['pico', 'pico-playable'].contains(PlayState.instance.currentStage.getBoyfriend().characterId))
 				{
 					musicVariant = "Pico";
 				}
@@ -89,7 +90,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		boyfriend.isDead = true;
 		add(boyfriend);
 		boyfriend.resetCharacter();
-		boyfriend.playAnimation('firstDeath');
+		boyfriend.playAnimation('firstDeath', true, true);
 
 		cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
 		cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;

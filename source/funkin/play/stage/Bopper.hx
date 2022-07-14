@@ -360,7 +360,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 	public function onCountdownEnd(event:CountdownScriptEvent) {}
 
-	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+	public function onSongLoaded(event:SongLoadScriptEvent) {}
 
 	public function onSongRetry(event:ScriptEvent) {}
 }

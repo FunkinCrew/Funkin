@@ -249,9 +249,9 @@ class BaseCharacter extends Bopper
 		// so we can query which ones are available.
 		this.comboNoteCounts = findCountAnimations('combo'); // example: combo50
 		this.dropNoteCounts = findCountAnimations('drop'); // example: drop50
-		trace('${this.animation.getNameList()}');
-		trace('Combo note counts: ' + this.comboNoteCounts);
-		trace('Drop note counts: ' + this.dropNoteCounts);
+		// trace('${this.animation.getNameList()}');
+		// trace('Combo note counts: ' + this.comboNoteCounts);
+		// trace('Drop note counts: ' + this.dropNoteCounts);
 			
 		super.onCreate(event);
 	}

@@ -74,20 +74,28 @@ class Main extends Sprite
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 
-		if (zoom == -1)
-		{
-			var ratioX:Float = stageWidth / gameWidth;
-			var ratioY:Float = stageHeight / gameHeight;
-			zoom = Math.min(ratioX, ratioY);
-			gameWidth = Math.ceil(stageWidth / zoom);
-			gameHeight = Math.ceil(stageHeight / zoom);
-		}
+		// if (zoom == -1)
+		// {
+		// 	var ratioX:Float = stageWidth / gameWidth;
+		// 	var ratioY:Float = stageHeight / gameHeight;
+		// 	zoom = Math.min(ratioX, ratioY);
+		// 	gameWidth = Math.ceil(stageWidth / zoom);
+		// 	gameHeight = Math.ceil(stageHeight / zoom);
+		// }
+
+		/**
+		 * The `zoom` argument of FlxGame was removed in the dev branch of Flixel,
+		 * since it was considered confusing and unintuitive.
+		 * If you want to change how the game scales when you resize the window,
+		 * you can use `FlxG.scaleMode`.
+		 * -Eric
+		 */
 
 		#if !debug
 		initialState = TitleState;
 		#end
 
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
 
 		#if debug
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
