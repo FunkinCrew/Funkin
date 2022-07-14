@@ -177,6 +177,9 @@ class PauseSubState extends MusicBeatSubstate
 			switch(daSelected.toLowerCase())
 			{
 				case "resume":
+					pauseMusic.stop();
+					pauseMusic.destroy();
+					
 					close();
 				case "restart song":
 					menu = "restart";
