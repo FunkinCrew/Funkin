@@ -3879,10 +3879,7 @@ class PlayState extends MusicBeatState
 		if (SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)] != null)
 		{
 			if (SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)].changeBPM)
-			{
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)].bpm, songMultiplier);
-				FlxG.log.add('CHANGED BPM!');
-			}
 
 			// Dad doesnt interupt his own notes
 			if (characterPlayingAs == 0)
@@ -3890,9 +3887,7 @@ class PlayState extends MusicBeatState
 				if (dad.otherCharacters == null)
 				{
 					if (dad.animation.curAnim != null)
-						if ((dad.animation.curAnim.name.startsWith("sing")
-							&& dad.animation.curAnim.finished
-							|| !dad.animation.curAnim.name.startsWith("sing"))
+						if (dad.animation.curAnim.finished
 							&& !dad.curCharacter.startsWith('gf'))
 							dad.dance(altAnim);
 				}
@@ -3901,9 +3896,7 @@ class PlayState extends MusicBeatState
 					for (character in dad.otherCharacters)
 					{
 						if (character.animation.curAnim != null)
-							if ((character.animation.curAnim.name.startsWith("sing")
-								&& character.animation.curAnim.finished
-								|| !character.animation.curAnim.name.startsWith("sing"))
+							if (character.animation.curAnim.finished
 								&& !character.curCharacter.startsWith('gf'))
 								character.dance(altAnim);
 					}
@@ -3914,11 +3907,11 @@ class PlayState extends MusicBeatState
 				if (boyfriend.otherCharacters == null)
 				{
 					if (boyfriend.animation.curAnim != null)
-						if ((boyfriend.animation.curAnim.name.startsWith("sing")
-							&& boyfriend.animation.curAnim.finished
-							|| !boyfriend.animation.curAnim.name.startsWith("sing"))
-							&& !boyfriend.curCharacter.startsWith('gf'))
-							boyfriend.dance();
+						if (boyfriend.curCharacter.startsWith('gf'))
+							if (boyfriend.animation.curAnim.name.startsWith("sing")
+								&& boyfriend.animation.curAnim.finished
+								|| !boyfriend.animation.curAnim.name.startsWith("sing"))
+								boyfriend.dance();
 				}
 				else
 				{
@@ -3976,7 +3969,7 @@ class PlayState extends MusicBeatState
 			if (boyfriend.otherCharacters == null)
 			{
 				if (boyfriend.animation.curAnim != null)
-					if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+					if (!boyfriend.animation.curAnim.name.startsWith("sing") && boyfriend.animation.curAnim.finished)
 						boyfriend.dance();
 			}
 			else
@@ -3984,7 +3977,7 @@ class PlayState extends MusicBeatState
 				for (character in boyfriend.otherCharacters)
 				{
 					if (character.animation.curAnim != null)
-						if (!character.animation.curAnim.name.startsWith("sing"))
+						if (!character.animation.curAnim.name.startsWith("sing") && character.animation.curAnim.finished)
 							character.dance();
 				}
 			}
@@ -3994,7 +3987,7 @@ class PlayState extends MusicBeatState
 			if (dad.otherCharacters == null)
 			{
 				if (dad.animation.curAnim != null)
-					if (!dad.animation.curAnim.name.startsWith("sing"))
+					if (!dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished)
 						dad.dance(altAnim);
 			}
 			else
@@ -4002,7 +3995,7 @@ class PlayState extends MusicBeatState
 				for (character in dad.otherCharacters)
 				{
 					if (character.animation.curAnim != null)
-						if (!character.animation.curAnim.name.startsWith("sing"))
+						if (!character.animation.curAnim.name.startsWith("sing") && boyfriend.animation.curAnim.finished)
 							character.dance(altAnim);
 				}
 			}
@@ -4274,6 +4267,7 @@ class PlayState extends MusicBeatState
 					var newGf = gfMap.get(event[3]);
 					newGf.alpha = 1;
 					gf = newGf;
+					gf.dance();
 
 					if (newGf.otherCharacters != null)
 					{
@@ -4314,7 +4308,8 @@ class PlayState extends MusicBeatState
 					var newDad = dadMap.get(event[3]);
 					newDad.alpha = 1;
 					dad = newDad;
-
+					dad.dance();
+					
 					if (newDad.otherCharacters != null)
 					{
 						for (character in newDad.otherCharacters)
@@ -4365,6 +4360,7 @@ class PlayState extends MusicBeatState
 					var newBF = bfMap.get(event[3]);
 					newBF.alpha = 1;
 					boyfriend = newBF;
+					boyfriend.dance();
 
 					if (newBF.otherCharacters != null)
 					{

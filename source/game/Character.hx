@@ -507,9 +507,7 @@ class Character extends FlxSprite
 			if (!isPlayer)
 			{
 				if (animation.curAnim.name.startsWith('sing'))
-				{
 					holdTimer += elapsed * (FlxG.state == PlayState.instance ? PlayState.songMultiplier : 1);
-				}
 
 				var dadVar:Float = 4;
 
