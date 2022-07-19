@@ -20,7 +20,7 @@ class LatencyState extends MusicBeatSubstate
 	var noteGrp:FlxTypedGroup<Note>;
 	var strumLine:FlxSprite;
 
-	var blocks:FlxGroup;
+	var blocks:FlxTypedGroup<FlxSprite>;
 
 	var songPosVis:FlxSprite;
 	var songVisFollowVideo:FlxSprite;
@@ -113,13 +113,13 @@ class LatencyState extends MusicBeatSubstate
 		beatTrail.alpha = 0.7;
 		add(beatTrail);
 
-		blocks = new FlxGroup();
+		blocks = new FlxTypedGroup<FlxSprite>();
 		add(blocks);
 
 		for (i in 0...8)
 		{
 			var block = new FlxSprite(2, 50 * i).makeGraphic(48, 48);
-			block.visible = false;
+			block.alpha = 0;
 			blocks.add(block);
 		}
 
@@ -139,15 +139,25 @@ class LatencyState extends MusicBeatSubstate
 		super.create();
 	}
 
+	override function stepHit()
+	{
+		if (curStep % 4 == 2)
+		{
+			blocks.members[((curBeat % 8) + 1) % 8].alpha = 0.5;
+		}
+
+		super.stepHit();
+	}
+
 	override function beatHit()
 	{
 		if (curBeat % 8 == 0)
 			blocks.forEach(blok ->
 			{
-				blok.visible = false;
+				blok.alpha = 0;
 			});
 
-		blocks.members[curBeat % 8].visible = true;
+		blocks.members[curBeat % 8].alpha = 1;
 		// block.visible = !block.visible;
 
 		super.beatHit();
