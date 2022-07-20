@@ -1,6 +1,7 @@
 # Crisis Engine - Compiling Auto
 if you wanna compile auto, do this at lua script and put in mods/scripts 
-```function onCreatePost(Elapsed)
+```lua
+function onCreatePost(Elapsed)
 setProperty("lime.test.windows", "Flx.g", "lime.windows")
 setproperty("openfl.windows")
 getPropertyFromGroup("haxelib.flixel.tools", "lime.test.windows")
