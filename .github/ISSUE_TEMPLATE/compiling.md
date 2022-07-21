@@ -20,6 +20,7 @@ labels: compiling help
 - [ ] Mac
 - [ ] Linux
 - [ ] HTML5
+- [ ] Haxeflixel
 
 ## Please describe your issue. Provide extensive detail and images if possible.
 
