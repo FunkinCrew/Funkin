@@ -1,7 +1,7 @@
 package funkin.modding;
 
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.stage.StageData;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
@@ -157,7 +157,7 @@ class PolymodHandler
 	{
 		return {
 			assetLibraryPaths: [
-				"songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1", "week2" => "week2",
+				"songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1",      "week2" => "week2",
 				"week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
 			]
 		}
@@ -223,7 +223,8 @@ class PolymodHandler
 		polymod.hscript.PolymodScriptClass.clearScriptClasses();
 
 		// Forcibly reload Polymod so it finds any new files.
-		loadEnabledMods();
+		// TODO: Replace this with loadEnabledMods().
+		funkin.modding.PolymodHandler.loadAllMods();
 
 		// Reload scripted classes so stages and modules will update.
 		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();

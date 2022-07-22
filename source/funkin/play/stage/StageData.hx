@@ -1,6 +1,8 @@
 package funkin.play.stage;
 
 import flixel.util.typeLimit.OneOfTwo;
+import funkin.play.stage.ScriptedStage;
+import funkin.play.stage.Stage;
 import funkin.util.VersionUtil;
 import funkin.util.assets.DataAssets;
 import haxe.Json;

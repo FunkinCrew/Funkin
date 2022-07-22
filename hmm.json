@@ -1,6 +1,49 @@
 {
   "dependencies": [
     {
+      "name": "discord_rpc",
+      "type": "git",
+      "dir": null,
+      "ref": "2d83fa8",
+      "url": "https://github.com/Aidan63/linc_discord-rpc"
+    },
+    {
+      "name": "flixel",
+      "type": "git",
+      "dir": null,
+      "ref": "75a2789",
+      "url": "https://github.com/haxeflixel/flixel"
+    },
+    {
+      "name": "flixel-addons",
+      "type": "git",
+      "dir": null,
+      "ref": "dev",
+      "url": "https://github.com/MasterEric/flixel-addons"
+    },
+    {
+      "name": "flixel-ui",
+      "type": "haxelib",
+      "version": "2.4.0"
+    },
+    {
+      "name": "flxanimate",
+      "type": "git",
+      "dir": null,
+      "ref": "90c44ca",
+      "url": "https://github.com/Dot-Stuff/flxanimate"
+    },
+    {
+      "name": "hmm",
+      "type": "haxelib",
+      "version": "2.1.0"
+    },
+    {
+      "name": "hscript",
+      "type": "haxelib",
+      "version": "2.5.0"
+    },
+    {
       "name": "hxcpp",
       "type": "haxelib",
       "version": "4.2.1"
@@ -9,11 +52,6 @@
       "name": "hxcpp-debug-server",
       "type": "haxelib",
       "version": "1.2.4"
-    },
-    {
-      "name": "thx.semver",
-      "type": "haxelib",
-      "version": "0.2.2"
     },
     {
       "name": "lime",
@@ -26,47 +64,16 @@
       "version": "9.1.0"
     },
     {
-      "name": "flixel",
-      "type": "git",
-      "dir": null,
-      "ref": "75a2789",
-      "url": "https://github.com/haxeflixel/flixel"
-    },
-    {
-      "name": "flixel-addons",
-      "type": "haxelib",
-      "version": "2.11.0"
-    },
-    {
-      "name": "flixel-ui",
-      "type": "haxelib",
-      "version": "2.4.0"
-    },
-    {
-      "name": "discord_rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "2d83fa8",
-      "url": "https://github.com/Aidan63/linc_discord-rpc"
-    },
-    {
-      "name": "hscript",
-      "type": "haxelib",
-      "version": "2.5.0"
-    },
-    {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "4c2c949",
+      "ref": "bde0604",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
-      "name": "flxanimate",
-      "type": "git",
-      "dir": null,
-      "ref": "90c44ca",
-      "url": "https://github.com/Dot-Stuff/flxanimate"
+      "name": "thx.semver",
+      "type": "haxelib",
+      "version": "0.2.2"
     }
   ]
 }

@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.display.FlxRuntimeShader;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
@@ -37,6 +38,8 @@ import funkin.ui.stageBuildShit.StageOffsetSubstate;
 import funkin.util.Constants;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;
+import openfl.Assets;
+import openfl.filters.ShaderFilter;
 
 using StringTools;
 
@@ -280,11 +283,10 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		super.create();
 
-		if (currentSong == null) {
-			lime.app.Application.current.window.alert(
-				"There was a critical error while accessing the selected song. Click OK to return to the main menu.",
-				"Error loading PlayState"
-			);
+		if (currentSong == null)
+		{
+			lime.app.Application.current.window.alert("There was a critical error while accessing the selected song. Click OK to return to the main menu.",
+				"Error loading PlayState");
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -474,8 +476,8 @@ class PlayState extends MusicBeatState implements IHook
 				currentStageId = 'mallXmas';
 			case 'winter-horrorland':
 				currentStageId = 'mallEvil';
-				case 'senpai' | 'roses':
-					currentStageId = 'school';
+			case 'senpai' | 'roses':
+				currentStageId = 'school';
 			case "darnell" | "lit-up" | "2hot":
 				// currentStageId = 'phillyStreets';
 				currentStageId = 'pyro';
@@ -592,15 +594,18 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			// We're using Eric's stage handler.
 			// Characters get added to the stage, not the main scene.
-			if (girlfriend != null) {
+			if (girlfriend != null)
+			{
 				currentStage.addCharacter(girlfriend, GF);
 			}
 
-			if (boyfriend != null) {
+			if (boyfriend != null)
+			{
 				currentStage.addCharacter(boyfriend, BF);
 			}
 
-			if (dad != null) {
+			if (dad != null)
+			{
 				currentStage.addCharacter(dad, DAD);
 				// Camera starts at dad.
 				cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
@@ -1061,7 +1066,7 @@ class PlayState extends MusicBeatState implements IHook
 
 			if (!event.eventCanceled)
 			{
-				// Pause updates while the substate is open, preventing the game state from advancing. 
+				// Pause updates while the substate is open, preventing the game state from advancing.
 				persistentUpdate = false;
 				// Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
 				persistentDraw = true;
@@ -1191,11 +1196,14 @@ class PlayState extends MusicBeatState implements IHook
 				// Disable updates, preventing animations in the background from playing.
 				persistentUpdate = false;
 				#if debug
-				if (FlxG.keys.pressed.THREE) {
+				if (FlxG.keys.pressed.THREE)
+				{
 					// TODO: Change the key or delete this?
 					// In debug builds, pressing 3 to kill the player makes the background transparent.
 					persistentDraw = true;
-				} else {
+				}
+				else
+				{
 				#end
 					persistentDraw = false;
 				#if debug

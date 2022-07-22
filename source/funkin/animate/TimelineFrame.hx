@@ -1,9 +1,9 @@
 package funkin.animate;
 
-import funkin.animate.ParseAnimate.Frame;
 import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.util.FlxColor;
+import funkin.animate.ParseAnimate.Frame;
 
 class TimelineFrame extends FlxSprite
 {

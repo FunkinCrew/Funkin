@@ -1,9 +1,9 @@
 package funkin.play.character;
 
+import funkin.modding.IHook;
+import funkin.play.character.MultiSparrowCharacter;
 import funkin.play.character.PackerCharacter;
 import funkin.play.character.SparrowCharacter;
-import funkin.play.character.MultiSparrowCharacter;
-import funkin.modding.IHook;
 
 /**
  * Note: Making a scripted class extending BaseCharacter is not recommended.

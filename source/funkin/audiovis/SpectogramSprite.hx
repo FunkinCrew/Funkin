@@ -1,16 +1,14 @@
 package funkin.audiovis;
 
-import funkin.audiovis.PolygonSpectogram.VISTYPE;
-import funkin.audiovis.VisShit.CurAudioInfo;
-import funkin.audiovis.dsp.FFT;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
+import funkin.audiovis.PolygonSpectogram.VISTYPE;
+import funkin.audiovis.VisShit.CurAudioInfo;
 import lime.utils.Int16Array;
 
 using Lambda;
@@ -113,7 +111,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 				prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
 				prevLine.y = (i / group.members.length * daHeight) + y;
 
-				var line = FlxPoint.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
+				var line = FlxVector.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
 
 				group.members[i].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
 				group.members[i].angle = line.degrees;
@@ -290,7 +288,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
 					prevLine.y = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
 
-					var line = FlxPoint.get(prevLine.x - group.members[Std.int(remappedSample)].x, prevLine.y - group.members[Std.int(remappedSample)].y);
+					var line = FlxVector.get(prevLine.x - group.members[Std.int(remappedSample)].x, prevLine.y - group.members[Std.int(remappedSample)].y);
 
 					group.members[Std.int(remappedSample)].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
 					group.members[Std.int(remappedSample)].angle = line.degrees;

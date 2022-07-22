@@ -6,9 +6,9 @@ import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.util.FlxDirectionFlags;
 import funkin.Note.NoteData;
 import funkin.audiovis.PolygonSpectogram;
-import flixel.util.FlxDirectionFlags;
 
 class PicoFight extends MusicBeatState
 {
@@ -137,7 +137,7 @@ class PicoFight extends MusicBeatState
 			// i forget how to make rhythm games
 			nt.x = (nt.ID - Conductor.songPosition) * (nt.ID / (Conductor.songPosition * 0.8));
 
-			if (nt.facing == FlxObject.RIGHT)
+			if (nt.facing == FlxDirectionFlags.RIGHT)
 			{
 				nt.x = FlxMath.remapToRange(nt.x, 0, FlxG.width, FlxG.width, 0);
 				nt.x -= FlxG.width / 2;
