@@ -297,6 +297,7 @@ class BaseCharacter extends Bopper
 		if (isDead)
 		{
 			playDeathAnimation();
+			return;
 		}
 
 		if (hasAnimation('idle-hold') && getCurrentAnimation() == "idle" && isAnimationFinished())
@@ -343,7 +344,7 @@ class BaseCharacter extends Bopper
 	{
 		if (force || (getCurrentAnimation().startsWith("firstDeath") && isAnimationFinished()))
 		{
-			playAnimation("deathLoop");
+			playAnimation("deathLoop" + GameOverSubstate.animationSuffix);
 		}
 	}
 
@@ -351,6 +352,9 @@ class BaseCharacter extends Bopper
 	{
 		// Prevent default dancing behavior.
 		if (debugMode)
+			return;
+
+		if (isDead)
 			return;
 
 		if (!force)

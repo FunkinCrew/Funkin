@@ -2,7 +2,6 @@ package funkin;
 
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.addons.display.FlxRuntimeShader;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.tweens.FlxEase;

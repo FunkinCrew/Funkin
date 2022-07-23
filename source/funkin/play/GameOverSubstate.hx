@@ -1,4 +1,4 @@
-package funkin;
+package funkin.play;
 
 import flixel.FlxSprite;
 import flixel.FlxObject;
@@ -22,6 +22,27 @@ using StringTools;
 class GameOverSubstate extends MusicBeatSubstate
 {
 	/**
+	 * Which alternate animation on the character to use.
+	 * You can set this via script.
+	 * For example, playing a different animation when BF dies in Week 4
+	 * or Pico dies in Weekend 1.
+	 */
+	public static var animationSuffix:String = "";
+
+	/**
+	 * Which alternate game over music to use.
+	 * You can set this via script.
+	 * For example, the bf-pixel script sets this to `-pixel`
+	 * and the pico-playable script sets this to `Pico`.
+	 */
+	public static var musicSuffix:String = "";
+
+	/**
+	 * Which alternate "blue ball" sound effect to use.
+	 */
+	public static var blueBallSuffix:String = "";
+
+	/**
 	 * The boyfriend character.
 	 */
 	var boyfriend:BaseCharacter;
@@ -42,93 +63,99 @@ class GameOverSubstate extends MusicBeatSubstate
 	 */
 	var isEnding:Bool = false;
 
-	/**
-	 * Music variant to use.
-	 * TODO: De-hardcode this somehow.
-	 */
-	var musicVariant:String = "";
-
 	public function new()
 	{
 		super();
 	}
 
+	/**
+	 * Reset the game over configuration to the default.
+	 */
+	public static function reset()
+	{
+		animationSuffix = "";
+		musicSuffix = "";
+	}
+
 	override public function create()
 	{
 		super.create();
-		FlxG.sound.list.add(gameOverMusic);
-		gameOverMusic.stop();
 
-		Conductor.songPosition = 0;
+		//
+		// Set up the visuals
+		//
 
-		// TODO: Make SFX and music easily overriden by scripts.
-		playBlueBalledSFX();
-
-		switch (PlayState.instance.currentStageId)
-		{
-			case 'school' | 'schoolEvil':
-				musicVariant = "-pixel";
-			default:
-				if (['pico', 'pico-playable'].contains(PlayState.instance.currentStage.getBoyfriend().characterId))
-				{
-					musicVariant = "Pico";
-				}
-				else
-				{
-					musicVariant = "";
-				}
-		}
-
-		// By adding a background we can make it transparent for testing.
+		// Add a black background to the screen.
+		// We make this transparent so that we can see the stage underneath during debugging.
 		var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.25;
 		bg.scrollFactor.set();
 		add(bg);
 
-		// We have to remove boyfriend from the stage. Then we can add him back at the end.
+		// Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubstate.
+		// We can then play the character's `firstDeath` animation.
 		boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
 		boyfriend.isDead = true;
 		add(boyfriend);
 		boyfriend.resetCharacter();
 		boyfriend.playAnimation('firstDeath', true, true);
 
+		// Assign a camera follow point to the boyfriend's position.
 		cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
 		cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
 		cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
 		add(cameraFollowPoint);
 
-		// FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 		FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.01);
+
+		//
+		// Set up the audio
+		//
+
+		// Prepare the game over music.
+		FlxG.sound.list.add(gameOverMusic);
+		gameOverMusic.stop();
+
+		// The conductor now represents the BPM of the game over music.
+		Conductor.songPosition = 0;
+
+		// Play the "blue balled" sound. May play a variant if one has been assigned.
+		playBlueBalledSFX();
 	}
 
 	override function update(elapsed:Float)
 	{
-		// makes the lerp non-dependant on the framerate
-		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.01);
-
 		super.update(elapsed);
 
+		//
+		// Handle user inputs.
+		//
+
+		// MOBILE ONLY: Restart the level when tapping Boyfriend.
 		if (FlxG.onMobile)
 		{
 			var touch = FlxG.touches.getFirst();
 			if (touch != null)
 			{
 				if (touch.overlaps(boyfriend))
+				{
 					confirmDeath();
+				}
 			}
 		}
 
+		// KEYBOARD ONLY: Restart the level when pressing the assigned key.
 		if (controls.ACCEPT)
 		{
 			confirmDeath();
 		}
 
+		// KEYBOARD ONLY: Return to the menu when pressing the assigned key.
 		if (controls.BACK)
 		{
 			PlayState.deathCounter = 0;
 			PlayState.seenCutscene = false;
-			// FlxG.sound.music.stop();
 			gameOverMusic.stop();
 
 			if (PlayState.isStoryMode)
@@ -137,30 +164,29 @@ class GameOverSubstate extends MusicBeatSubstate
 				FlxG.switchState(new FreeplayState());
 		}
 
-		// Start panning the camera to BF after 12 frames.
-		// TODO: Should this be de-hardcoded?
-		//if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.animation.curAnim.curFrame == 12)
-		//{
-//
-		//}
-
 		if (gameOverMusic.playing)
 		{
+			// Match the conductor to the music.
+			// This enables the stepHit and beatHit events.
 			Conductor.songPosition = gameOverMusic.time;
 		}
 		else
 		{
+			// Music hasn't started yet.
 			switch (PlayState.storyWeek)
 			{
+				// TODO: Make the behavior for playing Jeff's voicelines generic or un-hardcoded.
+				// This will simplify the class and make it easier for mods to add death quotes.
 				case 7:
 					if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !playingJeffQuote)
 					{
 						playingJeffQuote = true;
 						playJeffQuote();
-
+						// Start music at lower volume
 						startDeathMusic(0.2);
 					}
 				default:
+					// Start music at normal volume once the initial death animation finishes.
 					if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
 					{
 						startDeathMusic();
@@ -168,7 +194,42 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 		}
 
+		// Dispatch the onUpdate event.
 		dispatchEvent(new UpdateScriptEvent(elapsed));
+	}
+
+	/**
+	 * Do behavior which occurs when you confirm and move to restart the level.
+	 */
+	function confirmDeath():Void
+	{
+		if (!isEnding)
+		{
+			isEnding = true;
+			startDeathMusic(); // isEnding changes this function's behavior.
+
+			boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
+
+			// After the animation finishes...
+			new FlxTimer().start(0.7, function(tmr:FlxTimer)
+			{
+				// ...fade out the graphics. Then after that happens...
+				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+				{
+					// ...close the GameOverSubstate.
+					FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
+					PlayState.needsReset = true;
+
+					// Readd Boyfriend to the stage.
+					boyfriend.isDead = false;
+					remove(boyfriend);
+					PlayState.instance.currentStage.addCharacter(boyfriend, BF);
+
+					// Close the substate.
+					close();
+				});
+			});
+		}
 	}
 
 	override function dispatchEvent(event:ScriptEvent)
@@ -186,13 +247,13 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		if (!isEnding)
 		{
-			gameOverMusic.loadEmbedded(Paths.music('gameOver' + musicVariant));
+			gameOverMusic.loadEmbedded(Paths.music('gameOver' + musicSuffix));
 			gameOverMusic.volume = startingVolume;
 			gameOverMusic.play();
 		}
 		else
 		{
-			gameOverMusic.loadEmbedded(Paths.music('gameOverEnd' + musicVariant));
+			gameOverMusic.loadEmbedded(Paths.music('gameOverEnd' + musicSuffix));
 			gameOverMusic.volume = startingVolume;
 			gameOverMusic.play();
 		}
@@ -204,7 +265,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	 */
 	function playBlueBalledSFX()
 	{
-		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + musicVariant));
+		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + blueBallSuffix));
 	}
 
 	var playingJeffQuote:Bool = false;
@@ -228,39 +289,5 @@ class GameOverSubstate extends MusicBeatSubstate
 				gameOverMusic.fadeIn(4, 0.2, 1);
 			}
 		});
-	}
-
-	/**
-	 * Do behavior which occurs when you confirm and move to restart the level.
-	 */
-	function confirmDeath():Void
-	{
-		if (!isEnding)
-		{
-			isEnding = true;
-			startDeathMusic(); // isEnding changes this function's behavior.
-
-			boyfriend.playAnimation('deathConfirm', true);
-
-			// After the animation finishes...
-			new FlxTimer().start(0.7, function(tmr:FlxTimer)
-			{
-				// ...fade out the graphics. Then after that happens...
-				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
-				{
-					// ...close the GameOverSubstate.
-					FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
-					PlayState.needsReset = true;
-
-					// Readd Boyfriend to the stage.
-					boyfriend.isDead = false;
-					remove(boyfriend);
-					PlayState.instance.currentStage.addCharacter(boyfriend, BF);
-
-					// Close the substate.
-					close();
-				});
-			});
-		}
 	}
 }

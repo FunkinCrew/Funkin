@@ -53,10 +53,19 @@ class MusicBeatSubstate extends FlxSubState
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
-	public function stepHit():Void
+	public function stepHit():Bool
 	{
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+			return false;
+
 		if (curStep % 4 == 0)
 			beatHit();
+
+		return true;
 	}
 
 	function dispatchEvent(event:ScriptEvent)
@@ -64,8 +73,15 @@ class MusicBeatSubstate extends FlxSubState
 		ModuleHandler.callEvent(event);
 	}
 
-	public function beatHit():Void
+	public function beatHit():Bool
 	{
-		// do literally nothing dumbass
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+			return false;
+
+		return true;
 	}
 }

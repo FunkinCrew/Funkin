@@ -23,7 +23,6 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
-	private var lastBeatHitTime:Float = 0;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -136,9 +135,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return false;
-		}
 
 		if (curStep % 4 == 0)
 			beatHit();
@@ -153,11 +150,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return false;
-		}
-
-		lastBeatHitTime = Conductor.songPosition;
 
 		return true;
 	}
@@ -178,9 +171,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return false;
-		}
 
 		return super.switchTo(nextState);
 	}
@@ -192,9 +183,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return;
-		}
 
 		super.openSubState(targetSubstate);
 	}
@@ -211,9 +200,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return;
-		}
 
 		super.closeSubState();
 	}

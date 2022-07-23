@@ -5,7 +5,6 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.addons.display.FlxRuntimeShader;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
@@ -32,6 +31,7 @@ import funkin.play.character.CharacterData;
 import funkin.play.scoring.Scoring;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData;
+import funkin.play.GameOverSubstate;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.stageBuildShit.StageOffsetSubstate;
@@ -2101,6 +2101,8 @@ class PlayState extends MusicBeatState implements IHook
 			dispatchEvent(new ScriptEvent(ScriptEvent.DESTROY, false));
 			currentStage = null;
 		}
+
+		GameOverSubstate.reset();
 
 		// Clear the static reference to this state.
 		instance = null;
