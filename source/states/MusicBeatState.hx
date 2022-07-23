@@ -34,6 +34,10 @@ class MusicBeatState extends FlxUIState
 		#if polymod
 		polymod.Polymod.clearCache();
 		#end
+			
+		#if sys
+		openfl.system.System.gc();	
+		#end
 
 		super();
 	}
