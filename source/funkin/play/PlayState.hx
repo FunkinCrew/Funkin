@@ -23,6 +23,7 @@ import funkin.charting.ChartingState;
 import funkin.modding.IHook;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.GameOverSubstate;
 import funkin.play.HealthIcon;
 import funkin.play.Strumline.StrumlineArrow;
 import funkin.play.Strumline.StrumlineStyle;
@@ -31,15 +32,12 @@ import funkin.play.character.CharacterData;
 import funkin.play.scoring.Scoring;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData;
-import funkin.play.GameOverSubstate;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.stageBuildShit.StageOffsetSubstate;
 import funkin.util.Constants;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;
-import openfl.Assets;
-import openfl.filters.ShaderFilter;
 
 using StringTools;
 
@@ -1344,8 +1342,6 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (!isInCutscene)
 			keyShit(true);
-
-		dispatchEvent(new UpdateScriptEvent(elapsed));
 	}
 
 	function applyClipRect(daNote:Note):Void

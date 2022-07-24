@@ -62,28 +62,41 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	{
 		buildStage();
 		this.refresh();
+
+		debugIconGroup = new FlxSpriteGroup();
+		debugIconGroup.visible = false;
+		debugIconGroup.zIndex = 1000000;
+		add(debugIconGroup);
 	}
 
-	public function resetStage():Void {
+	public function resetStage():Void
+	{
 		// Reset positions of characters.
-		if (getBoyfriend() != null) {
+		if (getBoyfriend() != null)
+		{
 			getBoyfriend().resetCharacter(false);
-		} else {
+		}
+		else
+		{
 			trace('STAGE RESET: No boyfriend found.');
 		}
-		if (getGirlfriend() != null) {
+		if (getGirlfriend() != null)
+		{
 			getGirlfriend().resetCharacter(false);
 		}
-		if (getDad() != null) {
+		if (getDad() != null)
+		{
 			getDad().resetCharacter(false);
 		}
 
 		// Reset positions of named props.
-		for (dataProp in _data.props) {
+		for (dataProp in _data.props)
+		{
 			// Fetch the prop.
 			var prop:FlxSprite = getNamedProp(dataProp.name);
 
-			if (prop != null) {
+			if (prop != null)
+			{
 				// Reset the position.
 				prop.x = dataProp.position[0];
 				prop.y = dataProp.position[1];
@@ -103,6 +116,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		trace('Building stage for display: ${this.stageId}');
 
 		this.camZoom = _data.cameraZoom;
+
+		this.debugIconGroup = new FlxSpriteGroup();
 
 		for (dataProp in _data.props)
 		{
@@ -270,6 +285,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			clipRectTransform(sprite, clipRect);
 	}
 
+	var debugIconGroup:FlxSpriteGroup;
+
 	/**
 	 * Used by the PlayState to add a character to the stage.
 	 */
@@ -348,8 +365,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 
 		// Add the character to the scene.
 		this.add(character);
-		this.add(debugIcon);
-		this.add(debugIcon2);
+		debugIconGroup.add(debugIcon);
+		debugIconGroup.add(debugIcon2);
 	}
 
 	public inline function getGirlfriendPosition():FlxPoint
@@ -512,6 +529,14 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			}
 		}
 		group.clear();
+		if (debugIconGroup != null && debugIconGroup.group != null)
+		{
+			debugIconGroup.kill();
+		}
+		else
+		{
+			debugIconGroup = null;
+		}
 	}
 
 	/**
@@ -535,6 +560,14 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 		}
 	}
 
+	public function onUpdate(event:UpdateScriptEvent)
+	{
+		if (FlxG.keys.justPressed.F3)
+		{
+			debugIconGroup.visible = !debugIconGroup.visible;
+		}
+	}
+
 	public function onScriptEvent(event:ScriptEvent) {}
 
 	public function onPause(event:PauseScriptEvent) {}
@@ -552,8 +585,6 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 	public function onCountdownStep(event:CountdownScriptEvent) {}
 
 	public function onCountdownEnd(event:CountdownScriptEvent) {}
-
-	public function onUpdate(event:UpdateScriptEvent) {}
 
 	public function onNoteHit(event:NoteScriptEvent) {}
 
