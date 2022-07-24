@@ -181,6 +181,7 @@ class StageDataParser
 	static final DEFAULT_CAMERA_OFFSETS_DAD:Array<Float> = [150, -100];
 	static final DEFAULT_POSITION:Array<Float> = [0, 0];
 	static final DEFAULT_SCALE:Float = 1.0;
+	static final DEFAULT_ALPHA:Float = 1.0;
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
 	static final DEFAULT_ZINDEX:Int = 0;
 
@@ -281,6 +282,11 @@ class StageDataParser
 			if (inputProp.scroll == null)
 			{
 				inputProp.scroll = DEFAULT_SCROLL;
+			}
+
+			if (inputProp.alpha == null)
+			{
+				inputProp.alpha = DEFAULT_ALPHA;
 			}
 
 			if (Std.isOfType(inputProp.scroll, Float))
@@ -441,6 +447,12 @@ typedef StageDataProp =
 	 * @default 1
 	 */
 	var scale:OneOfTwo<Float, Array<Float>>;
+
+	/**
+	 * The alpha of the prop, as a float.
+	 * @default 1.0
+	 */
+	var alpha:Null<Float>;
 
 	/**
 	 * If not zero, this prop will play an animation every X beats of the song.

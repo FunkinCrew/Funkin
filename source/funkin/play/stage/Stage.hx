@@ -174,6 +174,8 @@ class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScripte
 			propSprite.x = dataProp.position[0];
 			propSprite.y = dataProp.position[1];
 
+			propSprite.alpha = dataProp.alpha;
+
 			// If pixel, disable antialiasing.
 			propSprite.antialiasing = !dataProp.isPixel;
 
