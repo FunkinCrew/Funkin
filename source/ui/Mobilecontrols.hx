@@ -34,29 +34,26 @@ class Mobilecontrols extends FlxSpriteGroup
 	{
 		super();
 
-		mode = Config.controlMode;
-		trace(mode);
-
-		switch (mode)
+		switch (FlxG.save.data.mobilecontrols)
 		{
-			case VIRTUALPAD_RIGHT:
+			case 'VPAD_RIGHT':
 				initVirtualPad(0);
 				cHandler = new ControlHandler(_virtualPad);
 				cHandler.bind();
-			case VIRTUALPAD_LEFT:
+			case 'VPAD_LEFT':
 				initVirtualPad(1);
 				cHandler = new ControlHandler(_virtualPad);
 				cHandler.bind();
-			case VIRTUALPAD_CUSTOM:
+			case 'VPAD_CUSTOM':
 				initVirtualPad(2);
 				cHandler = new ControlHandler(_virtualPad);
 				cHandler.bind();
-			case HITBOX:
+			case 'HITBOX':
 				_hitbox = new Hitbox();
 				add(_hitbox);
 				cHandler = new ControlHandler(_hitbox);
 				cHandler.bind();
-			case KEYBOARD:
+			case 'KEYBOARD':
 		}
 	}
 
