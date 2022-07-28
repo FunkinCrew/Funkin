@@ -1,6 +1,10 @@
 package ui;
 
 // import options.CustomControlsState;
+import flixel.FlxCamera;
+import flixel.FlxBasic;
+import flixel.input.actions.FlxActionInputDigital.FlxActionInputDigitalKeyboard;
+import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxSignal;
 import flixel.input.IFlxInputManager;
 import flixel.util.typeLimit.OneOfTwo;
@@ -23,6 +27,7 @@ class Mobilecontrols extends FlxSpriteGroup
 
 	public var _hitbox:Hitbox;
 	public var _virtualPad:FlxVirtualPad;
+	public var _keyboard:Keyboard;
 
 	var cHandler:ControlHandler;
 
@@ -41,22 +46,16 @@ class Mobilecontrols extends FlxSpriteGroup
 		{
 			case VIRTUALPAD_RIGHT:
 				initVirtualPad(0);
-				cHandler = new ControlHandler(_virtualPad);
-				cHandler.bind();
 			case VIRTUALPAD_LEFT:
 				initVirtualPad(1);
-				cHandler = new ControlHandler(_virtualPad);
-				cHandler.bind();
 			case VIRTUALPAD_CUSTOM:
 				initVirtualPad(2);
-				cHandler = new ControlHandler(_virtualPad);
-				cHandler.bind();
 			case HITBOX:
-				_hitbox = new Hitbox();
+				_hitbox = new Hitbox(null, true);
 				add(_hitbox);
-				cHandler = new ControlHandler(_hitbox);
-				cHandler.bind();
 			case KEYBOARD:
+				_keyboard = new Keyboard();
+				FlxG.state.add(_keyboard);
 		}
 	}
 
@@ -89,18 +88,98 @@ class Mobilecontrols extends FlxSpriteGroup
 		return pad;
 	}
 
-	public static function createVirtualPad(?DPad:FlxDPadMode, ?Action:FlxActionMode):Null<FlxVirtualPad> 
+	public static function createVirtualPad(?DPad:FlxDPadMode, ?Action:FlxActionMode, isNewCamera:Bool = false):Null<FlxVirtualPad> 
 	{
 		if (!Mobilecontrols.isEnabled)
 			return null;
 		
-		var virtualPad = new FlxVirtualPad(DPad, Action);
-		new ControlHandler(virtualPad).bind();
+		var virtualPad = new FlxVirtualPad(DPad, Action, true);
+
+		if (isNewCamera){
+			var camcontrol = new FlxCamera();
+			FlxG.cameras.add(camcontrol);
+			camcontrol.bgColor.alpha = 0;
+			camcontrol.alpha = 0;
+			virtualPad.cameras = [camcontrol];
+		}
+
 		return virtualPad;
 	}
 
 	static function get_isEnabled():Bool {
 		return FlxG.onMobile #if true || true #end;
+	}
+}
+
+
+// maybe do this in ControlHandler??
+@:access(Controls)
+class Keyboard extends FlxBasic {
+	var keys:Array<FlxKey>;
+	var keyInputs:Array<FlxActionInput>;
+
+	public function new() {
+		visible = false;
+		active = false;
+		if (FlxG.save.data.keys == null)
+			return;
+
+		var controls = PlayerSettings.player1.controls;
+		keys = FlxG.save.data.keys;
+		keyInputs = [];
+
+		trace(keys.map(f -> f.toString()).join(':'));
+
+		inline controls.bindKeys(Control.LEFT, [keys[0], FlxKey.UP]);
+		inline controls.bindKeys(Control.DOWN, [keys[1], FlxKey.DOWN]);
+		inline controls.bindKeys(Control.UP, [keys[2], FlxKey.LEFT]);
+		inline controls.bindKeys(Control.RIGHT, [keys[3], FlxKey.RIGHT]);
+
+		inline controls.unbindKeys(Control.UP, [FlxKey.W]);
+		inline controls.unbindKeys(Control.DOWN, [FlxKey.S]);
+		inline controls.unbindKeys(Control.LEFT, [FlxKey.A]);
+		inline controls.unbindKeys(Control.RIGHT, [FlxKey.D]);
+		
+		super();
+	}
+
+	inline function addKeys(action:FlxActionDigital, keys:Array<FlxKey>, state:FlxInputState)
+	{
+		for (key in keys)
+		{
+			var input = new FlxActionInputDigitalKeyboard(key, state);
+			keyInputs.push(input);
+
+			action.add(input);
+		}
+	}
+
+	override function destroy() {
+		var controls = PlayerSettings.player1.controls;
+		for (action in controls.digitalActions)
+		{
+			var i = action.inputs.length;
+			
+			while (i-- > 0)
+			{
+				var input = action.inputs[i];
+
+				var x = keyInputs.length;
+				while (x-- > 0)
+					if (keyInputs[x] == input)
+					{
+						action.remove(input);
+						input.destroy();
+					}
+			}
+		}
+
+		inline controls.bindKeys(Control.UP, [FlxKey.W]);
+		inline controls.bindKeys(Control.DOWN, [FlxKey.S]);
+		inline controls.bindKeys(Control.LEFT, [FlxKey.A]);
+		inline controls.bindKeys(Control.RIGHT, [FlxKey.D]);
+
+		super.destroy();
 	}
 }
 
@@ -138,6 +217,9 @@ class ControlHandler
 
 	// bind to controls class
 	public function bind() {
+		if (trackedinputs != null)
+			unBind();
+
 		trackedinputs = [];
 		if (isPad)
 			setVirtualPad();
@@ -146,6 +228,9 @@ class ControlHandler
 	}
 
 	public function unBind() {
+		if (trackedinputs == null)
+			return;
+
 		removeFlxInput(trackedinputs);
 		trackedinputs = null;
 	}

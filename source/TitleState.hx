@@ -52,6 +52,10 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
 
+		#if android
+		FlxG.android.preventDefaultKeys = [BACK];
+		#end
+
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -272,7 +276,7 @@ class TitleState extends MusicBeatState
 			#end
 		}
 
-		if (pressedEnter && !transitioning && skippedIntro)
+		if (pressedEnter && !transitioning && skippedIntro && initialized)
 		{
 			#if (!switch && newgrounds)
 			NGio.unlockMedal(60960);

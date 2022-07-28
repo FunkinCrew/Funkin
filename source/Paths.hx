@@ -149,7 +149,7 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
-	inline static public function image(key:String, ?library:String):Dynamic
+	inline static public function image(key:String, ?library:String):FlxGraphic
 	{
 				// streamlined the assets process more
 		var returnAsset:FlxGraphic = returnGraphic(key, library);
@@ -163,7 +163,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		return FlxAtlasFrames.fromSparrow(AssetManager.getBitmapData(image(key, library)), file('images/$key.xml', library));
+		return FlxAtlasFrames.fromSparrow(AssetManager.getBitmapData(image(key, library).assetsKey), file('images/$key.xml', library));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)

@@ -7,7 +7,8 @@ import openfl.utils.ByteArray;
 class VersionData extends ByteArrayData{}
 
 class Version {
-    public static function get():VersionJson {
+    public static var get(get, never):VersionJson;
+    public static function get_get():VersionJson {
         var v = new VersionData();
 		return cast Json.parse(v.readUTFBytes(v.length));
     }

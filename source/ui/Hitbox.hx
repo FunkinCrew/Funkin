@@ -1,5 +1,6 @@
 package ui;
 
+import ui.Mobilecontrols.ControlHandler;
 import flixel.math.FlxMath;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
@@ -22,8 +23,10 @@ class Hitbox extends FlxSpriteGroup
 	public var buttonDown:FlxButton;
 	public var buttonUp:FlxButton;
 	public var buttonRight:FlxButton;
+
+	var bind:ControlHandler;
 	
-	public function new(?widghtScreen:Float)
+	public function new(?widghtScreen:Float, bindToControls:Bool = true)
 	{
 		super();
 
@@ -57,6 +60,9 @@ class Hitbox extends FlxSpriteGroup
 		hitbox.add(add(buttonUp = createhitbox(sizex * 2, "up")));
 
 		hitbox.add(add(buttonRight = createhitbox(sizex * 3, "right")));
+
+		bind = new ControlHandler(this);
+		bind.bind();
 	}
 
 	public function createhitbox(X:Float, framestring:String) {
@@ -98,12 +104,14 @@ class Hitbox extends FlxSpriteGroup
 	}
 
 	override public function destroy():Void
-		{
-			super.destroy();
+	{
+		bind.unBind();
+
+		super.destroy();
 	
-			buttonLeft = null;
-			buttonDown = null;
-			buttonUp = null;
-			buttonRight = null;
-		}
+		buttonLeft = null;
+		buttonDown = null;
+		buttonUp = null;
+		buttonRight = null;
+	}
 }

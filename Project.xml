@@ -154,6 +154,8 @@
 	<!--Disable the Flixel sound management code-->
 	<!--<haxedef name="FLX_NO_SOUND_SYSTEM" />-->
 
+	<haxedef name="HXC_DEBUG_TRACE" if="debug" />
+
 	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
 
 	<!--Disable the Flixel core focus lost screen-->

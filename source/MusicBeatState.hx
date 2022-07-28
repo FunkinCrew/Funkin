@@ -22,7 +22,6 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
-		new Mobilecontrols();
 		if (transIn != null)
 			trace('reg ' + transIn.region);
 

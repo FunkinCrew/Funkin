@@ -19,7 +19,7 @@ class AboutState extends MusicBeatState
 
 	override function create()
 	{
-		var bgasset = Assets.getBitmapData(Paths.image('bgcredit'));
+		var bgasset = Paths.image('bgcredit');
 
 		bg0 = new FlxSprite(0, 0).loadGraphic(bgasset);
 		bg1 = new FlxSprite(0, 0).loadGraphic(bgasset);
