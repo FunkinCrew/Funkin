@@ -53,8 +53,6 @@ class ControlEditorState extends FlxState
 	var hitbox:Hitbox;
 	var variantChoicer:CoolVariantChoicer;
 	var deletebar:FlxSprite;
-	
-	var saveItem:String = 'VPAD_RIGHT';
 
 	var curKeySelected:Int = 0;
 	var keyboardSettings:KeyboardButtonBinder;
@@ -392,9 +390,9 @@ class ControlEditorState extends FlxState
 
 	inline function changeControl(mode:ui.Mobilecontrols.ControlsGroup) 
 	{		
-		switch(mode)
+		switch (mode)
 		{
-			case 'HITBOX':
+			case HITBOX:
 				hitbox.visible = true;
 				virtualpad.visible = false;
 				keyboardSettings.visible = false;
@@ -407,16 +405,16 @@ class ControlEditorState extends FlxState
 				keyboardSettings.visible = false;
 				keyboardSettings.active = false;
 				// virtualpad.visible = true;
-				saveItem == 'VPAD_RIGHT';
-			case 'VPAD_LEFT':
+
+			case VIRTUALPAD_LEFT:
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(FULL, NONE));
 				keyboardSettings.visible = false;
 				keyboardSettings.active = false;
 				// virtualpad.visible = true;
-				saveItem == 'VPAD_LEFT';
-			case 'VPAD_CUSTOM':
+
+			case VIRTUALPAD_CUSTOM:
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(FULL, NONE));
@@ -426,8 +424,8 @@ class ControlEditorState extends FlxState
 				// saveCustomPosition();
 				// virtualpad.visible = true;
 				// loadshit()
-				saveItem == 'VPAD_CUSTOM';
-			case 'KEYBOARD':
+
+			case KEYBOARD:
 				hitbox.visible = false;
 				virtualpad.visible = false;
 				keyboardSettings.visible = true;
