@@ -424,27 +424,24 @@ class ControlEditorState extends FlxState
 
 	inline function changeControl(mode:ui.Mobilecontrols.ControlsGroup) 
 	{		
-		switch (FlxG.save.data.mobilecontrols)
+		switch(mode)
 		{
 			case 'HITBOX':
 				hitbox.visible = true;
 				virtualpad.visible = false;
 				saveItem == 'HITBOX';
-			
 			case 'VPAD_RIGHT':
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(RIGHT_FULL, NONE));
 				// virtualpad.visible = true;
 				saveItem == 'VPAD_RIGHT';
-
 			case 'VPAD_LEFT':
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(FULL, NONE));
 				// virtualpad.visible = true;
 				saveItem == 'VPAD_LEFT';
-
 			case 'VPAD_CUSTOM':
 				hitbox.visible = false;
 				virtualpad.destroy();
@@ -454,7 +451,6 @@ class ControlEditorState extends FlxState
 				// virtualpad.visible = true;
 				// loadshit()
 				saveItem == 'VPAD_CUSTOM';
-
 			case 'KEYBOARD':
 				hitbox.visible = false;
 				virtualpad.visible = false;
