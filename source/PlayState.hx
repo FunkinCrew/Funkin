@@ -100,6 +100,12 @@ class PlayState extends MusicBeatState
 	private var iconP2:HealthIcon;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
+	
+	//FNF OPTIONS
+  public var sceneToggle = Config.cutscenes;
+  public var midScroll = Config.mid;
+  public var downToggle = Config.downscroll;
+  public var splashToggle = Config.splash;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -134,7 +140,7 @@ class PlayState extends MusicBeatState
 
 	var mcontrols:Mobilecontrols;
 
-	var midScroll:Bool = false;
+	//var midScroll:Bool = false;
 
 	public static var campaignScore:Int = 0;
 
@@ -2105,7 +2111,7 @@ class PlayState extends MusicBeatState
 			case 'sick':
 				if (health < 2)
 					health += 0.1;
-				if (true) // noteSplashOp
+				if (true && splashToggle) // noteSplashOp
 				{
 					var recycledNote = grpNoteSplashes.recycle(NoteSplash);
 					recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
