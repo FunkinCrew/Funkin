@@ -70,6 +70,11 @@ class Main extends Sprite
 
 		FlxGraphic.defaultPersist = true;
 
+		if (LowMemoryState.isNotEnoughRam() || true)
+		{
+			initialState = LowMemoryState;
+		}
+
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
