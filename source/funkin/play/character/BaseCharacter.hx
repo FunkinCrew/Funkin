@@ -166,15 +166,19 @@ class BaseCharacter extends Bopper
 		return _data.flipX;
 	}
 
-	function findCountAnimations(prefix:String):Array<Int> {
+	function findCountAnimations(prefix:String):Array<Int>
+	{
 		var animNames:Array<String> = this.animation.getNameList();
 
 		var result:Array<Int> = [];
 
-		for (anim in animNames) {
-			if (anim.startsWith(prefix)) {
+		for (anim in animNames)
+		{
+			if (anim.startsWith(prefix))
+			{
 				var comboNum:Null<Int> = Std.parseInt(anim.substring(prefix.length));
-				if (comboNum != null) {
+				if (comboNum != null)
+				{
 					result.push(comboNum);
 				}
 			}
@@ -189,15 +193,16 @@ class BaseCharacter extends Bopper
 	 * Reset the character so it can be used at the start of the level.
 	 * Call this when restarting the level.
 	 */
-	public function resetCharacter(resetCamera:Bool = true):Void {
+	public function resetCharacter(resetCamera:Bool = true):Void
+	{
 		// Reset the animation offsets. This will modify x and y to be the absolute position of the character.
 		this.animOffsets = [0, 0];
-		
+
 		// Now we can set the x and y to be their original values without having to account for animOffsets.
 		this.resetPosition();
-		
+
 		// Make sure we are playing the idle animation (to reapply animOffsets)...
-		this.dance();
+		this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
 		// ...then update the hitbox so that this.width and this.height are correct.
 		this.updateHitbox();
 
@@ -205,7 +210,7 @@ class BaseCharacter extends Bopper
 		if (resetCamera)
 			this.resetCameraFocusPoint();
 	}
-	
+
 	/**
 	 * Set the sprite scale to the appropriate value.
 	 * @param scale 
@@ -252,7 +257,7 @@ class BaseCharacter extends Bopper
 		// trace('${this.animation.getNameList()}');
 		// trace('Combo note counts: ' + this.comboNoteCounts);
 		// trace('Drop note counts: ' + this.dropNoteCounts);
-			
+
 		super.onCreate(event);
 	}
 
@@ -314,6 +319,11 @@ class BaseCharacter extends Bopper
 		// Handle character note hold time.
 		if (getCurrentAnimation().startsWith("sing"))
 		{
+			// TODO: Rework this code (and all character animations ugh)
+			// such that the hold time is handled by padding frames,
+			// and reverting to the idle animation is done when `isAnimationFinished()`.
+			// This lets you add frames to the end of the sing animation to ease back into the idle!
+
 			holdTimer += event.elapsed;
 			var singTimeMs:Float = singTimeCrochet * (Conductor.crochet * 0.001); // x beats, to ms.
 			// Without this check here, the player character would only play the `sing` animation
@@ -454,8 +464,11 @@ class BaseCharacter extends Bopper
 		{
 			// If the note is from the same strumline, play the sing animation.
 			this.playSingAnimation(event.note.data.dir, false);
-		} else if (characterType == GF) {
-			if (event.note.mustPress && this.comboNoteCounts.contains(event.comboCount)) {
+		}
+		else if (characterType == GF)
+		{
+			if (event.note.mustPress && this.comboNoteCounts.contains(event.comboCount))
+			{
 				trace('Playing GF combo animation: combo${event.comboCount}');
 				this.playAnimation('combo${event.comboCount}', true, true);
 			}
@@ -479,19 +492,24 @@ class BaseCharacter extends Bopper
 		{
 			// If the note is from the same strumline, play the sing animation.
 			this.playSingAnimation(event.note.data.dir, true);
-		} else if (event.note.mustPress && characterType == GF) {
+		}
+		else if (event.note.mustPress && characterType == GF)
+		{
 			var dropAnim = '';
 
 			// Choose the combo drop anim to play.
 			// If there are several (for example, drop10 and drop50) the highest one will be used.
 			// If the combo count is too low, no animation will be played.
-			for (count in dropNoteCounts) {
-				if (event.comboCount >= count) {
+			for (count in dropNoteCounts)
+			{
+				if (event.comboCount >= count)
+				{
 					dropAnim = 'drop${count}';
 				}
 			}
 
-			if (dropAnim != '') {
+			if (dropAnim != '')
+			{
 				trace('Playing GF combo drop animation: ${dropAnim}');
 				this.playAnimation(dropAnim, true, true);
 			}
@@ -549,6 +567,7 @@ enum CharacterType
 	 * - If the player misses or hits a ghost note, plays the appropriate `singDIR-miss` animation until BF is done singing.
 	 */
 	BF;
+
 	/**
 	 * The DAD character has the following behaviors.
 	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
@@ -557,6 +576,7 @@ enum CharacterType
 	 * - When the CPU misses a note (NOTE: This only happens via script, not by default), plays the appropriate `singDIR-miss` animation until DAD is done singing.
 	 */
 	DAD;
+
 	/**
 	 * The GF character has the following behaviors.
 	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
@@ -569,6 +589,7 @@ enum CharacterType
 	 *   - No drop animation will play if one isn't applicable (i.e. if the combo count is too low).
 	 */
 	GF;
+
 	/**
 	 * The OTHER character will only perform the `danceLeft`/`danceRight` or `idle` animation by default, depending on what's available.
 	 * Additional behaviors can be performed via scripts.

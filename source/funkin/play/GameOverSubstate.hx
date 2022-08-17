@@ -1,7 +1,7 @@
 package funkin.play;
 
-import flixel.FlxSprite;
 import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -183,13 +183,13 @@ class GameOverSubstate extends MusicBeatSubstate
 						playingJeffQuote = true;
 						playJeffQuote();
 						// Start music at lower volume
-						startDeathMusic(0.2);
+						startDeathMusic(0.2, false);
 					}
 				default:
 					// Start music at normal volume once the initial death animation finishes.
 					if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
 					{
-						startDeathMusic();
+						startDeathMusic(1.0, false);
 					}
 			}
 		}
@@ -206,7 +206,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (!isEnding)
 		{
 			isEnding = true;
-			startDeathMusic(); // isEnding changes this function's behavior.
+			startDeathMusic(1.0, true); // isEnding changes this function's behavior.
 
 			boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
 
@@ -243,17 +243,16 @@ class GameOverSubstate extends MusicBeatSubstate
 	 * Starts the death music at the appropriate volume.
 	 * @param startingVolume 
 	 */
-	function startDeathMusic(?startingVolume:Float = 1):Void
+	function startDeathMusic(?startingVolume:Float = 1, ?force:Bool = false):Void
 	{
-		if (!isEnding)
+		var musicPath = Paths.music('gameOver' + musicSuffix);
+		if (isEnding)
 		{
-			gameOverMusic.loadEmbedded(Paths.music('gameOver' + musicSuffix));
-			gameOverMusic.volume = startingVolume;
-			gameOverMusic.play();
+			musicPath = Paths.music('gameOverEnd' + musicSuffix);
 		}
-		else
+		if (!gameOverMusic.playing || force)
 		{
-			gameOverMusic.loadEmbedded(Paths.music('gameOverEnd' + musicSuffix));
+			gameOverMusic.loadEmbedded(musicPath);
 			gameOverMusic.volume = startingVolume;
 			gameOverMusic.play();
 		}

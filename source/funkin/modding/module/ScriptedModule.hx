@@ -1,6 +1,6 @@
 package funkin.modding.module;
 
-import funkin.modding.IHook;
+import polymod.hscript.HScriptedClass;
 
 @:hscriptClass
-class ScriptedModule extends Module implements IHook {}
+class ScriptedModule extends Module implements HScriptedClass {}

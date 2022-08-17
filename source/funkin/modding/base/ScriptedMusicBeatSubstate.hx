@@ -1,7 +1,7 @@
 package funkin.modding.base;
 
 import funkin.MusicBeatSubstate;
-import funkin.modding.IHook;
+import polymod.hscript.HScriptedClass;
 
 @:hscriptClass
-class ScriptedMusicBeatSubstate extends MusicBeatSubstate implements IHook {}
+class ScriptedMusicBeatSubstate extends MusicBeatSubstate implements HScriptedClass {}

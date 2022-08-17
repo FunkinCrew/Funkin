@@ -19,7 +19,6 @@ import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
-import openfl.filters.ShaderFilter;
 import openfl.media.Video;
 import openfl.net.NetStream;
 
@@ -580,7 +579,8 @@ class TitleState extends MusicBeatState
 			if (cheatActive && curBeat % 2 == 0)
 				swagShader.update(0.125);
 
-			logoBl.animation.play('bump', true);
+			if (logoBl != null)
+				logoBl.animation.play('bump', true);
 
 			danceLeft = !danceLeft;
 

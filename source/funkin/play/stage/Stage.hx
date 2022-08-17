@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSort;
-import funkin.modding.IHook;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -19,7 +18,7 @@ import funkin.util.assets.FlxAnimationUtil;
  * 
  * A Stage is comprised of one or more props, each of which is a FlxSprite.
  */
-class Stage extends FlxSpriteGroup implements IHook implements IPlayStateScriptedClass
+class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 {
 	public final stageId:String;
 	public final stageName:String;

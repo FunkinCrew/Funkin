@@ -20,7 +20,6 @@ import funkin.Note;
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
 import funkin.charting.ChartingState;
-import funkin.modding.IHook;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.GameOverSubstate;
@@ -38,6 +37,7 @@ import funkin.ui.stageBuildShit.StageOffsetSubstate;
 import funkin.util.Constants;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;
+import polymod.hscript.HScriptedClass;
 
 using StringTools;
 
@@ -45,7 +45,7 @@ using StringTools;
 import Discord.DiscordClient;
 #end
 
-class PlayState extends MusicBeatState implements IHook
+class PlayState extends MusicBeatState
 {
 	/**
 	 * STATIC VARIABLES

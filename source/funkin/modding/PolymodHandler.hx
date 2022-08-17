@@ -220,14 +220,14 @@ class PolymodHandler
 	{
 		// Forcibly clear scripts so that scripts can be edited.
 		ModuleHandler.clearModuleCache();
-		polymod.hscript.PolymodScriptClass.clearScriptClasses();
+		Polymod.clearScripts();
 
 		// Forcibly reload Polymod so it finds any new files.
 		// TODO: Replace this with loadEnabledMods().
 		funkin.modding.PolymodHandler.loadAllMods();
 
 		// Reload scripted classes so stages and modules will update.
-		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
+		Polymod.registerAllScriptClasses();
 
 		// Reload everything that is cached.
 		// Currently this freezes the game for a second but I guess that's tolerable?

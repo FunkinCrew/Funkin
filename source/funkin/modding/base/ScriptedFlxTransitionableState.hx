@@ -1,7 +1,7 @@
 package funkin.modding.base;
 
 import flixel.addons.transition.FlxTransitionableState;
-import funkin.modding.IHook;
+import polymod.hscript.HScriptedClass;
 
 @:hscriptClass
-class ScriptedFlxTransitionableState extends FlxTransitionableState implements IHook {}
+class ScriptedFlxTransitionableState extends FlxTransitionableState implements HScriptedClass {}

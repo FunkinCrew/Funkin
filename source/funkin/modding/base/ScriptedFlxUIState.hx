@@ -1,7 +1,7 @@
 package funkin.modding.base;
 
 import flixel.addons.ui.FlxUIState;
-import funkin.modding.IHook;
+import polymod.hscript.HScriptedClass;
 
 @:hscriptClass
-class ScriptedFlxUIState extends FlxUIState implements IHook {}
+class ScriptedFlxUIState extends FlxUIState implements HScriptedClass {}
