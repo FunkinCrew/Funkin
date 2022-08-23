@@ -11,14 +11,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "75a2789",
+      "ref": "0f3ae2d",
       "url": "https://github.com/haxeflixel/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "dev",
+      "ref": "a3877f0",
       "url": "https://github.com/MasterEric/flixel-addons"
     },
     {
@@ -30,7 +30,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "90c44ca",
+      "ref": "18b2060",
       "url": "https://github.com/Dot-Stuff/flxanimate"
     },
     {
@@ -55,19 +55,23 @@
     },
     {
       "name": "lime",
-      "type": "haxelib",
-      "version": "7.9.0"
+      "type": "git",
+      "dir": null,
+      "ref": "770bf0e",
+      "url": "https://github.com/openfl/lime"
     },
     {
-      "name": "openfl",
-      "type": "haxelib",
-      "version": "9.1.0"
+      "name": "flixel-addons",
+      "type": "git",
+      "dir": null,
+      "ref": "dev",
+      "url": "https://github.com/MasterEric/flixel-addons"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "bde0604",
+      "ref": "develop",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

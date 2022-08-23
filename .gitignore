@@ -1,6 +1,7 @@
-export/
+.DS_STORE
+.haxelib/
 .vscode/
 APIStuff.hx
-.DS_STORE
+dump/
+export/
 RECOVER_*.fla
-.haxelib/

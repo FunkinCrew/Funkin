@@ -68,7 +68,7 @@ class PolymodHandler
 			// Framework being used to load assets.
 			framework: OPENFL,
 			// The current version of our API.
-			apiVersion: API_VERSION,
+			apiVersionRule: API_VERSION,
 			// Call this function any time an error occurs.
 			errorCallback: PolymodErrorHandler.onPolymodError,
 			// Enforce semantic version patterns for each mod.
@@ -166,7 +166,7 @@ class PolymodHandler
 	public static function getAllMods():Array<ModMetadata>
 	{
 		trace('Scanning the mods folder...');
-		var modMetadata = Polymod.scan(MOD_FOLDER);
+		var modMetadata = Polymod.scan();
 		trace('Found ${modMetadata.length} mods when scanning.');
 		return modMetadata;
 	}
