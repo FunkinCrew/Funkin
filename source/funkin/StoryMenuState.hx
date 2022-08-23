@@ -13,8 +13,8 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import lime.net.curl.CURLCode;
 import funkin.play.PlayState;
+import lime.net.curl.CURLCode;
 
 using StringTools;
 
@@ -30,13 +30,14 @@ class StoryMenuState extends MusicBeatState
 		['Satin-Panties', "High", "Milf"],
 		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
 		['Senpai', 'Roses', 'Thorns'],
-		['Ugh', 'Guns', 'Stress']
+		['Ugh', 'Guns', 'Stress'],
+		['Darnell', "lit-up", "2hot"]
 	];
 	var curDifficulty:Int = 1;
 
 	// TODO: This info is just hardcoded right now.
 	// We should probably make it so that weeks must be completed in order to unlock the next week.
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true, true, true];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
@@ -47,6 +48,7 @@ class StoryMenuState extends MusicBeatState
 		['parents-christmas', 'bf', 'gf'],
 		['senpai', 'bf', 'gf'],
 		['tankman', 'bf', 'gf'],
+		['pico', 'pico', 'pico']
 	];
 
 	var weekNames:Array<String> = [
@@ -57,7 +59,8 @@ class StoryMenuState extends MusicBeatState
 		"MOMMY MUST MURDER",
 		"RED SNOW",
 		"hating simulator ft. moawling",
-		"TANKMAN"
+		"TANKMAN",
+		"DARNELL AND NENE"
 	];
 
 	var txtWeekTitle:FlxText;
