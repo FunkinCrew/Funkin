@@ -87,6 +87,7 @@ class Main extends Sprite
 		initialState = TitleState;
 		#end
 
+		haxe.ui.Toolkit.init();
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if debug
