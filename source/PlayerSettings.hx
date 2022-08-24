@@ -71,20 +71,20 @@ class PlayerSettings
 		var saveControls = FlxG.save.data.controls;
 		if (saveControls != null)
 		{
-			var pad = null;
+			var buttons = null;
 			if (id == 0 && saveControls.p1 != null && saveControls.p1.pad != null)
 			{
-				pad = saveControls.p1.pad;
+				buttons = saveControls.p1.pad;
 			}
 			else if (id == 1 && saveControls.p2 != null && saveControls.p2.pad != null)
 			{
-				pad = saveControls.p2.pad;
+				buttons = saveControls.p2.pad;
 			}
-			if (pad != null)
+			if (buttons != null)
 			{
 				setDefault = false;
-				trace('loaded pad data: ' + Json.stringify(pad));
-				controls.addGamepadWithSaveData(pad.id, pad);
+				trace('loaded pad data: ' + Json.stringify(buttons));
+				controls.addGamepadWithSaveData(pad.id, buttons);
 			}
 		}
 		if (setDefault)
