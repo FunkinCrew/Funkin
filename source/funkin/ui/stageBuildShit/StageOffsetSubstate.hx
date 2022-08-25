@@ -22,6 +22,8 @@ import openfl.net.FileReference;
 
 class StageOffsetSubstate extends MusicBeatSubstate
 {
+	var uiStuff:Component;
+
 	override function create()
 	{
 		super.create();
@@ -31,7 +33,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
 		FlxG.camera.target = null;
 
 		var str = Paths.xml('ui/stage-editor-view');
-		var uiStuff:Component = RuntimeComponentBuilder.fromAsset(str);
+		uiStuff = RuntimeComponentBuilder.fromAsset(str);
 
 		uiStuff.findComponent("lol").onClick = saveCharacterCompile;
 		uiStuff.findComponent('saveAs').onClick = saveStageFileRef;
@@ -95,6 +97,11 @@ class StageOffsetSubstate extends MusicBeatSubstate
 				FlxMouseEventManager.remove(thing);
 				thing.alpha = 1;
 			}
+
+			if (uiStuff != null)
+				remove(uiStuff);
+
+			uiStuff = null;
 
 			PlayState.instance.resetCamera();
 			FlxG.mouse.visible = false;
