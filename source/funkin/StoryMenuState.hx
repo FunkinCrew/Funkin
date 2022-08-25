@@ -215,8 +215,11 @@ class StoryMenuState extends MusicBeatState
 					size = nums[char];
 
 					// IDK, this might be busted ass null shit?
-					weekCharacterThing.x += nums[3];
-					weekCharacterThing.y += nums[4];
+					if (char != 1)
+					{
+						weekCharacterThing.x += nums[3];
+						weekCharacterThing.y += nums[4];
+					}
 				}
 
 				weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * size));
@@ -467,9 +470,6 @@ class StoryMenuState extends MusicBeatState
 		for (ind => grp in grpWeekCharacters)
 			grp.visible = ind == curWeek;
 
-		// grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
-		// grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
-		// grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
 		txtTracklist.text = "Tracks\n";
 
 		var trackNames:Array<String> = weekData[curWeek];
