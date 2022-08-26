@@ -1,8 +1,10 @@
 package funkin.audiovis;
 
-import funkin.audiovis.dsp.FFT;
 import flixel.math.FlxMath;
 import flixel.system.FlxSound;
+import funkin.audiovis.dsp.FFT;
+import haxe.Timer;
+import lime.system.ThreadPool;
 import lime.utils.Int16Array;
 
 using Lambda;
@@ -51,8 +53,8 @@ class VisShit
 		final maxFreq = 4000.01;
 		final melodicBandPass = function(k:Int, s:Float)
 		{
-			// final freq = indexToFreq(k);
-			// final filter = freq > minFreq - binSize && freq < maxFreq + binSize ? 1 : 0;
+			final freq = indexToFreq(k);
+			final filter = freq > minFreq - binSize && freq < maxFreq + binSize ? 1 : 0;
 			return s;
 		};
 
