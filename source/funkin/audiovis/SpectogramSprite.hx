@@ -1,8 +1,5 @@
 package funkin.audiovis;
 
-import funkin.audiovis.PolygonSpectogram.VISTYPE;
-import funkin.audiovis.VisShit.CurAudioInfo;
-import funkin.audiovis.dsp.FFT;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -11,6 +8,11 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
+import funkin.audiovis.PolygonSpectogram.VISTYPE;
+import funkin.audiovis.VisShit.CurAudioInfo;
+import funkin.audiovis.dsp.FFT;
+import haxe.Timer;
+import lime.system.ThreadPool;
 import lime.utils.Int16Array;
 
 using Lambda;
@@ -167,39 +169,20 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 				else
 					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, vis.snd.length, 0, numSamples));
 
-				var i = remappedShit;
-				var prevLine:FlxPoint = new FlxPoint();
-
-				var swagheight:Int = 200;
-
 				var fftSamples:Array<Float> = [];
-
-				// var array:Array<Float> = cast audioData.subarray(remappedShit, remappedShit + lengthOfShit);
-
-				if (FlxG.keys.justPressed.M)
-				{
-					trace('POOP LOL');
-					var funnyAud = audioData.subarray(remappedShit, remappedShit + lengthOfShit);
-
-					for (poop in funnyAud)
-					{
-						// trace("actual audio: " + poop);
-						trace("win: " + poop);
-					}
-
-					// trace(audioData.subarray(remappedShit, remappedShit + lengthOfShit).buffer);
-				}
+				var i = remappedShit;
 
 				for (sample in remappedShit...remappedShit + (Std.int((44100 * (1 / 144)))))
 				{
 					var curAud:CurAudioInfo = VisShit.getCurAud(audioData, i);
 					i += 2;
 
-					// var remappedSample:Float = FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1);
 					fftSamples.push(curAud.balanced);
 				}
 
 				var freqShit = vis.funnyFFT(fftSamples);
+				var prevLine:FlxPoint = new FlxPoint();
+				var swagheight:Int = 200;
 
 				for (i in 0...group.members.length)
 				{
