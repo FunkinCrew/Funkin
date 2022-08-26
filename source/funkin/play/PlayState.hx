@@ -478,7 +478,7 @@ class PlayState extends MusicBeatState implements IHook
 				currentStageId = 'pyro';
 			case 'senpai' | 'roses':
 				currentStageId = 'school';
-			case "darnell":
+			case "darnell" | "lit-up" | "2hot":
 				currentStageId = 'phillyStreets';
 			case 'thorns':
 				currentStageId = 'schoolEvil';
