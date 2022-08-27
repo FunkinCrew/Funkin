@@ -3,7 +3,6 @@ package funkin;
 import funkin.Note.NoteData;
 import funkin.Section.SwagSection;
 import haxe.Json;
-import haxe.format.JsonParser;
 import lime.utils.Assets;
 
 using StringTools;
@@ -105,6 +104,8 @@ class SongLoad
 
 	public static function checkAndCreateNotemap(diff:String):Void
 	{
+		if (songData == null || songData.noteMap == null)
+			return;
 		if (songData.noteMap[diff] == null)
 			songData.noteMap[diff] = [];
 	}
@@ -249,14 +250,17 @@ class SongLoad
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var songParsed:Dynamic;
-		try {
+		try
+		{
 			songParsed = Json.parse(rawJson);
-		} catch (e) {
+		}
+		catch (e)
+		{
 			FlxG.log.warn("Error parsing JSON: " + e.message);
 			trace("Error parsing JSON: " + e.message);
 			return null;
 		}
-		
+
 		var swagShit:SwagSong = cast songParsed.song;
 		swagShit.difficulties = []; // reset it to default before load
 		swagShit.noteMap = new Map();

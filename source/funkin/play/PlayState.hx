@@ -37,7 +37,6 @@ import funkin.ui.stageBuildShit.StageOffsetSubstate;
 import funkin.util.Constants;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;
-import polymod.hscript.HScriptedClass;
 
 using StringTools;
 
@@ -286,6 +285,7 @@ class PlayState extends MusicBeatState
 			lime.app.Application.current.window.alert("There was a critical error while accessing the selected song. Click OK to return to the main menu.",
 				"Error loading PlayState");
 			FlxG.switchState(new MainMenuState());
+			return;
 		}
 
 		instance = this;
@@ -1787,6 +1787,9 @@ class PlayState extends MusicBeatState
 
 	override function stepHit():Bool
 	{
+		if (SongLoad.songData == null)
+			return false;
+
 		// super.stepHit() returns false if a module cancelled the event.
 		if (!super.stepHit())
 			return false;

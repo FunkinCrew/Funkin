@@ -15,7 +15,7 @@ class FlxMacro
 		// The fields of the FlxClass.
 		var fields:Array<haxe.macro.Expr.Field> = haxe.macro.Context.getBuildFields();
 
-		haxe.macro.Context.info('[INFO] ${cls.name}: Adding zIndex attribute...', pos);
+		// haxe.macro.Context.info('[INFO] ${cls.name}: Adding zIndex attribute...', pos);
 
 		// Here, we add the zIndex attribute to all FlxBasic objects.
 		// This has no functional code tied to it, but it can be used as a target value
