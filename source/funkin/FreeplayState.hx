@@ -117,7 +117,7 @@ class FreeplayState extends MusicBeatSubstate
 		if (StoryMenuState.weekUnlocked[7] || isDebug)
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
-		addWeek(["Darnell", "lit-up", "2hot"], 8, ['darnell']);
+		addWeek(["Darnell", "lit-up", "2hot", "blazin"], 8, ['darnell']);
 
 		// LOAD MUSIC
 

@@ -1124,10 +1124,14 @@ class PlayState extends MusicBeatState
 			iconP1.toggleOldIcon();
 
 		#if debug
+		// PAGEUP: Skip forward one section.
+		// SHIFT+PAGEUP: Skip forward ten sections.
 		if (FlxG.keys.justPressed.PAGEUP)
-			changeSection(1);
+			changeSection(FlxG.keys.pressed.SHIFT ? 10 : 1);
+		// PAGEDOWN: Skip backward one section. Doesn't replace notes.
+		// SHIFT+PAGEDOWN: Skip backward ten sections.
 		if (FlxG.keys.justPressed.PAGEDOWN)
-			changeSection(-1);
+			changeSection(FlxG.keys.pressed.SHIFT ? -10 : -1);
 		#end
 
 		if (health > 2.0)
