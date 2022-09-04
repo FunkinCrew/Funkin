@@ -44,8 +44,6 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public var shouldBop:Bool = true;
 
-	private var finishCallbackMap:Map<String, Void->Void> = new Map<String, Void->Void>();
-
 	function set_idleSuffix(value:String):String
 	{
 		this.idleSuffix = value;
@@ -113,8 +111,10 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 * Called when an animation finishes.
 	 * @param name The name of the animation that just finished.
 	 */
-	function onAnimationFinished(name:String) {
-		if (!canPlayOtherAnims) {
+	function onAnimationFinished(name:String)
+	{
+		if (!canPlayOtherAnims)
+		{
 			canPlayOtherAnims = true;
 		}
 	}
@@ -128,7 +128,8 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 * For example, if an animation was defined as having the indexes [3, 0, 1, 2],
 	 * then the first callback would have frameNumber = 0 and frameIndex = 3.
 	 */
-	function onAnimationFrame(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1) {
+	function onAnimationFrame(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1)
+	{
 		// Do nothing by default.
 		// This can be overridden by, for example, scripted characters.
 		// Try not to do anything expensive here, it runs many times a second.
@@ -328,39 +329,75 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		return this.animation.curAnim.name;
 	}
 
-	public function onScriptEvent(event:ScriptEvent) {}
+	public function onScriptEvent(event:ScriptEvent)
+	{
+	}
 
-	public function onCreate(event:ScriptEvent) {}
+	public function onCreate(event:ScriptEvent)
+	{
+	}
 
-	public function onDestroy(event:ScriptEvent) {}
+	public function onDestroy(event:ScriptEvent)
+	{
+	}
 
-	public function onUpdate(event:UpdateScriptEvent) {}
+	public function onUpdate(event:UpdateScriptEvent)
+	{
+	}
 
-	public function onPause(event:PauseScriptEvent) {}
+	public function onPause(event:PauseScriptEvent)
+	{
+	}
 
-	public function onResume(event:ScriptEvent) {}
+	public function onResume(event:ScriptEvent)
+	{
+	}
 
-	public function onSongStart(event:ScriptEvent) {}
+	public function onSongStart(event:ScriptEvent)
+	{
+	}
 
-	public function onSongEnd(event:ScriptEvent) {}
+	public function onSongEnd(event:ScriptEvent)
+	{
+	}
 
-	public function onGameOver(event:ScriptEvent) {}
+	public function onGameOver(event:ScriptEvent)
+	{
+	}
 
-	public function onNoteHit(event:NoteScriptEvent) {}
+	public function onNoteHit(event:NoteScriptEvent)
+	{
+	}
 
-	public function onNoteMiss(event:NoteScriptEvent) {}
+	public function onNoteMiss(event:NoteScriptEvent)
+	{
+	}
 
-	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+	{
+	}
 
-	public function onStepHit(event:SongTimeScriptEvent) {}
+	public function onStepHit(event:SongTimeScriptEvent)
+	{
+	}
 
-	public function onCountdownStart(event:CountdownScriptEvent) {}
+	public function onCountdownStart(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onCountdownStep(event:CountdownScriptEvent) {}
+	public function onCountdownStep(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onCountdownEnd(event:CountdownScriptEvent) {}
+	public function onCountdownEnd(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onSongLoaded(event:SongLoadScriptEvent) {}
+	public function onSongLoaded(event:SongLoadScriptEvent)
+	{
+	}
 
-	public function onSongRetry(event:ScriptEvent) {}
+	public function onSongRetry(event:ScriptEvent)
+	{
+	}
 }

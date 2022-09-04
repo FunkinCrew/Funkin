@@ -3,6 +3,7 @@ package funkin.play.stage;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
+import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSort;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -264,6 +265,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 	public function refresh()
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+	}
+
+	public function setShader(shader:FlxShader)
+	{
+		forEachAlive(function(prop:FlxSprite)
+		{
+			prop.shader = shader;
+		});
 	}
 
 	/**
@@ -544,7 +553,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 	 * A function that gets called once per step in the song.
 	 * @param curStep The current step number.
 	 */
-	public function onStepHit(event:SongTimeScriptEvent):Void {}
+	public function onStepHit(event:SongTimeScriptEvent):Void
+	{
+	}
 
 	/**
 	 * A function that gets called once per beat in the song (once every four steps).
@@ -569,31 +580,59 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 		}
 	}
 
-	public function onScriptEvent(event:ScriptEvent) {}
+	public function onScriptEvent(event:ScriptEvent)
+	{
+	}
 
-	public function onPause(event:PauseScriptEvent) {}
+	public function onPause(event:PauseScriptEvent)
+	{
+	}
 
-	public function onResume(event:ScriptEvent) {}
+	public function onResume(event:ScriptEvent)
+	{
+	}
 
-	public function onSongStart(event:ScriptEvent) {}
+	public function onSongStart(event:ScriptEvent)
+	{
+	}
 
-	public function onSongEnd(event:ScriptEvent) {}
+	public function onSongEnd(event:ScriptEvent)
+	{
+	}
 
-	public function onGameOver(event:ScriptEvent) {}
+	public function onGameOver(event:ScriptEvent)
+	{
+	}
 
-	public function onCountdownStart(event:CountdownScriptEvent) {}
+	public function onCountdownStart(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onCountdownStep(event:CountdownScriptEvent) {}
+	public function onCountdownStep(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onCountdownEnd(event:CountdownScriptEvent) {}
+	public function onCountdownEnd(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onNoteHit(event:NoteScriptEvent) {}
+	public function onNoteHit(event:NoteScriptEvent)
+	{
+	}
 
-	public function onNoteMiss(event:NoteScriptEvent) {}
+	public function onNoteMiss(event:NoteScriptEvent)
+	{
+	}
 
-	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+	{
+	}
 
-	public function onSongLoaded(event:SongLoadScriptEvent) {}
+	public function onSongLoaded(event:SongLoadScriptEvent)
+	{
+	}
 
-	public function onSongRetry(event:ScriptEvent) {}
+	public function onSongRetry(event:ScriptEvent)
+	{
+	}
 }

@@ -477,8 +477,11 @@ class PlayState extends MusicBeatState
 			case 'senpai' | 'roses':
 				currentStageId = 'school';
 			case "darnell" | "lit-up" | "2hot":
-				// currentStageId = 'phillyStreets';
-				currentStageId = 'pyro';
+				currentStageId = 'phillyStreets';
+			// currentStageId = 'pyro';
+			case "blazin":
+				currentStageId = 'phillyBlazin';
+			// currentStageId = 'pyro';
 			case 'pyro':
 				currentStageId = 'pyro';
 			case 'thorns':
@@ -516,6 +519,8 @@ class PlayState extends MusicBeatState
 		{
 			case 'pyro' | 'phillyStreets':
 				gfVersion = 'nene';
+			case 'blazin':
+				gfVersion = '';
 			case 'limoRide':
 				gfVersion = 'gf-car';
 			case 'mallXmas' | 'mallEvil':
@@ -524,9 +529,6 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf-pixel';
 			case 'tankmanBattlefield':
 				gfVersion = 'gf-tankmen';
-			case 'breakout':
-				// SERIOUSLY PUT THIS SHIT IN THE CHART
-				gfVersion = '';
 		}
 
 		if (currentSong.player1 == "pico")
@@ -918,7 +920,27 @@ class PlayState extends MusicBeatState
 				swagNote.mustPress = gottaHitNote;
 
 				if (swagNote.mustPress)
-					swagNote.x += FlxG.width / 2; // general offset
+				{
+					if (playerStrumline != null)
+					{
+						swagNote.x = playerStrumline.getArrow(swagNote.data.noteData).x;
+					}
+					else
+					{
+						swagNote.x += FlxG.width / 2; // general offset
+					}
+				}
+				else
+				{
+					if (enemyStrumline != null)
+					{
+						swagNote.x = enemyStrumline.getArrow(swagNote.data.noteData).x;
+					}
+					else
+					{
+						swagNote.x += FlxG.width / 2; // general offset
+					}
+				}
 			}
 		}
 

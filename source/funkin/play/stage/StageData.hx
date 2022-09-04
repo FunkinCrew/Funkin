@@ -89,6 +89,7 @@ class StageDataParser
 			}
 			catch (e)
 			{
+				trace('    An error occurred while loading stage data: ${stageId}');
 				// Assume error was already logged.
 				continue;
 			}

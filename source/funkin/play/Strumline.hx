@@ -1,8 +1,7 @@
 package funkin.play;
 
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.FlxSprite;
-import flixel.math.FlxPoint;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.Note.NoteColor;
