@@ -180,6 +180,8 @@ class InitState extends FlxTransitionableState
 		FlxG.switchState(new PicoFight());
 		#elseif ANIMDEBUG
 		FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+		#elseif LATENCY
+		FlxG.switchState(new LatencyState());
 		#elseif NETTEST
 		FlxG.switchState(new netTest.NetTest());
 		#else

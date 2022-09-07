@@ -122,6 +122,8 @@
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
+	<haxelib name="haxeui-core"/>
+	<haxelib name="haxeui-flixel"/>
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
@@ -197,6 +199,9 @@
 	<!-- HScript relies heavily on Reflection, which means we can't use DCE. -->
 	<haxeflag name="-dce no" />
 	<haxeflag name="--macro" value="include('funkin')" />
+	<!-- Ensure all UI components are available at runtime. -->
+    <haxeflag name="--macro" value="include('haxe.ui.components')" />
+    <haxeflag name="--macro" value="include('haxe.ui.containers')" />
 
 	<!-- Necessary to provide stack traces for HScript. -->
 	<haxedef name="hscriptPos" />
@@ -247,7 +252,7 @@
 	<!-- <prebuild haxe="trace('prebuilding');"/> -->
 	<!-- <postbuild haxe="art/Postbuild.hx"/> -->
 
-	<config:ios allow-provisioning-updates="true" team-id="" />
+	<!-- <config:ios allow-provisioning-updates="true" team-id="" /> -->
 
 	<!-- Options for Polymod -->
 	<section if="polymod">

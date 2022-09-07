@@ -13,8 +13,15 @@ class MenuCharacter extends FlxSprite
 
 		this.character = character;
 
-		var tex = Paths.getSparrowAtlas('campaign_menu_UI_characters');
+		var suffix:String = character;
+
+		if (character != "darnell" && character != "nene")
+			suffix = "characters";
+
+		var tex = Paths.getSparrowAtlas('campaign_menu_UI_' + suffix);
 		frames = tex;
+
+		trace(character);
 
 		animation.addByPrefix('bf', "BF idle dance white", 24);
 		animation.addByPrefix('bfConfirm', 'BF HEY!!', 24, false);
@@ -26,6 +33,8 @@ class MenuCharacter extends FlxSprite
 		animation.addByPrefix('parents-christmas', "Parent Christmas Idle", 24);
 		animation.addByPrefix('senpai', "SENPAI idle Black Lines", 24);
 		animation.addByPrefix('tankman', "Tankman Menu BLACK", 24);
+		animation.addByPrefix('darnell', "Darnell Black Lines To Scale", 24);
+		animation.addByPrefix('nene', "Nene Black Lines To Scale", 24);
 		// Parent Christmas Idle
 
 		animation.play(character);

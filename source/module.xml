@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+	<!-- A module provides additional behavior and configuration for HaxeUI. -->
+	<components>
+		<!--
+			Ensure all components get included at compilation time.
+			This needs to be done HERE and not via the `include` macro because `Toolkit.init()`
+			reads this to build the component registry.
+		-->
+		<class package="haxe.ui.components" loadAll="true" />
+		<class package="haxe.ui.containers" loadAll="true" />
+		<class package="haxe.ui.core" loadAll="true" />
+	</components>
+</module>

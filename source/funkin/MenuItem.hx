@@ -12,10 +12,19 @@ class MenuItem extends FlxSpriteGroup
 	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
 
-	public function new(x:Float, y:Float, weekNum:Int = 0)
+	public function new(x:Float, y:Float, weekNum:Int = 0, weekType:WeekType)
 	{
 		super(x, y);
-		week = new FlxSprite().loadGraphic(Paths.image('storymenu/week' + weekNum));
+
+		var weekStr:String = switch (weekType)
+		{
+			case WEEK:
+				"week";
+			case WEEKEND:
+				"weekend";
+		}
+
+		week = new FlxSprite().loadGraphic(Paths.image('storymenu/' + weekStr + weekNum));
 		add(week);
 	}
 
@@ -45,4 +54,10 @@ class MenuItem extends FlxSpriteGroup
 		else
 			week.color = FlxColor.WHITE;
 	}
+}
+
+enum abstract WeekType(String) to String
+{
+	var WEEK;
+	var WEEKEND;
 }
