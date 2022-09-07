@@ -1,7 +1,7 @@
 package funkin;
 
-import flixel.util.FlxColor;
 import flixel.FlxSubState;
+import flixel.util.FlxColor;
 import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
@@ -71,6 +71,15 @@ class MusicBeatSubstate extends FlxSubState
 	function dispatchEvent(event:ScriptEvent)
 	{
 		ModuleHandler.callEvent(event);
+	}
+
+	/**
+	 * Close this substate and replace it with a different one.
+	 */
+	public function switchSubState(substate:FlxSubState):Void
+	{
+		this.close();
+		this._parentState.openSubState(substate);
 	}
 
 	public function beatHit():Bool

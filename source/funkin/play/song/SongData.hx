@@ -1,5 +1,11 @@
 package funkin.play.song;
 
+import funkin.util.assets.DataAssets;
+import openfl.utils.Assets;
+import thx.semver.Version;
+
+using StringTools;
+
 /**
  * Contains utilities for loading and parsing stage data.
  */
@@ -15,7 +21,7 @@ class SongDataParser
 	/**
 	 * A list containing all the songs available to the game.
 	 */
-	static final songCache:Map<String, Stage> = new Map<String, Stage>();
+	static final songCache:Map<String, Song> = new Map<String, Song>();
 
 	static final DEFAULT_SONG_ID = 'UNKNOWN';
 
@@ -59,11 +65,10 @@ class SongDataParser
 		trace('  Instantiating ${unscriptedSongIds.length} non-scripted songs...');
 		for (songId in unscriptedSongIds)
 		{
-			var song:Song;
 			try
 			{
-				stage = new Song(songId);
-				if (stage != null)
+				var song = new Song(songId);
+				if (song != null)
 				{
 					trace('    Loaded song data: ${song.songId}');
 					songCache.set(song.songId, song);
@@ -83,7 +88,7 @@ class SongDataParser
 	/**
 	 * Retrieves a particular song from the cache.
 	 */
-	public static function fetchStage(songId:String):Null<Song>
+	public static function fetchSong(songId:String):Null<Song>
 	{
 		if (songCache.exists(songId))
 		{
@@ -102,22 +107,20 @@ class SongDataParser
 	{
 		if (songCache != null)
 		{
-			for (song in songCache)
-			{
-				song.destroy();
-			}
 			songCache.clear();
 		}
 	}
 
 	public static function parseSongMetadata(songId:String):Null<SongMetadata>
 	{
+		return null;
 	}
 
 	static function loadSongMetadataFile(songPath:String, variant:String = ''):String
 	{
-		var songMetadataFilePath:String = Paths.json('stages/${stagePath}');
-		var rawJson = Assets.getText(stageFilePath).trim();
+		var songMetadataFilePath:String = (variant != '') ? Paths.json('songs/${songPath}') : Paths.json('songs/${songPath}');
+
+		var rawJson:String = Assets.getText(songMetadataFilePath).trim();
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -126,4 +129,26 @@ class SongDataParser
 
 		return rawJson;
 	}
+}
+
+typedef SongMetadata =
+{
+	var version:Version;
+
+	var songName:String;
+	var artist:String;
+	var timeFormat:SongTimeFormat;
+	var divisions:Int;
+	var timeChanges:Array<SongTimeChange>;
+};
+
+typedef SongChartData =
+{
+};
+
+enum abstract SongTimeFormat(String) from String to String
+{
+	var TICKS = "ticks";
+	var FLOAT = "float";
+	var MILLISECONDS = "ms";
 }

@@ -866,8 +866,8 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes.strumTime;
+				// TODO: Replace 4 with strumlineSize
 				var daNoteData:Int = Std.int(songNotes.noteData % 4);
-
 				var gottaHitNote:Bool = section.mustHitSection;
 
 				if (songNotes.highStakes) // noteData > 3
@@ -917,6 +917,7 @@ class PlayState extends MusicBeatState
 						sustainNote.x += FlxG.width / 2; // general offset
 				}
 
+				// TODO: Replace 4 with strumlineSize
 				swagNote.mustPress = gottaHitNote;
 
 				if (swagNote.mustPress)
@@ -938,7 +939,7 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						swagNote.x += FlxG.width / 2; // general offset
+						// swagNote.x += FlxG.width / 2; // general offset
 					}
 				}
 			}

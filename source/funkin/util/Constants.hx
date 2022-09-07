@@ -20,6 +20,9 @@ class Constants
 
 	public static final FREAKY_MENU_BPM = 102;
 
+	// Change this if you're making an engine.
+	public static final TITLE = "Friday Night Funkin'";
+
 	#if debug
 	public static final GIT_HASH = funkin.util.macro.GitCommit.getGitCommitHash();
 
@@ -35,5 +38,5 @@ class Constants
 	#end
 
 	public static final URL_KICKSTARTER:String = "https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/";
-	public static final URL_ITCH:String = "https://ninja-muffin24.itch.io/funkin";
+	public static final URL_ITCH:String = "https://ninja-muffin24.itch.io/funkin/purchase";
 }

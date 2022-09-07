@@ -27,7 +27,7 @@ class OptionsState extends MusicBeatState
 		menuBG.scrollFactor.set(0, 0);
 		add(menuBG);
 
-		var options = addPage(Options, new OptionsMenu(false));
+		var options = addPage(Options, new OptionsMenu());
 		var preferences = addPage(Preferences, new PreferencesMenu());
 		var controls = addPage(Controls, new ControlsMenu());
 
@@ -167,22 +167,14 @@ class OptionsMenu extends Page
 {
 	var items:TextMenuList;
 
-	public function new(showDonate:Bool)
+	public function new()
 	{
 		super();
 
 		add(items = new TextMenuList());
 		createItem("PREFERENCES", function() switchPage(Preferences));
 		createItem("CONTROLS", function() switchPage(Controls));
-		// createItem("COLORS", function() switchPage(Colors));
 
-		#if CAN_OPEN_LINKS
-		if (showDonate)
-		{
-			var hasPopupBlocker = #if web true #else false #end;
-			createItem("DONATE", selectDonate, hasPopupBlocker);
-		}
-		#end
 		#if newgrounds
 		if (NGio.isLoggedIn)
 			createItem("LOGOUT", selectLogout);
@@ -214,13 +206,6 @@ class OptionsMenu extends Page
 	{
 		return items.length > 2;
 	}
-
-	#if CAN_OPEN_LINKS
-	function selectDonate()
-	{
-		WindowUtil.openURL(Constants.URL_ITCH);
-	}
-	#end
 
 	#if newgrounds
 	function selectLogin()

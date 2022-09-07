@@ -10,8 +10,7 @@ import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.stage.StageData.StageDataParser;
+import funkin.ui.debug.DebugMenuSubState;
 import funkin.util.SortUtil;
 
 /**
@@ -60,6 +59,15 @@ class MusicBeatState extends FlxUIState
 		// This can now be used in EVERY STATE YAY!
 		if (FlxG.keys.justPressed.F5)
 			debug_refreshModules();
+
+		// ` / ~
+		if (FlxG.keys.justPressed.GRAVEACCENT)
+		{
+			// TODO: Does this break anything?
+			this.persistentUpdate = false;
+			this.persistentDraw = false;
+			FlxG.state.openSubState(new DebugMenuSubState());
+		}
 
 		// everyStep();
 		var oldStep:Int = curStep;

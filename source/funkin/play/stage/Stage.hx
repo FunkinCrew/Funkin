@@ -375,8 +375,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
 		// Add the character to the scene.
 		this.add(character);
+
+		#if debug
 		debugIconGroup.add(debugIcon);
 		debugIconGroup.add(debugIcon2);
+		#end
 	}
 
 	public inline function getGirlfriendPosition():FlxPoint

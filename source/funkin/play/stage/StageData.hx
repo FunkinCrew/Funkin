@@ -141,6 +141,11 @@ class StageDataParser
 		return validateStageData(stageId, stageData);
 	}
 
+	public static function listStageIds():Array<String>
+	{
+		return [for (x in stageCache.keys()) x];
+	}
+
 	static function loadStageFile(stagePath:String):String
 	{
 		var stageFilePath:String = Paths.json('stages/${stagePath}');
