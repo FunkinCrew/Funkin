@@ -370,6 +370,7 @@ class PlayState extends MusicBeatState
 		add(cameraFollowPoint);
 
 		comboPopUps = new PopUpStuff();
+		comboPopUps.cameras = [camHUD];
 		add(comboPopUps);
 
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
@@ -1900,6 +1901,7 @@ class PlayState extends MusicBeatState
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
 			animShit.scrollFactor.set(0.6, 0.6);
+			animShit.cameras = [camHUD];
 			add(animShit);
 
 			var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
