@@ -34,7 +34,7 @@ class StoryMenuState extends MusicBeatState
 		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
 		['Senpai', 'Roses', 'Thorns'],
 		['Ugh', 'Guns', 'Stress'],
-		['Darnell', "lit-up", "2hot"]
+		['Darnell', "lit-up", "2hot", "blazin"]
 	];
 	var curDifficulty:Int = 1;
 

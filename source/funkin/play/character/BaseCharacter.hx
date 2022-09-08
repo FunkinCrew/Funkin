@@ -460,13 +460,13 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, false);
 			holdTimer = 0;
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, false);
 			holdTimer = 0;
 		}
 	}

@@ -1,21 +1,13 @@
 package funkin.ui.stageBuildShit;
 
 import flixel.FlxSprite;
-import flixel.input.mouse.FlxMouseEventManager;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
-import flixel.ui.FlxButton;
 import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData;
-import haxe.Json;
-import haxe.ui.ComponentBuilder;
 import haxe.ui.RuntimeComponentBuilder;
-import haxe.ui.Toolkit;
-import haxe.ui.components.Button;
-import haxe.ui.containers.HBox;
-import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
-import openfl.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
@@ -46,7 +38,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
 
 		for (thing in PlayState.instance.currentStage)
 		{
-			FlxMouseEventManager.add(thing, spr ->
+			FlxMouseEvent.add(thing, spr ->
 			{
 				char = cast thing;
 				trace("JUST PRESSED!");
@@ -94,7 +86,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
 		{
 			for (thing in PlayState.instance.currentStage)
 			{
-				FlxMouseEventManager.remove(thing);
+				FlxMouseEvent.remove(thing);
 				thing.alpha = 1;
 			}
 

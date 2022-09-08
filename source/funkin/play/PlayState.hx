@@ -938,7 +938,7 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						swagNote.x += FlxG.width / 2; // general offset
+						// swagNote.x += FlxG.width / 2; // general offset
 					}
 				}
 			}
@@ -1406,7 +1406,10 @@ class PlayState extends MusicBeatState
 		var daPos:Float = 0;
 		for (i in 0...(Std.int(curStep / 16 + sec)))
 		{
-			if (SongLoad.getSong()[i].changeBPM)
+			var section = SongLoad.getSong()[i];
+			if (section == null)
+				continue;
+			if (section.changeBPM)
 			{
 				daBPM = SongLoad.getSong()[i].bpm;
 			}

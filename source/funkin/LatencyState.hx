@@ -139,17 +139,17 @@ class LatencyState extends MusicBeatSubstate
 		super.create();
 	}
 
-	override function stepHit()
+	override function stepHit():Bool
 	{
 		if (curStep % 4 == 2)
 		{
 			blocks.members[((curBeat % 8) + 1) % 8].alpha = 0.5;
 		}
 
-		super.stepHit();
+		return super.stepHit();
 	}
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
 		if (curBeat % 8 == 0)
 			blocks.forEach(blok ->
@@ -160,7 +160,7 @@ class LatencyState extends MusicBeatSubstate
 		blocks.members[curBeat % 8].alpha = 1;
 		// block.visible = !block.visible;
 
-		super.beatHit();
+		return super.beatHit();
 	}
 
 	override function update(elapsed:Float)
