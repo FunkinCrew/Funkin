@@ -56,8 +56,6 @@ class DebugBoundingState extends FlxState
 
 	var hudCam:FlxCamera;
 
-	var charInput:FlxUIDropDownMenu;
-
 	var curView:ANIMDEBUGVIEW = SPRITESHEET;
 
 	var spriteSheetView:FlxGroup;
@@ -112,11 +110,6 @@ class DebugBoundingState extends FlxState
 
 		initSpritesheetView();
 		initOffsetView();
-
-		// charInput = new FlxInputText(300, 10, 150, "bf", 16);
-		// charInput.focusCam = hudCam;
-		// charInput.cameras = [hudCam];
-		// charInput.scrollFactor.set();
 
 		uiStuff.cameras = [hudCam];
 
@@ -258,15 +251,16 @@ class DebugBoundingState extends FlxState
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
-		// charInput isnt only exclusive to offsetView shit now
-		charInput = new FlxUIDropDownMenu(500, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
+		var charDropdown:DropDown = cast uiStuff.findComponent('characterDropdown');
+		for (char in characters)
 		{
-			loadAnimShit(characters[Std.parseInt(str)]);
-			// trace();
-		});
-		// charInput.
-		charInput.cameras = [hudCam];
-		add(charInput);
+			charDropdown.dataSource.add({text: char});
+		}
+
+		charDropdown.onChange = function(e:UIEvent)
+		{
+			loadAnimShit(e.data.text);
+		};
 	}
 
 	public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
@@ -360,11 +354,6 @@ class DebugBoundingState extends FlxState
 
 		if (FlxG.keys.justPressed.H)
 			hudCam.visible = !hudCam.visible;
-
-		/* if (charInput.hasFocus && FlxG.keys.justPressed.ENTER)
-			{
-				loadAnimShit();
-		}*/
 
 		CoolUtil.mouseCamDrag();
 		CoolUtil.mouseWheelZoom();
@@ -480,6 +469,9 @@ class DebugBoundingState extends FlxState
 
 	var swagChar:BaseCharacter;
 
+	/*
+		Called when animation dropdown is changed!
+	 */
 	function loadAnimShit(char:String)
 	{
 		if (swagChar != null)
