@@ -200,8 +200,8 @@
 	<haxeflag name="-dce no" />
 	<haxeflag name="--macro" value="include('funkin')" />
 	<!-- Ensure all UI components are available at runtime. -->
-    <haxeflag name="--macro" value="include('haxe.ui.components')" />
-    <haxeflag name="--macro" value="include('haxe.ui.containers')" />
+  <haxeflag name="--macro" value="include('haxe.ui.components')" />
+  <haxeflag name="--macro" value="include('haxe.ui.containers')" />
 
 	<!-- Necessary to provide stack traces for HScript. -->
 	<haxedef name="hscriptPos" />

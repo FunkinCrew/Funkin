@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
 import funkin.play.PlayState;
-import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.core.Component;
@@ -77,10 +76,17 @@ class StageOffsetSubstate extends MusicBeatSubstate
 			char.y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
 		}
 
+		FlxG.mouse.visible = true;
+
 		CoolUtil.mouseCamDrag();
 
 		if (FlxG.keys.pressed.CONTROL)
 			CoolUtil.mouseWheelZoom();
+
+		if (FlxG.mouse.wheel != 0)
+		{
+			FlxG.camera.zoom += FlxG.mouse.wheel * 0.1;
+		}
 
 		if (FlxG.keys.justPressed.Y)
 		{
