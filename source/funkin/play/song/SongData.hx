@@ -1,6 +1,10 @@
 package funkin.play.song;
 
+import flixel.util.typeLimit.OneOfTwo;
+import funkin.play.song.ScriptedSong;
 import funkin.util.assets.DataAssets;
+import haxe.DynamicAccess;
+import haxe.Json;
 import openfl.utils.Assets;
 import thx.semver.Version;
 
@@ -12,18 +16,13 @@ using StringTools;
 class SongDataParser
 {
 	/**
-	 * The current version string for the stage data format.
-	 * Handle breaking changes by incrementing this value
-	 * and adding migration to the SongMigrator class.
-	 */
-	public static final CHART_VERSION:String = "2.0.0";
-
-	/**
 	 * A list containing all the songs available to the game.
 	 */
 	static final songCache:Map<String, Song> = new Map<String, Song>();
 
 	static final DEFAULT_SONG_ID = 'UNKNOWN';
+	static final SONG_DATA_PATH = 'songs/';
+	static final SONG_DATA_SUFFIX = '/metadata.json';
 
 	/**
 	 * Parses and preloads the game's song metadata and scripts when the game starts.
@@ -57,7 +56,7 @@ class SongDataParser
 		//
 		// UNSCRIPTED SONGS
 		//
-		var songIdList:Array<String> = DataAssets.listDataFilesInPath('songs/');
+		var songIdList:Array<String> = DataAssets.listDataFilesInPath(SONG_DATA_PATH, SONG_DATA_SUFFIX);
 		var unscriptedSongIds:Array<String> = songIdList.filter(function(songId:String):Bool
 		{
 			return !songCache.exists(songId);
@@ -77,6 +76,7 @@ class SongDataParser
 			catch (e)
 			{
 				trace('    An error occurred while loading song data: ${songId}');
+				trace(e);
 				// Assume error was already logged.
 				continue;
 			}
@@ -111,16 +111,90 @@ class SongDataParser
 		}
 	}
 
-	public static function parseSongMetadata(songId:String):Null<SongMetadata>
+	public static function parseSongMetadata(songId:String):Array<SongMetadata>
 	{
-		return null;
+		var result:Array<SongMetadata> = [];
+
+		var rawJson:String = loadSongMetadataFile(songId);
+		var jsonData:Dynamic = null;
+		try
+		{
+			jsonData = Json.parse(rawJson);
+		}
+		catch (e)
+		{
+		}
+
+		var songMetadata:SongMetadata = SongMigrator.migrateSongMetadata(jsonData, songId);
+		songMetadata = SongValidator.validateSongMetadata(songMetadata, songId);
+
+		if (songMetadata == null)
+		{
+			return result;
+		}
+
+		result.push(songMetadata);
+
+		var variations = songMetadata.playData.songVariations;
+
+		for (variation in variations)
+		{
+			var variationRawJson:String = loadSongMetadataFile(songId, variation);
+			var variationSongMetadata:SongMetadata = SongMigrator.migrateSongMetadata(variationRawJson, '${songId}_${variation}');
+			variationSongMetadata = SongValidator.validateSongMetadata(variationSongMetadata, '${songId}_${variation}');
+			if (variationSongMetadata != null)
+			{
+				variationSongMetadata.variation = variation;
+				result.push(variationSongMetadata);
+			}
+		}
+
+		return result;
 	}
 
-	static function loadSongMetadataFile(songPath:String, variant:String = ''):String
+	static function loadSongMetadataFile(songPath:String, variation:String = ''):String
 	{
-		var songMetadataFilePath:String = (variant != '') ? Paths.json('songs/${songPath}') : Paths.json('songs/${songPath}');
+		var songMetadataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/metadata-$variation') : Paths.json('$SONG_DATA_PATH$songPath/metadata');
 
 		var rawJson:String = Assets.getText(songMetadataFilePath).trim();
+
+		while (!rawJson.endsWith("}"))
+		{
+			rawJson = rawJson.substr(0, rawJson.length - 1);
+		}
+
+		return rawJson;
+	}
+
+	public static function parseSongChartData(songId:String, variation:String = ""):SongChartData
+	{
+		var rawJson:String = loadSongChartDataFile(songId, variation);
+		var jsonData:Dynamic = null;
+		try
+		{
+			jsonData = Json.parse(rawJson);
+		}
+		catch (e)
+		{
+		}
+
+		var songChartData:SongChartData = SongMigrator.migrateSongChartData(jsonData, songId);
+		songChartData = SongValidator.validateSongChartData(songChartData, songId);
+
+		if (songChartData == null)
+		{
+			trace('Failed to validate song chart data: ${songId}');
+			return null;
+		}
+
+		return songChartData;
+	}
+
+	static function loadSongChartDataFile(songPath:String, variation:String = ''):String
+	{
+		var songChartDataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/chart-$variation') : Paths.json('$SONG_DATA_PATH$songPath/chart');
+
+		var rawJson:String = Assets.getText(songChartDataFilePath).trim();
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -133,6 +207,10 @@ class SongDataParser
 
 typedef SongMetadata =
 {
+	/**
+	 * A semantic versioning string for the song data format.
+	 * 
+	 */
 	var version:Version;
 
 	var songName:String;
@@ -140,11 +218,223 @@ typedef SongMetadata =
 	var timeFormat:SongTimeFormat;
 	var divisions:Int;
 	var timeChanges:Array<SongTimeChange>;
+	var loop:Bool;
+	var playData:SongPlayData;
+	var generatedBy:String;
+
+	/**
+	 * Defaults to ''. Populated later.
+	 */
+	var variation:String;
 };
+
+typedef SongPlayData =
+{
+	var songVariations:Array<String>;
+	var difficulties:Array<String>;
+
+	/**
+	 * Keys are the player characters and the values give info on what opponent/GF/inst to use.
+	 */
+	var playableChars:DynamicAccess<SongPlayableChar>;
+
+	var stage:String;
+	var noteSkin:String;
+}
+
+typedef RawSongPlayableChar =
+{
+	var g:String;
+	var o:String;
+	var i:String;
+}
+
+abstract SongPlayableChar(RawSongPlayableChar)
+{
+	public function new(girlfriend:String, opponent:String, inst:String = "")
+	{
+		this = {
+			g: girlfriend,
+			o: opponent,
+			i: inst
+		};
+	}
+
+	public var girlfriend(get, set):String;
+
+	public function get_girlfriend():String
+	{
+		return this.g;
+	}
+
+	public function set_girlfriend(value:String):String
+	{
+		return this.g = value;
+	}
+
+	public var opponent(get, set):String;
+
+	public function get_opponent():String
+	{
+		return this.o;
+	}
+
+	public function set_opponent(value:String):String
+	{
+		return this.o = value;
+	}
+
+	public var inst(get, set):String;
+
+	public function get_inst():String
+	{
+		return this.i;
+	}
+
+	public function set_inst(value:String):String
+	{
+		return this.i = value;
+	}
+}
 
 typedef SongChartData =
 {
 };
+
+typedef RawSongTimeChange =
+{
+	/**
+	 * Timestamp in specified `timeFormat`.
+	 */
+	var t:Float;
+
+	/**
+	 * Time in beats (int). The game will calculate further beat values based on this one,
+	 * so it can do it in a simple linear fashion.
+	 */
+	var b:Int;
+
+	/**
+	 * Quarter notes per minute (float). Cannot be empty in the first element of the list,
+	 * but otherwise it's optional, and defaults to the value of the previous element.
+	 */
+	var bpm:Float;
+
+	/**
+	 * Time signature numerator (int). Optional, defaults to 4.
+	 */
+	var n:Int;
+
+	/**
+	 * Time signature denominator (int). Optional, defaults to 4. Should only ever be a power of two.
+	 */
+	var d:Int;
+
+	/**
+	 * Beat tuplets (Array<int> or int). This defines how many steps each beat is divided into.
+	 * It can either be an array of length `n` (see above) or a single integer number.
+	 * Optional, defaults to `[4]`.
+	 */
+	var bt:OneOfTwo<Int, Array<Int>>;
+}
+
+/**
+ * Add aliases to the minimalized property names of the typedef,
+ * to improve readability.
+ */
+abstract SongTimeChange(RawSongTimeChange)
+{
+	public function new(timeStamp:Float, beatTime:Int, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, beatTuplets:Array<Int>)
+	{
+		this = {
+			t: timeStamp,
+			b: beatTime,
+			bpm: bpm,
+			n: timeSignatureNum,
+			d: timeSignatureDen,
+			bt: beatTuplets,
+		}
+	}
+
+	public var timeStamp(get, set):Float;
+
+	public function get_timeStamp():Float
+	{
+		return this.t;
+	}
+
+	public function set_timeStamp(value:Float):Float
+	{
+		return this.t = value;
+	}
+
+	public var beatTime(get, set):Int;
+
+	public function get_beatTime():Int
+	{
+		return this.b;
+	}
+
+	public function set_beatTime(value:Int):Int
+	{
+		return this.b = value;
+	}
+
+	public var bpm(get, set):Float;
+
+	public function get_bpm():Float
+	{
+		return this.bpm;
+	}
+
+	public function set_bpm(value:Float):Float
+	{
+		return this.bpm = value;
+	}
+
+	public var timeSignatureNum(get, set):Int;
+
+	public function get_timeSignatureNum():Int
+	{
+		return this.n;
+	}
+
+	public function set_timeSignatureNum(value:Int):Int
+	{
+		return this.n = value;
+	}
+
+	public var timeSignatureDen(get, set):Int;
+
+	public function get_timeSignatureDen():Int
+	{
+		return this.d;
+	}
+
+	public function set_timeSignatureDen(value:Int):Int
+	{
+		return this.d = value;
+	}
+
+	public var beatTuplets(get, set):Array<Int>;
+
+	public function get_beatTuplets():Array<Int>
+	{
+		if (Std.isOfType(this.bt, Int))
+		{
+			return [this.bt];
+		}
+		else
+		{
+			return this.bt;
+		}
+	}
+
+	public function set_beatTuplets(value:Array<Int>):Array<Int>
+	{
+		return this.bt = value;
+	}
+}
 
 enum abstract SongTimeFormat(String) from String to String
 {

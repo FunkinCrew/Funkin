@@ -2,6 +2,7 @@ package funkin.modding;
 
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.song.SongData;
 import funkin.play.stage.StageData;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
@@ -231,6 +232,7 @@ class PolymodHandler
 
 		// Reload everything that is cached.
 		// Currently this freezes the game for a second but I guess that's tolerable?
+		SongDataParser.loadSongCache();
 		StageDataParser.loadStageCache();
 		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.loadModuleCache();

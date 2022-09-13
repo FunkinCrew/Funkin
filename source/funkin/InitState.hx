@@ -9,9 +9,9 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import funkin.charting.ChartingState;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.PicoFight;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.song.SongData.SongDataParser;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.animDebugShit.DebugBoundingState;
@@ -27,11 +27,6 @@ import io.colyseus.Room;
 #end
 #if discord_rpc
 import Discord.DiscordClient;
-#end
-#if desktop
-import sys.FileSystem;
-import sys.io.File;
-import sys.thread.Thread;
 #end
 
 /**
@@ -123,6 +118,7 @@ class InitState extends FlxTransitionableState
 		// FlxTransitionableState.skipNextTransOut = true;
 		FlxTransitionableState.skipNextTransIn = true;
 
+		SongDataParser.loadSongCache();
 		StageDataParser.loadStageCache();
 		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.buildModuleCallbacks();
