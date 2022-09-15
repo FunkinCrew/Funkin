@@ -1002,6 +1002,8 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.U)
 		{
+			// hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
+			persistentUpdate = false;
 			openSubState(new StageOffsetSubstate());
 		}
 
