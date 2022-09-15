@@ -9,12 +9,9 @@ import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import funkin.audiovis.PolygonSpectogram.VISTYPE;
 import funkin.audiovis.VisShit.CurAudioInfo;
-<<<<<<< HEAD
-=======
 import funkin.audiovis.dsp.FFT;
 import haxe.Timer;
 import lime.system.ThreadPool;
->>>>>>> origin/note-redux
 import lime.utils.Int16Array;
 
 using Lambda;

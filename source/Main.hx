@@ -81,14 +81,9 @@ class Main extends Sprite
 		initialState = funkin.TitleState;
 		#end
 
-<<<<<<< HEAD
 		initHaxeUI();
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
-=======
-		haxe.ui.Toolkit.init();
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
->>>>>>> origin/note-redux
 
 		#if debug
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);

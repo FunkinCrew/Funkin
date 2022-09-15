@@ -464,17 +464,11 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-<<<<<<< HEAD
 			this.playSingAnimation(event.note.data.dir, false);
-=======
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
-			holdTimer = 0;
->>>>>>> origin/note-redux
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-<<<<<<< HEAD
 			this.playSingAnimation(event.note.data.dir, false);
 		}
 		else if (characterType == GF)
@@ -484,10 +478,6 @@ class BaseCharacter extends Bopper
 				trace('Playing GF combo animation: combo${event.comboCount}');
 				this.playAnimation('combo${event.comboCount}', true, true);
 			}
-=======
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
-			holdTimer = 0;
->>>>>>> origin/note-redux
 		}
 	}
 
