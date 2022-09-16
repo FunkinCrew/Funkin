@@ -42,12 +42,12 @@ class Paths
 
 	inline static function getLibraryPathForce(file:String, library:String)
 	{
-		return '$library:assets/$library/$file';
+		return 'contents/$library/$file';
 	}
 
 	inline static function getPreloadPath(file:String)
 	{
-		return 'assets/$file';
+		return 'contents/$file';
 	}
 
 	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
@@ -87,12 +87,13 @@ class Paths
 
 	inline static public function voices(song:String)
 	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+		return 'contents/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
 	}
 
 	inline static public function inst(song:String)
 	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+		trace('contents/songs/${song.toLowerCase()}/Inst.$SOUND_EXT');
+		return 'contents/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
 	inline static public function image(key:String, ?library:String)
@@ -102,7 +103,7 @@ class Paths
 
 	inline static public function font(key:String)
 	{
-		return 'assets/fonts/$key';
+		return 'contents/fonts/$key';
 	}
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
