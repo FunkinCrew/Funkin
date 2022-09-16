@@ -1323,7 +1323,10 @@ class PlayState extends MusicBeatState
 		vocals.pause();
 
 		FlxG.sound.music.play();
+		#if !debug
 		Conductor.songPosition = FlxG.sound.music.time;
+		#end
+
 		vocals.time = Conductor.songPosition;
 		vocals.play();
 	}
@@ -1362,6 +1365,25 @@ class PlayState extends MusicBeatState
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
 
+		#if debug
+		//control game speed, make your life easier
+		var timeScale = FlxG.timeScale;
+		if (FlxG.keys.justPressed.G)
+		{
+			timeScale /= 2;
+		}
+		if (FlxG.keys.justPressed.H)
+		{
+			timeScale *= 2;
+		}
+		if (FlxG.keys.justPressed.T)
+		{
+			timeScale = 1;
+		}
+		timeScale = timeScale < 0.1 ? 0.1 : timeScale > 16 ? 16 : timeScale;
+		FlxG.timeScale = timeScale;
+		#end
+		
 		super.update(elapsed);
 
 		scoreTxt.text = "Score:" + songScore;
@@ -1434,7 +1456,12 @@ class PlayState extends MusicBeatState
 		{
 			if (startedCountdown)
 			{
+				#if debug
+				Conductor.songPosition += FlxG.elapsed * 1000 * FlxG.timeScale;
+				#else
 				Conductor.songPosition += FlxG.elapsed * 1000;
+				#end
+
 				if (Conductor.songPosition >= 0)
 					startSong();
 			}
@@ -1442,7 +1469,11 @@ class PlayState extends MusicBeatState
 		else
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
+			#if debug
+			Conductor.songPosition += FlxG.elapsed * 1000 * FlxG.timeScale;
+			#else
 			Conductor.songPosition += FlxG.elapsed * 1000;
+			#end
 
 			if (!paused)
 			{
