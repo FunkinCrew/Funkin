@@ -16,10 +16,6 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
-<<<<<<< HEAD
-import funkin.Note;
-=======
->>>>>>> origin/note-redux
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
 import funkin.charting.ChartingState;

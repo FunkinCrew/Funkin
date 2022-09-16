@@ -2,16 +2,11 @@ package funkin.play;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-<<<<<<< HEAD
-=======
 import flixel.math.FlxPoint;
->>>>>>> origin/note-redux
 import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import funkin.noteStuff.NoteBasic.NoteColor;
 import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.noteStuff.NoteBasic.NoteType;
-import funkin.ui.PreferencesMenu;
 import funkin.util.Constants;
 
 /**

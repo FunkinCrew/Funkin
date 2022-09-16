@@ -1,16 +1,10 @@
 package funkin.play;
 
-import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-<<<<<<< HEAD
-import flixel.util.FlxDirectionFlags;
-import funkin.Note.NoteData;
-=======
->>>>>>> origin/note-redux
 import funkin.audiovis.PolygonSpectogram;
 import funkin.noteStuff.NoteBasic.NoteData;
 
