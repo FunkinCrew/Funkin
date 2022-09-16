@@ -1,6 +1,6 @@
 package funkin;
 
-import funkin.Note.NoteData;
+import funkin.noteStuff.NoteBasic.NoteData;
 
 typedef SwagSection =
 {

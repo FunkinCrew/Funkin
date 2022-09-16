@@ -16,7 +16,10 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+<<<<<<< HEAD
 import funkin.Note;
+=======
+>>>>>>> origin/note-redux
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
 import funkin.charting.ChartingState;
@@ -1698,6 +1701,7 @@ class PlayState extends MusicBeatState
 			else
 			{
 				// HNGGG I really want to add an option for ghost tapping
+				// L + ratio
 				for (shit in 0...pressArray.length)
 					if (pressArray[shit])
 						PlayState.instance.ghostNoteMiss(shit, false);
@@ -1732,7 +1736,7 @@ class PlayState extends MusicBeatState
 	 * @param direction 
 	 * @param hasPossibleNotes 
 	 */
-	function ghostNoteMiss(direction:NoteType = 1, hasPossibleNotes:Bool = true):Void
+	function ghostNoteMiss(direction:funkin.noteStuff.NoteBasic.NoteType = 1, hasPossibleNotes:Bool = true):Void
 	{
 		var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
 			hasPossibleNotes, // Whether there was a note you could have hit.

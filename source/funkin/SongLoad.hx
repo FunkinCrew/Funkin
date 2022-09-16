@@ -1,7 +1,7 @@
 package funkin;
 
-import funkin.Note.NoteData;
 import funkin.Section.SwagSection;
+import funkin.noteStuff.NoteBasic.NoteData;
 import haxe.Json;
 import lime.utils.Assets;
 

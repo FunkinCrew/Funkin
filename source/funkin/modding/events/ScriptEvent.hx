@@ -2,7 +2,7 @@ package funkin.modding.events;
 
 import flixel.FlxState;
 import flixel.FlxSubState;
-import funkin.Note.NoteDir;
+import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.play.Countdown.CountdownStep;
 import openfl.events.EventType;
 import openfl.events.KeyboardEvent;
