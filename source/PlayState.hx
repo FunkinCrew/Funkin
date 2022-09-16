@@ -120,6 +120,8 @@ class PlayState extends MusicBeatState
 
 	var defaultCamZoom:Float = 1.05;
 
+	var canDie:Bool = true;
+
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
@@ -1388,6 +1390,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
+			canDie = false;
 			FlxG.switchState(new ChartingState());
 
 			#if desktop
@@ -1574,8 +1577,9 @@ class PlayState extends MusicBeatState
 			trace("User is cheating!");
 		}
 
-		if (health <= 0)
+		if (health <= 0 && canDie)
 		{
+
 			boyfriend.stunned = true;
 
 			persistentUpdate = false;
@@ -1703,6 +1707,8 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+
+		canDie = false;
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
