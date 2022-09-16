@@ -335,11 +335,7 @@ class BaseCharacter extends Bopper
 			var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
 
 			FlxG.watch.addQuick('singTimeMs-${characterId}', singTimeMs);
-<<<<<<< HEAD
-			if (holdTimer > singTimeMs && shouldStopSinging) //  && !getCurrentAnimation().endsWith("miss")
-=======
 			if (holdTimer > singTimeMs && shouldStopSinging)
->>>>>>> origin/note-redux
 			{
 				// trace('holdTimer reached ${holdTimer}sec (> ${singTimeMs}), stopping sing animation');
 				holdTimer = 0;

@@ -54,9 +54,9 @@ class SongMigrator
 			{
 				trace('[SONGDATA] Song (${songId}) chart version (${jsonData.version}) is valid and up-to-date.');
 
-				var songMetadata:SongMetadata = cast jsonData;
+				var songChartData:SongChartData = cast jsonData;
 
-				return songMetadata;
+				return songChartData;
 			}
 			else
 			{

@@ -1,7 +1,10 @@
 package funkin.play.song;
 
 import funkin.play.song.SongData.SongDataParser;
+import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongMetadata;
+import funkin.play.song.SongData.SongNoteData;
+import funkin.play.song.SongData.SongPlayableChar;
 import funkin.play.song.SongData.SongTimeChange;
 import funkin.play.song.SongData.SongTimeFormat;
 
@@ -20,12 +23,14 @@ class Song // implements IPlayStateScriptedClass
 
 	final _metadata:Array<SongMetadata>;
 
+	final variations:Array<String>;
 	final difficulties:Map<String, SongDifficulty>;
 
 	public function new(id:String)
 	{
 		this.songId = id;
 
+		variations = [];
 		difficulties = new Map<String, SongDifficulty>();
 
 		_metadata = SongDataParser.parseSongMetadata(songId);
@@ -35,6 +40,9 @@ class Song // implements IPlayStateScriptedClass
 		}
 
 		populateFromMetadata();
+
+		// TODO: Disable later.
+		cacheCharts();
 	}
 
 	function populateFromMetadata()
@@ -46,6 +54,8 @@ class Song // implements IPlayStateScriptedClass
 			{
 				var difficulty = new SongDifficulty(diffId, metadata.variation);
 
+				variations.push(metadata.variation);
+
 				difficulty.songName = metadata.songName;
 				difficulty.songArtist = metadata.artist;
 				difficulty.timeFormat = metadata.timeFormat;
@@ -54,17 +64,20 @@ class Song // implements IPlayStateScriptedClass
 				difficulty.loop = metadata.loop;
 				difficulty.generatedBy = metadata.generatedBy;
 
+				difficulty.stage = metadata.playData.stage;
+				// difficulty.noteSkin = metadata.playData.noteSkin;
+
+				difficulty.chars = new Map<String, SongPlayableChar>();
+				for (charId in metadata.playData.playableChars.keys())
+				{
+					var char = metadata.playData.playableChars.get(charId);
+
+					difficulty.chars.set(charId, char);
+				}
+
 				difficulties.set(diffId, difficulty);
 			}
 		}
-	}
-
-	/**
-	 * Parse and cache the chart for a specific difficulty.
-	 */
-	public function cacheChart(diffId:String)
-	{
-		getDifficulty(diffId).cacheChart();
 	}
 
 	/**
@@ -72,10 +85,27 @@ class Song // implements IPlayStateScriptedClass
 	 */
 	public function cacheCharts()
 	{
-		for (difficulty in difficulties)
+		trace('Caching ${variations.length} chart files for song $songId');
+		for (variation in variations)
 		{
-			difficulty.cacheChart();
+			var chartData = SongDataParser.parseSongChartData(songId, variation);
+
+			for (diffId in chartData.notes.keys())
+			{
+				trace('  Difficulty $diffId');
+				var difficulty = difficulties.get(diffId);
+				if (difficulty == null)
+				{
+					trace('Could not find difficulty $diffId for song $songId');
+					continue;
+				}
+
+				difficulty.notes = chartData.notes.get(diffId);
+				difficulty.scrollSpeed = chartData.scrollSpeed.get(diffId);
+				difficulty.events = chartData.events;
+			}
 		}
+		trace('Done caching charts.');
 	}
 
 	/**
@@ -124,9 +154,13 @@ class SongDifficulty
 
 	public var timeChanges:Array<SongTimeChange> = [];
 
-	public var scrollSpeed(default, null):Float = SongValidator.DEFAULT_SCROLLSPEED;
+	public var stage:String = SongValidator.DEFAULT_STAGE;
+	public var chars:Map<String, SongPlayableChar> = null;
 
-	// public var notes(default, null):Array<;
+	public var scrollSpeed:Float = SongValidator.DEFAULT_SCROLLSPEED;
+
+	public var notes:Array<SongNoteData>;
+	public var events:Array<SongEventData>;
 
 	public function new(diffId:String, variation:String)
 	{
@@ -134,13 +168,8 @@ class SongDifficulty
 		this.variation = variation;
 	}
 
-	public function cacheChart():Void
-	{
-		// TODO: Parse chart data
-	}
-
 	public function clearChart():Void
 	{
-		// notes = null;
+		notes = null;
 	}
 }

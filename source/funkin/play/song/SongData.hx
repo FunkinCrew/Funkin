@@ -249,6 +249,231 @@ typedef RawSongPlayableChar =
 	var i:String;
 }
 
+typedef RawSongNoteData =
+{
+	/**
+	 * The timestamp of the note. The timestamp is in the format of the song's time format.
+	 */
+	var t:Float;
+
+	/**
+	 * Data for the note. Represents the index on the strumline.
+	 * 0 = left, 1 = down, 2 = up, 3 = right
+	 * `floor(direction / strumlineSize)` specifies which strumline the note is on.
+	 * 0 = player, 1 = opponent, etc.
+	 */
+	var d:Int;
+
+	/**
+	 * Length of the note, if applicable.
+	 * Defaults to 0 for single notes.
+	 */
+	var l:Float;
+
+	/**
+	 * The kind of the note.
+	 * This can allow the note to include information used for custom behavior.
+	 * Defaults to blank or `"normal"`.
+	 */
+	var k:String;
+}
+
+abstract SongNoteData(RawSongNoteData)
+{
+	public function new(time:Float, data:Int, length:Float = 0, kind:String = "")
+	{
+		this = {
+			t: time,
+			d: data,
+			l: length,
+			k: kind
+		};
+	}
+
+	public var time(get, set):Float;
+
+	public function get_time():Float
+	{
+		return this.t;
+	}
+
+	public function set_time(value:Float):Float
+	{
+		return this.t = value;
+	}
+
+	/**
+	 * The raw data for the note.
+	 */
+	public var data(get, set):Int;
+
+	public function get_data():Int
+	{
+		return this.d;
+	}
+
+	public function set_data(value:Int):Int
+	{
+		return this.d = value;
+	}
+
+	/**
+	 * The direction of the note, if applicable.
+	 * Strips the strumline index from the data.
+	 *
+	 * 0 = left, 1 = down, 2 = up, 3 = right
+	 */
+	public inline function getDirection(strumlineSize:Int = 4):Int
+	{
+		return this.d % strumlineSize;
+	}
+
+	/**
+	 * The strumline index of the note, if applicable.
+	 * Strips the direction from the data.
+	 * 
+	 * 0 = player, 1 = opponent, etc.
+	 */
+	public inline function getStrumlineIndex(strumlineSize:Int = 4):Int
+	{
+		return Math.floor(this.d / strumlineSize);
+	}
+
+	public var length(get, set):Float;
+
+	public function get_length():Float
+	{
+		return this.l;
+	}
+
+	public function set_length(value:Float):Float
+	{
+		return this.l = value;
+	}
+
+	public var kind(get, set):String;
+
+	public function get_kind():String
+	{
+		if (this.k == null || this.k == '')
+			return 'normal';
+
+		return this.k;
+	}
+
+	public function set_kind(value:String):String
+	{
+		if (value == 'normal' || value == '')
+			value = null;
+		return this.k = value;
+	}
+}
+
+typedef RawSongEventData =
+{
+	/**
+	 * The timestamp of the event. The timestamp is in the format of the song's time format.
+	 */
+	var t:Float;
+
+	/**
+	 * The kind of the event.
+	 * Examples include "FocusCamera" and "PlayAnimation"
+	 * Custom events can be added by scripts with the `ScriptedSongEvent` class.
+	 */
+	var e:String;
+
+	/**
+	 * The data for the event.
+	 * This can allow the event to include information used for custom behavior.
+	 * Data type depends on the event kind. It can be anything that's JSON serializable.
+	 */
+	var v:Dynamic;
+}
+
+abstract SongEventData(RawSongEventData)
+{
+	public function new(time:Float, event:String, value:Dynamic = null)
+	{
+		this = {
+			t: time,
+			e: event,
+			v: value
+		};
+	}
+
+	public var time(get, set):Float;
+
+	public function get_time():Float
+	{
+		return this.t;
+	}
+
+	public function set_time(value:Float):Float
+	{
+		return this.t = value;
+	}
+
+	public var event(get, set):String;
+
+	public function get_event():String
+	{
+		return this.e;
+	}
+
+	public function set_event(value:String):String
+	{
+		return this.e = value;
+	}
+
+	public var value(get, set):Dynamic;
+
+	public function get_value():Dynamic
+	{
+		return this.v;
+	}
+
+	public function set_value(value:Dynamic):Dynamic
+	{
+		return this.v = value;
+	}
+
+	public inline function getBool():Bool
+	{
+		return cast this.v;
+	}
+
+	public inline function getInt():Int
+	{
+		return cast this.v;
+	}
+
+	public inline function getFloat():Float
+	{
+		return cast this.v;
+	}
+
+	public inline function getString():String
+	{
+		return cast this.v;
+	}
+
+	public inline function getArray():Array<Dynamic>
+	{
+		return cast this.v;
+	}
+
+	public inline function getMap():DynamicAccess<Dynamic>
+	{
+		return cast this.v;
+	}
+
+	public inline function getBoolArray():Array<Bool>
+	{
+		return cast this.v;
+	}
+}
+
 abstract SongPlayableChar(RawSongPlayableChar)
 {
 	public function new(girlfriend:String, opponent:String, inst:String = "")
@@ -299,6 +524,12 @@ abstract SongPlayableChar(RawSongPlayableChar)
 
 typedef SongChartData =
 {
+	var version:Version;
+
+	var scrollSpeed:DynamicAccess<Float>;
+	var events:Array<SongEventData>;
+	var notes:DynamicAccess<Array<SongNoteData>>;
+	var generatedBy:String;
 };
 
 typedef RawSongTimeChange =

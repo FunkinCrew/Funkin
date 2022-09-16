@@ -18,6 +18,7 @@ class SongValidator
 	public static final DEFAULT_DIVISIONS:Int = -1;
 	public static final DEFAULT_LOOP:Bool = false;
 	public static final DEFAULT_GENERATEDBY:String = "Unknown";
+	public static final DEFAULT_STAGE:String = "mainStage";
 	public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 
 	/**
