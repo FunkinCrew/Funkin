@@ -1,1 +1,1 @@
-import Paths;
+import misc.Paths;
