@@ -6,8 +6,8 @@ import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import funkin.Note.NoteData;
 import funkin.audiovis.PolygonSpectogram;
+import funkin.noteStuff.NoteBasic.NoteData;
 
 class PicoFight extends MusicBeatState
 {

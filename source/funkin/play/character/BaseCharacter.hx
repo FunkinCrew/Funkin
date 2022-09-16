@@ -1,8 +1,8 @@
 package funkin.play.character;
 
 import flixel.math.FlxPoint;
-import funkin.Note.NoteDir;
 import funkin.modding.events.ScriptEvent;
+import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.stage.Bopper;
 
