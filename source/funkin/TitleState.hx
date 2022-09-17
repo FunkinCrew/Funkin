@@ -10,6 +10,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audiovis.SpectogramSprite;
+import funkin.noteStuff.NoteUtil;
 import funkin.shaderslmfao.BuildingShaders;
 import funkin.shaderslmfao.ColorSwap;
 import funkin.shaderslmfao.TitleOutline;
@@ -52,6 +53,10 @@ class TitleState extends MusicBeatState
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		FlxG.sound.cache(Paths.music('freakyMenu'));
+
+		var jsonThing:String = Paths.file('data/songs/bopeebo/bopeebo-events.json');
+		var songstuffLol = NoteUtil.loadSongEvents(jsonThing);
+		trace(songstuffLol);
 
 		// DEBUG BULLSHIT
 
