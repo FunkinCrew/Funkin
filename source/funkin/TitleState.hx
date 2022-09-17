@@ -45,6 +45,7 @@ class TitleState extends MusicBeatState
 	var video:Video;
 	var netStream:NetStream;
 	private var overlay:Sprite;
+	var songEventStuff:Map<Int, Array<SongEventInfo>>;
 
 	override public function create():Void
 	{
@@ -55,8 +56,7 @@ class TitleState extends MusicBeatState
 		FlxG.sound.cache(Paths.music('freakyMenu'));
 
 		var jsonThing:String = Paths.file('data/songs/bopeebo/bopeebo-events.json');
-		var songstuffLol = NoteUtil.loadSongEvents(jsonThing);
-		trace(songstuffLol);
+		songEventStuff = NoteUtil.loadSongEvents(jsonThing);
 
 		// DEBUG BULLSHIT
 
@@ -270,6 +270,8 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		NoteUtil.checkSongEvents(songEventStuff, Conductor.songPosition);
+
 		#if HAS_PITCH
 		if (FlxG.keys.pressed.UP)
 			FlxG.sound.music.pitch += 0.5 * elapsed;

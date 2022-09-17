@@ -59,7 +59,20 @@ class NoteUtil
 	{
 		for (eventGrp in songData.keys())
 		{
-			trace(eventGrp);
+			if (time >= eventGrp)
+			{
+				for (events in songData[eventGrp])
+				{
+					if (!events.activated)
+					{
+						// TURN TO NICER SWITCH STATEMENT CHECKER OF EVENT TYPES!!
+						trace(events.value);
+						trace(eventGrp);
+						trace(Conductor.songPosition);
+						events.activated = true;
+					}
+				}
+			}
 		}
 	}
 }
