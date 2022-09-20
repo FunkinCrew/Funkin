@@ -1,13 +1,11 @@
 package funkin.ui.animDebugShit;
 
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.character.SparrowCharacter;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.ui.FlxInputText;
+import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
@@ -18,6 +16,13 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.character.SparrowCharacter;
+import haxe.ui.RuntimeComponentBuilder;
+import haxe.ui.components.DropDown;
+import haxe.ui.core.Component;
+import haxe.ui.events.ItemEvent;
+import haxe.ui.events.UIEvent;
 import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
 import openfl.events.Event;
@@ -51,8 +56,6 @@ class DebugBoundingState extends FlxState
 
 	var hudCam:FlxCamera;
 
-	var charInput:FlxUIDropDownMenu;
-
 	var curView:ANIMDEBUGVIEW = SPRITESHEET;
 
 	var spriteSheetView:FlxGroup;
@@ -63,9 +66,36 @@ class DebugBoundingState extends FlxState
 	var onionSkinChar:FlxSprite;
 	var txtOffsetShit:FlxText;
 
+	var uiStuff:Component;
+
 	override function create()
 	{
 		Paths.setCurrentLevel('week1');
+
+		var str = Paths.xml('ui/offset-editor-view');
+		uiStuff = RuntimeComponentBuilder.fromAsset(str);
+
+		// uiStuff.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
+		var dropdown:DropDown = cast uiStuff.findComponent("swapper");
+		dropdown.onChange = function(e:UIEvent)
+		{
+			trace(e.type);
+			curView = cast e.data.curView;
+			trace(e.data);
+			// trace(e.data);
+		};
+		// lv.
+		// lv.onChange = function(e:UIEvent)
+		// {
+		// 	trace(e.type);
+		// 	// trace(e.data.curView);
+		// 	// var item:haxe.ui.core.ItemRenderer = cast e.target;
+		// 	trace(e.target);
+		// 	// if (e.type == "change")
+		// 	// {
+		// 	// 	curView = cast e.data;
+		// 	// }
+		// };
 
 		hudCam = new FlxCamera();
 		hudCam.bgColor.alpha = 0;
@@ -81,10 +111,9 @@ class DebugBoundingState extends FlxState
 		initSpritesheetView();
 		initOffsetView();
 
-		// charInput = new FlxInputText(300, 10, 150, "bf", 16);
-		// charInput.focusCam = hudCam;
-		// charInput.cameras = [hudCam];
-		// charInput.scrollFactor.set();
+		uiStuff.cameras = [hudCam];
+
+		add(uiStuff);
 
 		super.create();
 	}
@@ -222,15 +251,16 @@ class DebugBoundingState extends FlxState
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
-		// charInput isnt only exclusive to offsetView shit now
-		charInput = new FlxUIDropDownMenu(500, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
+		var charDropdown:DropDown = cast uiStuff.findComponent('characterDropdown');
+		for (char in characters)
 		{
-			loadAnimShit(characters[Std.parseInt(str)]);
-			// trace();
-		});
-		// charInput.
-		charInput.cameras = [hudCam];
-		add(charInput);
+			charDropdown.dataSource.add({text: char});
+		}
+
+		charDropdown.onChange = function(e:UIEvent)
+		{
+			loadAnimShit(e.data.text);
+		};
 	}
 
 	public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
@@ -290,9 +320,16 @@ class DebugBoundingState extends FlxState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.keys.justPressed.ONE)
+		{
+			var lv:DropDown = cast uiStuff.findComponent("swapper");
+			lv.selectedIndex = 0;
 			curView = SPRITESHEET;
+		}
+
 		if (FlxG.keys.justReleased.TWO)
 		{
+			var lv:DropDown = cast uiStuff.findComponent("swapper");
+			lv.selectedIndex = 1;
 			curView = OFFSETSHIT;
 			if (swagChar != null)
 			{
@@ -317,11 +354,6 @@ class DebugBoundingState extends FlxState
 
 		if (FlxG.keys.justPressed.H)
 			hudCam.visible = !hudCam.visible;
-
-		/* if (charInput.hasFocus && FlxG.keys.justPressed.ENTER)
-			{
-				loadAnimShit();
-		}*/
 
 		CoolUtil.mouseCamDrag();
 		CoolUtil.mouseWheelZoom();
@@ -437,6 +469,9 @@ class DebugBoundingState extends FlxState
 
 	var swagChar:BaseCharacter;
 
+	/*
+		Called when animation dropdown is changed!
+	 */
 	function loadAnimShit(char:String)
 	{
 		if (swagChar != null)
@@ -528,8 +563,8 @@ class DebugBoundingState extends FlxState
 	}
 }
 
-enum ANIMDEBUGVIEW
+enum abstract ANIMDEBUGVIEW(String)
 {
-	SPRITESHEET;
-	OFFSETSHIT;
+	var SPRITESHEET;
+	var OFFSETSHIT;
 }
