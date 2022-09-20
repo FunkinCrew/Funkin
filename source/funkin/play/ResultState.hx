@@ -7,7 +7,10 @@ class ResultState extends MusicBeatSubstate
 {
 	override function create()
 	{
+		FlxG.sound.playMusic(Paths.music("resultsNormal"));
+
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
+		bg.alpha = 0.8;
 		bg.scrollFactor.set();
 		add(bg);
 		var results:FlxText = new FlxText(70, 70, 0, "RESULTS:", 32);

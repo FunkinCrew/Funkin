@@ -1442,8 +1442,12 @@ class PlayState extends MusicBeatState implements IHook
 		}
 		else
 		{
-			trace('WENT BACK TO FREEPLAY??');
+			trace('WENT TO RESULTS SCREEN!');
 			// unloadAssets();
+
+			persistentUpdate = false;
+			vocals.stop();
+
 			var res:ResultState = new ResultState();
 			res.camera = camHUD;
 			openSubState(res);
