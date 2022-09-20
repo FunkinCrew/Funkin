@@ -30,7 +30,7 @@ jobs:
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game?
         run: |
-          haxelib run lime build html5 -debug
+          haxelib run lime build html5 -debug --times
           ls
       - uses: ./.github/actions/upload-itch
         with:
@@ -46,7 +46,7 @@ jobs:
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
-          haxelib run lime build windows -debug
+          haxelib run lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
@@ -62,7 +62,7 @@ jobs:
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game?
         run: |
-          haxelib run lime build mac -debug
+          haxelib run lime build mac -debug --times
           ls
       - uses: ./.github/actions/upload-itch
         with:
@@ -81,7 +81,7 @@ jobs:
           haxelib run lime setup linux
       - name: Build game?
         run: |
-          haxelib run lime build linux -debug
+          haxelib run lime build linux -debug --times
           ls
       - uses: ./.github/actions/upload-itch
         with:
