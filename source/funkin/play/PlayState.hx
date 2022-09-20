@@ -18,6 +18,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import funkin.Highscore.Tallies;
 import funkin.Note;
 import funkin.Note;
 import funkin.Section.SwagSection;
@@ -261,7 +262,7 @@ class PlayState extends MusicBeatState implements IHook
 
 	private var camZooming:Bool = false;
 	private var gfSpeed:Int = 1;
-	private var combo:Int = 0;
+	// private var combo:Int = 0;
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
@@ -822,6 +823,9 @@ class PlayState extends MusicBeatState implements IHook
 
 	function regenNoteData():Void
 	{
+		// resets combo, should prob put somewhere else!
+		Highscore.tallies.combo = 0;
+		Highscore.tallies = new Tallies();
 		// make unspawn notes shit def empty
 		inactiveNotes = [];
 
@@ -1316,12 +1320,12 @@ class PlayState extends MusicBeatState implements IHook
 	{
 		// Girlfriend gets sad if you combo break after hitting 5 notes.
 		if (currentStage != null && currentStage.getGirlfriend() != null)
-			if (combo > 5 && currentStage.getGirlfriend().hasAnimation('sad'))
+			if (Highscore.tallies.combo > 5 && currentStage.getGirlfriend().hasAnimation('sad'))
 				currentStage.getGirlfriend().playAnimation('sad');
 
-		if (combo != 0)
+		if (Highscore.tallies.combo != 0)
 		{
-			combo = comboPopUps.displayCombo(0);
+			Highscore.tallies.combo = comboPopUps.displayCombo(0);
 		}
 	}
 
@@ -1440,7 +1444,10 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			// unloadAssets();
-			FlxG.switchState(new FreeplayState());
+			var res:ResultState = new ResultState();
+			res.camera = camHUD;
+			openSubState(res);
+			// FlxG.switchState(new FreeplayState());
 		}
 	}
 
@@ -1462,18 +1469,21 @@ class PlayState extends MusicBeatState implements IHook
 		{
 			healthMulti *= 0; // no health on shit note
 			daRating = 'shit';
+			Highscore.tallies.shit += 1;
 			score = 50;
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.GOOD_THRESHOLD)
 		{
 			healthMulti *= 0.2;
 			daRating = 'bad';
+			Highscore.tallies.bad += 1;
 			score = 100;
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.SICK_THRESHOLD)
 		{
 			healthMulti *= 0.78;
 			daRating = 'good';
+			Highscore.tallies.good += 1;
 			score = 200;
 		}
 		else
@@ -1483,6 +1493,8 @@ class PlayState extends MusicBeatState implements IHook
 
 		if (isSick)
 		{
+			Highscore.tallies.sick += 1;
+
 			var noteSplash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 			noteSplash.setupNoteSplash(daNote.x, daNote.y, daNote.data.noteData);
 			// new NoteSplash(daNote.x, daNote.y, daNote.noteData);
@@ -1495,8 +1507,8 @@ class PlayState extends MusicBeatState implements IHook
 
 		comboPopUps.displayRating(daRating);
 
-		if (combo >= 10 || combo == 0)
-			comboPopUps.displayCombo(combo);
+		if (Highscore.tallies.combo >= 10 || Highscore.tallies.combo == 0)
+			comboPopUps.displayCombo(Highscore.tallies.combo);
 	}
 
 	function controlCamera()
@@ -1725,7 +1737,11 @@ class PlayState extends MusicBeatState implements IHook
 
 			if (!note.isSustainNote)
 			{
-				combo += 1;
+				Highscore.tallies.combo += 1;
+
+				if (Highscore.tallies.combo > Highscore.tallies.maxCombo)
+					Highscore.tallies.maxCombo = Highscore.tallies.combo;
+
 				popUpScore(note.data.strumTime, note);
 			}
 
@@ -1812,14 +1828,14 @@ class PlayState extends MusicBeatState implements IHook
 
 		var shouldShowComboText:Bool = (curBeat % 8 == 7) // End of measure. TODO: Is this always the correct time?
 			&& (SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection) // Current section is BF's.
-			&& (combo > 5) // Don't want to show on small combos.
+			&& (Highscore.tallies.combo > 5) // Don't want to show on small combos.
 			&& ((SongLoad.getSong().length < Std.int(curStep / 16)) // Show at the end of the song.
 				|| (!SongLoad.getSong()[Std.int(curStep / 16) + 1].mustHitSection) // Or when the next section is Dad's.
 			);
 
 		if (shouldShowComboText)
 		{
-			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
+			var animShit:ComboCounter = new ComboCounter(-100, 300, Highscore.tallies.combo);
 			animShit.scrollFactor.set(0.6, 0.6);
 			add(animShit);
 

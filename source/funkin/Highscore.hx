@@ -8,6 +8,8 @@ class Highscore
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
 
+	public static var tallies:Tallies = new Tallies();
+
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Void
 	{
 		var formattedSong:String = formatSong(song, diff);
@@ -95,4 +97,36 @@ class Highscore
 			songScores = FlxG.save.data.songScores;
 		}
 	}
+}
+
+// i only do forward metadata cuz george did!
+
+@:forward
+abstract Tallies(RawTallies)
+{
+	public function new()
+	{
+		this = {
+			combo: 0,
+			missed: 0,
+			shit: 0,
+			bad: 0,
+			good: 0,
+			sick: 0,
+			totalNotes: 0,
+			maxCombo: 0
+		}
+	}
+}
+
+typedef RawTallies =
+{
+	var combo:Int;
+	var missed:Int;
+	var shit:Int;
+	var bad:Int;
+	var good:Int;
+	var sick:Int;
+	var maxCombo:Int;
+	var totalNotes:Int;
 }
