@@ -5,9 +5,18 @@ import flixel.text.FlxText;
 
 class ResultState extends MusicBeatSubstate
 {
+	var resultsVariation:ResultVariations;
+
 	override function create()
 	{
-		FlxG.sound.playMusic(Paths.music("resultsNormal"));
+		if (Highscore.tallies.sick == Highscore.tallies.totalNotes && Highscore.tallies.maxCombo == Highscore.tallies.totalNotes)
+			resultsVariation = PERFECT;
+		else if (Highscore.tallies.missed + Highscore.tallies.bad + Highscore.tallies.shit >= Highscore.tallies.totalNotes * 0.50)
+			resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
+		else
+			resultsVariation = NORMAL;
+
+		FlxG.sound.playMusic(Paths.music("results" + resultsVariation));
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
 		bg.alpha = 0.8;
@@ -42,4 +51,11 @@ class ResultState extends MusicBeatSubstate
 
 		super.update(elapsed);
 	}
+}
+
+enum abstract ResultVariations(String)
+{
+	var PERFECT;
+	var NORMAL;
+	var SHIT;
 }
