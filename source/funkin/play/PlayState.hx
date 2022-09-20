@@ -1704,6 +1704,9 @@ class PlayState extends MusicBeatState implements IHook
 
 	function noteMiss(note:Note):Void
 	{
+		// a MISS is when you let a note scroll past you!!
+		Highscore.tallies.missed++;
+
 		var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, note, true);
 		dispatchEvent(event);
 		// Calling event.cancelEvent() skips all the other logic! Neat!
@@ -1737,7 +1740,8 @@ class PlayState extends MusicBeatState implements IHook
 
 			if (!note.isSustainNote)
 			{
-				Highscore.tallies.combo += 1;
+				Highscore.tallies.combo++;
+				Highscore.tallies.totalNotes++;
 
 				if (Highscore.tallies.combo > Highscore.tallies.maxCombo)
 					Highscore.tallies.maxCombo = Highscore.tallies.combo;

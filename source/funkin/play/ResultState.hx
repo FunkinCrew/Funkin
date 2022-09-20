@@ -10,8 +10,10 @@ class ResultState extends MusicBeatSubstate
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
 		bg.scrollFactor.set();
 		add(bg);
-		var results:FlxText = new FlxText(0, 0, 0, "RESULTS:", 32);
+		var results:FlxText = new FlxText(70, 70, 0, "RESULTS:", 32);
 
+		results.text += "\nTOTAL NOTES: ";
+		results.text += Highscore.tallies.totalNotes;
 		results.text += "\nMISSED: ";
 		results.text += Highscore.tallies.missed;
 		results.text += "\nSHIT: ";

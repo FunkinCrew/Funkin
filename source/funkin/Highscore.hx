@@ -122,11 +122,20 @@ abstract Tallies(RawTallies)
 typedef RawTallies =
 {
 	var combo:Int;
+
+	/**
+	 * How many notes you let scroll by.
+	 */
 	var missed:Int;
+
 	var shit:Int;
 	var bad:Int;
 	var good:Int;
 	var sick:Int;
 	var maxCombo:Int;
+
+	/**
+	 * How many notes total that you hit. (NOT how many notes total in the song!)
+	 */
 	var totalNotes:Int;
 }
