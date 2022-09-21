@@ -12,6 +12,7 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
@@ -225,9 +226,8 @@ class StoryMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		// scoreText.setFormat('VCR OSD Mono', 32);
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
 
-		scoreText.text = "WEEK SCORE:" + lerpScore;
+		scoreText.text = "WEEK SCORE:" + tweenScore;
 
 		txtWeekTitle.text = weekNames[curWeek].toUpperCase();
 		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
@@ -359,15 +359,14 @@ class StoryMenuState extends MusicBeatState
 		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
 		sprDifficulty.y = leftArrow.y - 15;
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
-
-		#if !switch
-		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
-		#end
+		FlxTween.num(tweenScore, intendedScore, 0.25, { ease: FlxEase.expoOut }, function(v:Float) {
+			tweenScore = Math.round(v);
+		});
 
 		FlxTween.tween(sprDifficulty, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
 
-	var lerpScore:Int = 0;
+	var tweenScore:Int = 0;
 	var intendedScore:Int = 0;
 
 	function changeWeek(change:Int = 0):Void
@@ -441,6 +440,9 @@ class StoryMenuState extends MusicBeatState
 
 		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
+		FlxTween.num(tweenScore, intendedScore, 0.25, { ease: FlxEase.expoOut }, function(v:Float) {
+			tweenScore = Math.round(v);
+		});
 		#end
 	}
 }
