@@ -2142,7 +2142,7 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 
-			songScore -= 10;
+			songScore -= (songScore - 10) >= 0 ? 10 : songScore;
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
