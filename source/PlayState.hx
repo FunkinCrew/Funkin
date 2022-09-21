@@ -125,6 +125,9 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
+	// toggle for old bf
+	public static var isBfOld:Bool = false;
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -738,7 +741,14 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
-		iconP1 = new HealthIcon(SONG.player1, true);
+		// changes health icon if old bf is toggled 
+		if (isBfOld)
+		{
+			iconP1 = new HealthIcon('bf-old', true);
+		} else
+		{
+			iconP1 = new HealthIcon(SONG.player1, true);
+		}
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
@@ -1344,6 +1354,8 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play(SONG.player1);
 			else
 				iconP1.animation.play('bf-old');
+			// toggles old bf
+			isBfOld = !isBfOld;
 		}
 
 		switch (curStage)
