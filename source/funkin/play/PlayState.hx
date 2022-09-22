@@ -1449,6 +1449,8 @@ class PlayState extends MusicBeatState implements IHook
 			FlxG.camera.follow(PlayState.instance.currentStage.getGirlfriend(), null, 0.05);
 			FlxG.camera.targetOffset.y -= 370;
 
+			FlxTween.tween(camHUD, {alpha: 0}, 0.6);
+
 			new FlxTimer().start(0.8, _ ->
 			{
 				FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1, {
@@ -1457,7 +1459,7 @@ class PlayState extends MusicBeatState implements IHook
 					{
 						persistentUpdate = false;
 						vocals.stop();
-
+						camHUD.alpha = 1;
 						var res:ResultState = new ResultState();
 						res.camera = camHUD;
 						openSubState(res);

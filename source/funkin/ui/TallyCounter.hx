@@ -12,7 +12,7 @@ import flixel.tweens.FlxTween;
  */
 class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
 {
-	var curNumber:Float = 0;
+	public var curNumber:Float = 0;
 
 	public var neededNumber:Int = 0;
 	public var flavour:Int = 0xFFFFFFFF;
@@ -24,7 +24,6 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
 		this.flavour = flavour;
 
 		this.neededNumber = neededNumber;
-		FlxTween.tween(this, {curNumber: neededNumber}, 4, {ease: FlxEase.quartOut});
 		drawNumbers();
 	}
 

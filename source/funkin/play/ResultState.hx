@@ -3,6 +3,7 @@ package funkin.play;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -89,28 +90,41 @@ class ResultState extends MusicBeatSubstate
 
 		var hStuf:Int = 50;
 
+		var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
+		add(ratingGrp);
+
 		var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, Highscore.tallies.totalNotes);
-		add(totalHit);
+		ratingGrp.add(totalHit);
 
 		var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, Highscore.tallies.maxCombo);
-		add(maxCombo);
+		ratingGrp.add(maxCombo);
 
 		hStuf += 2;
 		var extraYOffset:Float = 5;
 		var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, Highscore.tallies.sick, 0xFF89E59E);
-		add(tallySick);
+		ratingGrp.add(tallySick);
 
 		var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, Highscore.tallies.good, 0xFF89C9E5);
-		add(tallyGood);
+		ratingGrp.add(tallyGood);
 
 		var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, Highscore.tallies.bad, 0xffE6CF8A);
-		add(tallyBad);
+		ratingGrp.add(tallyBad);
 
 		var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, Highscore.tallies.shit, 0xFFE68C8A);
-		add(tallyShit);
+		ratingGrp.add(tallyShit);
 
 		var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, Highscore.tallies.missed, 0xFFC68AE6);
-		add(tallyMissed);
+		ratingGrp.add(tallyMissed);
+
+		for (ind => rating in ratingGrp.members)
+		{
+			rating.visible = false;
+			new FlxTimer().start((0.3 * ind) + 0.55, _ ->
+			{
+				rating.visible = true;
+				FlxTween.tween(rating, {curNumber: rating.neededNumber}, 0.5, {ease: FlxEase.quartOut});
+			});
+		}
 
 		new FlxTimer().start(0.5, _ ->
 		{
