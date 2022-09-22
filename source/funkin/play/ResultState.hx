@@ -9,6 +9,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
+import funkin.ui.TallyCounter;
 
 class ResultState extends MusicBeatSubstate
 {
@@ -42,6 +43,7 @@ class ResultState extends MusicBeatSubstate
 			soundSystem.animation.play("idle");
 			soundSystem.visible = true;
 		});
+		soundSystem.antialiasing = true;
 		add(soundSystem);
 
 		var difficulty:FlxSprite = new FlxSprite(680);
@@ -61,17 +63,20 @@ class ResultState extends MusicBeatSubstate
 		difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
 		difficulty.y = -difficulty.height;
 		FlxTween.tween(difficulty, {y: 110}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
+		difficulty.antialiasing = true;
 		add(difficulty);
 
 		var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
 		blackTopBar.y = -blackTopBar.height;
 		FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
+		blackTopBar.antialiasing = true;
 		add(blackTopBar);
 
-		var resultsAnim:FlxSprite = new FlxSprite(-2000, -10);
+		var resultsAnim:FlxSprite = new FlxSprite(-200, -10);
 		resultsAnim.frames = Paths.getSparrowAtlas("resultScreen/results");
 		resultsAnim.animation.addByPrefix("result", "results", 24, false);
 		resultsAnim.animation.play("result");
+		resultsAnim.antialiasing = true;
 		add(resultsAnim);
 
 		var ratingsPopin:FlxSprite = new FlxSprite(-150, 120);
@@ -79,7 +84,31 @@ class ResultState extends MusicBeatSubstate
 		ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
 		// ratingsPopin.animation.play("idle");
 		ratingsPopin.visible = false;
+		ratingsPopin.antialiasing = true;
 		add(ratingsPopin);
+
+		var hStuf:Int = 50;
+
+		var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, Highscore.tallies.totalNotes);
+		add(totalHit);
+
+		var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, Highscore.tallies.maxCombo);
+		add(maxCombo);
+
+		var tallySick:TallyCounter = new TallyCounter(230, hStuf * 5, Highscore.tallies.sick, 0xFF89E59E);
+		add(tallySick);
+
+		var tallyGood:TallyCounter = new TallyCounter(230, hStuf * 6, Highscore.tallies.good, 0xFF89C9E5);
+		add(tallyGood);
+
+		var tallyBad:TallyCounter = new TallyCounter(230, hStuf * 7, Highscore.tallies.bad, 0xffE6CF8A);
+		add(tallyBad);
+
+		var tallyShit:TallyCounter = new TallyCounter(230, hStuf * 8, Highscore.tallies.shit, 0xFFE68C8A);
+		add(tallyShit);
+
+		var tallyMissed:TallyCounter = new TallyCounter(230, hStuf * 9, Highscore.tallies.missed, 0xFFC68AE6);
+		add(tallyMissed);
 
 		new FlxTimer().start(0.5, _ ->
 		{

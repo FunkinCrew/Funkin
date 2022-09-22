@@ -1445,12 +1445,25 @@ class PlayState extends MusicBeatState implements IHook
 			trace('WENT TO RESULTS SCREEN!');
 			// unloadAssets();
 
-			persistentUpdate = false;
-			vocals.stop();
+			camZooming = false;
+			FlxG.camera.follow(PlayState.instance.currentStage.getGirlfriend(), null, 0.05);
+			FlxG.camera.targetOffset.y -= 370;
 
-			var res:ResultState = new ResultState();
-			res.camera = camHUD;
-			openSubState(res);
+			new FlxTimer().start(0.8, _ ->
+			{
+				FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1, {
+					ease: FlxEase.expoIn,
+					onComplete: _ ->
+					{
+						persistentUpdate = false;
+						vocals.stop();
+
+						var res:ResultState = new ResultState();
+						res.camera = camHUD;
+						openSubState(res);
+					}
+				});
+			});
 			// FlxG.switchState(new FreeplayState());
 		}
 	}
