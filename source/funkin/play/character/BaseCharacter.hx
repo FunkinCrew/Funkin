@@ -273,6 +273,10 @@ class BaseCharacter extends Bopper
 	{
 		if (!isOpponent)
 		{
+			if (PlayState.instance.iconP1 == null)
+			{
+				trace('[WARN] Player 1 health icon not found!');
+			}
 			PlayState.instance.iconP1.characterId = _data.healthIcon.id;
 			PlayState.instance.iconP1.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
 			PlayState.instance.iconP1.offset.x = _data.healthIcon.offsets[0];
@@ -281,6 +285,10 @@ class BaseCharacter extends Bopper
 		}
 		else
 		{
+			if (PlayState.instance.iconP2 == null)
+			{
+				trace('[WARN] Player 2 health icon not found!');
+			}
 			PlayState.instance.iconP2.characterId = _data.healthIcon.id;
 			PlayState.instance.iconP2.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
 			PlayState.instance.iconP2.offset.x = _data.healthIcon.offsets[0];

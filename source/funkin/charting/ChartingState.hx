@@ -148,7 +148,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 
 		loadSong(_song.song);
-		Conductor.bpm = _song.bpm;
+		// Conductor.bpm = _song.bpm;
 		Conductor.mapBPMChanges(_song);
 
 		bpmTxt = new FlxText(1000, 50, 0, "", 16);
@@ -549,7 +549,7 @@ class ChartingState extends MusicBeatState
 			{
 				tempBpm = nums.value;
 				Conductor.mapBPMChanges(_song);
-				Conductor.bpm = nums.value;
+				Conductor.forceBPM(nums.value);
 			}
 			else if (wname == 'note_susLength')
 			{
@@ -1223,7 +1223,7 @@ class ChartingState extends MusicBeatState
 
 		if (SongLoad.getSong()[curSection].changeBPM && SongLoad.getSong()[curSection].bpm > 0)
 		{
-			Conductor.bpm = SongLoad.getSong()[curSection].bpm;
+			Conductor.forceBPM(SongLoad.getSong()[curSection].bpm);
 			FlxG.log.add('CHANGED BPM!');
 		}
 		else
@@ -1233,7 +1233,7 @@ class ChartingState extends MusicBeatState
 			for (i in 0...curSection)
 				if (SongLoad.getSong()[i].changeBPM)
 					daBPM = SongLoad.getSong()[i].bpm;
-			Conductor.bpm = daBPM;
+			Conductor.forceBPM(daBPM);
 		}
 
 		/* // PORT BULLSHIT, INCASE THERE'S NO SUSTAIN DATA FOR A NOTE

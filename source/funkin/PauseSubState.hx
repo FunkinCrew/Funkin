@@ -1,17 +1,15 @@
 package funkin;
 
 import flixel.FlxSprite;
-import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import funkin.Controls.Control;
 import funkin.play.PlayState;
+import funkin.play.song.SongData.SongDataParser;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -61,7 +59,14 @@ class PauseSubState extends MusicBeatSubstate
 		add(metaDataGrp);
 
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
-		levelInfo.text += PlayState.currentSong.song;
+		if (PlayState.instance.currentChart != null)
+		{
+			levelInfo.text += '${PlayState.instance.currentChart.songName} - ${PlayState.instance.currentChart.songArtist}';
+		}
+		else
+		{
+			levelInfo.text += PlayState.currentSong.song;
+		}
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
@@ -180,9 +185,11 @@ class PauseSubState extends MusicBeatSubstate
 						close();
 					case "EASY" | 'NORMAL' | "HARD":
 						PlayState.currentSong = SongLoad.loadFromJson(PlayState.currentSong.song.toLowerCase(), PlayState.currentSong.song.toLowerCase());
+						PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.currentSong.song.toLowerCase());
 						SongLoad.curDiff = daSelected.toLowerCase();
 
 						PlayState.storyDifficulty = curSelected;
+						PlayState.storyDifficulty_NEW = 'easy';
 
 						PlayState.needsReset = true;
 

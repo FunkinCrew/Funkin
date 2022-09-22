@@ -2,6 +2,7 @@ package funkin;
 
 import funkin.Section.SwagSection;
 import funkin.noteStuff.NoteBasic.NoteData;
+import funkin.play.PlayState;
 import haxe.Json;
 import lime.utils.Assets;
 
@@ -47,7 +48,21 @@ class SongLoad
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson = Assets.getText(Paths.json('songs/${folder.toLowerCase()}/${jsonInput.toLowerCase()}')).trim();
+		var rawJson:Dynamic = null;
+		try
+		{
+			rawJson = Assets.getText(Paths.json('songs/${folder.toLowerCase()}/${jsonInput.toLowerCase()}')).trim();
+		}
+		catch (e)
+		{
+			trace('Failed to load song data: ${e}');
+			rawJson = null;
+		}
+
+		if (rawJson == null)
+		{
+			return null;
+		}
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -112,6 +127,11 @@ class SongLoad
 
 	public static function getSpeed(?diff:String):Float
 	{
+		if (PlayState.instance != null && PlayState.instance.currentChart != null)
+		{
+			return getSpeed_NEW(diff);
+		}
+
 		if (diff == null)
 			diff = SongLoad.curDiff;
 
@@ -135,6 +155,14 @@ class SongLoad
 		speedShit = songData.speedMap[diff];
 
 		return speedShit;
+	}
+
+	public static function getSpeed_NEW(?diff:String):Float
+	{
+		if (PlayState.instance == null || PlayState.instance.currentChart == null || PlayState.instance.currentChart.scrollSpeed == 0.0)
+			return 1.0;
+
+		return PlayState.instance.currentChart.scrollSpeed;
 	}
 
 	public static function getDefaultSwagSong():SwagSong

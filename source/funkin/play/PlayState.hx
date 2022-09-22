@@ -28,6 +28,10 @@ import funkin.play.Strumline.StrumlineStyle;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData;
 import funkin.play.scoring.Scoring;
+import funkin.play.song.Song;
+import funkin.play.song.SongData.SongNoteData;
+import funkin.play.song.SongData.SongPlayableChar;
+import funkin.play.song.SongValidator;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData;
 import funkin.ui.PopUpStuff;
@@ -61,6 +65,8 @@ class PlayState extends MusicBeatState
 	 * and the notes to be played.
 	 */
 	public static var currentSong:SwagSong = null;
+
+	public static var currentSong_NEW:Song = null;
 
 	/**
 	 * Whether the game is currently in Story Mode. If false, we are in Free Play Mode.
@@ -116,6 +122,8 @@ class PlayState extends MusicBeatState
 	 */
 	public var currentStage:Stage = null;
 
+	public var currentChart(get, null):SongDifficulty;
+
 	/**
 	 * The internal ID of the currently active Stage.
 	 * Used to retrieve the data required to build the `currentStage`.
@@ -165,6 +173,12 @@ class PlayState extends MusicBeatState
 	 * Used to provide smooth animations based on linear interpolation of the player's health.
 	 */
 	private var healthLerp:Float = 1;
+
+	/**
+	 * Forcibly disables all update logic while the game moves back to the Menu state.
+	 * This is used only when a critical error occurs and the game cannot continue.
+	 */
+	private var criticalFailure:Bool = false;
 
 	/**
 	 * RENDER OBJECTS
@@ -244,6 +258,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var storyDifficulty_NEW:String = "normal";
 	public static var seenCutscene:Bool = false;
 	public static var campaignScore:Int = 0;
 
@@ -279,8 +294,10 @@ class PlayState extends MusicBeatState
 	{
 		super.create();
 
-		if (currentSong == null)
+		if (currentSong == null && currentSong_NEW == null)
 		{
+			criticalFailure = true;
+
 			lime.app.Application.current.window.alert("There was a critical error while accessing the selected song. Click OK to return to the main menu.",
 				"Error loading PlayState");
 			FlxG.switchState(new MainMenuState());
@@ -308,28 +325,48 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 
 		// Prepare the current song to be played.
-		FlxG.sound.cache(Paths.inst(currentSong.song));
-		FlxG.sound.cache(Paths.voices(currentSong.song));
+		if (currentChart != null)
+		{
+			currentChart.cacheInst();
+			currentChart.cacheVocals();
+		}
+		else
+		{
+			FlxG.sound.cache(Paths.inst(currentSong.song));
+			FlxG.sound.cache(Paths.voices(currentSong.song));
+		}
 
-		Conductor.songPosition = -5000;
+		Conductor.update(-5000);
 
 		// Initialize stage stuff.
 		initCameras();
 
-		if (currentSong == null)
-			currentSong = SongLoad.loadFromJson('tutorial');
-
-		Conductor.mapBPMChanges(currentSong);
-		Conductor.bpm = currentSong.bpm;
-
-		switch (currentSong.song.toLowerCase())
+		if (currentSong == null && currentSong_NEW == null)
 		{
-			case 'senpai':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('songs/senpai/senpaiDialogue'));
-			case 'roses':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('songs/roses/rosesDialogue'));
-			case 'thorns':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('songs/thorns/thornsDialogue'));
+			currentSong = SongLoad.loadFromJson('tutorial');
+		}
+
+		if (currentSong_NEW != null)
+		{
+			Conductor.mapTimeChanges(currentChart);
+			// Conductor.bpm = currentChart.getStartingBPM();
+
+			// TODO: Support for dialog.
+		}
+		else
+		{
+			Conductor.mapBPMChanges(currentSong);
+			// Conductor.bpm = currentSong.bpm;
+
+			switch (currentSong.song.toLowerCase())
+			{
+				case 'senpai':
+					dialogue = CoolUtil.coolTextFile(Paths.txt('songs/senpai/senpaiDialogue'));
+				case 'roses':
+					dialogue = CoolUtil.coolTextFile(Paths.txt('songs/roses/rosesDialogue'));
+				case 'thorns':
+					dialogue = CoolUtil.coolTextFile(Paths.txt('songs/thorns/thornsDialogue'));
+			}
 		}
 
 		if (dialogue != null)
@@ -379,7 +416,14 @@ class PlayState extends MusicBeatState
 
 		add(grpNoteSplashes);
 
-		generateSong();
+		if (currentSong_NEW != null)
+		{
+			generateSong_NEW();
+		}
+		else
+		{
+			generateSong();
+		}
 
 		resetCamera();
 
@@ -442,6 +486,13 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
+	function get_currentChart():SongDifficulty
+	{
+		if (currentSong_NEW == null || storyDifficulty_NEW == null)
+			return null;
+		return currentSong_NEW.getDifficulty(storyDifficulty_NEW);
+	}
+
 	/**
 	 * Initializes the game and HUD cameras.
 	 */
@@ -460,6 +511,12 @@ class PlayState extends MusicBeatState
 
 	function initStage()
 	{
+		if (currentSong_NEW != null)
+		{
+			initStage_NEW();
+			return;
+		}
+
 		// TODO: Move stageId to the song file.
 		switch (currentSong.song.toLowerCase())
 		{
@@ -487,9 +544,6 @@ class PlayState extends MusicBeatState
 				currentStageId = 'schoolEvil';
 			case 'guns' | 'stress' | 'ugh':
 				currentStageId = 'tankmanBattlefield';
-			case 'experimental-phase' | 'perfection':
-				// SERIOUSLY REVAMP THE CHART FORMAT ALREADY
-				currentStageId = "breakout";
 			default:
 				currentStageId = "mainStage";
 		}
@@ -497,8 +551,33 @@ class PlayState extends MusicBeatState
 		loadStage(currentStageId);
 	}
 
+	function initStage_NEW()
+	{
+		if (currentChart == null)
+		{
+			trace('Song difficulty could not be loaded.');
+		}
+
+		if (currentChart.stage != null && currentChart.stage != '')
+		{
+			currentStageId = currentChart.stage;
+		}
+		else
+		{
+			currentStageId = SongValidator.DEFAULT_STAGE;
+		}
+
+		loadStage(currentStageId);
+	}
+
 	function initCharacters()
 	{
+		if (currentSong_NEW != null)
+		{
+			initCharacters_NEW();
+			return;
+		}
+
 		iconP1 = new HealthIcon(currentSong.player1, 0);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -611,6 +690,111 @@ class PlayState extends MusicBeatState
 			}
 
 			// Redo z-indexes.
+			currentStage.refresh();
+		}
+	}
+
+	function initCharacters_NEW()
+	{
+		if (currentSong_NEW == null || currentChart == null)
+		{
+			trace('Song difficulty could not be loaded.');
+		}
+
+		// TODO: Switch playable character by manipulating this value.
+		// TODO: How to choose which one to use for story mode?
+		var currentPlayer = 'bf';
+
+		var currentCharData:SongPlayableChar = currentChart.getPlayableChar(currentPlayer);
+
+		//
+		// GIRLFRIEND
+		//
+		var girlfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharData.girlfriend);
+
+		if (girlfriend != null)
+		{
+			girlfriend.characterType = CharacterType.GF;
+		}
+		else if (currentCharData.girlfriend != '')
+		{
+			trace('WARNING: Could not load girlfriend character with ID ${currentCharData.girlfriend}, skipping...');
+		}
+		else
+		{
+			// Chosen GF was '' so we don't load one.
+		}
+
+		//
+		// DAD
+		//
+		var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharData.opponent);
+
+		if (dad != null)
+		{
+			dad.characterType = CharacterType.DAD;
+		}
+
+		// TODO: Cut out this code/make it generic.
+		switch (currentCharData.opponent)
+		{
+			case 'gf':
+				if (isStoryMode)
+				{
+					cameraFollowPoint.x += 600;
+					tweenCamIn();
+				}
+		}
+
+		//
+		// OPPONENT HEALTH ICON
+		//
+		iconP2 = new HealthIcon(currentCharData.opponent, 1);
+		iconP2.y = healthBar.y - (iconP2.height / 2);
+		add(iconP2);
+
+		//
+		// BOYFRIEND
+		//
+		var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentPlayer);
+
+		if (boyfriend != null)
+		{
+			boyfriend.characterType = CharacterType.BF;
+		}
+
+		//
+		// PLAYER HEALTH ICON
+		//
+		iconP1 = new HealthIcon(currentPlayer, 0);
+		iconP1.y = healthBar.y - (iconP1.height / 2);
+		add(iconP1);
+
+		//
+		// ADD CHARACTERS TO SCENE
+		//
+
+		if (currentStage != null)
+		{
+			// Characters get added to the stage, not the main scene.
+			if (girlfriend != null)
+			{
+				currentStage.addCharacter(girlfriend, GF);
+			}
+
+			if (boyfriend != null)
+			{
+				currentStage.addCharacter(boyfriend, BF);
+			}
+
+			if (dad != null)
+			{
+				currentStage.addCharacter(dad, DAD);
+				// Camera starts at dad.
+				cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+			}
+
+			// Rearrange by z-indexes.
 			currentStage.refresh();
 		}
 	}
@@ -794,7 +978,14 @@ class PlayState extends MusicBeatState
 			// if (FlxG.sound.music != null)
 			// FlxG.sound.music.play(true);
 			// else
-			FlxG.sound.playMusic(Paths.inst(currentSong.song), 1, false);
+			if (currentChart != null)
+			{
+				currentChart.playInst(1.0, false);
+			}
+			else
+			{
+				FlxG.sound.playMusic(Paths.inst(currentSong.song), 1, false);
+			}
 		}
 
 		FlxG.sound.music.onComplete = endSong;
@@ -813,7 +1004,7 @@ class PlayState extends MusicBeatState
 	{
 		// FlxG.log.add(ChartParser.parse());
 
-		Conductor.bpm = currentSong.bpm;
+		Conductor.forceBPM(currentSong.bpm);
 
 		currentSong.song = currentSong.song;
 
@@ -832,6 +1023,32 @@ class PlayState extends MusicBeatState
 		add(activeNotes);
 
 		regenNoteData();
+
+		generatedMusic = true;
+	}
+
+	private function generateSong_NEW():Void
+	{
+		if (currentChart == null)
+		{
+			trace('Song difficulty could not be loaded.');
+		}
+
+		Conductor.forceBPM(currentChart.getStartingBPM());
+
+		// TODO: Fix grouped vocals
+		vocals = currentChart.buildVocals();
+		vocals.members[0].onComplete = function()
+		{
+			vocalsFinished = true;
+		}
+
+		// Create the rendered note group.
+		activeNotes = new FlxTypedGroup<Note>();
+		activeNotes.zIndex = 1000;
+		add(activeNotes);
+
+		regenNoteData_NEW();
 
 		generatedMusic = true;
 	}
@@ -950,6 +1167,133 @@ class PlayState extends MusicBeatState
 		});
 	}
 
+	function regenNoteData_NEW():Void
+	{
+		// Destroy inactive notes.
+		inactiveNotes = [];
+
+		// Destroy active notes.
+		activeNotes.forEach(function(nt)
+		{
+			nt.followsTime = false;
+			FlxTween.tween(nt, {y: FlxG.height + nt.y}, 0.5, {
+				ease: FlxEase.expoIn,
+				onComplete: function(twn)
+				{
+					nt.kill();
+					activeNotes.remove(nt, true);
+					nt.destroy();
+				}
+			});
+		});
+
+		var noteData:Array<SongNoteData> = currentChart.notes;
+
+		var oldNote:Note = null;
+		for (songNote in noteData)
+		{
+			var mustHitNote:Bool = songNote.getMustHitNote();
+
+			// TODO: Put this in the chart or something?
+			var strumlineStyle:StrumlineStyle = null;
+			switch (currentStageId)
+			{
+				case 'school':
+					strumlineStyle = PIXEL;
+				case 'schoolEvil':
+					strumlineStyle = PIXEL;
+				default:
+					strumlineStyle = NORMAL;
+			}
+
+			var newNote:Note = new Note(songNote.time, songNote.data, oldNote, false, strumlineStyle);
+			newNote.mustPress = mustHitNote;
+			newNote.data.sustainLength = songNote.length;
+			newNote.data.noteKind = songNote.kind;
+			newNote.scrollFactor.set(0, 0);
+
+			// Note positioning.
+			// TODO: Make this more robust.
+			if (newNote.mustPress)
+			{
+				if (playerStrumline != null)
+				{
+					// Align with the strumline arrow.
+					newNote.x = playerStrumline.getArrow(songNote.getDirection()).x;
+				}
+				else
+				{
+					// Assume strumline position.
+					newNote.x += FlxG.width / 2;
+				}
+			}
+			else
+			{
+				if (enemyStrumline != null)
+				{
+					newNote.x = enemyStrumline.getArrow(songNote.getDirection()).x;
+				}
+				else
+				{
+					// newNote.x += 0;
+				}
+			}
+
+			inactiveNotes.push(newNote);
+
+			oldNote = newNote;
+
+			// Generate X sustain notes.
+			var sustainSections = Math.round(songNote.length / Conductor.stepCrochet);
+			for (noteIndex in 0...sustainSections)
+			{
+				var noteTimeOffset:Float = Conductor.stepCrochet + (Conductor.stepCrochet * noteIndex);
+				var sustainNote:Note = new Note(songNote.time + noteTimeOffset, songNote.data, oldNote, true, strumlineStyle);
+				sustainNote.mustPress = mustHitNote;
+				sustainNote.data.noteKind = songNote.kind;
+				sustainNote.scrollFactor.set(0, 0);
+
+				if (sustainNote.mustPress)
+				{
+					if (playerStrumline != null)
+					{
+						// Align with the strumline arrow.
+						sustainNote.x = playerStrumline.getArrow(songNote.getDirection()).x;
+					}
+					else
+					{
+						// Assume strumline position.
+						sustainNote.x += FlxG.width / 2;
+					}
+				}
+				else
+				{
+					if (enemyStrumline != null)
+					{
+						sustainNote.x = enemyStrumline.getArrow(songNote.getDirection()).x;
+					}
+					else
+					{
+						// newNote.x += 0;
+					}
+				}
+
+				inactiveNotes.push(sustainNote);
+
+				oldNote = sustainNote;
+			}
+		}
+
+		// Sorting is an expensive operation.
+		// Assume it was done in the chart file.
+		/**
+			inactiveNotes.sort(function(a:Note, b:Note):Int
+			{
+				return SortUtil.byStrumtime(FlxSort.ASCENDING, a, b);
+			});
+		**/
+	}
+
 	function tweenCamIn():Void
 	{
 		FlxTween.tween(FlxG.camera, {zoom: 1.3 * FlxCamera.defaultZoom}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
@@ -986,7 +1330,7 @@ class PlayState extends MusicBeatState
 
 		vocals.pause();
 		FlxG.sound.music.play();
-		Conductor.songPosition = FlxG.sound.music.time + Conductor.offset;
+		Conductor.update(FlxG.sound.music.time + Conductor.offset);
 
 		if (vocalsFinished)
 			return;
@@ -998,6 +1342,9 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (criticalFailure)
+			return;
 
 		if (FlxG.keys.justPressed.U)
 		{
@@ -1027,7 +1374,16 @@ class PlayState extends MusicBeatState
 
 			currentStage.resetStage();
 
-			regenNoteData(); // loads the note data from start
+			// Delete all notes and reset the arrays.
+			if (currentChart != null)
+			{
+				regenNoteData_NEW();
+			}
+			else
+			{
+				regenNoteData();
+			}
+
 			health = 1;
 			songScore = 0;
 			combo = 0;
@@ -1058,7 +1414,7 @@ class PlayState extends MusicBeatState
 			if (Paths.SOUND_EXT == 'mp3')
 				Conductor.offset = -13; // DO NOT FORGET TO REMOVE THE HARDCODE! WHEN I MAKE BETTER OFFSET SYSTEM!
 
-			Conductor.songPosition = FlxG.sound.music.time + Conductor.offset; // 20 is THE MILLISECONDS??
+			Conductor.update(FlxG.sound.music.time + Conductor.offset);
 
 			if (!isGamePaused)
 			{
@@ -1177,7 +1533,7 @@ class PlayState extends MusicBeatState
 		}
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
-		if (currentSong.song == 'Fresh')
+		if (currentSong != null && currentSong.song == 'Fresh')
 		{
 			switch (curBeat)
 			{
@@ -1307,7 +1663,7 @@ class PlayState extends MusicBeatState
 
 				if (!daNote.mustPress && daNote.wasGoodHit && !daNote.tooLate)
 				{
-					if (currentSong.song != 'Tutorial')
+					if (currentSong != null && currentSong.song != 'Tutorial')
 						camZooming = true;
 
 					var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, daNote, combo, true);
@@ -1324,7 +1680,7 @@ class PlayState extends MusicBeatState
 					else
 					{
 						// Volume of DAD.
-						if (currentSong.needsVoices)
+						if (currentSong != null && currentSong.needsVoices)
 							vocals.volume = 1;
 					}
 				}
@@ -1412,8 +1768,9 @@ class PlayState extends MusicBeatState
 			}
 			daPos += 4 * (1000 * 60 / daBPM);
 		}
-		Conductor.songPosition = FlxG.sound.music.time = daPos;
-		Conductor.songPosition += Conductor.offset;
+
+		FlxG.sound.music.time = daPos;
+		Conductor.update(FlxG.sound.music.time + Conductor.offset);
 		updateCurStep();
 		resyncVocals();
 	}
@@ -1857,7 +2214,7 @@ class PlayState extends MusicBeatState
 		{
 			if (SongLoad.getSong()[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.bpm = SongLoad.getSong()[Math.floor(curStep / 16)].bpm;
+				Conductor.forceBPM(SongLoad.getSong()[Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
 			}
 		}
@@ -2118,8 +2475,14 @@ class PlayState extends MusicBeatState
 	function performCleanup()
 	{
 		// Uncache the song.
-		openfl.utils.Assets.cache.clear(Paths.inst(currentSong.song));
-		openfl.utils.Assets.cache.clear(Paths.voices(currentSong.song));
+		if (currentChart != null)
+		{
+		}
+		else
+		{
+			openfl.utils.Assets.cache.clear(Paths.inst(currentSong.song));
+			openfl.utils.Assets.cache.clear(Paths.voices(currentSong.song));
+		}
 
 		// Remove reference to stage and remove sprites from it to save memory.
 		if (currentStage != null)

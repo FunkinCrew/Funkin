@@ -70,7 +70,7 @@ class LatencyState extends MusicBeatSubstate
 
 		// funnyStatsGraph.hi
 
-		Conductor.bpm = 60;
+		Conductor.forceBPM(60);
 
 		noteGrp = new FlxTypedGroup<Note>();
 		add(noteGrp);

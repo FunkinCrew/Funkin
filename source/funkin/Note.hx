@@ -2,6 +2,8 @@ package funkin;
 
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
+import funkin.noteStuff.NoteBasic.NoteData;
+import funkin.noteStuff.NoteBasic.NoteType;
 import funkin.play.PlayState;
 import funkin.play.Strumline.StrumlineStyle;
 import funkin.shaderslmfao.ColorSwap;

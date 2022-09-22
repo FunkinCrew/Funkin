@@ -27,6 +27,7 @@ import funkin.freeplayStuff.FreeplayScore;
 import funkin.freeplayStuff.SongMenuItem;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
+import funkin.play.song.SongData.SongDataParser;
 import funkin.shaderslmfao.AngleMask;
 import funkin.shaderslmfao.PureColor;
 import funkin.shaderslmfao.StrokeShader;
@@ -97,7 +98,7 @@ class FreeplayState extends MusicBeatSubstate
 		}
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
+			addWeek(['Bopeebo', 'Bopeebo_new', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster']);
@@ -520,8 +521,10 @@ class FreeplayState extends MusicBeatSubstate
 			}*/
 
 			PlayState.currentSong = SongLoad.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState.currentSong_NEW = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
+			PlayState.storyDifficulty_NEW = 'easy';
 			// SongLoad.curDiff = Highscore.formatSong()
 
 			SongLoad.curDiff = switch (curDifficulty)
@@ -562,6 +565,7 @@ class FreeplayState extends MusicBeatSubstate
 		intendedScore = FlxG.random.int(0, 100000);
 
 		PlayState.storyDifficulty = curDifficulty;
+		PlayState.storyDifficulty_NEW = 'easy';
 
 		grpDifficulties.group.forEach(function(spr)
 		{

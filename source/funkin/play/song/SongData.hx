@@ -339,6 +339,11 @@ abstract SongNoteData(RawSongNoteData)
 		return Math.floor(this.d / strumlineSize);
 	}
 
+	public inline function getMustHitNote(strumlineSize:Int = 4):Bool
+	{
+		return getStrumlineIndex(strumlineSize) == 0;
+	}
+
 	public var length(get, set):Float;
 
 	public function get_length():Float
@@ -522,7 +527,7 @@ abstract SongPlayableChar(RawSongPlayableChar)
 	}
 }
 
-typedef SongChartData =
+typedef RawSongChartData =
 {
 	var version:Version;
 
@@ -531,6 +536,32 @@ typedef SongChartData =
 	var notes:DynamicAccess<Array<SongNoteData>>;
 	var generatedBy:String;
 };
+
+@:forward
+abstract SongChartData(RawSongChartData)
+{
+	public function new(scrollSpeed:DynamicAccess<Float>, events:Array<SongEventData>, notes:DynamicAccess<Array<SongNoteData>>)
+	{
+		this = {
+			version: SongMigrator.CHART_VERSION,
+
+			events: events,
+			notes: notes,
+			scrollSpeed: scrollSpeed,
+			generatedBy: SongValidator.DEFAULT_GENERATEDBY
+		}
+	}
+
+	public function getScrollSpeed(diff:String = 'default'):Float
+	{
+		var result:Float = this.scrollSpeed.get(diff);
+
+		if (result == 0.0 && diff != 'default')
+			return getScrollSpeed('default');
+
+		return (result == 0.0) ? 1.0 : result;
+	}
+}
 
 typedef RawSongTimeChange =
 {
@@ -567,6 +598,17 @@ typedef RawSongTimeChange =
 	 * Optional, defaults to `[4]`.
 	 */
 	var bt:OneOfTwo<Int, Array<Int>>;
+}
+
+typedef RawConductorTimeChange =
+{
+	> RawSongTimeChange,
+
+	/**
+	 * The time in the song (in steps) that this change occurs at.
+	 * This time is somewhat weird because the rate it increases is dependent on the BPM at that point in the song.
+	 */
+	public var st:Float;
 }
 
 /**
@@ -664,6 +706,113 @@ abstract SongTimeChange(RawSongTimeChange)
 	public function set_beatTuplets(value:Array<Int>):Array<Int>
 	{
 		return this.bt = value;
+	}
+}
+
+abstract ConductorTimeChange(RawConductorTimeChange)
+{
+	public function new(timeStamp:Float, beatTime:Int, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, beatTuplets:Array<Int>)
+	{
+		this = {
+			t: timeStamp,
+			b: beatTime,
+			bpm: bpm,
+			n: timeSignatureNum,
+			d: timeSignatureDen,
+			bt: beatTuplets,
+			st: 0.0
+		}
+	}
+
+	public var timeStamp(get, set):Float;
+
+	public function get_timeStamp():Float
+	{
+		return this.t;
+	}
+
+	public function set_timeStamp(value:Float):Float
+	{
+		return this.t = value;
+	}
+
+	public var beatTime(get, set):Int;
+
+	public function get_beatTime():Int
+	{
+		return this.b;
+	}
+
+	public function set_beatTime(value:Int):Int
+	{
+		return this.b = value;
+	}
+
+	public var bpm(get, set):Float;
+
+	public function get_bpm():Float
+	{
+		return this.bpm;
+	}
+
+	public function set_bpm(value:Float):Float
+	{
+		return this.bpm = value;
+	}
+
+	public var timeSignatureNum(get, set):Int;
+
+	public function get_timeSignatureNum():Int
+	{
+		return this.n;
+	}
+
+	public function set_timeSignatureNum(value:Int):Int
+	{
+		return this.n = value;
+	}
+
+	public var timeSignatureDen(get, set):Int;
+
+	public function get_timeSignatureDen():Int
+	{
+		return this.d;
+	}
+
+	public function set_timeSignatureDen(value:Int):Int
+	{
+		return this.d = value;
+	}
+
+	public var beatTuplets(get, set):Array<Int>;
+
+	public function get_beatTuplets():Array<Int>
+	{
+		if (Std.isOfType(this.bt, Int))
+		{
+			return [this.bt];
+		}
+		else
+		{
+			return this.bt;
+		}
+	}
+
+	public function set_beatTuplets(value:Array<Int>):Array<Int>
+	{
+		return this.bt = value;
+	}
+
+	public var stepTime(get, set):Float;
+
+	public function get_stepTime():Float
+	{
+		return this.st;
+	}
+
+	public function set_stepTime(value:Float):Float
+	{
+		return this.st = value;
 	}
 }
 

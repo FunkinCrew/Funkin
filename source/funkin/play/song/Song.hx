@@ -1,5 +1,7 @@
 package funkin.play.song;
 
+import funkin.VoicesGroup;
+import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongMetadata;
@@ -45,14 +47,18 @@ class Song // implements IPlayStateScriptedClass
 		cacheCharts();
 	}
 
-	function populateFromMetadata()
+	/**
+	 * Populate the song data from the provided metadata,
+	 * including data from individual difficulties. Does not load chart data.
+	 */
+	function populateFromMetadata():Void
 	{
 		// Variations may have different artist, time format, generatedBy, etc.
 		for (metadata in _metadata)
 		{
 			for (diffId in metadata.playData.difficulties)
 			{
-				var difficulty = new SongDifficulty(diffId, metadata.variation);
+				var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
 				variations.push(metadata.variation);
 
@@ -83,25 +89,27 @@ class Song // implements IPlayStateScriptedClass
 	/**
 	 * Parse and cache the chart for all difficulties of this song.
 	 */
-	public function cacheCharts()
+	public function cacheCharts():Void
 	{
 		trace('Caching ${variations.length} chart files for song $songId');
 		for (variation in variations)
 		{
-			var chartData = SongDataParser.parseSongChartData(songId, variation);
+			var chartData:SongChartData = SongDataParser.parseSongChartData(songId, variation);
+			var chartNotes = chartData.notes;
 
-			for (diffId in chartData.notes.keys())
+			for (diffId in chartNotes.keys())
 			{
-				trace('  Difficulty $diffId');
-				var difficulty = difficulties.get(diffId);
+				// Retrieve the cached difficulty data.
+				var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
 				if (difficulty == null)
 				{
 					trace('Could not find difficulty $diffId for song $songId');
 					continue;
 				}
-
+				// Add the chart data to the difficulty.
 				difficulty.notes = chartData.notes.get(diffId);
-				difficulty.scrollSpeed = chartData.scrollSpeed.get(diffId);
+				difficulty.scrollSpeed = chartData.getScrollSpeed(diffId);
+
 				difficulty.events = chartData.events;
 			}
 		}
@@ -111,7 +119,7 @@ class Song // implements IPlayStateScriptedClass
 	/**
 	 * Retrieve the metadata for a specific difficulty, including the chart if it is loaded.
 	 */
-	public function getDifficulty(diffId:String):SongDifficulty
+	public inline function getDifficulty(diffId:String):SongDifficulty
 	{
 		return difficulties.get(diffId);
 	}
@@ -119,7 +127,7 @@ class Song // implements IPlayStateScriptedClass
 	/**
 	 * Purge the cached chart data for each difficulty of this song.
 	 */
-	public function clearCharts()
+	public function clearCharts():Void
 	{
 		for (diff in difficulties)
 		{
@@ -135,6 +143,11 @@ class Song // implements IPlayStateScriptedClass
 
 class SongDifficulty
 {
+	/**
+	 * The parent song for this difficulty.
+	 */
+	public final song:Song;
+
 	/**
 	 * The difficulty ID, such as `easy` or `hard`.
 	 */
@@ -162,8 +175,9 @@ class SongDifficulty
 	public var notes:Array<SongNoteData>;
 	public var events:Array<SongEventData>;
 
-	public function new(diffId:String, variation:String)
+	public function new(song:Song, diffId:String, variation:String)
 	{
+		this.song = song;
 		this.difficulty = diffId;
 		this.variation = variation;
 	}
@@ -171,5 +185,49 @@ class SongDifficulty
 	public function clearChart():Void
 	{
 		notes = null;
+	}
+
+	public function getStartingBPM():Float
+	{
+		if (timeChanges.length == 0)
+		{
+			return 0;
+		}
+
+		return timeChanges[0].bpm;
+	}
+
+	public function getPlayableChar(id:String):SongPlayableChar
+	{
+		return chars.get(id);
+	}
+
+	public inline function cacheInst()
+	{
+		// DEBUG: Remove this.
+		// FlxG.sound.cache(Paths.inst(this.song.songId));
+		FlxG.sound.cache(Paths.inst('bopeebo'));
+	}
+
+	public inline function playInst(volume:Float = 1.0, looped:Bool = false)
+	{
+		// DEBUG: Remove this.
+		// FlxG.sound.playMusic(Paths.inst(this.song.songId), volume, looped);
+		FlxG.sound.playMusic(Paths.inst('bopeebo'), volume, looped);
+	}
+
+	public inline function cacheVocals()
+	{
+		// DEBUG: Remove this.
+		// FlxG.sound.cache(Paths.voices(this.song.songId));
+		FlxG.sound.cache(Paths.voices('bopeebo'));
+	}
+
+	public inline function buildVocals(charId:String = "bf"):VoicesGroup
+	{
+		// DEBUG: Remove this.
+		// var result:VoicesGroup = new VoicesGroup(this.song.songId, null, false);
+		var result:VoicesGroup = new VoicesGroup('bopeebo', null, false);
+		return result;
 	}
 }

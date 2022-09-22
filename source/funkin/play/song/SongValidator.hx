@@ -5,6 +5,7 @@ import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongPlayData;
 import funkin.play.song.SongData.SongTimeChange;
 import funkin.play.song.SongData.SongTimeFormat;
+import funkin.util.Constants;
 
 /**
  * For SongMetadata and SongChartData objects,
@@ -17,9 +18,15 @@ class SongValidator
 	public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;
 	public static final DEFAULT_DIVISIONS:Int = -1;
 	public static final DEFAULT_LOOP:Bool = false;
-	public static final DEFAULT_GENERATEDBY:String = "Unknown";
 	public static final DEFAULT_STAGE:String = "mainStage";
 	public static final DEFAULT_SCROLLSPEED:Float = 1.0;
+
+	public static var DEFAULT_GENERATEDBY(get, null):String;
+
+	static function get_DEFAULT_GENERATEDBY():String
+	{
+		return '${Constants.TITLE} - ${Constants.VERSION}';
+	}
 
 	/**
 	 * Validates the fields of a SongMetadata object (excluding the version field).

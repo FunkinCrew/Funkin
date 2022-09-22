@@ -140,7 +140,7 @@ class TitleState extends MusicBeatState
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
-			Conductor.bpm = Constants.FREAKY_MENU_BPM;
+			Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
 		}
 
 		persistentUpdate = true;
@@ -474,7 +474,7 @@ class TitleState extends MusicBeatState
 		var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
 		add(spec);
 
-		Conductor.bpm = 190;
+		Conductor.forceBPM(190);
 		FlxG.camera.flash(FlxColor.WHITE, 1);
 		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 	}

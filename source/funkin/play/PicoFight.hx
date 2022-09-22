@@ -5,6 +5,7 @@ import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.util.FlxDirectionFlags;
 import funkin.audiovis.PolygonSpectogram;
 import funkin.noteStuff.NoteBasic.NoteData;
 
@@ -35,7 +36,7 @@ class PicoFight extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst("blazin"));
 
 		SongLoad.loadFromJson('blazin', "blazin");
-		Conductor.bpm = SongLoad.songData.bpm;
+		Conductor.forceBPM(SongLoad.songData.bpm);
 
 		for (dumbassSection in SongLoad.songData.noteMap['hard'])
 		{

@@ -4,9 +4,11 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import funkin.noteStuff.NoteBasic.NoteColor;
 import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.noteStuff.NoteBasic.NoteType;
+import funkin.ui.PreferencesMenu;
 import funkin.util.Constants;
 
 /**
