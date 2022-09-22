@@ -95,19 +95,21 @@ class ResultState extends MusicBeatSubstate
 		var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, Highscore.tallies.maxCombo);
 		add(maxCombo);
 
-		var tallySick:TallyCounter = new TallyCounter(230, hStuf * 5, Highscore.tallies.sick, 0xFF89E59E);
+		hStuf += 2;
+		var extraYOffset:Float = 5;
+		var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, Highscore.tallies.sick, 0xFF89E59E);
 		add(tallySick);
 
-		var tallyGood:TallyCounter = new TallyCounter(230, hStuf * 6, Highscore.tallies.good, 0xFF89C9E5);
+		var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, Highscore.tallies.good, 0xFF89C9E5);
 		add(tallyGood);
 
-		var tallyBad:TallyCounter = new TallyCounter(230, hStuf * 7, Highscore.tallies.bad, 0xffE6CF8A);
+		var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, Highscore.tallies.bad, 0xffE6CF8A);
 		add(tallyBad);
 
-		var tallyShit:TallyCounter = new TallyCounter(230, hStuf * 8, Highscore.tallies.shit, 0xFFE68C8A);
+		var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, Highscore.tallies.shit, 0xFFE68C8A);
 		add(tallyShit);
 
-		var tallyMissed:TallyCounter = new TallyCounter(230, hStuf * 9, Highscore.tallies.missed, 0xFFC68AE6);
+		var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, Highscore.tallies.missed, 0xFFC68AE6);
 		add(tallyMissed);
 
 		new FlxTimer().start(0.5, _ ->
