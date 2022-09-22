@@ -24,9 +24,24 @@ class ResultState extends MusicBeatSubstate
 
 		FlxG.sound.playMusic(Paths.music("results" + resultsVariation));
 
+		// TEMP-ish, just used to sorta "cache" the 3000x3000 image!
+		var cacheBullShit = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
+		add(cacheBullShit);
+
 		var bg:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFECC5C, 0xFFFDC05C], 90);
 		bg.scrollFactor.set();
 		add(bg);
+
+		var soundSystem:FlxSprite = new FlxSprite(-15, -180);
+		soundSystem.frames = Paths.getSparrowAtlas("resultScreen/soundSystem");
+		soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
+		soundSystem.visible = false;
+		new FlxTimer().start(0.4, _ ->
+		{
+			soundSystem.animation.play("idle");
+			soundSystem.visible = true;
+		});
+		add(soundSystem);
 
 		var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
 		blackTopBar.y = -blackTopBar.height;
@@ -39,7 +54,7 @@ class ResultState extends MusicBeatSubstate
 		resultsAnim.animation.play("result");
 		add(resultsAnim);
 
-		var ratingsPopin:FlxSprite = new FlxSprite(-100, 150);
+		var ratingsPopin:FlxSprite = new FlxSprite(-150, 120);
 		ratingsPopin.frames = Paths.getSparrowAtlas("resultScreen/ratingsPopin");
 		ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
 		// ratingsPopin.animation.play("idle");
