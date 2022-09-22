@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.text.FlxText;
@@ -43,12 +44,31 @@ class ResultState extends MusicBeatSubstate
 		});
 		add(soundSystem);
 
+		var difficulty:FlxSprite = new FlxSprite(680);
+
+		var diffSpr:String = switch (CoolUtil.difficultyString())
+		{
+			case "EASY":
+				"difEasy";
+			case "NORMAL":
+				"difNormal";
+			case "HARD":
+				"difHard";
+			case _:
+				"difNormal";
+		}
+
+		difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
+		difficulty.y = -difficulty.height;
+		FlxTween.tween(difficulty, {y: 110}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
+		add(difficulty);
+
 		var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
 		blackTopBar.y = -blackTopBar.height;
 		FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
 		add(blackTopBar);
 
-		var resultsAnim:FlxSprite = new FlxSprite(-200);
+		var resultsAnim:FlxSprite = new FlxSprite(-2000, -10);
 		resultsAnim.frames = Paths.getSparrowAtlas("resultScreen/results");
 		resultsAnim.animation.addByPrefix("result", "results", 24, false);
 		resultsAnim.animation.play("result");
