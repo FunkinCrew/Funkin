@@ -1360,7 +1360,8 @@ class PlayState extends MusicBeatState implements IHook
 		vocals.volume = 0;
 		if (currentSong.validScore)
 		{
-			Highscore.saveScore(currentSong.song, songScore, storyDifficulty);
+			// crackhead double thingie, sets whether was new highscore, AND saves the song!
+			Highscore.tallies.isNewHighscore = Highscore.saveScore(currentSong.song, songScore, storyDifficulty);
 		}
 
 		if (isStoryMode)

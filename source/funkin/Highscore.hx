@@ -10,7 +10,7 @@ class Highscore
 
 	public static var tallies:Tallies = new Tallies();
 
-	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Void
+	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Bool
 	{
 		var formattedSong:String = formatSong(song, diff);
 
@@ -21,10 +21,16 @@ class Highscore
 		if (songScores.exists(formattedSong))
 		{
 			if (songScores.get(formattedSong) < score)
+			{
 				setScore(formattedSong, score);
+				return true;
+				// new highscore
+			}
 		}
 		else
 			setScore(formattedSong, score);
+
+		return false;
 	}
 
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
@@ -114,7 +120,8 @@ abstract Tallies(RawTallies)
 			good: 0,
 			sick: 0,
 			totalNotes: 0,
-			maxCombo: 0
+			maxCombo: 0,
+			isNewHighscore: false
 		}
 	}
 }
@@ -133,6 +140,7 @@ typedef RawTallies =
 	var good:Int;
 	var sick:Int;
 	var maxCombo:Int;
+	var isNewHighscore:Bool;
 
 	/**
 	 * How many notes total that you hit. (NOT how many notes total in the song!)

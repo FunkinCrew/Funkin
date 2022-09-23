@@ -178,6 +178,9 @@ class ResultState extends MusicBeatSubstate
 			});
 		});
 
+		if (Highscore.tallies.isNewHighscore)
+			trace("ITS A NEW HIGHSCORE!!!");
+
 		super.create();
 	}
 
