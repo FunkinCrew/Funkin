@@ -118,6 +118,14 @@ class ResultState extends MusicBeatSubstate
 		scorePopin.visible = false;
 		add(scorePopin);
 
+		var highscoreNew:FlxSprite = new FlxSprite(280, 580);
+		highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
+		highscoreNew.animation.addByPrefix("new", "NEW HIGHSCORE", 24);
+		highscoreNew.visible = false;
+		highscoreNew.setGraphicSize(Std.int(highscoreNew.width * 0.8));
+		highscoreNew.updateHitbox();
+		add(highscoreNew);
+
 		var hStuf:Int = 50;
 
 		var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
@@ -165,6 +173,10 @@ class ResultState extends MusicBeatSubstate
 			{
 				scorePopin.animation.play("score");
 				scorePopin.visible = true;
+
+				highscoreNew.visible = true;
+				highscoreNew.animation.play("new");
+				FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
 			};
 
 			boyfriend.animation.play('fall');
