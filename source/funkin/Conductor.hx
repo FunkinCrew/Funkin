@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.util.FlxSignal;
 import funkin.SongLoad.SwagSong;
 import funkin.play.song.Song.SongDifficulty;
 import funkin.play.song.SongData.ConductorTimeChange;
@@ -18,12 +19,12 @@ class Conductor
 	 * The list of time changes in the song.
 	 * There should be at least one time change (at the beginning of the song) to define the BPM.
 	 */
-	private static var timeChanges:Array<ConductorTimeChange> = [];
+	private static var timeChanges:Array<SongTimeChange> = [];
 
 	/**
 	 * The current time change.
 	 */
-	private static var currentTimeChange:ConductorTimeChange;
+	private static var currentTimeChange:SongTimeChange;
 
 	/**
 	 * The current position in the song in milliseconds.
@@ -81,12 +82,15 @@ class Conductor
 		return currentStep;
 	}
 
+	public static var beatHit(default, null):FlxSignal = new FlxSignal();
+	public static var stepHit(default, null):FlxSignal = new FlxSignal();
+
 	public static var lastSongPos:Float;
 	public static var visualOffset:Float = 0;
 	public static var audioOffset:Float = 0;
 	public static var offset:Float = 0;
 
-	public function new()
+	private function new()
 	{
 	}
 
@@ -120,8 +124,30 @@ class Conductor
 	 */
 	public static function update(songPosition:Float)
 	{
-		Conductor.songPosition = songPosition;
-		Conductor.bpm = Conductor.getLastBPMChange().bpm;
+		var oldBeat = currentBeat;
+		var oldStep = currentStep;
+
+		songPosition = songPosition;
+		bpm = Conductor.getLastBPMChange().bpm;
+
+		for (i in 0...timeChanges.length)
+		{
+			if (songPosition >= timeChanges[i].songTime)
+				currentTimeChange = timeChanges[i];
+
+			if (songPosition < timeChanges[i].songTime)
+				break;
+		}
+
+		currentStep = (currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.songTime) / stepCrochet;
+		currentBeat = Math.floor(currentStep / 4);
+
+		// FlxSignals are really cool.
+		if (currentStep != oldStep)
+			stepHit.dispatch();
+
+		if (currentBeat != oldBeat)
+			beatHit.dispatch();
 	}
 
 	public static function mapBPMChanges(song:SwagSong)
@@ -157,23 +183,24 @@ class Conductor
 
 		timeChanges = [];
 
-		for (songTimeChange in timeChanges)
+		for (currentTimeChange in timeChanges)
 		{
-			var prevTimeChange:ConductorTimeChange = timeChanges.length == 0 ? null : timeChanges[timeChanges.length - 1];
-			var currentTimeChange:ConductorTimeChange = cast songTimeChange;
+			var prevTimeChange:SongTimeChange = timeChanges.length == 0 ? null : timeChanges[timeChanges.length - 1];
 
-			if (prevTimeChange != null)
-			{
-				var deltaTime:Float = currentTimeChange.timeStamp - prevTimeChange.timeStamp;
-				var deltaSteps:Int = Math.round(deltaTime / (60 / prevTimeChange.bpm) * 1000 / 4);
+			/*
+				if (prevTimeChange != null)
+				{
+					var deltaTime:Float = currentTimeChange.timeStamp - prevTimeChange.timeStamp;
+					var deltaSteps:Int = Math.round(deltaTime / (60 / prevTimeChange.bpm) * 1000 / 4);
 
-				currentTimeChange.stepTime = prevTimeChange.stepTime + deltaSteps;
-			}
-			else
-			{
-				// We know the time and steps of this time change is 0, since this is the first time change.
-				currentTimeChange.stepTime = 0;
-			}
+					currentTimeChange.stepTime = prevTimeChange.stepTime + deltaSteps;
+				}
+				else
+				{
+					// We know the time and steps of this time change is 0, since this is the first time change.
+					currentTimeChange.stepTime = 0;
+				}
+			 */
 
 			timeChanges.push(currentTimeChange);
 		}

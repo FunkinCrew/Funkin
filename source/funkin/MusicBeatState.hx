@@ -115,37 +115,16 @@ class MusicBeatState extends FlxUIState
 		FlxG.resetState();
 	}
 
-	private function updateBeat():Void
-	{
-		curBeat = Math.floor(curStep / 4);
-	}
-
-	private function updateCurStep():Void
-	{
-		var lastChange:BPMChangeEvent = {
-			stepTime: 0,
-			songTime: 0,
-			bpm: 0
-		}
-		for (i in 0...Conductor.bpmChangeMap.length)
-		{
-			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
-				lastChange = Conductor.bpmChangeMap[i];
-		}
-
-		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
-	}
-
 	public function stepHit():Bool
 	{
-		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep);
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, Conductor.currentBeat, Conductor.currentStep);
 
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
 			return false;
 
-		if (curStep % 4 == 0)
+		if (Conductor.currentStep % 4 == 0)
 			beatHit();
 
 		return true;
@@ -153,7 +132,7 @@ class MusicBeatState extends FlxUIState
 
 	public function beatHit():Bool
 	{
-		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep);
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, Conductor.currentBeat, Conductor.currentStep);
 
 		dispatchEvent(event);
 
