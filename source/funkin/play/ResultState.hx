@@ -31,6 +31,9 @@ class ResultState extends MusicBeatSubstate
 		var cacheBullShit = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
 		add(cacheBullShit);
 
+		var dumb = new FlxSprite().loadGraphic(Paths.image("resultScreen/scorePopin"));
+		add(dumb);
+
 		var bg:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFECC5C, 0xFFFDC05C], 90);
 		bg.scrollFactor.set();
 		add(bg);
@@ -109,6 +112,12 @@ class ResultState extends MusicBeatSubstate
 		ratingsPopin.antialiasing = true;
 		add(ratingsPopin);
 
+		var scorePopin:FlxSprite = new FlxSprite(-180, 520);
+		scorePopin.frames = Paths.getSparrowAtlas("resultScreen/scorePopin");
+		scorePopin.animation.addByPrefix("score", "tally score", 24, false);
+		scorePopin.visible = false;
+		add(scorePopin);
+
 		var hStuf:Int = 50;
 
 		var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
@@ -151,6 +160,12 @@ class ResultState extends MusicBeatSubstate
 		{
 			ratingsPopin.animation.play("idle");
 			ratingsPopin.visible = true;
+
+			ratingsPopin.animation.finishCallback = anim ->
+			{
+				scorePopin.animation.play("score");
+				scorePopin.visible = true;
+			};
 
 			boyfriend.animation.play('fall');
 			boyfriend.visible = true;
