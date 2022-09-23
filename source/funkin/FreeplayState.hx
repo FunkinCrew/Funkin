@@ -561,7 +561,7 @@ class FreeplayState extends MusicBeatSubstate
 			curDifficulty = 0;
 
 		// intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		intendedScore = FlxG.random.int(0, 100000);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 
 		PlayState.storyDifficulty = curDifficulty;
 

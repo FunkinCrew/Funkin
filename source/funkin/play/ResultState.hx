@@ -35,6 +35,27 @@ class ResultState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
+		var gf:FlxSprite = new FlxSprite(500, 300);
+		gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
+		gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
+		gf.visible = false;
+		gf.animation.finishCallback = _ ->
+		{
+			gf.animation.play('clap', true, false, 9);
+		};
+		add(gf);
+
+		var boyfriend:FlxSprite = new FlxSprite(640, -200);
+		boyfriend.frames = Paths.getSparrowAtlas('resultScreen/resultBoyfriendGOOD');
+		boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
+		boyfriend.visible = false;
+		boyfriend.animation.finishCallback = function(_)
+		{
+			boyfriend.animation.play('fall', true, false, 14);
+		};
+
+		add(boyfriend);
+
 		var soundSystem:FlxSprite = new FlxSprite(-15, -180);
 		soundSystem.frames = Paths.getSparrowAtlas("resultScreen/soundSystem");
 		soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
@@ -130,6 +151,16 @@ class ResultState extends MusicBeatSubstate
 		{
 			ratingsPopin.animation.play("idle");
 			ratingsPopin.visible = true;
+
+			boyfriend.animation.play('fall');
+			boyfriend.visible = true;
+
+			new FlxTimer().start((1 / 24) * 22, _ ->
+			{
+				// plays about 22 frames (at 24fps timing) after bf spawns in
+				gf.animation.play('clap', true);
+				gf.visible = true;
+			});
 		});
 
 		super.create();

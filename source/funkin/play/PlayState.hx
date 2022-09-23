@@ -1446,13 +1446,17 @@ class PlayState extends MusicBeatState implements IHook
 			// unloadAssets();
 
 			camZooming = false;
+
 			FlxG.camera.follow(PlayState.instance.currentStage.getGirlfriend(), null, 0.05);
-			FlxG.camera.targetOffset.y -= 370;
+			FlxG.camera.targetOffset.y -= 350;
+			FlxG.camera.targetOffset.x += 20;
 
 			FlxTween.tween(camHUD, {alpha: 0}, 0.6);
 
 			new FlxTimer().start(0.8, _ ->
 			{
+				currentStage.getGirlfriend().animation.play("cheer");
+
 				FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1, {
 					ease: FlxEase.expoIn,
 					onComplete: _ ->
