@@ -27,6 +27,7 @@ import funkin.play.Strumline.StrumlineArrow;
 import funkin.play.Strumline.StrumlineStyle;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData;
+import funkin.play.event.SongEvent;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongNoteData;
@@ -162,6 +163,8 @@ class PlayState extends MusicBeatState
 	 */
 	private var inactiveNotes:Array<Note>;
 
+	private var songEvents:Array<SongEvent>;
+
 	/**
 	 * If true, the player is allowed to pause the game.
 	 * Disabled during the ending of a song.
@@ -279,7 +282,6 @@ class PlayState extends MusicBeatState
 	var perfectMode:Bool = false;
 	var previousFrameTime:Int = 0;
 	var songTime:Float = 0;
-	var cameraRightSide:Bool = false;
 
 	#if discord_rpc
 	// Discord RPC variables
@@ -305,6 +307,12 @@ class PlayState extends MusicBeatState
 		}
 
 		instance = this;
+
+		if (currentSong_NEW != null)
+		{
+			// TODO: Do this in the loading state.
+			currentSong_NEW.cacheCharts(true);
+		}
 
 		// Displays the camera follow point as a sprite for debug purposes.
 		// TODO: Put this on a toggle?
@@ -1172,6 +1180,10 @@ class PlayState extends MusicBeatState
 
 	function regenNoteData_NEW():Void
 	{
+		// Reset song events.
+		songEvents = currentChart.getEvents();
+		SongEventHandler.resetEvents(songEvents);
+
 		// Destroy inactive notes.
 		inactiveNotes = [];
 
@@ -1727,6 +1739,16 @@ class PlayState extends MusicBeatState
 			});
 		}
 
+		if (songEvents != null && songEvents.length > 0)
+		{
+			var songEventsToActivate:Array<SongEvent> = SongEventHandler.queryEvents(songEvents, Conductor.songPosition);
+
+			if (songEventsToActivate.length > 0)
+				trace('[EVENTS] Found ${songEventsToActivate.length} event(s) to activate.');
+
+			SongEventHandler.activateEvents(songEventsToActivate);
+		}
+
 		if (!isInCutscene)
 			keyShit(true);
 	}
@@ -1915,38 +1937,63 @@ class PlayState extends MusicBeatState
 			comboPopUps.displayCombo(combo);
 	}
 
-	function controlCamera()
-	{
-		if (currentStage == null)
-			return;
-
-		var isFocusedOnDad = cameraFollowPoint.x == currentStage.getDad().cameraFocusPoint.x;
-		var isFocusedOnBF = cameraFollowPoint.x == currentStage.getBoyfriend().cameraFocusPoint.x;
-
-		if (cameraRightSide && !isFocusedOnBF)
+	/*
+		function controlCamera()
 		{
-			// Focus the camera on the player.
-			cameraFollowPoint.setPosition(currentStage.getBoyfriend().cameraFocusPoint.x, currentStage.getBoyfriend().cameraFocusPoint.y);
+			if (currentStage == null)
+				return;
 
-			// TODO: Un-hardcode this.
-			if (currentSong.song.toLowerCase() == 'tutorial')
-				FlxTween.tween(FlxG.camera, {zoom: 1 * FlxCamera.defaultZoom}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
-		}
-		else if (!cameraRightSide && !isFocusedOnDad)
-		{
-			// Focus the camera on the opponent.
-			cameraFollowPoint.setPosition(currentStage.getDad().cameraFocusPoint.x, currentStage.getDad().cameraFocusPoint.y);
-
-			// TODO: Un-hardcode this stuff.
-			if (currentStage.getDad().characterId == 'mom')
+			switch (cameraFocusCharacter)
 			{
-				vocals.volume = 1;
+				default: // null = No change
+					break;
+				case 0: // Boyfriend
+					var isFocusedOnBF = cameraFollowPoint.x == currentStage.getBoyfriend().cameraFocusPoint.x;
+					if (!isFocusedOnBF)
+					{
+						// Focus the camera on the player.
+						cameraFollowPoint.setPosition(currentStage.getBoyfriend().cameraFocusPoint.x, currentStage.getBoyfriend().cameraFocusPoint.y);
+					}
+				case 1: // Dad
+					var isFocusedOnDad = cameraFollowPoint.x == currentStage.getDad().cameraFocusPoint.x;
+					if (!isFocusedOnDad)
+					{
+						cameraFollowPoint.setPosition(currentStage.getDad().cameraFocusPoint.x, currentStage.getDad().cameraFocusPoint.y);
+					}
+				case 2: // Girlfriend
+					var isFocusedOnGF = cameraFollowPoint.x == currentStage.getGirlfriend().cameraFocusPoint.x;
+					if (!isFocusedOnGF)
+					{
+						cameraFollowPoint.setPosition(currentStage.getGirlfriend().cameraFocusPoint.x, currentStage.getGirlfriend().cameraFocusPoint.y);
+					}
 			}
 
-			if (currentSong.song.toLowerCase() == 'tutorial')
-				tweenCamIn();
-		}
-	}
+			/*
+				if (cameraRightSide && !isFocusedOnBF)
+				{
+					// Focus the camera on the player.
+					cameraFollowPoint.setPosition(currentStage.getBoyfriend().cameraFocusPoint.x, currentStage.getBoyfriend().cameraFocusPoint.y);
+
+					// TODO: Un-hardcode this.
+					if (currentSong.song.toLowerCase() == 'tutorial')
+						FlxTween.tween(FlxG.camera, {zoom: 1 * FlxCamera.defaultZoom}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+				}
+				else if (!cameraRightSide && !isFocusedOnDad)
+				{
+					// Focus the camera on the opponent.
+					cameraFollowPoint.setPosition(currentStage.getDad().cameraFocusPoint.x, currentStage.getDad().cameraFocusPoint.y);
+
+					// TODO: Un-hardcode this stuff.
+					if (currentStage.getDad().characterId == 'mom')
+					{
+						vocals.volume = 1;
+					}
+
+					if (currentSong.song.toLowerCase() == 'tutorial')
+						tweenCamIn();
+				}
+	 */
+	// }
 
 	public function keyShit(test:Bool):Void
 	{
@@ -2193,6 +2240,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
+			// TODO: Sort more efficiently, or less often, to improve performance.
 			activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
 		}
 
@@ -2201,8 +2249,7 @@ class PlayState extends MusicBeatState
 		{
 			if (generatedMusic && SongLoad.getSong()[Std.int(Conductor.currentStep / 16)] != null)
 			{
-				cameraRightSide = SongLoad.getSong()[Std.int(Conductor.currentStep / 16)].mustHitSection;
-				controlCamera();
+				// cameraRightSide = SongLoad.getSong()[Std.int(Conductor.currentStep / 16)].mustHitSection;
 			}
 
 			if (SongLoad.getSong()[Math.floor(Conductor.currentStep / 16)] != null)
@@ -2214,6 +2261,9 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
+		// Manage the camera focus, if necessary.
+		// controlCamera();
 
 		// HARDCODING FOR MILF ZOOMS!
 

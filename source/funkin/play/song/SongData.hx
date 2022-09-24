@@ -471,11 +471,6 @@ abstract SongEventData(RawSongEventData)
 		return cast this.v;
 	}
 
-	public inline function getMap():DynamicAccess<Dynamic>
-	{
-		return cast this.v;
-	}
-
 	public inline function getBoolArray():Array<Bool>
 	{
 		return cast this.v;

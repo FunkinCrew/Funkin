@@ -11,6 +11,7 @@ import funkin.charting.ChartingState;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.event.SongEvent.SongEventHandler;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
@@ -117,6 +118,9 @@ class InitState extends FlxTransitionableState
 
 		// FlxTransitionableState.skipNextTransOut = true;
 		FlxTransitionableState.skipNextTransIn = true;
+
+		SongEventHandler.registerBaseEventCallbacks();
+		// TODO: Register custom event callbacks here
 
 		SongDataParser.loadSongCache();
 		StageDataParser.loadStageCache();

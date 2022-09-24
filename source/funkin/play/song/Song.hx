@@ -1,6 +1,7 @@
 package funkin.play.song;
 
 import funkin.VoicesGroup;
+import funkin.play.event.SongEvent;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.play.song.SongData.SongEventData;
@@ -42,9 +43,6 @@ class Song // implements IPlayStateScriptedClass
 		}
 
 		populateFromMetadata();
-
-		// TODO: Disable later.
-		cacheCharts();
 	}
 
 	/**
@@ -89,8 +87,13 @@ class Song // implements IPlayStateScriptedClass
 	/**
 	 * Parse and cache the chart for all difficulties of this song.
 	 */
-	public function cacheCharts():Void
+	public function cacheCharts(?force:Bool = false):Void
 	{
+		if (force)
+		{
+			clearCharts();
+		}
+
 		trace('Caching ${variations.length} chart files for song $songId');
 		for (variation in variations)
 		{
@@ -158,6 +161,16 @@ class SongDifficulty
 	 */
 	public final variation:String;
 
+	/**
+	 * The note chart for this difficulty.
+	 */
+	public var notes:Array<SongNoteData>;
+
+	/**
+	 * The event chart for this difficulty.
+	 */
+	public var events:Array<SongEventData>;
+
 	public var songName:String = SongValidator.DEFAULT_SONGNAME;
 	public var songArtist:String = SongValidator.DEFAULT_ARTIST;
 	public var timeFormat:SongTimeFormat = SongValidator.DEFAULT_TIMEFORMAT;
@@ -171,9 +184,6 @@ class SongDifficulty
 	public var chars:Map<String, SongPlayableChar> = null;
 
 	public var scrollSpeed:Float = SongValidator.DEFAULT_SCROLLSPEED;
-
-	public var notes:Array<SongNoteData>;
-	public var events:Array<SongEventData>;
 
 	public function new(song:Song, diffId:String, variation:String)
 	{
@@ -200,6 +210,11 @@ class SongDifficulty
 	public function getPlayableChar(id:String):SongPlayableChar
 	{
 		return chars.get(id);
+	}
+
+	public function getEvents():Array<SongEvent>
+	{
+		return cast events;
 	}
 
 	public inline function cacheInst()

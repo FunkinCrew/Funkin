@@ -232,6 +232,9 @@ class PolymodHandler
 
 		// Reload everything that is cached.
 		// Currently this freezes the game for a second but I guess that's tolerable?
+
+		// TODO: Reload event callbacks
+
 		SongDataParser.loadSongCache();
 		StageDataParser.loadStageCache();
 		CharacterDataParser.loadCharacterCache();

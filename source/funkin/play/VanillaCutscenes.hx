@@ -64,8 +64,8 @@ class VanillaCutscenes
 		FlxTween.tween(FlxG.camera, {zoom: PlayState.defaultCameraZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 		@:privateAccess
 		PlayState.instance.startCountdown();
-		@:privateAccess
-		PlayState.instance.controlCamera();
+		// @:privateAccess
+		// PlayState.instance.controlCamera();
 	}
 
 	public static function playHorrorStartCutscene()
