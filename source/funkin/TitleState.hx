@@ -530,12 +530,13 @@ class TitleState extends MusicBeatState
 
 		if (!skippedIntro)
 		{
-			FlxG.log.add(curBeat);
+			// FlxG.log.add(Conductor.currentBeat);
 			// if the user is draggin the window some beats will
 			// be missed so this is just to compensate
-			if (curBeat > lastBeat)
+			if (Conductor.currentBeat > lastBeat)
 			{
-				for (i in lastBeat...curBeat)
+				// TODO: Why does it perform ALL the previous steps each beat?
+				for (i in lastBeat...Conductor.currentBeat)
 				{
 					switch (i + 1)
 					{
@@ -572,14 +573,14 @@ class TitleState extends MusicBeatState
 					}
 				}
 			}
-			lastBeat = curBeat;
+			lastBeat = Conductor.currentBeat;
 		}
 		if (skippedIntro)
 		{
-			if (cheatActive && curBeat % 2 == 0)
+			if (cheatActive && Conductor.currentBeat % 2 == 0)
 				swagShader.update(0.125);
 
-			if (logoBl != null)
+			if (logoBl != null && logoBl.animation != null)
 				logoBl.animation.play('bump', true);
 
 			danceLeft = !danceLeft;

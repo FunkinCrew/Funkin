@@ -6,7 +6,6 @@ import flixel.addons.ui.FlxUIState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
-import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
@@ -19,8 +18,6 @@ import funkin.util.SortUtil;
  */
 class MusicBeatState extends FlxUIState
 {
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
 
 	inline function get_controls():Controls
@@ -47,6 +44,16 @@ class MusicBeatState extends FlxUIState
 		super.create();
 
 		createWatermarkText();
+
+		Conductor.beatHit.add(this.beatHit);
+		Conductor.stepHit.add(this.stepHit);
+	}
+
+	public override function destroy():Void
+	{
+		super.destroy();
+		Conductor.beatHit.remove(this.beatHit);
+		Conductor.stepHit.remove(this.stepHit);
 	}
 
 	override function update(elapsed:Float)
@@ -69,14 +76,7 @@ class MusicBeatState extends FlxUIState
 			FlxG.state.openSubState(new DebugMenuSubState());
 		}
 
-		// everyStep();
-		var oldStep:Int = curStep;
-
-		updateCurStep();
-		updateBeat();
-
-		if (oldStep != curStep && curStep >= 0)
-			stepHit();
+		// Conductor.update(FlxG.sound.music.time + Conductor.offset);
 
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
@@ -123,9 +123,6 @@ class MusicBeatState extends FlxUIState
 
 		if (event.eventCanceled)
 			return false;
-
-		if (Conductor.currentStep % 4 == 0)
-			beatHit();
 
 		return true;
 	}

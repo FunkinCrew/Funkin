@@ -622,7 +622,7 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.music.pan = FlxMath.remapToRange(FlxG.mouse.screenX, 0, FlxG.width, -1, 1) * 10;
 
-		curStep = recalculateSteps();
+		// curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
@@ -649,7 +649,7 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.X)
 			toggleAltAnimNote();
 
-		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
+		if (false) // (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
 			// trace(curStep);
 			// trace((SongLoad.getSong()[curSection].lengthInSteps) * (curSection + 1));
@@ -663,8 +663,8 @@ class ChartingState extends MusicBeatState
 			changeSection(curSection + 1, false);
 		}
 
-		FlxG.watch.addQuick('daBeat', curBeat);
-		FlxG.watch.addQuick('daStep', curStep);
+		FlxG.watch.addQuick('daBeat', Conductor.currentBeat);
+		FlxG.watch.addQuick('daStep', Conductor.currentStep);
 
 		if (FlxG.mouse.pressedMiddle && FlxG.mouse.overlaps(gridBG))
 		{
@@ -1034,10 +1034,10 @@ class ChartingState extends MusicBeatState
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		curStep = lastChange.stepTime + Math.floor((FlxG.sound.music.time - lastChange.songTime) / Conductor.stepCrochet);
-		updateBeat();
+		// curStep = lastChange.stepTime + Math.floor((FlxG.sound.music.time - lastChange.songTime) / Conductor.stepCrochet);
+		// updateBeat();
 
-		return curStep;
+		return Conductor.currentStep;
 	}
 
 	function resetSection(songBeginning:SongResetType = SECTION):Void
@@ -1061,7 +1061,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		vocals.time = FlxG.sound.music.time;
-		updateCurStep();
+		// updateCurStep();
 
 		updateGrid();
 		updateSectionUI();
@@ -1092,7 +1092,7 @@ class ChartingState extends MusicBeatState
 
 				FlxG.sound.music.time = sectionStartTime();
 				vocals.time = FlxG.sound.music.time;
-				updateCurStep();
+				// updateCurStep();
 			}
 
 			updateGrid();

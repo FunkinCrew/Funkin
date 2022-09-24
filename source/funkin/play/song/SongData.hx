@@ -22,7 +22,7 @@ class SongDataParser
 
 	static final DEFAULT_SONG_ID = 'UNKNOWN';
 	static final SONG_DATA_PATH = 'songs/';
-	static final SONG_DATA_SUFFIX = '/metadata.json';
+	static final SONG_DATA_SUFFIX = '-metadata.json';
 
 	/**
 	 * Parses and preloads the game's song metadata and scripts when the game starts.
@@ -56,7 +56,10 @@ class SongDataParser
 		//
 		// UNSCRIPTED SONGS
 		//
-		var songIdList:Array<String> = DataAssets.listDataFilesInPath(SONG_DATA_PATH, SONG_DATA_SUFFIX);
+		var songIdList:Array<String> = DataAssets.listDataFilesInPath(SONG_DATA_PATH, SONG_DATA_SUFFIX).map(function(songDataPath:String):String
+		{
+			return songDataPath.split('/')[0];
+		});
 		var unscriptedSongIds:Array<String> = songIdList.filter(function(songId:String):Bool
 		{
 			return !songCache.exists(songId);
@@ -154,7 +157,7 @@ class SongDataParser
 
 	static function loadSongMetadataFile(songPath:String, variation:String = ''):String
 	{
-		var songMetadataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/metadata-$variation') : Paths.json('$SONG_DATA_PATH$songPath/metadata');
+		var songMetadataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/$songPath-metadata-$variation') : Paths.json('$SONG_DATA_PATH$songPath/$songPath-metadata');
 
 		var rawJson:String = Assets.getText(songMetadataFilePath).trim();
 
@@ -192,7 +195,7 @@ class SongDataParser
 
 	static function loadSongChartDataFile(songPath:String, variation:String = ''):String
 	{
-		var songChartDataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/chart-$variation') : Paths.json('$SONG_DATA_PATH$songPath/chart');
+		var songChartDataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart-$variation') : Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart');
 
 		var rawJson:String = Assets.getText(songChartDataFilePath).trim();
 
@@ -598,17 +601,6 @@ typedef RawSongTimeChange =
 	 * Optional, defaults to `[4]`.
 	 */
 	var bt:OneOfTwo<Int, Array<Int>>;
-}
-
-typedef RawConductorTimeChange =
-{
-	> RawSongTimeChange,
-
-	/**
-	 * The time in the song (in steps) that this change occurs at.
-	 * This time is somewhat weird because the rate it increases is dependent on the BPM at that point in the song.
-	 */
-	public var st:Float;
 }
 
 /**

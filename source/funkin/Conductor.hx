@@ -3,7 +3,6 @@ package funkin;
 import flixel.util.FlxSignal;
 import funkin.SongLoad.SwagSong;
 import funkin.play.song.Song.SongDifficulty;
-import funkin.play.song.SongData.ConductorTimeChange;
 import funkin.play.song.SongData.SongTimeChange;
 
 typedef BPMChangeEvent =
@@ -68,9 +67,9 @@ class Conductor
 		return crochet / 4;
 	}
 
-	public static var currentBeat(get, null):Float;
+	public static var currentBeat(get, null):Int;
 
-	static function get_currentBeat():Float
+	static function get_currentBeat():Int
 	{
 		return currentBeat;
 	}
@@ -127,20 +126,28 @@ class Conductor
 		var oldBeat = currentBeat;
 		var oldStep = currentStep;
 
-		songPosition = songPosition;
-		bpm = Conductor.getLastBPMChange().bpm;
+		Conductor.songPosition = songPosition;
+		Conductor.bpm = Conductor.getLastBPMChange().bpm;
 
+		currentTimeChange = timeChanges[0];
 		for (i in 0...timeChanges.length)
 		{
-			if (songPosition >= timeChanges[i].songTime)
+			if (songPosition >= timeChanges[i].timeStamp)
 				currentTimeChange = timeChanges[i];
 
-			if (songPosition < timeChanges[i].songTime)
+			if (songPosition < timeChanges[i].timeStamp)
 				break;
 		}
 
-		currentStep = (currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.songTime) / stepCrochet;
-		currentBeat = Math.floor(currentStep / 4);
+		if (currentTimeChange == null)
+		{
+			trace('WARNING: Conductor is broken, timeChanges is empty.');
+		}
+		else
+		{
+			currentStep = Math.floor((currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepCrochet);
+			currentBeat = Math.floor(currentStep / 4);
+		}
 
 		// FlxSignals are really cool.
 		if (currentStep != oldStep)
@@ -183,9 +190,9 @@ class Conductor
 
 		timeChanges = [];
 
-		for (currentTimeChange in timeChanges)
+		for (currentTimeChange in songTimeChanges)
 		{
-			var prevTimeChange:SongTimeChange = timeChanges.length == 0 ? null : timeChanges[timeChanges.length - 1];
+			// var prevTimeChange:SongTimeChange = timeChanges.length == 0 ? null : timeChanges[timeChanges.length - 1];
 
 			/*
 				if (prevTimeChange != null)
@@ -204,6 +211,8 @@ class Conductor
 
 			timeChanges.push(currentTimeChange);
 		}
+
+		trace('Done mapping time changes: ' + timeChanges);
 
 		// Done.
 	}

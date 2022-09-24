@@ -336,8 +336,6 @@ class PlayState extends MusicBeatState
 			FlxG.sound.cache(Paths.voices(currentSong.song));
 		}
 
-		Conductor.update(-5000);
-
 		// Initialize stage stuff.
 		initCameras();
 
@@ -368,6 +366,8 @@ class PlayState extends MusicBeatState
 					dialogue = CoolUtil.coolTextFile(Paths.txt('songs/thorns/thornsDialogue'));
 			}
 		}
+
+		Conductor.update(-5000);
 
 		if (dialogue != null)
 		{
@@ -989,6 +989,7 @@ class PlayState extends MusicBeatState
 		}
 
 		FlxG.sound.music.onComplete = endSong;
+		trace('Playing vocals...');
 		vocals.play();
 
 		#if discord_rpc
@@ -1011,12 +1012,14 @@ class PlayState extends MusicBeatState
 		if (currentSong.needsVoices)
 			vocals = new VoicesGroup(currentSong.song, currentSong.voiceList);
 		else
-			vocals = new VoicesGroup(currentSong.song, null, false);
+			vocals = new VoicesGroup(currentSong.song, null);
 
 		vocals.members[0].onComplete = function()
 		{
 			vocalsFinished = true;
 		};
+
+		trace(vocals);
 
 		activeNotes = new FlxTypedGroup<Note>();
 		activeNotes.zIndex = 1000;
@@ -1525,8 +1528,8 @@ class PlayState extends MusicBeatState
 			camHUD.zoom = FlxMath.lerp(1 * FlxCamera.defaultZoom, camHUD.zoom, 0.95);
 		}
 
-		FlxG.watch.addQuick("beatShit", curBeat);
-		FlxG.watch.addQuick("stepShit", curStep);
+		FlxG.watch.addQuick("beatShit", Conductor.currentBeat);
+		FlxG.watch.addQuick("stepShit", Conductor.currentStep);
 		if (currentStage != null)
 		{
 			FlxG.watch.addQuick("bfAnim", currentStage.getBoyfriend().getCurrentAnimation());
@@ -1535,7 +1538,7 @@ class PlayState extends MusicBeatState
 
 		if (currentSong != null && currentSong.song == 'Fresh')
 		{
-			switch (curBeat)
+			switch (Conductor.currentBeat)
 			{
 				case 16:
 					camZooming = true;
@@ -1758,20 +1761,10 @@ class PlayState extends MusicBeatState
 	{
 		FlxG.sound.music.pause();
 
-		var daBPM:Float = currentSong.bpm;
-		var daPos:Float = 0;
-		for (i in 0...(Std.int(curStep / 16 + sec)))
-		{
-			if (SongLoad.getSong()[i].changeBPM)
-			{
-				daBPM = SongLoad.getSong()[i].bpm;
-			}
-			daPos += 4 * (1000 * 60 / daBPM);
-		}
+		// BPM might change between the current and target section but IDGAF
+		FlxG.sound.music.time = Conductor.songPosition + (sec * 4 * (1000 * 60 / Conductor.bpm));
 
-		FlxG.sound.music.time = daPos;
 		Conductor.update(FlxG.sound.music.time + Conductor.offset);
-		updateCurStep();
 		resyncVocals();
 	}
 	#end
@@ -1785,7 +1778,7 @@ class PlayState extends MusicBeatState
 		mayPauseGame = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
-		if (currentSong.validScore)
+		if (currentSong != null && currentSong.validScore)
 		{
 			Highscore.saveScore(currentSong.song, songScore, storyDifficulty);
 		}
@@ -2186,8 +2179,8 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
-		iconP1.onStepHit(curStep);
-		iconP2.onStepHit(curStep);
+		iconP1.onStepHit(Conductor.currentStep);
+		iconP2.onStepHit(Conductor.currentStep);
 
 		return true;
 	}
@@ -2204,18 +2197,21 @@ class PlayState extends MusicBeatState
 		}
 
 		// Moving this code into the `beatHit` function allows for scripts and modules to control the camera better.
-		if (generatedMusic && SongLoad.getSong()[Std.int(curStep / 16)] != null)
+		if (currentSong != null)
 		{
-			cameraRightSide = SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection;
-			controlCamera();
-		}
-
-		if (SongLoad.getSong()[Math.floor(curStep / 16)] != null)
-		{
-			if (SongLoad.getSong()[Math.floor(curStep / 16)].changeBPM)
+			if (generatedMusic && SongLoad.getSong()[Std.int(Conductor.currentStep / 16)] != null)
 			{
-				Conductor.forceBPM(SongLoad.getSong()[Math.floor(curStep / 16)].bpm);
-				FlxG.log.add('CHANGED BPM!');
+				cameraRightSide = SongLoad.getSong()[Std.int(Conductor.currentStep / 16)].mustHitSection;
+				controlCamera();
+			}
+
+			if (SongLoad.getSong()[Math.floor(Conductor.currentStep / 16)] != null)
+			{
+				if (SongLoad.getSong()[Math.floor(Conductor.currentStep / 16)].changeBPM)
+				{
+					Conductor.forceBPM(SongLoad.getSong()[Math.floor(Conductor.currentStep / 16)].bpm);
+					FlxG.log.add('CHANGED BPM!');
+				}
 			}
 		}
 
@@ -2223,13 +2219,18 @@ class PlayState extends MusicBeatState
 
 		if (PreferencesMenu.getPref('camera-zoom'))
 		{
-			if (currentSong.song.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
+			if (currentSong != null
+				&& currentSong.song.toLowerCase() == 'milf'
+				&& Conductor.currentBeat >= 168
+				&& Conductor.currentBeat < 200
+				&& camZooming
+				&& FlxG.camera.zoom < 1.35)
 			{
 				FlxG.camera.zoom += 0.015 * FlxCamera.defaultZoom;
 				camHUD.zoom += 0.03;
 			}
 
-			if (camZooming && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom) && curBeat % 4 == 0)
+			if (camZooming && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom) && Conductor.currentBeat % 4 == 0)
 			{
 				FlxG.camera.zoom += 0.015 * FlxCamera.defaultZoom;
 				camHUD.zoom += 0.03;
@@ -2242,14 +2243,19 @@ class PlayState extends MusicBeatState
 		// bruh this var is bonkers i thot it was a function lmfaooo
 
 		// Break up into individual lines to aid debugging.
-		var shouldShowComboText:Bool = (curBeat % 8 == 7);
-		var daSection = SongLoad.getSong()[Std.int(curStep / 16)];
-		shouldShowComboText = shouldShowComboText && (daSection != null && daSection.mustHitSection);
-		shouldShowComboText = shouldShowComboText && (combo > 5);
 
-		var daNextSection = SongLoad.getSong()[Std.int(curStep / 16) + 1];
-		var isEndOfSong = SongLoad.getSong().length < Std.int(curStep / 16);
-		shouldShowComboText = shouldShowComboText && (isEndOfSong || (daNextSection != null && !daNextSection.mustHitSection));
+		var shouldShowComboText:Bool = false;
+		if (currentSong != null)
+		{
+			shouldShowComboText = (Conductor.currentBeat % 8 == 7);
+			var daSection = SongLoad.getSong()[Std.int(Conductor.currentBeat / 16)];
+			shouldShowComboText = shouldShowComboText && (daSection != null && daSection.mustHitSection);
+			shouldShowComboText = shouldShowComboText && (combo > 5);
+
+			var daNextSection = SongLoad.getSong()[Std.int(Conductor.currentBeat / 16) + 1];
+			var isEndOfSong = SongLoad.getSong().length < Std.int(Conductor.currentBeat / 16);
+			shouldShowComboText = shouldShowComboText && (isEndOfSong || (daNextSection != null && !daNextSection.mustHitSection));
+		}
 
 		if (shouldShowComboText)
 		{
@@ -2282,17 +2288,16 @@ class PlayState extends MusicBeatState
 			return;
 
 		// TODO: Move this to a song event.
-		if (curBeat % 8 == 7 && currentSong.song == 'Bopeebo')
-		{
-			currentStage.getBoyfriend().playAnimation('hey', true);
-		}
+		// if (Conductor.currentBeat % 8 == 7 && currentSong.song == 'Bopeebo')
+		// {
+		// 	currentStage.getBoyfriend().playAnimation('hey', true);
+		// }
 
 		// TODO: Move this to a song event.
-		if (curBeat % 16 == 15
-			&& currentSong.song == 'Tutorial'
+		if (Conductor.currentBeat % 16 == 15 // && currentSong.song == 'Tutorial'
 			&& currentStage.getDad().characterId == 'gf'
-			&& curBeat > 16
-			&& curBeat < 48)
+			&& Conductor.currentBeat > 16
+			&& Conductor.currentBeat < 48)
 		{
 			currentStage.getBoyfriend().playAnimation('hey', true);
 			currentStage.getDad().playAnimation('cheer', true);
@@ -2478,7 +2483,7 @@ class PlayState extends MusicBeatState
 		if (currentChart != null)
 		{
 		}
-		else
+		else if (currentSong != null)
 		{
 			openfl.utils.Assets.cache.clear(Paths.inst(currentSong.song));
 			openfl.utils.Assets.cache.clear(Paths.voices(currentSong.song));

@@ -204,30 +204,29 @@ class SongDifficulty
 
 	public inline function cacheInst()
 	{
-		// DEBUG: Remove this.
-		// FlxG.sound.cache(Paths.inst(this.song.songId));
-		FlxG.sound.cache(Paths.inst('bopeebo'));
+		FlxG.sound.cache(Paths.inst(this.song.songId));
 	}
 
 	public inline function playInst(volume:Float = 1.0, looped:Bool = false)
 	{
-		// DEBUG: Remove this.
-		// FlxG.sound.playMusic(Paths.inst(this.song.songId), volume, looped);
-		FlxG.sound.playMusic(Paths.inst('bopeebo'), volume, looped);
+		FlxG.sound.playMusic(Paths.inst(this.song.songId), volume, looped);
 	}
 
 	public inline function cacheVocals()
 	{
-		// DEBUG: Remove this.
-		// FlxG.sound.cache(Paths.voices(this.song.songId));
-		FlxG.sound.cache(Paths.voices('bopeebo'));
+		FlxG.sound.cache(Paths.voices(this.song.songId));
 	}
 
-	public inline function buildVocals(charId:String = "bf"):VoicesGroup
+	public function buildVoiceList():Array<String>
 	{
-		// DEBUG: Remove this.
-		// var result:VoicesGroup = new VoicesGroup(this.song.songId, null, false);
-		var result:VoicesGroup = new VoicesGroup('bopeebo', null, false);
+		// TODO: Implement.
+
+		return [""];
+	}
+
+	public function buildVocals(charId:String = "bf"):VoicesGroup
+	{
+		var result:VoicesGroup = new VoicesGroup(this.song.songId, this.buildVoiceList());
 		return result;
 	}
 }
