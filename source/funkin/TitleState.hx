@@ -10,6 +10,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.audiovis.SpectogramSprite;
+import funkin.noteStuff.NoteUtil;
+import funkin.shaderslmfao.BuildingShaders;
 import funkin.shaderslmfao.ColorSwap;
 import funkin.shaderslmfao.TitleOutline;
 import funkin.ui.AtlasText;
