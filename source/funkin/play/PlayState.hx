@@ -1786,7 +1786,7 @@ class PlayState extends MusicBeatState
 		// BPM might change between the current and target section but IDGAF
 		FlxG.sound.music.time = Conductor.songPosition + (sec * 4 * (1000 * 60 / Conductor.bpm));
 
-		Conductor.update(FlxG.sound.music.time + Conductor.offset);
+		Conductor.update();
 		resyncVocals();
 	}
 	#end

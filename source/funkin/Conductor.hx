@@ -34,15 +34,20 @@ class Conductor
 	/**
 	 * Beats per minute of the current song at the current time.
 	 */
-	public static var bpm(get, null):Float = 100;
+	public static var bpm(get, null):Float;
 
 	static function get_bpm():Float
 	{
+		if (bpmOverride != null)
+			return bpmOverride;
+
 		if (currentTimeChange == null)
 			return 100;
 
 		return currentTimeChange.bpm;
 	}
+
+	static var bpmOverride:Null<Float> = null;
 
 	// OLD, replaced with timeChanges.
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
@@ -111,23 +116,29 @@ class Conductor
 		return lastChange;
 	}
 
+	@:deprecated // Use loadSong with metadata files instead.
 	public static function forceBPM(bpm:Float)
 	{
-		// TODO: Get rid of this and use song metadata instead.
-		Conductor.bpm = bpm;
+		Conductor.bpmOverride = bpm;
 	}
 
 	/**
 	 * Update the conductor with the current song position.
 	 * BPM, current step, etc. will be re-calculated based on the song position.
+	 * 
+	 * @param	songPosition The current position in the song in milliseconds.
+	 *        Leave blank to use the FlxG.sound.music position.
 	 */
-	public static function update(songPosition:Float)
+	public static function update(songPosition:Float = null)
 	{
+		if (songPosition == null)
+			songPosition = (FlxG.sound.music != null) ? (FlxG.sound.music.time + Conductor.offset) : 0;
+
 		var oldBeat = currentBeat;
 		var oldStep = currentStep;
 
 		Conductor.songPosition = songPosition;
-		Conductor.bpm = Conductor.getLastBPMChange().bpm;
+		// Conductor.bpm = Conductor.getLastBPMChange().bpm;
 
 		currentTimeChange = timeChanges[0];
 		for (i in 0...timeChanges.length)
@@ -139,13 +150,19 @@ class Conductor
 				break;
 		}
 
-		if (currentTimeChange == null)
+		if (currentTimeChange == null && bpmOverride == null)
 		{
 			trace('WARNING: Conductor is broken, timeChanges is empty.');
 		}
-		else
+		else if (currentTimeChange != null)
 		{
 			currentStep = Math.floor((currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepCrochet);
+			currentBeat = Math.floor(currentStep / 4);
+		}
+		else
+		{
+			// Assume a constant BPM equal to the forced value.
+			currentStep = Math.floor((songPosition) / stepCrochet);
 			currentBeat = Math.floor(currentStep / 4);
 		}
 
@@ -157,6 +174,7 @@ class Conductor
 			beatHit.dispatch();
 	}
 
+	@:deprecated // Switch to TimeChanges instead.
 	public static function mapBPMChanges(song:SwagSong)
 	{
 		bpmChangeMap = [];
@@ -181,7 +199,6 @@ class Conductor
 			totalSteps += deltaSteps;
 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 		}
-		trace("new BPM map BUDDY " + bpmChangeMap);
 	}
 
 	public static function mapTimeChanges(currentChart:SongDifficulty)

@@ -259,6 +259,8 @@ class TitleState extends MusicBeatState
 			FlxG.sound.music.pitch -= 0.5 * elapsed;
 		#end
 
+		Conductor.update();
+
 		/* if (FlxG.onMobile)
 				  {
 			if (gfDance != null)

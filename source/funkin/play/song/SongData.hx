@@ -114,6 +114,11 @@ class SongDataParser
 		}
 	}
 
+	public static function listSongIds():Array<String>
+	{
+		return [for (x in songCache.keys()) x];
+	}
+
 	public static function parseSongMetadata(songId:String):Array<SongMetadata>
 	{
 		var result:Array<SongMetadata> = [];
