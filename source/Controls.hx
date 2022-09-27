@@ -406,7 +406,7 @@ class Controls extends FlxActionSet
 		{
 			case null:
 				// add all
-				#if (haxe >= "4.0.0")
+				#if (haxe >= "4.1.0")
 				for (gamepad in controls.gamepadsAdded)
 					if (!gamepadsAdded.contains(gamepad))
 						gamepadsAdded.push(gamepad);
