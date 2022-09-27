@@ -25,6 +25,7 @@ import funkin.Controls.Control;
 import funkin.freeplayStuff.BGScrollingText;
 import funkin.freeplayStuff.DJBoyfriend;
 import funkin.freeplayStuff.FreeplayScore;
+import funkin.freeplayStuff.LetterSort;
 import funkin.freeplayStuff.SongMenuItem;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
@@ -242,6 +243,14 @@ class FreeplayState extends MusicBeatSubstate
 			add(new DifficultySelector(20, grpDifficulties.y - 10, false, controls));
 			add(new DifficultySelector(325, grpDifficulties.y - 10, true, controls));
 
+			var letterSort:LetterSort = new LetterSort(300, 100);
+			add(letterSort);
+
+			letterSort.changeSelectionCallback = (str) ->
+			{
+				generateSongList(str, true);
+			};
+
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
 				fnfFreeplay.visible = true;
@@ -299,7 +308,7 @@ class FreeplayState extends MusicBeatSubstate
 
 		typing.callback = function(txt, action)
 		{
-			generateSongList(new EReg(txt.trim(), "ig"));
+			// generateSongList(new EReg(txt.trim(), "ig"));
 			trace(action);
 		};
 
@@ -311,29 +320,48 @@ class FreeplayState extends MusicBeatSubstate
 		super.create();
 	}
 
-	public function generateSongList(?regexp:EReg)
+	public function generateSongList(?startsWith:String, ?force:Bool = false)
 	{
 		curSelected = 0;
 
 		grpCapsules.clear();
 
-		var regexp:EReg = regexp;
+		// var regexp:EReg = regexp;
 		var tempSongs:Array<SongMetadata> = songs;
-		if (regexp != null)
-			tempSongs = songs.filter(item -> regexp.match(item.songName));
 
-		tempSongs.sort(function(a, b):Int
+		if (startsWith != null)
 		{
-			var tempA = a.songName.toUpperCase();
-			var tempB = b.songName.toUpperCase();
+			trace("STARTS WITH: " + startsWith);
+			switch (startsWith)
+			{
+				case "ALL":
+				case "#":
+				default:
+					trace(tempSongs.length);
 
-			if (tempA < tempB)
-				return -1;
-			else if (tempA > tempB)
-				return 1;
-			else
-				return 0;
-		});
+					tempSongs = tempSongs.filter(str ->
+					{
+						return str.songName.toLowerCase().startsWith(startsWith);
+					});
+					trace(tempSongs.length);
+			}
+		}
+
+		// if (regexp != null)
+		// 	tempSongs = songs.filter(item -> regexp.match(item.songName));
+
+		// tempSongs.sort(function(a, b):Int
+		// {
+		// 	var tempA = a.songName.toUpperCase();
+		// 	var tempB = b.songName.toUpperCase();
+
+		// 	if (tempA < tempB)
+		// 		return -1;
+		// 	else if (tempA > tempB)
+		// 		return 1;
+		// 	else
+		// 		return 0;
+		// });
 
 		for (i in 0...tempSongs.length)
 		{
@@ -355,11 +383,19 @@ class FreeplayState extends MusicBeatSubstate
 				funnyMenu.doLerp = true;
 			});
 
-			new FlxTimer().start(((0.20 * i) / (1 + i)) + 0.75, function(swagShi)
+			if (!force)
+			{
+				new FlxTimer().start(((0.20 * i) / (1 + i)) + 0.75, function(swagShi)
+				{
+					funnyMenu.songText.visible = true;
+					funnyMenu.alpha = 1;
+				});
+			}
+			else
 			{
 				funnyMenu.songText.visible = true;
 				funnyMenu.alpha = 1;
-			});
+			}
 
 			grpCapsules.add(funnyMenu);
 
@@ -649,8 +685,8 @@ class FreeplayState extends MusicBeatSubstate
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = songs.length - 1;
-		if (curSelected >= songs.length)
+			curSelected = grpCapsules.members.length - 1;
+		if (curSelected >= grpCapsules.members.length)
 			curSelected = 0;
 
 		// selector.y = (70 * curSelected) + 30;
@@ -684,7 +720,8 @@ class FreeplayState extends MusicBeatSubstate
 				capsule.targetPos.y -= 100; // another 100 for good measure
 		}
 
-		grpCapsules.members[curSelected].selected = true;
+		if (grpCapsules.members.length > 0)
+			grpCapsules.members[curSelected].selected = true;
 	}
 }
 
