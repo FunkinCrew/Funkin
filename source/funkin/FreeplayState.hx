@@ -453,6 +453,9 @@ class FreeplayState extends MusicBeatSubstate
 
 	var initTouchPos:FlxPoint = new FlxPoint();
 
+	var spamTimer:Float = 0;
+	var spamming:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -560,6 +563,31 @@ class FreeplayState extends MusicBeatSubstate
 			}
 		}
 		#end
+
+		if (controls.UI_UP || controls.UI_DOWN)
+		{
+			spamTimer += elapsed;
+
+			if (spamming)
+			{
+				if (spamTimer >= 0.07)
+				{
+					spamTimer = 0;
+
+					if (controls.UI_UP)
+						changeSelection(-1);
+					else
+						changeSelection(1);
+				}
+			}
+			else if (spamTimer >= 0.9)
+				spamming = true;
+		}
+		else
+		{
+			spamming = false;
+			spamTimer = 0;
+		}
 
 		if (upP)
 			changeSelection(-1);
