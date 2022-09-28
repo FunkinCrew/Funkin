@@ -381,6 +381,7 @@ class FreeplayState extends MusicBeatSubstate
 			funnyMenu.ID = i;
 			funnyMenu.alpha = 0.5;
 			funnyMenu.songText.visible = false;
+			funnyMenu.favIcon.visible = tempSongs[i].isFav;
 
 			fp.updateScore(0);
 
@@ -473,11 +474,32 @@ class FreeplayState extends MusicBeatSubstate
 
 		if (FlxG.keys.justPressed.F)
 		{
+			var realShit = curSelected;
 			songs[curSelected].isFav = !songs[curSelected].isFav;
 			if (songs[curSelected].isFav)
-				FlxTween.tween(grpCapsules.members[curSelected], {angle: 360}, 0.4, {ease: FlxEase.elasticOut});
+			{
+				
+				FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4, {
+					ease: FlxEase.elasticOut,
+					onComplete: _ ->
+					{
+						grpCapsules.members[realShit].favIcon.visible = true;
+						grpCapsules.members[realShit].favIcon.animation.play("fav");
+					}
+				});
+			}
 			else
-				FlxTween.tween(grpCapsules.members[curSelected], {angle: 0}, 0.4, {ease: FlxEase.elasticOut});
+			{
+				grpCapsules.members[realShit].favIcon.animation.play('fav', false, true);
+				new FlxTimer().start((1 / 24) * 14, _ ->
+				{
+					grpCapsules.members[realShit].favIcon.visible = false;
+				});
+				new FlxTimer().start((1 / 24) * 24, _ ->
+				{
+					FlxTween.tween(grpCapsules.members[realShit], {angle: 0}, 0.4, {ease: FlxEase.elasticOut});
+				});
+			}
 		}
 
 		if (FlxG.keys.justPressed.T)
