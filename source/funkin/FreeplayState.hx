@@ -248,7 +248,15 @@ class FreeplayState extends MusicBeatSubstate
 
 			letterSort.changeSelectionCallback = (str) ->
 			{
-				generateSongList(str, true);
+				switch (str)
+				{
+					case "fav":
+						generateSongList({filterType: FAVORITE}, true);
+					case "ALL":
+						generateSongList(null, true);
+					default:
+						generateSongList({filterType: STARTSWITH, filterData: str}, true);
+				}
 			};
 
 			new FlxTimer().start(1 / 24, function(handShit)
@@ -320,7 +328,7 @@ class FreeplayState extends MusicBeatSubstate
 		super.create();
 	}
 
-	public function generateSongList(?startsWith:String, ?force:Bool = false)
+	public function generateSongList(?filterStuff:SongFilter, ?force:Bool = false)
 	{
 		curSelected = 0;
 
@@ -329,21 +337,24 @@ class FreeplayState extends MusicBeatSubstate
 		// var regexp:EReg = regexp;
 		var tempSongs:Array<SongMetadata> = songs;
 
-		if (startsWith != null)
+		if (filterStuff != null)
 		{
-			trace("STARTS WITH: " + startsWith);
-			switch (startsWith)
+			switch (filterStuff.filterType)
 			{
-				case "ALL":
-				case "#":
-				default:
-					trace(tempSongs.length);
-
+				case STARTSWITH:
 					tempSongs = tempSongs.filter(str ->
 					{
-						return str.songName.toLowerCase().startsWith(startsWith);
+						return str.songName.toLowerCase().startsWith(filterStuff.filterData);
 					});
-					trace(tempSongs.length);
+				case ALL:
+				// no filter!
+				case FAVORITE:
+					tempSongs = tempSongs.filter(str ->
+					{
+						return str.isFav;
+					});
+				default:
+					// return all on default
 			}
 		}
 
@@ -459,6 +470,15 @@ class FreeplayState extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.F)
+		{
+			songs[curSelected].isFav = !songs[curSelected].isFav;
+			if (songs[curSelected].isFav)
+				FlxTween.tween(grpCapsules.members[curSelected], {angle: 360}, 0.4, {ease: FlxEase.elasticOut});
+			else
+				FlxTween.tween(grpCapsules.members[curSelected], {angle: 0}, 0.4, {ease: FlxEase.elasticOut});
+		}
 
 		if (FlxG.keys.justPressed.T)
 			typing.hasFocus = true;
@@ -799,16 +819,31 @@ class DifficultySelector extends FlxSprite
 	}
 }
 
+typedef SongFilter =
+{
+	var filterType:FilterType;
+	var ?filterData:Dynamic;
+}
+
+enum abstract FilterType(String)
+{
+	var STARTSWITH;
+	var FAVORITE;
+	var ALL;
+}
+
 class SongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var isFav:Bool = false;
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, ?isFav:Bool = false)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+		this.isFav = isFav;
 	}
 }
