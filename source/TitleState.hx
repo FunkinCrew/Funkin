@@ -44,12 +44,48 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
-	override public function create():Void
+	public static var mod_dirs:Array<String> = [];
+
+	public static function reloadMods()
 	{
 		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-		#end
+		mod_dirs = FlxG.save.data.mods;
 
+		var new_dirs:Array<String> = [];
+
+		for(dir in mod_dirs)
+		{
+			new_dirs.push(dir);
+		}
+
+		polymod.Polymod.init({
+			modRoot: "mods",
+			dirs: new_dirs,
+			framework: OPENFL,
+			errorCallback: function(error:polymod.Polymod.PolymodError)
+			{
+				#if debug
+				trace(error.message);
+				#end
+			},
+			frameworkParams: {
+				assetLibraryPaths: [
+					"songs" => "songs",
+					"shared" => "shared",
+					"week1" => "week1",
+					"week2" => "week2",
+					"week3" => "week3",
+					"week4" => "week4",
+					"week5" => "week5",
+					"week6" => "week6"
+				]
+			}
+		});
+		#end
+	}
+
+	override public function create():Void
+	{
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -66,6 +102,11 @@ class TitleState extends MusicBeatState
 		#end
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
+
+		if(FlxG.save.data.mods == null)
+			FlxG.save.data.mods = [];
+
+		reloadMods();
 
 		Highscore.load();
 
