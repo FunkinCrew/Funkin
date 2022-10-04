@@ -50,7 +50,7 @@ class MenuTypedItem extends MenuItem
 		}
 	}
 
-	override public function set_alpha(Alpha:Float)
+	override function set_alpha(Alpha:Float)
 	{
 		super.set_alpha(Alpha);
 		if (label != null)
@@ -58,7 +58,7 @@ class MenuTypedItem extends MenuItem
 		return alpha;
 	}
 
-	override public function set_x(NewX:Float)
+	override function set_x(NewX:Float)
 	{
 		super.set_x(NewX);
 		if (label != null)
@@ -66,7 +66,7 @@ class MenuTypedItem extends MenuItem
 		return x;
 	}
 
-	override public function set_y(NewY:Float)
+	override function set_y(NewY:Float)
 	{
 		super.set_y(NewY);
 		if (label != null)
