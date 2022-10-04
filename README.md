@@ -1,6 +1,6 @@
 # Friday Night Funkin
 
-![Repo size](https://img.shields.io/github/repo-size/GDColon/GDBrowser)
+![Repo size](https://img.shields.io/github/repo-size/ninjamuffin99/Funkin)
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
