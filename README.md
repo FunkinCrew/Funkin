@@ -1,3 +1,7 @@
+# Friday Night Funkin : Rappa Engine
+
+uhhh i'll add credits later this github page is kinda wip lol
+
 # Friday Night Funkin
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
