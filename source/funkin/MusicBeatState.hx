@@ -76,8 +76,6 @@ class MusicBeatState extends FlxUIState
 			FlxG.state.openSubState(new DebugMenuSubState());
 		}
 
-		// Conductor.update(FlxG.sound.music.time + Conductor.offset);
-
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
 		dispatchEvent(new UpdateScriptEvent(elapsed));

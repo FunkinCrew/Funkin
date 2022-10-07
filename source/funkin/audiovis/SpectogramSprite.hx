@@ -7,7 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
-import funkin.audiovis.PolygonSpectogram.VISTYPE;
+import funkin.audio.visualize.PolygonSpectogram.VISTYPE;
 import funkin.audiovis.VisShit.CurAudioInfo;
 import funkin.audiovis.dsp.FFT;
 import haxe.Timer;

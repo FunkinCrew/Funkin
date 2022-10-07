@@ -19,13 +19,13 @@ import flixel.util.FlxColor;
 import funkin.Conductor.BPMChangeEvent;
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
+import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audiovis.ABotVis;
-import funkin.audiovis.PolygonSpectogram;
 import funkin.audiovis.SpectogramSprite;
+import funkin.graphics.rendering.MeshRender;
 import funkin.noteStuff.NoteBasic.NoteData;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
-import funkin.rendering.MeshRender;
 import haxe.Json;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
@@ -1021,7 +1021,7 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	function recalculateSteps():Int
+	function recalculateSteps():Float
 	{
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,

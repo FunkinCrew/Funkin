@@ -2,6 +2,7 @@ package funkin.play.event;
 
 import flixel.FlxSprite;
 import funkin.play.PlayState;
+import funkin.play.character.BaseCharacter;
 import funkin.play.song.SongData.RawSongEventData;
 import haxe.DynamicAccess;
 
@@ -260,10 +261,22 @@ class VanillaEventCallbacks
 			case 'boyfriend':
 				trace('[EVENT] Playing animation $anim on boyfriend.');
 				target = PlayState.instance.currentStage.getBoyfriend();
+			case 'bf':
+				trace('[EVENT] Playing animation $anim on boyfriend.');
+				target = PlayState.instance.currentStage.getBoyfriend();
+			case 'player':
+				trace('[EVENT] Playing animation $anim on boyfriend.');
+				target = PlayState.instance.currentStage.getBoyfriend();
 			case 'dad':
 				trace('[EVENT] Playing animation $anim on dad.');
 				target = PlayState.instance.currentStage.getDad();
+			case 'opponent':
+				trace('[EVENT] Playing animation $anim on dad.');
+				target = PlayState.instance.currentStage.getDad();
 			case 'girlfriend':
+				trace('[EVENT] Playing animation $anim on girlfriend.');
+				target = PlayState.instance.currentStage.getGirlfriend();
+			case 'gf':
 				trace('[EVENT] Playing animation $anim on girlfriend.');
 				target = PlayState.instance.currentStage.getGirlfriend();
 			default:
@@ -276,7 +289,15 @@ class VanillaEventCallbacks
 
 		if (target != null)
 		{
-			target.animation.play(anim, force);
+			if (Std.isOfType(target, BaseCharacter))
+			{
+				var targetChar:BaseCharacter = cast target;
+				targetChar.playAnimation(anim, force, force);
+			}
+			else
+			{
+				target.animation.play(anim, force);
+			}
 		}
 	}
 }

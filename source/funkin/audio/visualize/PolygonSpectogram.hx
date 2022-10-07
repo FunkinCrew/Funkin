@@ -1,12 +1,12 @@
-package funkin.audiovis;
+package funkin.audio.visualize;
 
-import funkin.audiovis.VisShit.CurAudioInfo;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
+import funkin.audiovis.VisShit;
+import funkin.graphics.rendering.MeshRender;
 import lime.utils.Int16Array;
-import funkin.rendering.MeshRender;
 
 class PolygonSpectogram extends MeshRender
 {
@@ -30,7 +30,7 @@ class PolygonSpectogram extends MeshRender
 	{
 		super(0, 0, col);
 
-		vis = new VisShit(daSound);
+		setSound(daSound);
 
 		if (height != null)
 			this.daHeight = height;
@@ -38,6 +38,11 @@ class PolygonSpectogram extends MeshRender
 		this.detail = detail;
 
 		// col not in yet
+	}
+
+	public function setSound(daSound:FlxSound)
+	{
+		vis = new VisShit(daSound);
 	}
 
 	override function update(elapsed:Float)

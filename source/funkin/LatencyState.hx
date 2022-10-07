@@ -9,7 +9,7 @@ import flixel.system.FlxSound;
 import flixel.system.debug.stats.StatsGraph;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import funkin.audiovis.PolygonSpectogram;
+import funkin.audio.visualize.PolygonSpectogram;
 import funkin.ui.CoolStatsGraph;
 import haxe.Timer;
 import openfl.events.KeyboardEvent;

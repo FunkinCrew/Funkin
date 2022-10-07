@@ -14,6 +14,9 @@ import funkin.util.assets.FlxAnimationUtil;
  * 
  * BaseCharacter has game logic, SparrowCharacter has only rendering logic.
  * KEEP THEM SEPARATE!
+ *
+ * TODO: Rewrite this to use a single frame collection.
+ * @see https://github.com/HaxeFlixel/flixel/issues/2587#issuecomment-1179620637
  */
 class MultiSparrowCharacter extends BaseCharacter
 {

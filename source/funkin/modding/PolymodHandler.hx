@@ -23,11 +23,21 @@ class PolymodHandler
 	 */
 	static final MOD_FOLDER = "mods";
 
+	public static function createModRoot()
+	{
+		if (!sys.FileSystem.exists(MOD_FOLDER))
+		{
+			sys.FileSystem.createDirectory(MOD_FOLDER);
+		}
+	}
+
 	/**
 	 * Loads the game with ALL mods enabled with Polymod.
 	 */
 	public static function loadAllMods()
 	{
+		// Create the mod root if it doesn't exist.
+		createModRoot();
 		trace("Initializing Polymod (using all mods)...");
 		loadModsById(getAllModIds());
 	}
@@ -37,6 +47,9 @@ class PolymodHandler
 	 */
 	public static function loadEnabledMods()
 	{
+		// Create the mod root if it doesn't exist.
+		createModRoot();
+
 		trace("Initializing Polymod (using configured mods)...");
 		loadModsById(getEnabledModIds());
 	}
@@ -46,6 +59,9 @@ class PolymodHandler
 	 */
 	public static function loadNoMods()
 	{
+		// Create the mod root if it doesn't exist.
+		createModRoot();
+
 		// We still need to configure the debug print calls etc.
 		trace("Initializing Polymod (using no mods)...");
 		loadModsById([]);

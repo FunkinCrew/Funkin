@@ -43,7 +43,7 @@ class HealthIcon extends FlxSprite
 	/**
 	 * Since the `scale` of the sprite dynamically changes over time,
 	 * this value allows you to set a relative scale for the icon.
-	 * @default 1x scale
+	 * @default 1x scale = 150px width and height.
 	 */
 	public var size:FlxPoint = new FlxPoint(1, 1);
 
@@ -87,13 +87,13 @@ class HealthIcon extends FlxSprite
 	 * The size of a non-pixel icon when using the legacy format.
 	 * Remember, modern icons can be any size.
 	 */
-	static final LEGACY_ICON_SIZE = 150;
+	public static final HEALTH_ICON_SIZE = 150;
 
 	/**
 	 * The size of a pixel icon when using the legacy format.
 	 * Remember, modern icons can be any size.
 	 */
-	static final LEGACY_PIXEL_SIZE = 32;
+	static final PIXEL_ICON_SIZE = 32;
 
 	/**
 	 * shitty hardcoded value for a specific positioning!!!
@@ -145,11 +145,9 @@ class HealthIcon extends FlxSprite
 	{
 		super.update(elapsed);
 
-		if (PlayState.instance == null)
-			return;
-
 		// Auto-update the state of the icon based on the player's health.
-		if (autoUpdate)
+		// Make sure this is false if the health icon is not being used in the PlayState.
+		if (autoUpdate && PlayState.instance != null)
 		{
 			switch (playerId)
 			{
@@ -168,19 +166,22 @@ class HealthIcon extends FlxSprite
 						+ (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01))
 						- (this.width - POSITION_OFFSET);
 			}
+		}
 
+		if (bumpEvery != 0)
+		{
 			// Lerp the health icon back to its normal size,
 			// while maintaining aspect ratio.
 			if (this.width > this.height)
 			{
 				// Apply linear interpolation while accounting for frame rate.
-				var targetSize = Std.int(CoolUtil.coolLerp(this.width, 150 * this.size.x, 0.15));
+				var targetSize = Std.int(CoolUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
 
 				setGraphicSize(targetSize, 0);
 			}
 			else
 			{
-				var targetSize = Std.int(CoolUtil.coolLerp(this.height, 150 * this.size.y, 0.15));
+				var targetSize = Std.int(CoolUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
 
 				setGraphicSize(0, targetSize);
 			}
@@ -190,18 +191,20 @@ class HealthIcon extends FlxSprite
 
 	public function onStepHit(curStep:Int)
 	{
-		if (curStep % bumpEvery == 0 && isLegacyStyle)
+		if (bumpEvery != 0 && curStep % bumpEvery == 0 && isLegacyStyle)
 		{
 			// Make the health icons bump (the update function causes them to lerp back down).
 			if (this.width > this.height)
 			{
-				var targetSize = Std.int(CoolUtil.coolLerp(this.width + 30, 150, 0.15));
+				var targetSize = Std.int(CoolUtil.coolLerp(this.width + HEALTH_ICON_SIZE * 0.2, HEALTH_ICON_SIZE, 0.15));
+				targetSize = Std.int(Math.min(targetSize, HEALTH_ICON_SIZE * 1.2));
 
 				setGraphicSize(targetSize, 0);
 			}
 			else
 			{
-				var targetSize = Std.int(CoolUtil.coolLerp(this.height + 30, 150, 0.15));
+				var targetSize = Std.int(CoolUtil.coolLerp(this.height + HEALTH_ICON_SIZE * 0.2, HEALTH_ICON_SIZE, 0.15));
+				targetSize = Std.int(Math.min(targetSize, HEALTH_ICON_SIZE * 1.2));
 
 				setGraphicSize(0, targetSize);
 			}
@@ -211,7 +214,7 @@ class HealthIcon extends FlxSprite
 
 	inline function initTargetSize()
 	{
-		setGraphicSize(150);
+		setGraphicSize(HEALTH_ICON_SIZE);
 		updateHitbox();
 	}
 
@@ -330,8 +333,7 @@ class HealthIcon extends FlxSprite
 		}
 		else
 		{
-			loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? LEGACY_PIXEL_SIZE : LEGACY_ICON_SIZE,
-				isPixel ? LEGACY_PIXEL_SIZE : LEGACY_ICON_SIZE);
+			loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
 
 			loadAnimationOld(charId);
 		}

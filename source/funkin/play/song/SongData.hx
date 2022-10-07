@@ -213,7 +213,7 @@ class SongDataParser
 	}
 }
 
-typedef SongMetadata =
+typedef RawSongMetadata =
 {
 	/**
 	 * A semantic versioning string for the song data format.
@@ -231,10 +231,40 @@ typedef SongMetadata =
 	var generatedBy:String;
 
 	/**
-	 * Defaults to ''. Populated later.
+	 * Defaults to `default` or `''`. Populated later.
 	 */
 	var variation:String;
 };
+
+@:forward
+abstract SongMetadata(RawSongMetadata)
+{
+	public function new(songName:String, artist:String, variation:String = 'default')
+	{
+		this = {
+			version: SongMigrator.CHART_VERSION,
+			songName: songName,
+			artist: artist,
+			timeFormat: 'ms',
+			divisions: 96,
+			timeChanges: [new SongTimeChange(-1, 0, 100, 4, 4, [4, 4, 4, 4])],
+			loop: false,
+			playData: {
+				songVariations: [],
+				difficulties: ['normal'],
+
+				playableChars: {
+					bf: new SongPlayableChar('gf', 'dad'),
+				},
+
+				stage: 'mainStage',
+				noteSkin: 'Normal'
+			},
+			generatedBy: SongValidator.DEFAULT_GENERATEDBY,
+			variation: variation
+		};
+	}
+}
 
 typedef SongPlayData =
 {
@@ -310,6 +340,14 @@ abstract SongNoteData(RawSongNoteData)
 		return this.t = value;
 	}
 
+	public var stepTime(get, never):Float;
+
+	public function get_stepTime():Float
+	{
+		// TODO: Account for changes in BPM.
+		return this.t / Conductor.stepCrochet;
+	}
+
 	/**
 	 * The raw data for the note.
 	 */
@@ -334,6 +372,23 @@ abstract SongNoteData(RawSongNoteData)
 	public inline function getDirection(strumlineSize:Int = 4):Int
 	{
 		return this.d % strumlineSize;
+	}
+
+	public function getDirectionName(strumlineSize:Int = 4):String
+	{
+		switch (this.d % strumlineSize)
+		{
+			case 0:
+				return 'Left';
+			case 1:
+				return 'Down';
+			case 2:
+				return 'Up';
+			case 3:
+				return 'Right';
+			default:
+				return 'Unknown';
+		}
 	}
 
 	/**
@@ -543,14 +598,18 @@ typedef RawSongChartData =
 @:forward
 abstract SongChartData(RawSongChartData)
 {
-	public function new(scrollSpeed:DynamicAccess<Float>, events:Array<SongEventData>, notes:DynamicAccess<Array<SongNoteData>>)
+	public function new(scrollSpeed:Float, events:Array<SongEventData>, notes:Array<SongNoteData>)
 	{
 		this = {
 			version: SongMigrator.CHART_VERSION,
 
 			events: events,
-			notes: notes,
-			scrollSpeed: scrollSpeed,
+			notes: {
+				normal: notes
+			},
+			scrollSpeed: {
+				normal: scrollSpeed
+			},
 			generatedBy: SongValidator.DEFAULT_GENERATEDBY
 		}
 	}

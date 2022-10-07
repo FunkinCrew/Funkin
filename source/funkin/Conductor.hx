@@ -72,19 +72,20 @@ class Conductor
 		return crochet / 4;
 	}
 
-	public static var currentBeat(get, null):Int;
+	/**
+	 * Current position in the song, in beats.
+	**/
+	public static var currentBeat(default, null):Int;
 
-	static function get_currentBeat():Int
-	{
-		return currentBeat;
-	}
+	/**
+	 * Current position in the song, in steps.
+	 */
+	public static var currentStep(default, null):Int;
 
-	public static var currentStep(get, null):Int;
-
-	static function get_currentStep():Int
-	{
-		return currentStep;
-	}
+	/**
+	 * Current position in the song, in steps and fractions of a step.
+	 */
+	public static var currentStepTime(default, null):Float;
 
 	public static var beatHit(default, null):FlxSignal = new FlxSignal();
 	public static var stepHit(default, null):FlxSignal = new FlxSignal();
@@ -93,6 +94,9 @@ class Conductor
 	public static var visualOffset:Float = 0;
 	public static var audioOffset:Float = 0;
 	public static var offset:Float = 0;
+
+	// TODO: Add code to update this.
+	public static var beatsPerMeasure:Int = 4;
 
 	private function new()
 	{
@@ -116,7 +120,13 @@ class Conductor
 		return lastChange;
 	}
 
-	@:deprecated // Use loadSong with metadata files instead.
+	/**
+	 * Forcibly defines the current BPM of the song.
+	 * Useful for things like the chart editor that need to manipulate BPM in real time.
+	 * 
+	 * WARNING: Avoid this for things like setting the BPM of the title screen music,
+	 * you should have a metadata file for it instead.
+	 */
 	public static function forceBPM(bpm:Float)
 	{
 		Conductor.bpmOverride = bpm;
@@ -156,13 +166,15 @@ class Conductor
 		}
 		else if (currentTimeChange != null)
 		{
-			currentStep = Math.floor((currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepCrochet);
+			currentStepTime = (currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepCrochet;
+			currentStep = Math.floor(currentStepTime);
 			currentBeat = Math.floor(currentStep / 4);
 		}
 		else
 		{
 			// Assume a constant BPM equal to the forced value.
-			currentStep = Math.floor((songPosition) / stepCrochet);
+			currentStepTime = (songPosition / stepCrochet);
+			currentStep = Math.floor(currentStepTime);
 			currentBeat = Math.floor(currentStep / 4);
 		}
 
@@ -209,28 +221,46 @@ class Conductor
 
 		for (currentTimeChange in songTimeChanges)
 		{
-			// var prevTimeChange:SongTimeChange = timeChanges.length == 0 ? null : timeChanges[timeChanges.length - 1];
-
-			/*
-				if (prevTimeChange != null)
-				{
-					var deltaTime:Float = currentTimeChange.timeStamp - prevTimeChange.timeStamp;
-					var deltaSteps:Int = Math.round(deltaTime / (60 / prevTimeChange.bpm) * 1000 / 4);
-
-					currentTimeChange.stepTime = prevTimeChange.stepTime + deltaSteps;
-				}
-				else
-				{
-					// We know the time and steps of this time change is 0, since this is the first time change.
-					currentTimeChange.stepTime = 0;
-				}
-			 */
-
 			timeChanges.push(currentTimeChange);
 		}
 
 		trace('Done mapping time changes: ' + timeChanges);
 
 		// Done.
+	}
+
+	/**
+	 * Given a time in milliseconds, return a time in steps.
+	 */
+	public static function getTimeInSteps(ms:Float):Int
+	{
+		if (timeChanges.length == 0)
+		{
+			// Assume a constant BPM equal to the forced value.
+			return Math.floor(ms / stepCrochet);
+		}
+		else
+		{
+			var resultStep:Int = 0;
+
+			var lastTimeChange:SongTimeChange = timeChanges[0];
+			for (timeChange in timeChanges)
+			{
+				if (ms >= timeChange.timeStamp)
+				{
+					lastTimeChange = timeChange;
+					resultStep = lastTimeChange.beatTime * 4;
+				}
+				else
+				{
+					// This time change is after the requested time.
+					break;
+				}
+			}
+
+			resultStep += Math.floor((ms - lastTimeChange.timeStamp) / stepCrochet);
+
+			return resultStep;
+		}
 	}
 }

@@ -1340,10 +1340,11 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void
 	{
-		if (_exiting)
+		if (_exiting || vocals == null)
 			return;
 
 		vocals.pause();
+
 		FlxG.sound.music.play();
 		Conductor.update(FlxG.sound.music.time + Conductor.offset);
 
@@ -2226,8 +2227,10 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
-		iconP1.onStepHit(Conductor.currentStep);
-		iconP2.onStepHit(Conductor.currentStep);
+		if (iconP1 != null)
+			iconP1.onStepHit(Std.int(Conductor.currentStep));
+		if (iconP2 != null)
+			iconP2.onStepHit(Std.int(Conductor.currentStep));
 
 		return true;
 	}
