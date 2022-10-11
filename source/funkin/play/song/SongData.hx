@@ -435,6 +435,42 @@ abstract SongNoteData(RawSongNoteData)
 			value = null;
 		return this.k = value;
 	}
+
+	@:op(A == B)
+	public function op_equals(other:SongNoteData):Bool
+	{
+		return this.t == other.t && this.d == other.d && this.l == other.l && this.k == other.k;
+	}
+
+	@:op(A != B)
+	public function op_notEquals(other:SongNoteData):Bool
+	{
+		return !this.op_equals(other);
+	}
+
+	@:op(A > B)
+	public function op_greaterThan(other:SongNoteData):Bool
+	{
+		return this.t > other.t;
+	}
+
+	@:op(A < B)
+	public function op_lessThan(other:SongNoteData):Bool
+	{
+		return this.t < other.t;
+	}
+
+	@:op(A >= B)
+	public function op_greaterThanOrEquals(other:SongNoteData):Bool
+	{
+		return this.t >= other.t;
+	}
+
+	@:op(A <= B)
+	public function op_lessThanOrEquals(other:SongNoteData):Bool
+	{
+		return this.t <= other.t;
+	}
 }
 
 typedef RawSongEventData =
@@ -534,6 +570,42 @@ abstract SongEventData(RawSongEventData)
 	public inline function getBoolArray():Array<Bool>
 	{
 		return cast this.v;
+	}
+
+	@:op(A == B)
+	public function op_equals(other:SongEventData):Bool
+	{
+		return this.t == other.t && this.e == other.e && this.v == other.v;
+	}
+
+	@:op(A != B)
+	public function op_notEquals(other:SongEventData):Bool
+	{
+		return !this.op_equals(other);
+	}
+
+	@:op(A > B)
+	public function op_greaterThan(other:SongEventData):Bool
+	{
+		return this.t > other.t;
+	}
+
+	@:op(A < B)
+	public function op_lessThan(other:SongEventData):Bool
+	{
+		return this.t < other.t;
+	}
+
+	@:op(A >= B)
+	public function op_greaterThanOrEquals(other:SongEventData):Bool
+	{
+		return this.t >= other.t;
+	}
+
+	@:op(A <= B)
+	public function op_lessThanOrEquals(other:SongEventData):Bool
+	{
+		return this.t <= other.t;
 	}
 }
 

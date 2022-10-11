@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.components.CheckBox;
+import haxe.ui.containers.TreeViewNode;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxTiledSprite;
@@ -51,6 +53,7 @@ class ChartEditorState extends HaxeUIState
 	public static final STRUMLINE_SIZE = 4;
 	static final MENU_BAR_HEIGHT = 32;
 	static final GRID_TOP_PAD:Int = 8;
+	static final SELECTION_SQUARE_BORDER_WIDTH:Int = 1;
 
 	// UI Element Colors
 	static final BG_COLOR:FlxColor = 0xFF673AB7;
@@ -63,7 +66,9 @@ class ChartEditorState extends HaxeUIState
 	static final PREVIEW_BG_COLOR:FlxColor = 0xFF303030;
 	static final PLAYHEAD_COLOR:FlxColor = 0xC0808080;
 	static final SPECTROGRAM_COLOR:FlxColor = 0xFFFF0000;
-
+	static final SELECTION_SQUARE_BORDER_COLOR:FlxColor = 0xFF339933;
+	static final SELECTION_SQUARE_FILL_COLOR:FlxColor = 0x4033FF33;
+	
 	/**
 	 * INSTANCE DATA
 	 */
@@ -165,6 +170,19 @@ class ChartEditorState extends HaxeUIState
 	var shouldPlayMetronome:Bool = true;
 
 	/**
+	 * Whether the current view is in downscroll mode.
+	 */
+	var isViewDownscroll(default, set):Bool = false;
+
+	function set_isViewDownscroll(value:Bool):Bool {
+		// Make sure view is updated.
+		noteDisplayDirty = true;
+		notePreviewDirty = true;
+
+		return isViewDownscroll = value;
+	}
+
+	/**
 	 * The current variation ID.
 	 */
 	var selectedVariation:String = DEFAULT_VARIATION;
@@ -207,6 +225,17 @@ class ChartEditorState extends HaxeUIState
 	 * Whether the undo/redo histories have changed since the last time the UI was updated.
 	 */
 	var commandHistoryDirty:Bool = true;
+
+	/**
+	 * The notes which are currently in the selection.
+	 */
+	var currentSelection:Array<SongNoteData> = [];
+
+	/**
+	 * The user's current clipboard. Contains a full list of the notes they have copied or cut.
+	 * TODO: Replace this with serialization in the real clipboard.
+	 */
+	var currentClipboard:Array<SongNoteData> = [];
 
 	/**
 	 * AUDIO AND SOUND DATA
@@ -418,6 +447,11 @@ class ChartEditorState extends HaxeUIState
 	 * The IMAGE used for the grid.
 	 */
 	var gridBitmap:BitmapData;
+	
+	/**
+	 * The IMAGE used for the selection squares.
+	 */
+	var selectionSquareBitmap:BitmapData = null;
 
 	/**
 	 * The tiled sprite used to display the grid.
@@ -474,6 +508,8 @@ class ChartEditorState extends HaxeUIState
 	 * and kills notes that are off-screen to be recycled later.
 	 */
 	var renderedNotes:FlxTypedSpriteGroup<ChartEditorNoteSprite>;
+
+	var renderedNoteSelectionSquares:FlxTypedSpriteGroup<FlxSprite>;
 
 	public function new()
 	{
@@ -541,12 +577,23 @@ class ChartEditorState extends HaxeUIState
 			dark ? GRID_COLOR_1_DARK : GRID_COLOR_1, dark ? GRID_COLOR_2_DARK : GRID_COLOR_2);
 	}
 
+	function makeSelectionSquareBitmap() {
+		selectionSquareBitmap = new BitmapData(GRID_SIZE, GRID_SIZE, true);
+
+		selectionSquareBitmap.fillRect(new Rectangle(0, 0, GRID_SIZE, GRID_SIZE), SELECTION_SQUARE_BORDER_COLOR);
+		selectionSquareBitmap.fillRect(new Rectangle(SELECTION_SQUARE_BORDER_WIDTH, SELECTION_SQUARE_BORDER_WIDTH,
+			GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2), GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2)),
+			SELECTION_SQUARE_FILL_COLOR);
+	}
+
 	/**
 	 * Builds and displays the chart editor grid, including the playhead and cursor.
 	 */
 	function buildGrid()
 	{
 		makeGridBitmap(false);
+
+		makeSelectionSquareBitmap();
 
 		// Draw dividers between the strumlines.
 		var dividerLineAX = GRID_SIZE * (STRUMLINE_SIZE) - 1;
@@ -657,23 +704,22 @@ class ChartEditorState extends HaxeUIState
 
 		addUIChangeListener('menubarItemToggleSidebar', (event:UIEvent) ->
 		{
-			var sidebar:MenuCheckBox = findComponent('sidebar', MenuCheckBox);
+			var sidebar:Component = findComponent('sidebar', Component);
 
-			if (event.value)
-			{
-				sidebar.show();
-			}
+			sidebar.visible = event.value;
 		});
+		setUISelected('menubarItemToggleSidebar', true);
+
+		addUIChangeListener('menubarItemDownscroll', (event:UIEvent) -> {
+			isViewDownscroll = event.value;
+		});
+		setUISelected('menubarItemDownscroll', isViewDownscroll);
 
 		addUIChangeListener('menubarItemMetronomeEnabled', (event:UIEvent) ->
 		{
 			shouldPlayMetronome = event.value;
 		});
-		var metronomeEnabledCheckbox:MenuCheckBox = findComponent('menubarItemMetronomeEnabled', MenuCheckBox);
-		if (metronomeEnabledCheckbox != null)
-		{
-			metronomeEnabledCheckbox.selected = shouldPlayMetronome;
-		}
+		setUISelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
 
 		addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) ->
 		{
@@ -880,12 +926,12 @@ class ChartEditorState extends HaxeUIState
 		// Middle Mouse + Drag = Scroll but move the playhead the same amount.
 		if (FlxG.mouse.pressedMiddle)
 		{
-			if (FlxG.mouse.diffY != 0)
+			if (FlxG.mouse.deltaY != 0)
 			{
 				// Scroll down by the amount dragged.
-				scrollAmount += -FlxG.mouse.diffY;
+				scrollAmount += -FlxG.mouse.deltaY;
 				// Move the playhead by the same amount in the other direction so it is stationary.
-				playheadAmount += FlxG.mouse.diffY;
+				playheadAmount += FlxG.mouse.deltaY;
 			}
 		}
 
@@ -977,39 +1023,47 @@ class ChartEditorState extends HaxeUIState
 			// Left click.
 			if (FlxG.mouse.justPressed)
 			{
-				var eventColumn = (STRUMLINE_SIZE * 2 + 1) - 1;
-				if (cursorColumn == eventColumn)
-				{
-					// Place an event.
+				// Find the first note that is at the cursor position.
+				var highlightedNote:ChartEditorNoteSprite = renderedNotes.find(function(note:ChartEditorNoteSprite):Bool {
+					// return note.step == cursorStep && note.column == cursorColumn;
+					return FlxG.mouse.overlaps(note);
+				});
 
-					/*
-						var newEventData:SongEvent = new SongEventData(cursorMs, cursorColumn, 0, selectedNoteKind);
-						currentSongChartEventData.push(newEventData);
-						sortChartData();
-					 */
-				}
-				else
-				{
-					// Create a note and place it in the chart.
-					var cursorMs = cursorStep * Conductor.stepCrochet;
-
-					var newNoteData:SongNoteData = new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
-
-					performCommand(new AddNoteCommand(newNoteData));
-				}
-			}
-
-			// Right click.
-			if (FlxG.mouse.justPressedRight)
-			{
-				for (noteSprite in renderedNotes.members)
-				{
-					if (noteSprite == null || !noteSprite.exists || !noteSprite.visible)
-						continue;
-
-					if (noteSprite.overlapsPoint(FlxG.mouse.getPosition()))
-					{
-						performCommand(new RemoveNoteCommand(noteSprite.noteData));
+				if (FlxG.keys.pressed.CONTROL) {
+					if (highlightedNote != null) {
+						if (isNoteSelected(highlightedNote.noteData)) {
+							performCommand(new SelectNotesCommand([highlightedNote.noteData]));
+						} else {
+							performCommand(new DeselectNotesCommand([highlightedNote.noteData]));
+						}
+					}
+				} else {
+					if (highlightedNote != null) {
+						// Remove the note.
+						performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
+					} else {
+						// Place a note.
+						var eventColumn = (STRUMLINE_SIZE * 2 + 1) - 1;
+						if (cursorColumn == eventColumn)
+						{
+							// Create an event and place it in the chart.
+							var cursorMs = cursorStep * Conductor.stepCrochet;
+		
+							// TODO: Allow configuring the event to place from the sidebar.
+							var newEventData:SongEventData = new SongEventData(cursorMs, "test", {});
+		
+							performCommand(new AddEventsCommand([newEventData]));
+						}
+						else
+						{
+							// Create a note and place it in the chart.
+							var cursorMs = cursorStep * Conductor.stepCrochet;
+		
+							var newNoteData:SongNoteData = new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
+		
+							performCommand(new AddNotesCommand([newNoteData]));
+						}
+	
 					}
 				}
 			}
@@ -1030,6 +1084,9 @@ class ChartEditorState extends HaxeUIState
 		if (noteDisplayDirty)
 		{
 			noteDisplayDirty = false;
+
+			// Update for whether downscroll is enabled.
+			renderedNotes.flipX = (isViewDownscroll);
 
 			// Calculate the view bounds.
 			var viewAreaTop:Float = this.scrollPosition - GRID_TOP_PAD;
@@ -1089,6 +1146,22 @@ class ChartEditorState extends HaxeUIState
 				// Setting note data resets position relative to the grid so we fix that.
 				noteSprite.x += renderedNotes.x;
 				noteSprite.y += renderedNotes.y;
+			}
+
+			// Handle selection squares.
+			for (member in renderedNoteSelectionSquares.members) {
+				member.kill();
+			}
+
+			for (noteSprite in renderedNotes.members) {
+				if (isNoteSelected(noteSprite.noteData)) {
+					var selectionSquare:FlxSprite = renderedNoteSelectionSquares.recycle(FlxSprite).loadGraphic(selectionSquareBitmap);
+					
+					selectionSquare.x = noteSprite.x;
+					selectionSquare.y = noteSprite.y;
+					selectionSquare.width = noteSprite.width;
+					selectionSquare.height = noteSprite.height;
+				}
 			}
 		}
 	}
@@ -1185,8 +1258,18 @@ class ChartEditorState extends HaxeUIState
 					text: "D: Erect",
 					icon: "haxeui-core/styles/default/haxeui_tiny.png"
 				});
+
+				treeView.onChange = onChangeTreeDifficulty;
 			}
 		}
+	}
+
+	function onChangeTreeDifficulty(event:UIEvent):Void
+	{
+		// Get the selected node.
+		var target:TreeView = cast event.target;
+		var targetNode:TreeViewNode = target.selectedNode;
+		trace('Selected node: ${targetNode.id}');
 	}
 
 	/**
@@ -1391,7 +1474,11 @@ class ChartEditorState extends HaxeUIState
 		this.scrollPosition = value;
 
 		// Move the grid sprite to the correct position.
-		gridTiledSprite.y = -scrollPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+		if (isViewDownscroll) {
+			gridTiledSprite.y = -scrollPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+		} else {
+			gridTiledSprite.y = -scrollPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+		}
 		// Move the rendered notes to the correct position.
 		renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
 
@@ -1424,7 +1511,7 @@ class ChartEditorState extends HaxeUIState
 		// Set visibility while syncing the checkbox.
 		if (sidebar != null)
 		{
-			sidebar.hidden = setUIValue('menubarItemToggleSidebar', !sidebar.hidden);
+			sidebar.visible = setUISelected('menubarItemToggleSidebar', !sidebar.visible);
 		}
 	}
 
@@ -1556,6 +1643,30 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
+	 * Set the value of a HaxeUI checkbox,
+	 * since that's on 'selected' instead of 'value'.
+	 */
+	function setUISelected<T>(key:String, value:Bool):Bool
+	{
+		var targetA:CheckBox = findComponent(key, CheckBox);
+
+		if (targetA != null)
+		{
+			return targetA.selected = value;
+		}
+
+		var targetB:MenuCheckBox = findComponent(key, MenuCheckBox);
+		if (targetB != null)
+		{
+			return targetB.selected = value;
+		}
+
+		// Gracefully handle the case where the item can't be located.
+		trace('WARN: Could not locate check box: $key');
+		return value;
+	}
+
+	/**
 	 * Perform (or redo) a command, then add it to the undo stack.
 	 * @param command The command to perform.
 	 * @param purgeRedoStack If true, the redo stack will be cleared.
@@ -1626,6 +1737,11 @@ class ChartEditorState extends HaxeUIState
 	function playMetronomeTick(?high:Bool = false)
 	{
 		playSound(Paths.sound('pianoStuff/piano-${high ? '001' : '008'}'));
+	}
+
+	function isNoteSelected(note:SongNoteData):Bool
+	{
+		return currentSelection.indexOf(note) != -1;
 	}
 
 	/**

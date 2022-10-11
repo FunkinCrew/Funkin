@@ -190,8 +190,8 @@
 	 * - e: A string specifying the event type. See below for more info.
 	 * - v: The (optional) value for this event. Its type depends on the associated event (it could be a number, bool, string, array, object...)
 	 * 
-   * This list is assumed to be in timestamp order, and unexpected behavior may occur if it is not.
-   *
+     * This list is assumed to be in timestamp order, and unexpected behavior may occur if it is not.
+     *
 	 * This list will be iterated through before the song is loaded, allowing for modules to mutate them before the song starts.
 	 * It also serves to allow for pre-loading certain assets that may be added to the game mid-song through events.
 	 *
@@ -246,6 +246,15 @@
 	 * - k: Kind of this note. If unspecified, defaults to `"normal"`.
 	 *			This can allow the note to either include custom behavior defined in a module script,
 	 *			or have a custom appearance defined by the noteSkin (or both).
+	 * - el: Editor layer (index) which this note is placed on.
+	 *			Optional, defaults to 0.
+	 * 			The user can use the UI to toggle visibility of notes placed on different layers.
+	 * - ep: Editor pattern child note.
+	 * 			Optional.
+	 *          If specified, this note is in the chart because it is part of a placed pattern.
+	 *          The value is the ID of the pattern the note was copied from.
+	 *          The final chart should be able to be fully recreated by deleting all notes with non-empty `ep`,
+	 *          then applying the pattern placement data from the `editor` object.
 	 */
 	"notes": {
 		"easy": [
@@ -1195,6 +1204,94 @@
 			{"t":25248,"d":0},
 			{"t":25296,"d":0},
 			{"t":25344,"d":1}
+		]
+	},
+
+	/**
+	 * Data used only by the chart editor.
+	 * This object is optional, and the chart file ought to be fully playable when it is excluded.
+	 */
+	"editor": {
+		/**
+		 * An map of patterns which exist for this chart.
+		 * You can browse through these using the interface on the right side,
+		 * place them in the chart in multiple places, create them from an existing selection,
+		 * and double click to enter the pattern for editing.
+		 * 
+		 * Editing a pattern will affect the grouped notes in all locations that the pattern was placed.
+		 * If a user destroys a pattern from the UI, they will be prompted to either
+		 * ungroup the notes (leaving them in the chart) or remove the grouped notes from the chart.
+		 *
+		 * The key for the map is a randomized unique ID for the pattern, used to quickly reference it elsewhere in the chart.
+		 */
+		"patternDefinitions": {
+			"a7be4f8": {
+				/**
+				 * A label to identify the pattern.
+				 * Should be customizable by the user, and does not need to be unique (the key for the map keeps patterns separate)
+				 */
+				"label": "Secondary Motif",
+				/**
+				 * A color to highlight the grouped notes with in the UI.
+				 * Should be customizable by the user (HaxeUI has a color picker, yay!).
+				 */
+				"color": "#FF3333",
+				/**
+				 * The notes placed in the pattern.
+				 * These are of the same format as the main `notes` object, with the exception that
+				 * editor attributes (such as layer and pattern child) are not allowed.
+				 * 
+				 * `t` acts as an offset with 0 representing the timestamp the pattern was placed.
+				 */
+				"notes": [
+					{"t":300, "d":4},
+					{"t":600, "d":2},
+					{"t":900, "d":1},
+					{"t":1300, "d":3},
+				]
+			}
+		},
+
+		/**
+		 * Defines where in the chart that patterns are currently placed.
+		 * Add one key for each difficulty in the chart.
+		 *
+		 * When placing a pattern in a chart, an element should be added to the appropriate array below,
+		 * then the pattern should be fetched, and the pattern notes (with `t = pattern time + offset)
+		 * copied to the chart, with `ep` set so the chart editor knows the notes are part of a pattern.
+		 */
+		"patternPlacements": {
+			"easy": [],
+			"normal": [
+				{
+					"t": 3000,
+					"p": "a7be4f8",
+					"f": false,
+					"el": 2
+				}
+			],
+			"hard": [
+				{
+					"t": 3000,
+					"p": "a7be4f8",
+					"f": false,
+					"el": 2
+				}
+			]	
+		},
+
+		/**
+		 * Metadata about the layers in the chart.
+		 * The first layer (0) is always named "Default" and it cannot be rearranged or deleted.
+		 * If there are no other layers in the chart, this array will be empty.
+		 */
+		"layers": [
+			{
+				/**
+				 * The name this note layer has in the interface.
+				 */
+				"label": "Test"
+			}
 		]
 	},
 

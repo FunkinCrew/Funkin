@@ -11,8 +11,8 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "0f3ae2d",
-      "url": "https://github.com/haxeflixel/flixel"
+      "ref": "dev",
+      "url": "https://github.com/MasterEric/flixel"
     },
     {
       "name": "flixel-addons",
@@ -41,10 +41,15 @@
       "url": "https://github.com/Dot-Stuff/flxanimate"
     },
     {
+      "name": "format",
+      "type": "haxelib",
+      "version": null
+    },
+    {
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "master",
+      "ref": "53f5cc24",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
@@ -73,6 +78,11 @@
       "name": "hxcpp-debug-server",
       "type": "haxelib",
       "version": "1.2.4"
+    },
+    {
+      "name": "hxp",
+      "type": "haxelib",
+      "version": null
     },
     {
       "name": "lime",
