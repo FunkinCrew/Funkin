@@ -1,8 +1,8 @@
 package funkin.ui.debug.charting;
 
-import funkin.play.song.SongDataUtils;
-import funkin.play.song.SongData.SongNoteData;
 import funkin.play.song.SongData.SongEventData;
+import funkin.play.song.SongData.SongNoteData;
+import funkin.play.song.SongDataUtils;
 
 using Lambda;
 
@@ -37,25 +37,26 @@ interface ChartEditorCommand
 
 class AddNotesCommand implements ChartEditorCommand
 {
-	private var notes:SongNoteData;
+	private var notes:Array<SongNoteData>;
 
-	public function new(notes:SongNoteData)
+	public function new(notes:Array<SongNoteData>)
 	{
 		this.notes = notes;
 	}
 
 	public function execute(state:ChartEditorState):Void
 	{
-		for (note in notes) {
+		for (note in notes)
+		{
 			state.currentSongChartNoteData.push(note);
 		}
 
 		state.currentSelection = notes;
 		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
-		
+
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 
@@ -67,48 +68,52 @@ class AddNotesCommand implements ChartEditorCommand
 
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 
 	public function toString():String
 	{
-		if (notes.length == 1) {
+		if (notes.length == 1)
+		{
 			var dir:String = notes[0].getDirectionName();
 			return 'Add $dir Note';
 		}
-		
+
 		return 'Add ${notes.length} Notes';
 	}
 }
 
-class RemoveNoteCommand implements ChartEditorCommand
+class RemoveNotesCommand implements ChartEditorCommand
 {
-	private var note:SongNoteData;
+	private var notes:Array<SongNoteData>;
 
-	public function new(note:SongNoteData)
+	public function new(notes:Array<SongNoteData>)
 	{
-		this.note = note;
+		this.notes = notes;
 	}
 
 	public function execute(state:ChartEditorState):Void
 	{
-		state.currentSongChartNoteData.remove(note);
+		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 		state.currentSelection = [];
 		state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
-		
+
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 
 	public function undo(state:ChartEditorState):Void
 	{
-		state.currentSongChartNoteData.push(note);
-		state.currentSelection = [note];
+		for (note in notes)
+		{
+			state.currentSongChartNoteData.push(note);
+		}
+		state.currentSelection = notes;
 		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
-		
+
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -117,11 +122,12 @@ class RemoveNoteCommand implements ChartEditorCommand
 
 	public function toString():String
 	{
-		if (notes.length == 1) {
+		if (notes.length == 1)
+		{
 			var dir:String = notes[0].getDirectionName();
 			return 'Remove $dir Note';
 		}
-		
+
 		return 'Remove ${notes.length} Notes';
 	}
 }
@@ -176,7 +182,8 @@ class SelectNotesCommand implements ChartEditorCommand
 
 	public function execute(state:ChartEditorState):Void
 	{
-		for (note in this.notes) {
+		for (note in this.notes)
+		{
 			state.currentSelection.push(note);
 		}
 
@@ -187,23 +194,24 @@ class SelectNotesCommand implements ChartEditorCommand
 	public function undo(state:ChartEditorState):Void
 	{
 		state.currentSelection = SongDataUtils.subtractNotes(state.currentSelection, this.notes);
-		
+
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 	}
 
 	public function toString():String
 	{
-		if (notes.length == 1) {
+		if (notes.length == 1)
+		{
 			var dir:String = notes[0].getDirectionName();
 			return 'Select $dir Note';
 		}
-		
+
 		return 'Select ${notes.length} Notes';
 	}
 }
 
-class DeselectNoteCommand implements ChartEditorCommand
+class DeselectNotesCommand implements ChartEditorCommand
 {
 	private var notes:Array<SongNoteData>;
 
@@ -222,21 +230,23 @@ class DeselectNoteCommand implements ChartEditorCommand
 
 	public function undo(state:ChartEditorState):Void
 	{
-		for (note in this.notes) {
+		for (note in this.notes)
+		{
 			state.currentSelection.push(note);
 		}
-		
+
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 	}
 
 	public function toString():String
 	{
-		if (notes.length == 1) {
+		if (notes.length == 1)
+		{
 			var dir:String = notes[0].getDirectionName();
 			return 'Deselect $dir Note';
 		}
-		
+
 		return 'Deselect ${notes.length} Notes';
 	}
 }
@@ -252,8 +262,7 @@ class SelectAllNotesCommand implements ChartEditorCommand
 
 	public function execute(state:ChartEditorState):Void
 	{
-		state.currentSelection = state.currentSongChartNoteData
-		;
+		state.currentSelection = state.currentSongChartNoteData;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 	}
@@ -336,7 +345,7 @@ class CutNotesCommand implements ChartEditorCommand
 	private var notes:Array<SongNoteData>;
 	private var previousSelection:Array<SongNoteData>;
 
-	public function new(notes:Array<SongNoteData>, ?previousSelection:Array<SongNoteData> = [])
+	public function new(notes:Array<SongNoteData>, ?previousSelection:Array<SongNoteData>)
 	{
 		this.notes = notes;
 		this.previousSelection = previousSelection == null ? [] : previousSelection;
@@ -346,7 +355,7 @@ class CutNotesCommand implements ChartEditorCommand
 	{
 		// Copy the notes.
 		state.currentClipboard = SongDataUtils.buildClipboard(notes);
-		
+
 		// Delete the notes.
 		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 		state.currentSelection = [];
@@ -363,7 +372,7 @@ class CutNotesCommand implements ChartEditorCommand
 
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 
@@ -392,7 +401,7 @@ class PasteNotesCommand implements ChartEditorCommand
 
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 
@@ -405,13 +414,13 @@ class PasteNotesCommand implements ChartEditorCommand
 
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 
 	public function toString():String
 	{
-		var len:Int = notes.length;
+		var len:Int = state.currentClipboard.length;
 		return 'Paste $len Notes from Clipboard';
 	}
 }
@@ -419,6 +428,7 @@ class PasteNotesCommand implements ChartEditorCommand
 class AddEventsCommand implements ChartEditorCommand
 {
 	private var events:Array<SongEventData>;
+
 	//	private var previousSelection:Array<SongEventData>;
 
 	public function new(events:Array<SongEventData>, ?previousSelection:Array<SongEventData>)
@@ -435,7 +445,7 @@ class AddEventsCommand implements ChartEditorCommand
 
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 
@@ -447,7 +457,7 @@ class AddEventsCommand implements ChartEditorCommand
 
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
-		
+
 		state.sortChartData();
 	}
 

@@ -439,37 +439,37 @@ abstract SongNoteData(RawSongNoteData)
 	@:op(A == B)
 	public function op_equals(other:SongNoteData):Bool
 	{
-		return this.t == other.t && this.d == other.d && this.l == other.l && this.k == other.k;
+		return this.t == other.time && this.d == other.data && this.l == other.length && this.k == other.kind;
 	}
 
 	@:op(A != B)
 	public function op_notEquals(other:SongNoteData):Bool
 	{
-		return !this.op_equals(other);
+		return this.t != other.time || this.d != other.data || this.l != other.length || this.k != other.kind;
 	}
 
 	@:op(A > B)
 	public function op_greaterThan(other:SongNoteData):Bool
 	{
-		return this.t > other.t;
+		return this.t > other.time;
 	}
 
 	@:op(A < B)
 	public function op_lessThan(other:SongNoteData):Bool
 	{
-		return this.t < other.t;
+		return this.t < other.time;
 	}
 
 	@:op(A >= B)
 	public function op_greaterThanOrEquals(other:SongNoteData):Bool
 	{
-		return this.t >= other.t;
+		return this.t >= other.time;
 	}
 
 	@:op(A <= B)
 	public function op_lessThanOrEquals(other:SongNoteData):Bool
 	{
-		return this.t <= other.t;
+		return this.t <= other.time;
 	}
 }
 
@@ -575,37 +575,37 @@ abstract SongEventData(RawSongEventData)
 	@:op(A == B)
 	public function op_equals(other:SongEventData):Bool
 	{
-		return this.t == other.t && this.e == other.e && this.v == other.v;
+		return this.t == other.time && this.e == other.event && this.v == other.value;
 	}
 
 	@:op(A != B)
 	public function op_notEquals(other:SongEventData):Bool
 	{
-		return !this.op_equals(other);
+		return this.t != other.time || this.e != other.event || this.v != other.value;
 	}
 
 	@:op(A > B)
 	public function op_greaterThan(other:SongEventData):Bool
 	{
-		return this.t > other.t;
+		return this.t > other.time;
 	}
 
 	@:op(A < B)
 	public function op_lessThan(other:SongEventData):Bool
 	{
-		return this.t < other.t;
+		return this.t < other.time;
 	}
 
 	@:op(A >= B)
 	public function op_greaterThanOrEquals(other:SongEventData):Bool
 	{
-		return this.t >= other.t;
+		return this.t >= other.time;
 	}
 
 	@:op(A <= B)
 	public function op_lessThanOrEquals(other:SongEventData):Bool
 	{
-		return this.t <= other.t;
+		return this.t <= other.time;
 	}
 }
 

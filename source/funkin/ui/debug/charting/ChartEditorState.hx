@@ -1,7 +1,5 @@
 package funkin.ui.debug.charting;
 
-import haxe.ui.components.CheckBox;
-import haxe.ui.containers.TreeViewNode;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxTiledSprite;
@@ -16,9 +14,20 @@ import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongNoteData;
 import funkin.play.song.SongSerializer;
+import funkin.ui.debug.charting.ChartEditorCommand.AddNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.CopyNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.CutNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.DeselectAllNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.DeselectNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.PasteNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.RemoveNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.SelectAllNotesCommand;
+import funkin.ui.debug.charting.ChartEditorCommand.SelectNotesCommand;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.haxeui.HaxeUIState;
+import haxe.ui.components.CheckBox;
 import haxe.ui.containers.TreeView;
+import haxe.ui.containers.TreeViewNode;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.menus.Menu.MenuEvent;
 import haxe.ui.containers.menus.MenuBar;
@@ -29,6 +38,8 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
+
+using Lambda;
 
 // Since Haxe 3.1.0, if access is allowed to an interface, it extends to all classes implementing that interface.
 // Thus, any ChartEditorCommand has access to any private field.
@@ -68,7 +79,7 @@ class ChartEditorState extends HaxeUIState
 	static final SPECTROGRAM_COLOR:FlxColor = 0xFFFF0000;
 	static final SELECTION_SQUARE_BORDER_COLOR:FlxColor = 0xFF339933;
 	static final SELECTION_SQUARE_FILL_COLOR:FlxColor = 0x4033FF33;
-	
+
 	/**
 	 * INSTANCE DATA
 	 */
@@ -174,7 +185,8 @@ class ChartEditorState extends HaxeUIState
 	 */
 	var isViewDownscroll(default, set):Bool = false;
 
-	function set_isViewDownscroll(value:Bool):Bool {
+	function set_isViewDownscroll(value:Bool):Bool
+	{
 		// Make sure view is updated.
 		noteDisplayDirty = true;
 		notePreviewDirty = true;
@@ -447,7 +459,7 @@ class ChartEditorState extends HaxeUIState
 	 * The IMAGE used for the grid.
 	 */
 	var gridBitmap:BitmapData;
-	
+
 	/**
 	 * The IMAGE used for the selection squares.
 	 */
@@ -577,7 +589,8 @@ class ChartEditorState extends HaxeUIState
 			dark ? GRID_COLOR_1_DARK : GRID_COLOR_1, dark ? GRID_COLOR_2_DARK : GRID_COLOR_2);
 	}
 
-	function makeSelectionSquareBitmap() {
+	function makeSelectionSquareBitmap()
+	{
 		selectionSquareBitmap = new BitmapData(GRID_SIZE, GRID_SIZE, true);
 
 		selectionSquareBitmap.fillRect(new Rectangle(0, 0, GRID_SIZE, GRID_SIZE), SELECTION_SQUARE_BORDER_COLOR);
@@ -710,7 +723,8 @@ class ChartEditorState extends HaxeUIState
 		});
 		setUISelected('menubarItemToggleSidebar', true);
 
-		addUIChangeListener('menubarItemDownscroll', (event:UIEvent) -> {
+		addUIChangeListener('menubarItemDownscroll', (event:UIEvent) ->
+		{
 			isViewDownscroll = event.value;
 		});
 		setUISelected('menubarItemDownscroll', isViewDownscroll);
@@ -1024,46 +1038,56 @@ class ChartEditorState extends HaxeUIState
 			if (FlxG.mouse.justPressed)
 			{
 				// Find the first note that is at the cursor position.
-				var highlightedNote:ChartEditorNoteSprite = renderedNotes.find(function(note:ChartEditorNoteSprite):Bool {
+				var highlightedNote:ChartEditorNoteSprite = renderedNotes.find(function(note:ChartEditorNoteSprite):Bool
+				{
 					// return note.step == cursorStep && note.column == cursorColumn;
 					return FlxG.mouse.overlaps(note);
 				});
 
-				if (FlxG.keys.pressed.CONTROL) {
-					if (highlightedNote != null) {
-						if (isNoteSelected(highlightedNote.noteData)) {
+				if (FlxG.keys.pressed.CONTROL)
+				{
+					if (highlightedNote != null)
+					{
+						if (isNoteSelected(highlightedNote.noteData))
+						{
 							performCommand(new SelectNotesCommand([highlightedNote.noteData]));
-						} else {
+						}
+						else
+						{
 							performCommand(new DeselectNotesCommand([highlightedNote.noteData]));
 						}
 					}
-				} else {
-					if (highlightedNote != null) {
+				}
+				else
+				{
+					if (highlightedNote != null)
+					{
 						// Remove the note.
 						performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
-					} else {
+					}
+					else
+					{
 						// Place a note.
 						var eventColumn = (STRUMLINE_SIZE * 2 + 1) - 1;
 						if (cursorColumn == eventColumn)
 						{
 							// Create an event and place it in the chart.
 							var cursorMs = cursorStep * Conductor.stepCrochet;
-		
+
 							// TODO: Allow configuring the event to place from the sidebar.
 							var newEventData:SongEventData = new SongEventData(cursorMs, "test", {});
-		
+
 							performCommand(new AddEventsCommand([newEventData]));
 						}
 						else
 						{
 							// Create a note and place it in the chart.
 							var cursorMs = cursorStep * Conductor.stepCrochet;
-		
+
 							var newNoteData:SongNoteData = new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
-		
+
 							performCommand(new AddNotesCommand([newNoteData]));
 						}
-	
 					}
 				}
 			}
@@ -1149,14 +1173,17 @@ class ChartEditorState extends HaxeUIState
 			}
 
 			// Handle selection squares.
-			for (member in renderedNoteSelectionSquares.members) {
+			for (member in renderedNoteSelectionSquares.members)
+			{
 				member.kill();
 			}
 
-			for (noteSprite in renderedNotes.members) {
-				if (isNoteSelected(noteSprite.noteData)) {
+			for (noteSprite in renderedNotes.members)
+			{
+				if (isNoteSelected(noteSprite.noteData))
+				{
 					var selectionSquare:FlxSprite = renderedNoteSelectionSquares.recycle(FlxSprite).loadGraphic(selectionSquareBitmap);
-					
+
 					selectionSquare.x = noteSprite.x;
 					selectionSquare.y = noteSprite.y;
 					selectionSquare.width = noteSprite.width;
@@ -1474,9 +1501,12 @@ class ChartEditorState extends HaxeUIState
 		this.scrollPosition = value;
 
 		// Move the grid sprite to the correct position.
-		if (isViewDownscroll) {
+		if (isViewDownscroll)
+		{
 			gridTiledSprite.y = -scrollPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
-		} else {
+		}
+		else
+		{
 			gridTiledSprite.y = -scrollPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
 		}
 		// Move the rendered notes to the correct position.
