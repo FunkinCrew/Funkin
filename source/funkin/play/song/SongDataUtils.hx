@@ -2,6 +2,8 @@ package funkin.play.song;
 
 import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongNoteData;
+import funkin.util.ClipboardUtil;
+import funkin.util.SerializerUtil;
 
 using Lambda;
 
@@ -65,6 +67,34 @@ class SongDataUtils
 	 */
 	public static function buildClipboard(notes:Array<SongNoteData>):Array<SongNoteData>
 	{
-		return offsetSongNoteData(notes, -notes[0].time);
+		return offsetSongNoteData(notes, -Std.int(notes[0].time));
 	}
+
+    public static function writeNotesToClipboard(notes:Array<SongNoteData>):Void
+    {
+        var notesString = SerializerUtil.toJSON(notes);
+
+        ClipboardUtil.setClipboard(notesString);
+
+        trace('Wrote ' + notes.length + ' notes to clipboard.');
+
+        trace(notesString);
+    }
+
+    public static function readNotesFromClipboard():Array<SongNoteData>
+    {
+        var notesString = ClipboardUtil.getClipboard();
+
+        trace('Read ' + notesString.length + ' characters from clipboard.');
+
+        var notes:Array<SongNoteData> = SerializerUtil.fromJSON(notesString);
+
+        if (notes == null) {
+            trace('Failed to parse notes from clipboard.');
+            return [];
+        } else {
+            trace('Parsed ' + notes.length + ' notes from clipboard.');
+            return notes;
+        }
+    }
 }

@@ -15,7 +15,6 @@ import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongNoteData;
 import funkin.play.song.SongSerializer;
 import funkin.ui.debug.charting.ChartEditorCommand.AddNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.CopyNotesCommand;
 import funkin.ui.debug.charting.ChartEditorCommand.CutNotesCommand;
 import funkin.ui.debug.charting.ChartEditorCommand.DeselectAllNotesCommand;
 import funkin.ui.debug.charting.ChartEditorCommand.DeselectNotesCommand;
@@ -24,6 +23,7 @@ import funkin.ui.debug.charting.ChartEditorCommand.RemoveNotesCommand;
 import funkin.ui.debug.charting.ChartEditorCommand.SelectAllNotesCommand;
 import funkin.ui.debug.charting.ChartEditorCommand.SelectNotesCommand;
 import funkin.ui.debug.charting.ChartEditorCommand;
+import funkin.play.song.SongDataUtils;
 import funkin.ui.haxeui.HaxeUIState;
 import haxe.ui.components.CheckBox;
 import haxe.ui.containers.TreeView;
@@ -242,12 +242,6 @@ class ChartEditorState extends HaxeUIState
 	 * The notes which are currently in the selection.
 	 */
 	var currentSelection:Array<SongNoteData> = [];
-
-	/**
-	 * The user's current clipboard. Contains a full list of the notes they have copied or cut.
-	 * TODO: Replace this with serialization in the real clipboard.
-	 */
-	var currentClipboard:Array<SongNoteData> = [];
 
 	/**
 	 * AUDIO AND SOUND DATA
@@ -676,6 +670,10 @@ class ChartEditorState extends HaxeUIState
 		renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
 		add(renderedNotes);
 
+		renderedNoteSelectionSquares = new FlxTypedSpriteGroup<FlxSprite>();
+		renderedNoteSelectionSquares.setPosition(gridTiledSprite.x, gridTiledSprite.y);
+		add(renderedNoteSelectionSquares);
+
 		/*
 			var sustainSprite:SustainTrail = new SustainTrail(0, 600, Paths.image('NOTE_hold_assets'), 0.9, false);
 			sustainSprite.scrollFactor.set(0, 0);
@@ -1038,7 +1036,7 @@ class ChartEditorState extends HaxeUIState
 			if (FlxG.mouse.justPressed)
 			{
 				// Find the first note that is at the cursor position.
-				var highlightedNote:ChartEditorNoteSprite = renderedNotes.find(function(note:ChartEditorNoteSprite):Bool
+				var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool
 				{
 					// return note.step == cursorStep && note.column == cursorColumn;
 					return FlxG.mouse.overlaps(note);
@@ -1220,6 +1218,28 @@ class ChartEditorState extends HaxeUIState
 		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Y)
 		{
 			redoLastCommand();
+		}
+
+		// CTRL + C = Copy
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
+		{
+			// Copy selected notes.
+			// We don't need a command for this since we can't undo it.
+			SongDataUtils.writeNotesToClipboard(SongDataUtils.buildClipboard(currentSelection));
+		}
+
+		// CTRL + X = Cut
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.X)
+		{
+			// Cut selected notes.
+			performCommand(new CutNotesCommand(currentSelection));
+		}
+
+		// CTRL + V = Paste
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V)
+		{
+			// Paste notes from clipboard, at the playhead.
+			performCommand(new PasteNotesCommand(scrollPositionInMs + playheadPositionInMs));
 		}
 	}
 
@@ -1511,6 +1531,7 @@ class ChartEditorState extends HaxeUIState
 		}
 		// Move the rendered notes to the correct position.
 		renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
+		renderedNoteSelectionSquares.setPosition(renderedNotes.x, renderedNotes.y);
 
 		return this.scrollPosition;
 	}

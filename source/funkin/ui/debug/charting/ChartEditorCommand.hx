@@ -312,34 +312,6 @@ class DeselectAllNotesCommand implements ChartEditorCommand
 	}
 }
 
-class CopyNotesCommand implements ChartEditorCommand
-{
-	private var notes:Array<SongNoteData>;
-	private var previousSelection:Array<SongNoteData>;
-
-	public function new(notes:Array<SongNoteData>, ?previousSelection:Array<SongNoteData>)
-	{
-		this.notes = notes;
-		this.previousSelection = previousSelection == null ? [] : previousSelection;
-	}
-
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentClipboard = SongDataUtils.buildClipboard(notes);
-	}
-
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentClipboard = previousSelection;
-	}
-
-	public function toString():String
-	{
-		var len:Int = notes.length;
-		return 'Copy $len Notes to Clipboard';
-	}
-}
-
 class CutNotesCommand implements ChartEditorCommand
 {
 	private var notes:Array<SongNoteData>;
@@ -354,7 +326,7 @@ class CutNotesCommand implements ChartEditorCommand
 	public function execute(state:ChartEditorState):Void
 	{
 		// Copy the notes.
-		state.currentClipboard = SongDataUtils.buildClipboard(notes);
+		SongDataUtils.writeNotesToClipboard(SongDataUtils.buildClipboard(notes));
 
 		// Delete the notes.
 		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
@@ -366,7 +338,6 @@ class CutNotesCommand implements ChartEditorCommand
 
 	public function undo(state:ChartEditorState):Void
 	{
-		state.currentClipboard = previousSelection;
 		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
 		state.currentSelection = notes;
 
@@ -385,16 +356,18 @@ class CutNotesCommand implements ChartEditorCommand
 
 class PasteNotesCommand implements ChartEditorCommand
 {
-	private var targetTimestamp:Int;
+	private var targetTimestamp:Float;
 
-	public function new(targetTimestamp:Int)
+	public function new(targetTimestamp:Float)
 	{
 		this.targetTimestamp = targetTimestamp;
 	}
 
 	public function execute(state:ChartEditorState):Void
 	{
-		var notesToAdd = SongDataUtils.offsetSongNoteData(state.currentClipboard, targetTimestamp);
+		var currentClipboard:Array<SongNoteData> = SongDataUtils.readNotesFromClipboard();
+
+		var notesToAdd = SongDataUtils.offsetSongNoteData(currentClipboard, Std.int(targetTimestamp));
 
 		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notesToAdd);
 		state.currentSelection = notesToAdd;
@@ -409,7 +382,9 @@ class PasteNotesCommand implements ChartEditorCommand
 	{
 		// NOTE: We can assume that the previous action
 		// defined the clipboard, so we don't need to redundantly it here... right?
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, state.currentClipboard);
+		// TODO: Test that this works as expected.
+		var currentClipboard:Array<SongNoteData> = SongDataUtils.readNotesFromClipboard();
+		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, currentClipboard);
 		state.currentSelection = [];
 
 		state.noteDisplayDirty = true;
@@ -420,8 +395,8 @@ class PasteNotesCommand implements ChartEditorCommand
 
 	public function toString():String
 	{
-		var len:Int = state.currentClipboard.length;
-		return 'Paste $len Notes from Clipboard';
+		var currentClipboard:Array<SongNoteData> = SongDataUtils.readNotesFromClipboard();
+		return 'Paste ${currentClipboard.length} Notes from Clipboard';
 	}
 }
 
