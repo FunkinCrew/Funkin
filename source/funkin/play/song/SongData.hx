@@ -439,7 +439,11 @@ abstract SongNoteData(RawSongNoteData)
 	@:op(A == B)
 	public function op_equals(other:SongNoteData):Bool
 	{
-		return this.t == other.time && this.d == other.data && this.l == other.length && this.k == other.kind;
+		if (this.k == '')
+			if (other.kind != '' && other.kind != 'normal')
+				return false;
+
+		return this.t == other.time && this.d == other.data && this.l == other.length;
 	}
 
 	@:op(A != B)

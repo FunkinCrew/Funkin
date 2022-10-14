@@ -7,39 +7,40 @@ import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
+import flixel.util.FlxTimer;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.play.HealthIcon;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongNoteData;
-import funkin.play.song.SongSerializer;
-import funkin.ui.debug.charting.ChartEditorCommand.AddNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.CutNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.DeselectAllNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.DeselectNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.PasteNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.RemoveNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.SelectAllNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand.SelectNotesCommand;
-import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.play.song.SongDataUtils;
+import funkin.play.song.SongSerializer;
+import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.haxeui.HaxeUIState;
+import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
+import haxe.ui.components.HorizontalSlider;
+import haxe.ui.components.Label;
+import haxe.ui.components.Slider;
+import haxe.ui.containers.SideBar;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import haxe.ui.containers.dialogs.Dialog;
+import haxe.ui.containers.dialogs.MessageBox;
 import haxe.ui.containers.menus.Menu.MenuEvent;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Component;
+import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 
 using Lambda;
+using StringTools;
 
 // Since Haxe 3.1.0, if access is allowed to an interface, it extends to all classes implementing that interface.
 // Thus, any ChartEditorCommand has access to any private field.
@@ -56,6 +57,8 @@ class ChartEditorState extends HaxeUIState
 	 */
 	static final CHART_EDITOR_LAYOUT = Paths.ui('chart-editor/main-view');
 
+	static final CHART_EDITOR_NOTIFBAR_LAYOUT = Paths.ui('chart-editor/components/notifbar');
+
 	static final DEFAULT_VARIATION = 'default';
 	static final DEFAULT_DIFFICULTY = 'normal';
 
@@ -65,6 +68,8 @@ class ChartEditorState extends HaxeUIState
 	static final MENU_BAR_HEIGHT = 32;
 	static final GRID_TOP_PAD:Int = 8;
 	static final SELECTION_SQUARE_BORDER_WIDTH:Int = 1;
+
+	static final NOTIFICATION_DISMISS_TIME:Float = 3.0;
 
 	// UI Element Colors
 	static final BG_COLOR:FlxColor = 0xFF673AB7;
@@ -79,6 +84,9 @@ class ChartEditorState extends HaxeUIState
 	static final SPECTROGRAM_COLOR:FlxColor = 0xFFFF0000;
 	static final SELECTION_SQUARE_BORDER_COLOR:FlxColor = 0xFF339933;
 	static final SELECTION_SQUARE_FILL_COLOR:FlxColor = 0x4033FF33;
+
+	static final PLAYBAR_PRIMARY_COLOR:FlxColor = 0xFF442277;
+	static final PLAYBAR_SECONDARY_COLOR:FlxColor = 0xFF8844DD;
 
 	/**
 	 * INSTANCE DATA
@@ -102,15 +110,21 @@ class ChartEditorState extends HaxeUIState
 		return scrollPosition / GRID_SIZE;
 	}
 
-	var scrollPositionInMs(get, null):Float;
-
 	/**
 	 * scrollPosition, converted to milliseconds.
 	 * TODO: Handle BPM changes.
 	 */
+	var scrollPositionInMs(get, set):Float;
+
 	function get_scrollPositionInMs():Float
 	{
 		return scrollPositionInSteps * Conductor.stepCrochet;
+	}
+
+	function set_scrollPositionInMs(value:Float):Float
+	{
+		scrollPosition = value / Conductor.stepCrochet;
+		return value;
 	}
 
 	/**
@@ -170,6 +184,21 @@ class ChartEditorState extends HaxeUIState
 	var isModalDialogOpen:Bool = false;
 
 	/**
+	 * Whether a skip button has been pressed on the playbar, and which one.
+	 */
+	var playbarButtonPressed:String = null;
+
+	/**
+	 * Whether the head of the playbar is being dragged.
+	 */
+	var playbarHeadDragging:Bool = false;
+
+	/**
+	 * Whether music was playing before we started dragging the playbar head.
+	 */
+	var playbarHeadDraggingWasPlaying:Bool = false;
+
+	/**
 	 * The note kind currently being placed. Defaults to `''`.
 	 * Use the input in the sidebar to change this.
 	 */
@@ -187,22 +216,47 @@ class ChartEditorState extends HaxeUIState
 
 	function set_isViewDownscroll(value:Bool):Bool
 	{
+		isViewDownscroll = value;
+
 		// Make sure view is updated.
 		noteDisplayDirty = true;
 		notePreviewDirty = true;
+		this.scrollPosition = this.scrollPosition;
 
-		return isViewDownscroll = value;
+		return isViewDownscroll;
 	}
 
 	/**
 	 * The current variation ID.
 	 */
-	var selectedVariation:String = DEFAULT_VARIATION;
+	var selectedVariation(default, set):String = DEFAULT_VARIATION;
+
+	function set_selectedVariation(value:String):String
+	{
+		selectedVariation = value;
+
+		// Make sure view is updated.
+		noteDisplayDirty = true;
+		notePreviewDirty = true;
+
+		return selectedVariation;
+	}
 
 	/**
 	 * The selected difficulty ID.
 	 */
-	var selectedDifficulty:String = DEFAULT_DIFFICULTY;
+	var selectedDifficulty(default, set):String = DEFAULT_DIFFICULTY;
+
+	function set_selectedDifficulty(value:String):String
+	{
+		selectedDifficulty = value;
+
+		// Make sure view is updated.
+		noteDisplayDirty = true;
+		notePreviewDirty = true;
+
+		return selectedDifficulty;
+	}
 
 	/**
 	 * Whether the note display render group needs to be updated.
@@ -268,6 +322,13 @@ class ChartEditorState extends HaxeUIState
 	 * - Values are the relevant metadata, ready to be serialized to JSON.
 	 */
 	var songMetadata:Map<String, SongMetadata>;
+
+	var availableVariations(get, null):Array<String>;
+
+	function get_availableVariations():Array<String>
+	{
+		return [for (x in songMetadata.keys()) x];
+	}
 
 	/**
 	 * The song chart data.
@@ -346,7 +407,7 @@ class ChartEditorState extends HaxeUIState
 	/**
 	 * Convenience property to get the note data for the current difficulty.
 	 */
-	var currentSongChartNoteData(get, null):Array<SongNoteData>;
+	var currentSongChartNoteData(get, set):Array<SongNoteData>;
 
 	function get_currentSongChartNoteData():Array<SongNoteData>
 	{
@@ -361,10 +422,16 @@ class ChartEditorState extends HaxeUIState
 		return result;
 	}
 
+	function set_currentSongChartNoteData(value:Array<SongNoteData>):Array<SongNoteData>
+	{
+		currentSongChartData.notes.set(selectedDifficulty, value);
+		return value;
+	}
+
 	/**
 	 * Convenience property to get the event data for the current difficulty.
 	 */
-	var currentSongChartEventData(get, null):Array<SongEventData>;
+	var currentSongChartEventData(get, set):Array<SongEventData>;
 
 	function get_currentSongChartEventData():Array<SongEventData>
 	{
@@ -374,6 +441,12 @@ class ChartEditorState extends HaxeUIState
 			currentSongChartData.events = [];
 		}
 		return currentSongChartData.events;
+	}
+
+	function set_currentSongChartEventData(value:Array<SongEventData>):Array<SongEventData>
+	{
+		currentSongChartData.events = value;
+		return value;
 	}
 
 	var currentSongNoteSkin(get, set):String;
@@ -517,6 +590,9 @@ class ChartEditorState extends HaxeUIState
 
 	var renderedNoteSelectionSquares:FlxTypedSpriteGroup<FlxSprite>;
 
+	var notifBar:SideBar;
+	var playbarHead:Slider;
+
 	public function new()
 	{
 		// Load the HaxeUI XML file.
@@ -536,6 +612,7 @@ class ChartEditorState extends HaxeUIState
 
 		// Add the HaxeUI components after the grid so they're on top.
 		super.create();
+		buildAdditionalUI();
 
 		// Setup the onClick listeners for the UI after it's been created.
 		setupUIListeners();
@@ -684,6 +761,59 @@ class ChartEditorState extends HaxeUIState
 		 */
 	}
 
+	function buildAdditionalUI():Void
+	{
+		notifBar = cast buildComponent(CHART_EDITOR_NOTIFBAR_LAYOUT);
+
+		add(notifBar);
+
+		playbarHead = new HorizontalSlider();
+		playbarHead.width = FlxG.width;
+		playbarHead.height = 10;
+
+		playbarHead.x = 0;
+		playbarHead.y = FlxG.height - 48 - 8;
+
+		playbarHead.allowFocus = false;
+		playbarHead.styleString = "padding-left: 0px; padding-right: 0px; border-left: 0px; border-right: 0px;";
+
+		playbarHead.onDragStart = function(_:DragEvent)
+		{
+			playbarHeadDragging = true;
+
+			// If we were dragging the playhead while the song was playing, resume playing.
+			if (audioVocalTrack.playing)
+			{
+				playbarHeadDraggingWasPlaying = true;
+				stopAudioPlayback();
+			}
+			else
+			{
+				playbarHeadDraggingWasPlaying = false;
+			}
+		}
+
+		playbarHead.onDragEnd = function(_:DragEvent)
+		{
+			trace('Seek to position: ${playbarHead.value}%');
+			playbarHeadDragging = false;
+
+			// Set the song position to where the playhead was moved to.
+			scrollPosition = songLength * (playbarHead.value / 100);
+			// Update the conductor and audio tracks to match.
+			moveSongToScrollPosition();
+
+			// If we were dragging the playhead while the song was playing, resume playing.
+			if (playbarHeadDraggingWasPlaying)
+			{
+				playbarHeadDraggingWasPlaying = false;
+				startAudioPlayback();
+			}
+		}
+
+		add(playbarHead);
+	}
+
 	/**
 	 * Sets up the onClick listeners for the UI.
 	 */
@@ -703,11 +833,65 @@ class ChartEditorState extends HaxeUIState
 			}
 		}
 
+		// Add functionality to the playbar.
+
+		addUIClickListener('playbarPlay', (event:MouseEvent) -> toggleAudioPlayback());
+		addUIClickListener('playbarStart', (event:MouseEvent) -> playbarButtonPressed = 'playbarStart');
+		addUIClickListener('playbarBack', (event:MouseEvent) -> playbarButtonPressed = 'playbarBack');
+		addUIClickListener('playbarForward', (event:MouseEvent) -> playbarButtonPressed = 'playbarForward');
+		addUIClickListener('playbarEnd', (event:MouseEvent) -> playbarButtonPressed = 'playbarEnd');
+
 		// Add functionality to the menu items.
 
 		addUIClickListener('menubarItemUndo', (event:MouseEvent) -> undoLastCommand());
 
 		addUIClickListener('menubarItemRedo', (event:MouseEvent) -> redoLastCommand());
+
+		addUIClickListener('menubarItemCopy', (event:MouseEvent) ->
+		{
+			SongDataUtils.writeNotesToClipboard(SongDataUtils.buildClipboard(currentSelection));
+		});
+
+		addUIClickListener('menubarItemCut', (event:MouseEvent) ->
+		{
+			performCommand(new CutNotesCommand(currentSelection));
+		});
+
+		addUIClickListener('menubarItemPaste', (event:MouseEvent) ->
+		{
+			performCommand(new PasteNotesCommand(scrollPositionInMs + playheadPositionInMs));
+		});
+
+		addUIClickListener('menubarItemDelete', (event:MouseEvent) ->
+		{
+			performCommand(new RemoveNotesCommand(currentSelection));
+		});
+
+		addUIClickListener('menubarItemSelectAll', (event:MouseEvent) ->
+		{
+			performCommand(new SelectAllNotesCommand(currentSelection));
+		});
+
+		addUIClickListener('menubarItemSelectInverse', (event:MouseEvent) -> {
+			// TODO: Implement this.
+		});
+
+		addUIClickListener('menubarItemSelectNone', (event:MouseEvent) ->
+		{
+			performCommand(new DeselectAllNotesCommand(currentSelection));
+		});
+
+		addUIClickListener('menubarItemSelectRegion', (event:MouseEvent) -> {
+			// TODO: Implement this.
+		});
+
+		addUIClickListener('menubarItemSelectBeforeCursor', (event:MouseEvent) -> {
+			// TODO: Implement this.
+		});
+
+		addUIClickListener('menubarItemSelectAfterCursor', (event:MouseEvent) -> {
+			// TODO: Implement this.
+		});
 
 		addUIClickListener('menubarItemAbout', (event:MouseEvent) -> openDialog('chart-editor/dialogs/about'));
 
@@ -822,11 +1006,11 @@ class ChartEditorState extends HaxeUIState
 			handleScrollKeybinds();
 			handleCursor();
 
-			handlePlayheadKeybinds();
-
 			handleMenubar();
 			handleSidebar();
+			handlePlaybar();
 
+			handlePlayheadKeybinds();
 			handleFileKeybinds();
 			handleEditKeybinds();
 			handleViewKeybinds();
@@ -834,21 +1018,9 @@ class ChartEditorState extends HaxeUIState
 		}
 
 		// DEBUG
-		if (FlxG.keys.justPressed.A)
-		{
-			performCommand(new SwitchDifficultyCommand(selectedDifficulty, 'easy', selectedVariation, 'default'));
-		}
-		if (FlxG.keys.justPressed.S)
-		{
-			performCommand(new SwitchDifficultyCommand(selectedDifficulty, 'normal', selectedVariation, 'default'));
-		}
-		if (FlxG.keys.justPressed.D)
-		{
-			performCommand(new SwitchDifficultyCommand(selectedDifficulty, 'hard', selectedVariation, 'default'));
-		}
 		if (FlxG.keys.justPressed.F)
 		{
-			performCommand(new SwitchDifficultyCommand(selectedDifficulty, 'erect', selectedVariation, 'erect'));
+			showNotification('Hi there :)');
 		}
 
 		// Right align the BF health icon.
@@ -922,10 +1094,20 @@ class ChartEditorState extends HaxeUIState
 		{
 			scrollAmount = -GRID_SIZE * 4 * Conductor.beatsPerMeasure;
 		}
+		if (playbarButtonPressed == 'playbarBack')
+		{
+			playbarButtonPressed = '';
+			scrollAmount = -GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+		}
 
 		// PAGE DOWN = Jump Down 1 Measure
 		if (FlxG.keys.justPressed.PAGEDOWN)
 		{
+			scrollAmount = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+		}
+		if (playbarButtonPressed == 'playbarForward')
+		{
+			playbarButtonPressed = '';
 			scrollAmount = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
 		}
 
@@ -971,11 +1153,21 @@ class ChartEditorState extends HaxeUIState
 			// Scroll amount is the difference between the current position and the top.
 			scrollAmount = 0 - this.scrollPosition;
 		}
+		if (playbarButtonPressed == 'playbarStart')
+		{
+			playbarButtonPressed = '';
+			scrollAmount = 0 - this.scrollPosition;
+		}
 
 		// END = Scroll to Bottom
 		if (FlxG.keys.justPressed.END)
 		{
 			// Scroll amount is the difference between the current position and the bottom.
+			scrollAmount = this.songLength - this.scrollPosition;
+		}
+		if (playbarButtonPressed == 'playbarEnd')
+		{
+			playbarButtonPressed = '';
 			scrollAmount = this.songLength - this.scrollPosition;
 		}
 
@@ -1038,22 +1230,26 @@ class ChartEditorState extends HaxeUIState
 				// Find the first note that is at the cursor position.
 				var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool
 				{
-					// return note.step == cursorStep && note.column == cursorColumn;
-					return FlxG.mouse.overlaps(note);
+					// If note.alive is false, the note is dead and awaiting recycling.
+					return note.alive && FlxG.mouse.overlaps(note);
 				});
 
 				if (FlxG.keys.pressed.CONTROL)
 				{
 					if (highlightedNote != null)
 					{
+						// Select/deselect an individual note.
 						if (isNoteSelected(highlightedNote.noteData))
-						{
-							performCommand(new SelectNotesCommand([highlightedNote.noteData]));
-						}
-						else
 						{
 							performCommand(new DeselectNotesCommand([highlightedNote.noteData]));
 						}
+						else
+						{
+							performCommand(new SelectNotesCommand([highlightedNote.noteData]));
+						}
+					}
+					else
+					{
 					}
 				}
 				else
@@ -1192,6 +1388,34 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
+	 * Handles display elements for the playbar at the bottom.
+	 */
+	function handlePlaybar()
+	{
+		var songPos = Conductor.songPosition;
+		var songRemaining = songLengthInMs - songPos;
+
+		// Move the playhead to match the song position, if we aren't dragging it.
+		if (!playbarHeadDragging)
+		{
+			var songPosPercent:Float = songPos / songLengthInMs;
+			playbarHead.value = songPosPercent * 100;
+		}
+
+		var songPosSeconds:String = Std.string(Math.floor((songPos / 1000) % 60)).lpad('0', 2);
+		var songPosMinutes:String = Std.string(Math.floor((songPos / 1000) / 60)).lpad('0', 2);
+		var songPosString:String = '${songPosMinutes}:${songPosSeconds}';
+
+		setUIValue('playbarSongPos', songPosString);
+
+		var songRemainingSeconds:String = Std.string(Math.floor((songRemaining / 1000) % 60)).lpad('0', 2);
+		var songRemainingMinutes:String = Std.string(Math.floor((songRemaining / 1000) / 60)).lpad('0', 2);
+		var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
+
+		setUIValue('playbarSongRemaining', songRemainingString);
+	}
+
+	/**
 	 * Handle keybinds for File menu items.
 	 */
 	function handleFileKeybinds()
@@ -1241,6 +1465,27 @@ class ChartEditorState extends HaxeUIState
 			// Paste notes from clipboard, at the playhead.
 			performCommand(new PasteNotesCommand(scrollPositionInMs + playheadPositionInMs));
 		}
+
+		// DELETE = Delete
+		if (FlxG.keys.justPressed.DELETE)
+		{
+			// Delete selected notes.
+			performCommand(new RemoveNotesCommand(currentSelection));
+		}
+
+		// CTRL + A = Select All
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.A)
+		{
+			// Select all notes.
+			performCommand(new SelectAllNotesCommand(currentSelection));
+		}
+
+		// CTRL + D = Select None
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.D)
+		{
+			// Deselect all notes.
+			performCommand(new DeselectAllNotesCommand(currentSelection));
+		}
 	}
 
 	/**
@@ -1274,7 +1519,10 @@ class ChartEditorState extends HaxeUIState
 
 			if (treeView != null)
 			{
-				var treeSong = treeView.addNode({id: 'stv_song_dadbattle', text: "S: Dad Battle", icon: "haxeui-core/styles/default/haxeui_tiny.png"});
+				// Clear the tree view so we can rebuild it.
+				treeView.clearNodes();
+
+				var treeSong = treeView.addNode({id: 'stv_song', text: 'S: $currentSongName', icon: "haxeui-core/styles/default/haxeui_tiny.png"});
 				treeSong.expanded = true;
 
 				var treeVariationDefault = treeSong.addNode({
@@ -1282,41 +1530,87 @@ class ChartEditorState extends HaxeUIState
 					text: "V: Default",
 					icon: "haxeui-core/styles/default/haxeui_tiny.png"
 				});
-				var treeVariationErect = treeSong.addNode({id: 'stv_variation_erect', text: "V: Erect", icon: "haxeui-core/styles/default/haxeui_tiny.png"});
+				treeVariationDefault.expanded = true;
 
 				var treeDifficultyEasy = treeVariationDefault.addNode({
-					id: 'stv_difficulty_easy',
+					id: 'stv_difficulty_default_easy',
 					text: "D: Easy",
 					icon: "haxeui-core/styles/default/haxeui_tiny.png"
 				});
 				var treeDifficultyNormal = treeVariationDefault.addNode({
-					id: 'stv_difficulty_normal',
+					id: 'stv_difficulty_default_normal',
 					text: "D: Normal",
 					icon: "haxeui-core/styles/default/haxeui_tiny.png"
 				});
 				var treeDifficultyHard = treeVariationDefault.addNode({
-					id: 'stv_difficulty_hard',
+					id: 'stv_difficulty_default_hard',
 					text: "D: Hard",
 					icon: "haxeui-core/styles/default/haxeui_tiny.png"
 				});
 
+				var treeVariationErect = treeSong.addNode({id: 'stv_variation_erect', text: "V: Erect", icon: "haxeui-core/styles/default/haxeui_tiny.png"});
+				treeVariationErect.expanded = true;
+
 				var treeDifficultyErect = treeVariationErect.addNode({
-					id: 'stv_difficulty_erect',
+					id: 'stv_difficulty_erect_erect',
 					text: "D: Erect",
 					icon: "haxeui-core/styles/default/haxeui_tiny.png"
 				});
 
 				treeView.onChange = onChangeTreeDifficulty;
+				treeView.selectedNode = getCurrentTreeDifficultyNode();
 			}
 		}
 	}
 
+	function getCurrentTreeDifficultyNode():TreeViewNode
+	{
+		var treeView:TreeView = findComponent('sidebarDifficulties');
+
+		if (treeView == null)
+			return null;
+
+		var result = treeView.findNodeByPath('stv_song/stv_variation_$selectedVariation/stv_difficulty_${selectedVariation}_$selectedDifficulty', 'id');
+
+		if (result == null)
+			return null;
+
+		return result;
+	}
+
 	function onChangeTreeDifficulty(event:UIEvent):Void
 	{
-		// Get the selected node.
-		var target:TreeView = cast event.target;
-		var targetNode:TreeViewNode = target.selectedNode;
-		trace('Selected node: ${targetNode.id}');
+		// Get the newly selected node.
+		var treeView:TreeView = cast event.target;
+		var targetNode:TreeViewNode = treeView.selectedNode;
+
+		if (targetNode == null)
+		{
+			trace('No target node!');
+			// Reset the user's selection.
+			treeView.selectedNode = getCurrentTreeDifficultyNode();
+			return;
+		}
+
+		switch (targetNode.data.id.split('_')[1])
+		{
+			case 'difficulty':
+				var variation = targetNode.data.id.split('_')[2];
+				var difficulty = targetNode.data.id.split('_')[3];
+
+				if (variation != null && difficulty != null)
+				{
+					trace('Changing difficulty to $variation:$difficulty');
+					selectedVariation = variation;
+					selectedDifficulty = difficulty;
+				}
+			// case 'song':
+			// case 'variation':
+			default:
+				// Reset the user's selection.
+				trace('Selected wrong node type, resetting selection.');
+				treeView.selectedNode = getCurrentTreeDifficultyNode();
+		}
 	}
 
 	/**
@@ -1424,10 +1718,13 @@ class ChartEditorState extends HaxeUIState
 		{
 			if (FlxG.mouse.pressedMiddle)
 			{
-				// If middle mouse panning during song playback, move ONLY the playhead.
+				// If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
 				var oldStepTime = Conductor.currentStepTime;
 				Conductor.update(audioInstTrack.time);
+				// Resync vocals.
+				if (Math.abs(audioInstTrack.time - audioVocalTrack.time) > 100)
+					audioVocalTrack.time = audioInstTrack.time;
 				var diffStepTime = Conductor.currentStepTime - oldStepTime;
 
 				// Move the playhead.
@@ -1440,6 +1737,9 @@ class ChartEditorState extends HaxeUIState
 				// Else, move the entire view.
 
 				Conductor.update(audioInstTrack.time);
+				// Resync vocals.
+				if (Math.abs(audioInstTrack.time - audioVocalTrack.time) > 100)
+					audioVocalTrack.time = audioInstTrack.time;
 
 				// We need time in fractional steps here to allow the song to actually play.
 				// Also account for a potentially offset playhead.
@@ -1454,16 +1754,31 @@ class ChartEditorState extends HaxeUIState
 
 		if (FlxG.keys.justPressed.SPACE)
 		{
-			if (audioInstTrack.playing)
-			{
-				audioInstTrack.pause();
-				audioVocalTrack.pause();
-			}
-			else
-			{
-				audioInstTrack.play();
-				audioVocalTrack.play();
-			}
+			toggleAudioPlayback();
+		}
+	}
+
+	function startAudioPlayback()
+	{
+		audioInstTrack.play();
+		audioVocalTrack.play();
+	}
+
+	function stopAudioPlayback()
+	{
+		audioInstTrack.pause();
+		audioVocalTrack.pause();
+	}
+
+	function toggleAudioPlayback()
+	{
+		if (audioInstTrack.playing)
+		{
+			stopAudioPlayback();
+		}
+		else
+		{
+			startAudioPlayback();
 		}
 	}
 
@@ -1814,5 +2129,76 @@ class ChartEditorState extends HaxeUIState
 
 		@:privateAccess
 		ChartEditorNoteSprite.noteFrameCollection = null;
+	}
+
+	/**
+	 * Displays a notification to the user. The only action is to dismiss.
+	 */
+	function showNotification(text:String)
+	{
+		var notifBarText:Label = notifBar.findComponent('notifBarText', Label);
+		var notifBarAction1:Button = notifBar.findComponent('notifBarAction1', Button);
+
+		// Make it appear.
+		notifBar.show();
+
+		// Don't shift the UI up.
+		notifBar.method = "float";
+		// Anchor to far right.
+		notifBar.x = FlxG.width - notifBar.width;
+
+		// Set the message.
+		notifBarText.text = text;
+
+		// Configure the action button.
+		notifBarAction1.text = 'Dismiss';
+		notifBarAction1.onClick = (_:UIEvent) -> dismissNotification();
+
+		// Auto dismiss.
+		new FlxTimer().start(NOTIFICATION_DISMISS_TIME, (_:FlxTimer) -> dismissNotification());
+	}
+
+	/**
+	 * Dismiss any existing notifications, if there are any.
+	 */
+	function dismissNotification():Void
+	{
+		notifBar.hide();
+	}
+
+	/**
+	 * Displays a prompt to the user, to save their changes made to this chart,
+	 * or to discard them.
+	 *
+	 * @param onComplete Function to call after the user clicks Save or Don't Save.
+	 *                   If Save was clicked, we save before calling this.
+	 * @param onCancel Function to call if the user clicks Cancel.
+	 */
+	function promptSaveChanges(onComplete:Void->Void, ?onCancel:Void->Void):Void
+	{
+		var messageBox:MessageBox = new MessageBox();
+
+		messageBox.title = 'Save Changes?';
+		messageBox.message = 'Do you want to save the changes you made to $currentSongName?\n\nYour changes will be lost if you don\'t save them.';
+		messageBox.type = 'question';
+		messageBox.modal = true;
+		messageBox.buttons = DialogButton.SAVE | "Don't Save" | "Cancel";
+
+		messageBox.registerEvent(DialogEvent.DIALOG_CLOSED, function(e:DialogEvent):Void
+		{
+			trace('Pressed: ${e.button}');
+			switch (e.button)
+			{
+				case 'Save':
+					// TODO: Make sure to actually save.
+					// saveChart();
+					onComplete();
+				case "Don't Save":
+					onComplete();
+				case 'Cancel':
+					if (onCancel != null)
+						onCancel();
+			}
+		});
 	}
 }

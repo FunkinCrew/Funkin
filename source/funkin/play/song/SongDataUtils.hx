@@ -1,5 +1,6 @@
 package funkin.play.song;
 
+import flixel.util.FlxSort;
 import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongNoteData;
 import funkin.util.ClipboardUtil;
@@ -35,11 +36,17 @@ class SongDataUtils
 		if (notes.length == 0 || subtrahend.length == 0)
 			return notes;
 
-		return notes.filter(function(note:SongNoteData):Bool
+		var result = notes.filter(function(note:SongNoteData):Bool
 		{
-			// SongNoteData's == operation has been overridden so that this will work.
-			return !subtrahend.has(note);
+			for (x in subtrahend)
+				// SongNoteData's == operation has been overridden so that this will work.
+				if (x == note)
+					return false;
+
+			return true;
 		});
+
+		return result;
 	}
 
 	/**
@@ -67,34 +74,47 @@ class SongDataUtils
 	 */
 	public static function buildClipboard(notes:Array<SongNoteData>):Array<SongNoteData>
 	{
-		return offsetSongNoteData(notes, -Std.int(notes[0].time));
+		return offsetSongNoteData(sortNotes(notes), -Std.int(notes[0].time));
 	}
 
-    public static function writeNotesToClipboard(notes:Array<SongNoteData>):Void
-    {
-        var notesString = SerializerUtil.toJSON(notes);
+	public static function sortNotes(notes:Array<SongNoteData>, ?desc:Bool = false):Array<SongNoteData>
+	{
+		// TODO: Modifies the array in place. Is this okay?
+		notes.sort(function(a:SongNoteData, b:SongNoteData):Int
+		{
+			return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.time, b.time);
+		});
+		return notes;
+	}
 
-        ClipboardUtil.setClipboard(notesString);
+	public static function writeNotesToClipboard(notes:Array<SongNoteData>):Void
+	{
+		var notesString = SerializerUtil.toJSON(notes);
 
-        trace('Wrote ' + notes.length + ' notes to clipboard.');
+		ClipboardUtil.setClipboard(notesString);
 
-        trace(notesString);
-    }
+		trace('Wrote ' + notes.length + ' notes to clipboard.');
 
-    public static function readNotesFromClipboard():Array<SongNoteData>
-    {
-        var notesString = ClipboardUtil.getClipboard();
+		trace(notesString);
+	}
 
-        trace('Read ' + notesString.length + ' characters from clipboard.');
+	public static function readNotesFromClipboard():Array<SongNoteData>
+	{
+		var notesString = ClipboardUtil.getClipboard();
 
-        var notes:Array<SongNoteData> = SerializerUtil.fromJSON(notesString);
+		trace('Read ' + notesString.length + ' characters from clipboard.');
 
-        if (notes == null) {
-            trace('Failed to parse notes from clipboard.');
-            return [];
-        } else {
-            trace('Parsed ' + notes.length + ' notes from clipboard.');
-            return notes;
-        }
-    }
+		var notes:Array<SongNoteData> = SerializerUtil.fromJSON(notesString);
+
+		if (notes == null)
+		{
+			trace('Failed to parse notes from clipboard.');
+			return [];
+		}
+		else
+		{
+			trace('Parsed ' + notes.length + ' notes from clipboard.');
+			return notes;
+		}
+	}
 }

@@ -122,7 +122,7 @@ class RemoveNotesCommand implements ChartEditorCommand
 
 	public function toString():String
 	{
-		if (notes.length == 1)
+		if (notes.length == 1 && notes[0] != null)
 		{
 			var dir:String = notes[0].getDirectionName();
 			return 'Remove $dir Note';
@@ -315,12 +315,10 @@ class DeselectAllNotesCommand implements ChartEditorCommand
 class CutNotesCommand implements ChartEditorCommand
 {
 	private var notes:Array<SongNoteData>;
-	private var previousSelection:Array<SongNoteData>;
 
-	public function new(notes:Array<SongNoteData>, ?previousSelection:Array<SongNoteData>)
+	public function new(notes:Array<SongNoteData>)
 	{
 		this.notes = notes;
-		this.previousSelection = previousSelection == null ? [] : previousSelection;
 	}
 
 	public function execute(state:ChartEditorState):Void
@@ -357,6 +355,8 @@ class CutNotesCommand implements ChartEditorCommand
 class PasteNotesCommand implements ChartEditorCommand
 {
 	private var targetTimestamp:Float;
+	// Notes we added with this command, for undo.
+	private var addedNotes:Array<SongNoteData>;
 
 	public function new(targetTimestamp:Float)
 	{
@@ -367,10 +367,10 @@ class PasteNotesCommand implements ChartEditorCommand
 	{
 		var currentClipboard:Array<SongNoteData> = SongDataUtils.readNotesFromClipboard();
 
-		var notesToAdd = SongDataUtils.offsetSongNoteData(currentClipboard, Std.int(targetTimestamp));
+		addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard, Std.int(targetTimestamp));
 
-		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notesToAdd);
-		state.currentSelection = notesToAdd;
+		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
+		state.currentSelection = addedNotes.copy();
 
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
@@ -380,11 +380,7 @@ class PasteNotesCommand implements ChartEditorCommand
 
 	public function undo(state:ChartEditorState):Void
 	{
-		// NOTE: We can assume that the previous action
-		// defined the clipboard, so we don't need to redundantly it here... right?
-		// TODO: Test that this works as expected.
-		var currentClipboard:Array<SongNoteData> = SongDataUtils.readNotesFromClipboard();
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, currentClipboard);
+		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
 		state.currentSelection = [];
 
 		state.noteDisplayDirty = true;
