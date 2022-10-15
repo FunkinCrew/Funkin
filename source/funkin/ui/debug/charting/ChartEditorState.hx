@@ -20,8 +20,6 @@ import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.haxeui.HaxeUIState;
 import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
-import haxe.ui.components.HorizontalSlider;
-import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.SideBar;
 import haxe.ui.containers.TreeView;
@@ -33,6 +31,7 @@ import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Component;
+import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
@@ -58,6 +57,7 @@ class ChartEditorState extends HaxeUIState
 	static final CHART_EDITOR_LAYOUT = Paths.ui('chart-editor/main-view');
 
 	static final CHART_EDITOR_NOTIFBAR_LAYOUT = Paths.ui('chart-editor/components/notifbar');
+	static final CHART_EDITOR_PLAYBARHEAD_LAYOUT = Paths.ui('chart-editor/components/playbar-head');
 
 	static final DEFAULT_VARIATION = 'default';
 	static final DEFAULT_DIFFICULTY = 'normal';
@@ -84,9 +84,6 @@ class ChartEditorState extends HaxeUIState
 	static final SPECTROGRAM_COLOR:FlxColor = 0xFFFF0000;
 	static final SELECTION_SQUARE_BORDER_COLOR:FlxColor = 0xFF339933;
 	static final SELECTION_SQUARE_FILL_COLOR:FlxColor = 0x4033FF33;
-
-	static final PLAYBAR_PRIMARY_COLOR:FlxColor = 0xFF442277;
-	static final PLAYBAR_SECONDARY_COLOR:FlxColor = 0xFF8844DD;
 
 	/**
 	 * INSTANCE DATA
@@ -224,6 +221,13 @@ class ChartEditorState extends HaxeUIState
 		this.scrollPosition = this.scrollPosition;
 
 		return isViewDownscroll;
+	}
+
+	var isCursorOverHaxeUI(get, null):Bool;
+
+	function get_isCursorOverHaxeUI():Bool
+	{
+		return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
 	}
 
 	/**
@@ -767,14 +771,17 @@ class ChartEditorState extends HaxeUIState
 
 		add(notifBar);
 
-		playbarHead = new HorizontalSlider();
+		var playbarHeadLayout:Component = buildComponent(CHART_EDITOR_PLAYBARHEAD_LAYOUT);
+
+		playbarHeadLayout.width = FlxG.width;
+		playbarHeadLayout.height = 10;
+		playbarHeadLayout.x = 0;
+		playbarHeadLayout.y = FlxG.height - 48 - 8;
+
+		playbarHead = playbarHeadLayout.findComponent('playbarHead', Slider);
+		playbarHead.allowFocus = false;
 		playbarHead.width = FlxG.width;
 		playbarHead.height = 10;
-
-		playbarHead.x = 0;
-		playbarHead.y = FlxG.height - 48 - 8;
-
-		playbarHead.allowFocus = false;
 		playbarHead.styleString = "padding-left: 0px; padding-right: 0px; border-left: 0px; border-right: 0px;";
 
 		playbarHead.onDragStart = function(_:DragEvent)
@@ -811,7 +818,7 @@ class ChartEditorState extends HaxeUIState
 			}
 		}
 
-		add(playbarHead);
+		add(playbarHeadLayout);
 	}
 
 	/**
@@ -1186,7 +1193,7 @@ class ChartEditorState extends HaxeUIState
 	function handleCursor()
 	{
 		// Note: If a menu is open in HaxeUI, don't handle cursor behavior.
-		if (FlxG.mouse.overlaps(gridTiledSprite) && (!isModalDialogOpen))
+		if (FlxG.mouse.overlaps(gridTiledSprite) && (!isModalDialogOpen) && (!isCursorOverHaxeUI))
 		{
 			// Cursor position relative to the grid.
 			var cursorX:Float = FlxG.mouse.screenX - gridTiledSprite.x;
