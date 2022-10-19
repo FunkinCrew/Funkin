@@ -29,7 +29,7 @@ class FlxVideo extends FlxBasic
 		netStream = new NetStream(netConnection);
 		netStream.client = {onMetaData: client_onMetaData};
 		netConnection.addEventListener('netStatus', netConnection_onNetStatus);
-		netStream.play(Paths.getPath(VideoAsset, TEXT, null));
+		netStream.play(Paths.file(VideoAsset));
 	}
 
 	public function finishVideo()

@@ -28,7 +28,7 @@ class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 
 	function parseOffsets()
 	{
-		var swag:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/cutsceneStuff/' + imageShit + 'CutscenOffsets.txt', TEXT, null));
+		var swag:Array<String> = CoolUtil.coolTextFile(Paths.file('images/cutsceneStuff/' + imageShit + 'CutscenOffsets.txt'));
 		for (stuff in swag)
 		{
 			var point:FlxPoint = FlxPoint.get();
