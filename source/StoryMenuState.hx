@@ -1,6 +1,6 @@
 package;
 
-#if desktop
+#if cpp
 import Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -55,6 +55,8 @@ class StoryMenuState extends MusicBeatState
 		"hating simulator ft. moawling"
 	];
 
+	var swagColors:Array<FlxColor> = [];
+	
 	var txtWeekTitle:FlxText;
 
 	var curWeek:Int = 0;
@@ -71,6 +73,8 @@ class StoryMenuState extends MusicBeatState
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 
+	var yellowBG:FlxSprite;
+
 	override function create()
 	{
 		transIn = FlxTransitionableState.defaultTransIn;
@@ -80,6 +84,13 @@ class StoryMenuState extends MusicBeatState
 		{
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		}
+
+		var daColorFile = CoolUtil.coolTextFile(Paths.txt('weekColors'));
+
+		for (i in 0...daColorFile.length)
+		{
+			swagColors.push(FlxColor.fromString(daColorFile[i]));
 		}
 
 		persistentUpdate = persistentDraw = true;
@@ -98,7 +109,7 @@ class StoryMenuState extends MusicBeatState
 		rankText.screenCenter(X);
 
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
-		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
+		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
@@ -113,7 +124,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 70");
 		
-		#if desktop
+		#if cpp
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
@@ -380,6 +391,8 @@ class StoryMenuState extends MusicBeatState
 			curWeek = weekData.length - 1;
 
 		var bullShit:Int = 0;
+		
+		yellowBG.color = swagColors[curWeek];
 
 		for (item in grpWeekText.members)
 		{
