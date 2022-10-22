@@ -18,6 +18,7 @@ using StringTools;
 
 class PauseSubState extends MusicBeatSubstate
 {
+	var grpMenuShit:FlxTypedGroup<Alphabet>;
 	var grpOptionShit:FlxTypedGroup<FlxText>;
 
 	var menuItems:Array<String> = ['Resume', 'Toggle practice mode', 'Restart Song', 'Exit to menu'];
@@ -42,7 +43,6 @@ class PauseSubState extends MusicBeatSubstate
 		bg.scrollFactor.set();
 		add(bg);
 
-
 		grpOptionShit = new FlxTypedGroup<FlxText>();
 		add(grpOptionShit);
 
@@ -58,7 +58,6 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 		levelDifficulty.updateHitbox();
-
 		grpOptionShit.add(levelDifficulty);
 
 		var blueBalled:FlxText = new FlxText(20, 32 + 48, 0, "Blue-balled: 0", 32);
@@ -76,20 +75,18 @@ class PauseSubState extends MusicBeatSubstate
 
 		practice.visible = PlayState.practiceMode;
 		blueBalled.alpha = 0;
-
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
-		blueBalled.x = FlxG.width - (blueBalled.width + 20);
-		practice.x = FlxG.width - (practice.width + 20);
 
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+		blueBalled.x = FlxG.width - (blueBalled.width + 20);
+		practice.x = FlxG.width - (practice.width + 20);
 
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 		FlxTween.tween(blueBalled, {alpha: 1, y: blueBalled.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
-
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
@@ -104,12 +101,11 @@ class PauseSubState extends MusicBeatSubstate
 
 		changeSelection();
 
-		
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 	}
 
 	var antiSpam:Bool = false;
-	
+
 	override function update(elapsed:Float)
 	{
 		if (pauseMusic.volume < 0.5)
@@ -155,10 +151,10 @@ class PauseSubState extends MusicBeatSubstate
 								introAssets.set('default', ['ready', "set", "go"]);
 								introAssets.set('school', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
 								introAssets.set('schoolEvil', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
-
+					
 								var introAlts:Array<String> = introAssets.get('default');
 								var altSuffix:String = "";
-
+					
 								for (value in introAssets.keys())
 								{
 									if (value == PlayState.curStage)
@@ -167,9 +163,9 @@ class PauseSubState extends MusicBeatSubstate
 										altSuffix = '-pixel';
 									}
 								}
-
+					
 								switch (swagCounter)
-
+					
 								{
 									case 0:
 										FlxG.sound.play(Paths.sound('intro3'), 0.6);
@@ -177,10 +173,10 @@ class PauseSubState extends MusicBeatSubstate
 										var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 										ready.scrollFactor.set();
 										ready.updateHitbox();
-
+					
 										if (PlayState.curStage.startsWith('school'))
 											ready.setGraphicSize(Std.int(ready.width * PlayState.daPixelZoom));
-
+					
 										ready.screenCenter();
 										add(ready);
 										FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
@@ -194,10 +190,10 @@ class PauseSubState extends MusicBeatSubstate
 									case 2:
 										var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 										set.scrollFactor.set();
-
+					
 										if (PlayState.curStage.startsWith('school'))
 											set.setGraphicSize(Std.int(set.width * PlayState.daPixelZoom));
-
+					
 										set.screenCenter();
 										add(set);
 										FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
@@ -211,12 +207,12 @@ class PauseSubState extends MusicBeatSubstate
 									case 3:
 										var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 										go.scrollFactor.set();
-
+					
 										if (PlayState.curStage.startsWith('school'))
 											go.setGraphicSize(Std.int(go.width * PlayState.daPixelZoom));
-
+					
 										go.updateHitbox();
-
+					
 										go.screenCenter();
 										add(go);
 										FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
@@ -231,7 +227,7 @@ class PauseSubState extends MusicBeatSubstate
 										trace('TIME TO PLAY BABY!');
 										close();
 								}
-
+					
 								swagCounter += 1;
 								// generateSong('fresh');
 							}, 5);
@@ -242,7 +238,9 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.practiceMode = !PlayState.practiceMode;
 					practice.visible = PlayState.practiceMode;
 
-					trace("PRACTICE MODE: " + PlayState.practiceMode, practice.visible);				case "Restart Song":
+					trace("PRACTICE MODE: " + PlayState.practiceMode, practice.visible);
+					
+				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());

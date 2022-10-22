@@ -145,14 +145,14 @@ class PlayState extends MusicBeatState
 	#end
 
 	override function add(object:FlxBasic):FlxBasic
+	{
+		if (Reflect.hasField(object, "antialiasing"))
 		{
-			if (Reflect.hasField(object, "antialiasing"))
-			{
-				Reflect.setField(object, "antialiasing", false);
-			}
-	
-			return super.add(object);
+			Reflect.setField(object, "antialiasing", false);
 		}
+
+		return super.add(object);
+	}
 
 	override public function create()
 	{
@@ -436,13 +436,12 @@ class PlayState extends MusicBeatState
 		          {
 		                  curStage = 'school';
 
-
 						  chromaticAbberation = new ChromaticAberrationShader();
 						  chromaticAbberation.setChrome(0.003);
 
 						  scanline = new ScanlineShader();
-						  FlxG.camera.setFilters([new ShaderFilter(scanline), new ShaderFilter(chromaticAbberation)]);					
-						  
+						  FlxG.camera.setFilters([new ShaderFilter(scanline), new ShaderFilter(chromaticAbberation)]);
+
 		                  // defaultCamZoom = 0.9;
 
 		                  var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
@@ -508,67 +507,73 @@ class PlayState extends MusicBeatState
 		          }
 		          case 'thorns':
 		          {
-					curStage = 'schoolEvil';
+						curStage = 'schoolEvil';
 
-					chromaticAbberation = new ChromaticAberrationShader();
-					chromaticAbberation.setChrome(0.005);
+						chromaticAbberation = new ChromaticAberrationShader();
+						chromaticAbberation.setChrome(0.005);
 
-					vhsShader = new VHSShader(); // Based VHS shader
-					vhsShader.setNoisePercent(75 / 100);
+						vhsShader = new VHSShader(); // Based VHS shader
+						vhsShader.setNoisePercent(75 / 100);
 
-					FlxG.camera.setFilters([new ShaderFilter(vhsShader), new ShaderFilter(chromaticAbberation)]);
+						FlxG.camera.setFilters([new ShaderFilter(vhsShader), new ShaderFilter(chromaticAbberation)]);
 
-					var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
-					var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
+						var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
+						var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
 
-					var posX = 400;
-						var posY = 200;
+						var posX = 400;
+							var posY = 200;
 
-					var bg:FlxSprite = new FlxSprite(posX, posY);
-					bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
-					bg.animation.addByPrefix('idle', 'background 2', 24);
-					bg.animation.play('idle');
-					bg.scrollFactor.set(0.8, 0.9);
-					bg.scale.set(6, 6);
-					add(bg);
+						var bg:FlxSprite = new FlxSprite(posX, posY);
+						bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
+						bg.animation.addByPrefix('idle', 'background 2', 24);
+						bg.animation.play('idle');
+						bg.scrollFactor.set(0.8, 0.9);
+						bg.scale.set(6, 6);
+						add(bg);
 
-					/* 
-							var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolBG'));
-							bg.scale.set(6, 6);
-							// bg.setGraphicSize(Std.int(bg.width * 6));
-							// bg.updateHitbox();
-							add(bg);
-							var fg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolFG'));
-							fg.scale.set(6, 6);
-							// fg.setGraphicSize(Std.int(fg.width * 6));
-							// fg.updateHitbox();
-							add(fg);
-							wiggleShit.effectType = WiggleEffectType.DREAMY;
-							wiggleShit.waveAmplitude = 0.01;
-							wiggleShit.waveFrequency = 60;
-							wiggleShit.waveSpeed = 0.8;
-					*/
+						/* 
+								var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolBG'));
+								bg.scale.set(6, 6);
+								// bg.setGraphicSize(Std.int(bg.width * 6));
+								// bg.updateHitbox();
+								add(bg);
 
-					// bg.shader = wiggleShit.shader;
-					// fg.shader = wiggleShit.shader;
+								var fg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolFG'));
+								fg.scale.set(6, 6);
+								// fg.setGraphicSize(Std.int(fg.width * 6));
+								// fg.updateHitbox();
+								add(fg);
 
-					/* 
-							var waveSprite = new FlxEffectSprite(bg, [waveEffectBG]);
-							var waveSpriteFG = new FlxEffectSprite(fg, [waveEffectFG]);
-							// Using scale since setGraphicSize() doesnt work???
-							waveSprite.scale.set(6, 6);
-							waveSpriteFG.scale.set(6, 6);
-							waveSprite.setPosition(posX, posY);
-							waveSpriteFG.setPosition(posX, posY);
-							waveSprite.scrollFactor.set(0.7, 0.8);
-							waveSpriteFG.scrollFactor.set(0.9, 0.8);
-							// waveSprite.setGraphicSize(Std.int(waveSprite.width * 6));
-							// waveSprite.updateHitbox();
-							// waveSpriteFG.setGraphicSize(Std.int(fg.width * 6));
-							// waveSpriteFG.updateHitbox();
-							add(waveSprite);
-							add(waveSpriteFG);
-					*/
+								wiggleShit.effectType = WiggleEffectType.DREAMY;
+								wiggleShit.waveAmplitude = 0.01;
+								wiggleShit.waveFrequency = 60;
+								wiggleShit.waveSpeed = 0.8;
+						*/
+
+						// bg.shader = wiggleShit.shader;
+						// fg.shader = wiggleShit.shader;
+
+						/* 
+								var waveSprite = new FlxEffectSprite(bg, [waveEffectBG]);
+								var waveSpriteFG = new FlxEffectSprite(fg, [waveEffectFG]);
+
+								// Using scale since setGraphicSize() doesnt work???
+								waveSprite.scale.set(6, 6);
+								waveSpriteFG.scale.set(6, 6);
+								waveSprite.setPosition(posX, posY);
+								waveSpriteFG.setPosition(posX, posY);
+
+								waveSprite.scrollFactor.set(0.7, 0.8);
+								waveSpriteFG.scrollFactor.set(0.9, 0.8);
+
+								// waveSprite.setGraphicSize(Std.int(waveSprite.width * 6));
+								// waveSprite.updateHitbox();
+								// waveSpriteFG.setGraphicSize(Std.int(fg.width * 6));
+								// waveSpriteFG.updateHitbox();
+
+								add(waveSprite);
+								add(waveSpriteFG);
+						*/
 		          }
 		          default:
 		          {
@@ -1319,7 +1324,7 @@ class PlayState extends MusicBeatState
 
 	override public function onFocus():Void
 	{
-		#if desktop
+		#if cpp
 		if (health > 0 && !paused)
 		{
 			if (Conductor.songPosition > 0.0)
@@ -1338,7 +1343,7 @@ class PlayState extends MusicBeatState
 	
 	override public function onFocusLost():Void
 	{
-		#if desktop
+		#if cpp
 		if (health > 0 && !paused)
 		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
@@ -1364,6 +1369,8 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		//		trace(health);
+
 		#if !debug
 		perfectMode = false;
 		#end
@@ -1390,7 +1397,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
-				
+
 				case 'schoolEvil':
 					vhsShader.update(elapsed);
 		}
@@ -1647,7 +1654,7 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				//if (daNote.y > FlxG.height)
-				if (daNote.tooLate)				
+				if (daNote.tooLate)
 				{
 					daNote.active = false;
 					daNote.visible = false;
@@ -1713,24 +1720,24 @@ class PlayState extends MusicBeatState
 				if (daNote.y < -daNote.height)
 				{
 					if (daNote.isSustainNote && daNote.wasGoodHit)
-						{
-							daNote.kill();
-							notes.remove(daNote, true);
-							daNote.destroy();
-						}
-						else					
+					{
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}
+					else
 					{
 						if (daNote.isSustainNote)
-							{
-	
-							}
-							if (health < 0)
-								health = 0;
-	
-							if (health > 0)
-								health -= 0.075;
-							vocals.volume = 0;
-							noteMiss(daNote.noteData, daNote);
+						{
+
+						}
+						if (health < 0)
+							health = 0;
+
+						if (health > 0)
+							health -= 0.075;
+						vocals.volume = 0;
+						noteMiss(daNote.noteData, daNote);
 					}
 
 					daNote.active = false;
@@ -1786,8 +1793,8 @@ class PlayState extends MusicBeatState
 
 				if (SONG.validScore)
 				{
-					NGio.unlockMedal(60961);
-					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+					//NGio.unlockMedal(60961);
+					//Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				}
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
@@ -1990,7 +1997,7 @@ class PlayState extends MusicBeatState
 		curSection += 1;
 	}
 
-	private function keyShit():Void //KE INPUT MY BELOVED
+	private function keyShit():Void // KADE ENGINE, INPUT LOL!
 	{
 		// HOLDING
 		/*
@@ -2008,7 +2015,6 @@ class PlayState extends MusicBeatState
 		var rightR = controls.RIGHT_R;
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
-
 		*/
 
 		var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
@@ -2051,20 +2057,6 @@ class PlayState extends MusicBeatState
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 				{
 					if (!directionsAccounted[daNote.noteData])
-				}
-			});
-
-			if (possibleNotes.length > 0)
-			{
-				var daNote = possibleNotes[0];
-
-				if (perfectMode)
-					noteCheck(true, daNote);
-
-				// Jump notes
-				if (possibleNotes.length >= 2)
-				{
-					if (possibleNotes[0].strumTime == possibleNotes[1].strumTime)
 					{
 						if (directionList.contains(daNote.noteData))
 						{
@@ -2072,23 +2064,23 @@ class PlayState extends MusicBeatState
 							for (coolNote in possibleNotes)
 							{
 								if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
-									{ // if it's the same note twice at < 10ms distance, just delete it
-										// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
-										dumbNotes.push(daNote);
-										break;
-									}
-									else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
-									{ // if daNote is earlier than existing note (coolNote), replace
-										possibleNotes.remove(coolNote);
-										possibleNotes.push(daNote);
-										break;
+								{ // if it's the same note twice at < 10ms distance, just delete it
+									// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
+									dumbNotes.push(daNote);
+									break;
+								}
+								else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
+								{ // if daNote is earlier than existing note (coolNote), replace
+									possibleNotes.remove(coolNote);
+									possibleNotes.push(daNote);
+									break;
 								}
 							}
 						}
-					else
-					{
-						possibleNotes.push(daNote);
-						directionList.push(daNote.noteData);
+						else
+						{
+							possibleNotes.push(daNote);
+							directionList.push(daNote.noteData);
 						}
 					}
 				}
@@ -2120,9 +2112,10 @@ class PlayState extends MusicBeatState
 					if (pressArray[shit] && !directionList.contains(shit))
 						noteMiss(shit, null);
 				}
+
 				for (coolNote in possibleNotes)
-					{
-						if (pressArray[coolNote.noteData])
+				{
+					if (pressArray[coolNote.noteData])
 					{
 						scoreTxt.color = FlxColor.WHITE;
 						goodNoteHit(coolNote);
@@ -2135,11 +2128,12 @@ class PlayState extends MusicBeatState
 				if (pressArray[shit])
 					noteMiss(shit, null);
 			*/
-			/*			
+			/*
 			else
 			{
 				noteMiss()
 			}
+			*/
 		}
 
 		/*
@@ -2171,13 +2165,13 @@ class PlayState extends MusicBeatState
 		*/
 
 		notes.forEachAlive(function(daNote:Note)
+		{
+			if(daNote.y < strumLine.y)
 			{
-				if(daNote.y < strumLine.y)
-				{
-				}
-			});
-	
-			if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)))
+			}
+		});
+
+		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true)))
 		{
 			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 			{
@@ -2191,7 +2185,7 @@ class PlayState extends MusicBeatState
 				spr.animation.play('pressed');
 			if (!holdArray[spr.ID])
 				spr.animation.play('static');
-
+	
 			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
 			{
 				spr.centerOffsets();
@@ -2204,7 +2198,7 @@ class PlayState extends MusicBeatState
 	}
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void
-		{		
+	{		
 		if (!boyfriend.stunned)
 		{
 			misses++;
@@ -2248,7 +2242,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
-    /*
+
+	/*
 	function badNoteCheck()
 	{
 		// just double pasting this shit cuz fuk u
@@ -2289,7 +2284,7 @@ class PlayState extends MusicBeatState
 				combo += 1;
 			}
 
-			//trace(note.noteData);			
+			//trace(note.noteData);
 			if (note.noteData >= 0)
 				health += 0.023;
 			else

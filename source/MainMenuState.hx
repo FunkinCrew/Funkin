@@ -34,8 +34,8 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
-	var engineVer:String = "0.1.0";
-
+	var engineVer:String = "0.1.0.4a";
+	
 	override function create()
 	{
 		#if cpp
@@ -45,20 +45,22 @@ class MainMenuState extends MusicBeatState
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
-
+		
 		if (!FlxG.sound.music.playing)
-		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 
-			//}
-	
-			/*
-			if (FlxG.sound.music.playing)
-			{
-				FlxG.sound.music.stop();
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			}
-			else		}
+		//}
+
+		/*
+		if (FlxG.sound.music.playing)
+		{
+			FlxG.sound.music.stop();
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		}
+		else
+		{
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		}
 		*/
 
 		persistentUpdate = persistentDraw = true;

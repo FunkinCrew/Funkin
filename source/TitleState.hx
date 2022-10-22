@@ -50,7 +50,7 @@ class TitleState extends MusicBeatState
 
 	var curWacky:Array<String> = [];
 
-	var colorShader:ColorSwapEffect;
+	var colorShader:shaders.ColorSwapEffect;
 
 	var wackyImage:FlxSprite;
 
@@ -86,7 +86,7 @@ class TitleState extends MusicBeatState
 
 		colorShader = new ColorSwapEffect();
 
-		EngineData.initSave();
+		engine.EngineData.initSave();
 		controls.setKeyboardScheme(KeyboardScheme.Solo);
 		trace("WASD sucks lmfao.");	
 		
