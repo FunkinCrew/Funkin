@@ -1,5 +1,6 @@
 package;
 
+#if newgrounds
 import flixel.FlxG;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
@@ -198,3 +199,70 @@ class NGio
 		}
 	}
 }
+#else
+import flixel.FlxG;
+import flixel.util.FlxSignal;
+import flixel.util.FlxTimer;
+
+/**
+ * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
+ */
+ class NGio
+ {
+	public static var isLoggedIn:Bool = false;
+	public static var scoreboardsLoaded:Bool = false;
+
+	public static var ngDataLoaded(default, null):FlxSignal = new FlxSignal();
+	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
+
+	public static var GAME_VER:String = "";
+	public static var GAME_VER_NUMS:String = '';
+	public static var gotOnlineVer:Bool = false;
+
+	 public function new(api:String, encKey:String, ?sessionId:String)
+	 {
+		 trace("no ng because logic???????????????");
+	 }
+
+	 inline static public function unlockMedal(id:Int)
+		{
+
+		}
+
+	inline static public function logEvent(event:String)
+	{
+	}
+
+	function onNGScoresFetch():Void
+		{
+
+		}
+
+	inline static public function postScore(score:Int = 0, song:String)
+	{
+
+	}
+
+	public static function noLogin(api:String)
+	{
+		trace('NO >:(');
+	}
+
+	function onNGLogin():Void
+	{
+
+	}
+
+	// --- MEDALS
+	function onNGMedalFetch():Void
+	{
+
+	}
+
+	// --- SCOREBOARDS
+	function onNGBoardsFetch():Void
+	{
+
+	}
+ }
+#end

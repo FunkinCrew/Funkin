@@ -72,4 +72,13 @@ class MusicBeatState extends FlxUIState
 	{
 		//do literally nothing dumbass
 	}
+
+	public function openURL(url:String)
+		{
+			#if linux
+			Sys.command('/usr/bin/xdg-open', [url, "&"]);
+			#else
+			FlxG.openURL(url);
+			#end
+		}
 }

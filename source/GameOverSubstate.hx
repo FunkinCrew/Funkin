@@ -14,6 +14,14 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	var stageSuffix:String = "";
 
+
+	var danceTime:Bool = false;
+	var started:Bool = false;
+
+	var daChrome:Float = 0.003;
+	var daNoise:Int = 100;
+	var awesomeShaderTime:Bool = false;	
+
 	public function new(x:Float, y:Float)
 	{
 		var daStage = PlayState.curStage;
@@ -55,6 +63,35 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
+		if (PlayState.SONG.song.toLowerCase() == 'thorns')
+			{
+				if (awesomeShaderTime)
+				{
+					if (!isEnding)
+					{
+						PlayState.vhsShader.setNoisePercent(100 / 100);
+						PlayState.chromaticAbberation.setChrome(FlxG.random.float(0.001, 0.005));
+					}
+					else
+					{
+						daNoise -= 2;
+						daChrome += 0.0001;
+	
+						PlayState.chromaticAbberation.setChrome(daChrome);
+						PlayState.vhsShader.setNoisePercent(daNoise / 100);
+					}
+				}
+				else
+				{
+					PlayState.vhsShader.setNoisePercent(0);
+					PlayState.chromaticAbberation.setChrome(0);
+					PlayState.vhsShader.update(elapsed);
+				}
+	
+				if (started)
+					PlayState.vhsShader.update(elapsed);
+			}	
+
 		if (controls.ACCEPT)
 		{
 			endBullshit();
@@ -78,6 +115,9 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
 			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			started = true;
+			awesomeShaderTime = true;
+			danceTime = true;
 		}
 
 		if (FlxG.sound.music.playing)
@@ -90,8 +130,12 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super.beatHit();
 
-		FlxG.log.add('beat');
-	}
+		if (danceTime && !isEnding)
+			{
+				bf.animation.play('deathLoop', true);
+			}
+	
+			FlxG.log.add('beat' + curBeat);	}
 
 	var isEnding:Bool = false;
 

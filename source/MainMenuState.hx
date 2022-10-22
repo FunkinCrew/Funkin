@@ -1,6 +1,6 @@
 package;
 
-#if desktop
+#if cpp
 import Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -14,7 +14,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import io.newgrounds.NG;
+//import io.newgrounds.NG;
 import lime.app.Application;
 
 using StringTools;
@@ -34,9 +34,11 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
+	var engineVer:String = "0.1.0";
+
 	override function create()
 	{
-		#if desktop
+		#if cpp
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
@@ -47,7 +49,17 @@ class MainMenuState extends MusicBeatState
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
-		}
+
+			//}
+	
+			/*
+			if (FlxG.sound.music.playing)
+			{
+				FlxG.sound.music.stop();
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+			}
+			else		}
+		*/
 
 		persistentUpdate = persistentDraw = true;
 
@@ -96,7 +108,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "FUNKIN " + Application.current.meta.get('version') + " | TestEngine " + engineVer, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -140,11 +152,14 @@ class MainMenuState extends MusicBeatState
 			{
 				if (optionShit[curSelected] == 'donate')
 				{
+					/*
 					#if linux
 					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
 					#else
 					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 					#end
+					*/
+					openURL('https://ninja-muffin24.itch.io/funkin');
 				}
 				else
 				{
@@ -182,8 +197,8 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										FlxTransitionableState.skipNextTransIn = true;
-										FlxTransitionableState.skipNextTransOut = true;
+										//FlxTransitionableState.skipNextTransIn = true;
+										//FlxTransitionableState.skipNextTransOut = true;
 										FlxG.switchState(new OptionsMenu());
 								}
 							});

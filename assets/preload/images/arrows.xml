@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="arrows.png">
+	<!-- Created with Adobe Animate version 19.2.1.408 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="left idle0000" x="0" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0001" x="0" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0002" x="0" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0003" x="0" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0004" x="0" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0005" x="0" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0006" x="78" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0007" x="78" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0008" x="78" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0009" x="78" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0010" x="78" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0011" x="78" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0012" x="156" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0013" x="156" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0014" x="156" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0015" x="156" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0016" x="156" y="0" width="75" height="120"/>
+	<SubTexture name="left idle0017" x="156" y="0" width="75" height="120"/>
+	<SubTexture name="left press0000" x="0" y="123" width="69" height="110"/>
+	<SubTexture name="left press0001" x="0" y="123" width="69" height="110"/>
+	<SubTexture name="left press0002" x="72" y="123" width="69" height="110"/>
+	<SubTexture name="left press0003" x="72" y="123" width="69" height="110"/>
+	<SubTexture name="right idle0000" x="144" y="123" width="75" height="120"/>
+	<SubTexture name="right idle0001" x="144" y="123" width="75" height="120"/>
+	<SubTexture name="right idle0002" x="144" y="123" width="75" height="120"/>
+	<SubTexture name="right idle0003" x="144" y="123" width="75" height="120"/>
+	<SubTexture name="right idle0004" x="144" y="123" width="75" height="120"/>
+	<SubTexture name="right idle0005" x="144" y="123" width="75" height="120"/>
+	<SubTexture name="right idle0006" x="0" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0007" x="0" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0008" x="0" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0009" x="0" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0010" x="0" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0011" x="0" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0012" x="78" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0013" x="78" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0014" x="78" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0015" x="78" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0016" x="78" y="246" width="75" height="120"/>
+	<SubTexture name="right idle0017" x="78" y="246" width="75" height="120"/>
+	<SubTexture name="right press0000" x="156" y="246" width="69" height="110"/>
+	<SubTexture name="right press0001" x="156" y="246" width="69" height="110"/>
+	<SubTexture name="right press0002" x="0" y="369" width="69" height="110"/>
+	<SubTexture name="right press0003" x="0" y="369" width="69" height="110"/>
+</TextureAtlas>

@@ -1,6 +1,7 @@
 package;
 
-#if desktop
+import flixel.tweens.FlxTween;
+#if cpp
 import Discord.DiscordClient;
 #end
 import flash.text.TextField;
@@ -18,7 +19,8 @@ using StringTools;
 class FreeplayState extends MusicBeatState
 {
 	var songs:Array<SongMetadata> = [];
-
+	var songColors:Array<FlxColor> = [];
+	var songBPM:Array<Int> = [];
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
@@ -33,14 +35,27 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 
+
+	var colorTween:FlxTween;
+	var daColor:FlxColor;
+
+	var bg:FlxSprite;
+
 	override function create()
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		for (i in 0...initSonglist.length)
 		{
-			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
+			var parsedFile:Array<String> = initSonglist[i].split(":");
+			//songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
+			songs.push(new SongMetadata(parsedFile[0], Std.parseInt(parsedFile[2]), parsedFile[1]));
+			songColors.push(FlxColor.fromString(parsedFile[3]));
+			songBPM.push(Std.parseInt(parsedFile[4]));
 		}
+
+		//trace(songs);
+		trace(songColors);
 
 		/* 
 			if (FlxG.sound.music != null)
@@ -50,7 +65,7 @@ class FreeplayState extends MusicBeatState
 			}
 		 */
 
-		#if desktop
+		#if cpp
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
@@ -61,6 +76,7 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
+		/*
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
@@ -78,12 +94,13 @@ class FreeplayState extends MusicBeatState
 
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
 			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
+		*/
 
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -113,7 +130,7 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 66, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 70, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
@@ -122,6 +139,9 @@ class FreeplayState extends MusicBeatState
 		add(diffText);
 
 		add(scoreText);
+
+		bg.color = songColors[curSelected];
+		daColor = bg.color;
 
 		changeSelection();
 		changeDiff();
@@ -185,6 +205,8 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
+		Conductor.songPosition = FlxG.sound.music.time;
+
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 
 		if (Math.abs(lerpScore - intendedScore) <= 10)
@@ -212,6 +234,11 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
+			if (colorTween != null)
+				{
+					colorTween.cancel();
+				}
+	
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -230,6 +257,15 @@ class FreeplayState extends MusicBeatState
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
+
+	override function beatHit():Void
+		{
+			super.beatHit();
+	
+			if (FlxG.save.data.freeplayBop)
+				FlxG.camera.zoom = 1.05;
+				FlxTween.tween(FlxG.camera, {zoom: 1}, 0.10);
+		}	
 
 	function changeDiff(change:Int = 0)
 	{
@@ -257,9 +293,11 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
+		/*
 		#if !switch
 		NGio.logEvent('Fresh');
 		#end
+		*/
 
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -272,6 +310,21 @@ class FreeplayState extends MusicBeatState
 			curSelected = 0;
 
 		// selector.y = (70 * curSelected) + 30;
+
+		Conductor.changeBPM(songBPM[curSelected]);
+		FlxG.log.add("Changing Song to...: "  + songs[curSelected].songName + " and the BPM to...: " + songBPM[curSelected]);
+		var newColor = songColors[curSelected];
+
+		if (newColor != daColor)
+		{
+			if (colorTween != null) 
+			{
+				colorTween.cancel();
+			}
+
+			daColor = newColor;
+			colorTween = FlxTween.color(bg, 0.5, bg.color, daColor);
+		}
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
