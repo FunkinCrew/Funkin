@@ -1,7 +1,7 @@
 package;
 
 import flixel.tweens.FlxTween;
-#if cpp
+#if windows
 import Discord.DiscordClient;
 #end
 import flash.text.TextField;
@@ -65,9 +65,9 @@ class FreeplayState extends MusicBeatState
 			}
 		 */
 
-		#if cpp
+		#if windows
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("In Freeplay mode", null);
 		#end
 
 		var isDebug:Bool = false;
