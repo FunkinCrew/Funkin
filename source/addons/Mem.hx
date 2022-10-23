@@ -8,7 +8,7 @@ import openfl.text.TextFormat;
 
 /**
 
- * FPS class extension to display memory usage.
+ * FPS class extension to display memory usage while playing a game.
 
  * @author Kirill Poletaev
 
