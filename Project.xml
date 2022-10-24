@@ -46,6 +46,12 @@
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+
+	<!-- TEST ENGINE CUSTOMIZATION -->
+	<define name="VIDEOS_ALLOWED" if="desktop || android" />
+
+	<assets path="mods" embed="false" exclude="*.ogg" if="web"/>
+	<assets path="mods" embed="false" exclude="*.mp3" unless="web"/>	
 	
 	<section if="PRELOAD_ALL">
 		<library name="songs"    preload="true" />
