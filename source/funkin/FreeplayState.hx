@@ -524,10 +524,7 @@ class FreeplayState extends MusicBeatSubstate
 			PlayState.currentSong_NEW = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
-			PlayState.storyDifficulty_NEW = 'easy';
-			// SongLoad.curDiff = Highscore.formatSong()
-
-			SongLoad.curDiff = switch (curDifficulty)
+			PlayState.storyDifficulty_NEW = switch (curDifficulty)
 			{
 				case 0:
 					'easy';
@@ -537,6 +534,9 @@ class FreeplayState extends MusicBeatSubstate
 					'hard';
 				default: 'normal';
 			};
+			// SongLoad.curDiff = Highscore.formatSong()
+
+			SongLoad.curDiff = PlayState.storyDifficulty_NEW;
 
 			PlayState.storyWeek = songs[curSelected].week;
 			trace(' CUR WEEK ' + PlayState.storyWeek);
@@ -565,7 +565,17 @@ class FreeplayState extends MusicBeatSubstate
 		intendedScore = FlxG.random.int(0, 100000);
 
 		PlayState.storyDifficulty = curDifficulty;
-		PlayState.storyDifficulty_NEW = 'easy';
+		PlayState.storyDifficulty_NEW = switch (curDifficulty)
+		{
+			case 0:
+				'easy';
+			case 1:
+				'normal';
+			case 2:
+				'hard';
+			default:
+				'normal';
+		};
 
 		grpDifficulties.group.forEach(function(spr)
 		{

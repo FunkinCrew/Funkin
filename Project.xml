@@ -181,6 +181,7 @@
 
 	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
 	<haxedef name="CAN_CHEAT" if="switch debug" />
+	<haxedef name="haxeui_no_mouse_reset" />
 
 	<!-- Skip the Intro -->
 	<section if="debug">

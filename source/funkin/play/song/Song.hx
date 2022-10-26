@@ -212,6 +212,11 @@ class SongDifficulty
 		return chars.get(id);
 	}
 
+	public function getPlayableChars():Array<String>
+	{
+		return [for (i in chars.keys()) i];
+	}
+
 	public function getEvents():Array<SongEvent>
 	{
 		return cast events;

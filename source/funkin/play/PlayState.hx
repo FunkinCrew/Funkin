@@ -396,7 +396,7 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'healthLerp', 0, 2);
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(Constants.HEALTH_BAR_RED, Constants.HEALTH_BAR_GREEN);
+		healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
 		add(healthBar);
 
 		initStage();
@@ -711,7 +711,18 @@ class PlayState extends MusicBeatState
 
 		// TODO: Switch playable character by manipulating this value.
 		// TODO: How to choose which one to use for story mode?
+
+		var playableChars = currentChart.getPlayableChars();
 		var currentPlayer = 'bf';
+
+		if (playableChars.length == 0)
+		{
+			trace('WARNING: No playable characters found for this song.');
+		}
+		else if (playableChars.indexOf(currentPlayer) == -1)
+		{
+			currentPlayer = playableChars[0];
+		}
 
 		var currentCharData:SongPlayableChar = currentChart.getPlayableChar(currentPlayer);
 

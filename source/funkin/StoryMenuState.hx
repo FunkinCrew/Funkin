@@ -378,8 +378,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.campaignScore = 0;
 
 			PlayState.storyDifficulty = curDifficulty;
-			PlayState.storyDifficulty_NEW = 'easy';
-			SongLoad.curDiff = switch (curDifficulty)
+			PlayState.storyDifficulty_NEW = switch (curDifficulty)
 			{
 				case 0:
 					'easy';
@@ -390,6 +389,7 @@ class StoryMenuState extends MusicBeatState
 				default:
 					'normal';
 			};
+			SongLoad.curDiff = PlayState.storyDifficulty_NEW;
 
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{

@@ -189,7 +189,7 @@ class PauseSubState extends MusicBeatSubstate
 						SongLoad.curDiff = daSelected.toLowerCase();
 
 						PlayState.storyDifficulty = curSelected;
-						PlayState.storyDifficulty_NEW = 'easy';
+						PlayState.storyDifficulty_NEW = daSelected.toLowerCase();
 
 						PlayState.needsReset = true;
 
