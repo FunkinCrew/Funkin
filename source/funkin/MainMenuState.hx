@@ -112,17 +112,10 @@ class MainMenuState extends MusicBeatState
 			persistentUpdate = false;
 			openSubState(new FreeplayState());
 		});
+
 		#if CAN_OPEN_LINKS
 		var hasPopupBlocker = #if web true #else false #end;
-
-		if (VideoState.seenVideo)
-		{
-			createMenuItem('kickstarter', 'mainmenu/kickstarter', selectDonate, hasPopupBlocker);
-		}
-		else
-		{
-			createMenuItem('donate', 'mainmenu/donate', selectDonate, hasPopupBlocker);
-		}
+		createMenuItem('donate', 'mainmenu/donate', selectDonate, hasPopupBlocker);
 		#end
 
 		createMenuItem('options', 'mainmenu/options', function()
@@ -195,7 +188,7 @@ class MainMenuState extends MusicBeatState
 	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
-		WindowUtil.openURL(Constants.URL_KICKSTARTER);
+		WindowUtil.openURL(Constants.URL_ITCH);
 	}
 	#end
 

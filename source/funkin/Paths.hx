@@ -59,6 +59,16 @@ class Paths
 		return getPath('data/$key.txt', TEXT, library);
 	}
 
+	inline static public function frag(key:String, ?library:String)
+	{
+		return getPath('shaders/$key.frag', TEXT, library);
+	}
+
+	inline static public function vert(key:String, ?library:String)
+	{
+		return getPath('shaders/$key.vert', TEXT, library);
+	}
+
 	inline static public function xml(key:String, ?library:String)
 	{
 		return getPath('data/$key.xml', TEXT, library);
@@ -105,6 +115,11 @@ class Paths
 	inline static public function font(key:String)
 	{
 		return 'assets/fonts/$key';
+	}
+
+	inline static public function ui(key:String, ?library:String)
+	{
+		return xml('ui/$key', library);
 	}
 
 	static public function getSparrowAtlas(key:String, ?library:String)

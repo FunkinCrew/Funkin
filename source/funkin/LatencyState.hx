@@ -9,7 +9,7 @@ import flixel.system.FlxSound;
 import flixel.system.debug.stats.StatsGraph;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import funkin.audiovis.PolygonSpectogram;
+import funkin.audio.visualize.PolygonSpectogram;
 import funkin.ui.CoolStatsGraph;
 import haxe.Timer;
 import openfl.events.KeyboardEvent;
@@ -70,7 +70,7 @@ class LatencyState extends MusicBeatSubstate
 
 		// funnyStatsGraph.hi
 
-		Conductor.bpm = 60;
+		Conductor.forceBPM(60);
 
 		noteGrp = new FlxTypedGroup<Note>();
 		add(noteGrp);
@@ -139,17 +139,17 @@ class LatencyState extends MusicBeatSubstate
 		super.create();
 	}
 
-	override function stepHit()
+	override function stepHit():Bool
 	{
 		if (curStep % 4 == 2)
 		{
 			blocks.members[((curBeat % 8) + 1) % 8].alpha = 0.5;
 		}
 
-		super.stepHit();
+		return super.stepHit();
 	}
 
-	override function beatHit()
+	override function beatHit():Bool
 	{
 		if (curBeat % 8 == 0)
 			blocks.forEach(blok ->
@@ -160,7 +160,7 @@ class LatencyState extends MusicBeatSubstate
 		blocks.members[curBeat % 8].alpha = 1;
 		// block.visible = !block.visible;
 
-		super.beatHit();
+		return super.beatHit();
 	}
 
 	override function update(elapsed:Float)

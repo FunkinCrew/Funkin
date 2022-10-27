@@ -1,8 +1,10 @@
 package funkin.modding.module;
 
-import funkin.modding.events.ScriptEventDispatcher;
-import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.module.Module;
+import funkin.modding.module.ScriptedModule;
 
 using funkin.util.IteratorTools;
 

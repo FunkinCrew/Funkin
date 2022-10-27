@@ -12,6 +12,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.MenuItem.WeekType;
 import funkin.play.PlayState;
+import funkin.play.song.SongData.SongDataParser;
 import lime.net.curl.CURLCode;
 import openfl.Assets;
 
@@ -372,11 +373,12 @@ class StoryMenuState extends MusicBeatState
 			selectedWeek = true;
 
 			PlayState.currentSong = SongLoad.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0].toLowerCase());
+			PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 
 			PlayState.storyDifficulty = curDifficulty;
-			SongLoad.curDiff = switch (curDifficulty)
+			PlayState.storyDifficulty_NEW = switch (curDifficulty)
 			{
 				case 0:
 					'easy';
@@ -387,6 +389,7 @@ class StoryMenuState extends MusicBeatState
 				default:
 					'normal';
 			};
+			SongLoad.curDiff = PlayState.storyDifficulty_NEW;
 
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{

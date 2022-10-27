@@ -1,6 +1,5 @@
 package funkin;
 
-import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
@@ -8,9 +7,9 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.audiovis.SpectogramSprite;
-import funkin.shaderslmfao.BuildingShaders;
 import funkin.shaderslmfao.ColorSwap;
 import funkin.shaderslmfao.TitleOutline;
 import funkin.ui.AtlasText;
@@ -39,7 +38,6 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 	var lastBeat:Int = 0;
 	var swagShader:ColorSwap;
-	var alphaShader:BuildingShaders;
 
 	var video:Video;
 	var netStream:NetStream;
@@ -48,7 +46,6 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		swagShader = new ColorSwap();
-		alphaShader = new BuildingShaders();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		FlxG.sound.cache(Paths.music('freakyMenu'));
@@ -143,7 +140,7 @@ class TitleState extends MusicBeatState
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
-			Conductor.bpm = Constants.FREAKY_MENU_BPM;
+			Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
 		}
 
 		persistentUpdate = true;
@@ -160,25 +157,14 @@ class TitleState extends MusicBeatState
 		logoBl.updateHitbox();
 
 		outlineShaderShit = new TitleOutline();
-		// logoBl.shader = swagShader.shader;
-		// logoBl.shader = outlineShaderShit;
-
-		// trace();
-		// logoBl.screenCenter();
-		// logoBl.color = FlxColor.BLACK;
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
+
 		add(gfDance);
-
-		// alphaShader.shader.funnyShit.input = gfDance.pixels; // old shit
-
-		logoBl.shader = alphaShader.shader;
-
-		// trace(alphaShader.shader.glFragmentSource)
 
 		// gfDance.shader = swagShader.shader;
 
@@ -272,6 +258,8 @@ class TitleState extends MusicBeatState
 		if (FlxG.keys.pressed.DOWN)
 			FlxG.sound.music.pitch -= 0.5 * elapsed;
 		#end
+
+		Conductor.update();
 
 		/* if (FlxG.onMobile)
 				  {
@@ -455,13 +443,13 @@ class TitleState extends MusicBeatState
 		if (FlxG.keys.justPressed.ANY)
 		{
 			if (controls.NOTE_DOWN_P || controls.UI_DOWN_P)
-				codePress(FlxObject.DOWN);
+				codePress(FlxDirectionFlags.DOWN);
 			if (controls.NOTE_UP_P || controls.UI_UP_P)
-				codePress(FlxObject.UP);
+				codePress(FlxDirectionFlags.UP);
 			if (controls.NOTE_LEFT_P || controls.UI_LEFT_P)
-				codePress(FlxObject.LEFT);
+				codePress(FlxDirectionFlags.LEFT);
 			if (controls.NOTE_RIGHT_P || controls.UI_RIGHT_P)
-				codePress(FlxObject.RIGHT);
+				codePress(FlxDirectionFlags.RIGHT);
 		}
 	}
 
@@ -488,7 +476,7 @@ class TitleState extends MusicBeatState
 		var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
 		add(spec);
 
-		Conductor.bpm = 190;
+		Conductor.forceBPM(190);
 		FlxG.camera.flash(FlxColor.WHITE, 1);
 		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 	}
@@ -544,12 +532,13 @@ class TitleState extends MusicBeatState
 
 		if (!skippedIntro)
 		{
-			FlxG.log.add(curBeat);
+			// FlxG.log.add(Conductor.currentBeat);
 			// if the user is draggin the window some beats will
 			// be missed so this is just to compensate
-			if (curBeat > lastBeat)
+			if (Conductor.currentBeat > lastBeat)
 			{
-				for (i in lastBeat...curBeat)
+				// TODO: Why does it perform ALL the previous steps each beat?
+				for (i in lastBeat...Conductor.currentBeat)
 				{
 					switch (i + 1)
 					{
@@ -563,10 +552,12 @@ class TitleState extends MusicBeatState
 							createCoolText(['In association', 'with']);
 						case 7:
 							addMoreText('newgrounds');
-							ngSpr.visible = true;
+							if (ngSpr != null)
+								ngSpr.visible = true;
 						case 8:
 							deleteCoolText();
-							ngSpr.visible = false;
+							if (ngSpr != null)
+								ngSpr.visible = false;
 						case 9:
 							createCoolText([curWacky[0]]);
 						case 11:
@@ -584,21 +575,25 @@ class TitleState extends MusicBeatState
 					}
 				}
 			}
-			lastBeat = curBeat;
+			lastBeat = Conductor.currentBeat;
 		}
 		if (skippedIntro)
 		{
-			if (cheatActive && curBeat % 2 == 0)
+			if (cheatActive && Conductor.currentBeat % 2 == 0)
 				swagShader.update(0.125);
 
-			logoBl.animation.play('bump', true);
+			if (logoBl != null && logoBl.animation != null)
+				logoBl.animation.play('bump', true);
 
 			danceLeft = !danceLeft;
 
-			if (danceLeft)
-				gfDance.animation.play('danceRight');
-			else
-				gfDance.animation.play('danceLeft');
+			if (gfDance != null && gfDance.animation != null)
+			{
+				if (danceLeft)
+					gfDance.animation.play('danceRight');
+				else
+					gfDance.animation.play('danceLeft');
+			}
 		}
 
 		return true;

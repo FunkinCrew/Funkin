@@ -28,5 +28,6 @@
       "request": "launch",
       "program": "${workspaceRoot}/export/debug/macos/bin/Funkin.app/Contents/MacOS/Funkin",
       "preLaunchTask": "debug: mac"
+    }
   ]
 }

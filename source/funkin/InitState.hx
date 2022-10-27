@@ -7,15 +7,13 @@ import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
-import funkin.charting.ChartingState;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.PicoFight;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.event.SongEvent.SongEventHandler;
+import funkin.play.song.SongData.SongDataParser;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
-import funkin.ui.animDebugShit.DebugBoundingState;
-import funkin.ui.stageBuildShit.StageBuilderState;
 import funkin.util.macro.MacroUtil;
 import openfl.display.BitmapData;
 
@@ -27,11 +25,6 @@ import io.colyseus.Room;
 #end
 #if discord_rpc
 import Discord.DiscordClient;
-#end
-#if desktop
-import sys.FileSystem;
-import sys.io.File;
-import sys.thread.Thread;
 #end
 
 /**
@@ -123,6 +116,10 @@ class InitState extends FlxTransitionableState
 		// FlxTransitionableState.skipNextTransOut = true;
 		FlxTransitionableState.skipNextTransIn = true;
 
+		SongEventHandler.registerBaseEventCallbacks();
+		// TODO: Register custom event callbacks here
+
+		SongDataParser.loadSongCache();
 		StageDataParser.loadStageCache();
 		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.buildModuleCallbacks();
@@ -171,7 +168,7 @@ class InitState extends FlxTransitionableState
 		#elseif FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif ANIMATE
-		FlxG.switchState(new animate.AnimTestStage());
+		FlxG.switchState(new funkin.animate.dotstuff.DotStuffTestStage());
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
 		#elseif STAGEBUILD
@@ -195,15 +192,17 @@ class InitState extends FlxTransitionableState
 		var dif = getDif();
 
 		PlayState.currentSong = SongLoad.loadFromJson(song, song);
+		PlayState.currentSong_NEW = SongDataParser.fetchSong(song);
 		PlayState.isStoryMode = isStoryMode;
 		PlayState.storyDifficulty = dif;
-		SongLoad.curDiff = switch (dif)
+		PlayState.storyDifficulty_NEW = switch (dif)
 		{
 			case 0: 'easy';
 			case 1: 'normal';
 			case 2: 'hard';
 			default: 'normal';
 		};
+		SongLoad.curDiff = PlayState.storyDifficulty_NEW;
 		PlayState.storyWeek = week;
 		LoadingState.loadAndSwitchState(new PlayState());
 	}

@@ -1,6 +1,8 @@
 package funkin.modding;
 
 import funkin.modding.module.ModuleHandler;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.song.SongData;
 import funkin.play.stage.StageData;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
@@ -21,11 +23,21 @@ class PolymodHandler
 	 */
 	static final MOD_FOLDER = "mods";
 
+	public static function createModRoot()
+	{
+		if (!sys.FileSystem.exists(MOD_FOLDER))
+		{
+			sys.FileSystem.createDirectory(MOD_FOLDER);
+		}
+	}
+
 	/**
 	 * Loads the game with ALL mods enabled with Polymod.
 	 */
 	public static function loadAllMods()
 	{
+		// Create the mod root if it doesn't exist.
+		createModRoot();
 		trace("Initializing Polymod (using all mods)...");
 		loadModsById(getAllModIds());
 	}
@@ -35,6 +47,9 @@ class PolymodHandler
 	 */
 	public static function loadEnabledMods()
 	{
+		// Create the mod root if it doesn't exist.
+		createModRoot();
+
 		trace("Initializing Polymod (using configured mods)...");
 		loadModsById(getEnabledModIds());
 	}
@@ -44,6 +59,9 @@ class PolymodHandler
 	 */
 	public static function loadNoMods()
 	{
+		// Create the mod root if it doesn't exist.
+		createModRoot();
+
 		// We still need to configure the debug print calls etc.
 		trace("Initializing Polymod (using no mods)...");
 		loadModsById([]);
@@ -67,7 +85,7 @@ class PolymodHandler
 			// Framework being used to load assets.
 			framework: OPENFL,
 			// The current version of our API.
-			apiVersion: API_VERSION,
+			apiVersionRule: API_VERSION,
 			// Call this function any time an error occurs.
 			errorCallback: PolymodErrorHandler.onPolymodError,
 			// Enforce semantic version patterns for each mod.
@@ -156,8 +174,8 @@ class PolymodHandler
 	{
 		return {
 			assetLibraryPaths: [
-				"songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1", "week2" => "week2",
-				"week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "week8" => "week8",
+				"songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1",      "week2" => "week2",
+				"week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
 			]
 		}
 	}
@@ -165,7 +183,7 @@ class PolymodHandler
 	public static function getAllMods():Array<ModMetadata>
 	{
 		trace('Scanning the mods folder...');
-		var modMetadata = Polymod.scan(MOD_FOLDER);
+		var modMetadata = Polymod.scan();
 		trace('Found ${modMetadata.length} mods when scanning.');
 		return modMetadata;
 	}
@@ -219,17 +237,23 @@ class PolymodHandler
 	{
 		// Forcibly clear scripts so that scripts can be edited.
 		ModuleHandler.clearModuleCache();
-		polymod.hscript.PolymodScriptClass.clearScriptClasses();
+		Polymod.clearScripts();
 
 		// Forcibly reload Polymod so it finds any new files.
-		loadEnabledMods();
+		// TODO: Replace this with loadEnabledMods().
+		funkin.modding.PolymodHandler.loadAllMods();
 
 		// Reload scripted classes so stages and modules will update.
-		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
+		Polymod.registerAllScriptClasses();
 
-		// Reload the stages in cache.
-		// TODO: Currently this causes lag since you're reading a lot of files, how to fix?
+		// Reload everything that is cached.
+		// Currently this freezes the game for a second but I guess that's tolerable?
+
+		// TODO: Reload event callbacks
+
+		SongDataParser.loadSongCache();
 		StageDataParser.loadStageCache();
+		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.loadModuleCache();
 	}
 }

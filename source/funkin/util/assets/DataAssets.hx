@@ -9,7 +9,7 @@ class DataAssets
 		return 'assets/data/${path}';
 	}
 
-	public static function listDataFilesInPath(path:String, ?ext:String = '.json'):Array<String>
+	public static function listDataFilesInPath(path:String, ?suffix:String = '.json'):Array<String>
 	{
 		var textAssets = openfl.utils.Assets.list();
 		var queryPath = buildDataPath(path);
@@ -17,9 +17,9 @@ class DataAssets
 		var results:Array<String> = [];
 		for (textPath in textAssets)
 		{
-			if (textPath.startsWith(queryPath) && textPath.endsWith(ext))
+			if (textPath.startsWith(queryPath) && textPath.endsWith(suffix))
 			{
-				var pathNoSuffix = textPath.substring(0, textPath.length - ext.length);
+				var pathNoSuffix = textPath.substring(0, textPath.length - suffix.length);
 				var pathNoPrefix = pathNoSuffix.substring(queryPath.length);
 
 				// No duplicates! Why does this happen?

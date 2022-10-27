@@ -1,13 +1,13 @@
 package funkin.play;
 
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import funkin.Note.NoteColor;
-import funkin.Note.NoteDir;
-import funkin.Note.NoteType;
+import funkin.noteStuff.NoteBasic.NoteColor;
+import funkin.noteStuff.NoteBasic.NoteDir;
+import funkin.noteStuff.NoteBasic.NoteType;
 import funkin.ui.PreferencesMenu;
 import funkin.util.Constants;
 
@@ -115,7 +115,7 @@ class Strumline extends FlxTypedSpriteGroup<StrumlineArrow>
 		return getArrow(value.int);
 	}
 
-	public inline function getArrowByNoteColor(value:NoteColor):StrumlineArrow
+	public inline function getArrowByNoteColor(value:funkin.noteStuff.NoteBasic.NoteColor):StrumlineArrow
 	{
 		return getArrow(value.int);
 	}

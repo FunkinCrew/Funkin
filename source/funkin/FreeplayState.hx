@@ -27,6 +27,7 @@ import funkin.freeplayStuff.FreeplayScore;
 import funkin.freeplayStuff.SongMenuItem;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
+import funkin.play.song.SongData.SongDataParser;
 import funkin.shaderslmfao.AngleMask;
 import funkin.shaderslmfao.PureColor;
 import funkin.shaderslmfao.StrokeShader;
@@ -80,7 +81,7 @@ class FreeplayState extends MusicBeatSubstate
 		#if debug
 		isDebug = true;
 		addSong('Test', 1, 'bf-pixel');
-		addSong('Pyro', 4, 'bf');
+		addSong('Pyro', 8, 'darnell');
 		#end
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -117,8 +118,7 @@ class FreeplayState extends MusicBeatSubstate
 		if (StoryMenuState.weekUnlocked[7] || isDebug)
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
-		addWeek(["Darnell", "lit-up", "2hot"], 8, ['darnell']);
-		addWeek(["bro"], 1, ['gf']);
+		addWeek(["Darnell", "lit-up", "2hot", "blazin"], 8, ['darnell']);
 
 		// LOAD MUSIC
 
@@ -128,7 +128,6 @@ class FreeplayState extends MusicBeatSubstate
 		trace(FlxG.camera.zoom);
 		trace(FlxG.camera.initialZoom);
 		trace(FlxCamera.defaultZoom);
-		trace(FlxG.initialZoom);
 
 		var pinkBack:FlxSprite = new FlxSprite().loadGraphic(Paths.image('freeplay/pinkBack'));
 		pinkBack.color = 0xFFffd4e9; // sets it to pink!
@@ -522,11 +521,10 @@ class FreeplayState extends MusicBeatSubstate
 			}*/
 
 			PlayState.currentSong = SongLoad.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState.currentSong_NEW = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
-			// SongLoad.curDiff = Highscore.formatSong()
-
-			SongLoad.curDiff = switch (curDifficulty)
+			PlayState.storyDifficulty_NEW = switch (curDifficulty)
 			{
 				case 0:
 					'easy';
@@ -536,6 +534,9 @@ class FreeplayState extends MusicBeatSubstate
 					'hard';
 				default: 'normal';
 			};
+			// SongLoad.curDiff = Highscore.formatSong()
+
+			SongLoad.curDiff = PlayState.storyDifficulty_NEW;
 
 			PlayState.storyWeek = songs[curSelected].week;
 			trace(' CUR WEEK ' + PlayState.storyWeek);
@@ -564,6 +565,17 @@ class FreeplayState extends MusicBeatSubstate
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 
 		PlayState.storyDifficulty = curDifficulty;
+		PlayState.storyDifficulty_NEW = switch (curDifficulty)
+		{
+			case 0:
+				'easy';
+			case 1:
+				'normal';
+			case 2:
+				'hard';
+			default:
+				'normal';
+		};
 
 		grpDifficulties.group.forEach(function(spr)
 		{

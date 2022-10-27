@@ -14,21 +14,16 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 	public var pitch(default, set):Float = 1;
 
 	// make it a group that you add to?
-	public function new(song:String, ?files:Array<String>, ?needsVoices:Bool = true)
+	public function new(song:String, ?files:Array<String> = null)
 	{
 		super();
 
-		if (!needsVoices)
+		if (files == null)
 		{
-			// simply adds an empty sound? fills it in moreso for easier backwards compatibility
+			// Add an empty voice.
 			add(new FlxSound());
-			// FlxG.sound.list.add(snd);
-
 			return;
 		}
-
-		if (files == null)
-			files = [""]; // loads with no file name assumption, to load "Voices.ogg" or whatev normally
 
 		for (sndFile in files)
 		{

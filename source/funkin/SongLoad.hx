@@ -1,9 +1,9 @@
 package funkin;
 
-import funkin.Note.NoteData;
 import funkin.Section.SwagSection;
+import funkin.noteStuff.NoteBasic.NoteData;
+import funkin.play.PlayState;
 import haxe.Json;
-import haxe.format.JsonParser;
 import lime.utils.Assets;
 
 using StringTools;
@@ -48,29 +48,26 @@ class SongLoad
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson = Assets.getText(Paths.json('songs/${folder.toLowerCase()}/${jsonInput.toLowerCase()}')).trim();
+		var rawJson:String = null;
+		try
+		{
+			rawJson = Assets.getText(Paths.json('songs/${folder.toLowerCase()}/${jsonInput.toLowerCase()}')).trim();
+		}
+		catch (e)
+		{
+			trace('Failed to load song data: ${e}');
+			rawJson = null;
+		}
+
+		if (rawJson == null)
+		{
+			return null;
+		}
 
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
-
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
-
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
 
 		return parseJSONshit(rawJson);
 	}
@@ -105,12 +102,19 @@ class SongLoad
 
 	public static function checkAndCreateNotemap(diff:String):Void
 	{
+		if (songData == null || songData.noteMap == null)
+			return;
 		if (songData.noteMap[diff] == null)
 			songData.noteMap[diff] = [];
 	}
 
 	public static function getSpeed(?diff:String):Float
 	{
+		if (PlayState.instance != null && PlayState.instance.currentChart != null)
+		{
+			return getSpeed_NEW(diff);
+		}
+
 		if (diff == null)
 			diff = SongLoad.curDiff;
 
@@ -134,6 +138,14 @@ class SongLoad
 		speedShit = songData.speedMap[diff];
 
 		return speedShit;
+	}
+
+	public static function getSpeed_NEW(?diff:String):Float
+	{
+		if (PlayState.instance == null || PlayState.instance.currentChart == null || PlayState.instance.currentChart.scrollSpeed == 0.0)
+			return 1.0;
+
+		return PlayState.instance.currentChart.scrollSpeed;
 	}
 
 	public static function getDefaultSwagSong():SwagSong
@@ -191,11 +203,7 @@ class SongLoad
 					noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
 					if (arrayDipshit.length > 3)
 					{
-						noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
-					}
-					if (arrayDipshit.length > 4)
-					{
-						noteStuff[sectionIndex].sectionNotes[noteIndex].noteKind = arrayDipshit[4];
+						noteStuff[sectionIndex].sectionNotes[noteIndex].noteKind = arrayDipshit[3];
 					}
 				}
 				else if (noteDataArray != null)
@@ -227,7 +235,7 @@ class SongLoad
 					noteTypeDefShit.strumTime,
 					noteTypeDefShit.noteData,
 					noteTypeDefShit.sustainLength,
-					noteTypeDefShit.altNote
+					noteTypeDefShit.noteKind
 				];
 
 				noteStuff[sectionIndex].sectionNotes[noteIndex] = cast dipshitArray;
@@ -252,7 +260,18 @@ class SongLoad
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var songParsed:Dynamic = Json.parse(rawJson);
+		var songParsed:Dynamic;
+		try
+		{
+			songParsed = Json.parse(rawJson);
+		}
+		catch (e)
+		{
+			FlxG.log.warn("Error parsing JSON: " + e.message);
+			trace("Error parsing JSON: " + e.message);
+			return null;
+		}
+
 		var swagShit:SwagSong = cast songParsed.song;
 		swagShit.difficulties = []; // reset it to default before load
 		swagShit.noteMap = new Map();

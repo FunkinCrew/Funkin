@@ -1,7 +1,7 @@
 package funkin.ui.stageBuildShit;
 
 import flixel.FlxSprite;
-import flixel.input.mouse.FlxMouseEventManager;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
 
 class SprStage extends FlxSprite
@@ -18,7 +18,7 @@ class SprStage extends FlxSprite
 	{
 		super(x, y);
 
-		FlxMouseEventManager.add(this, dragShitFunc, null, function(spr:SprStage)
+		FlxMouseEvent.add(this, dragShitFunc, null, function(spr:SprStage)
 		{
 			if (isSelected() || StageBuilderState.curTool == SELECT)
 				alpha = 0.5;

@@ -1,6 +1,7 @@
 package funkin;
 
 import flixel.FlxSubState;
+import flixel.util.FlxColor;
 import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
@@ -10,9 +11,9 @@ import funkin.modding.module.ModuleHandler;
  */
 class MusicBeatSubstate extends FlxSubState
 {
-	public function new()
+	public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)
 	{
-		super();
+		super(bgColor);
 	}
 
 	private var curStep:Int = 0;
@@ -52,10 +53,19 @@ class MusicBeatSubstate extends FlxSubState
 		curStep = lastChange.stepTime + Math.floor(((Conductor.songPosition - Conductor.audioOffset) - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
-	public function stepHit():Void
+	public function stepHit():Bool
 	{
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+			return false;
+
 		if (curStep % 4 == 0)
 			beatHit();
+
+		return true;
 	}
 
 	function dispatchEvent(event:ScriptEvent)
@@ -63,8 +73,24 @@ class MusicBeatSubstate extends FlxSubState
 		ModuleHandler.callEvent(event);
 	}
 
-	public function beatHit():Void
+	/**
+	 * Close this substate and replace it with a different one.
+	 */
+	public function switchSubState(substate:FlxSubState):Void
 	{
-		// do literally nothing dumbass
+		this.close();
+		this._parentState.openSubState(substate);
+	}
+
+	public function beatHit():Bool
+	{
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep);
+
+		dispatchEvent(event);
+
+		if (event.eventCanceled)
+			return false;
+
+		return true;
 	}
 }

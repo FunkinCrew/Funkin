@@ -1,4 +1,4 @@
-package funkin.rendering;
+package funkin.graphics.rendering;
 
 import flixel.FlxStrip;
 import flixel.util.FlxColor;

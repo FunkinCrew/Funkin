@@ -1,7 +1,6 @@
 package funkin;
 
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
@@ -11,7 +10,8 @@ using StringTools;
 /**
  * Loosley based on FlxTypeText lolol
  */
-@:deprecated("Use ui.AtlasText instead")
+// TODO: Re-eanble this
+// @:deprecated("Use ui.AtlasText instead")
 class Alphabet extends FlxSpriteGroup
 {
 	public var delay:Float = 0.05;

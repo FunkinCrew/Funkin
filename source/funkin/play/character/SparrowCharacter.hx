@@ -25,8 +25,6 @@ class SparrowCharacter extends BaseCharacter
 		loadSpritesheet();
 		loadAnimations();
 
-		playAnimation(_data.startingAnimation);
-
 		super.onCreate(event);
 	}
 

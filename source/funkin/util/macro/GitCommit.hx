@@ -20,7 +20,7 @@ class GitCommit
 		var commitHash:String = process.stdout.readLine();
 		var commitHashSplice:String = commitHash.substr(0, 7);
 
-		trace('Git Commit ID ${commitHashSplice}');
+		trace('Git Commit ID: ${commitHashSplice}');
 
 		// Generates a string expression
 		return macro $v{commitHashSplice};
@@ -46,7 +46,7 @@ class GitCommit
 		}
 
 		var branchName:String = branchProcess.stdout.readLine();
-		trace('Current Working Branch: ${branchName}');
+		trace('Git Branch Name: ${branchName}');
 
 		// Generates a string expression
 		return macro $v{branchName};

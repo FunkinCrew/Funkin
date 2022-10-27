@@ -17,15 +17,15 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import funkin.Conductor.BPMChangeEvent;
-import funkin.Note.NoteData;
 import funkin.Section.SwagSection;
 import funkin.SongLoad.SwagSong;
+import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audiovis.ABotVis;
-import funkin.audiovis.PolygonSpectogram;
 import funkin.audiovis.SpectogramSprite;
+import funkin.graphics.rendering.MeshRender;
+import funkin.noteStuff.NoteBasic.NoteData;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
-import funkin.rendering.MeshRender;
 import haxe.Json;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
@@ -148,7 +148,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 
 		loadSong(_song.song);
-		Conductor.bpm = _song.bpm;
+		// Conductor.bpm = _song.bpm;
 		Conductor.mapBPMChanges(_song);
 
 		bpmTxt = new FlxText(1000, 50, 0, "", 16);
@@ -549,7 +549,7 @@ class ChartingState extends MusicBeatState
 			{
 				tempBpm = nums.value;
 				Conductor.mapBPMChanges(_song);
-				Conductor.bpm = nums.value;
+				Conductor.forceBPM(nums.value);
 			}
 			else if (wname == 'note_susLength')
 			{
@@ -622,7 +622,7 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.music.pan = FlxMath.remapToRange(FlxG.mouse.screenX, 0, FlxG.width, -1, 1) * 10;
 
-		curStep = recalculateSteps();
+		// curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
@@ -649,7 +649,7 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.X)
 			toggleAltAnimNote();
 
-		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
+		if (false) // (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
 		{
 			// trace(curStep);
 			// trace((SongLoad.getSong()[curSection].lengthInSteps) * (curSection + 1));
@@ -663,8 +663,8 @@ class ChartingState extends MusicBeatState
 			changeSection(curSection + 1, false);
 		}
 
-		FlxG.watch.addQuick('daBeat', curBeat);
-		FlxG.watch.addQuick('daStep', curStep);
+		FlxG.watch.addQuick('daBeat', Conductor.currentBeat);
+		FlxG.watch.addQuick('daStep', Conductor.currentStep);
 
 		if (FlxG.mouse.pressedMiddle && FlxG.mouse.overlaps(gridBG))
 		{
@@ -1016,12 +1016,12 @@ class ChartingState extends MusicBeatState
 		if (curSelectedNote != null)
 		{
 			trace('ALT NOTE SHIT');
-			curSelectedNote.altNote = (curSelectedNote.altNote == "alt") ? "" : "alt";
-			trace(curSelectedNote.altNote);
+			curSelectedNote.noteKind = (curSelectedNote.noteKind == "alt") ? "" : "alt";
+			trace(curSelectedNote.noteKind);
 		}
 	}
 
-	function recalculateSteps():Int
+	function recalculateSteps():Float
 	{
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
@@ -1034,10 +1034,10 @@ class ChartingState extends MusicBeatState
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		curStep = lastChange.stepTime + Math.floor((FlxG.sound.music.time - lastChange.songTime) / Conductor.stepCrochet);
-		updateBeat();
+		// curStep = lastChange.stepTime + Math.floor((FlxG.sound.music.time - lastChange.songTime) / Conductor.stepCrochet);
+		// updateBeat();
 
-		return curStep;
+		return Conductor.currentStep;
 	}
 
 	function resetSection(songBeginning:SongResetType = SECTION):Void
@@ -1061,7 +1061,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		vocals.time = FlxG.sound.music.time;
-		updateCurStep();
+		// updateCurStep();
 
 		updateGrid();
 		updateSectionUI();
@@ -1092,7 +1092,7 @@ class ChartingState extends MusicBeatState
 
 				FlxG.sound.music.time = sectionStartTime();
 				vocals.time = FlxG.sound.music.time;
-				updateCurStep();
+				// updateCurStep();
 			}
 
 			updateGrid();
@@ -1223,7 +1223,7 @@ class ChartingState extends MusicBeatState
 
 		if (SongLoad.getSong()[curSection].changeBPM && SongLoad.getSong()[curSection].bpm > 0)
 		{
-			Conductor.bpm = SongLoad.getSong()[curSection].bpm;
+			Conductor.forceBPM(SongLoad.getSong()[curSection].bpm);
 			FlxG.log.add('CHANGED BPM!');
 		}
 		else
@@ -1233,7 +1233,7 @@ class ChartingState extends MusicBeatState
 			for (i in 0...curSection)
 				if (SongLoad.getSong()[i].changeBPM)
 					daBPM = SongLoad.getSong()[i].bpm;
-			Conductor.bpm = daBPM;
+			Conductor.forceBPM(daBPM);
 		}
 
 		/* // PORT BULLSHIT, INCASE THERE'S NO SUSTAIN DATA FOR A NOTE
@@ -1358,7 +1358,7 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
-		var noteAlt = "";
+		var noteKind = "";
 
 		justPlacedNote = true;
 
@@ -1399,7 +1399,7 @@ class ChartingState extends MusicBeatState
 
 		var daNewNote:Note = new Note(noteStrum, noteData);
 		daNewNote.data.sustainLength = noteSus;
-		daNewNote.data.altNote = noteAlt;
+		daNewNote.data.noteKind = noteKind;
 		SongLoad.getSong()[curSection].sectionNotes.push(daNewNote.data);
 
 		curSelectedNote = SongLoad.getSong()[curSection].sectionNotes[SongLoad.getSong()[curSection].sectionNotes.length - 1];

@@ -1,7 +1,8 @@
 package funkin.play.stage;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
@@ -43,8 +44,6 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public var shouldBop:Bool = true;
 
-	public var finishCallbackMap:Map<String, Void->Void> = new Map<String, Void->Void>();
-
 	function set_idleSuffix(value:String):String
 	{
 		this.idleSuffix = value;
@@ -55,9 +54,27 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	/**
 	 * The offset of the character relative to the position specified by the stage.
 	 */
-	public var globalOffsets(default, null):Array<Float> = [0, 0];
+	public var globalOffsets(default, set):Array<Float> = [0, 0];
+
+	function set_globalOffsets(value:Array<Float>)
+	{
+		if (globalOffsets == null)
+			globalOffsets = [0, 0];
+		if (globalOffsets == value)
+			return value;
+
+		var xDiff = globalOffsets[0] - value[0];
+		var yDiff = globalOffsets[1] - value[1];
+
+		this.x += xDiff;
+		this.y += yDiff;
+
+		return animOffsets = value;
+	}
 
 	private var animOffsets(default, set):Array<Float> = [0, 0];
+
+	public var originalPosition:FlxPoint = new FlxPoint(0, 0);
 
 	function set_animOffsets(value:Array<Float>)
 	{
@@ -85,11 +102,48 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	{
 		super();
 		this.danceEvery = danceEvery;
-		this.animation.finishCallback = function(name)
+
+		this.animation.callback = this.onAnimationFrame;
+		this.animation.finishCallback = this.onAnimationFinished;
+	}
+
+	/**
+	 * Called when an animation finishes.
+	 * @param name The name of the animation that just finished.
+	 */
+	function onAnimationFinished(name:String)
+	{
+		if (!canPlayOtherAnims)
 		{
-			if (finishCallbackMap[name] != null)
-				finishCallbackMap[name]();
-		};
+			canPlayOtherAnims = true;
+		}
+	}
+
+	/**
+	 * Called when the current animation's frame changes.
+	 * @param name The name of the current animation.
+	 * @param frameNumber The number of the current frame.
+	 * @param frameIndex The index of the current frame.
+	 * 
+	 * For example, if an animation was defined as having the indexes [3, 0, 1, 2],
+	 * then the first callback would have frameNumber = 0 and frameIndex = 3.
+	 */
+	function onAnimationFrame(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1)
+	{
+		// Do nothing by default.
+		// This can be overridden by, for example, scripted characters.
+		// Try not to do anything expensive here, it runs many times a second.
+
+		// Sometimes this gets called with empty values? IDK why but adding defaults keeps it from crashing.
+	}
+
+	/**
+	 * If this Bopper was defined by the stage, return the prop to its original position.
+	 */
+	public function resetPosition()
+	{
+		this.x = originalPosition.x + animOffsets[0];
+		this.y = originalPosition.y + animOffsets[1];
 	}
 
 	function update_shouldAlternate():Void
@@ -196,10 +250,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
 	{
-		if (ignoreOther == null)
-			ignoreOther = false;
-
-		if (!canPlayOtherAnims)
+		if (!canPlayOtherAnims && !ignoreOther)
 			return;
 
 		var correctName = correctAnimationName(name);
@@ -211,16 +262,36 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		if (ignoreOther)
 		{
 			canPlayOtherAnims = false;
-
-			// doing it with this funny map, since overriding the animation.finishCallback is a bit messier IMO
-			finishCallbackMap[name] = function()
-			{
-				canPlayOtherAnims = true;
-				finishCallbackMap[name] = null;
-			};
 		}
 
 		applyAnimationOffsets(correctName);
+	}
+
+	var forceAnimationTimer:FlxTimer = new FlxTimer();
+
+	/**
+	 * @param name The animation to play.
+	 * @param duration The duration in which other (non-forced) animations will be skipped, in seconds (NOT MILLISECONDS).
+	 */
+	public function forceAnimationForDuration(name:String, duration:Float):Void
+	{
+		// TODO: Might be nice to rework this function, maybe have a numbered priority system?
+
+		if (this.animation == null)
+			return;
+
+		var correctName = correctAnimationName(name);
+		if (correctName == null)
+			return;
+
+		this.animation.play(correctName, false, false);
+		applyAnimationOffsets(correctName);
+
+		canPlayOtherAnims = false;
+		forceAnimationTimer.start(duration, (timer) ->
+		{
+			canPlayOtherAnims = true;
+		}, 1);
 	}
 
 	function applyAnimationOffsets(name:String)
@@ -258,39 +329,75 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 		return this.animation.curAnim.name;
 	}
 
-	public function onScriptEvent(event:ScriptEvent) {}
+	public function onScriptEvent(event:ScriptEvent)
+	{
+	}
 
-	public function onCreate(event:ScriptEvent) {}
+	public function onCreate(event:ScriptEvent)
+	{
+	}
 
-	public function onDestroy(event:ScriptEvent) {}
+	public function onDestroy(event:ScriptEvent)
+	{
+	}
 
-	public function onUpdate(event:UpdateScriptEvent) {}
+	public function onUpdate(event:UpdateScriptEvent)
+	{
+	}
 
-	public function onPause(event:PauseScriptEvent) {}
+	public function onPause(event:PauseScriptEvent)
+	{
+	}
 
-	public function onResume(event:ScriptEvent) {}
+	public function onResume(event:ScriptEvent)
+	{
+	}
 
-	public function onSongStart(event:ScriptEvent) {}
+	public function onSongStart(event:ScriptEvent)
+	{
+	}
 
-	public function onSongEnd(event:ScriptEvent) {}
+	public function onSongEnd(event:ScriptEvent)
+	{
+	}
 
-	public function onGameOver(event:ScriptEvent) {}
+	public function onGameOver(event:ScriptEvent)
+	{
+	}
 
-	public function onNoteHit(event:NoteScriptEvent) {}
+	public function onNoteHit(event:NoteScriptEvent)
+	{
+	}
 
-	public function onNoteMiss(event:NoteScriptEvent) {}
+	public function onNoteMiss(event:NoteScriptEvent)
+	{
+	}
 
-	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+	{
+	}
 
-	public function onStepHit(event:SongTimeScriptEvent) {}
+	public function onStepHit(event:SongTimeScriptEvent)
+	{
+	}
 
-	public function onCountdownStart(event:CountdownScriptEvent) {}
+	public function onCountdownStart(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onCountdownStep(event:CountdownScriptEvent) {}
+	public function onCountdownStep(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onCountdownEnd(event:CountdownScriptEvent) {}
+	public function onCountdownEnd(event:CountdownScriptEvent)
+	{
+	}
 
-	public function onSongLoaded(eent:SongLoadScriptEvent) {}
+	public function onSongLoaded(event:SongLoadScriptEvent)
+	{
+	}
 
-	public function onSongRetry(event:ScriptEvent) {}
+	public function onSongRetry(event:ScriptEvent)
+	{
+	}
 }

@@ -2,8 +2,8 @@ package;
 
 import flixel.FlxGame;
 import flixel.FlxState;
-import funkin.InitState;
 import funkin.MemoryCounter;
+import haxe.ui.Toolkit;
 import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
@@ -15,7 +15,7 @@ class Main extends Sprite
 {
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = InitState; // The FlxState the game starts with.
+	var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
 	#if web
 	var framerate:Int = 60; // How many frames per second the game should run at.
@@ -69,26 +69,21 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
-		// Lib.current.stage.color = null;
-
-		var stageWidth:Int = Lib.current.stage.stageWidth;
-		var stageHeight:Int = Lib.current.stage.stageHeight;
-
-		if (zoom == -1)
-		{
-			var ratioX:Float = stageWidth / gameWidth;
-			var ratioY:Float = stageHeight / gameHeight;
-			zoom = Math.min(ratioX, ratioY);
-			gameWidth = Math.ceil(stageWidth / zoom);
-			gameHeight = Math.ceil(stageHeight / zoom);
-		}
+		/**
+		 * The `zoom` argument of FlxGame was removed in the dev branch of Flixel,
+		 * since it was considered confusing and unintuitive.
+		 * If you want to change how the game scales when you resize the window,
+		 * you can use `FlxG.scaleMode`.
+		 * -Eric
+		 */
 
 		#if !debug
-		initialState = TitleState;
+		initialState = funkin.TitleState;
 		#end
 
-		haxe.ui.Toolkit.init();
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		initHaxeUI();
+
+		addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
 
 		#if debug
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
@@ -98,53 +93,14 @@ class Main extends Sprite
 		addChild(memoryCounter);
 		#end
 		#end
-
-		/* 
-			video = new Video();
-			addChild(video);
-
-			var netConnection = new NetConnection();
-			netConnection.connect(null);
-
-			netStream = new NetStream(netConnection);
-			netStream.client = {onMetaData: client_onMetaData};
-			netStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, netStream_onAsyncError);
-
-			#if (js && html5)
-			overlay = new Sprite();
-			overlay.graphics.beginFill(0, 0.5);
-			overlay.graphics.drawRect(0, 0, 560, 320);
-			overlay.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-			overlay.buttonMode = true;
-			addChild(overlay);
-
-			netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
-			#else
-			netStream.play("assets/preload/music/dredd.mp4");
-			#end 
-		 */
 	}
-	/* 
-		private function client_onMetaData(metaData:Dynamic)
-		{
-			video.attachNetStream(netStream);
 
-			video.width = video.videoWidth;
-			video.height = video.videoHeight;
-		}
-
-		private function netStream_onAsyncError(event:AsyncErrorEvent):Void
-		{
-			trace("Error loading video");
-		}
-
-		private function netConnection_onNetStatus(event:NetStatusEvent):Void
-		{
-		}
-
-		private function overlay_onMouseDown(event:MouseEvent):Void
-		{
-			netStream.play("assets/preload/music/dredd.mp4");
-		}
-	 */
+	function initHaxeUI()
+	{
+		// Calling this before any HaxeUI components get used is important:
+		// - It initializes the theme styles.
+		// - It scans the class path and registers any HaxeUI components.
+		Toolkit.init();
+		Toolkit.theme = "dark"; // don't be cringe
+	}
 }

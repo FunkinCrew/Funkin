@@ -188,8 +188,10 @@ class LoadingState extends MusicBeatState
 		{
 			Paths.setCurrentLevel('tutorial');
 		}
-		else
-		{
+		else if (PlayState.storyWeek == 8) {
+			// TODO: Refactor this code.
+			Paths.setCurrentLevel("weekend1");
+		} else {
 			Paths.setCurrentLevel("week" + PlayState.storyWeek);
 		}
 		#if NO_PRELOAD_ALL

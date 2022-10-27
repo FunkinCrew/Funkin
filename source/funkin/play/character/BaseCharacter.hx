@@ -1,8 +1,8 @@
 package funkin.play.character;
 
 import flixel.math.FlxPoint;
-import funkin.Note.NoteDir;
 import funkin.modding.events.ScriptEvent;
+import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.stage.Bopper;
 
@@ -33,6 +33,16 @@ class BaseCharacter extends Bopper
 
 	public var isDead:Bool = false;
 	public var debugMode:Bool = false;
+
+	/**
+	 * This character plays a given animation when hitting these specific combo numbers.
+	 */
+	public var comboNoteCounts(default, null):Array<Int>;
+
+	/**
+	 * This character plays a given animation when dropping combos larger than these numbers.
+	 */
+	public var dropNoteCounts(default, null):Array<Int>;
 
 	final _data:CharacterData;
 	final singTimeCrochet:Float;
@@ -82,7 +92,7 @@ class BaseCharacter extends Bopper
 	override function set_animOffsets(value:Array<Float>)
 	{
 		if (animOffsets == null)
-			animOffsets = [0, 0];
+			value = [0, 0];
 		if (animOffsets == value)
 			return value;
 
@@ -148,6 +158,60 @@ class BaseCharacter extends Bopper
 	}
 
 	/**
+	 * Gets the value of flipX from the character data.
+	 * `!getFlipX()` is the direction Boyfriend should face.
+	 */
+	public function getDataFlipX():Bool
+	{
+		return _data.flipX;
+	}
+
+	function findCountAnimations(prefix:String):Array<Int>
+	{
+		var animNames:Array<String> = this.animation.getNameList();
+
+		var result:Array<Int> = [];
+
+		for (anim in animNames)
+		{
+			if (anim.startsWith(prefix))
+			{
+				var comboNum:Null<Int> = Std.parseInt(anim.substring(prefix.length));
+				if (comboNum != null)
+				{
+					result.push(comboNum);
+				}
+			}
+		}
+
+		// Sort numerically.
+		result.sort((a, b) -> a - b);
+		return result;
+	}
+
+	/**
+	 * Reset the character so it can be used at the start of the level.
+	 * Call this when restarting the level.
+	 */
+	public function resetCharacter(resetCamera:Bool = true):Void
+	{
+		// Reset the animation offsets. This will modify x and y to be the absolute position of the character.
+		this.animOffsets = [0, 0];
+
+		// Now we can set the x and y to be their original values without having to account for animOffsets.
+		this.resetPosition();
+
+		// Make sure we are playing the idle animation (to reapply animOffsets)...
+		this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
+		// ...then update the hitbox so that this.width and this.height are correct.
+		this.updateHitbox();
+
+		// Reset the camera focus point while we're at it.
+		if (resetCamera)
+			this.resetCameraFocusPoint();
+	}
+
+	/**
 	 * Set the sprite scale to the appropriate value.
 	 * @param scale 
 	 */
@@ -177,28 +241,59 @@ class BaseCharacter extends Bopper
 
 	override function onCreate(event:ScriptEvent):Void
 	{
-		// Camera focus point
+		// Make sure we are playing the idle animation...
+		this.dance();
+		// ...then update the hitbox so that this.width and this.height are correct.
+		this.updateHitbox();
+		// Without the above code, width and height (and therefore character position)
+		// will be based on the first animation in the sheet rather than the default animation.
+
+		this.resetCameraFocusPoint();
+
+		// Child class should have created animations by now,
+		// so we can query which ones are available.
+		this.comboNoteCounts = findCountAnimations('combo'); // example: combo50
+		this.dropNoteCounts = findCountAnimations('drop'); // example: drop50
+		// trace('${this.animation.getNameList()}');
+		// trace('Combo note counts: ' + this.comboNoteCounts);
+		// trace('Drop note counts: ' + this.dropNoteCounts);
+
+		super.onCreate(event);
+	}
+
+	function resetCameraFocusPoint():Void
+	{
+		// Calculate the camera focus point
 		var charCenterX = this.x + this.width / 2;
 		var charCenterY = this.y + this.height / 2;
 		this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
-		super.onCreate(event);
 	}
 
 	public function initHealthIcon(isOpponent:Bool):Void
 	{
 		if (!isOpponent)
 		{
+			if (PlayState.instance.iconP1 == null)
+			{
+				trace('[WARN] Player 1 health icon not found!');
+			}
 			PlayState.instance.iconP1.characterId = _data.healthIcon.id;
 			PlayState.instance.iconP1.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
 			PlayState.instance.iconP1.offset.x = _data.healthIcon.offsets[0];
 			PlayState.instance.iconP1.offset.y = _data.healthIcon.offsets[1];
+			PlayState.instance.iconP1.flipX = !_data.healthIcon.flipX;
 		}
 		else
 		{
+			if (PlayState.instance.iconP2 == null)
+			{
+				trace('[WARN] Player 2 health icon not found!');
+			}
 			PlayState.instance.iconP2.characterId = _data.healthIcon.id;
 			PlayState.instance.iconP2.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
 			PlayState.instance.iconP2.offset.x = _data.healthIcon.offsets[0];
 			PlayState.instance.iconP2.offset.y = _data.healthIcon.offsets[1];
+			PlayState.instance.iconP1.flipX = _data.healthIcon.flipX;
 		}
 	}
 
@@ -215,22 +310,28 @@ class BaseCharacter extends Bopper
 		if (isDead)
 		{
 			playDeathAnimation();
+			return;
 		}
 
-		if (hasAnimation('idle-end') && getCurrentAnimation() == "idle" && isAnimationFinished())
-			playAnimation('idle-end');
-		if (hasAnimation('singLEFT-end') && getCurrentAnimation() == "singLEFT" && isAnimationFinished())
-			playAnimation('singLEFT-end');
-		if (hasAnimation('singDOWN-end') && getCurrentAnimation() == "singDOWN" && isAnimationFinished())
-			playAnimation('singDOWN-end');
-		if (hasAnimation('singUP-end') && getCurrentAnimation() == "singUP" && isAnimationFinished())
-			playAnimation('singUP-end');
-		if (hasAnimation('singRIGHT-end') && getCurrentAnimation() == "singRIGHT" && isAnimationFinished())
-			playAnimation('singRIGHT-end');
+		if (hasAnimation('idle-hold') && getCurrentAnimation() == "idle" && isAnimationFinished())
+			playAnimation('idle-hold');
+		if (hasAnimation('singLEFT-hold') && getCurrentAnimation() == "singLEFT" && isAnimationFinished())
+			playAnimation('singLEFT-hold');
+		if (hasAnimation('singDOWN-hold') && getCurrentAnimation() == "singDOWN" && isAnimationFinished())
+			playAnimation('singDOWN-hold');
+		if (hasAnimation('singUP-hold') && getCurrentAnimation() == "singUP" && isAnimationFinished())
+			playAnimation('singUP-hold');
+		if (hasAnimation('singRIGHT-hold') && getCurrentAnimation() == "singRIGHT" && isAnimationFinished())
+			playAnimation('singRIGHT-hold');
 
 		// Handle character note hold time.
 		if (getCurrentAnimation().startsWith("sing"))
 		{
+			// TODO: Rework this code (and all character animations ugh)
+			// such that the hold time is handled by padding frames,
+			// and reverting to the idle animation is done when `isAnimationFinished()`.
+			// This lets you add frames to the end of the sing animation to ease back into the idle!
+
 			holdTimer += event.elapsed;
 			var singTimeMs:Float = singTimeCrochet * (Conductor.crochet * 0.001); // x beats, to ms.
 
@@ -244,7 +345,6 @@ class BaseCharacter extends Bopper
 			FlxG.watch.addQuick('singTimeMs-${characterId}', singTimeMs);
 			if (holdTimer > singTimeMs && shouldStopSinging)
 			{
-				trace(getCurrentAnimation());
 				// trace('holdTimer reached ${holdTimer}sec (> ${singTimeMs}), stopping sing animation');
 				holdTimer = 0;
 				dance(true);
@@ -266,7 +366,7 @@ class BaseCharacter extends Bopper
 	{
 		if (force || (getCurrentAnimation().startsWith("firstDeath") && isAnimationFinished()))
 		{
-			playAnimation("deathLoop");
+			playAnimation("deathLoop" + GameOverSubstate.animationSuffix);
 		}
 	}
 
@@ -274,6 +374,9 @@ class BaseCharacter extends Bopper
 	{
 		// Prevent default dancing behavior.
 		if (debugMode)
+			return;
+
+		if (isDead)
 			return;
 
 		if (!force)
@@ -365,14 +468,20 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
-			holdTimer = 0;
+			this.playSingAnimation(event.note.data.dir, false);
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, false, event.note.data.altNote);
-			holdTimer = 0;
+			this.playSingAnimation(event.note.data.dir, false);
+		}
+		else if (characterType == GF)
+		{
+			if (event.note.mustPress && this.comboNoteCounts.contains(event.comboCount))
+			{
+				trace('Playing GF combo animation: combo${event.comboCount}');
+				this.playAnimation('combo${event.comboCount}', true, true);
+			}
 		}
 	}
 
@@ -387,12 +496,33 @@ class BaseCharacter extends Bopper
 		if (event.note.mustPress && characterType == BF)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, true);
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.note.data.dir, true, event.note.data.altNote);
+			this.playSingAnimation(event.note.data.dir, true);
+		}
+		else if (event.note.mustPress && characterType == GF)
+		{
+			var dropAnim = '';
+
+			// Choose the combo drop anim to play.
+			// If there are several (for example, drop10 and drop50) the highest one will be used.
+			// If the combo count is too low, no animation will be played.
+			for (count in dropNoteCounts)
+			{
+				if (event.comboCount >= count)
+				{
+					dropAnim = 'drop${count}';
+				}
+			}
+
+			if (dropAnim != '')
+			{
+				trace('Playing GF combo drop animation: ${dropAnim}');
+				this.playAnimation(dropAnim, true, true);
+			}
 		}
 	}
 
@@ -411,9 +541,9 @@ class BaseCharacter extends Bopper
 
 		if (characterType == BF)
 		{
-			trace('Playing ghost miss animation...');
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(event.dir, true, null);
+			// trace('Playing ghost miss animation...');
+			this.playSingAnimation(event.dir, true);
 		}
 	}
 
@@ -439,8 +569,40 @@ class BaseCharacter extends Bopper
 
 enum CharacterType
 {
+	/**
+	 * The BF character has the following behaviors.
+	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
+	 * - When the player hits a note, plays the appropriate `singDIR` animation until BF is done singing.
+	 * - If there is a `singDIR-end` animation, the `singDIR` animation will play once before looping the `singDIR-end` animation until BF is done singing.
+	 * - If the player misses or hits a ghost note, plays the appropriate `singDIR-miss` animation until BF is done singing.
+	 */
 	BF;
+
+	/**
+	 * The DAD character has the following behaviors.
+	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
+	 * - When the CPU hits a note, plays the appropriate `singDIR` animation until DAD is done singing.
+	 * - If there is a `singDIR-end` animation, the `singDIR` animation will play once before looping the `singDIR-end` animation until DAD is done singing.
+	 * - When the CPU misses a note (NOTE: This only happens via script, not by default), plays the appropriate `singDIR-miss` animation until DAD is done singing.
+	 */
 	DAD;
+
+	/**
+	 * The GF character has the following behaviors.
+	 * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
+	 * - If available, `combo###` animations will play when certain combo counts are reached.
+	 *   - For example, `combo50` will play when the player hits 50 notes in a row.
+	 *   - Multiple combo animations can be provided for different thresholds.
+	 * - If available, `drop###` animations will play when combos are dropped above certain thresholds.
+	 *   - For example, `drop10` will play when the player drops a combo larger than 10.
+	 *   - Multiple drop animations can be provided for different thresholds (i.e. dropping larger combos).
+	 *   - No drop animation will play if one isn't applicable (i.e. if the combo count is too low).
+	 */
 	GF;
+
+	/**
+	 * The OTHER character will only perform the `danceLeft`/`danceRight` or `idle` animation by default, depending on what's available.
+	 * Additional behaviors can be performed via scripts.
+	 */
 	OTHER;
 }

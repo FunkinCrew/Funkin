@@ -1,7 +1,7 @@
 package funkin.ui;
 
-import funkin.ui.MenuList;
 import flixel.graphics.frames.FlxAtlasFrames;
+import funkin.ui.MenuList;
 
 typedef AtlasAsset = flixel.util.typeLimit.OneOfTwo<String, FlxAtlasFrames>;
 
@@ -16,7 +16,7 @@ class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 	{
 		super(navControls, wrapMode);
 
-		if (Std.is(atlas, String))
+		if (Std.isOfType(atlas, String))
 			this.atlas = Paths.getSparrowAtlas(cast atlas);
 		else
 			this.atlas = cast atlas;

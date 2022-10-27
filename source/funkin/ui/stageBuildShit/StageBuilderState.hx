@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup;
 import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
-import flixel.input.mouse.FlxMouseEventManager;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
@@ -92,8 +92,6 @@ class StageBuilderState extends MusicBeatState
 
 		var saveSceneBtn:FlxButton = new FlxButton(20, 50, "Save Scene", saveScene);
 		hudGrp.add(saveSceneBtn);
-
-		FlxMouseEventManager.init();
 
 		#if desktop
 		FlxG.stage.window.onDropFile.add(function(path:String)
@@ -424,7 +422,7 @@ class StageBuilderState extends MusicBeatState
 	{
 		sprGrp.sort(daLayerSorting, FlxSort.ASCENDING);
 
-		FlxMouseEventManager.reorder();
+		FlxMouseEvent.reorder();
 	}
 
 	function daLayerSorting(order:Int = FlxSort.ASCENDING, layer1:SprStage, layer2:SprStage):Int

@@ -1,6 +1,6 @@
 package funkin.play.stage;
 
-import funkin.modding.IHook;
+import polymod.hscript.HScriptedClass;
 
 @:hscriptClass
-class ScriptedBopper extends Bopper implements IHook {}
+class ScriptedBopper extends Bopper implements HScriptedClass {}

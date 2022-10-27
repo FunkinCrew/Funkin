@@ -6,12 +6,10 @@ import flixel.addons.ui.FlxUIState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
-import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.stage.StageData.StageDataParser;
+import funkin.ui.debug.DebugMenuSubState;
 import funkin.util.SortUtil;
 
 /**
@@ -20,10 +18,7 @@ import funkin.util.SortUtil;
  */
 class MusicBeatState extends FlxUIState
 {
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
-	private var lastBeatHitTime:Float = 0;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -49,24 +44,37 @@ class MusicBeatState extends FlxUIState
 		super.create();
 
 		createWatermarkText();
+
+		Conductor.beatHit.add(this.beatHit);
+		Conductor.stepHit.add(this.stepHit);
+	}
+
+	public override function destroy():Void
+	{
+		super.destroy();
+		Conductor.beatHit.remove(this.beatHit);
+		Conductor.stepHit.remove(this.stepHit);
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
+		if (FlxG.keys.justPressed.F4)
+			FlxG.switchState(new MainMenuState());
+
 		// This can now be used in EVERY STATE YAY!
 		if (FlxG.keys.justPressed.F5)
 			debug_refreshModules();
 
-		// everyStep();
-		var oldStep:Int = curStep;
-
-		updateCurStep();
-		updateBeat();
-
-		if (oldStep != curStep && curStep >= 0)
-			stepHit();
+		// ` / ~
+		if (FlxG.keys.justPressed.GRAVEACCENT)
+		{
+			// TODO: Does this break anything?
+			this.persistentUpdate = false;
+			this.persistentDraw = false;
+			FlxG.state.openSubState(new DebugMenuSubState());
+		}
 
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
@@ -105,56 +113,26 @@ class MusicBeatState extends FlxUIState
 		FlxG.resetState();
 	}
 
-	private function updateBeat():Void
-	{
-		curBeat = Math.floor(curStep / 4);
-	}
-
-	private function updateCurStep():Void
-	{
-		var lastChange:BPMChangeEvent = {
-			stepTime: 0,
-			songTime: 0,
-			bpm: 0
-		}
-		for (i in 0...Conductor.bpmChangeMap.length)
-		{
-			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
-				lastChange = Conductor.bpmChangeMap[i];
-		}
-
-		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
-	}
-
 	public function stepHit():Bool
 	{
-		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, curBeat, curStep);
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, Conductor.currentBeat, Conductor.currentStep);
 
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return false;
-		}
-
-		if (curStep % 4 == 0)
-			beatHit();
 
 		return true;
 	}
 
 	public function beatHit():Bool
 	{
-		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, curBeat, curStep);
+		var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, Conductor.currentBeat, Conductor.currentStep);
 
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return false;
-		}
-
-		lastBeatHitTime = Conductor.songPosition;
 
 		return true;
 	}
@@ -175,9 +153,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return false;
-		}
 
 		return super.switchTo(nextState);
 	}
@@ -189,9 +165,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return;
-		}
 
 		super.openSubState(targetSubstate);
 	}
@@ -208,9 +182,7 @@ class MusicBeatState extends FlxUIState
 		dispatchEvent(event);
 
 		if (event.eventCanceled)
-		{
 			return;
-		}
 
 		super.closeSubState();
 	}

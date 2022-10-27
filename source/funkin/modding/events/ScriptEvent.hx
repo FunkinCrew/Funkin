@@ -2,7 +2,7 @@ package funkin.modding.events;
 
 import flixel.FlxState;
 import flixel.FlxSubState;
-import funkin.Note.NoteDir;
+import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.play.Countdown.CountdownStep;
 import openfl.events.EventType;
 import openfl.events.KeyboardEvent;
@@ -142,7 +142,7 @@ class ScriptEvent
 	public static inline final GAME_OVER:ScriptEventType = "GAME_OVER";
 
 	/**
-	 * Called when the player presses a key to restart the game.
+	 * Called after the player presses a key to restart the game.
 	 * This can happen from the pause menu or the game over screen.
 	 * 
 	 * This event IS cancelable! Canceling this event will prevent the game from restarting.
@@ -294,15 +294,22 @@ class NoteScriptEvent extends ScriptEvent
 	 */
 	public var note(default, null):Note;
 
-	public function new(type:ScriptEventType, note:Note, cancelable:Bool = false):Void
+	/**
+	 * The combo count as it is with this event.
+	 * Will be (combo) on miss events and (combo + 1) on hit events (the stored combo count won't update if the event is cancelled).
+	 */
+	public var comboCount(default, null):Int;
+
+	public function new(type:ScriptEventType, note:Note, comboCount:Int = 0, cancelable:Bool = false):Void
 	{
 		super(type, cancelable);
 		this.note = note;
+		this.comboCount = comboCount;
 	}
 
 	public override function toString():String
 	{
-		return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ')';
+		return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ', comboCount=' + comboCount + ')';
 	}
 }
 

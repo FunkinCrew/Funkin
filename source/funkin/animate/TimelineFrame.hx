@@ -1,9 +1,9 @@
 package funkin.animate;
 
-import funkin.animate.ParseAnimate.Frame;
 import flixel.FlxSprite;
-import flixel.input.mouse.FlxMouseEventManager;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.util.FlxColor;
+import funkin.animate.ParseAnimate.Frame;
 
 class TimelineFrame extends FlxSprite
 {
@@ -17,7 +17,7 @@ class TimelineFrame extends FlxSprite
 
 		makeGraphic((10 * length) + (2 * (length - 1)), 10, FlxColor.RED);
 
-		FlxMouseEventManager.add(this, null, null, function(spr:TimelineFrame)
+		FlxMouseEvent.add(this, null, null, function(spr:TimelineFrame)
 		{
 			alpha = 0.5;
 		}, function(spr:TimelineFrame)

@@ -54,7 +54,7 @@
 		<library name="week5" preload="true" />
 		<library name="week6" preload="true" />
 		<library name="week7" preload="true" />
-		<library name="week8" preload="true" />
+		<library name="weekend1" preload="true" />
 	</section>
 
 	<section if="NO_PRELOAD_ALL">
@@ -68,7 +68,7 @@
 		<library name="week5" preload="false" />
 		<library name="week6" preload="false" />
 		<library name="week7" preload="false" />
-		<library name="week8" preload="false" />
+		<library name="weekend1" preload="false" />
 	</section>
 
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg" if="web" />
@@ -91,8 +91,8 @@
 	<assets path="assets/week6" library="week6" exclude="*.fla|*.mp3" unless="web" />
 	<assets path="assets/week7" library="week7" exclude="*.fla|*.ogg" if="web" />
 	<assets path="assets/week7" library="week7" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week8" library="week8" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week8" library="week8" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.mp3" unless="web" />
 
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
@@ -125,61 +125,15 @@
 	<haxelib name="haxeui-core"/>
 	<haxelib name="haxeui-flixel"/>
 
-	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<!--haxelib name="newgrounds" unless="switch"/> -->
-	<haxelib name="faxe" if='switch' />
+	<haxelib name="haxeui-core"/>
+	<haxelib name="haxeui-flixel"/>
 	<haxelib name="polymod" />
+	<haxelib name="flxanimate" />
 
 	<haxelib name="thx.semver" />
 
-	<!-- <haxelib name="colyseus"/> -->
-	<!-- <haxelib name="colyseus-websocket" /> -->
-	<!-- <haxelib name="newgrounds"/> -->
 	<haxelib name="hxcpp-debug-server" if="desktop debug" />
-
-	<!-- swf stufffff -->
-	<!-- <haxelib name="swf"/> -->
-	<!-- <library path="assets/tanky.swf" preload="true"/> -->
-	<!-- <library path="assets/tankBG.swf" preload="true"/> -->
-
-	<!-- <haxelib name="flixel-animate" /> -->
-	<!-- <haxelib name="spinehaxe" /> -->
-	<!-- https://github.com/ninjamuffin99/Flixel-Animate-Atlas-Player -->
-
-
-	<!--<haxelib name="discord_rpc" if="cpp"/> -->
-	<!-- foesn't work with neko -->
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
-
-	<!-- <haxelib name="markdown" /> -->
-	<!-- <haxelib name="HtmlParser" /> -->
-
-	<!--In case you want to use nape with flixel-->
-	<!--<haxelib name="nape-haxe4" />-->
-
-	<!-- ______________________________ Haxedefines _____________________________ -->
-
-	<!--Enable the Flixel core recording system-->
-	<!--<haxedef name="FLX_RECORD" />-->
-
-	<!--Disable the right and middle mouse buttons-->
-	<!-- <haxedef name="FLX_NO_MOUSE_ADVANCED" /> -->
-
-	<!--Disable the native cursor API on Flash-->
-	<!--<haxedef name="FLX_NO_NATIVE_CURSOR" />-->
-
-	<!--Optimise inputs, be careful you will get null errors if you don't use conditionals in your game-->
-	<!-- <haxedef name="FLX_NO_MOUSE" if="mobile" /> -->
-	<!-- <haxedef name="FLX_NO_KEYBOARD" if="mobile" /> -->
-	<!-- <haxedef name="FLX_NO_TOUCH" if="desktop" /> -->
-	<!--<haxedef name="FLX_NO_GAMEPAD" />-->
-
-	<!--Disable the Flixel core sound tray-->
-	<!--<haxedef name="FLX_NO_SOUND_TRAY" />-->
-
-	<!--Disable the Flixel sound management code-->
-	<!--<haxedef name="FLX_NO_SOUND_SYSTEM" />-->
 
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
@@ -202,6 +156,11 @@
     <haxeflag name="--macro" value="include('haxe.ui.components')" />
     <haxeflag name="--macro" value="include('haxe.ui.containers')" />
 
+	<!-- Ensure all UI components are available at runtime. -->
+	<haxeflag name="--macro" value="include('haxe.ui.components')" />
+	<haxeflag name="--macro" value="include('haxe.ui.containers')" />
+	<haxeflag name="--macro" value="include('haxe.ui.containers.menus')" />
+
 	<!-- Necessary to provide stack traces for HScript. -->
 	<haxedef name="hscriptPos" />
 	<haxedef name="HXCPP_CHECK_POINTER" />
@@ -222,6 +181,7 @@
 
 	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
 	<haxedef name="CAN_CHEAT" if="switch debug" />
+	<haxedef name="haxeui_no_mouse_reset" />
 
 	<!-- Skip the Intro -->
 	<section if="debug">
@@ -263,8 +223,6 @@
 		<haxedef name="POLYMOD_SCRIPT_LIBRARY" value="scripts" />
 		<!-- The base path from which scripts should be accessed. -->
 		<haxedef name="POLYMOD_ROOT_PATH" value="scripts/" />
-		<!-- Determines the precision required for mods to be compatible. -->
-		<haxedef name="POLYMOD_API_VERSION_MATCH" value="MATCH_MINOR" />
 		<!-- Determines the subdirectory of the mod folder used for file appending. -->
 		<haxedef name="POLYMOD_APPEND_FOLDER" value="_append" />
 		<!-- Determines the subdirectory of the mod folder used for file merges. -->
