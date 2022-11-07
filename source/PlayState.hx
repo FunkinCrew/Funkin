@@ -2306,11 +2306,13 @@ class PlayState extends MusicBeatState
 							if (possibleNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - possibleNote.strumTime) < 10)
 							{
 								removeList.push(daNote);
+								break;
 							}
 							else if (possibleNote.noteData == daNote.noteData && daNote.strumTime < possibleNote.strumTime)
 							{
 								possibleNotes.remove(possibleNote);
 								possibleNotes.push(daNote);
+								break;
 							}
 						}
 					}
