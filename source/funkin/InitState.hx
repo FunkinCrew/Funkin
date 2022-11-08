@@ -125,6 +125,8 @@ class InitState extends FlxTransitionableState
 		ModuleHandler.buildModuleCallbacks();
 		ModuleHandler.loadModuleCache();
 
+		FlxG.debugger.toggleKeys = [F2];
+
 		#if song
 		var song = getSong();
 

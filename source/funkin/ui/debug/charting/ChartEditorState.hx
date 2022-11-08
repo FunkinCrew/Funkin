@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import funkin.input.Cursor;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
@@ -90,15 +91,26 @@ class ChartEditorState extends HaxeUIState
 	// The amount of padding between the menu bar and the chart grid when fully scrolled up.
 	static final GRID_TOP_PAD:Int = 8;
 
+	public static final PLAYHEAD_SCROLL_AREA_WIDTH:Int = 12;
+	public static final PLAYHEAD_HEIGHT:Int = Std.int(GRID_SIZE / 8);
+
+	public static final GRID_SELECTION_BORDER_WIDTH:Int = 6;
+
 	// Duration until notifications are automatically hidden.
 	static final NOTIFICATION_DISMISS_TIME:Float = 3.0;
 
+	// Start performing rapid undo after this many seconds.
+	static final RAPID_UNDO_DELAY:Float = 0.4;
+	// Perform a rapid undo every this many seconds.
+	static final RAPID_UNDO_INTERVAL:Float = 0.1;
+
 	// UI Element Colors
 	// Background color tint.
-	static final CURSOR_COLOR:FlxColor = 0xC0FFFFFF;
+	static final CURSOR_COLOR:FlxColor = 0xE0FFFFFF;
 	static final PREVIEW_BG_COLOR:FlxColor = 0xFF303030;
-	static final PLAYHEAD_COLOR:FlxColor = 0xC0808080;
+	static final PLAYHEAD_SCROLL_AREA_COLOR:FlxColor = 0xFF682B2F;
 	static final SPECTROGRAM_COLOR:FlxColor = 0xFFFF0000;
+	static final PLAYHEAD_COLOR:FlxColor = 0xC0BD0231;
 
 	/**
 	 * How many pixels far the user needs to move the mouse before the cursor is considered to be dragged rather than clicked.
@@ -351,6 +363,10 @@ class ChartEditorState extends HaxeUIState
 	 */
 	var redoHistory:Array<ChartEditorCommand> = [];
 
+	var undoHeldTime:Float = 0.0;
+
+	var redoHeldTime:Float = 0.0;
+
 	/**
 	 * Whether the undo/redo histories have changed since the last time the UI was updated.
 	 */
@@ -366,6 +382,11 @@ class ChartEditorState extends HaxeUIState
 	 * The selection box extends from this point to the current mouse position.
 	 */
 	var selectionBoxStartPos:FlxPoint = null;
+
+	/**
+	 * Whether the user's last mouse click was on the playhead scroll area.
+	 */
+	var gridPlayheadScrollAreaPressed:Bool = false;
 
 	/**
 	 * The SongNoteData which is currently being placed.
@@ -631,6 +652,8 @@ class ChartEditorState extends HaxeUIState
 	 */
 	var gridPlayhead:FlxSpriteGroup;
 
+	var gridPlayheadScrollArea:FlxSprite;
+
 	/**
 	 * A sprite used to highlight the grid square under the cursor.
 	 */
@@ -704,7 +727,6 @@ class ChartEditorState extends HaxeUIState
 		currentTheme = ChartEditorTheme.Light;
 
 		buildGrid();
-		buildNoteGroup();
 		buildSelectionBox();
 
 		// Add the HaxeUI components after the grid so they're on top.
@@ -759,20 +781,32 @@ class ChartEditorState extends HaxeUIState
 		 */
 
 		// The cursor that appears when hovering over the grid.
-		gridCursor = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE, CURSOR_COLOR);
+		var gridCursorSize:Int = Std.int(GRID_SIZE - GRID_SELECTION_BORDER_WIDTH);
+		gridCursor = new FlxSprite().makeGraphic(gridCursorSize, gridCursorSize, CURSOR_COLOR);
 		add(gridCursor);
+
+		buildNoteGroup();
+
+		gridPlayheadScrollArea = new FlxSprite(gridTiledSprite.x - PLAYHEAD_SCROLL_AREA_WIDTH,
+			MENU_BAR_HEIGHT).makeGraphic(PLAYHEAD_SCROLL_AREA_WIDTH, FlxG.height - MENU_BAR_HEIGHT, PLAYHEAD_SCROLL_AREA_COLOR);
+		add(gridPlayheadScrollArea);
 
 		// The playhead that show the current position in the song.
 		gridPlayhead = new FlxSpriteGroup();
 		add(gridPlayhead);
 
-		var playheadWidth = GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + 10 + 10;
+		var playheadWidth = GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + (PLAYHEAD_SCROLL_AREA_WIDTH * 2);
 		var playheadBaseYPos = MENU_BAR_HEIGHT + GRID_TOP_PAD;
 		gridPlayhead.setPosition(gridTiledSprite.x, playheadBaseYPos);
-		var playheadSprite = new FlxSprite().makeGraphic(playheadWidth, Std.int(GRID_SIZE / 4), PLAYHEAD_COLOR);
-		playheadSprite.x = -10;
+		var playheadSprite = new FlxSprite().makeGraphic(playheadWidth, PLAYHEAD_HEIGHT, PLAYHEAD_COLOR);
+		playheadSprite.x = -PLAYHEAD_SCROLL_AREA_WIDTH;
 		playheadSprite.y = 0;
 		gridPlayhead.add(playheadSprite);
+
+		var playheadBlock = ChartEditorThemeHandler.buildPlayheadBlock();
+		playheadBlock.x = -PLAYHEAD_SCROLL_AREA_WIDTH;
+		playheadBlock.y = -PLAYHEAD_HEIGHT / 2;
+		gridPlayhead.add(playheadBlock);
 
 		// Character icons.
 		healthIconDad = new HealthIcon('dad');
@@ -1096,7 +1130,7 @@ class ChartEditorState extends HaxeUIState
 		handleMenubar();
 		handleSidebar();
 		handlePlaybar();
-		handlePlayheadKeybinds();
+		handlePlayhead();
 
 		handleFileKeybinds();
 		handleEditKeybinds();
@@ -1159,6 +1193,10 @@ class ChartEditorState extends HaxeUIState
 	**/
 	function handleScrollKeybinds()
 	{
+		// Don't scroll when the cursor is over the UI.
+		if (isCursorOverHaxeUI)
+			return;
+
 		// Amount to scroll the grid.
 		var scrollAmount:Float = 0;
 		// Amount to scroll the playhead relative to the grid.
@@ -1218,7 +1256,7 @@ class ChartEditorState extends HaxeUIState
 		// SHIFT + Scroll = Scroll Fast
 		if (FlxG.keys.pressed.SHIFT)
 		{
-			scrollAmount *= 10;
+			scrollAmount *= 5;
 		}
 		// CONTROL + Scroll = Scroll Precise
 		if (FlxG.keys.pressed.CONTROL)
@@ -1238,11 +1276,13 @@ class ChartEditorState extends HaxeUIState
 		{
 			// Scroll amount is the difference between the current position and the top.
 			scrollAmount = 0 - this.scrollPosition;
+			playheadAmount = 0 - this.playheadPosition;
 		}
 		if (playbarButtonPressed == 'playbarStart')
 		{
 			playbarButtonPressed = '';
 			scrollAmount = 0 - this.scrollPosition;
+			playheadAmount = 0 - this.playheadPosition;
 		}
 
 		// END = Scroll to Bottom
@@ -1276,13 +1316,53 @@ class ChartEditorState extends HaxeUIState
 
 		if (shouldHandleCursor)
 		{
+			var overlapsGrid:Bool = FlxG.mouse.overlaps(gridTiledSprite);
+
 			// Cursor position relative to the grid.
 			var cursorX:Float = FlxG.mouse.screenX - gridTiledSprite.x;
 			var cursorY:Float = FlxG.mouse.screenY - gridTiledSprite.y;
 
-			if (FlxG.mouse.justPressed && (currentToolMode == ChartEditorToolMode.Select))
+			var overlapsSelectionBorder = overlapsGrid
+				&& (cursorX % 40) < (GRID_SELECTION_BORDER_WIDTH / 2)
+					|| (cursorX % 40) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2))
+						|| (cursorY % 40) < (GRID_SELECTION_BORDER_WIDTH / 2) || (cursorY % 40) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2));
+
+			if (FlxG.mouse.justPressed)
 			{
-				selectionBoxStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+				if (FlxG.mouse.overlaps(gridPlayheadScrollArea))
+				{
+					gridPlayheadScrollAreaPressed = true;
+				}
+				else if (!overlapsGrid || overlapsSelectionBorder)
+				{
+					selectionBoxStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+				}
+			}
+
+			if (gridPlayheadScrollAreaPressed)
+			{
+				Cursor.cursorMode = Grabbing;
+			}
+			else if (FlxG.mouse.overlaps(gridPlayheadScrollArea))
+			{
+				Cursor.cursorMode = Pointer;
+			}
+			else
+			{
+				Cursor.cursorMode = Default;
+			}
+
+			if (gridPlayheadScrollAreaPressed && FlxG.mouse.released)
+			{
+				gridPlayheadScrollAreaPressed = false;
+			}
+
+			if (gridPlayheadScrollAreaPressed)
+			{
+				// Clicked on the playhead scroll area.
+				// Move the playhead to the cursor position.
+				this.playheadPosition = FlxG.mouse.screenY - MENU_BAR_HEIGHT - GRID_TOP_PAD;
+				moveSongToScrollPosition();
 			}
 
 			// Cursor position snapped to the grid.
@@ -1313,7 +1393,7 @@ class ChartEditorState extends HaxeUIState
 				}
 			}
 
-			if ((currentToolMode == ChartEditorToolMode.Select) && selectionBoxStartPos != null)
+			if (selectionBoxStartPos != null)
 			{
 				var cursorXStart:Float = selectionBoxStartPos.x - gridTiledSprite.x;
 				var cursorYStart:Float = selectionBoxStartPos.y - gridTiledSprite.y;
@@ -1405,7 +1485,7 @@ class ChartEditorState extends HaxeUIState
 					selectionBoxStartPos = null;
 					setSelectionBoxBounds();
 
-					if (FlxG.mouse.overlaps(gridTiledSprite))
+					if (overlapsGrid)
 					{
 						// We clicked on the grid without moving the mouse.
 
@@ -1436,8 +1516,6 @@ class ChartEditorState extends HaxeUIState
 							{
 								if (highlightedNote != null)
 								{
-									// Handle the case of clicking on a sustain piece.
-									highlightedNote = highlightedNote.getBaseNoteSprite();
 									// Click to select an individual note and deselect everything else.
 									if (isNoteSelected(highlightedNote.noteData))
 									{
@@ -1471,7 +1549,7 @@ class ChartEditorState extends HaxeUIState
 					}
 				}
 			}
-			else if ((currentToolMode == ChartEditorToolMode.Place) && currentPlaceNoteData != null)
+			else if (currentPlaceNoteData != null)
 			{
 				// Handle extending the note as you drag.
 
@@ -1498,10 +1576,10 @@ class ChartEditorState extends HaxeUIState
 			}
 			else
 			{
-				if ((currentToolMode == ChartEditorToolMode.Place) && FlxG.mouse.justPressed)
+				if (FlxG.mouse.justPressed)
 				{
 					// Just clicked to place a note.
-					if (FlxG.mouse.overlaps(gridTiledSprite))
+					if (overlapsGrid && !overlapsSelectionBorder)
 					{
 						// We clicked on the grid without moving the mouse.
 
@@ -1512,31 +1590,46 @@ class ChartEditorState extends HaxeUIState
 							return note.alive && FlxG.mouse.overlaps(note);
 						});
 
-						if (highlightedNote != null)
+						if (FlxG.keys.pressed.CONTROL)
 						{
-							// We clicked an existing note.
-							// Do nothing in Place mode so we don't accidentally double place a note.
-						}
-						else
-						{
-							// Click to place a note and select it.
-							var eventColumn = (STRUMLINE_SIZE * 2 + 1) - 1;
-							if (cursorColumn == eventColumn)
+							// Control click to select/deselect an individual note.
+							if (isNoteSelected(highlightedNote.noteData))
 							{
-								// Create an event and place it in the chart.
-								// TODO: Allow configuring the event to place from the sidebar.
-								var newEventData:SongEventData = new SongEventData(cursorMs, "test", {});
-
-								performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
+								performCommand(new DeselectNotesCommand([highlightedNote.noteData]));
 							}
 							else
 							{
-								// Create a note and place it in the chart.
-								var newNoteData:SongNoteData = new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
+								performCommand(new SelectNotesCommand([highlightedNote.noteData]));
+							}
+						}
+						else
+						{
+							if (highlightedNote != null)
+							{
+								// Click a note to select it.
+								performCommand(new SetNoteSelectionCommand([highlightedNote.noteData], currentSelection));
+							}
+							else
+							{
+								// Click a blank space to place a note and select it.
+								var eventColumn = (STRUMLINE_SIZE * 2 + 1) - 1;
+								if (cursorColumn == eventColumn)
+								{
+									// Create an event and place it in the chart.
+									// TODO: Allow configuring the event to place from the sidebar.
+									var newEventData:SongEventData = new SongEventData(cursorMs, "test", {});
 
-								performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+									performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
+								}
+								else
+								{
+									// Create a note and place it in the chart.
+									var newNoteData:SongNoteData = new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
 
-								currentPlaceNoteData = newNoteData;
+									performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+
+									currentPlaceNoteData = newNoteData;
+								}
 							}
 						}
 					}
@@ -1546,7 +1639,9 @@ class ChartEditorState extends HaxeUIState
 					}
 				}
 
-				if (FlxG.mouse.justPressedRight && FlxG.mouse.overlaps(gridTiledSprite))
+				var rightMouseUpdated:Bool = (FlxG.mouse.justPressedRight)
+					|| (FlxG.mouse.pressedRight && (FlxG.mouse.deltaX > 0 || FlxG.mouse.deltaY > 0));
+				if (rightMouseUpdated && overlapsGrid)
 				{
 					// We right clicked on the grid.
 
@@ -1568,12 +1663,12 @@ class ChartEditorState extends HaxeUIState
 			}
 
 			// Handle grid cursor.
-			if (FlxG.mouse.overlaps(gridTiledSprite))
+			if (overlapsGrid && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
 			{
 				gridCursor.visible = true;
 				// X and Y are the cursor position relative to the grid, snapped to the top left of the grid square.
-				gridCursor.x = Math.floor(cursorX / GRID_SIZE) * GRID_SIZE + gridTiledSprite.x;
-				gridCursor.y = cursorStep * GRID_SIZE + gridTiledSprite.y;
+				gridCursor.x = Math.floor(cursorX / GRID_SIZE) * GRID_SIZE + gridTiledSprite.x + (GRID_SELECTION_BORDER_WIDTH / 2);
+				gridCursor.y = cursorStep * GRID_SIZE + gridTiledSprite.y + (GRID_SELECTION_BORDER_WIDTH / 2);
 			}
 			else
 			{
@@ -1587,6 +1682,8 @@ class ChartEditorState extends HaxeUIState
 			gridCursor.visible = false;
 			gridCursor.x = -9999;
 			gridCursor.y = -9999;
+
+			Cursor.cursorMode = Default;
 		}
 	}
 
@@ -1785,10 +1882,38 @@ class ChartEditorState extends HaxeUIState
 			undoLastCommand();
 		}
 
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.Z && !FlxG.keys.pressed.Y)
+		{
+			undoHeldTime += FlxG.elapsed;
+		}
+		else
+		{
+			undoHeldTime = 0;
+		}
+		if (undoHeldTime > RAPID_UNDO_DELAY + RAPID_UNDO_INTERVAL)
+		{
+			undoLastCommand();
+			undoHeldTime -= RAPID_UNDO_INTERVAL;
+		}
+
 		// CTRL + Y = Redo
 		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Y)
 		{
 			redoLastCommand();
+		}
+
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.Y && !FlxG.keys.pressed.Z)
+		{
+			redoHeldTime += FlxG.elapsed;
+		}
+		else
+		{
+			redoHeldTime = 0;
+		}
+		if (redoHeldTime > RAPID_UNDO_DELAY + RAPID_UNDO_INTERVAL)
+		{
+			redoLastCommand();
+			redoHeldTime -= RAPID_UNDO_INTERVAL;
 		}
 
 		// CTRL + C = Copy
@@ -2140,7 +2265,7 @@ class ChartEditorState extends HaxeUIState
 		}
 	}
 
-	function handlePlayheadKeybinds()
+	function handlePlayhead()
 	{
 		// Place notes at the playhead.
 		// TODO: Add the ability to switch modes.
