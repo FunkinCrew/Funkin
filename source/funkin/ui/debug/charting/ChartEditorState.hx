@@ -854,8 +854,12 @@ class ChartEditorState extends HaxeUIState
 	function buildSpectrogram(target:FlxSound)
 	{
 		gridSpectrogram = new PolygonSpectogram(target, SPECTROGRAM_COLOR, FlxG.height / 2, Math.floor(FlxG.height / 2));
-		gridSpectrogram.x = 0;
-		gridSpectrogram.y = 0;
+		// Halfway through the grid.
+		// gridSpectrogram.x = gridTiledSprite.x + STRUMLINE_SIZE * GRID_SIZE;
+		// gridSpectrogram.y = gridTiledSprite.y;
+		gridSpectrogram.x = 200;
+		gridSpectrogram.y = 200;
+		gridSpectrogram.visType = STATIC; // We move the spectrogram manually.
 		gridSpectrogram.waveAmplitude = 50;
 		gridSpectrogram.scrollFactor.set(0, 0);
 		add(gridSpectrogram);
@@ -2330,6 +2334,9 @@ class ChartEditorState extends HaxeUIState
 		// Move the rendered notes to the correct position.
 		renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
 		renderedNoteSelectionSquares.setPosition(renderedNotes.x, renderedNotes.y);
+		// Move the spectrogram to the correct position.
+		// gridSpectrogram.y = gridTiledSprite.y;
+		gridSpectrogram.setPosition(0, 0);
 
 		return this.scrollPosition;
 	}
@@ -2404,7 +2411,10 @@ class ChartEditorState extends HaxeUIState
 
 		gridTiledSprite.height = songLength;
 		if (gridSpectrogram != null)
-			gridSpectrogram.setSound(audioVocalTrack);
+		{
+			gridSpectrogram.setSound(audioInstTrack);
+			gridSpectrogram.generateSection(0, songLengthInMs / 1000);
+		}
 
 		scrollPosition = 0;
 		playheadPosition = 0;
