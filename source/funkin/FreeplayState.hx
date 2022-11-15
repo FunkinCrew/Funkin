@@ -65,6 +65,8 @@ class FreeplayState extends MusicBeatSubstate
 	private var grpCapsules:FlxTypedGroup<SongMenuItem>;
 	private var curPlaying:Bool = false;
 
+	private var dj:DJBoyfriend;
+
 	private var iconArray:Array<HealthIcon> = [];
 
 	override function create()
@@ -178,7 +180,7 @@ class FreeplayState extends MusicBeatSubstate
 		funnyScroll3.speed = -0.8;
 		grpTxtScrolls.add(funnyScroll3);
 
-		var dj:DJBoyfriend = new DJBoyfriend(0, -100);
+		dj = new DJBoyfriend(0, -100);
 		add(dj);
 
 		var bgDad:FlxSprite = new FlxSprite(pinkBack.width * 0.75, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
@@ -231,7 +233,7 @@ class FreeplayState extends MusicBeatSubstate
 		fp.visible = false;
 		add(fp);
 
-		dj.animHITsignal.add(function()
+		dj.onIntroDone.add(function()
 		{
 			FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
@@ -483,17 +485,32 @@ class FreeplayState extends MusicBeatSubstate
 		#end
 
 		if (upP)
+		{
+			dj.resetAFKTimer();
 			changeSelection(-1);
+		}
 		if (downP)
+		{
+			dj.resetAFKTimer();
 			changeSelection(1);
+		}
 
 		if (FlxG.mouse.wheel != 0)
+		{
+			dj.resetAFKTimer();
 			changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+		}
 
 		if (controls.UI_LEFT_P)
+		{
+			dj.resetAFKTimer();
 			changeDiff(-1);
+		}
 		if (controls.UI_RIGHT_P)
+		{
+			dj.resetAFKTimer();
 			changeDiff(1);
+		}
 
 		if (controls.BACK)
 		{
@@ -540,7 +557,15 @@ class FreeplayState extends MusicBeatSubstate
 
 			PlayState.storyWeek = songs[curSelected].week;
 			trace(' CUR WEEK ' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+
+			// Visual and audio effects.
+			FlxG.sound.play(Paths.sound('confirmMenu'));
+			dj.confirm();
+
+			new FlxTimer().start(1, function(tmr:FlxTimer)
+			{
+				LoadingState.loadAndSwitchState(new PlayState(), true);
+			});
 		}
 	}
 
