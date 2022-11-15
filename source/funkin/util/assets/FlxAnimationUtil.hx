@@ -1,6 +1,7 @@
 package funkin.util.assets;
 
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxFramesCollection;
 import funkin.play.AnimationData;
 
 class FlxAnimationUtil
@@ -38,5 +39,21 @@ class FlxAnimationUtil
 		{
 			addAtlasAnimation(target, anim);
 		}
+	}
+
+	public static function combineFramesCollections(a:FlxFramesCollection, b:FlxFramesCollection):FlxFramesCollection
+	{
+		var result:FlxFramesCollection = new FlxFramesCollection(null, ATLAS, null);
+
+		for (frame in a.frames)
+		{
+			result.pushFrame(frame);
+		}
+		for (frame in b.frames)
+		{
+			result.pushFrame(frame);
+		}
+
+		return result;
 	}
 }
