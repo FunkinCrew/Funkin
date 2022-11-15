@@ -2412,12 +2412,6 @@ class PlayState extends MusicBeatState
 			return;
 
 		// TODO: Move this to a song event.
-		// if (Conductor.currentBeat % 8 == 7 && currentSong.song == 'Bopeebo')
-		// {
-		// 	currentStage.getBoyfriend().playAnimation('hey', true);
-		// }
-
-		// TODO: Move this to a song event.
 		if (Conductor.currentBeat % 16 == 15 // && currentSong.song == 'Tutorial'
 			&& currentStage.getDad().characterId == 'gf'
 			&& Conductor.currentBeat > 16
