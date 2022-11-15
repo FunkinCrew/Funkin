@@ -21,7 +21,9 @@ If you downloaded this from any other place than ninja-muffin24.itch.io/FUNKIN
 You might be in DANGER!!! 
 
 The Itch.io release is the only official source for the desktop (PC, Mac, Linux) versions of the game!
-As of right now, the game is FREE! If you paid for it, you got SCAMMED!
+As of right now, the game is FREE! If you paid for it, you got SCAMMED! The only official paid versions are on itch.io and Steam, and are of the FULL ASS GAME which does not exist as of November, 15, 2022
+
+If you paid for it, please go to https://github.com/ninjamuffin99/Funkin/issues and report the paid copy. 
 
 Now that that's out of the way....
 THANKS FOR DOWNLOADIN. 
