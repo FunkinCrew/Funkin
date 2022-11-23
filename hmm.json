@@ -11,7 +11,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "dev",
+      "ref": "6728df7",
       "url": "https://github.com/MasterEric/flixel"
     },
     {
@@ -37,7 +37,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "18b2060",
+      "ref": "58d5d27",
       "url": "https://github.com/Dot-Stuff/flxanimate"
     },
     {
@@ -49,20 +49,25 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "fc8d656b",
+      "ref": "3f229bd",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "80941a7",
+      "ref": "be1f404",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
       "name": "hmm",
       "type": "haxelib",
       "version": "2.1.0"
+    },
+    {
+      "name": "haxe-concurrent",
+      "type": "haxelib",
+      "version": "3.0.2"
     },
     {
       "name": "hscript",
@@ -88,14 +93,14 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "develop",
+      "ref": "4c82152",
       "url": "https://github.com/openfl/lime"
     },
     {
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "develop",
+      "ref": "4f999ac",
       "url": "https://github.com/openfl/openfl"
     },
     {
