@@ -78,7 +78,13 @@ class Main extends Sprite
 		 */
 
 		#if !debug
-		initialState = funkin.TitleState;
+		/**
+		 * Someone was like "hey let's make a state that only runs code on debug builds"
+		 * then put essential initialization code in it.
+		 * The easiest fix is to make it run in all builds.
+		 * -Eric
+		 */
+		// initialState = funkin.TitleState;
 		#end
 
 		initHaxeUI();

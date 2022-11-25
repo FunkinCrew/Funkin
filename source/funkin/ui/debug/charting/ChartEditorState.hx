@@ -76,9 +76,6 @@ class ChartEditorState extends HaxeUIState
 	static final CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT = Paths.ui('chart-editor/toolbox/eventdata');
 	static final CHART_EDITOR_TOOLBOX_SONGDATA_LAYOUT = Paths.ui('chart-editor/toolbox/songdata');
 
-	static final CHART_EDITOR_DIALOG_ABOUT_LAYOUT = Paths.ui('chart-editor/dialogs/about');
-	static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT = Paths.ui('chart-editor/dialogs/user-guide');
-
 	// The base grid size for the chart editor.
 	public static final GRID_SIZE:Int = 40;
 
@@ -1009,9 +1006,9 @@ class ChartEditorState extends HaxeUIState
 			// TODO: Implement this.
 		});
 
-		addUIClickListener('menubarItemAbout', (event:MouseEvent) -> openDialog(CHART_EDITOR_DIALOG_ABOUT_LAYOUT));
+		addUIClickListener('menubarItemAbout', (event:MouseEvent) -> ChartEditorDialogHandler.openAboutDialog(this));
 
-		addUIClickListener('menubarItemUserGuide', (event:MouseEvent) -> openDialog(CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT));
+		addUIClickListener('menubarItemUserGuide', (event:MouseEvent) -> ChartEditorDialogHandler.openUserGuideDialog(this));
 
 		addUIChangeListener('menubarItemToggleSidebar', (event:UIEvent) ->
 		{
@@ -1145,6 +1142,11 @@ class ChartEditorState extends HaxeUIState
 		if (FlxG.keys.justPressed.F)
 		{
 			showNotification('Hi there :)');
+		}
+
+		if (FlxG.keys.justPressed.Q)
+		{
+			ChartEditorDialogHandler.openSplashDialog(this, true);
 		}
 
 		// Right align the BF health icon.
@@ -1988,7 +1990,7 @@ class ChartEditorState extends HaxeUIState
 	{
 		// F1 = Open Help
 		if (FlxG.keys.justPressed.F1)
-			openDialog(CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT);
+			ChartEditorDialogHandler.openUserGuideDialog(this);
 	}
 
 	function handleSidebar()
@@ -2334,9 +2336,12 @@ class ChartEditorState extends HaxeUIState
 		// Move the rendered notes to the correct position.
 		renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
 		renderedNoteSelectionSquares.setPosition(renderedNotes.x, renderedNotes.y);
-		// Move the spectrogram to the correct position.
-		// gridSpectrogram.y = gridTiledSprite.y;
-		gridSpectrogram.setPosition(0, 0);
+		if (gridSpectrogram != null)
+		{
+			// Move the spectrogram to the correct position.
+			gridSpectrogram.y = gridTiledSprite.y;
+			gridSpectrogram.setPosition(0, 0);
+		}
 
 		return this.scrollPosition;
 	}
@@ -2369,16 +2374,6 @@ class ChartEditorState extends HaxeUIState
 		{
 			sidebar.visible = setUISelected('menubarItemToggleSidebar', !sidebar.visible);
 		}
-	}
-
-	/**
-	 * Builds and opens a dialog from a given layout path.
-	 * @param modal Makes the background uninteractable while the dialog is open.
-	 */
-	function openDialog(key:String, modal:Bool = true)
-	{
-		var dialog:Dialog = cast buildComponent(key);
-		dialog.showDialog(modal);
 	}
 
 	/**
