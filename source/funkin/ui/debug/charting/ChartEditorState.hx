@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import lime.media.AudioBuffer;
 import funkin.input.Cursor;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxSliceSprite;
@@ -184,7 +185,15 @@ class ChartEditorState extends HaxeUIState
 	/**
 	 * This is the song's length in PIXELS, same format as scrollPosition.
 	 */
-	var songLength:Int;
+	var songLength(get, default):Int;
+
+	function get_songLength():Int
+	{
+		if (songLength <= 0)
+			return 1000;
+
+		return songLength;
+	}
 
 	/**
 	 * songLength, converted to steps.
@@ -276,6 +285,14 @@ class ChartEditorState extends HaxeUIState
 	function get_isCursorOverHaxeUI():Bool
 	{
 		return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+	}
+
+	var isCursorOverHaxeUIButton(get, null):Bool;
+
+	function get_isCursorOverHaxeUIButton():Bool
+	{
+		return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY, haxe.ui.components.Button)
+			|| Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY, haxe.ui.components.Link);
 	}
 
 	/**
@@ -734,7 +751,9 @@ class ChartEditorState extends HaxeUIState
 		setupUIListeners();
 
 		// TODO: We should be loading the music later when the user requests it.
-		loadMusic();
+		// loadDefaultMusic();
+
+		ChartEditorDialogHandler.openSplashDialog(this, false);
 	}
 
 	function buildDefaultSongData()
@@ -954,6 +973,9 @@ class ChartEditorState extends HaxeUIState
 		addUIClickListener('playbarEnd', (event:MouseEvent) -> playbarButtonPressed = 'playbarEnd');
 
 		// Add functionality to the menu items.
+
+		addUIClickListener('menubarItemNewChart', (event:MouseEvent) -> ChartEditorDialogHandler.openSplashDialog(this, true));
+		addUIClickListener('menubarItemLoadInst', (event:MouseEvent) -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
 
 		addUIClickListener('menubarItemUndo', (event:MouseEvent) -> undoLastCommand());
 
@@ -1688,8 +1710,11 @@ class ChartEditorState extends HaxeUIState
 			gridCursor.visible = false;
 			gridCursor.x = -9999;
 			gridCursor.y = -9999;
+		}
 
-			Cursor.cursorMode = Default;
+		if (isCursorOverHaxeUIButton && Cursor.cursorMode == Default)
+		{
+			Cursor.cursorMode = Pointer;
 		}
 	}
 
@@ -2203,7 +2228,7 @@ class ChartEditorState extends HaxeUIState
 	 */
 	function handleMusicPlayback()
 	{
-		if (audioInstTrack.playing)
+		if (audioInstTrack != null && audioInstTrack.playing)
 		{
 			if (FlxG.mouse.pressedMiddle)
 			{
@@ -2227,7 +2252,7 @@ class ChartEditorState extends HaxeUIState
 
 				Conductor.update(audioInstTrack.time);
 				// Resync vocals.
-				if (Math.abs(audioInstTrack.time - audioVocalTrack.time) > 100)
+				if (audioVocalTrack != null && Math.abs(audioInstTrack.time - audioVocalTrack.time) > 100)
 					audioVocalTrack.time = audioInstTrack.time;
 
 				// We need time in fractional steps here to allow the song to actually play.
@@ -2249,18 +2274,25 @@ class ChartEditorState extends HaxeUIState
 
 	function startAudioPlayback()
 	{
-		audioInstTrack.play();
-		audioVocalTrack.play();
+		if (audioInstTrack != null)
+			audioInstTrack.play();
+		if (audioVocalTrack != null)
+			audioVocalTrack.play();
 	}
 
 	function stopAudioPlayback()
 	{
-		audioInstTrack.pause();
-		audioVocalTrack.pause();
+		if (audioInstTrack != null)
+			audioInstTrack.pause();
+		if (audioVocalTrack != null)
+			audioVocalTrack.pause();
 	}
 
 	function toggleAudioPlayback()
 	{
+		if (audioInstTrack == null)
+			return;
+
 		if (audioInstTrack.playing)
 		{
 			stopAudioPlayback();
@@ -2377,15 +2409,32 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
-	 * Load a music track for playback.
+	 * Loads an instrumental from an absolute file path, replacing the current instrumental.
 	 */
-	function loadMusic()
+	public function loadInstrumentalFromPath(path:String):Void
 	{
-		// TODO: How to load music by selecting with a file dialog?
-		audioInstTrack = FlxG.sound.play(Paths.inst('dadbattle'), 1.0, false);
+		var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path);
+		loadInstrumentalFromBytes(fileBytes);
+	}
+
+	/**
+	 * Loads an instrumental from audio byte data, replacing the current instrumental.
+	 */
+	public function loadInstrumentalFromBytes(bytes:haxe.io.Bytes):Void
+	{
+		audioInstTrack = FlxG.sound.load(openfl.media.Sound.loadCompressedDataFromByteArray(ByteArray.fromBytes(bytes)), 1.0, false);
 		audioInstTrack.autoDestroy = false;
 		audioInstTrack.pause();
 
+		// Tell the user the load was successful.
+		// TODO: Un-bork this.
+		// showNotification('Loaded instrumental track successfully.');
+
+		postLoadInstrumental();
+	}
+
+	function postLoadInstrumental()
+	{
 		// Prevent the time from skipping back to 0 when the song ends.
 		audioInstTrack.onComplete = function()
 		{
@@ -2393,11 +2442,6 @@ class ChartEditorState extends HaxeUIState
 			audioVocalTrack.pause();
 		};
 
-		audioVocalTrack = FlxG.sound.play(Paths.voices('dadbattle'), 1.0, false);
-		audioVocalTrack.autoDestroy = false;
-		audioVocalTrack.pause();
-
-		// TODO: Make sure Conductor works properly with changing BPMs.
 		var DAD_BATTLE_BPM = 180;
 		var BOPEEBO_BPM = 100;
 		Conductor.forceBPM(DAD_BATTLE_BPM);
@@ -2417,6 +2461,23 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
+	 * Load a music track for playback.
+	 */
+	function loadDefaultMusic()
+	{
+		// TODO: How to load music by selecting with a file dialog?
+		audioInstTrack = FlxG.sound.play(Paths.inst('dadbattle'), 1.0, false);
+		audioInstTrack.autoDestroy = false;
+		audioInstTrack.pause();
+
+		audioVocalTrack = FlxG.sound.play(Paths.voices('dadbattle'), 1.0, false);
+		audioVocalTrack.autoDestroy = false;
+		audioVocalTrack.pause();
+
+		postLoadInstrumental();
+	}
+
+	/**
 	 * When setting the scroll position, except when automatically scrolling during song playback,
 	 * we need to update the conductor's current step time and the timestamp of the audio tracks.
 	 */
@@ -2426,8 +2487,10 @@ class ChartEditorState extends HaxeUIState
 		Conductor.update(scrollPositionInMs);
 
 		// Update the songPosition in the audio tracks.
-		audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
-		audioVocalTrack.time = scrollPositionInMs + playheadPositionInMs;
+		if (audioInstTrack != null)
+			audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+		if (audioVocalTrack != null)
+			audioVocalTrack.time = scrollPositionInMs + playheadPositionInMs;
 
 		// We need to update the note sprites because we changed the scroll position.
 		noteDisplayDirty = true;
