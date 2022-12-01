@@ -296,6 +296,11 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
+	 * Set by ChartEditorDialogHandler, used to prevent background interaction while the dialog is open.
+	 */
+	public var isHaxeUIDialogOpen:Bool = false;
+
+	/**
 	 * The variation ID for the difficulty which is currently being edited.
 	 */
 	var selectedVariation(default, set):String = Constants.DEFAULT_VARIATION;
@@ -753,7 +758,7 @@ class ChartEditorState extends HaxeUIState
 		// TODO: We should be loading the music later when the user requests it.
 		// loadDefaultMusic();
 
-		ChartEditorDialogHandler.openSplashDialog(this, false);
+		ChartEditorDialogHandler.openWelcomeDialog(this, false);
 	}
 
 	function buildDefaultSongData()
@@ -974,7 +979,7 @@ class ChartEditorState extends HaxeUIState
 
 		// Add functionality to the menu items.
 
-		addUIClickListener('menubarItemNewChart', (event:MouseEvent) -> ChartEditorDialogHandler.openSplashDialog(this, true));
+		addUIClickListener('menubarItemNewChart', (event:MouseEvent) -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
 		addUIClickListener('menubarItemLoadInst', (event:MouseEvent) -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
 
 		addUIClickListener('menubarItemUndo', (event:MouseEvent) -> undoLastCommand());
@@ -1168,7 +1173,7 @@ class ChartEditorState extends HaxeUIState
 
 		if (FlxG.keys.justPressed.Q)
 		{
-			ChartEditorDialogHandler.openSplashDialog(this, true);
+			ChartEditorDialogHandler.openWelcomeDialog(this, true);
 		}
 
 		// Right align the BF health icon.
@@ -2266,7 +2271,7 @@ class ChartEditorState extends HaxeUIState
 			}
 		}
 
-		if (FlxG.keys.justPressed.SPACE)
+		if (FlxG.keys.justPressed.SPACE && !isHaxeUIDialogOpen)
 		{
 			toggleAudioPlayback();
 		}
@@ -2422,7 +2427,9 @@ class ChartEditorState extends HaxeUIState
 	 */
 	public function loadInstrumentalFromBytes(bytes:haxe.io.Bytes):Void
 	{
-		audioInstTrack = FlxG.sound.load(openfl.media.Sound.loadCompressedDataFromByteArray(ByteArray.fromBytes(bytes)), 1.0, false);
+		var openflSound = new openfl.media.Sound();
+		openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(bytes), bytes.length);
+		audioInstTrack = FlxG.sound.load(openflSound, 1.0, false);
 		audioInstTrack.autoDestroy = false;
 		audioInstTrack.pause();
 
@@ -2438,8 +2445,10 @@ class ChartEditorState extends HaxeUIState
 		// Prevent the time from skipping back to 0 when the song ends.
 		audioInstTrack.onComplete = function()
 		{
-			audioInstTrack.pause();
-			audioVocalTrack.pause();
+			if (audioInstTrack != null)
+				audioInstTrack.pause();
+			if (audioVocalTrack != null)
+				audioVocalTrack.pause();
 		};
 
 		var DAD_BATTLE_BPM = 180;

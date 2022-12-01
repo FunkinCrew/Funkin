@@ -1,7 +1,6 @@
 package funkin.modding.base;
 
-import flixel.FlxSprite;
-import polymod.hscript.HScriptedClass;
-
 @:hscriptClass
-class ScriptedFlxSprite extends FlxSprite implements HScriptedClass {}
+class ScriptedFlxSprite extends flixel.FlxSprite implements HScriptedClass
+{
+}

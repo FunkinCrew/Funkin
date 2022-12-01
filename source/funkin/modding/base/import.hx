@@ -1,0 +1,1 @@
+import polymod.hscript.HScriptedClass;
