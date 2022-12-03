@@ -3,18 +3,27 @@ package funkin.play;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxPoint;
+import flixel.text.FlxBitmapText;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
+import funkin.shaderslmfao.LeftMaskShader;
 import funkin.ui.TallyCounter;
 
 class ResultState extends MusicBeatSubstate
 {
 	var resultsVariation:ResultVariations;
+	var songName:FlxBitmapText;
+	var difficulty:FlxSprite;
+
+	var maskShaderSongName = new LeftMaskShader();
+	var maskShaderDifficulty = new LeftMaskShader();
 
 	override function create()
 	{
@@ -71,7 +80,7 @@ class ResultState extends MusicBeatSubstate
 		soundSystem.antialiasing = true;
 		add(soundSystem);
 
-		var difficulty:FlxSprite = new FlxSprite(680);
+		difficulty = new FlxSprite(555);
 
 		var diffSpr:String = switch (CoolUtil.difficultyString())
 		{
@@ -86,10 +95,34 @@ class ResultState extends MusicBeatSubstate
 		}
 
 		difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
-		difficulty.y = -difficulty.height;
-		FlxTween.tween(difficulty, {y: 110}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
 		difficulty.antialiasing = true;
 		add(difficulty);
+
+		var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
+		songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
+
+		// stole this from PauseSubState, I think eric wrote it!!
+		if (PlayState.instance.currentChart != null)
+		{
+			songName.text += '${PlayState.instance.currentChart.songName}:${PlayState.instance.currentChart.songArtist}';
+		}
+		else
+		{
+			songName.text += PlayState.currentSong.song;
+		}
+
+		songName.antialiasing = true;
+		songName.letterSpacing = -15;
+		songName.angle = -4.1;
+		add(songName);
+
+		timerThenSongName();
+
+		songName.shader = maskShaderSongName;
+		difficulty.shader = maskShaderDifficulty;
+
+		maskShaderSongName.swagMaskX = difficulty.x - 15;
+		maskShaderDifficulty.swagMaskX = difficulty.x - 15;
 
 		var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
 		blackTopBar.y = -blackTopBar.height;
@@ -196,8 +229,72 @@ class ResultState extends MusicBeatSubstate
 		super.create();
 	}
 
+	function timerThenSongName()
+	{
+		movingSongStuff = false;
+
+		difficulty.x = 555;
+
+		var diffYTween = 122;
+
+		difficulty.y = -difficulty.height;
+		FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
+
+		songName.y = diffYTween - 30;
+		songName.x = (difficulty.x + difficulty.width) + 20;
+
+		new FlxTimer().start(3, _ ->
+		{
+			movingSongStuff = true;
+		});
+	}
+
+	var movingSongStuff:Bool = false;
+	var speedOfTween:FlxPoint = FlxPoint.get(-1, 0.1);
+
 	override function update(elapsed:Float)
 	{
+		maskShaderSongName.swagSprX = songName.x;
+		maskShaderDifficulty.swagSprX = difficulty.x;
+
+		if (movingSongStuff)
+		{
+			songName.x += speedOfTween.x;
+			difficulty.x += speedOfTween.x;
+			songName.y += speedOfTween.y;
+			difficulty.y += speedOfTween.y;
+
+			if (songName.x + songName.width < 100)
+			{
+				timerThenSongName();
+			}
+		}
+
+		if (FlxG.keys.justPressed.RIGHT)
+			speedOfTween.x += 0.1;
+
+		if (FlxG.keys.justPressed.LEFT)
+		{
+			speedOfTween.x -= 0.1;
+		}
+
+		if (FlxG.keys.justPressed.UP)
+			speedOfTween.y -= 0.1;
+
+		if (FlxG.keys.justPressed.DOWN)
+			speedOfTween.y += 0.1;
+
+		if (FlxG.keys.pressed.V)
+		{
+			trace(speedOfTween);
+		}
+
+		if (FlxG.keys.justPressed.PERIOD)
+			songName.angle += 0.1;
+
+		if (FlxG.keys.justPressed.COMMA)
+			songName.angle -= 0.1;
+
 		if (controls.PAUSE)
 			FlxG.switchState(new FreeplayState());
 

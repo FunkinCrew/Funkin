@@ -86,10 +86,8 @@
     },
     {
       "name": "lime",
-      "type": "git",
-      "dir": null,
-      "ref": "develop",
-      "url": "https://github.com/openfl/lime"
+      "type": "haxelib",
+      "version": null
     },
     {
       "name": "openfl",

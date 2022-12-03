@@ -166,6 +166,8 @@ class TitleState extends MusicBeatState
 
 		add(gfDance);
 
+		// gfDance.shader = maskShader;
+
 		// gfDance.shader = swagShader.shader;
 
 		// gfDance.shader = new TitleOutline();
