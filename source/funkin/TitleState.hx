@@ -11,6 +11,7 @@ import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.audiovis.SpectogramSprite;
 import funkin.shaderslmfao.ColorSwap;
+import funkin.shaderslmfao.LeftMaskShader;
 import funkin.shaderslmfao.TitleOutline;
 import funkin.ui.AtlasText;
 import funkin.util.Constants;
@@ -133,6 +134,7 @@ class TitleState extends MusicBeatState
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
+	var maskShader = new LeftMaskShader();
 
 	function startIntro()
 	{
@@ -166,6 +168,9 @@ class TitleState extends MusicBeatState
 
 		add(gfDance);
 
+		// maskShader.swagSprX = gfDance.x;
+		// maskShader.swagMaskX = gfDance.x + 200;
+		// maskShader.frameUV = gfDance.frame.uv;
 		// gfDance.shader = maskShader;
 
 		// gfDance.shader = swagShader.shader;
@@ -434,6 +439,17 @@ class TitleState extends MusicBeatState
 		if (!cheatActive && skippedIntro)
 			cheatCodeShit();
 		super.update(elapsed);
+	}
+
+	override function draw()
+	{
+		super.draw();
+
+		// if (gfDance != null)
+		// {
+		// 	trace(gfDance.frame.uv);
+		// 	maskShader.frameUV = gfDance.frame.uv;
+		// }
 	}
 
 	var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];

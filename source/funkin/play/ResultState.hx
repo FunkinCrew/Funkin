@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -121,7 +122,7 @@ class ResultState extends MusicBeatSubstate
 		songName.shader = maskShaderSongName;
 		difficulty.shader = maskShaderDifficulty;
 
-		maskShaderSongName.swagMaskX = difficulty.x - 15;
+		// maskShaderSongName.swagMaskX = difficulty.x - 15;
 		maskShaderDifficulty.swagMaskX = difficulty.x - 15;
 
 		var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
@@ -252,9 +253,23 @@ class ResultState extends MusicBeatSubstate
 	var movingSongStuff:Bool = false;
 	var speedOfTween:FlxPoint = FlxPoint.get(-1, 0.1);
 
+	override function draw():Void
+	{
+		super.draw();
+
+		if (songName != null)
+		{
+			songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
+			// PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
+		}
+
+		// if (songName != null && songName.frame != null)
+		// maskShaderSongName.frameUV = songName.frame.uv;
+	}
+
 	override function update(elapsed:Float)
 	{
-		maskShaderSongName.swagSprX = songName.x;
+		// maskShaderSongName.swagSprX = songName.x;
 		maskShaderDifficulty.swagSprX = difficulty.x;
 
 		if (movingSongStuff)
