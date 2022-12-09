@@ -1,10 +1,10 @@
 package funkin.ui;
 
-import funkin.util.Constants;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import funkin.play.PlayState;
+import funkin.util.Constants;
 
 using StringTools;
 
@@ -20,21 +20,26 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		if (daRating == null)
 			daRating = "good";
 
-		var rating:FlxSprite = new FlxSprite();
+		var rating:FlxSprite = new FlxSprite(0, 0);
+		rating.scrollFactor.set(0.2, 0.2);
+
+		rating.zIndex = 1000;
 		var ratingPath:String = daRating;
 
 		if (PlayState.instance.currentStageId.startsWith('school'))
 			ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
 		rating.loadGraphic(Paths.image(ratingPath));
-		rating.x = FlxG.width * 0.55 - 40;
+		rating.x = FlxG.width * 0.50;
+		rating.x -= FlxG.camera.scroll.x * 0.2;
 		// make sure rating is visible lol!
-		if (rating.x < FlxG.camera.scroll.x)
-			rating.x = FlxG.camera.scroll.x;
-		else if (rating.x > FlxG.camera.scroll.x + FlxG.camera.width - rating.width)
-			rating.x = FlxG.camera.scroll.x + FlxG.camera.width - rating.width;
+		//		if (rating.x < FlxG.camera.scroll.x)
+		//			rating.x = FlxG.camera.scroll.x;
+		//		else if (rating.x > FlxG.camera.scroll.x + FlxG.camera.width - rating.width)
+		//			rating.x = FlxG.camera.scroll.x + FlxG.camera.width - rating.width;
 
-		rating.y = FlxG.camera.scroll.y + FlxG.camera.height * 0.4 - 60;
+		// FlxG.camera.scroll.y +
+		rating.y = FlxG.camera.height * 0.4 - 60;
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
@@ -76,14 +81,15 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 			pixelShitPart2 = '-pixel';
 		}
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
-		comboSpr.y = FlxG.camera.scroll.y + FlxG.camera.height * 0.4 + 80;
-		comboSpr.x = FlxG.width * 0.55;
+		comboSpr.y = FlxG.camera.height * 0.4 + 80;
+		comboSpr.x = FlxG.width * 0.50;
+		comboSpr.x -= FlxG.camera.scroll.x * 0.2;
 		// make sure combo is visible lol!
 		// 194 fits 4 combo digits
-		if (comboSpr.x < FlxG.camera.scroll.x + 194)
-			comboSpr.x = FlxG.camera.scroll.x + 194;
-		else if (comboSpr.x > FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width)
-			comboSpr.x = FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width;
+		// if (comboSpr.x < FlxG.camera.scroll.x + 194)
+		// 	comboSpr.x = FlxG.camera.scroll.x + 194;
+		// else if (comboSpr.x > FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width)
+		// 	comboSpr.x = FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width;
 
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;

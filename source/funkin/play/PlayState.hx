@@ -416,6 +416,7 @@ class PlayState extends MusicBeatState
 		add(cameraFollowPoint);
 
 		comboPopUps = new PopUpStuff();
+		comboPopUps.cameras = [camHUD];
 		add(comboPopUps);
 
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
@@ -1813,10 +1814,22 @@ class PlayState extends MusicBeatState
 	{
 		FlxG.sound.music.pause();
 
-		// BPM might change between the current and target section but IDGAF
-		FlxG.sound.music.time = Conductor.songPosition + (sec * 4 * (1000 * 60 / Conductor.bpm));
-
-		Conductor.update();
+		var daBPM:Float = currentSong.bpm;
+		var daPos:Float = 0;
+		for (i in 0...(Std.int(curStep / 16 + sec)))
+		{
+			var section = SongLoad.getSong()[i];
+			if (section == null)
+				continue;
+			if (section.changeBPM)
+			{
+				daBPM = SongLoad.getSong()[i].bpm;
+			}
+			daPos += 4 * (1000 * 60 / daBPM);
+		}
+		Conductor.songPosition = FlxG.sound.music.time = daPos;
+		Conductor.songPosition += Conductor.offset;
+		updateCurStep();
 		resyncVocals();
 	}
 	#end
@@ -2385,6 +2398,7 @@ class PlayState extends MusicBeatState
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, Highscore.tallies.combo);
 			animShit.scrollFactor.set(0.6, 0.6);
+			animShit.cameras = [camHUD];
 			add(animShit);
 
 			var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation

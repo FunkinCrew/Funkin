@@ -31,6 +31,7 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 		{
 			kill();
 		};
+		effectStuff.setGraphicSize(Std.int(effectStuff.width * 0.7));
 		add(effectStuff);
 
 		grpNumbers = new FlxTypedGroup<ComboNumber>();
@@ -90,7 +91,8 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 
 		while (daCombo > 0)
 		{
-			var comboNumber:ComboNumber = new ComboNumber(420 - (130 * loopNum), 44 * loopNum, daCombo % 10);
+			var comboNumber:ComboNumber = new ComboNumber(450 - (100 * loopNum), 20 + 14 * loopNum, daCombo % 10);
+			comboNumber.setGraphicSize(Std.int(comboNumber.width * 0.7));
 			grpNumbers.add(comboNumber);
 			add(comboNumber);
 

@@ -2,16 +2,22 @@ package funkin.ui.stageBuildShit;
 
 import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
+<<<<<<< HEAD
 import flixel.input.mouse.FlxMouseEventManager;
+=======
+>>>>>>> origin/feature/week-4-gameplay
 import flixel.math.FlxPoint;
-import flixel.ui.FlxButton;
 import funkin.play.PlayState;
+<<<<<<< HEAD
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.containers.VBox;
+=======
+import funkin.play.stage.StageData;
+import haxe.ui.RuntimeComponentBuilder;
+>>>>>>> origin/feature/week-4-gameplay
 import haxe.ui.core.Component;
-import openfl.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
@@ -81,10 +87,17 @@ class StageOffsetSubstate extends MusicBeatSubstate
 			char.y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
 		}
 
+		FlxG.mouse.visible = true;
+
 		CoolUtil.mouseCamDrag();
 
 		if (FlxG.keys.pressed.CONTROL)
 			CoolUtil.mouseWheelZoom();
+
+		if (FlxG.mouse.wheel != 0)
+		{
+			FlxG.camera.zoom += FlxG.mouse.wheel * 0.1;
+		}
 
 		if (FlxG.keys.justPressed.Y)
 		{

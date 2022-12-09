@@ -469,19 +469,13 @@ class BaseCharacter extends Bopper
 		{
 			// If the note is from the same strumline, play the sing animation.
 			this.playSingAnimation(event.note.data.dir, false);
+			holdTimer = 0;
 		}
 		else if (!event.note.mustPress && characterType == DAD)
 		{
 			// If the note is from the same strumline, play the sing animation.
 			this.playSingAnimation(event.note.data.dir, false);
-		}
-		else if (characterType == GF)
-		{
-			if (event.note.mustPress && this.comboNoteCounts.contains(event.comboCount))
-			{
-				trace('Playing GF combo animation: combo${event.comboCount}');
-				this.playAnimation('combo${event.comboCount}', true, true);
-			}
+			holdTimer = 0;
 		}
 	}
 
