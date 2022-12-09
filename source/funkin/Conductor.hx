@@ -129,6 +129,7 @@ class Conductor
 	 */
 	public static function forceBPM(bpm:Float)
 	{
+		trace('[CONDUCTOR] Forcing BPM to ' + bpm);
 		Conductor.bpmOverride = bpm;
 	}
 
@@ -213,10 +214,8 @@ class Conductor
 		}
 	}
 
-	public static function mapTimeChanges(currentChart:SongDifficulty)
+	public static function mapTimeChanges(songTimeChanges:Array<SongTimeChange>)
 	{
-		var songTimeChanges:Array<SongTimeChange> = currentChart.timeChanges;
-
 		timeChanges = [];
 
 		for (currentTimeChange in songTimeChanges)

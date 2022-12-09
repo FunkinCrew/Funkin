@@ -445,7 +445,7 @@ class ChartingState extends MusicBeatState
 		add(playheadTest);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new VoicesGroup(daSong, _song.voiceList);
+		vocals = VoicesGroup.build(daSong, _song.voiceList);
 		// vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		// FlxG.sound.list.add(vocals);
 

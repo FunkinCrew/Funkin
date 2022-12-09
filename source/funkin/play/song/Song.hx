@@ -45,6 +45,11 @@ class Song // implements IPlayStateScriptedClass
 		populateFromMetadata();
 	}
 
+	public function getRawMetadata():Array<SongMetadata>
+	{
+		return _metadata;
+	}
+
 	/**
 	 * Populate the song data from the provided metadata,
 	 * including data from individual difficulties. Does not load chart data.
@@ -246,7 +251,7 @@ class SongDifficulty
 
 	public function buildVocals(charId:String = "bf"):VoicesGroup
 	{
-		var result:VoicesGroup = new VoicesGroup(this.song.songId, this.buildVoiceList());
+		var result:VoicesGroup = VoicesGroup.build(this.song.songId, this.buildVoiceList());
 		return result;
 	}
 }

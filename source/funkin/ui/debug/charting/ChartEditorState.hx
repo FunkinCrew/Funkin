@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import funkin.play.song.SongData.SongDataParser;
+import funkin.play.song.Song;
 import lime.media.AudioBuffer;
 import funkin.input.Cursor;
 import flixel.FlxSprite;
@@ -433,7 +435,7 @@ class ChartEditorState extends HaxeUIState
 	 * The audio track for the vocals.
 	 * TODO: Replace with a VocalSoundGroup.
 	 */
-	var audioVocalTrack:FlxSound;
+	var audioVocalTrackGroup:VoicesGroup;
 
 	/**
 	 * CHART DATA
@@ -758,7 +760,9 @@ class ChartEditorState extends HaxeUIState
 		// TODO: We should be loading the music later when the user requests it.
 		// loadDefaultMusic();
 
-		ChartEditorDialogHandler.openWelcomeDialog(this, false);
+		// TODO: Change to false.
+		var canCloseInitialDialog = true;
+		ChartEditorDialogHandler.openWelcomeDialog(this, canCloseInitialDialog);
 	}
 
 	function buildDefaultSongData()
@@ -771,6 +775,8 @@ class ChartEditorState extends HaxeUIState
 
 		// Initialize the song chart data.
 		songChartData = new Map<String, SongChartData>();
+
+		audioVocalTrackGroup = new VoicesGroup();
 	}
 
 	/**
@@ -933,7 +939,7 @@ class ChartEditorState extends HaxeUIState
 			playbarHeadDragging = true;
 
 			// If we were dragging the playhead while the song was playing, resume playing.
-			if (audioVocalTrack.playing)
+			if (audioInstTrack != null && audioInstTrack.playing)
 			{
 				playbarHeadDraggingWasPlaying = true;
 				stopAudioPlayback();
@@ -1057,16 +1063,35 @@ class ChartEditorState extends HaxeUIState
 		});
 		setUISelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
 
+		var instVolumeLabel:Label = findComponent('menubarLabelVolumeInstrumental', Label);
 		addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) ->
 		{
 			var volume:Float = event.value / 100.0;
-			audioInstTrack.volume = volume;
+			if (audioInstTrack != null)
+				audioInstTrack.volume = volume;
+			instVolumeLabel.text = 'Instrumental - ${event.value}%';
 		});
 
+		var vocalsVolumeLabel:Label = findComponent('menubarLabelVolumeVocals', Label);
 		addUIChangeListener('menubarItemVolumeVocals', (event:UIEvent) ->
 		{
 			var volume:Float = event.value / 100.0;
-			audioVocalTrack.volume = volume;
+			if (audioVocalTrackGroup != null)
+				audioVocalTrackGroup.volume = volume;
+			vocalsVolumeLabel.text = 'Vocals - ${event.value}%';
+		});
+
+		var playbackSpeedLabel:Label = findComponent('menubarLabelPlaybackSpeed', Label);
+		addUIChangeListener('menubarItemPlaybackSpeed', (event:UIEvent) ->
+		{
+			var pitch = event.value * 2.0 / 100.0;
+			#if FLX_PITCH
+			if (audioInstTrack != null)
+				audioInstTrack.pitch = pitch;
+			if (audioVocalTrackGroup != null)
+				audioVocalTrackGroup.pitch = pitch;
+			#end
+			playbackSpeedLabel.text = 'Playback Speed - ${pitch}x';
 		});
 
 		addUIChangeListener('menubarItemToggleToolboxTools', (event:UIEvent) ->
@@ -2242,8 +2267,8 @@ class ChartEditorState extends HaxeUIState
 				var oldStepTime = Conductor.currentStepTime;
 				Conductor.update(audioInstTrack.time);
 				// Resync vocals.
-				if (Math.abs(audioInstTrack.time - audioVocalTrack.time) > 100)
-					audioVocalTrack.time = audioInstTrack.time;
+				if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
+					audioVocalTrackGroup.time = audioInstTrack.time;
 				var diffStepTime = Conductor.currentStepTime - oldStepTime;
 
 				// Move the playhead.
@@ -2257,8 +2282,8 @@ class ChartEditorState extends HaxeUIState
 
 				Conductor.update(audioInstTrack.time);
 				// Resync vocals.
-				if (audioVocalTrack != null && Math.abs(audioInstTrack.time - audioVocalTrack.time) > 100)
-					audioVocalTrack.time = audioInstTrack.time;
+				if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
+					audioVocalTrackGroup.time = audioInstTrack.time;
 
 				// We need time in fractional steps here to allow the song to actually play.
 				// Also account for a potentially offset playhead.
@@ -2281,16 +2306,20 @@ class ChartEditorState extends HaxeUIState
 	{
 		if (audioInstTrack != null)
 			audioInstTrack.play();
-		if (audioVocalTrack != null)
-			audioVocalTrack.play();
+		if (audioVocalTrackGroup != null)
+			audioVocalTrackGroup.play();
+		if (audioVocalTrackGroup != null)
+			audioVocalTrackGroup.play();
 	}
 
 	function stopAudioPlayback()
 	{
 		if (audioInstTrack != null)
 			audioInstTrack.pause();
-		if (audioVocalTrack != null)
-			audioVocalTrack.pause();
+		if (audioVocalTrackGroup != null)
+			audioVocalTrackGroup.pause();
+		if (audioVocalTrackGroup != null)
+			audioVocalTrackGroup.pause();
 	}
 
 	function toggleAudioPlayback()
@@ -2418,8 +2447,12 @@ class ChartEditorState extends HaxeUIState
 	 */
 	public function loadInstrumentalFromPath(path:String):Void
 	{
+		#if sys
 		var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path);
 		loadInstrumentalFromBytes(fileBytes);
+		#else
+		trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+		#end
 	}
 
 	/**
@@ -2440,6 +2473,14 @@ class ChartEditorState extends HaxeUIState
 		postLoadInstrumental();
 	}
 
+	public function loadInstrumentalFromAsset(path:String):Void
+	{
+		var vocalTrack = FlxG.sound.load(path, 1.0, false);
+		audioInstTrack = vocalTrack;
+
+		postLoadInstrumental();
+	}
+
 	function postLoadInstrumental()
 	{
 		// Prevent the time from skipping back to 0 when the song ends.
@@ -2447,13 +2488,9 @@ class ChartEditorState extends HaxeUIState
 		{
 			if (audioInstTrack != null)
 				audioInstTrack.pause();
-			if (audioVocalTrack != null)
-				audioVocalTrack.pause();
+			if (audioVocalTrackGroup != null)
+				audioVocalTrackGroup.pause();
 		};
-
-		var DAD_BATTLE_BPM = 180;
-		var BOPEEBO_BPM = 100;
-		Conductor.forceBPM(DAD_BATTLE_BPM);
 
 		songLength = Std.int(Conductor.getTimeInSteps(audioInstTrack.length) * GRID_SIZE);
 
@@ -2470,20 +2507,79 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
-	 * Load a music track for playback.
+	 * Loads a vocal track from an absolute file path.
 	 */
-	function loadDefaultMusic()
+	public function loadVocalsFromPath(path:String):Void
 	{
-		// TODO: How to load music by selecting with a file dialog?
-		audioInstTrack = FlxG.sound.play(Paths.inst('dadbattle'), 1.0, false);
-		audioInstTrack.autoDestroy = false;
-		audioInstTrack.pause();
+		#if sys
+		var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path);
+		loadVocalsFromBytes(fileBytes);
+		#else
+		trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+		#end
+	}
 
-		audioVocalTrack = FlxG.sound.play(Paths.voices('dadbattle'), 1.0, false);
-		audioVocalTrack.autoDestroy = false;
-		audioVocalTrack.pause();
+	public function loadVocalsFromAsset(path:String):Void
+	{
+		var vocalTrack = FlxG.sound.load(path, 1.0, false);
+		audioVocalTrackGroup.add(vocalTrack);
+	}
 
-		postLoadInstrumental();
+	/**
+	 * Loads a vocal track from audio byte data.
+	 */
+	public function loadVocalsFromBytes(bytes:haxe.io.Bytes):Void
+	{
+		var openflSound = new openfl.media.Sound();
+		openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(bytes), bytes.length);
+		var vocalTrack = FlxG.sound.load(openflSound, 1.0, false);
+		audioVocalTrackGroup.add(vocalTrack);
+
+		// Tell the user the load was successful.
+		// TODO: Un-bork this.
+		// showNotification('Loaded instrumental track successfully.');
+	}
+
+	/**
+	 * Fetch's a song's existing chart and audio and loads it, replacing the current song.
+	 */
+	public function loadSongAsTemplate(songId:String)
+	{
+		var song:Song = SongDataParser.fetchSong(songId);
+
+		if (song == null)
+		{
+			// showNotification('Failed to load song template.');
+			return;
+		}
+
+		// Load the song metadata.
+		var rawSongMetadata:Array<SongMetadata> = song.getRawMetadata();
+
+		this.songMetadata = new Map<String, SongMetadata>();
+
+		for (metadata in rawSongMetadata)
+		{
+			var variation = (metadata.variation == null || metadata.variation == '') ? 'default' : metadata.variation;
+			this.songMetadata.set(variation, metadata);
+		}
+
+		this.songChartData = new Map<String, SongChartData>();
+
+		for (metadata in rawSongMetadata)
+		{
+			var variation = (metadata.variation == null || metadata.variation == '') ? 'default' : metadata.variation;
+			this.songChartData.set(variation, SongDataParser.parseSongChartData(songId, metadata.variation));
+		}
+
+		Conductor.mapTimeChanges(currentSongMetadata.timeChanges);
+
+		loadInstrumentalFromAsset(Paths.inst(songId));
+		loadVocalsFromAsset(Paths.voices(songId));
+
+		// Apply BPM
+
+		// showNotification('Loaded song ${songId}.');
 	}
 
 	/**
@@ -2498,8 +2594,8 @@ class ChartEditorState extends HaxeUIState
 		// Update the songPosition in the audio tracks.
 		if (audioInstTrack != null)
 			audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
-		if (audioVocalTrack != null)
-			audioVocalTrack.time = scrollPositionInMs + playheadPositionInMs;
+		if (audioVocalTrackGroup != null)
+			audioVocalTrackGroup.time = scrollPositionInMs + playheadPositionInMs;
 
 		// We need to update the note sprites because we changed the scroll position.
 		noteDisplayDirty = true;

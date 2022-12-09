@@ -354,7 +354,7 @@ class PlayState extends MusicBeatState
 
 		if (currentSong_NEW != null)
 		{
-			Conductor.mapTimeChanges(currentChart);
+			Conductor.mapTimeChanges(currentChart.timeChanges);
 			// Conductor.bpm = currentChart.getStartingBPM();
 
 			// TODO: Support for dialog.
@@ -1029,9 +1029,9 @@ class PlayState extends MusicBeatState
 		currentSong.song = currentSong.song;
 
 		if (currentSong.needsVoices)
-			vocals = new VoicesGroup(currentSong.song, currentSong.voiceList);
+			vocals = VoicesGroup.build(currentSong.song, currentSong.voiceList);
 		else
-			vocals = new VoicesGroup(currentSong.song, null);
+			vocals = VoicesGroup.build(currentSong.song, null);
 
 		vocals.members[0].onComplete = function()
 		{

@@ -110,6 +110,25 @@ class ChartEditorDialogHandler
 		}
 
 		// TODO: Get the list of songs and insert them as links into the "Create From Song" section.
+		var linkTemplateDadBattle:Link = dialog.findComponent('splashTemplateDadBattle', Link);
+		linkTemplateDadBattle.onClick = (_event) ->
+		{
+			dialog.hideDialog(DialogButton.CANCEL);
+
+			// Load song from template
+			state.loadSongAsTemplate('dadbattle');
+		}
+		var linkTemplateBopeebo:Link = dialog.findComponent('splashTemplateBopeebo', Link);
+		linkTemplateBopeebo.onClick = (_event) ->
+		{
+			dialog.hideDialog(DialogButton.CANCEL);
+
+			// Load song from template
+			state.loadSongAsTemplate('bopeebo');
+		}
+
+		var splashTemplateContainer:VBox = dialog.findComponent('splashTemplateContainer', VBox);
+
 		return dialog;
 	}
 
@@ -237,7 +256,7 @@ class ChartEditorDialogHandler
 		var dialogBPM:NumberStepper = dialog.findComponent('dialogBPM', NumberStepper);
 		dialogBPM.onChange = (event:UIEvent) ->
 		{
-			if (event.value == null)
+			if (event.value == null || event.value <= 0)
 				return;
 
 			var timeChanges = state.currentSongMetadata.timeChanges;
@@ -249,6 +268,9 @@ class ChartEditorDialogHandler
 			{
 				timeChanges[0].bpm = event.value;
 			}
+
+			Conductor.forceBPM(event.value);
+
 			state.currentSongMetadata.timeChanges = timeChanges;
 		};
 
@@ -388,9 +410,9 @@ class ChartEditorDialogHandler
 				{
 					if (selectedFile != null)
 					{
-						trace('Selected file: ' + selectedFile);
-						vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n$selectedFile';
-						// state.loadVocalsFromBytes(selectedFile.bytes);
+						trace('Selected file: ' + selectedFile.name + "~" + selectedFile.fullPath);
+						vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${selectedFile.name}';
+						state.loadVocalsFromBytes(selectedFile.bytes);
 						removeDropHandler(onDropFile);
 					}
 				});

@@ -11,14 +11,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "6728df7",
+      "ref": "8ff2aa9",
       "url": "https://github.com/MasterEric/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "a3877f0",
+      "ref": "157eaf3",
       "url": "https://github.com/MasterEric/flixel-addons"
     },
     {

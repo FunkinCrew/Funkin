@@ -96,12 +96,12 @@ class SongDataParser
 		if (songCache.exists(songId))
 		{
 			var song:Song = songCache.get(songId);
-			trace('[STAGEDATA] Successfully fetch song: ${songId}');
+			trace('[SONGDATA] Successfully fetch song: ${songId}');
 			return song;
 		}
 		else
 		{
-			trace('[STAGEDATA] Failed to fetch song, not found in cache: ${songId}');
+			trace('[SONGDATA] Failed to fetch song, not found in cache: ${songId}');
 			return null;
 		}
 	}

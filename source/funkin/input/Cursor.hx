@@ -35,7 +35,7 @@ class Cursor
 	static final CURSOR_GRABBING_PARAMS:CursorParams = {
 		graphic: "assets/images/cursor/cursor-grabbing.png",
 		scale: 1.0,
-		offsetX: 8,
+		offsetX: 32,
 		offsetY: 0,
 	};
 	static var assetCursorGrabbing:BitmapData = null;
