@@ -22,13 +22,6 @@
       "url": "https://github.com/MasterEric/flixel-addons"
     },
     {
-      "name": "flixel-addons",
-      "type": "git",
-      "dir": null,
-      "ref": "dev",
-      "url": "https://github.com/MasterEric/flixel-addons"
-    },
-    {
       "name": "flixel-ui",
       "type": "haxelib",
       "version": "2.4.0"
@@ -100,8 +93,8 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "4f999ac",
-      "url": "https://github.com/openfl/openfl"
+      "ref": "3fd5763",
+      "url": "https://github.com/MasterEric/openfl/"
     },
     {
       "name": "polymod",

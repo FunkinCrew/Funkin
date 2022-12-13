@@ -279,6 +279,26 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
+	 * Whether hitsounds are enabled for at least one character.
+	 */
+	var hitsoundsEnabled(get, null):Bool;
+
+	function get_hitsoundsEnabled():Bool
+	{
+		return hitsoundsEnabledPlayer || hitsoundsEnabledOpponent;
+	}
+
+	/**
+	 * Whether hitsounds are enabled for the player.
+	 */
+	var hitsoundsEnabledPlayer:Bool = true;
+
+	/**
+	 * Whether hitsounds are enabled for the opponent.
+	 */
+	var hitsoundsEnabledOpponent:Bool = true;
+
+	/**
 	 * Whether the user's mouse cursor is hovering over a SOLID component of the HaxeUI.
 	 * If so, ignore mouse events underneath.
 	 */
@@ -1063,13 +1083,25 @@ class ChartEditorState extends HaxeUIState
 		});
 		setUISelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
 
+		addUIChangeListener('menubarItemPlayerHitsounds', (event:UIEvent) ->
+		{
+			hitsoundsEnabledPlayer = event.value;
+		});
+		setUISelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
+		
+		addUIChangeListener('menubarItemOpponentHitsounds', (event:UIEvent) ->
+		{
+			hitsoundsEnabledOpponent = event.value;
+		});
+		setUISelected('menubarItemOpponentHitsounds', hitsoundsEnabledOpponent);
+		
 		var instVolumeLabel:Label = findComponent('menubarLabelVolumeInstrumental', Label);
 		addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) ->
 		{
 			var volume:Float = event.value / 100.0;
 			if (audioInstTrack != null)
 				audioInstTrack.volume = volume;
-			instVolumeLabel.text = 'Instrumental - ${event.value}%';
+			instVolumeLabel.text = 'Instrumental - ${Std.int(event.value)}%';
 		});
 
 		var vocalsVolumeLabel:Label = findComponent('menubarLabelVolumeVocals', Label);
@@ -1078,7 +1110,7 @@ class ChartEditorState extends HaxeUIState
 			var volume:Float = event.value / 100.0;
 			if (audioVocalTrackGroup != null)
 				audioVocalTrackGroup.volume = volume;
-			vocalsVolumeLabel.text = 'Vocals - ${event.value}%';
+			vocalsVolumeLabel.text = 'Vocals - ${Std.int(event.value)}%';
 		});
 
 		var playbackSpeedLabel:Label = findComponent('menubarLabelPlaybackSpeed', Label);
@@ -1091,7 +1123,7 @@ class ChartEditorState extends HaxeUIState
 			if (audioVocalTrackGroup != null)
 				audioVocalTrackGroup.pitch = pitch;
 			#end
-			playbackSpeedLabel.text = 'Playback Speed - ${pitch}x';
+			playbackSpeedLabel.text = 'Playback Speed - ${Std.int(event.value * 100) / 100}x';
 		});
 
 		addUIChangeListener('menubarItemToggleToolboxTools', (event:UIEvent) ->
@@ -2265,7 +2297,9 @@ class ChartEditorState extends HaxeUIState
 				// If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
 				var oldStepTime = Conductor.currentStepTime;
+				var oldSongPosition = Conductor.songPosition;
 				Conductor.update(audioInstTrack.time);
+				handleHitsounds(oldSongPosition, Conductor.songPosition);
 				// Resync vocals.
 				if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
 					audioVocalTrackGroup.time = audioInstTrack.time;
@@ -2279,8 +2313,9 @@ class ChartEditorState extends HaxeUIState
 			else
 			{
 				// Else, move the entire view.
-
+				var oldSongPosition = Conductor.songPosition;
 				Conductor.update(audioInstTrack.time);
+				handleHitsounds(oldSongPosition, Conductor.songPosition);
 				// Resync vocals.
 				if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
 					audioVocalTrackGroup.time = audioInstTrack.time;
@@ -2301,6 +2336,36 @@ class ChartEditorState extends HaxeUIState
 			toggleAudioPlayback();
 		}
 	}
+
+	/**
+	 * Handle the playback of hitsounds.
+	 */
+	function handleHitsounds(oldSongPosition:Float, newSongPosition:Float):Void {
+		if (!hitsoundsEnabled)
+			return;
+
+		// Assume notes are sorted by time.
+		for (noteData in currentSongChartNoteData) {
+			if (noteData.time < oldSongPosition)
+				// Note is in the past.
+				continue;
+
+			if (noteData.time >= newSongPosition)
+				// Note is in the future.
+				return;
+
+			// Note was just hit.
+			switch (noteData.getStrumlineIndex()) {
+				case 0: // Player
+					if (hitsoundsEnabledPlayer)
+						playSound(Paths.sound('funnyNoise/funnyNoise-09'));
+				case 1: // Opponent
+					if (hitsoundsEnabledOpponent)
+						playSound(Paths.sound('funnyNoise/funnyNoise-010'));
+			}
+		}
+	}
+
 
 	function startAudioPlayback()
 	{
