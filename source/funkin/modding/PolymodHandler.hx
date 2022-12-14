@@ -25,10 +25,12 @@ class PolymodHandler
 
 	public static function createModRoot()
 	{
+		#if sys
 		if (!sys.FileSystem.exists(MOD_FOLDER))
 		{
 			sys.FileSystem.createDirectory(MOD_FOLDER);
 		}
+		#end
 	}
 
 	/**

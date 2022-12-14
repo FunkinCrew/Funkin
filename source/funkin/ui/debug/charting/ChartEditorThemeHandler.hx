@@ -111,8 +111,8 @@ class ChartEditorThemeHandler
 
 		// 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
 		// This gets reused to fill the screen.
-		var gridWidth = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2 + 1);
-		var gridHeight = ChartEditorState.GRID_SIZE * (STEPS_PER_BEAT * BEATS_PER_MEASURE);
+		var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2 + 1));
+		var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * (STEPS_PER_BEAT * BEATS_PER_MEASURE));
 		state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1,
 			gridColor2);
 
@@ -190,6 +190,11 @@ class ChartEditorThemeHandler
 		// Divider at 2 * (Strumline Size)
 		var dividerLineBX = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
 		state.gridBitmap.fillRect(new Rectangle(dividerLineBX, 0, GRID_STRUMLINE_DIVIDER_WIDTH, state.gridBitmap.height), gridStrumlineDividerColor);
+
+		if (state.gridTiledSprite != null) {
+			state.gridTiledSprite.loadGraphic(state.gridBitmap);
+		}
+		// Else, gridTiledSprite will be built later.
 	}
 
 	static function updateSelectionSquare(state:ChartEditorState):Void

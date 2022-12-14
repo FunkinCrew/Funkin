@@ -118,15 +118,30 @@ class ChartEditorState extends HaxeUIState
 	static final DRAG_THRESHOLD:Float = 16.0;
 
 	/**
+	 * Types of notes you can snap to.
+	 */
+	static final SNAP_QUANTS:Array<Int> = [4, 8, 12, 16, 20, 24, 32, 48, 64, 96, 192];
+
+	/**
 	 * INSTANCE DATA
 	 */
 	// ==============================
+	public var currentZoomLevel:Float = 1.0;
+
+	var noteSnapQuantIndex:Int = 3;
+
+	public var noteSnapQuant(get, never):Int;
+
+	function get_noteSnapQuant():Int
+	{
+		return SNAP_QUANTS[noteSnapQuantIndex];
+	}
 
 	/**
 	 * scrollPosition is the current position in the song, in pixels.
 	 * One pixel is 1/40 of 1 step, and 1/160 of 1 beat.
 	 */
-	var scrollPosition(default, set):Float = -1.0;
+	var scrollPositionInPixels(default, set):Float = -1.0;
 
 	/**
 	 * scrollPosition, converted to steps.
@@ -136,7 +151,7 @@ class ChartEditorState extends HaxeUIState
 
 	function get_scrollPositionInSteps():Float
 	{
-		return scrollPosition / GRID_SIZE;
+		return scrollPositionInPixels / GRID_SIZE;
 	}
 
 	/**
@@ -152,7 +167,7 @@ class ChartEditorState extends HaxeUIState
 
 	function set_scrollPositionInMs(value:Float):Float
 	{
-		scrollPosition = value / Conductor.stepCrochet;
+		scrollPositionInPixels = value / Conductor.stepCrochet;
 		return value;
 	}
 
@@ -162,7 +177,7 @@ class ChartEditorState extends HaxeUIState
 	 * 40 means the playhead is 1 grid length below the base position.
 	 * -40 means the playhead is 1 grid length above the base position.
 	 */
-	var playheadPosition(default, set):Float;
+	var playheadPositionInPixels(default, set):Float;
 
 	var playheadPositionInSteps(get, null):Float;
 
@@ -171,7 +186,7 @@ class ChartEditorState extends HaxeUIState
 	 */
 	function get_playheadPositionInSteps():Float
 	{
-		return playheadPosition / GRID_SIZE;
+		return playheadPositionInPixels / GRID_SIZE;
 	}
 
 	/**
@@ -187,14 +202,14 @@ class ChartEditorState extends HaxeUIState
 	/**
 	 * This is the song's length in PIXELS, same format as scrollPosition.
 	 */
-	var songLength(get, default):Int;
+	var songLengthInPixels(get, default):Int;
 
-	function get_songLength():Int
+	function get_songLengthInPixels():Int
 	{
-		if (songLength <= 0)
+		if (songLengthInPixels <= 0)
 			return 1000;
 
-		return songLength;
+		return songLengthInPixels;
 	}
 
 	/**
@@ -204,7 +219,7 @@ class ChartEditorState extends HaxeUIState
 
 	function get_songLengthInSteps():Float
 	{
-		return songLength / GRID_SIZE;
+		return songLengthInPixels / GRID_SIZE;
 	}
 
 	/**
@@ -273,7 +288,7 @@ class ChartEditorState extends HaxeUIState
 		// Make sure view is updated when we change view modes.
 		noteDisplayDirty = true;
 		notePreviewDirty = true;
-		this.scrollPosition = this.scrollPosition;
+		this.scrollPositionInPixels = this.scrollPositionInPixels;
 
 		return isViewDownscroll;
 	}
@@ -367,7 +382,7 @@ class ChartEditorState extends HaxeUIState
 		// Make sure view is updated when we change modes.
 		noteDisplayDirty = true;
 		notePreviewDirty = true;
-		this.scrollPosition = 0;
+		this.scrollPositionInPixels = 0;
 
 		return isInPatternMode;
 	}
@@ -595,7 +610,7 @@ class ChartEditorState extends HaxeUIState
 		return value;
 	}
 
-	var currentSongNoteSkin(get, set):String;
+	public var currentSongNoteSkin(get, set):String;
 
 	function get_currentSongNoteSkin():String
 	{
@@ -696,9 +711,9 @@ class ChartEditorState extends HaxeUIState
 	var gridPlayheadScrollArea:FlxSprite;
 
 	/**
-	 * A sprite used to highlight the grid square under the cursor.
+	 * A sprite used to indicate the note that will be placed on click.
 	 */
-	var gridCursor:FlxSprite;
+	var gridGhostNote:ChartEditorNoteSprite;
 
 	/**
 	 * The waveform which (optionally) displays over the grid, underneath the notes and playhead.
@@ -823,14 +838,11 @@ class ChartEditorState extends HaxeUIState
 		gridTiledSprite.y = MENU_BAR_HEIGHT + GRID_TOP_PAD; // Push down to account for the menu bar.
 		add(gridTiledSprite);
 
-		/*
-			buildSpectrogram(audioVocalTrack);
-		 */
-
-		// The cursor that appears when hovering over the grid.
-		var gridCursorSize:Int = Std.int(GRID_SIZE - GRID_SELECTION_BORDER_WIDTH);
-		gridCursor = new FlxSprite().makeGraphic(gridCursorSize, gridCursorSize, CURSOR_COLOR);
-		add(gridCursor);
+		gridGhostNote = new ChartEditorNoteSprite(this);
+		gridGhostNote.alpha = 0.8;
+		gridGhostNote.noteData = new SongNoteData(-1, -1, 0, "");
+		gridGhostNote.visible = false;
+		add(gridGhostNote);
 
 		buildNoteGroup();
 
@@ -975,7 +987,7 @@ class ChartEditorState extends HaxeUIState
 			playbarHeadDragging = false;
 
 			// Set the song position to where the playhead was moved to.
-			scrollPosition = songLength * (playbarHead.value / 100);
+			scrollPositionInPixels = songLengthInPixels * (playbarHead.value / 100);
 			// Update the conductor and audio tracks to match.
 			moveSongToScrollPosition();
 
@@ -1088,13 +1100,13 @@ class ChartEditorState extends HaxeUIState
 			hitsoundsEnabledPlayer = event.value;
 		});
 		setUISelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
-		
+
 		addUIChangeListener('menubarItemOpponentHitsounds', (event:UIEvent) ->
 		{
 			hitsoundsEnabledOpponent = event.value;
 		});
 		setUISelected('menubarItemOpponentHitsounds', hitsoundsEnabledOpponent);
-		
+
 		var instVolumeLabel:Label = findComponent('menubarLabelVolumeInstrumental', Label);
 		addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) ->
 		{
@@ -1210,6 +1222,8 @@ class ChartEditorState extends HaxeUIState
 
 		// These ones only happen if the modal dialog is not open.
 		handleScrollKeybinds();
+		handleZoom();
+		handleSnap();
 		handleCursor();
 
 		handleMenubar();
@@ -1326,7 +1340,7 @@ class ChartEditorState extends HaxeUIState
 		}
 
 		// Mouse Wheel = Scroll
-		if (FlxG.mouse.wheel != 0)
+		if (FlxG.mouse.wheel != 0 && !FlxG.keys.pressed.CONTROL)
 		{
 			scrollAmount = -10 * FlxG.mouse.wheel;
 		}
@@ -1365,35 +1379,71 @@ class ChartEditorState extends HaxeUIState
 		if (FlxG.keys.justPressed.HOME)
 		{
 			// Scroll amount is the difference between the current position and the top.
-			scrollAmount = 0 - this.scrollPosition;
-			playheadAmount = 0 - this.playheadPosition;
+			scrollAmount = 0 - this.scrollPositionInPixels;
+			playheadAmount = 0 - this.playheadPositionInPixels;
 		}
 		if (playbarButtonPressed == 'playbarStart')
 		{
 			playbarButtonPressed = '';
-			scrollAmount = 0 - this.scrollPosition;
-			playheadAmount = 0 - this.playheadPosition;
+			scrollAmount = 0 - this.scrollPositionInPixels;
+			playheadAmount = 0 - this.playheadPositionInPixels;
 		}
 
 		// END = Scroll to Bottom
 		if (FlxG.keys.justPressed.END)
 		{
 			// Scroll amount is the difference between the current position and the bottom.
-			scrollAmount = this.songLength - this.scrollPosition;
+			scrollAmount = this.songLengthInPixels - this.scrollPositionInPixels;
 		}
 		if (playbarButtonPressed == 'playbarEnd')
 		{
 			playbarButtonPressed = '';
-			scrollAmount = this.songLength - this.scrollPosition;
+			scrollAmount = this.songLengthInPixels - this.scrollPositionInPixels;
 		}
 
 		// Apply the scroll amount.
-		this.scrollPosition += scrollAmount;
-		this.playheadPosition += playheadAmount;
+		this.scrollPositionInPixels += scrollAmount;
+		this.playheadPositionInPixels += playheadAmount;
 
 		// Resync the conductor and audio tracks.
 		if (scrollAmount != 0 || playheadAmount != 0)
 			moveSongToScrollPosition();
+	}
+
+	function handleZoom()
+	{
+		if (FlxG.keys.justPressed.MINUS)
+		{
+			currentZoomLevel /= 2;
+
+			// Update the grid.
+			ChartEditorThemeHandler.updateTheme(this);
+			// Update the note positions.
+			noteDisplayDirty = true;
+		}
+
+		if (FlxG.keys.justPressed.PLUS)
+		{
+			currentZoomLevel *= 2;
+
+			// Update the grid.
+			ChartEditorThemeHandler.updateTheme(this);
+			// Update the note positions.
+			noteDisplayDirty = true;
+		}
+	}
+
+	function handleSnap()
+	{
+		if (FlxG.keys.justPressed.LEFT)
+		{
+			noteSnapQuantIndex--;
+		}
+
+		if (FlxG.keys.justPressed.RIGHT)
+		{
+			noteSnapQuantIndex++;
+		}
 	}
 
 	/**
@@ -1403,6 +1453,7 @@ class ChartEditorState extends HaxeUIState
 	{
 		// Note: If a menu is open in HaxeUI, don't handle cursor behavior.
 		var shouldHandleCursor = !isCursorOverHaxeUI || (selectionBoxStartPos != null);
+		var eventColumn = (STRUMLINE_SIZE * 2 + 1) - 1;
 
 		if (shouldHandleCursor)
 		{
@@ -1451,16 +1502,16 @@ class ChartEditorState extends HaxeUIState
 			{
 				// Clicked on the playhead scroll area.
 				// Move the playhead to the cursor position.
-				this.playheadPosition = FlxG.mouse.screenY - MENU_BAR_HEIGHT - GRID_TOP_PAD;
+				this.playheadPositionInPixels = FlxG.mouse.screenY - MENU_BAR_HEIGHT - GRID_TOP_PAD;
 				moveSongToScrollPosition();
 			}
 
 			// Cursor position snapped to the grid.
 
 			// The song position of the cursor, in steps.
-			var cursorFractionalStep:Float = cursorY / GRID_SIZE;
-			var cursorStep:Int = Math.floor(cursorFractionalStep);
-			var cursorMs:Float = cursorStep * Conductor.stepCrochet;
+			var cursorFractionalStep:Float = cursorY / GRID_SIZE / (16 / noteSnapQuant);
+			var cursorStep:Int = Std.int(Math.floor(cursorFractionalStep));
+			var cursorMs:Float = cursorStep * Conductor.stepCrochet * (16 / noteSnapQuant);
 			// The direction value for the column at the cursor.
 			var cursorColumn:Int = Math.floor(cursorX / GRID_SIZE);
 			if (cursorColumn < 0)
@@ -1702,7 +1753,7 @@ class ChartEditorState extends HaxeUIState
 							else
 							{
 								// Click a blank space to place a note and select it.
-								var eventColumn = (STRUMLINE_SIZE * 2 + 1) - 1;
+
 								if (cursorColumn == eventColumn)
 								{
 									// Create an event and place it in the chart.
@@ -1750,28 +1801,44 @@ class ChartEditorState extends HaxeUIState
 						performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
 					}
 				}
-			}
 
-			// Handle grid cursor.
-			if (overlapsGrid && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
-			{
-				gridCursor.visible = true;
-				// X and Y are the cursor position relative to the grid, snapped to the top left of the grid square.
-				gridCursor.x = Math.floor(cursorX / GRID_SIZE) * GRID_SIZE + gridTiledSprite.x + (GRID_SELECTION_BORDER_WIDTH / 2);
-				gridCursor.y = cursorStep * GRID_SIZE + gridTiledSprite.y + (GRID_SELECTION_BORDER_WIDTH / 2);
-			}
-			else
-			{
-				gridCursor.visible = false;
-				gridCursor.x = -9999;
-				gridCursor.y = -9999;
+				// Handle grid cursor.
+				if (overlapsGrid && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
+				{
+					Cursor.cursorMode = Pointer;
+
+					// Indicate that we can pla
+					gridGhostNote.visible = (cursorColumn != eventColumn);
+
+					if (cursorColumn != gridGhostNote.noteData.data || selectedNoteKind != gridGhostNote.noteData.kind) {
+						gridGhostNote.noteData.kind = selectedNoteKind;
+						gridGhostNote.noteData.data = cursorColumn;
+						gridGhostNote.playNoteAnimation();
+					}
+					
+					FlxG.watch.addQuick("cursorY", cursorY);
+					FlxG.watch.addQuick("cursorFractionalStep", cursorFractionalStep);
+					FlxG.watch.addQuick("cursorStep", cursorStep);
+					FlxG.watch.addQuick("cursorMs", cursorMs);
+
+					gridGhostNote.noteData.time = cursorMs;
+					gridGhostNote.updateNotePosition(renderedNotes);
+
+					// gridCursor.visible = true;
+					// // X and Y are the cursor position relative to the grid, snapped to the top left of the grid square.
+					// gridCursor.x = Math.floor(cursorX / GRID_SIZE) * GRID_SIZE + gridTiledSprite.x + (GRID_SELECTION_BORDER_WIDTH / 2);
+					// gridCursor.y = cursorStep * GRID_SIZE + gridTiledSprite.y + (GRID_SELECTION_BORDER_WIDTH / 2);
+				}
+				else
+				{
+					gridGhostNote.visible = false;
+					Cursor.cursorMode = Default;
+				}
 			}
 		}
 		else
 		{
-			gridCursor.visible = false;
-			gridCursor.x = -9999;
-			gridCursor.y = -9999;
+			gridGhostNote.visible = false;
 		}
 
 		if (isCursorOverHaxeUIButton && Cursor.cursorMode == Default)
@@ -1793,9 +1860,9 @@ class ChartEditorState extends HaxeUIState
 			renderedNotes.flipX = (isViewDownscroll);
 
 			// Calculate the view bounds.
-			var viewAreaTop:Float = this.scrollPosition - GRID_TOP_PAD;
+			var viewAreaTop:Float = this.scrollPositionInPixels - GRID_TOP_PAD;
 			var viewHeight:Float = (FlxG.height - MENU_BAR_HEIGHT);
-			var viewAreaBottom:Float = this.scrollPosition + viewHeight;
+			var viewAreaBottom:Float = this.scrollPositionInPixels + viewHeight;
 
 			// Remove notes that are no longer visible and list the ones that are.
 			var displayedNoteData:Array<SongNoteData> = [];
@@ -1830,7 +1897,11 @@ class ChartEditorState extends HaxeUIState
 				}
 				else
 				{
+					// Note is already displayed and should remain displayed.
 					displayedNoteData.push(noteSprite.noteData);
+
+					// Update the note sprite's position.
+					noteSprite.updateNotePosition(renderedNotes);
 				}
 			}
 
@@ -1839,8 +1910,11 @@ class ChartEditorState extends HaxeUIState
 			{
 				// Remember if we are already displaying this note.
 				if (displayedNoteData.indexOf(noteData) != -1)
+				{
 					continue;
+				}
 
+				// Get the position the note should be at.
 				var noteTimePixels:Float = noteData.time / Conductor.stepCrochet * GRID_SIZE;
 
 				// Make sure the note appears when scrolling up.
@@ -1854,11 +1928,11 @@ class ChartEditorState extends HaxeUIState
 				// Get a note sprite from the pool.
 				// If we can reuse a deleted note, do so.
 				// If a new note is needed, call buildNoteSprite.
-				var noteSprite:ChartEditorNoteSprite = renderedNotes.recycle(ChartEditorNoteSprite);
+				var noteSprite:ChartEditorNoteSprite = renderedNotes.recycle(() -> new ChartEditorNoteSprite(this));
+				noteSprite.parentState = this;
 
 				// The note sprite handles animation playback and positioning.
 				noteSprite.noteData = noteData;
-				noteSprite.noteSkin = currentSongNoteSkin;
 
 				// Setting note data resets position relative to the grid so we fix that.
 				noteSprite.x += renderedNotes.x;
@@ -1880,6 +1954,7 @@ class ChartEditorState extends HaxeUIState
 						}
 
 						var nextNoteSprite:ChartEditorNoteSprite = renderedNotes.recycle(ChartEditorNoteSprite);
+						nextNoteSprite.parentState = this;
 						nextNoteSprite.parentNoteSprite = lastNoteSprite;
 						lastNoteSprite.childNoteSprite = nextNoteSprite;
 
@@ -2306,7 +2381,7 @@ class ChartEditorState extends HaxeUIState
 				var diffStepTime = Conductor.currentStepTime - oldStepTime;
 
 				// Move the playhead.
-				playheadPosition += diffStepTime * GRID_SIZE;
+				playheadPositionInPixels += diffStepTime * GRID_SIZE;
 
 				// We don't move the song to scroll position, or update the note sprites.
 			}
@@ -2322,7 +2397,7 @@ class ChartEditorState extends HaxeUIState
 
 				// We need time in fractional steps here to allow the song to actually play.
 				// Also account for a potentially offset playhead.
-				scrollPosition = Conductor.currentStepTime * GRID_SIZE - playheadPosition;
+				scrollPositionInPixels = Conductor.currentStepTime * GRID_SIZE - playheadPositionInPixels;
 
 				// DO NOT move song to scroll position here specifically.
 
@@ -2340,12 +2415,14 @@ class ChartEditorState extends HaxeUIState
 	/**
 	 * Handle the playback of hitsounds.
 	 */
-	function handleHitsounds(oldSongPosition:Float, newSongPosition:Float):Void {
+	function handleHitsounds(oldSongPosition:Float, newSongPosition:Float):Void
+	{
 		if (!hitsoundsEnabled)
 			return;
 
 		// Assume notes are sorted by time.
-		for (noteData in currentSongChartNoteData) {
+		for (noteData in currentSongChartNoteData)
+		{
 			if (noteData.time < oldSongPosition)
 				// Note is in the past.
 				continue;
@@ -2355,7 +2432,8 @@ class ChartEditorState extends HaxeUIState
 				return;
 
 			// Note was just hit.
-			switch (noteData.getStrumlineIndex()) {
+			switch (noteData.getStrumlineIndex())
+			{
 				case 0: // Player
 					if (hitsoundsEnabledPlayer)
 						playSound(Paths.sound('funnyNoise/funnyNoise-09'));
@@ -2365,7 +2443,6 @@ class ChartEditorState extends HaxeUIState
 			}
 		}
 	}
-
 
 	function startAudioPlayback()
 	{
@@ -2429,40 +2506,40 @@ class ChartEditorState extends HaxeUIState
 
 	function placeNoteAtPlayhead(column:Int):Void
 	{
-		var gridSnappedPlayheadPos = scrollPosition - (scrollPosition % GRID_SIZE);
+		var gridSnappedPlayheadPos = scrollPositionInPixels - (scrollPositionInPixels % GRID_SIZE);
 	}
 
-	function set_scrollPosition(value:Float):Float
+	function set_scrollPositionInPixels(value:Float):Float
 	{
 		if (value < 0)
 		{
 			// If we're scrolling up, and we hit the top,
 			// but the playhead is in the middle, move the playhead up.
-			if (playheadPosition > 0)
+			if (playheadPositionInPixels > 0)
 			{
-				var amount = scrollPosition - value;
-				playheadPosition -= amount;
+				var amount = scrollPositionInPixels - value;
+				playheadPositionInPixels -= amount;
 			}
 
 			value = 0;
 		}
 
-		if (value > songLength)
-			value = songLength;
+		if (value > songLengthInPixels)
+			value = songLengthInPixels;
 
-		if (value == scrollPosition)
+		if (value == scrollPositionInPixels)
 			return value;
 
-		this.scrollPosition = value;
+		this.scrollPositionInPixels = value;
 
 		// Move the grid sprite to the correct position.
 		if (isViewDownscroll)
 		{
-			gridTiledSprite.y = -scrollPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+			gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
 		}
 		else
 		{
-			gridTiledSprite.y = -scrollPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+			gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
 		}
 		// Move the rendered notes to the correct position.
 		renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
@@ -2474,23 +2551,28 @@ class ChartEditorState extends HaxeUIState
 			gridSpectrogram.setPosition(0, 0);
 		}
 
-		return this.scrollPosition;
+		return this.scrollPositionInPixels;
 	}
 
-	function set_playheadPosition(value:Float):Float
+	function get_playheadPositionInPixels():Float
+	{
+		return this.playheadPositionInPixels;
+	}
+
+	function set_playheadPositionInPixels(value:Float):Float
 	{
 		// Make sure playhead doesn't go outside the song.
-		if (value + scrollPosition < 0)
-			value = -scrollPosition;
-		if (value + scrollPosition > songLength)
-			value = songLength - scrollPosition;
+		if (value + scrollPositionInPixels < 0)
+			value = -scrollPositionInPixels;
+		if (value + scrollPositionInPixels > songLengthInPixels)
+			value = songLengthInPixels - scrollPositionInPixels;
 
-		this.playheadPosition = value;
+		this.playheadPositionInPixels = value;
 
 		// Move the playhead sprite to the correct position.
-		gridPlayhead.y = this.playheadPosition + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+		gridPlayhead.y = this.playheadPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
 
-		return this.playheadPosition;
+		return this.playheadPositionInPixels;
 	}
 
 	/**
@@ -2557,17 +2639,17 @@ class ChartEditorState extends HaxeUIState
 				audioVocalTrackGroup.pause();
 		};
 
-		songLength = Std.int(Conductor.getTimeInSteps(audioInstTrack.length) * GRID_SIZE);
+		songLengthInPixels = Std.int(Conductor.getTimeInSteps(audioInstTrack.length) * GRID_SIZE);
 
-		gridTiledSprite.height = songLength;
+		gridTiledSprite.height = songLengthInPixels;
 		if (gridSpectrogram != null)
 		{
 			gridSpectrogram.setSound(audioInstTrack);
 			gridSpectrogram.generateSection(0, songLengthInMs / 1000);
 		}
 
-		scrollPosition = 0;
-		playheadPosition = 0;
+		scrollPositionInPixels = 0;
+		playheadPositionInPixels = 0;
 		moveSongToScrollPosition();
 	}
 
@@ -2637,12 +2719,11 @@ class ChartEditorState extends HaxeUIState
 			this.songChartData.set(variation, SongDataParser.parseSongChartData(songId, metadata.variation));
 		}
 
+		Conductor.forceBPM(null); // Disable the forced BPM.
 		Conductor.mapTimeChanges(currentSongMetadata.timeChanges);
 
 		loadInstrumentalFromAsset(Paths.inst(songId));
 		loadVocalsFromAsset(Paths.voices(songId));
-
-		// Apply BPM
 
 		// showNotification('Loaded song ${songId}.');
 	}

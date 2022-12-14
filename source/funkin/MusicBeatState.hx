@@ -77,6 +77,7 @@ class MusicBeatState extends FlxUIState
 		}
 
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
+		FlxG.watch.addQuick("bpm", Conductor.bpm);
 
 		dispatchEvent(new UpdateScriptEvent(elapsed));
 	}

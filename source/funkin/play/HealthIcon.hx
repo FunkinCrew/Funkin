@@ -196,11 +196,11 @@ class HealthIcon extends FlxSprite
 			// Make the health icons bump (the update function causes them to lerp back down).
 			if (this.width > this.height)
 			{
-				setGraphicSize(this.width + (HEALTH_ICON_SIZE * this.size.x * 0.2), 0);
+				setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * 0.2)), 0);
 			}
 			else
 			{
-				setGraphicSize(0, this.height + (HEALTH_ICON_SIZE * this.size.y * 0.2));
+				setGraphicSize(0, Std.int(this.height + (HEALTH_ICON_SIZE * this.size.y * 0.2)));
 			}
 			this.updateHitbox();
 		}

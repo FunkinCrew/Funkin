@@ -11,14 +11,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "8ff2aa9",
+      "ref": "a629f9a5",
       "url": "https://github.com/MasterEric/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "157eaf3",
+      "ref": "752c3d7",
       "url": "https://github.com/MasterEric/flixel-addons"
     },
     {
@@ -30,37 +30,32 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "58d5d27",
+      "ref": "18b2060",
       "url": "https://github.com/Dot-Stuff/flxanimate"
     },
     {
       "name": "format",
       "type": "haxelib",
-      "version": null
+      "version": "3.5.0"
     },
     {
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "3f229bd",
+      "ref": "fc8d656b",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "be1f404",
+      "ref": "80941a7",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
       "name": "hmm",
       "type": "haxelib",
       "version": "2.1.0"
-    },
-    {
-      "name": "haxe-concurrent",
-      "type": "haxelib",
-      "version": "3.0.2"
     },
     {
       "name": "hscript",
@@ -84,23 +79,21 @@
     },
     {
       "name": "lime",
-      "type": "git",
-      "dir": null,
-      "ref": "4c82152",
-      "url": "https://github.com/openfl/lime"
+      "type": "haxelib",
+      "version": null
     },
     {
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "3fd5763",
-      "url": "https://github.com/MasterEric/openfl/"
+      "ref": "3fd5763c1",
+      "url": "https://github.com/MasterEric/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "develop",
+      "ref": "547c8ee",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

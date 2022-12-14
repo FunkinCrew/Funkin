@@ -114,7 +114,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
 		var result:FlxSound = super.add(sound);
 
 		if (result == null)
-			return;
+			return null;
 
 		// Apply parameters to the new sound.
 		result.autoDestroy = this.autoDestroyMembers;
@@ -126,6 +126,8 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
 		result.play(true, 0.0);
 		result.pause();
 		result.time = this.time;
+
+		return result;
 	}
 
 	/**
