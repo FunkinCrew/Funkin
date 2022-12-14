@@ -17,6 +17,7 @@ class SongMenuItem extends FlxSpriteGroup
 	public var songTitle:String = "Test";
 
 	public var songText:FlxText;
+	public var favIcon:FlxSprite;
 
 	public var targetPos:FlxPoint = new FlxPoint();
 	public var doLerp:Bool = false;
@@ -39,6 +40,14 @@ class SongMenuItem extends FlxSpriteGroup
 		songText.font = "5by7";
 		songText.color = 0xFF43C1EA;
 		add(songText);
+
+		favIcon = new FlxSprite(440, 40);
+		favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
+		favIcon.animation.addByPrefix('fav', "favorite heart", 24, false);
+		favIcon.animation.play('fav');
+		favIcon.antialiasing = true;
+		favIcon.setGraphicSize(60, 60);
+		add(favIcon);
 
 		selected = selected; // just to kickstart the set_selected
 	}

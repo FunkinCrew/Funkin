@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.ui.FlxInputText;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
@@ -24,6 +25,7 @@ import funkin.Controls.Control;
 import funkin.freeplayStuff.BGScrollingText;
 import funkin.freeplayStuff.DJBoyfriend;
 import funkin.freeplayStuff.FreeplayScore;
+import funkin.freeplayStuff.LetterSort;
 import funkin.freeplayStuff.SongMenuItem;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
@@ -68,6 +70,8 @@ class FreeplayState extends MusicBeatSubstate
 	private var dj:DJBoyfriend;
 
 	private var iconArray:Array<HealthIcon> = [];
+
+	var typing:FlxInputText;
 
 	override function create()
 	{
@@ -240,6 +244,22 @@ class FreeplayState extends MusicBeatSubstate
 			add(new DifficultySelector(20, grpDifficulties.y - 10, false, controls));
 			add(new DifficultySelector(325, grpDifficulties.y - 10, true, controls));
 
+			var letterSort:LetterSort = new LetterSort(300, 100);
+			add(letterSort);
+
+			letterSort.changeSelectionCallback = (str) ->
+			{
+				switch (str)
+				{
+					case "fav":
+						generateSongList({filterType: FAVORITE}, true);
+					case "ALL":
+						generateSongList(null, true);
+					default:
+						generateSongList({filterType: STARTSWITH, filterData: str}, true);
+				}
+			};
+
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
 				fnfFreeplay.visible = true;
@@ -261,55 +281,7 @@ class FreeplayState extends MusicBeatSubstate
 			grpTxtScrolls.visible = true;
 		});
 
-		for (i in 0...songs.length)
-		{
-			var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, (i * 150) + 160, songs[i].songName);
-			funnyMenu.targetPos.x = funnyMenu.x;
-			funnyMenu.ID = i;
-			funnyMenu.alpha = 0.5;
-			funnyMenu.songText.visible = false;
-
-			fp.updateScore(0);
-
-			new FlxTimer().start((1 / 24) * i, function(doShit)
-			{
-				funnyMenu.doJumpIn = true;
-			});
-
-			new FlxTimer().start((0.09 * i) + 0.85, function(lerpTmr)
-			{
-				funnyMenu.doLerp = true;
-			});
-
-			new FlxTimer().start(((0.20 * i) / (1 + i)) + 0.75, function(swagShi)
-			{
-				funnyMenu.songText.visible = true;
-				funnyMenu.alpha = 1;
-			});
-
-			grpCapsules.add(funnyMenu);
-
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
-			songText.x += 100;
-			songText.isMenuItem = true;
-			songText.targetY = i;
-
-			// grpSongs.add(songText);
-
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			// icon.sprTracker = songText;
-
-			// using a FlxGroup is too much fuss!
-			iconArray.push(icon);
-			// add(icon);
-
-			// songText.x += 40;
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			// songText.screenCenter(X);
-		}
-
-		changeSelection();
-		changeDiff();
+		generateSongList();
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
@@ -340,12 +312,127 @@ class FreeplayState extends MusicBeatSubstate
 		funnyCam.bgColor = FlxColor.TRANSPARENT;
 		FlxG.cameras.add(funnyCam);
 
+		typing = new FlxInputText(100, 100);
+		add(typing);
+
+		typing.callback = function(txt, action)
+		{
+			// generateSongList(new EReg(txt.trim(), "ig"));
+			trace(action);
+		};
+
 		forEach(function(bs)
 		{
 			bs.cameras = [funnyCam];
 		});
 
 		super.create();
+	}
+
+	public function generateSongList(?filterStuff:SongFilter, ?force:Bool = false)
+	{
+		curSelected = 0;
+
+		grpCapsules.clear();
+
+		// var regexp:EReg = regexp;
+		var tempSongs:Array<SongMetadata> = songs;
+
+		if (filterStuff != null)
+		{
+			switch (filterStuff.filterType)
+			{
+				case STARTSWITH:
+					tempSongs = tempSongs.filter(str ->
+					{
+						return str.songName.toLowerCase().startsWith(filterStuff.filterData);
+					});
+				case ALL:
+				// no filter!
+				case FAVORITE:
+					tempSongs = tempSongs.filter(str ->
+					{
+						return str.isFav;
+					});
+				default:
+					// return all on default
+			}
+		}
+
+		// if (regexp != null)
+		// 	tempSongs = songs.filter(item -> regexp.match(item.songName));
+
+		// tempSongs.sort(function(a, b):Int
+		// {
+		// 	var tempA = a.songName.toUpperCase();
+		// 	var tempB = b.songName.toUpperCase();
+
+		// 	if (tempA < tempB)
+		// 		return -1;
+		// 	else if (tempA > tempB)
+		// 		return 1;
+		// 	else
+		// 		return 0;
+		// });
+
+		for (i in 0...tempSongs.length)
+		{
+			var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, (i * 150) + 160, tempSongs[i].songName);
+			funnyMenu.targetPos.x = funnyMenu.x;
+			funnyMenu.ID = i;
+			funnyMenu.alpha = 0.5;
+			funnyMenu.songText.visible = false;
+			funnyMenu.favIcon.visible = tempSongs[i].isFav;
+
+			fp.updateScore(0);
+
+			new FlxTimer().start((1 / 24) * i, function(doShit)
+			{
+				funnyMenu.doJumpIn = true;
+			});
+
+			new FlxTimer().start((0.09 * i) + 0.85, function(lerpTmr)
+			{
+				funnyMenu.doLerp = true;
+			});
+
+			if (!force)
+			{
+				new FlxTimer().start(((0.20 * i) / (1 + i)) + 0.75, function(swagShi)
+				{
+					funnyMenu.songText.visible = true;
+					funnyMenu.alpha = 1;
+				});
+			}
+			else
+			{
+				funnyMenu.songText.visible = true;
+				funnyMenu.alpha = 1;
+			}
+
+			grpCapsules.add(funnyMenu);
+
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, tempSongs[i].songName, true, false);
+			songText.x += 100;
+			songText.isMenuItem = true;
+			songText.targetY = i;
+
+			// grpSongs.add(songText);
+
+			var icon:HealthIcon = new HealthIcon(tempSongs[i].songCharacter);
+			// icon.sprTracker = songText;
+
+			// using a FlxGroup is too much fuss!
+			iconArray.push(icon);
+			// add(icon);
+
+			// songText.x += 40;
+			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+			// songText.screenCenter(X);
+		}
+
+		changeSelection();
+		changeDiff();
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
@@ -379,9 +466,45 @@ class FreeplayState extends MusicBeatSubstate
 
 	var initTouchPos:FlxPoint = new FlxPoint();
 
+	var spamTimer:Float = 0;
+	var spamming:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.F)
+		{
+			var realShit = curSelected;
+			songs[curSelected].isFav = !songs[curSelected].isFav;
+			if (songs[curSelected].isFav)
+			{
+				
+				FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4, {
+					ease: FlxEase.elasticOut,
+					onComplete: _ ->
+					{
+						grpCapsules.members[realShit].favIcon.visible = true;
+						grpCapsules.members[realShit].favIcon.animation.play("fav");
+					}
+				});
+			}
+			else
+			{
+				grpCapsules.members[realShit].favIcon.animation.play('fav', false, true);
+				new FlxTimer().start((1 / 24) * 14, _ ->
+				{
+					grpCapsules.members[realShit].favIcon.visible = false;
+				});
+				new FlxTimer().start((1 / 24) * 24, _ ->
+				{
+					FlxTween.tween(grpCapsules.members[realShit], {angle: 0}, 0.4, {ease: FlxEase.elasticOut});
+				});
+			}
+		}
+
+		if (FlxG.keys.justPressed.T)
+			typing.hasFocus = true;
 
 		if (FlxG.sound.music != null)
 		{
@@ -484,6 +607,31 @@ class FreeplayState extends MusicBeatSubstate
 		}
 		#end
 
+		if (controls.UI_UP || controls.UI_DOWN)
+		{
+			spamTimer += elapsed;
+
+			if (spamming)
+			{
+				if (spamTimer >= 0.07)
+				{
+					spamTimer = 0;
+
+					if (controls.UI_UP)
+						changeSelection(-1);
+					else
+						changeSelection(1);
+				}
+			}
+			else if (spamTimer >= 0.9)
+				spamming = true;
+		}
+		else
+		{
+			spamming = false;
+			spamTimer = 0;
+		}
+
 		if (upP)
 		{
 			dj.resetAFKTimer();
@@ -512,7 +660,7 @@ class FreeplayState extends MusicBeatSubstate
 			changeDiff(1);
 		}
 
-		if (controls.BACK)
+		if (controls.BACK && !typing.hasFocus)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 
@@ -644,8 +792,8 @@ class FreeplayState extends MusicBeatSubstate
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = songs.length - 1;
-		if (curSelected >= songs.length)
+			curSelected = grpCapsules.members.length - 1;
+		if (curSelected >= grpCapsules.members.length)
 			curSelected = 0;
 
 		// selector.y = (70 * curSelected) + 30;
@@ -679,7 +827,8 @@ class FreeplayState extends MusicBeatSubstate
 				capsule.targetPos.y -= 100; // another 100 for good measure
 		}
 
-		grpCapsules.members[curSelected].selected = true;
+		if (grpCapsules.members.length > 0)
+			grpCapsules.members[curSelected].selected = true;
 	}
 }
 
@@ -729,16 +878,31 @@ class DifficultySelector extends FlxSprite
 	}
 }
 
+typedef SongFilter =
+{
+	var filterType:FilterType;
+	var ?filterData:Dynamic;
+}
+
+enum abstract FilterType(String)
+{
+	var STARTSWITH;
+	var FAVORITE;
+	var ALL;
+}
+
 class SongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var isFav:Bool = false;
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, ?isFav:Bool = false)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+		this.isFav = isFav;
 	}
 }
