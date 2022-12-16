@@ -8,6 +8,12 @@ class Highscore
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
 
+	#if (haxe >= "4.0.0")
+	public static var songCompletion:Map<String, Float> = new Map();
+	#else
+	public static var songCompletion:Map<String, Float> = new Map<String, Float>();
+	#end
+
 	public static var tallies:Tallies = new Tallies();
 
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Bool
@@ -33,6 +39,24 @@ class Highscore
 		return false;
 	}
 
+	public static function saveCompletion(song:String, completion:Float, ?diff:Int = 0):Bool
+	{
+		var formattedSong:String = formatSong(song, diff);
+
+		if (songCompletion.exists(formattedSong))
+		{
+			if (songCompletion.get(formattedSong) < completion)
+			{
+				setCompletion(formattedSong, completion);
+				return true;
+			}
+		}
+		else
+			setCompletion(formattedSong, completion);
+
+		return false;
+	}
+
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
 	{
 		#if newgrounds
@@ -48,6 +72,13 @@ class Highscore
 		}
 		else
 			setScore(formattedSong, score);
+	}
+
+	static function setCompletion(formattedSong:String, completion:Float):Void
+	{
+		songCompletion.set(formattedSong, completion);
+		FlxG.save.data.songCompletion = songCompletion;
+		FlxG.save.flush();
 	}
 
 	/**
@@ -88,6 +119,19 @@ class Highscore
 		return songScores.get(formatSong(song, diff));
 	}
 
+	public static function getCompletion(song, diff):Float
+	{
+		if (!songCompletion.exists(formatSong(song, diff)))
+			setCompletion(formatSong(song, diff), 0);
+
+		return songCompletion.get(formatSong(song, diff));
+	}
+
+	public static function getAllScores()
+	{
+		trace(songScores.toString());
+	}
+
 	public static function getWeekScore(week:Int, diff:Int):Int
 	{
 		if (!songScores.exists(formatSong('week' + week, diff)))
@@ -102,6 +146,9 @@ class Highscore
 		{
 			songScores = FlxG.save.data.songScores;
 		}
+
+		if (FlxG.save.data.songCompletion != null)
+			songCompletion = FlxG.save.data.songCompletion;
 	}
 }
 
@@ -120,6 +167,7 @@ abstract Tallies(RawTallies)
 			good: 0,
 			sick: 0,
 			totalNotes: 0,
+			totalNotesHit: 0,
 			maxCombo: 0,
 			isNewHighscore: false
 		}
@@ -144,6 +192,11 @@ typedef RawTallies =
 
 	/**
 	 * How many notes total that you hit. (NOT how many notes total in the song!)
+	 */
+	var totalNotesHit:Int;
+
+	/**
+	 * How many notes PASSED BY AND/OR HIT!!!
 	 */
 	var totalNotes:Int;
 }

@@ -47,6 +47,9 @@ class FreeplayState extends MusicBeatSubstate
 	var curDifficulty:Int = 1;
 
 	var fp:FreeplayScore;
+	var txtCompletion:FlxText;
+	var lerpCompletion:Float = 0;
+	var intendedCompletion:Float = 0;
 	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
 
@@ -233,9 +236,29 @@ class FreeplayState extends MusicBeatSubstate
 		fnfFreeplay.shader = sillyStroke;
 		add(fnfFreeplay);
 
-		fp = new FreeplayScore(420, 40, 100);
+		var fnfHighscoreSpr:FlxSprite = new FlxSprite(890, 70);
+		fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
+		fnfHighscoreSpr.animation.addByPrefix("highscore", "highscore", 24, false);
+		fnfHighscoreSpr.visible = false;
+		fnfHighscoreSpr.setGraphicSize(0, Std.int(fnfHighscoreSpr.height * 1));
+		fnfHighscoreSpr.antialiasing = true;
+		fnfHighscoreSpr.updateHitbox();
+		add(fnfHighscoreSpr);
+
+		new FlxTimer().start(FlxG.random.float(12, 50), function(tmr)
+		{
+			fnfHighscoreSpr.animation.play("highscore");
+			tmr.time = FlxG.random.float(20, 60);
+		}, 0);
+
+		fp = new FreeplayScore(460, 60, 100);
 		fp.visible = false;
 		add(fp);
+
+		txtCompletion = new FlxText(1200, 77, 0, "0", 32);
+		txtCompletion.font = "VCR OSD Mono";
+		txtCompletion.visible = false;
+		add(txtCompletion);
 
 		dj.onIntroDone.add(function()
 		{
@@ -262,9 +285,13 @@ class FreeplayState extends MusicBeatSubstate
 
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
+				fnfHighscoreSpr.visible = true;
 				fnfFreeplay.visible = true;
 				fp.visible = true;
-				fp.updateScore(FlxG.random.int(0, 1000));
+				fp.updateScore(0);
+
+				txtCompletion.visible = true;
+				intendedCompletion = 0;
 
 				new FlxTimer().start(1.5 / 24, function(bold)
 				{
@@ -384,7 +411,7 @@ class FreeplayState extends MusicBeatSubstate
 			funnyMenu.songText.visible = false;
 			funnyMenu.favIcon.visible = tempSongs[i].isFav;
 
-			fp.updateScore(0);
+			// fp.updateScore(0);
 
 			new FlxTimer().start((1 / 24) * i, function(doShit)
 			{
@@ -479,7 +506,6 @@ class FreeplayState extends MusicBeatSubstate
 			songs[curSelected].isFav = !songs[curSelected].isFav;
 			if (songs[curSelected].isFav)
 			{
-				
 				FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4, {
 					ease: FlxEase.elasticOut,
 					onComplete: _ ->
@@ -515,8 +541,16 @@ class FreeplayState extends MusicBeatSubstate
 		}
 
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.2);
+		lerpCompletion = CoolUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
 
-		fp.scoreShit = Std.int(lerpScore);
+		fp.updateScore(Std.int(lerpScore));
+
+		txtCompletion.text = Math.floor(lerpCompletion * 100) + "%";
+		trace(Highscore.getCompletion(songs[curSelected].songName, curDifficulty));
+
+		// trace(intendedScore);
+		// trace(lerpScore);
+		// Highscore.getAllScores();
 
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
@@ -736,6 +770,7 @@ class FreeplayState extends MusicBeatSubstate
 
 		// intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
 
 		PlayState.storyDifficulty = curDifficulty;
 		PlayState.storyDifficulty_NEW = switch (curDifficulty)
@@ -799,7 +834,8 @@ class FreeplayState extends MusicBeatSubstate
 		// selector.y = (70 * curSelected) + 30;
 
 		// intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		intendedScore = FlxG.random.int(0, 1000000);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
 		// lerpScore = 0;
 
 		#if PRELOAD_ALL

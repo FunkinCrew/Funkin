@@ -51,7 +51,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
 		for (i in 0...7)
 		{
-			add(new ScoreNum(x + (35 * i), y, 0));
+			add(new ScoreNum(x + (45 * i), y, 0));
 		}
 
 		this.scoreShit = scoreShit;
@@ -122,7 +122,7 @@ class ScoreNum extends FlxSprite
 		animation.play(numToString[digit], true);
 		antialiasing = true;
 
-		setGraphicSize(Std.int(width * 0.3));
+		setGraphicSize(Std.int(width * 0.4));
 		updateHitbox();
 	}
 }
