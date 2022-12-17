@@ -143,7 +143,7 @@ class StageDataParser
 
 	public static function listStageIds():Array<String>
 	{
-		return [for (x in stageCache.keys()) x];
+		return stageCache.keys().array();
 	}
 
 	static function loadStageFile(stagePath:String):String

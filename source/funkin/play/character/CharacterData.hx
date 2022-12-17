@@ -225,7 +225,7 @@ class CharacterDataParser
 
 	public static function listCharacterIds():Array<String>
 	{
-		return [for (x in characterCache.keys()) x];
+		return characterCache.keys().array();
 	}
 
 	static function clearCharacterCache():Void

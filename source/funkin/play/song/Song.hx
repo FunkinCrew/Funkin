@@ -127,8 +127,11 @@ class Song // implements IPlayStateScriptedClass
 	/**
 	 * Retrieve the metadata for a specific difficulty, including the chart if it is loaded.
 	 */
-	public inline function getDifficulty(diffId:String):SongDifficulty
+	public inline function getDifficulty(?diffId:String):SongDifficulty
 	{
+		if (diffId == null)
+			diffId = difficulties.keys().array()[0];
+
 		return difficulties.get(diffId);
 	}
 
@@ -219,7 +222,7 @@ class SongDifficulty
 
 	public function getPlayableChars():Array<String>
 	{
-		return [for (i in chars.keys()) i];
+		return chars.keys().array();
 	}
 
 	public function getEvents():Array<SongEvent>

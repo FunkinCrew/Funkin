@@ -135,7 +135,7 @@ class SongDataUtils
 
 		trace('Read ' + notesString.length + ' characters from clipboard.');
 
-		var notes:Array<SongNoteData> = SerializerUtil.fromJSON(notesString);
+		var notes:Array<SongNoteData> = notesString.parseJSON();
 
 		if (notes == null)
 		{

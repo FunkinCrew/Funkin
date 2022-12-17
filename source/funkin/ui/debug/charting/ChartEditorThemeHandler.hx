@@ -62,10 +62,6 @@ class ChartEditorThemeHandler
 	static final SELECTION_SQUARE_FILL_COLOR_LIGHT:FlxColor = 0x4033FF33;
 	static final SELECTION_SQUARE_FILL_COLOR_DARK:FlxColor = 0x4033FF33;
 
-	// TODO: Un-hardcode these to be based on time signature.
-	static final STEPS_PER_BEAT:Int = 4;
-	static final BEATS_PER_MEASURE:Int = 4;
-
 	static final PLAYHEAD_BLOCK_BORDER_WIDTH:Int = 2;
 	static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF9D0011;
 	static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFFBD0231;
@@ -112,7 +108,7 @@ class ChartEditorThemeHandler
 		// 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
 		// This gets reused to fill the screen.
 		var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2 + 1));
-		var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * (STEPS_PER_BEAT * BEATS_PER_MEASURE));
+		var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * (Conductor.stepsPerMeasure));
 		state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1,
 			gridColor2);
 
@@ -130,7 +126,7 @@ class ChartEditorThemeHandler
 			selectionBorderColor);
 
 		// Selection borders in the middle.
-		for (i in 1...(STEPS_PER_BEAT * BEATS_PER_MEASURE))
+		for (i in 1...(Conductor.stepsPerMeasure))
 		{
 			state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
 				state.gridBitmap.width, ChartEditorState.GRID_SELECTION_BORDER_WIDTH),

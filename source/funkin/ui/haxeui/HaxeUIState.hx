@@ -1,5 +1,10 @@
 package funkin.ui.haxeui;
 
+import haxe.ui.containers.menus.MenuCheckBox;
+import haxe.ui.components.CheckBox;
+import haxe.ui.events.DragEvent;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
@@ -91,6 +96,83 @@ class HaxeUIState extends MusicBeatState
 				showContextMenu(assetPath, e.screenX, e.screenY);
 			});
 		}
+	}
+
+	/**
+	 * Add an onClick listener to a HaxeUI menu bar item.
+	 */
+	function addUIClickListener(key:String, callback:MouseEvent->Void)
+	{
+		var target:Component = findComponent(key);
+		if (target == null)
+		{
+			// Gracefully handle the case where the item can't be located.
+			trace('WARN: Could not locate menu item: $key');
+		}
+		else
+		{
+			target.onClick = callback;
+		}
+	}
+
+	/**
+	 * Add an onChange listener to a HaxeUI input component such as a slider or text field.
+	 */
+	function addUIChangeListener(key:String, callback:UIEvent->Void)
+	{
+		var target:Component = findComponent(key);
+		if (target == null)
+		{
+			// Gracefully handle the case where the item can't be located.
+			trace('WARN: Could not locate menu item: $key');
+		}
+		else
+		{
+			target.onChange = callback;
+		}
+	}
+
+	/**
+	 * Set the value of a HaxeUI component.
+	 * Usually modifies the text of a label or value of a text field.
+	 */
+	function setUIValue<T>(key:String, value:T):T
+	{
+		var target:Component = findComponent(key);
+		if (target == null)
+		{
+			// Gracefully handle the case where the item can't be located.
+			trace('WARN: Could not locate menu item: $key');
+			return value;
+		}
+		else
+		{
+			return target.value = value;
+		}
+	}
+
+	/**
+	 * Set the value of a HaxeUI checkbox,
+	 * since that's on 'selected' instead of 'value'.
+	 */
+	public function setUICheckboxSelected<T>(key:String, value:Bool):Bool
+	{
+		var targetA:CheckBox = findComponent(key, CheckBox);
+
+		if (targetA != null)
+		{
+			return targetA.selected = value;
+		}
+
+		var targetB:MenuCheckBox = findComponent(key, MenuCheckBox);
+		if (targetB != null)
+		{
+			return targetB.selected = value;
+		}
+
+		// Gracefully handle the case where the item can't be located.
+		trace('WARN: Could not locate check box: $key');
+		return value;
 	}
 
 	public function findComponent<T:Component>(criteria:String = null, type:Class<T> = null, recursive:Null<Bool> = null, searchType:String = "id"):Null<T>

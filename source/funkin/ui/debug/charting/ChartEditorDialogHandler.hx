@@ -1,17 +1,17 @@
 package funkin.ui.debug.charting;
 
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.character.BaseCharacter;
-import haxe.ui.components.Label;
-import haxe.ui.events.MouseEvent;
-import funkin.play.song.SongData.SongPlayableChar;
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
 import funkin.input.Cursor;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.song.SongData.SongDataParser;
+import funkin.play.song.SongData.SongPlayableChar;
 import funkin.play.song.SongData.SongTimeChange;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Image;
+import haxe.ui.components.Label;
 import haxe.ui.components.Link;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.TextField;
@@ -22,6 +22,7 @@ import haxe.ui.containers.properties.Property;
 import haxe.ui.containers.properties.PropertyGrid;
 import haxe.ui.containers.properties.PropertyGroup;
 import haxe.ui.containers.VBox;
+import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
 using Lambda;
@@ -110,6 +111,8 @@ class ChartEditorDialogHandler
 		}
 
 		// TODO: Get the list of songs and insert them as links into the "Create From Song" section.
+
+		/*
 		var linkTemplateDadBattle:Link = dialog.findComponent('splashTemplateDadBattle', Link);
 		linkTemplateDadBattle.onClick = (_event) ->
 		{
@@ -126,8 +129,32 @@ class ChartEditorDialogHandler
 			// Load song from template
 			state.loadSongAsTemplate('bopeebo');
 		}
+		*/
 
 		var splashTemplateContainer:VBox = dialog.findComponent('splashTemplateContainer', VBox);
+
+		var songList:Array<String> = SongDataParser.listSongIds();
+
+		for (targetSongId in songList) {
+			var songData = SongDataParser.fetchSong(targetSongId);
+
+			if (songData == null)
+				continue;
+
+			var songName = songData.getDifficulty().songName;
+
+			var linkTemplateSong:Link = new Link();
+			linkTemplateSong.text = songName;
+			linkTemplateSong.onClick = (_event) ->
+			{
+				dialog.hideDialog(DialogButton.CANCEL);
+
+				// Load song from template
+				state.loadSongAsTemplate(targetSongId);
+			}
+
+			splashTemplateContainer.addComponent(linkTemplateSong);
+		}
 
 		return dialog;
 	}

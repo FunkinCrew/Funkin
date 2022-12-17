@@ -351,5 +351,5 @@ class MultiCallback
 		return fired.copy();
 
 	public function getUnfired()
-		return [for (id in unfired.keys()) id];
+		return unfired.array();
 }

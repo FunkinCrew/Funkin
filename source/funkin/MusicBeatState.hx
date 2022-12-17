@@ -60,6 +60,7 @@ class MusicBeatState extends FlxUIState
 	{
 		super.update(elapsed);
 
+		// Emergency exit button.
 		if (FlxG.keys.justPressed.F4)
 			FlxG.switchState(new MainMenuState());
 
@@ -67,7 +68,7 @@ class MusicBeatState extends FlxUIState
 		if (FlxG.keys.justPressed.F5)
 			debug_refreshModules();
 
-		// ` / ~
+		// ` / ~ to open the debug menu.
 		if (FlxG.keys.justPressed.GRAVEACCENT)
 		{
 			// TODO: Does this break anything?
@@ -76,7 +77,9 @@ class MusicBeatState extends FlxUIState
 			FlxG.state.openSubState(new DebugMenuSubState());
 		}
 
+		// Display Conductor info in the watch window.
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
+		FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
 		FlxG.watch.addQuick("bpm", Conductor.bpm);
 
 		dispatchEvent(new UpdateScriptEvent(elapsed));

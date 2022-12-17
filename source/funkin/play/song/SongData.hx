@@ -116,7 +116,7 @@ class SongDataParser
 
 	public static function listSongIds():Array<String>
 	{
-		return [for (x in songCache.keys()) x];
+		return songCache.keys().array();
 	}
 
 	public static function parseSongMetadata(songId:String):Array<SongMetadata>
@@ -261,8 +261,23 @@ abstract SongMetadata(RawSongMetadata)
 				noteSkin: 'Normal'
 			},
 			generatedBy: SongValidator.DEFAULT_GENERATEDBY,
+
+			// Variation ID.
 			variation: variation
 		};
+	}
+
+	public function clone(?newVariation:String = null):SongMetadata {
+		var result = new SongMetadata(this.songName, this.artist, newVariation == null ? this.variation : newVariation);
+		result.version = this.version;
+		result.timeFormat = this.timeFormat;
+		result.divisions = this.divisions;
+		result.timeChanges = this.timeChanges;
+		result.loop = this.loop;
+		result.playData = this.playData;
+		result.generatedBy = this.generatedBy;
+		
+		return result;
 	}
 }
 

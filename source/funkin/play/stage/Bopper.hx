@@ -6,6 +6,9 @@ import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
+typedef AnimationFrameCallback = String->Int->Int->Void;
+typedef AnimationFinishedCallback = String->Void;
+
 /**
  * A Bopper is a stage prop which plays a dance animation.
  * Y'know, a thingie that bops. A bopper.
@@ -68,8 +71,8 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
 		this.x += xDiff;
 		this.y += yDiff;
-
 		return animOffsets = value;
+
 	}
 
 	private var animOffsets(default, set):Array<Float> = [0, 0];
@@ -113,6 +116,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	 */
 	function onAnimationFinished(name:String)
 	{
+		// TODO: Can we make a system of like, animation priority or something?
 		if (!canPlayOtherAnims)
 		{
 			canPlayOtherAnims = true;
@@ -131,10 +135,10 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 	function onAnimationFrame(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1)
 	{
 		// Do nothing by default.
-		// This can be overridden by, for example, scripted characters.
+		// This can be overridden by, for example, scripted characters,
+		// or by calling `animationFrame.add()`.
+		
 		// Try not to do anything expensive here, it runs many times a second.
-
-		// Sometimes this gets called with empty values? IDK why but adding defaults keeps it from crashing.
 	}
 
 	/**

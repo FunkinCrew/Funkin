@@ -1,12 +1,8 @@
 package funkin.ui.debug.charting;
 
-import funkin.play.song.SongData.SongDataParser;
-import funkin.play.song.Song;
-import lime.media.AudioBuffer;
-import funkin.input.Cursor;
-import flixel.FlxSprite;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
+import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -15,8 +11,14 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.audio.visualize.PolygonSpectogram;
+import funkin.audio.VocalGroup;
+import funkin.input.Cursor;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.HealthIcon;
+import funkin.play.song.Song;
 import funkin.play.song.SongData.SongChartData;
+import funkin.play.song.SongData.SongDataParser;
 import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongNoteData;
@@ -25,24 +27,28 @@ import funkin.play.song.SongSerializer;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
 import funkin.ui.debug.charting.ChartEditorToolboxHandler.ChartEditorToolMode;
+import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
 import funkin.util.Constants;
+import funkin.util.FileUtil;
+import funkin.util.SerializerUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
-import haxe.ui.containers.SideBar;
-import haxe.ui.containers.TreeView;
-import haxe.ui.containers.TreeViewNode;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.MessageBox;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.SideBar;
+import haxe.ui.containers.TreeView;
+import haxe.ui.containers.TreeViewNode;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+import lime.media.AudioBuffer;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 
@@ -77,7 +83,11 @@ class ChartEditorState extends HaxeUIState
 	static final CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT = Paths.ui('chart-editor/toolbox/tools');
 	static final CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT = Paths.ui('chart-editor/toolbox/notedata');
 	static final CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT = Paths.ui('chart-editor/toolbox/eventdata');
-	static final CHART_EDITOR_TOOLBOX_SONGDATA_LAYOUT = Paths.ui('chart-editor/toolbox/songdata');
+	static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT = Paths.ui('chart-editor/toolbox/metadata');
+	static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT = Paths.ui('chart-editor/toolbox/difficulty');
+	static final CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT = Paths.ui('chart-editor/toolbox/characters');
+	static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT = Paths.ui('chart-editor/toolbox/player-preview');
+	static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT = Paths.ui('chart-editor/toolbox/opponent-preview');
 
 	// The base grid size for the chart editor.
 	public static final GRID_SIZE:Int = 40;
@@ -214,32 +224,47 @@ class ChartEditorState extends HaxeUIState
 
 	/**
 	 * songLength, converted to steps.
+	 * TODO: Handle BPM changes.
 	 */
-	var songLengthInSteps(get, null):Float;
+	var songLengthInSteps(get, set):Float;
 
 	function get_songLengthInSteps():Float
 	{
 		return songLengthInPixels / GRID_SIZE;
 	}
 
+	function set_songLengthInSteps(value:Float):Float
+	{
+		songLengthInPixels = Std.int(value * GRID_SIZE);
+		return value;
+	}
+
 	/**
 	 * songLength, converted to milliseconds.
+	 * TODO: Handle BPM changes.
 	 */
-	var songLengthInMs(get, null):Float;
+	var songLengthInMs(get, set):Float;
 
 	function get_songLengthInMs():Float
 	{
 		return songLengthInSteps * Conductor.stepCrochet;
 	}
 
+	function set_songLengthInMs(value:Float):Float
+	{
+		songLengthInSteps = Conductor.getTimeInSteps(audioInstTrack.length);
+		return value;
+	}
+
 	var currentTheme(default, set):ChartEditorTheme = null;
 
 	function set_currentTheme(value:ChartEditorTheme):ChartEditorTheme
 	{
+		if (value == null || value == currentTheme)
+			return currentTheme;
+
 		currentTheme = value;
-
 		ChartEditorThemeHandler.updateTheme(this);
-
 		return value;
 	}
 
@@ -262,7 +287,6 @@ class ChartEditorState extends HaxeUIState
 
 	/**
 	 * The note kind to use for notes being placed in the chart. Defaults to `''`.
-	 * Use the input in the sidebar to change this.
 	 */
 	var selectedNoteKind:String = '';
 
@@ -275,6 +299,16 @@ class ChartEditorState extends HaxeUIState
 	 * Use the tool window to affect how the user interacts with the program.
 	 */
 	var currentToolMode:ChartEditorToolMode = ChartEditorToolMode.Select;
+
+	/**
+	 * The character sprite in the Player Preview window.
+	 */
+	var currentPlayerCharacterPlayer:CharacterPlayer = null;
+
+	/**
+	 * The character sprite in the Opponent Preview window.
+	 */
+	var currentOpponentCharacterPlayer:CharacterPlayer = null;
 
 	/**
 	 * Whether the current view is in downscroll mode.
@@ -402,10 +436,16 @@ class ChartEditorState extends HaxeUIState
 	var notePreviewDirty:Bool = true;
 
 	/**
-	 * Whether the difficulty tree view in the sidebar has been modified and needs to be updated.
+	 * Whether the difficulty tree view in the toolbox has been modified and needs to be updated.
 	 * This happens when we add/remove difficulties.
 	 */
 	var difficultySelectDirty:Bool = true;
+
+	/**
+	 * Whether the character select view in the toolbox has been modified and needs to be updated.
+	 * This happens when we add/remove characters.
+	 */
+	var characterSelectDirty:Bool = true;
 
 	var isInPlaytestMode:Bool = false;
 
@@ -468,9 +508,17 @@ class ChartEditorState extends HaxeUIState
 
 	/**
 	 * The audio track for the vocals.
-	 * TODO: Replace with a VocalSoundGroup.
 	 */
-	var audioVocalTrackGroup:VoicesGroup;
+	var audioVocalTrackGroup:VocalGroup;
+
+	/**
+	 * A map of the audio tracks for each character's vocals.
+	 * - Keys are the character IDs.
+	 * - Values are the FlxSound objects to play that character's vocals.
+	 * 
+	 * When switching characters, the elements of the VocalGroup will be swapped to match the new character.
+	 */
+	var audioVocalTracks:Map<String, FlxSound> = new Map<String, FlxSound>();
 
 	/**
 	 * CHART DATA
@@ -661,6 +709,13 @@ class ChartEditorState extends HaxeUIState
 		return currentSongMetadata.songName = value;
 	}
 
+	var currentSongId(get, null):String;
+
+	function get_currentSongId():String
+	{
+		return currentSongName.toLowerKebabCase();
+	}
+
 	var currentSongArtist(get, set):String;
 
 	function get_currentSongArtist():String
@@ -811,7 +866,7 @@ class ChartEditorState extends HaxeUIState
 		// Initialize the song chart data.
 		songChartData = new Map<String, SongChartData>();
 
-		audioVocalTrackGroup = new VoicesGroup();
+		audioVocalTrackGroup = new VocalGroup();
 	}
 
 	/**
@@ -839,7 +894,7 @@ class ChartEditorState extends HaxeUIState
 		add(gridTiledSprite);
 
 		gridGhostNote = new ChartEditorNoteSprite(this);
-		gridGhostNote.alpha = 0.8;
+		gridGhostNote.alpha = 0.6;
 		gridGhostNote.noteData = new SongNoteData(-1, -1, 0, "");
 		gridGhostNote.visible = false;
 		add(gridGhostNote);
@@ -947,17 +1002,19 @@ class ChartEditorState extends HaxeUIState
 		 */
 	}
 
+	var playbarHeadLayout:Component;
+
 	function buildAdditionalUI():Void
 	{
 		notifBar = cast buildComponent(CHART_EDITOR_NOTIFBAR_LAYOUT);
 
 		add(notifBar);
 
-		var playbarHeadLayout:Component = buildComponent(CHART_EDITOR_PLAYBARHEAD_LAYOUT);
+		playbarHeadLayout = buildComponent(CHART_EDITOR_PLAYBARHEAD_LAYOUT);
 
-		playbarHeadLayout.width = FlxG.width;
+		playbarHeadLayout.width = FlxG.width - 8;
 		playbarHeadLayout.height = 10;
-		playbarHeadLayout.x = 0;
+		playbarHeadLayout.x = 4;
 		playbarHeadLayout.y = FlxG.height - 48 - 8;
 
 		playbarHead = playbarHeadLayout.findComponent('playbarHead', Slider);
@@ -1018,6 +1075,7 @@ class ChartEditorState extends HaxeUIState
 		// Add functionality to the menu items.
 
 		addUIClickListener('menubarItemNewChart', (event:MouseEvent) -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
+		addUIClickListener('menubarItemSaveChartAs', (event:MouseEvent) -> exportAllSongData());
 		addUIClickListener('menubarItemLoadInst', (event:MouseEvent) -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
 
 		addUIClickListener('menubarItemUndo', (event:MouseEvent) -> undoLastCommand());
@@ -1075,37 +1133,43 @@ class ChartEditorState extends HaxeUIState
 
 		addUIClickListener('menubarItemUserGuide', (event:MouseEvent) -> ChartEditorDialogHandler.openUserGuideDialog(this));
 
-		addUIChangeListener('menubarItemToggleSidebar', (event:UIEvent) ->
-		{
-			var sidebar:Component = findComponent('sidebar', Component);
-
-			sidebar.visible = event.value;
-		});
-		setUISelected('menubarItemToggleSidebar', true);
-
 		addUIChangeListener('menubarItemDownscroll', (event:UIEvent) ->
 		{
 			isViewDownscroll = event.value;
 		});
-		setUISelected('menubarItemDownscroll', isViewDownscroll);
+		setUICheckboxSelected('menubarItemDownscroll', isViewDownscroll);
+
+		addUIChangeListener('menuBarItemThemeLight', (event:UIEvent) ->
+		{
+			if (event.target.value)
+				currentTheme = ChartEditorTheme.Light;
+		});
+		setUICheckboxSelected('menuBarItemThemeLight', currentTheme == ChartEditorTheme.Light);
+
+		addUIChangeListener('menuBarItemThemeDark', (event:UIEvent) ->
+		{
+			if (event.target.value)
+				currentTheme = ChartEditorTheme.Dark;
+		});
+		setUICheckboxSelected('menuBarItemThemeDark', currentTheme == ChartEditorTheme.Dark);
 
 		addUIChangeListener('menubarItemMetronomeEnabled', (event:UIEvent) ->
 		{
 			shouldPlayMetronome = event.value;
 		});
-		setUISelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
+		setUICheckboxSelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
 
 		addUIChangeListener('menubarItemPlayerHitsounds', (event:UIEvent) ->
 		{
 			hitsoundsEnabledPlayer = event.value;
 		});
-		setUISelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
+		setUICheckboxSelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
 
 		addUIChangeListener('menubarItemOpponentHitsounds', (event:UIEvent) ->
 		{
 			hitsoundsEnabledOpponent = event.value;
 		});
-		setUISelected('menubarItemOpponentHitsounds', hitsoundsEnabledOpponent);
+		setUICheckboxSelected('menubarItemOpponentHitsounds', hitsoundsEnabledOpponent);
 
 		var instVolumeLabel:Label = findComponent('menubarLabelVolumeInstrumental', Label);
 		addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) ->
@@ -1142,8 +1206,7 @@ class ChartEditorState extends HaxeUIState
 		{
 			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT, event.value);
 		});
-		setUISelected('menubarItemToggleToolboxTools', true);
-
+		// setUICheckboxSelected('menubarItemToggleToolboxTools', true);
 		addUIChangeListener('menubarItemToggleToolboxNotes', (event:UIEvent) ->
 		{
 			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
@@ -1152,66 +1215,34 @@ class ChartEditorState extends HaxeUIState
 		{
 			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT, event.value);
 		});
-		addUIChangeListener('menubarItemToggleToolboxSong', (event:UIEvent) ->
+		addUIChangeListener('menubarItemToggleToolboxDifficulty', (event:UIEvent) ->
 		{
-			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_SONGDATA_LAYOUT, event.value);
+			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
+		});
+		addUIChangeListener('menubarItemToggleToolboxMetadata', (event:UIEvent) ->
+		{
+			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
+		});
+		addUIChangeListener('menubarItemToggleToolboxCharacters', (event:UIEvent) ->
+		{
+			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT, event.value);
+		});
+		addUIChangeListener('menubarItemToggleToolboxPlayerPreview', (event:UIEvent) ->
+		{
+			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
+		});
+		addUIChangeListener('menubarItemToggleToolboxOpponentPreview', (event:UIEvent) ->
+		{
+			ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
 		});
 
-		addUIClickListener('sidebarSaveMetadata', (event:MouseEvent) ->
-		{
-			// Save metadata for current variation.
-			SongSerializer.exportSongMetadata(currentSongMetadata);
-		});
-		addUIClickListener('sidebarSaveChart', (event:MouseEvent) ->
-		{
-			// Save chart data for current variation.
-			SongSerializer.exportSongChartData(currentSongChartData);
-		});
-		addUIClickListener('sidebarLoadMetadata', (event:MouseEvent) ->
-		{
-			// Replace metadata for current variation.
-			SongSerializer.importSongMetadataAsync(function(songMetadata:SongMetadata)
-			{
-				currentSongMetadata = songMetadata;
-			});
-		});
-		addUIClickListener('sidebarLoadChart', (event:MouseEvent) ->
-		{
-			// Replace chart data for current variation.
-			SongSerializer.importSongChartDataAsync(function(songChartData:SongChartData)
-			{
-				currentSongChartData = songChartData;
-
-				noteDisplayDirty = true;
-			});
-		});
-		addUIChangeListener('sidebarSongName', (event:UIEvent) ->
-		{
-			// Set song name (for current variation)
-			currentSongName = event.value;
-		});
-		setUIValue('sidebarSongName', currentSongName);
-		addUIChangeListener('sidebarSongArtist', (event:UIEvent) ->
-		{
-			currentSongArtist = event.value;
-		});
-		setUIValue('sidebarSongArtist', currentSongArtist);
-		addUIChangeListener('sidebarStage', (event:UIEvent) ->
-		{
-			currentSongStage = event.value;
-		});
-		setUIValue('sidebarStage', currentSongStage);
-		addUIChangeListener('sidebarNoteSkin', (event:UIEvent) ->
-		{
-			currentSongNoteSkin = event.value;
-		});
-		setUIValue('sidebarNoteSkin', currentSongNoteSkin);
 		// TODO: Pass specific HaxeUI components to add context menus to them.
 		registerContextMenu(null, Paths.ui('chart-editor/context/test'));
 	}
 
 	public override function update(elapsed:Float)
 	{
+		// dispatchEvent gets called here.
 		super.update(elapsed);
 
 		FlxG.mouse.visible = true;
@@ -1222,12 +1253,12 @@ class ChartEditorState extends HaxeUIState
 
 		// These ones only happen if the modal dialog is not open.
 		handleScrollKeybinds();
-		handleZoom();
-		handleSnap();
+		// handleZoom();
+		// handleSnap();
 		handleCursor();
 
 		handleMenubar();
-		handleSidebar();
+		handleToolboxes();
 		handlePlaybar();
 		handlePlayhead();
 
@@ -1247,6 +1278,16 @@ class ChartEditorState extends HaxeUIState
 			ChartEditorDialogHandler.openWelcomeDialog(this, true);
 		}
 
+		if (FlxG.keys.justPressed.W)
+		{
+			difficultySelectDirty = true;
+		}
+
+		if (FlxG.keys.justPressed.E)
+		{
+			currentSongMetadata.timeChanges[0].timeSignatureNum = (currentSongMetadata.timeChanges[0].timeSignatureNum == 4 ? 3 : 4);
+		}
+
 		// Right align the BF health icon.
 
 		// Base X position to the right of the grid.
@@ -1261,6 +1302,7 @@ class ChartEditorState extends HaxeUIState
 	 */
 	override function beatHit():Bool
 	{
+		// dispatchEvent gets called here.
 		if (!super.beatHit())
 			return false;
 
@@ -1277,6 +1319,7 @@ class ChartEditorState extends HaxeUIState
 	 */
 	override function stepHit():Bool
 	{
+		// dispatchEvent gets called here.
 		if (!super.stepHit())
 			return false;
 
@@ -1757,7 +1800,7 @@ class ChartEditorState extends HaxeUIState
 								if (cursorColumn == eventColumn)
 								{
 									// Create an event and place it in the chart.
-									// TODO: Allow configuring the event to place from the sidebar.
+									// TODO: Allow configuring the event to place.
 									var newEventData:SongEventData = new SongEventData(cursorMs, "test", {});
 
 									performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
@@ -1810,16 +1853,12 @@ class ChartEditorState extends HaxeUIState
 					// Indicate that we can pla
 					gridGhostNote.visible = (cursorColumn != eventColumn);
 
-					if (cursorColumn != gridGhostNote.noteData.data || selectedNoteKind != gridGhostNote.noteData.kind) {
+					if (cursorColumn != gridGhostNote.noteData.data || selectedNoteKind != gridGhostNote.noteData.kind)
+					{
 						gridGhostNote.noteData.kind = selectedNoteKind;
 						gridGhostNote.noteData.data = cursorColumn;
 						gridGhostNote.playNoteAnimation();
 					}
-					
-					FlxG.watch.addQuick("cursorY", cursorY);
-					FlxG.watch.addQuick("cursorFractionalStep", cursorFractionalStep);
-					FlxG.watch.addQuick("cursorStep", cursorStep);
-					FlxG.watch.addQuick("cursorMs", cursorMs);
 
 					gridGhostNote.noteData.time = cursorMs;
 					gridGhostNote.updateNotePosition(renderedNotes);
@@ -2004,6 +2043,10 @@ class ChartEditorState extends HaxeUIState
 	 */
 	function handlePlaybar()
 	{
+		// Make sure the playbar is never nudged out of the correct spot.
+		playbarHeadLayout.x = 4;
+		playbarHeadLayout.y = FlxG.height - 48 - 8;
+
 		var songPos = Conductor.songPosition;
 		var songRemaining = songLengthInMs - songPos;
 
@@ -2140,9 +2183,6 @@ class ChartEditorState extends HaxeUIState
 	 */
 	function handleViewKeybinds()
 	{
-		// B = Toggle Sidebar
-		if (FlxG.keys.justPressed.B)
-			toggleSidebar();
 	}
 
 	/**
@@ -2155,68 +2195,129 @@ class ChartEditorState extends HaxeUIState
 			ChartEditorDialogHandler.openUserGuideDialog(this);
 	}
 
-	function handleSidebar()
+	function handleToolboxes()
+	{
+		handleDifficultyToolbox();
+		handlePlayerPreviewToolbox();
+		handleOpponentPreviewToolbox();
+	}
+
+	function handleDifficultyToolbox()
 	{
 		if (difficultySelectDirty)
 		{
 			difficultySelectDirty = false;
 
 			// Manage the Select Difficulty tree view.
-			var treeView:TreeView = findComponent('sidebarDifficulties');
+			var difficultyToolbox = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+			if (difficultyToolbox == null)
+				return;
 
-			if (treeView != null)
+			var treeView:TreeView = difficultyToolbox.findComponent('difficultyToolboxTree');
+			if (treeView == null)
+				return;
+
+			// Clear the tree view so we can rebuild it.
+			treeView.clearNodes();
+
+			var treeSong = treeView.addNode({id: 'stv_song', text: 'S: $currentSongName', icon: "haxeui-core/styles/default/haxeui_tiny.png"});
+			treeSong.expanded = true;
+
+			for (curVariation in availableVariations)
 			{
-				// Clear the tree view so we can rebuild it.
-				treeView.clearNodes();
+				var variationMetadata:SongMetadata = songMetadata.get(curVariation);
 
-				var treeSong = treeView.addNode({id: 'stv_song', text: 'S: $currentSongName', icon: "haxeui-core/styles/default/haxeui_tiny.png"});
-				treeSong.expanded = true;
-
-				var treeVariationDefault = treeSong.addNode({
-					id: 'stv_variation_default',
-					text: "V: Default",
+				var treeVariation = treeSong.addNode({
+					id: 'stv_variation_$curVariation',
+					text: 'V: ${curVariation.toTitleCase()}',
 					// icon: "haxeui-core/styles/default/haxeui_tiny.png"
 				});
-				treeVariationDefault.expanded = true;
+				treeVariation.expanded = true;
 
-				var treeDifficultyEasy = treeVariationDefault.addNode({
-					id: 'stv_difficulty_default_easy',
-					text: "D: Easy",
-					// icon: "haxeui-core/styles/default/haxeui_tiny.png"
-				});
-				var treeDifficultyNormal = treeVariationDefault.addNode({
-					id: 'stv_difficulty_default_normal',
-					text: "D: Normal",
-					// icon: "haxeui-core/styles/default/haxeui_tiny.png"
-				});
-				var treeDifficultyHard = treeVariationDefault.addNode({
-					id: 'stv_difficulty_default_hard',
-					text: "D: Hard",
-					// icon: "haxeui-core/styles/default/haxeui_tiny.png"
-				});
+				var difficultyList = variationMetadata.playData.difficulties;
 
-				var treeVariationErect = treeSong.addNode({
-					id: 'stv_variation_erect',
-					text: "V: Erect",
-					// icon: "haxeui-core/styles/default/haxeui_tiny.png"
-				});
-				treeVariationErect.expanded = true;
+				for (difficulty in difficultyList)
+				{
+					var treeDifficulty = treeVariation.addNode({
+						id: 'stv_difficulty_${curVariation}_$difficulty',
+						text: 'D: ${difficulty.toTitleCase()}',
+						// icon: "haxeui-core/styles/default/haxeui_tiny.png"
+					});
+				}
+			}
 
-				var treeDifficultyErect = treeVariationErect.addNode({
-					id: 'stv_difficulty_erect_erect',
-					text: "D: Erect",
-					// icon: "haxeui-core/styles/default/haxeui_tiny.png"
-				});
+			treeView.onChange = onChangeTreeDifficulty;
+			treeView.selectedNode = getCurrentTreeDifficultyNode();
+		}
+	}
 
-				treeView.onChange = onChangeTreeDifficulty;
-				treeView.selectedNode = getCurrentTreeDifficultyNode();
+	function handlePlayerPreviewToolbox()
+	{
+		// Manage the Select Difficulty tree view.
+		var charPreviewToolbox = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
+		if (charPreviewToolbox == null)
+			return;
+
+		var charPlayer:CharacterPlayer = charPreviewToolbox.findComponent('charPlayer');
+		if (charPlayer == null)
+			return;
+
+		currentPlayerCharacterPlayer = charPlayer;
+	}
+
+	function handleOpponentPreviewToolbox()
+	{
+		// Manage the Select Difficulty tree view.
+		var charPreviewToolbox = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
+		if (charPreviewToolbox == null)
+			return;
+
+		var charPlayer:CharacterPlayer = charPreviewToolbox.findComponent('charPlayer');
+		if (charPlayer == null)
+			return;
+
+		currentOpponentCharacterPlayer = charPlayer;
+	}
+
+	override function dispatchEvent(event:ScriptEvent)
+	{
+		super.dispatchEvent(event);
+
+		// We can't use the ScriptedEventDispatcher with currentCharPlayer because we can't use the IScriptedClass interface on it.
+		if (currentPlayerCharacterPlayer != null)
+		{
+			switch (event.type)
+			{
+				case ScriptEvent.UPDATE:
+					currentPlayerCharacterPlayer.onUpdate(cast event);
+				case ScriptEvent.SONG_BEAT_HIT:
+					currentPlayerCharacterPlayer.onBeatHit(cast event);
+				case ScriptEvent.SONG_STEP_HIT:
+					currentPlayerCharacterPlayer.onStepHit(cast event);
+				case ScriptEvent.NOTE_HIT:
+					currentPlayerCharacterPlayer.onNoteHit(cast event);
+			}
+		}
+
+		if (currentOpponentCharacterPlayer != null)
+		{
+			switch (event.type)
+			{
+				case ScriptEvent.UPDATE:
+					currentOpponentCharacterPlayer.onUpdate(cast event);
+				case ScriptEvent.SONG_BEAT_HIT:
+					currentOpponentCharacterPlayer.onBeatHit(cast event);
+				case ScriptEvent.SONG_STEP_HIT:
+					currentOpponentCharacterPlayer.onStepHit(cast event);
+				case ScriptEvent.NOTE_HIT:
+					currentOpponentCharacterPlayer.onNoteHit(cast event);
 			}
 		}
 	}
 
 	function getCurrentTreeDifficultyNode():TreeViewNode
 	{
-		var treeView:TreeView = findComponent('sidebarDifficulties');
+		var treeView:TreeView = findComponent('difficultyToolboxTree');
 
 		if (treeView == null)
 			return null;
@@ -2262,6 +2363,18 @@ class ChartEditorState extends HaxeUIState
 				trace('Selected wrong node type, resetting selection.');
 				treeView.selectedNode = getCurrentTreeDifficultyNode();
 		}
+	}
+
+	function addDifficulty(variation:String)
+	{
+	}
+
+	function addVariation(variationId:String)
+	{
+		// Create a new variation with the specified ID.
+		songMetadata.set(variationId, currentSongMetadata.clone(variationId));
+		// Switch to the new variation.
+		selectedVariation = variationId;
 	}
 
 	/**
@@ -2432,6 +2545,23 @@ class ChartEditorState extends HaxeUIState
 				return;
 
 			// Note was just hit.
+
+			// Character preview.
+
+			// Why does NOTESCRIPTEVENT TAKE A SPRITE AAAAA
+			var tempNote:Note = new Note(noteData.time, noteData.data, null, false, NORMAL);
+			tempNote.mustPress = noteData.getMustHitNote();
+			tempNote.data.sustainLength = noteData.length;
+			tempNote.data.noteKind = noteData.kind;
+			tempNote.scrollFactor.set(0, 0);
+			var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, tempNote, 1, true);
+			dispatchEvent(event);
+
+			// Calling event.cancelEvent() skips all the other logic! Neat!
+			if (event.eventCanceled)
+				continue;
+
+			// Hitsounds.
 			switch (noteData.getStrumlineIndex())
 			{
 				case 0: // Player
@@ -2576,20 +2706,6 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
-	 * Show the sidebar if it's hidden, or hide it if it's shown.
-	 */
-	function toggleSidebar()
-	{
-		var sidebar:Component = findComponent('sidebar', Component);
-
-		// Set visibility while syncing the checkbox.
-		if (sidebar != null)
-		{
-			sidebar.visible = setUISelected('menubarItemToggleSidebar', !sidebar.visible);
-		}
-	}
-
-	/**
 	 * Loads an instrumental from an absolute file path, replacing the current instrumental.
 	 */
 	public function loadInstrumentalFromPath(path:String):Void
@@ -2622,8 +2738,8 @@ class ChartEditorState extends HaxeUIState
 
 	public function loadInstrumentalFromAsset(path:String):Void
 	{
-		var vocalTrack = FlxG.sound.load(path, 1.0, false);
-		audioInstTrack = vocalTrack;
+		var instTrack = FlxG.sound.load(path, 1.0, false);
+		audioInstTrack = instTrack;
 
 		postLoadInstrumental();
 	}
@@ -2639,7 +2755,7 @@ class ChartEditorState extends HaxeUIState
 				audioVocalTrackGroup.pause();
 		};
 
-		songLengthInPixels = Std.int(Conductor.getTimeInSteps(audioInstTrack.length) * GRID_SIZE);
+		songLengthInMs = audioInstTrack.length;
 
 		gridTiledSprite.height = songLengthInPixels;
 		if (gridSpectrogram != null)
@@ -2668,7 +2784,7 @@ class ChartEditorState extends HaxeUIState
 
 	public function loadVocalsFromAsset(path:String):Void
 	{
-		var vocalTrack = FlxG.sound.load(path, 1.0, false);
+		var vocalTrack:FlxSound = FlxG.sound.load(path, 1.0, false);
 		audioVocalTrackGroup.add(vocalTrack);
 	}
 
@@ -2679,7 +2795,7 @@ class ChartEditorState extends HaxeUIState
 	{
 		var openflSound = new openfl.media.Sound();
 		openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(bytes), bytes.length);
-		var vocalTrack = FlxG.sound.load(openflSound, 1.0, false);
+		var vocalTrack:FlxSound = FlxG.sound.load(openflSound, 1.0, false);
 		audioVocalTrackGroup.add(vocalTrack);
 
 		// Tell the user the load was successful.
@@ -2748,84 +2864,8 @@ class ChartEditorState extends HaxeUIState
 	}
 
 	/**
-	 * Add an onClick listener to a HaxeUI menu bar item.
-	**/
-	function addUIClickListener(key:String, callback:MouseEvent->Void)
-	{
-		var target:Component = findComponent(key);
-		if (target == null)
-		{
-			// Gracefully handle the case where the item can't be located.
-			trace('WARN: Could not locate menu item: $key');
-		}
-		else
-		{
-			target.onClick = callback;
-		}
-	}
-
-	/**
-	 * Add an onChange listener to a HaxeUI menu bar item such as a slider.
-	 */
-	function addUIChangeListener(key:String, callback:UIEvent->Void)
-	{
-		var target:Component = findComponent(key);
-		if (target == null)
-		{
-			// Gracefully handle the case where the item can't be located.
-			trace('WARN: Could not locate menu item: $key');
-		}
-		else
-		{
-			target.onChange = callback;
-		}
-	}
-
-	/**
-	 * Set the value of a HaxeUI component.
-	 * Usually modifies the text of a label.
-	 */
-	function setUIValue<T>(key:String, value:T):T
-	{
-		var target:Component = findComponent(key);
-		if (target == null)
-		{
-			// Gracefully handle the case where the item can't be located.
-			trace('WARN: Could not locate menu item: $key');
-			return value;
-		}
-		else
-		{
-			return target.value = value;
-		}
-	}
-
-	/**
-	 * Set the value of a HaxeUI checkbox,
-	 * since that's on 'selected' instead of 'value'.
-	 */
-	function setUISelected<T>(key:String, value:Bool):Bool
-	{
-		var targetA:CheckBox = findComponent(key, CheckBox);
-
-		if (targetA != null)
-		{
-			return targetA.selected = value;
-		}
-
-		var targetB:MenuCheckBox = findComponent(key, MenuCheckBox);
-		if (targetB != null)
-		{
-			return targetB.selected = value;
-		}
-
-		// Gracefully handle the case where the item can't be located.
-		trace('WARN: Could not locate check box: $key');
-		return value;
-	}
-
-	/**
 	 * Perform (or redo) a command, then add it to the undo stack.
+	 * 
 	 * @param command The command to perform.
 	 * @param purgeRedoStack If true, the redo stack will be cleared.
 	 */
@@ -2958,39 +2998,49 @@ class ChartEditorState extends HaxeUIState
 		notifBar.hide();
 	}
 
-	/**
-	 * Displays a prompt to the user, to save their changes made to this chart,
-	 * or to discard them.
-	 *
-	 * @param onComplete Function to call after the user clicks Save or Don't Save.
-	 *                   If Save was clicked, we save before calling this.
-	 * @param onCancel Function to call if the user clicks Cancel.
-	 */
-	function promptSaveChanges(onComplete:Void->Void, ?onCancel:Void->Void):Void
+	public function exportAllSongData():Void
 	{
-		var messageBox:MessageBox = new MessageBox();
+		var zipEntries = [];
 
-		messageBox.title = 'Save Changes?';
-		messageBox.message = 'Do you want to save the changes you made to $currentSongName?\n\nYour changes will be lost if you don\'t save them.';
-		messageBox.type = 'question';
-		messageBox.modal = true;
-		messageBox.buttons = DialogButton.SAVE | "Don't Save" | "Cancel";
-
-		messageBox.registerEvent(DialogEvent.DIALOG_CLOSED, function(e:DialogEvent):Void
+		for (variation in availableVariations)
 		{
-			trace('Pressed: ${e.button}');
-			switch (e.button)
+			var variationId = variation;
+			if (variation == '' || variation == 'default' || variation == 'normal')
 			{
-				case 'Save':
-					// TODO: Make sure to actually save.
-					// saveChart();
-					onComplete();
-				case "Don't Save":
-					onComplete();
-				case 'Cancel':
-					if (onCancel != null)
-						onCancel();
+				variationId = '';
 			}
-		});
+
+			if (variationId == '')
+			{
+				var variationMetadata = songMetadata.get(variation);
+				zipEntries.push(FileUtil.makeZIPEntry('$currentSongId-metadata.json', SerializerUtil.toJSON(variationMetadata)));
+				var variationChart = songChartData.get(variation);
+				zipEntries.push(FileUtil.makeZIPEntry('$currentSongId-chart.json', SerializerUtil.toJSON(variationChart)));
+			}
+			else
+			{
+				var variationMetadata = songMetadata.get(variation);
+				zipEntries.push(FileUtil.makeZIPEntry('$currentSongId-metadata-$variationId.json', SerializerUtil.toJSON(variationMetadata)));
+				var variationChart = songChartData.get(variation);
+				zipEntries.push(FileUtil.makeZIPEntry('$currentSongId-chart-$variationId.json', SerializerUtil.toJSON(variationChart)));
+			}
+		}
+
+		// TODO: Add audio files to the ZIP.
+
+		trace('Exporting ${zipEntries.length} files to ZIP...');
+
+		// Prompt and save.
+		var onSave:Array<String>->Void = (paths:Array<String>) ->
+		{
+			trace('Successfully exported files.');
+		};
+
+		var onCancel:Void->Void = () ->
+		{
+			trace('Export cancelled.');
+		};
+
+		FileUtil.saveFilesAsZIP(zipEntries, onSave, onCancel, '$currentSongId-chart.zip');
 	}
 }

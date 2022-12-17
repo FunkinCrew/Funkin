@@ -116,7 +116,20 @@ class Conductor
 	public static var offset:Float = 0;
 
 	// TODO: Add code to update this.
-	public static var beatsPerMeasure:Int = 4;
+	public static var beatsPerMeasure(get, null):Int;
+
+	static function get_beatsPerMeasure():Int
+	{
+		return timeSignatureNumerator;
+	}
+
+	public static var stepsPerMeasure(get, null):Int;
+
+	static function get_stepsPerMeasure():Int
+	{
+		// Is this always x4?
+		return timeSignatureNumerator * 4;
+	}
 
 	private function new()
 	{
@@ -151,7 +164,10 @@ class Conductor
 	 */
 	public static function forceBPM(?bpm:Float = null)
 	{
-		trace('[CONDUCTOR] Forcing BPM to ' + bpm);
+		if (bpm != null)
+			trace('[CONDUCTOR] Forcing BPM to ' + bpm);
+		else
+			trace('[CONDUCTOR] Resetting BPM to default');
 		Conductor.bpmOverride = bpm;
 	}
 
