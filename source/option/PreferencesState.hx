@@ -25,8 +25,6 @@ class PreferencesState extends MusicBeatState
 
 	override public function create() 
 	{
-	  Paths.clearStoredMemory();
-		Paths.clearUnusedMemory();
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));

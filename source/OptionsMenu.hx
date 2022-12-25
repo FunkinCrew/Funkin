@@ -22,8 +22,6 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
-	  Paths.clearStoredMemory();
-		Paths.clearUnusedMemory();
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		//controlsStrings = CoolUtil.coolTextFile('assets/data/controls.txt');
 		menuBG.color = 0xFFea71fd;
