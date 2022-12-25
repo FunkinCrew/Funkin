@@ -5,10 +5,10 @@ name: Build
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  # push:
-    # branches: [ main ]
-  # pull_request:
-    # branches: [ main ]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -16,6 +16,51 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
+  buildLinux:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          sudo apt-get install libvlc-dev
+          sudo apt-get install libvlccore-dev
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib install tjson
+          haxelib install hxjsonast
+          haxelib install hxCodec
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib install hxcpp-debug-server
+          haxelib list
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build Project.xml linux --app-version="4.0.0-${{ github.run_id}}"
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: linuxBuild
+          path: 'export/release/linux/bin'
   buildWindows:
     runs-on: windows-latest
 
@@ -58,6 +103,47 @@ jobs:
         with:
           name: windowsBuild
           path: export/release/windows/bin
+  buildMac:
+    runs-on: macos-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.5
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          haxelib install lime
+          haxelib install openfl
+          haxelib --never install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib install flixel-ui
+          haxelib install flixel-addons
+          haxelib install tjson
+          haxelib install hxjsonast
+          haxelib install hxCodec
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib install hxcpp-debug-server
+          haxelib list
+      - name: Create Version Tag
+        run: echo "${{github.run_id}}" > VERSION
+      - name: Compile
+        run: haxelib run lime build mac --app-version="4.0.0-${{ github.run_id}}"
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: macBuild
+          path: export/release/macos/bin
   buildAndroid:
     name: buildAndroid
     runs-on: ubuntu-latest
