@@ -117,6 +117,8 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (aa.anim.finished)
+			aa.playAnim("singUP");
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
@@ -228,4 +230,6 @@ class MainMenuState extends MusicBeatState
 			spr.updateHitbox();
 		});
 	}
+
+	var aa:AtlasCharacter;
 }
