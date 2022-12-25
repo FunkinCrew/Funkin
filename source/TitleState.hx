@@ -86,9 +86,6 @@ class TitleState extends MusicBeatState
 			if (!StoryMenuState.weekUnlocked[0])
 				StoryMenuState.weekUnlocked[0] = true;
 		}
-		
-    if(FlxG.save.data.mobilecontrols == null)
-			FlxG.save.data.mobilecontrols = 'VPAD_RIGHT';
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
