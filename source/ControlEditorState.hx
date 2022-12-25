@@ -45,8 +45,6 @@ class ControlEditorState extends FlxState
 	var hitbox:Hitbox;
 	var variantChoicer:CoolVariantChoicer;
 	var deletebar:FlxSprite;
-	
-	var saveItem:String == 'VPAD_RIGHT'
 
 	var curKeySelected:Int = 0;
 	var keyboardSettings:FlxTypedGroup<FlxText>;
@@ -89,7 +87,7 @@ class ControlEditorState extends FlxState
 		var exitSavebutton = new FlxUIButton((exitbutton.x + exitbutton.width + 25),25,"exit and save",() -> 
 		{
 			saveCustomPosition();
-			// config.setcontrolmode(curSelected);
+			config.setcontrolmode(curSelected);
 			exit();
 		});
 		exitSavebutton.resize(250,50);
@@ -423,28 +421,25 @@ class ControlEditorState extends FlxState
 
 	inline function changeControl(mode:ui.Mobilecontrols.ControlsGroup) 
 	{		
-		switch (FlxG.save.data.mobilecontrols)
+		switch (mode)
 		{
-			case 'HITBOX':
+			case HITBOX:
 				hitbox.visible = true;
 				virtualpad.visible = false;
-				saveItem == 'HITBOX';
 			
-			case 'VPAD_RIGHT':
+			case VIRTUALPAD_RIGHT:
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(RIGHT_FULL, NONE));
 				// virtualpad.visible = true;
-				saveItem == 'VPAD_RIGHT';
 
-			case 'VPAD_LEFT':
+			case VIRTUALPAD_LEFT:
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(FULL, NONE));
 				// virtualpad.visible = true;
-				saveItem == 'VPAD_LEFT';
 
-			case 'VPAD_CUSTOM':
+			case VIRTUALPAD_CUSTOM:
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(FULL, NONE));
@@ -452,9 +447,8 @@ class ControlEditorState extends FlxState
 				// saveCustomPosition();
 				// virtualpad.visible = true;
 				// loadshit()
-				saveItem == 'VPAD_CUSTOM';
 
-			case 'KEYBOARD':
+			case KEYBOARD:
 				hitbox.visible = false;
 				virtualpad.visible = false;
 		}
