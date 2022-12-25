@@ -27,11 +27,14 @@ class Mobilecontrols extends FlxSpriteGroup
 	var cHandler:ControlHandler;
 
 	public static var isEnabled(get, never):Bool;
+
+	var config:Config;
+
 	public function new() 
 	{
 		super();
 
-		switch(FlxG.save.data.mobilecontrols)
+		switch (FlxG.save.data.mobilecontrols)
 		{
 			case 'VPAD_RIGHT':
 				initVirtualPad(0);
