@@ -106,7 +106,7 @@ class ControlEditorState extends FlxState
 		optionsbutton.setLabelFormat("VCR OSD Mono",24,FlxColor.BLACK,"center");
 		add(optionsbutton);
 
-		deletebar = new FlxSprite().loadGraphic('assets/images/delbar.png');
+		deletebar = new FlxSprite().loadGraphic('assets/android/delbar.png');
 		deletebar.y = FlxG.height - 77;
 		deletebar.alpha = 0;
 		add(deletebar);
