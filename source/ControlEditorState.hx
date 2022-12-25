@@ -46,7 +46,7 @@ class ControlEditorState extends FlxState
 	var variantChoicer:CoolVariantChoicer;
 	var deletebar:FlxSprite;
 	
-	var saveItem:String == 'VPAD_RIGHT';
+	var saveItem:String == 'VPAD_RIGHT':
 
 	var curKeySelected:Int = 0;
 	var keyboardSettings:FlxTypedGroup<FlxText>;
