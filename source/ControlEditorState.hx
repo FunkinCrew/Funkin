@@ -1,13 +1,5 @@
 package;
 
-import flixel.input.actions.FlxActionInputDigital.FlxActionInputDigitalKeyboard;
-import flixel.FlxBasic;
-import Controls.Control;
-import flixel.input.actions.FlxActionInput.FlxInputDevice;
-import flixel.input.actions.FlxAction.FlxActionDigital;
-import flixel.effects.FlxFlicker;
-import flixel.tweens.FlxTween;
-import flixel.input.keyboard.FlxKey;
 import ui.Hitbox;
 import ui.Mobilecontrols;
 import ui.FlxVirtualPad;
@@ -57,7 +49,7 @@ class ControlEditorState extends FlxState
 	var saveItem:String = 'VPAD_RIGHT';
 
 	var curKeySelected:Int = 0;
-	var keyboardSettings:KeyboardButtonBinder;
+	var keyboardSettings:FlxTypedGroup<FlxText>;
 
 	override function create() 
 	{
@@ -96,7 +88,7 @@ class ControlEditorState extends FlxState
 
 		var exitSavebutton = new FlxUIButton((exitbutton.x + exitbutton.width + 25),25,"exit and save",() -> 
 		{
-			save();
+			saveCustomPosition();
 			// config.setcontrolmode(curSelected);
 			exit();
 		});
@@ -114,11 +106,22 @@ class ControlEditorState extends FlxState
 		deletebar.alpha = 0;
 		add(deletebar);
 
-		keyboardSettings = new KeyboardButtonBinder();
-		keyboardSettings.visible = false;
-		keyboardSettings.active = false;
+		keyboardSettings = new FlxTypedGroup<FlxText>();
+
+		var ktextX = 500;
+		var leftText = new FlxText(ktextX, 50, 0, "> Left arrow: W", 48);
+		leftText.color = FlxColor.YELLOW;
+		keyboardSettings.add(leftText);
+		var downText = new FlxText(ktextX, 100, 0, " Down arrow: A", 48);
+		keyboardSettings.add(downText);
+		var upText = new FlxText(ktextX, 150, 0, " Up arrow: S", 48);
+		keyboardSettings.add(upText);
+		var rightText = new FlxText(ktextX, 200, 0, " Right arrow: D", 48);
+		keyboardSettings.add(rightText);
+
 		add(keyboardSettings);
 
+		createOptionsUi();
 		changeSelection();
 
 		// FlxG.save.data.padPositions = null;
@@ -128,47 +131,75 @@ class ControlEditorState extends FlxState
 		super.create();
 	}
 
-	public function save() {
-		switch (curSelected)
-		{
-			case ControlsGroup.VIRTUALPAD_CUSTOM:
-				saveCustomPosition();
-			case ControlsGroup.KEYBOARD:
-				keyboardSettings.saveBind();
-		}
-		Config.controlMode = curSelected;
+	function createOptionsUi() {
+		// var buttonOptBar = new FlxUI();
+		// buttonOptBar.x = 100;
+		// buttonOptBar.y = 100;
+		// add(buttonOptBar);
+		// var zoomSlider = new FlxUISlider(virtualpad, 'scale', 0, 0, 1, 2);
+		// zoomSlider.decimals = 0;
+		// zoomSlider.callback = (f) -> {
+		// 	virtualpad.updateHitbox();
+		// }
+		// buttonOptBar.add(zoomSlider);
+
+		// add(new FlxButton(50, 200, "+", () -> {
+		// 	// virtualpad.setGraphicSize(Std.int(virtualpad.width * 2));
+		// 	virtualpad.updateHitbox();
+		// }));
 	}
 
 	override function update(elapsed:Float) 
 	{
-		#if android
-		var androidback:Bool = FlxG.android.justReleased.BACK;
-		#else
-		var androidback:Bool = false;
-		#end
-		if (/*exitbutton.justReleased ||*/ androidback){
-			FlxG.switchState(new OptionsMenu());
-		}
-
-		if (FlxG.keys.justReleased.RIGHT)
-		{
-			changeSelection(1);
-		}
-
-		if (FlxG.keys.justReleased.LEFT)
-		{
-			changeSelection(-1);
-		}
 		// broken
 		// if (deletebar.overlaps(virtualpad))
 		// 	deletebar.alpha = 1; // FlxMath.lerp(deletebar.alpha, 1, 0.5 * elapsed)
 		// else
 		// 	deletebar.alpha = 0; // FlxMath.lerp(deletebar.alpha, 0, 0.5 * elapsed)
 
-		// if (curSelected == 4)
-		// {
+		if (curSelected == 4)
+		{
+			if (FlxG.keys.justPressed.DOWN)
+			{
+				var lastl = curKeySelected;
+				curKeySelected++;
+				if (curKeySelected < 0)
+					curKeySelected = 4 - 1;
+				if (curKeySelected >= 4)
+					curKeySelected = 0;
 
-		// }
+				var lastText = keyboardSettings.members[lastl];
+				lastText.text = " " + lastText.text.substr(1, lastText.text.length);
+				lastText.color = FlxColor.WHITE;
+				
+				var curText = keyboardSettings.members[curKeySelected];
+				lastText.text = ">" + lastText.text.substr(1, lastText.text.length);
+				curText.color = FlxColor.YELLOW;
+			}
+
+			if (FlxG.keys.justPressed.UP)
+			{
+				var lastl = curKeySelected;
+				curKeySelected--;
+				if (curKeySelected < 0)
+					curKeySelected = 4 - 1;
+				if (curKeySelected >= 4)
+					curKeySelected = 0;
+
+				var lastText = keyboardSettings.members[lastl];
+				lastText.text = " " + lastText.text.substr(1, lastText.text.length);
+				lastText.color = FlxColor.WHITE;
+
+				var curText = keyboardSettings.members[curKeySelected];
+				lastText.text = ">" + lastText.text.substr(1, lastText.text.length);
+				curText.color = FlxColor.YELLOW;
+			}
+			
+			if (FlxG.keys.justPressed.ENTER)
+			{
+				
+			}
+		}
 
 		if (curSelected == 3)
 		{
@@ -397,23 +428,17 @@ class ControlEditorState extends FlxState
 			case 'HITBOX':
 				hitbox.visible = true;
 				virtualpad.visible = false;
-				keyboardSettings.visible = false;
-				keyboardSettings.active = false;
 			
 			case VIRTUALPAD_RIGHT:
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(RIGHT_FULL, NONE));
-				keyboardSettings.visible = false;
-				keyboardSettings.active = false;
 				// virtualpad.visible = true;
 				saveItem == 'VPAD_RIGHT';
 			case 'VPAD_LEFT':
 				hitbox.visible = false;
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(FULL, NONE));
-				keyboardSettings.visible = false;
-				keyboardSettings.active = false;
 				// virtualpad.visible = true;
 				saveItem == 'VPAD_LEFT';
 			case 'VPAD_CUSTOM':
@@ -421,8 +446,6 @@ class ControlEditorState extends FlxState
 				virtualpad.destroy();
 				add(virtualpad = new FlxVirtualPad(FULL, NONE));
 				loadCustomPosition(virtualpad);
-				keyboardSettings.visible = false;
-				keyboardSettings.active = false;
 				// saveCustomPosition();
 				// virtualpad.visible = true;
 				// loadshit()
@@ -430,8 +453,6 @@ class ControlEditorState extends FlxState
 			case 'KEYBOARD':
 				hitbox.visible = false;
 				virtualpad.visible = false;
-				keyboardSettings.visible = true;
-				keyboardSettings.active = true;
 		}
 	}
 
@@ -498,200 +519,6 @@ class CoolVariantChoicer extends FlxSpriteGroup
 	}
 }
 
-@:access(Controls)
-class KeyboardButtonBinder extends FlxTypedSpriteGroup<FlxText> {
-
-	public var bindedKeys:Array<FlxKey> = new Array();
-
-	var curKeySelected(default, null):Int;
-
-	var selected:Bool = false;
-
-	var lastbutton:FlxKey = NONE;
-
-	public function new() {
-		super(5);
-
-		FlxG.save.data.keys = null;
-
-		if (FlxG.save.data.keys != null)
-			bindedKeys = FlxG.save.data.keys;
-		else
-			bindedKeys = getKeysFromControls();
-		
-
-
-		var ktextX = 0; // 500
-		var ktextY = 0;
-		var leftText = new FlxText(ktextX, 0 + ktextY, 0, ">Left arrow: " + bindedKeys[0], 48);
-		add(leftText);
-		var downText = new FlxText(ktextX, 50 + ktextY, 0, " Down arrow: " + bindedKeys[1], 48);
-		add(downText);
-		var upText = new FlxText(ktextX, 100 + ktextY, 0, " Up arrow: " + bindedKeys[2], 48);
-		add(upText);
-		var rightText = new FlxText(ktextX, 150 + ktextY, 0, " Right arrow: " + bindedKeys[3], 48);
-		add(rightText);
-
-		screenCenter();
-
-		var infoText = new FlxText(-200, 400, 0, "press up or down to select and press enter to change", 24);
-		add(infoText);
-	}
-	function getKeysFromControls():Array<Int> {
-		var controls = PlayerSettings.player1.controls;
-
-		var keys = new Array<Int>(); 
-
-		for (input in controls._left.inputs)
-			if (input.device == KEYBOARD)
-			{
-				keys[0] = (cast(input, FlxActionInputDigitalKeyboard)).inputID;
-				break;
-			}
-
-		for (input in controls._down.inputs)
-			if (input.device == KEYBOARD)
-			{
-				keys[1] = (cast(input, FlxActionInputDigitalKeyboard)).inputID;
-				break;
-			}
-
-		for (input in controls._up.inputs)
-			if (input.device == KEYBOARD)
-			{
-				keys[2] = (cast(input, FlxActionInputDigitalKeyboard)).inputID;
-				break;
-			}
-		
-		for (input in controls._right.inputs)
-			if (input.device == KEYBOARD)
-			{
-				keys[3] = (cast(input, FlxActionInputDigitalKeyboard)).inputID;
-				break;
-			}
-
-		trace(keys);
-		return keys;
-	}
-
-
-	public function saveBind() {
-		var toSave = bindedKeys.copy();
-		// for (i in 0...toSave.length) {
-		// 	if (toSave[i] == 0)
-		// 		toSave[i] = FlxKey.NONE; 
-		// }
-		FlxG.save.data.keys = toSave;
-		trace(toSave);
-		FlxG.save.flush();
-		trace(toSave.map(f -> f.toString()).join(':'));
-		// Config.initControls();
-		// applyCustomBind();
-	}
-
-	
-	// public static function applyCustomBind() {
-		// var controls = PlayerSettings.player1.controls;
-		// var newKeys:Vector<FlxKey> = FlxG.save.data.keys;
-
-		// if (newKeys == null)
-		// 	return;
-
-		// // removeAllKeys(controls._up);
-		// // removeAllKeys(controls._down);
-		// // removeAllKeys(controls._left);
-		// // removeAllKeys(controls._right);
-
-		// trace(newKeys);
-		// controls.replaceBinding(Control.LEFT, Keys, newKeys[0]);
-		// controls.replaceBinding(Control.DOWN, Keys, newKeys[1]);
-		// controls.replaceBinding(Control.UP, Keys, newKeys[2]);
-		// controls.replaceBinding(Control.RIGHT, Keys, newKeys[3]);
-
-	// }
-
-	// static function removeAllKeys(action:FlxActionDigital) {
-	// 	for (input in action.inputs)
-	// 	{
-	// 		if (input.device == FlxInputDevice.KEYBOARD)
-	// 			action.inputs.remove(input);
-	// 	}
-	// }
-
-	override function update(elapsed:Float) {
-		if (FlxG.keys.justPressed.DOWN && !selected)
-			{
-				var lastl = curKeySelected;
-				curKeySelected++;
-				if (curKeySelected < 0)
-					curKeySelected = 4 - 1;
-				if (curKeySelected >= 4)
-					curKeySelected = 0;
-
-				
-				var lastText = members[lastl];
-				lastText.text = " " + lastText.text.substr(1, lastText.text.length);
-				
-				var curText = members[curKeySelected];
-				curText.text = ">" + curText.text.substr(1, curText.text.length);
-			}
-
-			if (FlxG.keys.justPressed.UP && !selected)
-			{
-				var lastl = curKeySelected;
-				curKeySelected--;
-				if (curKeySelected < 0)
-					curKeySelected = 4 - 1;
-				if (curKeySelected >= 4)
-					curKeySelected = 0;
-
-				var lastText = members[lastl];
-				lastText.text = " " + lastText.text.substr(1, lastText.text.length);
-
-				var curText = members[curKeySelected];
-				curText.text = ">" + curText.text.substr(1, curText.text.length);
-			}
-			
-			if (selected)
-			{
-				if (FlxG.keys.getIsDown().length != 0 && selected)
-					if (FlxG.keys.getIsDown()[0].ID != FlxKey.ENTER)
-						lastbutton = FlxG.keys.getIsDown()[0].ID;
-				trace(lastbutton);
-
-				if (FlxG.keys.justPressed.ENTER)
-				{
-					var curText = members[curKeySelected];
-					curText.color = FlxColor.WHITE;
-					selected = false;
-
-					if (lastbutton != FlxKey.NONE)
-					{
-						bindedKeys[curKeySelected] = lastbutton;
-						lastbutton = NONE;
-					}
-				}
-
-				if (FlxG.keys.pressed.ANY && !FlxG.keys.pressed.ENTER)
-				{
-					var text = members[curKeySelected].text;
-					var base = text.substring(0, text.indexOf(':') + 1);
-					members[curKeySelected].text = base + " " + lastbutton.toString();
-				}
-			}else
-			{
-				if (FlxG.keys.justPressed.ENTER)
-				{
-					var curText = members[curKeySelected];
-					curText.color = FlxColor.YELLOW;
-
-					selected = true;
-				}
-			}
-		
-		super.update(elapsed);
-	}
-}
 
 
 class ButtonOptionSubState extends FlxUISubState

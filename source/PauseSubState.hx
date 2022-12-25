@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxCamera;
 import ui.Mobilecontrols;
 import Controls.Control;
 import flixel.FlxG;
@@ -78,12 +77,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
-		if (Mobilecontrols.isEnabled)
-		{
-			var pad = Mobilecontrols.createVirtualPad(UP_DOWN, A_B);
-			// new FlxCamera()
-			add(pad);
-		}
+		Mobilecontrols.addVirtualPad(UP_DOWN, A_B);
 	}
 
 	override function update(elapsed:Float)

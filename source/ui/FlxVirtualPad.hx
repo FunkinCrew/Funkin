@@ -1,6 +1,5 @@
 package ui;
 
-import ui.Mobilecontrols.ControlHandler;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.group.FlxSpriteGroup;
@@ -47,15 +46,13 @@ class FlxVirtualPad extends FlxSpriteGroup
 	 */
 	public var actions:FlxSpriteGroup;
 
-	public var bind:ControlHandler;
-
 	/**
 	 * Create a gamepad which contains 4 directional buttons and 4 action buttons.
 	 *
 	 * @param   DPadMode     The D-Pad mode. `FULL` for example.
 	 * @param   ActionMode   The action buttons mode. `A_B_C` for example.
 	 */
-	public function new(?DPad:FlxDPadMode, ?Action:FlxActionMode, bindToControls:Bool = true)
+	public function new(?DPad:FlxDPadMode, ?Action:FlxActionMode)
 	{
 		super();
 		scrollFactor.set();
@@ -116,15 +113,10 @@ class FlxVirtualPad extends FlxSpriteGroup
 				actions.add(add(buttonA = createButton(FlxG.width - 44 * multiply, FlxG.height - 45 * multiply, 44 * multiply, 45 * multiply, "a")));
 			case NONE: // do nothing
 		}
-
-		bind = new ControlHandler(this);
-		bind.bind();
 	}
 
 	override public function destroy():Void
 	{
-		bind.unBind();
-
 		super.destroy();
 
 		dPad = FlxDestroyUtil.destroy(dPad);
