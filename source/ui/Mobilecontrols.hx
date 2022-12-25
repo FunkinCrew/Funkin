@@ -23,7 +23,7 @@ import ui.Hitbox;
 
 class Mobilecontrols extends FlxSpriteGroup
 {
-	public var mode:ControlsGroup = HITBOX;
+	public var mode:ControlsGroup = 'HITBOX';
 
 	public var _hitbox:Hitbox;
 	public var _virtualPad:FlxVirtualPad;
@@ -38,7 +38,7 @@ class Mobilecontrols extends FlxSpriteGroup
 
 		switch(FlxG.save.data.mobilecontrols)
 		{
-			case VIRTUALPAD_RIGHT:
+			case 'VPAD_RIGHT':
 				initVirtualPad(0);
 			case VIRTUALPAD_LEFT:
 				initVirtualPad(1);
@@ -314,9 +314,9 @@ class ControlHandler
 }
 
 enum abstract ControlsGroup(Int) to Int from Int {
-	var HITBOX = 0;
-	var VIRTUALPAD_RIGHT = 1;
-	var VIRTUALPAD_LEFT = 2;
-	var VIRTUALPAD_CUSTOM = 3;
-	var KEYBOARD = 4;
+	var 'HITBOX' = 0;
+	var 'VPAD_RIGHT' = 1;
+	var 'VPAD_LEFT' = 2;
+	var 'VPAD_CUSTOM' = 3;
+	var 'KEYBOARD' = 4;
 }
