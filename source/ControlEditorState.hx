@@ -63,7 +63,7 @@ class ControlEditorState extends FlxState
 		FlxG.save.data.lastmousevisible = FlxG.mouse.visible;
 		FlxG.mouse.visible = true;
 		#end
-		curSelected = Config.controlMode;
+		curSelected = 3;
 
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
@@ -95,6 +95,7 @@ class ControlEditorState extends FlxState
 		var exitSavebutton = new FlxUIButton((exitbutton.x + exitbutton.width + 25),25,"exit and save",() -> 
 		{
 			save();
+			// config.setcontrolmode(curSelected);
 			exit();
 		});
 		exitSavebutton.resize(250,50);

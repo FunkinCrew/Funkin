@@ -119,7 +119,7 @@ class Config {
 
 	public static function set_controlMode(mode:Int = 0):Int {
 		// save control mode num from FlxSave
-		FlxG.save.data.controlmode = mode;
+		if (FlxG.save.data.controlmode == null) FlxG.save.data.controlmode = mode;
 		FlxG.save.flush();
 
 		return FlxG.save.data.controlmode;
