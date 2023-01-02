@@ -6,8 +6,6 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.Module;
 import funkin.modding.module.ScriptedModule;
 
-using funkin.util.IteratorTools;
-
 /**
  * Utility functions for loading and manipulating active modules.
  */

@@ -6,8 +6,6 @@ import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.stage.Bopper;
 
-using StringTools;
-
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
  * 
@@ -96,8 +94,9 @@ class BaseCharacter extends Bopper
 		if (animOffsets == value)
 			return value;
 
-		var xDiff = animOffsets[0] - value[0];
-		var yDiff = animOffsets[1] - value[1];
+		// Make sure animOffets are halved when scale is 0.5.
+		var xDiff = (animOffsets[0] * this.scale.x) - value[0];
+		var yDiff = (animOffsets[1] * this.scale.y) - value[1];
 
 		// Call the super function so that camera focus point is not affected.
 		super.set_x(this.x + xDiff);

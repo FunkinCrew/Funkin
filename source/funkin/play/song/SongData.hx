@@ -8,8 +8,6 @@ import haxe.Json;
 import openfl.utils.Assets;
 import thx.semver.Version;
 
-using StringTools;
-
 /**
  * Contains utilities for loading and parsing stage data.
  */
@@ -96,12 +94,12 @@ class SongDataParser
 		if (songCache.exists(songId))
 		{
 			var song:Song = songCache.get(songId);
-			trace('[STAGEDATA] Successfully fetch song: ${songId}');
+			trace('[SONGDATA] Successfully fetch song: ${songId}');
 			return song;
 		}
 		else
 		{
-			trace('[STAGEDATA] Failed to fetch song, not found in cache: ${songId}');
+			trace('[SONGDATA] Failed to fetch song, not found in cache: ${songId}');
 			return null;
 		}
 	}
@@ -116,7 +114,7 @@ class SongDataParser
 
 	public static function listSongIds():Array<String>
 	{
-		return [for (x in songCache.keys()) x];
+		return songCache.keys().array();
 	}
 
 	public static function parseSongMetadata(songId:String):Array<SongMetadata>
@@ -261,8 +259,24 @@ abstract SongMetadata(RawSongMetadata)
 				noteSkin: 'Normal'
 			},
 			generatedBy: SongValidator.DEFAULT_GENERATEDBY,
+
+			// Variation ID.
 			variation: variation
 		};
+	}
+
+	public function clone(?newVariation:String = null):SongMetadata
+	{
+		var result = new SongMetadata(this.songName, this.artist, newVariation == null ? this.variation : newVariation);
+		result.version = this.version;
+		result.timeFormat = this.timeFormat;
+		result.divisions = this.divisions;
+		result.timeChanges = this.timeChanges;
+		result.loop = this.loop;
+		result.playData = this.playData;
+		result.generatedBy = this.generatedBy;
+
+		return result;
 	}
 }
 

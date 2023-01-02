@@ -1,9 +1,6 @@
 package funkin;
 
 import Sys.sleep;
-
-using StringTools;
-
 #if discord_rpc
 import discord_rpc.DiscordRpc;
 #end

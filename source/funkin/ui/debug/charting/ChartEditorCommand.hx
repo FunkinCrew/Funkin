@@ -64,6 +64,7 @@ class AddNotesCommand implements ChartEditorCommand
 
 		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -76,6 +77,7 @@ class AddNotesCommand implements ChartEditorCommand
 		state.currentSelection = [];
 		state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -109,6 +111,7 @@ class RemoveNotesCommand implements ChartEditorCommand
 		state.currentSelection = [];
 		state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -124,6 +127,7 @@ class RemoveNotesCommand implements ChartEditorCommand
 		state.currentSelection = notes;
 		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -409,6 +413,7 @@ class CutNotesCommand implements ChartEditorCommand
 		// Delete the notes.
 		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 		state.currentSelection = [];
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 		state.sortChartData();
@@ -419,6 +424,7 @@ class CutNotesCommand implements ChartEditorCommand
 		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
 		state.currentSelection = notes;
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -453,6 +459,7 @@ class FlipNotesCommand implements ChartEditorCommand
 
 		state.currentSelection = flippedNotes;
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 		state.sortChartData();
@@ -465,6 +472,7 @@ class FlipNotesCommand implements ChartEditorCommand
 
 		state.currentSelection = notes;
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -498,6 +506,7 @@ class PasteNotesCommand implements ChartEditorCommand
 		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
 		state.currentSelection = addedNotes.copy();
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -509,6 +518,7 @@ class PasteNotesCommand implements ChartEditorCommand
 		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
 		state.currentSelection = [];
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -539,6 +549,7 @@ class AddEventsCommand implements ChartEditorCommand
 		// TODO: Allow selecting events.
 		// state.currentSelection = events;
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -551,6 +562,7 @@ class AddEventsCommand implements ChartEditorCommand
 
 		state.currentSelection = [];
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -581,6 +593,7 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
 	{
 		note.length = newLength;
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 
@@ -591,6 +604,7 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
 	{
 		note.length = oldLength;
 
+		state.saveDataDirty = true;
 		state.noteDisplayDirty = true;
 		state.notePreviewDirty = true;
 

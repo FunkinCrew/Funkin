@@ -1,4 +1,4 @@
-package funkin.util;
+package funkin.util.tools;
 
 /**
  * A static extension which provides utility functions for Iterators.

@@ -7,30 +7,38 @@ import flixel.system.FlxSound;
 // when needed
 class VoicesGroup extends FlxTypedGroup<FlxSound>
 {
-	public var time(default, set):Float = 0;
+	public var time(get, set):Float;
 
-	public var volume(default, set):Float = 1;
+	public var volume(get, set):Float;
 
-	public var pitch(default, set):Float = 1;
+	public var pitch(get, set):Float;
 
 	// make it a group that you add to?
-	public function new(song:String, ?files:Array<String> = null)
+	public function new()
 	{
 		super();
+	}
+
+	// TODO: Remove this.
+	public static function build(song:String, ?files:Array<String> = null):VoicesGroup
+	{
+		var result = new VoicesGroup();
 
 		if (files == null)
 		{
 			// Add an empty voice.
-			add(new FlxSound());
-			return;
+			result.add(new FlxSound());
+			return result;
 		}
 
 		for (sndFile in files)
 		{
 			var snd:FlxSound = new FlxSound().loadEmbedded(Paths.voices(song, '$sndFile'));
 			FlxG.sound.list.add(snd); // adds it to sound group for proper volumes
-			add(snd); // adds it to main group for other shit
+			result.add(snd); // adds it to main group for other shit
 		}
+
+		return result;
 	}
 
 	/**
@@ -83,6 +91,14 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 		});
 	}
 
+	function get_time():Float
+	{
+		if (getFirstAlive() != null)
+			return getFirstAlive().time;
+		else
+			return 0;
+	}
+
 	function set_time(time:Float):Float
 	{
 		forEachAlive(function(snd)
@@ -92,6 +108,14 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 		});
 
 		return time;
+	}
+
+	function get_volume():Float
+	{
+		if (getFirstAlive() != null)
+			return getFirstAlive().volume;
+		else
+			return 1;
 	}
 
 	// in PlayState, adjust the code so that it only mutes the player1 vocal tracks?
@@ -105,9 +129,20 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 		return volume;
 	}
 
+	function get_pitch():Float
+	{
+		#if FLX_PITCH
+		if (getFirstAlive() != null)
+			return getFirstAlive().pitch;
+		else
+		#end
+		return 1;
+	}
+
 	function set_pitch(val:Float):Float
 	{
-		#if HAS_PITCH
+		#if FLX_PITCH
+		trace('Setting audio pitch to ' + val);
 		forEachAlive(function(snd)
 		{
 			snd.pitch = val;

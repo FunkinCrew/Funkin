@@ -15,9 +15,6 @@ import funkin.play.PlayState;
 import funkin.play.song.SongData.SongDataParser;
 import lime.net.curl.CURLCode;
 import openfl.Assets;
-
-using StringTools;
-
 #if discord_rpc
 import Discord.DiscordClient;
 #end

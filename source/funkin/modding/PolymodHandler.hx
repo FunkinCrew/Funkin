@@ -7,6 +7,7 @@ import funkin.play.stage.StageData;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
+import funkin.util.FileUtil;
 
 class PolymodHandler
 {
@@ -25,10 +26,7 @@ class PolymodHandler
 
 	public static function createModRoot()
 	{
-		if (!sys.FileSystem.exists(MOD_FOLDER))
-		{
-			sys.FileSystem.createDirectory(MOD_FOLDER);
-		}
+		FileUtil.createDirIfNotExists(MOD_FOLDER);
 	}
 
 	/**
@@ -183,7 +181,11 @@ class PolymodHandler
 	public static function getAllMods():Array<ModMetadata>
 	{
 		trace('Scanning the mods folder...');
-		var modMetadata = Polymod.scan();
+		var modMetadata = Polymod.scan({
+			modRoot: MOD_FOLDER,
+			apiVersionRule: API_VERSION,
+			errorCallback: PolymodErrorHandler.onPolymodError
+		});
 		trace('Found ${modMetadata.length} mods when scanning.');
 		return modMetadata;
 	}

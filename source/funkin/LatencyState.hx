@@ -31,8 +31,10 @@ class LatencyState extends MusicBeatSubstate
 	var offsetsPerBeat:Array<Int> = [];
 	var swagSong:HomemadeMusic;
 
+	#if debug
 	var funnyStatsGraph:CoolStatsGraph;
 	var realStats:CoolStatsGraph;
+	#end
 
 	override function create()
 	{
@@ -42,11 +44,13 @@ class LatencyState extends MusicBeatSubstate
 		FlxG.sound.music = swagSong;
 		FlxG.sound.music.play();
 
+		#if debug
 		funnyStatsGraph = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.PINK, "time");
 		FlxG.addChildBelowMouse(funnyStatsGraph);
 
 		realStats = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.YELLOW, "REAL");
 		FlxG.addChildBelowMouse(realStats);
+		#end
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key ->
 		{
@@ -170,8 +174,10 @@ class LatencyState extends MusicBeatSubstate
 			trace(FlxG.sound.music._channel.position);
 		 */
 
+		#if debug
 		funnyStatsGraph.update(FlxG.sound.music.time % 500);
 		realStats.update(swagSong.getTimeWithDiff() % 500);
+		#end
 
 		if (FlxG.keys.justPressed.S)
 		{

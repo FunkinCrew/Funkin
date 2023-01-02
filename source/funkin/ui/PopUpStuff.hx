@@ -6,8 +6,6 @@ import flixel.tweens.FlxTween;
 import funkin.play.PlayState;
 import funkin.util.Constants;
 
-using StringTools;
-
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {
 	override public function new()

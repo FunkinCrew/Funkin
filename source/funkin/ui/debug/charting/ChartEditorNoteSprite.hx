@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import flixel.FlxObject;
+import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxTileFrames;
@@ -12,16 +14,13 @@ import funkin.play.song.SongData.SongNoteData;
  */
 class ChartEditorNoteSprite extends FlxSprite
 {
+	public var parentState:ChartEditorState;
+
 	/**
 	 * The note data that this sprite represents.
 	 * You can set this to null to kill the sprite and flag it for recycling.
 	 */
 	public var noteData(default, set):SongNoteData;
-
-	/**
-	 * The note skin that this sprite displays.
-	 */
-	public var noteSkin(default, set):String = 'Normal';
 
 	/**
 	 * This note is the previous sprite in a sustain chain.
@@ -33,9 +32,11 @@ class ChartEditorNoteSprite extends FlxSprite
 	 */
 	public var childNoteSprite(default, set):ChartEditorNoteSprite = null;
 
-	public function new()
+	public function new(parent:ChartEditorState)
 	{
 		super();
+
+		this.parentState = parent;
 
 		if (noteFrameCollection == null)
 		{
@@ -131,26 +132,12 @@ class ChartEditorNoteSprite extends FlxSprite
 		playNoteAnimation();
 
 		// Update the position to match the note data.
-		setNotePosition();
+		updateNotePosition();
 
 		return this.noteData;
 	}
 
-	function set_noteSkin(value:String):String
-	{
-		// Don't update if the skin hasn't changed.
-		if (value == this.noteSkin)
-			return this.noteSkin;
-
-		this.noteSkin = value;
-
-		// Make sure to update the graphic to match the note skin.
-		playNoteAnimation();
-
-		return this.noteSkin;
-	}
-
-	function setNotePosition()
+	public function updateNotePosition(?origin:FlxObject)
 	{
 		var cursorColumn:Int = this.noteData.data;
 
@@ -179,7 +166,13 @@ class ChartEditorNoteSprite extends FlxSprite
 
 			// Notes far in the song will start far down, but the group they belong to will have a high negative offset.
 			// TODO: stepTime doesn't account for fluctuating BPMs.
-			this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
+			if (this.noteData.stepTime >= 0)
+				this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
+
+			if (origin != null) {
+				this.x += origin.x;
+				this.y += origin.y;
+			}
 		}
 		else
 		{
@@ -214,7 +207,6 @@ class ChartEditorNoteSprite extends FlxSprite
 		if (this.parentNoteSprite != null)
 		{
 			this.noteData = this.parentNoteSprite.noteData;
-			this.noteSkin = this.parentNoteSprite.noteSkin;
 		}
 
 		return this.parentNoteSprite;
@@ -227,13 +219,12 @@ class ChartEditorNoteSprite extends FlxSprite
 		if (this.parentNoteSprite != null)
 		{
 			this.noteData = this.parentNoteSprite.noteData;
-			this.noteSkin = this.parentNoteSprite.noteSkin;
 		}
 
 		return this.childNoteSprite;
 	}
 
-	function playNoteAnimation()
+	public function playNoteAnimation()
 	{
 		// Decide whether to display a note or a sustain.
 		var baseAnimationName:String = 'tap';
@@ -241,7 +232,7 @@ class ChartEditorNoteSprite extends FlxSprite
 			baseAnimationName = (this.childNoteSprite != null) ? 'hold' : 'holdEnd';
 
 		// Play the appropriate animation for the type, direction, and skin.
-		var animationName = '${baseAnimationName}${this.noteData.getDirectionName()}${this.noteSkin}';
+		var animationName = '${baseAnimationName}${this.noteData.getDirectionName()}${this.parentState.currentSongNoteSkin}';
 
 		this.animation.play(animationName);
 
@@ -266,7 +257,7 @@ class ChartEditorNoteSprite extends FlxSprite
 		this.updateHitbox();
 
 		// TODO: Make this an attribute of the note skin.
-		this.antialiasing = (noteSkin != 'Pixel');
+		this.antialiasing = (this.parentState.currentSongNoteSkin != 'Pixel');
 	}
 
 	/**

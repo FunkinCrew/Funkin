@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.system.debug.log.LogStyle;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -15,10 +16,8 @@ import funkin.play.song.SongData.SongDataParser;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
 import funkin.util.macro.MacroUtil;
+import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
-
-using StringTools;
-
 #if colyseus
 import io.colyseus.Client;
 import io.colyseus.Room;
@@ -88,8 +87,16 @@ class InitState extends FlxTransitionableState
 		if (FlxG.save.data.mute != null)
 			FlxG.sound.muted = FlxG.save.data.mute;
 
+		// Make errors and warnings less annoying.
+		LogStyle.ERROR.openConsole = false;
+		LogStyle.ERROR.errorSound = null;
+		LogStyle.WARNING.openConsole = false;
+		LogStyle.WARNING.errorSound = null;
+
 		// FlxG.save.close();
 		// FlxG.sound.loadSavedPrefs();
+		WindowUtil.initWindowEvents();
+
 		PreferencesMenu.initPrefs();
 		PlayerSettings.init();
 		Highscore.load();
@@ -124,6 +131,8 @@ class InitState extends FlxTransitionableState
 		CharacterDataParser.loadCharacterCache();
 		ModuleHandler.buildModuleCallbacks();
 		ModuleHandler.loadModuleCache();
+
+		FlxG.debugger.toggleKeys = [F2];
 
 		#if song
 		var song = getSong();

@@ -188,10 +188,13 @@ class LoadingState extends MusicBeatState
 		{
 			Paths.setCurrentLevel('tutorial');
 		}
-		else if (PlayState.storyWeek == 8) {
+		else if (PlayState.storyWeek == 8)
+		{
 			// TODO: Refactor this code.
 			Paths.setCurrentLevel("weekend1");
-		} else {
+		}
+		else
+		{
 			Paths.setCurrentLevel("week" + PlayState.storyWeek);
 		}
 		#if NO_PRELOAD_ALL
@@ -251,7 +254,7 @@ class LoadingState extends MusicBeatState
 		}
 		else
 		{
-			if (StringTools.endsWith(path, ".bundle"))
+			if (path.endsWith(".bundle"))
 			{
 				rootPath = path;
 				path += "/library.json";
@@ -351,5 +354,5 @@ class MultiCallback
 		return fired.copy();
 
 	public function getUnfired()
-		return [for (id in unfired.keys()) id];
+		return unfired.array();
 }

@@ -196,17 +196,11 @@ class HealthIcon extends FlxSprite
 			// Make the health icons bump (the update function causes them to lerp back down).
 			if (this.width > this.height)
 			{
-				var targetSize = Std.int(CoolUtil.coolLerp(this.width + HEALTH_ICON_SIZE * 0.2, HEALTH_ICON_SIZE, 0.15));
-				targetSize = Std.int(Math.min(targetSize, HEALTH_ICON_SIZE * 1.2));
-
-				setGraphicSize(targetSize, 0);
+				setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * 0.2)), 0);
 			}
 			else
 			{
-				var targetSize = Std.int(CoolUtil.coolLerp(this.height + HEALTH_ICON_SIZE * 0.2, HEALTH_ICON_SIZE, 0.15));
-				targetSize = Std.int(Math.min(targetSize, HEALTH_ICON_SIZE * 1.2));
-
-				setGraphicSize(0, targetSize);
+				setGraphicSize(0, Std.int(this.height + (HEALTH_ICON_SIZE * this.size.y * 0.2)));
 			}
 			this.updateHitbox();
 		}

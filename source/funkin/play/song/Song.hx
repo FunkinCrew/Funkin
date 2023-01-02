@@ -45,6 +45,11 @@ class Song // implements IPlayStateScriptedClass
 		populateFromMetadata();
 	}
 
+	public function getRawMetadata():Array<SongMetadata>
+	{
+		return _metadata;
+	}
+
 	/**
 	 * Populate the song data from the provided metadata,
 	 * including data from individual difficulties. Does not load chart data.
@@ -122,8 +127,11 @@ class Song // implements IPlayStateScriptedClass
 	/**
 	 * Retrieve the metadata for a specific difficulty, including the chart if it is loaded.
 	 */
-	public inline function getDifficulty(diffId:String):SongDifficulty
+	public inline function getDifficulty(?diffId:String):SongDifficulty
 	{
+		if (diffId == null)
+			diffId = difficulties.keys().array()[0];
+
 		return difficulties.get(diffId);
 	}
 
@@ -214,7 +222,7 @@ class SongDifficulty
 
 	public function getPlayableChars():Array<String>
 	{
-		return [for (i in chars.keys()) i];
+		return chars.keys().array();
 	}
 
 	public function getEvents():Array<SongEvent>
@@ -246,7 +254,7 @@ class SongDifficulty
 
 	public function buildVocals(charId:String = "bf"):VoicesGroup
 	{
-		var result:VoicesGroup = new VoicesGroup(this.song.songId, this.buildVoiceList());
+		var result:VoicesGroup = VoicesGroup.build(this.song.songId, this.buildVoiceList());
 		return result;
 	}
 }

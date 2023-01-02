@@ -17,8 +17,6 @@ import io.newgrounds.objects.events.Result.GetCurrentVersionResult;
 import io.newgrounds.objects.events.Result.GetVersionResult;
 #end
 
-using StringTools;
-
 /**
  * Contains any script functions which should be ALLOWD for use by modded scripts.
  */

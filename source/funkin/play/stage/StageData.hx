@@ -8,8 +8,6 @@ import funkin.util.assets.DataAssets;
 import haxe.Json;
 import openfl.Assets;
 
-using StringTools;
-
 /**
  * Contains utilities for loading and parsing stage data.
  */
@@ -143,7 +141,7 @@ class StageDataParser
 
 	public static function listStageIds():Array<String>
 	{
-		return [for (x in stageCache.keys()) x];
+		return stageCache.keys().array();
 	}
 
 	static function loadStageFile(stagePath:String):String

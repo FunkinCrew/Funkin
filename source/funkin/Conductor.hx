@@ -63,13 +63,33 @@ class Conductor
 	}
 
 	/**
-	 * Duration of a step in milliseconds. Calculated based on bpm.
+	 * Duration of a step (quarter) in milliseconds. Calculated based on bpm.
 	 */
 	public static var stepCrochet(get, null):Float;
 
 	static function get_stepCrochet():Float
 	{
-		return crochet / 4;
+		return crochet / timeSignatureNumerator;
+	}
+
+	public static var timeSignatureNumerator(get, null):Int;
+
+	static function get_timeSignatureNumerator():Int
+	{
+		if (currentTimeChange == null)
+			return 4;
+
+		return currentTimeChange.timeSignatureNum;
+	}
+
+	public static var timeSignatureDenominator(get, null):Int;
+
+	static function get_timeSignatureDenominator():Int
+	{
+		if (currentTimeChange == null)
+			return 4;
+
+		return currentTimeChange.timeSignatureDen;
 	}
 
 	/**
@@ -96,7 +116,20 @@ class Conductor
 	public static var offset:Float = 0;
 
 	// TODO: Add code to update this.
-	public static var beatsPerMeasure:Int = 4;
+	public static var beatsPerMeasure(get, null):Int;
+
+	static function get_beatsPerMeasure():Int
+	{
+		return timeSignatureNumerator;
+	}
+
+	public static var stepsPerMeasure(get, null):Int;
+
+	static function get_stepsPerMeasure():Int
+	{
+		// Is this always x4?
+		return timeSignatureNumerator * 4;
+	}
 
 	private function new()
 	{
@@ -124,11 +157,17 @@ class Conductor
 	 * Forcibly defines the current BPM of the song.
 	 * Useful for things like the chart editor that need to manipulate BPM in real time.
 	 * 
+	 * Set to null to reset to the BPM defined by the timeChanges.
+	 * 
 	 * WARNING: Avoid this for things like setting the BPM of the title screen music,
 	 * you should have a metadata file for it instead.
 	 */
-	public static function forceBPM(bpm:Float)
+	public static function forceBPM(?bpm:Float = null)
 	{
+		if (bpm != null)
+			trace('[CONDUCTOR] Forcing BPM to ' + bpm);
+		else
+			trace('[CONDUCTOR] Resetting BPM to default');
 		Conductor.bpmOverride = bpm;
 	}
 
@@ -213,10 +252,8 @@ class Conductor
 		}
 	}
 
-	public static function mapTimeChanges(currentChart:SongDifficulty)
+	public static function mapTimeChanges(songTimeChanges:Array<SongTimeChange>)
 	{
-		var songTimeChanges:Array<SongTimeChange> = currentChart.timeChanges;
-
 		timeChanges = [];
 
 		for (currentTimeChange in songTimeChanges)

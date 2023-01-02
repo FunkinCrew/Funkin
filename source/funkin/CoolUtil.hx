@@ -18,8 +18,6 @@ import lime.math.Rectangle;
 import lime.utils.Assets;
 import openfl.filters.ShaderFilter;
 
-using StringTools;
-
 class CoolUtil
 {
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];

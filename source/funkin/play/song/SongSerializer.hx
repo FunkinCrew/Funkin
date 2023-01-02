@@ -25,7 +25,7 @@ class SongSerializer
 		if (fileData == null)
 			return null;
 
-		var songChartData:SongChartData = SerializerUtil.fromJSON(fileData);
+		var songChartData:SongChartData = fileData.parseJSON();
 
 		return songChartData;
 	}
@@ -41,7 +41,7 @@ class SongSerializer
 		if (fileData == null)
 			return null;
 
-		var songMetadata:SongMetadata = SerializerUtil.fromJSON(fileData);
+		var songMetadata:SongMetadata = fileData.parseJSON();
 
 		return songMetadata;
 	}
@@ -59,7 +59,7 @@ class SongSerializer
 			if (data == null)
 				return;
 
-			var songChartData:SongChartData = SerializerUtil.fromJSON(data);
+			var songChartData:SongChartData = data.parseJSON();
 
 			if (songChartData != null)
 				callback(songChartData);
@@ -79,7 +79,7 @@ class SongSerializer
 			if (data == null)
 				return;
 
-			var songMetadata:SongMetadata = SerializerUtil.fromJSON(data);
+			var songMetadata:SongMetadata = data.parseJSON();
 
 			if (songMetadata != null)
 				callback(songMetadata);

@@ -34,7 +34,6 @@ import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
 
 using Lambda;
-using StringTools;
 using flixel.util.FlxSpriteUtil; // add in "compiler save" that saves the JSON directly to the debug json using File.write() stuff on windows / sys
 
 class ChartingState extends MusicBeatState
@@ -445,7 +444,7 @@ class ChartingState extends MusicBeatState
 		add(playheadTest);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new VoicesGroup(daSong, _song.voiceList);
+		vocals = VoicesGroup.build(daSong, _song.voiceList);
 		// vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		// FlxG.sound.list.add(vocals);
 
