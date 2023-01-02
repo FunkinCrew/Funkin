@@ -69,13 +69,15 @@ class ScoreNum extends FlxSprite
 
 	function set_digit(val):Int
 	{
-		if (animation.curAnim != null && animation.curAnim.name != Std.string(val))
+		if (animation.curAnim != null && animation.curAnim.name != numToString[val])
 		{
-			animation.play(Std.string(val), true, false, 0);
+			animation.play(numToString[val], true, false, 0);
 			updateHitbox();
 
 			switch (val)
 			{
+				case 1:
+					offset.x -= 15;
 				case 5:
 				// set offsets
 				// offset.x += 0;
@@ -98,6 +100,8 @@ class ScoreNum extends FlxSprite
 	public var baseY:Float = 0;
 	public var baseX:Float = 0;
 
+	var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+
 	public function new(x:Float, y:Float, ?initDigit:Int = 0)
 	{
 		super(x, y);
@@ -105,20 +109,20 @@ class ScoreNum extends FlxSprite
 		baseY = y;
 		baseX = x;
 
-		frames = Paths.getSparrowAtlas('noteComboNumbers');
+		frames = Paths.getSparrowAtlas('digital_numbers');
 
 		for (i in 0...10)
 		{
-			var stringNum:String = Std.string(i);
+			var stringNum:String = numToString[i];
 			animation.addByPrefix(stringNum, stringNum, 24, false);
 		}
 
 		this.digit = initDigit;
 
-		animation.play(Std.string(digit), true);
+		animation.play(numToString[digit], true);
 		antialiasing = true;
 
-		setGraphicSize(Std.int(width * 0.3));
+		setGraphicSize(Std.int(width * 0.4));
 		updateHitbox();
 	}
 }

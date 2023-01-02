@@ -1197,6 +1197,9 @@ class PlayState extends MusicBeatState
 
 	function regenNoteData_NEW():Void
 	{
+		Highscore.tallies.combo = 0;
+		Highscore.tallies = new Tallies();
+
 		// Reset song events.
 		songEvents = currentChart.getEvents();
 		SongEventHandler.resetEvents(songEvents);
@@ -1638,6 +1641,10 @@ class PlayState extends MusicBeatState
 		while (inactiveNotes[0] != null && inactiveNotes[0].data.strumTime - Conductor.songPosition < 1800 / SongLoad.getSpeed())
 		{
 			var dunceNote:Note = inactiveNotes[0];
+
+			if (dunceNote.mustPress && !dunceNote.isSustainNote)
+				Highscore.tallies.totalNotes++;
+
 			activeNotes.add(dunceNote);
 
 			inactiveNotes.shift();
@@ -1847,6 +1854,8 @@ class PlayState extends MusicBeatState
 		{
 			// crackhead double thingie, sets whether was new highscore, AND saves the song!
 			Highscore.tallies.isNewHighscore = Highscore.saveScore(currentSong.song, songScore, storyDifficulty);
+
+			Highscore.saveCompletion(currentSong.song, Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes, storyDifficulty);
 		}
 
 		if (isStoryMode)
@@ -2274,7 +2283,7 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				Highscore.tallies.combo++;
-				Highscore.tallies.totalNotes++;
+				Highscore.tallies.totalNotesHit++;
 
 				if (Highscore.tallies.combo > Highscore.tallies.maxCombo)
 					Highscore.tallies.maxCombo = Highscore.tallies.combo;

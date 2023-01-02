@@ -1,112 +1,104 @@
 {
-  "dependencies": [
-    {
-      "name": "discord_rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "2d83fa8",
-      "url": "https://github.com/Aidan63/linc_discord-rpc"
-    },
-    {
-      "name": "flixel",
-      "type": "git",
-      "dir": null,
-      "ref": "dev",
-      "url": "https://github.com/MasterEric/flixel"
-    },
-    {
-      "name": "flixel-addons",
-      "type": "git",
-      "dir": null,
-      "ref": "a3877f0",
-      "url": "https://github.com/MasterEric/flixel-addons"
-    },
-    {
-      "name": "flixel-addons",
-      "type": "git",
-      "dir": null,
-      "ref": "dev",
-      "url": "https://github.com/MasterEric/flixel-addons"
-    },
-    {
-      "name": "flixel-ui",
-      "type": "haxelib",
-      "version": "2.4.0"
-    },
-    {
-      "name": "flxanimate",
-      "type": "git",
-      "dir": null,
-      "ref": "18b2060",
-      "url": "https://github.com/Dot-Stuff/flxanimate"
-    },
-    {
-      "name": "format",
-      "type": "haxelib",
-      "version": null
-    },
-    {
-      "name": "haxeui-core",
-      "type": "git",
-      "dir": null,
-      "ref": "fc8d656b",
-      "url": "https://github.com/haxeui/haxeui-core/"
-    },
-    {
-      "name": "haxeui-flixel",
-      "type": "git",
-      "dir": null,
-      "ref": "80941a7",
-      "url": "https://github.com/haxeui/haxeui-flixel"
-    },
-    {
-      "name": "hmm",
-      "type": "haxelib",
-      "version": "2.1.0"
-    },
-    {
-      "name": "hscript",
-      "type": "haxelib",
-      "version": "2.5.0"
-    },
-    {
-      "name": "hxcpp",
-      "type": "haxelib",
-      "version": "4.2.1"
-    },
-    {
-      "name": "hxcpp-debug-server",
-      "type": "haxelib",
-      "version": "1.2.4"
-    },
-    {
-      "name": "hxp",
-      "type": "haxelib",
-      "version": null
-    },
-    {
-      "name": "lime",
-      "type": "haxelib",
-      "version": null
-    },
-    {
-      "name": "openfl",
-      "type": "git",
-      "dir": null,
-      "ref": "develop",
-      "url": "https://github.com/openfl/openfl"
-    },
-    {
-      "name": "polymod",
-      "type": "git",
-      "dir": null,
-      "ref": "develop",
-      "url": "https://github.com/larsiusprime/polymod"
-    },
-    {
-      "name": "thx.semver",
-      "type": "haxelib",
-      "version": "0.2.2"
-    }
-  ]
+    "dependencies": [{
+            "name": "discord_rpc",
+            "type": "git",
+            "dir": null,
+            "ref": "2d83fa8",
+            "url": "https://github.com/Aidan63/linc_discord-rpc"
+        },
+        {
+            "name": "flixel",
+            "type": "git",
+            "dir": null,
+            "ref": "a629f9a5",
+            "url": "https://github.com/MasterEric/flixel"
+        },
+        {
+            "name": "flixel-addons",
+            "type": "git",
+            "dir": null,
+            "ref": "752c3d7",
+            "url": "https://github.com/MasterEric/flixel-addons"
+        },
+        {
+            "name": "flixel-ui",
+            "type": "haxelib",
+            "version": "2.4.0"
+        },
+        {
+            "name": "flxanimate",
+            "type": "git",
+            "dir": null,
+            "ref": "18b2060",
+            "url": "https://github.com/Dot-Stuff/flxanimate"
+        },
+        {
+            "name": "format",
+            "type": "haxelib",
+            "version": "3.5.0"
+        },
+        {
+            "name": "haxeui-core",
+            "type": "git",
+            "dir": null,
+            "ref": "fc8d656b",
+            "url": "https://github.com/haxeui/haxeui-core/"
+        },
+        {
+            "name": "haxeui-flixel",
+            "type": "git",
+            "dir": null,
+            "ref": "80941a7",
+            "url": "https://github.com/haxeui/haxeui-flixel"
+        },
+        {
+            "name": "hmm",
+            "type": "haxelib",
+            "version": "2.1.0"
+        },
+        {
+            "name": "hscript",
+            "type": "haxelib",
+            "version": "2.5.0"
+        },
+        {
+            "name": "hxcpp",
+            "type": "haxelib",
+            "version": "4.2.1"
+        },
+        {
+            "name": "hxcpp-debug-server",
+            "type": "haxelib",
+            "version": "1.2.4"
+        },
+        {
+            "name": "hxp",
+            "type": "haxelib",
+            "version": "1.2.2"
+        },
+        {
+            "name": "lime",
+            "type": "haxelib",
+            "version": "8.0.0"
+        },
+        {
+            "name": "openfl",
+            "type": "git",
+            "dir": null,
+            "ref": "3fd5763c1",
+            "url": "https://github.com/MasterEric/openfl"
+        },
+        {
+            "name": "polymod",
+            "type": "git",
+            "dir": null,
+            "ref": "547c8ee",
+            "url": "https://github.com/larsiusprime/polymod"
+        },
+        {
+            "name": "thx.semver",
+            "type": "haxelib",
+            "version": "0.2.2"
+        }
+    ]
 }

@@ -28,7 +28,7 @@ class ResultState extends MusicBeatSubstate
 
 	override function create()
 	{
-		if (Highscore.tallies.sick == Highscore.tallies.totalNotes && Highscore.tallies.maxCombo == Highscore.tallies.totalNotes)
+		if (Highscore.tallies.sick == Highscore.tallies.totalNotesHit && Highscore.tallies.maxCombo == Highscore.tallies.totalNotesHit)
 			resultsVariation = PERFECT;
 		else if (Highscore.tallies.missed + Highscore.tallies.bad + Highscore.tallies.shit >= Highscore.tallies.totalNotes * 0.50)
 			resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
@@ -165,7 +165,7 @@ class ResultState extends MusicBeatSubstate
 		var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
 		add(ratingGrp);
 
-		var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, Highscore.tallies.totalNotes);
+		var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, Highscore.tallies.totalNotesHit);
 		ratingGrp.add(totalHit);
 
 		var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, Highscore.tallies.maxCombo);

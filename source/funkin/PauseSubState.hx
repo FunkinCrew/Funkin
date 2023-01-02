@@ -81,6 +81,9 @@ class PauseSubState extends MusicBeatSubstate
 
 		var deathCounter:FlxText = new FlxText(20, 15 + 64, 0, "", 32);
 		deathCounter.text = "Blue balled: " + PlayState.deathCounter;
+		deathCounter.text += "\n" + Highscore.tallies.totalNotesHit;
+		deathCounter.text += "\n" + Highscore.tallies.totalNotes;
+		deathCounter.text += "\n" + Std.string(Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes);
 		deathCounter.scrollFactor.set();
 		deathCounter.setFormat(Paths.font('vcr.ttf'), 32);
 		deathCounter.updateHitbox();
