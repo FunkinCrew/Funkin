@@ -6,8 +6,6 @@ import funkin.play.PlayState;
 import haxe.Json;
 import lime.utils.Assets;
 
-using StringTools;
-
 typedef SwagSong =
 {
 	var song:String;

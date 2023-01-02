@@ -8,8 +8,6 @@ import funkin.util.assets.DataAssets;
 import haxe.Json;
 import openfl.Assets;
 
-using StringTools;
-
 /**
  * Contains utilities for loading and parsing stage data.
  */

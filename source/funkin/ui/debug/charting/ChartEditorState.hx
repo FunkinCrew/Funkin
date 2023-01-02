@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import haxe.io.Path;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.FlxSprite;
@@ -31,6 +32,7 @@ import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
+import funkin.util.DateUtil;
 import funkin.util.SerializerUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
@@ -49,11 +51,11 @@ import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import lime.media.AudioBuffer;
+import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 
 using Lambda;
-using StringTools;
 
 /**
  * A state dedicated to allowing the user to create and edit song charts.
@@ -97,6 +99,11 @@ class ChartEditorState extends HaxeUIState
 
 	// The height of the menu bar in the layout.
 	static final MENU_BAR_HEIGHT = 32;
+
+	/**
+	 * Duration to wait before autosaving the chart.
+	 */
+	static final AUTOSAVE_TIMER_DELAY:Float = 60.0 * 5.0;
 
 	// The amount of padding between the menu bar and the chart grid when fully scrolled up.
 	static final GRID_TOP_PAD:Int = 8;
@@ -434,6 +441,38 @@ class ChartEditorState extends HaxeUIState
 	 * The Bitmap can be modified by individual commands without using this.
 	 */
 	var notePreviewDirty:Bool = true;
+
+	/**
+	 * Whether the chart has been modified since it was last saved.
+	 * Used to determine whether to auto-save, etc.
+	 */
+	var saveDataDirty(default, set):Bool = false;
+
+	function set_saveDataDirty(value:Bool):Bool
+	{
+		if (value == saveDataDirty)
+			return value;
+
+		if (value)
+		{
+			// Start the auto-save timer.
+			autoSaveTimer = new FlxTimer().start(AUTOSAVE_TIMER_DELAY, (_) -> autoSave());
+		}
+		else
+		{
+			// Stop the auto-save timer.
+			autoSaveTimer.cancel();
+			autoSaveTimer.destroy();
+			autoSaveTimer = null;
+		}
+
+		return saveDataDirty = value;
+	}
+
+	/**
+	 * A timer used to auto-save the chart after a period of inactivity.
+	 */
+	var autoSaveTimer:FlxTimer;
 
 	/**
 	 * Whether the difficulty tree view in the toolbox has been modified and needs to be updated.
@@ -847,6 +886,8 @@ class ChartEditorState extends HaxeUIState
 		// Setup the onClick listeners for the UI after it's been created.
 		setupUIListeners();
 
+		setupAutoSave();
+
 		// TODO: We should be loading the music later when the user requests it.
 		// loadDefaultMusic();
 
@@ -1240,6 +1281,48 @@ class ChartEditorState extends HaxeUIState
 		registerContextMenu(null, Paths.ui('chart-editor/context/test'));
 	}
 
+	/**
+	 * Setup timers and listerners to handle auto-save.
+	 */
+	function setupAutoSave()
+	{
+		WindowUtil.windowExit.add(onWindowClose);
+		saveDataDirty = false;
+	}
+
+	/**
+	 * Called after 5 minutes without saving.
+	 */
+	function autoSave()
+	{
+		saveDataDirty = false;
+
+		// Auto-save the chart.
+
+		#if html5
+		// Auto-save to local storage.
+		#else
+		// Auto-save to temp file.
+		exportAllSongData(true, true);
+		#end
+	}
+
+	function onWindowClose(exitCode:Int)
+	{
+		trace('Window exited with exit code: $exitCode');
+		trace('Should save chart? $saveDataDirty');
+
+		if (saveDataDirty)
+		{
+			exportAllSongData(true);
+		}
+	}
+
+	function cleanupAutoSave()
+	{
+		WindowUtil.windowExit.remove(onWindowClose);
+	}
+
 	public override function update(elapsed:Float)
 	{
 		// dispatchEvent gets called here.
@@ -1268,25 +1351,20 @@ class ChartEditorState extends HaxeUIState
 		handleHelpKeybinds();
 
 		// DEBUG
+		#if debug
 		if (FlxG.keys.justPressed.F)
 		{
-			showNotification('Hi there :)');
-		}
+			// This breaks the layout don't use it.
+			// showNotification('Hi there :)');
 
-		if (FlxG.keys.justPressed.Q)
-		{
-			ChartEditorDialogHandler.openWelcomeDialog(this, true);
-		}
-
-		if (FlxG.keys.justPressed.W)
-		{
-			difficultySelectDirty = true;
+			autoSave();
 		}
 
 		if (FlxG.keys.justPressed.E)
 		{
 			currentSongMetadata.timeChanges[0].timeSignatureNum = (currentSongMetadata.timeChanges[0].timeSignatureNum == 4 ? 3 : 4);
 		}
+		#end
 
 		// Right align the BF health icon.
 
@@ -2959,6 +3037,8 @@ class ChartEditorState extends HaxeUIState
 	{
 		super.destroy();
 
+		cleanupAutoSave();
+
 		@:privateAccess
 		ChartEditorNoteSprite.noteFrameCollection = null;
 	}
@@ -2998,7 +3078,11 @@ class ChartEditorState extends HaxeUIState
 		notifBar.hide();
 	}
 
-	public function exportAllSongData():Void
+	/**
+	 * @param force Whether to force the export without prompting the user for a file location.
+	 * @param tmp If true, save to the temporary directory instead of the local `backup` directory.
+	 */
+	public function exportAllSongData(?force:Bool = false, ?tmp:Bool = false):Void
 	{
 		var zipEntries = [];
 
@@ -3030,6 +3114,16 @@ class ChartEditorState extends HaxeUIState
 
 		trace('Exporting ${zipEntries.length} files to ZIP...');
 
+		if (force)
+		{
+			var targetPath:String = tmp ? Path.join([FileUtil.getTempDir(), 'chart-editor-exit-${DateUtil.generateTimestamp()}.zip']) : Path.join(['./backups/', 'chart-editor-exit-${DateUtil.generateTimestamp()}.zip']);
+
+			// We have to force write because the program will die before the save dialog is closed.
+			trace('Force exporting to $targetPath...');
+			FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath);
+			return;
+		}
+
 		// Prompt and save.
 		var onSave:Array<String>->Void = (paths:Array<String>) ->
 		{
@@ -3041,6 +3135,6 @@ class ChartEditorState extends HaxeUIState
 			trace('Export cancelled.');
 		};
 
-		FileUtil.saveFilesAsZIP(zipEntries, onSave, onCancel, '$currentSongId-chart.zip');
+		FileUtil.saveMultipleFiles(zipEntries, onSave, onCancel, '$currentSongId-chart.zip');
 	}
 }

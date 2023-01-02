@@ -41,9 +41,6 @@ import funkin.ui.stageBuildShit.StageOffsetSubstate;
 import funkin.util.Constants;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;
-
-using StringTools;
-
 #if discord_rpc
 import Discord.DiscordClient;
 #end

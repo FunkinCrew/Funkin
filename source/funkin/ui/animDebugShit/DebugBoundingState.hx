@@ -33,7 +33,6 @@ import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 
-using StringTools;
 using flixel.util.FlxSpriteUtil;
 
 #if web

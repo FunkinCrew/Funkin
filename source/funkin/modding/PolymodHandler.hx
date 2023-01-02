@@ -7,6 +7,7 @@ import funkin.play.stage.StageData;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
+import funkin.util.FileUtil;
 
 class PolymodHandler
 {
@@ -25,12 +26,7 @@ class PolymodHandler
 
 	public static function createModRoot()
 	{
-		#if sys
-		if (!sys.FileSystem.exists(MOD_FOLDER))
-		{
-			sys.FileSystem.createDirectory(MOD_FOLDER);
-		}
-		#end
+		FileUtil.createDirIfNotExists(MOD_FOLDER);
 	}
 
 	/**

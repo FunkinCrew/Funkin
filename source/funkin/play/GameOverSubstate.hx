@@ -11,8 +11,6 @@ import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.ui.PreferencesMenu;
 
-using StringTools;
-
 /**
  * A substate which renders over the PlayState when the player dies.
  * Displays the player death animation, plays the music, and handles restarting the song.

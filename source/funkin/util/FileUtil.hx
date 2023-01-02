@@ -1,5 +1,6 @@
 package funkin.util;
 
+import cpp.abi.Abi;
 import haxe.zip.Entry;
 import lime.utils.Bytes;
 import lime.ui.FileDialog;
@@ -222,7 +223,8 @@ class FileUtil
 	 * @param typeFilter TODO What does this do?
 	 * @return Whether the file dialog was opened successfully.
 	 */
-	public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String, ?force:Bool = false):Bool
+	public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
+			?force:Bool = false):Bool
 	{
 		#if desktop
 		// Prompt the user for a directory, then write all of the files to there.
@@ -232,17 +234,23 @@ class FileUtil
 			for (resource in resources)
 			{
 				var filePath = haxe.io.Path.join([targetPath, resource.fileName]);
-                try {
-					if (resource.data == null) {
+				try
+				{
+					if (resource.data == null)
+					{
 						trace('WARNING: File $filePath has no data or content. Skipping.');
 						continue;
-					} else {
-						writeBytesToPath(filePath, resource.data, force);
 					}
-                } catch (e:Dynamic) {
-                    trace('Failed to write file (probably already exists): $filePath' + filePath);
-                    continue;
-                }
+					else
+					{
+						writeBytesToPath(filePath, resource.data, force ? Force : Skip);
+					}
+				}
+				catch (e:Dynamic)
+				{
+					trace('Failed to write file (probably already exists): $filePath' + filePath);
+					continue;
+				}
 				paths.push(filePath);
 			}
 			onSaveAll(paths);
@@ -264,7 +272,9 @@ class FileUtil
 	/**
 	 * Takes an array of file entries and prompts the user to save them as a ZIP file.
 	 */
-	public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String, ?force:Bool = false):Bool {
+	public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
+			?force:Bool = false):Bool
+	{
 		// Create a ZIP file.
 		var zipBytes = createZIPFromEntries(resources);
 
@@ -280,44 +290,160 @@ class FileUtil
 	}
 
 	/**
-	 * Write string file contents directly to a given path.
-     * Only works on desktop.
+	 * Takes an array of file entries and forcibly writes a ZIP to the given path.
+	 * Only works on desktop, because HTML5 doesn't allow you to write files to arbitrary paths.
+	 * Use `saveFilesAsZIP` instead.
+	 * @param force Whether to force overwrite an existing file.
 	 */
-	public static function writeStringToPath(path:String, data:String, force:Bool = false)
+	public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, ?force:Bool = false):Bool
 	{
-		if (force || !sys.FileSystem.exists(path))
+		#if desktop
+		// Create a ZIP file.
+		var zipBytes = createZIPFromEntries(resources);
+
+		// Write the ZIP.
+		writeBytesToPath(path, zipBytes, force ? Force : Skip);
+
+		return true;
+		#else
+		return false;
+		#end
+	}
+
+	/**
+	 * Write string file contents directly to a given path.
+	 * Only works on desktop.
+	 * 
+	 * @param mode Whether to Force, Skip, or Ask to overwrite an existing file.
+	 */
+	public static function writeStringToPath(path:String, data:String, mode:FileWriteMode = Skip)
+	{
+		#if sys
+		createDirIfNotExists(Path.directory(path));
+
+		switch (mode)
 		{
-			sys.io.File.saveContent(path, data);
+			case Force:
+				sys.io.File.saveContent(path, data);
+			case Skip:
+				if (!sys.FileSystem.exists(path))
+				{
+					sys.io.File.saveContent(path, data);
+				}
+				else
+				{
+					throw 'File already exists: $path';
+				}
+			case Ask:
+				if (sys.FileSystem.exists(path))
+				{
+					// TODO: We don't have the technology to use native popups yet.
+				}
+				else
+				{
+					sys.io.File.saveContent(path, data);
+				}
 		}
-		else
-		{
-			throw 'File already exists: $path';
-		}
+		#else
+		throw 'Direct file writing by path not supported on this platform.';
+		#end
 	}
 
 	/**
 	 * Write byte file contents directly to a given path.
-     * Only works on desktop.
+	 * Only works on desktop.
+	 * 
+	 * @param mode Whether to Force, Skip, or Ask to overwrite an existing file.
 	 */
-	public static function writeBytesToPath(path:String, data:Bytes, force:Bool = false)
+	public static function writeBytesToPath(path:String, data:Bytes, mode:FileWriteMode = Skip)
 	{
-		if (force || !sys.FileSystem.exists(path))
+		#if sys
+		createDirIfNotExists(Path.directory(path));
+
+		switch (mode)
 		{
-			sys.io.File.saveBytes(path, data);
+			case Force:
+				sys.io.File.saveBytes(path, data);
+			case Skip:
+				if (!sys.FileSystem.exists(path))
+				{
+					sys.io.File.saveBytes(path, data);
+				}
+				else
+				{
+					throw 'File already exists: $path';
+				}
+			case Ask:
+				if (sys.FileSystem.exists(path))
+				{
+					// TODO: We don't have the technology to use native popups yet.
+				}
+				else
+				{
+					sys.io.File.saveBytes(path, data);
+				}
 		}
-		else
-		{
-			throw 'File already exists: $path';
-		}
+		#else
+		throw 'Direct file writing by path not supported on this platform.';
+		#end
 	}
 
 	/**
 	 * Write string file contents directly to the end of a file at the given path.
-     * Only works on desktop.
+	 * Only works on desktop.
 	 */
 	public static function appendStringToPath(path:String, data:String)
 	{
 		sys.io.File.append(path, false).writeString(data);
+	}
+
+	/**
+	 * Create a directory if it doesn't already exist.
+	 * Only works on desktop.
+	 */
+	public static function createDirIfNotExists(dir:String)
+	{
+		#if sys
+		if (!sys.FileSystem.exists(dir))
+		{
+			sys.FileSystem.createDirectory(dir);
+		}
+		#end
+	}
+
+	static var tempDir:String = null;
+	static final TEMP_ENV_VARS:Array<String> = ['TEMP', 'TMPDIR', 'TEMPDIR', 'TMP'];
+
+	/**
+	 * Get the path to a temporary directory we can use for writing files.
+	 * Only works on desktop.
+	 */
+	public static function getTempDir():String
+	{
+		if (tempDir != null)
+			return tempDir;
+
+		#if sys
+		#if windows
+		var path:String = null;
+
+		for (envName in TEMP_ENV_VARS)
+		{
+			path = Sys.getEnv(envName);
+
+			if (path == "")
+				path = null;
+			if (path != null)
+				break;
+		}
+
+		return tempDir = Path.join([path, 'funkin/']);
+		#else
+		return tempDir = '/tmp/funkin/';
+		#end
+		#else
+		return null;
+		#end
 	}
 
 	/**
@@ -329,7 +455,7 @@ class FileUtil
 	public static function createZIPFromEntries(entries:Array<Entry>):Bytes
 	{
 		var o = new haxe.io.BytesOutput();
-		
+
 		var zipWriter = new haxe.zip.Writer(o);
 		zipWriter.write(entries.list());
 
@@ -348,24 +474,23 @@ class FileUtil
 		var data = haxe.io.Bytes.ofString(content, UTF8);
 
 		return {
-			fileName : name,
-			fileSize : data.length,
-			
-			data : data,
-			dataSize : data.length,
+			fileName: name,
+			fileSize: data.length,
 
-			compressed : false,
-			
-			fileTime : Date.now(),
-			crc32 : null,
-			extraFields : null,
+			data: data,
+			dataSize: data.length,
+
+			compressed: false,
+
+			fileTime: Date.now(),
+			crc32: null,
+			extraFields: null,
 		};
 	}
 
 	static function convertTypeFilter(typeFilter:Array<FileFilter>):String
 	{
 		var filter = null;
-
 		if (typeFilter != null)
 		{
 			var filters = [];
@@ -378,4 +503,22 @@ class FileUtil
 
 		return filter;
 	}
+}
+
+enum FileWriteMode
+{
+	/**
+	 * Forcibly overwrite the file if it already exists.
+	 */
+	Force;
+
+	/**
+	 * Ask the user if they want to overwrite the file if it already exists.
+	 */
+	Ask;
+
+	/**
+	 * Skip the file if it already exists.
+	 */
+	Skip;
 }

@@ -10,8 +10,6 @@ import funkin.shaderslmfao.ColorSwap;
 import funkin.ui.PreferencesMenu;
 import funkin.util.Constants;
 
-using StringTools;
-
 class Note extends FlxSprite
 {
 	public var data = new NoteData();

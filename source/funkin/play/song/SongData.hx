@@ -8,8 +8,6 @@ import haxe.Json;
 import openfl.utils.Assets;
 import thx.semver.Version;
 
-using StringTools;
-
 /**
  * Contains utilities for loading and parsing stage data.
  */
@@ -267,7 +265,8 @@ abstract SongMetadata(RawSongMetadata)
 		};
 	}
 
-	public function clone(?newVariation:String = null):SongMetadata {
+	public function clone(?newVariation:String = null):SongMetadata
+	{
 		var result = new SongMetadata(this.songName, this.artist, newVariation == null ? this.variation : newVariation);
 		result.version = this.version;
 		result.timeFormat = this.timeFormat;
@@ -276,7 +275,7 @@ abstract SongMetadata(RawSongMetadata)
 		result.loop = this.loop;
 		result.playData = this.playData;
 		result.generatedBy = this.generatedBy;
-		
+
 		return result;
 	}
 }

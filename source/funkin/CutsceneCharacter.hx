@@ -4,8 +4,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 
-using StringTools;
-
 class CutsceneCharacter extends FlxTypedGroup<FlxSprite>
 {
 	public var coolPos:FlxPoint = FlxPoint.get();

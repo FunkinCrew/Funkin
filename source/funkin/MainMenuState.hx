@@ -28,9 +28,6 @@ import funkin.util.Constants;
 import funkin.util.WindowUtil;
 import lime.app.Application;
 import openfl.filters.ShaderFilter;
-
-using StringTools;
-
 #if discord_rpc
 import Discord.DiscordClient;
 #end

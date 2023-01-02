@@ -15,8 +15,6 @@ import io.newgrounds.objects.events.Result.GetCurrentVersionResult;
 import io.newgrounds.objects.events.Result.GetVersionResult;
 import lime.app.Application;
 import openfl.display.Stage;
-
-using StringTools;
 #end
 
 /**

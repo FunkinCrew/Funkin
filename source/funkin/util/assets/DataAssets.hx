@@ -1,7 +1,5 @@
 package funkin.util.assets;
 
-using StringTools;
-
 class DataAssets
 {
 	static function buildDataPath(path:String):String

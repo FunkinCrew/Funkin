@@ -16,8 +16,6 @@ import funkin.util.assets.DataAssets;
 import haxe.Json;
 import openfl.utils.Assets;
 
-using StringTools;
-
 class CharacterDataParser
 {
 	/**
@@ -258,7 +256,7 @@ class CharacterDataParser
 	static function loadCharacterFile(charPath:String):String
 	{
 		var charFilePath:String = Paths.json('characters/${charPath}');
-		var rawJson = StringTools.trim(Assets.getText(charFilePath));
+		var rawJson = Assets.getText(charFilePath).trim();
 
 		while (!StringTools.endsWith(rawJson, "}"))
 		{

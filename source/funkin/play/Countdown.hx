@@ -10,8 +10,6 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import flixel.util.FlxTimer;
 
-using StringTools;
-
 class Countdown
 {
 	/**

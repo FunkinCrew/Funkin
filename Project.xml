@@ -135,14 +135,6 @@
 
 	<haxelib name="hxcpp-debug-server" if="desktop debug" />
 
-	<!--
-		With these options enabled, console popup and beep no longer occur.
-		You can still see the log messages by opening the console (F2).
-		Be sure to remove these during cleanup and bugfix testing!
-	-->
-	<haxedef name="FLX_NO_ERROR_SOUND" />
-	<haxedef name="FLX_NO_ERROR_CONSOLE" />
-
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 

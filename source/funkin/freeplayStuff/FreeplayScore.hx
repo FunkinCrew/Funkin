@@ -3,8 +3,6 @@ package funkin.freeplayStuff;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
-using StringTools;
-
 class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 {
 	public var scoreShit(default, set):Int = 0;

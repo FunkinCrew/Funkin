@@ -22,8 +22,6 @@ import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetStream;
 
-using StringTools;
-
 #if desktop
 #end
 class TitleState extends MusicBeatState

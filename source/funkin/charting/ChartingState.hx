@@ -34,7 +34,6 @@ import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
 
 using Lambda;
-using StringTools;
 using flixel.util.FlxSpriteUtil; // add in "compiler save" that saves the JSON directly to the debug json using File.write() stuff on windows / sys
 
 class ChartingState extends MusicBeatState
