@@ -1,12 +1,12 @@
 package funkin;
 
-import flixel.system.debug.log.LogStyle;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayState;
@@ -15,8 +15,8 @@ import funkin.play.event.SongEvent.SongEventHandler;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
-import funkin.util.macro.MacroUtil;
 import funkin.util.WindowUtil;
+import funkin.util.macro.MacroUtil;
 import openfl.display.BitmapData;
 #if colyseus
 import io.colyseus.Client;
@@ -57,6 +57,42 @@ class InitState extends FlxTransitionableState
 		FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
 		{
 			FlxG.debugger.visible = false;
+		});
+
+		FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFFCC2233), function()
+		{
+			if (FlxG.vcr.paused)
+			{
+				FlxG.vcr.resume();
+
+				for (snd in FlxG.sound.list)
+					snd.resume();
+
+				FlxG.sound.music.resume();
+			}
+			else
+			{
+				FlxG.vcr.pause();
+
+				for (snd in FlxG.sound.list)
+					snd.pause();
+
+				FlxG.sound.music.pause();
+			}
+		});
+
+		FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function()
+		{
+			FlxG.game.debugger.vcr.onStep();
+
+			for (snd in FlxG.sound.list)
+			{
+				snd.pause();
+				snd.time += FlxG.elapsed * 1000;
+			}
+
+			FlxG.sound.music.pause();
+			FlxG.sound.music.time += FlxG.elapsed * 1000;
 		});
 
 		FlxG.sound.muteKeys = [ZERO];
