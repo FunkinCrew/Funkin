@@ -1820,7 +1820,7 @@ class PlayState extends MusicBeatState
 
 		var daBPM:Float = currentSong.bpm;
 		var daPos:Float = 0;
-		for (i in 0...(Std.int(curStep / 16 + sec)))
+		for (i in 0...(Std.int(Conductor.currentStep / 16 + sec)))
 		{
 			var section = SongLoad.getSong()[i];
 			if (section == null)
@@ -1833,7 +1833,8 @@ class PlayState extends MusicBeatState
 		}
 		Conductor.songPosition = FlxG.sound.music.time = daPos;
 		Conductor.songPosition += Conductor.offset;
-		updateCurStep();
+		// updateCurStep();
+		Conductor.update(Conductor.songPosition);
 		resyncVocals();
 	}
 	#end

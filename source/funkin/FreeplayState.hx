@@ -411,19 +411,21 @@ class FreeplayState extends MusicBeatSubstate
 
 			// fp.updateScore(0);
 
-			new FlxTimer().start((1 / 24) * i, function(doShit)
+			var maxTimer:Float = Math.min(i, 4);
+
+			new FlxTimer().start((1 / 24) * maxTimer, function(doShit)
 			{
 				funnyMenu.doJumpIn = true;
 			});
 
-			new FlxTimer().start((0.09 * i) + 0.85, function(lerpTmr)
+			new FlxTimer().start((0.09 * maxTimer) + 0.85, function(lerpTmr)
 			{
 				funnyMenu.doLerp = true;
 			});
 
 			if (!force)
 			{
-				new FlxTimer().start(((0.20 * i) / (1 + i)) + 0.75, function(swagShi)
+				new FlxTimer().start(((0.20 * maxTimer) / (1 + maxTimer)) + 0.75, function(swagShi)
 				{
 					funnyMenu.songText.visible = true;
 					funnyMenu.alpha = 1;

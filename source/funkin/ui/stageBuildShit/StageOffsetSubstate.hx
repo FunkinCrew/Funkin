@@ -2,21 +2,10 @@ package funkin.ui.stageBuildShit;
 
 import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
-<<<<<<< HEAD
-import flixel.input.mouse.FlxMouseEventManager;
-=======
->>>>>>> origin/feature/week-4-gameplay
 import flixel.math.FlxPoint;
 import funkin.play.PlayState;
-<<<<<<< HEAD
-import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
-import haxe.ui.containers.VBox;
-=======
-import funkin.play.stage.StageData;
-import haxe.ui.RuntimeComponentBuilder;
->>>>>>> origin/feature/week-4-gameplay
 import haxe.ui.core.Component;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
