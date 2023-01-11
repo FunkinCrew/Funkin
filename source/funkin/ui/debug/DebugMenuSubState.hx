@@ -79,6 +79,7 @@ class DebugMenuSubState extends MusicBeatSubstate
 
 	function openAnimationEditor()
 	{
+		FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
 		trace('Animation Editor');
 	}
 
