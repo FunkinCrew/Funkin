@@ -134,6 +134,13 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	//judgement counter
+	var sicks:Int = 0;
+	var goods:Int = 0;
+	var bads:Int = 0;
+	var shits:Int = 0;
+	var misses:Int = 0;
+
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
@@ -733,8 +740,8 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -1364,7 +1371,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1624,10 +1631,16 @@ class PlayState extends MusicBeatState
 
 				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
+				if (daNote.y < -150)
+				{
+					noteMiss(daNote.noteData);
+					daNote.kill();
+					notes.remove(daNote, true);
+					daNote.destroy();
+				}
+
 				// i am so fucking sorry for this if condition
-				if (daNote.isSustainNote
-					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
-					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+				if (daNote.isSustainNote && daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2 && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 				{
 					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
 					swagRect.y /= daNote.scale.y;
@@ -1817,6 +1830,18 @@ class PlayState extends MusicBeatState
 			score = 200;
 		}
 
+		switch (daRating)
+		{
+			case 'shit':
+				shits++;
+			case 'bad':
+				bads++;
+			case 'good':
+				goods++;
+			case 'sick':
+				sicks++;
+		}
+
 		songScore += score;
 
 		/* if (combo > 60)
@@ -2002,8 +2027,10 @@ class PlayState extends MusicBeatState
 									if (controlArray[ignoreList[shit]])
 										inIgnoreList = true;
 								}
+								/*
 								if (!inIgnoreList)
 									badNoteCheck();
+								*/
 							}
 						}
 					}
@@ -2054,10 +2081,12 @@ class PlayState extends MusicBeatState
 					}
 				 */
 			}
+			/*
 			else
 			{
 				badNoteCheck();
 			}
+			*/
 		}
 
 		if ((up || right || down || left) && !boyfriend.stunned && generatedMusic)
@@ -2143,6 +2172,7 @@ class PlayState extends MusicBeatState
 			combo = 0;
 
 			songScore -= 10;
+			misses += 1;
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
@@ -2193,10 +2223,12 @@ class PlayState extends MusicBeatState
 	{
 		if (keyP)
 			goodNoteHit(note);
+		/*
 		else
 		{
 			badNoteCheck();
 		}
+		*/
 	}
 
 	function goodNoteHit(note:Note):Void

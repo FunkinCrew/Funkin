@@ -12,6 +12,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import flixel.system.FlxSound;
 
 using StringTools;
 
@@ -56,10 +57,6 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		var isDebug:Bool = false;
-
-		#if debug
-		isDebug = true;
-		#end
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
@@ -176,6 +173,8 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
+	var instPlaying:Int = -1;
+	public static var vocals:FlxSound = null;
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -228,6 +227,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
 			LoadingState.loadAndSwitchState(new PlayState());
+			destroyFreeplayVocals();
 		}
 	}
 
@@ -258,7 +258,8 @@ class FreeplayState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		#if !switch
-		NGio.logEvent('Fresh');
+		//Crash Causes
+		//NGio.logEvent('Fresh');
 		#end
 
 		// NGio.logEvent('Fresh');
@@ -279,7 +280,20 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		destroyFreeplayVocals();
+		var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+		PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+		if (PlayState.SONG.needsVoices)
+			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+		else
+			vocals = new FlxSound();
+		FlxG.sound.list.add(vocals);
+		FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.7);
+		vocals.play();
+		vocals.persist = true;
+		vocals.looped = true;
+		vocals.volume = 0.7;
+		instPlaying = curSelected;
 		#end
 
 		var bullShit:Int = 0;
@@ -305,6 +319,14 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+	
+	public static function destroyFreeplayVocals() {
+		if(vocals != null) {
+			vocals.stop();
+			vocals.destroy();
+		}
+		vocals = null;
 	}
 }
 
