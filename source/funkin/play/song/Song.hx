@@ -22,239 +22,239 @@ import funkin.play.song.SongData.SongTimeFormat;
  */
 class Song // implements IPlayStateScriptedClass
 {
-	public final songId:String;
+  public final songId:String;
 
-	final _metadata:Array<SongMetadata>;
+  final _metadata:Array<SongMetadata>;
 
-	final variations:Array<String>;
-	final difficulties:Map<String, SongDifficulty>;
+  final variations:Array<String>;
+  final difficulties:Map<String, SongDifficulty>;
 
-	public function new(id:String)
-	{
-		this.songId = id;
+  public function new(id:String)
+  {
+    this.songId = id;
 
-		variations = [];
-		difficulties = new Map<String, SongDifficulty>();
+    variations = [];
+    difficulties = new Map<String, SongDifficulty>();
 
-		_metadata = SongDataParser.parseSongMetadata(songId);
-		if (_metadata == null || _metadata.length == 0)
-		{
-			throw 'Could not find song data for songId: $songId';
-		}
+    _metadata = SongDataParser.parseSongMetadata(songId);
+    if (_metadata == null || _metadata.length == 0)
+    {
+      throw 'Could not find song data for songId: $songId';
+    }
 
-		populateFromMetadata();
-	}
+    populateFromMetadata();
+  }
 
-	public function getRawMetadata():Array<SongMetadata>
-	{
-		return _metadata;
-	}
+  public function getRawMetadata():Array<SongMetadata>
+  {
+    return _metadata;
+  }
 
-	/**
-	 * Populate the song data from the provided metadata,
-	 * including data from individual difficulties. Does not load chart data.
-	 */
-	function populateFromMetadata():Void
-	{
-		// Variations may have different artist, time format, generatedBy, etc.
-		for (metadata in _metadata)
-		{
-			for (diffId in metadata.playData.difficulties)
-			{
-				var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
+  /**
+   * Populate the song data from the provided metadata,
+   * including data from individual difficulties. Does not load chart data.
+   */
+  function populateFromMetadata():Void
+  {
+    // Variations may have different artist, time format, generatedBy, etc.
+    for (metadata in _metadata)
+    {
+      for (diffId in metadata.playData.difficulties)
+      {
+        var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
-				variations.push(metadata.variation);
+        variations.push(metadata.variation);
 
-				difficulty.songName = metadata.songName;
-				difficulty.songArtist = metadata.artist;
-				difficulty.timeFormat = metadata.timeFormat;
-				difficulty.divisions = metadata.divisions;
-				difficulty.timeChanges = metadata.timeChanges;
-				difficulty.loop = metadata.loop;
-				difficulty.generatedBy = metadata.generatedBy;
+        difficulty.songName = metadata.songName;
+        difficulty.songArtist = metadata.artist;
+        difficulty.timeFormat = metadata.timeFormat;
+        difficulty.divisions = metadata.divisions;
+        difficulty.timeChanges = metadata.timeChanges;
+        difficulty.loop = metadata.loop;
+        difficulty.generatedBy = metadata.generatedBy;
 
-				difficulty.stage = metadata.playData.stage;
-				// difficulty.noteSkin = metadata.playData.noteSkin;
+        difficulty.stage = metadata.playData.stage;
+        // difficulty.noteSkin = metadata.playData.noteSkin;
 
-				difficulty.chars = new Map<String, SongPlayableChar>();
-				for (charId in metadata.playData.playableChars.keys())
-				{
-					var char = metadata.playData.playableChars.get(charId);
+        difficulty.chars = new Map<String, SongPlayableChar>();
+        for (charId in metadata.playData.playableChars.keys())
+        {
+          var char = metadata.playData.playableChars.get(charId);
 
-					difficulty.chars.set(charId, char);
-				}
+          difficulty.chars.set(charId, char);
+        }
 
-				difficulties.set(diffId, difficulty);
-			}
-		}
-	}
+        difficulties.set(diffId, difficulty);
+      }
+    }
+  }
 
-	/**
-	 * Parse and cache the chart for all difficulties of this song.
-	 */
-	public function cacheCharts(?force:Bool = false):Void
-	{
-		if (force)
-		{
-			clearCharts();
-		}
+  /**
+   * Parse and cache the chart for all difficulties of this song.
+   */
+  public function cacheCharts(?force:Bool = false):Void
+  {
+    if (force)
+    {
+      clearCharts();
+    }
 
-		trace('Caching ${variations.length} chart files for song $songId');
-		for (variation in variations)
-		{
-			var chartData:SongChartData = SongDataParser.parseSongChartData(songId, variation);
-			var chartNotes = chartData.notes;
+    trace('Caching ${variations.length} chart files for song $songId');
+    for (variation in variations)
+    {
+      var chartData:SongChartData = SongDataParser.parseSongChartData(songId, variation);
+      var chartNotes = chartData.notes;
 
-			for (diffId in chartNotes.keys())
-			{
-				// Retrieve the cached difficulty data.
-				var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
-				if (difficulty == null)
-				{
-					trace('Could not find difficulty $diffId for song $songId');
-					continue;
-				}
-				// Add the chart data to the difficulty.
-				difficulty.notes = chartData.notes.get(diffId);
-				difficulty.scrollSpeed = chartData.getScrollSpeed(diffId);
+      for (diffId in chartNotes.keys())
+      {
+        // Retrieve the cached difficulty data.
+        var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+        if (difficulty == null)
+        {
+          trace('Could not find difficulty $diffId for song $songId');
+          continue;
+        }
+        // Add the chart data to the difficulty.
+        difficulty.notes = chartData.notes.get(diffId);
+        difficulty.scrollSpeed = chartData.getScrollSpeed(diffId);
 
-				difficulty.events = chartData.events;
-			}
-		}
-		trace('Done caching charts.');
-	}
+        difficulty.events = chartData.events;
+      }
+    }
+    trace('Done caching charts.');
+  }
 
-	/**
-	 * Retrieve the metadata for a specific difficulty, including the chart if it is loaded.
-	 */
-	public inline function getDifficulty(?diffId:String):SongDifficulty
-	{
-		if (diffId == null)
-			diffId = difficulties.keys().array()[0];
+  /**
+   * Retrieve the metadata for a specific difficulty, including the chart if it is loaded.
+   */
+  public inline function getDifficulty(?diffId:String):SongDifficulty
+  {
+    if (diffId == null)
+      diffId = difficulties.keys().array()[0];
 
-		return difficulties.get(diffId);
-	}
+    return difficulties.get(diffId);
+  }
 
-	/**
-	 * Purge the cached chart data for each difficulty of this song.
-	 */
-	public function clearCharts():Void
-	{
-		for (diff in difficulties)
-		{
-			diff.clearChart();
-		}
-	}
+  /**
+   * Purge the cached chart data for each difficulty of this song.
+   */
+  public function clearCharts():Void
+  {
+    for (diff in difficulties)
+    {
+      diff.clearChart();
+    }
+  }
 
-	public function toString():String
-	{
-		return 'Song($songId)';
-	}
+  public function toString():String
+  {
+    return 'Song($songId)';
+  }
 }
 
 class SongDifficulty
 {
-	/**
-	 * The parent song for this difficulty.
-	 */
-	public final song:Song;
+  /**
+   * The parent song for this difficulty.
+   */
+  public final song:Song;
 
-	/**
-	 * The difficulty ID, such as `easy` or `hard`.
-	 */
-	public final difficulty:String;
+  /**
+   * The difficulty ID, such as `easy` or `hard`.
+   */
+  public final difficulty:String;
 
-	/**
-	 * The metadata file that contains this difficulty.
-	 */
-	public final variation:String;
+  /**
+   * The metadata file that contains this difficulty.
+   */
+  public final variation:String;
 
-	/**
-	 * The note chart for this difficulty.
-	 */
-	public var notes:Array<SongNoteData>;
+  /**
+   * The note chart for this difficulty.
+   */
+  public var notes:Array<SongNoteData>;
 
-	/**
-	 * The event chart for this difficulty.
-	 */
-	public var events:Array<SongEventData>;
+  /**
+   * The event chart for this difficulty.
+   */
+  public var events:Array<SongEventData>;
 
-	public var songName:String = SongValidator.DEFAULT_SONGNAME;
-	public var songArtist:String = SongValidator.DEFAULT_ARTIST;
-	public var timeFormat:SongTimeFormat = SongValidator.DEFAULT_TIMEFORMAT;
-	public var divisions:Int = SongValidator.DEFAULT_DIVISIONS;
-	public var loop:Bool = SongValidator.DEFAULT_LOOP;
-	public var generatedBy:String = SongValidator.DEFAULT_GENERATEDBY;
+  public var songName:String = SongValidator.DEFAULT_SONGNAME;
+  public var songArtist:String = SongValidator.DEFAULT_ARTIST;
+  public var timeFormat:SongTimeFormat = SongValidator.DEFAULT_TIMEFORMAT;
+  public var divisions:Int = SongValidator.DEFAULT_DIVISIONS;
+  public var loop:Bool = SongValidator.DEFAULT_LOOP;
+  public var generatedBy:String = SongValidator.DEFAULT_GENERATEDBY;
 
-	public var timeChanges:Array<SongTimeChange> = [];
+  public var timeChanges:Array<SongTimeChange> = [];
 
-	public var stage:String = SongValidator.DEFAULT_STAGE;
-	public var chars:Map<String, SongPlayableChar> = null;
+  public var stage:String = SongValidator.DEFAULT_STAGE;
+  public var chars:Map<String, SongPlayableChar> = null;
 
-	public var scrollSpeed:Float = SongValidator.DEFAULT_SCROLLSPEED;
+  public var scrollSpeed:Float = SongValidator.DEFAULT_SCROLLSPEED;
 
-	public function new(song:Song, diffId:String, variation:String)
-	{
-		this.song = song;
-		this.difficulty = diffId;
-		this.variation = variation;
-	}
+  public function new(song:Song, diffId:String, variation:String)
+  {
+    this.song = song;
+    this.difficulty = diffId;
+    this.variation = variation;
+  }
 
-	public function clearChart():Void
-	{
-		notes = null;
-	}
+  public function clearChart():Void
+  {
+    notes = null;
+  }
 
-	public function getStartingBPM():Float
-	{
-		if (timeChanges.length == 0)
-		{
-			return 0;
-		}
+  public function getStartingBPM():Float
+  {
+    if (timeChanges.length == 0)
+    {
+      return 0;
+    }
 
-		return timeChanges[0].bpm;
-	}
+    return timeChanges[0].bpm;
+  }
 
-	public function getPlayableChar(id:String):SongPlayableChar
-	{
-		return chars.get(id);
-	}
+  public function getPlayableChar(id:String):SongPlayableChar
+  {
+    return chars.get(id);
+  }
 
-	public function getPlayableChars():Array<String>
-	{
-		return chars.keys().array();
-	}
+  public function getPlayableChars():Array<String>
+  {
+    return chars.keys().array();
+  }
 
-	public function getEvents():Array<SongEvent>
-	{
-		return cast events;
-	}
+  public function getEvents():Array<SongEventData>
+  {
+    return cast events;
+  }
 
-	public inline function cacheInst()
-	{
-		FlxG.sound.cache(Paths.inst(this.song.songId));
-	}
+  public inline function cacheInst()
+  {
+    FlxG.sound.cache(Paths.inst(this.song.songId));
+  }
 
-	public inline function playInst(volume:Float = 1.0, looped:Bool = false)
-	{
-		FlxG.sound.playMusic(Paths.inst(this.song.songId), volume, looped);
-	}
+  public inline function playInst(volume:Float = 1.0, looped:Bool = false)
+  {
+    FlxG.sound.playMusic(Paths.inst(this.song.songId), volume, looped);
+  }
 
-	public inline function cacheVocals()
-	{
-		FlxG.sound.cache(Paths.voices(this.song.songId));
-	}
+  public inline function cacheVocals()
+  {
+    FlxG.sound.cache(Paths.voices(this.song.songId));
+  }
 
-	public function buildVoiceList():Array<String>
-	{
-		// TODO: Implement.
+  public function buildVoiceList():Array<String>
+  {
+    // TODO: Implement.
 
-		return [""];
-	}
+    return [""];
+  }
 
-	public function buildVocals(charId:String = "bf"):VoicesGroup
-	{
-		var result:VoicesGroup = VoicesGroup.build(this.song.songId, this.buildVoiceList());
-		return result;
-	}
+  public function buildVocals(charId:String = "bf"):VoicesGroup
+  {
+    var result:VoicesGroup = VoicesGroup.build(this.song.songId, this.buildVoiceList());
+    return result;
+  }
 }

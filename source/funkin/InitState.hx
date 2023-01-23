@@ -11,7 +11,7 @@ import flixel.util.FlxColor;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.event.SongEvent.SongEventHandler;
+import funkin.play.event.SongEvent.SongEventParser;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
@@ -32,196 +32,199 @@ import Discord.DiscordClient;
  */
 class InitState extends FlxTransitionableState
 {
-	override public function create():Void
-	{
-		trace('This is a debug build, loading InitState...');
-		#if android
-		FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
-		#end
-		#if newgrounds
-		NGio.init();
-		#end
-		#if discord_rpc
-		DiscordClient.initialize();
+  override public function create():Void
+  {
+    trace('This is a debug build, loading InitState...');
+    #if android
+    FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
+    #end
+    #if newgrounds
+    NGio.init();
+    #end
+    #if discord_rpc
+    DiscordClient.initialize();
 
-		Application.current.onExit.add(function(exitCode)
-		{
-			DiscordClient.shutdown();
-		});
-		#end
+    Application.current.onExit.add(function(exitCode)
+    {
+      DiscordClient.shutdown();
+    });
+    #end
 
-		// ==== flixel shit ==== //
+    // ==== flixel shit ==== //
 
-		// This big obnoxious white button is for MOBILE, so that you can press it
-		// easily with your finger when debug bullshit pops up during testing lol!
-		FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
-		{
-			FlxG.debugger.visible = false;
-		});
+    // This big obnoxious white button is for MOBILE, so that you can press it
+    // easily with your finger when debug bullshit pops up during testing lol!
+    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
+    {
+      FlxG.debugger.visible = false;
+    });
 
-		FlxG.sound.muteKeys = [ZERO];
-		FlxG.game.focusLostFramerate = 60;
+    FlxG.sound.muteKeys = [ZERO];
+    FlxG.game.focusLostFramerate = 60;
 
-		// FlxG.stage.window.borderless = true;
-		// FlxG.stage.window.mouseLock = true;
+    // FlxG.stage.window.borderless = true;
+    // FlxG.stage.window.mouseLock = true;
 
-		var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-		diamond.persist = true;
-		diamond.destroyOnNoUse = false;
+    var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
+    diamond.persist = true;
+    diamond.destroyOnNoUse = false;
 
-		FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-			new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-		FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), {asset: diamond, width: 32, height: 32},
-			new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+    FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
+      new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+    FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), {asset: diamond, width: 32, height: 32},
+      new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
-		// ===== save shit ===== //
+    // ===== save shit ===== //
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+    FlxG.save.bind('funkin', 'ninjamuffin99');
 
-		// https://github.com/HaxeFlixel/flixel/pull/2396
-		// IF/WHEN MY PR GOES THRU AND IT GETS INTO MAIN FLIXEL, DELETE THIS CHUNKOF CODE, AND THEN UNCOMMENT THE LINE BELOW
-		// FlxG.sound.loadSavedPrefs();
+    // https://github.com/HaxeFlixel/flixel/pull/2396
+    // IF/WHEN MY PR GOES THRU AND IT GETS INTO MAIN FLIXEL, DELETE THIS CHUNKOF CODE, AND THEN UNCOMMENT THE LINE BELOW
+    // FlxG.sound.loadSavedPrefs();
 
-		if (FlxG.save.data.volume != null)
-			FlxG.sound.volume = FlxG.save.data.volume;
-		if (FlxG.save.data.mute != null)
-			FlxG.sound.muted = FlxG.save.data.mute;
+    if (FlxG.save.data.volume != null)
+      FlxG.sound.volume = FlxG.save.data.volume;
+    if (FlxG.save.data.mute != null)
+      FlxG.sound.muted = FlxG.save.data.mute;
 
-		// Make errors and warnings less annoying.
-		LogStyle.ERROR.openConsole = false;
-		LogStyle.ERROR.errorSound = null;
-		LogStyle.WARNING.openConsole = false;
-		LogStyle.WARNING.errorSound = null;
+    // Make errors and warnings less annoying.
+    LogStyle.ERROR.openConsole = false;
+    LogStyle.ERROR.errorSound = null;
+    LogStyle.WARNING.openConsole = false;
+    LogStyle.WARNING.errorSound = null;
 
-		// FlxG.save.close();
-		// FlxG.sound.loadSavedPrefs();
-		WindowUtil.initWindowEvents();
+    // FlxG.save.close();
+    // FlxG.sound.loadSavedPrefs();
+    WindowUtil.initWindowEvents();
+    WindowUtil.disableCrashHandler();
 
-		PreferencesMenu.initPrefs();
-		PlayerSettings.init();
-		Highscore.load();
+    PreferencesMenu.initPrefs();
+    PlayerSettings.init();
+    Highscore.load();
 
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			// FIX LATER!!!
-			// WEEK UNLOCK PROGRESSION!!
-			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
+    if (FlxG.save.data.weekUnlocked != null)
+    {
+      // FIX LATER!!!
+      // WEEK UNLOCK PROGRESSION!!
+      // StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
 
-			if (StoryMenuState.weekUnlocked.length < 4)
-				StoryMenuState.weekUnlocked.insert(0, true);
+      if (StoryMenuState.weekUnlocked.length < 4)
+        StoryMenuState.weekUnlocked.insert(0, true);
 
-			// QUICK PATCH OOPS!
-			if (!StoryMenuState.weekUnlocked[0])
-				StoryMenuState.weekUnlocked[0] = true;
-		}
+      // QUICK PATCH OOPS!
+      if (!StoryMenuState.weekUnlocked[0])
+        StoryMenuState.weekUnlocked[0] = true;
+    }
 
-		if (FlxG.save.data.seenVideo != null)
-			VideoState.seenVideo = FlxG.save.data.seenVideo;
+    if (FlxG.save.data.seenVideo != null)
+      VideoState.seenVideo = FlxG.save.data.seenVideo;
 
-		// ===== fuck outta here ===== //
+    // ===== fuck outta here ===== //
 
-		// FlxTransitionableState.skipNextTransOut = true;
-		FlxTransitionableState.skipNextTransIn = true;
+    // FlxTransitionableState.skipNextTransOut = true;
+    FlxTransitionableState.skipNextTransIn = true;
 
-		SongEventHandler.registerBaseEventCallbacks();
-		// TODO: Register custom event callbacks here
+    // TODO: Register custom event callbacks here
 
-		SongDataParser.loadSongCache();
-		StageDataParser.loadStageCache();
-		CharacterDataParser.loadCharacterCache();
-		ModuleHandler.buildModuleCallbacks();
-		ModuleHandler.loadModuleCache();
+    SongEventParser.loadEventCache();
+    SongDataParser.loadSongCache();
+    StageDataParser.loadStageCache();
+    CharacterDataParser.loadCharacterCache();
+    ModuleHandler.buildModuleCallbacks();
+    ModuleHandler.loadModuleCache();
 
-		FlxG.debugger.toggleKeys = [F2];
+    FlxG.debugger.toggleKeys = [F2];
 
-		#if song
-		var song = getSong();
+    ModuleHandler.callOnCreate();
 
-		var weeks = [
-			['bopeebo', 'fresh', 'dadbattle'],
-			['spookeez', 'south', 'monster'],
-			['spooky', 'spooky', 'monster'],
-			['pico', 'philly', 'blammed'],
-			['satin-panties', 'high', 'milf'],
-			['cocoa', 'eggnog', 'winter-horrorland'],
-			['senpai', 'roses', 'thorns'],
-			['ugh', 'guns', 'stress']
-		];
+    #if song
+    var song = getSong();
 
-		var week = 0;
-		for (i in 0...weeks.length)
-		{
-			if (weeks[i].contains(song))
-			{
-				week = i + 1;
-				break;
-			}
-		}
+    var weeks = [
+      ['bopeebo', 'fresh', 'dadbattle'],
+      ['spookeez', 'south', 'monster'],
+      ['spooky', 'spooky', 'monster'],
+      ['pico', 'philly', 'blammed'],
+      ['satin-panties', 'high', 'milf'],
+      ['cocoa', 'eggnog', 'winter-horrorland'],
+      ['senpai', 'roses', 'thorns'],
+      ['ugh', 'guns', 'stress']
+    ];
 
-		if (week == 0)
-			throw 'Invalid -D song=$song';
+    var week = 0;
+    for (i in 0...weeks.length)
+    {
+      if (weeks[i].contains(song))
+      {
+        week = i + 1;
+        break;
+      }
+    }
 
-		startSong(week, song, false);
-		#elseif week
-		var week = getWeek();
+    if (week == 0)
+      throw 'Invalid -D song=$song';
 
-		var songs = [
-			      'bopeebo', 'spookeez', 'spooky', 'pico',
-			'satin-panties',    'cocoa', 'senpai',  'ugh'
-		];
+    startSong(week, song, false);
+    #elseif week
+    var week = getWeek();
 
-		if (week <= 0 || week >= songs.length)
-			throw "invalid -D week=" + week;
+    var songs = [
+            'bopeebo', 'spookeez', 'spooky', 'pico',
+      'satin-panties',    'cocoa', 'senpai',  'ugh'
+    ];
 
-		startSong(week, songs[week - 1], true);
-		#elseif FREEPLAY
-		FlxG.switchState(new FreeplayState());
-		#elseif ANIMATE
-		FlxG.switchState(new funkin.animate.dotstuff.DotStuffTestStage());
-		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
-		#elseif STAGEBUILD
-		FlxG.switchState(new StageBuilderState());
-		#elseif FIGHT
-		FlxG.switchState(new PicoFight());
-		#elseif ANIMDEBUG
-		FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
-		#elseif LATENCY
-		FlxG.switchState(new LatencyState());
-		#elseif NETTEST
-		FlxG.switchState(new netTest.NetTest());
-		#else
-		FlxG.sound.cache(Paths.music('freakyMenu'));
-		FlxG.switchState(new TitleState());
-		#end
-	}
+    if (week <= 0 || week >= songs.length)
+      throw "invalid -D week=" + week;
 
-	function startSong(week, song, isStoryMode)
-	{
-		var dif = getDif();
+    startSong(week, songs[week - 1], true);
+    #elseif FREEPLAY
+    FlxG.switchState(new FreeplayState());
+    #elseif ANIMATE
+    FlxG.switchState(new funkin.animate.dotstuff.DotStuffTestStage());
+    #elseif CHARTING
+    FlxG.switchState(new ChartingState());
+    #elseif STAGEBUILD
+    FlxG.switchState(new StageBuilderState());
+    #elseif FIGHT
+    FlxG.switchState(new PicoFight());
+    #elseif ANIMDEBUG
+    FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+    #elseif LATENCY
+    FlxG.switchState(new LatencyState());
+    #elseif NETTEST
+    FlxG.switchState(new netTest.NetTest());
+    #else
+    FlxG.sound.cache(Paths.music('freakyMenu'));
+    FlxG.switchState(new TitleState());
+    #end
+  }
 
-		PlayState.currentSong = SongLoad.loadFromJson(song, song);
-		PlayState.currentSong_NEW = SongDataParser.fetchSong(song);
-		PlayState.isStoryMode = isStoryMode;
-		PlayState.storyDifficulty = dif;
-		PlayState.storyDifficulty_NEW = switch (dif)
-		{
-			case 0: 'easy';
-			case 1: 'normal';
-			case 2: 'hard';
-			default: 'normal';
-		};
-		SongLoad.curDiff = PlayState.storyDifficulty_NEW;
-		PlayState.storyWeek = week;
-		LoadingState.loadAndSwitchState(new PlayState());
-	}
+  function startSong(week, song, isStoryMode)
+  {
+    var dif = getDif();
+
+    PlayState.currentSong = SongLoad.loadFromJson(song, song);
+    PlayState.currentSong_NEW = SongDataParser.fetchSong(song);
+    PlayState.isStoryMode = isStoryMode;
+    PlayState.storyDifficulty = dif;
+    PlayState.storyDifficulty_NEW = switch (dif)
+    {
+      case 0: 'easy';
+      case 1: 'normal';
+      case 2: 'hard';
+      default: 'normal';
+    };
+    SongLoad.curDiff = PlayState.storyDifficulty_NEW;
+    PlayState.storyWeek = week;
+    LoadingState.loadAndSwitchState(new PlayState());
+  }
 }
 
 function getWeek()
-	return Std.parseInt(MacroUtil.getDefine("week"));
+  return Std.parseInt(MacroUtil.getDefine("week"));
 
 function getSong()
-	return MacroUtil.getDefine("song");
+  return MacroUtil.getDefine("song");
 
 function getDif()
-	return Std.parseInt(MacroUtil.getDefine("dif", "1"));
+  return Std.parseInt(MacroUtil.getDefine("dif", "1"));

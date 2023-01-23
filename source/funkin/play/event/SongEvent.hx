@@ -1,303 +1,270 @@
 package funkin.play.event;
 
-import flixel.FlxSprite;
-import funkin.play.PlayState;
-import funkin.play.character.BaseCharacter;
-import funkin.play.song.SongData.RawSongEventData;
-import haxe.DynamicAccess;
+import funkin.util.macro.ClassMacro;
+import funkin.play.song.SongData.SongEventData;
 
-typedef RawSongEvent =
+/**
+ * This class represents a handler for a type of song event.
+ * It is used by the ScriptedSongEvent class to handle user-defined events.
+ */
+class SongEvent
 {
-	> RawSongEventData,
+  public var id:String;
 
-	/**
-	 * Whether the event has been activated or not.
-	 */
-	var a:Bool;
+  public function new(id:String)
+  {
+    this.id = id;
+  }
+
+  public function handleEvent(data:SongEventData)
+  {
+    throw 'SongEvent.handleEvent() must be overridden!';
+  }
+
+  public function getEventSchema():SongEventSchema
+  {
+    return null;
+  }
+
+  public function getTitle():String
+  {
+    return this.id.toTitleCase();
+  }
+
+  public function toString():String
+  {
+    return 'SongEvent(${this.id})';
+  }
 }
 
-@:forward
-abstract SongEvent(RawSongEvent)
+class SongEventParser
 {
-	public function new(time:Float, event:String, value:Dynamic = null)
-	{
-		this = {
-			t: time,
-			e: event,
-			v: value,
-			a: false
-		};
-	}
+  /**
+   * Every built-in event class must be added to this list.
+   * Thankfully, with the power of `SongEventMacro`, this is done automatically.
+   */
+  private static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent);
 
-	public var time(get, set):Float;
+  /**
+   * Map of internal handlers for song events.
+   * These may be either `ScriptedSongEvents` or built-in classes extending `SongEvent`.
+   */
+  static final eventCache:Map<String, SongEvent> = new Map<String, SongEvent>();
 
-	public function get_time():Float
-	{
-		return this.t;
-	}
+  public static function loadEventCache():Void
+  {
+    clearEventCache();
 
-	public function set_time(value:Float):Float
-	{
-		return this.t = value;
-	}
+    //
+    // BASE GAME EVENTS
+    //
+    registerBaseEvents();
+    registerScriptedEvents();
+  }
 
-	public var event(get, set):String;
+  static function registerBaseEvents()
+  {
+    trace('Instantiating ${BUILTIN_EVENTS.length} built-in song events...');
+    for (eventCls in BUILTIN_EVENTS)
+    {
+      var eventClsName:String = Type.getClassName(eventCls);
+      if (eventClsName == 'funkin.play.event.SongEvent' || eventClsName == 'funkin.play.event.ScriptedSongEvent')
+        continue;
 
-	public function get_event():String
-	{
-		return this.e;
-	}
+      var event:SongEvent = Type.createInstance(eventCls, ["UNKNOWN"]);
 
-	public function set_event(value:String):String
-	{
-		return this.e = value;
-	}
+      if (event != null)
+      {
+        trace('  Loaded built-in song event: (${event.id})');
+        eventCache.set(event.id, event);
+      }
+      else
+      {
+        trace('  Failed to load built-in song event: ${Type.getClassName(eventCls)}');
+      }
+    }
+  }
 
-	public var value(get, set):Dynamic;
+  static function registerScriptedEvents()
+  {
+    var scriptedEventClassNames:Array<String> = ScriptedSongEvent.listScriptClasses();
+    if (scriptedEventClassNames == null || scriptedEventClassNames.length == 0)
+      return;
 
-	public function get_value():Dynamic
-	{
-		return this.v;
-	}
+    trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
+    for (eventCls in scriptedEventClassNames)
+    {
+      var event:SongEvent = ScriptedSongEvent.init(eventCls, "UKNOWN");
 
-	public function set_value(value:Dynamic):Dynamic
-	{
-		return this.v = value;
-	}
+      if (event != null)
+      {
+        trace('  Loaded scripted song event: ${event.id}');
+        eventCache.set(event.id, event);
+      }
+      else
+      {
+        trace('  Failed to instantiate scripted song event class: ${eventCls}');
+      }
+    }
+  }
 
-	public inline function getBool():Bool
-	{
-		return cast this.v;
-	}
+  public static function listEventIds():Array<String>
+  {
+    return eventCache.keys().array();
+  }
 
-	public inline function getInt():Int
-	{
-		return cast this.v;
-	}
+  public static function listEvents():Array<SongEvent>
+  {
+    return eventCache.values();
+  }
 
-	public inline function getFloat():Float
-	{
-		return cast this.v;
-	}
+  public static function getEvent(id:String):SongEvent
+  {
+    return eventCache.get(id);
+  }
 
-	public inline function getString():String
-	{
-		return cast this.v;
-	}
+  public static function getEventSchema(id:String):SongEventSchema
+  {
+    var event:SongEvent = getEvent(id);
+    if (event == null)
+      return null;
 
-	public inline function getArray():Array<Dynamic>
-	{
-		return cast this.v;
-	}
+    return event.getEventSchema();
+  }
 
-	public inline function getMap():DynamicAccess<Dynamic>
-	{
-		return cast this.v;
-	}
+  static function clearEventCache()
+  {
+    eventCache.clear();
+  }
 
-	public inline function getBoolArray():Array<Bool>
-	{
-		return cast this.v;
-	}
+  public static function handleEvent(data:SongEventData):Void
+  {
+    var eventType:String = data.event;
+    var eventHandler:SongEvent = eventCache.get(eventType);
+
+    if (eventHandler != null)
+    {
+      eventHandler.handleEvent(data);
+    }
+    else
+    {
+      trace('WARNING: No event handler for event with id: ${eventType}');
+    }
+
+    data.activated = true;
+  }
+
+  public static inline function handleEvents(events:Array<SongEventData>):Void
+  {
+    for (event in events)
+    {
+      handleEvent(event);
+    }
+  }
+
+  /**
+   * Given a list of song events and the current timestamp,
+   * return a list of events that should be handled.
+   */
+  public static function queryEvents(events:Array<SongEventData>, currentTime:Float):Array<SongEventData>
+  {
+    return events.filter(function(event:SongEventData):Bool
+    {
+      // If the event is already activated, don't activate it again.
+      if (event.activated)
+        return false;
+
+      // If the event is in the future, don't activate it.
+      if (event.time > currentTime)
+        return false;
+
+      return true;
+    });
+  }
+
+  /**
+   * Reset activation of all the provided events.
+   */
+  public static function resetEvents(events:Array<SongEventData>):Void
+  {
+    for (event in events)
+    {
+      event.activated = false;
+      // TODO: Add an onReset() method to SongEvent?
+    }
+  }
 }
 
-typedef SongEventCallback = SongEvent->Void;
-
-class SongEventHandler
+enum abstract SongEventFieldType(String) from String to String
 {
-	private static final eventCallbacks:Map<String, SongEventCallback> = new Map<String, SongEventCallback>();
+  /**
+   * The STRING type will display as a text field.
+   */
+  var STRING = "string";
 
-	public static function registerCallback(event:String, callback:SongEventCallback):Void
-	{
-		eventCallbacks.set(event, callback);
-	}
+  /**
+   * The INTEGER type will display as a text field that only accepts numbers.
+   */
+  var INTEGER = "integer";
 
-	public static function unregisterCallback(event:String):Void
-	{
-		eventCallbacks.remove(event);
-	}
+  /**
+   * The FLOAT type will display as a text field that only accepts numbers.
+   */
+  var FLOAT = "float";
 
-	public static function clearCallbacks():Void
-	{
-		eventCallbacks.clear();
-	}
+  /**
+   * The BOOL type will display as a checkbox.
+   */
+  var BOOL = "bool";
 
-	/**
-	 * Register each of the event callbacks provided by the base game.
-	 */
-	public static function registerBaseEventCallbacks():Void
-	{
-		// TODO: Add a system for mods to easily add their own event callbacks.
-		// Should be easy as creating character or stage scripts.
-		registerCallback('FocusCamera', VanillaEventCallbacks.focusCamera);
-		registerCallback('PlayAnimation', VanillaEventCallbacks.playAnimation);
-	}
-
-	/**
-	 * Given a list of song events and the current timestamp,
-	 * return a list of events that should be activated.
-	 */
-	public static function queryEvents(events:Array<SongEvent>, currentTime:Float):Array<SongEvent>
-	{
-		return events.filter(function(event:SongEvent):Bool
-		{
-			// If the event is already activated, don't activate it again.
-			if (event.a)
-				return false;
-
-			// If the event is in the future, don't activate it.
-			if (event.time > currentTime)
-				return false;
-
-			return true;
-		});
-	}
-
-	public static function activateEvents(events:Array<SongEvent>):Void
-	{
-		for (event in events)
-		{
-			activateEvent(event);
-		}
-	}
-
-	public static function activateEvent(event:SongEvent):Void
-	{
-		if (event.a)
-		{
-			trace('Event already activated: ' + event);
-			return;
-		}
-
-		// Prevent the event from being activated again.
-		event.a = true;
-
-		// Perform the action.
-		if (eventCallbacks.exists(event.event))
-		{
-			eventCallbacks.get(event.event)(event);
-		}
-	}
-
-	public static function resetEvents(events:Array<SongEvent>):Void
-	{
-		for (event in events)
-		{
-			resetEvent(event);
-		}
-	}
-
-	public static function resetEvent(event:SongEvent):Void
-	{
-		// TODO: Add a system for mods to easily add their reset callbacks.
-		event.a = false;
-	}
+  /**
+   * The ENUM type will display as a dropdown.
+   * Make sure to specify the `keys` field in the schema.
+   */
+  var ENUM = "enum";
 }
 
-class VanillaEventCallbacks
+typedef SongEventSchemaField =
 {
-	/**
-	 * Event Name: "FocusCamera"
-	 * Event Value: Int
-	 *   0: Focus on the player.
-	 *   1: Focus on the opponent.
-	 *   2: Focus on the girlfriend.
-	 */
-	public static function focusCamera(event:SongEvent):Void
-	{
-		// Does nothing if there is no PlayState camera or stage.
-		if (PlayState.instance == null || PlayState.instance.currentStage == null)
-			return;
+  /**
+   * The name of the property as it should be saved in the event data.
+   */
+  name:String,
 
-		switch (event.getInt())
-		{
-			case 0: // Boyfriend
-				// Focus the camera on the player.
-				trace('[EVENT] Focusing camera on player.');
-				PlayState.instance.cameraFollowPoint.setPosition(PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x,
-					PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y);
-			case 1: // Dad
-				// Focus the camera on the dad.
-				trace('[EVENT] Focusing camera on dad.');
-				PlayState.instance.cameraFollowPoint.setPosition(PlayState.instance.currentStage.getDad().cameraFocusPoint.x,
-					PlayState.instance.currentStage.getDad().cameraFocusPoint.y);
-			case 2: // Girlfriend
-				// Focus the camera on the girlfriend.
-				trace('[EVENT] Focusing camera on girlfriend.');
-				PlayState.instance.cameraFollowPoint.setPosition(PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x,
-					PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y);
-			default:
-				trace('[EVENT] Unknown camera focus: ' + event.value);
-		}
-	}
+  /**
+   * The title of the field to display in the UI.
+   */
+  title:String,
 
-	/**
-	 * Event Name: "playAnimation"
-	 * Event Value: Object
-	 *   {
-	 *     target: String, // "player", "dad", "girlfriend", or <stage prop id>
-	 * 	   animation: String,
-	 *     force: Bool // optional
-	 *   }
-	 */
-	public static function playAnimation(event:SongEvent):Void
-	{
-		// Does nothing if there is no PlayState camera or stage.
-		if (PlayState.instance == null || PlayState.instance.currentStage == null)
-			return;
+  /**
+   * The type of the field.
+   */
+  type:SongEventFieldType,
 
-		var data:Dynamic = event.value;
-
-		var targetName:String = Reflect.field(data, 'target');
-		var anim:String = Reflect.field(data, 'anim');
-		var force:Null<Bool> = Reflect.field(data, 'force');
-		if (force == null)
-			force = false;
-
-		var target:FlxSprite = null;
-
-		switch (targetName)
-		{
-			case 'boyfriend':
-				trace('[EVENT] Playing animation $anim on boyfriend.');
-				target = PlayState.instance.currentStage.getBoyfriend();
-			case 'bf':
-				trace('[EVENT] Playing animation $anim on boyfriend.');
-				target = PlayState.instance.currentStage.getBoyfriend();
-			case 'player':
-				trace('[EVENT] Playing animation $anim on boyfriend.');
-				target = PlayState.instance.currentStage.getBoyfriend();
-			case 'dad':
-				trace('[EVENT] Playing animation $anim on dad.');
-				target = PlayState.instance.currentStage.getDad();
-			case 'opponent':
-				trace('[EVENT] Playing animation $anim on dad.');
-				target = PlayState.instance.currentStage.getDad();
-			case 'girlfriend':
-				trace('[EVENT] Playing animation $anim on girlfriend.');
-				target = PlayState.instance.currentStage.getGirlfriend();
-			case 'gf':
-				trace('[EVENT] Playing animation $anim on girlfriend.');
-				target = PlayState.instance.currentStage.getGirlfriend();
-			default:
-				target = PlayState.instance.currentStage.getNamedProp(targetName);
-				if (target == null)
-					trace('[EVENT] Unknown animation target: $targetName');
-				else
-					trace('[EVENT] Fetched animation target $targetName from stage.');
-		}
-
-		if (target != null)
-		{
-			if (Std.isOfType(target, BaseCharacter))
-			{
-				var targetChar:BaseCharacter = cast target;
-				targetChar.playAnimation(anim, force, force);
-			}
-			else
-			{
-				target.animation.play(anim, force);
-			}
-		}
-	}
+  /**
+   * Used for ENUM values.
+   * The key is the display name and the value is the actual value.
+   */
+  ?keys:Map<String, Dynamic>,
+  /**
+   * Used for INTEGER and FLOAT values.
+   * The minimum value that can be entered.
+   */
+  ?min:Float,
+  /**
+   * Used for INTEGER and FLOAT values.
+   * The maximum value that can be entered.
+   */
+  ?max:Float,
+  /**
+   * Used for INTEGER and FLOAT values.
+   * The step value that will be used when incrementing/decrementing the value.
+   */
+  ?step:Float,
+  /**
+   * An optional default value for the field.
+   */
+  ?defaultValue:Dynamic,
 }
+
+typedef SongEventSchema = Array<SongEventSchemaField>;

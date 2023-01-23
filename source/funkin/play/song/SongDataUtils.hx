@@ -27,6 +27,22 @@ class SongDataUtils
 	}
 
 	/**
+	 * Given an array of SongEventData objects, return a new array of SongEventData objects
+	 * whose timestamps are shifted by the given amount.
+	 * Does not mutate the original array.
+	 * 
+	 * @param events The events to modify.
+	 * @param offset The time difference to apply in milliseconds.
+	 */
+	public static function offsetSongEventData(events:Array<SongEventData>, offset:Int):Array<SongEventData>
+	{
+		return events.map(function(event:SongEventData):SongEventData
+		{
+			return new SongEventData(event.time + offset, event.event, event.value);
+		});
+	}
+
+	/**
 	 * Return a new array without a certain subset of notes from an array of SongNoteData objects.
 	 * Does not mutate the original array.
 	 * 
@@ -94,9 +110,19 @@ class SongDataUtils
 	 * 
 	 * Offset the provided array of notes such that the first note is at 0 milliseconds.
 	 */
-	public static function buildClipboard(notes:Array<SongNoteData>):Array<SongNoteData>
+	public static function buildNoteClipboard(notes:Array<SongNoteData>):Array<SongNoteData>
 	{
 		return offsetSongNoteData(sortNotes(notes), -Std.int(notes[0].time));
+	}
+
+	/**
+	 * Prepare an array of events to be used as the clipboard data.
+	 * 
+	 * Offset the provided array of events such that the first event is at 0 milliseconds.
+	 */
+	public static function buildEventClipboard(events:Array<SongEventData>):Array<SongEventData>
+	{
+		return offsetSongEventData(sortEvents(events), -Std.int(events[0].time));
 	}
 
 	/**
@@ -113,39 +139,55 @@ class SongDataUtils
 	}
 
 	/**
-	 * Serialize an array of note data and write it to the clipboard.
+	 * Sort an array of events by strum time.
 	 */
-	public static function writeNotesToClipboard(notes:Array<SongNoteData>):Void
+	public static function sortEvents(events:Array<SongEventData>, ?desc:Bool = false):Array<SongEventData>
 	{
-		var notesString = SerializerUtil.toJSON(notes);
+		// TODO: Modifies the array in place. Is this okay?
+		events.sort(function(a:SongEventData, b:SongEventData):Int
+		{
+			return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.time, b.time);
+		});
+		return events;
+	}
 
-		ClipboardUtil.setClipboard(notesString);
+	/**
+	 * Serialize note and event data and write it to the clipboard.
+	 */
+	public static function writeItemsToClipboard(data:SongClipboardItems):Void
+	{
+		var dataString = SerializerUtil.toJSON(data);
 
-		trace('Wrote ' + notes.length + ' notes to clipboard.');
+		ClipboardUtil.setClipboard(dataString);
 
-		trace(notesString);
+		trace('Wrote ' + data.notes.length + ' notes and ' + data.events.length + ' events to clipboard.');
+
+		trace(dataString);
 	}
 
 	/**
 	 * Read an array of note data from the clipboard and deserialize it.
 	 */
-	public static function readNotesFromClipboard():Array<SongNoteData>
+	public static function readItemsFromClipboard():SongClipboardItems
 	{
 		var notesString = ClipboardUtil.getClipboard();
 
-		trace('Read ' + notesString.length + ' characters from clipboard.');
+		trace('Read ${notesString.length} characters from clipboard.');
 
-		var notes:Array<SongNoteData> = notesString.parseJSON();
+		var data:SongClipboardItems = notesString.parseJSON();
 
-		if (notes == null)
+		if (data == null)
 		{
 			trace('Failed to parse notes from clipboard.');
-			return [];
+			return {
+				notes: [],
+				events: []
+			};
 		}
 		else
 		{
-			trace('Parsed ' + notes.length + ' notes from clipboard.');
-			return notes;
+			trace('Parsed ' + data.notes.length + ' notes and ' + data.events.length + ' from clipboard.');
+			return data;
 		}
 	}
 
@@ -157,6 +199,17 @@ class SongDataUtils
 		return notes.filter(function(note:SongNoteData):Bool
 		{
 			return note.time >= start && note.time <= end;
+		});
+	}
+
+	/**
+	 * Filter a list of events to only include events that are within the given time range.
+	 */
+	public static function getEventsInTimeRange(events:Array<SongEventData>, start:Float, end:Float):Array<SongEventData>
+	{
+		return events.filter(function(event:SongEventData):Bool
+		{
+			return event.time >= start && event.time <= end;
 		});
 	}
 
@@ -181,4 +234,10 @@ class SongDataUtils
 			return data.indexOf(note.data) != -1;
 		});
 	}
+}
+
+typedef SongClipboardItems =
+{
+	notes:Array<SongNoteData>,
+	events:Array<SongEventData>
 }

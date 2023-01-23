@@ -151,15 +151,22 @@
 
 	<!-- HScript relies heavily on Reflection, which means we can't use DCE. -->
 	<haxeflag name="-dce no" />
+	
+	<!-- Ensure all Funkin' classes are available at runtime. -->
 	<haxeflag name="--macro" value="include('funkin')" />
+	
 	<!-- Ensure all UI components are available at runtime. -->
   <haxeflag name="--macro" value="include('haxe.ui.components')" />
   <haxeflag name="--macro" value="include('haxe.ui.containers')" />
-
-	<!-- Ensure all UI components are available at runtime. -->
-	<haxeflag name="--macro" value="include('haxe.ui.components')" />
-	<haxeflag name="--macro" value="include('haxe.ui.containers')" />
 	<haxeflag name="--macro" value="include('haxe.ui.containers.menus')" />
+
+	<!--
+		Ensure additional class packages are available at runtime (some only really used by scripts).
+		Ignore packages we can't include.
+	-->
+	<haxeflag name="--macro" value="include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])" />
+
+
 
 	<!-- Necessary to provide stack traces for HScript. -->
 	<haxedef name="hscriptPos" />

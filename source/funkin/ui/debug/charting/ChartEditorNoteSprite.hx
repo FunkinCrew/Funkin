@@ -169,7 +169,8 @@ class ChartEditorNoteSprite extends FlxSprite
 			if (this.noteData.stepTime >= 0)
 				this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
 
-			if (origin != null) {
+			if (origin != null)
+			{
 				this.x += origin.x;
 				this.y += origin.y;
 			}
