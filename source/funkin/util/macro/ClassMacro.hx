@@ -55,8 +55,7 @@ class ClassMacro
 
     var targetClass:ClassType = MacroUtil.getClassTypeFromExpr(targetClassExpr);
     var targetClassPath:String = null;
-    if (targetClass != null)
-      targetClassPath = targetClass.pack.join('.') + '.' + targetClass.name;
+    if (targetClass != null) targetClassPath = targetClass.pack.join('.') + '.' + targetClass.name;
 
     var request:String = 'extend~${targetClassPath}';
 
@@ -125,12 +124,10 @@ class ClassMacro
   {
     var compiledClassList:ClassType = MacroUtil.getClassType("funkin.util.macro.CompiledClassList");
 
-    if (compiledClassList == null)
-      throw "Could not find CompiledClassList class.";
+    if (compiledClassList == null) throw "Could not find CompiledClassList class.";
 
     // Reset outdated metadata.
-    if (compiledClassList.meta.has('classLists'))
-      compiledClassList.meta.remove('classLists');
+    if (compiledClassList.meta.has('classLists')) compiledClassList.meta.remove('classLists');
 
     var classLists:Array<Expr> = [];
     // Generate classLists.

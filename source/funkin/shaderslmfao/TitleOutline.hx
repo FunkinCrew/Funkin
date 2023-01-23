@@ -5,24 +5,24 @@ import flixel.system.FlxAssets.FlxShader;
 
 class TitleOutline extends FlxShader
 {
-	public var funnyX(default, set):Float = 0;
-	public var funnyY(default, set):Float = 0;
+  public var funnyX(default, set):Float = 0;
+  public var funnyY(default, set):Float = 0;
 
-	function set_funnyX(x:Float):Float
-	{
-		xPos.value[0] = x;
+  function set_funnyX(x:Float):Float
+  {
+    xPos.value[0] = x;
 
-		return x;
-	}
+    return x;
+  }
 
-	function set_funnyY(y:Float):Float
-	{
-		yPos.value[0] = y;
+  function set_funnyY(y:Float):Float
+  {
+    yPos.value[0] = y;
 
-		return y;
-	}
+    return y;
+  }
 
-	@:glFragmentSource('
+  @:glFragmentSource('
         #pragma header
 
         // uniform float alphaShit;
@@ -64,11 +64,11 @@ class TitleOutline extends FlxShader
         }
 
     ')
-	public function new()
-	{
-		super();
+  public function new()
+  {
+    super();
 
-		xPos.value = [0];
-		yPos.value = [0];
-	}
+    xPos.value = [0];
+    yPos.value = [0];
+  }
 }

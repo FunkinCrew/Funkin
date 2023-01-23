@@ -1,6 +1,8 @@
 package funkin.modding.base;
 
+/**
+ * A script that can be tied to a MusicBeatState.
+ * Create a scripted class that extends MusicBeatState to use this.
+ */
 @:hscriptClass
-class ScriptedMusicBeatState extends funkin.MusicBeatState implements HScriptedClass
-{
-}
+class ScriptedMusicBeatState extends funkin.MusicBeatState implements HScriptedClass {}

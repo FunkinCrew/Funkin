@@ -129,8 +129,7 @@ class Song // implements IPlayStateScriptedClass
    */
   public inline function getDifficulty(?diffId:String):SongDifficulty
   {
-    if (diffId == null)
-      diffId = difficulties.keys().array()[0];
+    if (diffId == null) diffId = difficulties.keys().array()[0];
 
     return difficulties.get(diffId);
   }

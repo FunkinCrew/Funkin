@@ -235,30 +235,33 @@ abstract SongMetadata(RawSongMetadata)
 {
   public function new(songName:String, artist:String, variation:String = 'default')
   {
-    this = {
-      version: SongMigrator.CHART_VERSION,
-      songName: songName,
-      artist: artist,
-      timeFormat: 'ms',
-      divisions: 96,
-      timeChanges: [new SongTimeChange(-1, 0, 100, 4, 4, [4, 4, 4, 4])],
-      loop: false,
-      playData: {
-        songVariations: [],
-        difficulties: ['normal'],
+    this =
+      {
+        version: SongMigrator.CHART_VERSION,
+        songName: songName,
+        artist: artist,
+        timeFormat: 'ms',
+        divisions: 96,
+        timeChanges: [new SongTimeChange(-1, 0, 100, 4, 4, [4, 4, 4, 4])],
+        loop: false,
+        playData:
+          {
+            songVariations: [],
+            difficulties: ['normal'],
 
-        playableChars: {
-          bf: new SongPlayableChar('gf', 'dad'),
-        },
+            playableChars:
+              {
+                bf: new SongPlayableChar('gf', 'dad'),
+              },
 
-        stage: 'mainStage',
-        noteSkin: 'Normal'
-      },
-      generatedBy: SongValidator.DEFAULT_GENERATEDBY,
+            stage: 'mainStage',
+            noteSkin: 'Normal'
+          },
+        generatedBy: SongValidator.DEFAULT_GENERATEDBY,
 
-      // Variation ID.
-      variation: variation
-    };
+        // Variation ID.
+        variation: variation
+      };
   }
 
   public function clone(?newVariation:String = null):SongMetadata
@@ -330,12 +333,13 @@ abstract SongNoteData(RawSongNoteData)
 {
   public function new(time:Float, data:Int, length:Float = 0, kind:String = "")
   {
-    this = {
-      t: time,
-      d: data,
-      l: length,
-      k: kind
-    };
+    this =
+      {
+        t: time,
+        d: data,
+        l: length,
+        k: kind
+      };
   }
 
   public var time(get, set):Float;
@@ -433,25 +437,21 @@ abstract SongNoteData(RawSongNoteData)
 
   public function get_kind():String
   {
-    if (this.k == null || this.k == '')
-      return 'normal';
+    if (this.k == null || this.k == '') return 'normal';
 
     return this.k;
   }
 
   public function set_kind(value:String):String
   {
-    if (value == 'normal' || value == '')
-      value = null;
+    if (value == 'normal' || value == '') value = null;
     return this.k = value;
   }
 
   @:op(A == B)
   public function op_equals(other:SongNoteData):Bool
   {
-    if (this.k == '')
-      if (other.kind != '' && other.kind != 'normal')
-        return false;
+    if (this.k == '') if (other.kind != '' && other.kind != 'normal') return false;
 
     return this.t == other.time && this.d == other.data && this.l == other.length;
   }
@@ -519,12 +519,13 @@ abstract SongEventData(RawSongEventData)
 {
   public function new(time:Float, event:String, value:Dynamic = null)
   {
-    this = {
-      t: time,
-      e: event,
-      v: value,
-      a: false
-    };
+    this =
+      {
+        t: time,
+        e: event,
+        v: value,
+        a: false
+      };
   }
 
   public var time(get, set):Float;
@@ -659,11 +660,12 @@ abstract SongPlayableChar(RawSongPlayableChar)
 {
   public function new(girlfriend:String, opponent:String, inst:String = "")
   {
-    this = {
-      g: girlfriend,
-      o: opponent,
-      i: inst
-    };
+    this =
+      {
+        g: girlfriend,
+        o: opponent,
+        i: inst
+      };
   }
 
   public var girlfriend(get, set):String;
@@ -718,26 +720,28 @@ abstract SongChartData(RawSongChartData)
 {
   public function new(scrollSpeed:Float, events:Array<SongEventData>, notes:Array<SongNoteData>)
   {
-    this = {
-      version: SongMigrator.CHART_VERSION,
+    this =
+      {
+        version: SongMigrator.CHART_VERSION,
 
-      events: events,
-      notes: {
-        normal: notes
-      },
-      scrollSpeed: {
-        normal: scrollSpeed
-      },
-      generatedBy: SongValidator.DEFAULT_GENERATEDBY
-    }
+        events: events,
+        notes:
+          {
+            normal: notes
+          },
+        scrollSpeed:
+          {
+            normal: scrollSpeed
+          },
+        generatedBy: SongValidator.DEFAULT_GENERATEDBY
+      }
   }
 
   public function getScrollSpeed(diff:String = 'default'):Float
   {
     var result:Float = this.scrollSpeed.get(diff);
 
-    if (result == 0.0 && diff != 'default')
-      return getScrollSpeed('default');
+    if (result == 0.0 && diff != 'default') return getScrollSpeed('default');
 
     return (result == 0.0) ? 1.0 : result;
   }
@@ -788,14 +792,15 @@ abstract SongTimeChange(RawSongTimeChange)
 {
   public function new(timeStamp:Float, beatTime:Int, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, beatTuplets:Array<Int>)
   {
-    this = {
-      t: timeStamp,
-      b: beatTime,
-      bpm: bpm,
-      n: timeSignatureNum,
-      d: timeSignatureDen,
-      bt: beatTuplets,
-    }
+    this =
+      {
+        t: timeStamp,
+        b: beatTime,
+        bpm: bpm,
+        n: timeSignatureNum,
+        d: timeSignatureDen,
+        bt: beatTuplets,
+      }
   }
 
   public var timeStamp(get, set):Float;

@@ -4,16 +4,16 @@ import flixel.system.FlxAssets.FlxShader;
 
 class ScreenWipeShader extends FlxShader
 {
-	public var daAlphaShit(default, set):Float = 0;
+  public var daAlphaShit(default, set):Float = 0;
 
-	function set_daAlphaShit(alpha:Float):Float
-	{
-		alphaShit.value[0] = alpha;
+  function set_daAlphaShit(alpha:Float):Float
+  {
+    alphaShit.value[0] = alpha;
 
-		return alpha;
-	}
+    return alpha;
+  }
 
-	@:glFragmentSource('
+  @:glFragmentSource('
         #pragma header
 
         uniform float alphaShit;
@@ -63,10 +63,10 @@ class ScreenWipeShader extends FlxShader
             gl_FragColor = color;
         }
     ')
-	public function new()
-	{
-		super();
+  public function new()
+  {
+    super();
 
-		alphaShit.value = [0];
-	}
+    alphaShit.value = [0];
+  }
 }

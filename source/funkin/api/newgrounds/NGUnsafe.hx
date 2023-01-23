@@ -22,55 +22,54 @@ import io.newgrounds.objects.events.Result.GetVersionResult;
  */
 class NGUnsafe
 {
-	static public function logEvent(event:String)
-	{
-		#if newgrounds
-		NG.core.calls.event.logEvent(event).send();
-		trace('should have logged: ' + event);
-		#else
-		#if debug
-		trace('event:$event - not logged, missing NG.io lib');
-		#end
-		#end
-	}
+  static public function logEvent(event:String)
+  {
+    #if newgrounds
+    NG.core.calls.event.logEvent(event).send();
+    trace('should have logged: ' + event);
+    #else
+    #if debug
+    trace('event:$event - not logged, missing NG.io lib');
+    #end
+    #end
+  }
 
-	static public function unlockMedal(id:Int)
-	{
-		#if newgrounds
-		if (isLoggedIn)
-		{
-			var medal = NG.core.medals.get(id);
-			if (!medal.unlocked)
-				medal.sendUnlock();
-		}
-		#else
-		#if debug
-		trace('medal:$id - not unlocked, missing NG.io lib');
-		#end
-		#end
-	}
+  static public function unlockMedal(id:Int)
+  {
+    #if newgrounds
+    if (isLoggedIn)
+    {
+      var medal = NG.core.medals.get(id);
+      if (!medal.unlocked) medal.sendUnlock();
+    }
+    #else
+    #if debug
+    trace('medal:$id - not unlocked, missing NG.io lib');
+    #end
+    #end
+  }
 
-	static public function postScore(score:Int = 0, song:String)
-	{
-		#if newgrounds
-		if (isLoggedIn)
-		{
-			for (id in NG.core.scoreBoards.keys())
-			{
-				var board = NG.core.scoreBoards.get(id);
+  static public function postScore(score:Int = 0, song:String)
+  {
+    #if newgrounds
+    if (isLoggedIn)
+    {
+      for (id in NG.core.scoreBoards.keys())
+      {
+        var board = NG.core.scoreBoards.get(id);
 
-				if (song == board.name)
-				{
-					board.postScore(score, "Uhh meow?");
-				}
+        if (song == board.name)
+        {
+          board.postScore(score, "Uhh meow?");
+        }
 
-				// trace('loaded scoreboard id:$id, name:${board.name}');
-			}
-		}
-		#else
-		#if debug
-		trace('Song:$song, Score:$score - not posted, missing NG.io lib');
-		#end
-		#end
-	}
+        // trace('loaded scoreboard id:$id, name:${board.name}');
+      }
+    }
+    #else
+    #if debug
+    trace('Song:$song, Score:$score - not posted, missing NG.io lib');
+    #end
+    #end
+  }
 }

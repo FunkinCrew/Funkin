@@ -16,86 +16,85 @@ import funkin.play.song.SongData.SongEventData;
  */
 class ChartEditorEventSprite extends FlxSprite
 {
-	public var parentState:ChartEditorState;
+  public var parentState:ChartEditorState;
 
-	/**
-	 * The note data that this sprite represents.
-	 * You can set this to null to kill the sprite and flag it for recycling.
-	 */
-	public var eventData(default, set):SongEventData;
+  /**
+   * The note data that this sprite represents.
+   * You can set this to null to kill the sprite and flag it for recycling.
+   */
+  public var eventData(default, set):SongEventData;
 
-	/**
-	 * The image used for all song events. Cached for performance.
-	 */
-	var eventGraphic:BitmapData;
+  /**
+   * The image used for all song events. Cached for performance.
+   */
+  var eventGraphic:BitmapData;
 
-	public function new(parent:ChartEditorState)
-	{
-		super();
+  public function new(parent:ChartEditorState)
+  {
+    super();
 
-		this.parentState = parent;
+    this.parentState = parent;
 
-		buildGraphic();
-	}
+    buildGraphic();
+  }
 
-	function buildGraphic():Void
-	{
-		if (eventGraphic == null)
-		{
-			eventGraphic = Assets.getBitmapData(Paths.image('ui/chart-editor/event'));
-		}
+  function buildGraphic():Void
+  {
+    if (eventGraphic == null)
+    {
+      eventGraphic = Assets.getBitmapData(Paths.image('ui/chart-editor/event'));
+    }
 
-		loadGraphic(eventGraphic);
-		setGraphicSize(ChartEditorState.GRID_SIZE);
-		this.updateHitbox();
-	}
+    loadGraphic(eventGraphic);
+    setGraphicSize(ChartEditorState.GRID_SIZE);
+    this.updateHitbox();
+  }
 
-	function set_eventData(value:SongEventData):SongEventData
-	{
-		this.eventData = value;
+  function set_eventData(value:SongEventData):SongEventData
+  {
+    this.eventData = value;
 
-		if (this.eventData == null)
-		{
-			// Disown parent.
-			this.kill();
-			return this.eventData;
-		}
+    if (this.eventData == null)
+    {
+      // Disown parent.
+      this.kill();
+      return this.eventData;
+    }
 
-		this.visible = true;
+    this.visible = true;
 
-		// Update the position to match the note data.
-		updateEventPosition();
+    // Update the position to match the note data.
+    updateEventPosition();
 
-		return this.eventData;
-	}
+    return this.eventData;
+  }
 
-	public function updateEventPosition(?origin:FlxObject)
-	{
-		this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
-		if (this.eventData.stepTime >= 0)
-			this.y = this.eventData.stepTime * ChartEditorState.GRID_SIZE;
+  public function updateEventPosition(?origin:FlxObject)
+  {
+    this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
+    if (this.eventData.stepTime >= 0) this.y = this.eventData.stepTime * ChartEditorState.GRID_SIZE;
 
-		if (origin != null)
-		{
-			this.x += origin.x;
-			this.y += origin.y;
-		}
-	}
+    if (origin != null)
+    {
+      this.x += origin.x;
+      this.y += origin.y;
+    }
+  }
 
-	/**
-	 * Return whether this note (or its parent) is currently visible.
-	 */
-	public function isEventVisible(viewAreaBottom:Float, viewAreaTop:Float):Bool
-	{
-		var outsideViewArea = (this.y + this.height < viewAreaTop || this.y > viewAreaBottom);
+  /**
+   * Return whether this note (or its parent) is currently visible.
+   */
+  public function isEventVisible(viewAreaBottom:Float, viewAreaTop:Float):Bool
+  {
+    var outsideViewArea = (this.y + this.height < viewAreaTop || this.y > viewAreaBottom);
 
-		if (!outsideViewArea)
-		{
-			return true;
-		}
+    if (!outsideViewArea)
+    {
+      return true;
+    }
 
-		// TODO: Check if this note's parent or child is visible.
+    // TODO: Check if this note's parent or child is visible.
 
-		return false;
-	}
+    return false;
+  }
 }

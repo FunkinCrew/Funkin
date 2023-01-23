@@ -4,7 +4,7 @@ import flixel.system.FlxAssets.FlxShader;
 
 class MultiplyShader extends FlxShader
 {
-	@:glFragmentSource('
+  @:glFragmentSource('
 		#pragma header
         uniform sampler2D funnyImage;
 		uniform vec4 uBlendColor;
@@ -24,8 +24,8 @@ class MultiplyShader extends FlxShader
 			vec4 base = texture2D(bitmap, openfl_TextureCoordv);
 			gl_FragColor = blendMultiply(base, uBlendColor, uBlendColor.a);
 		}')
-	public function new()
-	{
-		super();
-	}
+  public function new()
+  {
+    super();
+  }
 }

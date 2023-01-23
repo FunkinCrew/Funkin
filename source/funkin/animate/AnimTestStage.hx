@@ -6,31 +6,31 @@ import flixel.addons.display.FlxGridOverlay;
 
 class AnimTestStage extends FlxState
 {
-	var tl:AnimateTimeline;
-	var swag:FlxAnimate;
+  var tl:AnimateTimeline;
+  var swag:FlxAnimate;
 
-	override function create()
-	{
-		var bg:FlxSprite = FlxGridOverlay.create(32, 32);
-		add(bg);
-		bg.scrollFactor.set();
+  override function create()
+  {
+    var bg:FlxSprite = FlxGridOverlay.create(32, 32);
+    add(bg);
+    bg.scrollFactor.set();
 
-		swag = new FlxAnimate(200, 200);
-		add(swag);
+    swag = new FlxAnimate(200, 200);
+    add(swag);
 
-		tl = new AnimateTimeline(Paths.file('images/tightBarsLol/Animation.json'));
-		add(tl);
+    tl = new AnimateTimeline(Paths.file('images/tightBarsLol/Animation.json'));
+    add(tl);
 
-		super.create();
-	}
+    super.create();
+  }
 
-	override function update(elapsed:Float)
-	{
-		tl.curFrame = swag.daFrame;
+  override function update(elapsed:Float)
+  {
+    tl.curFrame = swag.daFrame;
 
-		CoolUtil.mouseWheelZoom();
-		CoolUtil.mouseCamDrag();
+    CoolUtil.mouseWheelZoom();
+    CoolUtil.mouseCamDrag();
 
-		super.update(elapsed);
-	}
+    super.update(elapsed);
+  }
 }

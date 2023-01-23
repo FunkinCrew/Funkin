@@ -9,11 +9,11 @@ import funkin.modding.events.ScriptEvent;
  */
 interface IScriptedClass
 {
-	public function onScriptEvent(event:ScriptEvent):Void;
+  public function onScriptEvent(event:ScriptEvent):Void;
 
-	public function onCreate(event:ScriptEvent):Void;
-	public function onDestroy(event:ScriptEvent):Void;
-	public function onUpdate(event:UpdateScriptEvent):Void;
+  public function onCreate(event:ScriptEvent):Void;
+  public function onDestroy(event:ScriptEvent):Void;
+  public function onUpdate(event:UpdateScriptEvent):Void;
 }
 
 /**
@@ -21,13 +21,13 @@ interface IScriptedClass
  */
 interface IStateChangingScriptedClass extends IScriptedClass
 {
-	public function onStateChangeBegin(event:StateChangeScriptEvent):Void;
-	public function onStateChangeEnd(event:StateChangeScriptEvent):Void;
+  public function onStateChangeBegin(event:StateChangeScriptEvent):Void;
+  public function onStateChangeEnd(event:StateChangeScriptEvent):Void;
 
-	public function onSubstateOpenBegin(event:SubStateScriptEvent):Void;
-	public function onSubstateOpenEnd(event:SubStateScriptEvent):Void;
-	public function onSubstateCloseBegin(event:SubStateScriptEvent):Void;
-	public function onSubstateCloseEnd(event:SubStateScriptEvent):Void;
+  public function onSubstateOpenBegin(event:SubStateScriptEvent):Void;
+  public function onSubstateOpenEnd(event:SubStateScriptEvent):Void;
+  public function onSubstateCloseBegin(event:SubStateScriptEvent):Void;
+  public function onSubstateCloseEnd(event:SubStateScriptEvent):Void;
 }
 
 /**
@@ -35,8 +35,8 @@ interface IStateChangingScriptedClass extends IScriptedClass
  */
 interface INoteScriptedClass extends IScriptedClass
 {
-	public function onNoteHit(event:NoteScriptEvent):Void;
-	public function onNoteMiss(event:NoteScriptEvent):Void;
+  public function onNoteHit(event:NoteScriptEvent):Void;
+  public function onNoteMiss(event:NoteScriptEvent):Void;
 }
 
 /**
@@ -54,87 +54,87 @@ interface INoteScriptedClass extends IScriptedClass
  */
 interface IPlayStateScriptedClass extends IScriptedClass
 {
-	/**
-	 * Called when the game is paused.
-	 * Has properties to set whether the pause easter egg will happen,
-	 * and can be cancelled by scripts.
-	 */
-	public function onPause(event:PauseScriptEvent):Void;
+  /**
+   * Called when the game is paused.
+   * Has properties to set whether the pause easter egg will happen,
+   * and can be cancelled by scripts.
+   */
+  public function onPause(event:PauseScriptEvent):Void;
 
-	/**
-	 * Called when the game is unpaused.
-	 */
-	public function onResume(event:ScriptEvent):Void;
+  /**
+   * Called when the game is unpaused.
+   */
+  public function onResume(event:ScriptEvent):Void;
 
-	/**
-	 * Called when the song has been parsed, before notes have been placed.
-	 * Use this to mutate the chart.
-	 */
-	public function onSongLoaded(event:SongLoadScriptEvent):Void;
+  /**
+   * Called when the song has been parsed, before notes have been placed.
+   * Use this to mutate the chart.
+   */
+  public function onSongLoaded(event:SongLoadScriptEvent):Void;
 
-	/**
-	 * Called when the song starts (conductor time is 0 seconds).
-	 */
-	public function onSongStart(event:ScriptEvent):Void;
+  /**
+   * Called when the song starts (conductor time is 0 seconds).
+   */
+  public function onSongStart(event:ScriptEvent):Void;
 
-	/**
-	 * Called when the song ends and the song is about to be unloaded.
-	 */
-	public function onSongEnd(event:ScriptEvent):Void;
+  /**
+   * Called when the song ends and the song is about to be unloaded.
+   */
+  public function onSongEnd(event:ScriptEvent):Void;
 
-	/**
-	 * Called as the player runs out of health just before the game over substate is entered.
-	 */
-	public function onGameOver(event:ScriptEvent):Void;
+  /**
+   * Called as the player runs out of health just before the game over substate is entered.
+   */
+  public function onGameOver(event:ScriptEvent):Void;
 
-	/**
-	 * Called when the player restarts the song, either via pause menu or restarting after a game over.
-	 */
-	public function onSongRetry(event:ScriptEvent):Void;
+  /**
+   * Called when the player restarts the song, either via pause menu or restarting after a game over.
+   */
+  public function onSongRetry(event:ScriptEvent):Void;
 
-	/**
-	 * Called when EITHER player hits a note.
-	 * Query the note attached to the event to determine if it was hit by the player or CPU.
-	 */
-	public function onNoteHit(event:NoteScriptEvent):Void;
+  /**
+   * Called when EITHER player hits a note.
+   * Query the note attached to the event to determine if it was hit by the player or CPU.
+   */
+  public function onNoteHit(event:NoteScriptEvent):Void;
 
-	/**
-	 * Called when EITHER player (usually the player) misses a note.
-	 */
-	public function onNoteMiss(event:NoteScriptEvent):Void;
+  /**
+   * Called when EITHER player (usually the player) misses a note.
+   */
+  public function onNoteMiss(event:NoteScriptEvent):Void;
 
-	/**
-	 * Called when the player presses a key when no note is on the strumline.
-	 */
-	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void;
+  /**
+   * Called when the player presses a key when no note is on the strumline.
+   */
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void;
 
-	/**
-	 * Called when the song reaches an event.
-	 */
-	public function onSongEvent(event:SongEventScriptEvent):Void;
+  /**
+   * Called when the song reaches an event.
+   */
+  public function onSongEvent(event:SongEventScriptEvent):Void;
 
-	/**
-	 * Called once every step of the song.
-	 */
-	public function onStepHit(event:SongTimeScriptEvent):Void;
+  /**
+   * Called once every step of the song.
+   */
+  public function onStepHit(event:SongTimeScriptEvent):Void;
 
-	/**
-	 * Called once every beat of the song.
-	 */
-	public function onBeatHit(event:SongTimeScriptEvent):Void;
+  /**
+   * Called once every beat of the song.
+   */
+  public function onBeatHit(event:SongTimeScriptEvent):Void;
 
-	/**
-	 * Called when the countdown of the song starts.
-	 */
-	public function onCountdownStart(event:CountdownScriptEvent):Void;
+  /**
+   * Called when the countdown of the song starts.
+   */
+  public function onCountdownStart(event:CountdownScriptEvent):Void;
 
-	/**
-	 * Called when the a part of the countdown happens.
-	 */
-	public function onCountdownStep(event:CountdownScriptEvent):Void;
+  /**
+   * Called when the a part of the countdown happens.
+   */
+  public function onCountdownStep(event:CountdownScriptEvent):Void;
 
-	/**
-	 * Called when the countdown of the song ends.
-	 */
-	public function onCountdownEnd(event:CountdownScriptEvent):Void;
+  /**
+   * Called when the countdown of the song ends.
+   */
+  public function onCountdownEnd(event:CountdownScriptEvent):Void;
 }

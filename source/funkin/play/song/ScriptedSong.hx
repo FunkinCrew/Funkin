@@ -1,9 +1,8 @@
 package funkin.play.song;
 
-import funkin.play.song.Song;
-import polymod.hscript.HScriptedClass;
-
+/**
+ * A script that can be tied to a Song.
+ * Create a scripted class that extends Song to use this.
+ */
 @:hscriptClass
-class ScriptedSong extends Song implements HScriptedClass
-{
-}
+class ScriptedSong extends funkin.play.song.Song implements polymod.hscript.HScriptedClass {}

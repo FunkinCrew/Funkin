@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.play.stage.StageData.StageDataParser;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -13,15 +14,10 @@ import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.event.SongEvent.SongEventParser;
 import funkin.play.song.SongData.SongDataParser;
-import funkin.play.stage.StageData;
 import funkin.ui.PreferencesMenu;
 import funkin.util.WindowUtil;
 import funkin.util.macro.MacroUtil;
 import openfl.display.BitmapData;
-#if colyseus
-import io.colyseus.Client;
-import io.colyseus.Room;
-#end
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -44,8 +40,7 @@ class InitState extends FlxTransitionableState
     #if discord_rpc
     DiscordClient.initialize();
 
-    Application.current.onExit.add(function(exitCode)
-    {
+    Application.current.onExit.add(function(exitCode) {
       DiscordClient.shutdown();
     });
     #end
@@ -54,19 +49,19 @@ class InitState extends FlxTransitionableState
 
     // This big obnoxious white button is for MOBILE, so that you can press it
     // easily with your finger when debug bullshit pops up during testing lol!
-    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
-    {
+    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
       FlxG.debugger.visible = false;
     });
 
-    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFFCC2233), function()
-    {
+    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFFCC2233), function() {
       if (FlxG.vcr.paused)
       {
         FlxG.vcr.resume();
 
         for (snd in FlxG.sound.list)
+        {
           snd.resume();
+        }
 
         FlxG.sound.music.resume();
       }
@@ -75,14 +70,15 @@ class InitState extends FlxTransitionableState
         FlxG.vcr.pause();
 
         for (snd in FlxG.sound.list)
+        {
           snd.pause();
+        }
 
         FlxG.sound.music.pause();
       }
     });
 
-    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function()
-    {
+    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function() {
       FlxG.game.debugger.vcr.onStep();
 
       for (snd in FlxG.sound.list)
@@ -118,10 +114,8 @@ class InitState extends FlxTransitionableState
     // IF/WHEN MY PR GOES THRU AND IT GETS INTO MAIN FLIXEL, DELETE THIS CHUNKOF CODE, AND THEN UNCOMMENT THE LINE BELOW
     // FlxG.sound.loadSavedPrefs();
 
-    if (FlxG.save.data.volume != null)
-      FlxG.sound.volume = FlxG.save.data.volume;
-    if (FlxG.save.data.mute != null)
-      FlxG.sound.muted = FlxG.save.data.mute;
+    if (FlxG.save.data.volume != null) FlxG.sound.volume = FlxG.save.data.volume;
+    if (FlxG.save.data.mute != null) FlxG.sound.muted = FlxG.save.data.mute;
 
     // Make errors and warnings less annoying.
     LogStyle.ERROR.openConsole = false;
@@ -144,16 +138,13 @@ class InitState extends FlxTransitionableState
       // WEEK UNLOCK PROGRESSION!!
       // StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
 
-      if (StoryMenuState.weekUnlocked.length < 4)
-        StoryMenuState.weekUnlocked.insert(0, true);
+      if (StoryMenuState.weekUnlocked.length < 4) StoryMenuState.weekUnlocked.insert(0, true);
 
       // QUICK PATCH OOPS!
-      if (!StoryMenuState.weekUnlocked[0])
-        StoryMenuState.weekUnlocked[0] = true;
+      if (!StoryMenuState.weekUnlocked[0]) StoryMenuState.weekUnlocked[0] = true;
     }
 
-    if (FlxG.save.data.seenVideo != null)
-      VideoState.seenVideo = FlxG.save.data.seenVideo;
+    if (FlxG.save.data.seenVideo != null) VideoState.seenVideo = FlxG.save.data.seenVideo;
 
     // ===== fuck outta here ===== //
 
@@ -174,9 +165,9 @@ class InitState extends FlxTransitionableState
     ModuleHandler.callOnCreate();
 
     #if song
-    var song = getSong();
+    var song:String = getSong();
 
-    var weeks = [
+    var weeks:Array<Array<String>> = [
       ['bopeebo', 'fresh', 'dadbattle'],
       ['spookeez', 'south', 'monster'],
       ['spooky', 'spooky', 'monster'],
@@ -187,7 +178,7 @@ class InitState extends FlxTransitionableState
       ['ugh', 'guns', 'stress']
     ];
 
-    var week = 0;
+    var week:Int = 0;
     for (i in 0...weeks.length)
     {
       if (weeks[i].contains(song))
@@ -197,20 +188,24 @@ class InitState extends FlxTransitionableState
       }
     }
 
-    if (week == 0)
-      throw 'Invalid -D song=$song';
+    if (week == 0) throw 'Invalid -D song=$song';
 
     startSong(week, song, false);
     #elseif week
-    var week = getWeek();
+    var week:Int = getWeek();
 
-    var songs = [
-            'bopeebo', 'spookeez', 'spooky', 'pico',
-      'satin-panties',    'cocoa', 'senpai',  'ugh'
+    var songs:Array<String> = [
+      'bopeebo',
+      'spookeez',
+      'spooky',
+      'pico',
+      'satin-panties',
+      'cocoa',
+      'senpai',
+      'ugh'
     ];
 
-    if (week <= 0 || week >= songs.length)
-      throw "invalid -D week=" + week;
+    if (week <= 0 || week >= songs.length) throw 'invalid -D week=' + week;
 
     startSong(week, songs[week - 1], true);
     #elseif FREEPLAY
@@ -235,9 +230,9 @@ class InitState extends FlxTransitionableState
     #end
   }
 
-  function startSong(week, song, isStoryMode)
+  function startSong(week, song, isStoryMode):Void
   {
-    var dif = getDif();
+    var dif:Int = getDif();
 
     PlayState.currentSong = SongLoad.loadFromJson(song, song);
     PlayState.currentSong_NEW = SongDataParser.fetchSong(song);
@@ -256,11 +251,11 @@ class InitState extends FlxTransitionableState
   }
 }
 
-function getWeek()
-  return Std.parseInt(MacroUtil.getDefine("week"));
+function getWeek():Int
+  return Std.parseInt(MacroUtil.getDefine('week'));
 
-function getSong()
-  return MacroUtil.getDefine("song");
+function getSong():String
+  return MacroUtil.getDefine('song');
 
-function getDif()
-  return Std.parseInt(MacroUtil.getDefine("dif", "1"));
+function getDif():Int
+  return Std.parseInt(MacroUtil.getDefine('dif', '1'));

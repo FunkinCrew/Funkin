@@ -5,34 +5,34 @@ import flixel.util.FlxColor;
 
 class StrokeShader extends FlxShader
 {
-	// MOSTLY STOLEN FROM AUSTIN EAST LOL!
-	// https://gist.github.com/AustinEast/d3892fdf6a6079366fffde071f0c2bae
-	public var width(default, set):Float = 0;
-	public var height(default, set):Float = 0;
+  // MOSTLY STOLEN FROM AUSTIN EAST LOL!
+  // https://gist.github.com/AustinEast/d3892fdf6a6079366fffde071f0c2bae
+  public var width(default, set):Float = 0;
+  public var height(default, set):Float = 0;
 
-	public var col(default, set):FlxColor = 0xFFFFFFFF;
+  public var col(default, set):FlxColor = 0xFFFFFFFF;
 
-	function set_width(val):Float
-	{
-		size.value = [val, height];
+  function set_width(val):Float
+  {
+    size.value = [val, height];
 
-		return val;
-	}
+    return val;
+  }
 
-	function set_height(val):Float
-	{
-		size.value = [width, val];
-		return val;
-	}
+  function set_height(val):Float
+  {
+    size.value = [width, val];
+    return val;
+  }
 
-	function set_col(val:FlxColor):FlxColor
-	{
-		color.value = [val.red, val.green, val.blue, val.alpha];
+  function set_col(val:FlxColor):FlxColor
+  {
+    color.value = [val.red, val.green, val.blue, val.alpha];
 
-		return val;
-	}
+    return val;
+  }
 
-	@:glFragmentSource('
+  @:glFragmentSource('
         #pragma header
 
         uniform vec2 size;
@@ -54,12 +54,12 @@ class StrokeShader extends FlxShader
             gl_FragColor = sample;
         }
     ')
-	public function new(color:FlxColor = 0xFFFFFFFF, width:Float = 1, height:Float = 1)
-	{
-		super();
+  public function new(color:FlxColor = 0xFFFFFFFF, width:Float = 1, height:Float = 1)
+  {
+    super();
 
-		col = color;
-		this.width = width;
-		this.height = height;
-	}
+    col = color;
+    this.width = width;
+    this.height = height;
+  }
 }

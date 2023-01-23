@@ -189,11 +189,12 @@ class StageDataParser
   static final DEFAULT_SCROLL:Array<Float> = [0, 0];
   static final DEFAULT_ZINDEX:Int = 0;
 
-  static final DEFAULT_CHARACTER_DATA:StageDataCharacter = {
-    zIndex: DEFAULT_ZINDEX,
-    position: DEFAULT_POSITION,
-    cameraOffsets: DEFAULT_OFFSETS,
-  }
+  static final DEFAULT_CHARACTER_DATA:StageDataCharacter =
+    {
+      zIndex: DEFAULT_ZINDEX,
+      position: DEFAULT_POSITION,
+      cameraOffsets: DEFAULT_OFFSETS,
+    }
 
   /**
    * Set unspecified parameters to their defaults.
@@ -377,10 +378,8 @@ class StageDataParser
       }
       if (inputCharacter.cameraOffsets == null || inputCharacter.cameraOffsets.length != 2)
       {
-        if (inputCharacter == input.characters.bf)
-          inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_BF;
-        else if (inputCharacter == input.characters.dad)
-          inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_DAD;
+        if (inputCharacter == input.characters.bf) inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_BF;
+        else if (inputCharacter == input.characters.dad) inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_DAD;
         else
         {
           inputCharacter.cameraOffsets = [0, 0];

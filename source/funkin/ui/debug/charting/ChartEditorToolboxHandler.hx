@@ -35,8 +35,7 @@ class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void
   {
-    if (shown)
-      showToolbox(state, id);
+    if (shown) showToolbox(state, id);
     else
       hideToolbox(state, id);
   }
@@ -45,8 +44,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = state.activeToolboxes.get(id);
 
-    if (toolbox == null)
-      toolbox = initToolbox(state, id);
+    if (toolbox == null) toolbox = initToolbox(state, id);
 
     if (toolbox != null)
     {
@@ -62,8 +60,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = state.activeToolboxes.get(id);
 
-    if (toolbox == null)
-      toolbox = initToolbox(state, id);
+    if (toolbox == null) toolbox = initToolbox(state, id);
 
     if (toolbox != null)
     {
@@ -107,8 +104,7 @@ class ChartEditorToolboxHandler
     }
 
     // This happens if the layout you try to load has a syntax error.
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Make sure we can reuse the toolbox later.
     toolbox.destroyOnClose = false;
@@ -122,8 +118,7 @@ class ChartEditorToolboxHandler
     var toolbox:Dialog = state.activeToolboxes.get(id);
 
     // Initialize the toolbox without showing it.
-    if (toolbox == null)
-      toolbox = initToolbox(state, id);
+    if (toolbox == null) toolbox = initToolbox(state, id);
 
     return toolbox;
   }
@@ -132,8 +127,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 50;
@@ -146,8 +140,7 @@ class ChartEditorToolboxHandler
 
     var toolsGroup:Group = toolbox.findComponent("toolboxToolsGroup", Group);
 
-    if (toolsGroup == null)
-      return null;
+    if (toolsGroup == null) return null;
 
     toolsGroup.onChange = (event:UIEvent) ->
     {
@@ -169,8 +162,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 75;
@@ -217,8 +209,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 100;
@@ -333,8 +324,7 @@ class ChartEditorToolboxHandler
       {
         trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${event.target.value}');
 
-        if (event.target.value == null)
-          state.selectedEventData.remove(event.target.id);
+        if (event.target.value == null) state.selectedEventData.remove(event.target.id);
         else
           state.selectedEventData.set(event.target.id, event.target.value);
       }
@@ -345,8 +335,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 125;
@@ -406,8 +395,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 150;
@@ -464,16 +452,14 @@ class ChartEditorToolboxHandler
     var inputNoteSkin:DropDown = toolbox.findComponent('inputNoteSkin', DropDown);
     inputNoteSkin.onChange = (event:UIEvent) ->
     {
-      if (event.data.id == null)
-        return;
+      if (event.data.id == null) return;
       state.currentSongMetadata.playData.noteSkin = event.data.id;
     };
 
     var inputBPM:NumberStepper = toolbox.findComponent('inputBPM', NumberStepper);
     inputBPM.onChange = (event:UIEvent) ->
     {
-      if (event.value == null || event.value <= 0)
-        return;
+      if (event.value == null || event.value <= 0) return;
 
       var timeChanges = state.currentSongMetadata.timeChanges;
       if (timeChanges == null || timeChanges.length == 0)
@@ -513,8 +499,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 175;
@@ -532,8 +517,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 200;
@@ -558,8 +542,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Dialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
 
-    if (toolbox == null)
-      return null;
+    if (toolbox == null) return null;
 
     // Starting position.
     toolbox.x = 200;

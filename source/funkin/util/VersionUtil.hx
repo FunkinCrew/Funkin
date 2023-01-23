@@ -10,22 +10,22 @@ import thx.semver.VersionRule;
  */
 class VersionUtil
 {
-	/**
-	 * Checks that a given verison number satisisfies a given version rule.
-	 * Version rule can be complex, e.g. "1.0.x" or ">=1.0.0,<1.1.0", or anything NPM supports.
-	 */
-	public static function validateVersion(version:String, versionRule:String):Bool
-	{
-		try
-		{
-			var v:Version = version; // Perform a cast.
-			var vr:VersionRule = versionRule; // Perform a cast.
-			return v.satisfies(vr);
-		}
-		catch (e)
-		{
-			trace('[VERSIONUTIL] Invalid semantic version: ${version}');
-			return false;
-		}
-	}
+  /**
+   * Checks that a given verison number satisisfies a given version rule.
+   * Version rule can be complex, e.g. "1.0.x" or ">=1.0.0,<1.1.0", or anything NPM supports.
+   */
+  public static function validateVersion(version:String, versionRule:String):Bool
+  {
+    try
+    {
+      var v:Version = version; // Perform a cast.
+      var vr:VersionRule = versionRule; // Perform a cast.
+      return v.satisfies(vr);
+    }
+    catch (e)
+    {
+      trace('[VERSIONUTIL] Invalid semantic version: ${version}');
+      return false;
+    }
+  }
 }

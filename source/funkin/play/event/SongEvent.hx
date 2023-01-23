@@ -9,6 +9,9 @@ import funkin.play.song.SongData.SongEventData;
  */
 class SongEvent
 {
+  /**
+   * The internal song event ID that this handler is responsible for.
+   */
   public var id:String;
 
   public function new(id:String)
@@ -16,16 +19,29 @@ class SongEvent
     this.id = id;
   }
 
-  public function handleEvent(data:SongEventData)
+  /**
+   * Handles a song event that matches this handler's ID.
+   * @param data The data associated with the event.
+   */
+  public function handleEvent(data:SongEventData):Void
   {
     throw 'SongEvent.handleEvent() must be overridden!';
   }
 
+  /**
+   * Retrieves the chart editor schema for this song event type.
+   * @return The schema, or null if this event type does not have a schema.
+   */
   public function getEventSchema():SongEventSchema
   {
     return null;
   }
 
+  /**
+   * Retrieves the human readable title of this song event type.
+   * Used for the chart editor.
+   * @return The title.
+   */
   public function getTitle():String
   {
     return this.id.toTitleCase();
@@ -37,13 +53,16 @@ class SongEvent
   }
 }
 
+/**
+ * This class statically handles the parsing of internal and scripted song event handlers.
+ */
 class SongEventParser
 {
   /**
    * Every built-in event class must be added to this list.
    * Thankfully, with the power of `SongEventMacro`, this is done automatically.
    */
-  private static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent);
+  static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent);
 
   /**
    * Map of internal handlers for song events.
@@ -68,8 +87,7 @@ class SongEventParser
     for (eventCls in BUILTIN_EVENTS)
     {
       var eventClsName:String = Type.getClassName(eventCls);
-      if (eventClsName == 'funkin.play.event.SongEvent' || eventClsName == 'funkin.play.event.ScriptedSongEvent')
-        continue;
+      if (eventClsName == 'funkin.play.event.SongEvent' || eventClsName == 'funkin.play.event.ScriptedSongEvent') continue;
 
       var event:SongEvent = Type.createInstance(eventCls, ["UNKNOWN"]);
 
@@ -88,8 +106,7 @@ class SongEventParser
   static function registerScriptedEvents()
   {
     var scriptedEventClassNames:Array<String> = ScriptedSongEvent.listScriptClasses();
-    if (scriptedEventClassNames == null || scriptedEventClassNames.length == 0)
-      return;
+    if (scriptedEventClassNames == null || scriptedEventClassNames.length == 0) return;
 
     trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
     for (eventCls in scriptedEventClassNames)
@@ -126,8 +143,7 @@ class SongEventParser
   public static function getEventSchema(id:String):SongEventSchema
   {
     var event:SongEvent = getEvent(id);
-    if (event == null)
-      return null;
+    if (event == null) return null;
 
     return event.getEventSchema();
   }
@@ -171,12 +187,10 @@ class SongEventParser
     return events.filter(function(event:SongEventData):Bool
     {
       // If the event is already activated, don't activate it again.
-      if (event.activated)
-        return false;
+      if (event.activated) return false;
 
       // If the event is in the future, don't activate it.
-      if (event.time > currentTime)
-        return false;
+      if (event.time > currentTime) return false;
 
       return true;
     });

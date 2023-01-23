@@ -43,8 +43,7 @@ class NoteUtil
     for (songEvent in songEvents)
     {
       trace(songEvent);
-      if (songData[songEvent.t] == null)
-        songData[songEvent.t] = [];
+      if (songData[songEvent.t] == null) songData[songEvent.t] = [];
 
       songData[songEvent.t].push({songEventType: songEvent.e, value: songEvent.v, activated: false});
     }

@@ -64,13 +64,13 @@ class FreeplayState extends MusicBeatSubstate
     0xfff6b604
   ];
 
-  private var grpSongs:FlxTypedGroup<Alphabet>;
-  private var grpCapsules:FlxTypedGroup<SongMenuItem>;
-  private var curPlaying:Bool = false;
+  var grpSongs:FlxTypedGroup<Alphabet>;
+  var grpCapsules:FlxTypedGroup<SongMenuItem>;
+  var curPlaying:Bool = false;
 
-  private var dj:DJBoyfriend;
+  var dj:DJBoyfriend;
 
-  private var iconArray:Array<HealthIcon> = [];
+  var iconArray:Array<HealthIcon> = [];
 
   var typing:FlxInputText;
 
@@ -100,30 +100,23 @@ class FreeplayState extends MusicBeatSubstate
 
     if (FlxG.sound.music != null)
     {
-      if (!FlxG.sound.music.playing)
-        FlxG.sound.playMusic(Paths.music('freakyMenu'));
+      if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu'));
     }
 
-    if (StoryMenuState.weekUnlocked[2] || isDebug)
-      addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
+    if (StoryMenuState.weekUnlocked[2] || isDebug) addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
-    if (StoryMenuState.weekUnlocked[2] || isDebug)
-      addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster']);
+    if (StoryMenuState.weekUnlocked[2] || isDebug) addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster']);
 
-    if (StoryMenuState.weekUnlocked[3] || isDebug)
-      addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
+    if (StoryMenuState.weekUnlocked[3] || isDebug) addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
 
-    if (StoryMenuState.weekUnlocked[4] || isDebug)
-      addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
+    if (StoryMenuState.weekUnlocked[4] || isDebug) addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
 
-    if (StoryMenuState.weekUnlocked[5] || isDebug)
-      addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents-christmas', 'parents-christmas', 'monster-christmas']);
+    if (StoryMenuState.weekUnlocked[5] || isDebug) addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5,
+      ['parents-christmas', 'parents-christmas', 'monster-christmas']);
 
-    if (StoryMenuState.weekUnlocked[6] || isDebug)
-      addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
+    if (StoryMenuState.weekUnlocked[6] || isDebug) addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
 
-    if (StoryMenuState.weekUnlocked[7] || isDebug)
-      addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
+    if (StoryMenuState.weekUnlocked[7] || isDebug) addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
     addWeek(["Darnell", "lit-up", "2hot", "blazin"], 8, ['darnell']);
 
@@ -469,16 +462,14 @@ class FreeplayState extends MusicBeatSubstate
 
   public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
   {
-    if (songCharacters == null)
-      songCharacters = ['bf'];
+    if (songCharacters == null) songCharacters = ['bf'];
 
     var num:Int = 0;
     for (song in songs)
     {
       addSong(song, weekNum, songCharacters[num]);
 
-      if (songCharacters.length != 1)
-        num++;
+      if (songCharacters.length != 1) num++;
     }
   }
 
@@ -506,14 +497,15 @@ class FreeplayState extends MusicBeatSubstate
       songs[curSelected].isFav = !songs[curSelected].isFav;
       if (songs[curSelected].isFav)
       {
-        FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4, {
-          ease: FlxEase.elasticOut,
-          onComplete: _ ->
+        FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4,
           {
-            grpCapsules.members[realShit].favIcon.visible = true;
-            grpCapsules.members[realShit].favIcon.animation.play("fav");
-          }
-        });
+            ease: FlxEase.elasticOut,
+            onComplete: _ ->
+            {
+              grpCapsules.members[realShit].favIcon.visible = true;
+              grpCapsules.members[realShit].favIcon.animation.play("fav");
+            }
+          });
       }
       else
       {
@@ -529,8 +521,7 @@ class FreeplayState extends MusicBeatSubstate
       }
     }
 
-    if (FlxG.keys.justPressed.T)
-      typing.hasFocus = true;
+    if (FlxG.keys.justPressed.T) typing.hasFocus = true;
 
     if (FlxG.sound.music != null)
     {
@@ -588,8 +579,7 @@ class FreeplayState extends MusicBeatSubstate
 
       if (FlxG.touches.getFirst() != null)
       {
-        if (touchTimer >= 1.5)
-          accepted = true;
+        if (touchTimer >= 1.5) accepted = true;
 
         touchTimer += elapsed;
         var touch:FlxTouch = FlxG.touches.getFirst();
@@ -612,16 +602,14 @@ class FreeplayState extends MusicBeatSubstate
         if (Math.abs(dxTouch) >= 100)
         {
           touchX = touch.screenX;
-          if (dxTouch != 0)
-            dxTouch < 0 ? changeDiff(1) : changeDiff(-1);
+          if (dxTouch != 0) dxTouch < 0 ? changeDiff(1) : changeDiff(-1);
         }
 
         if (Math.abs(dyTouch) >= 100)
         {
           touchY = touch.screenY;
 
-          if (dyTouch != 0)
-            dyTouch < 0 ? changeSelection(1) : changeSelection(-1);
+          if (dyTouch != 0) dyTouch < 0 ? changeSelection(1) : changeSelection(-1);
           // changeSelection(1);
         }
       }
@@ -651,14 +639,12 @@ class FreeplayState extends MusicBeatSubstate
         {
           spamTimer = 0;
 
-          if (controls.UI_UP)
-            changeSelection(-1);
+          if (controls.UI_UP) changeSelection(-1);
           else
             changeSelection(1);
         }
       }
-      else if (spamTimer >= 0.9)
-        spamming = true;
+      else if (spamTimer >= 0.9) spamming = true;
     }
     else
     {
@@ -763,10 +749,8 @@ class FreeplayState extends MusicBeatSubstate
 
     curDifficulty += change;
 
-    if (curDifficulty < 0)
-      curDifficulty = 2;
-    if (curDifficulty > 2)
-      curDifficulty = 0;
+    if (curDifficulty < 0) curDifficulty = 2;
+    if (curDifficulty > 2) curDifficulty = 0;
 
     // intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
     intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
@@ -826,10 +810,8 @@ class FreeplayState extends MusicBeatSubstate
 
     curSelected += change;
 
-    if (curSelected < 0)
-      curSelected = grpCapsules.members.length - 1;
-    if (curSelected >= grpCapsules.members.length)
-      curSelected = 0;
+    if (curSelected < 0) curSelected = grpCapsules.members.length - 1;
+    if (curSelected >= grpCapsules.members.length) curSelected = 0;
 
     // selector.y = (70 * curSelected) + 30;
 
@@ -859,12 +841,10 @@ class FreeplayState extends MusicBeatSubstate
       capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
       // capsule.targetPos.x = 320 + (40 * (index - curSelected));
 
-      if (index < curSelected)
-        capsule.targetPos.y -= 100; // another 100 for good measure
+      if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
-    if (grpCapsules.members.length > 0)
-      grpCapsules.members[curSelected].selected = true;
+    if (grpCapsules.members.length > 0) grpCapsules.members[curSelected].selected = true;
   }
 }
 
@@ -892,10 +872,8 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float)
   {
-    if (flipX && controls.UI_RIGHT_P)
-      moveShitDown();
-    if (!flipX && controls.UI_LEFT_P)
-      moveShitDown();
+    if (flipX && controls.UI_RIGHT_P) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P) moveShitDown();
 
     super.update(elapsed);
   }

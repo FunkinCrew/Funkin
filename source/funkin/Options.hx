@@ -2,5 +2,5 @@ package funkin;
 
 class Options
 {
-	public static var masterVolume:Float = 1;
+  public static var masterVolume:Float = 1;
 }

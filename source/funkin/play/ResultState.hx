@@ -19,307 +19,302 @@ import funkin.ui.TallyCounter;
 
 class ResultState extends MusicBeatSubstate
 {
-	var resultsVariation:ResultVariations;
-	var songName:FlxBitmapText;
-	var difficulty:FlxSprite;
+  var resultsVariation:ResultVariations;
+  var songName:FlxBitmapText;
+  var difficulty:FlxSprite;
 
-	var maskShaderSongName = new LeftMaskShader();
-	var maskShaderDifficulty = new LeftMaskShader();
+  var maskShaderSongName = new LeftMaskShader();
+  var maskShaderDifficulty = new LeftMaskShader();
 
-	override function create()
-	{
-		if (Highscore.tallies.sick == Highscore.tallies.totalNotesHit && Highscore.tallies.maxCombo == Highscore.tallies.totalNotesHit)
-			resultsVariation = PERFECT;
-		else if (Highscore.tallies.missed + Highscore.tallies.bad + Highscore.tallies.shit >= Highscore.tallies.totalNotes * 0.50)
-			resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
-		else
-			resultsVariation = NORMAL;
+  override function create()
+  {
+    if (Highscore.tallies.sick == Highscore.tallies.totalNotesHit
+      && Highscore.tallies.maxCombo == Highscore.tallies.totalNotesHit) resultsVariation = PERFECT;
+    else if (Highscore.tallies.missed
+      + Highscore.tallies.bad
+      + Highscore.tallies.shit >= Highscore.tallies.totalNotes * 0.50)
+      resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
+    else
+      resultsVariation = NORMAL;
 
-		FlxG.sound.playMusic(Paths.music("results" + resultsVariation));
+    FlxG.sound.playMusic(Paths.music("results" + resultsVariation));
 
-		// TEMP-ish, just used to sorta "cache" the 3000x3000 image!
-		var cacheBullShit = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
-		add(cacheBullShit);
+    // TEMP-ish, just used to sorta "cache" the 3000x3000 image!
+    var cacheBullShit = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
+    add(cacheBullShit);
 
-		var dumb = new FlxSprite().loadGraphic(Paths.image("resultScreen/scorePopin"));
-		add(dumb);
+    var dumb = new FlxSprite().loadGraphic(Paths.image("resultScreen/scorePopin"));
+    add(dumb);
 
-		var bg:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFECC5C, 0xFFFDC05C], 90);
-		bg.scrollFactor.set();
-		add(bg);
+    var bg:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFECC5C, 0xFFFDC05C], 90);
+    bg.scrollFactor.set();
+    add(bg);
 
-		var gf:FlxSprite = new FlxSprite(500, 300);
-		gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
-		gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
-		gf.visible = false;
-		gf.animation.finishCallback = _ ->
-		{
-			gf.animation.play('clap', true, false, 9);
-		};
-		add(gf);
+    var gf:FlxSprite = new FlxSprite(500, 300);
+    gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
+    gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
+    gf.visible = false;
+    gf.animation.finishCallback = _ ->
+    {
+      gf.animation.play('clap', true, false, 9);
+    };
+    add(gf);
 
-		var boyfriend:FlxSprite = new FlxSprite(640, -200);
-		boyfriend.frames = Paths.getSparrowAtlas('resultScreen/resultBoyfriendGOOD');
-		boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
-		boyfriend.visible = false;
-		boyfriend.animation.finishCallback = function(_)
-		{
-			boyfriend.animation.play('fall', true, false, 14);
-		};
+    var boyfriend:FlxSprite = new FlxSprite(640, -200);
+    boyfriend.frames = Paths.getSparrowAtlas('resultScreen/resultBoyfriendGOOD');
+    boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
+    boyfriend.visible = false;
+    boyfriend.animation.finishCallback = function(_)
+    {
+      boyfriend.animation.play('fall', true, false, 14);
+    };
 
-		add(boyfriend);
+    add(boyfriend);
 
-		var soundSystem:FlxSprite = new FlxSprite(-15, -180);
-		soundSystem.frames = Paths.getSparrowAtlas("resultScreen/soundSystem");
-		soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
-		soundSystem.visible = false;
-		new FlxTimer().start(0.4, _ ->
-		{
-			soundSystem.animation.play("idle");
-			soundSystem.visible = true;
-		});
-		soundSystem.antialiasing = true;
-		add(soundSystem);
+    var soundSystem:FlxSprite = new FlxSprite(-15, -180);
+    soundSystem.frames = Paths.getSparrowAtlas("resultScreen/soundSystem");
+    soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
+    soundSystem.visible = false;
+    new FlxTimer().start(0.4, _ ->
+    {
+      soundSystem.animation.play("idle");
+      soundSystem.visible = true;
+    });
+    soundSystem.antialiasing = true;
+    add(soundSystem);
 
-		difficulty = new FlxSprite(555);
+    difficulty = new FlxSprite(555);
 
-		var diffSpr:String = switch (CoolUtil.difficultyString())
-		{
-			case "EASY":
-				"difEasy";
-			case "NORMAL":
-				"difNormal";
-			case "HARD":
-				"difHard";
-			case _:
-				"difNormal";
-		}
+    var diffSpr:String = switch (CoolUtil.difficultyString())
+    {
+      case "EASY":
+        "difEasy";
+      case "NORMAL":
+        "difNormal";
+      case "HARD":
+        "difHard";
+      case _:
+        "difNormal";
+    }
 
-		difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
-		difficulty.antialiasing = true;
-		add(difficulty);
+    difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
+    difficulty.antialiasing = true;
+    add(difficulty);
 
-		var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
-		songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
+    var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
+    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
 
-		// stole this from PauseSubState, I think eric wrote it!!
-		if (PlayState.instance.currentChart != null)
-		{
-			songName.text += '${PlayState.instance.currentChart.songName}:${PlayState.instance.currentChart.songArtist}';
-		}
-		else
-		{
-			songName.text += PlayState.currentSong.song;
-		}
+    // stole this from PauseSubState, I think eric wrote it!!
+    if (PlayState.instance.currentChart != null)
+    {
+      songName.text += '${PlayState.instance.currentChart.songName}:${PlayState.instance.currentChart.songArtist}';
+    }
+    else
+    {
+      songName.text += PlayState.currentSong.song;
+    }
 
-		songName.antialiasing = true;
-		songName.letterSpacing = -15;
-		songName.angle = -4.1;
-		add(songName);
+    songName.antialiasing = true;
+    songName.letterSpacing = -15;
+    songName.angle = -4.1;
+    add(songName);
 
-		timerThenSongName();
+    timerThenSongName();
 
-		songName.shader = maskShaderSongName;
-		difficulty.shader = maskShaderDifficulty;
+    songName.shader = maskShaderSongName;
+    difficulty.shader = maskShaderDifficulty;
 
-		// maskShaderSongName.swagMaskX = difficulty.x - 15;
-		maskShaderDifficulty.swagMaskX = difficulty.x - 15;
+    // maskShaderSongName.swagMaskX = difficulty.x - 15;
+    maskShaderDifficulty.swagMaskX = difficulty.x - 15;
 
-		var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
-		blackTopBar.y = -blackTopBar.height;
-		FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
-		blackTopBar.antialiasing = true;
-		add(blackTopBar);
+    var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
+    blackTopBar.y = -blackTopBar.height;
+    FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
+    blackTopBar.antialiasing = true;
+    add(blackTopBar);
 
-		var resultsAnim:FlxSprite = new FlxSprite(-200, -10);
-		resultsAnim.frames = Paths.getSparrowAtlas("resultScreen/results");
-		resultsAnim.animation.addByPrefix("result", "results", 24, false);
-		resultsAnim.animation.play("result");
-		resultsAnim.antialiasing = true;
-		add(resultsAnim);
+    var resultsAnim:FlxSprite = new FlxSprite(-200, -10);
+    resultsAnim.frames = Paths.getSparrowAtlas("resultScreen/results");
+    resultsAnim.animation.addByPrefix("result", "results", 24, false);
+    resultsAnim.animation.play("result");
+    resultsAnim.antialiasing = true;
+    add(resultsAnim);
 
-		var ratingsPopin:FlxSprite = new FlxSprite(-150, 120);
-		ratingsPopin.frames = Paths.getSparrowAtlas("resultScreen/ratingsPopin");
-		ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
-		// ratingsPopin.animation.play("idle");
-		ratingsPopin.visible = false;
-		ratingsPopin.antialiasing = true;
-		add(ratingsPopin);
+    var ratingsPopin:FlxSprite = new FlxSprite(-150, 120);
+    ratingsPopin.frames = Paths.getSparrowAtlas("resultScreen/ratingsPopin");
+    ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
+    // ratingsPopin.animation.play("idle");
+    ratingsPopin.visible = false;
+    ratingsPopin.antialiasing = true;
+    add(ratingsPopin);
 
-		var scorePopin:FlxSprite = new FlxSprite(-180, 520);
-		scorePopin.frames = Paths.getSparrowAtlas("resultScreen/scorePopin");
-		scorePopin.animation.addByPrefix("score", "tally score", 24, false);
-		scorePopin.visible = false;
-		add(scorePopin);
+    var scorePopin:FlxSprite = new FlxSprite(-180, 520);
+    scorePopin.frames = Paths.getSparrowAtlas("resultScreen/scorePopin");
+    scorePopin.animation.addByPrefix("score", "tally score", 24, false);
+    scorePopin.visible = false;
+    add(scorePopin);
 
-		var highscoreNew:FlxSprite = new FlxSprite(280, 580);
-		highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
-		highscoreNew.animation.addByPrefix("new", "NEW HIGHSCORE", 24);
-		highscoreNew.visible = false;
-		highscoreNew.setGraphicSize(Std.int(highscoreNew.width * 0.8));
-		highscoreNew.updateHitbox();
-		add(highscoreNew);
+    var highscoreNew:FlxSprite = new FlxSprite(280, 580);
+    highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
+    highscoreNew.animation.addByPrefix("new", "NEW HIGHSCORE", 24);
+    highscoreNew.visible = false;
+    highscoreNew.setGraphicSize(Std.int(highscoreNew.width * 0.8));
+    highscoreNew.updateHitbox();
+    add(highscoreNew);
 
-		var hStuf:Int = 50;
+    var hStuf:Int = 50;
 
-		var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
-		add(ratingGrp);
+    var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
+    add(ratingGrp);
 
-		var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, Highscore.tallies.totalNotesHit);
-		ratingGrp.add(totalHit);
+    var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, Highscore.tallies.totalNotesHit);
+    ratingGrp.add(totalHit);
 
-		var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, Highscore.tallies.maxCombo);
-		ratingGrp.add(maxCombo);
+    var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, Highscore.tallies.maxCombo);
+    ratingGrp.add(maxCombo);
 
-		hStuf += 2;
-		var extraYOffset:Float = 5;
-		var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, Highscore.tallies.sick, 0xFF89E59E);
-		ratingGrp.add(tallySick);
+    hStuf += 2;
+    var extraYOffset:Float = 5;
+    var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, Highscore.tallies.sick, 0xFF89E59E);
+    ratingGrp.add(tallySick);
 
-		var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, Highscore.tallies.good, 0xFF89C9E5);
-		ratingGrp.add(tallyGood);
+    var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, Highscore.tallies.good, 0xFF89C9E5);
+    ratingGrp.add(tallyGood);
 
-		var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, Highscore.tallies.bad, 0xffE6CF8A);
-		ratingGrp.add(tallyBad);
+    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, Highscore.tallies.bad, 0xffE6CF8A);
+    ratingGrp.add(tallyBad);
 
-		var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, Highscore.tallies.shit, 0xFFE68C8A);
-		ratingGrp.add(tallyShit);
+    var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, Highscore.tallies.shit, 0xFFE68C8A);
+    ratingGrp.add(tallyShit);
 
-		var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, Highscore.tallies.missed, 0xFFC68AE6);
-		ratingGrp.add(tallyMissed);
+    var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, Highscore.tallies.missed, 0xFFC68AE6);
+    ratingGrp.add(tallyMissed);
 
-		for (ind => rating in ratingGrp.members)
-		{
-			rating.visible = false;
-			new FlxTimer().start((0.3 * ind) + 0.55, _ ->
-			{
-				rating.visible = true;
-				FlxTween.tween(rating, {curNumber: rating.neededNumber}, 0.5, {ease: FlxEase.quartOut});
-			});
-		}
+    for (ind => rating in ratingGrp.members)
+    {
+      rating.visible = false;
+      new FlxTimer().start((0.3 * ind) + 0.55, _ ->
+      {
+        rating.visible = true;
+        FlxTween.tween(rating, {curNumber: rating.neededNumber}, 0.5, {ease: FlxEase.quartOut});
+      });
+    }
 
-		new FlxTimer().start(0.5, _ ->
-		{
-			ratingsPopin.animation.play("idle");
-			ratingsPopin.visible = true;
+    new FlxTimer().start(0.5, _ ->
+    {
+      ratingsPopin.animation.play("idle");
+      ratingsPopin.visible = true;
 
-			ratingsPopin.animation.finishCallback = anim ->
-			{
-				scorePopin.animation.play("score");
-				scorePopin.visible = true;
+      ratingsPopin.animation.finishCallback = anim ->
+      {
+        scorePopin.animation.play("score");
+        scorePopin.visible = true;
 
-				highscoreNew.visible = true;
-				highscoreNew.animation.play("new");
-				FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
-			};
+        highscoreNew.visible = true;
+        highscoreNew.animation.play("new");
+        FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
+      };
 
-			boyfriend.animation.play('fall');
-			boyfriend.visible = true;
+      boyfriend.animation.play('fall');
+      boyfriend.visible = true;
 
-			new FlxTimer().start((1 / 24) * 22, _ ->
-			{
-				// plays about 22 frames (at 24fps timing) after bf spawns in
-				gf.animation.play('clap', true);
-				gf.visible = true;
-			});
-		});
+      new FlxTimer().start((1 / 24) * 22, _ ->
+      {
+        // plays about 22 frames (at 24fps timing) after bf spawns in
+        gf.animation.play('clap', true);
+        gf.visible = true;
+      });
+    });
 
-		if (Highscore.tallies.isNewHighscore)
-			trace("ITS A NEW HIGHSCORE!!!");
+    if (Highscore.tallies.isNewHighscore) trace("ITS A NEW HIGHSCORE!!!");
 
-		super.create();
-	}
+    super.create();
+  }
 
-	function timerThenSongName()
-	{
-		movingSongStuff = false;
+  function timerThenSongName()
+  {
+    movingSongStuff = false;
 
-		difficulty.x = 555;
+    difficulty.x = 555;
 
-		var diffYTween = 122;
+    var diffYTween = 122;
 
-		difficulty.y = -difficulty.height;
-		FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
+    difficulty.y = -difficulty.height;
+    FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
 
-		songName.y = diffYTween - 30;
-		songName.x = (difficulty.x + difficulty.width) + 20;
+    songName.y = diffYTween - 30;
+    songName.x = (difficulty.x + difficulty.width) + 20;
 
-		new FlxTimer().start(3, _ ->
-		{
-			movingSongStuff = true;
-		});
-	}
+    new FlxTimer().start(3, _ ->
+    {
+      movingSongStuff = true;
+    });
+  }
 
-	var movingSongStuff:Bool = false;
-	var speedOfTween:FlxPoint = FlxPoint.get(-1, 0.1);
+  var movingSongStuff:Bool = false;
+  var speedOfTween:FlxPoint = FlxPoint.get(-1, 0.1);
 
-	override function draw():Void
-	{
-		super.draw();
+  override function draw():Void
+  {
+    super.draw();
 
-		if (songName != null)
-		{
-			songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
-			// PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
-		}
+    if (songName != null)
+    {
+      songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
+      // PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
+    }
 
-		// if (songName != null && songName.frame != null)
-		// maskShaderSongName.frameUV = songName.frame.uv;
-	}
+    // if (songName != null && songName.frame != null)
+    // maskShaderSongName.frameUV = songName.frame.uv;
+  }
 
-	override function update(elapsed:Float)
-	{
-		// maskShaderSongName.swagSprX = songName.x;
-		maskShaderDifficulty.swagSprX = difficulty.x;
+  override function update(elapsed:Float)
+  {
+    // maskShaderSongName.swagSprX = songName.x;
+    maskShaderDifficulty.swagSprX = difficulty.x;
 
-		if (movingSongStuff)
-		{
-			songName.x += speedOfTween.x;
-			difficulty.x += speedOfTween.x;
-			songName.y += speedOfTween.y;
-			difficulty.y += speedOfTween.y;
+    if (movingSongStuff)
+    {
+      songName.x += speedOfTween.x;
+      difficulty.x += speedOfTween.x;
+      songName.y += speedOfTween.y;
+      difficulty.y += speedOfTween.y;
 
-			if (songName.x + songName.width < 100)
-			{
-				timerThenSongName();
-			}
-		}
+      if (songName.x + songName.width < 100)
+      {
+        timerThenSongName();
+      }
+    }
 
-		if (FlxG.keys.justPressed.RIGHT)
-			speedOfTween.x += 0.1;
+    if (FlxG.keys.justPressed.RIGHT) speedOfTween.x += 0.1;
 
-		if (FlxG.keys.justPressed.LEFT)
-		{
-			speedOfTween.x -= 0.1;
-		}
+    if (FlxG.keys.justPressed.LEFT)
+    {
+      speedOfTween.x -= 0.1;
+    }
 
-		if (FlxG.keys.justPressed.UP)
-			speedOfTween.y -= 0.1;
+    if (FlxG.keys.justPressed.UP) speedOfTween.y -= 0.1;
 
-		if (FlxG.keys.justPressed.DOWN)
-			speedOfTween.y += 0.1;
+    if (FlxG.keys.justPressed.DOWN) speedOfTween.y += 0.1;
 
-		if (FlxG.keys.pressed.V)
-		{
-			trace(speedOfTween);
-		}
+    if (FlxG.keys.pressed.V)
+    {
+      trace(speedOfTween);
+    }
 
-		if (FlxG.keys.justPressed.PERIOD)
-			songName.angle += 0.1;
+    if (FlxG.keys.justPressed.PERIOD) songName.angle += 0.1;
 
-		if (FlxG.keys.justPressed.COMMA)
-			songName.angle -= 0.1;
+    if (FlxG.keys.justPressed.COMMA) songName.angle -= 0.1;
 
-		if (controls.PAUSE)
-			FlxG.switchState(new FreeplayState());
+    if (controls.PAUSE) FlxG.switchState(new FreeplayState());
 
-		super.update(elapsed);
-	}
+    super.update(elapsed);
+  }
 }
 
 enum abstract ResultVariations(String)
 {
-	var PERFECT;
-	var NORMAL;
-	var SHIT;
+  var PERFECT;
+  var NORMAL;
+  var SHIT;
 }

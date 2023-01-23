@@ -5,122 +5,121 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 {
-	public var scoreShit(default, set):Int = 0;
+  public var scoreShit(default, set):Int = 0;
 
-	function set_scoreShit(val):Int
-	{
-		if (group == null || group.members == null)
-			return val;
-		var loopNum:Int = group.members.length - 1;
-		var dumbNumb = Std.parseInt(Std.string(val));
-		var prevNum:ScoreNum;
+  function set_scoreShit(val):Int
+  {
+    if (group == null || group.members == null) return val;
+    var loopNum:Int = group.members.length - 1;
+    var dumbNumb = Std.parseInt(Std.string(val));
+    var prevNum:ScoreNum;
 
-		while (dumbNumb > 0)
-		{
-			group.members[loopNum].digit = dumbNumb % 10;
+    while (dumbNumb > 0)
+    {
+      group.members[loopNum].digit = dumbNumb % 10;
 
-			// var funnyNum = group.members[loopNum];
-			// prevNum = group.members[loopNum + 1];
+      // var funnyNum = group.members[loopNum];
+      // prevNum = group.members[loopNum + 1];
 
-			// if (prevNum != null)
-			// {
-			// funnyNum.x = prevNum.x - (funnyNum.width * 0.7);
-			// }
+      // if (prevNum != null)
+      // {
+      // funnyNum.x = prevNum.x - (funnyNum.width * 0.7);
+      // }
 
-			// funnyNum.y = (funnyNum.baseY - (funnyNum.height / 2)) + 73;
-			// funnyNum.x = (funnyNum.baseX - (funnyNum.width / 2)) + 450; // this plus value is hand picked lol!
+      // funnyNum.y = (funnyNum.baseY - (funnyNum.height / 2)) + 73;
+      // funnyNum.x = (funnyNum.baseX - (funnyNum.width / 2)) + 450; // this plus value is hand picked lol!
 
-			dumbNumb = Math.floor(dumbNumb / 10);
-			loopNum--;
-		}
+      dumbNumb = Math.floor(dumbNumb / 10);
+      loopNum--;
+    }
 
-		while (loopNum > 0)
-		{
-			group.members[loopNum].digit = 0;
-			loopNum--;
-		}
+    while (loopNum > 0)
+    {
+      group.members[loopNum].digit = 0;
+      loopNum--;
+    }
 
-		return val;
-	}
+    return val;
+  }
 
-	public function new(x:Float, y:Float, scoreShit:Int = 100)
-	{
-		super(x, y);
+  public function new(x:Float, y:Float, scoreShit:Int = 100)
+  {
+    super(x, y);
 
-		for (i in 0...7)
-		{
-			add(new ScoreNum(x + (45 * i), y, 0));
-		}
+    for (i in 0...7)
+    {
+      add(new ScoreNum(x + (45 * i), y, 0));
+    }
 
-		this.scoreShit = scoreShit;
-	}
+    this.scoreShit = scoreShit;
+  }
 
-	public function updateScore(scoreNew:Int)
-	{
-		scoreShit = scoreNew;
-	}
+  public function updateScore(scoreNew:Int)
+  {
+    scoreShit = scoreNew;
+  }
 }
 
 class ScoreNum extends FlxSprite
 {
-	public var digit(default, set):Int = 0;
+  public var digit(default, set):Int = 0;
 
-	function set_digit(val):Int
-	{
-		if (animation.curAnim != null && animation.curAnim.name != numToString[val])
-		{
-			animation.play(numToString[val], true, false, 0);
-			updateHitbox();
+  function set_digit(val):Int
+  {
+    if (animation.curAnim != null && animation.curAnim.name != numToString[val])
+    {
+      animation.play(numToString[val], true, false, 0);
+      updateHitbox();
 
-			switch (val)
-			{
-				case 1:
-					offset.x -= 15;
-				case 5:
-				// set offsets
-				// offset.x += 0;
-				// offset.y += 10;
+      switch (val)
+      {
+        case 1:
+          offset.x -= 15;
+        case 5:
+        // set offsets
+        // offset.x += 0;
+        // offset.y += 10;
 
-				case 7:
-				// offset.y += 6;
-				case 4:
-				// offset.y += 5;
-				case 9:
-				// offset.y += 5;
-				default:
-					centerOffsets(false);
-			}
-		}
+        case 7:
+        // offset.y += 6;
+        case 4:
+        // offset.y += 5;
+        case 9:
+        // offset.y += 5;
+        default:
+          centerOffsets(false);
+      }
+    }
 
-		return val;
-	}
+    return val;
+  }
 
-	public var baseY:Float = 0;
-	public var baseX:Float = 0;
+  public var baseY:Float = 0;
+  public var baseX:Float = 0;
 
-	var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+  var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
 
-	public function new(x:Float, y:Float, ?initDigit:Int = 0)
-	{
-		super(x, y);
+  public function new(x:Float, y:Float, ?initDigit:Int = 0)
+  {
+    super(x, y);
 
-		baseY = y;
-		baseX = x;
+    baseY = y;
+    baseX = x;
 
-		frames = Paths.getSparrowAtlas('digital_numbers');
+    frames = Paths.getSparrowAtlas('digital_numbers');
 
-		for (i in 0...10)
-		{
-			var stringNum:String = numToString[i];
-			animation.addByPrefix(stringNum, stringNum, 24, false);
-		}
+    for (i in 0...10)
+    {
+      var stringNum:String = numToString[i];
+      animation.addByPrefix(stringNum, stringNum, 24, false);
+    }
 
-		this.digit = initDigit;
+    this.digit = initDigit;
 
-		animation.play(numToString[digit], true);
-		antialiasing = true;
+    animation.play(numToString[digit], true);
+    antialiasing = true;
 
-		setGraphicSize(Std.int(width * 0.4));
-		updateHitbox();
-	}
+    setGraphicSize(Std.int(width * 0.4));
+    updateHitbox();
+  }
 }

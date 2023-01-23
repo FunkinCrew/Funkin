@@ -4,7 +4,7 @@ import flixel.system.FlxAssets.FlxShader;
 
 class AngleMask extends FlxShader
 {
-	@:glFragmentSource('
+  @:glFragmentSource('
 		#pragma header
         uniform vec2 endPosition;
 		void main()
@@ -34,10 +34,10 @@ class AngleMask extends FlxShader
                 gl_FragColor = vec4(0.0);
 
 		}')
-	public function new()
-	{
-		super();
+  public function new()
+  {
+    super();
 
-		endPosition.value = [90, 100]; // 100 AS DEFAULT WORKS NICELY FOR FREEPLAY?
-	}
+    endPosition.value = [90, 100]; // 100 AS DEFAULT WORKS NICELY FOR FREEPLAY?
+  }
 }

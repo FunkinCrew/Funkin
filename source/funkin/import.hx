@@ -1,3 +1,5 @@
+package;
+
 #if !macro
 // Only import these when we aren't in a macro.
 import funkin.Paths;

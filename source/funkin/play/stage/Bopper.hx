@@ -61,10 +61,8 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
   function set_globalOffsets(value:Array<Float>)
   {
-    if (globalOffsets == null)
-      globalOffsets = [0, 0];
-    if (globalOffsets == value)
-      return value;
+    if (globalOffsets == null) globalOffsets = [0, 0];
+    if (globalOffsets == value) return value;
 
     var xDiff = globalOffsets[0] - value[0];
     var yDiff = globalOffsets[1] - value[1];
@@ -74,16 +72,14 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
     return animOffsets = value;
   }
 
-  private var animOffsets(default, set):Array<Float> = [0, 0];
+  var animOffsets(default, set):Array<Float> = [0, 0];
 
   public var originalPosition:FlxPoint = new FlxPoint(0, 0);
 
   function set_animOffsets(value:Array<Float>)
   {
-    if (animOffsets == null)
-      animOffsets = [0, 0];
-    if (animOffsets == value)
-      return value;
+    if (animOffsets == null) animOffsets = [0, 0];
+    if (animOffsets == value) return value;
 
     var xDiff = animOffsets[0] - value[0];
     var yDiff = animOffsets[1] - value[1];
@@ -203,8 +199,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
   public function hasAnimation(id:String):Bool
   {
-    if (this.animation == null)
-      return false;
+    if (this.animation == null) return false;
 
     return this.animation.getByName(id) != null;
   }
@@ -217,8 +212,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
   function correctAnimationName(name:String)
   {
     // If the animation exists, we're good.
-    if (hasAnimation(name))
-      return name;
+    if (hasAnimation(name)) return name;
 
     trace('[BOPPER] Animation "$name" does not exist!');
 
@@ -253,12 +247,10 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
    */
   public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
   {
-    if (!canPlayOtherAnims && !ignoreOther)
-      return;
+    if (!canPlayOtherAnims && !ignoreOther) return;
 
     var correctName = correctAnimationName(name);
-    if (correctName == null)
-      return;
+    if (correctName == null) return;
 
     this.animation.play(correctName, restart, false, 0);
 
@@ -280,12 +272,10 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
   {
     // TODO: Might be nice to rework this function, maybe have a numbered priority system?
 
-    if (this.animation == null)
-      return;
+    if (this.animation == null) return;
 
     var correctName = correctAnimationName(name);
-    if (correctName == null)
-      return;
+    if (correctName == null) return;
 
     this.animation.play(correctName, false, false);
     applyAnimationOffsets(correctName);
@@ -327,8 +317,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
    */
   public function getCurrentAnimation():String
   {
-    if (this.animation == null || this.animation.curAnim == null)
-      return "";
+    if (this.animation == null || this.animation.curAnim == null) return "";
     return this.animation.curAnim.name;
   }
 

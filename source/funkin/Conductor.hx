@@ -18,12 +18,12 @@ class Conductor
    * The list of time changes in the song.
    * There should be at least one time change (at the beginning of the song) to define the BPM.
    */
-  private static var timeChanges:Array<SongTimeChange> = [];
+  static var timeChanges:Array<SongTimeChange> = [];
 
   /**
    * The current time change.
    */
-  private static var currentTimeChange:SongTimeChange;
+  static var currentTimeChange:SongTimeChange;
 
   /**
    * The current position in the song in milliseconds.
@@ -38,11 +38,9 @@ class Conductor
 
   static function get_bpm():Float
   {
-    if (bpmOverride != null)
-      return bpmOverride;
+    if (bpmOverride != null) return bpmOverride;
 
-    if (currentTimeChange == null)
-      return 100;
+    if (currentTimeChange == null) return 100;
 
     return currentTimeChange.bpm;
   }
@@ -76,8 +74,7 @@ class Conductor
 
   static function get_timeSignatureNumerator():Int
   {
-    if (currentTimeChange == null)
-      return 4;
+    if (currentTimeChange == null) return 4;
 
     return currentTimeChange.timeSignatureNum;
   }
@@ -86,8 +83,7 @@ class Conductor
 
   static function get_timeSignatureDenominator():Int
   {
-    if (currentTimeChange == null)
-      return 4;
+    if (currentTimeChange == null) return 4;
 
     return currentTimeChange.timeSignatureDen;
   }
@@ -131,22 +127,21 @@ class Conductor
     return timeSignatureNumerator * 4;
   }
 
-  private function new() {}
+  function new() {}
 
   public static function getLastBPMChange()
   {
-    var lastChange:BPMChangeEvent = {
-      stepTime: 0,
-      songTime: 0,
-      bpm: 0
-    }
+    var lastChange:BPMChangeEvent =
+      {
+        stepTime: 0,
+        songTime: 0,
+        bpm: 0
+      }
     for (i in 0...Conductor.bpmChangeMap.length)
     {
-      if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
-        lastChange = Conductor.bpmChangeMap[i];
+      if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime) lastChange = Conductor.bpmChangeMap[i];
 
-      if (Conductor.songPosition < Conductor.bpmChangeMap[i].songTime)
-        break;
+      if (Conductor.songPosition < Conductor.bpmChangeMap[i].songTime) break;
     }
     return lastChange;
   }
@@ -162,8 +157,7 @@ class Conductor
    */
   public static function forceBPM(?bpm:Float = null)
   {
-    if (bpm != null)
-      trace('[CONDUCTOR] Forcing BPM to ' + bpm);
+    if (bpm != null) trace('[CONDUCTOR] Forcing BPM to ' + bpm);
     else
       trace('[CONDUCTOR] Resetting BPM to default');
     Conductor.bpmOverride = bpm;
@@ -178,8 +172,7 @@ class Conductor
    */
   public static function update(songPosition:Float = null)
   {
-    if (songPosition == null)
-      songPosition = (FlxG.sound.music != null) ? FlxG.sound.music.time + Conductor.offset : 0.0;
+    if (songPosition == null) songPosition = (FlxG.sound.music != null) ? FlxG.sound.music.time + Conductor.offset : 0.0;
 
     var oldBeat = currentBeat;
     var oldStep = currentStep;
@@ -190,11 +183,9 @@ class Conductor
     currentTimeChange = timeChanges[0];
     for (i in 0...timeChanges.length)
     {
-      if (songPosition >= timeChanges[i].timeStamp)
-        currentTimeChange = timeChanges[i];
+      if (songPosition >= timeChanges[i].timeStamp) currentTimeChange = timeChanges[i];
 
-      if (songPosition < timeChanges[i].timeStamp)
-        break;
+      if (songPosition < timeChanges[i].timeStamp) break;
     }
 
     if (currentTimeChange == null && bpmOverride == null && FlxG.sound.music != null)
@@ -216,11 +207,9 @@ class Conductor
     }
 
     // FlxSignals are really cool.
-    if (currentStep != oldStep)
-      stepHit.dispatch();
+    if (currentStep != oldStep) stepHit.dispatch();
 
-    if (currentBeat != oldBeat)
-      beatHit.dispatch();
+    if (currentBeat != oldBeat) beatHit.dispatch();
   }
 
   @:deprecated // Switch to TimeChanges instead.
@@ -236,11 +225,12 @@ class Conductor
       if (SongLoad.getSong()[i].changeBPM && SongLoad.getSong()[i].bpm != curBPM)
       {
         curBPM = SongLoad.getSong()[i].bpm;
-        var event:BPMChangeEvent = {
-          stepTime: totalSteps,
-          songTime: totalPos,
-          bpm: curBPM
-        };
+        var event:BPMChangeEvent =
+          {
+            stepTime: totalSteps,
+            songTime: totalPos,
+            bpm: curBPM
+          };
         bpmChangeMap.push(event);
       }
 

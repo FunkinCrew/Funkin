@@ -15,139 +15,139 @@ using Lambda;
  */
 interface ChartEditorCommand
 {
-	/**
-	 * Calling this function should perform the action that this command represents.
-	 * @param state The ChartEditorState to perform the action on.
-	 */
-	public function execute(state:ChartEditorState):Void;
+  /**
+   * Calling this function should perform the action that this command represents.
+   * @param state The ChartEditorState to perform the action on.
+   */
+  public function execute(state:ChartEditorState):Void;
 
-	/**
-	 * Calling this function should perform the inverse of the action that this command represents,
-	 * effectively undoing the action.
-	 * @param state The ChartEditorState to undo the action on.
-	 */
-	public function undo(state:ChartEditorState):Void;
+  /**
+   * Calling this function should perform the inverse of the action that this command represents,
+   * effectively undoing the action.
+   * @param state The ChartEditorState to undo the action on.
+   */
+  public function undo(state:ChartEditorState):Void;
 
-	/**
-	 * Get a short description of the action (for the UI).
-	 * For example, return `Add Left Note` to display `Undo Add Left Note` in the menu.
-	 */
-	public function toString():String;
+  /**
+   * Get a short description of the action (for the UI).
+   * For example, return `Add Left Note` to display `Undo Add Left Note` in the menu.
+   */
+  public function toString():String;
 }
 
 class AddNotesCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
-	private var appendToSelection:Bool;
+  var notes:Array<SongNoteData>;
+  var appendToSelection:Bool;
 
-	public function new(notes:Array<SongNoteData>, appendToSelection:Bool = false)
-	{
-		this.notes = notes;
-		this.appendToSelection = appendToSelection;
-	}
+  public function new(notes:Array<SongNoteData>, appendToSelection:Bool = false)
+  {
+    this.notes = notes;
+    this.appendToSelection = appendToSelection;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		for (note in notes)
-		{
-			state.currentSongChartNoteData.push(note);
-		}
+  public function execute(state:ChartEditorState):Void
+  {
+    for (note in notes)
+    {
+      state.currentSongChartNoteData.push(note);
+    }
 
-		if (appendToSelection)
-		{
-			state.currentNoteSelection = state.currentNoteSelection.concat(notes);
-		}
-		else
-		{
-			state.currentNoteSelection = notes;
-			state.currentEventSelection = [];
-		}
+    if (appendToSelection)
+    {
+      state.currentNoteSelection = state.currentNoteSelection.concat(notes);
+    }
+    else
+    {
+      state.currentNoteSelection = notes;
+      state.currentEventSelection = [];
+    }
 
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
-		state.currentNoteSelection = [];
-		state.currentEventSelection = [];
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		if (notes.length == 1)
-		{
-			var dir:String = notes[0].getDirectionName();
-			return 'Add $dir Note';
-		}
+  public function toString():String
+  {
+    if (notes.length == 1)
+    {
+      var dir:String = notes[0].getDirectionName();
+      return 'Add $dir Note';
+    }
 
-		return 'Add ${notes.length} Notes';
-	}
+    return 'Add ${notes.length} Notes';
+  }
 }
 
 class RemoveNotesCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
+  var notes:Array<SongNoteData>;
 
-	public function new(notes:Array<SongNoteData>)
-	{
-		this.notes = notes;
-	}
+  public function new(notes:Array<SongNoteData>)
+  {
+    this.notes = notes;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
-		state.currentNoteSelection = [];
-		state.currentEventSelection = [];
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		for (note in notes)
-		{
-			state.currentSongChartNoteData.push(note);
-		}
-		state.currentNoteSelection = notes;
-		state.currentEventSelection = [];
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+  public function undo(state:ChartEditorState):Void
+  {
+    for (note in notes)
+    {
+      state.currentSongChartNoteData.push(note);
+    }
+    state.currentNoteSelection = notes;
+    state.currentEventSelection = [];
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		if (notes.length == 1 && notes[0] != null)
-		{
-			var dir:String = notes[0].getDirectionName();
-			return 'Remove $dir Note';
-		}
+  public function toString():String
+  {
+    if (notes.length == 1 && notes[0] != null)
+    {
+      var dir:String = notes[0].getDirectionName();
+      return 'Remove $dir Note';
+    }
 
-		return 'Remove ${notes.length} Notes';
-	}
+    return 'Remove ${notes.length} Notes';
+  }
 }
 
 /**
@@ -155,323 +155,323 @@ class RemoveNotesCommand implements ChartEditorCommand
  */
 class SelectItemsCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
-	private var events:Array<SongEventData>;
+  var notes:Array<SongNoteData>;
+  var events:Array<SongEventData>;
 
-	public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
-	{
-		this.notes = notes;
-		this.events = events;
-	}
+  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
+  {
+    this.notes = notes;
+    this.events = events;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		for (note in this.notes)
-		{
-			state.currentNoteSelection.push(note);
-		}
+  public function execute(state:ChartEditorState):Void
+  {
+    for (note in this.notes)
+    {
+      state.currentNoteSelection.push(note);
+    }
 
-		for (event in this.events)
-		{
-			state.currentEventSelection.push(event);
-		}
+    for (event in this.events)
+    {
+      state.currentEventSelection.push(event);
+    }
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
-		state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
+    state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function toString():String
-	{
-		var len:Int = notes.length + events.length;
+  public function toString():String
+  {
+    var len:Int = notes.length + events.length;
 
-		if (notes.length == 0)
-		{
-			if (events.length == 1)
-			{
-				return 'Select Event';
-			}
-			else
-			{
-				return 'Select ${events.length} Events';
-			}
-		}
-		else if (events.length == 0)
-		{
-			if (notes.length == 1)
-			{
-				return 'Select Note';
-			}
-			else
-			{
-				return 'Select ${notes.length} Notes';
-			}
-		}
+    if (notes.length == 0)
+    {
+      if (events.length == 1)
+      {
+        return 'Select Event';
+      }
+      else
+      {
+        return 'Select ${events.length} Events';
+      }
+    }
+    else if (events.length == 0)
+    {
+      if (notes.length == 1)
+      {
+        return 'Select Note';
+      }
+      else
+      {
+        return 'Select ${notes.length} Notes';
+      }
+    }
 
-		return 'Select ${len} Items';
-	}
+    return 'Select ${len} Items';
+  }
 }
 
 class AddEventsCommand implements ChartEditorCommand
 {
-	private var events:Array<SongEventData>;
-	private var appendToSelection:Bool;
+  var events:Array<SongEventData>;
+  var appendToSelection:Bool;
 
-	public function new(events:Array<SongEventData>, ?appendToSelection:Bool = false)
-	{
-		this.events = events;
-		this.appendToSelection = appendToSelection;
-	}
+  public function new(events:Array<SongEventData>, ?appendToSelection:Bool = false)
+  {
+    this.events = events;
+    this.appendToSelection = appendToSelection;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		for (event in events)
-		{
-			state.currentSongChartEventData.push(event);
-		}
+  public function execute(state:ChartEditorState):Void
+  {
+    for (event in events)
+    {
+      state.currentSongChartEventData.push(event);
+    }
 
-		if (appendToSelection)
-		{
-			state.currentEventSelection = state.currentEventSelection.concat(events);
-		}
-		else
-		{
-			state.currentNoteSelection = [];
-			state.currentEventSelection = events;
-		}
+    if (appendToSelection)
+    {
+      state.currentEventSelection = state.currentEventSelection.concat(events);
+    }
+    else
+    {
+      state.currentNoteSelection = [];
+      state.currentEventSelection = events;
+    }
 
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
 
-		state.currentNoteSelection = [];
-		state.currentEventSelection = [];
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		var len:Int = events.length;
-		return 'Add $len Events';
-	}
+  public function toString():String
+  {
+    var len:Int = events.length;
+    return 'Add $len Events';
+  }
 }
 
 class RemoveEventsCommand implements ChartEditorCommand
 {
-	private var events:Array<SongEventData>;
+  var events:Array<SongEventData>;
 
-	public function new(events:Array<SongEventData>)
-	{
-		this.events = events;
-	}
+  public function new(events:Array<SongEventData>)
+  {
+    this.events = events;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
-		state.currentEventSelection = [];
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
+    state.currentEventSelection = [];
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		for (event in events)
-		{
-			state.currentSongChartEventData.push(event);
-		}
-		state.currentEventSelection = events;
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+  public function undo(state:ChartEditorState):Void
+  {
+    for (event in events)
+    {
+      state.currentSongChartEventData.push(event);
+    }
+    state.currentEventSelection = events;
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		if (events.length == 1 && events[0] != null)
-		{
-			return 'Remove Event';
-		}
+  public function toString():String
+  {
+    if (events.length == 1 && events[0] != null)
+    {
+      return 'Remove Event';
+    }
 
-		return 'Remove ${events.length} Events';
-	}
+    return 'Remove ${events.length} Events';
+  }
 }
 
 class RemoveItemsCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
-	private var events:Array<SongEventData>;
+  var notes:Array<SongNoteData>;
+  var events:Array<SongEventData>;
 
-	public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
-	{
-		this.notes = notes;
-		this.events = events;
-	}
+  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
+  {
+    this.notes = notes;
+    this.events = events;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
-		state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
 
-		state.currentNoteSelection = [];
-		state.currentEventSelection = [];
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
 
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		for (note in notes)
-		{
-			state.currentSongChartNoteData.push(note);
-		}
+  public function undo(state:ChartEditorState):Void
+  {
+    for (note in notes)
+    {
+      state.currentSongChartNoteData.push(note);
+    }
 
-		for (event in events)
-		{
-			state.currentSongChartEventData.push(event);
-		}
+    for (event in events)
+    {
+      state.currentSongChartEventData.push(event);
+    }
 
-		state.currentNoteSelection = notes;
-		state.currentEventSelection = events;
+    state.currentNoteSelection = notes;
+    state.currentEventSelection = events;
 
-		state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		return 'Remove ${notes.length + events.length} Items';
-	}
+  public function toString():String
+  {
+    return 'Remove ${notes.length + events.length} Items';
+  }
 }
 
 class SwitchDifficultyCommand implements ChartEditorCommand
 {
-	private var prevDifficulty:String;
-	private var newDifficulty:String;
-	private var prevVariation:String;
-	private var newVariation:String;
+  var prevDifficulty:String;
+  var newDifficulty:String;
+  var prevVariation:String;
+  var newVariation:String;
 
-	public function new(prevDifficulty:String, newDifficulty:String, prevVariation:String, newVariation:String)
-	{
-		this.prevDifficulty = prevDifficulty;
-		this.newDifficulty = newDifficulty;
-		this.prevVariation = prevVariation;
-		this.newVariation = newVariation;
-	}
+  public function new(prevDifficulty:String, newDifficulty:String, prevVariation:String, newVariation:String)
+  {
+    this.prevDifficulty = prevDifficulty;
+    this.newDifficulty = newDifficulty;
+    this.prevVariation = prevVariation;
+    this.newVariation = newVariation;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.selectedVariation = newVariation != null ? newVariation : prevVariation;
-		state.selectedDifficulty = newDifficulty != null ? newDifficulty : prevDifficulty;
+  public function execute(state:ChartEditorState):Void
+  {
+    state.selectedVariation = newVariation != null ? newVariation : prevVariation;
+    state.selectedDifficulty = newDifficulty != null ? newDifficulty : prevDifficulty;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.selectedVariation = prevVariation != null ? prevVariation : newVariation;
-		state.selectedDifficulty = prevDifficulty != null ? prevDifficulty : newDifficulty;
+  public function undo(state:ChartEditorState):Void
+  {
+    state.selectedVariation = prevVariation != null ? prevVariation : newVariation;
+    state.selectedDifficulty = prevDifficulty != null ? prevDifficulty : newDifficulty;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function toString():String
-	{
-		return 'Switch Difficulty';
-	}
+  public function toString():String
+  {
+    return 'Switch Difficulty';
+  }
 }
 
 class DeselectItemsCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
-	private var events:Array<SongEventData>;
+  var notes:Array<SongNoteData>;
+  var events:Array<SongEventData>;
 
-	public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
-	{
-		this.notes = notes;
-		this.events = events;
-	}
+  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
+  {
+    this.notes = notes;
+    this.events = events;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
-		state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
+    state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		for (note in this.notes)
-		{
-			state.currentNoteSelection.push(note);
-		}
+  public function undo(state:ChartEditorState):Void
+  {
+    for (note in this.notes)
+    {
+      state.currentNoteSelection.push(note);
+    }
 
-		for (event in this.events)
-		{
-			state.currentEventSelection.push(event);
-		}
+    for (event in this.events)
+    {
+      state.currentEventSelection.push(event);
+    }
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function toString():String
-	{
-		var noteCount = notes.length + events.length;
+  public function toString():String
+  {
+    var noteCount = notes.length + events.length;
 
-		if (noteCount == 1)
-		{
-			var dir:String = notes[0].getDirectionName();
-			return 'Deselect $dir Items';
-		}
+    if (noteCount == 1)
+    {
+      var dir:String = notes[0].getDirectionName();
+      return 'Deselect $dir Items';
+    }
 
-		return 'Deselect ${noteCount} Items';
-	}
+    return 'Deselect ${noteCount} Items';
+  }
 }
 
 /**
@@ -480,353 +480,350 @@ class DeselectItemsCommand implements ChartEditorCommand
  */
 class SetItemSelectionCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
-	private var events:Array<SongEventData>;
-	private var previousNoteSelection:Array<SongNoteData>;
-	private var previousEventSelection:Array<SongEventData>;
+  var notes:Array<SongNoteData>;
+  var events:Array<SongEventData>;
+  var previousNoteSelection:Array<SongNoteData>;
+  var previousEventSelection:Array<SongEventData>;
 
-	public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, previousNoteSelection:Array<SongNoteData>,
-			previousEventSelection:Array<SongEventData>)
-	{
-		this.notes = notes;
-		this.events = events;
-		this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
-		this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
-	}
+  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, previousNoteSelection:Array<SongNoteData>,
+      previousEventSelection:Array<SongEventData>)
+  {
+    this.notes = notes;
+    this.events = events;
+    this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
+    this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = notes;
-		state.currentEventSelection = events;
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = notes;
+    state.currentEventSelection = events;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = previousNoteSelection;
-		state.currentEventSelection = previousEventSelection;
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = previousNoteSelection;
+    state.currentEventSelection = previousEventSelection;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function toString():String
-	{
-		return 'Select ${notes.length} Items';
-	}
+  public function toString():String
+  {
+    return 'Select ${notes.length} Items';
+  }
 }
 
 class SelectAllItemsCommand implements ChartEditorCommand
 {
-	private var previousNoteSelection:Array<SongNoteData>;
-	private var previousEventSelection:Array<SongEventData>;
+  var previousNoteSelection:Array<SongNoteData>;
+  var previousEventSelection:Array<SongEventData>;
 
-	public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
-	{
-		this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
-		this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
-	}
+  public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
+  {
+    this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
+    this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = state.currentSongChartNoteData;
-		state.currentEventSelection = state.currentSongChartEventData;
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = state.currentSongChartNoteData;
+    state.currentEventSelection = state.currentSongChartEventData;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = previousNoteSelection;
-		state.currentEventSelection = previousEventSelection;
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = previousNoteSelection;
+    state.currentEventSelection = previousEventSelection;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function toString():String
-	{
-		return 'Select All Items';
-	}
+  public function toString():String
+  {
+    return 'Select All Items';
+  }
 }
 
 class InvertSelectedItemsCommand implements ChartEditorCommand
 {
-	private var previousNoteSelection:Array<SongNoteData>;
-	private var previousEventSelection:Array<SongEventData>;
+  var previousNoteSelection:Array<SongNoteData>;
+  var previousEventSelection:Array<SongEventData>;
 
-	public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
-	{
-		this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
-		this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
-	}
+  public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
+  {
+    this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
+    this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentSongChartNoteData, previousNoteSelection);
-		state.currentEventSelection = SongDataUtils.subtractEvents(state.currentSongChartEventData, previousEventSelection);
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentSongChartNoteData, previousNoteSelection);
+    state.currentEventSelection = SongDataUtils.subtractEvents(state.currentSongChartEventData, previousEventSelection);
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = previousNoteSelection;
-		state.currentEventSelection = previousEventSelection;
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = previousNoteSelection;
+    state.currentEventSelection = previousEventSelection;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function toString():String
-	{
-		return 'Invert Selected Items';
-	}
+  public function toString():String
+  {
+    return 'Invert Selected Items';
+  }
 }
 
 class DeselectAllItemsCommand implements ChartEditorCommand
 {
-	private var previousNoteSelection:Array<SongNoteData>;
-	private var previousEventSelection:Array<SongEventData>;
+  var previousNoteSelection:Array<SongNoteData>;
+  var previousEventSelection:Array<SongEventData>;
 
-	public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
-	{
-		this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
-		this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
-	}
+  public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
+  {
+    this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
+    this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = [];
-		state.currentEventSelection = [];
+  public function execute(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentNoteSelection = previousNoteSelection;
-		state.currentEventSelection = previousEventSelection;
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentNoteSelection = previousNoteSelection;
+    state.currentEventSelection = previousEventSelection;
 
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-	}
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+  }
 
-	public function toString():String
-	{
-		return 'Deselect All Items';
-	}
+  public function toString():String
+  {
+    return 'Deselect All Items';
+  }
 }
 
 class CutItemsCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
-	private var events:Array<SongEventData>;
+  var notes:Array<SongNoteData>;
+  var events:Array<SongEventData>;
 
-	public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
-	{
-		this.notes = notes;
-		this.events = events;
-	}
+  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
+  {
+    this.notes = notes;
+    this.events = events;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		// Copy the notes.
-		SongDataUtils.writeItemsToClipboard({
-			notes: SongDataUtils.buildNoteClipboard(notes),
-			events: SongDataUtils.buildEventClipboard(events)
-		});
+  public function execute(state:ChartEditorState):Void
+  {
+    // Copy the notes.
+    SongDataUtils.writeItemsToClipboard(
+      {
+        notes: SongDataUtils.buildNoteClipboard(notes),
+        events: SongDataUtils.buildEventClipboard(events)
+      });
 
-		// Delete the notes.
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
-		state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
-		state.currentNoteSelection = [];
-		state.currentEventSelection = [];
+    // Delete the notes.
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+    state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-		state.sortChartData();
-	}
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
-		state.currentSongChartEventData = state.currentSongChartEventData.concat(events);
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
+    state.currentSongChartEventData = state.currentSongChartEventData.concat(events);
 
-		state.currentNoteSelection = notes;
-		state.currentEventSelection = events;
+    state.currentNoteSelection = notes;
+    state.currentEventSelection = events;
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-		state.sortChartData();
-	}
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		var len:Int = notes.length + events.length;
+  public function toString():String
+  {
+    var len:Int = notes.length + events.length;
 
-		if (notes.length == 0)
-			return 'Cut $len Events to Clipboard';
-		else if (events.length == 0)
-			return 'Cut $len Notes to Clipboard';
-		else
-			return 'Cut $len Items to Clipboard';
-	}
+    if (notes.length == 0) return 'Cut $len Events to Clipboard';
+    else if (events.length == 0) return 'Cut $len Notes to Clipboard';
+    else
+      return 'Cut $len Items to Clipboard';
+  }
 }
 
 class FlipNotesCommand implements ChartEditorCommand
 {
-	private var notes:Array<SongNoteData>;
-	private var flippedNotes:Array<SongNoteData>;
+  var notes:Array<SongNoteData>;
+  var flippedNotes:Array<SongNoteData>;
 
-	public function new(notes:Array<SongNoteData>)
-	{
-		this.notes = notes;
-	}
+  public function new(notes:Array<SongNoteData>)
+  {
+    this.notes = notes;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		// Delete the notes.
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
+  public function execute(state:ChartEditorState):Void
+  {
+    // Delete the notes.
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 
-		// Add the flipped notes.
-		flippedNotes = SongDataUtils.flipNotes(notes);
-		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(flippedNotes);
+    // Add the flipped notes.
+    flippedNotes = SongDataUtils.flipNotes(notes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(flippedNotes);
 
-		state.currentNoteSelection = flippedNotes;
-		state.currentEventSelection = [];
+    state.currentNoteSelection = flippedNotes;
+    state.currentEventSelection = [];
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
-		state.sortChartData();
-	}
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, flippedNotes);
-		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, flippedNotes);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
 
-		state.currentNoteSelection = notes;
-		state.currentEventSelection = [];
+    state.currentNoteSelection = notes;
+    state.currentEventSelection = [];
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		var len:Int = notes.length;
-		return 'Flip $len Notes';
-	}
+  public function toString():String
+  {
+    var len:Int = notes.length;
+    return 'Flip $len Notes';
+  }
 }
 
 class PasteItemsCommand implements ChartEditorCommand
 {
-	private var targetTimestamp:Float;
-	// Notes we added with this command, for undo.
-	private var addedNotes:Array<SongNoteData>;
-	private var addedEvents:Array<SongEventData>;
+  var targetTimestamp:Float;
+  // Notes we added with this command, for undo.
+  var addedNotes:Array<SongNoteData>;
+  var addedEvents:Array<SongEventData>;
 
-	public function new(targetTimestamp:Float)
-	{
-		this.targetTimestamp = targetTimestamp;
-	}
+  public function new(targetTimestamp:Float)
+  {
+    this.targetTimestamp = targetTimestamp;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
+  public function execute(state:ChartEditorState):Void
+  {
+    var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
 
-		addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, Std.int(targetTimestamp));
-		addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
+    addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, Std.int(targetTimestamp));
+    addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
 
-		state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
-		state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
-		state.currentNoteSelection = addedNotes.copy();
-		state.currentEventSelection = addedEvents.copy();
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
+    state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
+    state.currentNoteSelection = addedNotes.copy();
+    state.currentEventSelection = addedEvents.copy();
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
-		state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
-		state.currentNoteSelection = [];
-		state.currentEventSelection = [];
+  public function undo(state:ChartEditorState):Void
+  {
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
+    state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
+    state.currentNoteSelection = [];
+    state.currentEventSelection = [];
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
+  public function toString():String
+  {
+    var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
 
-		var len:Int = currentClipboard.notes.length + currentClipboard.events.length;
+    var len:Int = currentClipboard.notes.length + currentClipboard.events.length;
 
-		if (currentClipboard.notes.length == 0)
-			return 'Paste $len Events';
-		else if (currentClipboard.events.length == 0)
-			return 'Paste $len Notes';
-		else
-			return 'Paste $len Items';
-	}
+    if (currentClipboard.notes.length == 0) return 'Paste $len Events';
+    else if (currentClipboard.events.length == 0) return 'Paste $len Notes';
+    else
+      return 'Paste $len Items';
+  }
 }
 
 class ExtendNoteLengthCommand implements ChartEditorCommand
 {
-	private var note:SongNoteData;
-	private var oldLength:Float;
-	private var newLength:Float;
+  var note:SongNoteData;
+  var oldLength:Float;
+  var newLength:Float;
 
-	public function new(note:SongNoteData, newLength:Float)
-	{
-		this.note = note;
-		this.oldLength = note.length;
-		this.newLength = newLength;
-	}
+  public function new(note:SongNoteData, newLength:Float)
+  {
+    this.note = note;
+    this.oldLength = note.length;
+    this.newLength = newLength;
+  }
 
-	public function execute(state:ChartEditorState):Void
-	{
-		note.length = newLength;
+  public function execute(state:ChartEditorState):Void
+  {
+    note.length = newLength;
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function undo(state:ChartEditorState):Void
-	{
-		note.length = oldLength;
+  public function undo(state:ChartEditorState):Void
+  {
+    note.length = oldLength;
 
-		state.saveDataDirty = true;
-		state.noteDisplayDirty = true;
-		state.notePreviewDirty = true;
+    state.saveDataDirty = true;
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
 
-		state.sortChartData();
-	}
+    state.sortChartData();
+  }
 
-	public function toString():String
-	{
-		return 'Extend Note Length';
-	}
+  public function toString():String
+  {
+    return 'Extend Note Length';
+  }
 }

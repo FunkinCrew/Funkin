@@ -9,53 +9,51 @@ import openfl.net.NetStream;
 
 class FlxVideo extends FlxBasic
 {
-	var video:Video;
-	var netStream:NetStream;
+  var video:Video;
+  var netStream:NetStream;
 
-	public var finishCallback:Void->Void;
+  public var finishCallback:Void->Void;
 
-	/**
-	 * Doesn't actually interact with Flixel shit, only just a pleasant to use class    
-	 */
-	public function new(vidSrc:String)
-	{
-		super();
+  /**
+   * Doesn't actually interact with Flixel shit, only just a pleasant to use class    
+   */
+  public function new(vidSrc:String)
+  {
+    super();
 
-		video = new Video();
-		video.x = 0;
-		video.y = 0;
+    video = new Video();
+    video.x = 0;
+    video.y = 0;
 
-		FlxG.addChildBelowMouse(video);
+    FlxG.addChildBelowMouse(video);
 
-		var netConnection = new NetConnection();
-		netConnection.connect(null);
+    var netConnection = new NetConnection();
+    netConnection.connect(null);
 
-		netStream = new NetStream(netConnection);
-		netStream.client = {onMetaData: client_onMetaData};
-		netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
-		netStream.play(Paths.file(vidSrc));
-	}
+    netStream = new NetStream(netConnection);
+    netStream.client = {onMetaData: client_onMetaData};
+    netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
+    netStream.play(Paths.file(vidSrc));
+  }
 
-	public function finishVideo():Void
-	{
-		netStream.dispose();
-		FlxG.removeChild(video);
+  public function finishVideo():Void
+  {
+    netStream.dispose();
+    FlxG.removeChild(video);
 
-		if (finishCallback != null)
-			finishCallback();
-	}
+    if (finishCallback != null) finishCallback();
+  }
 
-	public function client_onMetaData(metaData:Dynamic)
-	{
-		video.attachNetStream(netStream);
+  public function client_onMetaData(metaData:Dynamic)
+  {
+    video.attachNetStream(netStream);
 
-		video.width = FlxG.width;
-		video.height = FlxG.height;
-	}
+    video.width = FlxG.width;
+    video.height = FlxG.height;
+  }
 
-	private function netConnection_onNetStatus(event:NetStatusEvent):Void
-	{
-		if (event.info.code == 'NetStream.Play.Complete')
-			finishVideo();
-	}
+  function netConnection_onNetStatus(event:NetStatusEvent):Void
+  {
+    if (event.info.code == 'NetStream.Play.Complete') finishVideo();
+  }
 }

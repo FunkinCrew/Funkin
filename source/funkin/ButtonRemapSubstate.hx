@@ -4,8 +4,8 @@ import flixel.FlxSubState;
 
 class ButtonRemapSubstate extends FlxSubState
 {
-	public function new()
-	{
-		super();
-	}
+  public function new()
+  {
+    super();
+  }
 }

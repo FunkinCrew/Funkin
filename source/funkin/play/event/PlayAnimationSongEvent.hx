@@ -15,14 +15,12 @@ class PlayAnimationSongEvent extends SongEvent
   public override function handleEvent(data:SongEventData)
   {
     // Does nothing if there is no PlayState camera or stage.
-    if (PlayState.instance == null || PlayState.instance.currentStage == null)
-      return;
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
     var targetName = data.getString('target');
     var anim = data.getString('anim');
     var force = data.getBool('force');
-    if (force == null)
-      force = false;
+    if (force == null) force = false;
 
     var target:FlxSprite = null;
 
@@ -51,8 +49,7 @@ class PlayAnimationSongEvent extends SongEvent
         target = PlayState.instance.currentStage.getGirlfriend();
       default:
         target = PlayState.instance.currentStage.getNamedProp(targetName);
-        if (target == null)
-          trace('Unknown animation target: $targetName');
+        if (target == null) trace('Unknown animation target: $targetName');
         else
           trace('Fetched animation target $targetName from stage.');
     }

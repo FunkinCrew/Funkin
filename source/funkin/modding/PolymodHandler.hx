@@ -79,33 +79,34 @@ class PolymodHandler
 
     buildImports();
 
-    var loadedModList = polymod.Polymod.init({
-      // Root directory for all mods.
-      modRoot: MOD_FOLDER,
-      // The directories for one or more mods to load.
-      dirs: ids,
-      // Framework being used to load assets.
-      framework: OPENFL,
-      // The current version of our API.
-      apiVersionRule: API_VERSION,
-      // Call this function any time an error occurs.
-      errorCallback: PolymodErrorHandler.onPolymodError,
-      // Enforce semantic version patterns for each mod.
-      // modVersions: null,
-      // A map telling Polymod what the asset type is for unfamiliar file extensions.
-      // extensionMap: [],
+    var loadedModList = polymod.Polymod.init(
+      {
+        // Root directory for all mods.
+        modRoot: MOD_FOLDER,
+        // The directories for one or more mods to load.
+        dirs: ids,
+        // Framework being used to load assets.
+        framework: OPENFL,
+        // The current version of our API.
+        apiVersionRule: API_VERSION,
+        // Call this function any time an error occurs.
+        errorCallback: PolymodErrorHandler.onPolymodError,
+        // Enforce semantic version patterns for each mod.
+        // modVersions: null,
+        // A map telling Polymod what the asset type is for unfamiliar file extensions.
+        // extensionMap: [],
 
-      frameworkParams: buildFrameworkParams(),
+        frameworkParams: buildFrameworkParams(),
 
-      // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
-      ignoredFiles: Polymod.getDefaultIgnoreList(),
+        // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
+        ignoredFiles: Polymod.getDefaultIgnoreList(),
 
-      // Parsing rules for various data formats.
-      parseRules: buildParseRules(),
+        // Parsing rules for various data formats.
+        parseRules: buildParseRules(),
 
-      // Parse hxc files and register the scripted classes in them.
-      useScriptedClasses: true,
-    });
+        // Parse hxc files and register the scripted classes in them.
+        useScriptedClasses: true,
+      });
 
     if (loadedModList == null)
     {
@@ -202,11 +203,12 @@ class PolymodHandler
   public static function getAllMods():Array<ModMetadata>
   {
     trace('Scanning the mods folder...');
-    var modMetadata = Polymod.scan({
-      modRoot: MOD_FOLDER,
-      apiVersionRule: API_VERSION,
-      errorCallback: PolymodErrorHandler.onPolymodError
-    });
+    var modMetadata = Polymod.scan(
+      {
+        modRoot: MOD_FOLDER,
+        apiVersionRule: API_VERSION,
+        errorCallback: PolymodErrorHandler.onPolymodError
+      });
     trace('Found ${modMetadata.length} mods when scanning.');
     return modMetadata;
   }

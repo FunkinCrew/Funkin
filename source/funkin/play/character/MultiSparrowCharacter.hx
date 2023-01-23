@@ -23,17 +23,17 @@ class MultiSparrowCharacter extends BaseCharacter
   /**
    * The actual group which holds all spritesheets this character uses.
    */
-  private var members:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
+  var members:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
 
   /**
    * A map between animation names and what frame collection the animation should use.
    */
-  private var animAssetPath:Map<String, String> = new Map<String, String>();
+  var animAssetPath:Map<String, String> = new Map<String, String>();
 
   /**
    * The current frame collection being used.
    */
-  private var activeMember:String;
+  var activeMember:String;
 
   public function new(id:String)
   {
@@ -179,8 +179,7 @@ class MultiSparrowCharacter extends BaseCharacter
   {
     // Make sure we ignore other animations if we're currently playing a forced one,
     // unless we're forcing a new animation.
-    if (!this.canPlayOtherAnims && !ignoreOther)
-      return;
+    if (!this.canPlayOtherAnims && !ignoreOther) return;
 
     loadFramesByAnimName(name);
     super.playAnimation(name, restart, ignoreOther);

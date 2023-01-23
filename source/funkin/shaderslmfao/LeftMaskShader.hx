@@ -5,36 +5,36 @@ import flixel.system.FlxAssets.FlxShader;
 
 class LeftMaskShader extends FlxShader
 {
-	public var swagMaskX(default, set):Float = 0;
-	public var swagSprX(default, set):Float = 0;
-	public var frameUV(default, set):FlxRect;
+  public var swagMaskX(default, set):Float = 0;
+  public var swagSprX(default, set):Float = 0;
+  public var frameUV(default, set):FlxRect;
 
-	function set_swagSprX(x:Float):Float
-	{
-		sprX.value[0] = x;
+  function set_swagSprX(x:Float):Float
+  {
+    sprX.value[0] = x;
 
-		return x;
-	}
+    return x;
+  }
 
-	function set_swagMaskX(x:Float):Float
-	{
-		maskX.value[0] = x;
+  function set_swagMaskX(x:Float):Float
+  {
+    maskX.value[0] = x;
 
-		return x;
-	}
+    return x;
+  }
 
-	function set_frameUV(uv:FlxRect):FlxRect
-	{
-		trace("SETTING FRAMEUV");
-		trace(uv);
+  function set_frameUV(uv:FlxRect):FlxRect
+  {
+    trace("SETTING FRAMEUV");
+    trace(uv);
 
-		uvFrameX.value[0] = uv.x;
-		uvFrameY.value[0] = uv.y;
+    uvFrameX.value[0] = uv.x;
+    uvFrameY.value[0] = uv.y;
 
-		return uv;
-	}
+    return uv;
+  }
 
-	@:glFragmentSource('
+  @:glFragmentSource('
         #pragma header
 
         uniform float sprX;
@@ -64,13 +64,13 @@ class LeftMaskShader extends FlxShader
 
         }
     ')
-	public function new()
-	{
-		super();
+  public function new()
+  {
+    super();
 
-		sprX.value = [0];
-		maskX.value = [0];
-		uvFrameX.value = [0];
-		uvFrameY.value = [0];
-	}
+    sprX.value = [0];
+    maskX.value = [0];
+    uvFrameX.value = [0];
+    uvFrameY.value = [0];
+  }
 }

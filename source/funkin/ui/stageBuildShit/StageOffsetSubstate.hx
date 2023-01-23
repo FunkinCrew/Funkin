@@ -80,8 +80,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
 
     CoolUtil.mouseCamDrag();
 
-    if (FlxG.keys.pressed.CONTROL)
-      CoolUtil.mouseWheelZoom();
+    if (FlxG.keys.pressed.CONTROL) CoolUtil.mouseWheelZoom();
 
     if (FlxG.mouse.wheel != 0)
     {
@@ -96,8 +95,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
         thing.alpha = 1;
       }
 
-      if (uiStuff != null)
-        remove(uiStuff);
+      if (uiStuff != null) remove(uiStuff);
 
       uiStuff = null;
 
@@ -109,7 +107,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
 
   var _file:FileReference;
 
-  private function saveStageFileRef(_):Void
+  function saveStageFileRef(_):Void
   {
     var jsonStr = prepStageStuff();
 
@@ -145,7 +143,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
     _file = null;
   }
 
-  private function saveCharacterCompile(_):Void
+  function saveCharacterCompile(_):Void
   {
     var outputJson:String = prepStageStuff();
 
@@ -158,7 +156,7 @@ class StageOffsetSubstate extends MusicBeatSubstate
     #end
   }
 
-  private function prepStageStuff():String
+  function prepStageStuff():String
   {
     var stageLol:StageData = StageDataParser.parseStageData(PlayState.instance.currentStageId);
 

@@ -290,8 +290,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     // sprite.scrollFactor.copyFrom(scrollFactor);
     sprite.cameras = _cameras; // _cameras instead of cameras because get_cameras() will not return null
 
-    if (clipRect != null)
-      clipRectTransform(sprite, clipRect);
+    if (clipRect != null) clipRectTransform(sprite, clipRect);
   }
 
   var debugIconGroup:FlxSpriteGroup;
@@ -301,8 +300,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    */
   public function addCharacter(character:BaseCharacter, charType:CharacterType)
   {
-    if (character == null)
-      return;
+    if (character == null) return;
 
     #if debug
     // Temporary marker that shows where the character's location is relative to.

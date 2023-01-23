@@ -10,251 +10,246 @@ import funkin.util.WindowUtil;
 
 class OptionsState extends MusicBeatState
 {
-	var pages = new Map<PageName, Page>();
-	var currentName:PageName = Options;
-	var currentPage(get, never):Page;
+  var pages = new Map<PageName, Page>();
+  var currentName:PageName = Options;
+  var currentPage(get, never):Page;
 
-	inline function get_currentPage()
-		return pages[currentName];
+  inline function get_currentPage()
+    return pages[currentName];
 
-	override function create()
-	{
-		var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		menuBG.color = 0xFFea71fd;
-		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
-		menuBG.updateHitbox();
-		menuBG.screenCenter();
-		menuBG.scrollFactor.set(0, 0);
-		add(menuBG);
+  override function create()
+  {
+    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+    menuBG.color = 0xFFea71fd;
+    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.updateHitbox();
+    menuBG.screenCenter();
+    menuBG.scrollFactor.set(0, 0);
+    add(menuBG);
 
-		var options = addPage(Options, new OptionsMenu());
-		var preferences = addPage(Preferences, new PreferencesMenu());
-		var controls = addPage(Controls, new ControlsMenu());
+    var options = addPage(Options, new OptionsMenu());
+    var preferences = addPage(Preferences, new PreferencesMenu());
+    var controls = addPage(Controls, new ControlsMenu());
 
-		if (options.hasMultipleOptions())
-		{
-			options.onExit.add(exitToMainMenu);
-			controls.onExit.add(switchPage.bind(Options));
-			preferences.onExit.add(switchPage.bind(Options));
-		}
-		else
-		{
-			// No need to show Options page
-			controls.onExit.add(exitToMainMenu);
-			setPage(Controls);
-		}
+    if (options.hasMultipleOptions())
+    {
+      options.onExit.add(exitToMainMenu);
+      controls.onExit.add(switchPage.bind(Options));
+      preferences.onExit.add(switchPage.bind(Options));
+    }
+    else
+    {
+      // No need to show Options page
+      controls.onExit.add(exitToMainMenu);
+      setPage(Controls);
+    }
 
-		// disable for intro transition
-		currentPage.enabled = false;
-		super.create();
-	}
+    // disable for intro transition
+    currentPage.enabled = false;
+    super.create();
+  }
 
-	function addPage<T:Page>(name:PageName, page:T)
-	{
-		page.onSwitch.add(switchPage);
-		pages[name] = page;
-		add(page);
-		page.exists = currentName == name;
-		return page;
-	}
+  function addPage<T:Page>(name:PageName, page:T)
+  {
+    page.onSwitch.add(switchPage);
+    pages[name] = page;
+    add(page);
+    page.exists = currentName == name;
+    return page;
+  }
 
-	function setPage(name:PageName)
-	{
-		if (pages.exists(currentName))
-		{
-			currentPage.exists = false;
-			currentPage.visible = false;
-		}
+  function setPage(name:PageName)
+  {
+    if (pages.exists(currentName))
+    {
+      currentPage.exists = false;
+      currentPage.visible = false;
+    }
 
-		currentName = name;
+    currentName = name;
 
-		if (pages.exists(currentName))
-		{
-			currentPage.exists = true;
-			currentPage.visible = true;
-		}
-	}
+    if (pages.exists(currentName))
+    {
+      currentPage.exists = true;
+      currentPage.visible = true;
+    }
+  }
 
-	override function finishTransIn()
-	{
-		super.finishTransIn();
+  override function finishTransIn()
+  {
+    super.finishTransIn();
 
-		currentPage.enabled = true;
-	}
+    currentPage.enabled = true;
+  }
 
-	function switchPage(name:PageName)
-	{
-		// Todo animate?
-		setPage(name);
-	}
+  function switchPage(name:PageName)
+  {
+    // Todo animate?
+    setPage(name);
+  }
 
-	function exitToMainMenu()
-	{
-		currentPage.enabled = false;
-		// TODO: Animate this transition?
-		FlxG.switchState(new MainMenuState());
-	}
+  function exitToMainMenu()
+  {
+    currentPage.enabled = false;
+    // TODO: Animate this transition?
+    FlxG.switchState(new MainMenuState());
+  }
 }
 
 class Page extends FlxGroup
 {
-	public var onSwitch(default, null) = new FlxTypedSignal<PageName->Void>();
-	public var onExit(default, null) = new FlxSignal();
+  public var onSwitch(default, null) = new FlxTypedSignal<PageName->Void>();
+  public var onExit(default, null) = new FlxSignal();
 
-	public var enabled(default, set) = true;
-	public var canExit = true;
+  public var enabled(default, set) = true;
+  public var canExit = true;
 
-	var controls(get, never):Controls;
+  var controls(get, never):Controls;
 
-	inline function get_controls()
-		return PlayerSettings.player1.controls;
+  inline function get_controls()
+    return PlayerSettings.player1.controls;
 
-	var subState:FlxSubState;
+  var subState:FlxSubState;
 
-	inline function switchPage(name:PageName)
-	{
-		onSwitch.dispatch(name);
-	}
+  inline function switchPage(name:PageName)
+  {
+    onSwitch.dispatch(name);
+  }
 
-	inline function exit()
-	{
-		onExit.dispatch();
-	}
+  inline function exit()
+  {
+    onExit.dispatch();
+  }
 
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
+  override function update(elapsed:Float)
+  {
+    super.update(elapsed);
 
-		if (enabled)
-			updateEnabled(elapsed);
-	}
+    if (enabled) updateEnabled(elapsed);
+  }
 
-	function updateEnabled(elapsed:Float)
-	{
-		if (canExit && controls.BACK)
-		{
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-			exit();
-		}
-	}
+  function updateEnabled(elapsed:Float)
+  {
+    if (canExit && controls.BACK)
+    {
+      FlxG.sound.play(Paths.sound('cancelMenu'));
+      exit();
+    }
+  }
 
-	function set_enabled(value:Bool)
-	{
-		return this.enabled = value;
-	}
+  function set_enabled(value:Bool)
+  {
+    return this.enabled = value;
+  }
 
-	function openPrompt(prompt:Prompt, onClose:Void->Void)
-	{
-		enabled = false;
-		prompt.closeCallback = function()
-		{
-			enabled = true;
-			if (onClose != null)
-				onClose();
-		}
+  function openPrompt(prompt:Prompt, onClose:Void->Void)
+  {
+    enabled = false;
+    prompt.closeCallback = function()
+    {
+      enabled = true;
+      if (onClose != null) onClose();
+    }
 
-		FlxG.state.openSubState(prompt);
-	}
+    FlxG.state.openSubState(prompt);
+  }
 
-	override function destroy()
-	{
-		super.destroy();
-		onSwitch.removeAll();
-	}
+  override function destroy()
+  {
+    super.destroy();
+    onSwitch.removeAll();
+  }
 }
 
 class OptionsMenu extends Page
 {
-	var items:TextMenuList;
+  var items:TextMenuList;
 
-	public function new()
-	{
-		super();
+  public function new()
+  {
+    super();
 
-		add(items = new TextMenuList());
-		createItem("PREFERENCES", function() switchPage(Preferences));
-		createItem("CONTROLS", function() switchPage(Controls));
+    add(items = new TextMenuList());
+    createItem("PREFERENCES", function() switchPage(Preferences));
+    createItem("CONTROLS", function() switchPage(Controls));
 
-		#if newgrounds
-		if (NGio.isLoggedIn)
-			createItem("LOGOUT", selectLogout);
-		else
-			createItem("LOGIN", selectLogin);
-		#end
-		createItem("EXIT", exit);
-	}
+    #if newgrounds
+    if (NGio.isLoggedIn) createItem("LOGOUT", selectLogout);
+    else
+      createItem("LOGIN", selectLogin);
+    #end
+    createItem("EXIT", exit);
+  }
 
-	function createItem(name:String, callback:Void->Void, fireInstantly = false)
-	{
-		var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
-		item.fireInstantly = fireInstantly;
-		item.screenCenter(X);
-		return item;
-	}
+  function createItem(name:String, callback:Void->Void, fireInstantly = false)
+  {
+    var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
+    item.fireInstantly = fireInstantly;
+    item.screenCenter(X);
+    return item;
+  }
 
-	override function set_enabled(value:Bool)
-	{
-		items.enabled = value;
-		return super.set_enabled(value);
-	}
+  override function set_enabled(value:Bool)
+  {
+    items.enabled = value;
+    return super.set_enabled(value);
+  }
 
-	/**
-	 * True if this page has multiple options, excluding the exit option.
-	 * If false, there's no reason to ever show this page.
-	 */
-	public function hasMultipleOptions():Bool
-	{
-		return items.length > 2;
-	}
+  /**
+   * True if this page has multiple options, excluding the exit option.
+   * If false, there's no reason to ever show this page.
+   */
+  public function hasMultipleOptions():Bool
+  {
+    return items.length > 2;
+  }
 
-	#if newgrounds
-	function selectLogin()
-	{
-		openNgPrompt(NgPrompt.showLogin());
-	}
+  #if newgrounds
+  function selectLogin()
+  {
+    openNgPrompt(NgPrompt.showLogin());
+  }
 
-	function selectLogout()
-	{
-		openNgPrompt(NgPrompt.showLogout());
-	}
+  function selectLogout()
+  {
+    openNgPrompt(NgPrompt.showLogout());
+  }
 
-	/**
-	 * Calls openPrompt and redraws the login/logout button
-	 * @param prompt 
-	 * @param onClose 
-	 */
-	public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
-	{
-		var onPromptClose = checkLoginStatus;
-		if (onClose != null)
-		{
-			onPromptClose = function()
-			{
-				checkLoginStatus();
-				onClose();
-			}
-		}
+  /**
+   * Calls openPrompt and redraws the login/logout button
+   * @param prompt 
+   * @param onClose 
+   */
+  public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
+  {
+    var onPromptClose = checkLoginStatus;
+    if (onClose != null)
+    {
+      onPromptClose = function()
+      {
+        checkLoginStatus();
+        onClose();
+      }
+    }
 
-		openPrompt(prompt, onPromptClose);
-	}
+    openPrompt(prompt, onPromptClose);
+  }
 
-	function checkLoginStatus()
-	{
-		// this shit don't work!! wtf!!!!
-		var prevLoggedIn = items.has("logout");
-		if (prevLoggedIn && !NGio.isLoggedIn)
-			items.resetItem("logout", "login", selectLogin);
-		else if (!prevLoggedIn && NGio.isLoggedIn)
-			items.resetItem("login", "logout", selectLogout);
-	}
-	#end
+  function checkLoginStatus()
+  {
+    // this shit don't work!! wtf!!!!
+    var prevLoggedIn = items.has("logout");
+    if (prevLoggedIn && !NGio.isLoggedIn) items.resetItem("logout", "login", selectLogin);
+    else if (!prevLoggedIn && NGio.isLoggedIn) items.resetItem("login", "logout", selectLogout);
+  }
+  #end
 }
 
 enum PageName
 {
-	Options;
-	Controls;
-	Colors;
-	Mods;
-	Preferences;
+  Options;
+  Controls;
+  Colors;
+  Mods;
+  Preferences;
 }

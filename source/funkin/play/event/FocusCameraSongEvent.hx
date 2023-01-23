@@ -50,20 +50,16 @@ class FocusCameraSongEvent extends SongEvent
   public override function handleEvent(data:SongEventData)
   {
     // Does nothing if there is no PlayState camera or stage.
-    if (PlayState.instance == null || PlayState.instance.currentStage == null)
-      return;
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
     var posX = data.getFloat('x');
-    if (posX == null)
-      posX = 0.0;
+    if (posX == null) posX = 0.0;
     var posY = data.getFloat('y');
-    if (posY == null)
-      posY = 0.0;
+    if (posY == null) posY = 0.0;
 
     var char = data.getInt('char');
 
-    if (char == null)
-      char = cast data.value;
+    if (char == null) char = cast data.value;
 
     switch (char)
     {

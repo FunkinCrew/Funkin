@@ -4,7 +4,7 @@ import flixel.system.FlxAssets.FlxShader;
 
 class WaveShader extends FlxShader
 {
-	@:glFragmentSource('
+  @:glFragmentSource('
         #pragma header
 
         void main()
@@ -15,8 +15,8 @@ class WaveShader extends FlxShader
         }
 
     ')
-	public function new()
-	{
-		super();
-	}
+  public function new()
+  {
+    super();
+  }
 }

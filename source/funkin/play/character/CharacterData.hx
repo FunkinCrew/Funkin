@@ -362,12 +362,13 @@ class CharacterDataParser
 
     if (input.healthIcon == null)
     {
-      input.healthIcon = {
-        id: null,
-        scale: null,
-        flipX: null,
-        offsets: null
-      };
+      input.healthIcon =
+        {
+          id: null,
+          scale: null,
+          flipX: null,
+          offsets: null
+        };
     }
 
     if (input.healthIcon.id == null)

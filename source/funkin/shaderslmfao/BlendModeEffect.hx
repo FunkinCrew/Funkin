@@ -5,30 +5,30 @@ import openfl.display.ShaderParameter;
 
 typedef BlendModeShader =
 {
-	var uBlendColor:ShaderParameter<Float>;
+  var uBlendColor:ShaderParameter<Float>;
 }
 
 class BlendModeEffect
 {
-	public var shader(default, null):BlendModeShader;
+  public var shader(default, null):BlendModeShader;
 
-	@:isVar
-	public var color(default, set):FlxColor;
+  @:isVar
+  public var color(default, set):FlxColor;
 
-	public function new(shader:BlendModeShader, color:FlxColor):Void
-	{
-		shader.uBlendColor.value = [];
-		this.shader = shader;
-		this.color = color;
-	}
+  public function new(shader:BlendModeShader, color:FlxColor):Void
+  {
+    shader.uBlendColor.value = [];
+    this.shader = shader;
+    this.color = color;
+  }
 
-	function set_color(color:FlxColor):FlxColor
-	{
-		shader.uBlendColor.value[0] = color.redFloat;
-		shader.uBlendColor.value[1] = color.greenFloat;
-		shader.uBlendColor.value[2] = color.blueFloat;
-		shader.uBlendColor.value[3] = color.alphaFloat;
+  function set_color(color:FlxColor):FlxColor
+  {
+    shader.uBlendColor.value[0] = color.redFloat;
+    shader.uBlendColor.value[1] = color.greenFloat;
+    shader.uBlendColor.value[2] = color.blueFloat;
+    shader.uBlendColor.value[3] = color.alphaFloat;
 
-		return this.color = color;
-	}
+    return this.color = color;
+  }
 }

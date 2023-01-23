@@ -16,8 +16,7 @@ class MacroUtil
   public static macro function getDefine(key:String, defaultValue:String = null):haxe.macro.Expr
   {
     var value = haxe.macro.Context.definedValue(key);
-    if (value == null)
-      value = defaultValue;
+    if (value == null) value = defaultValue;
     return macro $v{value};
   }
 
@@ -135,8 +134,7 @@ class MacroUtil
    */
   public static function isSubclassOf(classType:ClassType, superClass:ClassType):Bool
   {
-    if (areClassesEqual(classType, superClass))
-      return true;
+    if (areClassesEqual(classType, superClass)) return true;
 
     if (classType.superClass != null)
     {

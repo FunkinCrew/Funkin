@@ -11,83 +11,83 @@ import flixel.util.FlxSort;
 // its kinda like marqeee html lol!
 class BGScrollingText extends FlxSpriteGroup
 {
-	var grpTexts:FlxTypedSpriteGroup<FlxText>;
+  var grpTexts:FlxTypedSpriteGroup<FlxText>;
 
-	public var widthShit:Float = FlxG.width;
-	public var placementOffset:Float = 20;
-	public var speed:Float = 1;
+  public var widthShit:Float = FlxG.width;
+  public var placementOffset:Float = 20;
+  public var speed:Float = 1;
 
-	public var funnyColor(default, set):Int = 0xFFFFFFFF;
+  public var funnyColor(default, set):Int = 0xFFFFFFFF;
 
-	public function new(x:Float, y:Float, text:String, widthShit:Float = 100)
-	{
-		super(x, y);
+  public function new(x:Float, y:Float, text:String, widthShit:Float = 100)
+  {
+    super(x, y);
 
-		this.widthShit = widthShit;
+    this.widthShit = widthShit;
 
-		grpTexts = new FlxTypedSpriteGroup<FlxText>();
-		add(grpTexts);
+    grpTexts = new FlxTypedSpriteGroup<FlxText>();
+    add(grpTexts);
 
-		var testText:FlxText = new FlxText(0, 0, 0, text, 48);
-		testText.font = "5by7";
-		testText.updateHitbox();
-		grpTexts.add(testText);
+    var testText:FlxText = new FlxText(0, 0, 0, text, 48);
+    testText.font = "5by7";
+    testText.updateHitbox();
+    grpTexts.add(testText);
 
-		var needed:Int = Math.ceil(widthShit / testText.frameWidth);
+    var needed:Int = Math.ceil(widthShit / testText.frameWidth);
 
-		for (i in 0...needed)
-		{
-			var lmfao:Int = i + 1;
+    for (i in 0...needed)
+    {
+      var lmfao:Int = i + 1;
 
-			var coolText:FlxText = new FlxText((lmfao * testText.frameWidth) + (lmfao * 20), 0, 0, text, 48);
-			coolText.font = "5by7";
-			coolText.updateHitbox();
-			grpTexts.add(coolText);
-		}
-	}
+      var coolText:FlxText = new FlxText((lmfao * testText.frameWidth) + (lmfao * 20), 0, 0, text, 48);
+      coolText.font = "5by7";
+      coolText.updateHitbox();
+      grpTexts.add(coolText);
+    }
+  }
 
-	function set_funnyColor(col:Int):Int
-	{
-		grpTexts.forEach(function(txt)
-		{
-			txt.color = col;
-		});
+  function set_funnyColor(col:Int):Int
+  {
+    grpTexts.forEach(function(txt)
+    {
+      txt.color = col;
+    });
 
-		return col;
-	}
+    return col;
+  }
 
-	override function update(elapsed:Float)
-	{
-		for (txt in grpTexts.group)
-		{
-			txt.x -= 1 * (speed * (elapsed / (1 / 60)));
+  override function update(elapsed:Float)
+  {
+    for (txt in grpTexts.group)
+    {
+      txt.x -= 1 * (speed * (elapsed / (1 / 60)));
 
-			if (speed > 0)
-			{
-				if (txt.x < -txt.frameWidth)
-				{
-					txt.x = grpTexts.group.members[grpTexts.length - 1].x + grpTexts.group.members[grpTexts.length - 1].frameWidth + placementOffset;
-					sortTextShit();
-				}
-			}
-			else
-			{
-				if (txt.x > widthShit)
-				{
-					txt.x = grpTexts.group.members[0].x - grpTexts.group.members[0].frameWidth - placementOffset;
-					sortTextShit();
-				}
-			}
-		}
+      if (speed > 0)
+      {
+        if (txt.x < -txt.frameWidth)
+        {
+          txt.x = grpTexts.group.members[grpTexts.length - 1].x + grpTexts.group.members[grpTexts.length - 1].frameWidth + placementOffset;
+          sortTextShit();
+        }
+      }
+      else
+      {
+        if (txt.x > widthShit)
+        {
+          txt.x = grpTexts.group.members[0].x - grpTexts.group.members[0].frameWidth - placementOffset;
+          sortTextShit();
+        }
+      }
+    }
 
-		super.update(elapsed);
-	}
+    super.update(elapsed);
+  }
 
-	function sortTextShit():Void
-	{
-		grpTexts.sort(function(Order:Int, Obj1:FlxObject, Obj2:FlxObject)
-		{
-			return FlxSort.byValues(Order, Obj1.x, Obj2.x);
-		});
-	}
+  function sortTextShit():Void
+  {
+    grpTexts.sort(function(Order:Int, Obj1:FlxObject, Obj2:FlxObject)
+    {
+      return FlxSort.byValues(Order, Obj1.x, Obj2.x);
+    });
+  }
 }

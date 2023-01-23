@@ -65,8 +65,7 @@ class DJBoyfriend extends FlxSprite
     {
       case Intro:
         // Play the intro animation then leave this state immediately.
-        if (getCurrentAnimation() != 'intro')
-          playAnimation('intro', true);
+        if (getCurrentAnimation() != 'intro') playAnimation('intro', true);
         timeSinceSpook = 0;
       case Idle:
         // We are in this state the majority of the time.
@@ -83,8 +82,7 @@ class DJBoyfriend extends FlxSprite
         }
         timeSinceSpook += elapsed;
       case Confirm:
-        if (getCurrentAnimation() != 'confirm')
-          playAnimation('confirm', false);
+        if (getCurrentAnimation() != 'confirm') playAnimation('confirm', false);
         timeSinceSpook = 0;
       case Spook:
         if (getCurrentAnimation() != 'spook')
@@ -150,8 +148,7 @@ class DJBoyfriend extends FlxSprite
 
   public function getCurrentAnimation():String
   {
-    if (this.animation == null || this.animation.curAnim == null)
-      return "";
+    if (this.animation == null || this.animation.curAnim == null) return "";
     return this.animation.curAnim.name;
   }
 
