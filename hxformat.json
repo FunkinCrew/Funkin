@@ -1,19 +1,31 @@
 {
-	"lineEnds": {
-		"leftCurly": "both",
-		"rightCurly": "both",
-		"emptyCurly": "noBreak",
-		"objectLiteralCurly": {
-			"leftCurly": "after"
-		}
-	},
-	"indentation": {
-		"character": "  "
-	},
-	"sameLine": {
-		"ifElse": "next",
-		"doWhile": "next",
-		"tryBody": "next",
-		"tryCatch": "next"
-	}
+  "disableFormatting": false,
+
+  "indentation": {
+    "character": "  ",
+    "tabWidth": 2,
+    "indentCaseLabels": true
+  },
+
+  "lineEnds": {
+    "anonFunctionCurly": {
+      "emptyCurly": "break",
+      "leftCurly": "after",
+      "rightCurly": "both"
+    },
+    "leftCurly": "both",
+    "rightCurly": "both"
+  },
+
+  "sameLine": {
+    "ifBody": "same",
+    "ifElse": "next",
+    "doWhile": "next",
+    "tryBody": "next",
+    "tryCatch": "next"
+  },
+
+  "whitespace": {
+    "switchPolicy": "around"
+  }
 }

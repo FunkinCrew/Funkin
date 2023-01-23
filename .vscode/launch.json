@@ -2,18 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      // Launch in native/CPP
+      // Launch in native/CPP on Windows/OSX/Linux
       "name": "Lime",
       "type": "lime",
       "request": "launch"
     },
     {
-      // Evaluate macros with debugging enabled
-      "name": "Haxe Eval",
-      "type": "haxe-eval",
-      "request": "launch"
-    },
-    {
+      // Launch in browser
       "name": "HTML5 Debug",
       "type": "chrome",
       "request": "launch",
@@ -23,11 +18,11 @@
       "preLaunchTask": "debug: html"
     },
     {
-      "name": "Mac (Debug)",
-      "type": "hxcpp",
-      "request": "launch",
-      "program": "${workspaceRoot}/export/debug/macos/bin/Funkin.app/Contents/MacOS/Funkin",
-      "preLaunchTask": "debug: mac"
+      // Performs a build for debugging macros
+      // Debugging is attached on the compilation rather than the game itself
+      "name": "Haxe Eval",
+      "type": "haxe-eval",
+      "request": "launch"
     }
   ]
 }
