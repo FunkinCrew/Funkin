@@ -6,74 +6,74 @@ import funkin.util.VersionUtil;
 
 class SongMigrator
 {
-	/**
-	 * The current latest version string for the song data format.
-	 * Handle breaking changes by incrementing this value
-	 * and adding migration to the SongMigrator class.
-	 */
-	public static final CHART_VERSION:String = "2.0.0";
+  /**
+   * The current latest version string for the song data format.
+   * Handle breaking changes by incrementing this value
+   * and adding migration to the SongMigrator class.
+   */
+  public static final CHART_VERSION:String = "2.0.0";
 
-	public static final CHART_VERSION_RULE:String = "2.0.x";
+  public static final CHART_VERSION_RULE:String = "2.0.x";
 
-	public static function migrateSongMetadata(jsonData:Dynamic, songId:String):SongMetadata
-	{
-		if (jsonData.version)
-		{
-			if (VersionUtil.validateVersion(jsonData.version, CHART_VERSION_RULE))
-			{
-				trace('[SONGDATA] Song (${songId}) metadata version (${jsonData.version}) is valid and up-to-date.');
+  public static function migrateSongMetadata(jsonData:Dynamic, songId:String):SongMetadata
+  {
+    if (jsonData.version)
+    {
+      if (VersionUtil.validateVersion(jsonData.version, CHART_VERSION_RULE))
+      {
+        trace('Song (${songId}) metadata version (${jsonData.version}) is valid and up-to-date.');
 
-				var songMetadata:SongMetadata = cast jsonData;
+        var songMetadata:SongMetadata = cast jsonData;
 
-				return songMetadata;
-			}
-			else
-			{
-				trace('[SONGDATA] Song (${songId}) metadata version (${jsonData.version}) is outdated.');
-				switch (jsonData.version)
-				{
-					// TODO: Add migration functions as cases here.
-					default:
-						// Unknown version.
-						trace('[SONGDATA] Song (${songId}) unknown metadata version: ${jsonData.version}');
-				}
-			}
-		}
-		else
-		{
-			trace('[SONGDATA] Song metadata version is missing.');
-		}
-		return null;
-	}
+        return songMetadata;
+      }
+      else
+      {
+        trace('Song (${songId}) metadata version (${jsonData.version}) is outdated.');
+        switch (jsonData.version)
+        {
+          // TODO: Add migration functions as cases here.
+          default:
+            // Unknown version.
+            trace('Song (${songId}) unknown metadata version: ${jsonData.version}');
+        }
+      }
+    }
+    else
+    {
+      trace('Song metadata version is missing.');
+    }
+    return null;
+  }
 
-	public static function migrateSongChartData(jsonData:Dynamic, songId:String):SongChartData
-	{
-		if (jsonData.version)
-		{
-			if (VersionUtil.validateVersion(jsonData.version, CHART_VERSION_RULE))
-			{
-				trace('[SONGDATA] Song (${songId}) chart version (${jsonData.version}) is valid and up-to-date.');
+  public static function migrateSongChartData(jsonData:Dynamic, songId:String):SongChartData
+  {
+    if (jsonData.version)
+    {
+      if (VersionUtil.validateVersion(jsonData.version, CHART_VERSION_RULE))
+      {
+        trace('Song (${songId}) chart version (${jsonData.version}) is valid and up-to-date.');
 
-				var songChartData:SongChartData = cast jsonData;
+        var songChartData:SongChartData = cast jsonData;
 
-				return songChartData;
-			}
-			else
-			{
-				trace('[SONGDATA] Song (${songId}) chart version (${jsonData.version}) is outdated.');
-				switch (jsonData.version)
-				{
-					// TODO: Add migration functions as cases here.
-					default:
-						// Unknown version.
-						trace('[SONGDATA] Song (${songId}) unknown chart version: ${jsonData.version}');
-				}
-			}
-		}
-		else
-		{
-			trace('[SONGDATA] Song chart version is missing.');
-		}
-		return null;
-	}
+        return songChartData;
+      }
+      else
+      {
+        trace('Song (${songId}) chart version (${jsonData.version}) is outdated.');
+        switch (jsonData.version)
+        {
+          // TODO: Add migration functions as cases here.
+          default:
+            // Unknown version.
+            trace('Song (${songId}) unknown chart version: ${jsonData.version}');
+        }
+      }
+    }
+    else
+    {
+      trace('Song chart version is missing.');
+    }
+    return null;
+  }
 }

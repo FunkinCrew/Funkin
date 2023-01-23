@@ -13,177 +13,177 @@ import openfl.net.FileReference;
 
 class StageOffsetSubstate extends MusicBeatSubstate
 {
-	var uiStuff:Component;
+  var uiStuff:Component;
 
-	override function create()
-	{
-		super.create();
+  override function create()
+  {
+    super.create();
 
-		FlxG.mouse.visible = true;
-		PlayState.instance.pauseMusic();
-		FlxG.camera.target = null;
+    FlxG.mouse.visible = true;
+    PlayState.instance.pauseMusic();
+    FlxG.camera.target = null;
 
-		var str = Paths.xml('ui/stage-editor-view');
-		uiStuff = RuntimeComponentBuilder.fromAsset(str);
+    var str = Paths.xml('ui/stage-editor-view');
+    uiStuff = RuntimeComponentBuilder.fromAsset(str);
 
-		uiStuff.findComponent("lol").onClick = saveCharacterCompile;
-		uiStuff.findComponent('saveAs').onClick = saveStageFileRef;
+    uiStuff.findComponent("lol").onClick = saveCharacterCompile;
+    uiStuff.findComponent('saveAs').onClick = saveStageFileRef;
 
-		add(uiStuff);
+    add(uiStuff);
 
-		PlayState.instance.persistentUpdate = true;
-		uiStuff.cameras = [PlayState.instance.camHUD];
-		// btn.cameras = [PlayState.instance.camHUD];
+    PlayState.instance.persistentUpdate = true;
+    uiStuff.cameras = [PlayState.instance.camHUD];
+    // btn.cameras = [PlayState.instance.camHUD];
 
-		for (thing in PlayState.instance.currentStage)
-		{
-			FlxMouseEvent.add(thing, spr ->
-			{
-				char = cast thing;
-				trace("JUST PRESSED!");
-				sprOld.x = thing.x;
-				sprOld.y = thing.y;
+    for (thing in PlayState.instance.currentStage)
+    {
+      FlxMouseEvent.add(thing, spr ->
+      {
+        char = cast thing;
+        trace("JUST PRESSED!");
+        sprOld.x = thing.x;
+        sprOld.y = thing.y;
 
-				mosPosOld.x = FlxG.mouse.x;
-				mosPosOld.y = FlxG.mouse.y;
-			}, null, spr ->
-			{
-				// ID tag is to see if currently overlapping hold basically!, a bit more reliable than checking transparency!
-				// used for bug where you can click, and if you click on NO sprite, it snaps the thing to position! unintended!
-				spr.ID = 1;
-				spr.alpha = 0.5;
-			}, spr ->
-			{
-				spr.ID = 0;
-				spr.alpha = 1;
-			});
-		}
-	}
+        mosPosOld.x = FlxG.mouse.x;
+        mosPosOld.y = FlxG.mouse.y;
+      }, null, spr ->
+      {
+        // ID tag is to see if currently overlapping hold basically!, a bit more reliable than checking transparency!
+        // used for bug where you can click, and if you click on NO sprite, it snaps the thing to position! unintended!
+        spr.ID = 1;
+        spr.alpha = 0.5;
+      }, spr ->
+      {
+        spr.ID = 0;
+        spr.alpha = 1;
+      });
+    }
+  }
 
-	var mosPosOld:FlxPoint = new FlxPoint();
-	var sprOld:FlxPoint = new FlxPoint();
+  var mosPosOld:FlxPoint = new FlxPoint();
+  var sprOld:FlxPoint = new FlxPoint();
 
-	var char:FlxSprite = null;
-	var overlappingChar:Bool = false;
+  var char:FlxSprite = null;
+  var overlappingChar:Bool = false;
 
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
+  override function update(elapsed:Float)
+  {
+    super.update(elapsed);
 
-		if (char != null && char.ID == 1 && FlxG.mouse.pressed)
-		{
-			char.x = sprOld.x - (mosPosOld.x - FlxG.mouse.x);
-			char.y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
-		}
+    if (char != null && char.ID == 1 && FlxG.mouse.pressed)
+    {
+      char.x = sprOld.x - (mosPosOld.x - FlxG.mouse.x);
+      char.y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
+    }
 
-		FlxG.mouse.visible = true;
+    FlxG.mouse.visible = true;
 
-		CoolUtil.mouseCamDrag();
+    CoolUtil.mouseCamDrag();
 
-		if (FlxG.keys.pressed.CONTROL)
-			CoolUtil.mouseWheelZoom();
+    if (FlxG.keys.pressed.CONTROL)
+      CoolUtil.mouseWheelZoom();
 
-		if (FlxG.mouse.wheel != 0)
-		{
-			FlxG.camera.zoom += FlxG.mouse.wheel * 0.1;
-		}
+    if (FlxG.mouse.wheel != 0)
+    {
+      FlxG.camera.zoom += FlxG.mouse.wheel * 0.1;
+    }
 
-		if (FlxG.keys.justPressed.Y)
-		{
-			for (thing in PlayState.instance.currentStage)
-			{
-				FlxMouseEvent.remove(thing);
-				thing.alpha = 1;
-			}
+    if (FlxG.keys.justPressed.Y)
+    {
+      for (thing in PlayState.instance.currentStage)
+      {
+        FlxMouseEvent.remove(thing);
+        thing.alpha = 1;
+      }
 
-			if (uiStuff != null)
-				remove(uiStuff);
+      if (uiStuff != null)
+        remove(uiStuff);
 
-			uiStuff = null;
+      uiStuff = null;
 
-			PlayState.instance.resetCamera();
-			FlxG.mouse.visible = false;
-			close();
-		}
-	}
+      PlayState.instance.resetCamera();
+      FlxG.mouse.visible = false;
+      close();
+    }
+  }
 
-	var _file:FileReference;
+  var _file:FileReference;
 
-	private function saveStageFileRef(_):Void
-	{
-		var jsonStr = prepStageStuff();
+  private function saveStageFileRef(_):Void
+  {
+    var jsonStr = prepStageStuff();
 
-		_file = new FileReference();
-		_file.addEventListener(Event.COMPLETE, onSaveComplete);
-		_file.addEventListener(Event.CANCEL, onSaveCancel);
-		_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-		_file.save(jsonStr, PlayState.instance.currentStageId + ".json");
-	}
+    _file = new FileReference();
+    _file.addEventListener(Event.COMPLETE, onSaveComplete);
+    _file.addEventListener(Event.CANCEL, onSaveCancel);
+    _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+    _file.save(jsonStr, PlayState.instance.currentStageId + ".json");
+  }
 
-	function onSaveComplete(_)
-	{
-		fileRemoveListens();
-		FlxG.log.notice("Successfully saved!");
-	}
+  function onSaveComplete(_)
+  {
+    fileRemoveListens();
+    FlxG.log.notice("Successfully saved!");
+  }
 
-	function onSaveCancel(_)
-	{
-		fileRemoveListens();
-	}
+  function onSaveCancel(_)
+  {
+    fileRemoveListens();
+  }
 
-	function onSaveError(_)
-	{
-		fileRemoveListens();
-		FlxG.log.error("Problem saving Stage file!");
-	}
+  function onSaveError(_)
+  {
+    fileRemoveListens();
+    FlxG.log.error("Problem saving Stage file!");
+  }
 
-	function fileRemoveListens()
-	{
-		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-		_file.removeEventListener(Event.CANCEL, onSaveCancel);
-		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-		_file = null;
-	}
+  function fileRemoveListens()
+  {
+    _file.removeEventListener(Event.COMPLETE, onSaveComplete);
+    _file.removeEventListener(Event.CANCEL, onSaveCancel);
+    _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+    _file = null;
+  }
 
-	private function saveCharacterCompile(_):Void
-	{
-		var outputJson:String = prepStageStuff();
+  private function saveCharacterCompile(_):Void
+  {
+    var outputJson:String = prepStageStuff();
 
-		#if sys
-		// save "local" to the current export.
-		sys.io.File.saveContent('./assets/data/stages/' + PlayState.instance.currentStageId + '.json', outputJson);
+    #if sys
+    // save "local" to the current export.
+    sys.io.File.saveContent('./assets/data/stages/' + PlayState.instance.currentStageId + '.json', outputJson);
 
-		// save to the dev version
-		sys.io.File.saveContent('../../../../assets/preload/data/stages/' + PlayState.instance.currentStageId + '.json', outputJson);
-		#end
-	}
+    // save to the dev version
+    sys.io.File.saveContent('../../../../assets/preload/data/stages/' + PlayState.instance.currentStageId + '.json', outputJson);
+    #end
+  }
 
-	private function prepStageStuff():String
-	{
-		var stageLol:StageData = StageDataParser.parseStageData(PlayState.instance.currentStageId);
+  private function prepStageStuff():String
+  {
+    var stageLol:StageData = StageDataParser.parseStageData(PlayState.instance.currentStageId);
 
-		for (prop in stageLol.props)
-		{
-			@:privateAccess
-			var posStuff = PlayState.instance.currentStage.namedProps.get(prop.name);
+    for (prop in stageLol.props)
+    {
+      @:privateAccess
+      var posStuff = PlayState.instance.currentStage.namedProps.get(prop.name);
 
-			prop.position[0] = posStuff.x;
-			prop.position[1] = posStuff.y;
-		}
+      prop.position[0] = posStuff.x;
+      prop.position[1] = posStuff.y;
+    }
 
-		var bfPos = PlayState.instance.currentStage.getBoyfriend().feetPosition;
-		stageLol.characters.bf.position[0] = Std.int(bfPos.x);
-		stageLol.characters.bf.position[1] = Std.int(bfPos.y);
+    var bfPos = PlayState.instance.currentStage.getBoyfriend().feetPosition;
+    stageLol.characters.bf.position[0] = Std.int(bfPos.x);
+    stageLol.characters.bf.position[1] = Std.int(bfPos.y);
 
-		var dadPos = PlayState.instance.currentStage.getDad().feetPosition;
+    var dadPos = PlayState.instance.currentStage.getDad().feetPosition;
 
-		stageLol.characters.dad.position[0] = Std.int(dadPos.x);
-		stageLol.characters.dad.position[1] = Std.int(dadPos.y);
+    stageLol.characters.dad.position[0] = Std.int(dadPos.x);
+    stageLol.characters.dad.position[1] = Std.int(dadPos.y);
 
-		var GF_FEET_SNIIIIIIIIIIIIIFFFF = PlayState.instance.currentStage.getGirlfriend().feetPosition;
-		stageLol.characters.gf.position[0] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.x);
-		stageLol.characters.gf.position[1] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.y);
+    var GF_FEET_SNIIIIIIIIIIIIIFFFF = PlayState.instance.currentStage.getGirlfriend().feetPosition;
+    stageLol.characters.gf.position[0] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.x);
+    stageLol.characters.gf.position[1] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.y);
 
-		return CoolUtil.jsonStringify(stageLol);
-	}
+    return CoolUtil.jsonStringify(stageLol);
+  }
 }
