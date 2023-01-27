@@ -1,7 +1,5 @@
 package funkin.play;
 
-import funkin.play.song.SongData.SongEventData;
-import funkin.play.event.SongEvent.SongEventParser;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -31,8 +29,10 @@ import funkin.play.Strumline.StrumlineArrow;
 import funkin.play.Strumline.StrumlineStyle;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData;
+import funkin.play.event.SongEvent.SongEventParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
+import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongNoteData;
 import funkin.play.song.SongData.SongPlayableChar;
 import funkin.play.song.SongValidator;
@@ -84,6 +84,11 @@ class PlayState extends MusicBeatState
    * Whether the game is currently in a cutscene, and gameplay should be stopped.
    */
   public static var isInCutscene:Bool = false;
+
+  /**
+   * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
+   */
+  public static var disableKeys:Bool = false;
 
   /**
    * Whether the game is currently in the countdown before the song resumes.
@@ -928,8 +933,7 @@ class PlayState extends MusicBeatState
       // moved senpai angry noise in here to clean up cutscene switch case lol
     }
 
-    new FlxTimer().start(0.3, function(tmr:FlxTimer)
-    {
+    new FlxTimer().start(0.3, function(tmr:FlxTimer) {
       black.alpha -= 0.15;
 
       if (black.alpha > 0) tmr.reset(0.3);
@@ -943,25 +947,21 @@ class PlayState extends MusicBeatState
           {
             add(senpaiEvil);
             senpaiEvil.alpha = 0;
-            new FlxTimer().start(0.3, function(swagTimer:FlxTimer)
-            {
+            new FlxTimer().start(0.3, function(swagTimer:FlxTimer) {
               senpaiEvil.alpha += 0.15;
               if (senpaiEvil.alpha < 1) swagTimer.reset();
               else
               {
                 senpaiEvil.animation.play('idle');
-                FlxG.sound.play(Paths.sound('Senpai_Dies'), 1, false, null, true, function()
-                {
+                FlxG.sound.play(Paths.sound('Senpai_Dies'), 1, false, null, true, function() {
                   remove(senpaiEvil);
                   remove(red);
-                  FlxG.camera.fade(FlxColor.WHITE, 0.01, true, function()
-                  {
+                  FlxG.camera.fade(FlxColor.WHITE, 0.01, true, function() {
                     add(dialogueBox);
                     camHUD.visible = true;
                   }, true);
                 });
-                new FlxTimer().start(3.2, function(deadTime:FlxTimer)
-                {
+                new FlxTimer().start(3.2, function(deadTime:FlxTimer) {
                   FlxG.camera.fade(FlxColor.WHITE, 1.6, false);
                 });
               }
@@ -1026,8 +1026,7 @@ class PlayState extends MusicBeatState
     else
       vocals = VoicesGroup.build(currentSong.song, null);
 
-    vocals.members[0].onComplete = function()
-    {
+    vocals.members[0].onComplete = function() {
       vocalsFinished = true;
     };
 
@@ -1053,8 +1052,7 @@ class PlayState extends MusicBeatState
 
     // TODO: Fix grouped vocals
     vocals = currentChart.buildVocals();
-    vocals.members[0].onComplete = function()
-    {
+    vocals.members[0].onComplete = function() {
       vocalsFinished = true;
     }
 
@@ -1076,14 +1074,12 @@ class PlayState extends MusicBeatState
     // make unspawn notes shit def empty
     inactiveNotes = [];
 
-    activeNotes.forEach(function(nt)
-    {
+    activeNotes.forEach(function(nt) {
       nt.followsTime = false;
       FlxTween.tween(nt, {y: FlxG.height + nt.y}, 0.5,
         {
           ease: FlxEase.expoIn,
-          onComplete: function(twn)
-          {
+          onComplete: function(twn) {
             nt.kill();
             activeNotes.remove(nt, true);
             nt.destroy();
@@ -1177,8 +1173,7 @@ class PlayState extends MusicBeatState
       }
     }
 
-    inactiveNotes.sort(function(a:Note, b:Note):Int
-    {
+    inactiveNotes.sort(function(a:Note, b:Note):Int {
       return SortUtil.byStrumtime(FlxSort.ASCENDING, a, b);
     });
   }
@@ -1196,14 +1191,12 @@ class PlayState extends MusicBeatState
     inactiveNotes = [];
 
     // Destroy active notes.
-    activeNotes.forEach(function(nt)
-    {
+    activeNotes.forEach(function(nt) {
       nt.followsTime = false;
       FlxTween.tween(nt, {y: FlxG.height + nt.y}, 0.5,
         {
           ease: FlxEase.expoIn,
-          onComplete: function(twn)
-          {
+          onComplete: function(twn) {
             nt.kill();
             activeNotes.remove(nt, true);
             nt.destroy();
@@ -1369,6 +1362,7 @@ class PlayState extends MusicBeatState
     if (FlxG.keys.justPressed.U)
     {
       // hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
+      disableKeys = true;
       persistentUpdate = false;
       openSubState(new StageOffsetSubstate());
     }
@@ -1557,7 +1551,7 @@ class PlayState extends MusicBeatState
       }
     }
 
-    if (!isInCutscene && !_exiting)
+    if ((!isInCutscene && !disableKeys) && !_exiting)
     {
       // RESET = Quick Game Over Screen
       if (controls.RESET)
@@ -1623,8 +1617,7 @@ class PlayState extends MusicBeatState
 
     if (generatedMusic && playerStrumline != null)
     {
-      activeNotes.forEachAlive(function(daNote:Note)
-      {
+      activeNotes.forEachAlive(function(daNote:Note) {
         if ((PreferencesMenu.getPref('downscroll') && daNote.y < -daNote.height)
           || (!PreferencesMenu.getPref('downscroll') && daNote.y > FlxG.height))
         {
@@ -1744,7 +1737,7 @@ class PlayState extends MusicBeatState
       }
     }
 
-    if (!isInCutscene) keyShit(true);
+    if (!isInCutscene && !disableKeys) keyShit(true);
   }
 
   function applyClipRect(daNote:Note):Void
@@ -1883,8 +1876,7 @@ class PlayState extends MusicBeatState
           camHUD.visible = false;
           isInCutscene = true;
 
-          FlxG.sound.play(Paths.sound('Lights_Shut_off'), function()
-          {
+          FlxG.sound.play(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             currentSong = SongLoad.loadFromJson(storyPlaylist[0].toLowerCase() + difficulty, storyPlaylist[0]);
             LoadingState.loadAndSwitchState(new PlayState());
@@ -1912,15 +1904,13 @@ class PlayState extends MusicBeatState
 
       FlxTween.tween(camHUD, {alpha: 0}, 0.6);
 
-      new FlxTimer().start(0.8, _ ->
-      {
+      new FlxTimer().start(0.8, _ -> {
         currentStage.getGirlfriend().animation.play("cheer");
 
         FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1,
           {
             ease: FlxEase.expoIn,
-            onComplete: _ ->
-            {
+            onComplete: _ -> {
               persistentUpdate = false;
               vocals.stop();
               camHUD.alpha = 1;
@@ -2065,8 +2055,7 @@ class PlayState extends MusicBeatState
     // HOLDS, check for sustain notes
     if (holdArray.contains(true) && PlayState.instance.generatedMusic)
     {
-      PlayState.instance.activeNotes.forEachAlive(function(daNote:Note)
-      {
+      PlayState.instance.activeNotes.forEachAlive(function(daNote:Note) {
         if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.data.noteData]) PlayState.instance.goodNoteHit(daNote);
       });
     }
@@ -2082,8 +2071,7 @@ class PlayState extends MusicBeatState
       var directionList:Array<Int> = []; // directions that can be hit
       var dumbNotes:Array<Note> = []; // notes to kill later
 
-      PlayState.instance.activeNotes.forEachAlive(function(daNote:Note)
-      {
+      PlayState.instance.activeNotes.forEachAlive(function(daNote:Note) {
         if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
         {
           if (directionList.contains(daNote.data.noteData))
@@ -2355,8 +2343,7 @@ class PlayState extends MusicBeatState
 
       var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
 
-      new FlxTimer().start(((Conductor.crochet / 1000) * 1.25) - frameShit, function(tmr)
-      {
+      new FlxTimer().start(((Conductor.crochet / 1000) * 1.25) - frameShit, function(tmr) {
         animShit.forceFinish();
       });
     }

@@ -2,6 +2,7 @@ package funkin.ui.haxeui;
 
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.core.Component;
+import haxe.ui.events.MouseEvent;
 
 class HaxeUISubState extends MusicBeatSubstate
 {
@@ -81,6 +82,30 @@ class HaxeUISubState extends MusicBeatSubstate
       trace(component2);
       remove(component);
     }
+  }
+
+  /**
+   * Add an onClick listener to a HaxeUI menu bar item.
+   */
+  function addUIClickListener(key:String, callback:MouseEvent->Void)
+  {
+    var target:Component = findComponent(key);
+    if (target == null)
+    {
+      // Gracefully handle the case where the item can't be located.
+      trace('WARN: Could not locate menu item: $key');
+    }
+    else
+    {
+      target.onClick = callback;
+    }
+  }
+
+  public function findComponent<T:Component>(criteria:String = null, type:Class<T> = null, recursive:Null<Bool> = null, searchType:String = "id"):Null<T>
+  {
+    if (component == null) return null;
+
+    return component.findComponent(criteria, type, recursive, searchType);
   }
 
   override function destroy()
