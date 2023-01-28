@@ -46,8 +46,6 @@ class ControlEditorState extends FlxState
 	var variantChoicer:CoolVariantChoicer;
 	var deletebar:FlxSprite;
 
-	var curKeySelected:Int = 0;
-	var keyboardSettings:FlxTypedGroup<FlxText>;
 
 	override function create() 
 	{
@@ -55,7 +53,7 @@ class ControlEditorState extends FlxState
 		FlxG.save.data.lastmousevisible = FlxG.mouse.visible;
 		FlxG.mouse.visible = true;
 		#end
-		curSelected = 3;
+		curSelected = Config.controlMode;
 
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
@@ -86,8 +84,7 @@ class ControlEditorState extends FlxState
 
 		var exitSavebutton = new FlxUIButton((exitbutton.x + exitbutton.width + 25),25,"exit and save",() -> 
 		{
-			saveCustomPosition();
-			// config.setcontrolmode(curSelected);
+			save();
 			exit();
 		});
 		exitSavebutton.resize(250,50);
@@ -104,21 +101,6 @@ class ControlEditorState extends FlxState
 		deletebar.alpha = 0;
 		add(deletebar);
 
-		keyboardSettings = new FlxTypedGroup<FlxText>();
-
-		var ktextX = 500;
-		var leftText = new FlxText(ktextX, 50, 0, "> Left arrow: W", 48);
-		leftText.color = FlxColor.YELLOW;
-		keyboardSettings.add(leftText);
-		var downText = new FlxText(ktextX, 100, 0, " Down arrow: A", 48);
-		keyboardSettings.add(downText);
-		var upText = new FlxText(ktextX, 150, 0, " Up arrow: S", 48);
-		keyboardSettings.add(upText);
-		var rightText = new FlxText(ktextX, 200, 0, " Right arrow: D", 48);
-		keyboardSettings.add(rightText);
-
-		add(keyboardSettings);
-
 		createOptionsUi();
 		changeSelection();
 
@@ -128,6 +110,17 @@ class ControlEditorState extends FlxState
 
 		super.create();
 	}
+	function save() {
+		Config.controlMode = curSelected;
+		switch (curSelected)
+		{
+			case 3:
+				saveCustomPosition();
+
+			default:
+		}
+	}
+
 
 	function createOptionsUi() {
 		// var buttonOptBar = new FlxUI();
@@ -149,54 +142,21 @@ class ControlEditorState extends FlxState
 
 	override function update(elapsed:Float) 
 	{
-		// broken
-		// if (deletebar.overlaps(virtualpad))
-		// 	deletebar.alpha = 1; // FlxMath.lerp(deletebar.alpha, 1, 0.5 * elapsed)
-		// else
-		// 	deletebar.alpha = 0; // FlxMath.lerp(deletebar.alpha, 0, 0.5 * elapsed)
-
-		if (curSelected == 4)
+		#if android
+		if (FlxG.android.justReleased.BACK)
 		{
-			if (FlxG.keys.justPressed.DOWN)
-			{
-				var lastl = curKeySelected;
-				curKeySelected++;
-				if (curKeySelected < 0)
-					curKeySelected = 4 - 1;
-				if (curKeySelected >= 4)
-					curKeySelected = 0;
+			FlxG.switchState(new OptionsMenu());
+		}
+		#end
 
-				var lastText = keyboardSettings.members[lastl];
-				lastText.text = " " + lastText.text.substr(1, lastText.text.length);
-				lastText.color = FlxColor.WHITE;
-				
-				var curText = keyboardSettings.members[curKeySelected];
-				lastText.text = ">" + lastText.text.substr(1, lastText.text.length);
-				curText.color = FlxColor.YELLOW;
-			}
+		if (FlxG.keys.justReleased.RIGHT)
+		{
+			changeSelection(1);
+		}
 
-			if (FlxG.keys.justPressed.UP)
-			{
-				var lastl = curKeySelected;
-				curKeySelected--;
-				if (curKeySelected < 0)
-					curKeySelected = 4 - 1;
-				if (curKeySelected >= 4)
-					curKeySelected = 0;
-
-				var lastText = keyboardSettings.members[lastl];
-				lastText.text = " " + lastText.text.substr(1, lastText.text.length);
-				lastText.color = FlxColor.WHITE;
-
-				var curText = keyboardSettings.members[curKeySelected];
-				lastText.text = ">" + lastText.text.substr(1, lastText.text.length);
-				curText.color = FlxColor.YELLOW;
-			}
-			
-			if (FlxG.keys.justPressed.ENTER)
-			{
-				
-			}
+		if (FlxG.keys.justReleased.LEFT)
+		{
+			changeSelection(-1);
 		}
 
 		if (curSelected == 3)

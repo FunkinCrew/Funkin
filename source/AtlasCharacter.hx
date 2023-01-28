@@ -139,13 +139,13 @@ class AtlasCharacter extends FlxAnimate
     override function update(elapsed:Float)
 	{
         @:privateAccess
-        curAnimName = anim.animationName;
+        curAnimName = anim.curSymbol.name;
 		// trace(curAnimName);
 
 		if (!curCharacter.startsWith('bf'))
 		{
             @:privateAccess
-			if (anim.animationName.startsWith('sing'))
+			if (curAnimName.startsWith('sing'))
 			{
 				holdTimer += elapsed;
 			}
@@ -165,7 +165,7 @@ class AtlasCharacter extends FlxAnimate
 		{
 			case 'gf':
                 @:privateAccess
-				if (anim.animationName == 'hairFall' && anim.finished)
+				if (curAnimName == 'hairFall' && anim.finished)
 					playAnim('danceRight');
 		}
 
@@ -182,7 +182,7 @@ class AtlasCharacter extends FlxAnimate
 			switch (curCharacter)
 			{
 				case 'gf':
-					if (!anim.animationName.startsWith('hair'))
+					if (!curAnimName.startsWith('hair'))
 					{
 						danced = !danced;
 
@@ -193,7 +193,7 @@ class AtlasCharacter extends FlxAnimate
 					}
 
 				case 'gf-christmas':
-					if (!anim.animationName.startsWith('hair'))
+					if (!curAnimName.startsWith('hair'))
 					{
 						danced = !danced;
 
@@ -204,7 +204,7 @@ class AtlasCharacter extends FlxAnimate
 					}
 
 				case 'picoSpeaker':
-					if (!anim.animationName.startsWith('hair'))
+					if (!curAnimName.startsWith('hair'))
 					{
 						danced = !danced;
 
@@ -215,7 +215,7 @@ class AtlasCharacter extends FlxAnimate
 					}
 
 				case 'gf-tankman':
-					if (!anim.animationName.startsWith('hair'))
+					if (!curAnimName.startsWith('hair'))
 					{
 						danced = !danced;
 
@@ -225,7 +225,7 @@ class AtlasCharacter extends FlxAnimate
 							playAnim('danceLeft');
 					}
 				case 'gf-car':
-					if (!anim.animationName.startsWith('hair'))
+					if (!curAnimName.startsWith('hair'))
 					{
 						danced = !danced;
 
@@ -235,7 +235,7 @@ class AtlasCharacter extends FlxAnimate
 							playAnim('danceLeft');
 					}
 				case 'gf-pixel':
-					if (!anim.animationName.startsWith('hair'))
+					if (!curAnimName.startsWith('hair'))
 					{
 						danced = !danced;
 
@@ -333,19 +333,19 @@ class AtlasBoyfriend extends AtlasCharacter
         @:privateAccess
 		if (!debugMode)
 		{
-			if (anim.animationName.startsWith('sing'))
+			if (curAnimName.startsWith('sing'))
 			{
 				holdTimer += elapsed;
 			}
 			else
 				holdTimer = 0;
 
-			if (anim.animationName.endsWith('miss') && anim.finished && !debugMode)
+			if (curAnimName.endsWith('miss') && anim.finished && !debugMode)
 			{
 				playAnim('idle', true, false, 10);
 			}
 
-			if (anim.animationName == 'firstDeath' && anim.finished)
+			if (curAnimName == 'firstDeath' && anim.finished)
 			{
 				playAnim('deathLoop');
 			}

@@ -1,8 +1,7 @@
 package;
 
 import ui.Mobilecontrols;
-import vlc.MP4Handler;
-import vlc.MP4Sprite;
+import hxcodec.VideoSprite;
 import flixel.math.FlxAngle;
 import flixel.group.FlxSpriteGroup;
 #if desktop
@@ -1049,7 +1048,7 @@ class PlayState extends MusicBeatState
 	{
 		if (true)
 		{
-			var video = new MP4Handler();
+			var video = new VideoSprite();
 			video.finishCallback = () -> {
 				startCountdown();
 			}
