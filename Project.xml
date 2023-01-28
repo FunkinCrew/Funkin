@@ -46,6 +46,8 @@
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+
+	<library name="videos"       preload="true" />
 	
 	<section if="PRELOAD_ALL">
 		<library name="songs"    preload="true" />
