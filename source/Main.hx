@@ -16,6 +16,7 @@ import lime.app.Application;
 import Discord.DiscordClient;
 #end
 
+#if ErrorDialog
 //crash handler stuff
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
@@ -23,6 +24,7 @@ import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 import sys.io.Process;
+#end
 
 using StringTools;
 
@@ -37,6 +39,7 @@ class Main extends Sprite
 		skipSplash: false, // if the default flixel splash screen should be skipped
 		startFullscreen: false // if the game should start at fullscreen mode
 	};
+	public static var fpsVar:FPS;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -86,14 +89,22 @@ class Main extends Sprite
 		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
 
 		#if !mobile
-		addChild(new FPS(10, 3, 0xFFFFFF));
+		fpsVar = new FPS(10, 3, 0xFFFFFF);
+		addChild(fpsVar);
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
+		if(fpsVar != null) {
+			fpsVar.visible = true;
+		}
 		#end
 
+		#if ErrorDialog
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#end
 
 	}
+	
+	#if ErrorDialog
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
 	function onCrash(e:UncaughtErrorEvent):Void
@@ -133,4 +144,5 @@ class Main extends Sprite
 		DiscordClient.shutdown();
 		Sys.exit(1);
 	}
+	#end
 }

@@ -1,135 +1,70 @@
 package;
 
-#if desktop
-import Discord.DiscordClient;
-#end
-import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
-import flixel.FlxSubState;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.util.FlxSave;
-import haxe.Json;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import flixel.input.keyboard.FlxKey;
-import flixel.graphics.FlxGraphic;
-import Controls.Control;
-
-using StringTools;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var options:Array<String> = ['Controls', 'Gameplay'];
+	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls'];
 
-	private var grpTexts:FlxTypedGroup<Alphabet>;
-	private var directories:Array<String> = [null];
+	var selector:FlxSprite;
+	var curSelected:Int = 0;
 
-	private var curSelected = 0;
-	private var curDirectory = 0;
-	private var directoryTxt:FlxText;
+	var grpOptionsTexts:FlxTypedGroup<FlxText>;
 
-	override function create()
+	public function new()
 	{
-		FlxG.camera.bgColor = FlxColor.BLACK;
-		#if desktop
-		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Options Menu", null);
-		#end
+		super();
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.scrollFactor.set();
-		bg.color = 0xFFea71fd;
-		add(bg);
+		grpOptionsTexts = new FlxTypedGroup<FlxText>();
+		add(grpOptionsTexts);
 
-		grpTexts = new FlxTypedGroup<Alphabet>();
-		add(grpTexts);
+		selector = new FlxSprite().makeGraphic(5, 5, FlxColor.RED);
+		add(selector);
 
-		var titleText:Alphabet = new Alphabet(75, 40, 'Options', true);
-		titleText.alpha = 0.4;
-		add(titleText);
-
-
-		for (i in 0...options.length)
+		for (i in 0...textMenuItems.length)
 		{
-			var leText:Alphabet = new Alphabet(90, 320, options[i], true);
-			leText.isMenuItem = true;
-			leText.targetY = i;
-			grpTexts.add(leText);
+			var optionText:FlxText = new FlxText(20, 20 + (i * 50), 0, textMenuItems[i], 32);
+			optionText.ID = i;
+			grpOptionsTexts.add(optionText);
 		}
-		
-		changeSelection();
-
-		FlxG.mouse.visible = false;
-		super.create();
 	}
 
 	override function update(elapsed:Float)
 	{
-		if (controls.UP)
-		{
-			changeSelection(-1);
-		}
-		if (controls.DOWN)
-		{
-			changeSelection(1);
-		}
+		super.update(elapsed);
 
-		if(FlxG.mouse.wheel != 0)
-		{
-			FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
-			changeSelection(-FlxG.mouse.wheel);
-		}
+		if (controls.UP_P)
+			curSelected -= 1;
 
-		if (controls.BACK)
+		if (controls.DOWN_P)
+			curSelected += 1;
+
+		if (curSelected < 0)
+			curSelected = textMenuItems.length - 1;
+
+		if (curSelected >= textMenuItems.length)
+			curSelected = 0;
+
+		grpOptionsTexts.forEach(function(txt:FlxText)
 		{
-			FlxG.switchState(new MainMenuState());
-		}
+			txt.color = FlxColor.WHITE;
+
+			if (txt.ID == curSelected)
+				txt.color = FlxColor.YELLOW;
+		});
 
 		if (controls.ACCEPT)
 		{
-			switch(options[curSelected]) {
-				case 'Controls':
-					openSubState(new ControlsSubState());
-			}
-		}
-		
-		var bullShit:Int = 0;
-		for (item in grpTexts.members)
-		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
+			switch (textMenuItems[curSelected])
 			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
+				case "Controls":
+					FlxG.state.closeSubState();
+					FlxG.state.openSubState(new ControlsSubState());
 			}
 		}
-		super.update(elapsed);
-	}
-
-	function changeSelection(change:Int = 0)
-	{
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = options.length - 1;
-		if (curSelected >= options.length)
-			curSelected = 0;
 	}
 }

@@ -115,6 +115,7 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
+	var scoreTxtTween:FlxTween;
 
 	public static var campaignScore:Int = 0;
 
@@ -164,6 +165,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
+		Conductor.safeZoneOffset = (FlxG.save.data.frames / 60) * 1000;
 
 		switch (SONG.song.toLowerCase())
 		{
@@ -696,6 +698,9 @@ class PlayState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
+		if (FlxG.save.data.downscroll)
+			strumLine.y = FlxG.height - 165;
+
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
@@ -729,6 +734,8 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		if (FlxG.save.data.downscroll)
+			healthBarBG.y = 50;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -1371,7 +1378,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses;
+		reloadHUD(false);
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1631,16 +1638,12 @@ class PlayState extends MusicBeatState
 
 				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
-				if (daNote.y < -150)
-				{
-					noteMiss(daNote.noteData);
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
-				}
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
 				// i am so fucking sorry for this if condition
-				if (daNote.isSustainNote && daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2 && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+				if (daNote.isSustainNote
+					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
+					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 				{
 					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
 					swagRect.y /= daNote.scale.y;
@@ -1687,20 +1690,41 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if (daNote.y < -daNote.height)
+				if (!FlxG.save.data.downscroll)
 				{
-					if (daNote.tooLate || !daNote.wasGoodHit)
+					if (daNote.y < -daNote.height)
 					{
-						health -= 0.0475;
-						vocals.volume = 0;
+						if (daNote.tooLate || !daNote.wasGoodHit)
+						{
+							noteMiss(daNote.noteData);
+							health -= 0.0475;
+							vocals.volume = 0;
+						}
+	
+						daNote.active = false;
+						daNote.visible = false;
+	
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
 					}
-
-					daNote.active = false;
-					daNote.visible = false;
-
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
+				}else{
+					if (daNote.y < daNote.height)
+					{
+						if (daNote.tooLate || !daNote.wasGoodHit)
+						{
+							noteMiss(daNote.noteData);
+							health -= 0.0475;
+							vocals.volume = 0;
+						}
+	
+						daNote.active = false;
+						daNote.visible = false;
+	
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}		
 				}
 			});
 		}
@@ -1844,6 +1868,8 @@ class PlayState extends MusicBeatState
 
 		songScore += score;
 
+		reloadHUD(true);
+
 		/* if (combo > 60)
 				daRating = 'sick';
 			else if (combo > 12)
@@ -1980,7 +2006,7 @@ class PlayState extends MusicBeatState
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
 
-		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
+		var controlArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 
 		// FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
@@ -2389,7 +2415,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
+			notes.sort(FlxSort.byY, (FlxG.save.data.downscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING));
 		}
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
@@ -2498,4 +2524,30 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+	//scoreTxt
+	function reloadHUD(p:Bool)
+	{
+		var curTime:Float = Conductor.songPosition;
+		if(curTime < 0) curTime = 0;
+
+		var songCalc:Float = (songLength - curTime);
+
+		var secondsTotal:Int = Math.floor(songCalc / 1000);
+		if(secondsTotal < 0) secondsTotal = 0;
+
+		scoreTxt.text = "Score:" + songScore + " | " + FlxStringUtil.formatTime(secondsTotal, false) +" | Misses:" + misses;
+
+		if (p){
+			if(scoreTxtTween != null) {
+				scoreTxtTween.cancel();
+			}
+			scoreTxt.scale.x = 1.075;
+			scoreTxt.scale.y = 1.075;
+			scoreTxtTween = FlxTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.2, {
+				onComplete: function(twn:FlxTween) {
+					scoreTxtTween = null;
+				}
+			});
+		}
+	}
 }

@@ -50,7 +50,22 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
 
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
 		PlayerSettings.init();
+
+		NekoEngineData.initSave();
+
+		KeyBinds.keyCheck();
+
+		if (FlxG.save.data.volDownBind == null)
+			FlxG.save.data.volDownBind = "MINUS";
+		if (FlxG.save.data.volUpBind == null)
+			FlxG.save.data.volUpBind = "PLUS";
+
+		FlxG.sound.muteKeys = [FlxKey.fromString(FlxG.save.data.muteBind)];
+		FlxG.sound.volumeDownKeys = [FlxKey.fromString(FlxG.save.data.volDownBind)];
+		FlxG.sound.volumeUpKeys = [FlxKey.fromString(FlxG.save.data.volUpBind)];
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -64,8 +79,6 @@ class TitleState extends MusicBeatState
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		trace('NEWGROUNDS LOL');
 		#end
-
-		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		Highscore.load();
 
