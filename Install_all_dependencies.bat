@@ -7,7 +7,7 @@ IF "%yesno%"=="n" GOTO End
 IF "%yesno%"=="N" GOTO End
 
 :Confirmation
-haxelib install hmm
+haxelib install hmm --quiet --always
 haxelib run hmm install
 
 :End

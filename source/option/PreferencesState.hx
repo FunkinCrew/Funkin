@@ -1,5 +1,8 @@
 package option;
 
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
@@ -13,18 +16,25 @@ import Config;
 class PreferencesState extends MusicBeatState
 {
 	private var grptext:FlxTypedGroup<Alphabet>;
-
 	private var checkboxGroup:FlxTypedGroup<Checkbox>;
 
 	var curSelected:Int = 0;
-
-	var menuItems:Array<String> = ['downscroll', 'ghost tapping', 'middlescroll', 'cutscenes', 'note splash', 'note glow', 'optimization',/* 'dfjk',*/ 'change icons'];
+	var options:Array<PrefItem>;
 
 	var notice:FlxText;
-	// var data:AndroidData = new AndroidData();
 
 	override public function create() 
 	{
+		options = [
+			{ name: 'downscroll', targetObject: Config, field: 'downscroll' },
+			{ name: 'ghost tapping', targetObject: Config, field: 'ghost' },
+			{ name: 'middlescroll', targetObject: Config, field: 'mid' },
+			{ name: 'cutscenes', targetObject: Config, field: 'cutscenes' },
+			{ name: 'note splash', targetObject: Config, field: 'splash' },
+			{ name: 'note glow', targetObject: Config, field: 'glow' },
+			{ name: 'optimization', targetObject: Config, field: 'osu' },
+			{ name: 'change icons', targetObject: null, field: '' }
+		];
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -39,36 +49,19 @@ class PreferencesState extends MusicBeatState
 		checkboxGroup = new FlxTypedGroup<Checkbox>();
 		add(checkboxGroup);
 
-		for (i in 0...menuItems.length)
+		for (i in 0...options.length)
 		{ 
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].name, true, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
 			grptext.add(controlLabel);
 
-			var ch = new Checkbox(controlLabel.x + controlLabel.width + 10, controlLabel.y - 20);
-			checkboxGroup.add(ch);
-			add(ch);
-
-			switch (menuItems[i]){
-				case "downscroll":
-					ch.change(Config.downscroll);
-				case "cutscenes":
-					ch.change(Config.cutscenes);
-				case "note splash":
-					ch.change(Config.splash);
-				case "note glow":
-					ch.change(Config.glow);
-				case "middlescroll":
-					ch.change(Config.mid);
-				case "optimization":
-					ch.change(Config.osu);
-				// case "dfjk":
-				// 	ch.change(Config.getDfjk());
-				case "ghost tapping":
-					ch.change(Config.ghost);
-				case "change icons":
-					//do nothing.
+			if (options[i].name != 'change icons')
+			{
+				var ch = new Checkbox(controlLabel.x + controlLabel.width + 10, controlLabel.y - 20);
+				checkboxGroup.add(ch);
+				add(ch);
+				ch.checked = Reflect.getProperty(options[i].targetObject, options[i].field);
 			}
 
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -117,30 +110,21 @@ class PreferencesState extends MusicBeatState
 
 		if (controls.ACCEPT)
 		{
-			var daSelected:String = menuItems[curSelected];
+			var curOption = options[curSelected];
 
-			trace(curSelected);
-
-			switch (daSelected)
+			if (curOption.name == 'change icons')
 			{
-				case "downscroll":
-					Config.downscroll = (checkboxGroup.members[curSelected].change());
-				case "cutscenes":
-					Config.cutscenes = (checkboxGroup.members[curSelected].change());
-				case "note splash":
-					Config.splash = (checkboxGroup.members[curSelected].change());//wjat.
-				case "note glow":
-					Config.glow = (checkboxGroup.members[curSelected].change());
-				case "middlescroll":
-					Config.mid = (checkboxGroup.members[curSelected].change());
-				case "optimization":
-					Config.osu = (checkboxGroup.members[curSelected].change());
-				// case "dfjk":
-				// 	Config.dfjk = (checkboxGroup.members[curSelected].change());
-				case "change icons":
-					FlxG.switchState(new option.IconState());
-				case "ghost tapping":
-					Config.ghost = checkboxGroup.members[curSelected].change();
+				FlxG.switchState(new option.IconState());
+			}
+			else
+			{
+				var lastValue:Bool = Reflect.getProperty(curOption.targetObject, curOption.field);
+
+				Reflect.setField(curOption.targetObject, 
+					curOption.field, 
+					!lastValue);
+
+				checkboxGroup.members[curSelected].checked = !lastValue;
 			}
 		}
 
@@ -183,4 +167,12 @@ class PreferencesState extends MusicBeatState
 			}
 		}
 	}
+}
+
+typedef PrefItem = 
+{
+	var name:String;
+
+	var targetObject:Dynamic;
+	var field:String;
 }

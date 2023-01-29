@@ -1,7 +1,9 @@
 package;
 
 import ui.Mobilecontrols;
+#if !html5
 import hxcodec.VideoSprite;
+#end
 import flixel.math.FlxAngle;
 import flixel.group.FlxSpriteGroup;
 #if desktop
@@ -1048,11 +1050,15 @@ class PlayState extends MusicBeatState
 	{
 		if (true)
 		{
+			#if !html5
 			var video = new VideoSprite();
 			video.finishCallback = () -> {
 				startCountdown();
 			}
 			video.playVideo(path);	
+			#else
+			startCountdown();
+			#end
 		}
 		else
 		{

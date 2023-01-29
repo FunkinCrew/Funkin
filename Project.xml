@@ -113,7 +113,7 @@
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
 
-	<haxelib name="hxCodec"/>
+	<haxelib name="hxCodec" unless="html5"/>
 	<haxelib name="flxanimate"/>
 
 	<!--In case you want to use the addons package-->
