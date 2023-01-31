@@ -45,3 +45,4 @@ warning--choking hazard
 devin chat--what an honorable man
 kickstarter exclusive--intro text
 cussing--we have it
+github exclusive intro text--open source forever
