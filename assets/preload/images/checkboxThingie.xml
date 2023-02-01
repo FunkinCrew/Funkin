@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="checkboxThingie.png">
+	<!-- Created with Adobe Animate version 21.0.4.39603 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Check Box Selected Static0000" x="0" y="198" width="120" height="174" frameX="0" frameY="0" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box Selected Static0001" x="0" y="198" width="120" height="174" frameX="0" frameY="0" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0000" x="371" y="0" width="121" height="82" frameX="-15" frameY="-133" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0001" x="371" y="0" width="121" height="82" frameX="-15" frameY="-133" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0002" x="132" y="0" width="127" height="180" frameX="-4" frameY="-45" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0003" x="0" y="0" width="127" height="193" frameX="0" frameY="0" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0004" x="0" y="0" width="127" height="193" frameX="0" frameY="0" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0005" x="257" y="185" width="138" height="146" frameX="-2" frameY="-62" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0006" x="257" y="185" width="138" height="146" frameX="-2" frameY="-62" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0007" x="132" y="185" width="120" height="176" frameX="-12" frameY="-29" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0008" x="132" y="185" width="120" height="176" frameX="-12" frameY="-29" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0009" x="0" y="198" width="120" height="174" frameX="-12" frameY="-29" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box selecting animation0010" x="0" y="198" width="120" height="174" frameX="-12" frameY="-29" frameWidth="140" frameHeight="225"/>
+	<SubTexture name="Check Box unselected0000" x="264" y="0" width="102" height="103"/>
+</TextureAtlas>

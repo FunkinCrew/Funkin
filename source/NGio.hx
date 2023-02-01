@@ -1,10 +1,13 @@
 package;
+#if newgrounds
 
 import flixel.FlxG;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
+import io.newgrounds.NGLite;
 import io.newgrounds.components.ScoreBoardComponent.Period;
+import io.newgrounds.objects.Error;
 import io.newgrounds.objects.Medal;
 import io.newgrounds.objects.Score;
 import io.newgrounds.objects.ScoreBoard;
@@ -15,14 +18,24 @@ import lime.app.Application;
 import openfl.display.Stage;
 
 using StringTools;
-
+#end
 /**
  * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
  */
 class NGio
 {
-	public static var isLoggedIn:Bool = false;
+	#if newgrounds
+	/**
+	 * True, if the saved sessionId was used in the initial login, and failed to connect.
+	 * Used in MainMenuState to show a popup to establish a new connection
+	 */
+	public static var savedSessionFailed(default, null):Bool = false;
 	public static var scoreboardsLoaded:Bool = false;
+	public static var isLoggedIn(get, never):Bool;
+	inline static function get_isLoggedIn()
+	{
+		return NG.core != null && NG.core.loggedIn;
+	}
 
 	public static var scoreboardArray:Array<Score> = [];
 
@@ -30,45 +43,67 @@ class NGio
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
 
 	public static var GAME_VER:String = "";
-	public static var GAME_VER_NUMS:String = '';
-	public static var gotOnlineVer:Bool = false;
-
-	public static function noLogin(api:String)
+	
+	static public function checkVersion(callback:String->Void)
 	{
-		trace('INIT NOLOGIN');
+		trace('checking NG.io version');
 		GAME_VER = "v" + Application.current.meta.get('version');
 
-		if (api.length != 0)
-		{
-			NG.create(api);
-
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+		NG.core.calls.app.getCurrentVersion(GAME_VER)
+			.addDataHandler(function(response)
 			{
-				var call = NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response:Response<GetCurrentVersionResult>)
-				{
-					GAME_VER = response.result.data.currentVersion;
-					GAME_VER_NUMS = GAME_VER.split(" ")[0].trim();
-					trace('CURRENT NG VERSION: ' + GAME_VER);
-					trace('CURRENT NG VERSION: ' + GAME_VER_NUMS);
-					gotOnlineVer = true;
-				});
-
-				call.send();
-			});
-		}
+				GAME_VER = response.result.data.currentVersion;
+				trace('CURRENT NG VERSION: ' + GAME_VER);
+				callback(GAME_VER);
+			})
+			.send();
 	}
 
-	public function new(api:String, encKey:String, ?sessionId:String)
+	static public function init()
 	{
+		var api = APIStuff.API;
+		if (api == null || api.length == 0)
+		{
+			trace("Missing Newgrounds API key, aborting connection");
+			return;
+		}
 		trace("connecting to newgrounds");
-
-		NG.createAndCheckSession(api, sessionId);
-
-		NG.core.verbose = true;
+		
+		#if NG_FORCE_EXPIRED_SESSION
+			var sessionId:String = "fake_session_id";
+			function onSessionFail(error:Error)
+			{
+				trace("Forcing an expired saved session. "
+					+ "To disable, comment out NG_FORCE_EXPIRED_SESSION in Project.xml");
+				savedSessionFailed = true;
+			}
+		#else
+			var sessionId:String = NGLite.getSessionId();
+			if (sessionId != null)
+				trace("found web session id");
+			
+			#if (debug)
+			if (sessionId == null && APIStuff.SESSION != null)
+			{
+				trace("using debug session id");
+				sessionId = APIStuff.SESSION;
+			}
+			#end
+		
+			var onSessionFail:Error->Void = null;
+			if (sessionId == null && FlxG.save.data.sessionId != null)
+			{
+				trace("using stored session id");
+				sessionId = FlxG.save.data.sessionId;
+				onSessionFail = function (error) savedSessionFailed = true;
+			}
+		#end
+		
+		NG.create(api, sessionId, #if NG_DEBUG true #else false #end, onSessionFail);
+		
+		#if NG_VERBOSE NG.core.verbose = true; #end
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
-		NG.core.initEncryption(encKey); // Found in you NG project view
-
-		trace(NG.core.attemptingLogin);
+		NG.core.initEncryption(APIStuff.EncKey); // Found in you NG project view
 
 		if (NG.core.attemptingLogin)
 		{
@@ -78,21 +113,58 @@ class NGio
 			trace("attempting login");
 			NG.core.onLogin.add(onNGLogin);
 		}
-		else
+		//GK: taking out auto login, adding a login button to the main menu
+		// else
+		// {
+		// 	/* They are NOT playing on newgrounds.com, no session id was found. We must start one manually, if we want to.
+		// 	 * Note: This will cause a new browser window to pop up where they can log in to newgrounds
+		// 	 */
+		// 	NG.core.requestLogin(onNGLogin);
+		// }
+	}
+	
+	/**
+	 * Attempts to log in to newgrounds by requesting a new session ID, only call if no session ID was found automatically
+	 * @param popupLauncher The function to call to open the login url, must be inside
+	 * a user input event or the popup blocker will block it.
+	 * @param onComplete A callback with the result of the connection.
+	 */
+	static public function login(?popupLauncher:(Void->Void)->Void, onComplete:ConnectionResult->Void)
+	{
+		trace("Logging in manually");
+		var onPending:Void->Void = null;
+		if (popupLauncher != null)
 		{
-			/* They are NOT playing on newgrounds.com, no session id was found. We must start one manually, if we want to.
-			 * Note: This will cause a new browser window to pop up where they can log in to newgrounds
-			 */
-			NG.core.requestLogin(onNGLogin);
+			onPending = function () popupLauncher(NG.core.openPassportUrl);
 		}
+		
+		var onSuccess:Void->Void = onNGLogin;
+		var onFail:Error->Void = null;
+		var onCancel:Void->Void = null;
+		if (onComplete != null)
+		{
+			onSuccess = function ()
+			{
+				onNGLogin();
+				onComplete(Success);
+			}
+			onFail = function (e) onComplete(Fail(e.message));
+			onCancel = function() onComplete(Cancelled);
+		}
+		
+		NG.core.requestLogin(onSuccess, onPending, onFail, onCancel);
+	}
+	
+	inline static public function cancelLogin():Void
+	{
+		NG.core.cancelLoginRequest();
 	}
 
-	function onNGLogin():Void
+	static function onNGLogin():Void
 	{
 		trace('logged in! user:${NG.core.user.name}');
-		isLoggedIn = true;
 		FlxG.save.data.sessionId = NG.core.sessionId;
-		// FlxG.save.flush();
+		FlxG.save.flush();
 		// Load medals then call onNGMedalFetch()
 		NG.core.requestMedals(onNGMedalFetch);
 
@@ -101,9 +173,17 @@ class NGio
 
 		ngDataLoaded.dispatch();
 	}
+	
+	static public function logout()
+	{
+		NG.core.logOut();
+		
+		FlxG.save.data.sessionId = null;
+		FlxG.save.flush();
+	}
 
 	// --- MEDALS
-	function onNGMedalFetch():Void
+	static function onNGMedalFetch():Void
 	{
 		/*
 			// Reading medal info
@@ -121,7 +201,7 @@ class NGio
 	}
 
 	// --- SCOREBOARDS
-	function onNGBoardsFetch():Void
+	static function onNGBoardsFetch():Void
 	{
 		/*
 			// Reading medal info
@@ -145,25 +225,7 @@ class NGio
 		// more info on scores --- http://www.newgrounds.io/help/components/#scoreboard-getscores
 	}
 
-	inline static public function postScore(score:Int = 0, song:String)
-	{
-		if (isLoggedIn)
-		{
-			for (id in NG.core.scoreBoards.keys())
-			{
-				var board = NG.core.scoreBoards.get(id);
-
-				if (song == board.name)
-				{
-					board.postScore(score, "Uhh meow?");
-				}
-
-				// trace('loaded scoreboard id:$id, name:${board.name}');
-			}
-		}
-	}
-
-	function onNGScoresFetch():Void
+	static function onNGScoresFetch():Void
 	{
 		scoreboardsLoaded = true;
 
@@ -181,20 +243,61 @@ class NGio
 
 		// NGio.scoreboardArray = NG.core.scoreBoards.get(8004).scores;
 	}
+	#end
 
-	inline static public function logEvent(event:String)
+	static public function logEvent(event:String)
 	{
+		#if newgrounds
 		NG.core.calls.event.logEvent(event).send();
 		trace('should have logged: ' + event);
+		#else
+			#if debug trace('event:$event - not logged, missing NG.io lib'); #end
+		#end
 	}
 
-	inline static public function unlockMedal(id:Int)
+	static public function unlockMedal(id:Int)
 	{
+		#if newgrounds
 		if (isLoggedIn)
 		{
 			var medal = NG.core.medals.get(id);
 			if (!medal.unlocked)
 				medal.sendUnlock();
 		}
+		#else
+			#if debug trace('medal:$id - not unlocked, missing NG.io lib'); #end
+		#end
 	}
+
+	static public function postScore(score:Int = 0, song:String)
+	{
+		#if newgrounds
+		if (isLoggedIn)
+		{
+			for (id in NG.core.scoreBoards.keys())
+			{
+				var board = NG.core.scoreBoards.get(id);
+
+				if (song == board.name)
+				{
+					board.postScore(score, "Uhh meow?");
+				}
+
+				// trace('loaded scoreboard id:$id, name:${board.name}');
+			}
+		}
+		#else
+			#if debug trace('Song:$song, Score:$score - not posted, missing NG.io lib'); #end
+		#end
+	}
+}
+
+enum ConnectionResult
+{
+	/** Log in successful */
+	Success;
+	/** Could not login */
+	Fail(msg:String);
+	/** User cancelled the login */
+	Cancelled;
 }
