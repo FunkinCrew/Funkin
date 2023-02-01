@@ -41,7 +41,9 @@
       "type": "AvoidStarImport"
     },
     {
-      "props": {},
+      "props": {
+        "severity": "IGNORE"
+      },
       "type": "AvoidTernaryOperator"
     },
     {
@@ -229,7 +231,8 @@
     },
     {
       "props": {
-        "ignoreReturnAssignments": false
+        "ignoreReturnAssignments": false,
+        "severity": "WARNING"
       },
       "type": "InnerAssignment"
     },
@@ -277,9 +280,16 @@
     },
     {
       "props": {
+        "format": "^[A-Z][a-zA-Z0-9]*$",
+        "tokens": ["ENUM"]
+      },
+      "type": "MemberName"
+    },
+    {
+      "props": {
         "ignoreExtern": true,
         "format": "^[a-z][a-zA-Z0-9]*$",
-        "tokens": []
+        "tokens": ["PUBLIC", "PRIVATE", "CLASS", "ABSTRACT", "TYPEDEF"]
       },
       "type": "MemberName"
     },
@@ -310,10 +320,10 @@
     {
       "props": {
         "modifiers": [
-          "MACRO",
-          "OVERRIDE",
           "PUBLIC_PRIVATE",
           "STATIC",
+          "MACRO",
+          "OVERRIDE",
           "INLINE",
           "DYNAMIC",
           "FINAL"
@@ -342,13 +352,15 @@
     },
     {
       "props": {
-        "max": 3
+        "max": 3,
+        "severity": "IGNORE"
       },
       "type": "NestedControlFlow"
     },
     {
       "props": {
-        "max": 1
+        "max": 1,
+        "severity": "IGNORE"
       },
       "type": "NestedForDepth"
     },
@@ -366,7 +378,7 @@
     },
     {
       "props": {
-        "option": "questionMark"
+        "option": "nullDefault"
       },
       "type": "NullableParameter"
     },
@@ -426,7 +438,7 @@
           "++",
           "--"
         ],
-        "option": "eol"
+        "option": "nl"
       },
       "type": "OperatorWrap"
     },
@@ -446,7 +458,9 @@
       "type": "ParameterNumber"
     },
     {
-      "props": {},
+      "props": {
+        "severity": "WARNING"
+      },
       "type": "PublicAccessor"
     },
     {
