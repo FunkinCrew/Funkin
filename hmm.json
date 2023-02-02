@@ -11,15 +11,15 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "d6100cc8",
-      "url": "https://github.com/EliteMasterEric/flixel"
+      "ref": "a629f9a5",
+      "url": "https://github.com/MasterEric/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "f107166",
-      "url": "https://github.com/EliteMasterEric/flixel-addons"
+      "ref": "752c3d7",
+      "url": "https://github.com/MasterEric/flixel-addons"
     },
     {
       "name": "flixel-ui",
@@ -42,7 +42,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "e5cf78d",
+      "ref": "50247e3",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
@@ -81,15 +81,15 @@
     },
     {
       "name": "lime",
-      "type": "git",
+      "type": "haxelib",
       "version": null
     },
     {
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "b2c18513",
-      "url": "https://github.com/EliteMasterEric/openfl"
+      "ref": "3fd5763c1",
+      "url": "https://github.com/MasterEric/openfl"
     },
     {
       "name": "polymod",
