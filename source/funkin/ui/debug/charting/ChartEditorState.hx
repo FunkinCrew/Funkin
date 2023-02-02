@@ -1106,8 +1106,7 @@ class ChartEditorState extends HaxeUIState
     playbarHead.height = 10;
     playbarHead.styleString = "padding-left: 0px; padding-right: 0px; border-left: 0px; border-right: 0px;";
 
-    playbarHead.onDragStart = function(_:DragEvent)
-    {
+    playbarHead.onDragStart = function(_:DragEvent) {
       playbarHeadDragging = true;
 
       // If we were dragging the playhead while the song was playing, resume playing.
@@ -1122,8 +1121,7 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
-    playbarHead.onDragEnd = function(_:DragEvent)
-    {
+    playbarHead.onDragEnd = function(_:DragEvent) {
       playbarHeadDragging = false;
 
       // Set the song position to where the playhead was moved to.
@@ -1139,7 +1137,7 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
-    // add(playbarHeadLayout);
+    add(playbarHeadLayout);
   }
 
   /**
@@ -1165,8 +1163,7 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemRedo', (event:MouseEvent) -> redoLastCommand());
 
-    addUIClickListener('menubarItemCopy', (event:MouseEvent) ->
-    {
+    addUIClickListener('menubarItemCopy', (event:MouseEvent) -> {
       // Doesn't use a command because it's not undoable.
       SongDataUtils.writeItemsToClipboard(
         {
@@ -1175,18 +1172,15 @@ class ChartEditorState extends HaxeUIState
         });
     });
 
-    addUIClickListener('menubarItemCut', (event:MouseEvent) ->
-    {
+    addUIClickListener('menubarItemCut', (event:MouseEvent) -> {
       performCommand(new CutItemsCommand(currentNoteSelection, currentEventSelection));
     });
 
-    addUIClickListener('menubarItemPaste', (event:MouseEvent) ->
-    {
+    addUIClickListener('menubarItemPaste', (event:MouseEvent) -> {
       performCommand(new PasteItemsCommand(scrollPositionInMs + playheadPositionInMs));
     });
 
-    addUIClickListener('menubarItemDelete', (event:MouseEvent) ->
-    {
+    addUIClickListener('menubarItemDelete', (event:MouseEvent) -> {
       if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
       {
         performCommand(new RemoveItemsCommand(currentNoteSelection, currentEventSelection));
@@ -1205,18 +1199,15 @@ class ChartEditorState extends HaxeUIState
       }
     });
 
-    addUIClickListener('menubarItemSelectAll', (event:MouseEvent) ->
-    {
+    addUIClickListener('menubarItemSelectAll', (event:MouseEvent) -> {
       performCommand(new SelectAllItemsCommand(currentNoteSelection, currentEventSelection));
     });
 
-    addUIClickListener('menubarItemSelectInverse', (event:MouseEvent) ->
-    {
+    addUIClickListener('menubarItemSelectInverse', (event:MouseEvent) -> {
       performCommand(new InvertSelectedItemsCommand(currentNoteSelection, currentEventSelection));
     });
 
-    addUIClickListener('menubarItemSelectNone', (event:MouseEvent) ->
-    {
+    addUIClickListener('menubarItemSelectNone', (event:MouseEvent) -> {
       performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
     });
 
@@ -1239,61 +1230,52 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemUserGuide', (event:MouseEvent) -> ChartEditorDialogHandler.openUserGuideDialog(this));
 
-    addUIChangeListener('menubarItemDownscroll', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemDownscroll', (event:UIEvent) -> {
       isViewDownscroll = event.value;
     });
     setUICheckboxSelected('menubarItemDownscroll', isViewDownscroll);
 
-    addUIChangeListener('menuBarItemThemeLight', (event:UIEvent) ->
-    {
+    addUIChangeListener('menuBarItemThemeLight', (event:UIEvent) -> {
       if (event.target.value) currentTheme = ChartEditorTheme.Light;
     });
     setUICheckboxSelected('menuBarItemThemeLight', currentTheme == ChartEditorTheme.Light);
 
-    addUIChangeListener('menuBarItemThemeDark', (event:UIEvent) ->
-    {
+    addUIChangeListener('menuBarItemThemeDark', (event:UIEvent) -> {
       if (event.target.value) currentTheme = ChartEditorTheme.Dark;
     });
     setUICheckboxSelected('menuBarItemThemeDark', currentTheme == ChartEditorTheme.Dark);
 
-    addUIChangeListener('menubarItemMetronomeEnabled', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemMetronomeEnabled', (event:UIEvent) -> {
       shouldPlayMetronome = event.value;
     });
     setUICheckboxSelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
 
-    addUIChangeListener('menubarItemPlayerHitsounds', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemPlayerHitsounds', (event:UIEvent) -> {
       hitsoundsEnabledPlayer = event.value;
     });
     setUICheckboxSelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
 
-    addUIChangeListener('menubarItemOpponentHitsounds', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemOpponentHitsounds', (event:UIEvent) -> {
       hitsoundsEnabledOpponent = event.value;
     });
     setUICheckboxSelected('menubarItemOpponentHitsounds', hitsoundsEnabledOpponent);
 
     var instVolumeLabel:Label = findComponent('menubarLabelVolumeInstrumental', Label);
-    addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) -> {
       var volume:Float = event.value / 100.0;
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       instVolumeLabel.text = 'Instrumental - ${Std.int(event.value)}%';
     });
 
     var vocalsVolumeLabel:Label = findComponent('menubarLabelVolumeVocals', Label);
-    addUIChangeListener('menubarItemVolumeVocals', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemVolumeVocals', (event:UIEvent) -> {
       var volume:Float = event.value / 100.0;
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
       vocalsVolumeLabel.text = 'Vocals - ${Std.int(event.value)}%';
     });
 
     var playbackSpeedLabel:Label = findComponent('menubarLabelPlaybackSpeed', Label);
-    addUIChangeListener('menubarItemPlaybackSpeed', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemPlaybackSpeed', (event:UIEvent) -> {
       var pitch = event.value * 2.0 / 100.0;
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
@@ -1302,37 +1284,29 @@ class ChartEditorState extends HaxeUIState
       playbackSpeedLabel.text = 'Playback Speed - ${Std.int(event.value * 100) / 100}x';
     });
 
-    addUIChangeListener('menubarItemToggleToolboxTools', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxTools', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT, event.value);
     });
     // setUICheckboxSelected('menubarItemToggleToolboxTools', true);
-    addUIChangeListener('menubarItemToggleToolboxNotes', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxNotes', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
     });
-    addUIChangeListener('menubarItemToggleToolboxEvents', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxEvents', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT, event.value);
     });
-    addUIChangeListener('menubarItemToggleToolboxDifficulty', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxDifficulty', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
     });
-    addUIChangeListener('menubarItemToggleToolboxMetadata', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxMetadata', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
     });
-    addUIChangeListener('menubarItemToggleToolboxCharacters', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxCharacters', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT, event.value);
     });
-    addUIChangeListener('menubarItemToggleToolboxPlayerPreview', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxPlayerPreview', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
     });
-    addUIChangeListener('menubarItemToggleToolboxOpponentPreview', (event:UIEvent) ->
-    {
+    addUIChangeListener('menubarItemToggleToolboxOpponentPreview', (event:UIEvent) -> {
       ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
     });
 
@@ -1736,8 +1710,7 @@ class ChartEditorState extends HaxeUIState
             // We build a list of columns to select.
             var columnStart:Int = Std.int(Math.min(cursorColumnBase, cursorColumnBaseStart));
             var columnEnd:Int = Std.int(Math.max(cursorColumnBase, cursorColumnBaseStart));
-            var columns:Array<Int> = [for (i in columnStart...(columnEnd + 1)) i].map(function(i:Int):Int
-            {
+            var columns:Array<Int> = [for (i in columnStart...(columnEnd + 1)) i].map(function(i:Int):Int {
               if (i >= eventColumn)
               {
                 // Don't invert the event column.
@@ -1824,16 +1797,14 @@ class ChartEditorState extends HaxeUIState
             // We clicked on the grid without moving the mouse.
 
             // Find the first note that is at the cursor position.
-            var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool
-            {
+            var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool {
               // If note.alive is false, the note is dead and awaiting recycling.
               return note.alive && FlxG.mouse.overlaps(note);
             });
             var highlightedEvent:ChartEditorEventSprite = null;
             if (highlightedNote == null)
             {
-              highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool
-              {
+              highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool {
                 return event.alive && FlxG.mouse.overlaps(event);
               });
             }
@@ -1931,16 +1902,14 @@ class ChartEditorState extends HaxeUIState
             // We clicked on the grid without moving the mouse.
 
             // Find the first note that is at the cursor position.
-            var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool
-            {
+            var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool {
               // If note.alive is false, the note is dead and awaiting recycling.
               return note.alive && FlxG.mouse.overlaps(note);
             });
             var highlightedEvent:ChartEditorEventSprite = null;
             if (highlightedNote == null)
             {
-              highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool
-              {
+              highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool {
                 // If event.alive is false, the event is dead and awaiting recycling.
                 return event.alive && FlxG.mouse.overlaps(event);
               });
@@ -2025,16 +1994,14 @@ class ChartEditorState extends HaxeUIState
           // We right clicked on the grid.
 
           // Find the first note that is at the cursor position.
-          var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool
-          {
+          var highlightedNote:ChartEditorNoteSprite = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool {
             // If note.alive is false, the note is dead and awaiting recycling.
             return note.alive && FlxG.mouse.overlaps(note);
           });
           var highlightedEvent:ChartEditorEventSprite = null;
           if (highlightedNote == null)
           {
-            highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool
-            {
+            highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool {
               // If event.alive is false, the event is dead and awaiting recycling.
               return event.alive && FlxG.mouse.overlaps(event);
             });
@@ -3036,8 +3003,7 @@ class ChartEditorState extends HaxeUIState
   function postLoadInstrumental()
   {
     // Prevent the time from skipping back to 0 when the song ends.
-    audioInstTrack.onComplete = function()
-    {
+    audioInstTrack.onComplete = function() {
       if (audioInstTrack != null) audioInstTrack.pause();
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.pause();
     };
@@ -3205,13 +3171,11 @@ class ChartEditorState extends HaxeUIState
 
   function sortChartData()
   {
-    currentSongChartNoteData.sort(function(a:SongNoteData, b:SongNoteData):Int
-    {
+    currentSongChartNoteData.sort(function(a:SongNoteData, b:SongNoteData):Int {
       return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
     });
 
-    currentSongChartEventData.sort(function(a:SongEventData, b:SongEventData):Int
-    {
+    currentSongChartEventData.sort(function(a:SongEventData, b:SongEventData):Int {
       return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
     });
   }
@@ -3321,13 +3285,11 @@ class ChartEditorState extends HaxeUIState
     }
 
     // Prompt and save.
-    var onSave:Array<String>->Void = (paths:Array<String>) ->
-    {
+    var onSave:Array<String>->Void = (paths:Array<String>) -> {
       trace('Successfully exported files.');
     };
 
-    var onCancel:Void->Void = () ->
-    {
+    var onCancel:Void->Void = () -> {
       trace('Export cancelled.');
     };
 
