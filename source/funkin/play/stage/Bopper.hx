@@ -5,6 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.stage.StageProp;
 
 typedef AnimationFrameCallback = String->Int->Int->Void;
 typedef AnimationFinishedCallback = String->Void;
@@ -13,7 +14,7 @@ typedef AnimationFinishedCallback = String->Void;
  * A Bopper is a stage prop which plays a dance animation.
  * Y'know, a thingie that bops. A bopper.
  */
-class Bopper extends FlxSprite implements IPlayStateScriptedClass
+class Bopper extends StageProp implements IPlayStateScriptedClass
 {
   /**
    * The bopper plays the dance animation once every `danceEvery` beats.
@@ -281,8 +282,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
     applyAnimationOffsets(correctName);
 
     canPlayOtherAnims = false;
-    forceAnimationTimer.start(duration, (timer) ->
-    {
+    forceAnimationTimer.start(duration, (timer) -> {
       canPlayOtherAnims = true;
     }, 1);
   }

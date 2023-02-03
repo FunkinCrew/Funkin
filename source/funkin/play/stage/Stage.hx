@@ -11,8 +11,11 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData.StageDataCharacter;
 import funkin.play.stage.StageData.StageDataParser;
+import funkin.play.stage.StageProp;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
+
+typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 
 /**
  * A Stage is a group of objects rendered in the PlayState.
@@ -28,7 +31,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
   public var camZoom:Float = 1.0;
 
-  var namedProps:Map<String, FlxSprite> = new Map<String, FlxSprite>();
+  var namedProps:Map<String, StageProp> = new Map<String, StageProp>();
   var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
   var boppers:Array<Bopper> = new Array<Bopper>();
 
@@ -66,7 +69,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     debugIconGroup = new FlxSpriteGroup();
     debugIconGroup.visible = false;
     debugIconGroup.zIndex = 1000000;
-    add(debugIconGroup);
+    // add(debugIconGroup);
   }
 
   public function resetStage():Void
@@ -93,7 +96,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     for (dataProp in _data.props)
     {
       // Fetch the prop.
-      var prop:FlxSprite = getNamedProp(dataProp.name);
+      var prop:StageProp = getNamedProp(dataProp.name);
 
       if (prop != null)
       {
@@ -125,14 +128,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
       var isAnimated = dataProp.animations.length > 0;
 
-      var propSprite:FlxSprite;
+      var propSprite:StageProp;
       if (dataProp.danceEvery != 0)
       {
         propSprite = new Bopper(dataProp.danceEvery);
       }
       else
       {
-        propSprite = new FlxSprite();
+        propSprite = new StageProp();
       }
 
       if (isAnimated)
@@ -239,11 +242,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * @param name (Optional) A unique name for the sprite.
    *   You can call `getNamedProp(name)` to retrieve it later.
    */
-  public function addProp(prop:FlxSprite, ?name:String = null)
+  public function addProp(prop:StageProp, ?name:String = null)
   {
     if (name != null)
     {
       namedProps.set(name, prop);
+      prop.name = name;
     }
     this.add(prop);
   }
@@ -255,6 +259,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   {
     boppers.push(bopper);
     this.addProp(bopper, name);
+    bopper.name = name;
   }
 
   /**
@@ -268,8 +273,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
   public function setShader(shader:FlxShader)
   {
-    forEachAlive(function(prop:FlxSprite)
-    {
+    forEachAlive(function(prop:FlxSprite) {
       prop.shader = shader;
     });
   }
@@ -439,7 +443,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * @param name The name of the prop to retrieve.
    * @return The corresponding FlxSprite.
    */
-  public function getNamedProp(name:String):FlxSprite
+  public function getNamedProp(name:String):StageProp
   {
     return this.namedProps.get(name);
   }

@@ -1,6 +1,8 @@
 package funkin.ui.haxeui;
 
 import haxe.ui.RuntimeComponentBuilder;
+import haxe.ui.components.CheckBox;
+import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.core.Component;
 import haxe.ui.events.MouseEvent;
 
@@ -99,6 +101,49 @@ class HaxeUISubState extends MusicBeatSubstate
     {
       target.onClick = callback;
     }
+  }
+
+  /**
+   * Set the value of a HaxeUI component.
+   * Usually modifies the text of a label or value of a text field.
+   */
+  function setUIValue<T>(key:String, value:T):T
+  {
+    var target:Component = findComponent(key);
+    if (target == null)
+    {
+      // Gracefully handle the case where the item can't be located.
+      trace('WARN: Could not locate menu item: $key');
+      return value;
+    }
+    else
+    {
+      return target.value = value;
+    }
+  }
+
+  /**
+   * Set the value of a HaxeUI checkbox,
+   * since that's on 'selected' instead of 'value'.
+   */
+  public function setUICheckboxSelected<T>(key:String, value:Bool):Bool
+  {
+    var targetA:CheckBox = findComponent(key, CheckBox);
+
+    if (targetA != null)
+    {
+      return targetA.selected = value;
+    }
+
+    var targetB:MenuCheckBox = findComponent(key, MenuCheckBox);
+    if (targetB != null)
+    {
+      return targetB.selected = value;
+    }
+
+    // Gracefully handle the case where the item can't be located.
+    trace('WARN: Could not locate check box: $key');
+    return value;
   }
 
   public function findComponent<T:Component>(criteria:String = null, type:Class<T> = null, recursive:Null<Bool> = null, searchType:String = "id"):Null<T>

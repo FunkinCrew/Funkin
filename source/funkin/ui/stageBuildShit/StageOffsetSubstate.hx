@@ -4,9 +4,12 @@ import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
 import funkin.play.PlayState;
+import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData;
+import funkin.play.stage.StageProp;
 import funkin.ui.haxeui.HaxeUISubState;
 import haxe.ui.RuntimeComponentBuilder;
+import haxe.ui.containers.ListView;
 import haxe.ui.core.Component;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -46,10 +49,33 @@ class StageOffsetSubstate extends HaxeUISubState
     // uiStuff.cameras = [PlayState.instance.camHUD];
     // btn.cameras = [PlayState.instance.camHUD];
 
+    var layerList:ListView = findComponent("prop-layers");
+
     for (thing in PlayState.instance.currentStage)
     {
+      var prop:StageProp = cast thing;
+      if (prop != null && prop.name != null)
+      {
+        layerList.dataSource.add(
+          {
+            item: prop.name,
+            complete: true
+          });
+      }
+      //
+      //
+      //
+      //
+      //
+
       FlxMouseEvent.add(thing, spr -> {
+        var dyn:StageProp = cast spr;
+        if (dyn != null && dyn.name != null) trace(dyn.name);
+
         char = cast thing;
+
+        // trace(thing);
+        // trace(spr);
         trace("JUST PRESSED!");
         sprOld.x = thing.x;
         sprOld.y = thing.y;
@@ -114,11 +140,6 @@ class StageOffsetSubstate extends HaxeUISubState
     CoolUtil.mouseCamDrag();
 
     if (FlxG.keys.pressed.CONTROL) CoolUtil.mouseWheelZoom();
-
-    if (FlxG.mouse.wheel != 0)
-    {
-      FlxG.camera.zoom += FlxG.mouse.wheel * 0.1;
-    }
 
     if (FlxG.keys.justPressed.Y)
     {

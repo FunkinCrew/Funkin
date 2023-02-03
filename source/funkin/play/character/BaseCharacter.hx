@@ -144,6 +144,7 @@ class BaseCharacter extends Bopper
     else
     {
       this.characterName = _data.name;
+      this.name = _data.name;
       this.singTimeCrochet = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
