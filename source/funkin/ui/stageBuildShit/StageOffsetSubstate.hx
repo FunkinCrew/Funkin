@@ -11,6 +11,7 @@ import funkin.ui.haxeui.HaxeUISubState;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.containers.ListView;
 import haxe.ui.core.Component;
+import haxe.ui.events.UIEvent;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
@@ -59,9 +60,11 @@ class StageOffsetSubstate extends HaxeUISubState
         layerList.dataSource.add(
           {
             item: prop.name,
-            complete: true
+            complete: true,
+            id: 'swag'
           });
       }
+
       //
       //
       //
@@ -70,18 +73,10 @@ class StageOffsetSubstate extends HaxeUISubState
 
       FlxMouseEvent.add(thing, spr -> {
         var dyn:StageProp = cast spr;
-        if (dyn != null && dyn.name != null) trace(dyn.name);
-
-        char = cast thing;
-
-        // trace(thing);
-        // trace(spr);
-        trace("JUST PRESSED!");
-        sprOld.x = thing.x;
-        sprOld.y = thing.y;
-
-        mosPosOld.x = FlxG.mouse.x;
-        mosPosOld.y = FlxG.mouse.y;
+        if (dyn != null && dyn.name != null)
+        {
+          if (FlxG.keys.pressed.CONTROL) selectProp(dyn.name);
+        }
       }, null, spr -> {
         // ID tag is to see if currently overlapping hold basically!, a bit more reliable than checking transparency!
         // used for bug where you can click, and if you click on NO sprite, it snaps the thing to position! unintended!
@@ -103,10 +98,54 @@ class StageOffsetSubstate extends HaxeUISubState
     }
   }
 
+  function selectProp(propName:String)
+  {
+    char = cast PlayState.instance.currentStage.getNamedProp(propName);
+
+    if (char == null) return;
+
+    // trace(thing);
+    // trace(spr);
+    trace("JUST PRESSED!");
+    sprOld.x = char.x;
+    sprOld.y = char.y;
+
+    mosPosOld.x = FlxG.mouse.x;
+    mosPosOld.y = FlxG.mouse.y;
+
+    setUIValue('propXPos', char.x);
+    setUIValue('propYPos', char.y);
+  }
+
   function setupUIListeners()
   {
     addUIClickListener('lol', saveCharacterCompile);
     addUIClickListener('saveAs', saveStageFileRef);
+
+    // addUIChangeListener('complete', (event:UIEvent) -> {
+    //   trace(event.value);
+    //   trace(event.type);
+    //   trace(event.target);
+    //   trace(event.data);
+    // });
+
+    addUIChangeListener('propXPos', (event:UIEvent) -> {
+      if (char != null) char.x = event.value;
+    });
+
+    addUIChangeListener('propYPos', (event:UIEvent) -> {
+      if (char != null) char.y = event.value;
+    });
+
+    addUIChangeListener('prop-layers', (event:UIEvent) -> {
+      trace(event.value);
+      trace(event.type);
+      trace(event.target);
+      trace(event.data);
+      trace(event.relatedEvent);
+    });
+
+    setUICheckboxSelected('complete', false);
   }
 
   var mosPosOld:FlxPoint = new FlxPoint();
@@ -118,6 +157,12 @@ class StageOffsetSubstate extends HaxeUISubState
   override function update(elapsed:Float)
   {
     super.update(elapsed);
+
+    if (char != null)
+    {
+      setUIValue('propXPos', char.x);
+      setUIValue('propYPos', char.y);
+    }
 
     if (char != null && char.ID == 1 && FlxG.mouse.pressed)
     {

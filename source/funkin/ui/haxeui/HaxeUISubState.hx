@@ -5,6 +5,7 @@ import haxe.ui.components.CheckBox;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.core.Component;
 import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
 
 class HaxeUISubState extends MusicBeatSubstate
 {
@@ -100,6 +101,23 @@ class HaxeUISubState extends MusicBeatSubstate
     else
     {
       target.onClick = callback;
+    }
+  }
+
+  /**
+   * Add an onChange listener to a HaxeUI input component such as a slider or text field.
+   */
+  function addUIChangeListener(key:String, callback:UIEvent->Void)
+  {
+    var target:Component = findComponent(key);
+    if (target == null)
+    {
+      // Gracefully handle the case where the item can't be located.
+      trace('WARN: Could not locate menu item: $key');
+    }
+    else
+    {
+      target.onChange = callback;
     }
   }
 
