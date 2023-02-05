@@ -80,12 +80,11 @@ You should have everything ready for compiling the game! Follow the guide below 
 
 Once you have all those installed, it's pretty easy to compile the game. You just need to run 'lime test html5 -debug' in the root of the project to build and run the HTML5 version. (command prompt navigation guide can be found here: [https://ninjamuffin99.newgrounds.com/news/post/1090480](https://ninjamuffin99.newgrounds.com/news/post/1090480))
 
-To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved. For Linux, you only need to open a terminal in the project directory and run 'lime test linux -debug' and then run the executable file in export/release/linux/bin. I'll add instructions for Mac once I get my hands on a macOS device. For Windows, you need to install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/?q=Build+Tools) (you'll need to scroll down a bit to find the download). While installing, don't click on any of the options to install workloads. Instead, go to the individual components tab and choose the following:
+To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved. For Linux, you only need to open a terminal in the project directory and run `lime test linux -debug`, then you can run the executable file in export/debug/linux/bin. For macOS, open a terminal window and run `xcode-select --install` and press install on the prompt. Once it finishes, you can open a terminal in the project directory and run `lime test mac -debug`, then you can run the executable file in export/debug/macos/bin. For Windows, you need to install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/?q=Build+Tools) (you'll need to scroll down a bit to find the download). While installing, don't click on any of the options to install workloads. Instead, go to the individual components tab and choose the following:
 * MSVC C++ x64/x86 build tools (Tested with `MSVC v143 - VS 2022 C++ x64/x86 build tools (v14.33-17.3)`)
 * Windows SDK (Tested with `Windows 10 SDK (10.0.19041.0)`)
 
-This will install about 4GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever, even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
-As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
+This will install about 4GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever, even on a higher end PC), you can run FNF from the .exe file under export\debug\windows\bin.
 
 ### Additional guides
 
