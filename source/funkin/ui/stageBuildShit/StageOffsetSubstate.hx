@@ -7,6 +7,7 @@ import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData;
 import funkin.play.stage.StageProp;
+import funkin.shaderslmfao.StrokeShader;
 import funkin.ui.haxeui.HaxeUISubState;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.containers.ListView;
@@ -19,6 +20,8 @@ import openfl.net.FileReference;
 class StageOffsetSubstate extends HaxeUISubState
 {
   var uiStuff:Component;
+
+  var outlineShader:StrokeShader;
 
   static final STAGE_EDITOR_LAYOUT = Paths.ui('stage-editor/stage-editor-view');
 
@@ -49,6 +52,8 @@ class StageOffsetSubstate extends HaxeUISubState
     component.cameras = [PlayState.instance.camHUD];
     // uiStuff.cameras = [PlayState.instance.camHUD];
     // btn.cameras = [PlayState.instance.camHUD];
+
+    outlineShader = new StrokeShader(0xFFFFFFFF, 4, 4);
 
     var layerList:ListView = findComponent("prop-layers");
 
@@ -100,9 +105,13 @@ class StageOffsetSubstate extends HaxeUISubState
 
   function selectProp(propName:String)
   {
+    if (char != null && char.shader == outlineShader) char.shader = null;
+
     char = cast PlayState.instance.currentStage.getNamedProp(propName);
 
     if (char == null) return;
+
+    char.shader = outlineShader;
 
     // trace(thing);
     // trace(spr);
