@@ -9,6 +9,7 @@ import funkin.play.stage.StageData;
 import funkin.play.stage.StageProp;
 import funkin.shaderslmfao.StrokeShader;
 import funkin.ui.haxeui.HaxeUISubState;
+import funkin.ui.stageBuildShit.StageEditorCommand;
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.containers.ListView;
 import haxe.ui.core.Component;
@@ -17,6 +18,16 @@ import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
 
+/**
+ * A substate dedicated to allowing the user to create and edit stages/props
+ * Built with HaxeUI for use by both developers and modders.
+ *
+ * All functionality is kept within this file to ruin my own sanity.
+ * 
+ * @author ninjamuffin99
+ */
+// Give other classes access to private instance fields
+@:allow(funkin.ui.stageBuildShit.StageEditorCommand)
 class StageOffsetSubstate extends HaxeUISubState
 {
   var uiStuff:Component;
@@ -107,9 +118,11 @@ class StageOffsetSubstate extends HaxeUISubState
   {
     if (char != null && char.shader == outlineShader) char.shader = null;
 
-    char = cast PlayState.instance.currentStage.getNamedProp(propName);
+    var proptemp:FlxSprite = cast PlayState.instance.currentStage.getNamedProp(propName);
 
-    if (char == null) return;
+    if (proptemp == null) return;
+
+    performCommand(new SelectPropCommand(proptemp));
 
     char.shader = outlineShader;
 
@@ -139,11 +152,21 @@ class StageOffsetSubstate extends HaxeUISubState
     // });
 
     addUIChangeListener('propXPos', (event:UIEvent) -> {
-      if (char != null) char.x = event.value;
+      if (char != null)
+      {
+        char.x = event.value;
+        // var xDiff = event.value - char.x;
+        // performCommand(new MovePropCommand(xDiff, 0));
+      }
     });
 
     addUIChangeListener('propYPos', (event:UIEvent) -> {
-      if (char != null) char.y = event.value;
+      if (char != null)
+      {
+        char.y = event.value;
+        // var yDiff = event.value - char.y;
+        // performCommand(new MovePropCommand(0, yDiff));
+      }
     });
 
     addUIChangeListener('prop-layers', (event:UIEvent) -> {
@@ -160,7 +183,7 @@ class StageOffsetSubstate extends HaxeUISubState
   var mosPosOld:FlxPoint = new FlxPoint();
   var sprOld:FlxPoint = new FlxPoint();
 
-  var char:FlxSprite = null;
+  private var char:FlxSprite = null;
   var overlappingChar:Bool = false;
 
   override function update(elapsed:Float)
@@ -183,10 +206,10 @@ class StageOffsetSubstate extends HaxeUISubState
     {
       var zoomShitLol:Float = 2 / FlxG.camera.zoom;
 
-      if (FlxG.keys.justPressed.LEFT) char.x -= zoomShitLol;
-      if (FlxG.keys.justPressed.RIGHT) char.x += zoomShitLol;
-      if (FlxG.keys.justPressed.UP) char.y -= zoomShitLol;
-      if (FlxG.keys.justPressed.DOWN) char.y += zoomShitLol;
+      if (FlxG.keys.justPressed.LEFT) performCommand(new MovePropCommand(-zoomShitLol, 0));
+      if (FlxG.keys.justPressed.RIGHT) performCommand(new MovePropCommand(zoomShitLol, 0));
+      if (FlxG.keys.justPressed.UP) performCommand(new MovePropCommand(0, -zoomShitLol));
+      if (FlxG.keys.justPressed.DOWN) performCommand(new MovePropCommand(0, zoomShitLol));
     }
 
     FlxG.mouse.visible = true;
@@ -194,6 +217,8 @@ class StageOffsetSubstate extends HaxeUISubState
     CoolUtil.mouseCamDrag();
 
     if (FlxG.keys.pressed.CONTROL) CoolUtil.mouseWheelZoom();
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Z) undoLastCommand();
 
     if (FlxG.keys.justPressed.Y)
     {
@@ -211,6 +236,38 @@ class StageOffsetSubstate extends HaxeUISubState
       FlxG.mouse.visible = false;
       close();
     }
+  }
+
+  var commandStack:Array<StageEditorCommand> = [];
+  var curOperation:Int = -1; // -1 at default, arrays start at 0
+
+  function performCommand(command:StageEditorCommand):Void
+  {
+    command.execute(this);
+    commandStack.push(command);
+    curOperation++;
+    if (curOperation < commandStack.length - 1) commandStack = commandStack.slice(0, curOperation + 1);
+  }
+
+  function undoCommand(command:StageEditorCommand):Void
+  {
+    command.undo(this);
+    curOperation--;
+  }
+
+  function undoLastCommand():Void
+  {
+    trace(curOperation);
+    trace(commandStack.length);
+    // trace(commandStack[commandStack.length]);
+    if (curOperation == -1 || commandStack.length == 0)
+    {
+      trace('no actions to undo');
+      return;
+    }
+
+    var command = commandStack[curOperation];
+    undoCommand(command);
   }
 
   var _file:FileReference;
