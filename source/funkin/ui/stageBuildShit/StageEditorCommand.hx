@@ -61,7 +61,12 @@ class SelectPropCommand implements StageEditorCommand
 
   public function undo(state:StageOffsetSubstate):Void
   {
+    var funnyShader = state.char.shader;
+    if (state.char != null) state.char.shader = null;
     state.char = this.prevProp;
+
+    // I KNOW, TWO DAMN NULL CHECKS IN A SINGLE FUNCTION! FUK U
+    if (state.char != null) state.char.shader = funnyShader;
   }
 
   public function toString():String
