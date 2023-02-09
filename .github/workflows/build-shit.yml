@@ -59,7 +59,7 @@ jobs:
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
-          lix run lime build windows -debug --times
+          yarn lix run lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
