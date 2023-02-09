@@ -55,6 +55,7 @@ jobs:
             .haxelib/
             export/debug/windows/haxe/
             export/debug/windows/obj/
+      - run: npx lix download
       - name: Build game
         run: |
           npx lix lime build windows -debug --times
