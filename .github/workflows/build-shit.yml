@@ -55,10 +55,10 @@ jobs:
             .haxelib/
             export/debug/windows/haxe/
             export/debug/windows/obj/
-      - run: npx lix download
+      - run: lix download
       - name: Build game
         run: |
-          npx lix lime build windows -debug --times
+          lix lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
