@@ -1,0 +1,4 @@
+# @install: lix --silent download "haxelib:/hxcpp#4.2.1" into hxcpp/4.2.1/haxelib
+# @run: haxelib run-dir hxcpp "${HAXE_LIBCACHE}/hxcpp/4.2.1/haxelib"
+-cp ${HAXE_LIBCACHE}/hxcpp/4.2.1/haxelib/
+-D hxcpp=4.2.1

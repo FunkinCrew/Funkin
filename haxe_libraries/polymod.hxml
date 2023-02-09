@@ -1,0 +1,4 @@
+# @install: lix --silent download "gh://github.com/larsiusprime/polymod#4e5b4b32fa2aff7a3a70cdf91fd7b0d2795fc799" into polymod/1.7.0/github/4e5b4b32fa2aff7a3a70cdf91fd7b0d2795fc799
+-lib thx.semver
+-cp ${HAXE_LIBCACHE}/polymod/1.7.0/github/4e5b4b32fa2aff7a3a70cdf91fd7b0d2795fc799/
+-D polymod=1.7.0

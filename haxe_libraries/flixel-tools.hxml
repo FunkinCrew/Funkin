@@ -1,0 +1,4 @@
+# @install: lix --silent download "haxelib:/flixel-tools#1.5.1" into flixel-tools/1.5.1/haxelib
+# @run: haxelib run-dir flixel-tools "${HAXE_LIBCACHE}/flixel-tools/1.5.1/haxelib"
+-cp ${HAXE_LIBCACHE}/flixel-tools/1.5.1/haxelib/
+-D flixel-tools=1.5.1

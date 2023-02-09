@@ -1,0 +1,4 @@
+# @install: lix --silent download "gh://github.com/haxeui/haxeui-core#e5cf78d71bbfaef799088a0b0ab162a38e4a7654" into haxeui-core/1.4.0/github/e5cf78d71bbfaef799088a0b0ab162a38e4a7654
+# @run: haxelib run-dir haxeui-core "${HAXE_LIBCACHE}/haxeui-core/1.4.0/github/e5cf78d71bbfaef799088a0b0ab162a38e4a7654"
+-cp ${HAXE_LIBCACHE}/haxeui-core/1.4.0/github/e5cf78d71bbfaef799088a0b0ab162a38e4a7654/
+-D haxeui-core=1.4.0

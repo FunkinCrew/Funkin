@@ -1,0 +1,4 @@
+# @install: lix --silent download "haxelib:/hxcpp-debug-server#1.2.4" into hxcpp-debug-server/1.2.4/haxelib
+-cp ${HAXE_LIBCACHE}/hxcpp-debug-server/1.2.4/haxelib/
+-D hxcpp-debug-server=1.2.4
+--macro hxcpp.debug.jsonrpc.Macro.injectServer()
