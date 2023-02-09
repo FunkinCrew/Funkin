@@ -46,7 +46,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-haxeshit
       - name: Restore existing build cache for faster compilation
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
+        id: cache-windows-shit
         with:
           # wha?
           key: cache-build-win
@@ -54,8 +55,6 @@ jobs:
             .haxelib/
             export/debug/windows/haxe/
             export/debug/windows/obj/
-          restore-keys: |
-            cache-build-mac
       - name: Build game
         run: |
           npx lix lime build windows -debug --times
@@ -66,12 +65,10 @@ jobs:
           build-dir: export/debug/windows/bin
           target: win
       - name: Uploading new cache
-        uses: actions/cache@v3
+        uses: actions/cache/save@v3
         with:
-          key: cache-build-win
+          key: ${{ steps.cache-windows-shit.outputs.cache-primary-key }}
           path: |
             .haxelib/
-            export/debug/macos/haxe/
-            export/debug/macos/obj/
-          restore-keys: |
-            cache-build-debug
+            export/debug/windows/haxe/
+            export/debug/windows/obj/
