@@ -56,9 +56,10 @@ jobs:
             export/debug/windows/haxe/
             export/debug/windows/obj/
             
-      - run: |
-        yarn add lix
-        yarn lix download
+      - name: dipshit lix yarn
+        run: |
+          yarn add lix
+          yarn lix download
       - name: Build game
         run: |
           lix lime build windows -debug --times
