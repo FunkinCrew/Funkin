@@ -3,9 +3,9 @@ description: "sets up haxe shit, using HMM!"
 runs:
   using: "composite"
   steps:
-      - uses: krdlab/setup-haxe@v1.1.6
+      - uses: krdlab/setup-haxe@v1.4.0
         with:
-          haxe-version: 4.2.4
+          haxe-version: 4.2.5
       - name: Config haxelib
         run: |
           haxelib config
@@ -13,6 +13,6 @@ runs:
       - name: Installing Haxe lol
         run: |
           haxe -version
-          haxelib --global install hmm
-          haxelib --global run hmm install --quiet
+          haxelib install hmm
+          haxelib run hmm install --quiet
         shell: bash
