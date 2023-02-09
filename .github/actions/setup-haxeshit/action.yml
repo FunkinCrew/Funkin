@@ -8,7 +8,3 @@ runs:
           lix-version: 15.8.9 # optional
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-      - name: Config haxelib
-        run: |
-          haxelib config
-        shell: bash
