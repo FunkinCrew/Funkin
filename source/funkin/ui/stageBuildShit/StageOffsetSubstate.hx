@@ -81,19 +81,18 @@ class StageOffsetSubstate extends HaxeUISubState
           });
       }
 
-      //
-      //
-      //
-      //
-      //
-
       FlxMouseEvent.add(thing, spr -> {
+        // onMouseClick
+
+        trace(spr);
+
         var dyn:StageProp = cast spr;
         if (dyn != null && dyn.name != null)
         {
-          if (FlxG.keys.pressed.CONTROL) selectProp(dyn.name);
+          if (FlxG.keys.pressed.CONTROL && char != dyn) selectProp(dyn.name);
         }
       }, null, spr -> {
+        // onMouseHover
         // ID tag is to see if currently overlapping hold basically!, a bit more reliable than checking transparency!
         // used for bug where you can click, and if you click on NO sprite, it snaps the thing to position! unintended!
 
@@ -108,8 +107,13 @@ class StageOffsetSubstate extends HaxeUISubState
           spr.alpha = 1;
         }
       }, spr -> {
-        spr.ID = 0;
-        spr.alpha = 1;
+        // onOut
+        // this if statement is for when u move ur mouse too fast... figure out how to proper lock it to mouse!
+        if (char != spr)
+        {
+          spr.ID = 0;
+          spr.alpha = 1;
+        }
       });
     }
   }
@@ -190,16 +194,41 @@ class StageOffsetSubstate extends HaxeUISubState
   {
     super.update(elapsed);
 
+    if (FlxG.keys.justPressed.O)
+    {
+      trace("COMMANDS!!!");
+      trace("-/-/-/-/-/-");
+      for (ind => cmd in commandStack)
+      {
+        var output:String = cmd.toString();
+        if (curOperation == ind) output += " <---";
+
+        trace(output);
+      }
+      trace("-/-/-/-/-/-");
+    }
+
     if (char != null)
     {
       setUIValue('propXPos', char.x);
       setUIValue('propYPos', char.y);
     }
 
-    if (char != null && char.ID == 1 && FlxG.mouse.pressed)
+    if (char != null && char.ID == 1)
     {
-      char.x = sprOld.x - (mosPosOld.x - FlxG.mouse.x);
-      char.y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
+      if (FlxG.mouse.pressed)
+      {
+        char.x = sprOld.x - (mosPosOld.x - FlxG.mouse.x);
+        char.y = sprOld.y - (mosPosOld.y - FlxG.mouse.y);
+      }
+
+      if (FlxG.mouse.justReleased)
+      {
+        trace("LOL");
+        var xDiff = (mosPosOld.x - FlxG.mouse.x);
+        var yDiff = (mosPosOld.y - FlxG.mouse.y);
+        performCommand(new MovePropCommand(-xDiff, -yDiff, false));
+      }
     }
 
     if (char != null)

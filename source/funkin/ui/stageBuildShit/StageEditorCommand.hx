@@ -18,17 +18,22 @@ class MovePropCommand implements StageEditorCommand
 {
   var xDiff:Float;
   var yDiff:Float;
+  var realMove:Bool; // if needs a move!
 
-  public function new(xDiff:Float = 0, yDiff:Float = 0)
+  public function new(xDiff:Float = 0, yDiff:Float = 0, ?realMove:Bool = true)
   {
     this.xDiff = xDiff;
     this.yDiff = yDiff;
+    this.realMove = realMove;
   }
 
   public function execute(state:StageOffsetSubstate):Void
   {
-    state.char.x += xDiff;
-    state.char.y += yDiff;
+    if (realMove)
+    {
+      state.char.x += xDiff;
+      state.char.y += yDiff;
+    }
   }
 
   public function undo(state:StageOffsetSubstate):Void
@@ -39,7 +44,7 @@ class MovePropCommand implements StageEditorCommand
 
   public function toString():String
   {
-    return "Moved char";
+    return "Moved char " + xDiff + " " + yDiff + " " + realMove;
   }
 }
 
