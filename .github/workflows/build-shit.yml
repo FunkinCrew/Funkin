@@ -55,7 +55,10 @@ jobs:
             .haxelib/
             export/debug/windows/haxe/
             export/debug/windows/obj/
-      - run: lix download
+            
+      - run: |
+      yarn add lix
+      yarn lix download
       - name: Build game
         run: |
           lix lime build windows -debug --times
