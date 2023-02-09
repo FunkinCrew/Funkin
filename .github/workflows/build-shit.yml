@@ -56,13 +56,10 @@ jobs:
             export/debug/windows/haxe/
             export/debug/windows/obj/
             
-      - name: dipshit lix yarn
-        run: |
-          yarn add lix
-          yarn lix download
+      - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
-          yarn lix run lime build windows -debug --times
+          lix run lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
