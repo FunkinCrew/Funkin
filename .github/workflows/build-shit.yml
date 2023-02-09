@@ -1,11 +1,12 @@
 name: build-upload
-on: 
+on:
+  workflow_dispatch:
   schedule:
     - cron: '30 17 * * *'
   push:
     branches:
       - "master"
-  workflow_dispatch:
+  
 jobs:
   check_date:
     runs-on: ubuntu-latest
@@ -44,6 +45,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-haxeshit
+      - name: Restore existing build cache for faster compilation
+        uses: actions/cache@v3
+        with:
+          # wha?
+          key: cache-build-win
+          path: |
+            .haxelib/
+            export/debug/windows/haxe/
+            export/debug/windows/obj/
+          restore-keys: |
+            cache-build-mac
       - name: Build game
         run: |
           haxelib run lime build windows -debug --times
@@ -53,38 +65,13 @@ jobs:
           butler-key: ${{ secrets.BUTLER_API_KEY}}
           build-dir: export/debug/windows/bin
           target: win
-  create-nightly-mac:
-    needs: check_date
-    if: ${{ needs.check_date.outputs.should_run != 'false'}}
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-haxeshit
-      - name: Build game?
-        run: |
-          haxelib run lime build mac -debug --times
-          ls
-      - uses: ./.github/actions/upload-itch
+      - name: Uploading new cache
+        uses: actions/cache@v3
         with:
-          butler-key: ${{ secrets.BUTLER_API_KEY}}
-          build-dir: export/debug/macos/bin
-          target: mac
-  create-nightly-linux:
-    needs: check_date
-    if: ${{ needs.check_date.outputs.should_run != 'false'}}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-haxeshit
-      - name: Setting up Linux
-        run: |
-          haxelib run lime setup linux
-      - name: Build game?
-        run: |
-          haxelib run lime build linux -debug --times
-          ls
-      - uses: ./.github/actions/upload-itch
-        with:
-          butler-key: ${{ secrets.BUTLER_API_KEY}}
-          build-dir: export/debug/linux/bin
-          target: linux
+          key: cache-build-win
+          path: |
+            .haxelib/
+            export/debug/macos/haxe/
+            export/debug/macos/obj/
+          restore-keys: |
+            cache-build-debug
