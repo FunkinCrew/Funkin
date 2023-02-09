@@ -3,9 +3,9 @@ description: "sets up haxe shit, using HMM!"
 runs:
   using: "composite"
   steps:
-      - uses: krdlab/setup-haxe@v1.1.6
+      - uses: krdlab/setup-haxe@v1.4.0
         with:
-          haxe-version: 4.2.4
+          haxe-version: 4.2.5
       - name: Config haxelib
         run: |
           haxelib config
