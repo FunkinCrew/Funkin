@@ -57,8 +57,8 @@ jobs:
             export/debug/windows/obj/
             
       - run: |
-      yarn add lix
-      yarn lix download
+        yarn add lix
+        yarn lix download
       - name: Build game
         run: |
           lix lime build windows -debug --times
