@@ -13,6 +13,6 @@ runs:
       - name: Installing Haxe lol
         run: |
           haxe -version
-          haxelib --global install hmm
-          haxelib --global run hmm install --quiet
+          haxelib install hmm
+          haxelib run hmm install --quiet
         shell: bash
