@@ -1,18 +1,12 @@
 name: setup-haxeshit
-description: "sets up haxe shit, using HMM!"
+description: "sets up haxe shit, using lix!"
 runs:
   using: "composite"
   steps:
-      - uses: krdlab/setup-haxe@v1.4.0
+      - uses: lix-pm/setup-lix@1.0.0
         with:
-          haxe-version: 4.2.5
+          lix-version: 15.8.9 # optional
       - name: Config haxelib
         run: |
           haxelib config
-        shell: bash
-      - name: Installing Haxe lol
-        run: |
-          haxe -version
-          haxelib install hmm
-          haxelib run hmm install --quiet
         shell: bash
