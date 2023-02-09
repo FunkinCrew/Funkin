@@ -62,7 +62,7 @@ jobs:
           yarn lix download
       - name: Build game
         run: |
-          yarn lix lime build windows -debug --times
+          yarn lix run lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
