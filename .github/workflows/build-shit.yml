@@ -58,7 +58,7 @@ jobs:
             cache-build-mac
       - name: Build game
         run: |
-          lix lime build windows -debug --times
+          npx lix lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
