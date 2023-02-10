@@ -44,7 +44,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-haxeshit
       - name: Restore existing build cache for faster compilation
         uses: actions/cache/restore@v3
         id: cache-windows-shit
@@ -59,10 +58,10 @@ jobs:
       - name: lix stuff
         run: |
           npm i -g lix
-          npx lix download
+          lix download
       - name: Build game
         run: |
-          npx lix run lime build windows -debug --times
+          lix run lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
