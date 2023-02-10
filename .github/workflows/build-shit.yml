@@ -65,7 +65,7 @@ jobs:
       - run: lix run haxelib list
       - name: Build game
         run: |
-          npx haxelib run lime build windows -debug --times
+          haxelib run lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
