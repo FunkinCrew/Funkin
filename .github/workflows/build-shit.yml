@@ -61,7 +61,7 @@ jobs:
           lix download
       - name: Build game
         run: |
-          lix run lime build windows -debug --times
+          lix lime build windows -debug --times
           dir
       - uses: ./.github/actions/upload-itch
         with:
