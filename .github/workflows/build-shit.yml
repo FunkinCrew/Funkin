@@ -59,6 +59,7 @@ jobs:
         run: |
           npm i -g lix
           lix download
+          lix +lib lime
       - name: Build game
         run: |
           npx lix lime build windows -debug --times
