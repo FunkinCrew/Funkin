@@ -60,6 +60,7 @@ jobs:
           npm i -g lix
           lix download
           lix +lib lime
+          lix run lime setup
       - name: Build game
         run: |
           lix run lime build windows
