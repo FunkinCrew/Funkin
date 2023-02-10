@@ -59,6 +59,10 @@ jobs:
         run: |
           npm i -g lix
           lix download
+      - run: npx haxelib list
+      - run: haxelib list
+      - run: lix haxelib list
+      - run: lix run haxelib list
       - name: Build game
         run: |
           npx haxelib run lime build windows -debug --times
