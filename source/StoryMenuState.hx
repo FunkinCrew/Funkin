@@ -1,6 +1,6 @@
 package;
 
-#if desktop
+#if discord_rpc
 import Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -29,11 +29,12 @@ class StoryMenuState extends MusicBeatState
 		['Pico', 'Philly', "Blammed"],
 		['Satin-Panties', "High", "Milf"],
 		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
-		['Senpai', 'Roses', 'Thorns']
+		['Senpai', 'Roses', 'Thorns'],
+		['Ugh', 'Guns', 'Stress']
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true, true];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
@@ -42,7 +43,8 @@ class StoryMenuState extends MusicBeatState
 		['pico', 'bf', 'gf'],
 		['mom', 'bf', 'gf'],
 		['parents-christmas', 'bf', 'gf'],
-		['senpai', 'bf', 'gf']
+		['senpai', 'bf', 'gf'],
+		['tankman', 'bf', 'gf']
 	];
 
 	var weekNames:Array<String> = [
@@ -52,7 +54,8 @@ class StoryMenuState extends MusicBeatState
 		"PICO",
 		"MOMMY MUST MURDER",
 		"RED SNOW",
-		"hating simulator ft. moawling"
+		"hating simulator ft. moawling",
+		"TANKMAN"
 	];
 
 	var txtWeekTitle:FlxText;
@@ -112,8 +115,8 @@ class StoryMenuState extends MusicBeatState
 		add(grpLocks);
 
 		trace("Line 70");
-		
-		#if desktop
+
+		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
@@ -225,9 +228,9 @@ class StoryMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		// scoreText.setFormat('VCR OSD Mono', 32);
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
+		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.5);
 
-		scoreText.text = "WEEK SCORE:" + lerpScore;
+		scoreText.text = "WEEK SCORE:" + Math.round(lerpScore);
 
 		txtWeekTitle.text = weekNames[curWeek].toUpperCase();
 		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
@@ -245,29 +248,29 @@ class StoryMenuState extends MusicBeatState
 		{
 			if (!selectedWeek)
 			{
-				if (controls.UP_P)
+				if (controls.UI_UP_P)
 				{
 					changeWeek(-1);
 				}
 
-				if (controls.DOWN_P)
+				if (controls.UI_DOWN_P)
 				{
 					changeWeek(1);
 				}
 
-				if (controls.RIGHT)
+				if (controls.UI_RIGHT)
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
 
-				if (controls.LEFT)
+				if (controls.UI_LEFT)
 					leftArrow.animation.play('press');
 				else
 					leftArrow.animation.play('idle');
 
-				if (controls.RIGHT_P)
+				if (controls.UI_RIGHT_P)
 					changeDifficulty(1);
-				if (controls.LEFT_P)
+				if (controls.UI_LEFT_P)
 					changeDifficulty(-1);
 			}
 
@@ -323,7 +326,6 @@ class StoryMenuState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
-			FreeplayState.destroyFreeplayVocals();
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				LoadingState.loadAndSwitchState(new PlayState(), true);
@@ -361,14 +363,10 @@ class StoryMenuState extends MusicBeatState
 		sprDifficulty.y = leftArrow.y - 15;
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 
-		#if !switch
-		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
-		#end
-
 		FlxTween.tween(sprDifficulty, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
 
-	var lerpScore:Int = 0;
+	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
 
 	function changeWeek(change:Int = 0):Void
@@ -421,6 +419,9 @@ class StoryMenuState extends MusicBeatState
 			case 'dad':
 				grpWeekCharacters.members[0].offset.set(120, 200);
 				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
+			case 'tankman':
+				grpWeekCharacters.members[0].offset.set(60, -20);
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
 
 			default:
 				grpWeekCharacters.members[0].offset.set(100, 100);
@@ -440,8 +441,6 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
 
-		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
-		#end
 	}
 }

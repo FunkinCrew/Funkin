@@ -2,6 +2,7 @@ package;
 
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
+import flixel.FlxGame;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
@@ -9,9 +10,6 @@ import flixel.util.FlxTimer;
 
 class MusicBeatState extends FlxUIState
 {
-	private var lastBeat:Float = 0;
-	private var lastStep:Float = 0;
-
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
@@ -29,13 +27,13 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
+		// everyStep();
 		var oldStep:Int = curStep;
 
 		updateCurStep();
 		updateBeat();
 
-		if (oldStep != curStep && curStep > 0)
+		if (oldStep != curStep && curStep >= 0)
 			stepHit();
 
 		super.update(elapsed);
@@ -70,6 +68,6 @@ class MusicBeatState extends FlxUIState
 
 	public function beatHit():Void
 	{
-		//do literally nothing dumbass
+		// do literally nothing dumbass
 	}
 }

@@ -26,6 +26,7 @@ haxelib install flixel-addons
 haxelib install flixel-ui
 haxelib install hscript
 haxelib install newgrounds 1.1.5
+haxelib install hxCodec
 ```
 Next, [install Git.](https://git-scm.com/downloads)  
 Then, execute this command.

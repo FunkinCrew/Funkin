@@ -1,15 +1,19 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import flixel.FlxG;
+import flixel.util.FlxTimer;
+import shaderslmfao.ColorSwap;
+import ui.PreferencesMenu;
+
+using StringTools;
+
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
 #end
-
-using StringTools;
 
 class Note extends FlxSprite
 {
@@ -22,9 +26,15 @@ class Note extends FlxSprite
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
 
+	private var willMiss:Bool = false;
+
+	public var altNote:Bool = false;
+	public var invisNote:Bool = false;
+
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
+	public var colorSwap:ColorSwap;
 	public var noteScore:Float = 1;
 
 	public static var swagWidth:Float = 160 * 0.7;
@@ -32,6 +42,8 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+
+	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
@@ -43,10 +55,9 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		x += 50;
+		x += 110;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
-
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
@@ -84,10 +95,10 @@ class Note extends FlxSprite
 			default:
 				frames = Paths.getSparrowAtlas('NOTE_assets');
 
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
+				animation.addByPrefix('greenScroll', 'green instance');
+				animation.addByPrefix('redScroll', 'red instance');
+				animation.addByPrefix('blueScroll', 'blue instance');
+				animation.addByPrefix('purpleScroll', 'purple instance');
 
 				animation.addByPrefix('purpleholdend', 'pruple end hold');
 				animation.addByPrefix('greenholdend', 'green hold end');
@@ -102,7 +113,18 @@ class Note extends FlxSprite
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 				antialiasing = true;
+
+				// colorSwap.colorToReplace = 0xFFF9393F;
+				// colorSwap.newColor = 0xFF00FF00;
+
+				// color = FlxG.random.color();
+				// color.saturation *= 4;
+				// replaceColor(0xFFC1C1C1, FlxColor.RED);
 		}
+
+		colorSwap = new ColorSwap();
+		shader = colorSwap.shader;
+		updateColors();
 
 		switch (noteData)
 		{
@@ -120,12 +142,18 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
+		if (PreferencesMenu.getPref('middlescroll'))
+			x -= 320;
+
 		// trace(prevNote);
 
 		if (isSustainNote && prevNote != null)
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
+
+			if (PreferencesMenu.getPref('downscroll'))
+				angle = 180;
 
 			x += width / 2;
 
@@ -169,21 +197,36 @@ class Note extends FlxSprite
 		}
 	}
 
+	public function updateColors():Void
+	{
+		colorSwap.update(arrowColors[noteData]);
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		if (mustPress)
 		{
-			// The * 0.5 is so that it's easier to hit them too late, instead of too early
-			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
-				canBeHit = true;
-			else
-				canBeHit = false;
-
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+			// miss on the NEXT frame so lag doesnt make u miss notes
+			if (willMiss && !wasGoodHit)
+			{
 				tooLate = true;
+				canBeHit = false;
+			}
+			else
+			{
+				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset)
+				{ // The * 0.5 is so that it's easier to hit them too late, instead of too early
+					if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+						canBeHit = true;
+				}
+				else
+				{
+					canBeHit = true;
+					willMiss = true;
+				}
+			}
 		}
 		else
 		{
@@ -191,6 +234,8 @@ class Note extends FlxSprite
 
 			if (strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
+			if (PreferencesMenu.getPref('middlescroll'))
+				alpha = 0;
 		}
 
 		if (tooLate)

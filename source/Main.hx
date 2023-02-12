@@ -1,23 +1,26 @@
 package;
 
-import flixel.graphics.FlxGraphic;
-import flixel.FlxG;
+#if desktop
+import Discord.DiscordClient;
+#end
+
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
+import openfl.events.AsyncErrorEvent;
 import openfl.events.Event;
-import openfl.display.StageScaleMode;
+import openfl.events.MouseEvent;
+import openfl.events.NetStatusEvent;
+import openfl.media.Video;
+import openfl.net.NetConnection;
+import openfl.net.NetStream;
 import lime.app.Application;
 
-#if desktop
-import Discord.DiscordClient;
-#end
-
-#if ErrorDialog
 //crash handler stuff
+#if ErrorDialog
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
@@ -30,16 +33,38 @@ using StringTools;
 
 class Main extends Sprite
 {
+	/*
+	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
+	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
+	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
+	*/
+	#if web
 	var game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
 		initialState: TitleState, // initial game state
 		zoom: -1.0, // game state bounds
 		framerate: 60, // default framerate
-		skipSplash: false, // if the default flixel splash screen should be skipped
+		skipSplash: true, // if the default flixel splash screen should be skipped
 		startFullscreen: false // if the game should start at fullscreen mode
 	};
-	public static var fpsVar:FPS;
+	#else
+	var game = {
+		width: 1280, // WINDOW width
+		height: 720, // WINDOW height
+		initialState: TitleState, // initial game state
+		zoom: -1.0, // game state bounds
+		framerate: 144, // default framerate
+		skipSplash: true, // if the default flixel splash screen should be skipped
+		startFullscreen: false // if the game should start at fullscreen mode
+	};
+
+	#end
+	/*
+	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
+	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+	*/
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -72,12 +97,18 @@ class Main extends Sprite
 		setupGame();
 	}
 
+	var video:Video;
+	var netStream:NetStream;
+	private var overlay:Sprite;
+
+	public static var fpsCounter:FPS;
+
 	private function setupGame():Void
 	{
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 
-		if (game.zoom == -1)
+		if (game.zoom == -1.0)
 		{
 			var ratioX:Float = stageWidth / game.width;
 			var ratioY:Float = stageHeight / game.height;
@@ -86,27 +117,72 @@ class Main extends Sprite
 			game.height = Math.ceil(stageHeight / game.zoom);
 		}
 
+		#if !debug
+		//initialState = TitleState;
+		#end
+
 		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
 
 		#if !mobile
-		fpsVar = new FPS(10, 3, 0xFFFFFF);
-		addChild(fpsVar);
-		Lib.current.stage.align = "tl";
-		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		if(fpsVar != null) {
-			fpsVar.visible = true;
-		}
+		fpsCounter = new FPS(10, 3, 0xFFFFFF);
+		addChild(fpsCounter);
 		#end
 
 		#if ErrorDialog
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
+		/* 
+			video = new Video();
+			addChild(video);
 
+			var netConnection = new NetConnection();
+			netConnection.connect(null);
+
+			netStream = new NetStream(netConnection);
+			netStream.client = {onMetaData: client_onMetaData};
+			netStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, netStream_onAsyncError);
+
+			#if (js && html5)
+			overlay = new Sprite();
+			overlay.graphics.beginFill(0, 0.5);
+			overlay.graphics.drawRect(0, 0, 560, 320);
+			overlay.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
+			overlay.buttonMode = true;
+			addChild(overlay);
+
+			netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
+			#else
+			netStream.play("assets/preload/music/dredd.mp4");
+			#end 
+		 */
 	}
-	
-	#if ErrorDialog
+	/* 
+		private function client_onMetaData(metaData:Dynamic)
+		{
+			video.attachNetStream(netStream);
+
+			video.width = video.videoWidth;
+			video.height = video.videoHeight;
+		}
+
+		private function netStream_onAsyncError(event:AsyncErrorEvent):Void
+		{
+			trace("Error loading video");
+		}
+
+		private function netConnection_onNetStatus(event:NetStatusEvent):Void
+		{
+		}
+
+		private function overlay_onMouseDown(event:MouseEvent):Void
+		{
+			netStream.play("assets/preload/music/dredd.mp4");
+		}
+	 */
+
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
+	#if ErrorDialog
 	function onCrash(e:UncaughtErrorEvent):Void
 	{
 		var errMsg:String = "";
@@ -117,7 +193,7 @@ class Main extends Sprite
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = "./crash/" + "nekoEngineError_" + dateNow + ".txt";
+		path = "./crash/" + dateNow + ".txt";
 
 		for (stackItem in callStack)
 		{
@@ -130,7 +206,7 @@ class Main extends Sprite
 			}
 		}
 
-		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/nennneko5787/FNF-nekoEngine2";
+		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/nennneko5787/FNF-nekoEngine2\n\n> Crash Handler written by: sqirra-rng";
 
 		if (!FileSystem.exists("./crash/"))
 			FileSystem.createDirectory("./crash/");
@@ -141,7 +217,9 @@ class Main extends Sprite
 		Sys.println("Crash dump saved in " + Path.normalize(path));
 
 		Application.current.window.alert(errMsg, "Error!");
+		#if discord_rpc
 		DiscordClient.shutdown();
+		#end
 		Sys.exit(1);
 	}
 	#end
