@@ -1,0 +1,78 @@
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+         - name: HTML5
+           os: ubuntu-latest
+           platform: html5
+           build_type: debug
+         - name: Linux
+           os: ubuntu-latest
+           platform: linux
+           build_type: debug
+         - name: macOS
+           os: macos-latest
+           platform: macos
+           build_type: debug
+         - name: Windows
+           os: windows-latest
+           platform: windows
+           build_type: debug
+    name: Build for ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          repository: ninjamuffin99/Funkin
+          ref: master
+      - name: Cache
+        uses: actions/cache@v2.1.4
+        with:
+          path: |
+            ./export/${{ matrix.build_type }}/${{ matrix.platform }}/haxe
+            ./export/${{ matrix.build_type }}/${{ matrix.platform }}/obj
+            ~/.hxccp_config.xml
+            ~/.lime
+            ~/.haxelib
+          key: ${{ matrix.name }}-funkinCache-${{ hashFiles('./Project.xml') }}
+      - name: Install & Setup Haxe
+        uses: krdlab/setup-haxe@v1.1.5
+        with:
+          haxe-version: 4.1.5
+      - name: Install Haxe Extensions
+        run: |
+          haxelib --quiet install lime
+          haxelib --quiet install openfl
+          haxelib --quiet install flixel
+          haxelib --quiet install flixel-addons
+          haxelib --quiet install flixel-ui
+          haxelib --quiet install flixel-tools
+          haxelib --quiet install hscript
+          haxelib --quiet install newgrounds
+          haxelib --quiet git polymod https://github.com/larsiusprime/polymod.git
+          haxelib --quiet git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+      - name: Setup Lime
+        run: haxelib --quiet run lime setup
+      - name: Install wget
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: choco install wget -y
+      - name: Download APIStuff
+        working-directory: ./source
+        run: wget https://raw.githubusercontent.com/regulad/Funkin/APIStuff/APIStuff.hx
+      - name: Build using Lime
+        run: haxelib run lime build ${{ matrix.platform }} -${{ matrix.build_type }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2.2.2
+        with:
+          name: |
+            Funkin' for ${{ matrix.name }}
+          path: export/${{ matrix.build_type }}/${{ matrix.platform }}/bin
