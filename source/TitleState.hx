@@ -70,7 +70,11 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		#if polymod
+<<<<<<< HEAD
 		polymod.Polymod.init({modRoot: "mods", dirs: FileSystem.readDirectory("mods"), framework: FLIXEL});
+=======
+		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		// FlxG.bitmap.clearCache();
 		#end
 
@@ -399,12 +403,19 @@ class TitleState extends MusicBeatState
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.onComplete = null;
 			// netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
+<<<<<<< HEAD
 			//NGio.unlockMedal(60960);
+=======
+			NGio.unlockMedal(60960);
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 			/* If it's Friday according to da clock
 			if (Date.now().getDay() == 5)
 				NGio.unlockMedal(61034);
+<<<<<<< HEAD
 			*/
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 			titleText.animation.play('press');
 

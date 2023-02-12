@@ -1,7 +1,10 @@
 package;
 
 import flixel.FlxG;
+<<<<<<< HEAD
 import flixel.util.FlxColor;
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;

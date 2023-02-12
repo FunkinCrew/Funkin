@@ -32,13 +32,19 @@ class PreferencesMenu extends ui.OptionsState.Page
 
 		createPrefItem('naughtyness', 'censor-naughty', true);
 		createPrefItem('downscroll', 'downscroll', false);
+<<<<<<< HEAD
 		createPrefItem('middlescroll', 'middlescroll', false);
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		createPrefItem('flashing menu', 'flashing-menu', true);
 		createPrefItem('Camera Zooming on Beat', 'camera-zoom', true);
 		createPrefItem('FPS Counter', 'fps-counter', true);
 		createPrefItem('Auto Pause', 'auto-pause', false);
+<<<<<<< HEAD
 		createPrefItem('Ghost Tapping', 'ghosttapping', true);
 		createPrefItem('Visible Combo Sprite', 'vcombospr', false);
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
 		if (items != null)
@@ -70,14 +76,20 @@ class PreferencesMenu extends ui.OptionsState.Page
 	{
 		preferenceCheck('censor-naughty', true);
 		preferenceCheck('downscroll', false);
+<<<<<<< HEAD
 		preferenceCheck('middlescroll', false);
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		preferenceCheck('flashing-menu', true);
 		preferenceCheck('camera-zoom', true);
 		preferenceCheck('fps-counter', true);
 		preferenceCheck('auto-pause', false);
 		preferenceCheck('master-volume', 1);
+<<<<<<< HEAD
 		preferenceCheck('ghosttapping', true);
 		preferenceCheck('vcombospr', false);
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		#if muted
 		setPref('master-volume', 0);

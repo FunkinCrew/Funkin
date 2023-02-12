@@ -4,7 +4,11 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+<<<<<<< HEAD
 #if desktop
+=======
+#if cpp
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 import polymod.Polymod;
 import sys.FileSystem;
 #end

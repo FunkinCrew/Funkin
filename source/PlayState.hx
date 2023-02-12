@@ -46,10 +46,13 @@ import shaderslmfao.BuildingShaders.BuildingShader;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 import ui.PreferencesMenu;
+<<<<<<< HEAD
 
 #if hxCodec
 import vlc.MP4Handler;
 #end
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 using StringTools;
 
@@ -145,6 +148,8 @@ class PlayState extends MusicBeatState
 
 	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
+	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -166,6 +171,7 @@ class PlayState extends MusicBeatState
 	var camPos:FlxPoint;
 	var lightFadeShader:BuildingShaders;
 
+<<<<<<< HEAD
 	//Rating Count
 	var sicks:Int = 0;
 	var goods:Int = 0;
@@ -173,6 +179,8 @@ class PlayState extends MusicBeatState
 	var shits:Int = 0;
 	var misses:Int = 0;
 
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
@@ -847,8 +855,13 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
+<<<<<<< HEAD
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+=======
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
 		add(scoreTxt);
@@ -945,6 +958,7 @@ class PlayState extends MusicBeatState
 		super.create();
 	}
 
+<<<<<<< HEAD
 	function playCutscene(name:String, atEndOfSong:Bool = false)
 	{
 		#if hxCodec
@@ -986,14 +1000,30 @@ class PlayState extends MusicBeatState
 
 	function ughIntro()
 	{
+=======
+	function ughIntro()
+	{
+		inCutscene = true;
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		blackShit.scrollFactor.set();
 		add(blackShit);
 
+<<<<<<< HEAD
 		playCutscene('ughCutscene.mp4');
 
 		remove(blackShit);
+=======
+		var vid:FlxVideo = new FlxVideo('music/ughCutscene.mp4');
+		vid.finishCallback = function()
+		{
+			remove(blackShit);
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+			startCountdown();
+			cameraMovement();
+		};
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		FlxG.camera.zoom = defaultCamZoom * 1.2;
 
@@ -1066,14 +1096,30 @@ class PlayState extends MusicBeatState
 
 	function gunsIntro()
 	{
+<<<<<<< HEAD
+=======
+		inCutscene = true;
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		blackShit.scrollFactor.set();
 		add(blackShit);
 
+<<<<<<< HEAD
 		playCutscene('gunsCutscene.mp4');
 
 		remove(blackShit);
+=======
+		var vid:FlxVideo = new FlxVideo('music/gunsCutscene.mp4');
+		vid.finishCallback = function()
+		{
+			remove(blackShit);
+
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+			startCountdown();
+			cameraMovement();
+		};
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		/* camFollow.setPosition(camPos.x, camPos.y);
 
@@ -1133,14 +1179,30 @@ class PlayState extends MusicBeatState
 
 	function stressIntro()
 	{
+<<<<<<< HEAD
+=======
+		inCutscene = true;
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		blackShit.scrollFactor.set();
 		add(blackShit);
 
+<<<<<<< HEAD
 		playCutscene('stressCutscene.mp4');
 		
 		remove(blackShit);
+=======
+		var vid:FlxVideo = new FlxVideo('music/stressCutscene.mp4');
+		vid.finishCallback = function()
+		{
+			remove(blackShit);
+
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+			startCountdown();
+			cameraMovement();
+		};
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		/* camHUD.visible = false;
 
@@ -1381,7 +1443,11 @@ class PlayState extends MusicBeatState
 	function initDiscord():Void
 	{
 		#if discord_rpc
+<<<<<<< HEAD
 		storyDifficultyText = CoolUtil.difficultyString();
+=======
+		storyDifficultyText = difficultyString();
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -2278,6 +2344,7 @@ class PlayState extends MusicBeatState
 				{
 					if ((!PreferencesMenu.getPref('downscroll') && daNote.y < -daNote.height)
 						|| (PreferencesMenu.getPref('downscroll') && daNote.y > FlxG.height))
+<<<<<<< HEAD
 					{
 						daNote.active = false;
 						daNote.visible = false;
@@ -2292,6 +2359,23 @@ class PlayState extends MusicBeatState
 					if (daNote.tooLate)
 					{
 						noteMiss();
+=======
+					{
+						daNote.active = false;
+						daNote.visible = false;
+
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}
+				}
+				else if (daNote.tooLate || daNote.wasGoodHit)
+				{
+					if (daNote.tooLate)
+					{
+						health -= 0.0475;
+						vocals.volume = 0;
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 						killCombo();
 					}
 
@@ -2479,6 +2563,7 @@ class PlayState extends MusicBeatState
 			grpNoteSplashes.add(noteSplash);
 		}
 
+<<<<<<< HEAD
 		switch (daRating){
 			case "sick":
 				sicks++;
@@ -2490,6 +2575,8 @@ class PlayState extends MusicBeatState
 				shits++;
 		}
 
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		// Only add the score if you're not on practice mode
 		if (!practiceMode)
 			songScore += score;
@@ -2541,7 +2628,12 @@ class PlayState extends MusicBeatState
 			},
 			startDelay: Conductor.crochet * 0.001
 		});
+<<<<<<< HEAD
 		displayCombo();
+=======
+		if (combo >= 10 || combo == 0)
+			displayCombo();
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 	}
 
 	function displayCombo():Void
@@ -2568,8 +2660,11 @@ class PlayState extends MusicBeatState
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
+<<<<<<< HEAD
 		if (!PreferencesMenu.getPref('vcombospr'))
 			comboSpr.visible = false;
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 		add(comboSpr);
 
@@ -2768,7 +2863,11 @@ class PlayState extends MusicBeatState
 			{
 				for (shit in 0...pressArray.length)
 				{ // if a direction is hit that shouldn't be
+<<<<<<< HEAD
 					if (pressArray[shit] && !directionList.contains(shit) && !PreferencesMenu.getPref('ghosttapping'))
+=======
+					if (pressArray[shit] && !directionList.contains(shit))
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 						noteMiss(shit);
 				}
 				for (coolNote in possibleNotes)
@@ -2780,7 +2879,11 @@ class PlayState extends MusicBeatState
 			else
 			{
 				for (shit in 0...pressArray.length)
+<<<<<<< HEAD
 					if (pressArray[shit] && !PreferencesMenu.getPref('ghosttapping'))
+=======
+					if (pressArray[shit])
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 						noteMiss(shit);
 			}
 		}
@@ -2826,7 +2929,10 @@ class PlayState extends MusicBeatState
 	{
 		// whole function used to be encased in if (!boyfriend.stunned)
 		health -= 0.04;
+<<<<<<< HEAD
 		misses += 1;
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		killCombo();
 
 		if (!practiceMode)

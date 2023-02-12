@@ -261,7 +261,10 @@ class FreeplayState extends MusicBeatState
 		PlayState.storyDifficulty = curDifficulty;
 
 		diffText.text = "< " + CoolUtil.difficultyString() + " >";
+<<<<<<< HEAD
 		diffText.color = CoolUtil.difficultyColorArray[curDifficulty];
+=======
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		positionHighscore();
 	}
 
