@@ -900,11 +900,23 @@ class PlayState extends MusicBeatState
 				case 'senpai' | 'roses' | 'thorns':
 					schoolIntro(doof);
 				case 'ugh':
+					#if (web || flash)
 					ughIntro();
+					#else
+					startCountdown();
+					#end
 				case 'stress':
+					#if (web || flash)
 					stressIntro();
+					#else
+					startCountdown();
+					#end
 				case 'guns':
+					#if (web || flash)
 					gunsIntro();
+					#else
+					startCountdown();
+					#end
 
 				default:
 					startCountdown();
