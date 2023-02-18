@@ -58,6 +58,10 @@ using StringTools;
 import Discord.DiscordClient;
 #end
 
+#if desktop
+import lime.app.Application;
+#end
+
 class PlayState extends MusicBeatState
 {
 	public static var curStage:String = '';
@@ -67,6 +71,7 @@ class PlayState extends MusicBeatState
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 	public static var deathCounter:Int = 0;
+	public static var dead:Bool = false;
 	public static var practiceMode:Bool = false;
 
 	var halloweenLevel:Bool = false;
@@ -185,7 +190,9 @@ class PlayState extends MusicBeatState
 
 		FlxG.sound.cache(Paths.inst(PlayState.SONG.song));
 		FlxG.sound.cache(Paths.voices(PlayState.SONG.song));
+		Application.current.window.onFocusOut.add(onWindowFocusOut);
 
+		dead = false;
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new SwagCamera();
 		camHUD = new FlxCamera();
@@ -1921,6 +1928,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			FlxG.switchState(new ChartingState());
+			Application.current.window.onFocusOut.remove(onWindowFocusOut);
 
 			#if discord_rpc
 			DiscordClient.changePresence("Chart Editor", null, null, true);
@@ -2050,6 +2058,7 @@ class PlayState extends MusicBeatState
 			{
 				// boyfriend.stunned = true;
 
+				dead = true;
 				persistentUpdate = false;
 				persistentDraw = false;
 				paused = true;
@@ -2148,6 +2157,14 @@ class PlayState extends MusicBeatState
 					var spr:StrumNote = null;
 					spr = opponentStrums.members[daNote.noteData];
 					spr.animation.play('confirm', true);
+					if (!curStage.startsWith('school'))
+					{
+						spr.centerOffsets();
+						spr.offset.x -= 13;
+						spr.offset.y -= 13;
+					}
+					else
+						spr.centerOffsets();
 					spr.resetAnim = time;
 
 					if (SONG.song != 'Tutorial')
@@ -2269,6 +2286,7 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
+		Application.current.window.onFocusOut.remove(onWindowFocusOut);
 		if (SONG.validScore)
 		{
 			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
@@ -3114,6 +3132,35 @@ class PlayState extends MusicBeatState
 					scoreTxtTween = null;
 				}
 			});
+		}
+	}
+
+	function onWindowFocusOut():Void
+	{
+		if (!dead && !paused && startedCountdown && canPause)
+		{
+			persistentUpdate = false;
+			persistentDraw = true;
+			paused = true;
+
+			// 1 / 1000 chance for Gitaroo Man easter egg
+			if (FlxG.random.bool(0.1))
+			{
+				// gitaroo man easter egg
+				FlxG.switchState(new GitarooPause());
+			}
+			else
+			{
+				var boyfriendPos = boyfriend.getScreenPosition();
+				var pauseSubState = new PauseSubState(boyfriendPos.x, boyfriendPos.y);
+				openSubState(pauseSubState);
+				pauseSubState.camera = camHUD;
+				boyfriendPos.put();
+			}
+
+			#if discord_rpc
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			#end
 		}
 	}
 }

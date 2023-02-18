@@ -6,6 +6,12 @@ import Discord.DiscordClient;
 
 import flixel.FlxGame;
 import flixel.FlxState;
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxEase.EaseFunction;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxTween.TweenOptions;
+import flixel.util.FlxTimer;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.FPS;
@@ -17,7 +23,9 @@ import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
+#if desktop
 import lime.app.Application;
+#end
 
 //crash handler stuff
 #if ErrorDialog
@@ -39,7 +47,7 @@ class Main extends Sprite
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
 	*/
-	#if web
+	#if (!desktop || !mobile)
 	var game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
@@ -131,6 +139,11 @@ class Main extends Sprite
 		#if ErrorDialog
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
+		
+		#if desktop
+		Application.current.window.onFocusOut.add(onWindowFocusOut);
+		Application.current.window.onFocusIn.add(onWindowFocusIn);
+		#end
 		/* 
 			video = new Video();
 			addChild(video);
@@ -179,6 +192,76 @@ class Main extends Sprite
 			netStream.play("assets/preload/music/dredd.mp4");
 		}
 	 */
+
+	#if desktop
+	var oldVol:Float = 1.0;
+	var newVol:Float = 0.3;
+
+	public static var focused:Bool = true;
+
+	public static var focusMusicTween:FlxTween;
+
+	// thx for ur code ari
+	function onWindowFocusOut()
+	{
+		focused = false;
+
+		// Lower global volume when unfocused
+		if (Type.getClass(FlxG.state) != PlayState) // imagine stealing my code smh
+		{
+			oldVol = FlxG.sound.volume;
+			if (oldVol > 0.3)
+			{
+				newVol = 0.3;
+			}
+			else
+			{
+				if (oldVol > 0.1)
+				{
+					newVol = 0.1;
+				}
+				else
+				{
+					newVol = 0;
+				}
+			}
+
+			trace("Game unfocused");
+
+			if (focusMusicTween != null)
+				focusMusicTween.cancel();
+			focusMusicTween = FlxTween.tween(FlxG.sound, {volume: newVol}, 0.5);
+
+			// Conserve power by lowering draw framerate when unfocuced
+			FlxG.updateFramerate = 60;
+			FlxG.drawFramerate = 60;
+		}
+	}
+
+	function onWindowFocusIn()
+	{
+		new FlxTimer().start(0.2, function(tmr:FlxTimer)
+		{
+			focused = true;
+		});
+
+		// Lower global volume when unfocused
+		if (Type.getClass(FlxG.state) != PlayState)
+		{
+			trace("Game focused");
+
+			// Normal global volume when focused
+			if (focusMusicTween != null)
+				focusMusicTween.cancel();
+
+			focusMusicTween = FlxTween.tween(FlxG.sound, {volume: oldVol}, 0.5);
+
+			// Bring framerate back when focused
+			FlxG.drawFramerate = 144;
+			FlxG.updateFramerate = 144;
+		}
+	}
+	#end
 
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
