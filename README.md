@@ -9,8 +9,7 @@ IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMPILED VERSION, YOU MUST OPEN 
 * neko Input
 * Haxe 4.2.5 and Flixel 5.x.x Support
 #### Here are the features we plan to add in the future.
-* Options Menu
-* Key Config
+* hmm
 # Build Of nekoEngine2
 Please stop using Haxe 4.1.5 and use [the latest Haxe.](https://haxe.org/download/)  
 Then execute this command.
