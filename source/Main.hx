@@ -17,7 +17,6 @@ import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
-<<<<<<< HEAD
 import lime.app.Application;
 
 //crash handler stuff
@@ -31,8 +30,6 @@ import sys.io.Process;
 #end
 
 using StringTools;
-=======
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 class Main extends Sprite
 {
@@ -41,7 +38,6 @@ class Main extends Sprite
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-<<<<<<< HEAD
 	*/
 	#if web
 	var game = {
@@ -66,14 +62,6 @@ class Main extends Sprite
 
 	#end
 	/*
-=======
-	#if web
-	var framerate:Int = 60; // How many frames per second the game should run at.
-	#else
-	var framerate:Int = 144; // How many frames per second the game should run at.
-
-	#end
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 	*/
@@ -139,13 +127,10 @@ class Main extends Sprite
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		#end
-<<<<<<< HEAD
 
 		#if ErrorDialog
 		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
-=======
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 		/* 
 			video = new Video();
 			addChild(video);
@@ -194,7 +179,6 @@ class Main extends Sprite
 			netStream.play("assets/preload/music/dredd.mp4");
 		}
 	 */
-<<<<<<< HEAD
 
 	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
 	// very cool person for real they don't get enough credit for their work
@@ -239,6 +223,4 @@ class Main extends Sprite
 		Sys.exit(1);
 	}
 	#end
-=======
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 }

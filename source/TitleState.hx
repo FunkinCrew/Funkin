@@ -45,6 +45,10 @@ import sys.io.File;
 import sys.thread.Thread;
 #end
 
+#if polymod
+import polymod.Polymod;
+#end
+
 class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
@@ -66,17 +70,40 @@ class TitleState extends MusicBeatState
 	var video:Video;
 	var netStream:NetStream;
 	private var overlay:Sprite;
+	static var doneFlixelSplash:Bool = false;
 
 	override public function create():Void
 	{
 		#if polymod
-<<<<<<< HEAD
-		polymod.Polymod.init({modRoot: "mods", dirs: FileSystem.readDirectory("mods"), framework: FLIXEL});
-=======
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
+		//Thanks For Leather Engine
+		Polymod.init({
+			modRoot:"mods/",
+			dirs: ['introMod'],
+            framework: FLIXEL,
+			errorCallback: function(error:PolymodError)
+			{
+				#if debug
+                trace(error.message);
+                #end
+			},
+            frameworkParams: {
+                assetLibraryPaths: [
+                    "songs" => "songs",
+                    "stages" => "stages",
+                    "shared" => "shared",
+                    "fonts" => "fonts"
+                ]
+            }
+		});
 		// FlxG.bitmap.clearCache();
 		#end
+
+		if (!doneFlixelSplash) {
+			doneFlixelSplash = true;
+			flixel.system.FlxSplash.nextState = TitleState;
+			FlxG.switchState(new flixel.system.FlxSplash());
+			return;
+		}
 
 		startedIntro = false;
 
@@ -403,19 +430,12 @@ class TitleState extends MusicBeatState
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.onComplete = null;
 			// netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
-<<<<<<< HEAD
 			//NGio.unlockMedal(60960);
-=======
-			NGio.unlockMedal(60960);
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 			/* If it's Friday according to da clock
 			if (Date.now().getDay() == 5)
 				NGio.unlockMedal(61034);
-<<<<<<< HEAD
 			*/
-=======
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 			titleText.animation.play('press');
 
@@ -426,31 +446,41 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.music.stop();
 
 			#if newgrounds
+			/*
 			if (!OutdatedSubState.leftState)
 			{
 				NGio.checkVersion(function(version)
 				{
 					// Check if version is outdated
 
-					var localVersion:String = "v" + Application.current.meta.get('version');
+					var localVersion:String = "v" + "0.2.8";
 					var onlineVersion = version.split(" ")[0].trim();
 
 					if (version.trim() != onlineVersion)
 					{
 						trace('OLD VERSION!');
-						// FlxG.switchState(new OutdatedSubState());
+						FlxG.switchState(new OutdatedSubState());
 					}
 					else
 					{
-						// FlxG.switchState(new MainMenuState());
+						FlxG.switchState(new MainMenuState());
 					}
-
+					
 					// REDO FOR ITCH/FINAL SHIT
 					FlxG.switchState(new MainMenuState());
 				});
 			}
+			*/
+			
+			new FlxTimer().start(1, function(tmr:FlxTimer)
+			{
+				FlxG.switchState(new MainMenuState());
+			});
 			#else
-			FlxG.switchState(new MainMenuState());
+			new FlxTimer().start(1, function(tmr:FlxTimer)
+			{
+				FlxG.switchState(new MainMenuState());
+			});
 			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}

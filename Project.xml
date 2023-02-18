@@ -2,11 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-<<<<<<< HEAD
-	<app title="Friday Night Funkin': nekoEngine" file="nekoEngine" packageName="ml.nennneko5787.funkin.nekoEngine" package="ml.nennneko5787.funkin.nekoEngine" main="Main" version="0.2.8" company="nennneko5787" />
-=======
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.2.8" company="ninjamuffin99" />
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
+	<app title="Friday Night Funkin': nekoEngine" file="nekoEngine" packageName="ml.nennneko5787.funkin.nekoEngine" package="ml.nennneko5787.funkin.nekoEngine" main="Main" version="0.0.1" company="nennneko5787" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -128,29 +124,18 @@
 	<haxelib name="flixel-ui" />
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
-<<<<<<< HEAD
 	<haxelib name="polymod" if="desktop"/>
 	<haxelib name="newgrounds"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 	<haxelib name="hxCodec" if="desktop || android" />
-=======
-	<haxelib name="polymod"/>
-	<haxelib name="newgrounds"/>
-	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 	
 	<!-- <haxelib name="flixel-animate" /> -->
 	<!-- <haxelib name="spinehaxe" /> -->
 	<!-- https://github.com/ninjamuffin99/Flixel-Animate-Atlas-Player -->
 
 
-<<<<<<< HEAD
 	<haxelib name="discord_rpc" if="desktop"/> <!-- foesn't work with neko -->
 	<haxelib name="hxcpp-debug-server" if="desktop"/>
-=======
-	<!--<haxelib name="discord_rpc" if="cpp"/> --> <!-- foesn't work with neko -->
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
@@ -198,6 +183,11 @@
 
 	<!-- Show debug traces for hxCodec -->
 	<haxedef name="HXC_DEBUG_TRACE" if="debug" />
+
+	<!-- Show debug traces for Polymod -->
+	<haxedef name="POLYMOD_DEBUG" if="debug" />
+
+	<haxedef name="POLYMOD_SCRIPT_EXT" value=".hscript" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

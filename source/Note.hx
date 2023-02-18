@@ -142,7 +142,7 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
-		if (PreferencesMenu.getPref('middlescroll'))
+		if (PlayState.ismiddlescroll)
 			x -= 320;
 
 		// trace(prevNote);
@@ -152,7 +152,7 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			if (PreferencesMenu.getPref('downscroll'))
+			if (PlayState.isdownscroll)
 				angle = 180;
 
 			x += width / 2;

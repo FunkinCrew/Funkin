@@ -4,13 +4,12 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-<<<<<<< HEAD
 #if desktop
-=======
-#if cpp
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
-import polymod.Polymod;
 import sys.FileSystem;
+#end
+
+#if polymod
+import polymod.Polymod;
 #end
 
 class ModMenu extends ui.OptionsState.Page
@@ -95,8 +94,8 @@ class ModMenu extends ui.OptionsState.Page
 			grpMods.remove(grpMods.members[0], true);
 		}
 
-		#if desktop
-		var modList = [];
+		#if polymod
+		var modList:Array<ModMetadata> = [];
 		modFolders = [];
 		
 		trace("mods path:" + FileSystem.absolutePath(MOD_PATH));
@@ -119,10 +118,10 @@ class ModMenu extends ui.OptionsState.Page
 		trace(modList);
 
 		var loopNum:Int = 0;
-		for (i in modFolders)
+		for (i in modList)
 		{
-			var txt:ModMenuItem = new ModMenuItem(0, 10 + (40 * loopNum), 0, i, 32);
-			txt.text = i;
+			var txt:ModMenuItem = new ModMenuItem(0, 10 + (40 * loopNum), 0, i.id, 32);
+			txt.text = i.id;
 			grpMods.add(txt);
 
 			loopNum++;

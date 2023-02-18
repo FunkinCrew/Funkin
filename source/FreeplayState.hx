@@ -13,6 +13,10 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+#if desktop
+import sys.FileSystem;
+import sys.io.File;
+#end
 
 using StringTools;
 
@@ -26,6 +30,8 @@ class FreeplayState extends MusicBeatState
 
 	var scoreText:FlxText;
 	var diffText:FlxText;
+	var difflText:FlxText;
+	var diffrText:FlxText;
 	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
 
@@ -136,6 +142,14 @@ class FreeplayState extends MusicBeatState
 		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
 		add(diffText);
+		
+		difflText = new FlxText(diffText.x - 12,diffText.y, 0, "<", 24);
+		difflText.font = diffText.font;
+		add(difflText);
+
+		diffrText = new FlxText(diffText.scale.x + 12,diffText.y, 0, ">", 24);
+		diffrText.font = diffText.font;
+		add(diffrText);
 
 		add(scoreText);
 
@@ -260,11 +274,9 @@ class FreeplayState extends MusicBeatState
 
 		PlayState.storyDifficulty = curDifficulty;
 
-		diffText.text = "< " + CoolUtil.difficultyString() + " >";
-<<<<<<< HEAD
+		diffText.text = CoolUtil.difficultyString();
 		diffText.color = CoolUtil.difficultyColorArray[curDifficulty];
-=======
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
+
 		positionHighscore();
 	}
 
@@ -324,6 +336,9 @@ class FreeplayState extends MusicBeatState
 
 		diffText.x = Std.int(scoreBG.x + scoreBG.width / 2);
 		diffText.x -= (diffText.width / 2);
+
+		difflText.x = diffText.x - 24;
+		diffrText.x = (diffText.x + diffText.width) + 6;
 	}
 }
 
