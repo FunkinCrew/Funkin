@@ -35,35 +35,15 @@ haxelib git polymod https://github.com/larsiusprime/polymod.git
 haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 ```
 At the moment, you can optionally fix the transition bug in songs with zoomed-out cameras.
-<<<<<<< HEAD
-=======
-- Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
-
-### Ignored files
-
-I gitignore the API keys for the game so that no one can nab them and post fake high scores on the leaderboards. But because of that the game
-doesn't compile without it.
-
-Just make a file in `/source` and call it `APIStuff.hx`, and copy & paste this into it
-
-```haxe
-package;
-
-class APIStuff
-{
-	inline public static var API:String = "51348:TtzK0rZ8";
-	inline public static var EncKey:String = "5NqKsSVSNKHbF9fPgZPqPg==";
-	inline public static var SESSION:String = null;
-}
-
->>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
 ```
 haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
 ```
 Run build-Itch-WINDOWS.bat in /art/ and build.
 # Credits
-## Friday Night Funkin': neko Engine2
+## Friday Night Funkin': nekoEngine2
 * nennneko5787 - Programmer
+* ShadowMario - The StrumNote.hx code I stole and modified from PsychEngine
+* k.net(brightfyre) - Window focus & unfocus source code I stole from Indie Cross
 ## Funkin
 * ninjamuffin99 - Programmer
 * PhantomArcade3K and Evilsk8r - Art
