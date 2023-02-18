@@ -1,0 +1,33 @@
+<<<<<<< HEAD
+{
+	"lineEnds": {
+		"leftCurly": "both",
+		"rightCurly": "both",
+		"objectLiteralCurly": {
+			"leftCurly": "after"
+		}
+	},
+	"sameLine": {
+		"ifElse": "next",
+		"doWhile": "next",
+		"tryBody": "next",
+		"tryCatch": "next"
+	}
+}
+=======
+{
+	"lineEnds": {
+		"leftCurly": "both",
+		"rightCurly": "both",
+		"objectLiteralCurly": {
+			"leftCurly": "after"
+		}
+	},
+	"sameLine": {
+		"ifElse": "next",
+		"doWhile": "next",
+		"tryBody": "next",
+		"tryCatch": "next"
+	}
+}
+>>>>>>> 65310c965b34ee16588e03d012c3d5be4c6a1679
