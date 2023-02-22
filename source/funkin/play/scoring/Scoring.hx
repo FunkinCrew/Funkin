@@ -1,5 +1,8 @@
 package funkin.play.scoring;
 
+/**
+ * Which system to use when scoring and judging notes.
+ */
 enum abstract ScoringSystem(String)
 {
   /**
@@ -19,9 +22,6 @@ enum abstract ScoringSystem(String)
    * Scores the player based on the offset based on timing, represented by a sigmoid function.
    */
   var PBOT1;
-
-  // WIFE1
-  // WIFE3
 }
 
 /**
@@ -35,161 +35,229 @@ class Scoring
    * @param scoringSystem The scoring system to use.
    * @return The score the note receives.
    */
-  public static function scoreNote(msTiming:Float, scoringSystem:ScoringSystem = PBOT1)
+  public static function scoreNote(msTiming:Float, scoringSystem:ScoringSystem = PBOT1):Int
   {
-    switch (scoringSystem)
+    return switch (scoringSystem)
     {
-      case LEGACY:
-        return scoreNote_LEGACY(msTiming);
-      case WEEK7:
-        return scoreNote_WEEK7(msTiming);
-      case PBOT1:
-        return scoreNote_PBOT1(msTiming);
+      case LEGACY: scoreNoteLEGACY(msTiming);
+      case WEEK7: scoreNoteWEEK7(msTiming);
+      case PBOT1: scoreNotePBOT1(msTiming);
       default:
         trace('ERROR: Unknown scoring system: ' + scoringSystem);
-        return 0;
+        0;
     }
   }
 
   /**
    * Determine the judgement a note receives under a given scoring system.
    * @param msTiming The difference between the note's time and when it was hit.
+   * @param scoringSystem The scoring system to use.
    * @return The judgement the note receives.
    */
   public static function judgeNote(msTiming:Float, scoringSystem:ScoringSystem = PBOT1):String
   {
-    switch (scoringSystem)
+    return switch (scoringSystem)
     {
-      case LEGACY:
-        return judgeNote_LEGACY(msTiming);
-      case WEEK7:
-        return judgeNote_WEEK7(msTiming);
-      case PBOT1:
-        return judgeNote_PBOT1(msTiming);
+      case LEGACY: judgeNoteLEGACY(msTiming);
+      case WEEK7: judgeNoteWEEK7(msTiming);
+      case PBOT1: judgeNotePBOT1(msTiming);
       default:
         trace('ERROR: Unknown scoring system: ' + scoringSystem);
-        return 'miss';
+        'miss';
     }
   }
 
   /**
-   * The maximum score received.
+   * The maximum score a note can receive.
    */
-  public static var PBOT1_MAX_SCORE = 350;
+  public static final PBOT1_MAX_SCORE:Int = 500;
 
   /**
-   * The minimum score received.
+   * The offset of the sigmoid curve for the scoring function.
    */
-  public static var PBOT1_MIN_SCORE = 0;
+  public static final PBOT1_SCORING_OFFSET:Float = 54.99;
+
+  /**
+   * The slope of the sigmoid curve for the scoring function.
+   */
+  public static final PBOT1_SCORING_SLOPE:Float = 0.080;
+
+  /**
+   * The minimum score a note can receive while still being considered a hit.
+   */
+  public static final PBOT1_MIN_SCORE:Float = 9.0;
+
+  /**
+   * The score a note receives when it is missed.
+   */
+  public static final PBOT1_MISS_SCORE:Int = 0;
 
   /**
    * The threshold at which a note hit is considered perfect and always given the max score.
-  **/
-  public static var PBOT1_PERFECT_THRESHOLD = 5.0; // 5ms.
+   */
+  public static final PBOT1_PERFECT_THRESHOLD:Float = 5.0; // 5ms
 
   /**
-   * The threshold at which a note hit is considered missed and always given the min score.
-  **/
-  public static var PBOT1_MISS_THRESHOLD = (10 / 60) * 1000; // ~166ms
+   * The threshold at which a note hit is considered missed.
+   * `160ms`
+   */
+  public static final PBOT1_MISS_THRESHOLD:Float = 160.0;
 
-  // Magic numbers used to tweak the shape of the scoring function.
-  public static var PBOT1_SCORING_SLOPE:Float = 0.052;
-  public static var PBOT1_SCORING_OFFSET:Float = 80.0;
+  /**
+   * The time within which a note is considered to have been hit with the Killer judgement.
+   * `~7.5% of the hit window, or 12.5ms`
+   */
+  public static final PBOT1_KILLER_THRESHOLD:Float = 12.5;
 
-  static function scoreNote_PBOT1(msTiming:Float):Int
+  /**
+   * The time within which a note is considered to have been hit with the Sick judgement.
+   * `~25% of the hit window, or 45ms`
+   */
+  public static final PBOT1_SICK_THRESHOLD:Float = 45.0;
+
+  /**
+   * The time within which a note is considered to have been hit with the Good judgement.
+   * `~55% of the hit window, or 90ms`
+   */
+  public static final PBOT1_GOOD_THRESHOLD:Float = 90.0;
+
+  /**
+   * The time within which a note is considered to have been hit with the Bad judgement.
+   * `~85% of the hit window, or 135ms`
+   */
+  public static final PBOT1_BAD_THRESHOLD:Float = 135.0;
+
+  /**
+   * The time within which a note is considered to have been hit with the Shit judgement.
+   * `100% of the hit window, or 160ms`
+   */
+  public static final PBOT1_SHIT_THRESHOLD:Float = 160.0;
+
+  static function scoreNotePBOT1(msTiming:Float):Int
   {
     // Absolute value because otherwise late hits are always given the max score.
-    var absTiming = Math.abs(msTiming);
-    if (absTiming > PBOT1_MISS_THRESHOLD)
-    {
-      return PBOT1_MIN_SCORE;
-    }
-    else if (absTiming < PBOT1_PERFECT_THRESHOLD)
-    {
-      return PBOT1_MAX_SCORE;
-    }
-    else
-    {
-      // Calculate the score based on the timing using a sigmoid function.
-      var factor:Float = 1.0 - (1.0 / (1.0 + Math.exp(-PBOT1_SCORING_SLOPE * (absTiming - PBOT1_SCORING_OFFSET))));
+    var absTiming:Float = Math.abs(msTiming);
 
-      var score = Std.int(PBOT1_MAX_SCORE * factor);
+    return switch (absTiming)
+    {
+      case(_ > PBOT1_MISS_THRESHOLD) => true:
+        PBOT1_MISS_SCORE;
+      case(_ < PBOT1_PERFECT_THRESHOLD) => true:
+        PBOT1_MAX_SCORE;
+      default:
+        var factor:Float = 1.0 - (1.0 / (1.0 + Math.exp(-PBOT1_SCORING_SLOPE * (absTiming - PBOT1_SCORING_OFFSET))));
+        var score:Int = Std.int(PBOT1_MAX_SCORE * factor + PBOT1_MIN_SCORE);
 
-      return score;
+        score;
     }
   }
 
-  static function judgeNote_PBOT1(msTiming:Float):String
+  static function judgeNotePBOT1(msTiming:Float):String
   {
-    return judgeNote_WEEK7(msTiming);
+    var absTiming:Float = Math.abs(msTiming);
+
+    return switch (absTiming)
+    {
+      case(_ < PBOT1_KILLER_THRESHOLD) => true:
+        'killer';
+      case(_ < PBOT1_SICK_THRESHOLD) => true:
+        'sick';
+      case(_ < PBOT1_GOOD_THRESHOLD) => true:
+        'good';
+      case(_ < PBOT1_BAD_THRESHOLD) => true:
+        'bad';
+      case(_ < PBOT1_SHIT_THRESHOLD) => true:
+        'shit';
+      default:
+        'miss';
+    }
   }
 
   /**
    * The window of time in which a note is considered to be hit, on the Funkin Legacy scoring system.
    * Currently equal to 10 frames at 60fps, or ~166ms.
    */
-  public static var LEGACY_HIT_WINDOW:Float = (10 / 60) * 1000; // 166.67 ms hit window (10 frames at 60fps)
+  public static final LEGACY_HIT_WINDOW:Float = (10 / 60) * 1000; // 166.67 ms hit window (10 frames at 60fps)
 
   /**
-   * The threshold at which a note is considered a "Bad" hit rather than a "Shit" hit.
+   * The threshold at which a note is considered a "Sick" hit rather than another judgement.
    * Represented as a percentage of the total hit window.
    */
-  public static var LEGACY_BAD_THRESHOLD:Float = 0.9;
+  public static final LEGACY_SICK_THRESHOLD:Float = 0.2;
 
-  public static var LEGACY_GOOD_THRESHOLD:Float = 0.75;
-  public static var LEGACY_SICK_THRESHOLD:Float = 0.2;
-  public static var LEGACY_SHIT_SCORE = 50;
-  public static var LEGACY_BAD_SCORE = 100;
-  public static var LEGACY_GOOD_SCORE = 200;
-  public static var LEGACY_SICK_SCORE = 350;
+  /**
+   * The threshold at which a note is considered a "Good" hit rather than another judgement.
+   * Represented as a percentage of the total hit window.
+   */
+  public static final LEGACY_GOOD_THRESHOLD:Float = 0.75;
 
-  static function scoreNote_LEGACY(msTiming:Float):Int
+  /**
+   * The threshold at which a note is considered a "Bad" hit rather than another judgement.
+   * Represented as a percentage of the total hit window.
+   */
+  public static final LEGACY_BAD_THRESHOLD:Float = 0.9;
+
+  /**
+   * The score a note receives when hit within the Shit threshold, rather than a miss.
+   * Represented as a percentage of the total hit window.
+   */
+  public static final LEGACY_SHIT_THRESHOLD:Float = 1.0;
+
+  /**
+   * The score a note receives when hit within the Sick threshold.
+   */
+  public static final LEGACY_SICK_SCORE:Int = 350;
+
+  /**
+   * The score a note receives when hit within the Good threshold.
+   */
+  public static final LEGACY_GOOD_SCORE:Int = 200;
+
+  /**
+   * The score a note receives when hit within the Bad threshold.
+   */
+  public static final LEGACY_BAD_SCORE:Int = 100;
+
+  /**
+   * The score a note receives when hit within the Shit threshold.
+   */
+  public static final LEGACY_SHIT_SCORE:Int = 50;
+
+  static function scoreNoteLEGACY(msTiming:Float):Int
   {
-    var absTiming = Math.abs(msTiming);
-    if (absTiming < LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD)
+    var absTiming:Float = Math.abs(msTiming);
+
+    return switch (absTiming)
     {
-      return LEGACY_SICK_SCORE;
-    }
-    else if (absTiming < LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD)
-    {
-      return LEGACY_GOOD_SCORE;
-    }
-    else if (absTiming < LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD)
-    {
-      return LEGACY_BAD_SCORE;
-    }
-    else if (absTiming < LEGACY_HIT_WINDOW)
-    {
-      return LEGACY_SHIT_SCORE;
-    }
-    else
-    {
-      return 0;
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD) => true:
+        LEGACY_SICK_SCORE;
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD) => true:
+        LEGACY_GOOD_SCORE;
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD) => true:
+        LEGACY_BAD_SCORE;
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_SHIT_THRESHOLD) => true:
+        LEGACY_SHIT_SCORE;
+      default:
+        0;
     }
   }
 
-  static function judgeNote_LEGACY(msTiming:Float):String
+  static function judgeNoteLEGACY(msTiming:Float):String
   {
-    var absTiming = Math.abs(msTiming);
-    if (absTiming < LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD)
+    var absTiming:Float = Math.abs(msTiming);
+
+    return switch (absTiming)
     {
-      return 'sick';
-    }
-    else if (absTiming < LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD)
-    {
-      return 'good';
-    }
-    else if (absTiming < LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD)
-    {
-      return 'bad';
-    }
-    else if (absTiming < LEGACY_HIT_WINDOW)
-    {
-      return 'shit';
-    }
-    else
-    {
-      return 'miss';
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD) => true:
+        'sick';
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD) => true:
+        'good';
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD) => true:
+        'bad';
+      case(_ < LEGACY_HIT_WINDOW * LEGACY_SHIT_THRESHOLD) => true:
+        'shit';
+      default:
+        'miss';
     }
   }
 
@@ -197,19 +265,34 @@ class Scoring
    * The window of time in which a note is considered to be hit, on the Funkin Classic scoring system.
    * Same as L 10 frames at 60fps, or ~166ms.
    */
-  public static var WEEK7_HIT_WINDOW = LEGACY_HIT_WINDOW;
+  public static final WEEK7_HIT_WINDOW:Float = LEGACY_HIT_WINDOW;
 
-  public static var WEEK7_BAD_THRESHOLD = 0.8; // 80% of the hit window, or ~125ms
-  public static var WEEK7_GOOD_THRESHOLD = 0.55; // 55% of the hit window, or ~91ms
-  public static var WEEK7_SICK_THRESHOLD = 0.2; // 20% of the hit window, or ~33ms
-  public static var WEEK7_SHIT_SCORE = 50;
-  public static var WEEK7_BAD_SCORE = 100;
-  public static var WEEK7_GOOD_SCORE = 200;
-  public static var WEEK7_SICK_SCORE = 350;
+  public static final WEEK7_BAD_THRESHOLD:Float = 0.8; // 80% of the hit window, or ~125ms
+  public static final WEEK7_GOOD_THRESHOLD:Float = 0.55; // 55% of the hit window, or ~91ms
+  public static final WEEK7_SICK_THRESHOLD:Float = 0.2; // 20% of the hit window, or ~33ms
+  public static final WEEK7_SHIT_SCORE:Int = 50;
+  public static final WEEK7_BAD_SCORE:Int = 100;
+  public static final WEEK7_GOOD_SCORE:Int = 200;
+  public static final WEEK7_SICK_SCORE:Int = 350;
 
-  static function scoreNote_WEEK7(msTiming:Float):Int
+  static function scoreNoteWEEK7(msTiming:Float):Int
   {
-    var absTiming = Math.abs(msTiming);
+    var absTiming:Float = Math.abs(msTiming);
+
+    return switch (absTiming)
+    {
+      case(_ < WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD) => true:
+        LEGACY_SICK_SCORE;
+      case(_ < WEEK7_HIT_WINDOW * WEEK7_GOOD_THRESHOLD) => true:
+        LEGACY_GOOD_SCORE;
+      case(_ < WEEK7_HIT_WINDOW * WEEK7_BAD_THRESHOLD) => true:
+        LEGACY_BAD_SCORE;
+      case(_ < WEEK7_HIT_WINDOW) => true:
+        LEGACY_SHIT_SCORE;
+      default:
+        0;
+    }
+
     if (absTiming < WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD)
     {
       return WEEK7_SICK_SCORE;
@@ -232,7 +315,7 @@ class Scoring
     }
   }
 
-  static function judgeNote_WEEK7(msTiming:Float):String
+  static function judgeNoteWEEK7(msTiming:Float):String
   {
     var absTiming = Math.abs(msTiming);
     if (absTiming < WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD)

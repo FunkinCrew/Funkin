@@ -18,9 +18,9 @@ class SongDataParser
    */
   static final songCache:Map<String, Song> = new Map<String, Song>();
 
-  static final DEFAULT_SONG_ID = 'UNKNOWN';
-  static final SONG_DATA_PATH = 'songs/';
-  static final SONG_DATA_SUFFIX = '-metadata.json';
+  static final DEFAULT_SONG_ID:String = 'UNKNOWN';
+  static final SONG_DATA_PATH:String = 'songs/';
+  static final SONG_DATA_SUFFIX:String = '-metadata.json';
 
   /**
    * Parses and preloads the game's song metadata and scripts when the game starts.
@@ -30,7 +30,7 @@ class SongDataParser
   public static function loadSongCache():Void
   {
     clearSongCache();
-    trace("Loading song cache...");
+    trace('Loading song cache...');
 
     //
     // SCRIPTED SONGS
@@ -54,12 +54,10 @@ class SongDataParser
     //
     // UNSCRIPTED SONGS
     //
-    var songIdList:Array<String> = DataAssets.listDataFilesInPath(SONG_DATA_PATH, SONG_DATA_SUFFIX).map(function(songDataPath:String):String
-    {
+    var songIdList:Array<String> = DataAssets.listDataFilesInPath(SONG_DATA_PATH, SONG_DATA_SUFFIX).map(function(songDataPath:String):String {
       return songDataPath.split('/')[0];
     });
-    var unscriptedSongIds:Array<String> = songIdList.filter(function(songId:String):Bool
-    {
+    var unscriptedSongIds:Array<String> = songIdList.filter(function(songId:String):Bool {
       return !songCache.exists(songId);
     });
     trace('  Instantiating ${unscriptedSongIds.length} non-scripted songs...');
@@ -67,7 +65,7 @@ class SongDataParser
     {
       try
       {
-        var song = new Song(songId);
+        var song:Song = new Song(songId);
         if (song != null)
         {
           trace('    Loaded song data: ${song.songId}');
@@ -88,6 +86,8 @@ class SongDataParser
 
   /**
    * Retrieves a particular song from the cache.
+   * @param songId The ID of the song to retrieve.
+   * @return The song, or null if it was not found.
    */
   public static function fetchSong(songId:String):Null<Song>
   {
@@ -331,7 +331,7 @@ typedef RawSongNoteData =
 
 abstract SongNoteData(RawSongNoteData)
 {
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = "")
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
   {
     this =
       {

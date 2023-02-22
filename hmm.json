@@ -65,6 +65,13 @@
       "version": "2.5.0"
     },
     {
+      "name": "hxcodec",
+      "type": "git",
+      "dir": null,
+      "ref": "master",
+      "url": "https://github.com/EliteMasterEric/hxCodec"
+    },
+    {
       "name": "hxcpp",
       "type": "haxelib",
       "version": "4.2.1"
@@ -81,7 +88,7 @@
     },
     {
       "name": "lime",
-      "type": "git",
+      "type": "haxelib",
       "version": null
     },
     {

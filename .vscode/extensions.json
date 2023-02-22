@@ -5,6 +5,7 @@
     "vshaxe.haxe-checkstyle", // Haxe code style and conventions
     "vshaxe.hxcpp-debugger", // CPP debugging
     "openfl.lime-vscode-extension", // Lime integration
-    "esbenp.prettier-vscode" // JSON formatting
+    "esbenp.prettier-vscode", // JSON formatting
+    "redhat.vscode-xml" // XML formatting
   ]
 }

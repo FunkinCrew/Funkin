@@ -29,8 +29,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
 
   function set_time(time:Float):Float
   {
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       // account for different offsets per sound?
       sound.time = time;
     });
@@ -52,8 +51,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
 
   function set_volume(volume:Float):Float
   {
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       sound.volume = volume;
     });
 
@@ -80,8 +78,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
   {
     #if FLX_PITCH
     trace('Setting audio pitch to ' + val);
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       sound.pitch = val;
     });
     #end
@@ -96,8 +93,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
   function set_autoDestroyMembers(value:Bool):Bool
   {
     autoDestroyMembers = value;
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       sound.autoDestroy = value;
     });
     return value;
@@ -131,8 +127,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
    */
   public function pause()
   {
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       sound.pause();
     });
   }
@@ -142,8 +137,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
    */
   public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
   {
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       sound.play(forceRestart, startTime, endTime);
     });
   }
@@ -153,8 +147,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
    */
   public function resume()
   {
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       sound.resume();
     });
   }
@@ -164,8 +157,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
    */
   public function stop()
   {
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       sound.stop();
     });
   }
@@ -188,8 +180,7 @@ class FlxAudioGroup extends FlxTypedGroup<FlxSound>
   {
     var deviation:Float = 0;
 
-    forEachAlive(function(sound:FlxSound)
-    {
+    forEachAlive(function(sound:FlxSound) {
       if (targetTime == null) targetTime = sound.time;
       else
       {

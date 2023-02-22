@@ -39,7 +39,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
    * Add a suffix to the `idle` animation (or `danceLeft` and `danceRight` animations)
    * that this bopper will play.
    */
-  public var idleSuffix(default, set):String = "";
+  public var idleSuffix(default, set):String = '';
 
   /**
    * Whether this bopper should bop every beat. By default it's true, but when used
@@ -59,7 +59,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
    */
   public var globalOffsets(default, set):Array<Float> = [0, 0];
 
-  function set_globalOffsets(value:Array<Float>)
+  function set_globalOffsets(value:Array<Float>):Array<Float>
   {
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
@@ -69,14 +69,15 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
 
     this.x += xDiff;
     this.y += yDiff;
-    return animOffsets = value;
+    globalOffsets = value;
+    return value;
   }
 
   var animOffsets(default, set):Array<Float> = [0, 0];
 
   public var originalPosition:FlxPoint = new FlxPoint(0, 0);
 
-  function set_animOffsets(value:Array<Float>)
+  function set_animOffsets(value:Array<Float>):Array<Float>
   {
     if (animOffsets == null) animOffsets = [0, 0];
     if (animOffsets == value) return value;
@@ -101,8 +102,11 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
     super();
     this.danceEvery = danceEvery;
 
-    this.animation.callback = this.onAnimationFrame;
-    this.animation.finishCallback = this.onAnimationFinished;
+    if (this.animation != null)
+    {
+      this.animation.callback = this.onAnimationFrame;
+      this.animation.finishCallback = this.onAnimationFinished;
+    }
   }
 
   /**
@@ -281,8 +285,7 @@ class Bopper extends FlxSprite implements IPlayStateScriptedClass
     applyAnimationOffsets(correctName);
 
     canPlayOtherAnims = false;
-    forceAnimationTimer.start(duration, (timer) ->
-    {
+    forceAnimationTimer.start(duration, (timer) -> {
       canPlayOtherAnims = true;
     }, 1);
   }

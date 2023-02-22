@@ -217,7 +217,8 @@
     },
     {
       "props": {
-        "character": "  "
+        "character": "  ",
+        "severity": "IGNORE"
       },
       "type": "Indentation"
     },
@@ -281,15 +282,22 @@
     {
       "props": {
         "format": "^[A-Z][a-zA-Z0-9]*$",
-        "tokens": ["ENUM"]
+        "tokens": ["ABSTRACT"]
+      },
+      "type": "MemberName"
+    },
+    {
+      "props": {
+        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "tokens": ["ABSTRACT"]
       },
       "type": "MemberName"
     },
     {
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-z][a-zA-Z0-9]*$",
-        "tokens": ["PUBLIC", "PRIVATE", "CLASS", "ABSTRACT", "TYPEDEF"]
+        "format": "^[_a-z][a-zA-Z0-9]*$",
+        "tokens": ["PUBLIC", "PRIVATE", "CLASS", "TYPEDEF"]
       },
       "type": "MemberName"
     },
@@ -402,7 +410,6 @@
     {
       "props": {
         "tokens": [
-          "=",
           "+",
           "-",
           "*",
@@ -439,6 +446,13 @@
           "--"
         ],
         "option": "nl"
+      },
+      "type": "OperatorWrap"
+    },
+    {
+      "props": {
+        "tokens": ["="],
+        "option": "eol"
       },
       "type": "OperatorWrap"
     },
@@ -494,7 +508,8 @@
     {
       "props": {
         "ignoreFormat": "^$",
-        "max": 2
+        "max": 2,
+        "severity": "IGNORE"
       },
       "type": "ReturnCount"
     },
