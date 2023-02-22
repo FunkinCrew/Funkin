@@ -58,7 +58,7 @@ jobs:
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
-          haxelib run lime build windows
+          haxelib run lime build windows -debug
           dir
       - uses: ./.github/actions/upload-itch
         with:
