@@ -16,7 +16,7 @@ class FlxAtlasSprite extends FlxAnimate
       FrameRate: 24.0,
       Reversed: false,
       // ?OnComplete:Void -> Void,
-      ShowPivot: true,
+      ShowPivot: #if debug true #else false #end,
       Antialiasing: true,
       ScrollFactor: new FlxPoint(1, 1),
       // Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
