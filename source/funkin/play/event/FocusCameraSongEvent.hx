@@ -47,17 +47,17 @@ class FocusCameraSongEvent extends SongEvent
     super('FocusCamera');
   }
 
-  public override function handleEvent(data:SongEventData)
+  public override function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
-    var posX = data.getFloat('x');
+    var posX:Null<Float> = data.getFloat('x');
     if (posX == null) posX = 0.0;
-    var posY = data.getFloat('y');
+    var posY:Null<Float> = data.getFloat('y');
     if (posY == null) posY = 0.0;
 
-    var char = data.getInt('char');
+    var char:Null<Int> = data.getInt('char');
 
     if (char == null) char = cast data.value;
 
@@ -65,29 +65,45 @@ class FocusCameraSongEvent extends SongEvent
     {
       case -1: // Position
         trace('Focusing camera on static position.');
-        var xTarget = posX;
-        var yTarget = posY;
+        var xTarget:Float = posX;
+        var yTarget:Float = posY;
 
         PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
       case 0: // Boyfriend
         // Focus the camera on the player.
+        if (PlayState.instance.currentStage.getBoyfriend() == null)
+        {
+          trace('No BF to focus on.');
+          return;
+        }
         trace('Focusing camera on player.');
-        var xTarget = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x + posX;
-        var yTarget = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y + posY;
+        var xTarget:Float = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x + posX;
+        var yTarget:Float = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y + posY;
 
         PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
       case 1: // Dad
         // Focus the camera on the dad.
+        if (PlayState.instance.currentStage.getDad() == null)
+        {
+          trace('No dad to focus on.');
+          return;
+        }
         trace('Focusing camera on dad.');
-        var xTarget = PlayState.instance.currentStage.getDad().cameraFocusPoint.x + posX;
-        var yTarget = PlayState.instance.currentStage.getDad().cameraFocusPoint.y + posY;
+        trace(PlayState.instance.currentStage.getDad());
+        var xTarget:Float = PlayState.instance.currentStage.getDad().cameraFocusPoint.x + posX;
+        var yTarget:Float = PlayState.instance.currentStage.getDad().cameraFocusPoint.y + posY;
 
         PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
       case 2: // Girlfriend
         // Focus the camera on the girlfriend.
+        if (PlayState.instance.currentStage.getGirlfriend() == null)
+        {
+          trace('No GF to focus on.');
+          return;
+        }
         trace('Focusing camera on girlfriend.');
-        var xTarget = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x + posX;
-        var yTarget = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y + posY;
+        var xTarget:Float = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x + posX;
+        var yTarget:Float = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y + posY;
 
         PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
       default:
@@ -97,7 +113,7 @@ class FocusCameraSongEvent extends SongEvent
 
   public override function getTitle():String
   {
-    return "Focus Camera";
+    return 'Focus Camera';
   }
 
   /**

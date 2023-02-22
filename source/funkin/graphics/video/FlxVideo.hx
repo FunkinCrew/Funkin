@@ -1,4 +1,4 @@
-package funkin;
+package funkin.graphics.video;
 
 import flixel.FlxBasic;
 import flixel.FlxSprite;
@@ -7,6 +7,9 @@ import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
 
+/**
+ * Plays a video via a NetStream. Only works on HTML5.
+ */
 class FlxVideo extends FlxBasic
 {
   var video:Video;

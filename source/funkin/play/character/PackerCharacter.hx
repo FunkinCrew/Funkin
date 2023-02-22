@@ -1,9 +1,9 @@
 package funkin.play.character;
 
-import funkin.modding.events.ScriptEvent;
 import flixel.graphics.frames.FlxFramesCollection;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.character.CharacterData.CharacterRenderType;
 import funkin.util.assets.FlxAnimationUtil;
-import funkin.play.character.BaseCharacter.CharacterType;
 
 /**
  * A PackerCharacter is a Character which is rendered by
@@ -13,7 +13,7 @@ class PackerCharacter extends BaseCharacter
 {
   public function new(id:String)
   {
-    super(id);
+    super(id, CharacterRenderType.Packer);
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -26,7 +26,7 @@ class PackerCharacter extends BaseCharacter
     super.onCreate(event);
   }
 
-  function loadSpritesheet()
+  function loadSpritesheet():Void
   {
     trace('[PACKERCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
 
@@ -51,7 +51,7 @@ class PackerCharacter extends BaseCharacter
     this.setScale(_data.scale);
   }
 
-  function loadAnimations()
+  function loadAnimations():Void
   {
     trace('[PACKERCHAR] Loading ${_data.animations.length} animations for ${characterId}');
 

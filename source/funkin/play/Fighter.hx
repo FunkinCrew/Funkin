@@ -7,12 +7,11 @@ class Fighter extends BaseCharacter
 {
   public function new(?x:Float = 0, ?y:Float = 0, ?char:String = "pico-fighter")
   {
-    super(char);
+    super(char, Custom);
     this.x = x;
     this.y = y;
 
-    animation.finishCallback = function(anim:String)
-    {
+    animation.finishCallback = function(anim:String) {
       switch anim
       {
         case "punch low" | "punch high" | "block" | 'dodge':

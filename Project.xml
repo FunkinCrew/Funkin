@@ -115,21 +115,21 @@
 	<assets path="assets/fonts" embed='true' />
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<haxelib name="openfl" />
-	<haxelib name="flixel" />
+	<haxelib name="lime" /> <!-- Game engine backend -->
+	<haxelib name="openfl" /> <!-- Game engine backend -->
+	<haxelib name="flixel" /> <!-- Game engine -->
 	<haxedev set='webgl' />
 
 	<!--In case you want to use the addons package-->
-	<haxelib name="flixel-addons" />
-	<haxelib name="hscript" />
-	<haxelib name="haxeui-core"/>
-	<haxelib name="haxeui-flixel"/>
+	<haxelib name="flixel-addons" /> <!-- Additional utilities for Flixel -->
+	<haxelib name="hscript" /> <!-- Scripting -->
 
-	<haxelib name="flixel-ui" />
-	<haxelib name="haxeui-core"/>
-	<haxelib name="haxeui-flixel"/>
-	<haxelib name="polymod" />
-	<haxelib name="flxanimate" />
+	<haxelib name="flixel-ui" /> <!-- UI framework (deprecate this? -->
+	<haxelib name="haxeui-core"/> <!-- UI framework -->
+	<haxelib name="haxeui-flixel"/> <!-- Integrate HaxeUI with Flixel -->
+	<haxelib name="polymod" /> <!-- Modding framework -->
+	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
+	<haxelib name="hxcodec" /> <!-- Video playback -->
 
 	<haxelib name="thx.semver" />
 

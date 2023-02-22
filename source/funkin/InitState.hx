@@ -211,7 +211,7 @@ class InitState extends FlxTransitionableState
     #elseif FREEPLAY
     FlxG.switchState(new FreeplayState());
     #elseif ANIMATE
-    FlxG.switchState(new funkin.animate.dotstuff.DotStuffTestStage());
+    FlxG.switchState(new funkin.ui.animDebugShit.FlxAnimateTest());
     #elseif CHARTING
     FlxG.switchState(new ChartingState());
     #elseif STAGEBUILD

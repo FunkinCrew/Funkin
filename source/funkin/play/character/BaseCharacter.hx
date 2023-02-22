@@ -4,6 +4,7 @@ import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
 import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 
 /**
@@ -62,11 +63,25 @@ class BaseCharacter extends Bopper
    * The absolute position of the top-left of the character.
    * @return 
    */
-  public var cornerPosition(get, null):FlxPoint;
+  public var cornerPosition(get, set):FlxPoint;
 
   function get_cornerPosition():FlxPoint
   {
     return new FlxPoint(x, y);
+  }
+
+  function set_cornerPosition(value:FlxPoint):FlxPoint
+  {
+    var xDiff:Float = value.x - this.x;
+    var yDiff:Float = value.y - this.y;
+
+    this.cameraFocusPoint.x += xDiff;
+    this.cameraFocusPoint.y += yDiff;
+
+    super.set_x(value.x);
+    super.set_y(value.y);
+
+    return value;
   }
 
   /**
@@ -131,7 +146,7 @@ class BaseCharacter extends Bopper
     return super.set_y(value);
   }
 
-  public function new(id:String)
+  public function new(id:String, renderType:CharacterRenderType)
   {
     super();
     this.characterId = id;
@@ -140,6 +155,10 @@ class BaseCharacter extends Bopper
     if (_data == null)
     {
       throw 'Could not find character data for characterId: $characterId';
+    }
+    else if (_data.renderType != renderType)
+    {
+      throw 'Render type mismatch for character ($characterId): expected ${renderType}, got ${_data.renderType}';
     }
     else
     {
@@ -235,6 +254,8 @@ class BaseCharacter extends Bopper
 
   override function onCreate(event:ScriptEvent):Void
   {
+    super.onCreate(event);
+
     // Make sure we are playing the idle animation...
     this.dance();
     // ...then update the hitbox so that this.width and this.height are correct.
@@ -307,14 +328,16 @@ class BaseCharacter extends Bopper
       return;
     }
 
-    if (hasAnimation('idle-hold') && getCurrentAnimation() == "idle" && isAnimationFinished()) playAnimation('idle-hold');
-    if (hasAnimation('singLEFT-hold') && getCurrentAnimation() == "singLEFT" && isAnimationFinished()) playAnimation('singLEFT-hold');
-    if (hasAnimation('singDOWN-hold') && getCurrentAnimation() == "singDOWN" && isAnimationFinished()) playAnimation('singDOWN-hold');
-    if (hasAnimation('singUP-hold') && getCurrentAnimation() == "singUP" && isAnimationFinished()) playAnimation('singUP-hold');
-    if (hasAnimation('singRIGHT-hold') && getCurrentAnimation() == "singRIGHT" && isAnimationFinished()) playAnimation('singRIGHT-hold');
+    // This logic turns the idle animation into a "lead-in" animation.
+    if (hasAnimation('idle-hold') && getCurrentAnimation() == 'idle' && isAnimationFinished()) playAnimation('idle-hold');
+
+    if (hasAnimation('singLEFT-hold') && getCurrentAnimation() == 'singLEFT' && isAnimationFinished()) playAnimation('singLEFT-hold');
+    if (hasAnimation('singDOWN-hold') && getCurrentAnimation() == 'singDOWN' && isAnimationFinished()) playAnimation('singDOWN-hold');
+    if (hasAnimation('singUP-hold') && getCurrentAnimation() == 'singUP' && isAnimationFinished()) playAnimation('singUP-hold');
+    if (hasAnimation('singRIGHT-hold') && getCurrentAnimation() == 'singRIGHT' && isAnimationFinished()) playAnimation('singRIGHT-hold');
 
     // Handle character note hold time.
-    if (getCurrentAnimation().startsWith("sing"))
+    if (getCurrentAnimation().startsWith('sing'))
     {
       // TODO: Rework this code (and all character animations ugh)
       // such that the hold time is handled by padding frames,
@@ -324,7 +347,7 @@ class BaseCharacter extends Bopper
       holdTimer += event.elapsed;
       var singTimeMs:Float = singTimeCrochet * (Conductor.crochet * 0.001); // x beats, to ms.
 
-      if (getCurrentAnimation().endsWith("miss")) singTimeMs *= 2; // makes it feel more awkward when you miss
+      if (getCurrentAnimation().endsWith('miss')) singTimeMs *= 2; // makes it feel more awkward when you miss
 
       // Without this check here, the player character would only play the `sing` animation
       // for one beat, as opposed to holding it as long as the player is holding the button.
@@ -349,39 +372,31 @@ class BaseCharacter extends Bopper
   /**
    * Since no `onBeatHit` or `dance` calls happen in GameOverSubstate,
    * this regularly gets called instead.
+   * 
+   * @param force Force the deathLoop animation to play, even if `firstDeath` is still playing.
    */
   public function playDeathAnimation(force:Bool = false):Void
   {
-    if (force || (getCurrentAnimation().startsWith("firstDeath") && isAnimationFinished()))
+    if (force || (getCurrentAnimation().startsWith('firstDeath') && isAnimationFinished()))
     {
-      playAnimation("deathLoop" + GameOverSubstate.animationSuffix);
+      playAnimation('deathLoop' + GameOverSubstate.animationSuffix);
     }
   }
 
-  override function dance(force:Bool = false)
+  override function dance(force:Bool = false):Void
   {
     // Prevent default dancing behavior.
-    if (debugMode) return;
-
-    if (isDead) return;
+    if (debugMode || isDead) return;
 
     if (!force)
     {
-      if (getCurrentAnimation().startsWith("sing"))
-      {
-        return;
-      }
-      if (["hey", "cheer"].contains(getCurrentAnimation()) && !isAnimationFinished())
-      {
-        return;
-      }
+      if (getCurrentAnimation().startsWith('sing')) return;
+
+      if (['hey', 'cheer'].contains(getCurrentAnimation()) && !isAnimationFinished()) return;
     }
 
     // Prevent dancing while another animation is playing.
-    if (!force && getCurrentAnimation().startsWith("sing"))
-    {
-      return;
-    }
+    if (!force && getCurrentAnimation().startsWith('sing')) return;
 
     // Otherwise, fallback to the super dance() method, which handles playing the idle animation.
     super.dance();
@@ -538,15 +553,18 @@ class BaseCharacter extends Bopper
    * @param miss If true, play the miss animation instead of the sing animation.
    * @param suffix A suffix to append to the animation name, like `alt`.
    */
-  public function playSingAnimation(dir:NoteDir, miss:Bool = false, suffix:String = ""):Void
+  public function playSingAnimation(dir:NoteDir, ?miss:Bool = false, ?suffix:String = ''):Void
   {
-    var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != "" ? '-${suffix}' : ''}';
+    var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
     // restart even if already playing, because the character might sing the same note twice.
     playAnimation(anim, true);
   }
 }
 
+/**
+ * The type of a given character sprite. Defines its default behaviors.
+ */
 enum CharacterType
 {
   /**
@@ -563,7 +581,8 @@ enum CharacterType
    * - At idle, dances with `danceLeft` and `danceRight` if available, or `idle` if not.
    * - When the CPU hits a note, plays the appropriate `singDIR` animation until DAD is done singing.
    * - If there is a `singDIR-end` animation, the `singDIR` animation will play once before looping the `singDIR-end` animation until DAD is done singing.
-   * - When the CPU misses a note (NOTE: This only happens via script, not by default), plays the appropriate `singDIR-miss` animation until DAD is done singing.
+   * - When the CPU misses a note (NOTE: This only happens via script, not by default),
+   *     plays the appropriate `singDIR-miss` animation until DAD is done singing.
    */
   DAD;
 

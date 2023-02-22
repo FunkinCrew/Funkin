@@ -3,6 +3,7 @@ package funkin.play.character;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
+import funkin.play.character.CharacterData.CharacterRenderType;
 
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
@@ -37,7 +38,7 @@ class MultiSparrowCharacter extends BaseCharacter
 
   public function new(id:String)
   {
-    super(id);
+    super(id, CharacterRenderType.MultiSparrow);
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -48,7 +49,7 @@ class MultiSparrowCharacter extends BaseCharacter
     super.onCreate(event);
   }
 
-  function buildSprites()
+  function buildSprites():Void
   {
     buildSpritesheets();
     buildAnimations();
@@ -63,8 +64,11 @@ class MultiSparrowCharacter extends BaseCharacter
     }
   }
 
-  function buildSpritesheets()
+  function buildSpritesheets():Void
   {
+    // TODO: This currently works by creating like 5 frame collections and switching between them.
+    // It would be better to refactor this to simply concatenate the frame collections together.
+
     // Build the list of asset paths to use.
     // Ignore nulls and duplicates.
     var assetList = [_data.assetPath];
