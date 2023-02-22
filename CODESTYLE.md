@@ -13,7 +13,7 @@ Code Quality is handled by the `vshaxe.haxe-checkstyle` extension, which include
   * Checks can be disabled by setting the severity to `IGNORE`.
 * `IndentationCharacter` checks what is used to indent, `Indentation` checks how deep the intentation is.
 * `CommentedOutCode` check is in place because old code should be retrieved via Git history.
-* TODO items:
+* TODO items: Enable these one-by-one and fix them to improve the overall code quality.
   - Reconfigure `MethodLength`
   - Reconfigure `CyclomaticComplexity`
   - Re-enable `MagicNumber`

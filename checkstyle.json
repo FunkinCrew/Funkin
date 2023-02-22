@@ -41,7 +41,9 @@
       "type": "AvoidStarImport"
     },
     {
-      "props": {},
+      "props": {
+        "severity": "IGNORE"
+      },
       "type": "AvoidTernaryOperator"
     },
     {
@@ -215,7 +217,8 @@
     },
     {
       "props": {
-        "character": "  "
+        "character": "  ",
+        "severity": "IGNORE"
       },
       "type": "Indentation"
     },
@@ -229,7 +232,8 @@
     },
     {
       "props": {
-        "ignoreReturnAssignments": false
+        "ignoreReturnAssignments": false,
+        "severity": "WARNING"
       },
       "type": "InnerAssignment"
     },
@@ -277,9 +281,23 @@
     },
     {
       "props": {
+        "format": "^[A-Z][a-zA-Z0-9]*$",
+        "tokens": ["ABSTRACT"]
+      },
+      "type": "MemberName"
+    },
+    {
+      "props": {
+        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "tokens": ["ABSTRACT"]
+      },
+      "type": "MemberName"
+    },
+    {
+      "props": {
         "ignoreExtern": true,
-        "format": "^[a-z][a-zA-Z0-9]*$",
-        "tokens": []
+        "format": "^[_a-z][a-zA-Z0-9]*$",
+        "tokens": ["PUBLIC", "PRIVATE", "CLASS", "TYPEDEF"]
       },
       "type": "MemberName"
     },
@@ -310,10 +328,10 @@
     {
       "props": {
         "modifiers": [
-          "MACRO",
-          "OVERRIDE",
           "PUBLIC_PRIVATE",
           "STATIC",
+          "MACRO",
+          "OVERRIDE",
           "INLINE",
           "DYNAMIC",
           "FINAL"
@@ -342,13 +360,15 @@
     },
     {
       "props": {
-        "max": 3
+        "max": 3,
+        "severity": "IGNORE"
       },
       "type": "NestedControlFlow"
     },
     {
       "props": {
-        "max": 1
+        "max": 1,
+        "severity": "IGNORE"
       },
       "type": "NestedForDepth"
     },
@@ -366,7 +386,7 @@
     },
     {
       "props": {
-        "option": "questionMark"
+        "option": "nullDefault"
       },
       "type": "NullableParameter"
     },
@@ -390,7 +410,6 @@
     {
       "props": {
         "tokens": [
-          "=",
           "+",
           "-",
           "*",
@@ -426,6 +445,13 @@
           "++",
           "--"
         ],
+        "option": "nl"
+      },
+      "type": "OperatorWrap"
+    },
+    {
+      "props": {
+        "tokens": ["="],
         "option": "eol"
       },
       "type": "OperatorWrap"
@@ -446,7 +472,9 @@
       "type": "ParameterNumber"
     },
     {
-      "props": {},
+      "props": {
+        "severity": "WARNING"
+      },
       "type": "PublicAccessor"
     },
     {
@@ -480,7 +508,8 @@
     {
       "props": {
         "ignoreFormat": "^$",
-        "max": 2
+        "max": 2,
+        "severity": "IGNORE"
       },
       "type": "ReturnCount"
     },

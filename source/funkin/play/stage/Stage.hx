@@ -114,7 +114,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * The default stage construction routine. Called when the stage is going to be played in.
    * Instantiates each prop and adds it to the stage, while setting its parameters.
    */
-  function buildStage()
+  function buildStage():Void
   {
     trace('Building stage for display: ${this.stageId}');
 
@@ -143,9 +143,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
         // Initalize sprite frames.
         switch (dataProp.animType)
         {
-          case "packer":
+          case 'packer':
             propSprite.frames = Paths.getPackerAtlas(dataProp.assetPath);
-          default: // "sparrow"
+          default: // 'sparrow'
             propSprite.frames = Paths.getSparrowAtlas(dataProp.assetPath);
         }
       }
@@ -189,7 +189,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
       switch (dataProp.animType)
       {
-        case "packer":
+        case 'packer':
           for (propAnim in dataProp.animations)
           {
             propSprite.animation.add(propAnim.name, propAnim.frameIndices);
@@ -199,7 +199,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
               cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
             }
           }
-        default: // "sparrow"
+        default: // 'sparrow'
           FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
           if (Std.isOfType(propSprite, Bopper))
           {
@@ -302,7 +302,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   /**
    * Used by the PlayState to add a character to the stage.
    */
-  public function addCharacter(character:BaseCharacter, charType:CharacterType)
+  public function addCharacter(character:BaseCharacter, charType:CharacterType):Void
   {
     if (character == null) return;
 
@@ -325,16 +325,16 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     switch (charType)
     {
       case BF:
-        this.characters.set("bf", character);
+        this.characters.set('bf', character);
         charData = _data.characters.bf;
         character.flipX = !character.getDataFlipX();
         character.initHealthIcon(false);
       case GF:
-        this.characters.set("gf", character);
+        this.characters.set('gf', character);
         charData = _data.characters.gf;
         character.flipX = character.getDataFlipX();
       case DAD:
-        this.characters.set("dad", character);
+        this.characters.set('dad', character);
         charData = _data.characters.dad;
         character.flipX = character.getDataFlipX();
         character.initHealthIcon(true);
@@ -414,11 +414,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   {
     if (pop)
     {
-      var boyfriend:BaseCharacter = getCharacter("bf");
+      var boyfriend:BaseCharacter = getCharacter('bf');
 
       // Remove the character from the stage.
       this.remove(boyfriend);
-      this.characters.remove("bf");
+      this.characters.remove('bf');
 
       return boyfriend;
     }
