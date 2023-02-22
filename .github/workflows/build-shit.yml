@@ -55,15 +55,10 @@ jobs:
             export/debug/windows/haxe/
             export/debug/windows/obj/
             
-      - name: lix stuff
-        run: |
-          npm i -g lix
-          lix download
-          lix +lib lime
-          lix run lime setup
+      - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
-          lix run lime build windows
+          haxelib run lime build windows
           dir
       - uses: ./.github/actions/upload-itch
         with:
