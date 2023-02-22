@@ -1381,6 +1381,8 @@ class PlayState extends MusicBeatState
 
       startingSong = true;
 
+      inputSpitter = [];
+
       FlxG.sound.music.pause();
       vocals.pause();
 
@@ -1804,6 +1806,11 @@ class PlayState extends MusicBeatState
   {
     dispatchEvent(new ScriptEvent(ScriptEvent.SONG_END));
 
+    #if sys
+    // spitter for ravy, teehee!!
+    sys.io.File.saveContent("./scores.txt", inputSpitter.join("\n"));
+    #end
+
     seenCutscene = false;
     deathCounter = 0;
     mayPauseGame = false;
@@ -2034,6 +2041,11 @@ class PlayState extends MusicBeatState
    */
   // }
 
+  /**
+   * Spitting out the input for ravy 🙇‍♂️!!
+   */
+  var inputSpitter:Array<String> = [];
+
   public function keyShit(test:Bool):Void
   {
     if (PlayState.instance == null) return;
@@ -2052,6 +2064,15 @@ class PlayState extends MusicBeatState
       controls.NOTE_UP_R,
       controls.NOTE_RIGHT_R
     ];
+
+    if (pressArray.contains(true))
+    {
+      var lol:Array<Int> = cast pressArray;
+      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" "));
+    }
+
+    if (FlxG.keys.justPressed.B) trace(inputSpitter.join("\n"));
+
     // HOLDS, check for sustain notes
     if (holdArray.contains(true) && PlayState.instance.generatedMusic)
     {
