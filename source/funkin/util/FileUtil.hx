@@ -1,12 +1,10 @@
 package funkin.util;
 
-import cpp.abi.Abi;
 import haxe.zip.Entry;
 import lime.utils.Bytes;
 import lime.ui.FileDialog;
 import openfl.net.FileFilter;
 import haxe.io.Path;
-import lime.utils.Resource;
 
 /**
  * Utilities for reading and writing files on various platforms.
@@ -145,15 +143,13 @@ class FileUtil
     #elseif html5
     var filter = convertTypeFilter(typeFilter);
 
-    var onFileLoaded = function(event)
-    {
+    var onFileLoaded = function(event) {
       var loadedFileRef:FileReference = event.target;
       trace('Loaded file: ' + loadedFileRef.name);
       onOpen(loadedFileRef.data);
     }
 
-    var onFileSelected = function(event)
-    {
+    var onFileSelected = function(event) {
       var selectedFileRef:FileReference = event.target;
       trace('Selected file: ' + selectedFileRef.name);
       selectedFileRef.addEventListener(Event.COMPLETE, onFileLoaded);
@@ -214,8 +210,7 @@ class FileUtil
   {
     #if desktop
     // Prompt the user for a directory, then write all of the files to there.
-    var onSelectDir = function(targetPath:String)
-    {
+    var onSelectDir = function(targetPath:String) {
       var paths:Array<String> = [];
       for (resource in resources)
       {
@@ -264,8 +259,7 @@ class FileUtil
     // Create a ZIP file.
     var zipBytes = createZIPFromEntries(resources);
 
-    var onSave = function(path:String)
-    {
+    var onSave = function(path:String) {
       onSave([path]);
     };
 

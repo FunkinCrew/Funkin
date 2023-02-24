@@ -1,12 +1,13 @@
 package funkin.play.cutscene;
 
-import hxcodec.flixel.FlxVideoSprite;
-import hxcodec.flixel.FlxCutsceneState;
+// import hxcodec.flixel.FlxVideoSprite;
+// import hxcodec.flixel.FlxCutsceneState;
 import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.graphics.video.FlxVideo;
 
 /**
  * Static methods for playing cutscenes in the PlayState.
@@ -62,7 +63,7 @@ class VanillaCutscenes
     vid.finishCallback = finishCutscene;
     #else
     // Video displays OVER the FlxState.
-    vid = new FlxVideoSprite(0, 0);
+    // vid = new FlxVideoSprite(0, 0);
 
     vid.cameras = [PlayState.instance.camCutscene];
 
@@ -73,7 +74,7 @@ class VanillaCutscenes
     #end
   }
 
-  static var vid:#if html5 FlxVideo #else FlxVideoSprite #end;
+  static var vid:#if html5 FlxVideo #else Dynamic /**FlxVideoSprite **/ #end;
 
   /**
    * Does the cleanup to start the countdown after the video is done.

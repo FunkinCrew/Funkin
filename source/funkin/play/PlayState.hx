@@ -27,12 +27,9 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.Strumline.StrumlineArrow;
 import funkin.play.Strumline.StrumlineStyle;
 import funkin.play.character.BaseCharacter;
-<<<<<<< HEAD
-import funkin.play.character.CharacterData;
-=======
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.character.CharacterData;
 import funkin.play.cutscene.VanillaCutscenes;
->>>>>>> feature/flxanimate
 import funkin.play.event.SongEvent.SongEventParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
@@ -93,15 +90,14 @@ class PlayState extends MusicBeatState
   public static var isInCutscene:Bool = false;
 
   /**
-<<<<<<< HEAD
    * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
    */
   public static var disableKeys:Bool = false;
-=======
+
+  /*
    * Whether the game is currently in dialog, and gameplay should be stopped.
    */
   public static var isInDialog:Bool = false;
->>>>>>> feature/flxanimate
 
   /**
    * Whether the game is currently in the countdown before the song resumes.
@@ -1419,7 +1415,10 @@ class PlayState extends MusicBeatState
 
       startingSong = true;
 
+      inputSpitter = [];
+
       // Reset music properly.
+
       FlxG.sound.music.pause();
       vocals.pause();
       FlxG.sound.music.time = 0;
@@ -1854,6 +1853,11 @@ class PlayState extends MusicBeatState
   {
     dispatchEvent(new ScriptEvent(ScriptEvent.SONG_END));
 
+    #if sys
+    // spitter for ravy, teehee!!
+    sys.io.File.saveContent("./scores.txt", inputSpitter.join("\n"));
+    #end
+
     seenCutscene = false;
     deathCounter = 0;
     mayPauseGame = false;
@@ -2084,6 +2088,11 @@ class PlayState extends MusicBeatState
    */
   // }
 
+  /**
+   * Spitting out the input for ravy 🙇‍♂️!!
+   */
+  var inputSpitter:Array<String> = [];
+
   public function keyShit(test:Bool):Void
   {
     if (PlayState.instance == null) return;
@@ -2102,6 +2111,15 @@ class PlayState extends MusicBeatState
       controls.NOTE_UP_R,
       controls.NOTE_RIGHT_R
     ];
+
+    if (pressArray.contains(true))
+    {
+      var lol:Array<Int> = cast pressArray;
+      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" "));
+    }
+
+    if (FlxG.keys.justPressed.B) trace(inputSpitter.join("\n"));
+
     // HOLDS, check for sustain notes
     if (holdArray.contains(true) && PlayState.instance.generatedMusic)
     {
