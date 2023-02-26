@@ -902,7 +902,11 @@ class PlayState extends MusicBeatState
 				case 'ugh':
 					ughIntro();
 				case 'stress':
+					#if web
 					stressIntro();
+					#else
+					startCountdown();
+					#end
 				case 'guns':
 					gunsIntro();
 
@@ -933,7 +937,7 @@ class PlayState extends MusicBeatState
 	function ughIntro()
 	{
 		inCutscene = true;
-
+		#if web
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		blackShit.scrollFactor.set();
 		add(blackShit);
@@ -951,8 +955,8 @@ class PlayState extends MusicBeatState
 
 		camFollow.x += 100;
 		camFollow.y += 100;
-
-		/* 
+        #else
+		
 			FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
 			FlxG.sound.music.fadeIn(5, 0, 0.5);
 
@@ -1013,13 +1017,15 @@ class PlayState extends MusicBeatState
 						camHUD.visible = true;
 					});
 				});
-		});*/
+		});
+		#end
 	}
 
 	function gunsIntro()
 	{
 		inCutscene = true;
 
+		#if web
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		blackShit.scrollFactor.set();
 		add(blackShit);
@@ -1033,8 +1039,8 @@ class PlayState extends MusicBeatState
 			startCountdown();
 			cameraMovement();
 		};
-
-		/* camFollow.setPosition(camPos.x, camPos.y);
+        #else
+		    camFollow.setPosition(camPos.x, camPos.y);
 
 			camHUD.visible = false;
 
@@ -1076,7 +1082,8 @@ class PlayState extends MusicBeatState
 				});
 
 				camHUD.visible = true;
-		});*/
+		});
+		#end
 	}
 
 	/**
@@ -1094,6 +1101,7 @@ class PlayState extends MusicBeatState
 	{
 		inCutscene = true;
 
+		#if web
 		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		blackShit.scrollFactor.set();
 		add(blackShit);
@@ -1107,7 +1115,7 @@ class PlayState extends MusicBeatState
 			startCountdown();
 			cameraMovement();
 		};
-
+        #else
 		/* camHUD.visible = false;
 
 			// for story mode shit
@@ -1342,6 +1350,7 @@ class PlayState extends MusicBeatState
 					gfCutsceneLayer.remove(cutsceneShit);
 				});
 		});*/
+		#end
 	}
 
 	function initDiscord():Void
@@ -1957,6 +1966,9 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
+
+		if (FlxG.keys.justPressed.ONE)
+			endSong();
 
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();

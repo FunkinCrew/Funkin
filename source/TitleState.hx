@@ -411,34 +411,37 @@ class TitleState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 			transitioning = true;
+
+			FlxG.switchState(new MainMenuState());
+
 			// FlxG.sound.music.stop();
 
 			#if newgrounds
-			if (!OutdatedSubState.leftState)
+			 if (!OutdatedSubState.leftState)
 			{
-				NGio.checkVersion(function(version)
-				{
-					// Check if version is outdated
+			// 	NGio.checkVersion(function(version)
+			// 	{
+			// 		// Check if version is outdated
 
-					var localVersion:String = "v" + Application.current.meta.get('version');
-					var onlineVersion = version.split(" ")[0].trim();
+			// 		var localVersion:String = "v" + Application.current.meta.get('version');
+			// 		var onlineVersion = version.split(" ")[0].trim();
 
-					if (version.trim() != onlineVersion)
-					{
-						trace('OLD VERSION!');
-						// FlxG.switchState(new OutdatedSubState());
-					}
-					else
-					{
-						// FlxG.switchState(new MainMenuState());
-					}
+			// 		if (version.trim() != onlineVersion)
+			// 		{
+			// 			trace('OLD VERSION!');
+			// 			// FlxG.switchState(new OutdatedSubState());
+			// 		}
+			// 		else
+			// 		{
+			// 			// FlxG.switchState(new MainMenuState());
+			// 		}
 
-					// REDO FOR ITCH/FINAL SHIT
-					FlxG.switchState(new MainMenuState());
-				});
+			// 		// REDO FOR ITCH/FINAL SHIT
+			// 		FlxG.switchState(new MainMenuState());
+			// 	});
 			}
 			#else
-			FlxG.switchState(new MainMenuState());
+			   FlxG.switchState(new MainMenuState());
 			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
