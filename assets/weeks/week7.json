@@ -1,5 +1,7 @@
 {
 	"songs":["Ugh", "Guns", "Stress"],
 	"weekid":7,
-	"weekIcon":["tankman"]
+	"weekIcon":["tankman"],
+	"weekCharacter":["tankman", "bf", "gf"],
+	"weekName":"TANKMAN"
 }

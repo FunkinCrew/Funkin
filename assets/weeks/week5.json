@@ -1,5 +1,7 @@
 {
 	"songs":["Cocoa", "Eggnog", "Winter-Horrorland"],
 	"weekid":5,
-	"weekIcon":["parents-christmas", "parents-christmas", "monster-christmas"]
+	"weekIcon":["parents-christmas", "parents-christmas", "monster-christmas"],
+	"weekCharacter":["parents-christmas", "bf", "gf"],
+	"weekName":"RED SNOW"
 }

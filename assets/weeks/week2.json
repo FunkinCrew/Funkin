@@ -1,5 +1,7 @@
 {
 	"songs":["Spookeez", "South", "Monster"],
 	"weekid":2,
-	"weekIcon":["spooky", "spooky", "monster"]
+	"weekIcon":["spooky", "spooky", "monster"],
+	"weekCharacter":["spooky", "bf", "gf"],
+	"weekName":"Spooky Month"
 }

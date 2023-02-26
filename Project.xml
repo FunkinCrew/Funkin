@@ -100,9 +100,9 @@
 	<assets path="assets/weeks"    library="weeks"    exclude="*.fla|*.ogg" if="web"/>
 	<assets path="assets/weeks"    library="weeks"    exclude="*.fla|*.mp3" unless="web"/>
 	
-	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
+	<assets path='example_mods' rename='mods' embed='false' if="desktop"/>
 
-	<template path="example_mods" rename="mods" />
+	<!-- template path="example_mods" rename="mods" /> -->
 
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->

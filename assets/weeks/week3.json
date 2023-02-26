@@ -1,5 +1,7 @@
 {
 	"songs":["Pico", "Philly", "Blammed"],
 	"weekid":3,
-	"weekIcon":["pico"]
+	"weekIcon":["pico"],
+	"weekCharacter":["pico", "bf", "gf"],
+	"weekName":"PICO"
 }

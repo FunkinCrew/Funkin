@@ -1,5 +1,7 @@
 {
 	"songs":["Bopeebo", "Fresh", "Dadbattle"],
 	"weekid":1,
-	"weekIcon":["dad"]
+	"weekIcon":["dad"],
+	"weekCharacter":["dad", "bf", "gf"],
+	"weekName":"Daddy Dearest"
 }
