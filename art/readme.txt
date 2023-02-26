@@ -15,6 +15,11 @@
 |   |  | (_| (_| \/   | ) | (_) | ) |_   \/ (- (_| | ) 
                  /          _/           /             
 
+FRIDAY NIGHT FUNKIN IS A GAME AND IT IS MID-DEVELOPMENT!!!
+PLAY AT YOUR OWN RISK LOL!
+WE ARE UPDATING SOMEWHAT REGULARLY!!
+BUT THE GAME IS ACTIVELY BEING DEVELOPED!
+
 HEY
 Thanks for downloadin Friday Night FUNKIN'
 If you downloaded this from any other place than ninja-muffin24.itch.io/FUNKIN

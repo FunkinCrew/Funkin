@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.2.7.1" company="ninjamuffin99" />
+	<app title="Friday Night Funkin'" file="Funkin" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.2.8" company="ninjamuffin99" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -40,6 +40,8 @@
 
 	<classpath name="source" />
 
+	<!-- <assets path='assets/preload/music' include="*mp4" embed='false' /> -->
+
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 	
@@ -57,6 +59,7 @@
 		<library name="week4"    preload="true" />
 		<library name="week5"    preload="true" />
 		<library name="week6"    preload="true" />
+		<library name="week7"    preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
@@ -69,28 +72,34 @@
 		<library name="week4"    preload="false" />
 		<library name="week5"    preload="false" />
 		<library name="week6"    preload="false" />
+		<library name="week7"    preload="false" />
 	</section>
 	
-	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.mp3" unless="web"/>
 	
-	<assets path='example_mods' rename='mods' embed='false'/>
+	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
+
+	<template path="example_mods" rename="mods" />
+
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->
 	
@@ -113,10 +122,18 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
+	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
-	<haxelib name="discord_rpc" if="desktop"/>
+	<haxelib name="newgrounds"/>
+	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
+	
+	<!-- <haxelib name="flixel-animate" /> -->
+	<!-- <haxelib name="spinehaxe" /> -->
+	<!-- https://github.com/ninjamuffin99/Flixel-Animate-Atlas-Player -->
+
+
+	<!--<haxelib name="discord_rpc" if="cpp"/> --> <!-- foesn't work with neko -->
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
@@ -168,6 +185,21 @@
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
+	
+	<haxedef name="CAN_OPEN_LINKS" unless="switch"/>
+	<haxedef name="CAN_CHEAT" if="switch debug"/>
+	
+	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
+	
+	<section if="newgrounds">
+		<!-- Enables Ng.core.verbose -->
+		<!-- <haxedef name="NG_VERBOSE" /> -->
+		
+		<!-- Enables a NG debug session, so medals don't permently unlock -->
+		<!-- <haxedef name="NG_DEBUG" /> -->
+		
+		<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
+		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
+	</section>
 	
 </project>
