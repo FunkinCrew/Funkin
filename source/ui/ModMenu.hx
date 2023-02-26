@@ -4,21 +4,33 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.FlxSprite;
+import Controls;
 #if desktop
 import sys.FileSystem;
+import sys.io.File;
+import haxe.Json;
+import haxe.format.JsonParser;
 #end
 
 #if polymod
 import polymod.Polymod;
+import polymod.Polymod.ModMetadata;
 #end
+
+using StringTools;
 
 class ModMenu extends ui.OptionsState.Page
 {
-	var grpMods:FlxTypedGroup<ModMenuItem>;
-	var enabledMods:Array<String> = [];
-	var modFolders:Array<String> = [];
+	var modList:Array<ModMetadata> = [];
+	public static var grpMods:FlxTypedGroup<ModMenuItem>;
+	public static var enabledMods:Array<String> = [];
 
 	var curSelected:Int = 0;
+
+	var descriptionText:FlxText;
+	var descBg:FlxSprite;
+	public static var MOD_PATH = "./mods";
 
 	public function new():Void
 	{
@@ -28,6 +40,19 @@ class ModMenu extends ui.OptionsState.Page
 		add(grpMods);
 
 		refreshModList();
+
+		descBg = new FlxSprite(0, FlxG.height - 90).makeGraphic(FlxG.width, 90, 0xFF000000);
+		descBg.alpha = 0.6;
+		add(descBg);
+
+		descriptionText = new FlxText(descBg.x, descBg.y + 4, FlxG.width, "Description", 18);
+		descriptionText.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER);
+		descriptionText.borderColor = FlxColor.BLACK;
+		descriptionText.borderSize = 1;
+		descriptionText.borderStyle = OUTLINE;
+		descriptionText.scrollFactor.set();
+		descriptionText.screenCenter(X);
+		add(descriptionText);
 	}
 
 	override function update(elapsed:Float)
@@ -42,8 +67,9 @@ class ModMenu extends ui.OptionsState.Page
 		if (controls.UI_DOWN_P)
 			selections(1);
 
-		if (FlxG.keys.justPressed.SPACE)
+		if (FlxG.keys.justPressed.SPACE){
 			grpMods.members[curSelected].modEnabled = !grpMods.members[curSelected].modEnabled;
+		}
 
 		if (FlxG.keys.justPressed.I && curSelected != 0)
 		{
@@ -68,10 +94,10 @@ class ModMenu extends ui.OptionsState.Page
 	{
 		curSelected += change;
 
-		if (curSelected >= modFolders.length)
+		if (curSelected >= modList.length)
 			curSelected = 0;
 		if (curSelected < 0)
-			curSelected = modFolders.length - 1;
+			curSelected = modList.length - 1;
 
 		for (txt in 0...grpMods.length)
 		{
@@ -83,10 +109,33 @@ class ModMenu extends ui.OptionsState.Page
 				grpMods.members[txt].color = FlxColor.WHITE;
 		}
 
+		descriptionText.screenCenter(X);
+
+		descriptionText.text = 
+		modList[curSelected].description
+		+ "\nContributors:";
+
+		var _count:Int = 0;
+		for (i in modList[curSelected].contributors){
+			if (_count != 0){
+				descriptionText.text =
+				descriptionText.text
+				+ ",";
+			}
+			descriptionText.text =
+			descriptionText.text
+			+ i.name+"("+i.role+")";
+		}
+
+		descriptionText.text =
+		descriptionText.text
+		+ "\nnekoEngine Version: " + modList[curSelected].apiVersion 
+		+ "\nMod Version: " + modList[curSelected].modVersion 
+		+ "\n";
+
 		organizeByY();
 	}
 
-	inline static var MOD_PATH = "./mods";
 	private function refreshModList():Void
 	{
 		while (grpMods.members.length > 0)
@@ -95,8 +144,7 @@ class ModMenu extends ui.OptionsState.Page
 		}
 
 		#if polymod
-		var modList:Array<ModMetadata> = [];
-		modFolders = [];
+		modList = [];
 		
 		trace("mods path:" + FileSystem.absolutePath(MOD_PATH));
 		if (!FileSystem.exists(MOD_PATH))
@@ -104,22 +152,15 @@ class ModMenu extends ui.OptionsState.Page
 			FlxG.log.warn("missing mods folder, expected: " + FileSystem.absolutePath(MOD_PATH));
 			return;
 		}
-		
-		for (file in FileSystem.readDirectory(MOD_PATH))
-		{
-			if (FileSystem.isDirectory(MOD_PATH + file))
-				modFolders.push(file);
-		}
 
-		enabledMods = [];
+		enabledMods = CoolUtil.hotTextFile(MOD_PATH+"/modList.txt");
 
-		modList = Polymod.scan(MOD_PATH);
-
-		trace(modList);
+		modList = Polymod.scan({modRoot: MOD_PATH});
 
 		var loopNum:Int = 0;
 		for (i in modList)
 		{
+			trace(i.id);
 			var txt:ModMenuItem = new ModMenuItem(0, 10 + (40 * loopNum), 0, i.id, 32);
 			txt.text = i.id;
 			grpMods.add(txt);

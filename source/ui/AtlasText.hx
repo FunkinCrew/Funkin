@@ -6,6 +6,15 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxStringUtil;
 
 @:forward
+abstract DefaultText(AtlasText) from AtlasText to AtlasText
+{
+	inline public function new (x = 0.0, y = 0.0, text:String)
+	{
+		this = new AtlasText(x, y, text, Default);
+	}
+}
+
+@:forward
 abstract BoldText(AtlasText) from AtlasText to AtlasText
 {
 	inline public function new (x = 0.0, y = 0.0, text:String)

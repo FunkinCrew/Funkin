@@ -17,6 +17,7 @@ class StrumNote extends FlxSprite
 	public var direction:Float = 90;//plan on doing scroll directions soon -bb
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
+	public var keyCount:Int = 4;
 	
 	private var player:Int;
 	
@@ -29,13 +30,14 @@ class StrumNote extends FlxSprite
 		return value;
 	}
 
-	public function new(x:Float, y:Float, leData:Int, player:Int) {
+	public function new(x:Float, y:Float, leData:Int, player:Int, keyCount:Int = 4) {
 		x += Note.swagWidth * leData;
 		colorSwap = new ColorSwap();
 		shader = colorSwap.shader;
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
+		this.keyCount = keyCount;
 		super(x, y);
 
 		var skin:String = 'NOTE_assets';
@@ -182,8 +184,14 @@ class StrumNote extends FlxSprite
 			if(animation.curAnim.name == 'confirm' && !PlayState.curStage.startsWith('school')) {
 				centerOrigin();
 				centerOffsets();
-				offset.x -= 13;
-				offset.y -= 13;
+				//Thanks For LeatherEngine
+				offset.x = frameWidth / 2;
+				offset.y = frameHeight / 2;
+	
+				var scale = keyCount;
+	
+				offset.x -= 156 * scale / 2;
+				offset.y -= 156 * scale / 2;
 			}
 		}
 	}

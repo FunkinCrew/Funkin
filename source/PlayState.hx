@@ -49,7 +49,7 @@ import ui.PreferencesMenu;
 import StrumNote;
 
 #if hxCodec
-import vlc.MP4Handler;
+import hxcodec.VideoHandler;
 #end
 
 using StringTools;
@@ -963,7 +963,7 @@ class PlayState extends MusicBeatState
 		inCutscene = true;
 		FlxG.sound.music.stop();
 	
-		var video:MP4Handler = new MP4Handler();
+		var video:VideoHandler = new VideoHandler();
 		video.finishCallback = function()
 		{
 			inCutscene = false;
@@ -1510,8 +1510,8 @@ class PlayState extends MusicBeatState
 		inCutscene = false;
 		camHUD.visible = true;
 
-		generateStaticArrows(0);
-		generateStaticArrows(1);
+		generateStaticArrows(0,SONG.p1KeyCount);
+		generateStaticArrows(1,SONG.p2KeyCount);
 
 		talking = false;
 		startedCountdown = true;
@@ -1645,14 +1645,13 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0];
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
-
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3)
+				if (songNotes[1] >= (!gottaHitNote ? SONG.p1KeyCount : SONG.p2KeyCount))
 					gottaHitNote = !section.mustHitSection;
 
 				var oldNote:Note;
+				var daNoteData:Int = Std.int(songNotes[1] % (!gottaHitNote ? SONG.p1KeyCount : SONG.p2KeyCount));
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
@@ -1711,12 +1710,12 @@ class PlayState extends MusicBeatState
 
 	// ^ These two sorts also look cute together ^
 
-	private function generateStaticArrows(player:Int):Void
+	private function generateStaticArrows(player:Int, keyCount:Int = 4):Void
 	{
-		for (i in 0...4)
+		for (i in 0...keyCount)
 		{
 			// FlxG.log.add(i);
-			var babyArrow:StrumNote = new StrumNote(0, strumLine.y, i, player);
+			var babyArrow:StrumNote = new StrumNote(0, strumLine.y, i, player, keyCount);
 			var colorswap:ColorSwap = new ColorSwap();
 			babyArrow.shader = colorswap.shader;
 			colorswap.update(Note.arrowColors[i]);
@@ -2628,19 +2627,9 @@ class PlayState extends MusicBeatState
 	private function keyShit():Void
 	{
 		// control arrays, order L D R U
-		var holdArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
-		var pressArray:Array<Bool> = [
-			controls.NOTE_LEFT_P,
-			controls.NOTE_DOWN_P,
-			controls.NOTE_UP_P,
-			controls.NOTE_RIGHT_P
-		];
-		var releaseArray:Array<Bool> = [
-			controls.NOTE_LEFT_R,
-			controls.NOTE_DOWN_R,
-			controls.NOTE_UP_R,
-			controls.NOTE_RIGHT_R
-		];
+		var holdArray:Array<Bool> = ManiaTools.getHoldKeysToNumber(SONG.p2KeyCount);
+		var pressArray:Array<Bool> = ManiaTools.getPressedKeysToNumber(SONG.p2KeyCount);
+		var releaseArray:Array<Bool> = ManiaTools.getReleasedKeysToNumber(SONG.p2KeyCount);
 
 		// HOLDS, check for sustain notes
 		if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)

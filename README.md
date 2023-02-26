@@ -44,6 +44,7 @@ Run build-Itch-WINDOWS.bat in /art/ and build.
 * nennneko5787 - Programmer
 * ShadowMario - The StrumNote.hx code I stole and modified from PsychEngine
 * k.net(brightfyre) - Window focus & unfocus source code I stole from Indie Cross
+* Leather128 - Part of the 5K+ support code stolen from LeatherEngine and part of the Mod Menu code
 ## Funkin
 * ninjamuffin99 - Programmer
 * PhantomArcade3K and Evilsk8r - Art

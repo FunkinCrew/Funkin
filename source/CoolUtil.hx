@@ -11,6 +11,10 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import haxe.Json;
 import lime.math.Rectangle;
 import lime.utils.Assets;
+#if desktop
+import sys.FileSystem;
+import sys.io.File;
+#end
 
 using StringTools;
 
@@ -35,6 +39,20 @@ class CoolUtil
 
 		return daList;
 	}
+
+	#if desktop
+	public static function hotTextFile(path:String):Array<String>
+	{
+		var daList:Array<String> = File.getContent(path).trim().split('\n');
+
+		for (i in 0...daList.length)
+		{
+			daList[i] = daList[i].trim();
+		}
+
+		return daList;
+	}
+	#end
 
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{

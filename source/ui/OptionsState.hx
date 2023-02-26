@@ -7,6 +7,20 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
 
+#if desktop
+import sys.FileSystem;
+import sys.io.File;
+import haxe.Json;
+import haxe.format.JsonParser;
+#end
+
+#if polymod
+import polymod.Polymod;
+import polymod.Polymod.ModMetadata;
+#end
+
+using StringTools;
+
 // typedef OptionsState = OptionsMenu_old;
 // class OptionsState_new extends MusicBeatState
 class OptionsState extends MusicBeatState
@@ -33,7 +47,7 @@ class OptionsState extends MusicBeatState
 		var controls = addPage(Controls, new ControlsMenu());
 		// var colors = addPage(Colors, new ColorsMenu());
 
-		#if cpp
+		#if desktop
 		var mods = addPage(Mods, new ModMenu());
 		#end
 
@@ -44,8 +58,8 @@ class OptionsState extends MusicBeatState
 			// colors.onExit.add(switchPage.bind(Options));
 			preferences.onExit.add(switchPage.bind(Options));
 
-			#if cpp
-			mods.onExit.add(switchPage.bind(Options));
+			#if desktop
+			mods.onExit.add(reloadMod);
 			#end
 		}
 		else
@@ -98,6 +112,20 @@ class OptionsState extends MusicBeatState
 		currentPage.enabled = false;
 		// Todo animate?
 		FlxG.switchState(new MainMenuState());
+	}
+
+	function reloadMod()
+	{
+		var rawEnabledMods:String = "";
+		for (i in ModMenu.grpMods.members){
+			if (i.modEnabled){
+				rawEnabledMods += i.text + "\n";
+			}
+		}
+		File.saveContent(ModMenu.MOD_PATH + "/modList.txt", rawEnabledMods.trim());
+		ModMenu.enabledMods = rawEnabledMods.trim().split('\n');
+		FlxG.sound.play(Paths.sound('cancelMenu'));
+		FlxG.switchState(new OptionsState());
 	}
 }
 
@@ -180,7 +208,7 @@ class OptionsMenu extends Page
 		createItem('preferences', function() switchPage(Preferences));
 		createItem("controls", function() switchPage(Controls));
 		// createItem('colors', function() switchPage(Colors));
-		#if cpp
+		#if polymod
 		createItem('mods', function() switchPage(Mods));
 		#end
 

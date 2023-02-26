@@ -101,7 +101,7 @@ class ControlsMenu extends ui.OptionsState.Page
 			if (currentHeader != null && name.indexOf(currentHeader) == 0)
 				name = name.substr(currentHeader.length);
 
-			var label = labels.add(new BoldText(150, y, name));
+			var label = labels.add(new DefaultText(150, y, name));
 			label.alpha = 0.6;
 			for (i in 0...COLUMNS)
 				createItem(label.x + 400 + i * 300, y, control, i);

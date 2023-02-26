@@ -26,6 +26,8 @@ class Note extends FlxSprite
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
 
+	public var rawNoteData:Int = 0;
+
 	private var willMiss:Bool = false;
 
 	public var altNote:Bool = false;
@@ -61,6 +63,26 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
+
+		if (PlayState.SONG != null){
+			if (mustPress)
+			{
+				scale.x = scale.x / (PlayState.SONG.p1KeyCount - 3);
+				scale.y = scale.y / (PlayState.SONG.p1KeyCount - 3);
+			}else{
+				scale.x = scale.x / (PlayState.SONG.p2KeyCount - 3); 
+				scale.y = scale.y / (PlayState.SONG.p2KeyCount - 3); 			
+			}
+		}else{
+			if (mustPress)
+			{
+				scale.x = scale.x / (ChartingState._song.p1KeyCount - 3); 
+				scale.y = scale.y / (ChartingState._song.p1KeyCount - 3); 
+			}else{
+				scale.x = scale.x / (ChartingState._song.p2KeyCount - 3); 
+				scale.y = scale.y / (ChartingState._song.p2KeyCount - 3); 			
+			}
+		}
 
 		var daStage:String = PlayState.curStage;
 
@@ -126,19 +148,16 @@ class Note extends FlxSprite
 		shader = colorSwap.shader;
 		updateColors();
 
-		switch (noteData)
+		x += swagWidth * Math.abs(noteData);
+		switch (Math.abs(noteData) % 4)
 		{
 			case 0:
-				x += swagWidth * 0;
 				animation.play('purpleScroll');
 			case 1:
-				x += swagWidth * 1;
 				animation.play('blueScroll');
 			case 2:
-				x += swagWidth * 2;
 				animation.play('greenScroll');
 			case 3:
-				x += swagWidth * 3;
 				animation.play('redScroll');
 		}
 
@@ -157,7 +176,7 @@ class Note extends FlxSprite
 
 			x += width / 2;
 
-			switch (noteData)
+			switch (Math.abs(noteData) % 4)
 			{
 				case 2:
 					animation.play('greenholdend');
@@ -178,7 +197,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				switch (prevNote.noteData)
+				switch (Math.abs(prevNote.noteData) % 4)
 				{
 					case 0:
 						prevNote.animation.play('purplehold');

@@ -15,6 +15,12 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
+#if desktop
+import sys.FileSystem;
+import sys.io.File;
+import haxe.Json;
+import haxe.format.JsonParser;
+#end
 
 using StringTools;
 
@@ -22,41 +28,14 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [
-		['Tutorial'],
-		['Bopeebo', 'Fresh', 'Dadbattle'],
-		['Spookeez', 'South', "Monster"],
-		['Pico', 'Philly', "Blammed"],
-		['Satin-Panties', "High", "Milf"],
-		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
-		['Senpai', 'Roses', 'Thorns'],
-		['Ugh', 'Guns', 'Stress']
-	];
+	var weekData:Array<Dynamic> = [];
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true, true];
 
-	var weekCharacters:Array<Dynamic> = [
-		['dad', 'bf', 'gf'],
-		['dad', 'bf', 'gf'],
-		['spooky', 'bf', 'gf'],
-		['pico', 'bf', 'gf'],
-		['mom', 'bf', 'gf'],
-		['parents-christmas', 'bf', 'gf'],
-		['senpai', 'bf', 'gf'],
-		['tankman', 'bf', 'gf']
-	];
+	var weekCharacters:Array<Dynamic> = [];
 
-	var weekNames:Array<String> = [
-		"",
-		"Daddy Dearest",
-		"Spooky Month",
-		"PICO",
-		"MOMMY MUST MURDER",
-		"RED SNOW",
-		"hating simulator ft. moawling",
-		"TANKMAN"
-	];
+	var weekNames:Array<String> = [];
 
 	var txtWeekTitle:FlxText;
 
@@ -84,6 +63,56 @@ class StoryMenuState extends MusicBeatState
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
+
+		#if desktop
+		var weekList:Array<String> = sys.FileSystem.readDirectory("assets/weeks/");
+		var weekJson:String;
+		var weekParseJson:Dynamic;
+		for(i in 0...weekList.length) {
+			weekJson = File.getContent("assets/weeks/"+weekList[i]);
+			weekParseJson = haxe.Json.parse(weekJson);
+			var weekSongs:Array<String> = Reflect.getProperty(weekParseJson, "songs");
+			var weekChars:Array<String> = Reflect.getProperty(weekParseJson, "weekCharacter");
+			var weekName:String = Reflect.getProperty(weekParseJson, "weekName");
+			weekData.push(weekSongs);
+			weekCharacters.push(weekChars);
+			weekNames.push(weekName);
+			trace("Add Week: "+weekList[i]);
+		}
+		#else
+		weekData = [
+			['Tutorial'],
+			['Bopeebo', 'Fresh', 'Dadbattle'],
+			['Spookeez', 'South', "Monster"],
+			['Pico', 'Philly', "Blammed"],
+			['Satin-Panties', "High", "Milf"],
+			['Cocoa', 'Eggnog', 'Winter-Horrorland'],
+			['Senpai', 'Roses', 'Thorns'],
+			['Ugh', 'Guns', 'Stress']
+		];
+
+		weekCharacters = [
+			['dad', 'bf', 'gf'],
+			['dad', 'bf', 'gf'],
+			['spooky', 'bf', 'gf'],
+			['pico', 'bf', 'gf'],
+			['mom', 'bf', 'gf'],
+			['parents-christmas', 'bf', 'gf'],
+			['senpai', 'bf', 'gf'],
+			['tankman', 'bf', 'gf']
+		];
+
+		var weekNames = [
+			"",
+			"Daddy Dearest",
+			"Spooky Month",
+			"PICO",
+			"MOMMY MUST MURDER",
+			"RED SNOW",
+			"hating simulator ft. moawling",
+			"TANKMAN"
+		];
+		#end
 
 		persistentUpdate = persistentDraw = true;
 

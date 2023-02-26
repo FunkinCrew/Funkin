@@ -16,6 +16,8 @@ import lime.utils.Assets;
 #if desktop
 import sys.FileSystem;
 import sys.io.File;
+import haxe.Json;
+import haxe.format.JsonParser;
 #end
 
 using StringTools;
@@ -35,6 +37,7 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
 
+	/*
 	var coolColors:Array<Int> = [
 		0xff9271fd,
 		0xff9271fd,
@@ -45,6 +48,7 @@ class FreeplayState extends MusicBeatState
 		0xffff78bf,
 		0xfff6b604
 	];
+	*/
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -67,12 +71,14 @@ class FreeplayState extends MusicBeatState
 		addSong('Test', 1, 'bf-pixel');
 		#end
 
+		/*
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		for (i in 0...initSonglist.length)
 		{
 			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
 		}
+		*/
 
 		if (FlxG.sound.music != null)
 		{
@@ -80,7 +86,21 @@ class FreeplayState extends MusicBeatState
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
 
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
+		#if desktop		
+		var weekList:Array<String> = sys.FileSystem.readDirectory("assets/weeks/");
+		var weekJson:String;
+		var weekParseJson:Dynamic;
+		for(i in 0...weekList.length) {
+			weekJson = File.getContent("assets/weeks/"+weekList[i]);
+			weekParseJson = haxe.Json.parse(weekJson);
+			var weekSongs:Array<String> = Reflect.getProperty(weekParseJson, "songs");
+			var weekid:Int = Reflect.getProperty(weekParseJson, "weekid");
+			var weekIcon:Array<String> = Reflect.getProperty(weekParseJson, "weekIcon");
+			addWeek(weekSongs, weekid, weekIcon);
+			trace("Add Week: "+weekList[i]);
+		}
+		#else
+		if (StoryMenuState.weekUnlocked[1] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
@@ -100,7 +120,7 @@ class FreeplayState extends MusicBeatState
 
 		if (StoryMenuState.weekUnlocked[7] || isDebug)
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
-
+		#end
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
@@ -219,7 +239,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
-		bg.color = FlxColor.interpolate(bg.color, coolColors[songs[curSelected].week % coolColors.length], CoolUtil.camLerpShit(0.045));
+		bg.color = FlxColor.interpolate(bg.color, 0xff9271fd, CoolUtil.camLerpShit(0.045));
 
 		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
 
@@ -258,6 +278,17 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
 			LoadingState.loadAndSwitchState(new PlayState());
+		}
+
+		if (FlxG.keys.pressed.SHIFT){
+			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState.isStoryMode = false;
+			PlayState.storyDifficulty = curDifficulty;
+
+			PlayState.storyWeek = songs[curSelected].week;
+			trace('CUR WEEK' + PlayState.storyWeek);
+			LoadingState.loadAndSwitchState(new ChartingState());
 		}
 	}
 

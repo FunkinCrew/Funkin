@@ -75,10 +75,11 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		#if polymod
+		var mods:Array<String> = CoolUtil.hotTextFile("mods/modList.txt");
 		//Thanks For Leather Engine
 		Polymod.init({
 			modRoot:"mods/",
-			dirs: ['introMod'],
+			dirs: mods,
             framework: FLIXEL,
 			errorCallback: function(error:PolymodError)
 			{
@@ -91,11 +92,24 @@ class TitleState extends MusicBeatState
                     "songs" => "songs",
                     "stages" => "stages",
                     "shared" => "shared",
-                    "fonts" => "fonts"
+                    "fonts" => "fonts",
+					"weeks" => "weeks",
+					"data" => "data",
+					"images" => "images",
+					"music" => "music",
+					"sounds" => "sounds",
+					"tutorial" => "tutorial",
+					"week1" => "week1",
+					"week2" => "week2",
+					"week3" => "week3",
+					"week4" => "week4",
+					"week5" => "week5",
+					"week6" => "week6",
+					"week7" => "week7"
                 ]
             }
 		});
-		// FlxG.bitmap.clearCache();
+		FlxG.bitmap.clearCache();
 		#end
 
 		if (!doneFlixelSplash) {
@@ -186,10 +200,13 @@ class TitleState extends MusicBeatState
 
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
 		#else
+		/*
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
+		*/
+		startIntro();
 		#end
 
 		#if discord_rpc
@@ -353,8 +370,10 @@ class TitleState extends MusicBeatState
 		else
 			initialized = true;
 
+		/*
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.onComplete = function() FlxG.switchState(new VideoState());
+		*/
 
 		startedIntro = true;
 		// credGroup.add(credTextShit);
