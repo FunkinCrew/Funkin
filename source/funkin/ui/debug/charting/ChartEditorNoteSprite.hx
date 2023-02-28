@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting;
 
 import flixel.FlxObject;
-import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxTileFrames;
@@ -14,6 +13,14 @@ import funkin.play.song.SongData.SongNoteData;
  */
 class ChartEditorNoteSprite extends FlxSprite
 {
+  /**
+   * The list of available note skin to validate against.
+   */
+  public static final NOTE_STYLES:Array<String> = ['Normal', 'Pixel'];
+
+  /**
+   * The ChartEditorState this note belongs to.
+   */
   public var parentState:ChartEditorState;
 
   /**
@@ -21,6 +28,11 @@ class ChartEditorNoteSprite extends FlxSprite
    * You can set this to null to kill the sprite and flag it for recycling.
    */
   public var noteData(default, set):SongNoteData;
+
+  /**
+   * The name of the note style currently in use.
+   */
+  public var noteStyle(get, null):String;
 
   /**
    * This note is the previous sprite in a sustain chain.
@@ -222,14 +234,20 @@ class ChartEditorNoteSprite extends FlxSprite
     return this.childNoteSprite;
   }
 
-  public function playNoteAnimation()
+  function get_noteStyle():String
+  {
+    // Fall back to 'Normal' if it's not a valid note style.
+    return if (NOTE_STYLES.contains(this.parentState.currentSongNoteSkin)) this.parentState.currentSongNoteSkin else 'Normal';
+  }
+
+  public function playNoteAnimation():Void
   {
     // Decide whether to display a note or a sustain.
     var baseAnimationName:String = 'tap';
     if (this.parentNoteSprite != null) baseAnimationName = (this.childNoteSprite != null) ? 'hold' : 'holdEnd';
 
     // Play the appropriate animation for the type, direction, and skin.
-    var animationName = '${baseAnimationName}${this.noteData.getDirectionName()}${this.parentState.currentSongNoteSkin}';
+    var animationName:String = '${baseAnimationName}${this.noteData.getDirectionName()}${this.noteStyle}';
 
     this.animation.play(animationName);
 

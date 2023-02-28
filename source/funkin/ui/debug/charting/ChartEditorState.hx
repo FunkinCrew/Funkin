@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.notifications.NotificationType;
+import haxe.ui.notifications.NotificationManager;
 import haxe.DynamicAccess;
 import haxe.io.Path;
 import flixel.addons.display.FlxSliceSprite;
@@ -92,6 +94,9 @@ class ChartEditorState extends HaxeUIState
   static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT = Paths.ui('chart-editor/toolbox/player-preview');
   static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT = Paths.ui('chart-editor/toolbox/opponent-preview');
 
+  // Validation
+  static final SUPPORTED_MUSIC_FORMATS:Array<String> = ['ogg'];
+
   /**
    * The base grid size for the chart editor.
    */
@@ -124,9 +129,9 @@ class ChartEditorState extends HaxeUIState
   static final GRID_TOP_PAD:Int = 8;
 
   /**
-   * Duration, in seconds, until toast notifications are automatically hidden.
+   * Duration, in milliseconds, until toast notifications are automatically hidden.
    */
-  static final NOTIFICATION_DISMISS_TIME:Float = 3.0;
+  static final NOTIFICATION_DISMISS_TIME:Int = 5000;
 
   // Start performing rapid undo after this many seconds.
   static final RAPID_UNDO_DELAY:Float = 0.4;
@@ -898,7 +903,6 @@ class ChartEditorState extends HaxeUIState
 
   var renderedSelectionSquares:FlxTypedSpriteGroup<FlxSprite>;
 
-  var notifBar:SideBar;
   var playbarHead:Slider;
 
   public function new()
@@ -1090,9 +1094,6 @@ class ChartEditorState extends HaxeUIState
 
   function buildAdditionalUI():Void
   {
-    notifBar = cast buildComponent(CHART_EDITOR_NOTIFBAR_LAYOUT);
-    add(notifBar);
-
     playbarHeadLayout = buildComponent(CHART_EDITOR_PLAYBARHEAD_LAYOUT);
 
     playbarHeadLayout.width = FlxG.width - 8;
@@ -1281,7 +1282,7 @@ class ChartEditorState extends HaxeUIState
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.pitch = pitch;
       #end
-      playbackSpeedLabel.text = 'Playback Speed - ${Std.int(event.value * 100) / 100}x';
+      playbackSpeedLabel.text = 'Playback Speed - ${Std.int(pitch * 100) / 100}x';
     });
 
     addUIChangeListener('menubarItemToggleToolboxTools', (event:UIEvent) -> {
@@ -1340,7 +1341,7 @@ class ChartEditorState extends HaxeUIState
     #end
   }
 
-  function onWindowClose(exitCode:Int)
+  function onWindowClose(exitCode:Int):Void
   {
     trace('Window exited with exit code: $exitCode');
     trace('Should save chart? $saveDataDirty');
@@ -1351,12 +1352,12 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function cleanupAutoSave()
+  function cleanupAutoSave():Void
   {
     WindowUtil.windowExit.remove(onWindowClose);
   }
 
-  public override function update(elapsed:Float)
+  public override function update(elapsed:Float):Void
   {
     // dispatchEvent gets called here.
     super.update(elapsed);
@@ -1387,10 +1388,16 @@ class ChartEditorState extends HaxeUIState
     #if debug
     if (FlxG.keys.justPressed.F)
     {
-      // This breaks the layout don't use it.
-      // showNotification('Hi there :)');
-
-      // autoSave();
+      NotificationManager.instance.addNotification(
+        {
+          title: 'This is a Notification',
+          body: 'Hello, world!',
+          type: NotificationType.Info,
+          expiryMs: NOTIFICATION_DISMISS_TIME
+          // styleNames: 'cssStyleName',
+          // icon: 'assetPath',
+          // actions: ['action1', 'action2']
+        });
     }
 
     if (FlxG.keys.justPressed.E)
@@ -1416,7 +1423,7 @@ class ChartEditorState extends HaxeUIState
     // dispatchEvent gets called here.
     if (!super.beatHit()) return false;
 
-    if (shouldPlayMetronome && audioInstTrack.playing)
+    if (shouldPlayMetronome && (audioInstTrack != null && audioInstTrack.playing))
     {
       playMetronomeTick(Conductor.currentBeat % 4 == 0);
     }
@@ -1432,7 +1439,7 @@ class ChartEditorState extends HaxeUIState
     // dispatchEvent gets called here.
     if (!super.stepHit()) return false;
 
-    if (audioInstTrack.playing)
+    if (audioInstTrack != null && audioInstTrack.playing)
     {
       healthIconDad.onStepHit(Conductor.currentStep);
       healthIconBF.onStepHit(Conductor.currentStep);
@@ -1447,7 +1454,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle keybinds for scrolling the chart editor grid.
   **/
-  function handleScrollKeybinds()
+  function handleScrollKeybinds():Void
   {
     // Don't scroll when the cursor is over the UI.
     if (isCursorOverHaxeUI) return;
@@ -1456,16 +1463,17 @@ class ChartEditorState extends HaxeUIState
     var scrollAmount:Float = 0;
     // Amount to scroll the playhead relative to the grid.
     var playheadAmount:Float = 0;
+    var shouldPause:Bool = false;
 
     // Up Arrow = Scroll Up
     if (FlxG.keys.justPressed.UP)
     {
-      scrollAmount = -GRID_SIZE * 0.25;
+      scrollAmount = -GRID_SIZE * 0.25 * 5;
     }
     // Down Arrow = Scroll Down
     if (FlxG.keys.justPressed.DOWN)
     {
-      scrollAmount = GRID_SIZE * 0.25;
+      scrollAmount = GRID_SIZE * 0.25 * 5;
     }
 
     // PAGE UP = Jump Up 1 Measure
@@ -2089,7 +2097,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle using `renderedNotes` to display notes from `currentSongChartNoteData`.
    */
-  function handleNoteDisplay()
+  function handleNoteDisplay():Void
   {
     if (noteDisplayDirty)
     {
@@ -2963,10 +2971,20 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * Loads an instrumental from an absolute file path, replacing the current instrumental.
+   * 
+   * @param path The absolute path to the audio file.
    */
   public function loadInstrumentalFromPath(path:String):Void
   {
     #if sys
+    // Validate file extension.
+    var fileExtension:String = Path.extension(path);
+    if (!SUPPORTED_MUSIC_FORMATS.contains(fileExtension))
+    {
+      trace('[WARN] Unsupported file extension: $fileExtension');
+      return;
+    }
+
     var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path);
     loadInstrumentalFromBytes(fileBytes);
     #else
@@ -3025,17 +3043,17 @@ class ChartEditorState extends HaxeUIState
   /**
    * Loads a vocal track from an absolute file path.
    */
-  public function loadVocalsFromPath(path:String):Void
+  public function loadVocalsFromPath(path:String, ?charKey:String):Void
   {
     #if sys
     var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path);
-    loadVocalsFromBytes(fileBytes);
+    loadVocalsFromBytes(fileBytes, charKey);
     #else
     trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     #end
   }
 
-  public function loadVocalsFromAsset(path:String):Void
+  public function loadVocalsFromAsset(path:String, ?charKey:String):Void
   {
     var vocalTrack:FlxSound = FlxG.sound.load(path, 1.0, false);
     audioVocalTrackGroup.add(vocalTrack);
@@ -3044,7 +3062,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Loads a vocal track from audio byte data.
    */
-  public function loadVocalsFromBytes(bytes:haxe.io.Bytes):Void
+  public function loadVocalsFromBytes(bytes:haxe.io.Bytes, ?charKey:String):Void
   {
     var openflSound = new openfl.media.Sound();
     openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(bytes), bytes.length);
@@ -3065,7 +3083,7 @@ class ChartEditorState extends HaxeUIState
 
     if (song == null)
     {
-      // showNotification('Failed to load song template.');
+      // showNotification('Failed to load song.');
       return;
     }
 
@@ -3219,23 +3237,11 @@ class ChartEditorState extends HaxeUIState
   }
 
   /**
-   * Displays a notification to the user. The only action is to dismiss.
-   */
-  function showNotification(text:String)
-  {
-    // Make it appear.
-    notifBar.show();
-
-    // Auto dismiss.
-    new FlxTimer().start(NOTIFICATION_DISMISS_TIME, (_:FlxTimer) -> dismissNotification());
-  }
-
-  /**
    * Dismiss any existing notifications, if there are any.
    */
-  function dismissNotification():Void
+  function dismissNotifications():Void
   {
-    notifBar.hide();
+    NotificationManager.instance.clearNotifications();
   }
 
   /**
