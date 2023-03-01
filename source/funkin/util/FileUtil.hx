@@ -5,6 +5,10 @@ import lime.utils.Bytes;
 import lime.ui.FileDialog;
 import openfl.net.FileFilter;
 import haxe.io.Path;
+#if html5
+import openfl.net.FileReference;
+import openfl.events.Event;
+#end
 
 /**
  * Utilities for reading and writing files on various platforms.
@@ -141,8 +145,6 @@ class FileUtil
     fileDialog.open(filter, defaultPath, dialogTitle);
     return true;
     #elseif html5
-    var filter = convertTypeFilter(typeFilter);
-
     var onFileLoaded = function(event) {
       var loadedFileRef:FileReference = event.target;
       trace('Loaded file: ' + loadedFileRef.name);
@@ -157,8 +159,9 @@ class FileUtil
     }
 
     var fileRef = new FileReference();
-    file.addEventListener(Event.SELECT, onFileSelected);
-    file.open(filter, defaultPath, dialogTitle);
+    fileRef.addEventListener(Event.SELECT, onFileSelected);
+    fileRef.browse(typeFilter);
+    return true;
     #else
     onCancel();
     return false;
@@ -169,7 +172,6 @@ class FileUtil
    * Browses for a single file location, then writes the provided `haxe.io.Bytes` data and calls `onSave(path)` when done.
    * Works great on desktop and HTML5.
    * 
-   * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
   public static function saveFile(data:Bytes, ?onSave:String->Void, ?onCancel:Void->Void, ?defaultFileName:String, ?dialogTitle:String):Bool
@@ -191,6 +193,7 @@ class FileUtil
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
 
     fileDialog.save(data, filter, defaultFileName, dialogTitle);
+    return true;
     #else
     onCancel();
     return false;
@@ -374,7 +377,11 @@ class FileUtil
    */
   public static function appendStringToPath(path:String, data:String)
   {
+    #if sys
     sys.io.File.append(path, false).writeString(data);
+    #else
+    throw 'Direct file writing by path not supported on this platform.';
+    #end
   }
 
   /**
@@ -410,7 +417,7 @@ class FileUtil
     {
       path = Sys.getEnv(envName);
 
-      if (path == "") path = null;
+      if (path == '') path = null;
       if (path != null) break;
     }
 

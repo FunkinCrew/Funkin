@@ -2,7 +2,7 @@ package funkin.util;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-#if cpp
+#if (cpp && windows)
 @:cppFileCode('
 #include <iostream>
 #include <windows.h>
@@ -35,8 +35,7 @@ class WindowUtil
     // onUpdate is called every frame just before rendering.
 
     // onExit is called when the game window is closed.
-    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int)
-    {
+    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int) {
       windowExit.dispatch(exitCode);
     });
   }
@@ -46,7 +45,7 @@ class WindowUtil
    */
   public static function disableCrashHandler()
   {
-    #if cpp
+    #if (cpp && windows)
     untyped __cpp__('SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);');
     #else
     // Do nothing.
