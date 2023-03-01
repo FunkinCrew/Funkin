@@ -436,22 +436,19 @@ class AnimateAtlasCharacter extends BaseCharacter
     if (!exists || x == value) return x; // early return (no need to transform)
 
     transformChildren(xTransform, value - x); // offset
-    x = value;
-    return x;
+    return x = value;
   }
 
   override function set_y(value:Float):Float
   {
     if (exists && y != value) transformChildren(yTransform, value - y); // offset
-    y = value;
-    return y;
+    return y = value;
   }
 
   override function set_angle(value:Float):Float
   {
     if (exists && angle != value) transformChildren(angleTransform, value - angle); // offset
-    angle = value;
-    return angle;
+    return angle = value;
   }
 
   override function set_alpha(value:Float):Float
@@ -462,43 +459,37 @@ class AnimateAtlasCharacter extends BaseCharacter
     {
       transformChildren(directAlphaTransform, value);
     }
-    alpha = value;
-    return alpha;
+    return alpha = value;
   }
 
   override function set_facing(value:Int):Int
   {
     if (exists && facing != value) transformChildren(facingTransform, value);
-    facing = value;
-    return facing;
+    return facing = value;
   }
 
   override function set_flipX(value:Bool):Bool
   {
     if (exists && flipX != value) transformChildren(flipXTransform, value);
-    flipX = value;
-    return flipX;
+    return flipX = value;
   }
 
   override function set_flipY(value:Bool):Bool
   {
     if (exists && flipY != value) transformChildren(flipYTransform, value);
-    flipY = value;
-    return flipY;
+    return flipY = value;
   }
 
   override function set_moves(value:Bool):Bool
   {
     if (exists && moves != value) transformChildren(movesTransform, value);
-    moves = value;
-    return moves;
+    return moves = value;
   }
 
   override function set_immovable(value:Bool):Bool
   {
     if (exists && immovable != value) transformChildren(immovableTransform, value);
-    immovable = value;
-    return immovable;
+    return immovable = value;
   }
 
   override function set_solid(value:Bool):Bool
@@ -510,15 +501,13 @@ class AnimateAtlasCharacter extends BaseCharacter
   override function set_color(value:Int):Int
   {
     if (exists && color != value) transformChildren(gColorTransform, value);
-    color = value;
-    return color;
+    return color = value;
   }
 
   override function set_blend(value:BlendMode):BlendMode
   {
     if (exists && blend != value) transformChildren(blendTransform, value);
-    blend = value;
-    return blend;
+    return blend = value;
   }
 
   override function set_clipRect(rect:FlxRect):FlxRect

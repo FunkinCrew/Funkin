@@ -126,8 +126,10 @@ class Song // implements IPlayStateScriptedClass
 
   /**
    * Retrieve the metadata for a specific difficulty, including the chart if it is loaded.
+   * @param diffId The difficulty ID, such as `easy` or `hard`.
+   * @return The difficulty data.
    */
-  public inline function getDifficulty(?diffId:String):SongDifficulty
+  public inline function getDifficulty(diffId:String = null):SongDifficulty
   {
     if (diffId == null) diffId = difficulties.keys().array()[0];
 

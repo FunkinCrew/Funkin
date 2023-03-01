@@ -17,8 +17,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   function set_active(value:Bool):Bool
   {
-    this.active = value;
-    return value;
+    return this.active = value;
   }
 
   public var moduleId(default, null):String = 'UNKNOWN';

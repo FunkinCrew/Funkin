@@ -193,7 +193,8 @@
     {
       "props": {
         "max": 1000,
-        "ignoreEmptyLines": true
+        "ignoreEmptyLines": true,
+        "severity": "IGNORE"
       },
       "type": "FileLength"
     },
@@ -232,7 +233,7 @@
     },
     {
       "props": {
-        "ignoreReturnAssignments": false,
+        "ignoreReturnAssignments": true,
         "severity": "WARNING"
       },
       "type": "InnerAssignment"
@@ -392,12 +393,13 @@
     },
     {
       "props": {
+        "oldFunctionTypePolicy": "none",
+        "unaryOpPolicy": "none",
+        "intervalOpPolicy": "none",
+
         "newFunctionTypePolicy": "around",
         "ternaryOpPolicy": "around",
-        "unaryOpPolicy": "none",
-        "oldFunctionTypePolicy": "around",
         "boolOpPolicy": "around",
-        "intervalOpPolicy": "none",
         "assignOpPolicy": "around",
         "bitwiseOpPolicy": "around",
         "arithmeticOpPolicy": "around",
@@ -623,7 +625,9 @@
       "type": "UnusedImport"
     },
     {
-      "props": {},
+      "props": {
+        "severity": "WARNING"
+      },
       "type": "UnusedLocalVar"
     },
     {

@@ -1,5 +1,8 @@
 package funkin.ui.debug.charting;
 
+import funkin.ui.debug.charting.ChartEditorCommand;
+import flixel.input.keyboard.FlxKey;
+import funkin.input.TurboKeyHandler;
 import haxe.ui.notifications.NotificationType;
 import haxe.ui.notifications.NotificationManager;
 import haxe.DynamicAccess;
@@ -18,7 +21,6 @@ import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VocalGroup;
 import funkin.input.Cursor;
 import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.HealthIcon;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongChartData;
@@ -27,8 +29,6 @@ import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongNoteData;
 import funkin.play.song.SongDataUtils;
-import funkin.play.song.SongSerializer;
-import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
 import funkin.ui.debug.charting.ChartEditorToolboxHandler.ChartEditorToolMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
@@ -37,23 +37,16 @@ import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.DateUtil;
 import funkin.util.SerializerUtil;
-import haxe.ui.components.Button;
-import haxe.ui.components.CheckBox;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.dialogs.Dialog;
-import haxe.ui.containers.dialogs.MessageBox;
-import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
-import haxe.ui.containers.SideBar;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
-import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
-import lime.media.AudioBuffer;
 import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
@@ -523,14 +516,34 @@ class ChartEditorState extends HaxeUIState
   var redoHistory:Array<ChartEditorCommand> = [];
 
   /**
-   * Variable used to track how long the user has been holding the undo keybind.
+   * Handler used to track how long the user has been holding the undo keybind.
    */
-  var undoHeldTime:Float = 0.0;
+  var undoKeyHandler:TurboKeyHandler = TurboKeyHandler.build([FlxKey.CONTROL, FlxKey.Z]);
 
   /**
    * Variable used to track how long the user has been holding the redo keybind.
    */
-  var redoHeldTime:Float = 0.0;
+  var redoKeyHandler:TurboKeyHandler = TurboKeyHandler.build([FlxKey.CONTROL, FlxKey.Y]);
+
+  /**
+   * Variable used to track how long the user has been holding the up keybind.
+   */
+  var upKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.UP);
+
+  /**
+   * Variable used to track how long the user has been holding the down keybind.
+   */
+  var downKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.DOWN);
+
+  /**
+   * Variable used to track how long the user has been holding the page-up keybind.
+   */
+  var pageUpKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.PAGEUP);
+
+  /**
+   * Variable used to track how long the user has been holding the page-down keybind.
+   */
+  var pageDownKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.PAGEDOWN);
 
   /**
    * Whether the undo/redo histories have changed since the last time the UI was updated.
@@ -728,8 +741,7 @@ class ChartEditorState extends HaxeUIState
 
   function set_currentSongChartEventData(value:Array<SongEventData>):Array<SongEventData>
   {
-    currentSongChartData.events = value;
-    return value;
+    return currentSongChartData.events = value;
   }
 
   public var currentSongNoteSkin(get, set):String;
@@ -911,7 +923,7 @@ class ChartEditorState extends HaxeUIState
     super(CHART_EDITOR_LAYOUT);
   }
 
-  override function create()
+  override function create():Void
   {
     // Get rid of any music from the previous state.
     FlxG.sound.music.stop();
@@ -931,18 +943,14 @@ class ChartEditorState extends HaxeUIState
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
+    setupTurboKeyHandlers();
 
     setupAutoSave();
 
-    // TODO: We should be loading the music later when the user requests it.
-    // loadDefaultMusic();
-
-    // TODO: Change to false.
-    var canCloseInitialDialog = true;
-    ChartEditorDialogHandler.openWelcomeDialog(this, canCloseInitialDialog);
+    ChartEditorDialogHandler.openWelcomeDialog(this, false);
   }
 
-  function buildDefaultSongData()
+  function buildDefaultSongData():Void
   {
     selectedVariation = Constants.DEFAULT_VARIATION;
     selectedDifficulty = Constants.DEFAULT_DIFFICULTY;
@@ -959,7 +967,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Builds and displays the background sprite.
    */
-  function buildBackground()
+  function buildBackground():Void
   {
     menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
     add(menuBG);
@@ -973,7 +981,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Builds and displays the chart editor grid, including the playhead and cursor.
    */
-  function buildGrid()
+  function buildGrid():Void
   {
     gridTiledSprite = new FlxTiledSprite(gridBitmap, gridBitmap.width, 1000, false, true);
     gridTiledSprite.x = FlxG.width / 2 - GRID_SIZE * STRUMLINE_SIZE; // Center the grid.
@@ -1032,7 +1040,7 @@ class ChartEditorState extends HaxeUIState
     add(healthIconBF);
   }
 
-  function buildSelectionBox()
+  function buildSelectionBox():Void
   {
     selectionBoxSprite.scrollFactor.set(0, 0);
     add(selectionBoxSprite);
@@ -1040,7 +1048,7 @@ class ChartEditorState extends HaxeUIState
     setSelectionBoxBounds();
   }
 
-  function setSelectionBoxBounds(?bounds:FlxRect = null)
+  function setSelectionBoxBounds(?bounds:FlxRect = null):Void
   {
     if (bounds == null)
     {
@@ -1058,7 +1066,7 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function buildSpectrogram(target:FlxSound)
+  function buildSpectrogram(target:FlxSound):Void
   {
     gridSpectrogram = new PolygonSpectogram(target, SPECTROGRAM_COLOR, FlxG.height / 2, Math.floor(FlxG.height / 2));
     // Halfway through the grid.
@@ -1075,7 +1083,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Builds the group that will hold all the notes.
    */
-  function buildNoteGroup()
+  function buildNoteGroup():Void
   {
     renderedNotes = new FlxTypedSpriteGroup<ChartEditorNoteSprite>();
     renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
@@ -1148,23 +1156,23 @@ class ChartEditorState extends HaxeUIState
   {
     // Add functionality to the playbar.
 
-    addUIClickListener('playbarPlay', (event:MouseEvent) -> toggleAudioPlayback());
-    addUIClickListener('playbarStart', (event:MouseEvent) -> playbarButtonPressed = 'playbarStart');
-    addUIClickListener('playbarBack', (event:MouseEvent) -> playbarButtonPressed = 'playbarBack');
-    addUIClickListener('playbarForward', (event:MouseEvent) -> playbarButtonPressed = 'playbarForward');
-    addUIClickListener('playbarEnd', (event:MouseEvent) -> playbarButtonPressed = 'playbarEnd');
+    addUIClickListener('playbarPlay', _ -> toggleAudioPlayback());
+    addUIClickListener('playbarStart', _ -> playbarButtonPressed = 'playbarStart');
+    addUIClickListener('playbarBack', _ -> playbarButtonPressed = 'playbarBack');
+    addUIClickListener('playbarForward', _ -> playbarButtonPressed = 'playbarForward');
+    addUIClickListener('playbarEnd', _ -> playbarButtonPressed = 'playbarEnd');
 
     // Add functionality to the menu items.
 
-    addUIClickListener('menubarItemNewChart', (event:MouseEvent) -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
-    addUIClickListener('menubarItemSaveChartAs', (event:MouseEvent) -> exportAllSongData());
-    addUIClickListener('menubarItemLoadInst', (event:MouseEvent) -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
+    addUIClickListener('menubarItemNewChart', _ -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
+    addUIClickListener('menubarItemSaveChartAs', _ -> exportAllSongData());
+    addUIClickListener('menubarItemLoadInst', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
 
-    addUIClickListener('menubarItemUndo', (event:MouseEvent) -> undoLastCommand());
+    addUIClickListener('menubarItemUndo', _ -> undoLastCommand());
 
-    addUIClickListener('menubarItemRedo', (event:MouseEvent) -> redoLastCommand());
+    addUIClickListener('menubarItemRedo', _ -> redoLastCommand());
 
-    addUIClickListener('menubarItemCopy', (event:MouseEvent) -> {
+    addUIClickListener('menubarItemCopy', function(_) {
       // Doesn't use a command because it's not undoable.
       SongDataUtils.writeItemsToClipboard(
         {
@@ -1173,15 +1181,11 @@ class ChartEditorState extends HaxeUIState
         });
     });
 
-    addUIClickListener('menubarItemCut', (event:MouseEvent) -> {
-      performCommand(new CutItemsCommand(currentNoteSelection, currentEventSelection));
-    });
+    addUIClickListener('menubarItemCut', _ -> performCommand(new CutItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    addUIClickListener('menubarItemPaste', (event:MouseEvent) -> {
-      performCommand(new PasteItemsCommand(scrollPositionInMs + playheadPositionInMs));
-    });
+    addUIClickListener('menubarItemPaste', _ -> performCommand(new PasteItemsCommand(scrollPositionInMs + playheadPositionInMs)));
 
-    addUIClickListener('menubarItemDelete', (event:MouseEvent) -> {
+    addUIClickListener('menubarItemDelete', function(_) {
       if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
       {
         performCommand(new RemoveItemsCommand(currentNoteSelection, currentEventSelection));
@@ -1200,84 +1204,60 @@ class ChartEditorState extends HaxeUIState
       }
     });
 
-    addUIClickListener('menubarItemSelectAll', (event:MouseEvent) -> {
-      performCommand(new SelectAllItemsCommand(currentNoteSelection, currentEventSelection));
-    });
+    addUIClickListener('menubarItemSelectAll', _ -> performCommand(new SelectAllItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    addUIClickListener('menubarItemSelectInverse', (event:MouseEvent) -> {
-      performCommand(new InvertSelectedItemsCommand(currentNoteSelection, currentEventSelection));
-    });
+    addUIClickListener('menubarItemSelectInverse', _ -> performCommand(new InvertSelectedItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    addUIClickListener('menubarItemSelectNone', (event:MouseEvent) -> {
-      performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
-    });
+    addUIClickListener('menubarItemSelectNone', _ -> performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    addUIClickListener('menubarItemSelectRegion', (event:MouseEvent) ->
-      {
-        // TODO: Implement this.
-      });
+    // TODO: Implement these.
+    // addUIClickListener('menubarItemSelectRegion', _ -> doSomething());
+    // addUIClickListener('menubarItemSelectBeforeCursor', _ -> doSomething());
+    // addUIClickListener('menubarItemSelectAfterCursor', _ -> doSomething());
 
-    addUIClickListener('menubarItemSelectBeforeCursor', (event:MouseEvent) ->
-      {
-        // TODO: Implement this.
-      });
+    addUIClickListener('menubarItemAbout', _ -> ChartEditorDialogHandler.openAboutDialog(this));
 
-    addUIClickListener('menubarItemSelectAfterCursor', (event:MouseEvent) ->
-      {
-        // TODO: Implement this.
-      });
+    addUIClickListener('menubarItemUserGuide', _ -> ChartEditorDialogHandler.openUserGuideDialog(this));
 
-    addUIClickListener('menubarItemAbout', (event:MouseEvent) -> ChartEditorDialogHandler.openAboutDialog(this));
-
-    addUIClickListener('menubarItemUserGuide', (event:MouseEvent) -> ChartEditorDialogHandler.openUserGuideDialog(this));
-
-    addUIChangeListener('menubarItemDownscroll', (event:UIEvent) -> {
-      isViewDownscroll = event.value;
-    });
+    addUIChangeListener('menubarItemDownscroll', event -> isViewDownscroll = event.value);
     setUICheckboxSelected('menubarItemDownscroll', isViewDownscroll);
 
-    addUIChangeListener('menuBarItemThemeLight', (event:UIEvent) -> {
+    addUIChangeListener('menuBarItemThemeLight', function(event:UIEvent) {
       if (event.target.value) currentTheme = ChartEditorTheme.Light;
     });
     setUICheckboxSelected('menuBarItemThemeLight', currentTheme == ChartEditorTheme.Light);
 
-    addUIChangeListener('menuBarItemThemeDark', (event:UIEvent) -> {
+    addUIChangeListener('menuBarItemThemeDark', function(event:UIEvent) {
       if (event.target.value) currentTheme = ChartEditorTheme.Dark;
     });
     setUICheckboxSelected('menuBarItemThemeDark', currentTheme == ChartEditorTheme.Dark);
 
-    addUIChangeListener('menubarItemMetronomeEnabled', (event:UIEvent) -> {
-      shouldPlayMetronome = event.value;
-    });
+    addUIChangeListener('menubarItemMetronomeEnabled', event -> shouldPlayMetronome = event.value);
     setUICheckboxSelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
 
-    addUIChangeListener('menubarItemPlayerHitsounds', (event:UIEvent) -> {
-      hitsoundsEnabledPlayer = event.value;
-    });
+    addUIChangeListener('menubarItemPlayerHitsounds', event -> hitsoundsEnabledPlayer = event.value);
     setUICheckboxSelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
 
-    addUIChangeListener('menubarItemOpponentHitsounds', (event:UIEvent) -> {
-      hitsoundsEnabledOpponent = event.value;
-    });
+    addUIChangeListener('menubarItemOpponentHitsounds', event -> hitsoundsEnabledOpponent = event.value);
     setUICheckboxSelected('menubarItemOpponentHitsounds', hitsoundsEnabledOpponent);
 
     var instVolumeLabel:Label = findComponent('menubarLabelVolumeInstrumental', Label);
-    addUIChangeListener('menubarItemVolumeInstrumental', (event:UIEvent) -> {
+    addUIChangeListener('menubarItemVolumeInstrumental', function(event:UIEvent) {
       var volume:Float = event.value / 100.0;
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       instVolumeLabel.text = 'Instrumental - ${Std.int(event.value)}%';
     });
 
     var vocalsVolumeLabel:Label = findComponent('menubarLabelVolumeVocals', Label);
-    addUIChangeListener('menubarItemVolumeVocals', (event:UIEvent) -> {
+    addUIChangeListener('menubarItemVolumeVocals', function(event:UIEvent) {
       var volume:Float = event.value / 100.0;
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
       vocalsVolumeLabel.text = 'Vocals - ${Std.int(event.value)}%';
     });
 
     var playbackSpeedLabel:Label = findComponent('menubarLabelPlaybackSpeed', Label);
-    addUIChangeListener('menubarItemPlaybackSpeed', (event:UIEvent) -> {
-      var pitch = event.value * 2.0 / 100.0;
+    addUIChangeListener('menubarItemPlaybackSpeed', function(event:UIEvent) {
+      var pitch:Float = event.value * 2.0 / 100.0;
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.pitch = pitch;
@@ -1285,40 +1265,45 @@ class ChartEditorState extends HaxeUIState
       playbackSpeedLabel.text = 'Playback Speed - ${Std.int(pitch * 100) / 100}x';
     });
 
-    addUIChangeListener('menubarItemToggleToolboxTools', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT, event.value);
-    });
-    // setUICheckboxSelected('menubarItemToggleToolboxTools', true);
-    addUIChangeListener('menubarItemToggleToolboxNotes', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
-    });
-    addUIChangeListener('menubarItemToggleToolboxEvents', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT, event.value);
-    });
-    addUIChangeListener('menubarItemToggleToolboxDifficulty', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
-    });
-    addUIChangeListener('menubarItemToggleToolboxMetadata', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
-    });
-    addUIChangeListener('menubarItemToggleToolboxCharacters', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT, event.value);
-    });
-    addUIChangeListener('menubarItemToggleToolboxPlayerPreview', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
-    });
-    addUIChangeListener('menubarItemToggleToolboxOpponentPreview', (event:UIEvent) -> {
-      ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
-    });
+    addUIChangeListener('menubarItemToggleToolboxTools',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT, event.value));
+    addUIChangeListener('menubarItemToggleToolboxNotes',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value));
+    addUIChangeListener('menubarItemToggleToolboxEvents',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT, event.value));
+    addUIChangeListener('menubarItemToggleToolboxDifficulty',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value));
+    addUIChangeListener('menubarItemToggleToolboxMetadata',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value));
+    addUIChangeListener('menubarItemToggleToolboxCharacters',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT, event.value));
+    addUIChangeListener('menubarItemToggleToolboxPlayerPreview',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value));
+    addUIChangeListener('menubarItemToggleToolboxOpponentPreview',
+      event -> ChartEditorToolboxHandler.setToolboxState(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value));
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     registerContextMenu(null, Paths.ui('chart-editor/context/test'));
   }
 
   /**
+   * Initialize TurboKeyHandlers and add them to the state (so `update()` is called)
+   * We can then probe `keyHandler.activated` to see if the key combo's action should be taken.
+   */
+  function setupTurboKeyHandlers():Void
+  {
+    add(undoKeyHandler);
+    add(redoKeyHandler);
+    add(upKeyHandler);
+    add(downKeyHandler);
+    add(pageUpKeyHandler);
+    add(pageDownKeyHandler);
+  }
+
+  /**
    * Setup timers and listerners to handle auto-save.
    */
-  function setupAutoSave()
+  function setupAutoSave():Void
   {
     WindowUtil.windowExit.add(onWindowClose);
     saveDataDirty = false;
@@ -1327,7 +1312,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Called after 5 minutes without saving.
    */
-  function autoSave()
+  function autoSave():Void
   {
     saveDataDirty = false;
 
@@ -1466,42 +1451,49 @@ class ChartEditorState extends HaxeUIState
     var shouldPause:Bool = false;
 
     // Up Arrow = Scroll Up
-    if (FlxG.keys.justPressed.UP)
+    if (upKeyHandler.activated)
     {
-      scrollAmount = -GRID_SIZE * 0.25 * 5;
+      scrollAmount = -GRID_SIZE * 0.25 * 5.0;
+      shouldPause = true;
     }
     // Down Arrow = Scroll Down
-    if (FlxG.keys.justPressed.DOWN)
+    if (downKeyHandler.activated)
     {
-      scrollAmount = GRID_SIZE * 0.25 * 5;
+      scrollAmount = GRID_SIZE * 0.25 * 5.0;
+      shouldPause = true;
     }
 
     // PAGE UP = Jump Up 1 Measure
-    if (FlxG.keys.justPressed.PAGEUP)
+    if (pageUpKeyHandler.activated)
     {
       scrollAmount = -GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      shouldPause = true;
     }
     if (playbarButtonPressed == 'playbarBack')
     {
       playbarButtonPressed = '';
       scrollAmount = -GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      shouldPause = true;
     }
 
     // PAGE DOWN = Jump Down 1 Measure
-    if (FlxG.keys.justPressed.PAGEDOWN)
+    if (pageDownKeyHandler.activated)
     {
       scrollAmount = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      shouldPause = true;
     }
     if (playbarButtonPressed == 'playbarForward')
     {
       playbarButtonPressed = '';
       scrollAmount = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      shouldPause = true;
     }
 
     // Mouse Wheel = Scroll
     if (FlxG.mouse.wheel != 0 && !FlxG.keys.pressed.CONTROL)
     {
       scrollAmount = -10 * FlxG.mouse.wheel;
+      shouldPause = true;
     }
 
     // Middle Mouse + Drag = Scroll but move the playhead the same amount.
@@ -1532,6 +1524,7 @@ class ChartEditorState extends HaxeUIState
     {
       playheadAmount = scrollAmount;
       scrollAmount = 0;
+      shouldPause = false;
     }
 
     // HOME = Scroll to Top
@@ -1540,12 +1533,14 @@ class ChartEditorState extends HaxeUIState
       // Scroll amount is the difference between the current position and the top.
       scrollAmount = 0 - this.scrollPositionInPixels;
       playheadAmount = 0 - this.playheadPositionInPixels;
+      shouldPause = true;
     }
     if (playbarButtonPressed == 'playbarStart')
     {
       playbarButtonPressed = '';
       scrollAmount = 0 - this.scrollPositionInPixels;
       playheadAmount = 0 - this.playheadPositionInPixels;
+      shouldPause = true;
     }
 
     // END = Scroll to Bottom
@@ -1553,11 +1548,13 @@ class ChartEditorState extends HaxeUIState
     {
       // Scroll amount is the difference between the current position and the bottom.
       scrollAmount = this.songLengthInPixels - this.scrollPositionInPixels;
+      shouldPause = true;
     }
     if (playbarButtonPressed == 'playbarEnd')
     {
       playbarButtonPressed = '';
       scrollAmount = this.songLengthInPixels - this.scrollPositionInPixels;
+      shouldPause = true;
     }
 
     // Apply the scroll amount.
@@ -1566,9 +1563,10 @@ class ChartEditorState extends HaxeUIState
 
     // Resync the conductor and audio tracks.
     if (scrollAmount != 0 || playheadAmount != 0) moveSongToScrollPosition();
+    if (shouldPause) stopAudioPlayback();
   }
 
-  function handleZoom()
+  function handleZoom():Void
   {
     if (FlxG.keys.justPressed.MINUS)
     {
@@ -1591,7 +1589,7 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function handleSnap()
+  function handleSnap():Void
   {
     if (FlxG.keys.justPressed.LEFT)
     {
@@ -1607,7 +1605,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle display of the mouse cursor.
    */
-  function handleCursor()
+  function handleCursor():Void
   {
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor = !isCursorOverHaxeUI || (selectionBoxStartPos != null);
@@ -2330,7 +2328,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handles display elements for the playbar at the bottom.
    */
-  function handlePlaybar()
+  function handlePlaybar():Void
   {
     // Make sure the playbar is never nudged out of the correct spot.
     playbarHeadLayout.x = 4;
@@ -2362,7 +2360,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle keybinds for File menu items.
    */
-  function handleFileKeybinds()
+  function handleFileKeybinds():Void
   {
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
@@ -2374,46 +2372,18 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle keybinds for edit menu items.
    */
-  function handleEditKeybinds()
+  function handleEditKeybinds():Void
   {
     // CTRL + Z = Undo
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Z)
+    if (undoKeyHandler.activated)
     {
       undoLastCommand();
-    }
-
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.Z && !FlxG.keys.pressed.Y)
-    {
-      undoHeldTime += FlxG.elapsed;
-    }
-    else
-    {
-      undoHeldTime = 0;
-    }
-    if (undoHeldTime > RAPID_UNDO_DELAY + RAPID_UNDO_INTERVAL)
-    {
-      undoLastCommand();
-      undoHeldTime -= RAPID_UNDO_INTERVAL;
     }
 
     // CTRL + Y = Redo
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Y)
+    if (redoKeyHandler.activated)
     {
       redoLastCommand();
-    }
-
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.Y && !FlxG.keys.pressed.Z)
-    {
-      redoHeldTime += FlxG.elapsed;
-    }
-    else
-    {
-      redoHeldTime = 0;
-    }
-    if (redoHeldTime > RAPID_UNDO_DELAY + RAPID_UNDO_INTERVAL)
-    {
-      redoLastCommand();
-      redoHeldTime -= RAPID_UNDO_INTERVAL;
     }
 
     // CTRL + C = Copy
@@ -2485,25 +2455,25 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle keybinds for View menu items.
    */
-  function handleViewKeybinds() {}
+  function handleViewKeybinds():Void {}
 
   /**
    * Handle keybinds for Help menu items.
    */
-  function handleHelpKeybinds()
+  function handleHelpKeybinds():Void
   {
     // F1 = Open Help
     if (FlxG.keys.justPressed.F1) ChartEditorDialogHandler.openUserGuideDialog(this);
   }
 
-  function handleToolboxes()
+  function handleToolboxes():Void
   {
     handleDifficultyToolbox();
     handlePlayerPreviewToolbox();
     handleOpponentPreviewToolbox();
   }
 
-  function handleDifficultyToolbox()
+  function handleDifficultyToolbox():Void
   {
     if (difficultySelectDirty)
     {
@@ -2552,7 +2522,7 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function handlePlayerPreviewToolbox()
+  function handlePlayerPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
     var charPreviewToolbox = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
@@ -2564,7 +2534,7 @@ class ChartEditorState extends HaxeUIState
     currentPlayerCharacterPlayer = charPlayer;
   }
 
-  function handleOpponentPreviewToolbox()
+  function handleOpponentPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
     var charPreviewToolbox = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
@@ -2576,7 +2546,7 @@ class ChartEditorState extends HaxeUIState
     currentOpponentCharacterPlayer = charPlayer;
   }
 
-  override function dispatchEvent(event:ScriptEvent)
+  override function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 
@@ -2660,9 +2630,9 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function addDifficulty(variation:String) {}
+  function addDifficulty(variation:String):Void {}
 
-  function addVariation(variationId:String)
+  function addVariation(variationId:String):Void
   {
     // Create a new variation with the specified ID.
     songMetadata.set(variationId, currentSongMetadata.clone(variationId));
@@ -2673,7 +2643,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle the player preview/gameplay test area on the left side.
    */
-  function handlePlayerDisplay() {}
+  function handlePlayerDisplay():Void {}
 
   /**
    * Handles the note preview/scroll area on the right side.
@@ -2683,7 +2653,7 @@ class ChartEditorState extends HaxeUIState
    * - Scrolling the note preview area down if the note preview is taller than the screen,
    *   and the viewport nears the end of the visible area.
    */
-  function handleNotePreview()
+  function handleNotePreview():Void
   {
     //
     if (notePreviewDirty)
@@ -2703,13 +2673,13 @@ class ChartEditorState extends HaxeUIState
    * Perform a spot update on the note preview, by editing the note preview
    * only where necessary. More efficient than a full update.
    */
-  function updateNotePreview(note:SongNoteData, ?deleteNote:Bool = false) {}
+  function updateNotePreview(note:SongNoteData, ?deleteNote:Bool = false):Void {}
 
   /**
    * Handles passive behavior of the menu bar, such as updating labels or enabled/disabled status.
    * Does not handle onClick ACTIONS of the menubar.
    */
-  function handleMenubar()
+  function handleMenubar():Void
   {
     if (commandHistoryDirty)
     {
@@ -2765,7 +2735,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle syncronizing the conductor with the music playback.
    */
-  function handleMusicPlayback()
+  function handleMusicPlayback():Void
   {
     if (audioInstTrack != null && audioInstTrack.playing)
     {
@@ -2856,21 +2826,25 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function startAudioPlayback()
+  function startAudioPlayback():Void
   {
     if (audioInstTrack != null) audioInstTrack.play();
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.play();
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.play();
+
+    setComponentText('playbarPlay', '||');
   }
 
-  function stopAudioPlayback()
+  function stopAudioPlayback():Void
   {
     if (audioInstTrack != null) audioInstTrack.pause();
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.pause();
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.pause();
+
+    setComponentText('playbarPlay', '>');
   }
 
-  function toggleAudioPlayback()
+  function toggleAudioPlayback():Void
   {
     if (audioInstTrack == null) return;
 
@@ -2884,7 +2858,7 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function handlePlayhead()
+  function handlePlayhead():Void
   {
     // Place notes at the playhead.
     // TODO: Add the ability to switch modes.
@@ -2973,52 +2947,64 @@ class ChartEditorState extends HaxeUIState
    * Loads an instrumental from an absolute file path, replacing the current instrumental.
    * 
    * @param path The absolute path to the audio file.
+   * @return Success or failure.
    */
-  public function loadInstrumentalFromPath(path:String):Void
+  public function loadInstrumentalFromPath(path:Path):Bool
   {
     #if sys
     // Validate file extension.
-    var fileExtension:String = Path.extension(path);
-    if (!SUPPORTED_MUSIC_FORMATS.contains(fileExtension))
+    if (!SUPPORTED_MUSIC_FORMATS.contains(path.ext))
     {
-      trace('[WARN] Unsupported file extension: $fileExtension');
-      return;
+      return false;
     }
 
-    var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path);
-    loadInstrumentalFromBytes(fileBytes);
+    var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path.toString());
+    return loadInstrumentalFromBytes(fileBytes, '${path.file}.${path.ext}');
     #else
     trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+    return false;
     #end
   }
 
   /**
    * Loads an instrumental from audio byte data, replacing the current instrumental.
+   * @param bytes The audio byte data.
+   * @param fileName The name of the file, if available. Used for notifications.
+   * @return Success or failure.
    */
-  public function loadInstrumentalFromBytes(bytes:haxe.io.Bytes):Void
+  public function loadInstrumentalFromBytes(bytes:haxe.io.Bytes, fileName:String = null):Bool
   {
-    var openflSound = new openfl.media.Sound();
+    var openflSound:openfl.media.Sound = new openfl.media.Sound();
     openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(bytes), bytes.length);
     audioInstTrack = FlxG.sound.load(openflSound, 1.0, false);
     audioInstTrack.autoDestroy = false;
     audioInstTrack.pause();
 
-    // Tell the user the load was successful.
-    // TODO: Un-bork this.
-    // showNotification('Loaded instrumental track successfully.');
-
     postLoadInstrumental();
+
+    return true;
   }
 
-  public function loadInstrumentalFromAsset(path:String):Void
+  /**
+   * Loads an instrumental from an OpenFL asset, replacing the current instrumental.
+   * @param path The path to the asset. Use `Paths` to build this.
+   * @return Success or failure.
+   */
+  public function loadInstrumentalFromAsset(path:String):Bool
   {
-    var instTrack = FlxG.sound.load(path, 1.0, false);
-    audioInstTrack = instTrack;
+    var instTrack:FlxSound = FlxG.sound.load(path, 1.0, false);
+    if (instTrack != null)
+    {
+      audioInstTrack = instTrack;
 
-    postLoadInstrumental();
+      postLoadInstrumental();
+      return true;
+    }
+
+    return false;
   }
 
-  function postLoadInstrumental()
+  function postLoadInstrumental():Void
   {
     // Prevent the time from skipping back to 0 when the song ends.
     audioInstTrack.onComplete = function() {
@@ -3042,42 +3028,47 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * Loads a vocal track from an absolute file path.
+   * @param path The absolute path to the audio file.
+   * @param charKey The character to load the vocal track for.
    */
-  public function loadVocalsFromPath(path:String, ?charKey:String):Void
+  public function loadVocalsFromPath(path:Path, charKey:String = null):Bool
   {
     #if sys
-    var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path);
-    loadVocalsFromBytes(fileBytes, charKey);
+    var fileBytes:haxe.io.Bytes = sys.io.File.getBytes(path.toString());
+    return loadVocalsFromBytes(fileBytes, charKey);
     #else
     trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+    return false;
     #end
   }
 
-  public function loadVocalsFromAsset(path:String, ?charKey:String):Void
+  public function loadVocalsFromAsset(path:String, charKey:String = null):Bool
   {
     var vocalTrack:FlxSound = FlxG.sound.load(path, 1.0, false);
-    audioVocalTrackGroup.add(vocalTrack);
+    if (vocalTrack != null)
+    {
+      audioVocalTrackGroup.add(vocalTrack);
+      return true;
+    }
+    return false;
   }
 
   /**
    * Loads a vocal track from audio byte data.
    */
-  public function loadVocalsFromBytes(bytes:haxe.io.Bytes, ?charKey:String):Void
+  public function loadVocalsFromBytes(bytes:haxe.io.Bytes, charKey:String = null):Bool
   {
     var openflSound = new openfl.media.Sound();
     openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(bytes), bytes.length);
     var vocalTrack:FlxSound = FlxG.sound.load(openflSound, 1.0, false);
     audioVocalTrackGroup.add(vocalTrack);
-
-    // Tell the user the load was successful.
-    // TODO: Un-bork this.
-    // showNotification('Loaded instrumental track successfully.');
+    return true;
   }
 
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
    */
-  public function loadSongAsTemplate(songId:String)
+  public function loadSongAsTemplate(songId:String):Void
   {
     var song:Song = SongDataParser.fetchSong(songId);
 
@@ -3089,6 +3080,7 @@ class ChartEditorState extends HaxeUIState
 
     // Load the song metadata.
     var rawSongMetadata:Array<SongMetadata> = song.getRawMetadata();
+    var songName:String = rawSongMetadata[0].songName;
 
     this.songMetadata = new Map<String, SongMetadata>();
 
@@ -3112,14 +3104,20 @@ class ChartEditorState extends HaxeUIState
     loadInstrumentalFromAsset(Paths.inst(songId));
     loadVocalsFromAsset(Paths.voices(songId));
 
-    // showNotification('Loaded song ${songId}.');
+    NotificationManager.instance.addNotification(
+      {
+        title: 'Success',
+        body: 'Loaded song ($songName)',
+        type: NotificationType.Success,
+        expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+      });
   }
 
   /**
    * When setting the scroll position, except when automatically scrolling during song playback,
    * we need to update the conductor's current step time and the timestamp of the audio tracks.
    */
-  function moveSongToScrollPosition()
+  function moveSongToScrollPosition():Void
   {
     // Update the songPosition in the Conductor.
     Conductor.update(scrollPositionInMs);
@@ -3168,7 +3166,7 @@ class ChartEditorState extends HaxeUIState
       return;
     }
 
-    var command = undoHistory.pop();
+    var command:ChartEditorCommand = undoHistory.pop();
     undoCommand(command);
   }
 
@@ -3183,11 +3181,11 @@ class ChartEditorState extends HaxeUIState
       return;
     }
 
-    var command = redoHistory.pop();
+    var command:ChartEditorCommand = redoHistory.pop();
     performCommand(command, false);
   }
 
-  function sortChartData()
+  function sortChartData():Void
   {
     currentSongChartNoteData.sort(function(a:SongNoteData, b:SongNoteData):Int {
       return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
@@ -3198,7 +3196,7 @@ class ChartEditorState extends HaxeUIState
     });
   }
 
-  function playMetronomeTick(?high:Bool = false)
+  function playMetronomeTick(?high:Bool = false):Void
   {
     playSound(Paths.sound('pianoStuff/piano-${high ? '001' : '008'}'));
   }
@@ -3217,7 +3215,7 @@ class ChartEditorState extends HaxeUIState
    * Play a sound effect.
    * Automatically cleans up after itself and recycles previous FlxSound instances if available, for performance.
    */
-  function playSound(path:String)
+  function playSound(path:String):Void
   {
     var snd:FlxSound = FlxG.sound.list.recycle(FlxSound);
     snd.loadEmbedded(FlxG.sound.cache(path));
@@ -3226,7 +3224,7 @@ class ChartEditorState extends HaxeUIState
     snd.play();
   }
 
-  override function destroy()
+  override function destroy():Void
   {
     super.destroy();
 
@@ -3282,7 +3280,14 @@ class ChartEditorState extends HaxeUIState
 
     if (force)
     {
-      var targetPath:String = tmp ? Path.join([FileUtil.getTempDir(), 'chart-editor-exit-${DateUtil.generateTimestamp()}.zip']) : Path.join(['./backups/', 'chart-editor-exit-${DateUtil.generateTimestamp()}.zip']);
+      var targetPath:String = if (tmp)
+      {
+        Path.join([FileUtil.getTempDir(), 'chart-editor-exit-${DateUtil.generateTimestamp()}.zip']);
+      }
+      else
+      {
+        Path.join(['./backups/', 'chart-editor-exit-${DateUtil.generateTimestamp()}.zip']);
+      }
 
       // We have to force write because the program will die before the save dialog is closed.
       trace('Force exporting to $targetPath...');
@@ -3291,11 +3296,11 @@ class ChartEditorState extends HaxeUIState
     }
 
     // Prompt and save.
-    var onSave:Array<String>->Void = (paths:Array<String>) -> {
+    var onSave:Array<String>->Void = function(paths:Array<String>) {
       trace('Successfully exported files.');
     };
 
-    var onCancel:Void->Void = () -> {
+    var onCancel:Void->Void = function() {
       trace('Export cancelled.');
     };
 
