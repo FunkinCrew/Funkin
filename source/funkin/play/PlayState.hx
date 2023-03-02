@@ -2025,7 +2025,19 @@ class PlayState extends MusicBeatState
       grpNoteSplashes.add(noteSplash);
     }
     // Only add the score if you're not on practice mode
-    if (!isPracticeMode) songScore += score;
+    if (!isPracticeMode)
+    {
+      songScore += score;
+
+      var pressArray:Array<Bool> = [
+        controls.NOTE_LEFT_P,
+        controls.NOTE_DOWN_P,
+        controls.NOTE_UP_P,
+        controls.NOTE_RIGHT_P
+      ];
+      var lol:Array<Int> = cast pressArray;
+      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" ") + " " + Std.string(score) + " " + songScore);
+    }
     comboPopUps.displayRating(daRating);
     if (Highscore.tallies.combo >= 10 || Highscore.tallies.combo == 0) comboPopUps.displayCombo(Highscore.tallies.combo);
   }
@@ -2112,11 +2124,11 @@ class PlayState extends MusicBeatState
       controls.NOTE_RIGHT_R
     ];
 
-    if (pressArray.contains(true))
-    {
-      var lol:Array<Int> = cast pressArray;
-      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" "));
-    }
+    // if (pressArray.contains(true))
+    // {
+    //   var lol:Array<Int> = cast pressArray;
+    //   inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" "));
+    // }
 
     if (FlxG.keys.justPressed.B) trace(inputSpitter.join("\n"));
 
@@ -2239,7 +2251,19 @@ class PlayState extends MusicBeatState
 
     health += event.healthChange;
 
-    if (!isPracticeMode) songScore += event.scoreChange;
+    if (!isPracticeMode)
+    {
+      songScore += event.scoreChange;
+
+      var pressArray:Array<Bool> = [
+        controls.NOTE_LEFT_P,
+        controls.NOTE_DOWN_P,
+        controls.NOTE_UP_P,
+        controls.NOTE_RIGHT_P
+      ];
+      var lol:Array<Int> = cast pressArray;
+      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" ") + " " + Std.string(event.scoreChange) + " " + songScore);
+    }
 
     if (event.playSound)
     {
@@ -2259,7 +2283,21 @@ class PlayState extends MusicBeatState
     if (event.eventCanceled) return;
 
     health -= 0.0775;
-    if (!isPracticeMode) songScore -= 10;
+
+    if (!isPracticeMode)
+    {
+      songScore -= 10;
+
+      // messy copy paste rn lol
+      var pressArray:Array<Bool> = [
+        controls.NOTE_LEFT_P,
+        controls.NOTE_DOWN_P,
+        controls.NOTE_UP_P,
+        controls.NOTE_RIGHT_P
+      ];
+      var lol:Array<Int> = cast pressArray;
+      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" ") + " " + Std.string(-10) + " " + songScore);
+    }
     vocals.volume = 0;
 
     if (Highscore.tallies.combo != 0)
