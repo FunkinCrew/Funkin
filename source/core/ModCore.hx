@@ -24,7 +24,8 @@ class ModCore
 		'xml' => TEXT,
 		'txt' => TEXT,
 		'ttf' => FONT,
-		'otf' => FONT
+		'otf' => FONT,
+		'mp4' => VIDEO
 	];
 
 	public static var trackedMods:Array<ModMetadata> = [];
