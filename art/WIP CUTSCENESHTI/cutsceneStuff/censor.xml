@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="censor.png">
-	<!-- Created with Adobe Animate version 21.0.0.35450 -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="mouth censor instance 10000" x="156" y="0" width="153" height="62" frameX="0" frameY="-1" frameWidth="154" frameHeight="63"/>
-	<SubTexture name="mouth censor instance 10001" x="0" y="0" width="152" height="63" frameX="-1" frameY="0" frameWidth="154" frameHeight="63"/>
-	<SubTexture name="mouth censor instance 10002" x="313" y="0" width="153" height="62" frameX="0" frameY="-1" frameWidth="154" frameHeight="63"/>
-	<SubTexture name="mouth censor instance 10003" x="156" y="66" width="154" height="61" frameX="0" frameY="-1" frameWidth="154" frameHeight="63"/>
-</TextureAtlas>

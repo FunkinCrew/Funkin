@@ -902,11 +902,7 @@ class PlayState extends MusicBeatState
 				case 'ugh':
 					ughIntro();
 				case 'stress':
-					#if web
 					stressIntro();
-					#else
-					startCountdown();
-					#end
 				case 'guns':
 					gunsIntro();
 
@@ -1116,7 +1112,7 @@ class PlayState extends MusicBeatState
 			cameraMovement();
 		};
         #else
-		/* camHUD.visible = false;
+		 camHUD.visible = false;
 
 			// for story mode shit
 			camFollow.setPosition(camPos.x, camPos.y);
@@ -1349,7 +1345,7 @@ class PlayState extends MusicBeatState
 
 					gfCutsceneLayer.remove(cutsceneShit);
 				});
-		});*/
+		});
 		#end
 	}
 
