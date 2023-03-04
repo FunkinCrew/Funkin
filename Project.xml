@@ -61,6 +61,8 @@
 		<library name="week6"    preload="true" />
 		<library name="week7"    preload="true" />
 		<library name="weeks"    preload="true" />
+		<library name="scripts"  preload="true" />
+		<library name="shaders"	 preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
@@ -75,6 +77,8 @@
 		<library name="week6"    preload="false" />
 		<library name="week7"    preload="false" />
 		<library name="weeks"    preload="false" />
+		<library name="scripts"  preload="false" />
+		<library name="shaders"	 preload="false" />
 	</section>
 	
 	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.ogg" if="web"/>
@@ -99,10 +103,12 @@
 	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.mp3" unless="web"/>
 	<assets path="assets/weeks"    library="weeks"    exclude="*.fla|*.ogg" if="web"/>
 	<assets path="assets/weeks"    library="weeks"    exclude="*.fla|*.mp3" unless="web"/>
-	
-	<assets path='example_mods' rename='mods' embed='false' if="desktop"/>
+	<assets path="assets/scripts"  library="scripts"  exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/scripts"  library="scripts"  exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/shaders"  library="shaders"  exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/shaders"  library="shaders"  exclude="*.fla|*.mp3" unless="web"/>
 
-	<!-- template path="example_mods" rename="mods" /> -->
+	<template path="example_mods" rename="mods" />
 
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->
@@ -126,12 +132,12 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<!--haxelib name="newgrounds" unless="switch"/> -->
+	<haxelib name="newgrounds" unless="switch"/>
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod" if="desktop"/>
-	<haxelib name="newgrounds"/>
+	<haxelib name="polymod" if="desktop || mobile"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
-	<haxelib name="hxCodec" if="desktop || android" />
+	<haxelib name="hxCodec" if="desktop || mobile" />
+	<haxelib name="linc_luajit" if="desktop || mobile" />
 	
 	<!-- <haxelib name="flixel-animate" /> -->
 	<!-- <haxelib name="spinehaxe" /> -->
@@ -139,7 +145,6 @@
 
 
 	<haxelib name="discord_rpc" if="desktop"/> <!-- foesn't work with neko -->
-	<haxelib name="hxcpp-debug-server" if="desktop"/>
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->

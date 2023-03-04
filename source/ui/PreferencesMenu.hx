@@ -39,6 +39,8 @@ class PreferencesMenu extends ui.OptionsState.Page
 		createPrefItem('Auto Pause', 'auto-pause', false);
 		createPrefItem('Ghost Tapping', 'ghosttapping', true);
 		createPrefItem('Visible Combo Sprite', 'vcombospr', false);
+		createPrefItem('Shaders', 'shaders', true);
+		createPrefItem('Antialiasing', 'antialiasing', true);
 
 		camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
 		if (items != null)
@@ -78,6 +80,8 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferenceCheck('master-volume', 1);
 		preferenceCheck('ghosttapping', true);
 		preferenceCheck('vcombospr', false);
+		preferenceCheck('shaders', true);
+		preferenceCheck('antialiasing', true);
 
 		#if muted
 		setPref('master-volume', 0);

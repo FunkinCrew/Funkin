@@ -18,9 +18,6 @@ typedef SwagSong =
 	var player1:String;
 	var player2:String;
 	var validScore:Bool;
-	
-	var p1KeyCount:Null<Int>;
-	var p2KeyCount:Null<Int>;
 }
 
 class Song
@@ -33,9 +30,6 @@ class Song
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
-
-	public var p1KeyCount:Int = 4;
-	public var p2KeyCount:Int = 4;
 
 	public function new(song, notes, bpm)
 	{
@@ -77,9 +71,6 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
-		if (swagShit.p1KeyCount == null) swagShit.p1KeyCount = 4;
-		if (swagShit.p2KeyCount == null) swagShit.p2KeyCount = swagShit.p1KeyCount;
-
 		return swagShit;
 	}
 }

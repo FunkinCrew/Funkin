@@ -184,14 +184,8 @@ class StrumNote extends FlxSprite
 			if(animation.curAnim.name == 'confirm' && !PlayState.curStage.startsWith('school')) {
 				centerOrigin();
 				centerOffsets();
-				//Thanks For LeatherEngine
-				offset.x = frameWidth / 2;
-				offset.y = frameHeight / 2;
-	
-				var scale = keyCount;
-	
-				offset.x -= 156 * scale / 2;
-				offset.y -= 156 * scale / 2;
+				offset.x -= 13;
+				offset.y -= 13;
 			}
 		}
 	}

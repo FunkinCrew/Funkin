@@ -152,7 +152,6 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.SONG.song.toLowerCase());
 
 					PlayState.storyDifficulty = curSelected;
-
 					FlxG.resetState();
 
 				case 'Toggle Practice Mode':

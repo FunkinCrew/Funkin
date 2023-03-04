@@ -39,8 +39,8 @@ class CoolUtil
 
 		return daList;
 	}
-
 	#if desktop
+
 	public static function hotTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = File.getContent(path).trim().split('\n');
@@ -53,7 +53,7 @@ class CoolUtil
 		return daList;
 	}
 	#end
-
+	
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
 		var dumbArray:Array<Int> = [];

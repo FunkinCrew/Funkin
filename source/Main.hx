@@ -144,6 +144,7 @@ class Main extends Sprite
 		Application.current.window.onFocusOut.add(onWindowFocusOut);
 		Application.current.window.onFocusIn.add(onWindowFocusIn);
 		#end
+		
 		/* 
 			video = new Video();
 			addChild(video);

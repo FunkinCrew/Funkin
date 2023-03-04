@@ -46,8 +46,9 @@ class Note extends FlxSprite
 	public static var RED_NOTE:Int = 3;
 
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
+	public var noteType:Int = 0;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, noteType:Int = 0)
 	{
 		super();
 
@@ -63,26 +64,7 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
-
-		if (PlayState.SONG != null){
-			if (mustPress)
-			{
-				scale.x = scale.x / (PlayState.SONG.p1KeyCount - 3);
-				scale.y = scale.y / (PlayState.SONG.p1KeyCount - 3);
-			}else{
-				scale.x = scale.x / (PlayState.SONG.p2KeyCount - 3); 
-				scale.y = scale.y / (PlayState.SONG.p2KeyCount - 3); 			
-			}
-		}else{
-			if (mustPress)
-			{
-				scale.x = scale.x / (ChartingState._song.p1KeyCount - 3); 
-				scale.y = scale.y / (ChartingState._song.p1KeyCount - 3); 
-			}else{
-				scale.x = scale.x / (ChartingState._song.p2KeyCount - 3); 
-				scale.y = scale.y / (ChartingState._song.p2KeyCount - 3); 			
-			}
-		}
+		this.noteType = noteType;
 
 		var daStage:String = PlayState.curStage;
 

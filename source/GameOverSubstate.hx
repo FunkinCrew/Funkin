@@ -11,6 +11,7 @@ import ui.PreferencesMenu;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
+	public static var instance:GameOverSubstate;
 	var bf:Boyfriend;
 	var camFollow:FlxObject;
 
@@ -19,6 +20,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float)
 	{
+		instance = this;
 		var daStage = PlayState.curStage;
 		var daBf:String = '';
 		switch (daStage)

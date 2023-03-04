@@ -117,6 +117,26 @@ class Paths
 
 	inline static public function video(key:String)
 	{
-		return 'assets/videos/$key';
+		return file('$key',"videos");
+	}
+
+	inline static public function week(key:String)
+	{
+		return file('$key.json',"weeks");
+	}
+
+	inline static public function script(key:String)
+	{
+		return file('$key',"scripts");
+	}
+
+	inline static public function shaders(key:String)
+	{
+		return file('$key',"shaders");
+	}
+
+	inline static public function filelist(type:AssetType = TEXT):Array<String>
+	{
+		return OpenFlAssets.list(type);
 	}
 }

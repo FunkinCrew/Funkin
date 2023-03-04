@@ -30,7 +30,7 @@ class ModMenu extends ui.OptionsState.Page
 
 	var descriptionText:FlxText;
 	var descBg:FlxSprite;
-	public static var MOD_PATH = "./mods";
+	public static var MOD_PATH = "mods";
 
 	public function new():Void
 	{
@@ -163,6 +163,8 @@ class ModMenu extends ui.OptionsState.Page
 			trace(i.id);
 			var txt:ModMenuItem = new ModMenuItem(0, 10 + (40 * loopNum), 0, i.id, 32);
 			txt.text = i.id;
+			if (enabledMods.contains(i.id))
+				txt.modEnabled = true;
 			grpMods.add(txt);
 
 			loopNum++;

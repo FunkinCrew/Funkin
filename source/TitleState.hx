@@ -74,6 +74,11 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		#if debug
+		//crash
+		//FlxG.log.redirectTraces = true;
+		#end
+
 		#if polymod
 		var mods:Array<String> = CoolUtil.hotTextFile("mods/modList.txt");
 		//Thanks For Leather Engine
@@ -95,6 +100,7 @@ class TitleState extends MusicBeatState
                     "fonts" => "fonts",
 					"weeks" => "weeks",
 					"data" => "data",
+					"scripts" => "scripts",
 					"images" => "images",
 					"music" => "music",
 					"sounds" => "sounds",
@@ -110,6 +116,7 @@ class TitleState extends MusicBeatState
             }
 		});
 		FlxG.bitmap.clearCache();
+		Polymod.clearCache();
 		#end
 
 		if (!doneFlixelSplash) {
@@ -200,13 +207,10 @@ class TitleState extends MusicBeatState
 
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
 		#else
-		/*
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
-		*/
-		startIntro();
 		#end
 
 		#if discord_rpc

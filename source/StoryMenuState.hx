@@ -16,8 +16,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
 #if desktop
-import sys.FileSystem;
-import sys.io.File;
+import lime.utils.Assets;
+import lime.utils.AssetType;
 import haxe.Json;
 import haxe.format.JsonParser;
 #end
@@ -65,11 +65,11 @@ class StoryMenuState extends MusicBeatState
 		}
 
 		#if desktop
-		var weekList:Array<String> = sys.FileSystem.readDirectory("assets/weeks/");
+		var weekList:Array<String> = CoolUtil.coolTextFile(Paths.txt("weeklist"));
 		var weekJson:String;
 		var weekParseJson:Dynamic;
 		for(i in 0...weekList.length) {
-			weekJson = File.getContent("assets/weeks/"+weekList[i]);
+			weekJson = Assets.getText(Paths.week(weekList[i]));
 			weekParseJson = haxe.Json.parse(weekJson);
 			var weekSongs:Array<String> = Reflect.getProperty(weekParseJson, "songs");
 			var weekChars:Array<String> = Reflect.getProperty(weekParseJson, "weekCharacter");

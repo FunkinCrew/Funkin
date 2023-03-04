@@ -14,8 +14,8 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 #if desktop
-import sys.FileSystem;
-import sys.io.File;
+import lime.utils.AssetType;
+import lime.utils.Assets;
 import haxe.Json;
 import haxe.format.JsonParser;
 #end
@@ -87,11 +87,11 @@ class FreeplayState extends MusicBeatState
 		}
 
 		#if desktop		
-		var weekList:Array<String> = sys.FileSystem.readDirectory("assets/weeks/");
+		var weekList:Array<String> = CoolUtil.coolTextFile(Paths.txt("weeklist"));
 		var weekJson:String;
 		var weekParseJson:Dynamic;
 		for(i in 0...weekList.length) {
-			weekJson = File.getContent("assets/weeks/"+weekList[i]);
+			weekJson = Assets.getText(Paths.week(weekList[i]));
 			weekParseJson = haxe.Json.parse(weekJson);
 			var weekSongs:Array<String> = Reflect.getProperty(weekParseJson, "songs");
 			var weekid:Int = Reflect.getProperty(weekParseJson, "weekid");
@@ -226,8 +226,12 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
+	var holdTime:Float = 0;
 	override function update(elapsed:Float)
 	{
+		var shiftMult:Int = 1;
+		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
+
 		super.update(elapsed);
 
 		if (FlxG.sound.music != null)
@@ -250,12 +254,34 @@ class FreeplayState extends MusicBeatState
 		var accepted = controls.ACCEPT;
 
 		if (upP)
+		{
 			changeSelection(-1);
+			holdTime = 0;
+		}
 		if (downP)
+		{
 			changeSelection(1);
+			holdTime = 0;
+		}
 
-		if (FlxG.mouse.wheel != 0)
-			changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+		if(controls.UI_DOWN || controls.UI_UP)
+		{
+			var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
+			holdTime += elapsed;
+			var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
+
+			if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
+			{
+				changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
+				changeDiff();
+			}
+		}
+
+		if(FlxG.mouse.wheel != 0)
+		{
+			changeSelection(-shiftMult * FlxG.mouse.wheel);
+			changeDiff();
+		}
 
 		if (controls.UI_LEFT_P)
 			changeDiff(-1);
@@ -280,7 +306,7 @@ class FreeplayState extends MusicBeatState
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 
-		if (FlxG.keys.pressed.SHIFT){
+		if (FlxG.keys.pressed.CONTROL){
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
