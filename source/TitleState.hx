@@ -45,6 +45,8 @@ import sys.io.File;
 import sys.thread.Thread;
 #end
 
+import core.ModCore;
+
 class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
@@ -69,9 +71,8 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
-		// FlxG.bitmap.clearCache();
+		#if (polymod && FUTURE_POLYMOD)
+		ModCore.reload();
 		#end
 
 		startedIntro = false;

@@ -48,6 +48,7 @@
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+	<define name="FUTURE_POLYMOD" if="desktop"/>
 	
 	<section if="PRELOAD_ALL">
 		<library name="songs"    preload="true" />
@@ -95,13 +96,10 @@
 	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.mp3" unless="web"/>
 	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.ogg" if="web"/>
 	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.mp3" unless="web"/>
-	
-	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
-	<template path="example_mods" rename="mods" />
+	<assets path="mods" if="FUTURE_POLYMOD" />
 
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<!-- <template path='mods' /> -->
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
 
@@ -124,7 +122,7 @@
 	<haxelib name="flixel-ui" />
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
+	<haxelib name="polymod-joalor64" if="FUTURE_POLYMOD"/>
 	<haxelib name="newgrounds"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 	
