@@ -153,6 +153,9 @@ class Paths
 
 	inline static public function font(key:String)
 		return 'assets/fonts/$key';
+		
+	inline static public function video(key:String)
+		return 'assets/$key.mp4';
 
 	inline static public function getSparrowAtlas(key:String, ?library:String, ?cache:Bool = true)
 		return FlxAtlasFrames.fromSparrow(returnGraphic('images/$key', cache), xml('images/$key'));
