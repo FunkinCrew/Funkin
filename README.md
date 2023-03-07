@@ -30,11 +30,12 @@ IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
 First, you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
 1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/) (Download 4.1.5 instead of 4.2.0 because 4.2.0 is broken and is not working with gits properly...)
-2. [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) after downloading Haxe
+2. [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) After downloading Haxe
 
 Other installations you'd need are the additional libraries, a fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
 ```
 flixel
+vshaxe
 flixel-addons
 flixel-ui
 hscript
@@ -88,3 +89,29 @@ As for Mac, 'lime test mac -debug' should work, if not the internet surely has a
 ### Additional guides
 
 - [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
+
+### VSCode
+
+In case that you use VSCode, You might need to check the Haxe Server Language thing, It's mostly for having a sweet mini menu for all the library and haxe functions
+
+(and don't have to check 27 billion times how a library works lol)
+
+Download the [Haxe language support](https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe) and the [Lime](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension) extension And you should go like normal. 
+
+If you hate the `"Unable to build cache - completion features may be slower than expected. Try fixing the error(s) and restarting the language server."` error
+You might need to downgrading the openfl, lime and hxcpp to these specific versions
+
+```
+
+lime 7.7.0
+openfl 9.0.2
+hxcpp 4.1.15
+
+```
+These are currently the most compatible with each other and with the Haxe Server, idk why
+
+
+(At this point you should know how to install libraries)
+
+
+And if you have a current version and you need to set it to another, just use `haxelib set [library] [library-version]`.
