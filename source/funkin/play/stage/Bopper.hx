@@ -70,8 +70,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
     this.x += xDiff;
     this.y += yDiff;
-    globalOffsets = value;
-    return value;
+    return globalOffsets = value;
   }
 
   var animOffsets(default, set):Array<Float> = [0, 0];

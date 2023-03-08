@@ -60,7 +60,7 @@ class VanillaCutscenes
     #if html5
     // Video displays OVER the FlxState.
     vid = new FlxVideo(path);
-    vid.finishCallback = finishCutscene;
+    vid.finishCallback = finishCutscene.bind(0.5);
     #else
     // Video displays OVER the FlxState.
     // vid = new FlxVideoSprite(0, 0);

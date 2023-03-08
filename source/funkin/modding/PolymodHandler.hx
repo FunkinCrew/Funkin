@@ -169,6 +169,7 @@ class PolymodHandler
     // `polymod.*`
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
+      if (cls == null) continue;
       var className = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }

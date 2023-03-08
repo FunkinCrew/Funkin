@@ -1,14 +1,12 @@
 package funkin.ui.haxeui;
 
-import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.components.CheckBox;
-import haxe.ui.events.DragEvent;
-import haxe.ui.events.MouseEvent;
-import haxe.ui.events.UIEvent;
-import haxe.ui.RuntimeComponentBuilder;
+import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
+import haxe.ui.RuntimeComponentBuilder;
 import lime.app.Application;
 
 class HaxeUIState extends MusicBeatState
@@ -23,7 +21,7 @@ class HaxeUIState extends MusicBeatState
     _componentKey = key;
   }
 
-  override function create()
+  override function create():Void
   {
     super.create();
 
@@ -31,7 +29,7 @@ class HaxeUIState extends MusicBeatState
     if (component != null) add(component);
   }
 
-  public function buildComponent(assetPath:String)
+  public function buildComponent(assetPath:String):Component
   {
     try
     {
@@ -81,15 +79,13 @@ class HaxeUIState extends MusicBeatState
   {
     if (target == null)
     {
-      Screen.instance.registerEvent(MouseEvent.RIGHT_CLICK, function(e:MouseEvent)
-      {
+      Screen.instance.registerEvent(MouseEvent.RIGHT_CLICK, function(e:MouseEvent) {
         showContextMenu(assetPath, e.screenX, e.screenY);
       });
     }
     else
     {
-      target.registerEvent(MouseEvent.RIGHT_CLICK, function(e:MouseEvent)
-      {
+      target.registerEvent(MouseEvent.RIGHT_CLICK, function(e:MouseEvent) {
         showContextMenu(assetPath, e.screenX, e.screenY);
       });
     }
@@ -98,7 +94,7 @@ class HaxeUIState extends MusicBeatState
   /**
    * Add an onClick listener to a HaxeUI menu bar item.
    */
-  function addUIClickListener(key:String, callback:MouseEvent->Void)
+  function addUIClickListener(key:String, callback:MouseEvent->Void):Void
   {
     var target:Component = findComponent(key);
     if (target == null)
@@ -112,10 +108,24 @@ class HaxeUIState extends MusicBeatState
     }
   }
 
+  function setComponentText(key:String, text:String):Void
+  {
+    var target:Component = findComponent(key);
+    if (target == null)
+    {
+      // Gracefully handle the case where the item can't be located.
+      trace('WARN: Could not locate menu item: $key');
+    }
+    else
+    {
+      target.text = text;
+    }
+  }
+
   /**
    * Add an onChange listener to a HaxeUI input component such as a slider or text field.
    */
-  function addUIChangeListener(key:String, callback:UIEvent->Void)
+  function addUIChangeListener(key:String, callback:UIEvent->Void):Void
   {
     var target:Component = findComponent(key);
     if (target == null)
@@ -179,7 +189,7 @@ class HaxeUIState extends MusicBeatState
     return component.findComponent(criteria, type, recursive, searchType);
   }
 
-  override function destroy()
+  override function destroy():Void
   {
     if (component != null) remove(component);
     component = null;

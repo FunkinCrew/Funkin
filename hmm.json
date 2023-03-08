@@ -42,14 +42,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "e5cf78d",
+      "ref": "59157d2",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "f03bb6d",
+      "ref": "d353389",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -68,7 +68,7 @@
       "name": "hxcodec",
       "type": "git",
       "dir": null,
-      "ref": "2c9a89a",
+      "ref": "d74c2aa",
       "url": "https://github.com/polybiusproxy/hxCodec"
     },
     {

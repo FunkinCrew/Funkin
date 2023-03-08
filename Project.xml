@@ -156,9 +156,13 @@
 	<haxeflag name="--macro" value="include('funkin')" />
 	
 	<!-- Ensure all UI components are available at runtime. -->
+	<haxeflag name="--macro" value="include('haxe.ui.backend.flixel.components')" />
+	<haxeflag name="--macro" value="include('haxe.ui.containers.dialogs')" />
+	<haxeflag name="--macro" value="include('haxe.ui.containers.menus')" />
+	<haxeflag name="--macro" value="include('haxe.ui.containers.properties')" />
+	<haxeflag name="--macro" value="include('haxe.ui.core')" />
   <haxeflag name="--macro" value="include('haxe.ui.components')" />
   <haxeflag name="--macro" value="include('haxe.ui.containers')" />
-	<haxeflag name="--macro" value="include('haxe.ui.containers.menus')" />
 
 	<!--
 		Ensure additional class packages are available at runtime (some only really used by scripts).
