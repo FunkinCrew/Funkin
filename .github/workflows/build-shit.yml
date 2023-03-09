@@ -38,6 +38,9 @@ jobs:
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false'}}
     runs-on: 64fast
+    permissions:
+       contents: write
+       actions: write
     steps:
       - uses: actions/checkout@v3
       - name: Restore existing build cache for faster compilation
