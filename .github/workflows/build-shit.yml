@@ -1,11 +1,7 @@
 name: build-upload
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 17 * * *'
   push:
-    branches:
-      - "master"
   
 jobs:
   check_date:
@@ -54,7 +50,8 @@ jobs:
             .haxelib/
             export/debug/windows/haxe/
             export/debug/windows/obj/
-            
+          restore-keys: |
+            cache-build-windows
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
@@ -65,11 +62,33 @@ jobs:
           butler-key: ${{ secrets.BUTLER_API_KEY}}
           build-dir: export/debug/windows/bin
           target: win
+      - name: Clearing already existing cache
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const caches = await github.rest.actions.getActionsCacheList({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            for (const cache of caches.data.actions_caches) {
+              if (cache.key == "cache-build-windows") {
+                console.log('Clearing ' + cache.key + '...')
+                await github.rest.actions.deleteActionsCacheById({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  cache_id: cache.id,
+                })
+                console.log("Cache cleared.")
+              }
+            }
       - name: Uploading new cache
         uses: actions/cache/save@v3
         with:
-          key: ${{ steps.cache-windows-shit.outputs.cache-primary-key }}
+          # caching again since for some reason it doesnt work with the first post cache shit
+          key: cache-build-windows
           path: |
             .haxelib/
             export/debug/windows/haxe/
             export/debug/windows/obj/
+          restore-keys: |
+            cache-build-windows
