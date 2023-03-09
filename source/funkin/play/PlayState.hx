@@ -1995,7 +1995,7 @@ class PlayState extends MusicBeatState
       healthMulti *= 0; // no health on shit note
       daRating = 'shit';
       Highscore.tallies.shit += 1;
-      score = 50;
+      // score = 50;
     }
     else if (noteDiff > Note.HIT_WINDOW * Note.GOOD_THRESHOLD)
     {
@@ -2008,7 +2008,7 @@ class PlayState extends MusicBeatState
       healthMulti *= 0.78;
       daRating = 'good';
       Highscore.tallies.good += 1;
-      score = 200;
+      // score = 200;
     }
     else
     {
