@@ -1,4 +1,0 @@
-# @install: lix --silent download "gh://github.com/Aidan63/linc_discord-rpc#2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5" into linc_discord-rpc/1.0.0/github/2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5
--lib hxcpp
--cp ${HAXE_LIBCACHE}/linc_discord-rpc/1.0.0/github/2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5/
--D discord_rpc=1.0.0

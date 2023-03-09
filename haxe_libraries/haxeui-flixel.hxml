@@ -1,5 +1,0 @@
-# @install: lix --silent download "gh://github.com/haxeui/haxeui-flixel#f03bb6d16017b7cd9572c9545223a7853330a342" into haxeui-flixel/1.4.0/github/f03bb6d16017b7cd9572c9545223a7853330a342
--lib flixel
--lib haxeui-core
--cp ${HAXE_LIBCACHE}/haxeui-flixel/1.4.0/github/f03bb6d16017b7cd9572c9545223a7853330a342/
--D haxeui-flixel=1.4.0

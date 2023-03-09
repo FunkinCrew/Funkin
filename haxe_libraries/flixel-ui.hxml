@@ -1,3 +1,0 @@
-# @install: lix --silent download "haxelib:/flixel-ui#2.5.0" into flixel-ui/2.5.0/haxelib
--cp ${HAXE_LIBCACHE}/flixel-ui/2.5.0/haxelib/
--D flixel-ui=2.5.0

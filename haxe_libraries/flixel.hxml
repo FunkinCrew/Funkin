@@ -1,4 +1,0 @@
-# @install: lix --silent download "gh://github.com/EliteMasterEric/flixel#d6100cc8bed8e2654e21f0d18ff6584ae5a1f23a" into flixel/5.2.1/github/d6100cc8bed8e2654e21f0d18ff6584ae5a1f23a
-# @run: haxelib run-dir flixel "${HAXE_LIBCACHE}/flixel/5.2.1/github/d6100cc8bed8e2654e21f0d18ff6584ae5a1f23a"
--cp ${HAXE_LIBCACHE}/flixel/5.2.1/github/d6100cc8bed8e2654e21f0d18ff6584ae5a1f23a/
--D flixel=5.2.1
