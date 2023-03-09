@@ -1,3 +1,0 @@
-# @install: lix --silent download "gh://github.com/EliteMasterEric/flixel-addons#f107166de3e830648e8fbf3da5526d4b94aa7dfc" into flixel-addons/3.0.2/github/f107166de3e830648e8fbf3da5526d4b94aa7dfc
--cp ${HAXE_LIBCACHE}/flixel-addons/3.0.2/github/f107166de3e830648e8fbf3da5526d4b94aa7dfc/
--D flixel-addons=3.0.2

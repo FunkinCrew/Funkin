@@ -1,3 +1,0 @@
-# @install: lix --silent download "gh://github.com/Dot-Stuff/flxanimate#18b2060a852d5c3eee7cb2fb69be5c56e105de53" into flxanimate/2.1.0/github/18b2060a852d5c3eee7cb2fb69be5c56e105de53
--cp ${HAXE_LIBCACHE}/flxanimate/2.1.0/github/18b2060a852d5c3eee7cb2fb69be5c56e105de53/
--D flxanimate=2.1.0
