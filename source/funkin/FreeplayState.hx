@@ -71,7 +71,7 @@ class FreeplayState extends MusicBeatSubstate
   var dj:DJBoyfriend;
 
   var typing:FlxInputText;
-  var exitMovers:Map<FlxSprite, MoveData> = new Map();
+  var exitMovers:Map<Array<FlxSprite>, MoveData> = new Map();
 
   override function create()
   {
@@ -132,14 +132,6 @@ class FreeplayState extends MusicBeatSubstate
     pinkBack.color = 0xFFffd4e9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
 
-    exitMovers.set(pinkBack,
-      {
-        x: -pinkBack.width,
-        y: pinkBack.y,
-        speed: 0.4,
-        wait: 0
-      });
-
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
 
@@ -148,6 +140,14 @@ class FreeplayState extends MusicBeatSubstate
 
     var alsoOrangeLOL:FlxSprite = new FlxSprite(0, orangeBackShit.y).makeGraphic(100, Std.int(orangeBackShit.height), 0xFFffd400);
     add(alsoOrangeLOL);
+
+    exitMovers.set([pinkBack, orangeBackShit, alsoOrangeLOL],
+      {
+        x: -pinkBack.width,
+        y: pinkBack.y,
+        speed: 0.4,
+        wait: 0
+      });
 
     FlxSpriteUtil.alphaMaskFlxSprite(orangeBackShit, pinkBack, orangeBackShit);
     orangeBackShit.visible = false;
@@ -162,7 +162,7 @@ class FreeplayState extends MusicBeatSubstate
     moreWays.speed = 4;
     grpTxtScrolls.add(moreWays);
 
-    exitMovers.set(moreWays,
+    exitMovers.set([moreWays],
       {
         x: FlxG.width,
         y: moreWays.y,
@@ -175,7 +175,7 @@ class FreeplayState extends MusicBeatSubstate
     funnyScroll.speed = -1;
     grpTxtScrolls.add(funnyScroll);
 
-    exitMovers.set(funnyScroll,
+    exitMovers.set([funnyScroll],
       {
         x: -funnyScroll.width,
         y: funnyScroll.y,
@@ -185,7 +185,7 @@ class FreeplayState extends MusicBeatSubstate
 
     var txtNuts:BGScrollingText = new BGScrollingText(0, 300, "PROTECT YO NUTS", FlxG.width / 2);
     grpTxtScrolls.add(txtNuts);
-    exitMovers.set(txtNuts,
+    exitMovers.set([txtNuts],
       {
         x: FlxG.width,
         y: txtNuts.y,
@@ -198,7 +198,7 @@ class FreeplayState extends MusicBeatSubstate
     funnyScroll2.speed = -1.2;
     grpTxtScrolls.add(funnyScroll2);
 
-    exitMovers.set(funnyScroll2,
+    exitMovers.set([funnyScroll2],
       {
         x: -funnyScroll2.width,
         y: funnyScroll2.y,
@@ -211,7 +211,7 @@ class FreeplayState extends MusicBeatSubstate
     moreWays2.speed = 4.4;
     grpTxtScrolls.add(moreWays2);
 
-    exitMovers.set(moreWays2,
+    exitMovers.set([moreWays2],
       {
         x: FlxG.width,
         y: moreWays2.y,
@@ -224,7 +224,7 @@ class FreeplayState extends MusicBeatSubstate
     funnyScroll3.speed = -0.8;
     grpTxtScrolls.add(funnyScroll3);
 
-    exitMovers.set(funnyScroll3,
+    exitMovers.set([funnyScroll3],
       {
         x: -funnyScroll3.width,
         y: funnyScroll3.y,
@@ -233,7 +233,7 @@ class FreeplayState extends MusicBeatSubstate
       });
 
     dj = new DJBoyfriend(0, -100);
-    exitMovers.set(dj,
+    exitMovers.set([dj],
       {
         x: -dj.width * 1.6,
         y: dj.y,
@@ -248,22 +248,14 @@ class FreeplayState extends MusicBeatSubstate
     bgDad.shader = new AngleMask();
     bgDad.visible = false;
 
-    exitMovers.set(bgDad,
-      {
-        x: FlxG.width * 1.5,
-        y: 0,
-        speed: 0.5,
-        wait: 0
-      });
-
     var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height), FlxColor.BLACK);
     add(blackOverlayBullshitLOLXD); // used to mask the text lol!
 
-    exitMovers.set(blackOverlayBullshitLOLXD,
+    exitMovers.set([blackOverlayBullshitLOLXD, bgDad],
       {
         x: FlxG.width * 1.5,
         y: bgDad.height,
-        speed: 0.5,
+        speed: 0.4,
         wait: 0
       });
 
@@ -281,6 +273,13 @@ class FreeplayState extends MusicBeatSubstate
     grpDifficulties = new FlxSpriteGroup(-300, 80);
     add(grpDifficulties);
 
+    exitMovers.set([grpDifficulties],
+      {
+        x: -300,
+        speed: 0.25,
+        wait: 0
+      });
+
     grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayEasy')));
     grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayNorm')));
     grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayHard')));
@@ -296,21 +295,13 @@ class FreeplayState extends MusicBeatSubstate
     add(overhangStuff);
     FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
 
-    exitMovers.set(overhangStuff,
-      {
-        y: -overhangStuff.height,
-        x: 0,
-        speed: 0.2,
-        wait: 0
-      });
-
     var fnfFreeplay:FlxText = new FlxText(0, 12, 0, "FREEPLAY", 48);
     fnfFreeplay.font = "VCR OSD Mono";
     fnfFreeplay.visible = false;
 
-    exitMovers.set(fnfFreeplay,
+    exitMovers.set([overhangStuff, fnfFreeplay],
       {
-        y: fnfFreeplay.y - 64,
+        y: -overhangStuff.height,
         x: 0,
         speed: 0.2,
         wait: 0
@@ -343,14 +334,35 @@ class FreeplayState extends MusicBeatSubstate
     txtCompletion.visible = false;
     add(txtCompletion);
 
+    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr],
+      {
+        x: FlxG.width,
+        speed: 0.3
+      });
+
     dj.onIntroDone.add(function() {
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
-      add(new DifficultySelector(20, grpDifficulties.y - 10, false, controls));
-      add(new DifficultySelector(325, grpDifficulties.y - 10, true, controls));
+      var diffSelLeft = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
+      var diffSelRight = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
+
+      add(diffSelLeft);
+      add(diffSelRight);
+
+      exitMovers.set([diffSelLeft, diffSelRight],
+        {
+          x: -diffSelLeft.width * 2,
+          speed: 0.26
+        });
 
       var letterSort:LetterSort = new LetterSort(300, 100);
       add(letterSort);
+
+      exitMovers.set([letterSort],
+        {
+          y: -100,
+          speed: 0.3
+        });
 
       letterSort.changeSelectionCallback = (str) -> {
         switch (str)
@@ -759,12 +771,23 @@ class FreeplayState extends MusicBeatSubstate
 
       var longestTimer:Float = 0;
 
-      for (spr in exitMovers.keys())
+      for (grpSpr in exitMovers.keys())
       {
-        var moveData:MoveData = exitMovers.get(spr);
-        FlxTween.tween(spr, {x: moveData.x, y: moveData.y}, moveData.speed, {ease: FlxEase.expoIn});
+        var moveData:MoveData = exitMovers.get(grpSpr);
 
-        longestTimer = Math.max(longestTimer, moveData.speed + moveData.wait);
+        for (spr in grpSpr)
+        {
+          var funnyMoveShit:MoveData = moveData;
+
+          if (moveData.x == null) funnyMoveShit.x = spr.x;
+          if (moveData.y == null) funnyMoveShit.y = spr.y;
+          if (moveData.speed == null) funnyMoveShit.speed = 0.2;
+          if (moveData.wait == null) funnyMoveShit.wait = 0;
+
+          FlxTween.tween(spr, {x: funnyMoveShit.x, y: funnyMoveShit.y}, funnyMoveShit.speed, {ease: FlxEase.expoIn});
+
+          longestTimer = Math.max(longestTimer, funnyMoveShit.speed + funnyMoveShit.wait);
+        }
       }
 
       for (caps in grpCapsules.members)
@@ -777,7 +800,16 @@ class FreeplayState extends MusicBeatSubstate
       new FlxTimer().start(longestTimer, (_) -> {
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-        FlxG.switchState(new MainMenuState());
+        if (Type.getClass(FlxG.state) == MainMenuState)
+        {
+          close();
+        }
+        else
+        {
+          FlxG.switchState(new MainMenuState());
+        }
+        //
+        // close();
       });
     }
 
@@ -1004,8 +1036,8 @@ class SongMetadata
 
 typedef MoveData =
 {
-  var x:Float;
-  var y:Float;
-  var speed:Float;
-  var wait:Float;
+  var ?x:Float;
+  var ?y:Float;
+  var ?speed:Float;
+  var ?wait:Float;
 }
