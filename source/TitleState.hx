@@ -52,7 +52,6 @@ import polymod.Polymod;
 class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
-	var startedIntro:Bool;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -125,8 +124,6 @@ class TitleState extends MusicBeatState
 			FlxG.switchState(new flixel.system.FlxSplash());
 			return;
 		}
-
-		startedIntro = false;
 
 		FlxG.game.focusLostFramerate = 60;
 
@@ -207,10 +204,15 @@ class TitleState extends MusicBeatState
 
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
 		#else
-		new FlxTimer().start(1, function(tmr:FlxTimer)
-		{
+		if (initialized)
 			startIntro();
-		});
+		else
+		{
+			new FlxTimer().start(1, function(tmr:FlxTimer)
+			{
+				startIntro();
+			});
+		}
 		#end
 
 		#if discord_rpc
@@ -278,11 +280,9 @@ class TitleState extends MusicBeatState
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 		}
-
-		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
-		{
+		
+		if(FlxG.sound.music == null) {
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
 		Conductor.changeBPM(102);
@@ -379,7 +379,6 @@ class TitleState extends MusicBeatState
 			FlxG.sound.music.onComplete = function() FlxG.switchState(new VideoState());
 		*/
 
-		startedIntro = true;
 		// credGroup.add(credTextShit);
 	}
 
@@ -450,8 +449,6 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			if (FlxG.sound.music != null)
-				FlxG.sound.music.onComplete = null;
 			// netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
 			//NGio.unlockMedal(60960);
 
@@ -498,11 +495,13 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				FlxG.switchState(new MainMenuState());
+				closedState = true;
 			});
 			#else
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				FlxG.switchState(new MainMenuState());
+				closedState = true;
 			});
 			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
@@ -565,88 +564,85 @@ class TitleState extends MusicBeatState
 		}
 	}
 
+	private var sickBeats:Int = 0; //Basically curBeat but won't be skipped if you hold the tab or resize the screen
+	public static var closedState:Bool = false;
 	var isRainbow:Bool = false;
 
 	override function beatHit()
 	{
 		super.beatHit();
 
-		if (!startedIntro)
-			return ;
-
-		if (skippedIntro)
-		{
+		if(logoBl != null)
 			logoBl.animation.play('bump', true);
 
+		if(gfDance != null) {
 			danceLeft = !danceLeft;
-
 			if (danceLeft)
 				gfDance.animation.play('danceRight');
 			else
 				gfDance.animation.play('danceLeft');
 		}
-		else
+
+		if (!closedState)
 		{
-			FlxG.log.add(curBeat);
+			FlxG.log.add(sickBeats);
 			// if the user is draggin the window some beats will
 			// be missed so this is just to compensate
-			if (curBeat > lastBeat)
+			sickBeats++;
+			switch (sickBeats)
 			{
-				for (i in lastBeat...curBeat)
-				{
-					switch (i + 1)
-					{
-						case 1:
-							createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-						// credTextShit.visible = true;
-						case 3:
-							addMoreText('present');
-						// credTextShit.text += '\npresent...';
-						// credTextShit.addText();
-						case 4:
-							deleteCoolText();
-						// credTextShit.visible = false;
-						// credTextShit.text = 'In association \nwith';
-						// credTextShit.screenCenter();
-						case 5:
-							createCoolText(['In association', 'with']);
-						case 7:
-							addMoreText('newgrounds');
-							ngSpr.visible = true;
-						// credTextShit.text += '\nNewgrounds';
-						case 8:
-							deleteCoolText();
-							ngSpr.visible = false;
-						// credTextShit.visible = false;
+				case 1:
+					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+					FlxG.sound.music.fadeIn(4, 0, 0.7);
+				case 2:
+					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				// credTextShit.visible = true;
+				case 4:
+					addMoreText('present');
+				// credTextShit.text += '\npresent...';
+				// credTextShit.addText();
+				case 5:
+					deleteCoolText();
+				// credTextShit.visible = false;
+				// credTextShit.text = 'In association \nwith';
+				// credTextShit.screenCenter();
+				case 6:
+					createCoolText(['In association', 'with']);
+				case 8:
+					addMoreText('newgrounds');
+					ngSpr.visible = true;
+				// credTextShit.text += '\nNewgrounds';
+				case 9:
+					deleteCoolText();
+					ngSpr.visible = false;
+				// credTextShit.visible = false;
 
-						// credTextShit.text = 'Shoutouts Tom Fulp';
-						// credTextShit.screenCenter();
-						case 9:
-							createCoolText([curWacky[0]]);
-						// credTextShit.visible = true;
-						case 11:
-							addMoreText(curWacky[1]);
-						// credTextShit.text += '\nlmao';
-						case 12:
-							deleteCoolText();
-						// credTextShit.visible = false;
-						// credTextShit.text = "Friday";
-						// credTextShit.screenCenter();
-						case 13:
-							addMoreText('Friday');
-						// credTextShit.visible = true;
-						case 14:
-							addMoreText('Night');
-						// credTextShit.text += '\nNight';
-						case 15:
-							addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				// credTextShit.text = 'Shoutouts Tom Fulp';
+				// credTextShit.screenCenter();
+				case 10:
+					createCoolText([curWacky[0]]);
+				// credTextShit.visible = true;
+				case 12:
+					addMoreText(curWacky[1]);
+				// credTextShit.text += '\nlmao';
+				case 13:
+					deleteCoolText();
+				// credTextShit.visible = false;
+				// credTextShit.text = "Friday";
+				// credTextShit.screenCenter();
+				case 14:
+					addMoreText('Friday');
+				// credTextShit.visible = true;
+				case 15:
+					addMoreText('Night');
+				// credTextShit.text += '\nNight';
+				case 16:
+					addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
 
-						case 16:
-							skipIntro();
-					}
-				}
+				case 17:
+					skipIntro();
 			}
-			lastBeat = curBeat;
+			lastBeat = sickBeats;
 		}
 	}
 

@@ -44,8 +44,6 @@ Run build-Itch-WINDOWS.bat in /art/ and build.
 * nennneko5787 - Programmer
 * ShadowMario - StrumNote.hx code, Lua code and shader code that I stole and modified from [PsychEngine](https://github.com/ShadowMario/FNF-PsychEngine).
 * k.net(brightfyre) - Window focus & unfocus source code I stole from [Indie Cross](https://github.com/brightfyregit/Indie-Cross-Public)
-* Leather128 - Part of the 5K+ support code stolen from [LeatherEngine](https://github.com/Leather128/LeatherEngine) and part of the Mod Menu code
-* tposejank - Part of the 5K+ support code stolen from [Psych Engine With Extra Keys](https://gamebanana.com/mods/333373)
 ## Funkin
 * ninjamuffin99 - Programmer
 * PhantomArcade3K and Evilsk8r - Art

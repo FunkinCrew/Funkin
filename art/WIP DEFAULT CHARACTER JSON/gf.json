@@ -1,0 +1,111 @@
+{
+	"texture":"characters/GF_assets",
+	"onInit":"danceRight",
+	"antialiasing": true,
+	"animations":[
+		{
+			"name":"cheer",
+			"anim":"GF Cheer",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singLEFT",
+			"anim":"GF left note",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singRIGHT",
+			"anim":"GF Right Note",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singUP",
+			"anim":"GF Up Note",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singDOWN",
+			"anim":"GF Down Note",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"sad",
+			"anim":"gf sad",
+			"framerate":24,
+			"loop": true,
+			"flipx": false,
+			"flipy": false,
+			"type":"indices",
+			"indices":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		},
+		{
+			"name":"danceLeft",
+			"anim":"GF Dancing Beat",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"indices",
+			"indices":[30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+		},
+		{
+			"name":"danceRight",
+			"anim":"GF Dancing Beat",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"indices",
+			"indices":[15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+		},
+		{
+			"name":"hairBlow",
+			"anim":"GF Dancing Beat Hair blowing",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"indices",
+			"indices":[0, 1, 2, 3]
+		},
+		{
+			"name":"hairFall",
+			"anim":"GF Dancing Beat Hair Landing",
+			"framerate":24,
+			"loop": false,
+			"flipx": false,
+			"flipy": false,
+			"type":"indices",
+			"indices":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+		},
+		{
+			"name":"scared",
+			"anim":"GF FEAR",
+			"framerate":24,
+			"loop": true,
+			"flipx": false,
+			"flipy": false,
+			"type":"prefix"
+		}
+	]
+}

@@ -125,7 +125,7 @@ class OptionsState extends MusicBeatState
 		File.saveContent(ModMenu.MOD_PATH + "/modList.txt", rawEnabledMods.trim());
 		ModMenu.enabledMods = rawEnabledMods.trim().split('\n');
 		FlxG.sound.play(Paths.sound('cancelMenu'));
-		FlxG.switchState(new OptionsState());
+		switchPage(Options);
 	}
 }
 

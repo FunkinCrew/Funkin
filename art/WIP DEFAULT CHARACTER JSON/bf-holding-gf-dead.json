@@ -1,0 +1,43 @@
+{
+	"texture":"characters/bfPixelsDEAD",
+	"onInit":"firstDeath",
+	"antialiasing": true,
+	"animations":[
+		{
+			"name":"singUP",
+			"anim":"BF Dead with GF Loop",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"firstDeath",
+			"anim":"BF Dies with GF",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"deathLoop",
+			"anim":"BF Dead with GF Loop",
+			"framerate":24,
+			"loop": true,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"deathConfirm",
+			"anim":"RETRY confirm holding gf",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		}
+	]
+}

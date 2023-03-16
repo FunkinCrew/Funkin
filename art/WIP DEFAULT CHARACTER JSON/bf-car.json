@@ -1,0 +1,107 @@
+{
+	"texture":"characters/bfCar",
+	"onInit":"idle",
+	"antialiasing": true,
+	"animations":[
+		{
+			"name":"idle",
+			"anim":"BF idle dance",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singUP",
+			"anim":"BF NOTE UP0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singLEFT",
+			"anim":"BF NOTE LEFT0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singRIGHT",
+			"anim":"BF NOTE RIGHT0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singDOWN",
+			"anim":"BF NOTE DOWN0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singUPmiss",
+			"anim":"BF NOTE UP MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singLEFTmiss",
+			"anim":"BF NOTE LEFT MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singRIGHTmiss",
+			"anim":"BF NOTE RIGHT MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singDOWNmiss",
+			"anim":"BF NOTE DOWN MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"hey",
+			"anim":"BF HEY",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"idleHair",
+			"anim":"BF idle dance",
+			"framerate":24,
+			"loop": true,
+			"flipx": true,
+			"flipy": false,
+			"type":"indices",
+			"indices":[10, 11, 12, 13]
+		}
+	]
+}

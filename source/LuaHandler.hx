@@ -59,6 +59,10 @@ import ui.PreferencesMenu;
 import Discord;
 #end
 
+#if hxCodec
+import hxcodec.VideoHandler;
+#end
+
 using StringTools;
 
 class LuaHandler {
@@ -160,6 +164,44 @@ class LuaHandler {
 		Lua_helper.add_callback(lua, "changePresence", function(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float) {
 			#if desktop
 			DiscordClient.changePresence(details, state, smallImageKey, hasStartTimestamp, endTimestamp);
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "playCutscene", function (name:String, atEndOfSong:Bool = false) {
+			#if hxCodec
+			PlayState.instance.inCutscene = true;
+			FlxG.sound.music.stop();
+		
+			var video:VideoHandler = new VideoHandler();
+			video.finishCallback = function()
+			{
+				PlayState.instance.inCutscene = false;
+				if (atEndOfSong)
+				{
+					if (PlayState.storyPlaylist.length <= 0)
+					FlxG.switchState(new StoryMenuState());
+					else
+					{
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase());
+					FlxG.switchState(new PlayState());
+					}
+				}
+				else
+					FlxTween.tween(FlxG.camera, {zoom: PlayState.defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+					PlayState.instance.startCountdown();
+					PlayState.instance.cameraMovement();
+			}
+			video.playVideo(Paths.video(name).replace("videos:",""));
+			#else
+			PlayState.instance.inCutscene = true;
+			var vid:FlxVideo = new FlxVideo(name);
+			vid.finishCallback = function()
+			{
+				FlxTween.tween(FlxG.camera, {zoom: PlayState.defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+				PlayState.instance.startCountdown();
+				PlayState.instance.cameraMovement();
+				PlayState.instance.inCutscene = false;
+			};
 			#end
 		});
 		#end
@@ -318,6 +360,19 @@ class DebugLuaText extends FlxText
 		disableTime -= elapsed;
 		if(disableTime < 0) disableTime = 0;
 		if(disableTime < 1) alpha = disableTime;
+	}
+}
+
+class ModchartSprite extends FlxSprite
+{
+	public var wasAdded:Bool = false;
+	public var animOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
+	//public var isInFront:Bool = false;
+
+	public function new(?x:Float = 0, ?y:Float = 0)
+	{
+		super(x, y);
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 	}
 }
 

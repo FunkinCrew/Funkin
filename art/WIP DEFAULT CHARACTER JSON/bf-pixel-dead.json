@@ -1,0 +1,43 @@
+{
+	"texture":"characters/bfPixelsDEAD",
+	"onInit":"firstDeath",
+	"antialiasing": false,
+	"animations":[
+		{
+			"name":"singUP",
+			"anim":"BF Dies pixel",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"firstDeath",
+			"anim":"BF Dies pixel",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"deathLoop",
+			"anim":"Retry Loop",
+			"framerate":24,
+			"loop": true,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"deathConfirm",
+			"anim":"RETRY CONFIRM",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		}
+	]
+}

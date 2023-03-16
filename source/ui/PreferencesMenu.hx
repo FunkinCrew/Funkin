@@ -41,6 +41,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 		createPrefItem('Visible Combo Sprite', 'vcombospr', false);
 		createPrefItem('Shaders', 'shaders', true);
 		createPrefItem('Antialiasing', 'antialiasing', true);
+		createPrefItem('JudgementCounter', 'judgementCounter', true);
 
 		camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
 		if (items != null)
@@ -82,6 +83,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferenceCheck('vcombospr', false);
 		preferenceCheck('shaders', true);
 		preferenceCheck('antialiasing', true);
+		preferenceCheck('judgementCounter', true);
 
 		#if muted
 		setPref('master-volume', 0);

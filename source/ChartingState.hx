@@ -69,6 +69,7 @@ class ChartingState extends MusicBeatState
 	var _song:SwagSong;
 
 	var typingShit:FlxInputText;
+	var typingShitt:FlxInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -114,6 +115,7 @@ class ChartingState extends MusicBeatState
 		{
 			_song = {
 				song: 'Test',
+				stage: 'stage',
 				notes: [],
 				bpm: 150,
 				needsVoices: true,
@@ -224,7 +226,11 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var characters:Array<String> = Paths.txt("characterList").trim().split('\n');
+		var charactersRaw:Array<String> = Paths.filelist(openfl.utils.AssetType.CHARACTER);
+		for (i in charactersRaw) {
+			characters.push(i.replace(".json",""));
+		}
 
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
@@ -240,6 +246,9 @@ class ChartingState extends MusicBeatState
 		});
 		player2DropDown.selectedLabel = _song.player2;
 
+		var UI_songStage = new FlxUIInputText(10, 120, 70, _song.stage, 8);
+		typingShitt = UI_songStage;
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -254,6 +263,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
+		tab_group_song.add(UI_songStage);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -490,6 +500,7 @@ class ChartingState extends MusicBeatState
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
+		_song.stage = typingShitt.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
@@ -593,7 +604,7 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		if (!typingShit.hasFocus)
+		if (!typingShit.hasFocus || !typingShitt.hasFocus)
 		{
 			if (FlxG.keys.justPressed.SPACE)
 			{

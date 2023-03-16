@@ -135,6 +135,16 @@ class Paths
 		return file('$key',"shaders");
 	}
 
+	inline static public function character(key:String)
+	{
+		return file('$key.json',"characters");
+	}
+
+	inline static public function stage(key:String)
+	{
+		return file('$key.json',"stages");
+	}
+
 	inline static public function filelist(type:AssetType = TEXT):Array<String>
 	{
 		return OpenFlAssets.list(type);

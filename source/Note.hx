@@ -93,6 +93,7 @@ class Note extends FlxSprite
 					animation.add('bluehold', [1]);
 				}
 
+				antialiasing = false;
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 
@@ -116,7 +117,7 @@ class Note extends FlxSprite
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
-				antialiasing = true;
+				antialiasing = PreferencesMenu.getPref('antialiasing');
 
 				// colorSwap.colorToReplace = 0xFFF9393F;
 				// colorSwap.newColor = 0xFF00FF00;
@@ -235,8 +236,10 @@ class Note extends FlxSprite
 
 			if (strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
-			if (PreferencesMenu.getPref('middlescroll'))
-				alpha = 0;
+
+			if(PlayState.ismiddlescroll) {
+				alpha =  1 * 0.35;
+			}
 		}
 
 		if (tooLate)

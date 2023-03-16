@@ -7,8 +7,33 @@ import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxSort;
 import haxe.io.Path;
+import ui.PreferencesMenu;
+#if desktop
+import lime.utils.AssetType;
+import lime.utils.Assets;
+import haxe.Json;
+import haxe.format.JsonParser;
+#end
 
 using StringTools;
+
+typedef CharacterFile = {
+	var texture:String;
+	var onInit:String;
+	var antialiasing:Bool;
+	var animations:Array<AnimArray>;
+}
+
+typedef AnimArray = {
+	var name:String;
+	var anim:String;
+	var framerate:Int;
+	var loop:Bool;
+	var flipx:Bool;
+	var flipy:Bool;
+	var type:String;
+	var indices:Array<Int>;
+}
 
 class Character extends FlxSprite
 {
@@ -22,6 +47,8 @@ class Character extends FlxSprite
 
 	public var animationNotes:Array<Dynamic> = [];
 
+	public var healthColorArray:Array<Int> = [255, 0, 0];
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -31,11 +58,13 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 
 		var tex:FlxAtlasFrames;
-		antialiasing = true;
+		antialiasing = PreferencesMenu.getPref('antialiasing');
 
 		switch (curCharacter)
 		{
 			case 'gf':
+				// Color Set
+				healthColorArray = [165,0,77];
 				// GIRLFRIEND CODE
 				tex = Paths.getSparrowAtlas('characters/GF_assets');
 				frames = tex;
@@ -56,6 +85,9 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 			case 'gf-christmas':
+				// Color Set
+				healthColorArray = [165,0,77];
+
 				tex = Paths.getSparrowAtlas('characters/gfChristmas');
 				frames = tex;
 				quickAnimAdd('cheer', 'GF Cheer');
@@ -74,6 +106,9 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 			case 'gf-tankmen':
+				// Color Set
+				healthColorArray = [165,0,77];
+
 				frames = Paths.getSparrowAtlas('characters/gfTankmen');
 				animation.addByIndices('sad', 'GF Crying at Gunpoint', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, true);
 				animation.addByIndices('danceLeft', 'GF Dancing at Gunpoint', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
@@ -83,6 +118,9 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 			case 'bf-holding-gf':
+				// Color Set
+				healthColorArray = [49,176,209];
+
 				frames = Paths.getSparrowAtlas('characters/bfAndGF');
 				quickAnimAdd('idle', 'BF idle dance');
 				quickAnimAdd('singDOWN', 'BF NOTE DOWN0');
@@ -103,6 +141,9 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'gf-car':
+				// Color Set
+				healthColorArray = [165,0,77];
+
 				tex = Paths.getSparrowAtlas('characters/gfCar');
 				frames = tex;
 				animation.addByIndices('singUP', 'GF Dancing Beat Hair blowing CAR', [0], "", 24, false);
@@ -116,6 +157,9 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 			case 'gf-pixel':
+				// Color Set
+				healthColorArray = [165,0,77];
+
 				tex = Paths.getSparrowAtlas('characters/gfPixel');
 				frames = tex;
 				animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
@@ -131,6 +175,9 @@ class Character extends FlxSprite
 				antialiasing = false;
 
 			case 'dad':
+				// Color Set
+				healthColorArray = [175,102,206];
+
 				// DAD ANIMATION LOADING CODE
 				tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST');
 				frames = tex;
@@ -144,6 +191,9 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			case 'spooky':
+				// Color Set
+				healthColorArray = [213,126,0];
+
 				tex = Paths.getSparrowAtlas('characters/spooky_kids_assets');
 				frames = tex;
 				quickAnimAdd('singUP', 'spooky UP NOTE');
@@ -157,6 +207,9 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 			case 'mom':
+				// Color Set
+				healthColorArray = [216,85,142];
+
 				tex = Paths.getSparrowAtlas('characters/Mom_Assets');
 				frames = tex;
 
@@ -173,6 +226,9 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 			case 'mom-car':
+				// Color Set
+				healthColorArray = [216,85,142];
+
 				tex = Paths.getSparrowAtlas('characters/momCar');
 				frames = tex;
 
@@ -189,6 +245,9 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			case 'monster':
+				// Color Set
+				healthColorArray = [243,110,245];
+
 				tex = Paths.getSparrowAtlas('characters/Monster_Assets');
 				frames = tex;
 				quickAnimAdd('idle', 'monster idle');
@@ -201,6 +260,9 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			case 'monster-christmas':
+				// Color Set
+				healthColorArray = [216,85,142];
+
 				tex = Paths.getSparrowAtlas('characters/monsterChristmas');
 				frames = tex;
 				quickAnimAdd('idle', 'monster idle');
@@ -213,6 +275,9 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			case 'pico':
+				// Color Set
+				healthColorArray = [183,216,85];
+
 				tex = Paths.getSparrowAtlas('characters/Pico_FNF_assetss');
 				frames = tex;
 				quickAnimAdd('idle', "Pico Idle Dance");
@@ -244,6 +309,9 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'pico-speaker':
+				// Color Set
+				healthColorArray = [183,216,85];
+
 				frames = Paths.getSparrowAtlas('characters/picoSpeaker');
 
 				quickAnimAdd('shoot1', "Pico shoot 1");
@@ -258,6 +326,9 @@ class Character extends FlxSprite
 				loadMappedAnims();
 
 			case 'bf':
+				// Color Set
+				healthColorArray = [49,176,209];
+
 				var tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
 				frames = tex;
 				quickAnimAdd('idle', 'BF idle dance');
@@ -286,6 +357,9 @@ class Character extends FlxSprite
 				loadOffsetFile(curCharacter);
 
 			case 'bf-christmas':
+				// Color Set
+				healthColorArray = [49,176,209];
+
 				var tex = Paths.getSparrowAtlas('characters/bfChristmas');
 				frames = tex;
 				quickAnimAdd('idle', 'BF idle dance');
@@ -305,6 +379,9 @@ class Character extends FlxSprite
 
 				flipX = true;
 			case 'bf-car':
+				// Color Set
+				healthColorArray = [49,176,209];
+
 				var tex = Paths.getSparrowAtlas('characters/bfCar');
 				frames = tex;
 				quickAnimAdd('idle', 'BF idle dance');
@@ -324,6 +401,9 @@ class Character extends FlxSprite
 
 				flipX = true;
 			case 'bf-pixel':
+				// Color Set
+				healthColorArray = [49,176,209];
+
 				frames = Paths.getSparrowAtlas('characters/bfPixel');
 				quickAnimAdd('idle', 'BF IDLE');
 				quickAnimAdd('singUP', 'BF UP NOTE');
@@ -349,6 +429,9 @@ class Character extends FlxSprite
 
 				flipX = true;
 			case 'bf-pixel-dead':
+				// Color Set
+				healthColorArray = [49,176,209];
+
 				frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD');
 				quickAnimAdd('singUP', "BF Dies pixel");
 				quickAnimAdd('firstDeath', "BF Dies pixel");
@@ -366,6 +449,9 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'bf-holding-gf-dead':
+				// Color Set
+				healthColorArray = [49,176,209];
+
 				frames = Paths.getSparrowAtlas('characters/bfHoldingGF-DEAD');
 				quickAnimAdd('singUP', 'BF Dead with GF Loop');
 				quickAnimAdd('firstDeath', 'BF Dies with GF');
@@ -379,6 +465,9 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'senpai':
+				// Color Set
+				healthColorArray = [255,170,111];
+
 				frames = Paths.getSparrowAtlas('characters/senpai');
 				quickAnimAdd('idle', 'Senpai Idle');
 				// at framerate 16.8 animation plays over 2 beats at 144bpm,
@@ -400,6 +489,9 @@ class Character extends FlxSprite
 
 				antialiasing = false;
 			case 'senpai-angry':
+				// Color Set
+				healthColorArray = [255,170,111];
+
 				frames = Paths.getSparrowAtlas('characters/senpai');
 				quickAnimAdd('idle', 'Angry Senpai Idle');
 				quickAnimAdd('singUP', 'Angry Senpai UP NOTE');
@@ -417,6 +509,9 @@ class Character extends FlxSprite
 				antialiasing = false;
 
 			case 'spirit':
+				// Color Set
+				healthColorArray = [255,60,110];
+
 				frames = Paths.getPackerAtlas('characters/spirit');
 				quickAnimAdd('idle', "idle spirit_");
 				quickAnimAdd('singUP', "up_");
@@ -434,6 +529,9 @@ class Character extends FlxSprite
 				antialiasing = false;
 
 			case 'parents-christmas':
+				// Color Set
+				healthColorArray = [196,94,174];
+
 				frames = Paths.getSparrowAtlas('characters/mom_dad_christmas_assets');
 				quickAnimAdd('idle', 'Parent Christmas Idle');
 				quickAnimAdd('singUP', 'Parent Up Note Dad');
@@ -451,6 +549,9 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			case 'tankman':
+				// Color Set
+				healthColorArray = [225,225,225];
+
 				frames = Paths.getSparrowAtlas('characters/tankmanCaptain');
 
 				quickAnimAdd('idle', "Tankman Idle Dance");
@@ -487,6 +588,24 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+			#if desktop
+			default:
+				var characterJson:String = Assets.getText(Paths.character(curCharacter+".json"));
+				var characterParseJson:CharacterFile = haxe.Json.parse(characterJson);
+				frames = Paths.getSparrowAtlas(characterParseJson.texture);
+				for (i in characterParseJson.animations){
+					if (i.type == "prefix"){
+						animation.addByPrefix(i.name, i.anim, i.framerate, i.loop, i.flipx, i.flipy);
+					}
+
+					if (i.type == "indices"){
+						animation.addByIndices(i.name, i.anim, i.indices, "", i.framerate, i.loop, i.flipx, i.flipy);
+					}
+				}
+				playAnim(characterParseJson.onInit);
+				if ((characterParseJson.antialiasing && PreferencesMenu.getPref('antialiasing')) || !characterParseJson.antialiasing)
+					antialiasing = characterParseJson.antialiasing;
+			#end
 		}
 
 		dance();

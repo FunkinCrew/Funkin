@@ -1,0 +1,133 @@
+{
+	"texture":"characters/BOYFRIEND",
+	"onInit":"idle",
+	"antialiasing": true,
+	"animations":[
+		{
+			"name":"idle",
+			"anim":"BF idle dance",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"UP",
+			"anim":"BF NOTE UP0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"LEFT",
+			"anim":"BF NOTE LEFT0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"RIGHT",
+			"anim":"BF NOTE RIGHT0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"DOWN",
+			"anim":"BF NOTE DOWN0",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"UPmiss",
+			"anim":"BF NOTE UP MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"LEFTmiss",
+			"anim":"BF NOTE LEFT MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"RIGHTmiss",
+			"anim":"BF NOTE RIGHT MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"DOWNmiss",
+			"anim":"BF NOTE DOWN MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"hey",
+			"anim":"BF HEY",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"firstDeath",
+			"anim":"BF dies",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"deathLoop",
+			"anim":"BF Dead Loop",
+			"framerate":24,
+			"loop": true,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"deathConfirm",
+			"anim":"BF Dead confirm",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"scared",
+			"anim":"BF idle shaking",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		}
+	]
+}

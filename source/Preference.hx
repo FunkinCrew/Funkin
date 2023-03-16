@@ -14,4 +14,5 @@ class Preference {
 	public static var vcombospr = PreferencesMenu.getPref('vcombospr');
 	public static var shaders = PreferencesMenu.getPref('shaders');
 	public static var antialiasing = PreferencesMenu.getPref('antialiasing');
+	public static var judgementCounter = PreferencesMenu.getPref('judgementCounter');
 }

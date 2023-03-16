@@ -1,0 +1,97 @@
+{
+	"texture":"characters/bfChristmas",
+	"onInit":"idle",
+	"antialiasing": false,
+	"animations":[
+		{
+			"name":"idle",
+			"anim":"BF IDLE",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singUP",
+			"anim":"BF UP NOTE",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singLEFT",
+			"anim":"BF LEFT NOTE",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singRIGHT",
+			"anim":"BF RIGHT NOTE",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singDOWN",
+			"anim":"BF DOWN NOTE",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singUPmiss",
+			"anim":"BF UP MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singLEFTmiss",
+			"anim":"BF LEFT MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singRIGHTmiss",
+			"anim":"BF RIGHT MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"singDOWNmiss",
+			"anim":"BF DOWN MISS",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		},
+		{
+			"name":"hey",
+			"anim":"BF HEY",
+			"framerate":24,
+			"loop": false,
+			"flipx": true,
+			"flipy": false,
+			"type":"prefix"
+		}
+	]
+}
