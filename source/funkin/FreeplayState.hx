@@ -797,6 +797,12 @@ class FreeplayState extends MusicBeatSubstate
         caps.doJumpOut = true;
       }
 
+      if (Type.getClass(FlxG.state) == MainMenuState)
+      {
+        FlxG.state.persistentUpdate = true;
+        FlxG.state.persistentDraw = true;
+      }
+
       new FlxTimer().start(longestTimer, (_) -> {
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
