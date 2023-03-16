@@ -164,10 +164,8 @@ class FreeplayState extends MusicBeatSubstate
 
     exitMovers.set([moreWays],
       {
-        x: FlxG.width,
-        y: moreWays.y,
-        speed: 0.3,
-        wait: 0
+        x: FlxG.width * 2,
+        speed: 0.4,
       });
 
     var funnyScroll:BGScrollingText = new BGScrollingText(0, 250, "BOYFRIEND", FlxG.width / 2);
@@ -177,9 +175,9 @@ class FreeplayState extends MusicBeatSubstate
 
     exitMovers.set([funnyScroll],
       {
-        x: -funnyScroll.width,
+        x: -funnyScroll.width * 2,
         y: funnyScroll.y,
-        speed: 0.3,
+        speed: 0.4,
         wait: 0
       });
 
@@ -187,10 +185,8 @@ class FreeplayState extends MusicBeatSubstate
     grpTxtScrolls.add(txtNuts);
     exitMovers.set([txtNuts],
       {
-        x: FlxG.width,
-        y: txtNuts.y,
-        speed: 0.3,
-        wait: 0
+        x: FlxG.width * 2,
+        speed: 0.4,
       });
 
     var funnyScroll2:BGScrollingText = new BGScrollingText(0, 340, "BOYFRIEND", FlxG.width / 2);
@@ -200,10 +196,8 @@ class FreeplayState extends MusicBeatSubstate
 
     exitMovers.set([funnyScroll2],
       {
-        x: -funnyScroll2.width,
-        y: funnyScroll2.y,
-        speed: 0.3,
-        wait: 0
+        x: -funnyScroll2.width * 2,
+        speed: 0.5,
       });
 
     var moreWays2:BGScrollingText = new BGScrollingText(0, 400, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width);
@@ -213,10 +207,8 @@ class FreeplayState extends MusicBeatSubstate
 
     exitMovers.set([moreWays2],
       {
-        x: FlxG.width,
-        y: moreWays2.y,
-        speed: 0.3,
-        wait: 0
+        x: FlxG.width * 2,
+        speed: 0.4
       });
 
     var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y, "BOYFRIEND", FlxG.width / 2);
@@ -226,19 +218,15 @@ class FreeplayState extends MusicBeatSubstate
 
     exitMovers.set([funnyScroll3],
       {
-        x: -funnyScroll3.width,
-        y: funnyScroll3.y,
-        speed: 0.3,
-        wait: 0
+        x: -funnyScroll3.width * 2,
+        speed: 0.3
       });
 
     dj = new DJBoyfriend(0, -100);
     exitMovers.set([dj],
       {
         x: -dj.width * 1.6,
-        y: dj.y,
-        speed: 0.5,
-        wait: 0
+        speed: 0.5
       });
     add(dj);
 
@@ -431,7 +419,7 @@ class FreeplayState extends MusicBeatSubstate
     FlxG.cameras.add(funnyCam);
 
     typing = new FlxInputText(100, 100);
-    add(typing);
+    // add(typing);
 
     typing.callback = function(txt, action) {
       // generateSongList(new EReg(txt.trim(), "ig"));
