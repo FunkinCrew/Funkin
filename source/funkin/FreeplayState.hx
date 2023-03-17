@@ -753,6 +753,10 @@ class FreeplayState extends MusicBeatSubstate
 
     if (controls.BACK && !typing.hasFocus)
     {
+      FlxTween.globalManager.clear();
+      FlxTimer.globalManager.clear();
+      dj.onIntroDone.removeAll();
+
       FlxG.sound.play(Paths.sound('cancelMenu'));
 
       // FlxTween.tween(dj, {x: -dj.width}, 0.2, {ease: FlxEase.quartOut});
