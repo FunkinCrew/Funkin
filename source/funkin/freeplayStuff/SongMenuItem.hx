@@ -23,6 +23,8 @@ class SongMenuItem extends FlxSpriteGroup
   public var doLerp:Bool = false;
   public var doJumpIn:Bool = false;
 
+  public var doJumpOut:Bool = false;
+
   public function new(x:Float, y:Float, song:String)
   {
     super(x, y);
@@ -52,27 +54,47 @@ class SongMenuItem extends FlxSpriteGroup
     selected = selected; // just to kickstart the set_selected
   }
 
-  var frameTicker:Float = 0;
-  var frameTypeBeat:Int = 0;
+  var frameInTicker:Float = 0;
+  var frameInTypeBeat:Int = 0;
+
+  var frameOutTicker:Float = 0;
+  var frameOutTypeBeat:Int = 0;
 
   var xFrames:Array<Float> = [1.7, 1.8, 0.85, 0.85, 0.97, 0.97, 1];
   var xPosLerpLol:Array<Float> = [0.9, 0.4, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
+  var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
   override function update(elapsed:Float)
   {
     if (doJumpIn)
     {
-      frameTicker += elapsed;
+      frameInTicker += elapsed;
 
-      if (frameTicker >= 1 / 24 && frameTypeBeat < xFrames.length)
+      if (frameInTicker >= 1 / 24 && frameInTypeBeat < xFrames.length)
       {
-        frameTicker = 0;
+        frameInTicker = 0;
 
-        scale.x = xFrames[frameTypeBeat];
-        scale.y = 1 / xFrames[frameTypeBeat];
-        x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameTypeBeat, xPosLerpLol.length - 1))];
+        scale.x = xFrames[frameInTypeBeat];
+        scale.y = 1 / xFrames[frameInTypeBeat];
+        x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
 
-        frameTypeBeat += 1;
+        frameInTypeBeat += 1;
+      }
+    }
+
+    if (doJumpOut)
+    {
+      frameOutTicker += elapsed;
+
+      if (frameOutTicker >= 1 / 24 && frameOutTypeBeat < xFrames.length)
+      {
+        frameOutTicker = 0;
+
+        scale.x = xFrames[frameOutTypeBeat];
+        scale.y = 1 / xFrames[frameOutTypeBeat];
+        x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+
+        frameOutTypeBeat += 1;
       }
     }
 

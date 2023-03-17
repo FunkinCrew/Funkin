@@ -88,8 +88,7 @@ class MainMenuState extends MusicBeatState
     menuItems = new MenuTypedList<AtlasMenuItem>();
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
-    menuItems.onAcceptPress.add(function(_)
-    {
+    menuItems.onAcceptPress.add(function(_) {
       if (_.name == 'freeplay')
       {
         magenta.visible = true;
@@ -102,8 +101,7 @@ class MainMenuState extends MusicBeatState
 
     menuItems.enabled = true; // can move on intro
     createMenuItem('storymode', 'mainmenu/storymode', function() startExitState(new StoryMenuState()));
-    createMenuItem('freeplay', 'mainmenu/freeplay', function()
-    {
+    createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
       openSubState(new FreeplayState());
@@ -114,8 +112,7 @@ class MainMenuState extends MusicBeatState
     createMenuItem('donate', 'mainmenu/donate', selectDonate, hasPopupBlocker);
     #end
 
-    createMenuItem('options', 'mainmenu/options', function()
-    {
+    createMenuItem('options', 'mainmenu/options', function() {
       startExitState(new OptionsState());
     });
 
@@ -129,8 +126,21 @@ class MainMenuState extends MusicBeatState
       menuItem.y = top + spacing * i;
     }
 
-    FlxG.cameras.reset(new SwagCamera());
-    FlxG.camera.follow(camFollow, null, 0.06);
+    resetCamStuff();
+
+    subStateClosed.add(_ -> {
+      resetCamStuff();
+    });
+
+    subStateOpened.add(sub -> {
+      if (Type.getClass(sub) == FreeplayState)
+      {
+        new FlxTimer().start(0.5, _ -> {
+          magenta.visible = false;
+        });
+      }
+    });
+
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     super.create();
@@ -140,6 +150,12 @@ class MainMenuState extends MusicBeatState
     // this.rightWatermarkText.text = "blablabla test";
 
     // NG.core.calls.event.logEvent('swag').send();
+  }
+
+  function resetCamStuff()
+  {
+    FlxG.cameras.reset(new SwagCamera());
+    FlxG.camera.follow(camFollow, null, 0.06);
   }
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
@@ -214,8 +230,7 @@ class MainMenuState extends MusicBeatState
     var onPromptClose = checkLoginStatus;
     if (onClose != null)
     {
-      onPromptClose = function()
-      {
+      onPromptClose = function() {
         checkLoginStatus();
         onClose();
       }
@@ -235,8 +250,7 @@ class MainMenuState extends MusicBeatState
   public function openPrompt(prompt:Prompt, onClose:Void->Void)
   {
     menuItems.enabled = false;
-    prompt.closeCallback = function()
-    {
+    prompt.closeCallback = function() {
       menuItems.enabled = true;
       if (onClose != null) onClose();
     }
@@ -248,8 +262,7 @@ class MainMenuState extends MusicBeatState
   {
     menuItems.enabled = false; // disable for exit
     var duration = 0.4;
-    menuItems.forEach(function(item)
-    {
+    menuItems.forEach(function(item) {
       if (menuItems.selectedIndex != item.ID)
       {
         FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut});
