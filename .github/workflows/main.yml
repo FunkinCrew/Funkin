@@ -33,6 +33,8 @@ jobs:
         run: |
           sudo apt-get install libvlc-dev
           sudo apt-get install libvlccore-dev
+          sudo apt-get install vlc-bin
+          sudo apt-get install luajit
           haxelib setup ~/haxelib
           haxelib install hxcpp > /dev/null --quiet
           haxelib install lime
