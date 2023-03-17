@@ -52,10 +52,11 @@ class StrumNote extends FlxSprite
 
 		if (PlayState.curStage.startsWith('school'))
 		{
-			loadGraphic(Paths.image('pixelUI/' + texture));
+			texture = "arrows-pixels";
+			loadGraphic(Paths.image('weeb/pixelUI/' + texture));
 			width = width / 4;
 			height = height / 5;
-			loadGraphic(Paths.image('pixelUI/' + texture), true, Math.floor(width), Math.floor(height));
+			loadGraphic(Paths.image('weeb/pixelUI/' + texture), true, Math.floor(width), Math.floor(height));
 
 			antialiasing = false;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -141,7 +142,7 @@ class StrumNote extends FlxSprite
 			}
 		}
 		//if(animation.curAnim != null){ //my bad i was upset
-		if(animation.curAnim.name == 'confirm' && !PlayState.curStage.startsWith('school')) {
+		if(getAnimName(animation) == 'confirm' && !PlayState.curStage.startsWith('school')) {
 			centerOffsets();
 			offset.x -= 13;
 			offset.y -= 13;
@@ -179,7 +180,7 @@ class StrumNote extends FlxSprite
 				colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
 			}
 			*/
-			if(animation.curAnim.name == 'confirm' && !PlayState.curStage.startsWith('school')) {
+			if(getAnimName(animation) == 'confirm' && !PlayState.curStage.startsWith('school')) {
 				centerOrigin();
 				centerOffsets();
 				offset.x -= 13;

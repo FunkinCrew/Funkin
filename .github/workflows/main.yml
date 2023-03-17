@@ -50,6 +50,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib git polymod https://github.com/larsiusprime/polymod.git
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
           haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
@@ -90,6 +91,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib git polymod https://github.com/larsiusprime/polymod.git
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
           haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
         shell: cmd
       - name: Create Version Tag
@@ -131,6 +133,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib git polymod https://github.com/larsiusprime/polymod.git
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
           haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION

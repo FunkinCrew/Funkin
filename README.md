@@ -33,6 +33,7 @@ Then, execute this command.
 ```
 haxelib git polymod https://github.com/larsiusprime/polymod.git
 haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
 ```
 At the moment, you can optionally fix the transition bug in songs with zoomed-out cameras.
 ```

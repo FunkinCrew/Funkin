@@ -17,6 +17,7 @@ import haxe.format.JsonParser;
 
 using StringTools;
 
+#if desktop
 typedef CharacterFile = {
 	var texture:String;
 	var onInit:String;
@@ -34,6 +35,7 @@ typedef AnimArray = {
 	var type:String;
 	var indices:Array<Int>;
 }
+#end
 
 class Character extends FlxSprite
 {
@@ -46,7 +48,6 @@ class Character extends FlxSprite
 	public var holdTimer:Float = 0;
 
 	public var animationNotes:Array<Dynamic> = [];
-
 	public var healthColorArray:Array<Int> = [255, 0, 0];
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
@@ -58,13 +59,14 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 
 		var tex:FlxAtlasFrames;
-		antialiasing = PreferencesMenu.getPref('antialiasing');
+		antialiasing = true;
 
 		switch (curCharacter)
 		{
 			case 'gf':
 				// Color Set
 				healthColorArray = [165,0,77];
+
 				// GIRLFRIEND CODE
 				tex = Paths.getSparrowAtlas('characters/GF_assets');
 				frames = tex;
