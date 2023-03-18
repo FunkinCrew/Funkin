@@ -3,6 +3,13 @@ package funkin.util;
 import haxe.Json;
 import thx.semver.Version;
 
+typedef ScoreInput =
+{
+  var d:Int; // Key pressed
+  var l:Int; // Duration
+  var t:Int; // Start timestamp
+}
+
 class SerializerUtil
 {
   static final INDENT_CHAR = "\t";

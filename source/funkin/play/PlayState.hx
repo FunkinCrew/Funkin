@@ -43,6 +43,7 @@ import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.stageBuildShit.StageOffsetSubstate;
 import funkin.util.Constants;
+import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;
 #if discord_rpc
@@ -1855,7 +1856,8 @@ class PlayState extends MusicBeatState
 
     #if sys
     // spitter for ravy, teehee!!
-    sys.io.File.saveContent("./scores.txt", inputSpitter.join("\n"));
+    var output = SerializerUtil.toJSON(inputSpitter);
+    sys.io.File.saveContent("./scores.json", output);
     #end
 
     seenCutscene = false;
@@ -1948,6 +1950,7 @@ class PlayState extends MusicBeatState
     else
     {
       trace('WENT TO RESULTS SCREEN!');
+      trace(songScore);
       // unloadAssets();
 
       camZoomRate = 0;
@@ -2035,8 +2038,32 @@ class PlayState extends MusicBeatState
         controls.NOTE_UP_P,
         controls.NOTE_RIGHT_P
       ];
-      var lol:Array<Int> = cast pressArray;
-      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" ") + " " + Std.string(score) + " " + songScore);
+      var indices:Array<Int> = [];
+      for (i in 0...pressArray.length)
+      {
+        if (pressArray[i]) indices.push(i);
+      }
+      if (indices.length > 0)
+      {
+        for (i in 0...indices.length)
+        {
+          inputSpitter.push(
+            {
+              t: Std.int(Conductor.songPosition),
+              d: indices[i],
+              l: 20
+            });
+        }
+      }
+      else
+      {
+        inputSpitter.push(
+          {
+            t: Std.int(Conductor.songPosition),
+            d: -1,
+            l: 20
+          });
+      }
     }
     comboPopUps.displayRating(daRating);
     if (Highscore.tallies.combo >= 10 || Highscore.tallies.combo == 0) comboPopUps.displayCombo(Highscore.tallies.combo);
@@ -2103,7 +2130,7 @@ class PlayState extends MusicBeatState
   /**
    * Spitting out the input for ravy 🙇‍♂️!!
    */
-  var inputSpitter:Array<String> = [];
+  var inputSpitter:Array<ScoreInput> = [];
 
   public function keyShit(test:Bool):Void
   {
@@ -2261,8 +2288,20 @@ class PlayState extends MusicBeatState
         controls.NOTE_UP_P,
         controls.NOTE_RIGHT_P
       ];
-      var lol:Array<Int> = cast pressArray;
-      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" ") + " " + Std.string(event.scoreChange) + " " + songScore);
+      var indices:Array<Int> = [];
+      for (i in 0...pressArray.length)
+      {
+        if (pressArray[i]) indices.push(i);
+      }
+      for (i in 0...indices.length)
+      {
+        inputSpitter.push(
+          {
+            t: Std.int(Conductor.songPosition),
+            d: indices[i],
+            l: 20
+          });
+      }
     }
 
     if (event.playSound)
@@ -2295,8 +2334,32 @@ class PlayState extends MusicBeatState
         controls.NOTE_UP_P,
         controls.NOTE_RIGHT_P
       ];
-      var lol:Array<Int> = cast pressArray;
-      inputSpitter.push(Std.int(Conductor.songPosition) + " " + lol.join(" ") + " " + Std.string(-10) + " " + songScore);
+      var indices:Array<Int> = [];
+      for (i in 0...pressArray.length)
+      {
+        if (pressArray[i]) indices.push(i);
+      }
+      if (indices.length > 0)
+      {
+        for (i in 0...indices.length)
+        {
+          inputSpitter.push(
+            {
+              t: Std.int(Conductor.songPosition),
+              d: indices[i],
+              l: 20
+            });
+        }
+      }
+      else
+      {
+        inputSpitter.push(
+          {
+            t: Std.int(Conductor.songPosition),
+            d: -1,
+            l: 20
+          });
+      }
     }
     vocals.volume = 0;
 
