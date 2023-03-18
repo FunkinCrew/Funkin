@@ -116,7 +116,7 @@
 	<assets path="assets/stages"  library="stages"  exclude="*.fla|*.ogg" if="web"/>
 	<assets path="assets/stages"  library="stages"  exclude="*.fla|*.mp3" unless="web"/>
 
-	<template path="example_mods" rename="mods" />
+	<assets path="example_mods" rename="mods" />
 
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->

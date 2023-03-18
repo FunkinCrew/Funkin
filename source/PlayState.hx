@@ -3187,14 +3187,14 @@ class PlayState extends MusicBeatState
 
 		if (curBeat % 2 == 0)
 		{
-			if (getAnimName(boyfriend).startsWith("sing"))
+			if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 				boyfriend.playAnim('idle');
-			if (getAnimName(dad).startsWith("sing"))
+			if (!dad.animation.curAnim.name.startsWith("sing"))
 				dad.dance();
 		}
 		else if (dad.curCharacter == 'spooky')
 		{
-			if (getAnimName(dad).startsWith("sing"))
+			if (!dad.animation.curAnim.name.startsWith("sing"))
 				dad.dance();
 		}
 
@@ -3265,9 +3265,6 @@ class PlayState extends MusicBeatState
 		{
 			lightningStrikeShit();
 		}
-
-		setOnLuas("curBeat",curBeat);
-		callOnLuas('onBeatHit', []);
 	}
 
 	var curLight:Int = 0;
