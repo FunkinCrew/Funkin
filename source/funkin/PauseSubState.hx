@@ -35,7 +35,7 @@ class PauseSubState extends MusicBeatSubstate
   var bg:FlxSprite;
   var metaDataGrp:FlxTypedGroup<FlxSprite>;
 
-  public function new(x:Float, y:Float)
+  public function new()
   {
     super();
 
@@ -225,8 +225,7 @@ class PauseSubState extends MusicBeatSubstate
             FlxTween.tween(bg, {alpha: 1}, 0.4,
               {
                 ease: FlxEase.quartInOut,
-                onComplete: function(_)
-                {
+                onComplete: function(_) {
                   FlxTransitionableState.skipNextTransIn = true;
                   FlxTransitionableState.skipNextTransOut = true;
 
