@@ -3,30 +3,77 @@ package funkin.ui;
 import flixel.FlxSprite;
 import haxe.Json;
 import lime.utils.Assets;
+// import flxtyped group
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import flixel.util.FlxSort;
 
 class StickerSubState extends MusicBeatSubstate
 {
+  var grpStickers:FlxTypedGroup<StickerSprite>;
+
   public function new():Void
   {
     super();
+
+    grpStickers = new FlxTypedGroup<StickerSprite>();
+    add(grpStickers);
 
     var stickerInfo:StickerInfo = new StickerInfo('stickers-set-1');
     for (stickerSets in stickerInfo.getPack("all"))
     {
       for (stickerShit in stickerInfo.getStickers(stickerSets))
       {
-        var sticky:StickerSprite = new StickerSprite(FlxG.random.int(0, FlxG.width), FlxG.random.int(0, FlxG.height), stickerInfo.name, stickerShit);
-        add(sticky);
+        // for loop jus to repeat it easy easy easy
+        for (i in 0...FlxG.random.int(1, 4))
+        {
+          var sticky:StickerSprite = new StickerSprite(0, 0, stickerInfo.name, stickerShit);
+          sticky.x -= sticky.width / 2;
+          sticky.y -= sticky.height / 2;
+          sticky.visible = false;
+          sticky.angle = FlxG.random.int(-60, 70);
+          // sticky.flipX = FlxG.random.bool();
+          grpStickers.add(sticky);
+
+          sticky.timing = FlxG.random.float(0, 1.5);
+
+          new FlxTimer().start(sticky.timing, function(_) {
+            sticky.visible = true;
+
+            new FlxTimer().start((1 / 24) * 2, _ -> {
+              sticky.scale.x = sticky.scale.y = FlxG.random.float(0.97, 1.02);
+              // sticky.angle *= FlxG.random.float(0, 0.05);
+            });
+          });
+        }
       }
     }
+
+    FlxG.random.shuffle(grpStickers.members);
+
+    for (ind => sticker in grpStickers.members)
+    {
+      sticker.x += (ind % 7) * sticker.width;
+      sticker.y += Math.floor(ind / 6) * sticker.height;
+    }
+
+    grpStickers.sort((ord, a, b) -> {
+      return FlxSort.byValues(ord, a.timing, b.timing);
+    });
   }
 }
 
 class StickerSprite extends FlxSprite
 {
+  public var timing:Float = 0;
+
   public function new(x:Float, y:Float, stickerSet:String, stickerName:String):Void
   {
     super(x, y, Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
+    height = 100;
+    width = 190;
+    antialiasing = true;
   }
 }
 
