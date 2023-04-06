@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.ui.StickerSubState;
 import flash.text.TextField;
 import flixel.FlxCamera;
 import flixel.FlxGame;
@@ -73,9 +74,34 @@ class FreeplayState extends MusicBeatSubstate
   var typing:FlxInputText;
   var exitMovers:Map<Array<FlxSprite>, MoveData> = new Map();
 
-  override function create()
+  var stickerSubState:StickerSubState;
+
+  public function new(?stickers:StickerSubState = null)
   {
+    if (stickers != null)
+    {
+      stickerSubState = stickers;
+    }
+
+    super();
+  }
+
+  override function create():Void
+  {
+    super.create();
+
     FlxTransitionableState.skipNextTransIn = true;
+
+    if (stickerSubState != null)
+    {
+      this.persistentUpdate = true;
+      this.persistentDraw = true;
+
+      openSubState(stickerSubState);
+      stickerSubState.degenStickers();
+
+      // resetSubState();
+    }
 
     #if discord_rpc
     // Updating Discord Rich Presence
@@ -429,8 +455,6 @@ class FreeplayState extends MusicBeatSubstate
     forEach(function(bs) {
       bs.cameras = [funnyCam];
     });
-
-    super.create();
   }
 
   public function generateSongList(?filterStuff:SongFilter, ?force:Bool = false)

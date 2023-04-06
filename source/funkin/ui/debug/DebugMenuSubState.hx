@@ -15,9 +15,10 @@ class DebugMenuSubState extends MusicBeatSubstate
    */
   var camFocusPoint:FlxObject;
 
-  override function create()
+  override function create():Void
   {
     super.create();
+    bgColor = 0x00000000;
 
     // Create an object for the camera to track.
     camFocusPoint = new FlxObject(0, 0);
