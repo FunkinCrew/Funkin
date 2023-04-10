@@ -23,12 +23,19 @@ class StickerSubState extends MusicBeatSubstate
   // yes... a damn OpenFL sprite!!!
   public var dipshit:Sprite;
 
-  public function new(?oldStickers:Array<StickerSprite>):Void
+  var nextState:NEXTSTATE = FREEPLAY;
+
+  public function new(?oldStickers:Array<StickerSprite>, ?nextState:NEXTSTATE = FREEPLAY):Void
   {
     super();
 
+    this.nextState = nextState;
+
     grpStickers = new FlxTypedGroup<StickerSprite>();
     add(grpStickers);
+
+    // makes the stickers on the most recent camera, which is more often than not... a UI camera!!
+    grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
     if (oldStickers != null)
     {
@@ -46,6 +53,8 @@ class StickerSubState extends MusicBeatSubstate
 
   public function degenStickers():Void
   {
+    grpStickers.cameras = FlxG.cameras.list;
+
     if (dipshit != null)
     {
       FlxG.removeChild(dipshit);
@@ -130,14 +139,22 @@ class StickerSubState extends MusicBeatSubstate
             dipshit = new Sprite();
             var scrn:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
             var mat:Matrix = new Matrix();
-            scrn.draw(FlxG.camera.canvas, mat);
+            scrn.draw(grpStickers.cameras[0].canvas, mat);
 
             var bitmap:Bitmap = new Bitmap(scrn);
 
             dipshit.addChild(bitmap);
             FlxG.addChildBelowMouse(dipshit);
 
-            FlxG.switchState(new FreeplayState(this));
+            switch (nextState)
+            {
+              case FREEPLAY:
+                FlxG.switchState(new FreeplayState(this));
+              case STORY:
+                FlxG.switchState(new StoryMenuState(this));
+              default:
+                FlxG.switchState(new FreeplayState(this));
+            }
           }
 
           // sticky.angle *= FlxG.random.float(0, 0.05);
@@ -276,4 +293,10 @@ typedef StickerShit =
   artist:String,
   stickers:Map<String, Array<String>>,
   stickerPacks:Map<String, Array<String>>
+}
+
+enum abstract NEXTSTATE(String)
+{
+  var FREEPLAY = 'freeplay';
+  var STORY = 'story';
 }

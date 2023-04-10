@@ -222,20 +222,12 @@ class PauseSubState extends MusicBeatSubstate
               item.alpha = 0.6;
             }
 
-            FlxTween.tween(bg, {alpha: 1}, 0.4,
-              {
-                ease: FlxEase.quartInOut,
-                onComplete: function(_) {
-                  FlxTransitionableState.skipNextTransIn = true;
-                  FlxTransitionableState.skipNextTransOut = true;
+            FlxTransitionableState.skipNextTransIn = true;
+            FlxTransitionableState.skipNextTransOut = true;
 
-                  FlxG.cameras.list[1].alpha = 0; // bullshit for the UI camera???
-
-                  if (PlayState.isStoryMode) FlxG.switchState(new StoryMenuState());
-                  else
-                    FlxG.switchState(new FreeplayState());
-                }
-              });
+            if (PlayState.isStoryMode) openSubState(new funkin.ui.StickerSubState(null, STORY));
+            else
+              openSubState(new funkin.ui.StickerSubState());
         }
       }
 
