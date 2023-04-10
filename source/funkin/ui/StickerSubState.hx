@@ -83,36 +83,91 @@ class StickerSubState extends MusicBeatSubstate
     }
 
     var stickerInfo:StickerInfo = new StickerInfo('stickers-set-1');
+    var stickers:Map<String, Array<String>> = new Map<String, Array<String>>();
     for (stickerSets in stickerInfo.getPack("all"))
     {
-      for (stickerShit in stickerInfo.getStickers(stickerSets))
-      {
-        // for loop jus to repeat it easy easy easy
-        for (i in 0...FlxG.random.int(1, 4))
-        {
-          var sticky:StickerSprite = new StickerSprite(0, 0, stickerInfo.name, stickerShit);
-          sticky.x -= sticky.width / 2;
-          sticky.y -= sticky.height / 2;
-          sticky.visible = false;
-          sticky.scrollFactor.set();
-          sticky.angle = FlxG.random.int(-60, 70);
-          // sticky.flipX = FlxG.random.bool();
-          grpStickers.add(sticky);
+      stickers.set(stickerSets, stickerInfo.getStickers(stickerSets));
 
-          sticky.timing = FlxG.random.float(0, 0.8);
+      trace(stickers);
+
+      // for (stickerShit in stickerInfo.getStickers(stickerSets))
+      // {
+      //   // for loop jus to repeat it easy easy easy
+      //   for (i in 0...FlxG.random.int(1, 5))
+      //   {
+      //     var sticky:StickerSprite = new StickerSprite(0, 0, stickerInfo.name, stickerShit);
+      //     sticky.x -= sticky.width / 2;
+      //     sticky.y -= sticky.height * 0.9;
+
+      //     // random location by default
+      //     sticky.x += FlxG.random.float(0, FlxG.width);
+      //     sticky.y += FlxG.random.float(0, FlxG.height);
+
+      //     sticky.visible = false;
+      //     sticky.scrollFactor.set();
+      //     sticky.angle = FlxG.random.int(-60, 70);
+      //     // sticky.flipX = FlxG.random.bool();
+      //     grpStickers.add(sticky);
+
+      //     sticky.timing = FlxG.random.float(0, 0.8);
+      //   }
+      // }
+    }
+
+    var xPos:Float = -100;
+    var yPos:Float = -100;
+    while (xPos <= FlxG.width)
+    {
+      var stickerSet:String = FlxG.random.getObject(stickers.keyValues());
+      var sticker:String = FlxG.random.getObject(stickers.get(stickerSet));
+      var sticky:StickerSprite = new StickerSprite(0, 0, stickerInfo.name, sticker);
+      sticky.visible = false;
+
+      sticky.x = xPos;
+      sticky.y = yPos;
+      xPos += sticky.frameWidth * 0.5;
+
+      if (xPos >= FlxG.width)
+      {
+        if (yPos <= FlxG.height)
+        {
+          xPos = -100;
+          yPos += FlxG.random.float(70, 120);
         }
       }
+
+      sticky.angle = FlxG.random.int(-60, 70);
+      grpStickers.add(sticky);
     }
 
     FlxG.random.shuffle(grpStickers.members);
 
-    for (ind => sticker in grpStickers.members)
-    {
-      sticker.x += (ind % 7) * sticker.width;
-      sticker.y += Math.floor(ind / 6) * sticker.height;
-    }
+    // var stickerCount:Int = 0;
 
-    FlxG.random.shuffle(grpStickers.members);
+    // for (w in 0...6)
+    // {
+    //   var xPos:Float = FlxG.width * (w / 6);
+    //   for (h in 0...6)
+    //   {
+    //     var yPos:Float = FlxG.height * (h / 6);
+    //     var sticker = grpStickers.members[stickerCount];
+    //     xPos -= sticker.width / 2;
+    //     yPos -= sticker.height * 0.9;
+    //     sticker.x = xPos;
+    //     sticker.y = yPos;
+
+    //     stickerCount++;
+    //   }
+    // }
+
+    // for (ind => sticker in grpStickers.members)
+    // {
+    //   sticker.x = (ind % 8) * sticker.width;
+    //   var yShit:Int = Math.floor(ind / 8);
+    //   sticker.y += yShit * sticker.height;
+    //   // scales it juuuust a smidge
+    //   sticker.y += 20 * yShit;
+    // }
 
     // another damn for loop... apologies!!!
     for (ind => sticker in grpStickers.members)
@@ -204,10 +259,11 @@ class StickerSprite extends FlxSprite
 
   public function new(x:Float, y:Float, stickerSet:String, stickerName:String):Void
   {
-    super(x, y, Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
-    height = 100;
-    width = 190;
+    super(x, y);
+    loadGraphic(Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
+    updateHitbox();
     antialiasing = true;
+    scrollFactor.set();
   }
 }
 

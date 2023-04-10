@@ -13,4 +13,9 @@ class MapTools
   {
     return [for (i in map.iterator()) i];
   }
+
+  public static function keyValues<K, T>(map:Map<K, T>):Array<K>
+  {
+    return [for (i in map.keys()) i];
+  }
 }
