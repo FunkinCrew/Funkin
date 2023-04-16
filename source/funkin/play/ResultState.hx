@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -16,6 +17,7 @@ import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
 import funkin.shaderslmfao.LeftMaskShader;
 import funkin.ui.TallyCounter;
+import flxanimate.FlxAnimate.Settings;
 
 class ResultState extends MusicBeatSubstate
 {
@@ -50,12 +52,32 @@ class ResultState extends MusicBeatSubstate
     bg.scrollFactor.set();
     add(bg);
 
+    var bfGfExcellent:FlxAtlasSprite = new FlxAtlasSprite(380, -170, Paths.animateAtlas("resultScreen/resultsBoyfriendExcellent", "shared"));
+    bfGfExcellent.visible = false;
+    // trace(bfGfExcellent.listAnimations());
+    add(bfGfExcellent);
+    var settings:Settings =
+      {
+        // ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
+        FrameRate: 24.0,
+        Reversed: false,
+        OnComplete: function() {
+          bfGfExcellent.anim.curFrame = 28;
+          trace("repeated anim!!");
+        },
+        ShowPivot: false,
+        Antialiasing: true,
+        ScrollFactor: new FlxPoint(1, 1),
+        // Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
+      };
+
+    bfGfExcellent.setTheSettings(settings);
+
     var gf:FlxSprite = new FlxSprite(500, 300);
     gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
     gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
     gf.visible = false;
-    gf.animation.finishCallback = _ ->
-    {
+    gf.animation.finishCallback = _ -> {
       gf.animation.play('clap', true, false, 9);
     };
     add(gf);
@@ -64,8 +86,7 @@ class ResultState extends MusicBeatSubstate
     boyfriend.frames = Paths.getSparrowAtlas('resultScreen/resultBoyfriendGOOD');
     boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
     boyfriend.visible = false;
-    boyfriend.animation.finishCallback = function(_)
-    {
+    boyfriend.animation.finishCallback = function(_) {
       boyfriend.animation.play('fall', true, false, 14);
     };
 
@@ -75,8 +96,7 @@ class ResultState extends MusicBeatSubstate
     soundSystem.frames = Paths.getSparrowAtlas("resultScreen/soundSystem");
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
-    new FlxTimer().start(0.4, _ ->
-    {
+    new FlxTimer().start(0.4, _ -> {
       soundSystem.animation.play("idle");
       soundSystem.visible = true;
     });
@@ -193,20 +213,17 @@ class ResultState extends MusicBeatSubstate
     for (ind => rating in ratingGrp.members)
     {
       rating.visible = false;
-      new FlxTimer().start((0.3 * ind) + 0.55, _ ->
-      {
+      new FlxTimer().start((0.3 * ind) + 0.55, _ -> {
         rating.visible = true;
         FlxTween.tween(rating, {curNumber: rating.neededNumber}, 0.5, {ease: FlxEase.quartOut});
       });
     }
 
-    new FlxTimer().start(0.5, _ ->
-    {
+    new FlxTimer().start(0.5, _ -> {
       ratingsPopin.animation.play("idle");
       ratingsPopin.visible = true;
 
-      ratingsPopin.animation.finishCallback = anim ->
-      {
+      ratingsPopin.animation.finishCallback = anim -> {
         scorePopin.animation.play("score");
         scorePopin.visible = true;
 
@@ -215,15 +232,22 @@ class ResultState extends MusicBeatSubstate
         FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
       };
 
-      boyfriend.animation.play('fall');
-      boyfriend.visible = true;
-
-      new FlxTimer().start((1 / 24) * 22, _ ->
+      if (false)
       {
-        // plays about 22 frames (at 24fps timing) after bf spawns in
-        gf.animation.play('clap', true);
-        gf.visible = true;
-      });
+        boyfriend.animation.play('fall');
+        boyfriend.visible = true;
+
+        new FlxTimer().start((1 / 24) * 22, _ -> {
+          // plays about 22 frames (at 24fps timing) after bf spawns in
+          gf.animation.play('clap', true);
+          gf.visible = true;
+        });
+      }
+      else
+      {
+        bfGfExcellent.visible = true;
+        bfGfExcellent.playAnimation("");
+      }
     });
 
     if (Highscore.tallies.isNewHighscore) trace("ITS A NEW HIGHSCORE!!!");
@@ -245,8 +269,7 @@ class ResultState extends MusicBeatSubstate
     songName.y = diffYTween - 30;
     songName.x = (difficulty.x + difficulty.width) + 20;
 
-    new FlxTimer().start(3, _ ->
-    {
+    new FlxTimer().start(3, _ -> {
       movingSongStuff = true;
     });
   }
@@ -296,11 +319,6 @@ class ResultState extends MusicBeatSubstate
     if (FlxG.keys.justPressed.UP) speedOfTween.y -= 0.1;
 
     if (FlxG.keys.justPressed.DOWN) speedOfTween.y += 0.1;
-
-    if (FlxG.keys.pressed.V)
-    {
-      trace(speedOfTween);
-    }
 
     if (FlxG.keys.justPressed.PERIOD) songName.angle += 0.1;
 
