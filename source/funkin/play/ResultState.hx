@@ -232,21 +232,21 @@ class ResultState extends MusicBeatSubstate
         FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
       };
 
-      if (false)
+      switch (resultsVariation)
       {
-        boyfriend.animation.play('fall');
-        boyfriend.visible = true;
+        case NORMAL:
+          boyfriend.animation.play('fall');
+          boyfriend.visible = true;
 
-        new FlxTimer().start((1 / 24) * 22, _ -> {
-          // plays about 22 frames (at 24fps timing) after bf spawns in
-          gf.animation.play('clap', true);
-          gf.visible = true;
-        });
-      }
-      else
-      {
-        bfGfExcellent.visible = true;
-        bfGfExcellent.playAnimation("");
+          new FlxTimer().start((1 / 24) * 22, _ -> {
+            // plays about 22 frames (at 24fps timing) after bf spawns in
+            gf.animation.play('clap', true);
+            gf.visible = true;
+          });
+        case PERFECT:
+          bfGfExcellent.visible = true;
+          bfGfExcellent.playAnimation("");
+        default:
       }
     });
 
