@@ -52,10 +52,19 @@ class ResultState extends MusicBeatSubstate
     bg.scrollFactor.set();
     add(bg);
 
+    var bgFlash:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFffeb69, 0xFFffe66a], 90);
+    bgFlash.scrollFactor.set();
+    bgFlash.visible = false;
+    add(bgFlash);
+
     var bfGfExcellent:FlxAtlasSprite = new FlxAtlasSprite(380, -170, Paths.animateAtlas("resultScreen/resultsBoyfriendExcellent", "shared"));
     bfGfExcellent.visible = false;
-    // trace(bfGfExcellent.listAnimations());
     add(bfGfExcellent);
+
+    var bfSHIT:FlxAtlasSprite = new FlxAtlasSprite(0, 20, Paths.animateAtlas("resultScreen/resultsBoyfriendSHIT", "shared"));
+    bfSHIT.visible = false;
+    add(bfSHIT);
+
     var settings:Settings =
       {
         // ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
@@ -63,6 +72,7 @@ class ResultState extends MusicBeatSubstate
         Reversed: false,
         OnComplete: function() {
           bfGfExcellent.anim.curFrame = 28;
+          bfSHIT.anim.curFrame = 150;
           trace("repeated anim!!");
         },
         ShowPivot: false,
@@ -72,6 +82,7 @@ class ResultState extends MusicBeatSubstate
       };
 
     bfGfExcellent.setTheSettings(settings);
+    bfSHIT.setTheSettings(settings);
 
     var gf:FlxSprite = new FlxSprite(500, 300);
     gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
@@ -232,11 +243,28 @@ class ResultState extends MusicBeatSubstate
         FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
       };
 
+      resultsVariation = SHIT;
+
       switch (resultsVariation)
       {
+        case SHIT:
+          bfSHIT.visible = true;
+          bfSHIT.playAnimation("");
+
         case NORMAL:
           boyfriend.animation.play('fall');
           boyfriend.visible = true;
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
 
           new FlxTimer().start((1 / 24) * 22, _ -> {
             // plays about 22 frames (at 24fps timing) after bf spawns in
