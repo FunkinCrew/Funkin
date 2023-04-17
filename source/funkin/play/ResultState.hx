@@ -244,8 +244,6 @@ class ResultState extends MusicBeatSubstate
         FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
       };
 
-      resultsVariation = SHIT;
-
       switch (resultsVariation)
       {
         case SHIT:
