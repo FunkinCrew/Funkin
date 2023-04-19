@@ -72,6 +72,7 @@ class ResultState extends MusicBeatSubstate
         Reversed: false,
         OnComplete: function() {
           bfGfExcellent.anim.curFrame = 28;
+          bfGfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
           bfSHIT.anim.curFrame = 150;
           bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
           trace("repeated anim!!");
