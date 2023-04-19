@@ -63,6 +63,10 @@ class ResultState extends MusicBeatSubstate
     bfGfExcellent.visible = false;
     add(bfGfExcellent);
 
+    var bfPerfect:FlxAtlasSprite = new FlxAtlasSprite(370, -180, Paths.animateAtlas("resultScreen/resultsBoyfriendPerfect", "shared"));
+    bfPerfect.visible = false;
+    add(bfPerfect);
+
     var bfSHIT:FlxAtlasSprite = new FlxAtlasSprite(0, 20, Paths.animateAtlas("resultScreen/resultsBoyfriendSHIT", "shared"));
     bfSHIT.visible = false;
     add(bfSHIT);
@@ -77,6 +81,10 @@ class ResultState extends MusicBeatSubstate
           bfGfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
           bfSHIT.anim.curFrame = 150;
           bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
+
+          bfPerfect.anim.curFrame = 136;
+          bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+
           trace("repeated anim!!");
         },
         ShowPivot: false,
@@ -87,6 +95,7 @@ class ResultState extends MusicBeatSubstate
 
     bfGfExcellent.setTheSettings(settings);
     bfSHIT.setTheSettings(settings);
+    bfPerfect.setTheSettings(settings);
 
     var gf:FlxSprite = new FlxSprite(500, 300);
     gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
@@ -274,8 +283,11 @@ class ResultState extends MusicBeatSubstate
             gf.visible = true;
           });
         case PERFECT:
-          bfGfExcellent.visible = true;
-          bfGfExcellent.playAnimation("");
+          bfPerfect.visible = true;
+          bfPerfect.playAnimation("");
+
+        // bfGfExcellent.visible = true;
+        // bfGfExcellent.playAnimation("");
         default:
       }
     });
@@ -363,6 +375,7 @@ class ResultState extends MusicBeatSubstate
 enum abstract ResultVariations(String)
 {
   var PERFECT;
+  var EXCELLENT;
   var NORMAL;
   var SHIT;
 }
