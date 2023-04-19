@@ -39,7 +39,9 @@ class ResultState extends MusicBeatSubstate
     else
       resultsVariation = NORMAL;
 
-    FlxG.sound.playMusic(Paths.music("results" + resultsVariation));
+    var loops = resultsVariation != SHIT;
+
+    FlxG.sound.playMusic(Paths.music("results" + resultsVariation), 1, loops);
 
     // TEMP-ish, just used to sorta "cache" the 3000x3000 image!
     var cacheBullShit = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
