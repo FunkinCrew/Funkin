@@ -15,6 +15,7 @@ import funkin.play.PlayState;
 import funkin.play.song.SongData.SongDataParser;
 import lime.net.curl.CURLCode;
 import openfl.Assets;
+import funkin.ui.StickerSubState;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -86,6 +87,18 @@ class StoryMenuState extends MusicBeatState
   var yellowBG:FlxSprite; // not actually, yellow, lol!
   var targetColor:Int = 0xFFF9CF51;
 
+  var stickerSubState:StickerSubState;
+
+  public function new(?stickers:StickerSubState = null)
+  {
+    if (stickers != null)
+    {
+      stickerSubState = stickers;
+    }
+
+    super();
+  }
+
   override function create()
   {
     transIn = FlxTransitionableState.defaultTransIn;
@@ -94,6 +107,17 @@ class StoryMenuState extends MusicBeatState
     if (FlxG.sound.music != null)
     {
       if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu'));
+    }
+
+    if (stickerSubState != null)
+    {
+      this.persistentUpdate = true;
+      this.persistentDraw = true;
+
+      openSubState(stickerSubState);
+      stickerSubState.degenStickers();
+
+      // resetSubState();
     }
 
     persistentUpdate = persistentDraw = true;
@@ -293,8 +317,7 @@ class StoryMenuState extends MusicBeatState
 
     difficultySelectors.visible = weekUnlocked[curWeek];
 
-    grpLocks.forEach(function(lock:FlxSprite)
-    {
+    grpLocks.forEach(function(lock:FlxSprite) {
       lock.y = grpWeekText.members[lock.ID].y;
     });
 
@@ -380,8 +403,7 @@ class StoryMenuState extends MusicBeatState
       };
       SongLoad.curDiff = PlayState.storyDifficulty_NEW;
 
-      new FlxTimer().start(1, function(tmr:FlxTimer)
-      {
+      new FlxTimer().start(1, function(tmr:FlxTimer) {
         LoadingState.loadAndSwitchState(new PlayState(), true);
       });
     }

@@ -1512,7 +1512,7 @@ class PlayState extends MusicBeatState
         else
         {
           var boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-          var pauseSubState = new PauseSubState(boyfriendPos.x, boyfriendPos.y);
+          var pauseSubState = new PauseSubState();
           openSubState(pauseSubState);
           pauseSubState.camera = camHUD;
           boyfriendPos.put();
