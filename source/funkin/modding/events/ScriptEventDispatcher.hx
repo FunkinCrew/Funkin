@@ -72,6 +72,9 @@ class ScriptEventDispatcher
         case ScriptEvent.RESUME:
           t.onResume(event);
           return;
+        case ScriptEvent.SONG_EVENT:
+          t.onSongEvent(cast event);
+          return;
         case ScriptEvent.COUNTDOWN_START:
           t.onCountdownStart(cast event);
           return;
@@ -118,7 +121,8 @@ class ScriptEventDispatcher
       return;
     }
 
-    throw "No function called for event type: " + event.type;
+    // If you get a crash on this line, that means ERIC FUCKED UP!
+    throw 'No function called for event type: ${event.type}';
   }
 
   public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>, event:ScriptEvent):Void
