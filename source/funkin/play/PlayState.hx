@@ -1771,7 +1771,13 @@ class PlayState extends MusicBeatState
         trace('Found ${songEventsToActivate.length} event(s) to activate.');
         for (event in songEventsToActivate)
         {
-          SongEventParser.handleEvent(event);
+          var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
+          dispatchEvent(eventEvent);
+          // Calling event.cancelEvent() skips the event. Neat!
+          if (!eventEvent.eventCanceled)
+          {
+            SongEventParser.handleEvent(event);
+          }
         }
       }
     }
@@ -2674,10 +2680,6 @@ class PlayState extends MusicBeatState
 
     // Dispatch event to character script(s).
     if (currentStage != null) currentStage.dispatchToCharacters(event);
-
-    // TODO: Dispatch event to song script
-
-    // TODO: Dispatch event to note script
   }
 
   /**

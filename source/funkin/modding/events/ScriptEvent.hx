@@ -385,12 +385,6 @@ class SongEventScriptEvent extends ScriptEvent
    */
   public var event(default, null):funkin.play.song.SongData.SongEventData;
 
-  /**
-   * The combo count as it is with this event.
-   * Will be (combo) on miss events and (combo + 1) on hit events (the stored combo count won't update if the event is cancelled).
-   */
-  public var comboCount(default, null):Int;
-
   public function new(event:funkin.play.song.SongData.SongEventData):Void
   {
     super(ScriptEvent.SONG_EVENT, true);

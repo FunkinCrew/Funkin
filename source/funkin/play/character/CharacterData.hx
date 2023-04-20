@@ -83,6 +83,7 @@ class CharacterDataParser
         try
         {
           var character:SparrowCharacter = ScriptedSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
+          trace('  Initialized character ${character.characterName}');
           characterScriptedClass.set(character.characterId, charCls);
         }
         catch (e)
