@@ -28,7 +28,7 @@ class ResultState extends MusicBeatSubstate
   var maskShaderSongName = new LeftMaskShader();
   var maskShaderDifficulty = new LeftMaskShader();
 
-  override function create()
+  override function create():Void
   {
     if (Highscore.tallies.sick == Highscore.tallies.totalNotesHit
       && Highscore.tallies.maxCombo == Highscore.tallies.totalNotesHit) resultsVariation = PERFECT;
@@ -71,31 +71,20 @@ class ResultState extends MusicBeatSubstate
     bfSHIT.visible = false;
     add(bfSHIT);
 
-    var settings:Settings =
-      {
-        // ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
-        FrameRate: 24.0,
-        Reversed: false,
-        OnComplete: function() {
-          bfGfExcellent.anim.curFrame = 28;
-          bfGfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
-          bfSHIT.anim.curFrame = 150;
-          bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    bfGfExcellent.anim.onComplete = () -> {
+      bfGfExcellent.anim.curFrame = 28;
+      bfGfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    };
 
-          bfPerfect.anim.curFrame = 136;
-          bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    bfPerfect.anim.onComplete = () -> {
+      bfPerfect.anim.curFrame = 136;
+      bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    };
 
-          trace("repeated anim!!");
-        },
-        ShowPivot: false,
-        Antialiasing: true,
-        ScrollFactor: new FlxPoint(1, 1),
-        // Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
-      };
-
-    bfGfExcellent.setTheSettings(settings);
-    bfSHIT.setTheSettings(settings);
-    bfPerfect.setTheSettings(settings);
+    bfSHIT.anim.onComplete = () -> {
+      bfSHIT.anim.curFrame = 150;
+      bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    };
 
     var gf:FlxSprite = new FlxSprite(500, 300);
     gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
