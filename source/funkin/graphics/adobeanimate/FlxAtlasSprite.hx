@@ -31,9 +31,11 @@ class FlxAtlasSprite extends FlxAnimate
 
   var canPlayOtherAnims:Bool = true;
 
-  public function new(x:Float, y:Float, path:String)
+  public function new(x:Float, y:Float, path:String, ?settings:Settings)
   {
-    super(x, y, path);
+    if (settings == null) settings = SETTINGS;
+
+    super(x, y, path, settings);
 
     if (this.anim.curInstance == null)
     {
@@ -55,7 +57,8 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
-    return this.anim.getFrameLabels();
+    // return this.anim.getFrameLabels();
+    return [""];
   }
 
   /**
