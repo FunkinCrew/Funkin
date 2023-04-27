@@ -1,4 +1,6 @@
 # Friday Night Funkin
+- `THIS IS A OLD FRIDAY NIGHT FUNKIN' V0.2.7.1 SOURCE, NOT HAVING A WEEK 7 SOURCE!`
+- `ME WAS FORK THIS BEFORE WEEK 7 SOURCE UPDATE!`
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
