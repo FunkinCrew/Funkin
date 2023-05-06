@@ -447,7 +447,7 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		/* 
 			#if web
-			if (!initialized && controls.ACCEPT)
+			if (!initialized && pressedEnter)
 			{
 				// netStream.dispose();
 				// FlxG.stage.removeChild(video);
@@ -468,30 +468,6 @@ class TitleState extends MusicBeatState
 			if (controls.UI_RIGHT)
 				swagShader.update(elapsed * 0.1);
 		}
-
-		if (pressedEnter && !skippedIntro && initialized)
-			skipIntro();
-		/* 
-			#if web
-			if (!initialized && controls.ACCEPT)
-			{
-				// netStream.dispose();
-				// FlxG.stage.removeChild(video);
-
-				startIntro();
-				skipIntro();
-			}
-			#end
-		 */
-
-		// if (FlxG.keys.justPressed.SPACE)
-		// swagShader.hasOutline = !swagShader.hasOutline;
-
-		if (controls.UI_LEFT)
-			swagShader.update(-elapsed * 0.1);
-
-		if (controls.UI_RIGHT)
-			swagShader.update(elapsed * 0.1);
 
 		super.update(elapsed);
 	}
