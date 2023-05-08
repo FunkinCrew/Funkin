@@ -11,13 +11,15 @@ import io.newgrounds.objects.Error;
 import io.newgrounds.objects.Medal;
 import io.newgrounds.objects.Score;
 import io.newgrounds.objects.ScoreBoard;
+import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.objects.events.Response;
-import io.newgrounds.objects.events.Result.GetCurrentVersionResult;
-import io.newgrounds.objects.events.Result.GetVersionResult;
+import io.newgrounds.objects.events.Result;
 import lime.app.Application;
 import openfl.display.Stage;
 
 using StringTools;
+using io.newgrounds.objects.events.Outcome.TypedOutcomeTools;
+using io.newgrounds.objects.events.Outcome.OutcomeTools;
 #end
 /**
  * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
@@ -50,11 +52,17 @@ class NGio
 		GAME_VER = "v" + Application.current.meta.get('version');
 
 		NG.core.calls.app.getCurrentVersion(GAME_VER)
-			.addDataHandler(function(response)
+			.addOutcomeHandler(function (outcome)
 			{
-				GAME_VER = response.result.data.currentVersion;
-				trace('CURRENT NG VERSION: ' + GAME_VER);
-				callback(GAME_VER);
+				switch(outcome)
+				{
+					case SUCCESS(data):
+						GAME_VER = data.currentVersion;
+						trace('CURRENT NG VERSION: ' + GAME_VER);
+						callback(GAME_VER);
+					case FAIL(error):
+						throw 'Error getting NG version: $error';
+				}
 			})
 			.send();
 	}
@@ -71,12 +79,12 @@ class NGio
 		
 		#if NG_FORCE_EXPIRED_SESSION
 			var sessionId:String = "fake_session_id";
-			function onSessionFail(error:Error)
-			{
-				trace("Forcing an expired saved session. "
-					+ "To disable, comment out NG_FORCE_EXPIRED_SESSION in Project.xml");
-				savedSessionFailed = true;
-			}
+			// function onSessionFail(error:String)
+			// {
+			// 	trace("Forcing an expired saved session. "
+			// 		+ "To disable, comment out NG_FORCE_EXPIRED_SESSION in Project.xml");
+			// 	savedSessionFailed = true;
+			// }
 		#else
 			var sessionId:String = NGLite.getSessionId();
 			if (sessionId != null)
@@ -90,20 +98,29 @@ class NGio
 			}
 			#end
 		
-			var onSessionFail:Error->Void = null;
-			if (sessionId == null && FlxG.save.data.sessionId != null)
-			{
-				trace("using stored session id");
-				sessionId = FlxG.save.data.sessionId;
-				onSessionFail = function (error) savedSessionFailed = true;
-			}
+			// var onSessionFail:Error->Void = null;
+			// if (sessionId == null && FlxG.save.data.sessionId != null)
+			// {
+			// 	trace("using stored session id");
+			// 	sessionId = FlxG.save.data.sessionId;
+			// 	onSessionFail = function (error) savedSessionFailed = true;
+			// }
 		#end
 		
-		NG.create(api, sessionId, #if NG_DEBUG true #else false #end, onSessionFail);
+		NG.create(api, sessionId, #if NG_DEBUG true #else false #end, function (outcome)
+		{
+			switch(outcome)
+			{
+				case SUCCESS: 
+				case FAIL(CANCELLED(PASSPORT)): trace('Login cancelled by user');
+				case FAIL(CANCELLED(MANUAL)):   trace('Login cancelled');
+				case FAIL(ERROR(error)):        trace('Error logging in: $error');
+			}
+		});
 		
 		#if NG_VERBOSE NG.core.verbose = true; #end
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
-		NG.core.initEncryption(APIStuff.EncKey); // Found in you NG project view
+		NG.core.setupEncryption(APIStuff.EncKey, RC4); // Found in you NG project view
 
 		if (NG.core.attemptingLogin)
 		{
@@ -129,30 +146,25 @@ class NGio
 	 * a user input event or the popup blocker will block it.
 	 * @param onComplete A callback with the result of the connection.
 	 */
-	static public function login(?popupLauncher:(Void->Void)->Void, onComplete:ConnectionResult->Void)
+	static public function login(?popupLauncher:(()->Void)->Void, onComplete:LoginOutcome->Void)
 	{
 		trace("Logging in manually");
-		var onPending:Void->Void = null;
+		var onPending:String->Void = null;
 		if (popupLauncher != null)
 		{
-			onPending = function () popupLauncher(NG.core.openPassportUrl);
+			onPending = function (_) popupLauncher(NG.core.openPassportUrl);
 		}
 		
-		var onSuccess:Void->Void = onNGLogin;
-		var onFail:Error->Void = null;
-		var onCancel:Void->Void = null;
-		if (onComplete != null)
+		NG.core.requestLogin(function (outcome)
 		{
-			onSuccess = function ()
+			switch (outcome)
 			{
-				onNGLogin();
-				onComplete(Success);
+				case SUCCESS:
+					onNGLogin();
+				default:
 			}
-			onFail = function (e) onComplete(Fail(e.message));
-			onCancel = function() onComplete(Cancelled);
-		}
-		
-		NG.core.requestLogin(onSuccess, onPending, onFail, onCancel);
+			onComplete(outcome);
+		}, onPending);
 	}
 	
 	inline static public function cancelLogin():Void
@@ -166,10 +178,10 @@ class NGio
 		FlxG.save.data.sessionId = NG.core.sessionId;
 		FlxG.save.flush();
 		// Load medals then call onNGMedalFetch()
-		NG.core.requestMedals(onNGMedalFetch);
+		NG.core.medals.loadList((outcome)->outcome.assertSuccessHandler(onNGMedalFetch));
 
 		// Load Scoreboards hten call onNGBoardsFetch()
-		NG.core.requestScoreBoards(onNGBoardsFetch);
+		NG.core.scoreBoards.loadList((outcome)->outcome.assertSuccessHandler(onNGBoardsFetch));
 
 		ngDataLoaded.dispatch();
 	}
@@ -290,14 +302,4 @@ class NGio
 			#if debug trace('Song:$song, Score:$score - not posted, missing NG.io lib'); #end
 		#end
 	}
-}
-
-enum ConnectionResult
-{
-	/** Log in successful */
-	Success;
-	/** Could not login */
-	Fail(msg:String);
-	/** User cancelled the login */
-	Cancelled;
 }
