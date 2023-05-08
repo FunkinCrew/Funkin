@@ -1,5 +1,6 @@
 package ui;
 
+import io.newgrounds.NGLite;
 import NGio;
 import ui.Prompt;
 
@@ -57,28 +58,39 @@ class NgPrompt extends Prompt
 					openPassportUrl();
 				}
 			},
-			function onLoginComplete(result:ConnectionResult)
+			function onLoginComplete(result:LoginOutcome)
 			{
 				switch (result)
 				{
-					case Success:
+					case SUCCESS:
 					{
 						prompt.setText("Login Successful");
 						prompt.setButtons(Ok);
 						prompt.onYes = prompt.close;
 					}
-					case Fail(msg):
+					case FAIL(ERROR(error)):
 					{
-						trace("Login Error:" + msg);
+						trace("Login Error:" + error.toString());
 						prompt.setText("Login failed");
 						prompt.setButtons(Ok);
 						prompt.onYes = prompt.close;
 					}
-					case Cancelled:
+					case FAIL(CANCELLED(PASSPORT)):
 					{
 						if (prompt != null)
 						{
 							prompt.setText("Login cancelled by user");
+							prompt.setButtons(Ok);
+							prompt.onYes = prompt.close;
+						}
+						else
+							trace("Login cancelled via prompt");
+					}
+					case FAIL(CANCELLED(MANUAL)):
+					{
+						if (prompt != null)
+						{
+							prompt.setText("Login cancelled");
 							prompt.setButtons(Ok);
 							prompt.onYes = prompt.close;
 						}

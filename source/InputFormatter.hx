@@ -145,7 +145,7 @@ class InputFormatter
 }
 
 @:forward
-@:enum abstract ControllerName(String) from String to String
+enum abstract ControllerName(String) from String to String
 {
     var OUYA     = "Ouya"    ;
     var PS4      = "PS4"     ;
