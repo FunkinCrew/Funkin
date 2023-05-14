@@ -119,7 +119,7 @@ class MainMenuState extends MusicBeatState
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
-		versionShit.text += '\nZyflixel Engine Dev Build (HEAVY WIP)';
+		versionShit.text += '\nZyflixel Engine (HEAVY WIP)';
 
 		super.create();
 	}
