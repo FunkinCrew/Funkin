@@ -955,8 +955,8 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			Conductor.songPosition = FlxG.sound.music.time + Conductor.offset; // 20 is THE MILLISECONDS??
-			// Conductor.songPosition += FlxG.elapsed * 1000;
+			// Conductor.songPosition = FlxG.sound.music.time + Conductor.offset; // 20 is THE MILLISECONDS??
+			Conductor.songPosition += FlxG.elapsed * 1000;
 
 			if (!paused)
 			{
