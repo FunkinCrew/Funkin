@@ -15,11 +15,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
-
 import game.ui.menu.*;
 import game.data.backend.Highscore;
 import game.data.backend.Song;
-
 
 using StringTools;
 

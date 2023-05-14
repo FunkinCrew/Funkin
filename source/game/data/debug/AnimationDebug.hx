@@ -11,7 +11,6 @@ import flixel.util.FlxColor;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
-
 import game.objects.*;
 
 using StringTools;

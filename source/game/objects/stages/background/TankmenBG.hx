@@ -3,7 +3,6 @@ package game.objects.stages.background;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import haxe.display.Display.Package;
-
 import game.data.backend.Conductor;
 
 class TankmenBG extends FlxSprite

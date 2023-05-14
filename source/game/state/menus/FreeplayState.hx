@@ -14,7 +14,6 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
-
 import game.ui.AtlasMenuList.AtlasMenuItem;
 import game.ui.MenuList.MenuTypedList;
 import game.ui.*;
@@ -222,7 +221,8 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 
 		FlxG.camera.zoom = FlxMath.lerp(1, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 4), 0, 1));
 
@@ -253,10 +253,12 @@ class FreeplayState extends MusicBeatState
 		else
 			grpArrows.members[0].animation.play('idle');
 
-		if (controls.UI_LEFT_P) {
+		if (controls.UI_LEFT_P)
+		{
 			changeDiff(-1);
 		}
-		if (controls.UI_RIGHT_P) {
+		if (controls.UI_RIGHT_P)
+		{
 			changeDiff(1);
 		}
 
@@ -281,7 +283,8 @@ class FreeplayState extends MusicBeatState
 
 	override function beatHit()
 	{
-		if (curBeat % 1 == 0) FlxG.camera.zoom += 0.015;
+		if (curBeat % 1 == 0)
+			FlxG.camera.zoom += 0.015;
 		super.beatHit();
 	}
 
@@ -299,7 +302,13 @@ class FreeplayState extends MusicBeatState
 		PlayState.storyDifficulty = curDifficulty;
 
 		difficulty.offset.x = 0;
-		switch (curDifficulty) {case 1: difficulty.offset.x = 70; case 0 | 2: difficulty.offset.x = 20;}
+		switch (curDifficulty)
+		{
+			case 1:
+				difficulty.offset.x = 70;
+			case 0 | 2:
+				difficulty.offset.x = 20;
+		}
 		difficulty.animation.play(CoolUtil.difficultyString().toLowerCase());
 	}
 
@@ -322,10 +331,12 @@ class FreeplayState extends MusicBeatState
 		Conductor.changeBPM(song.bpm);
 		#end
 
-		for (i in 0...iconArray.length) iconArray[i].visible = false;
+		for (i in 0...iconArray.length)
+			iconArray[i].visible = false;
 		iconArray[curSelected].visible = true;
 
-		for (item in grpSongs.members) item.visible = false;
+		for (item in grpSongs.members)
+			item.visible = false;
 		grpSongs.members[curSelected].visible = true;
 	}
 }

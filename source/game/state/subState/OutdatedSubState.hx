@@ -6,7 +6,6 @@ import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.app.Application;
-
 import game.state.MusicBeatState;
 import game.state.menus.MainMenuState;
 

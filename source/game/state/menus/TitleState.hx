@@ -57,6 +57,7 @@ import sys.thread.Thread;
 class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
+
 	var startedIntro:Bool;
 
 	var blackScreen:FlxSprite;
@@ -78,9 +79,9 @@ class TitleState extends MusicBeatState
 
 	// Note: If you are adding songs to the game, make sure you add the songs here
 	var gameSongs:Array<String> = [
-		'test', 'tutorial', 'bopeebo', 'fresh', 'dadbattle', 'spookeez', 'south', 'monster',
-		'pico', 'philly', 'blammed', 'satin-panties', 'high', 'milf', 'cocoa', 'eggnog', 'winter-horrorland',
-		'senpai', 'roses', 'thorns', 'ugh', 'guns', 'stress'];
+		'test', 'tutorial', 'bopeebo', 'fresh', 'dadbattle', 'spookeez', 'south', 'monster', 'pico', 'philly', 'blammed', 'satin-panties', 'high', 'milf',
+		'cocoa', 'eggnog', 'winter-horrorland', 'senpai', 'roses', 'thorns', 'ugh', 'guns', 'stress'
+	];
 
 	override public function create():Void
 	{
@@ -342,8 +343,10 @@ class TitleState extends MusicBeatState
 			FlxG.switchState(new CutsceneAnimTestState());
 		#end
 
-		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
-		if (FlxG.keys.justPressed.F) FlxG.fullscreen = !FlxG.fullscreen;
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
+		if (FlxG.keys.justPressed.F)
+			FlxG.fullscreen = !FlxG.fullscreen;
 
 		FlxG.camera.zoom = FlxMath.lerp(1, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 4), 0, 1));
 
@@ -381,7 +384,7 @@ class TitleState extends MusicBeatState
 			if (Date.now().getDay() == 5)
 				// NGio.unlockMedal(61034);
 
-			titleText.animation.play('press');
+				titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
@@ -393,11 +396,14 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
-		if (pressedEnter && !skippedIntro && initialized) skipIntro();
+		if (pressedEnter && !skippedIntro && initialized)
+			skipIntro();
 
-		if (controls.UI_LEFT) swagShader.update(-elapsed * 0.1);
+		if (controls.UI_LEFT)
+			swagShader.update(-elapsed * 0.1);
 
-		if (controls.UI_RIGHT) swagShader.update(elapsed * 0.1);
+		if (controls.UI_RIGHT)
+			swagShader.update(elapsed * 0.1);
 
 		super.update(elapsed);
 	}
@@ -441,7 +447,8 @@ class TitleState extends MusicBeatState
 		if (!startedIntro)
 			return;
 
-		if (curBeat % 1 == 0) FlxG.camera.zoom += 0.015;
+		if (curBeat % 1 == 0)
+			FlxG.camera.zoom += 0.015;
 
 		if (skippedIntro)
 		{

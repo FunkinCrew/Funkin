@@ -7,7 +7,6 @@ import game.data.backend.Song.SwagSong;
  * ...
  * @author
  */
-
 typedef BPMChangeEvent =
 {
 	var stepTime:Int;
@@ -29,9 +28,7 @@ class Conductor
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
-	public function new()
-	{
-	}
+	public function new() {}
 
 	public static function findRating(diff:Float)
 	{
@@ -48,8 +45,7 @@ class Conductor
 
 	public static function getRatingScore(diff:Float)
 	{
-		return (findRating(diff) == 'sick' ? 350 : findRating(diff) == 'good' ? 200 :
-		findRating(diff) == 'bad' ? 100 : findRating(diff) == 'shit' ? 50 : 0);
+		return (findRating(diff) == 'sick' ? 350 : findRating(diff) == 'good' ? 200 : findRating(diff) == 'bad' ? 100 : findRating(diff) == 'shit' ? 50 : 0);
 	}
 
 	public static function mapBPMChanges(song:SwagSong)
@@ -61,7 +57,7 @@ class Conductor
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length)
 		{
-			if(song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
+			if (song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
 			{
 				curBPM = song.notes[i].bpm;
 				var event:BPMChangeEvent = {

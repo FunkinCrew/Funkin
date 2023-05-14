@@ -8,7 +8,6 @@ import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
-
 import game.state.menus.*;
 
 class VideoState extends MusicBeatState

@@ -10,7 +10,6 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import haxe.Json;
 import lime.math.Rectangle;
 import lime.utils.Assets;
-
 import game.state.*;
 
 using StringTools;
@@ -47,7 +46,8 @@ class CoolUtil
 	}
 
 	// Robbed From Psych lmfao
-	inline public static function boundTo(value:Float, min:Float, max:Float):Float {
+	inline public static function boundTo(value:Float, min:Float, max:Float):Float
+	{
 		return Math.max(min, Math.min(max, value));
 	}
 
@@ -64,8 +64,8 @@ class CoolUtil
 	}
 
 	/*
-	* just lerp that does camLerpShit for u so u dont have to do it every time
-	*/
+	 * just lerp that does camLerpShit for u so u dont have to do it every time
+	 */
 	public static function coolLerp(a:Float, b:Float, ratio:Float):Float
 	{
 		return FlxMath.lerp(a, b, camLerpShit(ratio));

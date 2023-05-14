@@ -8,16 +8,16 @@ class StaticNote extends FlxSprite
 {
 	public var animReset:Float = 0;
 
-    public function new(x:Float, y:Float, data:Int, player:Int)
-    {
-        super(x, y);
-        loadStaticArrow(data);
-        scrollFactor.set();
-    }
+	public function new(x:Float, y:Float, data:Int, player:Int)
+	{
+		super(x, y);
+		loadStaticArrow(data);
+		scrollFactor.set();
+	}
 
-    function loadStaticArrow(data:Int)
-    {
-        if (PlayState.isPixel)
+	function loadStaticArrow(data:Int)
+	{
+		if (PlayState.isPixel)
 		{
 			loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
 			animation.add('green', [6]);
@@ -89,14 +89,16 @@ class StaticNote extends FlxSprite
 			}
 		}
 		updateHitbox();
-        playStrumAnim('static', true);
-    }
+		playStrumAnim('static', true);
+	}
 
 	override function update(elapsed:Float)
 	{
-		if (animReset > 0) {
+		if (animReset > 0)
+		{
 			animReset -= elapsed;
-			if (animReset <= 0) {
+			if (animReset <= 0)
+			{
 				playStrumAnim('static', true);
 				animReset = 0;
 			}
@@ -104,17 +106,17 @@ class StaticNote extends FlxSprite
 		super.update(elapsed);
 	}
 
-    public function playStrumAnim(anim:String, ?forced:Bool = false):Void
-    {
-        animation.play(anim, forced);
+	public function playStrumAnim(anim:String, ?forced:Bool = false):Void
+	{
+		animation.play(anim, forced);
 
-        if (anim == 'confirm' && !PlayState.isPixel)
-        {
-            centerOffsets();
-            offset.x -= 13;
-            offset.y -= 13;
-        }
-        else
-            centerOffsets();
-    }
+		if (anim == 'confirm' && !PlayState.isPixel)
+		{
+			centerOffsets();
+			offset.x -= 13;
+			offset.y -= 13;
+		}
+		else
+			centerOffsets();
+	}
 }

@@ -15,68 +15,68 @@ import game.data.backend.*;
 import game.objects.*;
 import game.objects.stages.background.*;
 import game.state.PlayState;
-
 import game.objects.shaders.BuildingShaders;
 import game.objects.shaders.BuildingShaders.BuildingShader;
 
 /*
-    If it wasn't obvious already, this class is heavily based off of
-    Forever Engines "Stage.hx"
+	If it wasn't obvious already, this class is heavily based off of
+	Forever Engines "Stage.hx"
 
-    Forever Engine by beloved
-*/
-
+	Forever Engine by beloved
+ */
 class GameStage extends FlxTypedGroup<FlxBasic>
 {
-    var pixelZoom = PlayState.daPixelZoom;
+	var pixelZoom = PlayState.daPixelZoom;
 
-    // Spooky Stage Stuff
-    var halloweenBG:FlxSprite;
-    var lightningStrikeBeat:Int = 0;
+	// Spooky Stage Stuff
+	var halloweenBG:FlxSprite;
+	var lightningStrikeBeat:Int = 0;
 	var lightningOffset:Int = 8;
 
-    // Philly Stage Stuff
-    // I love philly cheesesteaks
-    var phillyTrain:FlxSprite;
+	// Philly Stage Stuff
+	// I love philly cheesesteaks
+	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
-    var phillyCityLights:FlxTypedGroup<FlxSprite>;
-    var lightFadeShader:BuildingShaders;
+	var phillyCityLights:FlxTypedGroup<FlxSprite>;
+	var lightFadeShader:BuildingShaders;
 
-    // Limo Stage Stuff
-    public var limo:FlxSprite;
+	// Limo Stage Stuff
+	public var limo:FlxSprite;
+
 	var fastCar:FlxSprite;
-    var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
+	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 
-    // Mall Stage Stuff
-    var upperBoppers:FlxSprite;
+	// Mall Stage Stuff
+	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
 	var santa:FlxSprite;
 
-    // School Stuff
-    var bgGirls:BackgroundGirls;
+	// School Stuff
+	var bgGirls:BackgroundGirls;
 
 	// Tank Stage Stuff
 	var tankWatchtower:BGSprite;
 	var tankGround:BGSprite;
+
 	public var tankmanRun:FlxTypedGroup<TankmenBG>;
 	public var foregroundSprites:FlxTypedGroup<BGSprite>;
 
 	// For if you want to have sprites in front of the characters
 	public var fgSprites:FlxTypedGroup<FlxBasic>;
 
-    public function new()
-    {
-        super();
+	public function new()
+	{
+		super();
 
 		foregroundSprites = new FlxTypedGroup<BGSprite>();
 		fgSprites = new FlxTypedGroup<FlxBasic>();
 
-        switch (getStage())
-        {
-            case 'stage':
-                PlayState.defaultCamZoom = 0.9;
+		switch (getStage())
+		{
+			case 'stage':
+				PlayState.defaultCamZoom = 0.9;
 
-                var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
+				var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
 				add(bg);
 
 				var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
@@ -94,9 +94,9 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				stageCurtains.scrollFactor.set(1.3, 1.3);
 				stageCurtains.active = false;
 				add(stageCurtains);
-                
-            case 'spooky':
-                var hallowTex = Paths.getSparrowAtlas('halloween_bg');
+
+			case 'spooky':
+				var hallowTex = Paths.getSparrowAtlas('halloween_bg');
 
 				halloweenBG = new FlxSprite(-200, -100);
 				halloweenBG.frames = hallowTex;
@@ -106,8 +106,8 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				halloweenBG.antialiasing = true;
 				add(halloweenBG);
 
-            case 'philly':
-                var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
+			case 'philly':
+				var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
 				bg.scrollFactor.set(0.1, 0.1);
 				add(bg);
 
@@ -140,14 +140,14 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image('philly/train'));
 				add(phillyTrain);
 
-                var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
+				var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
 				add(street);
 
 				trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
 				FlxG.sound.list.add(trainSound);
-            
-            case 'limo':
-                var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
+
+			case 'limo':
+				var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
 				skyBG.scrollFactor.set(0.1, 0.1);
 				add(skyBG);
 
@@ -178,11 +178,11 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				limo.antialiasing = true;
 
 				fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol'));
-            
-            case 'mall':
-                PlayState.defaultCamZoom = 0.80;
 
-                var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(Paths.image('christmas/bgWalls'));
+			case 'mall':
+				PlayState.defaultCamZoom = 0.80;
+
+				var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(Paths.image('christmas/bgWalls'));
 				bg.antialiasing = true;
 				bg.scrollFactor.set(0.2, 0.2);
 				bg.active = false;
@@ -232,8 +232,8 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				santa.antialiasing = true;
 				add(santa);
 
-            case 'mallEvil':
-                var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image('christmas/evilBG'));
+			case 'mallEvil':
+				var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image('christmas/evilBG'));
 				bg.antialiasing = true;
 				bg.scrollFactor.set(0.2, 0.2);
 				bg.active = false;
@@ -250,10 +250,10 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				evilSnow.antialiasing = true;
 				add(evilSnow);
 
-            case 'school':
-                PlayState.isPixel = true;
+			case 'school':
+				PlayState.isPixel = true;
 
-                var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
+				var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
 				bgSky.scrollFactor.set(0.1, 0.1);
 				add(bgSky);
 
@@ -305,16 +305,17 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				bgGirls = new BackgroundGirls(-100, 190);
 				bgGirls.scrollFactor.set(0.9, 0.9);
 
-				if (PlayState.SONG.song.toLowerCase() == 'roses') bgGirls.getScared();
+				if (PlayState.SONG.song.toLowerCase() == 'roses')
+					bgGirls.getScared();
 
 				bgGirls.setGraphicSize(Std.int(bgGirls.width * pixelZoom));
 				bgGirls.updateHitbox();
 				add(bgGirls);
 
-            case 'schoolEvil':
-                PlayState.isPixel = true;
+			case 'schoolEvil':
+				PlayState.isPixel = true;
 
-                var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
+				var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
 				var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
 
 				var posX = 400;
@@ -399,47 +400,60 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 
 				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
-        }
-    }
-
-    // Define Your Songs Stage Here
-    public function getStage()
-    {
-        var curStage:String = 'stage';
-        switch (PlayState.SONG.song.toLowerCase())
-		{
-			case 'spookeez' | 'south' | 'monster': curStage = 'spooky';
-			case 'pico' | 'philly' | 'blammed': curStage = 'philly';
-			case 'satin-panties' | 'high' | 'milf': curStage = 'limo';
-			case 'coca' | 'eggnog': curStage = 'mall';
-			case 'winter-horrorland': curStage = 'mallEvil';
-			case 'senpai' | 'roses': curStage = 'school';
-			case 'thorns': curStage = 'schoolEvil';
-            case 'ugh' | 'guns' | 'stress': curStage = 'tank';
 		}
-        return curStage;
-    }
+	}
 
-    public function getGF()
-    {
-        var GF:String = 'gf';
-        switch (getStage())
-        {
-            case 'limo': GF = 'gf-car';
-            case 'mall' | 'mallEvil': GF = 'gf-christmas';
-            case 'tank': GF = 'gf-tankmen';
-        }
-        if (PlayState.isPixel) GF = 'gf-pixel';
-        if (PlayState.SONG.song.toLowerCase() == 'stress') GF = 'pico-speaker';
-        return GF;
-    }
+	// Define Your Songs Stage Here
+	public function getStage()
+	{
+		var curStage:String = 'stage';
+		switch (PlayState.SONG.song.toLowerCase())
+		{
+			case 'spookeez' | 'south' | 'monster':
+				curStage = 'spooky';
+			case 'pico' | 'philly' | 'blammed':
+				curStage = 'philly';
+			case 'satin-panties' | 'high' | 'milf':
+				curStage = 'limo';
+			case 'coca' | 'eggnog':
+				curStage = 'mall';
+			case 'winter-horrorland':
+				curStage = 'mallEvil';
+			case 'senpai' | 'roses':
+				curStage = 'school';
+			case 'thorns':
+				curStage = 'schoolEvil';
+			case 'ugh' | 'guns' | 'stress':
+				curStage = 'tank';
+		}
+		return curStage;
+	}
 
-    // Put Character Positions Here
-    public function positionChars(bf:Character, dad:Character, gf:Character)
-    {
-        switch (getStage())
-        {
-            case 'limo':
+	public function getGF()
+	{
+		var GF:String = 'gf';
+		switch (getStage())
+		{
+			case 'limo':
+				GF = 'gf-car';
+			case 'mall' | 'mallEvil':
+				GF = 'gf-christmas';
+			case 'tank':
+				GF = 'gf-tankmen';
+		}
+		if (PlayState.isPixel)
+			GF = 'gf-pixel';
+		if (PlayState.SONG.song.toLowerCase() == 'stress')
+			GF = 'pico-speaker';
+		return GF;
+	}
+
+	// Put Character Positions Here
+	public function positionChars(bf:Character, dad:Character, gf:Character)
+	{
+		switch (getStage())
+		{
+			case 'limo':
 				bf.y -= 220;
 				bf.x += 260;
 
@@ -481,50 +495,53 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 					gf.x -= 170;
 					gf.y -= 75;
 				}
-        }
-    }
+		}
+	}
 
-    public function updateStage(elapsed:Float, bf:Character, dad:Character, gf:Character)
-    {
-        switch (getStage())
-        {
-            case 'philly':
-                if (trainMoving)
-                {
-                    trainFrameTiming += elapsed;
-    
-                    if (trainFrameTiming >= 1 / 24)
-                    {
-                        updateTrainPos(gf);
-                        trainFrameTiming = 0;
-                    }
-                }
-    
-                lightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
-				
-			case 'tank': moveTank();
-        }
-    }
+	public function updateStage(elapsed:Float, bf:Character, dad:Character, gf:Character)
+	{
+		switch (getStage())
+		{
+			case 'philly':
+				if (trainMoving)
+				{
+					trainFrameTiming += elapsed;
 
-    // Stage Events eg: bgChar bopping etc.
-    public function beatHit(beat:Int, bf:Character, dad:Character, gf:Character)
-    {
-        switch (getStage())
-        {
-            case 'spooky':
-                if (FlxG.random.bool(10) && beat > lightningStrikeBeat + lightningOffset) {
-                    FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
-		            halloweenBG.animation.play('lightning');
+					if (trainFrameTiming >= 1 / 24)
+					{
+						updateTrainPos(gf);
+						trainFrameTiming = 0;
+					}
+				}
 
-		            lightningStrikeBeat = beat;
-		            lightningOffset = FlxG.random.int(8, 24);
+				lightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
 
-		            bf.playAnim('scared', true);
-		            gf.playAnim('scared', true);
-                }
+			case 'tank':
+				moveTank();
+		}
+	}
 
-            case 'philly':
-                if (!trainMoving) trainCooldown += 1;
+	// Stage Events eg: bgChar bopping etc.
+	public function beatHit(beat:Int, bf:Character, dad:Character, gf:Character)
+	{
+		switch (getStage())
+		{
+			case 'spooky':
+				if (FlxG.random.bool(10) && beat > lightningStrikeBeat + lightningOffset)
+				{
+					FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+					halloweenBG.animation.play('lightning');
+
+					lightningStrikeBeat = beat;
+					lightningOffset = FlxG.random.int(8, 24);
+
+					bf.playAnim('scared', true);
+					gf.playAnim('scared', true);
+				}
+
+			case 'philly':
+				if (!trainMoving)
+					trainCooldown += 1;
 				if (beat % 4 == 0)
 				{
 					lightFadeShader.reset();
@@ -545,20 +562,22 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 					trainStart();
 				}
 
-            case 'limo':
-                grpLimoDancers.forEach(function(dancer:BackgroundDancer)
-                {
-                    dancer.dance();
-                });
+			case 'limo':
+				grpLimoDancers.forEach(function(dancer:BackgroundDancer)
+				{
+					dancer.dance();
+				});
 
-                if (FlxG.random.bool(10) && fastCarCanDrive) fastCarDrive();
-            
-            case 'mall':
-                upperBoppers.animation.play('bop', true);
+				if (FlxG.random.bool(10) && fastCarCanDrive)
+					fastCarDrive();
+
+			case 'mall':
+				upperBoppers.animation.play('bop', true);
 				bottomBoppers.animation.play('bop', true);
 				santa.animation.play('idle', true);
 
-            case 'school': bgGirls.dance();
+			case 'school':
+				bgGirls.dance();
 
 			case 'tank':
 				tankWatchtower.dance();
@@ -566,87 +585,85 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 				{
 					spr.dance();
 				});
-        }
-    }
+		}
+	}
 
-    // Same as above
-    public function stepHit(step:Int, bf:Character, dad:Character, gf:Character)
-    {
+	// Same as above
+	public function stepHit(step:Int, bf:Character, dad:Character, gf:Character) {}
 
-    }
-
-    // Other
-
-    // Philly Stuff
-    var trainMoving:Bool = false;
+	// Other
+	// Philly Stuff
+	var trainMoving:Bool = false;
 	var trainFrameTiming:Float = 0;
 	var trainCars:Int = 8;
 	var trainFinishing:Bool = false;
 	var trainCooldown:Int = 0;
-    var startedMoving:Bool = false;
-    var curLight:Int = 0;
+	var startedMoving:Bool = false;
+	var curLight:Int = 0;
 
-    function updateTrainPos(gf:Character):Void
-    {
-        if (trainSound.time >= 4700)
-        {
-            startedMoving = true;
-            gf.playAnim('hairBlow');
-        }
-    
-        if (startedMoving)
-        {
-            phillyTrain.x -= 400;
-    
-            if (phillyTrain.x < -2000 && !trainFinishing)
-            {
-                phillyTrain.x = -1150;
-                trainCars -= 1;
-    
-                if (trainCars <= 0) trainFinishing = true;
-            }
-            if (phillyTrain.x < -4000 && trainFinishing) trainReset(gf);
-        }
-    }
+	function updateTrainPos(gf:Character):Void
+	{
+		if (trainSound.time >= 4700)
+		{
+			startedMoving = true;
+			gf.playAnim('hairBlow');
+		}
 
-    function trainReset(gf:Character):Void
-    {
-        gf.playAnim('hairFall');
-        phillyTrain.x = FlxG.width + 200;
-        trainMoving = false;
-        trainCars = 8;
-        trainFinishing = false;
-        startedMoving = false;
-    }
+		if (startedMoving)
+		{
+			phillyTrain.x -= 400;
 
-    function trainStart():Void
-    {
-        trainMoving = true;
-        trainSound.play(true);
-    }
+			if (phillyTrain.x < -2000 && !trainFinishing)
+			{
+				phillyTrain.x = -1150;
+				trainCars -= 1;
 
-    // Limo Stuff
-    var fastCarCanDrive:Bool = true;
+				if (trainCars <= 0)
+					trainFinishing = true;
+			}
+			if (phillyTrain.x < -4000 && trainFinishing)
+				trainReset(gf);
+		}
+	}
 
-    function fastCarDrive()
-    {
-        FlxG.sound.play(Paths.soundRandom('carPass', 0, 1), 0.7);
-    
-        fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
-        fastCarCanDrive = false;
-        new FlxTimer().start(2, function(tmr:FlxTimer)
-        {
-            resetFastCar();
-        });
-    }
+	function trainReset(gf:Character):Void
+	{
+		gf.playAnim('hairFall');
+		phillyTrain.x = FlxG.width + 200;
+		trainMoving = false;
+		trainCars = 8;
+		trainFinishing = false;
+		startedMoving = false;
+	}
 
-    public function resetFastCar():Void
-    {
-        fastCar.x = -12600;
-        fastCar.y = FlxG.random.int(140, 250);
-        fastCar.velocity.x = 0;
-        fastCarCanDrive = true;
-    }
+	function trainStart():Void
+	{
+		trainMoving = true;
+		trainSound.play(true);
+	}
+
+	// Limo Stuff
+	var fastCarCanDrive:Bool = true;
+
+	function fastCarDrive()
+	{
+		FlxG.sound.play(Paths.soundRandom('carPass', 0, 1), 0.7);
+
+		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
+		fastCarCanDrive = false;
+		new FlxTimer().start(2, function(tmr:FlxTimer)
+		{
+			resetFastCar();
+		});
+	}
+
+	public function resetFastCar():Void
+	{
+		fastCar.x = -12600;
+		fastCar.y = FlxG.random.int(140, 250);
+		fastCar.velocity.x = 0;
+		fastCarCanDrive = true;
+	}
 
 	// Tank Stuff
 	var tankResetShit:Bool = false;
@@ -662,11 +679,14 @@ class GameStage extends FlxTypedGroup<FlxBasic>
 			var daAngleOffset:Float = 1;
 			tankAngle += FlxG.elapsed * tankSpeed;
 			tankGround.angle = tankAngle - 90 + 15;
-	
+
 			tankGround.x = tankX + Math.cos(FlxAngle.asRadians((tankAngle * daAngleOffset) + 180)) * 1500;
 			tankGround.y = 1300 + Math.sin(FlxAngle.asRadians((tankAngle * daAngleOffset) + 180)) * 1100;
 		}
 	}
 
-    override function add(obj:FlxBasic):FlxBasic { return super.add(obj); }
+	override function add(obj:FlxBasic):FlxBasic
+	{
+		return super.add(obj);
+	}
 }

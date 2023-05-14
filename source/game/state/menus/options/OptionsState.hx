@@ -6,7 +6,6 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
-
 import game.state.subState.*;
 import game.state.menus.options.controls.*;
 import game.data.PlayerSettings;
@@ -199,9 +198,9 @@ class OptionsMenu extends Page
 		#end
 		#if newgrounds
 		/*if (NGio.isLoggedIn)
-			createItem("logout", selectLogout);
-		else
-			createItem("login", selectLogin);*/
+				createItem("logout", selectLogout);
+			else
+				createItem("login", selectLogin); */
 		#end
 		createItem("exit", exit);
 	}
@@ -239,41 +238,40 @@ class OptionsMenu extends Page
 		#end
 	}
 	#end
-
 	#if newgrounds
 	/*function selectLogin()
-	{
-		openNgPrompt(NgPrompt.showLogin());
-	}
-
-	function selectLogout()
-	{
-		openNgPrompt(NgPrompt.showLogout());
-	}
-	
-	public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
-	{
-		var onPromptClose = checkLoginStatus;
-		if (onClose != null)
 		{
-			onPromptClose = function()
-			{
-				checkLoginStatus();
-				onClose();
-			}
+			openNgPrompt(NgPrompt.showLogin());
 		}
 
-		openPrompt(prompt, onPromptClose);
-	}
+		function selectLogout()
+		{
+			openNgPrompt(NgPrompt.showLogout());
+		}
 
-	function checkLoginStatus()
-	{
-		// this shit don't work!! wtf!!!!
-		var prevLoggedIn = items.has("logout");
-		if (prevLoggedIn && !NGio.isLoggedIn)
-			items.resetItem("logout", "login", selectLogin);
-		else if (!prevLoggedIn && NGio.isLoggedIn)
-			items.resetItem("login", "logout", selectLogout);
+		public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
+		{
+			var onPromptClose = checkLoginStatus;
+			if (onClose != null)
+			{
+				onPromptClose = function()
+				{
+					checkLoginStatus();
+					onClose();
+				}
+			}
+
+			openPrompt(prompt, onPromptClose);
+		}
+
+		function checkLoginStatus()
+		{
+			// this shit don't work!! wtf!!!!
+			var prevLoggedIn = items.has("logout");
+			if (prevLoggedIn && !NGio.isLoggedIn)
+				items.resetItem("logout", "login", selectLogin);
+			else if (!prevLoggedIn && NGio.isLoggedIn)
+				items.resetItem("login", "logout", selectLogout);
 	}*/
 	#end
 }

@@ -81,7 +81,8 @@ class MainMenuState extends MusicBeatState
 		magenta.visible = false;
 		magenta.antialiasing = true;
 		magenta.color = 0xFFfd719b;
-		if (PreferencesMenu.preferences.get('flashing-menu')) add(magenta);
+		if (PreferencesMenu.preferences.get('flashing-menu'))
+			add(magenta);
 
 		// FUCK YOU FNF LOGO
 		// Actually Kill Yourself
@@ -97,7 +98,7 @@ class MainMenuState extends MusicBeatState
 		var menItemTex = Paths.getSparrowAtlas('main_menu');
 		for (i in 0...menuOptions.length)
 		{
-			var menuItem:FlxSprite = new FlxSprite(10 + (i * 500) , FlxG.height / 2 + 100);
+			var menuItem:FlxSprite = new FlxSprite(10 + (i * 500), FlxG.height / 2 + 100);
 			menuItem.frames = menItemTex;
 			menuItem.animation.addByPrefix('idle', menuOptions[i] + ' idle', 24);
 			menuItem.animation.addByPrefix('selected', menuOptions[i] + ' selected', 24);
@@ -108,8 +109,10 @@ class MainMenuState extends MusicBeatState
 			menuItem.scale.set(0.7, 0.7);
 			menuItem.updateHitbox();
 
-			if (i == 1) menuItem.y += 130;
-			if (i == 2) menuItem.x -= 100;
+			if (i == 1)
+				menuItem.y += 130;
+			if (i == 2)
+				menuItem.x -= 100;
 		}
 
 		changeOption();
@@ -139,9 +142,11 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.sound.music.volume < 0.8) FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+		if (FlxG.sound.music.volume < 0.8)
+			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 
-		if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 
 		FlxG.camera.zoom = FlxMath.lerp(1, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 4), 0, 1));
 
@@ -178,7 +183,8 @@ class MainMenuState extends MusicBeatState
 			{
 				if (curSelected != spr.ID)
 				{
-					FlxTween.tween(spr, {alpha: 0}, 0.4, {ease: FlxEase.quadOut,
+					FlxTween.tween(spr, {alpha: 0}, 0.4, {
+						ease: FlxEase.quadOut,
 						onComplete: function(twn:FlxTween)
 						{
 							spr.kill();
@@ -210,7 +216,8 @@ class MainMenuState extends MusicBeatState
 
 	override function beatHit()
 	{
-		if (curBeat % 2 == 0) {
+		if (curBeat % 2 == 0)
+		{
 			FlxG.camera.zoom += 0.015;
 			logo.scale.set(0.7, 0.7);
 		}
@@ -230,23 +237,25 @@ class MainMenuState extends MusicBeatState
 			item.offset.x = 0;
 			item.animation.play('idle');
 			item.updateHitbox();
-		
+
 			if (item.ID == curSelected)
 			{
 				item.animation.play('selected');
 				switch (item.ID)
 				{
-					case 0: item.offset.x = 100;
-					case 1: item.offset.x = 130;
-					case 2: item.offset.x = 130;
+					case 0:
+						item.offset.x = 100;
+					case 1:
+						item.offset.x = 130;
+					case 2:
+						item.offset.x = 130;
 				}
 			}
 		});
 	}
 }
-
 /*private class MainMenuList extends MenuTypedList<MainMenuItem>
-{
+	{
 	public var atlas:FlxAtlasFrames;
 
 	public function new()
@@ -269,10 +278,10 @@ class MainMenuState extends MusicBeatState
 		super.destroy();
 		atlas = null;
 	}
-}
+	}
 
-private class MainMenuItem extends AtlasMenuItem
-{
+	private class MainMenuItem extends AtlasMenuItem
+	{
 	public function new(x = 0.0, y = 0.0, name, atlas, callback)
 	{
 		super(x, y, name, atlas, callback);
