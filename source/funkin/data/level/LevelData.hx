@@ -1,0 +1,83 @@
+package funkin.data.level;
+
+import funkin.play.AnimationData;
+
+/**
+ * A type definition for the data in a story mode level JSON file.
+ * @see https://lib.haxe.org/p/json2object/
+ */
+typedef LevelData =
+{
+  /**
+   * The version number of the level data schema.
+   * When making changes to the level data format, this should be incremented,
+   * and a migration function should be added to LevelDataParser to handle old versions.
+   */
+  @:default(LevelRegistry.LEVEL_DATA_VERSION)
+  var version:String;
+
+  /**
+   * The title of the week, as seen in the top corner.
+   */
+  var name:String;
+
+  /**
+   * The graphic for the level, as seen in the scrolling list.
+   */
+  var titleAsset:String;
+
+  @:default([])
+  var props:Array<LevelPropData>;
+  @:default(["bopeebo"])
+  var songs:Array<String>;
+  @:default("#F9CF51")
+  @:optional
+  var background:String;
+}
+
+typedef LevelPropData =
+{
+  /**
+   * The image to use for the prop. May optionally be a sprite sheet.
+   */
+  var assetPath:String;
+
+  /**
+   * The scale to render the prop at.
+   * @default 1.0
+   */
+  @:default(1.0)
+  @:optional
+  var scale:Float;
+
+  /**
+   * If true, the prop is a pixel sprite, and will be rendered without smoothing.
+   */
+  @:default(false)
+  @:optional
+  var isPixel:Bool;
+
+  /**
+   * The frequency to bop at, in beats.
+   * @default 1.0 = every beat
+   */
+  @:default(1.0)
+  @:optional
+  var danceEvery:Float;
+
+  /**
+   * The offset on the position to render the prop at.
+   * @default [0.0, 0.0]
+   */
+  @:default([0, 0])
+  @:optional
+  var offset:Array<Float>;
+
+  /**
+   * A set of animations to play on the prop.
+   * If default/empty, the prop will be static.
+   */
+  @:default([])
+  @:optional
+  var animations:Array<AnimationData>;
+}

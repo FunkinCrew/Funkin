@@ -136,6 +136,11 @@ class Song // implements IPlayStateScriptedClass
     return difficulties.get(diffId);
   }
 
+  public function listDifficulties():Array<String>
+  {
+    return difficulties.keys().array();
+  }
+
   /**
    * Purge the cached chart data for each difficulty of this song.
    */
