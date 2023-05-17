@@ -13,7 +13,7 @@ typedef LevelData =
    * When making changes to the level data format, this should be incremented,
    * and a migration function should be added to LevelDataParser to handle old versions.
    */
-  @:default(LevelRegistry.LEVEL_DATA_VERSION)
+  @:default(funkin.data.level.LevelRegistry.LEVEL_DATA_VERSION)
   var version:String;
 
   /**
@@ -51,6 +51,14 @@ typedef LevelPropData =
   var scale:Float;
 
   /**
+   * The opacity to render the prop at.
+   * @default 1.0
+   */
+  @:default(1.0)
+  @:optional
+  var alpha:Float;
+
+  /**
    * If true, the prop is a pixel sprite, and will be rendered without smoothing.
    */
   @:default(false)
@@ -59,11 +67,11 @@ typedef LevelPropData =
 
   /**
    * The frequency to bop at, in beats.
-   * @default 1.0 = every beat
+   * @default 1 = every beat, 2 = every other beat, etc.
    */
-  @:default(1.0)
+  @:default(1)
   @:optional
-  var danceEvery:Float;
+  var danceEvery:Int;
 
   /**
    * The offset on the position to render the prop at.
@@ -71,7 +79,7 @@ typedef LevelPropData =
    */
   @:default([0, 0])
   @:optional
-  var offset:Array<Float>;
+  var offsets:Array<Float>;
 
   /**
    * A set of animations to play on the prop.

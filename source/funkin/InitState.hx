@@ -153,6 +153,7 @@ class InitState extends FlxTransitionableState
 
     // TODO: Register custom event callbacks here
 
+    funkin.data.level.LevelRegistry.instance.loadEntries();
     SongEventParser.loadEventCache();
     SongDataParser.loadSongCache();
     StageDataParser.loadStageCache();

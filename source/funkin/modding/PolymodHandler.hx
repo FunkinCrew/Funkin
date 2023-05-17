@@ -277,6 +277,7 @@ class PolymodHandler
 
     // TODO: Reload event callbacks
 
+    funkin.data.level.LevelRegistry.instance.loadEntries();
     SongDataParser.loadSongCache();
     StageDataParser.loadStageCache();
     CharacterDataParser.loadCharacterCache();

@@ -66,7 +66,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = DataAssets.listDataFilesInPath(dataFilePath);
+    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('${dataFilePath}/');
     var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
       return !entries.exists(entryId);
     });
@@ -99,6 +99,11 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   public function countEntries():Int
   {
     return entries.size();
+  }
+
+  public function fetchEntry(id:String):Null<T>
+  {
+    return entries.get(id);
   }
 
   public function toString():String

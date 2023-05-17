@@ -21,6 +21,7 @@ import funkin.shaderslmfao.ScreenWipeShader;
 import funkin.ui.AtlasMenuList;
 import funkin.ui.MenuList.MenuItem;
 import funkin.ui.MenuList;
+import funkin.ui.story.StoryMenuState;
 import funkin.ui.OptionsState;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;

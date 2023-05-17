@@ -1,6 +1,8 @@
 package funkin.ui.story;
 
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import funkin.play.song.Song;
 import funkin.data.IRegistryEntry;
 import funkin.data.level.LevelRegistry;
 import funkin.data.level.LevelData;
@@ -66,9 +68,11 @@ class Level implements IRegistryEntry<LevelData>
    */
   public function getSongDisplayNames(difficulty:String):Array<String>
   {
-    return getSongs().map(function(songId) {
-      return funkin.play.song.SongData.SongDataParser.fetchSong(songId).getDifficulty(difficulty).songName;
+    var songList:Array<String> = getSongs() ?? [];
+    var songNameList:Array<String> = songList.map(function(songId) {
+      return funkin.play.song.SongData.SongDataParser.fetchSong(songId) ?.getDifficulty(difficulty) ?.songName ?? 'Unknown';
     });
+    return songNameList;
   }
 
   /**
@@ -112,14 +116,15 @@ class Level implements IRegistryEntry<LevelData>
     var firstSongId:String = songList[0];
     var firstSong:Song = funkin.play.song.SongData.SongDataParser.fetchSong(firstSongId);
 
-    for (difficulty in firstSong.getDifficulties())
+    for (difficulty in firstSong.listDifficulties())
     {
       difficulties.push(difficulty);
     }
 
     // Filter to only include difficulties that are present in all songs
-    for (songId in 1...songList.length)
+    for (songIndex in 1...songList.length)
     {
+      var songId:String = songList[songIndex];
       var song:Song = funkin.play.song.SongData.SongDataParser.fetchSong(songId);
 
       for (difficulty in difficulties)
@@ -145,7 +150,10 @@ class Level implements IRegistryEntry<LevelData>
       var propData = _data.props[propIndex];
       var propSprite:LevelProp = LevelProp.build(propData);
       propSprite.x += FlxG.width * 0.25 * propIndex;
+      props.push(propSprite);
     }
+
+    return props;
   }
 
   public function destroy():Void {}

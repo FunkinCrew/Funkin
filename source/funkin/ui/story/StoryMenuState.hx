@@ -1,5 +1,20 @@
 package funkin.ui.story;
 
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.data.level.LevelRegistry;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.PlayState;
+import funkin.play.song.SongData.SongDataParser;
+import funkin.util.Constants;
+
 class StoryMenuState extends MusicBeatState
 {
   static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString("#F9CF51");
@@ -10,12 +25,15 @@ class StoryMenuState extends MusicBeatState
   var currentLevelId:String = 'tutorial';
   var currentLevel:Level;
   var isLevelUnlocked:Bool;
+  var currentLevelTitle:LevelTitle;
 
   var highScore:Int = 42069420;
   var highScoreLerp:Int = 12345678;
 
   var exitingMenu:Bool = false;
-  var selectedWeek:Bool = false;
+  var selectedLevel:Bool = false;
+
+  var displayingModdedLevels:Bool = false;
 
   //
   // RENDER OBJECTS
@@ -37,7 +55,7 @@ class StoryMenuState extends MusicBeatState
   var tracklistText:FlxText;
 
   /**
-   * The title of the week in the middle.
+   * The titles of the levels in the middle.
    */
   var levelTitles:FlxTypedGroup<LevelTitle>;
 
@@ -66,18 +84,26 @@ class StoryMenuState extends MusicBeatState
    */
   var difficultySprite:FlxSprite;
 
+  var difficultySprites:Map<String, FlxSprite>;
+
+  var stickerSubState:StickerSubState;
+
   public function new(?stickers:StickerSubState = null)
   {
+    super();
+
     if (stickers != null)
     {
       stickerSubState = stickers;
     }
-
-    super();
   }
 
   override function create():Void
   {
+    super.create();
+
+    difficultySprites = new Map<String, FlxSprite>();
+
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
@@ -101,52 +127,61 @@ class StoryMenuState extends MusicBeatState
 
     persistentUpdate = persistentDraw = true;
 
+    updateData();
+
     // Explicitly define the background color.
     this.bgColor = FlxColor.BLACK;
 
     levelTitles = new FlxTypedGroup<LevelTitle>();
     add(levelTitles);
 
-    levelBackground = new FlxSprite(0, 56).makeGraphic(FlxG.width, BACKGROUND_HEIGHT, DEFAULT_BACKGROUND_COLOR);
-    add(levelBackground);
+    updateBackground();
 
     levelProps = new FlxTypedGroup<LevelProp>();
+    levelProps.zIndex = 1000;
     add(levelProps);
+
+    updateProps();
 
     scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
     scoreText.setFormat("VCR OSD Mono", 32);
     add(scoreText);
 
-    tracklistText = new FlxText(FlxG.width * 0.05, yellowBG.x + yellowBG.height + 100, 0, "Tracks", 32);
+    tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
+    tracklistText.setFormat("VCR OSD Mono", 32);
     tracklistText.alignment = CENTER;
-    tracklistText.font = rankText.font;
     tracklistText.color = 0xFFe55777;
     add(tracklistText);
 
-    levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'WEEK 1');
+    levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
     levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
     add(levelTitleText);
 
-    buildLevelTitles(false);
+    buildLevelTitles();
 
-    leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
-    leftArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
-    leftArrow.animation.addByPrefix('idle', 'leftIdle0');
-    leftArrow.animation.addByPrefix('press', 'leftConfirm0');
-    leftArrow.animation.play('idle');
-    add(leftArrow);
+    leftDifficultyArrow = new FlxSprite(levelTitles.members[0].x + levelTitles.members[0].width + 10, levelTitles.members[0].y + 10);
+    leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
+    leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
+    leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
+    leftDifficultyArrow.animation.play('idle');
+    add(leftDifficultyArrow);
 
-    rightArrow = new FlxSprite(sprDifficulty.x + sprDifficulty.width + 50, leftArrow.y);
-    rightArrow.frames = leftArrow.frames;
-    rightArrow.animation.addByPrefix('idle', 'rightIdle0');
-    rightArrow.animation.addByPrefix('press', 'rightConfirm0');
-    rightArrow.animation.play('idle');
-    add(rightArrow);
+    buildDifficultySprite();
 
-    difficultySprite = buildDifficultySprite();
-    changeDifficulty();
+    rightDifficultyArrow = new FlxSprite(difficultySprite.x + difficultySprite.width + 10, leftDifficultyArrow.y);
+    rightDifficultyArrow.frames = leftDifficultyArrow.frames;
+    rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
+    rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
+    rightDifficultyArrow.animation.play('idle');
+    add(rightDifficultyArrow);
+
     add(difficultySprite);
+
+    updateText();
+    changeDifficulty();
+    changeLevel();
+    refresh();
 
     #if discord_rpc
     // Updating Discord Rich Presence
@@ -154,39 +189,69 @@ class StoryMenuState extends MusicBeatState
     #end
   }
 
-  function buildDifficultySprite():Void
+  function updateData():Void
   {
-    difficultySprite = new FlxSprite(leftArrow.x + 130, leftArrow.y);
-    difficultySprite.frames = ui_tex;
-    difficultySprite.animation.addByPrefix('easy', 'EASY');
-    difficultySprite.animation.addByPrefix('normal', 'NORMAL');
-    difficultySprite.animation.addByPrefix('hard', 'HARD');
-    difficultySprite.animation.play('easy');
+    currentLevel = LevelRegistry.instance.fetchEntry(currentLevelId);
+    isLevelUnlocked = currentLevel == null ? false : currentLevel.isUnlocked();
   }
 
-  function buildLevelTitles(moddedLevels:Bool):Void
+  function buildDifficultySprite():Void
+  {
+    remove(difficultySprite);
+    difficultySprite = difficultySprites.get(currentDifficultyId);
+    if (difficultySprite == null)
+    {
+      difficultySprite = new FlxSprite(leftDifficultyArrow.x + leftDifficultyArrow.width + 10, leftDifficultyArrow.y);
+      difficultySprite.loadGraphic(Paths.image('storymenu/difficulties/${currentDifficultyId}'));
+      difficultySprites.set(currentDifficultyId, difficultySprite);
+
+      difficultySprite.x += (difficultySprites.get('normal').width - difficultySprite.width) / 2;
+    }
+    difficultySprite.alpha = 0;
+    difficultySprite.y = leftDifficultyArrow.y - 15;
+    FlxTween.tween(difficultySprite, {y: leftDifficultyArrow.y + 15, alpha: 1}, 0.07);
+    add(difficultySprite);
+  }
+
+  function buildLevelTitles():Void
   {
     levelTitles.clear();
 
-    var levelIds:Array<String> = LevelRegistry.instance.getLevelIds();
+    var levelIds:Array<String> = displayingModdedLevels ? LevelRegistry.instance.listModdedLevelIds() : LevelRegistry.instance.listBaseGameLevelIds();
+    if (levelIds.length == 0) levelIds = ['tutorial'];
+
     for (levelIndex in 0...levelIds.length)
     {
       var levelId:String = levelIds[levelIndex];
       var level:Level = LevelRegistry.instance.fetchEntry(levelId);
-      var levelTitleItem:LevelTitle = new LevelTitle(0, yellowBG.y + yellowBG.height + 10, level);
-      levelTitleItem.targetY = ((weekThing.height + 20) * levelIndex);
+      if (level == null) continue;
+
+      var levelTitleItem:LevelTitle = new LevelTitle(0, Std.int(levelBackground.y + levelBackground.height + 10), level);
+      levelTitleItem.targetY = ((levelTitleItem.height + 20) * levelIndex);
+      levelTitleItem.screenCenter(X);
       levelTitles.add(levelTitleItem);
     }
   }
 
+  function switchMode(moddedLevels:Bool):Void
+  {
+    displayingModdedLevels = moddedLevels;
+    buildLevelTitles();
+
+    changeLevel(0);
+    changeDifficulty(0);
+  }
+
   override function update(elapsed:Float)
   {
-    highScoreLerp = CoolUtil.coolLerp(highScoreLerp, highScore, 0.5);
+    Conductor.update();
 
-    scoreText.text = 'WEEK SCORE: ${Math.round(highScoreLerp)}';
+    highScoreLerp = Std.int(CoolUtil.coolLerp(highScoreLerp, highScore, 0.5));
 
-    txtWeekTitle.text = weekNames[curWeek].toUpperCase();
-    txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
+    scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
+
+    levelTitleText.text = currentLevel.getTitle();
+    levelTitleText.x = FlxG.width - (levelTitleText.width + 10); // Right align.
 
     handleKeyPresses();
 
@@ -197,7 +262,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (!exitingMenu)
     {
-      if (!selectedWeek)
+      if (!selectedLevel)
       {
         if (controls.UI_UP_P)
         {
@@ -211,20 +276,20 @@ class StoryMenuState extends MusicBeatState
 
         if (controls.UI_RIGHT)
         {
-          rightArrow.animation.play('press')
+          rightDifficultyArrow.animation.play('press');
         }
         else
         {
-          rightArrow.animation.play('idle');
+          rightDifficultyArrow.animation.play('idle');
         }
 
         if (controls.UI_LEFT)
         {
-          leftArrow.animation.play('press');
+          leftDifficultyArrow.animation.play('press');
         }
         else
         {
-          leftArrow.animation.play('idle');
+          leftDifficultyArrow.animation.play('idle');
         }
 
         if (controls.UI_RIGHT_P)
@@ -236,15 +301,20 @@ class StoryMenuState extends MusicBeatState
         {
           changeDifficulty(-1);
         }
+
+        if (FlxG.keys.justPressed.TAB)
+        {
+          switchMode(!displayingModdedLevels);
+        }
       }
 
       if (controls.ACCEPT)
       {
-        selectWeek();
+        selectLevel();
       }
     }
 
-    if (controls.BACK && !exitingMenu && !selectedWeek)
+    if (controls.BACK && !exitingMenu && !selectedLevel)
     {
       FlxG.sound.play(Paths.sound('cancelMenu'));
       exitingMenu = true;
@@ -252,7 +322,180 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  function changeLevel(change:Int = 0):Void {}
+  /**
+   * Changes the selected level.
+   * @param change +1 (down), -1 (up)
+   */
+  function changeLevel(change:Int = 0):Void
+  {
+    var levelList:Array<String> = displayingModdedLevels ? LevelRegistry.instance.listModdedLevelIds() : LevelRegistry.instance.listBaseGameLevelIds();
+    if (levelList.length == 0) levelList = ['tutorial'];
 
-  function changeDifficulty(change:Int = 0):Void {}
+    var currentIndex:Int = levelList.indexOf(currentLevelId);
+
+    currentIndex += change;
+
+    // Wrap around
+    if (currentIndex < 0) currentIndex = levelList.length - 1;
+    if (currentIndex >= levelList.length) currentIndex = 0;
+
+    currentLevelId = levelList[currentIndex];
+
+    updateData();
+
+    for (index in 0...levelTitles.members.length)
+    {
+      var item:LevelTitle = levelTitles.members[index];
+
+      item.targetY = (index - currentIndex) * 120 + 480;
+
+      if (index == currentIndex)
+      {
+        currentLevelTitle = item;
+        item.alpha = 1.0;
+      }
+      else if (index > currentIndex)
+      {
+        item.alpha = 0.6;
+      }
+      else
+      {
+        item.alpha = 0.0;
+      }
+    }
+
+    updateText();
+    updateBackground();
+    updateProps();
+    refresh();
+  }
+
+  /**
+   * Changes the selected difficulty.
+   * @param change +1 (right) to increase difficulty, -1 (left) to decrease difficulty 
+   */
+  function changeDifficulty(change:Int = 0):Void
+  {
+    var difficultyList:Array<String> = currentLevel.getDifficulties();
+    var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
+
+    currentIndex += change;
+
+    // Wrap around
+    if (currentIndex < 0) currentIndex = difficultyList.length - 1;
+    if (currentIndex >= difficultyList.length) currentIndex = 0;
+
+    currentDifficultyId = difficultyList[currentIndex];
+
+    buildDifficultySprite();
+  }
+
+  override function dispatchEvent(event:ScriptEvent):Void
+  {
+    // super.dispatchEvent(event) dispatches event to module scripts.
+    super.dispatchEvent(event);
+
+    if ((levelProps?.length ?? 0) > 0)
+    {
+      // Dispatch event to props.
+      for (prop in levelProps)
+      {
+        ScriptEventDispatcher.callEvent(prop, event);
+      }
+    }
+  }
+
+  function selectLevel()
+  {
+    if (!currentLevel.isUnlocked())
+    {
+      FlxG.sound.play(Paths.sound('cancelMenu'));
+      return;
+    }
+
+    if (selectedLevel) return;
+
+    selectedLevel = true;
+
+    FlxG.sound.play(Paths.sound('confirmMenu'));
+
+    currentLevelTitle.isFlashing = true;
+
+    for (prop in levelProps.members)
+    {
+      prop.playConfirm();
+    }
+
+    PlayState.storyPlaylist = currentLevel.getSongs();
+    PlayState.isStoryMode = true;
+
+    PlayState.currentSong = SongLoad.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0].toLowerCase());
+    PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.storyPlaylist[0].toLowerCase());
+
+    // TODO: Fix this.
+    PlayState.storyWeek = 0;
+    PlayState.campaignScore = 0;
+
+    // TODO: Fix this.
+    PlayState.storyDifficulty = 0;
+    PlayState.storyDifficulty_NEW = currentDifficultyId;
+
+    SongLoad.curDiff = PlayState.storyDifficulty_NEW;
+
+    new FlxTimer().start(1, function(tmr:FlxTimer) {
+      LoadingState.loadAndSwitchState(new PlayState(), true);
+    });
+  }
+
+  function updateBackground():Void
+  {
+    if (levelBackground != null)
+    {
+      var oldBackground:FlxSprite = levelBackground;
+
+      FlxTween.tween(oldBackground, {alpha: 0.0}, 0.6,
+        {
+          ease: FlxEase.linear,
+          onComplete: function(_) {
+            remove(oldBackground);
+          }
+        });
+    }
+
+    levelBackground = currentLevel.buildBackground();
+    levelBackground.x = 0;
+    levelBackground.y = 56;
+    levelBackground.alpha = 0.0;
+    levelBackground.zIndex = 100;
+    add(levelBackground);
+
+    FlxTween.tween(levelBackground, {alpha: 1.0}, 0.6,
+      {
+        ease: FlxEase.linear
+      });
+  }
+
+  function updateProps():Void
+  {
+    levelProps.clear();
+    for (prop in currentLevel.buildProps())
+    {
+      prop.zIndex = 1000;
+      levelProps.add(prop);
+    }
+
+    refresh();
+  }
+
+  function updateText():Void
+  {
+    tracklistText.text = 'TRACKS\n\n';
+    tracklistText.text += currentLevel.getSongDisplayNames(currentDifficultyId).join('\n');
+
+    tracklistText.screenCenter(X);
+    tracklistText.x -= FlxG.width * 0.35;
+
+    // TODO: Fix this.
+    highScore = Highscore.getWeekScore(0, 0);
+  }
 }

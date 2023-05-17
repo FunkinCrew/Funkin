@@ -1,10 +1,19 @@
 package funkin.ui.story;
 
+import funkin.play.stage.Bopper;
+import funkin.util.assets.FlxAnimationUtil;
+import funkin.data.level.LevelData;
+
 class LevelProp extends Bopper
 {
   public function new(danceEvery:Int)
   {
     super(danceEvery);
+  }
+
+  public function playConfirm():Void
+  {
+    playAnimation('confirm', true, true);
   }
 
   public static function build(propData:LevelPropData):Null<LevelProp>
@@ -33,8 +42,8 @@ class LevelProp extends Bopper
       return null;
     }
 
-    prop.scale.set(propData.scale * (propData.isPixel ? 6 : 1));
-    prop.updateHitbox();
+    var scale:Float = propData.scale * (propData.isPixel ? 6 : 1);
+    prop.scale.set(scale, scale);
     prop.antialiasing = !propData.isPixel;
     prop.alpha = propData.alpha;
     prop.x = propData.offsets[0];
@@ -45,6 +54,9 @@ class LevelProp extends Bopper
     {
       prop.setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
     }
+
+    prop.dance();
+    prop.animation.paused = true;
 
     return prop;
   }

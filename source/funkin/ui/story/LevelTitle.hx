@@ -1,9 +1,10 @@
 package funkin.ui.story;
 
-import funkin.CoolUtil;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
+import flixel.util.FlxColor;
+import funkin.CoolUtil;
 
 class LevelTitle extends FlxSpriteGroup
 {
@@ -24,14 +25,25 @@ class LevelTitle extends FlxSpriteGroup
     super(x, y);
 
     this.level = level;
-  }
 
-  public override function create():Void
-  {
-    super.create();
+    if (this.level == null) throw "Level cannot be null!";
 
     buildLevelTitle();
     buildLevelLock();
+  }
+
+  override function get_width():Float
+  {
+    if (length == 0) return 0;
+
+    if (lock.visible)
+    {
+      return title.width + lock.width + LOCK_PAD;
+    }
+    else
+    {
+      return title.width;
+    }
   }
 
   // if it runs at 60fps, fake framerate will be 6
@@ -42,12 +54,12 @@ class LevelTitle extends FlxSpriteGroup
 
   public override function update(elapsed:Float):Void
   {
-    this.y = CoolUtil.coolLerp(y, (targetY * 120) + 480, 0.17);
+    this.y = CoolUtil.coolLerp(y, targetY, 0.17);
 
     if (isFlashing) flashingInt += 1;
-    if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2)) week.color = 0xFF33ffff;
+    if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2)) title.color = 0xFF33ffff;
     else
-      week.color = FlxColor.WHITE;
+      title.color = FlxColor.WHITE;
   }
 
   public function showLock():Void

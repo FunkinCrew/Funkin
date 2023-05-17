@@ -21,36 +21,48 @@ typedef AnimationData =
    * ONLY for use by MultiSparrow characters.
    * @default The assetPath of the parent sprite
    */
+  @:default(null)
+  @:optional
   var assetPath:Null<String>;
 
   /**
    * Offset the character's position by this amount when playing this animation.
    * @default [0, 0]
    */
+  @:default([0, 0])
+  @:optional
   var offsets:Null<Array<Float>>;
 
   /**
    * Whether the animation should loop when it finishes.
    * @default false
    */
+  @:default(false)
+  @:optional
   var looped:Null<Bool>;
 
   /**
    * Whether the animation's sprites should be flipped horizontally.
    * @default false
    */
+  @:default(false)
+  @:optional
   var flipX:Null<Bool>;
 
   /**
    * Whether the animation's sprites should be flipped vertically.
    * @default false
    */
+  @:default(false)
+  @:optional
   var flipY:Null<Bool>;
 
   /**
    * The frame rate of the animation.
    * @default 24
    */
+  @:default(24)
+  @:optional
   var frameRate:Null<Int>;
 
   /**
@@ -59,5 +71,7 @@ typedef AnimationData =
    * @example [0, 1, 2, 3] (use only the first four frames)
    * @default [] (all frames)
    */
+  @:default([])
+  @:optional
   var frameIndices:Null<Array<Int>>;
 }

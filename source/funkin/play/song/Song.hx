@@ -29,11 +29,14 @@ class Song // implements IPlayStateScriptedClass
   final variations:Array<String>;
   final difficulties:Map<String, SongDifficulty>;
 
+  var difficultyIds:Array<String>;
+
   public function new(id:String)
   {
     this.songId = id;
 
     variations = [];
+    difficultyIds = [];
     difficulties = new Map<String, SongDifficulty>();
 
     _metadata = SongDataParser.parseSongMetadata(songId);
@@ -61,6 +64,8 @@ class Song // implements IPlayStateScriptedClass
     {
       for (diffId in metadata.playData.difficulties)
       {
+        difficultyIds.push(diffId);
+
         var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
         variations.push(metadata.variation);
@@ -138,7 +143,12 @@ class Song // implements IPlayStateScriptedClass
 
   public function listDifficulties():Array<String>
   {
-    return difficulties.keys().array();
+    return difficultyIds;
+  }
+
+  public function hasDifficulty(diffId:String):Bool
+  {
+    return difficulties.exists(diffId);
   }
 
   /**

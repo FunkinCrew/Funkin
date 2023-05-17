@@ -207,9 +207,15 @@ class Conductor
     }
 
     // FlxSignals are really cool.
-    if (currentStep != oldStep) stepHit.dispatch();
+    if (currentStep != oldStep)
+    {
+      stepHit.dispatch();
+    }
 
-    if (currentBeat != oldBeat) beatHit.dispatch();
+    if (currentBeat != oldBeat)
+    {
+      beatHit.dispatch();
+    }
   }
 
   @:deprecated // Switch to TimeChanges instead.

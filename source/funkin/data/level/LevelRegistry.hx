@@ -55,10 +55,10 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
   }
 
   /**
-   * A list of all the story weeks, in order.
+   * A list of all the story weeks from the base game, in order.
    * TODO: Should this be hardcoded?
    */
-  public function listDefaultLevelIds():String
+  public function listBaseGameLevelIds():Array<String>
   {
     return [
       "tutorial",
@@ -70,6 +70,16 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
       "week6",
       "week7",
       "weekend1"
-    ]
+    ];
+  }
+
+  /**
+   * A list of all installed story weeks that are not from the base game.
+   */
+  public function listModdedLevelIds():Array<String>
+  {
+    return listEntryIds().filter(function(id:String):Bool {
+      return listBaseGameLevelIds().indexOf(id) == -1;
+    });
   }
 }

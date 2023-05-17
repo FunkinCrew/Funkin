@@ -2,6 +2,7 @@ package funkin.play;
 
 import flixel.FlxCamera;
 import flixel.FlxObject;
+import funkin.ui.story.StoryMenuState;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
