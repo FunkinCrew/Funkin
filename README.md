@@ -3,7 +3,7 @@
 A FNF Engine Built Off Of Base Game
 
 TODO:
-- Add script support in the form of hscript using [SScript](https://github.com/BeastlyGabi/SScript/)
+- Add script support in the form of hscript using [SScript](https://github.com/BeastlyGabi/SScript/) (Almost Done)
 - Softcode characters (with hscript)
 - Remake the options menu
 
