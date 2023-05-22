@@ -253,7 +253,8 @@ class SongDifficulty
 
   public inline function playInst(volume:Float = 1.0, looped:Bool = false)
   {
-    FlxG.sound.playMusic(Paths.inst(this.song.songId), volume, looped);
+    var suffix:String = variation == null ? null : '-$variation';
+    FlxG.sound.playMusic(Paths.inst(this.song.songId, suffix), volume, looped);
   }
 
   public inline function cacheVocals()
@@ -265,7 +266,7 @@ class SongDifficulty
   {
     // TODO: Implement.
 
-    return [""];
+    return [variation == null ? '' : '-$variation'];
   }
 
   public function buildVocals(charId:String = "bf"):VoicesGroup

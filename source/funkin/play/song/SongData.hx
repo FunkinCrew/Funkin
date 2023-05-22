@@ -143,9 +143,15 @@ class SongDataParser
 
     for (variation in variations)
     {
-      var variationRawJson:String = loadSongMetadataFile(songId, variation);
-      var variationSongMetadata:SongMetadata = SongMigrator.migrateSongMetadata(variationRawJson, '${songId}_${variation}');
-      variationSongMetadata = SongValidator.validateSongMetadata(variationSongMetadata, '${songId}_${variation}');
+      var variationJsonStr:String = loadSongMetadataFile(songId, variation);
+      var variationJsonData:Dynamic = null;
+      try
+      {
+        variationJsonData = Json.parse(variationJsonStr);
+      }
+      catch (e) {}
+      var variationSongMetadata:SongMetadata = SongMigrator.migrateSongMetadata(variationJsonData, '${songId}-${variation}');
+      variationSongMetadata = SongValidator.validateSongMetadata(variationSongMetadata, '${songId}-${variation}');
       if (variationSongMetadata != null)
       {
         variationSongMetadata.variation = variation;

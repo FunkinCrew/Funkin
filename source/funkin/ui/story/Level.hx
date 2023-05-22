@@ -127,6 +127,8 @@ class Level implements IRegistryEntry<LevelData>
       var songId:String = songList[songIndex];
       var song:Song = funkin.play.song.SongData.SongDataParser.fetchSong(songId);
 
+      if (song == null) continue;
+
       for (difficulty in difficulties)
       {
         if (!song.hasDifficulty(difficulty))
