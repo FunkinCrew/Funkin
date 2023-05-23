@@ -116,9 +116,12 @@ class Level implements IRegistryEntry<LevelData>
     var firstSongId:String = songList[0];
     var firstSong:Song = funkin.play.song.SongData.SongDataParser.fetchSong(firstSongId);
 
-    for (difficulty in firstSong.listDifficulties())
+    if (firstSong != null)
     {
-      difficulties.push(difficulty);
+      for (difficulty in firstSong.listDifficulties())
+      {
+        difficulties.push(difficulty);
+      }
     }
 
     // Filter to only include difficulties that are present in all songs
@@ -137,6 +140,8 @@ class Level implements IRegistryEntry<LevelData>
         }
       }
     }
+
+    if (difficulties.length == 0) difficulties = ['normal'];
 
     return difficulties;
   }

@@ -1,5 +1,6 @@
 package funkin.ui.story;
 
+import openfl.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -202,14 +203,29 @@ class StoryMenuState extends MusicBeatState
     if (difficultySprite == null)
     {
       difficultySprite = new FlxSprite(leftDifficultyArrow.x + leftDifficultyArrow.width + 10, leftDifficultyArrow.y);
-      difficultySprite.loadGraphic(Paths.image('storymenu/difficulties/${currentDifficultyId}'));
+
+      if (Assets.exists(Paths.file('images/storymenu/difficulties/${currentDifficultyId}.xml')))
+      {
+        difficultySprite.frames = Paths.getSparrowAtlas('storymenu/difficulties/${currentDifficultyId}');
+        difficultySprite.animation.addByPrefix('idle', 'idle0', 24, true);
+        difficultySprite.animation.play('idle');
+      }
+      else
+      {
+        difficultySprite.loadGraphic(Paths.image('storymenu/difficulties/${currentDifficultyId}'));
+      }
+
       difficultySprites.set(currentDifficultyId, difficultySprite);
 
       difficultySprite.x += (difficultySprites.get('normal').width - difficultySprite.width) / 2;
     }
     difficultySprite.alpha = 0;
+
     difficultySprite.y = leftDifficultyArrow.y - 15;
-    FlxTween.tween(difficultySprite, {y: leftDifficultyArrow.y + 15, alpha: 1}, 0.07);
+    var targetY:Float = leftDifficultyArrow.y + 10;
+    targetY -= (difficultySprite.height - difficultySprites.get('normal').height) / 2;
+    FlxTween.tween(difficultySprite, {y: targetY, alpha: 1}, 0.07);
+
     add(difficultySprite);
   }
 
@@ -218,7 +234,7 @@ class StoryMenuState extends MusicBeatState
     levelTitles.clear();
 
     var levelIds:Array<String> = displayingModdedLevels ? LevelRegistry.instance.listModdedLevelIds() : LevelRegistry.instance.listBaseGameLevelIds();
-    if (levelIds.length == 0) levelIds = ['tutorial'];
+    if (levelIds.length == 0) levelIds = ['tutorial']; // Make sure there's at least one level to display.
 
     for (levelIndex in 0...levelIds.length)
     {
@@ -267,11 +283,13 @@ class StoryMenuState extends MusicBeatState
         if (controls.UI_UP_P)
         {
           changeLevel(-1);
+          changeDifficulty(0);
         }
 
         if (controls.UI_DOWN_P)
         {
           changeLevel(1);
+          changeDifficulty(0);
         }
 
         if (controls.UI_RIGHT)
@@ -385,9 +403,39 @@ class StoryMenuState extends MusicBeatState
     if (currentIndex < 0) currentIndex = difficultyList.length - 1;
     if (currentIndex >= difficultyList.length) currentIndex = 0;
 
+    var hasChanged:Bool = currentDifficultyId != difficultyList[currentIndex];
     currentDifficultyId = difficultyList[currentIndex];
 
-    buildDifficultySprite();
+    if (difficultyList.length <= 1)
+    {
+      leftDifficultyArrow.visible = false;
+      rightDifficultyArrow.visible = false;
+    }
+    else
+    {
+      leftDifficultyArrow.visible = true;
+      rightDifficultyArrow.visible = true;
+    }
+
+    if (hasChanged)
+    {
+      buildDifficultySprite();
+      funnyMusicThing();
+    }
+  }
+
+  final FADE_OUT_TIME:Float = 1.5;
+
+  function funnyMusicThing():Void
+  {
+    if (currentDifficultyId == "nightmare")
+    {
+      FlxG.sound.music.fadeOut(FADE_OUT_TIME, 0.0);
+    }
+    else
+    {
+      FlxG.sound.music.fadeOut(FADE_OUT_TIME, 1.0);
+    }
   }
 
   override function dispatchEvent(event:ScriptEvent):Void
