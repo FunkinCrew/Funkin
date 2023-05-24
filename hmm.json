@@ -11,7 +11,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "d6100cc8",
+      "ref": "32cee07",
       "url": "https://github.com/EliteMasterEric/flixel"
     },
     {
@@ -42,14 +42,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "59157d2",
+      "ref": "08fbc9d",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "d353389",
+      "ref": "999fadd",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -68,13 +68,13 @@
       "name": "hxcodec",
       "type": "git",
       "dir": null,
-      "ref": "d74c2aa",
+      "ref": "91adeec",
       "url": "https://github.com/polybiusproxy/hxCodec"
     },
     {
       "name": "hxcpp",
       "type": "haxelib",
-      "version": "4.2.1"
+      "version": "4.3.2"
     },
     {
       "name": "hxcpp-debug-server",
@@ -84,13 +84,13 @@
     {
       "name": "hxp",
       "type": "haxelib",
-      "version": null
+      "version": "1.2.2"
     },
     {
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "afadf5f",
+      "ref": "deecd6c",
       "url": "https://github.com/openfl/lime"
     },
     {
