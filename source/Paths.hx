@@ -5,6 +5,13 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+#end
+
+import openfl.utils.Assets;
+
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
@@ -16,7 +23,7 @@ class Paths
 		currentLevel = name.toLowerCase();
 	}
 
-	static function getPath(file:String, type:AssetType, library:Null<String>)
+	public static function getPath(file:String, ?type:AssetType, ?library:Null<String>)
 	{
 		if (library != null)
 			return getLibraryPath(file, library);
@@ -45,7 +52,7 @@ class Paths
 		return '$library:assets/$library/$file';
 	}
 
-	inline static function getPreloadPath(file:String)
+	inline public static function getPreloadPath(file:String)
 	{
 		return 'assets/$file';
 	}
@@ -85,6 +92,11 @@ class Paths
 		return getPath('music/$key.$SOUND_EXT', MUSIC, library);
 	}
 
+	inline static public function video(key:String)
+	{
+		return 'assets/videos/$key.mp4';
+	}
+
 	inline static public function voices(song:String)
 	{
 		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
@@ -113,5 +125,28 @@ class Paths
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+	}
+
+	public static function fileExists(key:String)
+	{
+		if (FileSystem.exists(key))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public static function getContent(key:String)
+	{
+		#if sys
+		if (FileSystem.exists(key))
+		{
+			return File.getContent(key);
+		}
+		#else
+		return Assets.getText(key);
+		#end
+		else
+			return null;
 	}
 }
