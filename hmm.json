@@ -87,6 +87,11 @@
       "version": "1.2.2"
     },
     {
+      "name": "json2object",
+      "type": "haxelib",
+      "version": null
+    },
+    {
       "name": "lime",
       "type": "git",
       "dir": null,

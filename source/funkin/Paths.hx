@@ -103,9 +103,9 @@ class Paths
     return 'songs:assets/songs/${song.toLowerCase()}/Voices$suffix.$SOUND_EXT';
   }
 
-  inline static public function inst(song:String)
+  inline static public function inst(song:String, ?suffix:String)
   {
-    return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+    return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix.$SOUND_EXT';
   }
 
   inline static public function image(key:String, ?library:String)

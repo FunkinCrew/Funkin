@@ -31,7 +31,7 @@ class LatencyState extends MusicBeatSubstate
   var offsetsPerBeat:Array<Int> = [];
   var swagSong:HomemadeMusic;
 
-  #if debug
+  #if FLX_DEBUG
   var funnyStatsGraph:CoolStatsGraph;
   var realStats:CoolStatsGraph;
   #end
@@ -44,7 +44,7 @@ class LatencyState extends MusicBeatSubstate
     FlxG.sound.music = swagSong;
     FlxG.sound.music.play();
 
-    #if debug
+    #if FLX_DEBUG
     funnyStatsGraph = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.PINK, "time");
     FlxG.addChildBelowMouse(funnyStatsGraph);
 
@@ -52,8 +52,7 @@ class LatencyState extends MusicBeatSubstate
     FlxG.addChildBelowMouse(realStats);
     #end
 
-    FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key ->
-    {
+    FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key -> {
       trace(key.charCode);
 
       if (key.charCode == 120) generateBeatStuff();
@@ -154,8 +153,7 @@ class LatencyState extends MusicBeatSubstate
 
   override function beatHit():Bool
   {
-    if (curBeat % 8 == 0) blocks.forEach(blok ->
-    {
+    if (curBeat % 8 == 0) blocks.forEach(blok -> {
       blok.alpha = 0;
     });
 
@@ -172,7 +170,7 @@ class LatencyState extends MusicBeatSubstate
       trace(FlxG.sound.music._channel.position);
      */
 
-    #if debug
+    #if FLX_DEBUG
     funnyStatsGraph.update(FlxG.sound.music.time % 500);
     realStats.update(swagSong.getTimeWithDiff() % 500);
     #end
@@ -248,8 +246,7 @@ class LatencyState extends MusicBeatSubstate
         FlxG.resetState();
     }*/
 
-    noteGrp.forEach(function(daNote:Note)
-    {
+    noteGrp.forEach(function(daNote:Note) {
       daNote.y = (strumLine.y - ((Conductor.songPosition - Conductor.audioOffset) - daNote.data.strumTime) * 0.45);
       daNote.x = strumLine.x + 30;
 

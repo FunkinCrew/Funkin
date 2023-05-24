@@ -78,6 +78,7 @@ class InitState extends FlxTransitionableState
       }
     });
 
+    #if FLX_DEBUG
     FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function() {
       FlxG.game.debugger.vcr.onStep();
 
@@ -90,6 +91,7 @@ class InitState extends FlxTransitionableState
       FlxG.sound.music.pause();
       FlxG.sound.music.time += FlxG.elapsed * 1000;
     });
+    #end
 
     FlxG.sound.muteKeys = [ZERO];
     FlxG.game.focusLostFramerate = 60;
@@ -153,6 +155,7 @@ class InitState extends FlxTransitionableState
 
     // TODO: Register custom event callbacks here
 
+    funkin.data.level.LevelRegistry.instance.loadEntries();
     SongEventParser.loadEventCache();
     SongDataParser.loadSongCache();
     StageDataParser.loadStageCache();
