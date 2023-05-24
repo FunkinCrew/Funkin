@@ -164,6 +164,7 @@ class PolymodHandler
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
+    Polymod.addImportAlias('flixel.system.FlxSound', flixel.sound.FlxSound);
 
     // Add blacklisting for prohibited classes and packages.
     // `polymod.*`
