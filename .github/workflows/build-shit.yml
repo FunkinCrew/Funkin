@@ -37,7 +37,7 @@ jobs:
   create-nightly-win:
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false'}}
-    runs-on: 64fast
+    runs-on: windows-latest
     permissions:
        contents: write
        actions: write
