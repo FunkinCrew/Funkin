@@ -79,12 +79,18 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
     result.pause();
     result.time = this.time;
 
+    result.onComplete = function() {
+      this.onComplete();
+    }
+
     // Apply parameters to the new sound.
     result.pitch = this.pitch;
     result.volume = this.volume;
 
     return result;
   }
+
+  public dynamic function onComplete():Void {}
 
   /**
    * Pause all the sounds in the group.

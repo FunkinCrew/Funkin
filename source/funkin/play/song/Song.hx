@@ -305,7 +305,7 @@ class SongDifficulty
 
   public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void
   {
-    var suffix:String = variation == null ? null : '-$variation';
+    var suffix:String = (variation ?? '') != '' ? '-$variation' : '';
     FlxG.sound.playMusic(Paths.inst(this.song.songId, suffix), volume, looped);
   }
 
@@ -336,7 +336,7 @@ class SongDifficulty
       return [];
     }
 
-    var suffix:String = variation != null ? '-$variation' : '';
+    var suffix:String = (variation ?? '') != '' ? '-$variation' : '';
 
     // Automatically resolve voices by removing suffixes.
     // For example, if `Voices-bf-car.ogg` does not exist, check for `Voices-bf.ogg`.

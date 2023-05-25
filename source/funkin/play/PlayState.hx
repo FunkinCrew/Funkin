@@ -1093,7 +1093,7 @@ class PlayState extends MusicBeatState
 
     // TODO: Fix grouped vocals
     vocals = currentChart.buildVocals();
-    vocals.members[0].onComplete = function() {
+    vocals.onComplete = function() {
       vocalsFinished = true;
     }
 
