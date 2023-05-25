@@ -1,11 +1,13 @@
-package funkin;
+package funkin.audio;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 
-// different than FlxSoundGroup cuz this can control all the sounds time and shit
-// when needed
-class VoicesGroup extends FlxTypedGroup<FlxSound>
+/**
+ * A group of FlxSounds that are all synced together.
+ * Unlike FlxSoundGroup, you cann also control their time and pitch.
+ */
+class SoundGroup extends FlxTypedGroup<FlxSound>
 {
   public var time(get, set):Float;
 
@@ -13,16 +15,15 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 
   public var pitch(get, set):Float;
 
-  // make it a group that you add to?
   public function new()
   {
     super();
   }
 
-  // TODO: Remove this.
-  public static function build(song:String, ?files:Array<String> = null):VoicesGroup
+  @:deprecated("Create sound files and call add() instead")
+  public static function build(song:String, ?files:Array<String> = null):SoundGroup
   {
-    var result = new VoicesGroup();
+    var result = new SoundGroup();
 
     if (files == null)
     {
@@ -42,18 +43,17 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
   }
 
   /**
-   * Finds the largest deviation from the desired time inside this VoicesGroup.
+   * Finds the largest deviation from the desired time inside this SoundGroup.
    * 
    * @param targetTime	The time to check against.
-   * 						If none is provided, it checks the time of all members against the first member of this VoicesGroup.
+   * 						If none is provided, it checks the time of all members against the first member of this SoundGroup.
    * @return The largest deviation from the target time found.
    */
   public function checkSyncError(?targetTime:Float):Float
   {
     var error:Float = 0;
 
-    forEachAlive(function(snd)
-    {
+    forEachAlive(function(snd) {
       if (targetTime == null) targetTime = snd.time;
       else
       {
@@ -64,29 +64,76 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
     return error;
   }
 
-  // prob a better / cleaner way to do all these forEach stuff?
+  /**
+   * Add a sound to the group.
+   */
+  public override function add(sound:FlxSound):FlxSound
+  {
+    var result:FlxSound = super.add(sound);
+
+    if (result == null) return null;
+
+    // We have to play, then pause the sound to set the time,
+    // else the sound will restart immediately when played.
+    result.play(true, 0.0);
+    result.pause();
+    result.time = this.time;
+
+    // Apply parameters to the new sound.
+    result.pitch = this.pitch;
+    result.volume = this.volume;
+
+    return result;
+  }
+
+  /**
+   * Pause all the sounds in the group.
+   */
   public function pause()
   {
-    forEachAlive(function(snd)
-    {
-      snd.pause();
+    forEachAlive(function(sound:FlxSound) {
+      sound.pause();
     });
   }
 
-  public function play()
+  /**
+   * Play all the sounds in the group.
+   */
+  public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
   {
-    forEachAlive(function(snd)
-    {
-      snd.play();
+    forEachAlive(function(sound:FlxSound) {
+      sound.play(forceRestart, startTime, endTime);
     });
   }
 
+  /**
+   * Resume all the sounds in the group.
+   */
+  public function resume()
+  {
+    forEachAlive(function(sound:FlxSound) {
+      sound.resume();
+    });
+  }
+
+  /**
+   * Stop all the sounds in the group.
+   */
   public function stop()
   {
-    forEachAlive(function(snd)
-    {
-      snd.stop();
+    forEachAlive(function(sound:FlxSound) {
+      sound.stop();
     });
+  }
+
+  /**
+   * Remove all sounds from the group.
+   */
+  public override function clear():Void
+  {
+    this.stop();
+
+    super.clear();
   }
 
   function get_time():Float
@@ -98,8 +145,7 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 
   function set_time(time:Float):Float
   {
-    forEachAlive(function(snd)
-    {
+    forEachAlive(function(snd) {
       // account for different offsets per sound?
       snd.time = time;
     });
@@ -117,8 +163,7 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
   // in PlayState, adjust the code so that it only mutes the player1 vocal tracks?
   function set_volume(volume:Float):Float
   {
-    forEachAlive(function(snd)
-    {
+    forEachAlive(function(snd) {
       snd.volume = volume;
     });
 
@@ -138,8 +183,7 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
   {
     #if FLX_PITCH
     trace('Setting audio pitch to ' + val);
-    forEachAlive(function(snd)
-    {
+    forEachAlive(function(snd) {
       snd.pitch = val;
     });
     #end
