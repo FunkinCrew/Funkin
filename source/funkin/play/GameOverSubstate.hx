@@ -2,7 +2,7 @@ package funkin.play;
 
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.modding.events.ScriptEvent;
@@ -208,11 +208,9 @@ class GameOverSubstate extends MusicBeatSubstate
       boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
 
       // After the animation finishes...
-      new FlxTimer().start(0.7, function(tmr:FlxTimer)
-      {
+      new FlxTimer().start(0.7, function(tmr:FlxTimer) {
         // ...fade out the graphics. Then after that happens...
-        FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
-        {
+        FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
           // ...close the GameOverSubstate.
           FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           PlayState.needsReset = true;
@@ -276,8 +274,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
     if (PreferencesMenu.getPref('censor-naughty')) randomCensor = [1, 3, 8, 13, 17, 21];
 
-    FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), 1, false, null, true, function()
-    {
+    FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), 1, false, null, true, function() {
       // Once the quote ends, fade in the game over music.
       if (!isEnding && gameOverMusic != null)
       {

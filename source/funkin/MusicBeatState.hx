@@ -146,15 +146,20 @@ class MusicBeatState extends FlxUIState
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
-  override function switchTo(nextState:FlxState):Bool
+  override function startOutro(onComplete:() -> Void):Void
   {
-    var event = new StateChangeScriptEvent(ScriptEvent.STATE_CHANGE_BEGIN, nextState, true);
+    var event = new StateChangeScriptEvent(ScriptEvent.STATE_CHANGE_BEGIN, null, true);
 
     dispatchEvent(event);
 
-    if (event.eventCanceled) return false;
-
-    return super.switchTo(nextState);
+    if (event.eventCanceled)
+    {
+      return;
+    }
+    else
+    {
+      onComplete();
+    }
   }
 
   public override function openSubState(targetSubstate:FlxSubState):Void

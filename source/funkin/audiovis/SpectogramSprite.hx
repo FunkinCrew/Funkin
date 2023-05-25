@@ -5,7 +5,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxVector;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
 import funkin.audio.visualize.PolygonSpectogram.VISTYPE;
 import funkin.audiovis.VisShit.CurAudioInfo;
@@ -75,8 +75,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
       default:
     }
 
-    forEach(spr ->
-    {
+    forEach(spr -> {
       spr.visible = spr.ID % wavOptimiz == 0;
     });
 

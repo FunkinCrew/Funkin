@@ -5,7 +5,7 @@ import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.system.debug.stats.StatsGraph;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -52,8 +52,7 @@ class LatencyState extends MusicBeatSubstate
     FlxG.addChildBelowMouse(realStats);
     #end
 
-    FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key ->
-    {
+    FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key -> {
       trace(key.charCode);
 
       if (key.charCode == 120) generateBeatStuff();
@@ -154,8 +153,7 @@ class LatencyState extends MusicBeatSubstate
 
   override function beatHit():Bool
   {
-    if (curBeat % 8 == 0) blocks.forEach(blok ->
-    {
+    if (curBeat % 8 == 0) blocks.forEach(blok -> {
       blok.alpha = 0;
     });
 
@@ -248,8 +246,7 @@ class LatencyState extends MusicBeatSubstate
         FlxG.resetState();
     }*/
 
-    noteGrp.forEach(function(daNote:Note)
-    {
+    noteGrp.forEach(function(daNote:Note) {
       daNote.y = (strumLine.y - ((Conductor.songPosition - Conductor.audioOffset) - daNote.data.strumTime) * 0.45);
       daNote.x = strumLine.x + 30;
 

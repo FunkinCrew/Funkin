@@ -17,7 +17,7 @@ class SongValidator
   public static final DEFAULT_ARTIST:String = "Unknown";
   public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;
   public static final DEFAULT_DIVISIONS:Int = -1;
-  public static final DEFAULT_LOOP:Bool = false;
+  public static final DEFAULT_LOOPED:Bool = false;
   public static final DEFAULT_STAGE:String = "mainStage";
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 

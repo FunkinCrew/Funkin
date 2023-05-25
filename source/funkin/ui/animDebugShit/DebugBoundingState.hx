@@ -10,7 +10,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
@@ -76,8 +76,7 @@ class DebugBoundingState extends FlxState
 
     // uiStuff.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
     var dropdown:DropDown = cast uiStuff.findComponent("swapper");
-    dropdown.onChange = function(e:UIEvent)
-    {
+    dropdown.onChange = function(e:UIEvent) {
       trace(e.type);
       curView = cast e.data.curView;
       trace(e.data);
@@ -147,8 +146,7 @@ class DebugBoundingState extends FlxState
     swagOutlines.antialiasing = true;
     spriteSheetView.add(swagOutlines);
 
-    FlxG.stage.window.onDropFile.add(function(path:String)
-    {
+    FlxG.stage.window.onDropFile.add(function(path:String) {
       // WACKY ASS TESTING SHIT FOR WEB FILE LOADING??
       #if web
       var swagList:FileList = cast path;
@@ -157,9 +155,8 @@ class DebugBoundingState extends FlxState
       trace(objShit);
 
       var funnysound = new FlxSound().loadStream('https://cdn.discordapp.com/attachments/767500676166451231/817821618251759666/Flutter.mp3', false, false,
-        null, function()
-      {
-        trace('LOADED SHIT??');
+        null, function() {
+          trace('LOADED SHIT??');
       });
 
       funnysound.volume = 1;
@@ -167,8 +164,7 @@ class DebugBoundingState extends FlxState
 
       var urlShit = new URLLoader(new URLRequest(objShit));
 
-      new FlxTimer().start(3, function(tmr:FlxTimer)
-      {
+      new FlxTimer().start(3, function(tmr:FlxTimer) {
         // music lol!
         if (urlShit.dataFormat == BINARY)
         {
@@ -255,8 +251,7 @@ class DebugBoundingState extends FlxState
       charDropdown.dataSource.add({text: char});
     }
 
-    charDropdown.onChange = function(e:UIEvent)
-    {
+    charDropdown.onChange = function(e:UIEvent) {
       loadAnimShit(e.data.text);
     };
   }
@@ -306,8 +301,7 @@ class DebugBoundingState extends FlxState
       if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
 
       // var callback = callbacks.add("library:" + library);
-      Assets.loadLibrary(library).onComplete(function(_)
-      {
+      Assets.loadLibrary(library).onComplete(function(_) {
         trace('LOADED... awesomeness...');
         // callback();
       });
@@ -483,8 +477,7 @@ class DebugBoundingState extends FlxState
     }
 
     animDropDownMenu.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animThing, true));
-    animDropDownMenu.callback = function(str:String)
-    {
+    animDropDownMenu.callback = function(str:String) {
       // clears the canvas
       onionSkinChar.pixels.fillRect(new Rectangle(0, 0, FlxG.width * 2, FlxG.height * 2), 0x00000000);
 

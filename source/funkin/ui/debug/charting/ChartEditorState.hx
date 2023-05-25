@@ -13,12 +13,12 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.audio.visualize.PolygonSpectogram;
-import funkin.audio.VocalGroup;
+import funkin.audio.VoicesGroup;
 import funkin.input.Cursor;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.HealthIcon;
@@ -596,14 +596,14 @@ class ChartEditorState extends HaxeUIState
   /**
    * The audio track for the vocals.
    */
-  var audioVocalTrackGroup:VocalGroup;
+  var audioVocalTrackGroup:VoicesGroup;
 
   /**
    * A map of the audio tracks for each character's vocals.
    * - Keys are the character IDs.
    * - Values are the FlxSound objects to play that character's vocals.
    * 
-   * When switching characters, the elements of the VocalGroup will be swapped to match the new character.
+   * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
   var audioVocalTracks:Map<String, FlxSound> = new Map<String, FlxSound>();
 
@@ -961,7 +961,7 @@ class ChartEditorState extends HaxeUIState
     // Initialize the song chart data.
     songChartData = new Map<String, SongChartData>();
 
-    audioVocalTrackGroup = new VocalGroup();
+    audioVocalTrackGroup = new VoicesGroup();
   }
 
   /**

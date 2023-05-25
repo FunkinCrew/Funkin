@@ -882,10 +882,10 @@ class FreeplayState extends MusicBeatSubstate
     }
   }
 
-  override function switchTo(nextState:FlxState):Bool
+  override function startOutro(onComplete:() -> Void):Void
   {
     clearDaCache(songs[curSelected].songName);
-    return super.switchTo(nextState);
+    super.startOutro(onComplete);
   }
 
   function changeDiff(change:Int = 0)

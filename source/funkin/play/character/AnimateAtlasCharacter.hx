@@ -25,8 +25,8 @@ typedef AnimateAtlasAnimation =
 {
   name:String,
   prefix:String,
-  offset:Null<Array<Float>>,
-  loop:Bool,
+  offsets:Null<Array<Float>>,
+  looped:Bool,
 }
 
 /**
@@ -107,7 +107,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     super.onAnimationFinished(prefix);
 
-    if (getAnimationData() != null && getAnimationData().loop)
+    if (getAnimationData() != null && getAnimationData().looped)
     {
       playAnimation(prefix, true, false);
     }
