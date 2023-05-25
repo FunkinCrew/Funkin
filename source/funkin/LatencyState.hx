@@ -31,7 +31,7 @@ class LatencyState extends MusicBeatSubstate
   var offsetsPerBeat:Array<Int> = [];
   var swagSong:HomemadeMusic;
 
-  #if debug
+  #if FLX_DEBUG
   var funnyStatsGraph:CoolStatsGraph;
   var realStats:CoolStatsGraph;
   #end
@@ -44,7 +44,7 @@ class LatencyState extends MusicBeatSubstate
     FlxG.sound.music = swagSong;
     FlxG.sound.music.play();
 
-    #if debug
+    #if FLX_DEBUG
     funnyStatsGraph = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.PINK, "time");
     FlxG.addChildBelowMouse(funnyStatsGraph);
 
@@ -170,7 +170,7 @@ class LatencyState extends MusicBeatSubstate
       trace(FlxG.sound.music._channel.position);
      */
 
-    #if debug
+    #if FLX_DEBUG
     funnyStatsGraph.update(FlxG.sound.music.time % 500);
     realStats.update(swagSong.getTimeWithDiff() % 500);
     #end

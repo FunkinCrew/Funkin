@@ -130,6 +130,7 @@
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
 	<!-- <haxelib name="hxcodec" /> Video playback -->
+	<haxelib name="json2object" /> <!-- JSON parsing -->
 
 	<haxelib name="thx.semver" />
 
@@ -143,6 +144,9 @@
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+
+	<!-- TODO: REMOVE THIS!!!! -->
+	<haxeflag name="-w" value="-WDeprecated" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 

@@ -5,6 +5,7 @@ import flixel.sound.FlxSound;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
+import funkin.ui.story.StoryMenuState;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;

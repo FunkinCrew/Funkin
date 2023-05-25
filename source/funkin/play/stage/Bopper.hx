@@ -256,6 +256,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     var correctName = correctAnimationName(name);
     if (correctName == null) return;
 
+    this.animation.paused = false;
     this.animation.play(correctName, restart, false, 0);
 
     if (ignoreOther)

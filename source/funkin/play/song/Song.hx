@@ -37,11 +37,14 @@ class Song implements IPlayStateScriptedClass
    */
   public var validScore:Bool = true;
 
+  var difficultyIds:Array<String>;
+
   public function new(id:String)
   {
     this.songId = id;
 
     variations = [];
+    difficultyIds = [];
     difficulties = new Map<String, SongDifficulty>();
 
     _metadata = SongDataParser.parseSongMetadata(songId);
@@ -72,6 +75,8 @@ class Song implements IPlayStateScriptedClass
       // but all the difficulties in the metadata must be in the chart file.
       for (diffId in metadata.playData.difficulties)
       {
+        difficultyIds.push(diffId);
+
         var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
         variations.push(metadata.variation);
@@ -146,6 +151,16 @@ class Song implements IPlayStateScriptedClass
     if (diffId == null) diffId = difficulties.keys().array()[0];
 
     return difficulties.get(diffId);
+  }
+
+  public function listDifficulties():Array<String>
+  {
+    return difficultyIds;
+  }
+
+  public function hasDifficulty(diffId:String):Bool
+  {
+    return difficulties.exists(diffId);
   }
 
   /**
@@ -290,7 +305,8 @@ class SongDifficulty
 
   public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void
   {
-    FlxG.sound.playMusic(Paths.inst(this.song.songId), volume, looped);
+    var suffix:String = variation == null ? null : '-$variation';
+    FlxG.sound.playMusic(Paths.inst(this.song.songId, suffix), volume, looped);
   }
 
   /**
@@ -320,28 +336,30 @@ class SongDifficulty
       return [];
     }
 
+    var suffix:String = variation != null ? '-$variation' : '';
+
     // Automatically resolve voices by removing suffixes.
     // For example, if `Voices-bf-car.ogg` does not exist, check for `Voices-bf.ogg`.
 
     var playerId:String = id;
-    var voicePlayer:String = Paths.voices(this.song.songId, '-$id');
+    var voicePlayer:String = Paths.voices(this.song.songId, '-$id$suffix');
     while (voicePlayer != null && !Assets.exists(voicePlayer))
     {
       // Remove the last suffix.
       // For example, bf-car becomes bf.
       playerId = playerId.split('-').slice(0, -1).join('-');
       // Try again.
-      voicePlayer = playerId == '' ? null : Paths.voices(this.song.songId, '-${playerId}');
+      voicePlayer = playerId == '' ? null : Paths.voices(this.song.songId, '-${playerId}$suffix');
     }
 
     var opponentId:String = playableCharData.opponent;
-    var voiceOpponent:String = Paths.voices(this.song.songId, '-${opponentId}');
+    var voiceOpponent:String = Paths.voices(this.song.songId, '-${opponentId}$suffix');
     while (voiceOpponent != null && !Assets.exists(voiceOpponent))
     {
       // Remove the last suffix.
       opponentId = opponentId.split('-').slice(0, -1).join('-');
       // Try again.
-      voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.songId, '-${opponentId}');
+      voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.songId, '-${opponentId}$suffix');
     }
 
     var result:Array<String> = [];
@@ -350,7 +368,7 @@ class SongDifficulty
     if (voicePlayer == null && voiceOpponent == null)
     {
       // Try to use `Voices.ogg` if no other voices are found.
-      if (Assets.exists(Paths.voices(this.song.songId, ''))) result.push(Paths.voices(this.song.songId, ''));
+      if (Assets.exists(Paths.voices(this.song.songId, ''))) result.push(Paths.voices(this.song.songId, '$suffix'));
     }
     return result;
   }

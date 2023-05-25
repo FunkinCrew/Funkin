@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import haxe.Json;
 import lime.utils.Assets;
 // import flxtyped group
+import funkin.ui.story.StoryMenuState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxTimer;
 import flixel.FlxG;
