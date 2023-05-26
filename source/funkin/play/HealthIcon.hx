@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.play.character.CharacterData;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -34,7 +35,7 @@ class HealthIcon extends FlxSprite
   /**
    * Whether this health icon should automatically update its state based on the character's health.
    * Note that turning this off means you have to manually do the following:
-   * - Bumping the icon on the beat.
+   * - Boping the icon on the beat.
    * - Switching between winning/losing/idle animations.
    * - Repositioning the icon as health changes.
    */
@@ -48,9 +49,16 @@ class HealthIcon extends FlxSprite
   public var size:FlxPoint = new FlxPoint(1, 1);
 
   /**
-   * Apply the "bump" animation once every X steps.
+   * Apply the "bop" animation once every X steps.
    */
-  public var bumpEvery:Int = 4;
+  public var bopEvery:Int = 4;
+
+  /**
+   * The amount, in degrees, to rotate the icon by when boping.
+   * ERIC NOTE: I experimented with this a bit but ended up turning it off,
+   * but why not leave it in for the script kiddies?
+   */
+  public var bopAngle:Float = 0.0;
 
   /**
    * The player the health icon is attached to.
@@ -59,9 +67,8 @@ class HealthIcon extends FlxSprite
 
   /**
    * Whether the sprite is pixel art or not.
-   * Calculated when loading an icon.
    */
-  var isPixel:Bool = false;
+  public var isPixel(default, set):Bool = false;
 
   /**
    * Whether this is a legacy icon or not.
@@ -71,34 +78,39 @@ class HealthIcon extends FlxSprite
   /**
    * At this amount of health, play the Winning animation instead of the idle.
    */
-  static final WINNING_THRESHOLD = 0.8 * 2;
+  static final WINNING_THRESHOLD:Float = 0.8 * 2;
 
   /**
    * At this amount of health, play the Losing animation instead of the idle.
    */
-  static final LOSING_THRESHOLD = 0.2 * 2;
+  static final LOSING_THRESHOLD:Float = 0.2 * 2;
 
   /**
    * The maximum health of the player.
    */
-  static final MAXIMUM_HEALTH = 2;
+  static final MAXIMUM_HEALTH:Float = 2;
 
   /**
    * The size of a non-pixel icon when using the legacy format.
    * Remember, modern icons can be any size.
    */
-  public static final HEALTH_ICON_SIZE = 150;
+  public static final HEALTH_ICON_SIZE:Int = 150;
 
   /**
    * The size of a pixel icon when using the legacy format.
    * Remember, modern icons can be any size.
    */
-  static final PIXEL_ICON_SIZE = 32;
+  static final PIXEL_ICON_SIZE:Int = 32;
+
+  /**
+   * The amount, in percent, to scale the icon by when bopping.
+   */
+  static final BOP_SCALE:Float = 0.2;
 
   /**
    * shitty hardcoded value for a specific positioning!!!
    */
-  static final POSITION_OFFSET = 26;
+  static final POSITION_OFFSET:Int = 26;
 
   public function new(char:String = 'bf', playerId:Int = 0)
   {
@@ -107,8 +119,6 @@ class HealthIcon extends FlxSprite
     this.scrollFactor.set();
 
     this.characterId = char;
-
-    this.antialiasing = !isPixel;
 
     initTargetSize();
   }
@@ -122,18 +132,28 @@ class HealthIcon extends FlxSprite
     return value;
   }
 
+  function set_isPixel(value:Bool):Bool
+  {
+    if (value == isPixel) return value;
+
+    isPixel = value;
+    loadCharacter(characterId);
+    return value;
+  }
+
   /**
    * Easter egg; press 9 in the PlayState to use the old player icon.
    */
   public function toggleOldIcon():Void
   {
-    if (characterId == 'bf-old')
+    if (characterId == 'beta')
     {
-      characterId = PlayState.currentSong.player1;
+      // characterId = PlayState.instance.currentPlayerId;
+      characterId = 'bf';
     }
     else
     {
-      characterId = 'bf-old';
+      characterId = 'beta';
     }
   }
 
@@ -144,8 +164,39 @@ class HealthIcon extends FlxSprite
   {
     super.update(elapsed);
 
-    // Auto-update the state of the icon based on the player's health.
-    // Make sure this is false if the health icon is not being used in the PlayState.
+    if (bopEvery != 0)
+    {
+      // Lerp the health icon back to its normal size,
+      // while maintaining aspect ratio.
+      if (this.width > this.height)
+      {
+        // Apply linear interpolation while accounting for frame rate.
+        var targetSize:Int = Std.int(CoolUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
+
+        setGraphicSize(targetSize, 0);
+      }
+      else
+      {
+        var targetSize:Int = Std.int(CoolUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
+
+        setGraphicSize(0, targetSize);
+      }
+
+      // Lerp the health icon back to its normal angle.
+      this.angle = CoolUtil.coolLerp(this.angle, 0, 0.15);
+
+      this.updateHitbox();
+    }
+
+    this.updatePosition();
+  }
+
+  /**
+   * Update the position (and status) of the health icon.
+   */
+  public function updatePosition():Void
+  {
+    // Make sure autoUpdate is false if the health icon is not being used in the PlayState.
     if (autoUpdate && PlayState.instance != null)
     {
       switch (playerId)
@@ -164,53 +215,47 @@ class HealthIcon extends FlxSprite
             + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01))
             - (this.width - POSITION_OFFSET);
       }
-    }
 
-    if (bumpEvery != 0)
-    {
-      // Lerp the health icon back to its normal size,
-      // while maintaining aspect ratio.
-      if (this.width > this.height)
-      {
-        // Apply linear interpolation while accounting for frame rate.
-        var targetSize = Std.int(CoolUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
-
-        setGraphicSize(targetSize, 0);
-      }
-      else
-      {
-        var targetSize = Std.int(CoolUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
-
-        setGraphicSize(0, targetSize);
-      }
-      this.updateHitbox();
+      // Keep the icon centered vertically on the health bar.
+      this.y = PlayState.instance.healthBar.y - (this.height / 2); // - (PlayState.instance.healthBar.height / 2)
     }
   }
 
-  public function onStepHit(curStep:Int)
+  /**
+   * Called on every step.
+   * @param curStep The current step number.
+   */
+  public function onStepHit(curStep:Int):Void
   {
-    if (bumpEvery != 0 && curStep % bumpEvery == 0 && isLegacyStyle)
+    // Make the icons bop.
+    if (bopEvery != 0 && curStep % bopEvery == 0 && isLegacyStyle)
     {
-      // Make the health icons bump (the update function causes them to lerp back down).
+      // Make the icon increase in size (the update function causes them to lerp back down).
       if (this.width > this.height)
       {
-        setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * 0.2)), 0);
+        setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);
       }
       else
       {
-        setGraphicSize(0, Std.int(this.height + (HEALTH_ICON_SIZE * this.size.y * 0.2)));
+        setGraphicSize(0, Std.int(this.height + (HEALTH_ICON_SIZE * this.size.y * BOP_SCALE)));
       }
+      // Make the icon twist (the update function causes them to lerp back to normal).
+      this.angle += bopAngle * (playerId == 0 ? 1 : -1);
+
       this.updateHitbox();
+
+      // Ensure the icon is positioned correctly after updating the hitbox.
+      this.updatePosition();
     }
   }
 
-  inline function initTargetSize()
+  inline function initTargetSize():Void
   {
     setGraphicSize(HEALTH_ICON_SIZE);
     updateHitbox();
   }
 
-  function updateHealthIcon(health:Float)
+  function updateHealthIcon(health:Float):Void
   {
     // We want to efficiently handle animation playback
 
@@ -219,56 +264,82 @@ class HealthIcon extends FlxSprite
 
     switch (getCurrentAnimation())
     {
-      case IDLE:
-        if (health < LOSING_THRESHOLD) playAnimation(TO_LOSING, LOSING);
-        else if (health > WINNING_THRESHOLD) playAnimation(TO_WINNING, WINNING);
+      case Idle:
+        if (health < LOSING_THRESHOLD)
+        {
+          playAnimation(ToLosing, Losing);
+        }
+        else if (health > WINNING_THRESHOLD)
+        {
+          playAnimation(ToWinning, Winning);
+        }
         else
-          playAnimation(IDLE);
-      case WINNING:
-        if (health < WINNING_THRESHOLD) playAnimation(FROM_WINNING, IDLE);
+        {
+          playAnimation(Idle);
+        }
+      case Winning:
+        if (health < WINNING_THRESHOLD)
+        {
+          playAnimation(FromWinning, Idle);
+        }
         else
-          playAnimation(WINNING, IDLE);
-      case LOSING:
-        if (health > LOSING_THRESHOLD) playAnimation(FROM_LOSING, IDLE);
+        {
+          playAnimation(Winning, Idle);
+        }
+      case Losing:
+        if (health > LOSING_THRESHOLD) playAnimation(FromLosing, Idle);
         else
-          playAnimation(LOSING, IDLE);
-      case TO_LOSING:
-        if (isAnimationFinished()) playAnimation(LOSING, IDLE);
-      case TO_WINNING:
-        if (isAnimationFinished()) playAnimation(WINNING, IDLE);
-      case FROM_LOSING | FROM_WINNING:
-        if (isAnimationFinished()) playAnimation(IDLE);
-      case "":
-        playAnimation(IDLE);
+        {
+          playAnimation(Losing, Idle);
+        }
+      case ToLosing:
+        if (isAnimationFinished())
+        {
+          playAnimation(Losing, Idle);
+        }
+      case ToWinning:
+        if (isAnimationFinished())
+        {
+          playAnimation(Winning, Idle);
+        }
+      case FromLosing | FromWinning:
+        if (isAnimationFinished())
+        {
+          playAnimation(Idle);
+        }
+      case '':
+        playAnimation(Idle);
       default:
-        playAnimation(IDLE);
+        playAnimation(Idle);
     }
   }
 
   /**
-   * Load
+   * Load health icon animations from a Sparrow XML file (the kind used by characters)
+   * Note that this is looking for SPECIFIC animation names, so you may need to modify the XML.
    * @param charId 
    */
-  function loadAnimationNew(charId:String):Void
+  function loadAnimationNew():Void
   {
-    this.animation.addByPrefix(IDLE, IDLE, 24, true);
-    this.animation.addByPrefix(WINNING, WINNING, 24, true);
-    this.animation.addByPrefix(LOSING, LOSING, 24, true);
-    this.animation.addByPrefix(TO_WINNING, TO_WINNING, 24, true);
-    this.animation.addByPrefix(TO_LOSING, TO_LOSING, 24, true);
-    this.animation.addByPrefix(FROM_WINNING, FROM_WINNING, 24, true);
-    this.animation.addByPrefix(FROM_LOSING, FROM_LOSING, 24, true);
+    this.animation.addByPrefix(Idle, Idle, 24, true);
+    this.animation.addByPrefix(Winning, Winning, 24, true);
+    this.animation.addByPrefix(Losing, Losing, 24, true);
+    this.animation.addByPrefix(ToWinning, ToWinning, 24, true);
+    this.animation.addByPrefix(ToLosing, ToLosing, 24, true);
+    this.animation.addByPrefix(FromWinning, FromWinning, 24, true);
+    this.animation.addByPrefix(FromLosing, FromLosing, 24, true);
   }
 
   /**
    * Load health icon animations using the legacy format.
-   * Simply assumes two icons, one on 
+   * Simply assumes two icons, the idle and losing icons.
    * @param charId 
    */
-  function loadAnimationOld(charId:String):Void
+  function loadAnimationOld():Void
   {
-    this.animation.add(IDLE, [0], 0, false, this.playerId == 0);
-    this.animation.add(LOSING, [1], 0, false, this.playerId == 0);
+    // Don't flip BF's icon here! That's done later.
+    this.animation.add(Idle, [0], 0, false, false);
+    this.animation.add(Losing, [1], 0, false, false);
   }
 
   function correctCharacterId(charId:String):String
@@ -276,7 +347,7 @@ class HealthIcon extends FlxSprite
     if (!Assets.exists(Paths.image('icons/icon-$charId')))
     {
       FlxG.log.warn('No icon for character: $charId : using default placeholder face instead!');
-      return "face";
+      return 'face';
     }
 
     return charId;
@@ -287,17 +358,6 @@ class HealthIcon extends FlxSprite
     return Assets.exists(Paths.file('images/icons/icon-$characterId.xml'));
   }
 
-  function fetchIsPixel(charId:String):Bool
-  {
-    var charData = CharacterDataParser.fetchCharacterData(charId);
-    if (charData == null)
-    {
-      FlxG.log.warn('No character data found for character: $charId');
-      return false;
-    }
-    return charData.isPixel;
-  }
-
   function loadCharacter(charId:String):Void
   {
     if (correctCharacterId(charId) != charId)
@@ -306,22 +366,22 @@ class HealthIcon extends FlxSprite
       return;
     }
 
-    isPixel = fetchIsPixel(charId);
-
     isLegacyStyle = !isNewSpritesheet(charId);
 
     if (!isLegacyStyle)
     {
       frames = Paths.getSparrowAtlas('icons/icon-$charId');
 
-      loadAnimationNew(charId);
+      loadAnimationNew();
     }
     else
     {
       loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
 
-      loadAnimationOld(charId);
+      loadAnimationOld();
     }
+
+    this.antialiasing = !isPixel;
   }
 
   /**
@@ -334,6 +394,7 @@ class HealthIcon extends FlxSprite
   }
 
   /**
+   * @param id The name of the animation to check for.
    * @return Whether this sprite posesses the given animation.
    *   Only true if the animation was successfully loaded from the XML.
    */
@@ -378,47 +439,50 @@ class HealthIcon extends FlxSprite
   }
 }
 
+/**
+ * The current state of the health
+ */
 enum abstract HealthIconState(String) to String from String
 {
   /**
    * Indicates the health icon is in the default animation.
    * Plays as long as health is between 20% and 80%.
    */
-  var IDLE = "idle";
+  public var Idle = 'idle';
 
   /**
    * Indicates the health icon is playing the Winning animation.
    * Plays as long as health is above 80%.
    */
-  var WINNING = "winning";
+  public var Winning = 'winning';
 
   /**
    * Indicates the health icon is playing the Losing animation.
    * Plays as long as health is below 20%.
    */
-  var LOSING = "losing";
+  public var Losing = 'losing';
 
   /**
    * Indicates that the health icon is transitioning between `idle` and `winning`.
    * The next animation will play once the current animation finishes.
    */
-  var TO_WINNING = "toWinning";
+  public var ToWinning = 'toWinning';
 
   /**
    * Indicates that the health icon is transitioning between `idle` and `losing`.
    * The next animation will play once the current animation finishes.
    */
-  var TO_LOSING = "toLosing";
+  public var ToLosing = 'toLosing';
 
   /**
    * Indicates that the health icon is transitioning between `winning` and `idle`.
    * The next animation will play once the current animation finishes.
    */
-  var FROM_WINNING = "fromWinning";
+  public var FromWinning = 'fromWinning';
 
   /**
    * Indicates that the health icon is transitioning between `losing` and `idle`.
    * The next animation will play once the current animation finishes.
    */
-  var FROM_LOSING = "fromLosing";
+  public var FromLosing = 'fromLosing';
 }
