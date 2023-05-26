@@ -43,6 +43,18 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var idleSuffix(default, set):String = '';
 
   /**
+   * If this bopper is rendered with pixel art,
+   * disable anti-aliasing and render at 6x scale.
+   */
+  public var isPixel(default, set):Bool = false;
+
+  function set_isPixel(value:Bool):Bool
+  {
+    if (isPixel == value) return value;
+    return isPixel = value;
+  }
+
+  /**
    * Whether this bopper should bop every beat. By default it's true, but when used
    * for characters/players, it should be false so it doesn't cut off their animations!!!!!
    */
@@ -80,7 +92,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   function set_animOffsets(value:Array<Float>):Array<Float>
   {
     if (animOffsets == null) animOffsets = [0, 0];
-    if (animOffsets == value) return value;
+    if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
     var xDiff = animOffsets[0] - value[0];
     var yDiff = animOffsets[1] - value[1];
@@ -213,7 +225,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
    * @param name 
    */
-  function correctAnimationName(name:String)
+  function correctAnimationName(name:String):String
   {
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
@@ -248,16 +260,16 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * @param name The name of the animation to play.
    * @param restart Whether to restart the animation if it is already playing.
    * @param ignoreOther Whether to ignore all other animation inputs, until this one is done playing
+   * @param reversed If true, play the animation backwards, from the last frame to the first.
    */
-  public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
+  public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false, ?reversed:Bool = false):Void
   {
     if (!canPlayOtherAnims && !ignoreOther) return;
 
     var correctName = correctAnimationName(name);
     if (correctName == null) return;
 
-    this.animation.paused = false;
-    this.animation.play(correctName, restart, false, 0);
+    this.animation.play(correctName, restart, reversed, 0);
 
     if (ignoreOther)
     {
@@ -291,10 +303,10 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     }, 1);
   }
 
-  function applyAnimationOffsets(name:String)
+  function applyAnimationOffsets(name:String):Void
   {
     var offsets = animationOffsets.get(name);
-    if (offsets != null)
+    if (offsets != null && !(offsets[0] == 0 && offsets[1] == 0))
     {
       this.animOffsets = [offsets[0] + globalOffsets[0], offsets[1] + globalOffsets[1]];
     }
@@ -324,14 +336,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (this.animation == null || this.animation.curAnim == null) return "";
     return this.animation.curAnim.name;
   }
-
-  public function onScriptEvent(event:ScriptEvent) {}
-
-  public function onCreate(event:ScriptEvent) {}
-
-  public function onDestroy(event:ScriptEvent) {}
-
-  public function onUpdate(event:UpdateScriptEvent) {}
 
   public function onPause(event:PauseScriptEvent) {}
 

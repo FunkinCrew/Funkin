@@ -34,6 +34,17 @@ class ScriptEventDispatcher
         return;
     }
 
+    if (Std.isOfType(target, IStateStageProp))
+    {
+      var t:IStateStageProp = cast(target, IStateStageProp);
+      switch (event.type)
+      {
+        case ScriptEvent.ADDED:
+          t.onAdd(cast event);
+          return;
+      }
+    }
+
     if (Std.isOfType(target, IPlayStateScriptedClass))
     {
       var t = cast(target, IPlayStateScriptedClass);

@@ -81,7 +81,7 @@ class AnimateAtlasCharacter extends BaseCharacter
     super.onCreate(event);
   }
 
-  public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false):Void
+  public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false, ?reverse:Bool = false):Void
   {
     if ((!canPlayOtherAnims && !ignoreOther)) return;
 

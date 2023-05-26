@@ -1,13 +1,32 @@
 package funkin.play.stage;
 
+import funkin.modding.events.ScriptEvent;
 import flixel.FlxSprite;
+import funkin.modding.IScriptedClass.IStateStageProp;
 
-class StageProp extends FlxSprite
+class StageProp extends FlxSprite implements IStateStageProp
 {
-  public var name:String = "";
+  /**
+   * An internal name for this prop.
+   */
+  public var name:String = '';
 
   public function new()
   {
     super();
   }
+
+  /**
+   * Called when this prop is added to the stage.
+   * @param event 
+   */
+  public function onAdd(event:ScriptEvent):Void {}
+
+  public function onScriptEvent(event:ScriptEvent) {}
+
+  public function onCreate(event:ScriptEvent) {}
+
+  public function onDestroy(event:ScriptEvent) {}
+
+  public function onUpdate(event:UpdateScriptEvent) {}
 }

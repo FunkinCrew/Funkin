@@ -189,7 +189,7 @@ class CharacterDataParser
    * @param charId The character ID to fetch.
    * @return The character instance, or null if the character was not found.
    */
-  public static function fetchCharacter(charId:String):Null<BaseCharacter>
+  public static function fetchCharacter(charId:String, ?debug:Bool = false):Null<BaseCharacter>
   {
     if (charId == null || charId == '' || !characterCache.exists(charId))
     {
@@ -246,7 +246,9 @@ class CharacterDataParser
       return null;
     }
 
-    trace('Successfully instantiated character: ${charId}');
+    trace('Successfully instantiated character (${debug ? 'debug' : 'stable'}): ${charId}');
+
+    char.debug = debug;
 
     // Call onCreate only in the fetchCharacter() function, not at application initialization.
     ScriptEventDispatcher.callEvent(char, new ScriptEvent(ScriptEvent.CREATE));
@@ -419,6 +421,7 @@ class CharacterDataParser
           id: null,
           scale: null,
           flipX: null,
+          isPixel: null,
           offsets: null
         };
     }
@@ -456,6 +459,11 @@ class CharacterDataParser
     if (input.isPixel == null)
     {
       input.isPixel = DEFAULT_ISPIXEL;
+    }
+
+    if (input.healthIcon.isPixel == null)
+    {
+      input.healthIcon.isPixel = input.isPixel;
     }
 
     if (input.danceEvery == null)
@@ -673,6 +681,12 @@ typedef HealthIconData =
    * @default false
    */
   var flipX:Null<Bool>;
+
+  /**
+   * Multiply scale by 6 and disable antialiasing
+   * @default false
+   */
+  var isPixel:Null<Bool>;
 
   /**
    * The offset of the health icon, in pixels.

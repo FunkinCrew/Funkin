@@ -33,6 +33,14 @@ class ScriptEvent
   public static inline final DESTROY:ScriptEventType = "DESTROY";
 
   /**
+   * Called when the relevent object is added to the game state.
+   * This assumes all data is loaded and ready to go.
+   * 
+   * This event is not cancelable.
+   */
+  public static inline final ADDED:ScriptEventType = 'ADDED';
+
+  /**
    * Called during the update function.
    * This is called every frame, so be careful!
    * 

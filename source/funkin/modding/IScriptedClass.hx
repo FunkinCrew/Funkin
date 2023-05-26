@@ -31,6 +31,18 @@ interface IStateChangingScriptedClass extends IScriptedClass
 }
 
 /**
+ * Defines a set of callbacks available to scripted classes which can be added to the current state.
+ * Generally requires the class to be an instance of FlxBasic.
+ */
+interface IStateStageProp extends IScriptedClass
+{
+  /**
+   * Called when the relevant element is added to the game state.
+   */
+  public function onAdd(event:ScriptEvent):Void;
+}
+
+/**
  * Defines a set of callbacks available to scripted classes which represent notes.
  */
 interface INoteScriptedClass extends IScriptedClass

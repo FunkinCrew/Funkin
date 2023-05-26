@@ -77,7 +77,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     // Reset positions of characters.
     if (getBoyfriend() != null)
     {
-      getBoyfriend().resetCharacter(false);
+      getBoyfriend().resetCharacter(true);
     }
     else
     {
@@ -85,11 +85,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     }
     if (getGirlfriend() != null)
     {
-      getGirlfriend().resetCharacter(false);
+      getGirlfriend().resetCharacter(true);
     }
     if (getDad() != null)
     {
-      getDad().resetCharacter(false);
+      getDad().resetCharacter(true);
     }
 
     // Reset positions of named props.
@@ -286,6 +286,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    */
   override function preAdd(Sprite:FlxSprite):Void
   {
+    if (Sprite == null) return;
     var sprite:FlxSprite = cast Sprite;
     sprite.x += x;
     sprite.y += y;
@@ -377,22 +378,36 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     // Add the character to the scene.
     this.add(character);
 
+    ScriptEventDispatcher.callEvent(character, new ScriptEvent(ScriptEvent.ADDED, false));
+
     #if debug
     debugIconGroup.add(debugIcon);
     debugIconGroup.add(debugIcon2);
     #end
   }
 
+  /**
+   * Get the position of the girlfriend character, as defined in the stage data.
+   * @return An FlxPoint position.
+   */
   public inline function getGirlfriendPosition():FlxPoint
   {
     return new FlxPoint(_data.characters.gf.position[0], _data.characters.gf.position[1]);
   }
 
+  /**
+   * Get the position of the boyfriend character, as defined in the stage data.
+   * @return An FlxPoint position.
+   */
   public inline function getBoyfriendPosition():FlxPoint
   {
     return new FlxPoint(_data.characters.bf.position[0], _data.characters.bf.position[1]);
   }
 
+  /**
+   * Get the position of the dad character, as defined in the stage data.
+   * @return An FlxPoint position.
+   */
   public inline function getDadPosition():FlxPoint
   {
     return new FlxPoint(_data.characters.dad.position[0], _data.characters.dad.position[1]);
@@ -409,6 +424,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   /**
    * Retrieve the Boyfriend character.
    * @param pop If true, the character will be removed from the stage as well.
+   * @return The Boyfriend character.
    */
   public function getBoyfriend(?pop:Bool = false):BaseCharacter
   {
@@ -428,14 +444,70 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     }
   }
 
-  public function getGirlfriend():BaseCharacter
+  /**
+   * Retrieve the player/Boyfriend character.
+   * @param pop If true, the character will be removed from the stage as well.
+   * @return The player/Boyfriend character.
+   */
+  public function getPlayer(?pop:Bool = false):BaseCharacter
   {
-    return getCharacter('gf');
+    return getBoyfriend(pop);
   }
 
-  public function getDad():BaseCharacter
+  /**
+   * Retrieve the Girlfriend character.
+   * @param pop If true, the character will be removed from the stage as well.
+   * @return The Girlfriend character.
+   */
+  public function getGirlfriend(?pop:Bool = false):BaseCharacter
   {
-    return getCharacter('dad');
+    if (pop)
+    {
+      var girlfriend:BaseCharacter = getCharacter('gf');
+
+      // Remove the character from the stage.
+      this.remove(girlfriend);
+      this.characters.remove('gf');
+
+      return girlfriend;
+    }
+    else
+    {
+      return getCharacter('gf');
+    }
+  }
+
+  /**
+   * Retrieve the Dad character.
+   * @param pop If true, the character will be removed from the stage as well.
+   * @return The Dad character.
+   */
+  public function getDad(?pop:Bool = false):BaseCharacter
+  {
+    if (pop)
+    {
+      var dad:BaseCharacter = getCharacter('dad');
+
+      // Remove the character from the stage.
+      this.remove(dad);
+      this.characters.remove('dad');
+
+      return dad;
+    }
+    else
+    {
+      return getCharacter('dad');
+    }
+  }
+
+  /**
+   * Retrieve the opponent/Dad character.
+   * @param pop If true, the character will be removed from the stage as well.
+   * @return The opponent character.
+   */
+  public function getOpponent(?pop:Bool = false):BaseCharacter
+  {
+    return getDad(pop);
   }
 
   /**
@@ -446,6 +518,26 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   public function getNamedProp(name:String):StageProp
   {
     return this.namedProps.get(name);
+  }
+
+  /**
+   * Pause the animations of ALL sprites in this group.
+   */
+  public function pause():Void
+  {
+    forEachAlive(function(prop:FlxSprite) {
+      if (prop.animation != null) prop.animation.pause();
+    });
+  }
+
+  /**
+   * Resume the animations of ALL sprites in this group.
+   */
+  public function resume():Void
+  {
+    forEachAlive(function(prop:FlxSprite) {
+      if (prop.animation != null) prop.animation.resume();
+    });
   }
 
   /**

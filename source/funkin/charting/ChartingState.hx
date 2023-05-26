@@ -1104,17 +1104,17 @@ class ChartingState extends MusicBeatState
 
       // leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
       // rightIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
-
-      leftIcon.playAnimation(p1Muted ? LOSING : IDLE);
-      rightIcon.playAnimation(p2Muted ? LOSING : IDLE);
+      //
+      // leftIcon.playAnimation(p1Muted ? LOSING : IDLE);
+      // rightIcon.playAnimation(p2Muted ? LOSING : IDLE);
     }
     else
     {
       leftIcon.characterId = (_song.player2);
       rightIcon.characterId = (_song.player1);
 
-      leftIcon.playAnimation(p2Muted ? LOSING : IDLE);
-      rightIcon.playAnimation(p1Muted ? LOSING : IDLE);
+      // leftIcon.playAnimation(p2Muted ? LOSING : IDLE);
+      // rightIcon.playAnimation(p1Muted ? LOSING : IDLE);
 
       // leftIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
       // rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;

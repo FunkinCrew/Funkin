@@ -21,7 +21,12 @@ class BaseCharacter extends Bopper
   /**
    * Whether the player is an active character (Boyfriend) or not.
    */
-  public var characterType:CharacterType = OTHER;
+  public var characterType(default, set):CharacterType = OTHER;
+
+  function set_characterType(value:CharacterType):CharacterType
+  {
+    return this.characterType = value;
+  }
 
   /**
    * Tracks how long, in seconds, the character has been playing the current `sing` animation.
@@ -30,8 +35,18 @@ class BaseCharacter extends Bopper
    */
   public var holdTimer:Float = 0;
 
+  /**
+   * Set to true when the character dead. Part of the handling for death animations.
+   */
   public var isDead:Bool = false;
-  public var debugMode:Bool = false;
+
+  /**
+   * Set to true when the character being used in a special way.
+   * This includes the Chart Editor and the Animation Editor.
+   * 
+   * Used by scripts to ensure that they don't try to run code to interact with the stage when the stage doesn't actually exist.
+   */
+  public var debug:Bool = false;
 
   /**
    * This character plays a given animation when hitting these specific combo numbers.
@@ -44,7 +59,7 @@ class BaseCharacter extends Bopper
   public var dropNoteCounts(default, null):Array<Int>;
 
   final _data:CharacterData;
-  final singTimeCrochet:Float;
+  final singTimeSec:Float;
 
   /**
    * The offset between the corner of the sprite and the origin of the sprite (at the character's feet).
@@ -102,14 +117,14 @@ class BaseCharacter extends Bopper
    */
   public var cameraFocusPoint(default, null):FlxPoint = new FlxPoint(0, 0);
 
-  override function set_animOffsets(value:Array<Float>)
+  override function set_animOffsets(value:Array<Float>):Array<Float>
   {
     if (animOffsets == null) value = [0, 0];
-    if (animOffsets == value) return value;
+    if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
     // Make sure animOffets are halved when scale is 0.5.
-    var xDiff = (animOffsets[0] * this.scale.x) - value[0];
-    var yDiff = (animOffsets[1] * this.scale.y) - value[1];
+    var xDiff = (animOffsets[0] * this.scale.x / (this.isPixel ? 6 : 1)) - value[0];
+    var yDiff = (animOffsets[1] * this.scale.y / (this.isPixel ? 6 : 1)) - value[1];
 
     // Call the super function so that camera focus point is not affected.
     super.set_x(this.x + xDiff);
@@ -164,7 +179,7 @@ class BaseCharacter extends Bopper
     {
       this.characterName = _data.name;
       this.name = _data.name;
-      this.singTimeCrochet = _data.singTime;
+      this.singTimeSec = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
     }
@@ -229,7 +244,7 @@ class BaseCharacter extends Bopper
    * Set the sprite scale to the appropriate value.
    * @param scale 
    */
-  function setScale(scale:Null<Float>):Void
+  public function setScale(scale:Null<Float>):Void
   {
     if (scale == null) scale = 1.0;
 
@@ -257,7 +272,7 @@ class BaseCharacter extends Bopper
     super.onCreate(event);
 
     // Make sure we are playing the idle animation...
-    this.dance();
+    this.dance(true);
     // ...then update the hitbox so that this.width and this.height are correct.
     this.updateHitbox();
     // Without the above code, width and height (and therefore character position)
@@ -291,7 +306,9 @@ class BaseCharacter extends Bopper
       if (PlayState.instance.iconP1 == null)
       {
         trace('[WARN] Player 1 health icon not found!');
+        return;
       }
+      PlayState.instance.iconP1.isPixel = _data.healthIcon?.isPixel ?? false;
       PlayState.instance.iconP1.characterId = _data.healthIcon.id;
       PlayState.instance.iconP1.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
       PlayState.instance.iconP1.offset.x = _data.healthIcon.offsets[0];
@@ -303,12 +320,14 @@ class BaseCharacter extends Bopper
       if (PlayState.instance.iconP2 == null)
       {
         trace('[WARN] Player 2 health icon not found!');
+        return;
       }
+      PlayState.instance.iconP2.isPixel = _data.healthIcon?.isPixel ?? false;
       PlayState.instance.iconP2.characterId = _data.healthIcon.id;
       PlayState.instance.iconP2.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
       PlayState.instance.iconP2.offset.x = _data.healthIcon.offsets[0];
       PlayState.instance.iconP2.offset.y = _data.healthIcon.offsets[1];
-      PlayState.instance.iconP1.flipX = _data.healthIcon.flipX;
+      PlayState.instance.iconP2.flipX = _data.healthIcon.flipX;
     }
   }
 
@@ -328,13 +347,16 @@ class BaseCharacter extends Bopper
       return;
     }
 
-    // This logic turns the idle animation into a "lead-in" animation.
-    if (hasAnimation('idle-hold') && getCurrentAnimation() == 'idle' && isAnimationFinished()) playAnimation('idle-hold');
+    // If there is an animation, and another animation with the same name + "-hold" exists,
+    // the second animation will play (and be looped if configured to do so) after the first animation finishes.
+    // This is good for characters that need to hold a pose while maintaining an animation, like the parents (this keeps their eyes flickering)
+    // and Darnell (this keeps the flame on his lighter flickering).
+    // Works for idle, singLEFT/RIGHT/UP/DOWN, alt singing animations, and anything else really.
 
-    if (hasAnimation('singLEFT-hold') && getCurrentAnimation() == 'singLEFT' && isAnimationFinished()) playAnimation('singLEFT-hold');
-    if (hasAnimation('singDOWN-hold') && getCurrentAnimation() == 'singDOWN' && isAnimationFinished()) playAnimation('singDOWN-hold');
-    if (hasAnimation('singUP-hold') && getCurrentAnimation() == 'singUP' && isAnimationFinished()) playAnimation('singUP-hold');
-    if (hasAnimation('singRIGHT-hold') && getCurrentAnimation() == 'singRIGHT' && isAnimationFinished()) playAnimation('singRIGHT-hold');
+    if (!getCurrentAnimation().endsWith('-hold') && hasAnimation(getCurrentAnimation() + '-hold') && isAnimationFinished())
+    {
+      playAnimation(getCurrentAnimation() + '-hold');
+    }
 
     // Handle character note hold time.
     if (getCurrentAnimation().startsWith('sing'))
@@ -345,18 +367,18 @@ class BaseCharacter extends Bopper
       // This lets you add frames to the end of the sing animation to ease back into the idle!
 
       holdTimer += event.elapsed;
-      var singTimeMs:Float = singTimeCrochet * (Conductor.crochet * 0.001); // x beats, to ms.
+      var singTimeSec:Float = singTimeSec * (Conductor.crochet * 0.001); // x beats, to ms.
 
-      if (getCurrentAnimation().endsWith('miss')) singTimeMs *= 2; // makes it feel more awkward when you miss
+      if (getCurrentAnimation().endsWith('miss')) singTimeSec *= 2; // makes it feel more awkward when you miss
 
       // Without this check here, the player character would only play the `sing` animation
       // for one beat, as opposed to holding it as long as the player is holding the button.
       var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
 
-      FlxG.watch.addQuick('singTimeMs-${characterId}', singTimeMs);
-      if (holdTimer > singTimeMs && shouldStopSinging)
+      FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
+      if (holdTimer > singTimeSec && shouldStopSinging)
       {
-        // trace('holdTimer reached ${holdTimer}sec (> ${singTimeMs}), stopping sing animation');
+        // trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
         holdTimer = 0;
         dance(true);
       }
@@ -370,7 +392,7 @@ class BaseCharacter extends Bopper
   }
 
   /**
-   * Since no `onBeatHit` or `dance` calls happen in GameOverSubstate,
+   * Since no `onBeatHit` or `dance` calls happen in GameOverSubState,
    * this regularly gets called instead.
    * 
    * @param force Force the deathLoop animation to play, even if `firstDeath` is still playing.
@@ -386,7 +408,7 @@ class BaseCharacter extends Bopper
   override function dance(force:Bool = false):Void
   {
     // Prevent default dancing behavior.
-    if (debugMode || isDead) return;
+    if (isDead) return;
 
     if (!force)
     {
