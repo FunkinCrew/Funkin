@@ -6,7 +6,7 @@ import flixel.addons.plugin.taskManager.FlxTask;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import funkin.ui.PreferencesMenu.CheckboxThingie;
 
 using Lambda;
@@ -86,8 +86,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
         for (i in 0...group.members.length)
         {
-          var getSliceShit = function(s:Int)
-          {
+          var getSliceShit = function(s:Int) {
             var powShit = FlxMath.remapToRange(s, 0, group.members.length, 0, CoolUtil.coolBaseLog(10, freqShit[0].length));
             return Math.round(Math.pow(10, powShit));
           };

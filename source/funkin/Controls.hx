@@ -46,8 +46,7 @@ enum Control
   #end
 }
 
-@:enum
-abstract Action(String) to String from String
+enum abstract Action(String) to String from String
 {
   var UI_UP = "ui_up";
   var UI_LEFT = "ui_left";

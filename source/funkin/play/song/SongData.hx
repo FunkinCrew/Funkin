@@ -226,7 +226,7 @@ typedef RawSongMetadata =
   var timeFormat:SongTimeFormat;
   var divisions:Int;
   var timeChanges:Array<SongTimeChange>;
-  var loop:Bool;
+  var looped:Bool;
   var playData:SongPlayData;
   var generatedBy:String;
 
@@ -249,7 +249,7 @@ abstract SongMetadata(RawSongMetadata)
         timeFormat: 'ms',
         divisions: 96,
         timeChanges: [new SongTimeChange(-1, 0, 100, 4, 4, [4, 4, 4, 4])],
-        loop: false,
+        looped: false,
         playData:
           {
             songVariations: [],
@@ -277,7 +277,7 @@ abstract SongMetadata(RawSongMetadata)
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
     result.timeChanges = this.timeChanges;
-    result.loop = this.loop;
+    result.looped = this.looped;
     result.playData = this.playData;
     result.generatedBy = this.generatedBy;
 

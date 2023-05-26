@@ -5,7 +5,7 @@ import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.system.debug.stats.StatsGraph;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;

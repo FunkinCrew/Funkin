@@ -1,7 +1,7 @@
 package funkin;
 
 import flixel.FlxSprite;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 
 class TankCutscene extends FlxSprite
 {

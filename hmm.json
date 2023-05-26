@@ -89,7 +89,7 @@
     {
       "name": "json2object",
       "type": "haxelib",
-      "version": null
+      "version": "3.11.0"
     },
     {
       "name": "lime",

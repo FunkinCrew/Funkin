@@ -1,12 +1,14 @@
 package funkin.play;
 
+import funkin.play.song.SongData.SongDataParser;
+import flixel.sound.FlxSound;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import funkin.ui.story.StoryMenuState;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
@@ -18,18 +20,14 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
-import funkin.Highscore.Tallies;
-import funkin.Note;
-import funkin.Section.SwagSection;
-import funkin.SongLoad.SwagSong;
 import funkin.charting.ChartingState;
+import funkin.Highscore.Tallies;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.Strumline.StrumlineArrow;
-import funkin.play.Strumline.StrumlineStyle;
+import funkin.Note;
 import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.character.CharacterData;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.event.SongEvent.SongEventParser;
 import funkin.play.scoring.Scoring;
@@ -40,6 +38,11 @@ import funkin.play.song.SongData.SongPlayableChar;
 import funkin.play.song.SongValidator;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData.StageDataParser;
+import funkin.play.Strumline.StrumlineArrow;
+import funkin.play.Strumline.StrumlineStyle;
+import funkin.Section.SwagSection;
+import funkin.SongLoad.SwagSong;
+import funkin.audio.VoicesGroup;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.stageBuildShit.StageOffsetSubstate;
@@ -360,7 +363,7 @@ class PlayState extends MusicBeatState
     if (currentChart != null)
     {
       currentChart.cacheInst();
-      currentChart.cacheVocals();
+      currentChart.cacheVocals('bf');
     }
     else
     {
@@ -1060,9 +1063,11 @@ class PlayState extends MusicBeatState
 
     currentSong.song = currentSong.song;
 
-    if (currentSong.needsVoices) vocals = VoicesGroup.build(currentSong.song, currentSong.voiceList);
-    else
-      vocals = VoicesGroup.build(currentSong.song, null);
+    vocals = new VoicesGroup();
+    var playerVocals:FlxSound = FlxG.sound.load(Paths.voices(currentSong.song, 'bf'), 1.0, false);
+    vocals.addPlayerVoice(playerVocals);
+    var opponentVocals:FlxSound = FlxG.sound.load(Paths.voices(currentSong.song, 'dad'), 1.0, false);
+    vocals.addOpponentVoice(opponentVocals);
 
     vocals.members[0].onComplete = function() {
       vocalsFinished = true;
@@ -1088,7 +1093,7 @@ class PlayState extends MusicBeatState
 
     // TODO: Fix grouped vocals
     vocals = currentChart.buildVocals();
-    vocals.members[0].onComplete = function() {
+    vocals.onComplete = function() {
       vocalsFinished = true;
     }
 
@@ -1428,6 +1433,8 @@ class PlayState extends MusicBeatState
 
       FlxG.sound.music.volume = 1;
       vocals.volume = 1;
+      vocals.playerVolume = 1;
+      vocals.opponentVolume = 1;
 
       currentStage.resetStage();
 
@@ -1720,7 +1727,7 @@ class PlayState extends MusicBeatState
           else
           {
             // Volume of DAD.
-            if (currentSong != null && currentSong.needsVoices) vocals.volume = 1;
+            if (currentSong != null && currentSong.needsVoices) vocals.opponentVolume = 1;
           }
         }
 
@@ -1904,7 +1911,7 @@ class PlayState extends MusicBeatState
         // if ()
         StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
-        if (currentSong.validScore)
+        if (currentSong?.validScore)
         {
           NGio.unlockMedal(60961);
           Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
@@ -1930,7 +1937,7 @@ class PlayState extends MusicBeatState
         FlxG.sound.music.stop();
         vocals.stop();
 
-        if (currentSong.song.toLowerCase() == 'eggnog')
+        if ((currentSong?.song ?? '').toLowerCase() == 'eggnog')
         {
           var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
             -FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
@@ -1949,7 +1956,7 @@ class PlayState extends MusicBeatState
         {
           previousCameraFollowPoint = cameraFollowPoint;
 
-          currentSong = SongLoad.loadFromJson(storyPlaylist[0].toLowerCase() + difficulty, storyPlaylist[0]);
+          currentSong_NEW = SongDataParser.fetchSong(PlayState.storyPlaylist[0].toLowerCase());
           LoadingState.loadAndSwitchState(new PlayState());
         }
       }
@@ -1993,7 +2000,7 @@ class PlayState extends MusicBeatState
   {
     var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
     // boyfriend.playAnimation('hey');
-    vocals.volume = 1;
+    vocals.playerVolume = 1;
 
     var isSick:Bool = false;
     var score = Scoring.scoreNote(noteDiff, PBOT1);
@@ -2125,7 +2132,6 @@ class PlayState extends MusicBeatState
           // TODO: Un-hardcode this stuff.
           if (currentStage.getDad().characterId == 'mom')
           {
-            vocals.volume = 1;
           }
 
           if (currentSong.song.toLowerCase() == 'tutorial')
@@ -2313,7 +2319,7 @@ class PlayState extends MusicBeatState
 
     if (event.playSound)
     {
-      vocals.volume = 0;
+      vocals.playerVolume = 0;
       FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }
@@ -2368,7 +2374,7 @@ class PlayState extends MusicBeatState
           });
       }
     }
-    vocals.volume = 0;
+    vocals.playerVolume = 0;
 
     if (Highscore.tallies.combo != 0)
     {
@@ -2406,7 +2412,7 @@ class PlayState extends MusicBeatState
       playerStrumline.getArrow(note.data.noteData).playAnimation('confirm', true);
 
       note.wasGoodHit = true;
-      vocals.volume = 1;
+      vocals.playerVolume = 1;
 
       if (!note.isSustainNote)
       {
@@ -2743,15 +2749,10 @@ class PlayState extends MusicBeatState
    * This function is called whenever Flixel switches switching to a new FlxState.
    * @return Whether to actually switch to the new state.
    */
-  override function switchTo(nextState:FlxState):Bool
+  override function startOutro(onComplete:() -> Void):Void
   {
-    var result = super.switchTo(nextState);
+    performCleanup();
 
-    if (result)
-    {
-      performCleanup();
-    }
-
-    return result;
+    onComplete();
   }
 }

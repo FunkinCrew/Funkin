@@ -2,7 +2,7 @@ package funkin.audio.visualize;
 
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
 import funkin.audiovis.VisShit;
 import funkin.graphics.rendering.MeshRender;

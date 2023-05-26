@@ -119,16 +119,21 @@ class SongLoad
     switch (diff)
     {
       case 'easy':
-        speedShit = songData.speed.easy;
+        speedShit = songData?.speed?.easy ?? 1.0;
       case 'normal':
-        speedShit = songData.speed.normal;
+        speedShit = songData?.speed?.normal ?? 1.0;
       case 'hard':
-        speedShit = songData.speed.hard;
+        speedShit = songData?.speed?.hard ?? 1.0;
     }
 
-    if (songData.speedMap[diff] == null) songData.speedMap[diff] = 1;
-
-    speedShit = songData.speedMap[diff];
+    if (songData?.speedMap == null || songData?.speedMap[diff] == null)
+    {
+      speedShit = 1;
+    }
+    else
+    {
+      speedShit = songData.speedMap[diff];
+    }
 
     return speedShit;
   }

@@ -1,7 +1,10 @@
 package funkin.play.song;
 
-import funkin.VoicesGroup;
-import funkin.play.event.SongEvent;
+import flixel.sound.FlxSound;
+import openfl.utils.Assets;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.IScriptedClass;
+import funkin.audio.VoicesGroup;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.play.song.SongData.SongEventData;
@@ -20,7 +23,7 @@ import funkin.play.song.SongData.SongTimeFormat;
  * It also receives script events; scripted classes which extend this class
  * can be used to perform custom gameplay behaviors only on specific songs.
  */
-class Song // implements IPlayStateScriptedClass
+class Song implements IPlayStateScriptedClass
 {
   public final songId:String;
 
@@ -28,6 +31,11 @@ class Song // implements IPlayStateScriptedClass
 
   final variations:Array<String>;
   final difficulties:Map<String, SongDifficulty>;
+
+  /**
+   * Set to false if the song was edited in the charter and should not be saved as a high score.
+   */
+  public var validScore:Bool = true;
 
   var difficultyIds:Array<String>;
 
@@ -62,6 +70,9 @@ class Song // implements IPlayStateScriptedClass
     // Variations may have different artist, time format, generatedBy, etc.
     for (metadata in _metadata)
     {
+      // There may be more difficulties in the chart file than in the metadata,
+      // (i.e. non-playable charts like the one used for Pico on the speaker in Stress)
+      // but all the difficulties in the metadata must be in the chart file.
       for (diffId in metadata.playData.difficulties)
       {
         difficultyIds.push(diffId);
@@ -75,7 +86,7 @@ class Song // implements IPlayStateScriptedClass
         difficulty.timeFormat = metadata.timeFormat;
         difficulty.divisions = metadata.divisions;
         difficulty.timeChanges = metadata.timeChanges;
-        difficulty.loop = metadata.loop;
+        difficulty.looped = metadata.looped;
         difficulty.generatedBy = metadata.generatedBy;
 
         difficulty.stage = metadata.playData.stage;
@@ -116,8 +127,9 @@ class Song // implements IPlayStateScriptedClass
         var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
         if (difficulty == null)
         {
-          trace('Could not find difficulty $diffId for song $songId');
-          continue;
+          trace('Fabricated new difficulty for $diffId.');
+          difficulty = new SongDifficulty(this, diffId, variation);
+          difficulties.set(diffId, difficulty);
         }
         // Add the chart data to the difficulty.
         difficulty.notes = chartData.notes.get(diffId);
@@ -166,6 +178,46 @@ class Song // implements IPlayStateScriptedClass
   {
     return 'Song($songId)';
   }
+
+  public function onPause(event:PauseScriptEvent):Void {};
+
+  public function onResume(event:ScriptEvent):Void {};
+
+  public function onSongLoaded(event:SongLoadScriptEvent):Void {};
+
+  public function onSongStart(event:ScriptEvent):Void {};
+
+  public function onSongEnd(event:ScriptEvent):Void {};
+
+  public function onGameOver(event:ScriptEvent):Void {};
+
+  public function onSongRetry(event:ScriptEvent):Void {};
+
+  public function onNoteHit(event:NoteScriptEvent):Void {};
+
+  public function onNoteMiss(event:NoteScriptEvent):Void {};
+
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {};
+
+  public function onSongEvent(event:SongEventScriptEvent):Void {};
+
+  public function onStepHit(event:SongTimeScriptEvent):Void {};
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void {};
+
+  public function onCountdownStart(event:CountdownScriptEvent):Void {};
+
+  public function onCountdownStep(event:CountdownScriptEvent):Void {};
+
+  public function onCountdownEnd(event:CountdownScriptEvent):Void {};
+
+  public function onScriptEvent(event:ScriptEvent):Void {};
+
+  public function onCreate(event:ScriptEvent):Void {};
+
+  public function onDestroy(event:ScriptEvent):Void {};
+
+  public function onUpdate(event:UpdateScriptEvent):Void {};
 }
 
 class SongDifficulty
@@ -199,7 +251,7 @@ class SongDifficulty
   public var songArtist:String = SongValidator.DEFAULT_ARTIST;
   public var timeFormat:SongTimeFormat = SongValidator.DEFAULT_TIMEFORMAT;
   public var divisions:Int = SongValidator.DEFAULT_DIVISIONS;
-  public var loop:Bool = SongValidator.DEFAULT_LOOP;
+  public var looped:Bool = SongValidator.DEFAULT_LOOPED;
   public var generatedBy:String = SongValidator.DEFAULT_GENERATEDBY;
 
   public var timeChanges:Array<SongTimeChange> = [];
@@ -246,32 +298,112 @@ class SongDifficulty
     return cast events;
   }
 
-  public inline function cacheInst()
+  public inline function cacheInst():Void
   {
     FlxG.sound.cache(Paths.inst(this.song.songId));
   }
 
-  public inline function playInst(volume:Float = 1.0, looped:Bool = false)
+  public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void
   {
-    var suffix:String = variation == null ? null : '-$variation';
+    var suffix:String = (variation ?? '') != '' ? '-$variation' : '';
     FlxG.sound.playMusic(Paths.inst(this.song.songId, suffix), volume, looped);
   }
 
-  public inline function cacheVocals()
+  /**
+   * Cache the vocals for a given character.
+   * @param id The character we are about to play.
+   */
+  public inline function cacheVocals(?id:String = 'bf'):Void
   {
-    FlxG.sound.cache(Paths.voices(this.song.songId));
+    for (voice in buildVoiceList(id))
+    {
+      FlxG.sound.cache(voice);
+    }
   }
 
-  public function buildVoiceList():Array<String>
+  /**
+   * Build a list of vocal files for the given character.
+   * Automatically resolves suffixed character IDs (so bf-car will resolve to bf if needed).
+   * 
+   * @param id The character we are about to play.
+   */
+  public function buildVoiceList(?id:String = 'bf'):Array<String>
   {
-    // TODO: Implement.
+    var playableCharData:SongPlayableChar = getPlayableChar(id);
+    if (playableCharData == null)
+    {
+      trace('Could not find playable char $id for song ${this.song.songId}');
+      return [];
+    }
 
-    return [variation == null ? '' : '-$variation'];
+    var suffix:String = (variation ?? '') != '' ? '-$variation' : '';
+
+    // Automatically resolve voices by removing suffixes.
+    // For example, if `Voices-bf-car.ogg` does not exist, check for `Voices-bf.ogg`.
+
+    var playerId:String = id;
+    var voicePlayer:String = Paths.voices(this.song.songId, '-$id$suffix');
+    while (voicePlayer != null && !Assets.exists(voicePlayer))
+    {
+      // Remove the last suffix.
+      // For example, bf-car becomes bf.
+      playerId = playerId.split('-').slice(0, -1).join('-');
+      // Try again.
+      voicePlayer = playerId == '' ? null : Paths.voices(this.song.songId, '-${playerId}$suffix');
+    }
+
+    var opponentId:String = playableCharData.opponent;
+    var voiceOpponent:String = Paths.voices(this.song.songId, '-${opponentId}$suffix');
+    while (voiceOpponent != null && !Assets.exists(voiceOpponent))
+    {
+      // Remove the last suffix.
+      opponentId = opponentId.split('-').slice(0, -1).join('-');
+      // Try again.
+      voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.songId, '-${opponentId}$suffix');
+    }
+
+    var result:Array<String> = [];
+    if (voicePlayer != null) result.push(voicePlayer);
+    if (voiceOpponent != null) result.push(voiceOpponent);
+    if (voicePlayer == null && voiceOpponent == null)
+    {
+      // Try to use `Voices.ogg` if no other voices are found.
+      if (Assets.exists(Paths.voices(this.song.songId, ''))) result.push(Paths.voices(this.song.songId, '$suffix'));
+    }
+    return result;
   }
 
-  public function buildVocals(charId:String = "bf"):VoicesGroup
+  /**
+   * Create a VoicesGroup, an audio object that can play the vocals for all characters.
+   * @param charId The player ID.
+   * @return The generated vocal group.
+   */
+  public function buildVocals(charId:String = 'bf'):VoicesGroup
   {
-    var result:VoicesGroup = VoicesGroup.build(this.song.songId, this.buildVoiceList());
+    var result:VoicesGroup = new VoicesGroup();
+
+    var voiceList:Array<String> = buildVoiceList(charId);
+
+    if (voiceList.length == 0)
+    {
+      trace('Could not find any voices for song ${this.song.songId}');
+      return result;
+    }
+
+    // Add player vocals.
+    if (voiceList[0] != null) result.addPlayerVoice(new FlxSound().loadEmbedded(Assets.getSound(voiceList[0])));
+    // Add opponent vocals.
+    if (voiceList[1] != null) result.addOpponentVoice(new FlxSound().loadEmbedded(Assets.getSound(voiceList[1])));
+
+    // Add additional vocals.
+    if (voiceList.length > 2)
+    {
+      for (i in 2...voiceList.length)
+      {
+        result.add(new FlxSound().loadEmbedded(Assets.getSound(voiceList[i])));
+      }
+    }
+
     return result;
   }
 }
