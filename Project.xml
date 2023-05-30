@@ -145,8 +145,14 @@
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
-	<!-- TODO: REMOVE THIS!!!! -->
+	<!-- 
+		Hide deprecation warnings until they're fixed.
+		TODO: REMOVE THIS!!!!
+	-->
 	<haxeflag name="-w" value="-WDeprecated" />
+
+	<!-- Haxe 4.3.0+: Enable pretty syntax errors and stuff. -->
+	<haxedef name="message-reporting" value="pretty" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 
