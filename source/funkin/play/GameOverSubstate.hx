@@ -100,8 +100,10 @@ class GameOverSubstate extends MusicBeatSubstate
     add(boyfriend);
     boyfriend.resetCharacter();
 
-    if (animationSuffix == "" && FlxG.random.bool((1 / 4000) * 100))
+    if (boyfriend.characterId == "bf" && animationSuffix == "" && FlxG.random.bool((1 / 4000) * 100))
     {
+      FlxG.sound.play(Paths.sound("fakeout_death"));
+
       var bfFake:FlxAtlasSprite = new FlxAtlasSprite(boyfriend.x - 440, boyfriend.y - 240, Paths.animateAtlas("characters/bfFakeOut", "shared"),);
       add(bfFake);
       bfFake.playAnimation("");
@@ -109,11 +111,17 @@ class GameOverSubstate extends MusicBeatSubstate
         bfFake.visible = false;
         boyfriend.visible = true;
         boyfriend.playAnimation('firstDeath', true, true);
+        // Play the "blue balled" sound. May play a variant if one has been assigned.
+        playBlueBalledSFX();
       };
       boyfriend.visible = false;
     }
     else
+    {
       boyfriend.playAnimation('firstDeath', true, true);
+      // Play the "blue balled" sound. May play a variant if one has been assigned.
+      playBlueBalledSFX();
+    }
 
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
@@ -134,9 +142,6 @@ class GameOverSubstate extends MusicBeatSubstate
 
     // The conductor now represents the BPM of the game over music.
     Conductor.songPosition = 0;
-
-    // Play the "blue balled" sound. May play a variant if one has been assigned.
-    playBlueBalledSFX();
   }
 
   override function update(elapsed:Float)
