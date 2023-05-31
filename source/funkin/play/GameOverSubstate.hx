@@ -1,5 +1,7 @@
 package funkin.play;
 
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.system.FlxSound;
@@ -97,7 +99,21 @@ class GameOverSubstate extends MusicBeatSubstate
     boyfriend.isDead = true;
     add(boyfriend);
     boyfriend.resetCharacter();
-    boyfriend.playAnimation('firstDeath', true, true);
+
+    if (animationSuffix == "" && FlxG.random.bool((1 / 4000) * 100))
+    {
+      var bfFake:FlxAtlasSprite = new FlxAtlasSprite(boyfriend.x - 440, boyfriend.y - 240, Paths.animateAtlas("characters/bfFakeOut", "shared"),);
+      add(bfFake);
+      bfFake.playAnimation("");
+      bfFake.anim.onComplete = () -> {
+        bfFake.visible = false;
+        boyfriend.visible = true;
+        boyfriend.playAnimation('firstDeath', true, true);
+      };
+      boyfriend.visible = false;
+    }
+    else
+      boyfriend.playAnimation('firstDeath', true, true);
 
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
