@@ -50,8 +50,7 @@ class LoadingState extends MusicBeatState
     loadBar.screenCenter(X);
     add(loadBar);
 
-    initSongsManifest().onComplete(function(lib)
-    {
+    initSongsManifest().onComplete(function(lib) {
       callbacks = new MultiCallback(onLoad);
       var introComplete = callbacks.add("introComplete");
       checkLoadSong(getSongPath());
@@ -89,8 +88,7 @@ class LoadingState extends MusicBeatState
       // @:privateAccess
       // library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
       var callback = callbacks.add("song:" + path);
-      Assets.loadSound(path).onComplete(function(_)
-      {
+      Assets.loadSound(path).onComplete(function(_) {
         callback();
       });
     }
@@ -105,8 +103,7 @@ class LoadingState extends MusicBeatState
       if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
 
       var callback = callbacks.add("library:" + library);
-      Assets.loadLibrary(library).onComplete(function(_)
-      {
+      Assets.loadLibrary(library).onComplete(function(_) {
         callback();
       });
     }
@@ -178,19 +175,6 @@ class LoadingState extends MusicBeatState
 
   static function getNextState(target:FlxState, stopMusic = false):FlxState
   {
-    if (PlayState.storyWeek == 0)
-    {
-      Paths.setCurrentLevel('tutorial');
-    }
-    else if (PlayState.storyWeek == 8)
-    {
-      // TODO: Refactor this code.
-      Paths.setCurrentLevel("weekend1");
-    }
-    else
-    {
-      Paths.setCurrentLevel("week" + PlayState.storyWeek);
-    }
     #if NO_PRELOAD_ALL
     var loaded = isSoundLoaded(getSongPath())
       && (!PlayState.currentSong.needsVoices || isSoundLoaded(getVocalPath()))
@@ -259,8 +243,7 @@ class LoadingState extends MusicBeatState
       path = LimeAssets.__cacheBreak(path);
     }
 
-    AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest)
-    {
+    AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest) {
       if (manifest == null)
       {
         promise.error("Cannot parse asset manifest for library \"" + id + "\"");
@@ -280,9 +263,8 @@ class LoadingState extends MusicBeatState
         library.onChange.add(LimeAssets.onChange.dispatch);
         promise.completeWith(Future.withValue(library));
       }
-    }).onError(function(_)
-    {
-        promise.error("There is no asset library with an ID of \"" + id + "\"");
+    }).onError(function(_) {
+      promise.error("There is no asset library with an ID of \"" + id + "\"");
     });
 
     return promise.future;
@@ -311,8 +293,7 @@ class MultiCallback
     length++;
     numRemaining++;
     var func:Void->Void = null;
-    func = function()
-    {
+    func = function() {
       if (unfired.exists(id))
       {
         unfired.remove(id);

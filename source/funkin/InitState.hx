@@ -140,10 +140,10 @@ class InitState extends FlxTransitionableState
       // WEEK UNLOCK PROGRESSION!!
       // StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
 
-      if (StoryMenuState.weekUnlocked.length < 4) StoryMenuState.weekUnlocked.insert(0, true);
+      // if (StoryMenuState.weekUnlocked.length < 4) StoryMenuState.weekUnlocked.insert(0, true);
 
       // QUICK PATCH OOPS!
-      if (!StoryMenuState.weekUnlocked[0]) StoryMenuState.weekUnlocked[0] = true;
+      // if (!StoryMenuState.weekUnlocked[0]) StoryMenuState.weekUnlocked[0] = true;
     }
 
     if (FlxG.save.data.seenVideo != null) VideoState.seenVideo = FlxG.save.data.seenVideo;

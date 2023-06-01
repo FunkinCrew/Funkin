@@ -1909,7 +1909,7 @@ class PlayState extends MusicBeatState
         }
 
         // if ()
-        StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
+        // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
         if (currentSong?.validScore)
         {
@@ -1917,7 +1917,7 @@ class PlayState extends MusicBeatState
           Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
         }
 
-        FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+        // FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
         FlxG.save.flush();
       }
       else
