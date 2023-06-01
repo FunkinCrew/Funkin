@@ -112,8 +112,8 @@ class StoryMenuState extends MusicBeatState
     {
       FlxG.sound.playMusic(Paths.music('freakyMenu'));
       FlxG.sound.music.fadeIn(4, 0, 0.7);
-      Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
     }
+    Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
 
     if (stickerSubState != null)
     {
@@ -479,6 +479,8 @@ class StoryMenuState extends MusicBeatState
 
     PlayState.currentSong = SongLoad.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0].toLowerCase());
     PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.storyPlaylist[0].toLowerCase());
+
+    Paths.setCurrentLevel(currentLevel.id);
 
     // TODO: Fix this.
     PlayState.storyWeek = 0;
