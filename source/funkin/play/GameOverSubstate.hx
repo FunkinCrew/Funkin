@@ -1,6 +1,5 @@
 package funkin.play;
 
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -100,29 +99,6 @@ class GameOverSubstate extends MusicBeatSubstate
     add(boyfriend);
     boyfriend.resetCharacter();
 
-    if (boyfriend.characterId == "bf" && animationSuffix == "" && FlxG.random.bool((1 / 4000) * 100))
-    {
-      FlxG.sound.play(Paths.sound("fakeout_death"));
-
-      var bfFake:FlxAtlasSprite = new FlxAtlasSprite(boyfriend.x - 440, boyfriend.y - 240, Paths.animateAtlas("characters/bfFakeOut", "shared"),);
-      add(bfFake);
-      bfFake.playAnimation("");
-      bfFake.anim.onComplete = () -> {
-        bfFake.visible = false;
-        boyfriend.visible = true;
-        boyfriend.playAnimation('firstDeath', true, true);
-        // Play the "blue balled" sound. May play a variant if one has been assigned.
-        playBlueBalledSFX();
-      };
-      boyfriend.visible = false;
-    }
-    else
-    {
-      boyfriend.playAnimation('firstDeath', true, true);
-      // Play the "blue balled" sound. May play a variant if one has been assigned.
-      playBlueBalledSFX();
-    }
-
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
     cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
@@ -144,9 +120,27 @@ class GameOverSubstate extends MusicBeatSubstate
     Conductor.songPosition = 0;
   }
 
+  var hasStartedAnimation:Bool = false;
+
   override function update(elapsed:Float)
   {
     super.update(elapsed);
+
+    if (!hasStartedAnimation)
+    {
+      hasStartedAnimation = true;
+
+      if (boyfriend.hasAnimation('fakeoutDeath') && (FlxG.random.bool((1 / 4000) * 100) || true))
+      {
+        boyfriend.playAnimation('fakeoutDeath', true, true);
+      }
+      else
+      {
+        boyfriend.playAnimation('firstDeath', true, true);
+        // Play the "blue balled" sound. May play a variant if one has been assigned.
+        playBlueBalledSFX();
+      }
+    }
 
     //
     // Handle user inputs.
@@ -279,7 +273,7 @@ class GameOverSubstate extends MusicBeatSubstate
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
    */
-  function playBlueBalledSFX()
+  public static function playBlueBalledSFX()
   {
     FlxG.sound.play(Paths.sound('fnf_loss_sfx' + blueBallSuffix));
   }
