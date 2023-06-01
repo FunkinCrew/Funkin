@@ -18,7 +18,7 @@ import funkin.ui.PreferencesMenu;
  * 
  * The newest implementation uses a substate, which prevents having to reload the song and stage each reset.
  */
-class GameOverSubstate extends MusicBeatSubstate
+class GameOverSubState extends MusicBeatSubState
 {
   /**
    * Which alternate animation on the character to use.
@@ -91,7 +91,7 @@ class GameOverSubstate extends MusicBeatSubstate
     bg.scrollFactor.set();
     add(bg);
 
-    // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubstate.
+    // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
     // We can then play the character's `firstDeath` animation.
     boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
     boyfriend.isDead = true;
@@ -212,7 +212,7 @@ class GameOverSubstate extends MusicBeatSubstate
       new FlxTimer().start(0.7, function(tmr:FlxTimer) {
         // ...fade out the graphics. Then after that happens...
         FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
-          // ...close the GameOverSubstate.
+          // ...close the GameOverSubState.
           FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           PlayState.needsReset = true;
 
