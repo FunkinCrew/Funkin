@@ -130,7 +130,7 @@ class GameOverSubstate extends MusicBeatSubstate
     {
       hasStartedAnimation = true;
 
-      if (boyfriend.hasAnimation('fakeoutDeath') && (FlxG.random.bool((1 / 4000) * 100)))
+      if (boyfriend.hasAnimation('fakeoutDeath') && (true || FlxG.random.bool((1 / 4000) * 100)))
       {
         boyfriend.playAnimation('fakeoutDeath', true, true);
       }
@@ -160,7 +160,7 @@ class GameOverSubstate extends MusicBeatSubstate
     }
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT)
+    if (controls.ACCEPT && blueballed)
     {
       confirmDeath();
     }
@@ -269,12 +269,15 @@ class GameOverSubstate extends MusicBeatSubstate
     }
   }
 
+  var blueballed:Bool = false;
+
   /**
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
    */
   public static function playBlueBalledSFX()
   {
+    blueballed = true;
     FlxG.sound.play(Paths.sound('fnf_loss_sfx' + blueBallSuffix));
   }
 
