@@ -12,7 +12,7 @@ import flixel.util.FlxColor;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.event.SongEvent.SongEventParser;
+import funkin.play.event.SongEventData.SongEventParser;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.ui.PreferencesMenu;
 import funkin.util.WindowUtil;
