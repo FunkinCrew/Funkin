@@ -34,6 +34,8 @@ import funkin.play.song.SongData.SongDataParser;
 import funkin.shaderslmfao.AngleMask;
 import funkin.shaderslmfao.PureColor;
 import funkin.shaderslmfao.StrokeShader;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
 import lime.app.Future;
 import lime.utils.Assets;
 
@@ -128,19 +130,20 @@ class FreeplayState extends MusicBeatSubState
       if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu'));
     }
 
-    addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
+    if (StoryMenuState.weekUnlocked[2] || isDebug) addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
-    addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster']);
+    if (StoryMenuState.weekUnlocked[2] || isDebug) addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster']);
 
-    addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
+    if (StoryMenuState.weekUnlocked[3] || isDebug) addWeek(['Pico', 'Philly-Nice', 'Blammed'], 3, ['pico']);
 
-    addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
+    if (StoryMenuState.weekUnlocked[4] || isDebug) addWeek(['Satin-Panties', 'High', 'MILF'], 4, ['mom']);
 
-    addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents-christmas', 'parents-christmas', 'monster-christmas']);
+    if (StoryMenuState.weekUnlocked[5] || isDebug) addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5,
+      ['parents-christmas', 'parents-christmas', 'monster-christmas']);
 
-    addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
+    if (StoryMenuState.weekUnlocked[6] || isDebug) addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
 
-    addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
+    if (StoryMenuState.weekUnlocked[7] || isDebug) addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
     addWeek(["Darnell", "lit-up", "2hot", "blazin"], 8, ['darnell']);
 
@@ -850,11 +853,9 @@ class FreeplayState extends MusicBeatSubState
           curDifficulty = 1;
       }*/
 
-      PlayState.currentSong = SongLoad.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-      PlayState.currentSong_NEW = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
-      PlayState.isStoryMode = false;
-      PlayState.storyDifficulty = curDifficulty;
-      PlayState.storyDifficulty_NEW = switch (curDifficulty)
+      PlayStatePlaylist.isStoryMode = false;
+      var targetSong:Song = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
+      var targetDifficulty:String = switch (curDifficulty)
       {
         case 0:
           'easy';
@@ -864,27 +865,41 @@ class FreeplayState extends MusicBeatSubState
           'hard';
         default: 'normal';
       };
-      // SongLoad.curDiff = Highscore.formatSong()
 
-      SongLoad.curDiff = PlayState.storyDifficulty_NEW;
+      // TODO: Implement additional difficulties into the interface properly.
+      if (FlxG.keys.pressed.E)
+      {
+        targetDifficulty = 'erect';
+      }
 
-      PlayState.storyWeek = songs[curSelected].week;
-      // trace(' CUR WEEK ' + PlayState.storyWeek);
+      // TODO: Implement Pico into the interface properly.
+      var targetCharacter:String = 'bf';
+      if (FlxG.keys.pressed.P)
+      {
+        targetCharacter = 'pico';
+      }
+
+      // PlayState.storyWeek = songs[curSelected].week;
 
       // Visual and audio effects.
       FlxG.sound.play(Paths.sound('confirmMenu'));
       dj.confirm();
 
       new FlxTimer().start(1, function(tmr:FlxTimer) {
-        LoadingState.loadAndSwitchState(new PlayState(), true);
+        LoadingState.loadAndSwitchState(new PlayState(
+          {
+            targetSong: targetSong,
+            targetDifficulty: targetDifficulty,
+            targetCharacter: targetCharacter,
+          }), true);
       });
     }
   }
 
-  override function startOutro(onComplete:() -> Void):Void
+  override function switchTo(nextState:FlxState):Bool
   {
     clearDaCache(songs[curSelected].songName);
-    super.startOutro(onComplete);
+    return super.switchTo(nextState);
   }
 
   function changeDiff(change:Int = 0)
@@ -899,19 +914,6 @@ class FreeplayState extends MusicBeatSubState
     // intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
     intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
     intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
-
-    PlayState.storyDifficulty = curDifficulty;
-    PlayState.storyDifficulty_NEW = switch (curDifficulty)
-    {
-      case 0:
-        'easy';
-      case 1:
-        'normal';
-      case 2:
-        'hard';
-      default:
-        'normal';
-    };
 
     grpDifficulties.group.forEach(function(spr) {
       spr.visible = false;
