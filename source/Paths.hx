@@ -21,11 +21,6 @@ class Paths
 		if (library != null)
 			return getLibraryPath(file, library);
 
-		// Check mods folder first
-		var modPath = getModPath(file);
-		if (OpenFlAssets.exists(modPath, type))
-			return modPath;
-
 		if (currentLevel != null)
 		{
 			var levelPath = getLibraryPathForce(file, currentLevel);
@@ -40,15 +35,9 @@ class Paths
 		return getPreloadPath(file);
 	}
 
-
 	static public function getLibraryPath(file:String, library = "preload")
 	{
 		return if (library == "preload" || library == "default") getPreloadPath(file); else getLibraryPathForce(file, library);
-	}
-
-	inline static function getModPath(file:String)
-	{
-		return 'mods/$file';
 	}
 
 	inline static function getLibraryPathForce(file:String, library:String)
