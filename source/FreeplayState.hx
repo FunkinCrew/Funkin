@@ -30,14 +30,15 @@ class FreeplayState extends MusicBeatState
 	var intendedScore:Int = 0;
 
 	var coolColors:Array<Int> = [
-		0xff9271fd,
+		0xffff038e,
 		0xff9271fd,
 		0xff223344,
 		0xFF941653,
 		0xFFfc96d7,
 		0xFFa0d1ff,
 		0xffff78bf,
-		0xfff6b604
+		0xfff6b604,
+		0xff309bff
 	];
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
@@ -58,14 +59,13 @@ class FreeplayState extends MusicBeatState
 
 		#if debug
 		isDebug = true;
-		addSong('Test', 1, 'bf-pixel');
 		#end
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		for (i in 0...initSonglist.length)
 		{
-			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
+			songs.push(new SongMetadata(initSonglist[i], 0, 'gf'));
 		}
 
 		if (FlxG.sound.music != null)
@@ -94,6 +94,11 @@ class FreeplayState extends MusicBeatState
 
 		if (StoryMenuState.weekUnlocked[7] || isDebug)
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
+
+		#if debug
+		addSong('Test', 8, 'bf-pixel');
+		#end
+
 
 		// LOAD MUSIC
 

@@ -464,15 +464,14 @@ class PlayState extends MusicBeatState
 				var posX = 400;
 				var posY = 200;
 
-				var bg:FlxSprite = new FlxSprite(posX, posY);
+				/*var bg:FlxSprite = new FlxSprite(posX, posY);
 				bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
 				bg.animation.addByPrefix('idle', 'background 2', 24);
 				bg.animation.play('idle');
 				bg.scrollFactor.set(0.8, 0.9);
 				bg.scale.set(6, 6);
-				add(bg);
+				add(bg);*/
 
-			/* 
 				var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolBG'));
 				bg.scale.set(6, 6);
 				// bg.setGraphicSize(Std.int(bg.width * 6));
@@ -489,12 +488,10 @@ class PlayState extends MusicBeatState
 				wiggleShit.waveAmplitude = 0.01;
 				wiggleShit.waveFrequency = 60;
 				wiggleShit.waveSpeed = 0.8;
-			 */
 
-			// bg.shader = wiggleShit.shader;
-			// fg.shader = wiggleShit.shader;
+			bg.shader = wiggleShit.shader;
+			fg.shader = wiggleShit.shader;
 
-			/* 
 				var waveSprite = new FlxEffectSprite(bg, [waveEffectBG]);
 				var waveSpriteFG = new FlxEffectSprite(fg, [waveEffectFG]);
 
@@ -514,7 +511,12 @@ class PlayState extends MusicBeatState
 
 				add(waveSprite);
 				add(waveSpriteFG);
-			 */
+
+				waveSprite.x = posX;
+				waveSprite.y = posY;
+
+				waveSpriteFG.x = posX;
+				waveSpriteFG.y = posY;
 
 			case 'guns' | 'stress' | 'ugh':
 				defaultCamZoom = 0.90;
