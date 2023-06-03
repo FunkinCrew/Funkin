@@ -4,6 +4,7 @@ import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
+import sys.FileSystem;
 
 using StringTools;
 
@@ -40,8 +41,15 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
-
+		var rawJson:String;
+		if (FileSystem.exists(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())))
+        {
+			rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
+        }
+        else
+        {
+			rawJson = '{"song": {"song": "' + jsonInput + '","bpm": 100.0,"needsVoices": true,"player1": "bf","player2": "dad","speed": 1.3,"notes": [{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []}]},"generatedBy": "SNIFF ver.6"}';
+        }
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
