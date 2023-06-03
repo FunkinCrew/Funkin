@@ -4,7 +4,6 @@ import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
-import sys.FileSystem;
 
 class Paths
 {
@@ -22,31 +21,34 @@ class Paths
 		if (library != null)
 			return getLibraryPath(file, library);
 
+		// Check mods folder first
+		var modPath = getModPath(file);
+		if (OpenFlAssets.exists(modPath, type))
+			return modPath;
+
 		if (currentLevel != null)
 		{
 			var levelPath = getLibraryPathForce(file, currentLevel);
-			if (OpenFlAssets.exists(levelPath, type) || FileSystem.exists(levelPath))
+			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 
 			levelPath = getLibraryPathForce(file, "shared");
-			if (OpenFlAssets.exists(levelPath, type) || FileSystem.exists(levelPath))
+			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 		}
 
-		var originalPath = getPreloadPath(file);
-		var modsPath = "mods/" + file;
-
-		if (OpenFlAssets.exists(originalPath, type) || FileSystem.exists(originalPath))
-			return originalPath;
-		else if (OpenFlAssets.exists(modsPath, type) || FileSystem.exists(modsPath))
-			return modsPath;
-
-		return null; // File not found in original or mods folder
+		return getPreloadPath(file);
 	}
+
 
 	static public function getLibraryPath(file:String, library = "preload")
 	{
 		return if (library == "preload" || library == "default") getPreloadPath(file); else getLibraryPathForce(file, library);
+	}
+
+	inline static function getModPath(file:String)
+	{
+		return 'mods/$file';
 	}
 
 	inline static function getLibraryPathForce(file:String, library:String)
