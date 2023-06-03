@@ -5,12 +5,12 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 #if cpp
-import polymod.Polymod;
+//import polymod.Polymod;
 import sys.FileSystem;
 #end
 
 class ModMenu extends ui.OptionsState.Page
-{
+{/*
 	var grpMods:FlxTypedGroup<ModMenuItem>;
 	var enabledMods:Array<String> = [];
 	var modFolders:Array<String> = [];
@@ -154,4 +154,4 @@ class ModMenuItem extends FlxText
 
 		super.update(elapsed);
 	}
-}
+*/}
