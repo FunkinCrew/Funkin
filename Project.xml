@@ -98,9 +98,9 @@
 	
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
-	<template path="example_mods" rename="mods" />
+	<!-- <template path="example_mods" rename="mods" /> -->
 
-	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<!-- <assets path='art/readme.txt' rename='do NOT readme.txt' /> -->
 	<!-- <template path='mods' /> -->
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
@@ -124,7 +124,6 @@
 	<haxelib name="flixel-ui" />
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
 	<haxelib name="newgrounds"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 	

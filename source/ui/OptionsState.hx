@@ -181,7 +181,7 @@ class OptionsMenu extends Page
 		createItem("controls", function() switchPage(Controls));
 		// createItem('colors', function() switchPage(Colors));
 		#if cpp
-		createItem('mods', function() switchPage(Mods));
+		//createItem('mods', function() switchPage(Mods));
 		#end
 
 		#if CAN_OPEN_LINKS
