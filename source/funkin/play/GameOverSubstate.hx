@@ -162,12 +162,14 @@ class GameOverSubstate extends MusicBeatSubstate
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
     if (controls.ACCEPT && blueballed)
     {
+      blueballed = false;
       confirmDeath();
     }
 
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
     if (controls.BACK)
     {
+      blueballed = false;
       PlayState.deathCounter = 0;
       PlayState.seenCutscene = false;
       gameOverMusic.stop();
@@ -269,7 +271,7 @@ class GameOverSubstate extends MusicBeatSubstate
     }
   }
 
-  var blueballed:Bool = false;
+  static var blueballed:Bool = false;
 
   /**
    * Play the sound effect that occurs when
