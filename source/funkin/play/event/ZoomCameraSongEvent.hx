@@ -76,8 +76,7 @@ class ZoomCameraSongEvent extends SongEvent
           return;
         }
 
-        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.stepLengthMs * duration / 1000),
-          {ease: easeFunction});
+        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.stepCrochet * duration / 1000), {ease: easeFunction});
     }
   }
 

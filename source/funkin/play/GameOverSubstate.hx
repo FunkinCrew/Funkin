@@ -153,11 +153,9 @@ class GameOverSubState extends MusicBeatSubState
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
     if (controls.BACK)
     {
-      PlayState.deathCounter = 0;
-      PlayState.seenCutscene = false;
       gameOverMusic.stop();
 
-      if (PlayState.isStoryMode) FlxG.switchState(new StoryMenuState());
+      if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
       else
         FlxG.switchState(new FreeplayState());
     }
@@ -171,11 +169,11 @@ class GameOverSubState extends MusicBeatSubState
     else
     {
       // Music hasn't started yet.
-      switch (PlayState.storyWeek)
+      switch (PlayStatePlaylist.campaignId)
       {
         // TODO: Make the behavior for playing Jeff's voicelines generic or un-hardcoded.
         // This will simplify the class and make it easier for mods to add death quotes.
-        case 7:
+        case "week7":
           if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !playingJeffQuote)
           {
             playingJeffQuote = true;
@@ -214,7 +212,7 @@ class GameOverSubState extends MusicBeatSubState
         FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
           // ...close the GameOverSubState.
           FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
-          PlayState.needsReset = true;
+          PlayState.instance.needsReset = true;
 
           // Readd Boyfriend to the stage.
           boyfriend.isDead = false;

@@ -37,7 +37,7 @@ class Countdown
     // Stop any existing countdown.
     stopCountdown();
 
-    PlayState.isInCountdown = true;
+    PlayState.instance.isInCountdown = true;
     Conductor.songPosition = Conductor.crochet * -5;
     // Handle onBeatHit events manually
     @:privateAccess
@@ -46,8 +46,7 @@ class Countdown
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
-    countdownTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
-    {
+    countdownTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer) {
       countdownStep = decrement(countdownStep);
 
       // Handle onBeatHit events manually
@@ -216,8 +215,7 @@ class Countdown
     FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.crochet / 1000,
       {
         ease: FlxEase.cubeInOut,
-        onComplete: function(twn:FlxTween)
-        {
+        onComplete: function(twn:FlxTween) {
           countdownSprite.destroy();
         }
       });

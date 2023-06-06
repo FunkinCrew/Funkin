@@ -1,9 +1,10 @@
 package funkin;
 
+import funkin.play.PlayStatePlaylist;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.sound.FlxSound;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -20,9 +21,9 @@ class PauseSubState extends MusicBeatSubState
     'Restart Song',
     'Change Difficulty',
     'Toggle Practice Mode',
-    'Exit to menu'
+    'Exit to Menu'
   ];
-  var difficultyChoices:Array<String> = ['EASY', 'NORMAL', 'HARD', 'BACK'];
+  var difficultyChoices:Array<String> = ['EASY', 'NORMAL', 'HARD', 'ERECT', 'BACK'];
 
   var menuItems:Array<String> = [];
   var curSelected:Int = 0;
@@ -41,10 +42,14 @@ class PauseSubState extends MusicBeatSubState
 
     menuItems = pauseOG;
 
-    if (PlayState.storyWeek == 6) // consistent with logic that decides asset lib!!
+    if (PlayStatePlaylist.campaignId == 'week6')
+    {
       pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast-pixel'), true, true);
+    }
     else
+    {
       pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+    }
     pauseMusic.volume = 0;
     pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
 
@@ -58,43 +63,38 @@ class PauseSubState extends MusicBeatSubState
     metaDataGrp = new FlxTypedGroup<FlxSprite>();
     add(metaDataGrp);
 
-    var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
+    var levelInfo:FlxText = new FlxText(20, 15, 0, '', 32);
     if (PlayState.instance.currentChart != null)
     {
       levelInfo.text += '${PlayState.instance.currentChart.songName} - ${PlayState.instance.currentChart.songArtist}';
     }
-    else
-    {
-      levelInfo.text += PlayState.currentSong.song;
-    }
     levelInfo.scrollFactor.set();
-    levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
+    levelInfo.setFormat(Paths.font('vcr.ttf'), 32);
     levelInfo.updateHitbox();
     metaDataGrp.add(levelInfo);
 
-    var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
-    levelDifficulty.text += CoolUtil.difficultyString();
+    var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, '', 32);
+    levelDifficulty.text += PlayState.instance.currentDifficulty.toTitleCase();
     levelDifficulty.scrollFactor.set();
     levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
     levelDifficulty.updateHitbox();
     metaDataGrp.add(levelDifficulty);
 
-    var deathCounter:FlxText = new FlxText(20, 15 + 64, 0, "", 32);
-    deathCounter.text = "Blue balled: " + PlayState.deathCounter;
-    deathCounter.text += "\n" + Highscore.tallies.totalNotesHit;
-    deathCounter.text += "\n" + Highscore.tallies.totalNotes;
-    deathCounter.text += "\n" + Std.string(Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes);
+    var deathCounter:FlxText = new FlxText(20, 15 + 64, 0, '', 32);
+    deathCounter.text = 'Blue balled: ${PlayState.instance.deathCounter}';
+    FlxG.watch.addQuick('totalNotesHit', Highscore.tallies.totalNotesHit);
+    FlxG.watch.addQuick('totalNotes', Highscore.tallies.totalNotes);
     deathCounter.scrollFactor.set();
     deathCounter.setFormat(Paths.font('vcr.ttf'), 32);
     deathCounter.updateHitbox();
     metaDataGrp.add(deathCounter);
 
-    practiceText = new FlxText(20, 15 + 64 + 32, 0, "PRACTICE MODE", 32);
+    practiceText = new FlxText(20, 15 + 64 + 32, 0, 'PRACTICE MODE', 32);
     practiceText.scrollFactor.set();
     practiceText.setFormat(Paths.font('vcr.ttf'), 32);
     practiceText.updateHitbox();
     practiceText.x = FlxG.width - (practiceText.width + 20);
-    practiceText.visible = PlayState.isPracticeMode;
+    practiceText.visible = PlayState.instance.isPracticeMode;
     metaDataGrp.add(practiceText);
 
     levelDifficulty.alpha = 0;
@@ -137,7 +137,7 @@ class PauseSubState extends MusicBeatSubState
     changeSelection();
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     if (pauseMusic.volume < 0.5) pauseMusic.volume += 0.01 * elapsed;
 
@@ -180,41 +180,39 @@ class PauseSubState extends MusicBeatSubState
       {
         var daSelected:String = menuItems[curSelected];
 
+        // TODO: Why is this based on the menu item's name? Make this an enum or something.
         switch (daSelected)
         {
-          case "Resume":
+          case 'Resume':
             close();
-          case "EASY" | 'NORMAL' | "HARD":
-            PlayState.currentSong = SongLoad.loadFromJson(PlayState.currentSong.song.toLowerCase(), PlayState.currentSong.song.toLowerCase());
-            PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.currentSong.song.toLowerCase());
-            SongLoad.curDiff = daSelected.toLowerCase();
-
-            PlayState.storyDifficulty = curSelected;
-            PlayState.storyDifficulty_NEW = daSelected.toLowerCase();
-
-            PlayState.needsReset = true;
-
-            close();
-
-          case 'Toggle Practice Mode':
-            PlayState.isPracticeMode = !PlayState.isPracticeMode;
-            practiceText.visible = PlayState.isPracticeMode;
 
           case 'Change Difficulty':
             menuItems = difficultyChoices;
             regenMenu();
+
+          case 'EASY' | 'NORMAL' | 'HARD' | 'ERECT':
+            PlayState.instance.currentSong = SongDataParser.fetchSong(PlayState.instance.currentSong.songId.toLowerCase());
+
+            PlayState.instance.currentDifficulty = daSelected.toLowerCase();
+
+            PlayState.instance.needsReset = true;
+
+            close();
           case 'BACK':
             menuItems = pauseOG;
             regenMenu();
-          case "Restart Song":
-            PlayState.needsReset = true;
 
+          case 'Toggle Practice Mode':
+            PlayState.instance.isPracticeMode = true;
+            practiceText.visible = PlayState.instance.isPracticeMode;
+
+          case 'Restart Song':
+            PlayState.instance.needsReset = true;
             close();
-          // FlxG.resetState();
-          case "Exit to menu":
+
+          case 'Exit to Menu':
             exitingToMenu = true;
-            PlayState.seenCutscene = false;
-            PlayState.deathCounter = 0;
+            PlayState.instance.deathCounter = 0;
 
             for (item in grpMenuShit.members)
             {
@@ -225,7 +223,7 @@ class PauseSubState extends MusicBeatSubState
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
 
-            if (PlayState.isStoryMode) openSubState(new funkin.ui.StickerSubState(null, STORY));
+            if (PlayStatePlaylist.isStoryMode) openSubState(new funkin.ui.StickerSubState(null, STORY));
             else
               openSubState(new funkin.ui.StickerSubState());
         }
@@ -239,7 +237,7 @@ class PauseSubState extends MusicBeatSubState
     }
   }
 
-  override function destroy()
+  override function destroy():Void
   {
     pauseMusic.destroy();
 
@@ -260,12 +258,10 @@ class PauseSubState extends MusicBeatSubState
       item.targetY = index - curSelected;
 
       item.alpha = 0.6;
-      // item.setGraphicSize(Std.int(item.width * 0.8));
 
       if (item.targetY == 0)
       {
         item.alpha = 1;
-        // item.setGraphicSize(Std.int(item.width));
       }
     }
   }

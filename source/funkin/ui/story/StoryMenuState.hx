@@ -13,6 +13,8 @@ import funkin.data.level.LevelRegistry;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.util.Constants;
 
@@ -474,26 +476,25 @@ class StoryMenuState extends MusicBeatState
       prop.playConfirm();
     }
 
-    PlayState.storyPlaylist = currentLevel.getSongs();
-    PlayState.isStoryMode = true;
-
-    PlayState.currentSong = SongLoad.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0].toLowerCase());
-    PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.storyPlaylist[0].toLowerCase());
-
     Paths.setCurrentLevel(currentLevel.id);
 
-    // TODO: Fix this.
-    PlayState.storyWeek = 0;
-    PlayState.campaignScore = 0;
+    PlayStatePlaylist.playlistSongIds = currentLevel.getSongs();
+    PlayStatePlaylist.isStoryMode = true;
+    PlayStatePlaylist.campaignScore = 0;
 
-    // TODO: Fix this.
-    PlayState.storyDifficulty = 0;
-    PlayState.storyDifficulty_NEW = currentDifficultyId;
+    var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    SongLoad.curDiff = PlayState.storyDifficulty_NEW;
+    var targetSong:Song = SongDataParser.fetchSong(targetSongId);
+
+    PlayStatePlaylist.campaignId = currentLevel.id;
+    PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
-      LoadingState.loadAndSwitchState(new PlayState(), true);
+      LoadingState.loadAndSwitchState(new PlayState(
+        {
+          targetSong: targetSong,
+          targetDifficulty: currentDifficultyId,
+        }), true);
     });
   }
 

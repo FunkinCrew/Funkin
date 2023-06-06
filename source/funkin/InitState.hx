@@ -237,20 +237,18 @@ class InitState extends FlxTransitionableState
   {
     var dif:Int = getDif();
 
-    PlayState.currentSong = SongLoad.loadFromJson(song, song);
-    PlayState.currentSong_NEW = SongDataParser.fetchSong(song);
-    PlayState.isStoryMode = isStoryMode;
-    PlayState.storyDifficulty = dif;
-    PlayState.storyDifficulty_NEW = switch (dif)
+    var targetDifficulty = switch (dif)
     {
       case 0: 'easy';
       case 1: 'normal';
       case 2: 'hard';
       default: 'normal';
     };
-    SongLoad.curDiff = PlayState.storyDifficulty_NEW;
-    PlayState.storyWeek = week;
-    LoadingState.loadAndSwitchState(new PlayState());
+    LoadingState.loadAndSwitchState(new PlayState(
+      {
+        targetSong: SongDataParser.fetchSong(song),
+        targetDifficulty: targetDifficulty,
+      }));
   }
 }
 
