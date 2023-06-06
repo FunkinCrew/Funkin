@@ -48,7 +48,7 @@ class Song
         }
         else
         {
-			rawJson = '{"song": {"song": "' + jsonInput + '","bpm": 100.0,"needsVoices": true,"player1": "bf","player2": "dad","speed": 1.3,"notes": [{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []}]},"generatedBy": "SNIFF ver.6"}';
+			rawJson = '{"song": {"song": "' + folder + '","bpm": 100.0,"needsVoices": true,"player1": "bf","player2": "dad","speed": 1.3,"notes": [{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []},{"lengthInSteps": 16,"mustHitSection": false,"sectionNotes": []}]},"generatedBy": "SNIFF ver.6"}';
         }
 		while (!rawJson.endsWith("}"))
 		{
