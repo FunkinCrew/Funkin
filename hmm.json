@@ -65,10 +65,10 @@
       "version": "2.5.0"
     },
     {
-      "name": "hxcodec",
+      "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "14ef69f",
+      "ref": "166ff82",
       "url": "https://github.com/polybiusproxy/hxCodec"
     },
     {

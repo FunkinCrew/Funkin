@@ -92,14 +92,14 @@ class VideoCutscene
     if (vid != null)
     {
       vid.zIndex = 0;
-      vid.onEndReached.add(finishVideo.bind(0.5));
+      vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
 
       vid.cameras = [PlayState.instance.camCutscene];
 
       PlayState.instance.add(vid);
 
       PlayState.instance.refresh();
-      vid.playVideo(filePath, false);
+      vid.play(filePath, false);
     }
     else
     {
