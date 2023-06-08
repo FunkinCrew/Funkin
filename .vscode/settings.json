@@ -31,7 +31,7 @@
   "xml.format.legacy": false,
   "xml.format.emptyElements": "collapse",
   "xml.preferences.quoteStyle": "double",
-  "xml.format.enforceQuoteStyle": "preferred",
+  "xml.format.enforceQuoteStyle": "preferred",l
   "xml.format.preserveAttributeLineBreaks": false,
   "xml.format.preservedNewlines": 0,
   "xml.format.splitAttributes": false,
