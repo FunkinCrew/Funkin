@@ -484,7 +484,7 @@ class ChartingState extends MusicBeatState
     // general shit
     var title:FlxText = new FlxText(UI_box.x + 20, UI_box.y + 20, 0);
     bullshitUI.add(title);
-    /* 
+    /*
       var loopCheck = new FlxUICheckBox(UI_box.x + 10, UI_box.y + 50, null, null, "Loops", 100, ['loop check']);
       loopCheck.checked = notes[0]elected.doesLoop;
       tooltips.add(loopCheck, {title: 'Section looping', body: "Whether or not it's a simon says style section", style: tooltipType});
@@ -561,7 +561,7 @@ class ChartingState extends MusicBeatState
   }*/
   /**
    * Gets the start time of section, defaults to the curSection
-   * @param section 
+   * @param section
    * @return position of the song in... either seconds or milliseconds.... woops
    */
   function sectionStartTime(?funnySection:Int):Float
@@ -1156,7 +1156,7 @@ class ChartingState extends MusicBeatState
     {
       sidePreview.drawRect(0, 0, 40, FlxG.height, 0xFF444444);
 
-      /* 
+      /*
         var sectionsNeeded:Int = Std.int(FlxG.sound.music.length / (sectionCalc(_song.bpm) * 4));
 
           while (sectionsNeeded > 0)

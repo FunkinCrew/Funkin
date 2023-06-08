@@ -34,8 +34,7 @@ class NoteSplash extends FlxSprite
 
     animation.play('note' + noteData + '-' + FlxG.random.int(0, 1), true);
     animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2);
-    animation.finishCallback = function(name)
-    {
+    animation.finishCallback = function(name) {
       kill();
     };
     updateHitbox();

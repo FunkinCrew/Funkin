@@ -119,14 +119,12 @@ class CharacterPlayer extends Box
     character.scale.x *= _scale;
     character.scale.y *= _scale;
 
-    character.animation.callback = function(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1)
-    {
+    character.animation.callback = function(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1) {
       @:privateAccess
       character.onAnimationFrame(name, frameNumber, frameIndex);
       dispatch(new AnimationEvent(AnimationEvent.FRAME));
     };
-    character.animation.finishCallback = function(name:String = "")
-    {
+    character.animation.finishCallback = function(name:String = "") {
       @:privateAccess
       character.onAnimationFinished(name);
       dispatch(new AnimationEvent(AnimationEvent.END));

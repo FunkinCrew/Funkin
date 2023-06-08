@@ -8,7 +8,7 @@ import funkin.play.character.CharacterData.CharacterRenderType;
 /**
  * A SparrowCharacter is a Character which is rendered by
  * displaying an animation derived from a SparrowV2 atlas spritesheet file.
- * 
+ *
  * BaseCharacter has game logic, SparrowCharacter has only rendering logic.
  * KEEP THEM SEPARATE!
  */

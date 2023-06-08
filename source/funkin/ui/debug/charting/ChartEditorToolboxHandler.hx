@@ -133,8 +133,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 50;
     toolbox.y = 50;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxTools', false);
     }
 
@@ -142,8 +141,7 @@ class ChartEditorToolboxHandler
 
     if (toolsGroup == null) return null;
 
-    toolsGroup.onChange = (event:UIEvent) ->
-    {
+    toolsGroup.onChange = (event:UIEvent) -> {
       switch (event.target.id)
       {
         case 'toolboxToolsGroupSelect':
@@ -168,8 +166,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 75;
     toolbox.y = 100;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxNotes', false);
     }
 
@@ -177,8 +174,7 @@ class ChartEditorToolboxHandler
     var toolboxNotesCustomKindLabel:Label = toolbox.findComponent("toolboxNotesCustomKindLabel", Label);
     var toolboxNotesCustomKind:TextField = toolbox.findComponent("toolboxNotesCustomKind", TextField);
 
-    toolboxNotesNoteKind.onChange = (event:UIEvent) ->
-    {
+    toolboxNotesNoteKind.onChange = (event:UIEvent) -> {
       var isCustom = (event.data.id == '~CUSTOM~');
 
       if (isCustom)
@@ -197,8 +193,7 @@ class ChartEditorToolboxHandler
       }
     }
 
-    toolboxNotesCustomKind.onChange = (event:UIEvent) ->
-    {
+    toolboxNotesCustomKind.onChange = (event:UIEvent) -> {
       state.selectedNoteKind = toolboxNotesCustomKind.text;
     }
 
@@ -215,8 +210,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 100;
     toolbox.y = 150;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxEvents', false);
     }
 
@@ -232,8 +226,7 @@ class ChartEditorToolboxHandler
       toolboxEventsEventKind.dataSource.add({text: event.getTitle(), value: event.id});
     }
 
-    toolboxEventsEventKind.onChange = (event:UIEvent) ->
-    {
+    toolboxEventsEventKind.onChange = (event:UIEvent) -> {
       var eventType:String = event.data.value;
 
       trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event type changed: $eventType');
@@ -320,8 +313,7 @@ class ChartEditorToolboxHandler
 
       target.addComponent(input);
 
-      input.onChange = (event:UIEvent) ->
-      {
+      input.onChange = (event:UIEvent) -> {
         trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${event.target.value}');
 
         if (event.target.value == null) state.selectedEventData.remove(event.target.id);
@@ -341,8 +333,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 125;
     toolbox.y = 200;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxDifficulty', false);
     }
 
@@ -352,35 +343,28 @@ class ChartEditorToolboxHandler
     var difficultyToolboxLoadMetadata:Button = toolbox.findComponent("difficultyToolboxLoadMetadata", Button);
     var difficultyToolboxLoadChart:Button = toolbox.findComponent("difficultyToolboxLoadChart", Button);
 
-    difficultyToolboxSaveMetadata.onClick = (event:UIEvent) ->
-    {
+    difficultyToolboxSaveMetadata.onClick = (event:UIEvent) -> {
       SongSerializer.exportSongMetadata(state.currentSongMetadata);
     };
 
-    difficultyToolboxSaveChart.onClick = (event:UIEvent) ->
-    {
+    difficultyToolboxSaveChart.onClick = (event:UIEvent) -> {
       SongSerializer.exportSongChartData(state.currentSongChartData);
     };
 
-    difficultyToolboxSaveAll.onClick = (event:UIEvent) ->
-    {
+    difficultyToolboxSaveAll.onClick = (event:UIEvent) -> {
       state.exportAllSongData();
     };
 
-    difficultyToolboxLoadMetadata.onClick = (event:UIEvent) ->
-    {
+    difficultyToolboxLoadMetadata.onClick = (event:UIEvent) -> {
       // Replace metadata for current variation.
-      SongSerializer.importSongMetadataAsync(function(songMetadata)
-      {
+      SongSerializer.importSongMetadataAsync(function(songMetadata) {
         state.currentSongMetadata = songMetadata;
       });
     };
 
-    difficultyToolboxLoadChart.onClick = (event:UIEvent) ->
-    {
+    difficultyToolboxLoadChart.onClick = (event:UIEvent) -> {
       // Replace chart data for current variation.
-      SongSerializer.importSongChartDataAsync(function(songChartData)
-      {
+      SongSerializer.importSongChartDataAsync(function(songChartData) {
         state.currentSongChartData = songChartData;
         state.noteDisplayDirty = true;
       });
@@ -401,14 +385,12 @@ class ChartEditorToolboxHandler
     toolbox.x = 150;
     toolbox.y = 250;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxMetadata', false);
     }
 
     var inputSongName:TextField = toolbox.findComponent('inputSongName', TextField);
-    inputSongName.onChange = (event:UIEvent) ->
-    {
+    inputSongName.onChange = (event:UIEvent) -> {
       var valid = event.target.text != null && event.target.text != "";
 
       if (valid)
@@ -423,8 +405,7 @@ class ChartEditorToolboxHandler
     };
 
     var inputSongArtist:TextField = toolbox.findComponent('inputSongArtist', TextField);
-    inputSongArtist.onChange = (event:UIEvent) ->
-    {
+    inputSongArtist.onChange = (event:UIEvent) -> {
       var valid = event.target.text != null && event.target.text != "";
 
       if (valid)
@@ -439,8 +420,7 @@ class ChartEditorToolboxHandler
     };
 
     var inputStage:DropDown = toolbox.findComponent('inputStage', DropDown);
-    inputStage.onChange = (event:UIEvent) ->
-    {
+    inputStage.onChange = (event:UIEvent) -> {
       var valid = event.data != null && event.data.id != null;
 
       if (valid)
@@ -450,15 +430,13 @@ class ChartEditorToolboxHandler
     };
 
     var inputNoteSkin:DropDown = toolbox.findComponent('inputNoteSkin', DropDown);
-    inputNoteSkin.onChange = (event:UIEvent) ->
-    {
+    inputNoteSkin.onChange = (event:UIEvent) -> {
       if (event.data.id == null) return;
       state.currentSongMetadata.playData.noteSkin = event.data.id;
     };
 
     var inputBPM:NumberStepper = toolbox.findComponent('inputBPM', NumberStepper);
-    inputBPM.onChange = (event:UIEvent) ->
-    {
+    inputBPM.onChange = (event:UIEvent) -> {
       if (event.value == null || event.value <= 0) return;
 
       var timeChanges = state.currentSongMetadata.timeChanges;
@@ -477,8 +455,7 @@ class ChartEditorToolboxHandler
     };
 
     var inputScrollSpeed:Slider = toolbox.findComponent('inputScrollSpeed', Slider);
-    inputScrollSpeed.onChange = (event:UIEvent) ->
-    {
+    inputScrollSpeed.onChange = (event:UIEvent) -> {
       var valid = event.target.value != null && event.target.value > 0;
 
       if (valid)
@@ -505,8 +482,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 175;
     toolbox.y = 300;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxCharacters', false);
     }
 
@@ -523,8 +499,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 200;
     toolbox.y = 350;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxPlayerPreview', false);
     }
 
@@ -548,8 +523,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 200;
     toolbox.y = 350;
 
-    toolbox.onDialogClosed = (event:DialogEvent) ->
-    {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxOpponentPreview', false);
     }
 

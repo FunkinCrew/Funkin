@@ -16,7 +16,7 @@ class ModuleHandler
 
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
-   * 
+   *
    * If you want to force stages to be reloaded, you can just call this function again.
    */
   public static function loadModuleCache():Void
@@ -66,8 +66,7 @@ class ModuleHandler
   {
     modulePriorityOrder = moduleCache.keys().array();
 
-    modulePriorityOrder.sort(function(a:String, b:String):Int
-    {
+    modulePriorityOrder.sort(function(a:String, b:String):Int {
       var aModule:Module = moduleCache.get(a);
       var bModule:Module = moduleCache.get(b);
 

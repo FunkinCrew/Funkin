@@ -4,7 +4,7 @@ import funkin.modding.events.ScriptEvent;
 
 /**
  * Defines a set of callbacks available to all scripted classes.
- * 
+ *
  * Includes events handling basic life cycle relevant to all scripted classes.
  */
 interface IScriptedClass
@@ -53,7 +53,7 @@ interface INoteScriptedClass extends IScriptedClass
 
 /**
  * Developer note:
- * 
+ *
  * I previously considered adding events for onKeyDown, onKeyUp, mouse events, etc.
  * However, I realized that you can simply call something like the following within a module:
  * `FlxG.state.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);`

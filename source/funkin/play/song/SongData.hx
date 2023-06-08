@@ -24,7 +24,7 @@ class SongDataParser
 
   /**
    * Parses and preloads the game's song metadata and scripts when the game starts.
-   * 
+   *
    * If you want to force song metadata to be reloaded, you can just call this function again.
    */
   public static function loadSongCache():Void
@@ -217,7 +217,7 @@ typedef RawSongMetadata =
 {
   /**
    * A semantic versioning string for the song data format.
-   * 
+   *
    */
   var version:Version;
 
@@ -414,7 +414,7 @@ abstract SongNoteData(RawSongNoteData)
   /**
    * The strumline index of the note, if applicable.
    * Strips the direction from the data.
-   * 
+   *
    * 0 = player, 1 = opponent, etc.
    */
   public inline function getStrumlineIndex(strumlineSize:Int = 4):Int

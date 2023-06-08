@@ -33,7 +33,7 @@ class CharacterDataParser
 
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
-   * 
+   *
    * If you want to force stages to be reloaded, you can just call this function again.
    */
   public static function loadCharacterCache():Void
@@ -294,7 +294,7 @@ class CharacterDataParser
 
   /**
    * Load a character's JSON file and parse its data.
-   * 
+   *
    * @param charId The character to load.
    * @return The character data, or null if validation failed.
    */
@@ -363,8 +363,8 @@ class CharacterDataParser
   /**
    * Set unspecified parameters to their defaults.
    * If the parameter is mandatory, print an error message.
-   * @param id 
-   * @param input 
+   * @param id
+   * @param input
    * @return The validated character data
    */
   static function validateCharacterData(id:String, input:CharacterData):Null<CharacterData>
@@ -624,7 +624,7 @@ typedef CharacterData =
   /**
    * The frequency at which the character will play its idle animation, in beats.
    * Increasing this number will make the character dance less often.
-   * 
+   *
    * @default 1
    */
   var danceEvery:Null<Int>;
@@ -633,7 +633,7 @@ typedef CharacterData =
    * The minimum duration that a character will play a note animation for, in beats.
    * If this number is too low, you may see the character start playing the idle animation between notes.
    * If this number is too high, you may see the the character play the sing animation for too long after the notes are gone.
-   * 
+   *
    * Examples:
    * - Daddy Dearest uses a value of `1.525`.
    * @default 1.0
@@ -654,7 +654,7 @@ typedef CharacterData =
   /**
    * Whether or not the whole ass sprite is flipped by default.
    * Useful for characters that could also be played (Pico)
-   * 
+   *
    * @default false
    */
   var flipX:Null<Bool>;

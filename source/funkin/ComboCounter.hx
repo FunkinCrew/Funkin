@@ -27,8 +27,7 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
     effectStuff.animation.addByPrefix('funny', 'NOTE COMBO animation', 24, false);
     effectStuff.animation.play('funny');
     effectStuff.antialiasing = true;
-    effectStuff.animation.finishCallback = function(nameThing)
-    {
+    effectStuff.animation.finishCallback = function(nameThing) {
       kill();
     };
     effectStuff.setGraphicSize(Std.int(effectStuff.width * 0.7));
@@ -42,8 +41,7 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
   {
     if (onScreenTime < 0.9)
     {
-      new FlxTimer().start((Conductor.crochet / 1000) * 0.25, function(tmr)
-      {
+      new FlxTimer().start((Conductor.crochet / 1000) * 0.25, function(tmr) {
         forceFinish();
       });
     }
@@ -64,16 +62,14 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     if (effectStuff.animation.curAnim.curFrame == 18)
     {
-      grpNumbers.forEach(function(spr:ComboNumber)
-      {
+      grpNumbers.forEach(function(spr:ComboNumber) {
         spr.animation.reset();
       });
     }
 
     if (effectStuff.animation.curAnim.curFrame == 20)
     {
-      grpNumbers.forEach(function(spr:ComboNumber)
-      {
+      grpNumbers.forEach(function(spr:ComboNumber) {
         spr.kill();
       });
     }

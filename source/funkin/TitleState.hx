@@ -53,7 +53,7 @@ class TitleState extends MusicBeatState
 
     super.create();
 
-    /* 
+    /*
           #elseif web
 
 
@@ -84,8 +84,7 @@ class TitleState extends MusicBeatState
      */
 
     // netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-    new FlxTimer().start(1, function(tmr:FlxTimer)
-    {
+    new FlxTimer().start(1, function(tmr:FlxTimer) {
       startIntro();
     });
   }
@@ -284,7 +283,7 @@ class TitleState extends MusicBeatState
       FlxTween.tween(FlxG.stage.window, {y: FlxG.stage.window.y + 100}, 0.7, {ease: FlxEase.quadInOut, type: PINGPONG});
     }
 
-    /* 
+    /*
           FlxG.watch.addQuick('cur display', FlxG.stage.window.display.id);
           if (FlxG.keys.justPressed.Y)
           {
@@ -373,8 +372,7 @@ class TitleState extends MusicBeatState
       #if newgrounds
       if (!OutdatedSubState.leftState)
       {
-        NGio.checkVersion(function(version)
-        {
+        NGio.checkVersion(function(version) {
           // Check if version is outdated
           var localVersion:String = "v" + Application.current.meta.get('version');
           var onlineVersion = version.split(" ")[0].trim();
@@ -391,8 +389,7 @@ class TitleState extends MusicBeatState
         });
       }
       #end
-      new FlxTimer().start(2, function(tmr:FlxTimer)
-      {
+      new FlxTimer().start(2, function(tmr:FlxTimer) {
         // These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory
         // Saves about 50mb of RAM or so???
         Assets.cache.clear(Paths.image('gfDanceTitle'));
@@ -404,7 +401,7 @@ class TitleState extends MusicBeatState
       // FlxG.sound.play(Paths.music('titleShoot'), 0.7);
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
-    /* 
+    /*
           #if web
           if (!initialized && controls.ACCEPT)
           {

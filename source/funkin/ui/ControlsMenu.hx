@@ -121,8 +121,7 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
     var margin = 100;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     menuCamera.minScrollY = 0;
-    controlGrid.onChange.add(function(selected)
-    {
+    controlGrid.onChange.add(function(selected) {
       camFollow.y = selected.y;
 
       labels.forEach((label) -> label.alpha = 0.6);

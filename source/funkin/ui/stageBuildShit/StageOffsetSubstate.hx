@@ -23,7 +23,7 @@ import openfl.net.FileReference;
  * Built with HaxeUI for use by both developers and modders.
  *
  * All functionality is kept within this file to ruin my own sanity.
- * 
+ *
  * @author ninjamuffin99
  */
 // Give other classes access to private instance fields

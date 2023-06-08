@@ -26,7 +26,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * Whether the bopper should dance left and right.
    * - If true, alternate playing `danceLeft` and `danceRight`.
    * - If false, play `idle` every time.
-   * 
+   *
    * You can manually set this value, or you can leave it as `null` to determine it automatically.
    */
   public var shouldAlternate:Null<Bool> = null;
@@ -139,7 +139,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * @param name The name of the current animation.
    * @param frameNumber The number of the current frame.
    * @param frameIndex The index of the current frame.
-   * 
+   *
    * For example, if an animation was defined as having the indexes [3, 0, 1, 2],
    * then the first callback would have frameNumber = 0 and frameIndex = 3.
    */
@@ -223,7 +223,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   /**
    * Ensure that a given animation exists before playing it.
    * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
-   * @param name 
+   * @param name
    */
   function correctAnimationName(name:String):String
   {

@@ -9,7 +9,7 @@ import funkin.play.stage.Bopper;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
- * 
+ *
  * Remember: The character's origin is at its FEET. (horizontal center, vertical bottom)
  */
 class BaseCharacter extends Bopper
@@ -43,7 +43,7 @@ class BaseCharacter extends Bopper
   /**
    * Set to true when the character being used in a special way.
    * This includes the Chart Editor and the Animation Editor.
-   * 
+   *
    * Used by scripts to ensure that they don't try to run code to interact with the stage when the stage doesn't actually exist.
    */
   public var debug:Bool = false;
@@ -76,7 +76,7 @@ class BaseCharacter extends Bopper
 
   /**
    * The absolute position of the top-left of the character.
-   * @return 
+   * @return
    */
   public var cornerPosition(get, set):FlxPoint;
 
@@ -112,7 +112,7 @@ class BaseCharacter extends Bopper
   /**
    * Returns the point the camera should focus on.
    * Should be approximately centered on the character, and should not move based on the current animation.
-   * 
+   *
    * Set the position of this rather than reassigning it, so that anything referencing it will not be affected.
    */
   public var cameraFocusPoint(default, null):FlxPoint = new FlxPoint(0, 0);
@@ -242,7 +242,7 @@ class BaseCharacter extends Bopper
 
   /**
    * Set the sprite scale to the appropriate value.
-   * @param scale 
+   * @param scale
    */
   public function setScale(scale:Null<Float>):Void
   {
@@ -394,7 +394,7 @@ class BaseCharacter extends Bopper
   /**
    * Since no `onBeatHit` or `dance` calls happen in GameOverSubState,
    * this regularly gets called instead.
-   * 
+   *
    * @param force Force the deathLoop animation to play, even if `firstDeath` is still playing.
    */
   public function playDeathAnimation(force:Bool = false):Void
