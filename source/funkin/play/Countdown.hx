@@ -101,7 +101,7 @@ class Countdown
 
   /**
    * Pauses the countdown at the current step. You can start it up again later by calling resumeCountdown().
-   * 
+   *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
    */
   public static function pauseCountdown()
@@ -114,7 +114,7 @@ class Countdown
 
   /**
    * Resumes the countdown at the current step. Only makes sense if you called pauseCountdown() first.
-   * 
+   *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
    */
   public static function resumeCountdown()
@@ -127,7 +127,7 @@ class Countdown
 
   /**
    * Stops the countdown at the current step. You will have to restart it again later.
-   * 
+   *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStart event.
    */
   public static function stopCountdown()
@@ -165,7 +165,7 @@ class Countdown
   /**
    * Retrieves the graphic to use for this step of the countdown.
    * TODO: Make this less dumb. Unhardcode it? Use modules? Use notestyles?
-   * 
+   *
    * This is public so modules can do lol funny shit.
    */
   public static function showCountdownGraphic(index:CountdownStep, isPixelStyle:Bool):Void
@@ -226,7 +226,7 @@ class Countdown
   /**
    * Retrieves the sound file to use for this step of the countdown.
    * TODO: Make this less dumb. Unhardcode it? Use modules? Use notestyles?
-   * 
+   *
    * This is public so modules can do lol funny shit.
    */
   public static function playCountdownSound(index:CountdownStep, isPixelStyle:Bool):Void

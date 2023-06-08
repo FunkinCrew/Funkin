@@ -24,7 +24,7 @@ class SerializerUtil
   }
 
   /**
-   * Convert a JSON string to a Haxe object of the chosen type.		
+   * Convert a JSON string to a Haxe object of the chosen type.
    */
   public static function fromJSONTyped<T>(input:String, type:Class<T>):T
   {

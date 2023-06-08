@@ -50,7 +50,7 @@ class TitleOutline extends FlxShader
             if (color.a == 0.0) {
                 float w = size.x / openfl_TextureSize.x;
                 float h = size.y / openfl_TextureSize.y;
-                
+
                 vec4 colorOffset = flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x - w, openfl_TextureCoordv.y - h));
 
 
@@ -59,7 +59,7 @@ class TitleOutline extends FlxShader
                 if (hsvShit.b <= 0.1 && colorOffset.a != 0.)
                     color = vec4(0.0, 1.0, 0.8, color.a);
             }
-            
+
             gl_FragColor = color;
         }
 

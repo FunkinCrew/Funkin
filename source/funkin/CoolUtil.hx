@@ -122,7 +122,7 @@ class CoolUtil
 
   /**
    * Just saves the json with some default values hehe
-   * @param json 
+   * @param json
    * @return String
    */
   public static inline function jsonStringify(data:Dynamic):String

@@ -7,7 +7,7 @@ import funkin.util.macro.MacroUtil;
 
 /**
  * Macros to generate lists of classes at compile time.
- * 
+ *
  * This code is a bitch glad Jason figured it out.
  * Based on code from CompileTime: https://github.com/jasononeil/compiletime
  */
@@ -15,9 +15,9 @@ class ClassMacro
 {
   /**
    * Gets a list of `Class<T>` for all classes in a specified package.
-   * 
+   *
    * Example: `var list:Array<Class<Dynamic>> = listClassesInPackage("funkin", true);`
-   * 
+   *
    * @param targetPackage A String containing the package name to query.
    * @param includeSubPackages Whether to include classes located in sub-packages of the target package.
    * @return A list of classes matching the specified criteria.
@@ -39,9 +39,9 @@ class ClassMacro
 
   /**
    * Get a list of `Class<T>` for all classes extending a specified class.
-   * 
+   *
    * Example: `var list:Array<Class<FlxSprite>> = listSubclassesOf(FlxSprite);`
-   * 
+   *
    * @param targetClass The class to query for subclasses.
    * @return A list of classes matching the specified criteria.
    */
@@ -68,7 +68,7 @@ class ClassMacro
   /**
    * Callback executed after the typing phase but before the generation phase.
    * Receives a list of `haxe.macro.Type` for all types in the program.
-   * 
+   *
    * Only metadata can be modified at this time, which makes it a BITCH to access the data at runtime.
    */
   static function onGenerate(allTypes:Array<haxe.macro.Type>)

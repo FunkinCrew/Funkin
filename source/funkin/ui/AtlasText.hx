@@ -86,7 +86,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   /**
    * Converts all characters to fit the font's `allowedCase`.
-   * @param text 
+   * @param text
    */
   function restrictCase(text:String)
   {

@@ -13,7 +13,7 @@ class AngleMask extends FlxShader
 
             vec2 uv = openfl_TextureCoordv.xy;
 
-            
+
 
             vec2 start = vec2(0.0, 0.0);
             vec2 end = vec2(endPosition.x / openfl_TextureSize.x, 1.0);

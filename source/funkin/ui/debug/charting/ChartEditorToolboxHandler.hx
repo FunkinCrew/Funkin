@@ -559,9 +559,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 200;
     toolbox.y = 350;
 
-    var container:VBox = toolbox.findComponent('charPlayerContainer', VBox);
-
-    toolbox.onDialogClosed = function(event:DialogEvent) {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.setUICheckboxSelected('menubarItemToggleToolboxOpponentPreview', false);
     }
 

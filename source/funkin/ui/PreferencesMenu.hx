@@ -43,8 +43,7 @@ class PreferencesMenu extends Page
     menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
     menuCamera.minScrollY = 0;
 
-    items.onChange.add(function(selected)
-    {
+    items.onChange.add(function(selected) {
       camFollow.y = selected.y;
     });
   }
@@ -82,8 +81,7 @@ class PreferencesMenu extends Page
 
   function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
   {
-    items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function()
-    {
+    items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
       preferenceCheck(prefString, prefValue);
 
       switch (Type.typeof(prefValue).getName())
@@ -145,8 +143,7 @@ class PreferencesMenu extends Page
 
     // menuCamera.followLerp = CoolUtil.camLerpShit(0.05);
 
-    items.forEach(function(daItem:TextMenuItem)
-    {
+    items.forEach(function(daItem:TextMenuItem) {
       if (items.selectedItem == daItem) daItem.x = 150;
       else
         daItem.x = 120;

@@ -24,8 +24,7 @@ class MemoryCounter extends TextField
     text = "RAM: ";
 
     #if flash
-    addEventListener(Event.ENTER_FRAME, function(e)
-    {
+    addEventListener(Event.ENTER_FRAME, function(e) {
       var time = Lib.getTimer();
       __enterFrame(time - currentTime);
     });

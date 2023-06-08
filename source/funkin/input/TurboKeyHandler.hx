@@ -5,10 +5,10 @@ import flixel.FlxBasic;
 
 /**
  * Handles repeating behavior when holding down a key or key combination.
- * 
+ *
  * When the `keys` are pressed, `activated` will be true for the first frame,
  * then wait `delay` seconds before becoming true for one frame every `interval` seconds.
- * 
+ *
  * Example: Pressing Ctrl+Z will undo, while holding Ctrl+Z will start to undo repeatedly.
  */
 class TurboKeyHandler extends FlxBasic

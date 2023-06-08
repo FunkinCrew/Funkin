@@ -8,7 +8,7 @@ class MacroUtil
 {
   /**
    * Gets the value of a Haxe compiler define.
-   * 
+   *
    * @param key The name of the define to get the value of.
    * @param defaultValue The value to return if the define is not set.
    * @return An expression containing the value of the define.

@@ -645,7 +645,11 @@ class ChartEditorState extends HaxeUIState
   var audioVocalTrackGroup:VoicesGroup;
 
   /**
-   * The raw byte data for the vocal audio tracks.
+   * A map of the audio tracks for each character's vocals.
+   * - Keys are the character IDs.
+   * - Values are the FlxSound objects to play that character's vocals.
+   *
+   * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
   var audioVocalTrackData:Map<String, Bytes> = [];
 

@@ -19,7 +19,7 @@ class ScriptEvent
    * Called when the relevant object is created.
    * Keep in mind that the constructor may be called before the object is needed,
    * for the purposes of caching data or otherwise.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final CREATE:ScriptEventType = 'CREATE';
@@ -27,7 +27,7 @@ class ScriptEvent
   /**
    * Called when the relevant object is destroyed.
    * This should perform relevant cleanup to ensure good performance.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final DESTROY:ScriptEventType = 'DESTROY';
@@ -35,7 +35,7 @@ class ScriptEvent
   /**
    * Called when the relevent object is added to the game state.
    * This assumes all data is loaded and ready to go.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final ADDED:ScriptEventType = 'ADDED';
@@ -43,35 +43,35 @@ class ScriptEvent
   /**
    * Called during the update function.
    * This is called every frame, so be careful!
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final UPDATE:ScriptEventType = 'UPDATE';
 
   /**
    * Called when the player moves to pause the game.
-   * 
+   *
    * This event IS cancelable! Canceling the event will prevent the game from pausing.
    */
   public static inline final PAUSE:ScriptEventType = 'PAUSE';
 
   /**
    * Called when the player moves to unpause the game while paused.
-   * 
+   *
    * This event IS cancelable! Canceling the event will prevent the game from resuming.
    */
   public static inline final RESUME:ScriptEventType = 'RESUME';
 
   /**
    * Called once per step in the song. This happens 4 times per measure.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SONG_BEAT_HIT:ScriptEventType = 'BEAT_HIT';
 
   /**
    * Called once per step in the song. This happens 16 times per measure.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SONG_STEP_HIT:ScriptEventType = 'STEP_HIT';
@@ -105,7 +105,7 @@ class ScriptEvent
 
   /**
    * Called when a song event is reached in the chart.
-   * 
+   *
    * This event IS cancelable! Cancelling this event prevents the event from being triggered,
    *   thus blocking its normal functionality.
    */
@@ -113,21 +113,21 @@ class ScriptEvent
 
   /**
    * Called when the song starts. This occurs as the countdown ends and the instrumental and vocals begin.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SONG_START:ScriptEventType = 'SONG_START';
 
   /**
    * Called when the song ends. This happens as the instrumental and vocals end.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SONG_END:ScriptEventType = 'SONG_END';
 
   /**
    * Called when the countdown begins. This occurs before the song starts.
-   * 
+   *
    * This event IS cancelable! Canceling this event will prevent the countdown from starting.
    * - The song will not start until you call Countdown.performCountdown() later.
    * - Note that calling performCountdown() will trigger this event again, so be sure to add logic to ignore it.
@@ -137,7 +137,7 @@ class ScriptEvent
   /**
    * Called when a step of the countdown happens.
    * Includes information about what step of the countdown was hit.
-   * 
+   *
    * This event IS cancelable! Canceling this event will pause the countdown.
    * - The countdown will not resume until you call PlayState.resumeCountdown().
    */
@@ -145,14 +145,14 @@ class ScriptEvent
 
   /**
    * Called when the countdown is done but just before the song starts.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final COUNTDOWN_END:ScriptEventType = 'COUNTDOWN_END';
 
   /**
    * Called before the game over screen triggers and the death animation plays.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final GAME_OVER:ScriptEventType = 'GAME_OVER';
@@ -160,21 +160,21 @@ class ScriptEvent
   /**
    * Called after the player presses a key to restart the game.
    * This can happen from the pause menu or the game over screen.
-   * 
+   *
    * This event IS cancelable! Canceling this event will prevent the game from restarting.
    */
   public static inline final SONG_RETRY:ScriptEventType = 'SONG_RETRY';
 
   /**
    * Called when the player pushes down any key on the keyboard.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final KEY_DOWN:ScriptEventType = 'KEY_DOWN';
 
   /**
    * Called when the player releases a key on the keyboard.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final KEY_UP:ScriptEventType = 'KEY_UP';
@@ -182,56 +182,56 @@ class ScriptEvent
   /**
    * Called when the game has finished loading the notes from JSON.
    * This allows modders to mutate the notes before they are used in the song.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SONG_LOADED:ScriptEventType = 'SONG_LOADED';
 
   /**
    * Called when the game is about to switch the current FlxState.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final STATE_CHANGE_BEGIN:ScriptEventType = 'STATE_CHANGE_BEGIN';
 
   /**
    * Called when the game has finished switching the current FlxState.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final STATE_CHANGE_END:ScriptEventType = 'STATE_CHANGE_END';
 
   /**
    * Called when the game is about to open a new FlxSubState.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SUBSTATE_OPEN_BEGIN:ScriptEventType = 'SUBSTATE_OPEN_BEGIN';
 
   /**
    * Called when the game has finished opening a new FlxSubState.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SUBSTATE_OPEN_END:ScriptEventType = 'SUBSTATE_OPEN_END';
 
   /**
    * Called when the game is about to close the current FlxSubState.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SUBSTATE_CLOSE_BEGIN:ScriptEventType = 'SUBSTATE_CLOSE_BEGIN';
 
   /**
    * Called when the game has finished closing the current FlxSubState.
-   * 
+   *
    * This event is not cancelable.
    */
   public static inline final SUBSTATE_CLOSE_END:ScriptEventType = 'SUBSTATE_CLOSE_END';
 
   /**
    * Called when the game is exiting the current FlxState.
-   * 
+   *
    * This event is not cancelable.
    */
   /**
