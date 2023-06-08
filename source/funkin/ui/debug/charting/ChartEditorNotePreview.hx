@@ -1,7 +1,5 @@
 package funkin.ui.debug.charting;
 
-package funkin.ui.debug.charting;
-
 import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongNoteData;
 import flixel.math.FlxMath;
