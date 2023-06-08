@@ -30,7 +30,7 @@ class SongValidator
 
   /**
    * Validates the fields of a SongMetadata object (excluding the version field).
-   * 
+   *
    * @param input The SongMetadata object to validate.
    * @param songId The ID of the song being validated. Only used for error messages.
    * @return The validated SongMetadata object.
@@ -73,7 +73,7 @@ class SongValidator
 
   /**
    * Validates the fields of a SongPlayData object.
-   * 
+   *
    * @param input The SongPlayData object to validate.
    * @param songId The ID of the song being validated. Only used for error messages.
    * @return The validated SongPlayData object.
@@ -85,7 +85,7 @@ class SongValidator
 
   /**
    * Validates the fields of a TimeChange object.
-   * 
+   *
    * @param input The TimeChange object to validate.
    * @param songId The ID of the song being validated. Only used for error messages.
    * @return The validated TimeChange object.
@@ -113,7 +113,7 @@ class SongValidator
 
   /**
    * Validates the fields of a SongChartData object (excluding the version field).
-   * 
+   *
    * @param input The SongChartData object to validate.
    * @param songId The ID of the song being validated. Only used for error messages.
    * @return The validated SongChartData object.
