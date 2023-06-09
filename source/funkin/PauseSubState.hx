@@ -11,7 +11,7 @@ import flixel.util.FlxColor;
 import funkin.play.PlayState;
 import funkin.play.song.SongData.SongDataParser;
 
-class PauseSubState extends MusicBeatSubstate
+class PauseSubState extends MusicBeatSubState
 {
   var grpMenuShit:FlxTypedGroup<Alphabet>;
 

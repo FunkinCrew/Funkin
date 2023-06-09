@@ -24,10 +24,10 @@ interface IStateChangingScriptedClass extends IScriptedClass
   public function onStateChangeBegin(event:StateChangeScriptEvent):Void;
   public function onStateChangeEnd(event:StateChangeScriptEvent):Void;
 
-  public function onSubstateOpenBegin(event:SubStateScriptEvent):Void;
-  public function onSubstateOpenEnd(event:SubStateScriptEvent):Void;
-  public function onSubstateCloseBegin(event:SubStateScriptEvent):Void;
-  public function onSubstateCloseEnd(event:SubStateScriptEvent):Void;
+  public function onSubStateOpenBegin(event:SubStateScriptEvent):Void;
+  public function onSubStateOpenEnd(event:SubStateScriptEvent):Void;
+  public function onSubStateCloseBegin(event:SubStateScriptEvent):Void;
+  public function onSubStateCloseEnd(event:SubStateScriptEvent):Void;
 }
 
 /**

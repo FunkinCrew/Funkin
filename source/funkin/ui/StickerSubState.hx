@@ -17,7 +17,7 @@ import openfl.geom.Matrix;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 
-class StickerSubState extends MusicBeatSubstate
+class StickerSubState extends MusicBeatSubState
 {
   public var grpStickers:FlxTypedGroup<StickerSprite>;
 
