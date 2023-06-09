@@ -2,11 +2,11 @@ package funkin.ui.debug;
 
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import funkin.MusicBeatSubstate;
+import funkin.MusicBeatSubState;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
 
-class DebugMenuSubState extends MusicBeatSubstate
+class DebugMenuSubState extends MusicBeatSubState
 {
   var items:TextMenuList;
 

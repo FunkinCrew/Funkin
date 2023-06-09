@@ -37,7 +37,7 @@ import funkin.shaderslmfao.StrokeShader;
 import lime.app.Future;
 import lime.utils.Assets;
 
-class FreeplayState extends MusicBeatSubstate
+class FreeplayState extends MusicBeatSubState
 {
   var songs:Array<SongMetadata> = [];
 
