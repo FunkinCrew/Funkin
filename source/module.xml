@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <module>
 	<!-- A module provides additional behavior and configuration for HaxeUI. -->
 	<components>
@@ -14,7 +14,6 @@
 		<class package="haxe.ui.containers.properties" loadAll="true" />
 		<class package="haxe.ui.containers" loadAll="true" />
 		<class package="haxe.ui.core" loadAll="true" />
-		
 		<!-- Custom components. -->
 		<class package="funkin.ui.haxeui.components" loadAll="true" />
 	</components>

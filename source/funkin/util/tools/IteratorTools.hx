@@ -2,9 +2,9 @@ package funkin.util.tools;
 
 /**
  * A static extension which provides utility functions for Iterators.
- * 
+ *
  * For example, add `using IteratorTools` then call `iterator.array()`.
- * 
+ *
  * @see https://haxe.org/manual/lf-static-extension.html
  */
 class IteratorTools

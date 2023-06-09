@@ -149,9 +149,9 @@ class Conductor
   /**
    * Forcibly defines the current BPM of the song.
    * Useful for things like the chart editor that need to manipulate BPM in real time.
-   * 
+   *
    * Set to null to reset to the BPM defined by the timeChanges.
-   * 
+   *
    * WARNING: Avoid this for things like setting the BPM of the title screen music,
    * you should have a metadata file for it instead.
    */
@@ -166,7 +166,7 @@ class Conductor
   /**
    * Update the conductor with the current song position.
    * BPM, current step, etc. will be re-calculated based on the song position.
-   * 
+   *
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    */

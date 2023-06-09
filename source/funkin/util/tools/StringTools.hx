@@ -7,7 +7,7 @@ class StringTools
 {
   /**
    * Converts a string to title case. For example, "hello world" becomes "Hello World".
-     * 
+     *
    * @param value The string to convert.
    * @return The converted string.
    */
@@ -29,7 +29,7 @@ class StringTools
 
   /**
    * Converts a string to lower kebab case. For example, "Hello World" becomes "hello-world".
-   * 
+   *
    * @param value The string to convert.
    * @return The converted string.
    */
@@ -40,7 +40,7 @@ class StringTools
 
   /**
    * Converts a string to upper kebab case, aka screaming kebab case. For example, "Hello World" becomes "HELLO-WORLD".
-   * 
+   *
    * @param value The string to convert.
    * @return The converted string.
    */
@@ -51,7 +51,7 @@ class StringTools
 
   /**
    * Parses the string data as JSON and returns the resulting object.
-   * 
+   *
    * @return The parsed object.
    */
   public static function parseJSON(value:String):Dynamic

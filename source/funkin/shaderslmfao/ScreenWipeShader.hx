@@ -45,7 +45,7 @@ class ScreenWipeShader extends FlxShader
         {
 			vec2 funnyUv = openfl_TextureCoordv;
             vec4 color = flixel_texture2D(bitmap, funnyUv);
-            
+
 			vec2 reallyFunnyUv = vec2(vec2(0.0, 0.0) - gl_FragCoord.xy / openfl_TextureSize.xy);
 
 			vec4 gf = flixel_texture2D(funnyShit, openfl_TextureCoordv);

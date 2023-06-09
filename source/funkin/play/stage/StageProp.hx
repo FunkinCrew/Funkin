@@ -18,7 +18,7 @@ class StageProp extends FlxSprite implements IStateStageProp
 
   /**
    * Called when this prop is added to the stage.
-   * @param event 
+   * @param event
    */
   public function onAdd(event:ScriptEvent):Void {}
 

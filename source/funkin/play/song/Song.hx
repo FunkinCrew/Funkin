@@ -324,7 +324,7 @@ class SongDifficulty
   /**
    * Build a list of vocal files for the given character.
    * Automatically resolves suffixed character IDs (so bf-car will resolve to bf if needed).
-   * 
+   *
    * @param id The character we are about to play.
    */
   public function buildVoiceList(?id:String = 'bf'):Array<String>

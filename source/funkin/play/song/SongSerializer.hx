@@ -50,8 +50,7 @@ class SongSerializer
    */
   public static function importSongChartDataAsync(callback:SongChartData->Void):Void
   {
-    browseFileReference(function(fileReference:FileReference)
-    {
+    browseFileReference(function(fileReference:FileReference) {
       var data = fileReference.data.toString();
 
       if (data == null) return;
@@ -68,8 +67,7 @@ class SongSerializer
    */
   public static function importSongMetadataAsync(callback:SongMetadata->Void):Void
   {
-    browseFileReference(function(fileReference:FileReference)
-    {
+    browseFileReference(function(fileReference:FileReference) {
       var data = fileReference.data.toString();
 
       if (data == null) return;
@@ -103,7 +101,7 @@ class SongSerializer
   /**
    * Save a SongChartData object as a JSON file to a specified path.
    * Works great on HTML5 and desktop.
-   * 
+   *
    * @param	path The file path to save to.
    */
   public static function exportSongChartDataAs(path:String, data:SongChartData)
@@ -116,7 +114,7 @@ class SongSerializer
   /**
    * Save a SongMetadata object as a JSON file to a specified path.
    * Works great on HTML5 and desktop.
-   * 
+   *
    * @param	path The file path to save to.
    */
   public static function exportSongMetadataAs(path:String, data:SongMetadata)
@@ -163,19 +161,17 @@ class SongSerializer
   /**
    * Browse for a file to read and execute a callback once we have a file reference.
    * Works great on HTML5 or desktop.
-   * 
+   *
    * @param	callback The function to call when the file is loaded.
    */
   static function browseFileReference(callback:FileReference->Void)
   {
     var file = new FileReference();
 
-    file.addEventListener(Event.SELECT, function(e)
-    {
+    file.addEventListener(Event.SELECT, function(e) {
       var selectedFileRef:FileReference = e.target;
       trace('Selected file: ' + selectedFileRef.name);
-      selectedFileRef.addEventListener(Event.COMPLETE, function(e)
-      {
+      selectedFileRef.addEventListener(Event.COMPLETE, function(e) {
         var loadedFileRef:FileReference = e.target;
         trace('Loaded file: ' + loadedFileRef.name);
         callback(loadedFileRef);
@@ -192,16 +188,13 @@ class SongSerializer
   static function writeFileReference(path:String, data:String)
   {
     var file = new FileReference();
-    file.addEventListener(Event.COMPLETE, function(e:Event)
-    {
+    file.addEventListener(Event.COMPLETE, function(e:Event) {
       trace('Successfully wrote file.');
     });
-    file.addEventListener(Event.CANCEL, function(e:Event)
-    {
+    file.addEventListener(Event.CANCEL, function(e:Event) {
       trace('Cancelled writing file.');
     });
-    file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent)
-    {
+    file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
       trace('IO error writing file.');
     });
     file.save(data, path);

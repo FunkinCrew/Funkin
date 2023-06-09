@@ -1,9 +1,11 @@
 {
   "title": "Testing123",
   "description": "Newgrounds? More like OLDGROUNDS lol.",
-  "contributors": [{
-    "name": "MasterEric"
-  }],
+  "contributors": [
+    {
+      "name": "MasterEric"
+    }
+  ],
   "api_version": "0.1.0",
   "mod_version": "1.0.0",
   "license": "Apache-2.0"

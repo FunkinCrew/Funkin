@@ -53,8 +53,7 @@ class DialogueBox extends FlxSpriteGroup
     bgFade.alpha = 0;
     add(bgFade);
 
-    new FlxTimer().start(0.83, function(tmr:FlxTimer)
-    {
+    new FlxTimer().start(0.83, function(tmr:FlxTimer) {
       bgFade.alpha += (1 / 5) * 0.7;
       if (bgFade.alpha > 0.7) bgFade.alpha = 0.7;
     }, 5);
@@ -192,8 +191,7 @@ class DialogueBox extends FlxSpriteGroup
           if (PlayState.currentSong.song.toLowerCase() == 'senpai'
             || PlayState.currentSong.song.toLowerCase() == 'thorns') FlxG.sound.music.fadeOut(2.2, 0);
 
-          new FlxTimer().start(0.2, function(tmr:FlxTimer)
-          {
+          new FlxTimer().start(0.2, function(tmr:FlxTimer) {
             box.alpha -= 1 / 5;
             bgFade.alpha -= 1 / 5 * 0.7;
             portraitLeft.visible = false;
@@ -203,8 +201,7 @@ class DialogueBox extends FlxSpriteGroup
             dropText.alpha = swagDialogue.alpha;
           }, 5);
 
-          new FlxTimer().start(1.2, function(tmr:FlxTimer)
-          {
+          new FlxTimer().start(1.2, function(tmr:FlxTimer) {
             finishThing();
             kill();
           });
@@ -233,8 +230,7 @@ class DialogueBox extends FlxSpriteGroup
     // swagDialogue.text = ;
     swagDialogue.resetText(dialogueList[0]);
     swagDialogue.start(0.04);
-    swagDialogue.completeCallback = function()
-    {
+    swagDialogue.completeCallback = function() {
       trace('dialogue finish');
       handSelect.visible = true;
       dialogueEnded = true;

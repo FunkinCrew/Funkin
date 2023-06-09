@@ -552,7 +552,7 @@ class ChartEditorDialogHandler
 
   /**
    * Builds and opens a dialog displaying the user guide, providing guidance and help on how to use the chart editor.
-   * 
+   *
    * @param state The current chart editor state.
    * @return The dialog that was opened.
    */

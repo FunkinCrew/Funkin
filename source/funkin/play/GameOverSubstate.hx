@@ -15,7 +15,7 @@ import funkin.ui.PreferencesMenu;
 /**
  * A substate which renders over the PlayState when the player dies.
  * Displays the player death animation, plays the music, and handles restarting the song.
- * 
+ *
  * The newest implementation uses a substate, which prevents having to reload the song and stage each reset.
  */
 class GameOverSubstate extends MusicBeatSubstate
@@ -237,7 +237,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
   /**
    * Starts the death music at the appropriate volume.
-   * @param startingVolume 
+   * @param startingVolume
    */
   function startDeathMusic(?startingVolume:Float = 1, ?force:Bool = false):Void
   {

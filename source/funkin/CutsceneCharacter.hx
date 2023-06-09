@@ -52,8 +52,7 @@ class CutsceneCharacter extends FlxTypedGroup<FlxSprite>
     cutScene.animation.play('weed');
     cutScene.antialiasing = true;
 
-    cutScene.animation.finishCallback = function(anim:String)
-    {
+    cutScene.animation.finishCallback = function(anim:String) {
       cutScene.kill();
       cutScene.destroy();
       cutScene = null;
