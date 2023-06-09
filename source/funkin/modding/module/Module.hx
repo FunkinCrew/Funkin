@@ -107,13 +107,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   public function onStateChangeEnd(event:StateChangeScriptEvent) {}
 
-  public function onSubstateOpenBegin(event:SubStateScriptEvent) {}
+  public function onSubStateOpenBegin(event:SubStateScriptEvent) {}
 
-  public function onSubstateOpenEnd(event:SubStateScriptEvent) {}
+  public function onSubStateOpenEnd(event:SubStateScriptEvent) {}
 
-  public function onSubstateCloseBegin(event:SubStateScriptEvent) {}
+  public function onSubStateCloseBegin(event:SubStateScriptEvent) {}
 
-  public function onSubstateCloseEnd(event:SubStateScriptEvent) {}
+  public function onSubStateCloseEnd(event:SubStateScriptEvent) {}
 
   public function onSongRetry(event:ScriptEvent) {}
 }

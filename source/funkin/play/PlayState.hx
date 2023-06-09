@@ -45,7 +45,7 @@ import funkin.SongLoad.SwagSong;
 import funkin.audio.VoicesGroup;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
-import funkin.ui.stageBuildShit.StageOffsetSubstate;
+import funkin.ui.stageBuildShit.StageOffsetSubState;
 import funkin.util.Constants;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
@@ -1405,7 +1405,7 @@ class PlayState extends MusicBeatState
       // hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
       disableKeys = true;
       persistentUpdate = false;
-      openSubState(new StageOffsetSubstate());
+      openSubState(new StageOffsetSubState());
     }
 
     updateHealthBar();
@@ -1643,8 +1643,8 @@ class PlayState extends MusicBeatState
         }
         #end
 
-        var gameOverSubstate = new GameOverSubstate();
-        openSubState(gameOverSubstate);
+        var gameOverSubState = new GameOverSubState();
+        openSubState(gameOverSubState);
 
         #if discord_rpc
         // Game Over doesn't get his own variable because it's only used here
@@ -2739,7 +2739,7 @@ class PlayState extends MusicBeatState
       currentStage = null;
     }
 
-    GameOverSubstate.reset();
+    GameOverSubState.reset();
 
     // Clear the static reference to this state.
     instance = null;

@@ -401,7 +401,7 @@ class BaseCharacter extends Bopper
   {
     if (force || (getCurrentAnimation().startsWith('firstDeath') && isAnimationFinished()))
     {
-      playAnimation('deathLoop' + GameOverSubstate.animationSuffix);
+      playAnimation('deathLoop' + GameOverSubState.animationSuffix);
     }
   }
 

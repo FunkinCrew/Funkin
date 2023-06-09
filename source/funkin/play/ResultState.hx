@@ -19,7 +19,7 @@ import funkin.shaderslmfao.LeftMaskShader;
 import funkin.ui.TallyCounter;
 import flxanimate.FlxAnimate.Settings;
 
-class ResultState extends MusicBeatSubstate
+class ResultState extends MusicBeatSubState
 {
   var resultsVariation:ResultVariations;
   var songName:FlxBitmapText;
