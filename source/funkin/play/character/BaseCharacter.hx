@@ -582,6 +582,13 @@ class BaseCharacter extends Bopper
     // restart even if already playing, because the character might sing the same note twice.
     playAnimation(anim, true);
   }
+
+  public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false, ?reversed:Bool = false):Void
+  {
+    FlxG.watch.addQuick('playAnim(${characterName})', name);
+    trace('playAnim(${characterName}): ${name}');
+    super.playAnimation(name, restart, ignoreOther, reversed);
+  }
 }
 
 /**

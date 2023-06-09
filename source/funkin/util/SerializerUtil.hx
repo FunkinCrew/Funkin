@@ -1,6 +1,7 @@
 package funkin.util;
 
 import haxe.Json;
+import haxe.io.Bytes;
 import thx.semver.Version;
 
 typedef ScoreInput =
@@ -36,6 +37,14 @@ class SerializerUtil
   public static function fromJSON(input:String):Dynamic
   {
     return Json.parse(input);
+  }
+
+  /**
+   * Convert a JSON byte array to a Haxe object.
+   */
+  public static function fromJSONBytes(input:Bytes):Dynamic
+  {
+    return Json.parse(input.toString());
   }
 
   /**
