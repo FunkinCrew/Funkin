@@ -601,7 +601,7 @@ class ChartEditorDialogHandler
     {
       trace('Adding vocal upload for character ${charKey}');
       var charMetadata:CharacterData = CharacterDataParser.fetchCharacterData(charKey);
-      var charName:String = charMetadata.name;
+      var charName:String = charMetadata != null ? charMetadata.name : charKey;
 
       var vocalsEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_UPLOAD_VOCALS_ENTRY_LAYOUT);
 

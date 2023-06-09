@@ -10,10 +10,10 @@ typedef LegacySongData =
   var player1:String; // Boyfriend
   var player2:String; // Opponent
 
-  var speed:LegacyScrollSpeeds;
+  var speed:Float;
   var stageDefault:String;
   var bpm:Float;
-  var notes:LegacyNoteData;
+  var notes:Array<LegacyNoteSection>;
   var song:String; // Song name
 };
 

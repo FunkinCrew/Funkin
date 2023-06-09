@@ -3367,10 +3367,10 @@ class ChartEditorState extends HaxeUIState
       audioVocalTrackGroup.clear();
     }
     // Add player vocals.
-    if (currentSongCharacterPlayer != null) audioVocalTrackGroup.addPlayerVocals(new FlxSound().loadEmbedded(Assets.getSound(Paths.voices(songId,
+    if (currentSongCharacterPlayer != null) audioVocalTrackGroup.addPlayerVoice(new FlxSound().loadEmbedded(Assets.getSound(Paths.voices(songId,
       '-$currentSongCharacterPlayer'))));
     // Add opponent vocals.
-    if (currentSongCharacterOpponent != null) audioVocalTrackGroup.addOpponentVocals(new FlxSound().loadEmbedded(Assets.getSound(Paths.voices(songId,
+    if (currentSongCharacterOpponent != null) audioVocalTrackGroup.addOpponentVoice(new FlxSound().loadEmbedded(Assets.getSound(Paths.voices(songId,
       '-$currentSongCharacterOpponent'))));
 
     postLoadInstrumental();

@@ -103,11 +103,28 @@ class SongMigrator
    * @param songId The ID of the song (only used for error reporting).
    * @return The migrated song metadata, or null if the migration failed.
    */
-  public static function migrateSongMetadataFromLegacy(jsonData:Dynamic):SongMetadata
+  public static function migrateSongMetadataFromLegacy(jsonData:Dynamic, difficulty:String = 'normal'):SongMetadata
   {
     trace('Migrating song metadata from FNF Legacy.');
 
     var songData:FNFLegacy = cast jsonData;
+    // Some cleanup
+    if (Std.isOfType(jsonData.song.notes, Array))
+    {
+      jsonData.song.notes = haxe.ds.Either.Left(jsonData.song.notes);
+    }
+    else
+    {
+      jsonData.song.notes = haxe.ds.Either.Right(jsonData.song.notes);
+    }
+    if (Std.isOfType(jsonData.song.speed, Float))
+    {
+      jsonData.song.speed = haxe.ds.Either.Left(jsonData.song.speed);
+    }
+    else
+    {
+      jsonData.song.speed = haxe.ds.Either.Right(jsonData.song.speed);
+    }
 
     var songMetadata:SongMetadata = new SongMetadata('Import', 'Kawai Sprite', 'default');
 
@@ -152,9 +169,20 @@ class SongMigrator
     songMetadata.playData.difficulties = [];
     if (songData.song != null && songData.song.notes != null)
     {
-      if (songData.song.notes.easy != null) songMetadata.playData.difficulties.push('easy');
-      if (songData.song.notes.normal != null) songMetadata.playData.difficulties.push('normal');
-      if (songData.song.notes.hard != null) songMetadata.playData.difficulties.push('hard');
+      if (Std.isOfType(songData.song.notes, Array))
+      {
+        // One difficulty of notes.
+        songMetadata.playData.difficulties.push(difficulty);
+      }
+      else
+      {
+        // Multiple difficulties of notes.
+        var songNoteDataDynamic:haxe.DynamicAccess<Dynamic> = cast songData.song.notes;
+        for (difficultyKey in songNoteDataDynamic.keys())
+        {
+          songMetadata.playData.difficulties.push(difficultyKey);
+        }
+      }
     }
     else
     {
@@ -186,7 +214,7 @@ class SongMigrator
    * @param difficulty The difficulty to migrate.
    * @return The migrated song chart data, or null if the migration failed.
    */
-  public static function migrateSongChartDataFromLegacy(jsonData:Dynamic):SongChartData
+  public static function migrateSongChartDataFromLegacy(jsonData:Dynamic, difficulty:String = 'normal'):SongChartData
   {
     trace('Migrating song chart data from FNF Legacy.');
 
@@ -194,27 +222,10 @@ class SongMigrator
 
     var songChartData:SongChartData = new SongChartData(1.0, [], []);
 
-    if (songData.song.notes.normal != null)
-    {
-      var songEventsEmpty:Bool = songChartData.getEvents() == null || songChartData.getEvents().length == 0;
-      if (songEventsEmpty) songChartData.setEvents(migrateSongEventDataFromLegacy(songData.song.notes.normal));
-      songChartData.setNotes(migrateSongNoteDataFromLegacy(songData.song.notes.normal), 'normal');
-      songChartData.setScrollSpeed(songData.song.speed.normal, 'normal');
-    }
-    if (songData.song.notes.easy != null)
-    {
-      var songEventsEmpty:Bool = songChartData.getEvents() == null || songChartData.getEvents().length == 0;
-      if (songEventsEmpty) songChartData.setEvents(migrateSongEventDataFromLegacy(songData.song.notes.easy));
-      songChartData.setNotes(migrateSongNoteDataFromLegacy(songData.song.notes.easy), 'easy');
-      songChartData.setScrollSpeed(songData.song.speed.easy, 'easy');
-    }
-    if (songData.song.notes.hard != null)
-    {
-      var songEventsEmpty:Bool = songChartData.getEvents() == null || songChartData.getEvents().length == 0;
-      if (songEventsEmpty) songChartData.setEvents(migrateSongEventDataFromLegacy(songData.song.notes.hard));
-      songChartData.setNotes(migrateSongNoteDataFromLegacy(songData.song.notes.hard), 'hard');
-      songChartData.setScrollSpeed(songData.song.speed.hard, 'hard');
-    }
+    var songEventsEmpty:Bool = songChartData.getEvents() == null || songChartData.getEvents().length == 0;
+    if (songEventsEmpty) songChartData.setEvents(migrateSongEventDataFromLegacy(songData.song.notes));
+    songChartData.setNotes(migrateSongNoteDataFromLegacy(songData.song.notes), difficulty);
+    songChartData.setScrollSpeed(songData.song.speed, difficulty);
 
     return songChartData;
   }

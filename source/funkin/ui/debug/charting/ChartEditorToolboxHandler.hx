@@ -374,11 +374,11 @@ class ChartEditorToolboxHandler
     var difficultyToolboxLoadChart:Button = toolbox.findComponent('difficultyToolboxLoadChart', Button);
 
     difficultyToolboxSaveMetadata.onClick = function(event:UIEvent) {
-      SongSerializer.exportSongMetadata(state.currentSongMetadata);
+      SongSerializer.exportSongMetadata(state.currentSongMetadata, state);
     };
 
     difficultyToolboxSaveChart.onClick = function(event:UIEvent) {
-      SongSerializer.exportSongChartData(state.currentSongChartData);
+      SongSerializer.exportSongChartData(state.currentSongChartData, state);
     };
 
     difficultyToolboxSaveAll.onClick = function(event:UIEvent) {
