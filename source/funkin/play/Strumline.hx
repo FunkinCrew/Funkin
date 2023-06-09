@@ -13,7 +13,7 @@ import funkin.util.Constants;
 
 /**
  * A group controlling the individual notes of the strumline for a given player.
- * 
+ *
  * FUN FACT: Setting the X and Y of a FlxSpriteGroup will move all the sprites in the group.
  */
 class Strumline extends FlxTypedSpriteGroup<StrumlineArrow>
@@ -62,8 +62,8 @@ class Strumline extends FlxTypedSpriteGroup<StrumlineArrow>
   /**
    * Apply a small animation which moves the arrow down and fades it in.
    * Only plays at the start of Free Play songs.
-   * 
-   * Note that modifying the offset of the whole strumline won't have the 
+   *
+   * Note that modifying the offset of the whole strumline won't have the
    * @param arrow The arrow to animate.
    * @param index The index of the arrow in the strumline.
    */

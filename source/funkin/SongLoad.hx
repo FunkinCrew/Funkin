@@ -281,7 +281,7 @@ class SongLoad
 
       // castNoteDataToNoteData(swagShit.noteMap[diff]);
 
-      /* 
+      /*
         switch (diff)
         {
           case "easy":

@@ -392,7 +392,7 @@ class StoryMenuState extends MusicBeatState
 
   /**
    * Changes the selected difficulty.
-   * @param change +1 (right) to increase difficulty, -1 (left) to decrease difficulty 
+   * @param change +1 (right) to increase difficulty, -1 (left) to decrease difficulty
    */
   function changeDifficulty(change:Int = 0):Void
   {

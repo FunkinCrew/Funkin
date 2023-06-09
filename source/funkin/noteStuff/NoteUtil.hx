@@ -7,7 +7,7 @@ import openfl.Assets;
  * Just various functions that IDK where to put em!!!
  * Semi-temp for now? the note stuff is super clutter-y right now
  * so I am putting this new stuff here right now XDD
- * 
+ *
  * A lot of this stuff can probably be moved to where appropriate!
  * i dont care about NoteUtil.hx at all!!!
  */
@@ -15,7 +15,7 @@ class NoteUtil
 {
   /**
    * IDK THING FOR BOTH LOL! DIS SHIT HACK-Y
-   * @param jsonPath 
+   * @param jsonPath
    * @return Map<Int, Array<SongEventInfo>>
    */
   public static function loadSongEvents(jsonPath:String):Map<Int, Array<SongEventInfo>>
@@ -34,7 +34,7 @@ class NoteUtil
 
   /**
    * Parses song event json stuff into a neater lil map grouping?
-   * @param songEvents 
+   * @param songEvents
    */
   public static function parseSongEvents(songEvents:Array<SongEvent>):Map<Int, Array<SongEventInfo>>
   {

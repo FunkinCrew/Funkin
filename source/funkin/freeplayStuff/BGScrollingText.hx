@@ -48,8 +48,7 @@ class BGScrollingText extends FlxSpriteGroup
 
   function set_funnyColor(col:Int):Int
   {
-    grpTexts.forEach(function(txt)
-    {
+    grpTexts.forEach(function(txt) {
       txt.color = col;
     });
 
@@ -85,8 +84,7 @@ class BGScrollingText extends FlxSpriteGroup
 
   function sortTextShit():Void
   {
-    grpTexts.sort(function(Order:Int, Obj1:FlxObject, Obj2:FlxObject)
-    {
+    grpTexts.sort(function(Order:Int, Obj1:FlxObject, Obj2:FlxObject) {
       return FlxSort.byValues(Order, Obj1.x, Obj2.x);
     });
   }

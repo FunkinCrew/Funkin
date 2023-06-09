@@ -145,8 +145,7 @@ class Page extends FlxGroup
   function openPrompt(prompt:Prompt, onClose:Void->Void)
   {
     enabled = false;
-    prompt.closeCallback = function()
-    {
+    prompt.closeCallback = function() {
       enabled = true;
       if (onClose != null) onClose();
     }
@@ -217,16 +216,15 @@ class OptionsMenu extends Page
 
   /**
    * Calls openPrompt and redraws the login/logout button
-   * @param prompt 
-   * @param onClose 
+   * @param prompt
+   * @param onClose
    */
   public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
   {
     var onPromptClose = checkLoginStatus;
     if (onClose != null)
     {
-      onPromptClose = function()
-      {
+      onPromptClose = function() {
         checkLoginStatus();
         onClose();
       }

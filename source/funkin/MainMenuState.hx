@@ -223,8 +223,8 @@ class MainMenuState extends MusicBeatState
 
   /**
    * Calls openPrompt and redraws the login/logout button
-   * @param prompt 
-   * @param onClose 
+   * @param prompt
+   * @param onClose
    */
   public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
   {

@@ -153,7 +153,7 @@ class PlayState extends MusicBeatState
   /**
    * An empty FlxObject contained in the scene.
    * The current gameplay camera will be centered on this object. Tween its position to move the camera smoothly.
-   * 
+   *
    * This is an FlxSprite for two reasons:
    * 1. It needs to be an object in the scene for the camera to be configured to follow it.
    * 2. It needs to be an FlxSprite to allow a graphic (optionally, for debug purposes) to be drawn on it.
@@ -168,7 +168,7 @@ class PlayState extends MusicBeatState
 
   /**
    * The current camera zoom level.
-   * 
+   *
    * The camera zoom is increased every beat, and lerped back to this value every frame, creating a smooth 'zoom-in' effect.
    * Defaults to 1.05 but may be larger or smaller depending on the current stage,
    * and may be changed by the `ZoomCamera` song event.
@@ -177,7 +177,7 @@ class PlayState extends MusicBeatState
 
   /**
    * The current HUD camera zoom level.
-   * 
+   *
    * The camera zoom is increased every beat, and lerped back to this value every frame, creating a smooth 'zoom-in' effect.
    */
   public var defaultHUDCameraZoom:Float = FlxCamera.defaultZoom * 1.0;
@@ -754,10 +754,10 @@ class PlayState extends MusicBeatState
   /**
    * Removes any references to the current stage, then clears the stage cache,
    * then reloads all the stages.
-   * 
+   *
    * This is useful for when you want to edit a stage without reloading the whole game.
    * Reloading works on both the JSON and the HXC, if applicable.
-   * 
+   *
    * Call this by pressing F5 on a debug build.
    */
   override function debug_refreshModules():Void
@@ -796,7 +796,7 @@ class PlayState extends MusicBeatState
   /**
    * Loads stage data from cache, assembles the props,
    * and adds it to the state.
-   * @param id 
+   * @param id
    */
   function loadStage(id:String):Void
   {
@@ -1504,7 +1504,7 @@ class PlayState extends MusicBeatState
     Conductor.update(FlxG.sound.music.time);
 
     /**
-      * 
+      *
       // TODO: Redo this for the new conductor.
       var daBPM:Float = Conductor.bpm;
       var daPos:Float = 0;
@@ -1985,9 +1985,9 @@ class PlayState extends MusicBeatState
    * Called when a player presses a key with no note present.
    * Scripts can modify the amount of health/score lost, whether player animations or sounds are used,
    * or even cancel the event entirely.
-   * 
-   * @param direction 
-   * @param hasPossibleNotes 
+   *
+   * @param direction
+   * @param hasPossibleNotes
    */
   function ghostNoteMiss(direction:funkin.noteStuff.NoteBasic.NoteType = 1, hasPossibleNotes:Bool = true):Void
   {
@@ -2227,7 +2227,7 @@ class PlayState extends MusicBeatState
 
   /**
    * Handles characters dancing to the beat of the current song.
-   * 
+   *
    * TODO: Move some of this logic into `Bopper.hx`
    */
   public function danceOnBeat():Void
@@ -2320,7 +2320,7 @@ class PlayState extends MusicBeatState
 
   /**
    * Function called before closing the current substate.
-   * @param subState 
+   * @param subState
    */
   public override function closeSubState():Void
   {

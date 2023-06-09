@@ -16,9 +16,9 @@ class Note extends FlxSprite
   public var data = new NoteData();
 
   /**
-   * code colors for.... code.... 
+   * code colors for.... code....
    * i think goes in order of left to right
-   * 
+   *
    * left 	0
    * down 	1
    * up 		2

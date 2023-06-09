@@ -317,7 +317,7 @@ class HealthIcon extends FlxSprite
   /**
    * Load health icon animations from a Sparrow XML file (the kind used by characters)
    * Note that this is looking for SPECIFIC animation names, so you may need to modify the XML.
-   * @param charId 
+   * @param charId
    */
   function loadAnimationNew():Void
   {
@@ -333,7 +333,7 @@ class HealthIcon extends FlxSprite
   /**
    * Load health icon animations using the legacy format.
    * Simply assumes two icons, the idle and losing icons.
-   * @param charId 
+   * @param charId
    */
   function loadAnimationOld():Void
   {

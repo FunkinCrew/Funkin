@@ -18,7 +18,7 @@ class FileUtil
   /**
    * Browses for a single file, then calls `onSelect(path)` when a path chosen.
    * Note that on HTML5 this will immediately fail, you should call `openFile(onOpen:Resource->Void)` instead.
-   * 
+   *
    * @param typeFilter Filters what kinds of files can be selected.
    * @return Whether the file dialog was opened successfully.
    */
@@ -46,7 +46,7 @@ class FileUtil
   /**
    * Browses for a directory, then calls `onSelect(path)` when a path chosen.
    * Note that on HTML5 this will immediately fail.
-   * 
+   *
    * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
@@ -74,7 +74,7 @@ class FileUtil
   /**
    * Browses for multiple file, then calls `onSelect(paths)` when a path chosen.
    * Note that on HTML5 this will immediately fail.
-   * 
+   *
    * @return Whether the file dialog was opened successfully.
    */
   public static function browseForMultipleFiles(?typeFilter:Array<FileFilter>, ?onSelect:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
@@ -101,7 +101,7 @@ class FileUtil
   /**
    * Browses for a file location to save to, then calls `onSelect(path)` when a path chosen.
    * Note that on HTML5 you can't do much with this, you should call `saveFile(resource:haxe.io.Bytes)` instead.
-   * 
+   *
    * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
@@ -129,7 +129,7 @@ class FileUtil
   /**
    * Browses for a single file location, then reads it and passes it to `onOpen(resource:haxe.io.Bytes)`.
    * Works great on desktop and HTML5.
-   * 
+   *
    * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
@@ -171,7 +171,7 @@ class FileUtil
   /**
    * Browses for a single file location, then writes the provided `haxe.io.Bytes` data and calls `onSave(path)` when done.
    * Works great on desktop and HTML5.
-   * 
+   *
    * @return Whether the file dialog was opened successfully.
    */
   public static function saveFile(data:Bytes, ?onSave:String->Void, ?onCancel:Void->Void, ?defaultFileName:String, ?dialogTitle:String):Bool
@@ -204,7 +204,7 @@ class FileUtil
    * Prompts the user to save multiple files.
    * On desktop, this will prompt the user for a directory, then write all of the files to there.
    * On HTML5, this will zip the files up and prompt the user to save that.
-   * 
+   *
    * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
@@ -296,7 +296,7 @@ class FileUtil
   /**
    * Write string file contents directly to a given path.
    * Only works on desktop.
-   * 
+   *
    * @param mode Whether to Force, Skip, or Ask to overwrite an existing file.
    */
   public static function writeStringToPath(path:String, data:String, mode:FileWriteMode = Skip)
@@ -335,7 +335,7 @@ class FileUtil
   /**
    * Write byte file contents directly to a given path.
    * Only works on desktop.
-   * 
+   *
    * @param mode Whether to Force, Skip, or Ask to overwrite an existing file.
    */
   public static function writeBytesToPath(path:String, data:Bytes, mode:FileWriteMode = Skip)
@@ -432,7 +432,7 @@ class FileUtil
 
   /**
    * Create a Bytes object containing a ZIP file, containing the provided entries.
-   * 
+   *
    * @param entries The entries to add to the ZIP file.
    * @return The ZIP file as a Bytes object.
    */
@@ -448,7 +448,7 @@ class FileUtil
 
   /**
    * Create a ZIP file entry from a file name and its string contents.
-   * 
+   *
    * @param name The name of the file. You can use slashes to create subdirectories.
    * @param content The string contents of the file.
    * @return The resulting entry.

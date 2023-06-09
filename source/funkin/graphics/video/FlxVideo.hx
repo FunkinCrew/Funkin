@@ -18,7 +18,7 @@ class FlxVideo extends FlxBasic
   public var finishCallback:Void->Void;
 
   /**
-   * Doesn't actually interact with Flixel shit, only just a pleasant to use class    
+   * Doesn't actually interact with Flixel shit, only just a pleasant to use class
    */
   public function new(vidSrc:String)
   {

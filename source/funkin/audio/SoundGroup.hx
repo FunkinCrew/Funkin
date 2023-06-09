@@ -44,7 +44,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
 
   /**
    * Finds the largest deviation from the desired time inside this SoundGroup.
-   * 
+   *
    * @param targetTime	The time to check against.
    * 						If none is provided, it checks the time of all members against the first member of this SoundGroup.
    * @return The largest deviation from the target time found.

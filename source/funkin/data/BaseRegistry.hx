@@ -11,7 +11,7 @@ typedef EntryConstructorFunction = String->Void;
 
 /**
  * A base type for a Registry, which is an object which handles loading scriptable objects.
- * 
+ *
  * @param T The type to construct. Must implement `IRegistryEntry`.
  * @param J The type of the JSON data used when constructing.
  */
@@ -139,8 +139,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   /**
    * Read, parse, and validate the JSON data and produce the corresponding data object.
-   * 
-   * NOTE: Must be implemented on the implementation class annd 
+   *
+   * NOTE: Must be implemented on the implementation class annd
    */
   public abstract function parseEntryData(id:String):Null<J>;
 
@@ -161,7 +161,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   /**
    * Create a entry, attached to a scripted class, from the given class name.
-   * @param clsName 
+   * @param clsName
    */
   abstract function createScriptedEntry(clsName:String):Null<T>;
 }

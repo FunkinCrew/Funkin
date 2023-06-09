@@ -58,7 +58,7 @@ using Lambda;
  * Built with HaxeUI for use by both developers and modders.
  *
  * Some functionality is moved to other classes to help maintain my sanity.
- * 
+ *
  * @author MasterEric
  */
 // Give other classes access to private instance fields
@@ -602,7 +602,7 @@ class ChartEditorState extends HaxeUIState
    * A map of the audio tracks for each character's vocals.
    * - Keys are the character IDs.
    * - Values are the FlxSound objects to play that character's vocals.
-   * 
+   *
    * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
   var audioVocalTracks:Map<String, FlxSound> = new Map<String, FlxSound>();
@@ -2945,7 +2945,7 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * Loads an instrumental from an absolute file path, replacing the current instrumental.
-   * 
+   *
    * @param path The absolute path to the audio file.
    * @return Success or failure.
    */
@@ -3132,7 +3132,7 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * Perform (or redo) a command, then add it to the undo stack.
-   * 
+   *
    * @param command The command to perform.
    * @param purgeRedoStack If true, the redo stack will be cleared.
    */

@@ -8,11 +8,11 @@ import funkin.play.character.CharacterData.CharacterRenderType;
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
  * into multiple files. This character renderer handles by showing the appropriate sprite.
- * 
+ *
  * Examples in base game include BF Holding GF (most of the sprites are in one file
  * but the death animation is in a separate file).
  * Only example I can think of in mods is Tricky (which has a separate file for each animation).
- * 
+ *
  * BaseCharacter has game logic, SparrowCharacter has only rendering logic.
  * KEEP THEM SEPARATE!
  *
