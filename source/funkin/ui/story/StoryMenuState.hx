@@ -53,6 +53,11 @@ class StoryMenuState extends MusicBeatState
   var scoreText:FlxText;
 
   /**
+   * The mode text at the top-middle.
+   */
+  var modeText:FlxText;
+
+  /**
    * The list of songs on the left.
    */
   var tracklistText:FlxText;
@@ -146,15 +151,21 @@ class StoryMenuState extends MusicBeatState
 
     updateProps();
 
-    scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
-    scoreText.setFormat("VCR OSD Mono", 32);
-    add(scoreText);
-
     tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
     tracklistText.setFormat("VCR OSD Mono", 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFe55777;
     add(tracklistText);
+
+    scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
+    scoreText.setFormat("VCR OSD Mono", 32);
+    add(scoreText);
+
+    modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
+    modeText.setFormat("VCR OSD Mono", 32);
+    modeText.screenCenter(X);
+    modeText.visible = hasModdedLevels();
+    add(modeText);
 
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
     levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
@@ -256,7 +267,7 @@ class StoryMenuState extends MusicBeatState
     displayingModdedLevels = moddedLevels;
     buildLevelTitles();
 
-    changeLevel(0);
+    changeLevel(999999); // Jump past the end of the list to the beginning.
     changeDifficulty(0);
   }
 
@@ -267,6 +278,9 @@ class StoryMenuState extends MusicBeatState
     highScoreLerp = Std.int(CoolUtil.coolLerp(highScoreLerp, highScore, 0.5));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
+
+    modeText.text = displayingModdedLevels ? 'Mods [TAB to switch]' : 'Base Game [TAB to switch]';
+    modeText.screenCenter(X);
 
     levelTitleText.text = currentLevel.getTitle();
     levelTitleText.x = FlxG.width - (levelTitleText.width + 10); // Right align.
@@ -322,7 +336,7 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(-1);
         }
 
-        if (FlxG.keys.justPressed.TAB)
+        if (FlxG.keys.justPressed.TAB && modeText.visible)
         {
           switchMode(!displayingModdedLevels);
         }
@@ -340,6 +354,11 @@ class StoryMenuState extends MusicBeatState
       exitingMenu = true;
       FlxG.switchState(new MainMenuState());
     }
+  }
+
+  function hasModdedLevels():Bool
+  {
+    return LevelRegistry.instance.listModdedLevelIds().length > 0;
   }
 
   /**
