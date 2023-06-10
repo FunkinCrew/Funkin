@@ -108,23 +108,6 @@ class SongMigrator
     trace('Migrating song metadata from FNF Legacy.');
 
     var songData:FNFLegacy = cast jsonData;
-    // Some cleanup
-    if (Std.isOfType(jsonData.song.notes, Array))
-    {
-      jsonData.song.notes = haxe.ds.Either.Left(jsonData.song.notes);
-    }
-    else
-    {
-      jsonData.song.notes = haxe.ds.Either.Right(jsonData.song.notes);
-    }
-    if (Std.isOfType(jsonData.song.speed, Float))
-    {
-      jsonData.song.speed = haxe.ds.Either.Left(jsonData.song.speed);
-    }
-    else
-    {
-      jsonData.song.speed = haxe.ds.Either.Right(jsonData.song.speed);
-    }
 
     var songMetadata:SongMetadata = new SongMetadata('Import', 'Kawai Sprite', 'default');
 
