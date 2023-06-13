@@ -11,12 +11,16 @@ class GitarooPause extends MusicBeatState
 
   var replaySelect:Bool = false;
 
-  public function new():Void
+  var previousParams:PlayStateParams;
+
+  public function new(previousParams:PlayStateParams):Void
   {
     super();
+
+    this.previousParams = previousParams;
   }
 
-  override function create()
+  override function create():Void
   {
     if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
@@ -49,7 +53,7 @@ class GitarooPause extends MusicBeatState
     super.create();
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     if (controls.UI_LEFT_P || controls.UI_RIGHT_P) changeThing();
 
@@ -57,7 +61,7 @@ class GitarooPause extends MusicBeatState
     {
       if (replaySelect)
       {
-        FlxG.switchState(new PlayState());
+        FlxG.switchState(new PlayState(previousParams));
       }
       else
       {

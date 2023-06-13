@@ -37,7 +37,7 @@ class Countdown
     // Stop any existing countdown.
     stopCountdown();
 
-    PlayState.isInCountdown = true;
+    PlayState.instance.isInCountdown = true;
     Conductor.songPosition = Conductor.crochet * -5;
     // Handle onBeatHit events manually
     @:privateAccess

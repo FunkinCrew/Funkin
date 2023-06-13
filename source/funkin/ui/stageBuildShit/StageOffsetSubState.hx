@@ -260,7 +260,7 @@ class StageOffsetSubState extends HaxeUISubState
       // if (uiStuff != null) remove(uiStuff);
 
       // uiStuff = null;
-      PlayState.disableKeys = false;
+      PlayState.instance.disableKeys = false;
       PlayState.instance.resetCamera();
       FlxG.mouse.visible = false;
       close();

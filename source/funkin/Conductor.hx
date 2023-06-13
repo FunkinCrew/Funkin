@@ -51,6 +51,16 @@ class Conductor
   public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
   /**
+   * Duration of a measure in milliseconds. Calculated based on bpm.
+   */
+  public static var measureLengthMs(get, null):Float;
+
+  static function get_measureLengthMs():Float
+  {
+    return crochet * timeSignatureNumerator;
+  }
+
+  /**
    * Duration of a beat in millisecond. Calculated based on bpm.
    */
   public static var crochet(get, null):Float;

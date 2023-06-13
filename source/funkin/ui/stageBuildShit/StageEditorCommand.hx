@@ -1,5 +1,6 @@
 package funkin.ui.stageBuildShit;
 
+import funkin.ui.stageBuildShit.StageOffsetSubState;
 import flixel.FlxSprite;
 
 /**

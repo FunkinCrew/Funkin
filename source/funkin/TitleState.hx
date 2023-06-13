@@ -283,44 +283,6 @@ class TitleState extends MusicBeatState
       FlxTween.tween(FlxG.stage.window, {y: FlxG.stage.window.y + 100}, 0.7, {ease: FlxEase.quadInOut, type: PINGPONG});
     }
 
-    /*
-          FlxG.watch.addQuick('cur display', FlxG.stage.window.display.id);
-          if (FlxG.keys.justPressed.Y)
-          {
-      // trace(FlxG.stage.window.display.name);
-
-      if (FlxG.gamepads.firstActive != null)
-      {
-        trace(FlxG.gamepads.firstActive.model);
-        FlxG.gamepads.firstActive.id
-      }
-      else
-        trace('gamepad null');
-
-      // FlxG.stage.window.title = Std.string(FlxG.random.int(0, 20000));
-      // FlxG.stage.window.setIcon(Image.fromFile('assets/images/icon16.png'));
-      // FlxG.stage.window.readPixels;
-
-      if (FlxG.stage.window.width == Std.int(FlxG.stage.window.display.bounds.width))
-      {
-        FlxG.stage.window.width = 1280;
-        FlxG.stage.window.height = 720;
-        FlxG.stage.window.y = 30;
-      }
-      else
-      {
-        FlxG.stage.window.width = Std.int(FlxG.stage.window.display.bounds.width);
-        FlxG.stage.window.height = Std.int(FlxG.stage.window.display.bounds.height);
-        FlxG.stage.window.x = Std.int(FlxG.stage.window.display.bounds.x);
-        FlxG.stage.window.y = Std.int(FlxG.stage.window.display.bounds.y);
-      }
-          }
-     */
-
-    #if debug
-    if (FlxG.keys.justPressed.EIGHT) FlxG.switchState(new CutsceneAnimTestState());
-    #end
-
     if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
     if (FlxG.keys.justPressed.F) FlxG.fullscreen = !FlxG.fullscreen;
 

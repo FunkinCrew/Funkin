@@ -39,7 +39,17 @@ class Highscore
     return false;
   }
 
-  public static function saveCompletion(song:String, completion:Float, ?diff:Int = 0):Bool
+  public static function saveScoreForDifficulty(song:String, score:Int = 0, diff:String = 'normal'):Bool
+  {
+    var diffInt:Int = 1;
+
+    if (diff == 'easy') diffInt = 0;
+    else if (diff == 'hard') diffInt = 2;
+
+    return saveScore(song, score, diffInt);
+  }
+
+  public static function saveCompletion(song:String, completion:Float, diff:Int = 0):Bool
   {
     var formattedSong:String = formatSong(song, diff);
 
@@ -57,20 +67,42 @@ class Highscore
     return false;
   }
 
-  public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
+  public static function saveCompletionForDifficulty(song:String, completion:Float, diff:String = 'normal'):Bool
+  {
+    var diffInt:Int = 1;
+
+    if (diff == 'easy') diffInt = 0;
+    else if (diff == 'hard') diffInt = 2;
+
+    return saveCompletion(song, completion, diffInt);
+  }
+
+  public static function saveWeekScore(week:String, score:Int = 0, diff:Int = 0):Void
   {
     #if newgrounds
-    NGio.postScore(score, "Week " + week);
+    NGio.postScore(score, 'Campaign ID $week');
     #end
 
-    var formattedSong:String = formatSong('week' + week, diff);
+    var formattedSong:String = formatSong(week, diff);
 
     if (songScores.exists(formattedSong))
     {
       if (songScores.get(formattedSong) < score) setScore(formattedSong, score);
     }
     else
+    {
       setScore(formattedSong, score);
+    }
+  }
+
+  public static function saveWeekScoreForDifficulty(week:String, score:Int = 0, diff:String = 'normal'):Void
+  {
+    var diffInt:Int = 1;
+
+    if (diff == 'easy') diffInt = 0;
+    else if (diff == 'hard') diffInt = 2;
+
+    saveWeekScore(week, score, diffInt);
   }
 
   static function setCompletion(formattedSong:String, completion:Float):Void
@@ -122,7 +154,7 @@ class Highscore
     return songCompletion.get(formatSong(song, diff));
   }
 
-  public static function getAllScores()
+  public static function getAllScores():Void
   {
     trace(songScores.toString());
   }

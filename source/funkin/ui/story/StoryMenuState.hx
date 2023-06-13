@@ -13,6 +13,8 @@ import funkin.data.level.LevelRegistry;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.util.Constants;
 
@@ -112,8 +114,8 @@ class StoryMenuState extends MusicBeatState
     {
       FlxG.sound.playMusic(Paths.music('freakyMenu'));
       FlxG.sound.music.fadeIn(4, 0, 0.7);
-      Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
     }
+    Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
 
     if (stickerSubState != null)
     {
@@ -474,24 +476,25 @@ class StoryMenuState extends MusicBeatState
       prop.playConfirm();
     }
 
-    PlayState.storyPlaylist = currentLevel.getSongs();
-    PlayState.isStoryMode = true;
+    Paths.setCurrentLevel(currentLevel.id);
 
-    PlayState.currentSong = SongLoad.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0].toLowerCase());
-    PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.storyPlaylist[0].toLowerCase());
+    PlayStatePlaylist.playlistSongIds = currentLevel.getSongs();
+    PlayStatePlaylist.isStoryMode = true;
+    PlayStatePlaylist.campaignScore = 0;
 
-    // TODO: Fix this.
-    PlayState.storyWeek = 0;
-    PlayState.campaignScore = 0;
+    var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    // TODO: Fix this.
-    PlayState.storyDifficulty = 0;
-    PlayState.storyDifficulty_NEW = currentDifficultyId;
+    var targetSong:Song = SongDataParser.fetchSong(targetSongId);
 
-    SongLoad.curDiff = PlayState.storyDifficulty_NEW;
+    PlayStatePlaylist.campaignId = currentLevel.id;
+    PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
-      LoadingState.loadAndSwitchState(new PlayState(), true);
+      LoadingState.loadAndSwitchState(new PlayState(
+        {
+          targetSong: targetSong,
+          targetDifficulty: currentDifficultyId,
+        }), true);
     });
   }
 

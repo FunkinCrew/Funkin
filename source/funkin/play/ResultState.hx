@@ -118,16 +118,16 @@ class ResultState extends MusicBeatSubState
 
     difficulty = new FlxSprite(555);
 
-    var diffSpr:String = switch (CoolUtil.difficultyString())
+    var diffSpr:String = switch (PlayState.instance.currentDifficulty)
     {
-      case "EASY":
-        "difEasy";
-      case "NORMAL":
-        "difNormal";
-      case "HARD":
-        "difHard";
+      case 'EASY':
+        'difEasy';
+      case 'NORMAL':
+        'difNormal';
+      case 'HARD':
+        'difHard';
       case _:
-        "difNormal";
+        'difNormal';
     }
 
     difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
@@ -144,7 +144,7 @@ class ResultState extends MusicBeatSubState
     }
     else
     {
-      songName.text += PlayState.currentSong.song;
+      songName.text += PlayState.instance.currentSong.songId;
     }
 
     songName.antialiasing = true;
