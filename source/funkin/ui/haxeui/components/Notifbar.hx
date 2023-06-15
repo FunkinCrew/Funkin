@@ -44,8 +44,7 @@ class Notifbar extends SideBar
       this.action.text = actionText;
       this.action.visible = true;
       this.action.disabled = false;
-      this.action.onClick = (_) ->
-      {
+      this.action.onClick = (_) -> {
         actionCallback();
       };
     }
@@ -98,8 +97,7 @@ class Notifbar extends SideBar
     action = outerContainer.findComponent('notifbarAction', Button);
     dismiss = outerContainer.findComponent('notifbarDismiss', Button);
 
-    dismiss.onClick = (_) ->
-    {
+    dismiss.onClick = (_) -> {
       dismissNotification();
     };
   }

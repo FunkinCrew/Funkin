@@ -121,9 +121,9 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 
   /**
    * Controls navigation on a linear list of items such as Vertical.
-   * @param prev 
-   * @param next 
-   * @param allowWrap 
+   * @param prev
+   * @param next
+   * @param allowWrap
    */
   inline function navList(prev:Bool, next:Bool, allowWrap:Bool)
   {
@@ -164,8 +164,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
     {
       busy = true;
       FlxG.sound.play(Paths.sound('confirmMenu'));
-      FlxFlicker.flicker(selected, 1, 0.06, true, false, function(_)
-      {
+      FlxFlicker.flicker(selected, 1, 0.06, true, false, function(_) {
         busy = false;
         selected.callback();
       });

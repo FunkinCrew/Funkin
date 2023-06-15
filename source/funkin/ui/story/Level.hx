@@ -43,7 +43,8 @@ class Level implements IRegistryEntry<LevelData>
    */
   public function getSongs():Array<String>
   {
-    return _data.songs;
+    // Copy the array so that it can't be modified on accident
+    return _data.songs.copy();
   }
 
   /**

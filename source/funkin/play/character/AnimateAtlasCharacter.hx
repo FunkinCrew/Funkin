@@ -32,7 +32,7 @@ typedef AnimateAtlasAnimation =
 /**
  * An AnimateAtlasCharacter is a Character which is rendered by
  * displaying an animation derived from an Adobe Animate texture atlas spritesheet file.
- * 
+ *
  * BaseCharacter has game logic, AnimateAtlasCharacter has only rendering logic.
  * KEEP THEM SEPARATE!
  */
@@ -537,7 +537,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   /**
    * Returns the left-most position of the left-most member.
    * If there are no members, x is returned.
-   * 
+   *
    * @since 5.0.0
    * @return the left-most position of the left-most member
    */
@@ -554,7 +554,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   /**
    * Returns the right-most position of the right-most member.
    * If there are no members, x is returned.
-   * 
+   *
    * @since 5.0.0
    * @return the right-most position of the right-most member
    */
@@ -586,7 +586,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   /**
    * Returns the top-most position of the top-most member.
    * If there are no members, y is returned.
-   * 
+   *
    * @since 5.0.0
    * @return the top-most position of the top-most member
    */
@@ -603,7 +603,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   /**
    * Returns the top-most position of the top-most member.
    * If there are no members, y is returned.
-   * 
+   *
    * @since 5.0.0
    * @return the bottom-most position of the bottom-most member
    */

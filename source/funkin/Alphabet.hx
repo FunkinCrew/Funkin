@@ -125,8 +125,7 @@ class Alphabet extends FlxSpriteGroup
     var xPos:Float = 0;
     var curRow:Int = 0;
 
-    new FlxTimer().start(0.05, function(tmr:FlxTimer)
-    {
+    new FlxTimer().start(0.05, function(tmr:FlxTimer) {
       // trace(_finalText.fastCodeAt(loopNum) + " " + _finalText.charAt(loopNum));
       if (_finalText.fastCodeAt(loopNum) == "\n".code)
       {

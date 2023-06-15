@@ -12,7 +12,7 @@ import flixel.util.FlxColor;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.event.SongEvent.SongEventParser;
+import funkin.play.event.SongEventData.SongEventParser;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.ui.PreferencesMenu;
 import funkin.util.WindowUtil;
@@ -140,10 +140,10 @@ class InitState extends FlxTransitionableState
       // WEEK UNLOCK PROGRESSION!!
       // StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
 
-      if (StoryMenuState.weekUnlocked.length < 4) StoryMenuState.weekUnlocked.insert(0, true);
+      // if (StoryMenuState.weekUnlocked.length < 4) StoryMenuState.weekUnlocked.insert(0, true);
 
       // QUICK PATCH OOPS!
-      if (!StoryMenuState.weekUnlocked[0]) StoryMenuState.weekUnlocked[0] = true;
+      // if (!StoryMenuState.weekUnlocked[0]) StoryMenuState.weekUnlocked[0] = true;
     }
 
     if (FlxG.save.data.seenVideo != null) VideoState.seenVideo = FlxG.save.data.seenVideo;
@@ -237,20 +237,18 @@ class InitState extends FlxTransitionableState
   {
     var dif:Int = getDif();
 
-    PlayState.currentSong = SongLoad.loadFromJson(song, song);
-    PlayState.currentSong_NEW = SongDataParser.fetchSong(song);
-    PlayState.isStoryMode = isStoryMode;
-    PlayState.storyDifficulty = dif;
-    PlayState.storyDifficulty_NEW = switch (dif)
+    var targetDifficulty = switch (dif)
     {
       case 0: 'easy';
       case 1: 'normal';
       case 2: 'hard';
       default: 'normal';
     };
-    SongLoad.curDiff = PlayState.storyDifficulty_NEW;
-    PlayState.storyWeek = week;
-    LoadingState.loadAndSwitchState(new PlayState());
+    LoadingState.loadAndSwitchState(new PlayState(
+      {
+        targetSong: SongDataParser.fetchSong(song),
+        targetDifficulty: targetDifficulty,
+      }));
   }
 }
 

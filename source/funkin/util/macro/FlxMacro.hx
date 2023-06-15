@@ -24,7 +24,7 @@ class FlxMacro
       {
         name: "zIndex", // Field name.
         access: [haxe.macro.Expr.Access.APublic], // Access level
-        kind: haxe.macro.Expr.FieldType.FVar(macro:Int, macro $v{0}), // Variable type and default value
+        kind: haxe.macro.Expr.FieldType.FVar(macro :Int, macro $v{0}), // Variable type and default value
         pos: pos, // The field's position in code.
       }
     ]);

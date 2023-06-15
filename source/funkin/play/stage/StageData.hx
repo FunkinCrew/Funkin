@@ -31,7 +31,7 @@ class StageDataParser
 
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
-   * 
+   *
    * If you want to force stages to be reloaded, you can just call this function again.
    */
   public static function loadStageCache():Void
@@ -68,8 +68,7 @@ class StageDataParser
     // UNSCRIPTED STAGES
     //
     var stageIdList:Array<String> = DataAssets.listDataFilesInPath('stages/');
-    var unscriptedStageIds:Array<String> = stageIdList.filter(function(stageId:String):Bool
-    {
+    var unscriptedStageIds:Array<String> = stageIdList.filter(function(stageId:String):Bool {
       return !stageCache.exists(stageId);
     });
     trace('  Instantiating ${unscriptedStageIds.length} non-scripted stages...');
@@ -126,7 +125,7 @@ class StageDataParser
 
   /**
    * Load a stage's JSON file, parse its data, and return it.
-   * 
+   *
    * @param stageId The stage to load.
    * @return The stage data, or null if validation failed.
    */
@@ -199,8 +198,8 @@ class StageDataParser
   /**
    * Set unspecified parameters to their defaults.
    * If the parameter is mandatory, print an error message.
-   * @param id 
-   * @param input 
+   * @param id
+   * @param input
    * @return The validated stage data
    */
   static function validateStageData(id:String, input:StageData):Null<StageData>
@@ -461,7 +460,7 @@ typedef StageDataProp =
    * If not zero, this prop will play an animation every X beats of the song.
    * This requires animations to be defined. If `danceLeft` and `danceRight` are defined,
    * they will alternated between, otherwise the `idle` animation will be used.
-   * 
+   *
    * @default 0
    */
   var danceEvery:Null<Int>;

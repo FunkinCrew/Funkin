@@ -19,7 +19,7 @@ class SortUtil
 
   /**
    * Given two Notes, returns 1 or -1 based on whether `a` or `b` has an earlier strumtime.
-   * 
+   *
    * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
    */
   public static inline function byStrumtime(order:Int, a:Note, b:Note)

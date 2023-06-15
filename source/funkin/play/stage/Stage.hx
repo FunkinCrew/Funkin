@@ -19,7 +19,7 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 
 /**
  * A Stage is a group of objects rendered in the PlayState.
- * 
+ *
  * A Stage is comprised of one or more props, each of which is a FlxSprite.
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
@@ -39,8 +39,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * The Stage elements get initialized at the beginning of the game.
    * They're used to cache the data needed to build the stage,
    * then accessed and fleshed out when the stage needs to be built.
-   * 
-   * @param stageId 
+   *
+   * @param stageId
    */
   public function new(stageId:String)
   {
@@ -543,7 +543,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   /**
    * Retrieve a list of all the asset paths required to load the stage.
    * Override this in a scripted class to ensure that all necessary assets are loaded!
-   * 
+   *
    * @return An array of file names.
    */
   public function fetchAssetPaths():Array<String>

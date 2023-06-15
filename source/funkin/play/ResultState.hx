@@ -19,7 +19,7 @@ import funkin.shaderslmfao.LeftMaskShader;
 import funkin.ui.TallyCounter;
 import flxanimate.FlxAnimate.Settings;
 
-class ResultState extends MusicBeatSubstate
+class ResultState extends MusicBeatSubState
 {
   var resultsVariation:ResultVariations;
   var songName:FlxBitmapText;
@@ -118,16 +118,16 @@ class ResultState extends MusicBeatSubstate
 
     difficulty = new FlxSprite(555);
 
-    var diffSpr:String = switch (CoolUtil.difficultyString())
+    var diffSpr:String = switch (PlayState.instance.currentDifficulty)
     {
-      case "EASY":
-        "difEasy";
-      case "NORMAL":
-        "difNormal";
-      case "HARD":
-        "difHard";
+      case 'EASY':
+        'difEasy';
+      case 'NORMAL':
+        'difNormal';
+      case 'HARD':
+        'difHard';
       case _:
-        "difNormal";
+        'difNormal';
     }
 
     difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
@@ -144,7 +144,7 @@ class ResultState extends MusicBeatSubstate
     }
     else
     {
-      songName.text += PlayState.currentSong.song;
+      songName.text += PlayState.instance.currentSong.songId;
     }
 
     songName.antialiasing = true;

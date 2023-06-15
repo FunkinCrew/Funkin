@@ -1,5 +1,6 @@
 package funkin.ui.stageBuildShit;
 
+import funkin.ui.stageBuildShit.StageOffsetSubState;
 import flixel.FlxSprite;
 
 /**
@@ -9,8 +10,8 @@ import flixel.FlxSprite;
  */
 interface StageEditorCommand
 {
-  public function execute(state:StageOffsetSubstate):Void;
-  public function undo(state:StageOffsetSubstate):Void;
+  public function execute(state:StageOffsetSubState):Void;
+  public function undo(state:StageOffsetSubState):Void;
   public function toString():String;
 }
 
@@ -27,7 +28,7 @@ class MovePropCommand implements StageEditorCommand
     this.realMove = realMove;
   }
 
-  public function execute(state:StageOffsetSubstate):Void
+  public function execute(state:StageOffsetSubState):Void
   {
     if (realMove)
     {
@@ -36,7 +37,7 @@ class MovePropCommand implements StageEditorCommand
     }
   }
 
-  public function undo(state:StageOffsetSubstate):Void
+  public function undo(state:StageOffsetSubState):Void
   {
     state.char.x -= xDiff;
     state.char.y -= yDiff;
@@ -58,13 +59,13 @@ class SelectPropCommand implements StageEditorCommand
     this.prop = prop;
   }
 
-  public function execute(state:StageOffsetSubstate):Void
+  public function execute(state:StageOffsetSubState):Void
   {
     this.prevProp = state.char;
     state.char = prop;
   }
 
-  public function undo(state:StageOffsetSubstate):Void
+  public function undo(state:StageOffsetSubState):Void
   {
     var funnyShader = state.char.shader;
     if (state.char != null) state.char.shader = null;

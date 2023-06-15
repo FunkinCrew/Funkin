@@ -37,7 +37,7 @@ class Countdown
     // Stop any existing countdown.
     stopCountdown();
 
-    PlayState.isInCountdown = true;
+    PlayState.instance.isInCountdown = true;
     Conductor.songPosition = Conductor.crochet * -5;
     // Handle onBeatHit events manually
     @:privateAccess
@@ -46,8 +46,7 @@ class Countdown
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
-    countdownTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
-    {
+    countdownTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer) {
       countdownStep = decrement(countdownStep);
 
       // Handle onBeatHit events manually
@@ -102,7 +101,7 @@ class Countdown
 
   /**
    * Pauses the countdown at the current step. You can start it up again later by calling resumeCountdown().
-   * 
+   *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
    */
   public static function pauseCountdown()
@@ -115,7 +114,7 @@ class Countdown
 
   /**
    * Resumes the countdown at the current step. Only makes sense if you called pauseCountdown() first.
-   * 
+   *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
    */
   public static function resumeCountdown()
@@ -128,7 +127,7 @@ class Countdown
 
   /**
    * Stops the countdown at the current step. You will have to restart it again later.
-   * 
+   *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStart event.
    */
   public static function stopCountdown()
@@ -166,7 +165,7 @@ class Countdown
   /**
    * Retrieves the graphic to use for this step of the countdown.
    * TODO: Make this less dumb. Unhardcode it? Use modules? Use notestyles?
-   * 
+   *
    * This is public so modules can do lol funny shit.
    */
   public static function showCountdownGraphic(index:CountdownStep, isPixelStyle:Bool):Void
@@ -216,8 +215,7 @@ class Countdown
     FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.crochet / 1000,
       {
         ease: FlxEase.cubeInOut,
-        onComplete: function(twn:FlxTween)
-        {
+        onComplete: function(twn:FlxTween) {
           countdownSprite.destroy();
         }
       });
@@ -228,7 +226,7 @@ class Countdown
   /**
    * Retrieves the sound file to use for this step of the countdown.
    * TODO: Make this less dumb. Unhardcode it? Use modules? Use notestyles?
-   * 
+   *
    * This is public so modules can do lol funny shit.
    */
   public static function playCountdownSound(index:CountdownStep, isPixelStyle:Bool):Void

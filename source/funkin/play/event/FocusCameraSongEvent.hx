@@ -1,12 +1,14 @@
 package funkin.play.event;
 
-import funkin.play.event.SongEvent;
 import funkin.play.song.SongData;
+import funkin.play.event.SongEvent;
+import funkin.play.event.SongEventData.SongEventFieldType;
+import funkin.play.event.SongEventData.SongEventSchema;
 
 /**
  * This class represents a handler for a type of song event.
  * It is used by the ScriptedSongEvent class to handle user-defined events.
- * 
+ *
  * Example: Focus on Boyfriend:
  * ```
  * {
@@ -16,7 +18,7 @@ import funkin.play.song.SongData;
  *   }
  * }
  * ```
- * 
+ *
  * Example: Focus on 10px above Girlfriend:
  * ```
  * {
@@ -27,7 +29,7 @@ import funkin.play.song.SongData;
  *   }
  * }
  * ```
- * 
+ *
  * Example: Focus on (100, 100):
  * ```
  * {

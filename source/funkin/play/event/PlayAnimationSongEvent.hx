@@ -3,6 +3,8 @@ package funkin.play.event;
 import flixel.FlxSprite;
 import funkin.play.character.BaseCharacter;
 import funkin.play.event.SongEvent;
+import funkin.play.event.SongEventData.SongEventFieldType;
+import funkin.play.event.SongEventData.SongEventSchema;
 import funkin.play.song.SongData;
 
 class PlayAnimationSongEvent extends SongEvent

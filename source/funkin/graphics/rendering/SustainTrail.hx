@@ -77,9 +77,9 @@ class SustainTrail extends FlxSprite
 
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
-   * @param NoteData 
-   * @param SustainLength 
-   * @param FileName 
+   * @param NoteData
+   * @param SustainLength
+   * @param FileName
    */
   public function new(NoteData:Int, SustainLength:Float, Path:String, ?Alpha:Float = 0.6, ?Pixel:Bool = false)
   {

@@ -51,6 +51,16 @@ class Conductor
   public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
   /**
+   * Duration of a measure in milliseconds. Calculated based on bpm.
+   */
+  public static var measureLengthMs(get, null):Float;
+
+  static function get_measureLengthMs():Float
+  {
+    return crochet * timeSignatureNumerator;
+  }
+
+  /**
    * Duration of a beat in millisecond. Calculated based on bpm.
    */
   public static var crochet(get, null):Float;
@@ -149,9 +159,9 @@ class Conductor
   /**
    * Forcibly defines the current BPM of the song.
    * Useful for things like the chart editor that need to manipulate BPM in real time.
-   * 
+   *
    * Set to null to reset to the BPM defined by the timeChanges.
-   * 
+   *
    * WARNING: Avoid this for things like setting the BPM of the title screen music,
    * you should have a metadata file for it instead.
    */
@@ -166,7 +176,7 @@ class Conductor
   /**
    * Update the conductor with the current song position.
    * BPM, current step, etc. will be re-calculated based on the song position.
-   * 
+   *
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    */

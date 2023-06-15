@@ -14,7 +14,7 @@ import funkin.ui.CoolStatsGraph;
 import haxe.Timer;
 import openfl.events.KeyboardEvent;
 
-class LatencyState extends MusicBeatSubstate
+class LatencyState extends MusicBeatSubState
 {
   var offsetText:FlxText;
   var noteGrp:FlxTypedGroup<Note>;
