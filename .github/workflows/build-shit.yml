@@ -44,14 +44,6 @@ jobs:
        actions: write
     steps:
       - uses: actions/checkout@v3
-      - name: Restore/create existing haxelib cache for faster downloads
-        uses: actions/cache@v3
-        id: cache-haxelib-windows
-        with:
-          # wha?
-          key: cache-haxelib-windows-${{ hashFiles('**/hmm.json')}}
-          path: |
-            .haxelib/
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |

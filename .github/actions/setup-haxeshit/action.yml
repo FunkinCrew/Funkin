@@ -10,6 +10,14 @@ runs:
         run: |
           haxelib config
         shell: bash
+      - name: Restore/create existing haxelib cache for faster downloads
+        uses: actions/cache@v3
+        id: cache-haxelib-windows
+        with:
+          # wha?
+          key: cache-haxelib-${{ runner.os }}-${{ hashFiles('**/hmm.json')}}
+          path: |
+            .haxelib/
       - name: Installing Haxe lol
         run: |
           haxe -version
