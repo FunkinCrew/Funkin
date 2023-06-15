@@ -7,7 +7,7 @@ import haxe.ui.core.Component;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
-class HaxeUISubState extends MusicBeatSubstate
+class HaxeUISubState extends MusicBeatSubState
 {
   // The component representing the main UI.
   public var component:Component;

@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.play.Strumline.StrumlineArrow;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import funkin.noteStuff.NoteBasic.NoteData;
@@ -15,9 +16,9 @@ class Note extends FlxSprite
   public var data = new NoteData();
 
   /**
-   * code colors for.... code.... 
+   * code colors for.... code....
    * i think goes in order of left to right
-   * 
+   *
    * left 	0
    * down 	1
    * up 		2
@@ -211,6 +212,24 @@ class Note extends FlxSprite
         if (antialiasing) scaleThing *= 1.0 + (1.0 / prevNote.frameHeight);
         prevNote.scale.y = scaleThing / prevNote.frameHeight;
         prevNote.updateHitbox();
+      }
+    }
+  }
+
+  public function alignToSturmlineArrow(arrow:StrumlineArrow):Void
+  {
+    x = arrow.x;
+
+    if (isSustainNote && prevNote != null)
+    {
+      if (prevNote.isSustainNote)
+      {
+        x = prevNote.x;
+      }
+      else
+      {
+        x += prevNote.width / 2;
+        x -= width / 2;
       }
     }
   }

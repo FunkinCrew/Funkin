@@ -38,7 +38,7 @@ class DialogueBox extends FlxSpriteGroup
   {
     super();
 
-    switch (PlayState.currentSong.song.toLowerCase())
+    switch (PlayState.instance.currentSong.songId.toLowerCase())
     {
       case 'senpai':
         FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
@@ -53,8 +53,7 @@ class DialogueBox extends FlxSpriteGroup
     bgFade.alpha = 0;
     add(bgFade);
 
-    new FlxTimer().start(0.83, function(tmr:FlxTimer)
-    {
+    new FlxTimer().start(0.83, function(tmr:FlxTimer) {
       bgFade.alpha += (1 / 5) * 0.7;
       if (bgFade.alpha > 0.7) bgFade.alpha = 0.7;
     }, 5);
@@ -80,7 +79,7 @@ class DialogueBox extends FlxSpriteGroup
     box = new FlxSprite(-20, 45);
 
     var hasDialog:Bool = false;
-    switch (PlayState.currentSong.song.toLowerCase())
+    switch (PlayState.instance.currentSong.songId.toLowerCase())
     {
       case 'senpai':
         hasDialog = true;
@@ -152,8 +151,8 @@ class DialogueBox extends FlxSpriteGroup
   override function update(elapsed:Float):Void
   {
     // HARD CODING CUZ IM STUPDI
-    if (PlayState.currentSong.song.toLowerCase() == 'roses') portraitLeft.visible = false;
-    if (PlayState.currentSong.song.toLowerCase() == 'thorns')
+    if (PlayState.instance.currentSong.songId.toLowerCase() == 'roses') portraitLeft.visible = false;
+    if (PlayState.instance.currentSong.songId.toLowerCase() == 'thorns')
     {
       portraitLeft.color = FlxColor.BLACK;
       swagDialogue.color = FlxColor.WHITE;
@@ -189,11 +188,10 @@ class DialogueBox extends FlxSpriteGroup
         {
           isEnding = true;
 
-          if (PlayState.currentSong.song.toLowerCase() == 'senpai'
-            || PlayState.currentSong.song.toLowerCase() == 'thorns') FlxG.sound.music.fadeOut(2.2, 0);
+          if (PlayState.instance.currentSong.songId.toLowerCase() == 'senpai'
+            || PlayState.instance.currentSong.songId.toLowerCase() == 'thorns') FlxG.sound.music.fadeOut(2.2, 0);
 
-          new FlxTimer().start(0.2, function(tmr:FlxTimer)
-          {
+          new FlxTimer().start(0.2, function(tmr:FlxTimer) {
             box.alpha -= 1 / 5;
             bgFade.alpha -= 1 / 5 * 0.7;
             portraitLeft.visible = false;
@@ -203,8 +201,7 @@ class DialogueBox extends FlxSpriteGroup
             dropText.alpha = swagDialogue.alpha;
           }, 5);
 
-          new FlxTimer().start(1.2, function(tmr:FlxTimer)
-          {
+          new FlxTimer().start(1.2, function(tmr:FlxTimer) {
             finishThing();
             kill();
           });
@@ -233,8 +230,7 @@ class DialogueBox extends FlxSpriteGroup
     // swagDialogue.text = ;
     swagDialogue.resetText(dialogueList[0]);
     swagDialogue.start(0.04);
-    swagDialogue.completeCallback = function()
-    {
+    swagDialogue.completeCallback = function() {
       trace('dialogue finish');
       handSelect.visible = true;
       dialogueEnded = true;

@@ -25,7 +25,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   /**
    * Determines the order in which modules receive events.
    * You can modify this to change the order in which a given module receives events.
-   * 
+   *
    * Priority 1 is processed before Priority 1000, etc.
    */
   public var priority(default, set):Int;
@@ -41,7 +41,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   /**
    * Called when the module is initialized.
    * It may not be safe to reference other modules here since they may not be loaded yet.
-   * 
+   *
    * NOTE: To make the module start inactive, call `this.active = false` in the constructor.
    */
   public function new(moduleId:String, priority:Int = 1000):Void
@@ -107,13 +107,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   public function onStateChangeEnd(event:StateChangeScriptEvent) {}
 
-  public function onSubstateOpenBegin(event:SubStateScriptEvent) {}
+  public function onSubStateOpenBegin(event:SubStateScriptEvent) {}
 
-  public function onSubstateOpenEnd(event:SubStateScriptEvent) {}
+  public function onSubStateOpenEnd(event:SubStateScriptEvent) {}
 
-  public function onSubstateCloseBegin(event:SubStateScriptEvent) {}
+  public function onSubStateCloseBegin(event:SubStateScriptEvent) {}
 
-  public function onSubstateCloseEnd(event:SubStateScriptEvent) {}
+  public function onSubStateCloseEnd(event:SubStateScriptEvent) {}
 
   public function onSongRetry(event:ScriptEvent) {}
 }

@@ -49,8 +49,7 @@ class NGio
     trace('checking NG.io version');
     GAME_VER = "v" + Application.current.meta.get('version');
 
-    NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response)
-    {
+    NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response) {
       GAME_VER = response.result.data.currentVersion;
       trace('CURRENT NG VERSION: ' + GAME_VER);
       callback(GAME_VER);
@@ -141,8 +140,7 @@ class NGio
     var onCancel:Void->Void = null;
     if (onComplete != null)
     {
-      onSuccess = function()
-      {
+      onSuccess = function() {
         onNGLogin();
         onComplete(Success);
       }
@@ -228,7 +226,7 @@ class NGio
     scoreboardsLoaded = true;
 
     ngScoresLoaded.dispatch();
-    /* 
+    /*
       for (score in NG.core.scoreBoards.get(8737).scores)
       {
         trace('score loaded user:${score.user.name}, score:${score.formatted_value}');

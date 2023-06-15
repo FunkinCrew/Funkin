@@ -113,16 +113,16 @@ class ScriptEventDispatcher
           t.onStateChangeEnd(cast event);
           return;
         case ScriptEvent.SUBSTATE_OPEN_BEGIN:
-          t.onSubstateOpenBegin(cast event);
+          t.onSubStateOpenBegin(cast event);
           return;
         case ScriptEvent.SUBSTATE_OPEN_END:
-          t.onSubstateOpenEnd(cast event);
+          t.onSubStateOpenEnd(cast event);
           return;
         case ScriptEvent.SUBSTATE_CLOSE_BEGIN:
-          t.onSubstateCloseBegin(cast event);
+          t.onSubStateCloseBegin(cast event);
           return;
         case ScriptEvent.SUBSTATE_CLOSE_END:
-          t.onSubstateCloseEnd(cast event);
+          t.onSubStateCloseEnd(cast event);
           return;
       }
     }

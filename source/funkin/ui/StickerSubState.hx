@@ -17,7 +17,7 @@ import openfl.geom.Matrix;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 
-class StickerSubState extends MusicBeatSubstate
+class StickerSubState extends MusicBeatSubState
 {
   public var grpStickers:FlxTypedGroup<StickerSprite>;
 
@@ -36,7 +36,8 @@ class StickerSubState extends MusicBeatSubstate
     add(grpStickers);
 
     // makes the stickers on the most recent camera, which is more often than not... a UI camera!!
-    grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+    // grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+    grpStickers.cameras = FlxG.cameras.list;
 
     if (oldStickers != null)
     {
@@ -208,8 +209,10 @@ class StickerSubState extends MusicBeatSubstate
                 FlxG.switchState(new FreeplayState(this));
               case STORY:
                 FlxG.switchState(new StoryMenuState(this));
+              case MAIN_MENU:
+                FlxG.switchState(new MainMenuState());
               default:
-                FlxG.switchState(new FreeplayState(this));
+                FlxG.switchState(new MainMenuState());
             }
           }
 
@@ -354,6 +357,7 @@ typedef StickerShit =
 
 enum abstract NEXTSTATE(String)
 {
+  var MAIN_MENU = 'mainmenu';
   var FREEPLAY = 'freeplay';
   var STORY = 'story';
 }

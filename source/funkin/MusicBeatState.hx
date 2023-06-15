@@ -35,8 +35,8 @@ class MusicBeatState extends FlxUIState
 
   function initCallbacks()
   {
-    subStateOpened.add(onOpenSubstateComplete);
-    subStateClosed.add(onCloseSubstateComplete);
+    subStateOpened.add(onOpenSubStateComplete);
+    subStateClosed.add(onCloseSubStateComplete);
   }
 
   override function create()
@@ -162,18 +162,18 @@ class MusicBeatState extends FlxUIState
     }
   }
 
-  public override function openSubState(targetSubstate:FlxSubState):Void
+  public override function openSubState(targetSubState:FlxSubState):Void
   {
-    var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_BEGIN, targetSubstate, true);
+    var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
     dispatchEvent(event);
 
     if (event.eventCanceled) return;
 
-    super.openSubState(targetSubstate);
+    super.openSubState(targetSubState);
   }
 
-  function onOpenSubstateComplete(targetState:FlxSubState):Void
+  function onOpenSubStateComplete(targetState:FlxSubState):Void
   {
     dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_END, targetState, true));
   }
@@ -189,7 +189,7 @@ class MusicBeatState extends FlxUIState
     super.closeSubState();
   }
 
-  function onCloseSubstateComplete(targetState:FlxSubState):Void
+  function onCloseSubStateComplete(targetState:FlxSubState):Void
   {
     dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_CLOSE_END, targetState, true));
   }

@@ -7,9 +7,9 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 
 /**
- * MusicBeatSubstate reincorporates the functionality of MusicBeatState into an FlxSubState.
+ * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
-class MusicBeatSubstate extends FlxSubState
+class MusicBeatSubState extends FlxSubState
 {
   public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)
   {

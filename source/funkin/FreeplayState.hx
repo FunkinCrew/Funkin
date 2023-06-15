@@ -34,12 +34,14 @@ import funkin.play.song.SongData.SongDataParser;
 import funkin.shaderslmfao.AngleMask;
 import funkin.shaderslmfao.PureColor;
 import funkin.shaderslmfao.StrokeShader;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
 import lime.app.Future;
 import lime.utils.Assets;
 
-class FreeplayState extends MusicBeatSubstate
+class FreeplayState extends MusicBeatSubState
 {
-  var songs:Array<SongMetadata> = [];
+  var songs:Array<FreeplaySongData> = [];
 
   // var selector:FlxText;
   var curSelected:Int = 0;
@@ -112,15 +114,15 @@ class FreeplayState extends MusicBeatSubstate
 
     #if debug
     isDebug = true;
-    addSong('Test', 1, 'bf-pixel');
-    addSong('Pyro', 8, 'darnell');
+    addSong('Test', 'tutorial', 'bf-pixel');
+    addSong('Pyro', 'weekend1', 'darnell');
     #end
 
     var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
     for (i in 0...initSonglist.length)
     {
-      songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
+      songs.push(new FreeplaySongData(initSonglist[i], 'tutorial', 'gf'));
     }
 
     if (FlxG.sound.music != null)
@@ -128,22 +130,28 @@ class FreeplayState extends MusicBeatSubstate
       if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu'));
     }
 
-    if (StoryMenuState.weekUnlocked[2] || isDebug) addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
+    // if (StoryMenuState.weekUnlocked[2] || isDebug)
+    addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 'week1', ['dad']);
 
-    if (StoryMenuState.weekUnlocked[2] || isDebug) addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster']);
+    // if (StoryMenuState.weekUnlocked[2] || isDebug)
+    addWeek(['Spookeez', 'South', 'Monster'], 'week2', ['spooky', 'spooky', 'monster']);
 
-    if (StoryMenuState.weekUnlocked[3] || isDebug) addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
+    // if (StoryMenuState.weekUnlocked[3] || isDebug)
+    addWeek(['Pico', 'Philly-Nice', 'Blammed'], 'week3', ['pico']);
 
-    if (StoryMenuState.weekUnlocked[4] || isDebug) addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
+    // if (StoryMenuState.weekUnlocked[4] || isDebug)
+    addWeek(['Satin-Panties', 'High', 'MILF'], 'week4', ['mom']);
 
-    if (StoryMenuState.weekUnlocked[5] || isDebug) addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5,
-      ['parents-christmas', 'parents-christmas', 'monster-christmas']);
+    // if (StoryMenuState.weekUnlocked[5] || isDebug)
+    addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 'week5', ['parents-christmas', 'parents-christmas', 'monster-christmas']);
 
-    if (StoryMenuState.weekUnlocked[6] || isDebug) addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
+    // if (StoryMenuState.weekUnlocked[6] || isDebug)
+    addWeek(['Senpai', 'Roses', 'Thorns'], 'week6', ['senpai', 'senpai', 'spirit']);
 
-    if (StoryMenuState.weekUnlocked[7] || isDebug) addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
+    // if (StoryMenuState.weekUnlocked[7] || isDebug)
+    addWeek(['Ugh', 'Guns', 'Stress'], 'week7', ['tankman']);
 
-    addWeek(["Darnell", "lit-up", "2hot", "blazin"], 8, ['darnell']);
+    addWeek(["Darnell", "lit-up", "2hot", "blazin"], 'weekend1', ['darnell']);
 
     // LOAD MUSIC
 
@@ -426,7 +434,7 @@ class FreeplayState extends MusicBeatSubstate
     var swag:Alphabet = new Alphabet(1, 0, "swag");
 
     // JUST DOIN THIS SHIT FOR TESTING!!!
-    /* 
+    /*
       var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
 
       var texFel:TextField = new TextField();
@@ -464,7 +472,7 @@ class FreeplayState extends MusicBeatSubstate
     grpCapsules.clear();
 
     // var regexp:EReg = regexp;
-    var tempSongs:Array<SongMetadata> = songs;
+    var tempSongs:Array<FreeplaySongData> = songs;
 
     if (filterStuff != null)
     {
@@ -553,19 +561,19 @@ class FreeplayState extends MusicBeatSubstate
     changeDiff();
   }
 
-  public function addSong(songName:String, weekNum:Int, songCharacter:String)
+  public function addSong(songName:String, levelId:String, songCharacter:String)
   {
-    songs.push(new SongMetadata(songName, weekNum, songCharacter));
+    songs.push(new FreeplaySongData(songName, levelId, songCharacter));
   }
 
-  public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
+  public function addWeek(songs:Array<String>, levelId:String, ?songCharacters:Array<String>)
   {
     if (songCharacters == null) songCharacters = ['bf'];
 
     var num:Int = 0;
     for (song in songs)
     {
-      addSong(song, weekNum, songCharacters[num]);
+      addSong(song, levelId, songCharacters[num]);
 
       if (songCharacters.length != 1) num++;
     }
@@ -851,11 +859,9 @@ class FreeplayState extends MusicBeatSubstate
           curDifficulty = 1;
       }*/
 
-      PlayState.currentSong = SongLoad.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-      PlayState.currentSong_NEW = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
-      PlayState.isStoryMode = false;
-      PlayState.storyDifficulty = curDifficulty;
-      PlayState.storyDifficulty_NEW = switch (curDifficulty)
+      PlayStatePlaylist.isStoryMode = false;
+      var targetSong:Song = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
+      var targetDifficulty:String = switch (curDifficulty)
       {
         case 0:
           'easy';
@@ -865,27 +871,41 @@ class FreeplayState extends MusicBeatSubstate
           'hard';
         default: 'normal';
       };
-      // SongLoad.curDiff = Highscore.formatSong()
 
-      SongLoad.curDiff = PlayState.storyDifficulty_NEW;
+      // TODO: Implement additional difficulties into the interface properly.
+      if (FlxG.keys.pressed.E)
+      {
+        targetDifficulty = 'erect';
+      }
 
-      PlayState.storyWeek = songs[curSelected].week;
-      // trace(' CUR WEEK ' + PlayState.storyWeek);
+      // TODO: Implement Pico into the interface properly.
+      var targetCharacter:String = 'bf';
+      if (FlxG.keys.pressed.P)
+      {
+        targetCharacter = 'pico';
+      }
+
+      PlayStatePlaylist.campaignId = songs[curSelected].levelId;
 
       // Visual and audio effects.
       FlxG.sound.play(Paths.sound('confirmMenu'));
       dj.confirm();
 
       new FlxTimer().start(1, function(tmr:FlxTimer) {
-        LoadingState.loadAndSwitchState(new PlayState(), true);
+        LoadingState.loadAndSwitchState(new PlayState(
+          {
+            targetSong: targetSong,
+            targetDifficulty: targetDifficulty,
+            targetCharacter: targetCharacter,
+          }), true);
       });
     }
   }
 
-  override function startOutro(onComplete:() -> Void):Void
+  override function switchTo(nextState:FlxState):Bool
   {
     clearDaCache(songs[curSelected].songName);
-    super.startOutro(onComplete);
+    return super.switchTo(nextState);
   }
 
   function changeDiff(change:Int = 0)
@@ -900,19 +920,6 @@ class FreeplayState extends MusicBeatSubstate
     // intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
     intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
     intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
-
-    PlayState.storyDifficulty = curDifficulty;
-    PlayState.storyDifficulty_NEW = switch (curDifficulty)
-    {
-      case 0:
-        'easy';
-      case 1:
-        'normal';
-      case 2:
-        'hard';
-      default:
-        'normal';
-    };
 
     grpDifficulties.group.forEach(function(spr) {
       spr.visible = false;
@@ -1040,17 +1047,17 @@ enum abstract FilterType(String)
   var ALL;
 }
 
-class SongMetadata
+class FreeplaySongData
 {
   public var songName:String = "";
-  public var week:Int = 0;
+  public var levelId:String = "";
   public var songCharacter:String = "";
   public var isFav:Bool = false;
 
-  public function new(song:String, week:Int, songCharacter:String, ?isFav:Bool = false)
+  public function new(song:String, levelId:String, songCharacter:String, ?isFav:Bool = false)
   {
     this.songName = song;
-    this.week = week;
+    this.levelId = levelId;
     this.songCharacter = songCharacter;
     this.isFav = isFav;
   }

@@ -36,14 +36,12 @@ class NgPrompt extends Prompt
         #if web
         prompt.buttons.getItem("yes").fireInstantly = true;
         #end
-        prompt.onYes = function()
-        {
+        prompt.onYes = function() {
           prompt.setText("Connecting..." #if web + "\n(check your popup blocker)" #end);
           prompt.setButtons(None);
           openPassportUrl();
         };
-        prompt.onNo = function()
-        {
+        prompt.onNo = function() {
           prompt.close();
           prompt = null;
           NGio.cancelLogin();
@@ -92,8 +90,7 @@ class NgPrompt extends Prompt
   {
     var user = io.newgrounds.NG.core.user.name;
     var prompt = new NgPrompt('Log out of $user?', Yes_No);
-    prompt.onYes = function()
-    {
+    prompt.onYes = function() {
       NGio.logout();
       prompt.close();
     };

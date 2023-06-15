@@ -16,10 +16,10 @@ import funkin.ui.PreferencesMenu;
 /**
  * A substate which renders over the PlayState when the player dies.
  * Displays the player death animation, plays the music, and handles restarting the song.
- * 
+ *
  * The newest implementation uses a substate, which prevents having to reload the song and stage each reset.
  */
-class GameOverSubstate extends MusicBeatSubstate
+class GameOverSubState extends MusicBeatSubState
 {
   /**
    * Which alternate animation on the character to use.
@@ -92,7 +92,7 @@ class GameOverSubstate extends MusicBeatSubstate
     bg.scrollFactor.set();
     add(bg);
 
-    // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubstate.
+    // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
     // We can then play the character's `firstDeath` animation.
     boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
     boyfriend.isDead = true;
@@ -160,19 +160,21 @@ class GameOverSubstate extends MusicBeatSubstate
     }
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT)
+    if (controls.ACCEPT && blueballed)
     {
+      blueballed = false;
       confirmDeath();
     }
 
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
     if (controls.BACK)
     {
+      blueballed = false;
       PlayState.deathCounter = 0;
       PlayState.seenCutscene = false;
       gameOverMusic.stop();
 
-      if (PlayState.isStoryMode) FlxG.switchState(new StoryMenuState());
+      if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
       else
         FlxG.switchState(new FreeplayState());
     }
@@ -186,11 +188,11 @@ class GameOverSubstate extends MusicBeatSubstate
     else
     {
       // Music hasn't started yet.
-      switch (PlayState.storyWeek)
+      switch (PlayStatePlaylist.campaignId)
       {
         // TODO: Make the behavior for playing Jeff's voicelines generic or un-hardcoded.
         // This will simplify the class and make it easier for mods to add death quotes.
-        case 7:
+        case "week7":
           if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !playingJeffQuote)
           {
             playingJeffQuote = true;
@@ -227,9 +229,9 @@ class GameOverSubstate extends MusicBeatSubstate
       new FlxTimer().start(0.7, function(tmr:FlxTimer) {
         // ...fade out the graphics. Then after that happens...
         FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
-          // ...close the GameOverSubstate.
+          // ...close the GameOverSubState.
           FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
-          PlayState.needsReset = true;
+          PlayState.instance.needsReset = true;
 
           // Readd Boyfriend to the stage.
           boyfriend.isDead = false;
@@ -252,7 +254,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
   /**
    * Starts the death music at the appropriate volume.
-   * @param startingVolume 
+   * @param startingVolume
    */
   function startDeathMusic(?startingVolume:Float = 1, ?force:Bool = false):Void
   {
@@ -269,12 +271,15 @@ class GameOverSubstate extends MusicBeatSubstate
     }
   }
 
+  static var blueballed:Bool = false;
+
   /**
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
    */
   public static function playBlueBalledSFX()
   {
+    blueballed = true;
     FlxG.sound.play(Paths.sound('fnf_loss_sfx' + blueBallSuffix));
   }
 

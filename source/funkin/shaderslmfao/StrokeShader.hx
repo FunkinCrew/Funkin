@@ -44,7 +44,7 @@ class StrokeShader extends FlxShader
             if (sample.a == 0.) {
                 float w = size.x / openfl_TextureSize.x;
                 float h = size.y / openfl_TextureSize.y;
-                
+
                 if (flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x + w, openfl_TextureCoordv.y)).a != 0.
                 || flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x - w, openfl_TextureCoordv.y)).a != 0.
                 || flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x, openfl_TextureCoordv.y + h)).a != 0.

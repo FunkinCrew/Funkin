@@ -44,7 +44,7 @@ import sys.io.File;
 
 class DebugBoundingState extends FlxState
 {
-  /* 
+  /*
     TODAY'S TO-DO
     - Cleaner UI
    */

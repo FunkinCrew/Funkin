@@ -8,7 +8,7 @@ class PolymodErrorHandler
    * Show a popup with the given text.
    * This displays a system popup, it WILL interrupt the game.
    * Make sure to only use this when it's important, like when there's a script error.
-   * 
+   *
    * @param name The name at the top of the popup.
    * @param desc The body text of the popup.
    */
