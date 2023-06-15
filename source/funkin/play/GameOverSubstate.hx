@@ -130,7 +130,7 @@ class GameOverSubstate extends MusicBeatSubstate
     {
       hasStartedAnimation = true;
 
-      if (boyfriend.hasAnimation('fakeoutDeath') && (FlxG.random.bool((1 / 4000) * 100) || true))
+      if (boyfriend.hasAnimation('fakeoutDeath') && FlxG.random.bool((1 / 4096) * 100))
       {
         boyfriend.playAnimation('fakeoutDeath', true, true);
       }
