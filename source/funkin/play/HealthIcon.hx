@@ -148,8 +148,7 @@ class HealthIcon extends FlxSprite
   {
     if (characterId == 'beta')
     {
-      // characterId = PlayState.instance.currentPlayerId;
-      characterId = 'bf';
+      characterId = PlayState.instance.currentPlayerId;
     }
     else
     {
