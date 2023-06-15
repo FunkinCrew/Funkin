@@ -2209,7 +2209,7 @@ class PlayState extends MusicBeatState
 
     if (shouldShowComboText)
     {
-      var animShit:ComboCounter = new ComboCounter(-100, 300, Highscore.tallies.combo);
+      var animShit:ComboMilestone = new ComboMilestone(-100, 300, Highscore.tallies.combo);
       animShit.scrollFactor.set(0.6, 0.6);
       animShit.cameras = [camHUD];
       add(animShit);
