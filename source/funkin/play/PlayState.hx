@@ -972,10 +972,10 @@ class PlayState extends MusicBeatState
       oldNote = newNote;
 
       // Generate X sustain notes.
-      var sustainSections = Math.round(songNote.length / Conductor.stepCrochet);
+      var sustainSections = Math.round(songNote.length / Conductor.stepLengthMs);
       for (noteIndex in 0...sustainSections)
       {
-        var noteTimeOffset:Float = Conductor.stepCrochet + (Conductor.stepCrochet * noteIndex);
+        var noteTimeOffset:Float = Conductor.stepLengthMs + (Conductor.stepLengthMs * noteIndex);
         var sustainNote:Note = new Note(songNote.time + noteTimeOffset, songNote.data, oldNote, true, strumlineStyle);
         sustainNote.mustPress = mustHitNote;
         sustainNote.data.noteKind = songNote.kind;
@@ -2216,7 +2216,7 @@ class PlayState extends MusicBeatState
 
       var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
 
-      new FlxTimer().start(((Conductor.crochet / 1000) * 1.25) - frameShit, function(tmr) {
+      new FlxTimer().start(((Conductor.beatLengthMs / 1000) * 1.25) - frameShit, function(tmr) {
         animShit.forceFinish();
       });
     }
