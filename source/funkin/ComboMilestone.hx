@@ -5,14 +5,14 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxTimer;
 
-class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
+class ComboMilestone extends FlxTypedSpriteGroup<FlxSprite>
 {
   var effectStuff:FlxSprite;
 
   var wasComboSetup:Bool = false;
   var daCombo:Int = 0;
 
-  var grpNumbers:FlxTypedGroup<ComboNumber>;
+  var grpNumbers:FlxTypedGroup<ComboMilestoneNumber>;
 
   var onScreenTime:Float = 0;
 
@@ -23,7 +23,7 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
     this.daCombo = daCombo;
 
     effectStuff = new FlxSprite(0, 0);
-    effectStuff.frames = Paths.getSparrowAtlas('noteCombo');
+    effectStuff.frames = Paths.getSparrowAtlas('comboMilestone');
     effectStuff.animation.addByPrefix('funny', 'NOTE COMBO animation', 24, false);
     effectStuff.animation.play('funny');
     effectStuff.antialiasing = true;
@@ -33,7 +33,7 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
     effectStuff.setGraphicSize(Std.int(effectStuff.width * 0.7));
     add(effectStuff);
 
-    grpNumbers = new FlxTypedGroup<ComboNumber>();
+    grpNumbers = new FlxTypedGroup<ComboMilestoneNumber>();
     // add(grpNumbers);
   }
 
@@ -41,7 +41,7 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
   {
     if (onScreenTime < 0.9)
     {
-      new FlxTimer().start((Conductor.crochet / 1000) * 0.25, function(tmr) {
+      new FlxTimer().start((Conductor.beatLengthMs / 1000) * 0.25, function(tmr) {
         forceFinish();
       });
     }
@@ -62,14 +62,14 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     if (effectStuff.animation.curAnim.curFrame == 18)
     {
-      grpNumbers.forEach(function(spr:ComboNumber) {
+      grpNumbers.forEach(function(spr:ComboMilestoneNumber) {
         spr.animation.reset();
       });
     }
 
     if (effectStuff.animation.curAnim.curFrame == 20)
     {
-      grpNumbers.forEach(function(spr:ComboNumber) {
+      grpNumbers.forEach(function(spr:ComboMilestoneNumber) {
         spr.kill();
       });
     }
@@ -86,7 +86,7 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     while (daCombo > 0)
     {
-      var comboNumber:ComboNumber = new ComboNumber(450 - (100 * loopNum), 20 + 14 * loopNum, daCombo % 10);
+      var comboNumber:ComboMilestoneNumber = new ComboMilestoneNumber(450 - (100 * loopNum), 20 + 14 * loopNum, daCombo % 10);
       comboNumber.setGraphicSize(Std.int(comboNumber.width * 0.7));
       grpNumbers.add(comboNumber);
       add(comboNumber);
@@ -95,27 +95,17 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 
       daCombo = Math.floor(daCombo / 10);
     }
-
-    // var comboNumber:ComboNumber = new ComboNumber(420, 0, 0);
-
-    // add to both, in the group just for ez organize/accessing
-    // grpNumbers.add(comboNumber);
-    // add(comboNumber);
-
-    // var comboNumber2:ComboNumber = new ComboNumber(420 - 134, 44, 0);
-    // grpNumbers.add(comboNumber2);
-    // add(comboNumber2);
   }
 }
 
-class ComboNumber extends FlxSprite
+class ComboMilestoneNumber extends FlxSprite
 {
   public function new(x:Float, y:Float, digit:Int)
   {
     super(x - 20, y);
 
     var stringNum:String = Std.string(digit);
-    frames = Paths.getSparrowAtlas('noteComboNumbers');
+    frames = Paths.getSparrowAtlas('comboMilestoneNumbers');
     animation.addByPrefix(stringNum, stringNum, 24, false);
     animation.play(stringNum);
     antialiasing = true;
