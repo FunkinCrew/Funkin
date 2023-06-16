@@ -45,9 +45,32 @@ class ScriptEventDispatcher
       }
     }
 
+    if (Std.isOfType(target, IDialogueScriptedClass))
+    {
+      var t:IDialogueScriptedClass = cast(target, IDialogueScriptedClass);
+      switch (event.type)
+      {
+        case ScriptEvent.DIALOGUE_START:
+          t.onDialogueStart(cast event);
+          return;
+        case ScriptEvent.DIALOGUE_LINE:
+          t.onDialogueLine(cast event);
+          return;
+        case ScriptEvent.DIALOGUE_COMPLETE_LINE:
+          t.onDialogueCompleteLine(cast event);
+          return;
+        case ScriptEvent.DIALOGUE_SKIP:
+          t.onDialogueSkip(cast event);
+          return;
+        case ScriptEvent.DIALOGUE_END:
+          t.onDialogueEnd(cast event);
+          return;
+      }
+    }
+
     if (Std.isOfType(target, IPlayStateScriptedClass))
     {
-      var t = cast(target, IPlayStateScriptedClass);
+      var t:IPlayStateScriptedClass = cast(target, IPlayStateScriptedClass);
       switch (event.type)
       {
         case ScriptEvent.NOTE_HIT:
@@ -133,7 +156,7 @@ class ScriptEventDispatcher
     }
 
     // If you get a crash on this line, that means ERIC FUCKED UP!
-    throw 'No function called for event type: ${event.type}';
+    // throw 'No function called for event type: ${event.type}';
   }
 
   public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>, event:ScriptEvent):Void

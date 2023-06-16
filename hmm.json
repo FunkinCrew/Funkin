@@ -116,6 +116,11 @@
       "name": "thx.semver",
       "type": "haxelib",
       "version": "0.2.2"
+    },
+    {
+      "name": "tink_json",
+      "type": "haxelib",
+      "version": null
     }
   ]
 }
