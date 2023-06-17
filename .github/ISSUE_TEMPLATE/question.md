@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Ask a general question
+description: Ask a general question
 title: 'Question: '
 labels: question
 ---
