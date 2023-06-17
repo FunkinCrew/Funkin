@@ -1,7 +1,7 @@
 ---
-name: Compiling help
+name: Compiling Help
 about: If you need help compiling the game, and you're running into issues. (Look through the 'compiling help' label in case it's been solved!)
-title: 'Compiling help: [BRIEF DESCRIPTION / ERROR MESSAGE OUTPUT]'
+title: 'Compiling Help: [BRIEF DESCRIPTION / ERROR MESSAGE OUTPUT]'
 labels: compiling help
 ---
 
