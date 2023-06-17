@@ -28,7 +28,7 @@ labels: bug
 
 [weed]: <> (Again, put an x in the [ ] box!)
 
-- [ ] Google Chrome (or Chomium based like Brave, Vivaldi, MS Edge)
+- [ ] Google Chrome (or Chromium based like Brave, Vivaldi, MS Edge)
 - [ ] Firefox
 - [ ] Safari
 
