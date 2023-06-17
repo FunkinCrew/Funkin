@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-description: Report a bug or critical performance issue
+about: Report a bug or critical performance issue
 title: 'Bug Report: [DESCRIBE YOUR BUG IN DETAIL HERE]'
 labels: bug
 ---
