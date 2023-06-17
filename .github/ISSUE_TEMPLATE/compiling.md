@@ -1,13 +1,13 @@
 ---
-name: Compiling help
+name: Compiling Help
 about: If you need help compiling the game, and you're running into issues. (Look through the 'compiling help' label in case it's been solved!)
-title: 'Compiling help: [BRIEF DESCRIPTION / ERROR MESSAGE OUTPUT]'
+title: 'Compiling Help: [BRIEF DESCRIPTION / ERROR MESSAGE OUTPUT]'
 labels: compiling help
 ---
 
 [weed]: <> (FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE)
 [weed]: <> (OR ELSE YOUR ISSUE WILL BE LESS LIKELY TO BE SOLVED!)
-[weed]: <> (DO NOT POST ABOUT ISSUES FROM OTHER FNF MOD ENGINES! I CANNOT AND PROBABLY WON'T SOLVE THOSE!)
+[weed]: <> (DO NOT POST ABOUT ISSUES FROM FNF MOD ENGINES! I CANNOT AND PROBABLY WON'T SOLVE THOSE!)
 [weed]: <> (GO TO THEIR RESPECTIVE GITHUB ISSUES AND REPORT THEM THERE LOL!)
 
 #### Please check for duplicates or similar compiler issues by filtering for 'compiler help'
