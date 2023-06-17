@@ -1,6 +1,6 @@
 ---
 name: Enhancement
-description: Suggest a new feature
+about: Suggest a new feature
 title: 'Enhancement: '
 labels: enhancement
 ---
