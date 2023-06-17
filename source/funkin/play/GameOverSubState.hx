@@ -170,8 +170,8 @@ class GameOverSubState extends MusicBeatSubState
     if (controls.BACK)
     {
       blueballed = false;
-      PlayState.deathCounter = 0;
-      PlayState.seenCutscene = false;
+      PlayState.instance.deathCounter = 0;
+      // PlayState.seenCutscene = false; // old thing...
       gameOverMusic.stop();
 
       if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
