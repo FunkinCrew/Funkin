@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug or critical performance issue
+description: Report a bug or critical performance issue
 title: 'Bug Report: [DESCRIBE YOUR BUG IN DETAIL HERE]'
 labels: bug
 ---
@@ -28,11 +28,11 @@ labels: bug
 
 [weed]: <> (Again, put an x in the [ ] box!)
 
-- [ ] Google Chrome (or chomium based like Brave, vivaldi, MS Edge)
+- [ ] Google Chrome (or Chomium based like Brave, Vivaldi, MS Edge)
 - [ ] Firefox
 - [ ] Safari
 
-## What version of the game are you using? Look in the bottom left corner of the main menu. (ex: 0.2.7, 0.2.1, shit like that)
+## What version of the game are you using? Look in the bottom left corner of the main menu. (ex: 0.2.7, 0.2.1, stuff like that)
 
 
 ## Have you identified any steps to reproduce the bug? If so, please describe them below in as much detail as possible. Use images if possible.
@@ -41,4 +41,4 @@ labels: bug
 
 
 
-## If you're game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting
+## If your game is FROZEN and you're playing a web version, press F12 to open up browser dev window, go to console, and copy-paste whatever red error you're getting
