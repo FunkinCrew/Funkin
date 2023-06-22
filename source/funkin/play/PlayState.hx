@@ -1696,10 +1696,6 @@ class PlayState extends MusicBeatState
         // Judge the miss.
         // NOTE: This is what handles the scoring.
         onNoteMiss(note);
-
-        // Kill the note.
-        // NOTE: This is what handles recycling the note graphic.
-        playerStrumline.killNote(note);
       }
     }
   }
@@ -1932,17 +1928,9 @@ class PlayState extends MusicBeatState
         popUpScore(note, input);
       }
 
-      playerStrumline.playConfirm(note.noteData.getDirection());
+      playerStrumline.hitNote(note);
 
-      note.hasBeenHit = true;
       vocals.playerVolume = 1;
-
-      if (!note.isSustainNote)
-      {
-        note.kill();
-        // activeNotes.remove(note, true);
-        note.destroy();
-      }
     }
   }
 
@@ -2017,9 +2005,9 @@ class PlayState extends MusicBeatState
     note.active = false;
     note.visible = false;
 
-    note.kill();
-    // activeNotes.remove(note, true);
-    note.destroy();
+    // Kill the note.
+    // NOTE: This is what handles recycling the note graphic.
+    playerStrumline.killNote(note);
   }
 
   /**

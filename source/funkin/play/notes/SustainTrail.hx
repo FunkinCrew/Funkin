@@ -33,10 +33,18 @@ class SustainTrail extends FlxSprite
   public var noteData:SongNoteData;
 
   /**
-   * Set to `true` if the user missed the note.
-   * The trail should be made transparent, with clipping and effects disabled
+   * Set to `true` if the user hit the note and is currently holding the sustain.
+   * Should display associated effects.
    */
-  public var missed:Bool = false; // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
+  public var hitNote:Bool = false;
+
+  /**
+   * Set to `true` if the user missed the note or released the sustain.
+   * Should make the trail transparent.
+   */
+  public var missedNote:Bool = false;
+
+  // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
   /**
    * A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
@@ -250,6 +258,20 @@ class SustainTrail extends FlxSprite
       getScreenPosition(_point, camera).subtractPoint(offset);
       camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
     }
+  }
+
+  public override function kill():Void
+  {
+    super.kill();
+
+    strumTime = 0;
+    noteDirection = 0;
+    sustainLength = 0;
+    fullSustainLength = 0;
+    noteData = null;
+
+    hitNote = false;
+    missedNote = false;
   }
 
   override public function destroy():Void

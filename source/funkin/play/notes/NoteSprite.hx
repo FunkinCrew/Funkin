@@ -175,4 +175,16 @@ class NoteSprite extends FlxSprite
     this.tooLate = false;
     this.hasMissed = false;
   }
+
+  public override function kill():Void
+  {
+    super.kill();
+  }
+
+  public override function destroy():Void
+  {
+    // This function should ONLY get called as you leave PlayState entirely.
+    // Otherwise, we want the game to keep reusing note sprites to save memory.
+    super.destroy();
+  }
 }

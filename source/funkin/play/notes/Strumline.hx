@@ -161,10 +161,10 @@ class Strumline extends FlxSpriteGroup
    * @param strumTime
    * @return Float
    */
-  static function calculateNoteYPos(strumTime:Float):Float
+  static function calculateNoteYPos(strumTime:Float, ?vwoosh:Bool = true):Float
   {
     // Make the note move faster visually as it moves offscreen.
-    var vwoosh:Float = (strumTime < Conductor.songPosition) ? 2.0 : 1.0;
+    var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
     return Conductor.PIXELS_PER_MS * (Conductor.songPosition - strumTime) * scrollSpeed * vwoosh * (PreferencesMenu.getPref('downscroll') ? 1 : -1);
@@ -206,13 +206,13 @@ class Strumline extends FlxSpriteGroup
       {
         note.visible = false;
         note.hasMissed = true;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missed = true;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
       }
       else
       {
         note.visible = true;
         note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
     }
 
@@ -223,25 +223,25 @@ class Strumline extends FlxSpriteGroup
 
       var renderWindowEnd = holdNote.strumTime + holdNote.fullSustainLength + Conductor.HIT_WINDOW_MS + RENDER_DISTANCE_MS / 8;
 
-      if (Conductor.songPosition >= renderWindowEnd || holdNote.sustainLength <= 0)
+      if (holdNote.missedNote && Conductor.songPosition >= renderWindowEnd)
       {
         // Hold note is offscreen, kill it.
         holdNote.visible = false;
         holdNote.kill(); // Do not destroy! Recycling is faster.
       }
-      else if (holdNote.sustainLength <= 0)
+      else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
         // Hold note is completed, kill it.
         playStatic(holdNote.noteDirection);
         holdNote.visible = false;
         holdNote.kill();
       }
-      else if (holdNote.sustainLength <= 10)
+      else if (holdNote.hitNote && holdNote.sustainLength <= 10)
       {
         // TODO: Better handle the weird edge case where the hold note is almost completed.
         holdNote.visible = false;
       }
-      else if (Conductor.songPosition > holdNote.strumTime && !holdNote.missed)
+      else if (Conductor.songPosition > holdNote.strumTime && holdNote.hitNote)
       {
         // Hold note is currently being hit, clip it off.
         holdConfirm(holdNote.noteDirection);
@@ -258,7 +258,7 @@ class Strumline extends FlxSpriteGroup
           holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
         }
       }
-      else if (holdNote.missed && (holdNote.fullSustainLength > holdNote.sustainLength))
+      else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
       {
         // Hold note was dropped before completing, keep it in its clipped state.
         holdNote.visible = true;
@@ -285,11 +285,11 @@ class Strumline extends FlxSpriteGroup
 
         if (PreferencesMenu.getPref('downscroll'))
         {
-          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, false) - holdNote.height + STRUMLINE_SIZE / 2;
         }
         else
         {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, false) + STRUMLINE_SIZE / 2;
         }
       }
     }
@@ -316,7 +316,15 @@ class Strumline extends FlxSpriteGroup
   public function hitNote(note:NoteSprite):Void
   {
     playConfirm(note.direction);
+    note.hasBeenHit = true;
     killNote(note);
+
+    if (note.holdNoteSprite != null)
+    {
+      note.holdNoteSprite.hitNote = true;
+      note.holdNoteSprite.missedNote = false;
+      note.holdNoteSprite.alpha = 1.0;
+    }
   }
 
   public function killNote(note:NoteSprite):Void
@@ -327,8 +335,8 @@ class Strumline extends FlxSpriteGroup
 
     if (note.holdNoteSprite != null)
     {
-      holdNoteSprite.missed = true;
-      holdNoteSprite.alpha = 0.6;
+      note.holdNoteSprite.missedNote = true;
+      note.holdNoteSprite.alpha = 0.6;
     }
   }
 
@@ -416,7 +424,8 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.noteDirection = note.getDirection();
       holdNoteSprite.fullSustainLength = note.length;
       holdNoteSprite.sustainLength = note.length;
-      holdNoteSprite.missed = false;
+      holdNoteSprite.missedNote = false;
+      holdNoteSprite.hitNote = false;
 
       holdNoteSprite.x = this.x;
       holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
