@@ -2,6 +2,7 @@ package funkin;
 
 import funkin.Controls;
 import flixel.FlxCamera;
+import funkin.input.PreciseInputManager;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxSignal;
@@ -52,6 +53,9 @@ class PlayerSettings
     }
 
     if (useDefault) controls.setKeyboardScheme(Solo);
+
+    // Apply loaded settings.
+    PreciseInputManager.instance.initializeKeys(controls);
   }
 
   function addGamepad(gamepad:FlxGamepad)

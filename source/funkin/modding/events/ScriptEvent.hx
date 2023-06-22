@@ -1,10 +1,12 @@
 package funkin.modding.events;
 
+import funkin.play.song.SongData.SongNoteData;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import funkin.noteStuff.NoteBasic.NoteDir;
+import funkin.play.notes.NoteSprite;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
+import funkin.play.notes.NoteDirection;
 import openfl.events.EventType;
 import openfl.events.KeyboardEvent;
 
@@ -344,7 +346,7 @@ class NoteScriptEvent extends ScriptEvent
    * The note associated with this event.
    * You cannot replace it, but you can edit it.
    */
-  public var note(default, null):Note;
+  public var note(default, null):NoteSprite;
 
   /**
    * The combo count as it is with this event.
@@ -357,7 +359,7 @@ class NoteScriptEvent extends ScriptEvent
    */
   public var playSound(default, default):Bool;
 
-  public function new(type:ScriptEventType, note:Note, comboCount:Int = 0, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, note:NoteSprite, comboCount:Int = 0, cancelable:Bool = false):Void
   {
     super(type, cancelable);
     this.note = note;
@@ -379,7 +381,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
   /**
    * The direction that was mistakenly pressed.
    */
-  public var dir(default, null):NoteDir;
+  public var dir(default, null):NoteDirection;
 
   /**
    * Whether there was a note within judgement range when this ghost note was pressed.
@@ -407,7 +409,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
    */
   public var playAnim(default, default):Bool;
 
-  public function new(dir:NoteDir, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int):Void
+  public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int):Void
   {
     super(ScriptEvent.NOTE_GHOST_MISS, true);
     this.dir = dir;
@@ -575,19 +577,19 @@ class SongLoadScriptEvent extends ScriptEvent
    * The note associated with this event.
    * You cannot replace it, but you can edit it.
    */
-  public var notes(default, set):Array<Note>;
+  public var notes(default, set):Array<SongNoteData>;
 
   public var id(default, null):String;
 
   public var difficulty(default, null):String;
 
-  function set_notes(notes:Array<Note>):Array<Note>
+  function set_notes(notes:Array<SongNoteData>):Array<SongNoteData>
   {
     this.notes = notes;
     return this.notes;
   }
 
-  public function new(id:String, difficulty:String, notes:Array<Note>):Void
+  public function new(id:String, difficulty:String, notes:Array<SongNoteData>):Void
   {
     super(ScriptEvent.SONG_LOADED, false);
     this.id = id;

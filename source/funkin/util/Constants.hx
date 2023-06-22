@@ -88,9 +88,9 @@ class Constants
   public static final COLOR_HEALTH_BAR_GREEN:FlxColor = 0xFF66FF33;
 
   /**
-   * Default variation for charts.
+   * The base colors of the notes.
    */
-  public static final DEFAULT_VARIATION:String = 'default';
+  public static final COLOR_NOTES:Array<FlxColor> = [0xFFFF22AA, 0xFF00EEFF, 0xFF00CC00, 0xFFCC1111];
 
   /**
    * STAGE DEFAULTS
@@ -118,6 +118,11 @@ class Constants
   public static final DEFAULT_SONG:String = 'tutorial';
 
   /**
+   * Default variation for charts.
+   */
+  public static final DEFAULT_VARIATION:String = 'default';
+
+  /**
    * OTHER
    */
   // ==============================
@@ -143,6 +148,9 @@ class Constants
    * The volume at which to play the countdown before the song starts.
    */
   public static final COUNTDOWN_VOLUME:Float = 0.6;
+
+  public static final STRUMLINE_X_OFFSET:Float = 48;
+  public static final STRUMLINE_Y_OFFSET:Float = 24;
 
   /**
    * The default intensity for camera zooms.

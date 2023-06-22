@@ -2,10 +2,10 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
-import funkin.noteStuff.NoteBasic.NoteDir;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
+import funkin.play.notes.NoteDirection;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -488,16 +488,16 @@ class BaseCharacter extends Bopper
   {
     super.onNoteHit(event);
 
-    if (event.note.mustPress && characterType == BF)
+    if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
       // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.data.dir, false);
+      this.playSingAnimation(event.note.noteData.getDirection(), false);
       holdTimer = 0;
     }
-    else if (!event.note.mustPress && characterType == DAD)
+    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
       // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.data.dir, false);
+      this.playSingAnimation(event.note.noteData.getDirection(), false);
       holdTimer = 0;
     }
   }
@@ -510,17 +510,17 @@ class BaseCharacter extends Bopper
   {
     super.onNoteMiss(event);
 
-    if (event.note.mustPress && characterType == BF)
+    if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
       // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.data.dir, true);
+      this.playSingAnimation(event.note.noteData.getDirection(), true);
     }
-    else if (!event.note.mustPress && characterType == DAD)
+    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
       // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.data.dir, true);
+      this.playSingAnimation(event.note.noteData.getDirection(), true);
     }
-    else if (event.note.mustPress && characterType == GF)
+    else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
       var dropAnim = '';
 
@@ -575,7 +575,7 @@ class BaseCharacter extends Bopper
    * @param miss If true, play the miss animation instead of the sing animation.
    * @param suffix A suffix to append to the animation name, like `alt`.
    */
-  public function playSingAnimation(dir:NoteDir, ?miss:Bool = false, ?suffix:String = ''):Void
+  public function playSingAnimation(dir:NoteDirection, ?miss:Bool = false, ?suffix:String = ''):Void
   {
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 

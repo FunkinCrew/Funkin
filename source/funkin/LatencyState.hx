@@ -2,14 +2,15 @@ package funkin;
 
 import flixel.FlxSprite;
 import flixel.FlxSubState;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import flixel.system.debug.stats.StatsGraph;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audio.visualize.PolygonSpectogram;
+import funkin.play.notes.NoteSprite;
 import funkin.ui.CoolStatsGraph;
 import haxe.Timer;
 import openfl.events.KeyboardEvent;
@@ -17,7 +18,7 @@ import openfl.events.KeyboardEvent;
 class LatencyState extends MusicBeatSubState
 {
   var offsetText:FlxText;
-  var noteGrp:FlxTypedGroup<Note>;
+  var noteGrp:FlxTypedGroup<NoteSprite>;
   var strumLine:FlxSprite;
 
   var blocks:FlxTypedGroup<FlxSprite>;
@@ -74,7 +75,7 @@ class LatencyState extends MusicBeatSubState
 
     Conductor.forceBPM(60);
 
-    noteGrp = new FlxTypedGroup<Note>();
+    noteGrp = new FlxTypedGroup<NoteSprite>();
     add(noteGrp);
 
     diffGrp = new FlxTypedGroup<FlxText>();
@@ -127,7 +128,7 @@ class LatencyState extends MusicBeatSubState
 
     for (i in 0...32)
     {
-      var note:Note = new Note(Conductor.beatLengthMs * i, 1);
+      var note:NoteSprite = new NoteSprite(Conductor.beatLengthMs * i);
       noteGrp.add(note);
     }
 
@@ -246,8 +247,8 @@ class LatencyState extends MusicBeatSubState
         FlxG.resetState();
     }*/
 
-    noteGrp.forEach(function(daNote:Note) {
-      daNote.y = (strumLine.y - ((Conductor.songPosition - Conductor.audioOffset) - daNote.data.strumTime) * 0.45);
+    noteGrp.forEach(function(daNote:NoteSprite) {
+      daNote.y = (strumLine.y - ((Conductor.songPosition - Conductor.audioOffset) - daNote.noteData.time) * 0.45);
       daNote.x = strumLine.x + 30;
 
       if (daNote.y < strumLine.y) daNote.alpha = 0.5;

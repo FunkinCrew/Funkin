@@ -51,4 +51,13 @@ class WindowUtil
     // Do nothing.
     #end
   }
+
+  /**
+   * Sets the title of the application window.
+   * @param value The title to use.
+   */
+  public static function setWindowTitle(value:String):Void
+  {
+    lime.app.Application.current.window.title = value;
+  }
 }

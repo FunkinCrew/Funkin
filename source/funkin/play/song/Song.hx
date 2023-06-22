@@ -298,9 +298,16 @@ class SongDifficulty
     return cast events;
   }
 
-  public inline function cacheInst():Void
+  public inline function cacheInst(?currentPlayerId:String = null):Void
   {
-    FlxG.sound.cache(Paths.inst(this.song.songId));
+    if (currentPlayerId != null)
+    {
+      FlxG.sound.cache(Paths.inst(this.song.songId, getPlayableChar(currentPlayerId).inst));
+    }
+    else
+    {
+      FlxG.sound.cache(Paths.inst(this.song.songId));
+    }
   }
 
   public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void

@@ -427,6 +427,12 @@ abstract SongNoteData(RawSongNoteData)
     return Math.floor(this.d / strumlineSize);
   }
 
+  /**
+   * Returns true if the note is one that Boyfriend should try to hit (i.e. it's on his side).
+   * TODO: The name of this function is a little misleading; what about mines?
+   * @param strumlineSize Defaults to 4.
+   * @return True if it's Boyfriend's note.
+   */
   public inline function getMustHitNote(strumlineSize:Int = 4):Bool
   {
     return getStrumlineIndex(strumlineSize) == 0;
