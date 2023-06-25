@@ -31,7 +31,6 @@ class ColorsMenu extends Page
       add(_effectSpr);
       _effectSpr.y = 0;
       _effectSpr.x = i * 130;
-      _effectSpr.antialiasing = true;
       _effectSpr.scale.x = _effectSpr.scale.y = 0.7;
       // _effectSpr.setGraphicSize();
       _effectSpr.height = note.height;

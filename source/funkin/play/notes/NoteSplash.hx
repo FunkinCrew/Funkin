@@ -26,7 +26,6 @@ class NoteSplash extends FlxSprite
     setup();
 
     this.alpha = ALPHA;
-    this.antialiasing = true;
     this.animation.finishCallback = this.onAnimationFinished;
   }
 

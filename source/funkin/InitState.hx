@@ -33,15 +33,11 @@ class InitState extends FlxTransitionableState
 {
   override public function create():Void
   {
-    trace('This is a debug build, loading InitState...');
-    #if android
-    FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
-    #end
-    #if newgrounds
-    NGio.init();
-    #end
-    #if discord_rpc
-    DiscordClient.initialize();
+    //
+    // FLIXEL SETUP
+    //
+    // This ain't a pixel art game! (most of the time)
+    FlxSprite.defaultAntialiasing = true;
 
     Application.current.onExit.add(function(exitCode) {
       DiscordClient.shutdown();

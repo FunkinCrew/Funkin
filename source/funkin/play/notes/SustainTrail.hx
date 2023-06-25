@@ -88,6 +88,8 @@ class SustainTrail extends FlxSprite
     super(0, 0, fileName);
 
     antialiasing = true;
+
+    // TODO: Why does this reference pixel stuff?
     if (fileName == "arrowEnds")
     {
       endOffset = bottomClip = 1;

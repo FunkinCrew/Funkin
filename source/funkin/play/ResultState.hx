@@ -114,7 +114,6 @@ class ResultState extends MusicBeatSubState
       soundSystem.animation.play("idle");
       soundSystem.visible = true;
     });
-    soundSystem.antialiasing = true;
     add(soundSystem);
 
     difficulty = new FlxSprite(555);
@@ -132,7 +131,6 @@ class ResultState extends MusicBeatSubState
     }
 
     difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
-    difficulty.antialiasing = true;
     add(difficulty);
 
     var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
@@ -148,7 +146,6 @@ class ResultState extends MusicBeatSubState
       songName.text += PlayState.instance.currentSong.songId;
     }
 
-    songName.antialiasing = true;
     songName.letterSpacing = -15;
     songName.angle = -4.1;
     add(songName);
@@ -164,22 +161,18 @@ class ResultState extends MusicBeatSubState
     var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
     blackTopBar.y = -blackTopBar.height;
     FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
-    blackTopBar.antialiasing = true;
     add(blackTopBar);
 
     var resultsAnim:FlxSprite = new FlxSprite(-200, -10);
     resultsAnim.frames = Paths.getSparrowAtlas("resultScreen/results");
     resultsAnim.animation.addByPrefix("result", "results", 24, false);
     resultsAnim.animation.play("result");
-    resultsAnim.antialiasing = true;
     add(resultsAnim);
 
     var ratingsPopin:FlxSprite = new FlxSprite(-150, 120);
     ratingsPopin.frames = Paths.getSparrowAtlas("resultScreen/ratingsPopin");
     ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
-    // ratingsPopin.animation.play("idle");
     ratingsPopin.visible = false;
-    ratingsPopin.antialiasing = true;
     add(ratingsPopin);
 
     var scorePopin:FlxSprite = new FlxSprite(-180, 520);

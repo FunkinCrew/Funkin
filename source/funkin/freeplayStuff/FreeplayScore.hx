@@ -117,7 +117,6 @@ class ScoreNum extends FlxSprite
     this.digit = initDigit;
 
     animation.play(numToString[digit], true);
-    antialiasing = true;
 
     setGraphicSize(Std.int(width * 0.4));
     updateHitbox();

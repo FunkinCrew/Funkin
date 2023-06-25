@@ -162,7 +162,6 @@ class NoteSprite extends FlxSprite
 
     setGraphicSize(Strumline.STRUMLINE_SIZE);
     updateHitbox();
-    antialiasing = true;
   }
 
   public override function revive():Void

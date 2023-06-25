@@ -266,7 +266,6 @@ class StickerSprite extends FlxSprite
     super(x, y);
     loadGraphic(Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
     updateHitbox();
-    antialiasing = true;
     scrollFactor.set();
   }
 }

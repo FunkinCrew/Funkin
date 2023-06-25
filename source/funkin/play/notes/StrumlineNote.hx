@@ -92,8 +92,6 @@ class StrumlineNote extends FlxSprite
         this.animation.addByIndices('confirm-hold', 'right confirm', [2, 3, 4, 5], '', 24, true, false, false);
     }
 
-    this.antialiasing = true;
-
     this.setGraphicSize(Std.int(Strumline.STRUMLINE_SIZE * 1.55));
     this.updateHitbox();
     this.playStatic();
