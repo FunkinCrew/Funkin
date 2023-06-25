@@ -66,10 +66,8 @@
     },
     {
       "name": "hxCodec",
-      "type": "git",
-      "dir": null,
-      "ref": "c42ab99",
-      "url": "https://github.com/polybiusproxy/hxCodec"
+      "type": "haxelib",
+      "version": "3.0.1"
     },
     {
       "name": "hxcpp",
