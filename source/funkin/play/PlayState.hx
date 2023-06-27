@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.sound.FlxSound;
 import funkin.ui.story.StoryMenuState;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
@@ -867,6 +868,7 @@ class PlayState extends MusicBeatState
 
     FlxG.sound.music.onComplete = endSong;
     trace('Playing vocals...');
+    add(vocals);
     vocals.play();
 
     #if discord_rpc
