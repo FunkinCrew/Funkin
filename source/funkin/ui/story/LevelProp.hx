@@ -16,8 +16,10 @@ class LevelProp extends Bopper
     playAnimation('confirm', true, true);
   }
 
-  public static function build(propData:LevelPropData):Null<LevelProp>
+  public static function build(propData:Null<LevelPropData>):Null<LevelProp>
   {
+    if (propData == null) return null;
+
     var isAnimated:Bool = propData.animations.length > 0;
     var prop:LevelProp = new LevelProp(propData.danceEvery);
 
