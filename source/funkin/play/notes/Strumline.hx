@@ -53,6 +53,8 @@ class Strumline extends FlxSpriteGroup
   var noteData:Array<SongNoteData> = [];
   var nextNoteIndex:Int = -1;
 
+  var heldKeys:Array<Bool> = [];
+
   public function new(isPlayer:Bool)
   {
     super();
@@ -60,19 +62,23 @@ class Strumline extends FlxSpriteGroup
     this.isPlayer = isPlayer;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
+    this.strumlineNotes.zIndex = 10;
     this.add(this.strumlineNotes);
 
     // Hold notes are added first so they render behind regular notes.
     this.holdNotes = new FlxTypedSpriteGroup<SustainTrail>();
+    this.holdNotes.zIndex = 20;
     this.add(this.holdNotes);
 
     this.notes = new FlxTypedSpriteGroup<NoteSprite>();
+    this.notes.zIndex = 30;
     this.add(this.notes);
 
     this.noteSplashes = new FlxTypedSpriteGroup<NoteSplash>(0, 0, NOTE_SPLASH_CAP);
+    this.noteSplashes.zIndex = 40;
     this.add(this.noteSplashes);
 
-    for (i in 0...DIRECTIONS.length)
+    for (i in 0...KEY_COUNT)
     {
       var child:StrumlineNote = new StrumlineNote(isPlayer, DIRECTIONS[i]);
       child.x = getXPos(DIRECTIONS[i]);
@@ -81,13 +87,18 @@ class Strumline extends FlxSpriteGroup
       this.strumlineNotes.add(child);
     }
 
+    for (i in 0...KEY_COUNT)
+    {
+      heldKeys.push(false);
+    }
+
     // This MUST be true for children to update!
     this.active = true;
   }
 
   override function get_width():Float
   {
-    return 4 * Strumline.NOTE_SPACING;
+    return KEY_COUNT * Strumline.NOTE_SPACING;
   }
 
   public override function update(elapsed:Float):Void
@@ -183,11 +194,11 @@ class Strumline extends FlxSpriteGroup
       if (note == null) continue;
       if (note.time > renderWindowStart) break;
 
-      buildNoteSprite(note);
+      var noteSprite = buildNoteSprite(note);
 
       if (note.length > 0)
       {
-        buildHoldNoteSprite(note);
+        noteSprite.holdNoteSprite = buildHoldNoteSprite(note);
       }
 
       nextNoteIndex++; // Increment the nextNoteIndex rather than splicing the array, because splicing is slow.
@@ -198,7 +209,8 @@ class Strumline extends FlxSpriteGroup
     {
       if (note == null || note.hasBeenHit) continue;
 
-      note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime);
+      var vwoosh:Bool = note.holdNoteSprite == null;
+      note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime, vwoosh);
 
       // Check if the note is outside the hit window, and if so, mark it as missed.
       // TODO: Check to make sure this doesn't happen when the note is on screen because it'll probably get deleted.
@@ -221,6 +233,17 @@ class Strumline extends FlxSpriteGroup
     {
       if (holdNote == null || !holdNote.alive) continue;
 
+      if (Conductor.songPosition > holdNote.strumTime && holdNote.hitNote && !holdNote.missedNote)
+      {
+        if (isPlayer && !isKeyHeld(holdNote.noteDirection))
+        {
+          // Stopped pressing the hold note.
+          playStatic(holdNote.noteDirection);
+          holdNote.missedNote = true;
+          holdNote.alpha = 0.6;
+        }
+      }
+
       var renderWindowEnd = holdNote.strumTime + holdNote.fullSustainLength + Conductor.HIT_WINDOW_MS + RENDER_DISTANCE_MS / 8;
 
       if (holdNote.missedNote && Conductor.songPosition >= renderWindowEnd)
@@ -241,6 +264,28 @@ class Strumline extends FlxSpriteGroup
         // TODO: Better handle the weird edge case where the hold note is almost completed.
         holdNote.visible = false;
       }
+      else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
+      {
+        // Hold note was dropped before completing, keep it in its clipped state.
+        holdNote.visible = true;
+
+        var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Conductor.PIXELS_PER_MS;
+
+        trace('yOffset: ' + yOffset);
+        trace('holdNote.fullSustainLength: ' + holdNote.fullSustainLength);
+        trace('holdNote.sustainLength: ' + holdNote.sustainLength);
+
+        var vwoosh:Bool = false;
+
+        if (PreferencesMenu.getPref('downscroll'))
+        {
+          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
+        }
+        else
+        {
+          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2;
+        }
+      }
       else if (Conductor.songPosition > holdNote.strumTime && holdNote.hitNote)
       {
         // Hold note is currently being hit, clip it off.
@@ -258,38 +303,19 @@ class Strumline extends FlxSpriteGroup
           holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
         }
       }
-      else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
-      {
-        // Hold note was dropped before completing, keep it in its clipped state.
-        holdNote.visible = true;
-
-        var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Conductor.PIXELS_PER_MS;
-
-        trace('yOffset: ' + yOffset);
-        trace('holdNote.fullSustainLength: ' + holdNote.fullSustainLength);
-        trace('holdNote.sustainLength: ' + holdNote.sustainLength);
-
-        if (PreferencesMenu.getPref('downscroll'))
-        {
-          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2;
-        }
-        else
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2;
-        }
-      }
       else
       {
         // Hold note is new, render it normally.
         holdNote.visible = true;
+        var vwoosh:Bool = false;
 
         if (PreferencesMenu.getPref('downscroll'))
         {
-          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, false) - holdNote.height + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
         }
         else
         {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, false) + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2;
         }
       }
     }
@@ -300,6 +326,21 @@ class Strumline extends FlxSpriteGroup
     if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
 
     if (holdNotes.members.length > 1) holdNotes.members.insertionSort(compareHoldNoteSprites.bind(FlxSort.ASCENDING));
+  }
+
+  public function pressKey(dir:NoteDirection):Void
+  {
+    heldKeys[dir] = true;
+  }
+
+  public function releaseKey(dir:NoteDirection):Void
+  {
+    heldKeys[dir] = false;
+  }
+
+  public function isKeyHeld(dir:NoteDirection):Bool
+  {
+    return heldKeys[dir];
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
@@ -395,7 +436,7 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
-  public function buildNoteSprite(note:SongNoteData):Void
+  public function buildNoteSprite(note:SongNoteData):NoteSprite
   {
     var noteSprite:NoteSprite = constructNoteSprite();
 
@@ -411,9 +452,11 @@ class Strumline extends FlxSpriteGroup
       // noteSprite.x += INITIAL_OFFSET;
       noteSprite.y = -9999;
     }
+
+    return noteSprite;
   }
 
-  public function buildHoldNoteSprite(note:SongNoteData):Void
+  public function buildHoldNoteSprite(note:SongNoteData):SustainTrail
   {
     var holdNoteSprite:SustainTrail = constructHoldNoteSprite();
 
@@ -427,13 +470,16 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.missedNote = false;
       holdNoteSprite.hitNote = false;
 
+      holdNoteSprite.alpha = 1.0;
+
       holdNoteSprite.x = this.x;
       holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
-      // holdNoteSprite.x += INITIAL_OFFSET;
       holdNoteSprite.x += STRUMLINE_SIZE / 2;
       holdNoteSprite.x -= holdNoteSprite.width / 2;
       holdNoteSprite.y = -9999;
     }
+
+    return holdNoteSprite;
   }
 
   /**

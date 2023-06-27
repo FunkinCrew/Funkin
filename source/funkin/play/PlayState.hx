@@ -1014,8 +1014,9 @@ class PlayState extends MusicBeatState
     // super.stepHit() returns false if a module cancelled the event.
     if (!super.stepHit()) return false;
 
-    if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 200
-      || Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 200)
+    if (FlxG.sound.music != null
+      && (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 200
+        || Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 200))
     {
       trace("VOCALS NEED RESYNC");
       if (vocals != null) trace(vocals.checkSyncError(Conductor.songPosition - Conductor.offset));
@@ -1473,7 +1474,6 @@ class PlayState extends MusicBeatState
     // }
 
     // Reset the notes on each strumline.
-    var noteData:Array<SongNoteData> = currentChart.notes;
     var playerNoteData:Array<SongNoteData> = [];
     var opponentNoteData:Array<SongNoteData> = [];
 
@@ -1698,6 +1698,9 @@ class PlayState extends MusicBeatState
         onNoteMiss(note);
       }
     }
+
+    // Process hold notes on the player's side.
+    // This handles scoring so we don't need it on the opponent's side.
   }
 
   /**
@@ -1736,6 +1739,8 @@ class PlayState extends MusicBeatState
     while (inputPressQueue.length > 0)
     {
       var input:PreciseInputEvent = inputPressQueue.shift();
+
+      playerStrumline.pressKey(input.noteDirection);
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
@@ -1777,6 +1782,8 @@ class PlayState extends MusicBeatState
 
       // Play the strumline animation.
       playerStrumline.playStatic(input.noteDirection);
+
+      playerStrumline.releaseKey(input.noteDirection);
     }
   }
 
@@ -2004,10 +2011,6 @@ class PlayState extends MusicBeatState
 
     note.active = false;
     note.visible = false;
-
-    // Kill the note.
-    // NOTE: This is what handles recycling the note graphic.
-    playerStrumline.killNote(note);
   }
 
   /**

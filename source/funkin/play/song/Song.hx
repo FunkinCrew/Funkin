@@ -283,8 +283,9 @@ class SongDifficulty
     return timeChanges[0].bpm;
   }
 
-  public function getPlayableChar(id:String):SongPlayableChar
+  public function getPlayableChar(id:String):Null<SongPlayableChar>
   {
+    if (id == null || id == '') return null;
     return chars.get(id);
   }
 
@@ -300,9 +301,10 @@ class SongDifficulty
 
   public inline function cacheInst(?currentPlayerId:String = null):Void
   {
-    if (currentPlayerId != null)
+    var currentPlayer:Null<SongPlayableChar> = getPlayableChar(currentPlayerId);
+    if (currentPlayer != null)
     {
-      FlxG.sound.cache(Paths.inst(this.song.songId, getPlayableChar(currentPlayerId).inst));
+      FlxG.sound.cache(Paths.inst(this.song.songId, currentPlayer.inst));
     }
     else
     {
