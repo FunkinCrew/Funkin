@@ -87,8 +87,10 @@ class NoteSprite extends FlxSprite
   public var lowPriority:Bool = false;
 
   /**
-   * This is true if the note has been fully missed by the player.
-   * It will be destroyed immediately.
+   * This is true if the note is later than 10 frames within the strumline,
+   * and thus can't be hit by the player.
+   * It will be destroyed after it moves offscreen.
+   * Managed by PlayState.
    */
   public var hasMissed:Bool;
 
@@ -107,11 +109,10 @@ class NoteSprite extends FlxSprite
   public var mayHit:Bool;
 
   /**
-   * This is true if the note is earlier than 10 frames after the strumline,
-   * and thus can't be hit by the player.
-   * Managed by PlayState.
+   * This is true if the PlayState has performed the logic for missing this note.
+   * Subtracting score, subtracting health, etc.
    */
-  public var tooLate:Bool;
+  public var handledMiss:Bool;
 
   public function new(strumTime:Float = 0, direction:Int = 0)
   {
@@ -171,7 +172,6 @@ class NoteSprite extends FlxSprite
     this.tooEarly = false;
     this.hasBeenHit = false;
     this.mayHit = false;
-    this.tooLate = false;
     this.hasMissed = false;
   }
 

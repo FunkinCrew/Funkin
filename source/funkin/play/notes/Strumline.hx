@@ -123,6 +123,13 @@ class Strumline extends FlxSpriteGroup
     });
   }
 
+  public function getNotesMayHit():Array<NoteSprite>
+  {
+    return notes.members.filter(function(note:NoteSprite) {
+      return note != null && note.alive && !note.hasBeenHit && note.mayHit;
+    });
+  }
+
   public function getHoldNotesInRange(strumTime:Float, hitWindow:Float):Array<SustainTrail>
   {
     var hitWindowStart:Float = strumTime - hitWindow;
@@ -207,24 +214,17 @@ class Strumline extends FlxSpriteGroup
     // Update rendering of notes.
     for (note in notes.members)
     {
-      if (note == null || note.hasBeenHit) continue;
+      if (note == null || !note.alive || note.hasBeenHit) continue;
 
       var vwoosh:Bool = note.holdNoteSprite == null;
+      // Set the note's position.
       note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime, vwoosh);
 
-      // Check if the note is outside the hit window, and if so, mark it as missed.
-      // TODO: Check to make sure this doesn't happen when the note is on screen because it'll probably get deleted.
-      if (Conductor.songPosition > (note.noteData.time + Conductor.HIT_WINDOW_MS))
+      // If the note is miss
+      var isOffscreen = PreferencesMenu.getPref('downscroll') ? note.y > FlxG.height : note.y < -note.height;
+      if (note.handledMiss && isOffscreen)
       {
-        note.visible = false;
-        note.hasMissed = true;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
-      }
-      else
-      {
-        note.visible = true;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+        killNote(note);
       }
     }
 

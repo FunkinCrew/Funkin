@@ -136,10 +136,8 @@ class PlayState extends MusicBeatState
 
   /**
    * The player's current health.
-   * The default maximum health is 2.0, and the default starting health is 1.0.
-   * TODO: Refactor this to [0.0, 1.0]
    */
-  public var health:Float = 1;
+  public var health:Float = Constants.HEALTH_STARTING;
 
   /**
    * The player's current score.
@@ -255,7 +253,7 @@ class PlayState extends MusicBeatState
    * The displayed value of the player's health.
    * Used to provide smooth animations based on linear interpolation of the player's health.
    */
-  var healthLerp:Float = 1;
+  var healthLerp:Float = Constants.HEALTH_STARTING;
 
   /**
    * How long the user has held the "Skip Video Cutscene" button for.
@@ -643,7 +641,7 @@ class PlayState extends MusicBeatState
       hudCameraZoomIntensity = Constants.DEFAULT_ZOOM_INTENSITY * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-      health = 1;
+      health = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
       Countdown.performCountdown(currentStageId.startsWith('school'));
@@ -735,8 +733,8 @@ class PlayState extends MusicBeatState
     }
 
     // Cap health.
-    if (health > 2.0) health = 2.0;
-    if (health < 0.0) health = 0.0;
+    if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
+    if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
     // Lerp the camera zoom towards the target level.
     if (subState == null)
@@ -761,19 +759,19 @@ class PlayState extends MusicBeatState
       // RESET = Quick Game Over Screen
       if (controls.RESET)
       {
-        health = 0;
+        health = Constants.HEALTH_MIN;
         trace('RESET = True');
       }
 
       #if CAN_CHEAT // brandon's a pussy
       if (controls.CHEAT)
       {
-        health += 1;
+        health += 0.25 * Constants.HEALTH_MAX; // +25% health.
         trace('User is cheating!');
       }
       #end
 
-      if (health <= 0 && !isPracticeMode)
+      if (health <= Constants.HEALTH_MIN && !isPracticeMode)
       {
         vocals.pause();
         FlxG.sound.music.pause();
@@ -934,7 +932,7 @@ class PlayState extends MusicBeatState
    */
   public override function onFocus():Void
   {
-    if (health > 0 && !paused && FlxG.autoPause)
+    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
     {
       if (Conductor.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
         + ' ('
@@ -954,7 +952,8 @@ class PlayState extends MusicBeatState
    */
   public override function onFocusLost():Void
   {
-    if (health > 0 && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
+      currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
 
     super.onFocusLost();
   }
@@ -1645,7 +1644,8 @@ class PlayState extends MusicBeatState
       {
         note.tooEarly = false;
         note.mayHit = false;
-        note.tooLate = true;
+        note.hasMissed = true;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
       }
       else if (Conductor.songPosition > hitWindowCenter)
       {
@@ -1660,20 +1660,20 @@ class PlayState extends MusicBeatState
         // Command the opponent to hit the note on time.
         // NOTE: This is what handles the strumline and cleaning up the note itself!
         opponentStrumline.hitNote(note);
-
-        // scoreNote();
       }
       else if (Conductor.songPosition > hitWindowStart)
       {
         note.tooEarly = false;
         note.mayHit = true;
-        note.tooLate = false;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
       else
       {
         note.tooEarly = true;
         note.mayHit = false;
-        note.tooLate = false;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
     }
 
@@ -1682,8 +1682,35 @@ class PlayState extends MusicBeatState
     {
       if (note == null || note.hasBeenHit) continue;
 
-      // If this is true, the note is already properly off the screen.
-      if (note.hasMissed)
+      var hitWindowStart = note.strumTime - Conductor.HIT_WINDOW_MS;
+      var hitWindowCenter = note.strumTime;
+      var hitWindowEnd = note.strumTime + Conductor.HIT_WINDOW_MS;
+
+      if (Conductor.songPosition > hitWindowEnd)
+      {
+        note.tooEarly = false;
+        note.mayHit = false;
+        note.hasMissed = true;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
+      }
+      else if (Conductor.songPosition > hitWindowStart)
+      {
+        note.tooEarly = false;
+        note.mayHit = true;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+      else
+      {
+        note.tooEarly = true;
+        note.mayHit = false;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+
+      // This becomes true when the note leaves the hit window.
+      // It might still be on screen.
+      if (note.hasMissed && !note.handledMiss)
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
@@ -1696,6 +1723,8 @@ class PlayState extends MusicBeatState
         // Judge the miss.
         // NOTE: This is what handles the scoring.
         onNoteMiss(note);
+
+        note.handledMiss = true;
       }
     }
 
@@ -1725,11 +1754,9 @@ class PlayState extends MusicBeatState
     }
 
     // Generate a list of notes within range.
-    var notesInRange:Array<NoteSprite> = playerStrumline.getNotesInRange(Conductor.songPosition, Conductor.HIT_WINDOW_MS);
+    var notesInRange:Array<NoteSprite> = playerStrumline.getNotesMayHit();
 
     // If there are notes in range, pressing a key will cause a ghost miss.
-    // var canMiss:Bool = notesInRange.length > 0;
-    var canMiss:Bool = true; // Forced to true for consistency with other input systems.
 
     var notesByDirection:Array<Array<NoteSprite>> = [[], [], [], []];
 
@@ -1744,10 +1771,19 @@ class PlayState extends MusicBeatState
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
-      if (canMiss && notesInDirection.length == 0)
+      if (!Constants.GHOST_TAPPING && notesInDirection.length == 0)
       {
-        // Pressed a wrong key with notes in range.
-        // Perform a ghost miss.
+        // Pressed a wrong key with no notes nearby.
+        // Perform a ghost miss (anti-spam).
+        ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
+
+        // Play the strumline animation.
+        playerStrumline.playPress(input.noteDirection);
+      }
+      else if (Constants.GHOST_TAPPING && notesInRange.length > 0 && notesInDirection.length == 0)
+      {
+        // Pressed a wrong key with no notes nearby AND with notes in a different direction available.
+        // Perform a ghost miss (anti-spam).
         ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
 
         // Play the strumline animation.
@@ -1837,37 +1873,6 @@ class PlayState extends MusicBeatState
       var directionList:Array<Int> = []; // directions that can be hit
       var dumbNotes:Array<NoteSprite> = []; // notes to kill later
 
-      /*
-        activeNotes.forEachAlive(function(daNote:Note) {
-          if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.hasBeenHit)
-          {
-            if (directionList.contains(daNote.data.noteData))
-            {
-              for (coolNote in possibleNotes)
-              {
-                if (coolNote.data.noteData == daNote.data.noteData && Math.abs(daNote.data.strumTime - coolNote.data.strumTime) < 10)
-                { // if it's the same note twice at < 10ms distance, just delete it
-                  // EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
-                  dumbNotes.push(daNote);
-                  break;
-                }
-                else if (coolNote.data.noteData == daNote.data.noteData && daNote.data.strumTime < coolNote.data.strumTime)
-                { // if daNote is earlier than existing note (coolNote), replace
-                  possibleNotes.remove(coolNote);
-                  possibleNotes.push(daNote);
-                  break;
-                }
-              }
-            }
-            else
-            {
-              possibleNotes.push(daNote);
-              directionList.push(daNote.data.noteData);
-            }
-          }
-        });
-       */
-
       for (note in dumbNotes)
       {
         FlxG.log.add('killing dumb ass note at ' + note.noteData.time);
@@ -1955,7 +1960,7 @@ class PlayState extends MusicBeatState
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
 
-    health -= 0.0775;
+    health -= Constants.HEALTH_MISS_PENALTY;
 
     if (!isPracticeMode)
     {
@@ -2008,9 +2013,6 @@ class PlayState extends MusicBeatState
       vocals.playerVolume = 0;
       FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
     }
-
-    note.active = false;
-    note.visible = false;
   }
 
   /**
@@ -2025,7 +2027,7 @@ class PlayState extends MusicBeatState
   {
     var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
       hasPossibleNotes, // Whether there was a note you could have hit.
-      - 0.035 * 2, // How much health to add (negative).
+      - 1 * Constants.HEALTH_MISS_PENALTY, // How much health to add (negative).
       - 10 // Amount of score to add (negative).
     );
     dispatchEvent(event);
@@ -2098,10 +2100,10 @@ class PlayState extends MusicBeatState
     if (FlxG.keys.justPressed.ONE) endSong();
 
     // 2: Gain 10% health.
-    if (FlxG.keys.justPressed.TWO) health += 0.1 * 2.0;
+    if (FlxG.keys.justPressed.TWO) health += 0.1 * Constants.HEALTH_MAX;
 
     // 3: Lose 5% health.
-    if (FlxG.keys.justPressed.THREE) health -= 0.05 * 2.0;
+    if (FlxG.keys.justPressed.THREE) health -= 0.05 * Constants.HEALTH_MAX;
     #end
 
     // 7: Move to the charter.
@@ -2146,36 +2148,33 @@ class PlayState extends MusicBeatState
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
 
-    var isSick:Bool = false;
-    var healthMulti:Float = 0;
-
     switch (daRating)
     {
       case 'killer':
         Highscore.tallies.killer += 1;
-        healthMulti = 0.033;
+        health += Constants.HEALTH_KILLER_BONUS;
       case 'sick':
         Highscore.tallies.sick += 1;
-        healthMulti = 0.033;
+        health += Constants.HEALTH_SICK_BONUS;
       case 'good':
         Highscore.tallies.good += 1;
-        healthMulti = 0.033 * 0.78;
+        health += Constants.HEALTH_GOOD_BONUS;
       case 'bad':
         Highscore.tallies.bad += 1;
-        healthMulti = 0.033 * 0.2;
+        health += Constants.HEALTH_BAD_BONUS;
       case 'shit':
         Highscore.tallies.shit += 1;
-        healthMulti = 0;
+        health += Constants.HEALTH_SHIT_BONUS;
       case 'miss':
         Highscore.tallies.missed += 1;
-        healthMulti = 0;
+        health -= Constants.HEALTH_MISS_PENALTY;
     }
 
-    health += healthMulti;
     if (daRating == "sick" || daRating == "killer")
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
+
     // Only add the score if you're not on practice mode
     if (!isPracticeMode)
     {
