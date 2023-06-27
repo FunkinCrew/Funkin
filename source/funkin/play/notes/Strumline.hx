@@ -130,6 +130,13 @@ class Strumline extends FlxSpriteGroup
     });
   }
 
+  public function getHoldNotesHitOrMissed():Array<SustainTrail>
+  {
+    return holdNotes.members.filter(function(holdNote:SustainTrail) {
+      return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
+    });
+  }
+
   public function getHoldNotesInRange(strumTime:Float, hitWindow:Float):Array<SustainTrail>
   {
     var hitWindowStart:Float = strumTime - hitWindow;
@@ -255,14 +262,16 @@ class Strumline extends FlxSpriteGroup
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
         // Hold note is completed, kill it.
-        playStatic(holdNote.noteDirection);
+        if (isKeyHeld(holdNote.noteDirection))
+        {
+          playPress(holdNote.noteDirection);
+        }
+        else
+        {
+          playStatic(holdNote.noteDirection);
+        }
         holdNote.visible = false;
         holdNote.kill();
-      }
-      else if (holdNote.hitNote && holdNote.sustainLength <= 10)
-      {
-        // TODO: Better handle the weird edge case where the hold note is almost completed.
-        holdNote.visible = false;
       }
       else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
       {
@@ -293,6 +302,11 @@ class Strumline extends FlxSpriteGroup
         holdNote.visible = true;
 
         holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - Conductor.songPosition;
+
+        if (holdNote.sustainLength <= 10)
+        {
+          holdNote.visible = false;
+        }
 
         if (PreferencesMenu.getPref('downscroll'))
         {

@@ -24,6 +24,16 @@ class NoteSplash extends FlxSprite
     // alpha = 0.75;
   }
 
+  public override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (animation.finished)
+    {
+      kill();
+    }
+  }
+
   public static function buildSplashFrames(force:Bool = false):FlxAtlasFrames
   {
     // static variables inside functions are a cool of Haxe 4.3.0.

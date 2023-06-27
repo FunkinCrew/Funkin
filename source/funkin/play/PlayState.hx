@@ -33,6 +33,7 @@ import funkin.play.event.SongEventData.SongEventParser;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.Strumline;
+import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongDataParser;
@@ -1728,10 +1729,15 @@ class PlayState extends MusicBeatState
     // This handles scoring so we don't need it on the opponent's side.
     for (holdNote in playerStrumline.holdNotes.members)
     {
+      if (holdNote == null || !holdNote.alive) continue;
+
       // While the hold note is being hit, and there is length on the hold note...
-      if (holdNote.hitNote && holdNote.sustainLength > 0)
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Grant the player health.
+        trace(holdNote);
+        trace(holdNote.noteData);
+        trace(holdNote.sustainLength);
         health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
       }
     }
@@ -1760,6 +1766,7 @@ class PlayState extends MusicBeatState
 
     // Generate a list of notes within range.
     var notesInRange:Array<NoteSprite> = playerStrumline.getNotesMayHit();
+    var holdNotesInRange:Array<SustainTrail> = playerStrumline.getHoldNotesHitOrMissed();
 
     // If there are notes in range, pressing a key will cause a ghost miss.
 
@@ -1785,7 +1792,7 @@ class PlayState extends MusicBeatState
         // Play the strumline animation.
         playerStrumline.playPress(input.noteDirection);
       }
-      else if (Constants.GHOST_TAPPING && notesInRange.length > 0 && notesInDirection.length == 0)
+      else if (Constants.GHOST_TAPPING && (holdNotesInRange.length + notesInRange.length > 0) && notesInDirection.length == 0)
       {
         // Pressed a wrong key with no notes nearby AND with notes in a different direction available.
         // Perform a ghost miss (anti-spam).
