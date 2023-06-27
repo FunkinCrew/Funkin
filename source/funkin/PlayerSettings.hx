@@ -26,8 +26,10 @@ class PlayerSettings
   // public var avatar:Player;
   // public var camera(get, never):PlayCamera;
 
-  function new(id)
+  function new(id:Int)
   {
+    trace('loading player settings for id: $id');
+
     this.id = id;
     this.controls = new Controls('player$id', None);
 
@@ -52,7 +54,11 @@ class PlayerSettings
       }
     }
 
-    if (useDefault) controls.setKeyboardScheme(Solo);
+    if (useDefault)
+    {
+      trace("falling back to default control scheme");
+      controls.setKeyboardScheme(Solo);
+    }
 
     // Apply loaded settings.
     PreciseInputManager.instance.initializeKeys(controls);
