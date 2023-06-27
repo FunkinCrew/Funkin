@@ -588,18 +588,18 @@ class Strumline extends FlxSpriteGroup
    * @param arrow The arrow to animate.
    * @param index The index of the arrow in the strumline.
    */
-  function fadeInArrow(arrow:StrumlineNote):Void
+  function fadeInArrow(index:Int, arrow:StrumlineNote):Void
   {
     arrow.y -= 10;
-    arrow.alpha = 0;
-    FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * arrow.ID)});
+    arrow.alpha = 0.0;
+    FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
   }
 
   public function fadeInArrows():Void
   {
-    for (arrow in this.strumlineNotes)
+    for (index => arrow in this.strumlineNotes.members.keyValueIterator())
     {
-      fadeInArrow(arrow);
+      fadeInArrow(index, arrow);
     }
   }
 

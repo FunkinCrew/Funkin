@@ -836,7 +836,7 @@ class PlayState extends MusicBeatState
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
     // Moving notes into position is now done by Strumline.update().
-    processNotes();
+    processNotes(elapsed);
 
     // Dispatch the onUpdate event to scripted elements.
     dispatchEvent(new UpdateScriptEvent(elapsed));
@@ -1378,10 +1378,6 @@ class PlayState extends MusicBeatState
     if (!PlayStatePlaylist.isStoryMode)
     {
       playerStrumline.fadeInArrows();
-    }
-
-    if (!PlayStatePlaylist.isStoryMode)
-    {
       opponentStrumline.fadeInArrows();
     }
 
@@ -1629,7 +1625,7 @@ class PlayState extends MusicBeatState
   /**
    * Handles opponent note hits and player note misses.
    */
-  function processNotes():Void
+  function processNotes(elapsed:Float):Void
   {
     // Process notes on the opponent's side.
     for (note in opponentStrumline.notes.members)
@@ -1730,6 +1726,15 @@ class PlayState extends MusicBeatState
 
     // Process hold notes on the player's side.
     // This handles scoring so we don't need it on the opponent's side.
+    for (holdNote in playerStrumline.holdNotes.members)
+    {
+      // While the hold note is being hit, and there is length on the hold note...
+      if (holdNote.hitNote && holdNote.sustainLength > 0)
+      {
+        // Grant the player health.
+        health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
+      }
+    }
   }
 
   /**

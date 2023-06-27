@@ -41,6 +41,7 @@ class StrumlineNote extends FlxSprite
     this.animation.callback = onAnimationFrame;
     this.animation.finishCallback = onAnimationFinished;
 
+    // Must be true for animations to play.
     this.active = true;
   }
 
