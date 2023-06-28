@@ -35,6 +35,7 @@ import funkin.play.notes.NoteDirection;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
+import funkin.NoteSplash;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.play.song.SongData.SongEventData;
@@ -452,6 +453,8 @@ class PlayState extends MusicBeatState
       trace('WARNING: PlayState instance already exists. This should not happen.');
     }
     instance = this;
+
+    NoteSplash.buildSplashFrames();
 
     if (currentSong != null)
     {
