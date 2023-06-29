@@ -41,10 +41,12 @@ class PackerCharacter extends BaseCharacter
 
     if (_data.isPixel)
     {
+      this.isPixel = true;
       this.antialiasing = false;
     }
     else
     {
+      this.isPixel = false;
       this.antialiasing = true;
     }
 

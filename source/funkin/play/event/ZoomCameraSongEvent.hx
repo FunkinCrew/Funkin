@@ -10,7 +10,7 @@ import funkin.play.event.SongEventData.SongEventFieldType;
 
 /**
  * This class represents a handler for camera zoom events.
- * 
+ *
  * Example: Zoom to 1.3x:
  * ```
  * {
@@ -18,8 +18,8 @@ import funkin.play.event.SongEventData.SongEventFieldType;
  *   'v': 1.3
  * }
  * ```
- * 
- * Example: Zoom to 1.3x 
+ *
+ * Example: Zoom to 1.3x
  * ```
  * {
  *   'e': 'FocusCamera',
@@ -29,7 +29,7 @@ import funkin.play.event.SongEventData.SongEventFieldType;
  *   }
  * }
  * ```
- * 
+ *
  * Example: Focus on (100, 100):
  * ```
  * {
@@ -76,7 +76,8 @@ class ZoomCameraSongEvent extends SongEvent
           return;
         }
 
-        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.stepCrochet * duration / 1000), {ease: easeFunction});
+        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.stepLengthMs * duration / 1000),
+          {ease: easeFunction});
     }
   }
 

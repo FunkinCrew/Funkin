@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -299,7 +300,14 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    // FlxG.camera.followLerp = CoolUtil.camLerpShit(0.06);
+    // ` / ~ to open the debug menu.
+    if (FlxG.keys.justPressed.GRAVEACCENT)
+    {
+      // TODO: Does this break anything?
+      this.persistentUpdate = false;
+      this.persistentDraw = false;
+      FlxG.state.openSubState(new DebugMenuSubState());
+    }
 
     if (FlxG.sound.music.volume < 0.8)
     {
