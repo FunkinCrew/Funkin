@@ -1201,13 +1201,10 @@ class PlayState extends MusicBeatState
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
 
-    FlxG.watch.addQuick('beatShit', Conductor.currentBeat);
-    FlxG.watch.addQuick('stepShit', Conductor.currentStep);
     if (currentStage != null)
     {
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
-    FlxG.watch.addQuick('songPos', Conductor.songPosition);
 
     // Handle GF dance speed.
     // TODO: Add a song event for this.

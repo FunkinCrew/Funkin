@@ -2,7 +2,6 @@ package funkin;
 
 import flixel.FlxSubState;
 import flixel.util.FlxColor;
-import funkin.Conductor.BPMChangeEvent;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import flixel.text.FlxText;
