@@ -12,6 +12,8 @@ import flixel.util.FlxTimer;
 import funkin.audiovis.SpectogramSprite;
 import funkin.shaderslmfao.ColorSwap;
 import funkin.shaderslmfao.LeftMaskShader;
+import funkin.play.song.SongData.SongDataParser;
+import funkin.play.song.SongData.SongMetadata;
 import funkin.shaderslmfao.TitleOutline;
 import funkin.ui.AtlasText;
 import funkin.util.Constants;
@@ -233,7 +235,7 @@ class TitleState extends MusicBeatState
   {
     if (FlxG.sound.music == null || !FlxG.sound.music.playing)
     {
-      var freakyMenuMetadata:SongMetadata = SongData.parseMusicMetadata('freakyMenu');
+      var freakyMenuMetadata:SongMetadata = SongDataParser.parseMusicMetadata('freakyMenu');
       Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
 
       FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);

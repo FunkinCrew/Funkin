@@ -195,7 +195,7 @@ class SongDataParser
 
   static function loadMusicMetadataFile(musicPath:String, variation:String = ''):String
   {
-    var musicMetadataFilePath:String = (variation != '') ? Paths.json('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata-$variation') : Paths.json('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata');
+    var musicMetadataFilePath:String = (variation != '') ? Paths.file('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata-$variation.json') : Paths.file('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata.json');
 
     var rawJson:String = Assets.getText(musicMetadataFilePath).trim();
 
@@ -395,8 +395,7 @@ abstract SongNoteData(RawSongNoteData)
 
   public function get_stepTime():Float
   {
-    // TODO: Account for changes in BPM.
-    return this.t / Conductor.stepCrochet;
+    return Conductor.getTimeInSteps(this.t);
   }
 
   /**
@@ -581,8 +580,7 @@ abstract SongEventData(RawSongEventData)
 
   public function get_stepTime():Float
   {
-    // TODO: Account for changes in BPM.
-    return this.t / Conductor.stepCrochet;
+    return Conductor.getTimeInSteps(this.t);
   }
 
   public var event(get, set):String;
