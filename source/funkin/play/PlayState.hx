@@ -887,7 +887,7 @@ class PlayState extends MusicBeatState
       trace('Song difficulty could not be loaded.');
     }
 
-    Conductor.forceBPM(currentChart.getStartingBPM());
+    // Conductor.forceBPM(currentChart.getStartingBPM());
 
     vocals = currentChart.buildVocals(currentPlayerId);
     if (vocals.members.length == 0)

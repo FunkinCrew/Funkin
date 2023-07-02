@@ -20,6 +20,7 @@ class SongDataParser
 
   static final DEFAULT_SONG_ID:String = 'UNKNOWN';
   static final SONG_DATA_PATH:String = 'songs/';
+  static final MUSIC_DATA_PATH:String = 'music/';
   static final SONG_DATA_SUFFIX:String = '-metadata.json';
 
   /**
@@ -167,6 +168,36 @@ class SongDataParser
     var songMetadataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/$songPath-metadata-$variation') : Paths.json('$SONG_DATA_PATH$songPath/$songPath-metadata');
 
     var rawJson:String = Assets.getText(songMetadataFilePath).trim();
+
+    while (!rawJson.endsWith("}"))
+    {
+      rawJson = rawJson.substr(0, rawJson.length - 1);
+    }
+
+    return rawJson;
+  }
+
+  public static function parseMusicMetadata(musicId:String):SongMetadata
+  {
+    var rawJson:String = loadMusicMetadataFile(musicId);
+    var jsonData:Dynamic = null;
+    try
+    {
+      jsonData = Json.parse(rawJson);
+    }
+    catch (e) {}
+
+    var musicMetadata:SongMetadata = SongMigrator.migrateSongMetadata(jsonData, musicId);
+    musicMetadata = SongValidator.validateSongMetadata(musicMetadata, musicId);
+
+    return musicMetadata;
+  }
+
+  static function loadMusicMetadataFile(musicPath:String, variation:String = ''):String
+  {
+    var musicMetadataFilePath:String = (variation != '') ? Paths.json('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata-$variation') : Paths.json('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata');
+
+    var rawJson:String = Assets.getText(musicMetadataFilePath).trim();
 
     while (!rawJson.endsWith("}"))
     {
@@ -365,7 +396,7 @@ abstract SongNoteData(RawSongNoteData)
   public function get_stepTime():Float
   {
     // TODO: Account for changes in BPM.
-    return this.t / Conductor.stepLengthMs;
+    return this.t / Conductor.stepCrochet;
   }
 
   /**
@@ -551,7 +582,7 @@ abstract SongEventData(RawSongEventData)
   public function get_stepTime():Float
   {
     // TODO: Account for changes in BPM.
-    return this.t / Conductor.stepLengthMs;
+    return this.t / Conductor.stepCrochet;
   }
 
   public var event(get, set):String;
@@ -764,7 +795,7 @@ typedef RawSongTimeChange =
    * Time in beats (int). The game will calculate further beat values based on this one,
    * so it can do it in a simple linear fashion.
    */
-  var b:Int;
+  var b:Null<Float>;
 
   /**
    * Quarter notes per minute (float). Cannot be empty in the first element of the list,
@@ -794,9 +825,9 @@ typedef RawSongTimeChange =
  * Add aliases to the minimalized property names of the typedef,
  * to improve readability.
  */
-abstract SongTimeChange(RawSongTimeChange)
+abstract SongTimeChange(RawSongTimeChange) from RawSongTimeChange
 {
-  public function new(timeStamp:Float, beatTime:Int, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, beatTuplets:Array<Int>)
+  public function new(timeStamp:Float, beatTime:Null<Float>, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, beatTuplets:Array<Int>)
   {
     this =
       {
@@ -821,14 +852,14 @@ abstract SongTimeChange(RawSongTimeChange)
     return this.t = value;
   }
 
-  public var beatTime(get, set):Int;
+  public var beatTime(get, set):Null<Float>;
 
-  public function get_beatTime():Int
+  public function get_beatTime():Null<Float>
   {
     return this.b;
   }
 
-  public function set_beatTime(value:Int):Int
+  public function set_beatTime(value:Null<Float>):Null<Float>
   {
     return this.b = value;
   }
