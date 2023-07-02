@@ -113,13 +113,6 @@ class Conductor
     return currentTimeChange.timeSignatureDen;
   }
 
-  public static var beatsPerMeasure(get, null):Float;
-
-  static function get_beatsPerMeasure():Float
-  {
-    return timeSignatureNumerator / timeSignatureDenominator * 4;
-  }
-
   /**
    * Current position in the song, in measures.
    */
@@ -158,10 +151,11 @@ class Conductor
   public static var audioOffset:Float = 0;
   public static var offset:Float = 0;
 
-  public static var beatsPerMeasure(get, null):Int;
+  public static var beatsPerMeasure(get, null):Float;
 
-  static function get_beatsPerMeasure():Int
+  static function get_beatsPerMeasure():Float
   {
+    // NOTE: Not always an integer, for example 7/8 is 3.5 beats per measure
     return stepsPerMeasure / Constants.STEPS_PER_BEAT;
   }
 
@@ -169,8 +163,8 @@ class Conductor
 
   static function get_stepsPerMeasure():Int
   {
-    // Is this always x4?
-    return timeSignatureNumerator / timeSignatureDenominator * Constants.STEPS_PER_BEAT * Constants.STEPS_PER_BEAT;
+    // TODO: Is this always an integer?
+    return Std.int(timeSignatureNumerator / timeSignatureDenominator * Constants.STEPS_PER_BEAT * Constants.STEPS_PER_BEAT);
   }
 
   function new() {}
