@@ -15,6 +15,7 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.util.Constants;
 
@@ -200,7 +201,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (FlxG.sound.music == null || !FlxG.sound.music.playing)
     {
-      var freakyMenuMetadata:SongMetadata = SongData.parseMusicMetadata('freakyMenu');
+      var freakyMenuMetadata:SongMetadata = SongDataParser.parseMusicMetadata('freakyMenu');
       Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
 
       FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);

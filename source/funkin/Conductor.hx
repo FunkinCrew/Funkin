@@ -72,15 +72,15 @@ class Conductor
 
   static function get_measureLengthMs():Float
   {
-    return crochet * timeSignatureNumerator;
+    return beatLengthMs * timeSignatureNumerator;
   }
 
   /**
    * Duration of a beat in milliseconds. Calculated based on bpm.
    */
-  public static var crochet(get, null):Float;
+  public static var beatLengthMs(get, null):Float;
 
-  static function get_crochet():Float
+  static function get_beatLengthMs():Float
   {
     return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC);
   }
@@ -88,11 +88,11 @@ class Conductor
   /**
    * Duration of a step (quarter) in milliseconds. Calculated based on bpm.
    */
-  public static var stepCrochet(get, null):Float;
+  public static var stepLengthMs(get, null):Float;
 
-  static function get_stepCrochet():Float
+  static function get_stepLengthMs():Float
   {
-    return crochet / timeSignatureNumerator;
+    return beatLengthMs / timeSignatureNumerator;
   }
 
   public static var timeSignatureNumerator(get, null):Int;
@@ -113,15 +113,37 @@ class Conductor
     return currentTimeChange.timeSignatureDen;
   }
 
+  public static var beatsPerMeasure(get, null):Float;
+
+  static function get_beatsPerMeasure():Float
+  {
+    return timeSignatureNumerator / timeSignatureDenominator * 4;
+  }
+
+  /**
+   * Current position in the song, in measures.
+   */
+  public static var currentMeasure(default, null):Int;
+
   /**
    * Current position in the song, in beats.
-  **/
+   */
   public static var currentBeat(default, null):Int;
 
   /**
    * Current position in the song, in steps.
    */
   public static var currentStep(default, null):Int;
+
+  /**
+   * Current position in the song, in measures and fractions of a measure.
+   */
+  public static var currentMeasureTime(default, null):Float;
+
+  /**
+   * Current position in the song, in beats and fractions of a measure.
+   */
+  public static var currentBeatTime(default, null):Float;
 
   /**
    * Current position in the song, in steps and fractions of a step.
@@ -136,12 +158,11 @@ class Conductor
   public static var audioOffset:Float = 0;
   public static var offset:Float = 0;
 
-  // TODO: Add code to update this.
   public static var beatsPerMeasure(get, null):Int;
 
   static function get_beatsPerMeasure():Int
   {
-    return timeSignatureNumerator;
+    return stepsPerMeasure / Constants.STEPS_PER_BEAT;
   }
 
   public static var stepsPerMeasure(get, null):Int;
@@ -149,7 +170,7 @@ class Conductor
   static function get_stepsPerMeasure():Int
   {
     // Is this always x4?
-    return timeSignatureNumerator * Constants.STEPS_PER_BEAT;
+    return timeSignatureNumerator / timeSignatureDenominator * Constants.STEPS_PER_BEAT * Constants.STEPS_PER_BEAT;
   }
 
   function new() {}
@@ -202,16 +223,22 @@ class Conductor
     else if (currentTimeChange != null)
     {
       // roundDecimal prevents representing 8 as 7.9999999
-      currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepCrochet, 6);
+      currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
+      currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
+      currentMeasureTime = currentStepTime / stepsPerMeasure;
       currentStep = Math.floor(currentStepTime);
-      currentBeat = Math.floor(currentStep / 4);
+      currentBeat = Math.floor(currentBeatTime);
+      currentMeasure = Math.floor(currentMeasureTime);
     }
     else
     {
       // Assume a constant BPM equal to the forced value.
-      currentStepTime = (songPosition / stepCrochet);
+      currentStepTime = FlxMath.roundDecimal((songPosition / stepLengthMs), 4);
+      currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
+      currentMeasureTime = currentStepTime / stepsPerMeasure;
       currentStep = Math.floor(currentStepTime);
-      currentBeat = Math.floor(currentStep / 4);
+      currentBeat = Math.floor(currentBeatTime);
+      currentMeasure = Math.floor(currentMeasureTime);
     }
 
     // FlxSignals are really cool.
@@ -274,7 +301,7 @@ class Conductor
     if (timeChanges.length == 0)
     {
       // Assume a constant BPM equal to the forced value.
-      return Math.floor(ms / stepCrochet);
+      return Math.floor(ms / stepLengthMs);
     }
     else
     {
@@ -295,7 +322,7 @@ class Conductor
         }
       }
 
-      resultStep += Math.floor((ms - lastTimeChange.timeStamp) / stepCrochet);
+      resultStep += Math.floor((ms - lastTimeChange.timeStamp) / stepLengthMs);
 
       return resultStep;
     }
