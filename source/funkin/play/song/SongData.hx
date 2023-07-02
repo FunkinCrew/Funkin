@@ -1,6 +1,8 @@
 package funkin.play.song;
 
 import flixel.util.typeLimit.OneOfTwo;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.song.ScriptedSong;
 import funkin.util.assets.DataAssets;
 import haxe.DynamicAccess;
@@ -96,6 +98,9 @@ class SongDataParser
     {
       var song:Song = songCache.get(songId);
       trace('Successfully fetch song: ${songId}');
+
+      var event:ScriptEvent = new ScriptEvent(ScriptEvent.CREATE, false);
+      ScriptEventDispatcher.callEvent(song, event);
       return song;
     }
     else

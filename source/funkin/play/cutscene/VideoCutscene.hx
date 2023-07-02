@@ -30,7 +30,8 @@ class VideoCutscene
 
     if (!openfl.Assets.exists(filePath))
     {
-      trace('ERROR: Video file does not exist: ${filePath}');
+      // Display a popup.
+      lime.app.Application.current.window.alert('Video file does not exist: ${filePath}', 'Error playing video');
       return;
     }
 

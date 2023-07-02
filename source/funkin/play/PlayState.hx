@@ -1422,12 +1422,30 @@ class PlayState extends MusicBeatState
     // Handle keybinds.
     if (!isInCutscene && !disableKeys) keyShit(true);
     if (!isInCutscene && !disableKeys) debugKeyShit();
+    if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
     // Dispatch the onUpdate event to scripted elements.
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
   static final CUTSCENE_KEYS:Array<FlxKey> = [SPACE, ESCAPE, ENTER];
+
+  function handleCutsceneKeys(elapsed:Float):Void
+  {
+    if (VideoCutscene.isPlaying())
+    {
+      // This is a video cutscene.
+
+      if (controls.CUTSCENE_SKIP)
+      {
+        trySkipVideoCutscene(elapsed);
+      }
+      else
+      {
+        trySkipVideoCutscene(-1);
+      }
+    }
+  }
 
   public function trySkipVideoCutscene(elapsed:Float):Void
   {
