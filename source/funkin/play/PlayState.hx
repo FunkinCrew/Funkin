@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.sound.FlxSound;
 import funkin.ui.story.StoryMenuState;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
@@ -867,6 +868,7 @@ class PlayState extends MusicBeatState
 
     FlxG.sound.music.onComplete = endSong;
     trace('Playing vocals...');
+    add(vocals);
     vocals.play();
 
     #if discord_rpc
@@ -970,10 +972,10 @@ class PlayState extends MusicBeatState
       oldNote = newNote;
 
       // Generate X sustain notes.
-      var sustainSections = Math.round(songNote.length / Conductor.stepCrochet);
+      var sustainSections = Math.round(songNote.length / Conductor.stepLengthMs);
       for (noteIndex in 0...sustainSections)
       {
-        var noteTimeOffset:Float = Conductor.stepCrochet + (Conductor.stepCrochet * noteIndex);
+        var noteTimeOffset:Float = Conductor.stepLengthMs + (Conductor.stepLengthMs * noteIndex);
         var sustainNote:Note = new Note(songNote.time + noteTimeOffset, songNote.data, oldNote, true, strumlineStyle);
         sustainNote.mustPress = mustHitNote;
         sustainNote.data.noteKind = songNote.kind;
@@ -2207,14 +2209,14 @@ class PlayState extends MusicBeatState
 
     if (shouldShowComboText)
     {
-      var animShit:ComboCounter = new ComboCounter(-100, 300, Highscore.tallies.combo);
+      var animShit:ComboMilestone = new ComboMilestone(-100, 300, Highscore.tallies.combo);
       animShit.scrollFactor.set(0.6, 0.6);
       animShit.cameras = [camHUD];
       add(animShit);
 
       var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
 
-      new FlxTimer().start(((Conductor.crochet / 1000) * 1.25) - frameShit, function(tmr) {
+      new FlxTimer().start(((Conductor.beatLengthMs / 1000) * 1.25) - frameShit, function(tmr) {
         animShit.forceFinish();
       });
     }

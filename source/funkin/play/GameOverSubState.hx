@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.system.FlxSound;
@@ -97,7 +98,6 @@ class GameOverSubState extends MusicBeatSubState
     boyfriend.isDead = true;
     add(boyfriend);
     boyfriend.resetCharacter();
-    boyfriend.playAnimation('firstDeath', true, true);
 
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
@@ -118,14 +118,29 @@ class GameOverSubState extends MusicBeatSubState
 
     // The conductor now represents the BPM of the game over music.
     Conductor.songPosition = 0;
-
-    // Play the "blue balled" sound. May play a variant if one has been assigned.
-    playBlueBalledSFX();
   }
+
+  var hasStartedAnimation:Bool = false;
 
   override function update(elapsed:Float)
   {
     super.update(elapsed);
+
+    if (!hasStartedAnimation)
+    {
+      hasStartedAnimation = true;
+
+      if (boyfriend.hasAnimation('fakeoutDeath') && FlxG.random.bool((1 / 4096) * 100))
+      {
+        boyfriend.playAnimation('fakeoutDeath', true, true);
+      }
+      else
+      {
+        boyfriend.playAnimation('firstDeath', true, true);
+        // Play the "blue balled" sound. May play a variant if one has been assigned.
+        playBlueBalledSFX();
+      }
+    }
 
     //
     // Handle user inputs.
@@ -145,14 +160,18 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT)
+    if (controls.ACCEPT && blueballed)
     {
+      blueballed = false;
       confirmDeath();
     }
 
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
     if (controls.BACK)
     {
+      blueballed = false;
+      PlayState.instance.deathCounter = 0;
+      // PlayState.seenCutscene = false; // old thing...
       gameOverMusic.stop();
 
       if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
@@ -252,12 +271,15 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
+  static var blueballed:Bool = false;
+
   /**
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
    */
-  function playBlueBalledSFX()
+  public static function playBlueBalledSFX()
   {
+    blueballed = true;
     FlxG.sound.play(Paths.sound('fnf_loss_sfx' + blueBallSuffix));
   }
 

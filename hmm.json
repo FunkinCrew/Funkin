@@ -68,8 +68,8 @@
       "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "166ff82",
-      "url": "https://github.com/polybiusproxy/hxCodec"
+      "ref": "a56f4b4",
+      "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
       "name": "hxcpp",
@@ -95,7 +95,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "deecd6c",
+      "ref": "5634ad7",
       "url": "https://github.com/openfl/lime"
     },
     {

@@ -14,7 +14,7 @@ import funkin.ui.TextMenuList;
 
 class ControlsMenu extends funkin.ui.OptionsState.Page
 {
-  inline static public var COLUMNS = 2;
+  public static inline final COLUMNS = 2;
   static var controlList = Control.createAll();
   /*
    * Defines groups of controls that cannot share inputs, like left and right. Say, if ACCEPT is Z, Back is X,
@@ -23,7 +23,9 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
    */
   static var controlGroups:Array<Array<Control>> = [
     [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
-    [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK]
+    [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
+    [CUTSCENE_ADVANCE, CUTSCENE_SKIP],
+    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE]
   ];
 
   var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
@@ -36,7 +38,7 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
   var labels:FlxTypedGroup<AtlasText>;
 
   var currentDevice:Device = Keys;
-  var deviceListSelected = false;
+  var deviceListSelected:Bool = false;
 
   public function new()
   {
@@ -48,7 +50,7 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
     camera = menuCamera;
 
     labels = new FlxTypedGroup<AtlasText>();
-    var headers = new FlxTypedGroup<AtlasText>();
+    var headers:FlxTypedGroup<AtlasText> = new FlxTypedGroup<AtlasText>();
     controlGrid = new MenuTypedList(Columns(COLUMNS), Vertical);
 
     add(labels);
@@ -57,20 +59,20 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
 
     if (FlxG.gamepads.numActiveGamepads > 0)
     {
-      var devicesBg = new FlxSprite();
-      devicesBg.makeGraphic(FlxG.width, 100, 0xFFfafd6d);
+      var devicesBg:FlxSprite = new FlxSprite();
+      devicesBg.makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
       add(devicesBg);
       deviceList = new TextMenuList(Horizontal, None);
       add(deviceList);
       deviceListSelected = true;
 
-      var item;
+      var item:TextMenuItem;
 
-      item = deviceList.createItem("Keyboard", AtlasFont.BOLD, selectDevice.bind(Keys));
+      item = deviceList.createItem('Keyboard', AtlasFont.BOLD, selectDevice.bind(Keys));
       item.x = FlxG.width / 2 - item.width - 30;
       item.y = (devicesBg.height - item.height) / 2;
 
-      item = deviceList.createItem("Gamepad", AtlasFont.BOLD, selectDevice.bind(Gamepad(FlxG.gamepads.firstActive.id)));
+      item = deviceList.createItem('Gamepad', AtlasFont.BOLD, selectDevice.bind(Gamepad(FlxG.gamepads.firstActive.id)));
       item.x = FlxG.width / 2 + 30;
       item.y = (devicesBg.height - item.height) / 2;
     }
@@ -94,6 +96,18 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
       {
         currentHeader = "NOTE_";
         headers.add(new AtlasText(0, y, "NOTES", AtlasFont.BOLD)).screenCenter(X);
+        y += spacer;
+      }
+      else if (currentHeader != "CUTSCENE_" && name.indexOf("CUTSCENE_") == 0)
+      {
+        currentHeader = "CUTSCENE_";
+        headers.add(new AtlasText(0, y, "CUTSCENE", AtlasFont.BOLD)).screenCenter(X);
+        y += spacer;
+      }
+      else if (currentHeader != "VOLUME_" && name.indexOf("VOLUME_") == 0)
+      {
+        currentHeader = "VOLUME_";
+        headers.add(new AtlasText(0, y, "VOLUME", AtlasFont.BOLD)).screenCenter(X);
         y += spacer;
       }
 
@@ -128,7 +142,7 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
       labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
     });
 
-    prompt = new Prompt("\nPress any key to rebind\n\n\n\n    Escape to cancel", None);
+    prompt = new Prompt("\nPress any key to rebind\n\n\nBackspace to unbind\n    Escape to cancel", None);
     prompt.create();
     prompt.createBgFromMargin(100, 0xFFfafd6d);
     prompt.back.scrollFactor.set(0, 0);
@@ -149,6 +163,8 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
 
   function onSelect():Void
   {
+    keyUsedToEnterPrompt = FlxG.keys.firstJustPressed();
+
     controlGrid.enabled = false;
     canExit = false;
     prompt.exists = true;
@@ -187,7 +203,9 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
     canExit = false;
   }
 
-  override function update(elapsed:Float)
+  var keyUsedToEnterPrompt:Null<Int> = null;
+
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -200,18 +218,35 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
       {
         case Keys:
           {
-            // check released otherwise bugs can happen when you change the BACK key
+            // Um?
+            // Checking pressed causes problems when you change the BACK key,
+            // but checking released causes problems when the prompt is instant.
+
+            // keyUsedToEnterPrompt is my weird workaround.
+
             var key = FlxG.keys.firstJustReleased();
-            if (key != NONE)
+            if (key != NONE && key != keyUsedToEnterPrompt)
             {
-              if (key != ESCAPE) onInputSelect(key);
-              closePrompt();
+              if (key == ESCAPE)
+              {
+                closePrompt();
+              }
+              else if (key == BACKSPACE)
+              {
+                onInputSelect(NONE);
+                closePrompt();
+              }
+              else
+              {
+                onInputSelect(key);
+                closePrompt();
+              }
             }
           }
         case Gamepad(id):
           {
             var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
-            if (button != NONE)
+            if (button != NONE && button != keyUsedToEnterPrompt)
             {
               if (button != BACK) onInputSelect(button);
               closePrompt();
@@ -219,23 +254,32 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
           }
       }
     }
+
+    var keyJustReleased:Int = FlxG.keys.firstJustReleased();
+    if (keyJustReleased != NONE && keyJustReleased == keyUsedToEnterPrompt)
+    {
+      keyUsedToEnterPrompt = null;
+    }
   }
 
-  function onInputSelect(input:Int)
+  function onInputSelect(input:Int):Void
   {
     var item = controlGrid.selectedItem;
 
     // check if that key is already set for this
-    var column0 = Math.floor(controlGrid.selectedIndex / 2) * 2;
-    for (i in 0...COLUMNS)
+    if (input != FlxKey.NONE)
     {
-      if (controlGrid.members[column0 + i].input == input) return;
+      var column0 = Math.floor(controlGrid.selectedIndex / 2) * 2;
+      for (i in 0...COLUMNS)
+      {
+        if (controlGrid.members[column0 + i].input == input) return;
+      }
     }
 
     // Check if items in the same group already have the new input
     for (group in itemGroups)
     {
-      if (group.contains(item))
+      if (input != FlxKey.NONE && group.contains(item))
       {
         for (otherItem in group)
         {
@@ -252,9 +296,44 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
     }
 
     PlayerSettings.player1.controls.replaceBinding(item.control, currentDevice, input, item.input);
+
     // Don't use resetItem() since items share names/labels
     item.input = input;
     item.label.text = item.getLabel(input);
+
+    // Shift left on the grid if the item on the right is bound and the item on the left is unbound.
+    if (controlGrid.selectedIndex % 2 == 1)
+    {
+      trace('Modified item on right side of grid');
+      var leftItem = controlGrid.members[controlGrid.selectedIndex - 1];
+      if (leftItem != null && input != FlxKey.NONE && leftItem.input == FlxKey.NONE)
+      {
+        trace('Left item is unbound and right item is not!');
+        // Swap them.
+        var temp = leftItem.input;
+        leftItem.input = item.input;
+        item.input = temp;
+
+        leftItem.label.text = leftItem.getLabel(leftItem.input);
+        item.label.text = item.getLabel(item.input);
+      }
+    }
+    else
+    {
+      trace('Modified item on left side of grid');
+      var rightItem = controlGrid.members[controlGrid.selectedIndex + 1];
+      if (rightItem != null && input == FlxKey.NONE && rightItem.input != FlxKey.NONE)
+      {
+        trace('Left item is unbound and right item is not!');
+        // Swap them.
+        var temp = item.input;
+        item.input = rightItem.input;
+        rightItem.input = temp;
+
+        item.label.text = item.getLabel(item.input);
+        rightItem.label.text = rightItem.getLabel(rightItem.input);
+      }
+    }
 
     PlayerSettings.player1.saveControls();
   }
@@ -306,6 +385,8 @@ class InputItem extends TextMenuItem
     this.input = getInput();
 
     super(x, y, getLabel(input), DEFAULT, callback);
+
+    this.fireInstantly = true;
   }
 
   public function updateDevice(device:Device)
@@ -334,6 +415,6 @@ class InputItem extends TextMenuItem
 
   public function getLabel(input:Int)
   {
-    return input == -1 ? "---" : InputFormatter.format(input, device);
+    return input == FlxKey.NONE ? "---" : InputFormatter.format(input, device);
   }
 }

@@ -658,7 +658,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
     // Override me in your scripted stage to perform custom behavior!
-    // Make sure to call super.onBeatHit(curBeat) if you want to keep the boppers dancing.
+    // Make sure to call super.onBeatHit(event) if you want to keep the boppers dancing.
 
     for (bopper in boppers)
     {

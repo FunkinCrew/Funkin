@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
@@ -355,7 +356,17 @@ class ResultState extends MusicBeatSubState
 
     if (FlxG.keys.justPressed.COMMA) songName.angle -= 0.1;
 
-    if (controls.PAUSE) FlxG.switchState(new FreeplayState());
+    if (controls.PAUSE)
+    {
+      if (PlayStatePlaylist.isStoryMode)
+      {
+        FlxG.switchState(new StoryMenuState());
+      }
+      else
+      {
+        FlxG.switchState(new FreeplayState());
+      }
+    }
 
     super.update(elapsed);
   }

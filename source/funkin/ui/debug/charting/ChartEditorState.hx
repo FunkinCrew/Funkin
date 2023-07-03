@@ -197,12 +197,12 @@ class ChartEditorState extends HaxeUIState
 
   function get_scrollPositionInMs():Float
   {
-    return scrollPositionInSteps * Conductor.stepCrochet;
+    return scrollPositionInSteps * Conductor.stepLengthMs;
   }
 
   function set_scrollPositionInMs(value:Float):Float
   {
-    scrollPositionInPixels = value / Conductor.stepCrochet;
+    scrollPositionInPixels = value / Conductor.stepLengthMs;
     return value;
   }
 
@@ -231,7 +231,7 @@ class ChartEditorState extends HaxeUIState
 
   function get_playheadPositionInMs():Float
   {
-    return playheadPositionInSteps * Conductor.stepCrochet;
+    return playheadPositionInSteps * Conductor.stepLengthMs;
   }
 
   /**
@@ -271,7 +271,7 @@ class ChartEditorState extends HaxeUIState
 
   function get_songLengthInMs():Float
   {
-    return songLengthInSteps * Conductor.stepCrochet;
+    return songLengthInSteps * Conductor.stepLengthMs;
   }
 
   function set_songLengthInMs(value:Float):Float
@@ -1815,7 +1815,7 @@ class ChartEditorState extends HaxeUIState
       // The song position of the cursor, in steps.
       var cursorFractionalStep:Float = cursorY / GRID_SIZE / (16 / noteSnapQuant);
       var cursorStep:Int = Std.int(Math.floor(cursorFractionalStep));
-      var cursorMs:Float = cursorStep * Conductor.stepCrochet * (16 / noteSnapQuant);
+      var cursorMs:Float = cursorStep * Conductor.stepLengthMs * (16 / noteSnapQuant);
       // The direction value for the column at the cursor.
       var cursorColumn:Int = Math.floor(cursorX / GRID_SIZE);
       if (cursorColumn < 0) cursorColumn = 0;
@@ -1853,7 +1853,7 @@ class ChartEditorState extends HaxeUIState
             // We released the mouse. Select the notes in the box.
             var cursorFractionalStepStart:Float = cursorYStart / GRID_SIZE;
             var cursorStepStart:Int = Math.floor(cursorFractionalStepStart);
-            var cursorMsStart:Float = cursorStepStart * Conductor.stepCrochet;
+            var cursorMsStart:Float = cursorStepStart * Conductor.stepLengthMs;
             var cursorColumnBase:Int = Math.floor(cursorX / GRID_SIZE);
             var cursorColumnBaseStart:Int = Math.floor(cursorXStart / GRID_SIZE);
 
@@ -2058,11 +2058,11 @@ class ChartEditorState extends HaxeUIState
         // Handle extending the note as you drag.
 
         // Since use Math.floor and stepCrochet here, the hold notes will be beat snapped.
-        var dragLengthSteps:Float = Math.floor((cursorMs - currentPlaceNoteData.time) / Conductor.stepCrochet);
+        var dragLengthSteps:Float = Math.floor((cursorMs - currentPlaceNoteData.time) / Conductor.stepLengthMs);
 
         // Without this, the newly placed note feels too short compared to the user's input.
         var INCREMENT:Float = 1.0;
-        var dragLengthMs:Float = (dragLengthSteps + INCREMENT) * Conductor.stepCrochet;
+        var dragLengthMs:Float = (dragLengthSteps + INCREMENT) * Conductor.stepLengthMs;
 
         // TODO: Add and update some sort of preview?
 
@@ -2367,7 +2367,7 @@ class ChartEditorState extends HaxeUIState
         }
 
         // Get the position the note should be at.
-        var noteTimePixels:Float = noteData.time / Conductor.stepCrochet * GRID_SIZE;
+        var noteTimePixels:Float = noteData.time / Conductor.stepLengthMs * GRID_SIZE;
 
         // Make sure the note appears when scrolling up.
         var modifiedViewAreaTop:Float = viewAreaTop - GRID_SIZE;
@@ -2393,7 +2393,7 @@ class ChartEditorState extends HaxeUIState
         {
           // If the note is a hold, we need to make sure it's long enough.
           var noteLengthMs:Float = noteSprite.noteData.length;
-          var noteLengthSteps:Float = (noteLengthMs / Conductor.stepCrochet);
+          var noteLengthSteps:Float = (noteLengthMs / Conductor.stepLengthMs);
           var lastNoteSprite:ChartEditorNoteSprite = noteSprite;
 
           while (noteLengthSteps > 0)
@@ -2417,7 +2417,7 @@ class ChartEditorState extends HaxeUIState
           // Make sure the last note sprite shows the end cap properly.
           lastNoteSprite.childNoteSprite = null;
 
-          // var noteLengthPixels:Float = (noteLengthMs / Conductor.stepCrochet + 1) * GRID_SIZE;
+          // var noteLengthPixels:Float = (noteLengthMs / Conductor.stepLengthMs + 1) * GRID_SIZE;
           // add(new FlxSprite(noteSprite.x, noteSprite.y - renderedNotes.y + noteLengthPixels).makeGraphic(40, 2, 0xFFFF0000));
         }
       }
@@ -2432,7 +2432,7 @@ class ChartEditorState extends HaxeUIState
         }
 
         // Get the position the event should be at.
-        var eventTimePixels:Float = eventData.time / Conductor.stepCrochet * GRID_SIZE;
+        var eventTimePixels:Float = eventData.time / Conductor.stepLengthMs * GRID_SIZE;
 
         // Make sure the event appears when scrolling up.
         var modifiedViewAreaTop:Float = viewAreaTop - GRID_SIZE;

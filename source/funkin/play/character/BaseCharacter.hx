@@ -367,7 +367,7 @@ class BaseCharacter extends Bopper
       // This lets you add frames to the end of the sing animation to ease back into the idle!
 
       holdTimer += event.elapsed;
-      var singTimeSec:Float = singTimeSec * (Conductor.crochet * 0.001); // x beats, to ms.
+      var singTimeSec:Float = singTimeSec * (Conductor.beatLengthMs * 0.001); // x beats, to ms.
 
       if (getCurrentAnimation().endsWith('miss')) singTimeSec *= 2; // makes it feel more awkward when you miss
 
