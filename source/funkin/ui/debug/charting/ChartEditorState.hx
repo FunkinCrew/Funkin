@@ -3119,7 +3119,7 @@ class ChartEditorState extends HaxeUIState
     var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
     var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / (16 / noteSnapQuant);
     var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-    var playheadPosMs:Float = playheadPosStep * Conductor.stepCrochet * (16 / noteSnapQuant);
+    var playheadPosMs:Float = playheadPosStep * Conductor.stepLengthMs * (16 / noteSnapQuant);
 
     var newNoteData:SongNoteData = new SongNoteData(playheadPosMs, column, 0, selectedNoteKind);
     performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
