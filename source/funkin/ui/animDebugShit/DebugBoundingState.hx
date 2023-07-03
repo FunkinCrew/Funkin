@@ -1,5 +1,7 @@
 package funkin.ui.animDebugShit;
 
+import funkin.util.SerializerUtil;
+import funkin.play.character.CharacterData;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -356,6 +358,8 @@ class DebugBoundingState extends FlxState
 
     if (FlxG.keys.justPressed.H) hudCam.visible = !hudCam.visible;
 
+    if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
+
     CoolUtil.mouseCamDrag();
     CoolUtil.mouseWheelZoom();
 
@@ -457,8 +461,8 @@ class DebugBoundingState extends FlxState
 
     if (FlxG.keys.justPressed.ESCAPE)
     {
-      var outputString = FlxG.keys.pressed.CTRL ? buildOutputStringOld() : buildOutputStringNew();
-      saveOffsets(outputString, FlxG.keys.pressed.CTRL ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
+      var outputString = FlxG.keys.pressed.CONTROL ? buildOutputStringOld() : buildOutputStringNew();
+      saveOffsets(outputString, FlxG.keys.pressed.CONTROL ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
     }
   }
 
@@ -478,15 +482,15 @@ class DebugBoundingState extends FlxState
 
   function buildOutputStringNew():String
   {
-    var charData:CharacterData = swagChar._data.copy();
+    var charData:CharacterData = Reflect.copy(swagChar._data);
 
-    for (charDataAnim in animations)
+    for (charDataAnim in charData.animations)
     {
       var animName:String = charDataAnim.name;
       charDataAnim.offsets = swagChar.animationOffsets.get(animName);
     }
 
-    return SerializerUtil.toJson(charData, true);
+    return SerializerUtil.toJSON(charData, true);
   }
 
   var swagChar:BaseCharacter;
