@@ -156,7 +156,10 @@ class Level implements IRegistryEntry<LevelData>
     for (propIndex in 0..._data.props.length)
     {
       var propData = _data.props[propIndex];
-      var propSprite:LevelProp = LevelProp.build(propData);
+
+      var propSprite:Null<LevelProp> = LevelProp.build(propData);
+      if (propSprite == null) continue;
+
       propSprite.x += FlxG.width * 0.25 * propIndex;
       props.push(propSprite);
     }

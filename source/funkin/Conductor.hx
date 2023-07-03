@@ -1,9 +1,8 @@
 package funkin;
 
-import flixel.util.FlxSignal;
-import funkin.SongLoad.SwagSong;
-import funkin.play.song.Song.SongDifficulty;
 import funkin.play.song.SongData.SongTimeChange;
+import flixel.util.FlxSignal;
+import funkin.play.song.Song.SongDifficulty;
 
 typedef BPMChangeEvent =
 {
@@ -12,18 +11,27 @@ typedef BPMChangeEvent =
   var bpm:Float;
 }
 
+/**
+ * A global source of truth for timing information.
+ */
 class Conductor
 {
-  /**
-   * The list of time changes in the song.
-   * There should be at least one time change (at the beginning of the song) to define the BPM.
-   */
-  static var timeChanges:Array<SongTimeChange> = [];
+  static final STEPS_PER_BEAT:Int = 4;
 
-  /**
-   * The current time change.
-   */
-  static var currentTimeChange:SongTimeChange;
+  // onBeatHit is called every quarter note
+  // onStepHit is called every sixteenth note
+  // 4/4 = 4 beats per measure = 16 steps per measure
+  //   120 BPM = 120 quarter notes per minute = 2 onBeatHit per second
+  //   120 BPM = 480 sixteenth notes per minute = 8 onStepHit per second
+  //   60 BPM = 60 quarter notes per minute = 1 onBeatHit per second
+  //   60 BPM = 240 sixteenth notes per minute = 4 onStepHit per second
+  // 3/4 = 3 beats per measure = 12 steps per measure
+  //   (IDENTICAL TO 4/4 but shorter measure length)
+  //   120 BPM = 120 quarter notes per minute = 2 onBeatHit per second
+  //   120 BPM = 480 sixteenth notes per minute = 8 onStepHit per second
+  //   60 BPM = 60 quarter notes per minute = 1 onBeatHit per second
+  //   60 BPM = 240 sixteenth notes per minute = 4 onStepHit per second
+  // 7/8 = 3.5 beats per measure = 14 steps per measure
 
   /**
    * The current position in the song in milliseconds.
@@ -47,29 +55,60 @@ class Conductor
 
   static var bpmOverride:Null<Float> = null;
 
-  // OLD, replaced with timeChanges.
-  public static var bpmChangeMap:Array<BPMChangeEvent> = [];
+  /**
+   * Current position in the song, in whole measures.
+   */
+  public static var currentMeasure(default, null):Int;
 
   /**
-   * Duration of a beat in millisecond. Calculated based on bpm.
-   */
-  public static var crochet(get, null):Float;
+   * Current position in the song, in whole beats.
+  **/
+  public static var currentBeat(default, null):Int;
 
-  static function get_crochet():Float
+  /**
+   * Current position in the song, in whole steps.
+   */
+  public static var currentStep(default, null):Int;
+
+  /**
+   * Current position in the song, in steps and fractions of a step.
+   */
+  public static var currentStepTime(default, null):Float;
+
+  /**
+   * Duration of a measure in milliseconds. Calculated based on bpm.
+   */
+  public static var measureLengthMs(get, null):Float;
+
+  static function get_measureLengthMs():Float
   {
+    return beatLengthMs * timeSignatureNumerator;
+  }
+
+  /**
+   * Duration of a beat (quarter note) in milliseconds. Calculated based on bpm.
+   */
+  public static var beatLengthMs(get, null):Float;
+
+  static function get_beatLengthMs():Float
+  {
+    // Tied directly to BPM.
     return ((60 / bpm) * 1000);
   }
 
   /**
-   * Duration of a step (quarter) in milliseconds. Calculated based on bpm.
+   * Duration of a step (sixteenth) in milliseconds. Calculated based on bpm.
    */
-  public static var stepCrochet(get, null):Float;
+  public static var stepLengthMs(get, null):Float;
 
-  static function get_stepCrochet():Float
+  static function get_stepLengthMs():Float
   {
-    return crochet / timeSignatureNumerator;
+    return beatLengthMs / STEPS_PER_BEAT;
   }
 
+  /**
+   * The numerator of the current time signature (number of notes in a measure)
+   */
   public static var timeSignatureNumerator(get, null):Int;
 
   static function get_timeSignatureNumerator():Int
@@ -79,6 +118,9 @@ class Conductor
     return currentTimeChange.timeSignatureNum;
   }
 
+  /**
+   * The numerator of the current time signature (length of notes in a measure)
+   */
   public static var timeSignatureDenominator(get, null):Int;
 
   static function get_timeSignatureDenominator():Int
@@ -88,30 +130,57 @@ class Conductor
     return currentTimeChange.timeSignatureDen;
   }
 
-  /**
-   * Current position in the song, in beats.
-  **/
-  public static var currentBeat(default, null):Int;
-
-  /**
-   * Current position in the song, in steps.
-   */
-  public static var currentStep(default, null):Int;
-
-  /**
-   * Current position in the song, in steps and fractions of a step.
-   */
-  public static var currentStepTime(default, null):Float;
-
-  public static var beatHit(default, null):FlxSignal = new FlxSignal();
-  public static var stepHit(default, null):FlxSignal = new FlxSignal();
-
-  public static var lastSongPos:Float;
-  public static var visualOffset:Float = 0;
-  public static var audioOffset:Float = 0;
   public static var offset:Float = 0;
 
-  // TODO: Add code to update this.
+  // TODO: What's the difference between visualOffset and audioOffset?
+  public static var visualOffset:Float = 0;
+  public static var audioOffset:Float = 0;
+
+  //
+  // Signals
+  //
+
+  /**
+   * Signal that is dispatched every measure.
+   * At 120 BPM 4/4, this is dispatched every 2 seconds.
+   * At 120 BPM 3/4, this is dispatched every 1.5 seconds.
+   */
+  public static var measureHit(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Signal that is dispatched every beat.
+   * At 120 BPM 4/4, this is dispatched every 0.5 seconds.
+   * At 120 BPM 3/4, this is dispatched every 0.5 seconds.
+   */
+  public static var beatHit(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Signal that is dispatched when a step is hit.
+   * At 120 BPM 4/4, this is dispatched every 0.125 seconds.
+   * At 120 BPM 3/4, this is dispatched every 0.125 seconds.
+   */
+  public static var stepHit(default, null):FlxSignal = new FlxSignal();
+
+  //
+  // Internal Variables
+  //
+
+  /**
+   * The list of time changes in the song.
+   * There should be at least one time change (at the beginning of the song) to define the BPM.
+   */
+  static var timeChanges:Array<SongTimeChange> = [];
+
+  /**
+   * The current time change.
+   */
+  static var currentTimeChange:SongTimeChange;
+
+  public static var lastSongPos:Float;
+
+  /**
+   * The number of beats (whole notes) in a measure.
+   */
   public static var beatsPerMeasure(get, null):Int;
 
   static function get_beatsPerMeasure():Int
@@ -119,31 +188,15 @@ class Conductor
     return timeSignatureNumerator;
   }
 
+  /**
+   * The number of steps (quarter-notes) in a measure.
+   */
   public static var stepsPerMeasure(get, null):Int;
 
   static function get_stepsPerMeasure():Int
   {
-    // Is this always x4?
+    // This is always 4, b
     return timeSignatureNumerator * 4;
-  }
-
-  function new() {}
-
-  public static function getLastBPMChange()
-  {
-    var lastChange:BPMChangeEvent =
-      {
-        stepTime: 0,
-        songTime: 0,
-        bpm: 0
-      }
-    for (i in 0...Conductor.bpmChangeMap.length)
-    {
-      if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime) lastChange = Conductor.bpmChangeMap[i];
-
-      if (Conductor.songPosition < Conductor.bpmChangeMap[i].songTime) break;
-    }
-    return lastChange;
   }
 
   /**
@@ -155,11 +208,16 @@ class Conductor
    * WARNING: Avoid this for things like setting the BPM of the title screen music,
    * you should have a metadata file for it instead.
    */
-  public static function forceBPM(?bpm:Float = null)
+  public static function forceBPM(?bpm:Float = null):Void
   {
-    if (bpm != null) trace('[CONDUCTOR] Forcing BPM to ' + bpm);
+    if (bpm != null)
+    {
+      trace('[CONDUCTOR] Forcing BPM to ' + bpm);
+    }
     else
+    {
       trace('[CONDUCTOR] Resetting BPM to default');
+    }
     Conductor.bpmOverride = bpm;
   }
 
@@ -170,15 +228,15 @@ class Conductor
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    */
-  public static function update(songPosition:Float = null)
+  public static function update(songPosition:Float = null):Void
   {
     if (songPosition == null) songPosition = (FlxG.sound.music != null) ? FlxG.sound.music.time + Conductor.offset : 0.0;
 
-    var oldBeat = currentBeat;
-    var oldStep = currentStep;
+    var oldMeasure:Int = currentMeasure;
+    var oldBeat:Int = currentBeat;
+    var oldStep:Int = currentStep;
 
     Conductor.songPosition = songPosition;
-    // Conductor.bpm = Conductor.getLastBPMChange().bpm;
 
     currentTimeChange = timeChanges[0];
     for (i in 0...timeChanges.length)
@@ -194,14 +252,14 @@ class Conductor
     }
     else if (currentTimeChange != null)
     {
-      currentStepTime = (currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepCrochet;
+      currentStepTime = (currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepLengthMs;
       currentStep = Math.floor(currentStepTime);
       currentBeat = Math.floor(currentStep / 4);
     }
     else
     {
       // Assume a constant BPM equal to the forced value.
-      currentStepTime = (songPosition / stepCrochet);
+      currentStepTime = (songPosition / stepLengthMs);
       currentStep = Math.floor(currentStepTime);
       currentBeat = Math.floor(currentStep / 4);
     }
@@ -216,37 +274,14 @@ class Conductor
     {
       beatHit.dispatch();
     }
-  }
 
-  @:deprecated // Switch to TimeChanges instead.
-  public static function mapBPMChanges(song:SwagSong)
-  {
-    bpmChangeMap = [];
-
-    var curBPM:Float = song.bpm;
-    var totalSteps:Int = 0;
-    var totalPos:Float = 0;
-    for (i in 0...SongLoad.getSong().length)
+    if (currentMeasure != oldMeasure)
     {
-      if (SongLoad.getSong()[i].changeBPM && SongLoad.getSong()[i].bpm != curBPM)
-      {
-        curBPM = SongLoad.getSong()[i].bpm;
-        var event:BPMChangeEvent =
-          {
-            stepTime: totalSteps,
-            songTime: totalPos,
-            bpm: curBPM
-          };
-        bpmChangeMap.push(event);
-      }
-
-      var deltaSteps:Int = SongLoad.getSong()[i].lengthInSteps;
-      totalSteps += deltaSteps;
-      totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
+      measureHit.dispatch();
     }
   }
 
-  public static function mapTimeChanges(songTimeChanges:Array<SongTimeChange>)
+  public static function mapTimeChanges(songTimeChanges:Array<SongTimeChange>):Void
   {
     timeChanges = [];
 
@@ -268,7 +303,7 @@ class Conductor
     if (timeChanges.length == 0)
     {
       // Assume a constant BPM equal to the forced value.
-      return Math.floor(ms / stepCrochet);
+      return Math.floor(ms / stepLengthMs);
     }
     else
     {
@@ -289,7 +324,7 @@ class Conductor
         }
       }
 
-      resultStep += Math.floor((ms - lastTimeChange.timeStamp) / stepCrochet);
+      resultStep += Math.floor((ms - lastTimeChange.timeStamp) / stepLengthMs);
 
       return resultStep;
     }

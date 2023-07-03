@@ -65,7 +65,7 @@
       "version": "2.5.0"
     },
     {
-      "name": "hxcodec",
+      "name": "hxCodec",
       "type": "git",
       "dir": null,
       "ref": "a56f4b4",

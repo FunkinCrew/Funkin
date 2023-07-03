@@ -20,13 +20,6 @@ import openfl.filters.ShaderFilter;
 
 class CoolUtil
 {
-  public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
-
-  public static function difficultyString():String
-  {
-    return difficultyArray[PlayState.storyDifficulty];
-  }
-
   public static function coolBaseLog(base:Float, fin:Float):Float
   {
     return Math.log(fin) / Math.log(base);

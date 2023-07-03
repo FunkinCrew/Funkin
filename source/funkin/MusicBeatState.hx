@@ -9,7 +9,6 @@ import flixel.util.FlxSort;
 import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
-import funkin.ui.debug.DebugMenuSubState;
 import funkin.util.SortUtil;
 
 /**
@@ -65,15 +64,6 @@ class MusicBeatState extends FlxUIState
 
     // This can now be used in EVERY STATE YAY!
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
-
-    // ` / ~ to open the debug menu.
-    if (FlxG.keys.justPressed.GRAVEACCENT)
-    {
-      // TODO: Does this break anything?
-      this.persistentUpdate = false;
-      this.persistentDraw = false;
-      FlxG.state.openSubState(new DebugMenuSubState());
-    }
 
     // Display Conductor info in the watch window.
     FlxG.watch.addQuick("songPos", Conductor.songPosition);

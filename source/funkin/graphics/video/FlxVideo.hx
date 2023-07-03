@@ -20,7 +20,7 @@ class FlxVideo extends FlxBasic
   /**
    * Doesn't actually interact with Flixel shit, only just a pleasant to use class
    */
-  public function new(vidSrc:String)
+  public function new(videoPath:String)
   {
     super();
 
@@ -36,7 +36,7 @@ class FlxVideo extends FlxBasic
     netStream = new NetStream(netConnection);
     netStream.client = {onMetaData: client_onMetaData};
     netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
-    netStream.play(Paths.file(vidSrc));
+    netStream.play(videoPath);
   }
 
   public function finishVideo():Void

@@ -13,6 +13,8 @@ import funkin.data.level.LevelRegistry;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.util.Constants;
 
@@ -49,6 +51,11 @@ class StoryMenuState extends MusicBeatState
    * The score text at the top.
    */
   var scoreText:FlxText;
+
+  /**
+   * The mode text at the top-middle.
+   */
+  var modeText:FlxText;
 
   /**
    * The list of songs on the left.
@@ -112,8 +119,8 @@ class StoryMenuState extends MusicBeatState
     {
       FlxG.sound.playMusic(Paths.music('freakyMenu'));
       FlxG.sound.music.fadeIn(4, 0, 0.7);
-      Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
     }
+    Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
 
     if (stickerSubState != null)
     {
@@ -144,15 +151,21 @@ class StoryMenuState extends MusicBeatState
 
     updateProps();
 
-    scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
-    scoreText.setFormat("VCR OSD Mono", 32);
-    add(scoreText);
-
     tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
     tracklistText.setFormat("VCR OSD Mono", 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFe55777;
     add(tracklistText);
+
+    scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
+    scoreText.setFormat("VCR OSD Mono", 32);
+    add(scoreText);
+
+    modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
+    modeText.setFormat("VCR OSD Mono", 32);
+    modeText.screenCenter(X);
+    modeText.visible = hasModdedLevels();
+    add(modeText);
 
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
     levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
@@ -254,7 +267,7 @@ class StoryMenuState extends MusicBeatState
     displayingModdedLevels = moddedLevels;
     buildLevelTitles();
 
-    changeLevel(0);
+    changeLevel(999999); // Jump past the end of the list to the beginning.
     changeDifficulty(0);
   }
 
@@ -265,6 +278,9 @@ class StoryMenuState extends MusicBeatState
     highScoreLerp = Std.int(CoolUtil.coolLerp(highScoreLerp, highScore, 0.5));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
+
+    modeText.text = displayingModdedLevels ? 'Mods [TAB to switch]' : 'Base Game [TAB to switch]';
+    modeText.screenCenter(X);
 
     levelTitleText.text = currentLevel.getTitle();
     levelTitleText.x = FlxG.width - (levelTitleText.width + 10); // Right align.
@@ -320,7 +336,7 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(-1);
         }
 
-        if (FlxG.keys.justPressed.TAB)
+        if (FlxG.keys.justPressed.TAB && modeText.visible)
         {
           switchMode(!displayingModdedLevels);
         }
@@ -338,6 +354,11 @@ class StoryMenuState extends MusicBeatState
       exitingMenu = true;
       FlxG.switchState(new MainMenuState());
     }
+  }
+
+  function hasModdedLevels():Bool
+  {
+    return LevelRegistry.instance.listModdedLevelIds().length > 0;
   }
 
   /**
@@ -474,24 +495,25 @@ class StoryMenuState extends MusicBeatState
       prop.playConfirm();
     }
 
-    PlayState.storyPlaylist = currentLevel.getSongs();
-    PlayState.isStoryMode = true;
+    Paths.setCurrentLevel(currentLevel.id);
 
-    PlayState.currentSong = SongLoad.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0].toLowerCase());
-    PlayState.currentSong_NEW = SongDataParser.fetchSong(PlayState.storyPlaylist[0].toLowerCase());
+    PlayStatePlaylist.playlistSongIds = currentLevel.getSongs();
+    PlayStatePlaylist.isStoryMode = true;
+    PlayStatePlaylist.campaignScore = 0;
 
-    // TODO: Fix this.
-    PlayState.storyWeek = 0;
-    PlayState.campaignScore = 0;
+    var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    // TODO: Fix this.
-    PlayState.storyDifficulty = 0;
-    PlayState.storyDifficulty_NEW = currentDifficultyId;
+    var targetSong:Song = SongDataParser.fetchSong(targetSongId);
 
-    SongLoad.curDiff = PlayState.storyDifficulty_NEW;
+    PlayStatePlaylist.campaignId = currentLevel.id;
+    PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
-      LoadingState.loadAndSwitchState(new PlayState(), true);
+      LoadingState.loadAndSwitchState(new PlayState(
+        {
+          targetSong: targetSong,
+          targetDifficulty: currentDifficultyId,
+        }), true);
     });
   }
 

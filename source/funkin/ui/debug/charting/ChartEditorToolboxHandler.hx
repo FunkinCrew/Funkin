@@ -3,6 +3,7 @@ package funkin.ui.debug.charting;
 import haxe.ui.data.ArrayDataSource;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
+import funkin.play.event.SongEventData;
 import funkin.play.song.SongData.SongTimeChange;
 import funkin.play.song.SongSerializer;
 import funkin.ui.haxeui.components.CharacterPlayer;

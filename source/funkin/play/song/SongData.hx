@@ -365,7 +365,7 @@ abstract SongNoteData(RawSongNoteData)
   public function get_stepTime():Float
   {
     // TODO: Account for changes in BPM.
-    return this.t / Conductor.stepCrochet;
+    return this.t / Conductor.stepLengthMs;
   }
 
   /**
@@ -551,7 +551,7 @@ abstract SongEventData(RawSongEventData)
   public function get_stepTime():Float
   {
     // TODO: Account for changes in BPM.
-    return this.t / Conductor.stepCrochet;
+    return this.t / Conductor.stepLengthMs;
   }
 
   public var event(get, set):String;
