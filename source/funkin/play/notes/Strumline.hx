@@ -1,16 +1,18 @@
 package funkin.play.notes;
 
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import funkin.ui.PreferencesMenu;
-import funkin.play.notes.NoteSprite;
-import flixel.util.FlxSort;
-import funkin.play.notes.SustainTrail;
-import funkin.util.SortUtil;
-import funkin.play.song.SongData.SongNoteData;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxSort;
+import funkin.play.notes.NoteHoldCover;
+import funkin.play.notes.NoteSplash;
+import funkin.play.notes.NoteSprite;
+import funkin.play.notes.SustainTrail;
+import funkin.play.song.SongData.SongNoteData;
+import funkin.ui.PreferencesMenu;
+import funkin.util.SortUtil;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -48,7 +50,7 @@ class Strumline extends FlxSpriteGroup
 
   var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
-  var sustainSplashes:FlxTypedSpriteGroup<NoteSplash>;
+  var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
 
   var noteData:Array<SongNoteData> = [];
   var nextNoteIndex:Int = -1;
@@ -74,8 +76,12 @@ class Strumline extends FlxSpriteGroup
     this.notes.zIndex = 30;
     this.add(this.notes);
 
+    this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>(0, 0, 4);
+    this.noteHoldCovers.zIndex = 40;
+    this.add(this.noteHoldCovers);
+
     this.noteSplashes = new FlxTypedSpriteGroup<NoteSplash>(0, 0, NOTE_SPLASH_CAP);
-    this.noteSplashes.zIndex = 40;
+    this.noteSplashes.zIndex = 50;
     this.add(this.noteSplashes);
 
     for (i in 0...KEY_COUNT)
@@ -450,6 +456,27 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
+  public function playNoteHoldCover(direction:NoteDirection):Void
+  {
+    // TODO: Add a setting to disable note splashes.
+    // if (Settings.noSplash) return;
+
+    var cover:NoteHoldCover = this.constructNoteHoldCover();
+
+    if (cover != null)
+    {
+      cover.playStart(direction);
+
+      cover.x = this.x;
+      cover.x += getXPos(direction);
+      cover.x -= cover.width / 8;
+      cover.x += INITIAL_OFFSET;
+      cover.y = this.y;
+      cover.y -= cover.height / 4;
+      //
+    }
+  }
+
   public function buildNoteSprite(note:SongNoteData):NoteSprite
   {
     var noteSprite:NoteSprite = constructNoteSprite();
@@ -524,6 +551,40 @@ class Strumline extends FlxSpriteGroup
         // The note splash pool is full and all note splashes are active,
         // so we just pick one at random to destroy and restart.
         result = FlxG.random.getObject(this.noteSplashes.members);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Custom recycling behavior.
+   */
+  function constructNoteHoldCover():NoteHoldCover
+  {
+    var result:NoteHoldCover = null;
+
+    // If we haven't filled the pool yet...
+    if (noteHoldCovers.length < noteHoldCovers.maxSize)
+    {
+      // Create a new note hold cover.
+      result = new NoteHoldCover();
+      this.noteHoldCovers.add(result);
+    }
+    else
+    {
+      // Else, find a note splash which is inactive so we can revive it.
+      result = this.noteHoldCovers.getFirstAvailable();
+
+      if (result != null)
+      {
+        result.revive();
+      }
+      else
+      {
+        // The note hold cover pool is full and all note hold covers are active,
+        // so we just pick one at random to destroy and restart.
+        result = FlxG.random.getObject(this.noteHoldCovers.members);
       }
     }
 

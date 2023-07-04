@@ -22,19 +22,6 @@ class NoteSprite extends FlxSprite
   }
 
   /**
-   * The length of the note's sustain, in milliseconds.
-   * If 0, the note is a tap note.
-   */
-  public var length(default, set):Float;
-
-  function set_length(value:Float):Float
-  {
-    this.length = value;
-    this.isSustainNote = (this.length > 0);
-    return this.length;
-  }
-
-  /**
    * The time at which the note should be hit, in steps.
    */
   public var stepTime(get, never):Float;

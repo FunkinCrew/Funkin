@@ -450,6 +450,13 @@ abstract SongNoteData(RawSongNoteData)
     return this.l = value;
   }
 
+  public var isHoldNote(get, never):Bool;
+
+  public function get_isHoldNote():Bool
+  {
+    return this.l > 0;
+  }
+
   public var kind(get, set):String;
 
   public function get_kind():String

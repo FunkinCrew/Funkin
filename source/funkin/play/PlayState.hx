@@ -2190,6 +2190,11 @@ class PlayState extends MusicBeatState
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
 
+    if (daNote.noteData.isHoldNote)
+    {
+      playerStrumline.playNoteHoldCover(daNote.noteData.getDirection());
+    }
+
     // Only add the score if you're not on practice mode
     if (!isPracticeMode)
     {
