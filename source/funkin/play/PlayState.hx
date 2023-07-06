@@ -1660,6 +1660,11 @@ class PlayState extends MusicBeatState
         // Command the opponent to hit the note on time.
         // NOTE: This is what handles the strumline and cleaning up the note itself!
         opponentStrumline.hitNote(note);
+
+        if (note.holdNoteSprite != null)
+        {
+          opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
+        }
       }
       else if (Conductor.songPosition > hitWindowStart)
       {
@@ -1945,7 +1950,7 @@ class PlayState extends MusicBeatState
       // Calling event.cancelEvent() skips all the other logic! Neat!
       if (event.eventCanceled) return;
 
-      if (!note.isSustainNote)
+      if (!note.isHoldNote)
       {
         Highscore.tallies.combo++;
         Highscore.tallies.totalNotesHit++;
@@ -1956,6 +1961,11 @@ class PlayState extends MusicBeatState
       }
 
       playerStrumline.hitNote(note);
+
+      if (note.holdNoteSprite != null)
+      {
+        playerStrumline.playNoteHoldCover(note.holdNoteSprite);
+      }
 
       vocals.playerVolume = 1;
     }
@@ -2188,11 +2198,6 @@ class PlayState extends MusicBeatState
     if (daRating == "sick" || daRating == "killer")
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
-    }
-
-    if (daNote.noteData.isHoldNote)
-    {
-      playerStrumline.playNoteHoldCover(daNote.noteData.getDirection());
     }
 
     // Only add the score if you're not on practice mode

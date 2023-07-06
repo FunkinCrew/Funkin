@@ -264,6 +264,8 @@ class Strumline extends FlxSpriteGroup
         // Hold note is offscreen, kill it.
         holdNote.visible = false;
         holdNote.kill(); // Do not destroy! Recycling is faster.
+
+        // The cover will see this and clean itself up.
       }
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
@@ -276,6 +278,12 @@ class Strumline extends FlxSpriteGroup
         {
           playStatic(holdNote.noteDirection);
         }
+
+        if (holdNote.cover != null)
+        {
+          holdNote.cover.playEnd();
+        }
+
         holdNote.visible = false;
         holdNote.kill();
       }
@@ -456,7 +464,7 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
-  public function playNoteHoldCover(direction:NoteDirection):Void
+  public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
     // TODO: Add a setting to disable note splashes.
     // if (Settings.noSplash) return;
@@ -465,15 +473,22 @@ class Strumline extends FlxSpriteGroup
 
     if (cover != null)
     {
-      cover.playStart(direction);
+      cover.holdNote = holdNote;
+      holdNote.cover = cover;
+      cover.visible = true;
+
+      cover.playStart();
 
       cover.x = this.x;
-      cover.x += getXPos(direction);
-      cover.x -= cover.width / 8;
-      cover.x += INITIAL_OFFSET;
+      cover.x += getXPos(holdNote.noteDirection);
+      cover.x += STRUMLINE_SIZE / 2;
+      cover.x -= cover.width / 2;
+      // cover.x += INITIAL_OFFSET * 2;
       cover.y = this.y;
-      cover.y -= cover.height / 4;
-      //
+      cover.y += INITIAL_OFFSET;
+      cover.y += STRUMLINE_SIZE / 2;
+      // cover.y -= cover.height / 2;
+      // cover.y += STRUMLINE_SIZE / 2;
     }
   }
 

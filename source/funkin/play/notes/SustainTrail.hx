@@ -32,6 +32,8 @@ class SustainTrail extends FlxSprite
   public var fullSustainLength:Float = 0;
   public var noteData:SongNoteData;
 
+  public var cover:NoteHoldCover = null;
+
   /**
    * Set to `true` if the user hit the note and is currently holding the sustain.
    * Should display associated effects.

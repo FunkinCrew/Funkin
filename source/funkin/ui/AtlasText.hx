@@ -178,8 +178,15 @@ class AtlasChar extends FlxSprite
     if (this.char != value)
     {
       var prefix = getAnimPrefix(value);
-      animation.addByPrefix("anim", prefix, 24);
-      animation.play("anim");
+      animation.addByPrefix('anim', prefix, 24);
+      if (animation.exists('anim'))
+      {
+        animation.play('anim');
+      }
+      else
+      {
+        trace('Could not find animation for char "' + value + '"');
+      }
       updateHitbox();
     }
 

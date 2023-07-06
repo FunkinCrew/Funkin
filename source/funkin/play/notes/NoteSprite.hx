@@ -61,7 +61,12 @@ class NoteSprite extends FlxSprite
 
   public var noteData:SongNoteData;
 
-  public var isSustainNote:Bool = false;
+  public var isHoldNote(get, never):Bool;
+
+  function get_isHoldNote():Bool
+  {
+    return noteData.length > 0;
+  }
 
   /**
    * Set this flag to true when hitting the note to avoid scoring it multiple times.
