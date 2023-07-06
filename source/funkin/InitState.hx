@@ -1,8 +1,7 @@
 package funkin;
 
-import funkin.play.stage.StageData.StageDataParser;
-import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
@@ -10,13 +9,17 @@ import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.PlayState;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.cutscene.dialogue.ConversationDataParser;
+import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
+import funkin.play.cutscene.dialogue.SpeakerDataParser;
 import funkin.play.event.SongEventData.SongEventParser;
+import funkin.play.PlayState;
 import funkin.play.song.SongData.SongDataParser;
+import funkin.play.stage.StageData.StageDataParser;
 import funkin.ui.PreferencesMenu;
-import funkin.util.WindowUtil;
 import funkin.util.macro.MacroUtil;
+import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
 #if discord_rpc
 import Discord.DiscordClient;
@@ -157,6 +160,9 @@ class InitState extends FlxTransitionableState
 
     funkin.data.level.LevelRegistry.instance.loadEntries();
     SongEventParser.loadEventCache();
+    ConversationDataParser.loadConversationCache();
+    DialogueBoxDataParser.loadDialogueBoxCache();
+    SpeakerDataParser.loadSpeakerCache();
     SongDataParser.loadSongCache();
     StageDataParser.loadStageCache();
     CharacterDataParser.loadCharacterCache();
@@ -216,7 +222,7 @@ class InitState extends FlxTransitionableState
     #elseif ANIMATE
     FlxG.switchState(new funkin.ui.animDebugShit.FlxAnimateTest());
     #elseif CHARTING
-    FlxG.switchState(new ChartingState());
+    FlxG.switchState(new funkin.ui.debug.charting.ChartEditorState());
     #elseif STAGEBUILD
     FlxG.switchState(new StageBuilderState());
     #elseif FIGHT
