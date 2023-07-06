@@ -245,7 +245,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  override function dispatchEvent(event:ScriptEvent)
+  public override function dispatchEvent(event:ScriptEvent)
   {
     super.dispatchEvent(event);
 

@@ -3,6 +3,7 @@ package funkin.modding.events;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import funkin.noteStuff.NoteBasic.NoteDir;
+import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
 import openfl.events.EventType;
 import openfl.events.KeyboardEvent;
@@ -230,10 +231,42 @@ class ScriptEvent
   public static inline final SUBSTATE_CLOSE_END:ScriptEventType = 'SUBSTATE_CLOSE_END';
 
   /**
-   * Called when the game is exiting the current FlxState.
+   * Called when the game starts a conversation.
    *
    * This event is not cancelable.
    */
+  public static inline final DIALOGUE_START:ScriptEventType = 'DIALOGUE_START';
+
+  /**
+   * Called to display the next line of conversation.
+   *
+   * This event IS cancelable! Canceling this event will prevent the conversation from moving to the next line.
+   * - This event is called when the conversation starts, or when the user presses ACCEPT to advance the conversation.
+   */
+  public static inline final DIALOGUE_LINE:ScriptEventType = 'DIALOGUE_LINE';
+
+  /**
+   * Called to skip scrolling the current line of conversation.
+   *
+   * This event IS cancelable! Canceling this event will prevent the conversation from skipping to the next line.
+   * - This event is called when the user presses ACCEPT to advance the conversation while it is already advancing.
+   */
+  public static inline final DIALOGUE_COMPLETE_LINE:ScriptEventType = 'DIALOGUE_COMPLETE_LINE';
+
+  /**
+   * Called to skip the conversation.
+   *
+   * This event IS cancelable! Canceling this event will prevent the conversation from skipping.
+   */
+  public static inline final DIALOGUE_SKIP:ScriptEventType = 'DIALOGUE_SKIP';
+
+  /**
+   * Called when the game ends a conversation.
+   *
+   * This event is not cancelable.
+   */
+  public static inline final DIALOGUE_END:ScriptEventType = 'DIALOGUE_END';
+
   /**
    * If true, the behavior associated with this event can be prevented.
    * For example, cancelling COUNTDOWN_START should prevent the countdown from starting,
@@ -486,6 +519,28 @@ class CountdownScriptEvent extends ScriptEvent
   public override function toString():String
   {
     return 'CountdownScriptEvent(type=' + type + ', step=' + step + ')';
+  }
+}
+
+/**
+ * An event that is fired during a dialogue.
+ */
+class DialogueScriptEvent extends ScriptEvent
+{
+  /**
+   * The dialogue being referenced by the event.
+   */
+  public var conversation(default, null):Conversation;
+
+  public function new(type:ScriptEventType, conversation:Conversation, cancelable:Bool = true):Void
+  {
+    super(type, cancelable);
+    this.conversation = conversation;
+  }
+
+  public override function toString():String
+  {
+    return 'DialogueScriptEvent(type=$type, conversation=$conversation)';
   }
 }
 

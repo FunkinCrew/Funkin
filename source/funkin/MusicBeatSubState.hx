@@ -1,6 +1,7 @@
 package funkin;
 
 import flixel.FlxSubState;
+import funkin.modding.IScriptedClass.IEventHandler;
 import flixel.util.FlxColor;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
@@ -10,7 +11,7 @@ import funkin.modding.PolymodHandler;
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
-class MusicBeatSubState extends FlxSubState
+class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;
@@ -98,7 +99,7 @@ class MusicBeatSubState extends FlxSubState
     return true;
   }
 
-  function dispatchEvent(event:ScriptEvent)
+  public function dispatchEvent(event:ScriptEvent)
   {
     ModuleHandler.callEvent(event);
   }

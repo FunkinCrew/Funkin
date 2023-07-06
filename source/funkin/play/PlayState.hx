@@ -1,7 +1,5 @@
 package funkin.play;
 
-import flixel.sound.FlxSound;
-import funkin.ui.story.StoryMenuState;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
@@ -14,6 +12,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -28,6 +27,8 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.Note;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.cutscene.dialogue.Conversation;
+import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.event.SongEventData.SongEventParser;
@@ -45,6 +46,7 @@ import funkin.play.Strumline.StrumlineStyle;
 import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.stageBuildShit.StageOffsetSubState;
+import funkin.ui.story.StoryMenuState;
 import funkin.util.Constants;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
@@ -221,6 +223,11 @@ class PlayState extends MusicBeatState
    * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
    */
   public var disableKeys:Bool = false;
+
+  /**
+   * The current dialogue.
+   */
+  public var currentConversation:Conversation;
 
   /**
    * PRIVATE INSTANCE VARIABLES
@@ -1432,7 +1439,20 @@ class PlayState extends MusicBeatState
 
   function handleCutsceneKeys(elapsed:Float):Void
   {
-    if (VideoCutscene.isPlaying())
+    if (currentConversation != null)
+    {
+      if (controls.CUTSCENE_ADVANCE) currentConversation?.advanceConversation();
+
+      if (controls.CUTSCENE_SKIP)
+      {
+        currentConversation?.trySkipConversation(elapsed);
+      }
+      else
+      {
+        currentConversation?.trySkipConversation(-1);
+      }
+    }
+    else if (VideoCutscene.isPlaying())
     {
       // This is a video cutscene.
 
@@ -2384,9 +2404,9 @@ class PlayState extends MusicBeatState
     camHUD.visible = true;
   }
 
-  override function dispatchEvent(event:ScriptEvent):Void
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
-    // ORDER: Module, Stage, Character, Song, Note
+    // ORDER: Module, Stage, Character, Song, Conversation, Note
     // Modules should get the first chance to cancel the event.
 
     // super.dispatchEvent(event) dispatches event to module scripts.
@@ -2398,9 +2418,53 @@ class PlayState extends MusicBeatState
     // Dispatch event to character script(s).
     if (currentStage != null) currentStage.dispatchToCharacters(event);
 
+    // Dispatch event to song script.
     ScriptEventDispatcher.callEvent(currentSong, event);
 
+    // Dispatch event to conversation script.
+    ScriptEventDispatcher.callEvent(currentConversation, event);
+
     // TODO: Dispatch event to note scripts
+  }
+
+  public function startConversation(conversationId:String):Void
+  {
+    isInCutscene = true;
+
+    currentConversation = ConversationDataParser.fetchConversation(conversationId);
+    if (currentConversation == null) return;
+
+    currentConversation.completeCallback = onConversationComplete;
+    currentConversation.cameras = [camCutscene];
+    currentConversation.zIndex = 1000;
+    add(currentConversation);
+    refresh();
+
+    var event:ScriptEvent = new ScriptEvent(ScriptEvent.CREATE, false);
+    ScriptEventDispatcher.callEvent(currentConversation, event);
+  }
+
+  function onConversationComplete():Void
+  {
+    isInCutscene = true;
+    remove(currentConversation);
+    currentConversation = null;
+
+    if (startingSong && !isInCountdown)
+    {
+      startCountdown();
+    }
+  }
+
+  override function destroy():Void
+  {
+    if (currentConversation != null)
+    {
+      remove(currentConversation);
+      currentConversation.kill();
+    }
+
+    super.destroy();
   }
 
   /**

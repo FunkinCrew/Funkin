@@ -1,5 +1,7 @@
 package funkin.play.song;
 
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
