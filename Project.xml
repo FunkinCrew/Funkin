@@ -106,7 +106,10 @@
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
 	<haxelib name="hxCodec" /> <!-- Video playback -->
+
 	<haxelib name="json2object" /> <!-- JSON parsing -->
+	<haxelib name="tink_json" /> <!-- JSON parsing -->
+
 	<haxelib name="thx.semver" />
 	<haxelib name="hxcpp-debug-server" if="desktop debug" />
 	<!--Disable the Flixel core focus lost screen-->

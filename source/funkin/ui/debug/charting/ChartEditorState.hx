@@ -2546,7 +2546,7 @@ class ChartEditorState extends HaxeUIState
     currentOpponentCharacterPlayer = charPlayer;
   }
 
-  override function dispatchEvent(event:ScriptEvent):Void
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 

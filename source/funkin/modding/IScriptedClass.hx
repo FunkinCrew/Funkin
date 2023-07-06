@@ -17,6 +17,15 @@ interface IScriptedClass
 }
 
 /**
+ * Defines an element which can receive script events.
+ * For example, the PlayState dispatches the event to all its child elements.
+ */
+interface IEventHandler
+{
+  public function dispatchEvent(event:ScriptEvent):Void;
+}
+
+/**
  * Defines a set of callbacks available to scripted classes which can follow the game between states.
  */
 interface IStateChangingScriptedClass extends IScriptedClass
@@ -149,4 +158,20 @@ interface IPlayStateScriptedClass extends IScriptedClass
    * Called when the countdown of the song ends.
    */
   public function onCountdownEnd(event:CountdownScriptEvent):Void;
+}
+
+/**
+ * Defines a set of callbacks activated during a dialogue conversation.
+ */
+interface IDialogueScriptedClass extends IScriptedClass
+{
+  /**
+   * Called as the dialogue starts, and before the first dialogue text is displayed.
+   */
+  public function onDialogueStart(event:DialogueScriptEvent):Void;
+
+  public function onDialogueCompleteLine(event:DialogueScriptEvent):Void;
+  public function onDialogueLine(event:DialogueScriptEvent):Void;
+  public function onDialogueSkip(event:DialogueScriptEvent):Void;
+  public function onDialogueEnd(event:DialogueScriptEvent):Void;
 }

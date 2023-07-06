@@ -459,7 +459,7 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  override function dispatchEvent(event:ScriptEvent):Void
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);
