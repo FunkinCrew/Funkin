@@ -47,7 +47,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 
     glow.animation.finishCallback = this.onAnimationFinished;
 
-    if (glow.animation.getAnimationList().length < 2)
+    if (glow.animation.getAnimationList().length < 3)
     {
       trace('WARNING: NoteHoldCover failed to initialize all animations.');
     }
@@ -56,33 +56,52 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
   public override function update(elapsed):Void
   {
     super.update(elapsed);
-    if (!holdNote.alive && !glow.animation.curAnim.name.startsWith('holdCoverEnd'))
+    if ((!holdNote.alive || holdNote.missedNote) && !glow.animation.curAnim.name.startsWith('holdCoverEnd'))
     {
-      this.visible = false;
-      this.kill();
-    }
-    else
-    {
-      this.visible = true;
+      // If alive is false, the hold note was held to completion.
+      // If missedNote is true, the hold note was "dropped".
+
+      playEnd();
     }
   }
 
   public function playStart():Void
   {
-    // glow.animation.play('holdCoverStart${noteDirection.colorName.toTitleCase()}');\
+    // glow.animation.play('holdCoverStart${noteDirection.colorName.toTitleCase()}');
     glow.animation.play('holdCoverStartRed');
   }
 
   public function playContinue():Void
   {
-    // glow.animation.play('holdCover${noteDirection.colorName.toTitleCase()}');\
+    // glow.animation.play('holdCover${noteDirection.colorName.toTitleCase()}');
     glow.animation.play('holdCoverRed');
   }
 
   public function playEnd():Void
   {
-    // glow.animation.play('holdCoverEnd${noteDirection.colorName.toTitleCase()}');\
+    // glow.animation.play('holdCoverEnd${noteDirection.colorName.toTitleCase()}');
     glow.animation.play('holdCoverEndRed');
+  }
+
+  public override function kill():Void
+  {
+    super.kill();
+
+    this.visible = false;
+
+    if (glow != null) glow.visible = false;
+    if (sparks != null) sparks.visible = false;
+  }
+
+  public override function revive():Void
+  {
+    super.revive();
+
+    this.visible = true;
+    this.alpha = 1.0;
+
+    if (glow != null) glow.visible = true;
+    if (sparks != null) sparks.visible = true;
   }
 
   public function onAnimationFinished(animationName:String):Void

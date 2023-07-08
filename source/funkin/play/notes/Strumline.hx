@@ -20,7 +20,7 @@ import funkin.util.SortUtil;
 class Strumline extends FlxSpriteGroup
 {
   public static final DIRECTIONS:Array<NoteDirection> = [NoteDirection.LEFT, NoteDirection.DOWN, NoteDirection.UP, NoteDirection.RIGHT];
-  public static final STRUMLINE_SIZE:Int = 112;
+  public static final STRUMLINE_SIZE:Int = 104;
   public static final NOTE_SPACING:Int = STRUMLINE_SIZE + 8;
 
   // Positional fixes for new strumline graphics.
@@ -84,6 +84,8 @@ class Strumline extends FlxSpriteGroup
     this.noteSplashes.zIndex = 50;
     this.add(this.noteSplashes);
 
+    this.refresh();
+
     for (i in 0...KEY_COUNT)
     {
       var child:StrumlineNote = new StrumlineNote(isPlayer, DIRECTIONS[i]);
@@ -102,6 +104,11 @@ class Strumline extends FlxSpriteGroup
     this.active = true;
   }
 
+  public function refresh():Void
+  {
+    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+  }
+
   override function get_width():Float
   {
     return KEY_COUNT * Strumline.NOTE_SPACING;
@@ -112,7 +119,24 @@ class Strumline extends FlxSpriteGroup
     super.update(elapsed);
 
     updateNotes();
+
+    #if debug
+    if (!isPlayer)
+    {
+      FlxG.watch.addQuick("strumlineAnim", strumlineNotes.members[3]?.animation?.curAnim?.name);
+      var curFrame = strumlineNotes.members[3]?.animation?.curAnim?.curFrame;
+      frameMax = (curFrame > frameMax) ? curFrame : frameMax;
+      FlxG.watch.addQuick("strumlineFrame", strumlineNotes.members[3]?.animation?.curAnim?.curFrame);
+      FlxG.watch.addQuick("strumlineFrameMax", frameMax);
+      animFinishedEver = animFinishedEver || strumlineNotes.members[3]?.animation?.curAnim?.finished;
+      FlxG.watch.addQuick("strumlineFinished", strumlineNotes.members[3]?.animation?.curAnim?.finished);
+      FlxG.watch.addQuick("strumlineFinishedEver", animFinishedEver);
+    }
+    #end
   }
+
+  var frameMax:Int;
+  var animFinishedEver:Bool;
 
   /**
    * Get a list of notes within + or - the given strumtime.
@@ -253,7 +277,8 @@ class Strumline extends FlxSpriteGroup
           // Stopped pressing the hold note.
           playStatic(holdNote.noteDirection);
           holdNote.missedNote = true;
-          holdNote.alpha = 0.6;
+          holdNote.visible = true;
+          holdNote.alpha = 0.0;
         }
       }
 
@@ -347,6 +372,15 @@ class Strumline extends FlxSpriteGroup
         }
       }
     }
+
+    // Update rendering of pressed keys.
+    for (dir in DIRECTIONS)
+    {
+      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
+      {
+        playPress(dir);
+      }
+    }
   }
 
   public function onBeatHit():Void
@@ -405,7 +439,7 @@ class Strumline extends FlxSpriteGroup
     if (note.holdNoteSprite != null)
     {
       note.holdNoteSprite.missedNote = true;
-      note.holdNoteSprite.alpha = 0.6;
+      note.holdNoteSprite.visible = false;
     }
   }
 
@@ -483,12 +517,12 @@ class Strumline extends FlxSpriteGroup
       cover.x += getXPos(holdNote.noteDirection);
       cover.x += STRUMLINE_SIZE / 2;
       cover.x -= cover.width / 2;
-      // cover.x += INITIAL_OFFSET * 2;
+      cover.x += -12; // Manual tweaking because fuck.
+
       cover.y = this.y;
       cover.y += INITIAL_OFFSET;
       cover.y += STRUMLINE_SIZE / 2;
-      // cover.y -= cover.height / 2;
-      // cover.y += STRUMLINE_SIZE / 2;
+      cover.y += -96; // Manual tweaking because fuck.
     }
   }
 
@@ -525,7 +559,7 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.sustainLength = note.length;
       holdNoteSprite.missedNote = false;
       holdNoteSprite.hitNote = false;
-
+      holdNoteSprite.visible = true;
       holdNoteSprite.alpha = 1.0;
 
       holdNoteSprite.x = this.x;

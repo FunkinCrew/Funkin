@@ -13,6 +13,10 @@ class StrumlineNote extends FlxSprite
 
   public var direction(default, set):NoteDirection;
 
+  var confirmHoldTimer:Float = -1;
+
+  static final CONFIRM_HOLD_TIME:Float = 0.1;
+
   public function updatePosition(parentNote:NoteSprite)
   {
     this.x = parentNote.x;
@@ -49,9 +53,12 @@ class StrumlineNote extends FlxSprite
 
   function onAnimationFinished(name:String):Void
   {
-    if (!isPlayer && name.startsWith('confirm'))
+    // Run a timer before we stop playing the confirm animation.
+    // On opponent, this prevent issues with hold notes.
+    // On player, this allows holding the confirm key to fall back to press.
+    if (name == 'confirm')
     {
-      playStatic();
+      confirmHoldTimer = 0;
     }
   }
 
@@ -60,37 +67,49 @@ class StrumlineNote extends FlxSprite
     super.update(elapsed);
 
     centerOrigin();
+
+    if (confirmHoldTimer >= 0)
+    {
+      confirmHoldTimer += elapsed;
+
+      // Ensure the opponent stops holding the key after a certain amount of time.
+      if (confirmHoldTimer >= CONFIRM_HOLD_TIME)
+      {
+        confirmHoldTimer = -1;
+        playStatic();
+      }
+    }
   }
 
   function setup():Void
   {
-    this.frames = Paths.getSparrowAtlas('StrumlineNotes');
+    this.frames = Paths.getSparrowAtlas('noteStrumline');
 
     switch (this.direction)
     {
       case NoteDirection.LEFT:
-        this.animation.addByIndices('static', 'left confirm', [6, 7], '', 24, false, false, false);
-        this.animation.addByPrefix('press', 'left press', 24, false, false, false);
-        this.animation.addByIndices('confirm', 'left confirm', [0, 1, 2, 3], '', 24, false, false, false);
-        this.animation.addByIndices('confirm-hold', 'left confirm', [2, 3, 4, 5], '', 24, true, false, false);
+        this.animation.addByPrefix('static', 'staticLeft0', 24, false, false, false);
+        this.animation.addByPrefix('press', 'pressLeft0', 24, false, false, false);
+        this.animation.addByPrefix('confirm', 'confirmLeft0', 24, false, false, false);
+        this.animation.addByPrefix('confirm-hold', 'confirmHoldLeft0', 24, true, false, false);
 
       case NoteDirection.DOWN:
-        this.animation.addByIndices('static', 'down confirm', [6, 7], '', 24, false, false, false);
-        this.animation.addByPrefix('press', 'down press', 24, false, false, false);
-        this.animation.addByIndices('confirm', 'down confirm', [0, 1, 2, 3], '', 24, false, false, false);
-        this.animation.addByIndices('confirm-hold', 'down confirm', [2, 3, 4, 5], '', 24, true, false, false);
+        this.animation.addByPrefix('static', 'staticDown0', 24, false, false, false);
+        this.animation.addByPrefix('press', 'pressDown0', 24, false, false, false);
+        this.animation.addByPrefix('confirm', 'confirmDown0', 24, false, false, false);
+        this.animation.addByPrefix('confirm-hold', 'confirmHoldDown0', 24, true, false, false);
 
       case NoteDirection.UP:
-        this.animation.addByIndices('static', 'up confirm', [6, 7], '', 24, false, false, false);
-        this.animation.addByPrefix('press', 'up press', 24, false, false, false);
-        this.animation.addByIndices('confirm', 'up confirm', [0, 1, 2, 3], '', 24, false, false, false);
-        this.animation.addByIndices('confirm-hold', 'up confirm', [2, 3, 4, 5], '', 24, true, false, false);
+        this.animation.addByPrefix('static', 'staticUp0', 24, false, false, false);
+        this.animation.addByPrefix('press', 'pressUp0', 24, false, false, false);
+        this.animation.addByPrefix('confirm', 'confirmUp0', 24, false, false, false);
+        this.animation.addByPrefix('confirm-hold', 'confirmHoldUp0', 24, true, false, false);
 
       case NoteDirection.RIGHT:
-        this.animation.addByIndices('static', 'right confirm', [6, 7], '', 24, false, false, false);
-        this.animation.addByPrefix('press', 'right press', 24, false, false, false);
-        this.animation.addByIndices('confirm', 'right confirm', [0, 1, 2, 3], '', 24, false, false, false);
-        this.animation.addByIndices('confirm-hold', 'right confirm', [2, 3, 4, 5], '', 24, true, false, false);
+        this.animation.addByPrefix('static', 'staticRight0', 24, false, false, false);
+        this.animation.addByPrefix('press', 'pressRight0', 24, false, false, false);
+        this.animation.addByPrefix('confirm', 'confirmRight0', 24, false, false, false);
+        this.animation.addByPrefix('confirm-hold', 'confirmHoldRight0', 24, true, false, false);
     }
 
     this.setGraphicSize(Std.int(Strumline.STRUMLINE_SIZE * 1.55));
@@ -133,16 +152,22 @@ class StrumlineNote extends FlxSprite
   {
     this.active = true;
 
-    if (getCurrentAnimation() == "confirm-hold") return;
-    if (getCurrentAnimation() == "confirm")
+    if (getCurrentAnimation() == "confirm-hold")
+    {
+      return;
+    }
+    else if (getCurrentAnimation() == "confirm")
     {
       if (isAnimationFinished())
       {
-        this.playAnimation('confirm-hold', true, false);
+        this.confirmHoldTimer = -1;
+        this.playAnimation('confirm-hold', false, false);
       }
-      return;
     }
-    this.playAnimation('confirm', false, false);
+    else
+    {
+      this.playAnimation('confirm', false, false);
+    }
   }
 
   /**

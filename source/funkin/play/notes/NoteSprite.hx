@@ -127,7 +127,7 @@ class NoteSprite extends FlxSprite
 
     if (noteFrames != null && !force) return noteFrames;
 
-    noteFrames = Paths.getSparrowAtlas('NOTE_assets');
+    noteFrames = Paths.getSparrowAtlas('notes');
 
     noteFrames.parent.persist = true;
 
@@ -138,20 +138,10 @@ class NoteSprite extends FlxSprite
   {
     this.frames = buildNoteFrames();
 
-    animation.addByPrefix('greenScroll', 'green instance');
-    animation.addByPrefix('redScroll', 'red instance');
-    animation.addByPrefix('blueScroll', 'blue instance');
-    animation.addByPrefix('purpleScroll', 'purple instance');
-
-    animation.addByPrefix('purpleholdend', 'pruple end hold');
-    animation.addByPrefix('greenholdend', 'green hold end');
-    animation.addByPrefix('redholdend', 'red hold end');
-    animation.addByPrefix('blueholdend', 'blue hold end');
-
-    animation.addByPrefix('purplehold', 'purple hold piece');
-    animation.addByPrefix('greenhold', 'green hold piece');
-    animation.addByPrefix('redhold', 'red hold piece');
-    animation.addByPrefix('bluehold', 'blue hold piece');
+    animation.addByPrefix('greenScroll', 'noteUp');
+    animation.addByPrefix('redScroll', 'noteRight');
+    animation.addByPrefix('blueScroll', 'noteDown');
+    animation.addByPrefix('purpleScroll', 'noteLeft');
 
     setGraphicSize(Strumline.STRUMLINE_SIZE);
     updateHitbox();

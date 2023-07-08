@@ -359,7 +359,7 @@ class BaseCharacter extends Bopper
     }
 
     // Handle character note hold time.
-    if (getCurrentAnimation().startsWith('sing'))
+    if (isSinging())
     {
       // TODO: Rework this code (and all character animations ugh)
       // such that the hold time is handled by padding frames,
@@ -405,6 +405,11 @@ class BaseCharacter extends Bopper
     }
   }
 
+  public function isSinging():Bool
+  {
+    return getCurrentAnimation().startsWith('sing');
+  }
+
   override function dance(force:Bool = false):Void
   {
     // Prevent default dancing behavior.
@@ -412,13 +417,13 @@ class BaseCharacter extends Bopper
 
     if (!force)
     {
-      if (getCurrentAnimation().startsWith('sing')) return;
+      if (isSinging()) return;
 
       if (['hey', 'cheer'].contains(getCurrentAnimation()) && !isAnimationFinished()) return;
     }
 
     // Prevent dancing while another animation is playing.
-    if (!force && getCurrentAnimation().startsWith('sing')) return;
+    if (!force && isSinging()) return;
 
     // Otherwise, fallback to the super dance() method, which handles playing the idle animation.
     super.dance();

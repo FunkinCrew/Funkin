@@ -1367,13 +1367,14 @@ class PlayState extends MusicBeatState
     add(playerStrumline);
     add(opponentStrumline);
 
-    // Position the player strumline on the right
-    playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET;
+    // Position the player strumline on the right half of the screen
+    playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
+    // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
     playerStrumline.y = PreferencesMenu.getPref('downscroll') ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     playerStrumline.zIndex = 200;
     playerStrumline.cameras = [camHUD];
 
-    // Position the opponent strumline on the left
+    // Position the opponent strumline on the left half of the screen
     opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
     opponentStrumline.y = PreferencesMenu.getPref('downscroll') ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.zIndex = 100;
@@ -1642,13 +1643,18 @@ class PlayState extends MusicBeatState
 
       if (Conductor.songPosition > hitWindowEnd)
       {
+        if (note.hasMissed) continue;
+
         note.tooEarly = false;
         note.mayHit = false;
         note.hasMissed = true;
+
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
       }
       else if (Conductor.songPosition > hitWindowCenter)
       {
+        if (note.hasBeenHit) continue;
+
         // Call an event to allow canceling the note hit.
         // NOTE: This is what handles the character animations!
         var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, 0, true);
@@ -1668,6 +1674,8 @@ class PlayState extends MusicBeatState
       }
       else if (Conductor.songPosition > hitWindowStart)
       {
+        if (note.hasBeenHit || note.hasMissed) continue;
+
         note.tooEarly = false;
         note.mayHit = true;
         note.hasMissed = false;
@@ -1680,6 +1688,25 @@ class PlayState extends MusicBeatState
         note.hasMissed = false;
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
+    }
+
+    // Process hold notes on the opponent's side.
+    for (holdNote in opponentStrumline.holdNotes.members)
+    {
+      if (holdNote == null || !holdNote.alive) continue;
+
+      // While the hold note is being hit, and there is length on the hold note...
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      {
+        // Make sure the opponent keeps singing while the note is held.
+        if (currentStage != null && currentStage.getDad() != null && currentStage.getDad().isSinging())
+        {
+          currentStage.getDad().holdTimer = 0;
+        }
+      }
+
+      // TODO: Potential penalty for dropping a hold note?
+      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
     }
 
     // Process notes on the player's side.
@@ -1743,11 +1770,11 @@ class PlayState extends MusicBeatState
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Grant the player health.
-        trace(holdNote);
-        trace(holdNote.noteData);
-        trace(holdNote.sustainLength);
         health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
       }
+
+      // TODO: Potential penalty for dropping a hold note?
+      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
     }
   }
 
@@ -1821,6 +1848,7 @@ class PlayState extends MusicBeatState
 
         targetNote.visible = false;
         targetNote.kill();
+        notesInDirection.remove(targetNote);
 
         // Play the strumline animation.
         playerStrumline.playConfirm(input.noteDirection);
@@ -1942,33 +1970,30 @@ class PlayState extends MusicBeatState
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
   {
-    if (!note.hasBeenHit)
+    var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, Highscore.tallies.combo + 1, true);
+    dispatchEvent(event);
+
+    // Calling event.cancelEvent() skips all the other logic! Neat!
+    if (event.eventCanceled) return;
+
+    if (!note.isHoldNote)
     {
-      var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, Highscore.tallies.combo + 1, true);
-      dispatchEvent(event);
+      Highscore.tallies.combo++;
+      Highscore.tallies.totalNotesHit++;
 
-      // Calling event.cancelEvent() skips all the other logic! Neat!
-      if (event.eventCanceled) return;
+      if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
 
-      if (!note.isHoldNote)
-      {
-        Highscore.tallies.combo++;
-        Highscore.tallies.totalNotesHit++;
-
-        if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
-
-        popUpScore(note, input);
-      }
-
-      playerStrumline.hitNote(note);
-
-      if (note.holdNoteSprite != null)
-      {
-        playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-      }
-
-      vocals.playerVolume = 1;
+      popUpScore(note, input);
     }
+
+    playerStrumline.hitNote(note);
+
+    if (note.holdNoteSprite != null)
+    {
+      playerStrumline.playNoteHoldCover(note.holdNoteSprite);
+    }
+
+    vocals.playerVolume = 1;
   }
 
   /**

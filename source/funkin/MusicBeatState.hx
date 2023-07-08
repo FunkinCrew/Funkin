@@ -60,6 +60,11 @@ class MusicBeatState extends FlxUIState implements IEventHandler
   {
     super.update(elapsed);
 
+    // Rebindable volume keys.
+    if (controls.VOLUME_MUTE) FlxG.sound.toggleMuted();
+    else if (controls.VOLUME_UP) FlxG.sound.changeVolume(0.1);
+    else if (controls.VOLUME_DOWN) FlxG.sound.changeVolume(-0.1);
+
     // Emergency exit button.
     if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
 

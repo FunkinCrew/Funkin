@@ -199,7 +199,7 @@ class Constants
    * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
    * This is the thing people have been begging for forever lolol.
    */
-  public static final GHOST_TAPPING:Bool = true;
+  public static final GHOST_TAPPING:Bool = false;
 
   /**
    * OTHER
