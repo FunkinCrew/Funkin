@@ -3,6 +3,7 @@ package funkin.play.notes;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.play.notes.NoteDirection;
 import flixel.graphics.frames.FlxFramesCollection;
+import funkin.util.assets.FlxAnimationUtil;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
@@ -11,7 +12,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 {
   static final FRAMERATE_DEFAULT:Int = 24;
 
-  static var glowFrames:FlxAtlasFrames;
+  static var glowFrames:FlxFramesCollection;
 
   public var holdNote:SustainTrail;
 
@@ -27,8 +28,23 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 
   public static function preloadFrames():Void
   {
-    glowFrames = Paths.getSparrowAtlas('holdCoverRed');
-    glowFrames.parent.persist = true;
+    glowFrames = null;
+    for (direction in Strumline.DIRECTIONS)
+    {
+      var directionName = direction.colorName.toTitleCase();
+
+      var atlas:FlxFramesCollection = Paths.getSparrowAtlas('holdCover${directionName}');
+      atlas.parent.persist = true;
+
+      if (glowFrames != null)
+      {
+        glowFrames = FlxAnimationUtil.combineFramesCollections(glowFrames, atlas);
+      }
+      else
+      {
+        glowFrames = atlas;
+      }
+    }
   }
 
   /**
@@ -41,13 +57,18 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     if (glowFrames == null) preloadFrames();
     glow.frames = glowFrames;
 
-    glow.animation.addByPrefix('holdCoverStartRed', 'holdCoverStartRed0', FRAMERATE_DEFAULT, false, false, false);
-    glow.animation.addByPrefix('holdCoverRed', 'holdCoverRed0', FRAMERATE_DEFAULT, true, false, false);
-    glow.animation.addByPrefix('holdCoverEndRed', 'holdCoverEndRed0', FRAMERATE_DEFAULT, false, false, false);
+    for (direction in Strumline.DIRECTIONS)
+    {
+      var directionName = direction.colorName.toTitleCase();
+
+      glow.animation.addByPrefix('holdCoverStart$directionName', 'holdCoverStart${directionName}0', FRAMERATE_DEFAULT, false, false, false);
+      glow.animation.addByPrefix('holdCover$directionName', 'holdCover${directionName}0', FRAMERATE_DEFAULT, true, false, false);
+      glow.animation.addByPrefix('holdCoverEnd$directionName', 'holdCoverEnd${directionName}0', FRAMERATE_DEFAULT, false, false, false);
+    }
 
     glow.animation.finishCallback = this.onAnimationFinished;
 
-    if (glow.animation.getAnimationList().length < 3)
+    if (glow.animation.getAnimationList().length < 3 * 4)
     {
       trace('WARNING: NoteHoldCover failed to initialize all animations.');
     }
@@ -67,20 +88,20 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 
   public function playStart():Void
   {
-    // glow.animation.play('holdCoverStart${noteDirection.colorName.toTitleCase()}');
-    glow.animation.play('holdCoverStartRed');
+    var direction:NoteDirection = holdNote.noteDirection;
+    glow.animation.play('holdCoverStart${direction.colorName.toTitleCase()}');
   }
 
   public function playContinue():Void
   {
-    // glow.animation.play('holdCover${noteDirection.colorName.toTitleCase()}');
-    glow.animation.play('holdCoverRed');
+    var direction:NoteDirection = holdNote.noteDirection;
+    glow.animation.play('holdCover${direction.colorName.toTitleCase()}');
   }
 
   public function playEnd():Void
   {
-    // glow.animation.play('holdCoverEnd${noteDirection.colorName.toTitleCase()}');
-    glow.animation.play('holdCoverEndRed');
+    var direction:NoteDirection = holdNote.noteDirection;
+    glow.animation.play('holdCoverEnd${direction.colorName.toTitleCase()}');
   }
 
   public override function kill():Void
