@@ -44,7 +44,6 @@ class StickerSubState extends MusicBeatSubState
       for (sticker in oldStickers)
       {
         grpStickers.add(sticker);
-        trace(sticker);
       }
 
       degenStickers();
@@ -89,31 +88,6 @@ class StickerSubState extends MusicBeatSubState
     for (stickerSets in stickerInfo.getPack("all"))
     {
       stickers.set(stickerSets, stickerInfo.getStickers(stickerSets));
-
-      trace(stickers);
-
-      // for (stickerShit in stickerInfo.getStickers(stickerSets))
-      // {
-      //   // for loop jus to repeat it easy easy easy
-      //   for (i in 0...FlxG.random.int(1, 5))
-      //   {
-      //     var sticky:StickerSprite = new StickerSprite(0, 0, stickerInfo.name, stickerShit);
-      //     sticky.x -= sticky.width / 2;
-      //     sticky.y -= sticky.height * 0.9;
-
-      //     // random location by default
-      //     sticky.x += FlxG.random.float(0, FlxG.width);
-      //     sticky.y += FlxG.random.float(0, FlxG.height);
-
-      //     sticky.visible = false;
-      //     sticky.scrollFactor.set();
-      //     sticky.angle = FlxG.random.int(-60, 70);
-      //     // sticky.flipX = FlxG.random.bool();
-      //     grpStickers.add(sticky);
-
-      //     sticky.timing = FlxG.random.float(0, 0.8);
-      //   }
-      // }
     }
 
     var xPos:Float = -100;
@@ -281,7 +255,6 @@ class StickerInfo
   {
     var path = Paths.file('images/transitionSwag/' + stickerSet + '/stickers.json');
     var json = Json.parse(Assets.getText(path));
-    trace(json);
 
     // doin this dipshit nonsense cuz i dunno how to deal with casting a json object with
     // a dash in its name (sticker-packs)
@@ -298,12 +271,7 @@ class StickerInfo
       var stickerStuff = Reflect.field(stickerFunny, field);
 
       stickerPacks.set(field, cast stickerStuff);
-
-      trace(field);
-      trace(Reflect.field(stickerFunny, field));
     }
-
-    trace(stickerPacks);
 
     // creates a similar for loop as before but for the stickers
     stickers = new Map<String, Array<String>>();
@@ -314,24 +282,7 @@ class StickerInfo
       var stickerStuff = Reflect.field(stickerFunny, field);
 
       stickers.set(field, cast stickerStuff);
-
-      trace(field);
-      trace(Reflect.field(stickerFunny, field));
     }
-
-    trace(stickers);
-
-    // this.stickerPacks = cast jsonInfo.stickerPacks;
-    // this.stickers = cast jsonInfo.stickers;
-
-    // trace(stickerPacks);
-    // trace(stickers);
-
-    // for (packs in stickers)
-    // {
-    //   // this.stickers.set(packs, Reflect.field(json, "sticker-packs"));
-    //   trace(packs);
-    // }
   }
 
   public function getStickers(stickerName:String):Array<String>
