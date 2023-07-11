@@ -45,6 +45,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-haxeshit
+      - name: Build Lime
+        # TODO: Remove the step that builds Lime later.
+        run: |
+          LIME_PATH=$(haxelib libpath lime)
+          echo "Moving to $LIME_PATH"
+          cd $LIME_PATH
+          git submodule sync --recursive
+          git submodule update --recursive
+          git status
+          lime rebuild windows --clean
       - name: Build game
         run: |
           haxelib run lime build windows -debug
