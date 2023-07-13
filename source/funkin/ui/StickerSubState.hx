@@ -159,6 +159,8 @@ class StickerSubState extends MusicBeatSubState
         if (ind == grpStickers.members.length - 1) frameTimer = 2;
 
         new FlxTimer().start((1 / 24) * frameTimer, _ -> {
+          if (sticker == null) return;
+
           sticker.scale.x = sticker.scale.y = FlxG.random.float(0.97, 1.02);
 
           if (ind == grpStickers.members.length - 1)
