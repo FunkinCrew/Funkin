@@ -34,7 +34,6 @@ import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
 import funkin.ui.debug.charting.ChartEditorToolboxHandler.ChartEditorToolMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
-import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.DateUtil;
 import funkin.util.SerializerUtil;

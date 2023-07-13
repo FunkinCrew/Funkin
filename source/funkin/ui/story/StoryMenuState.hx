@@ -16,7 +16,6 @@ import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongDataParser;
-import funkin.util.Constants;
 
 class StoryMenuState extends MusicBeatState
 {

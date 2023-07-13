@@ -205,6 +205,7 @@ class Constants
    * OTHER
    */
   // ==============================
+  public static final LIBRARY_SEPARATOR:String = ':';
 
   /**
    * All MP3 decoders introduce a playback delay of `528` samples,

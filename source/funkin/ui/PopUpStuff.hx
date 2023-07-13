@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import funkin.play.PlayState;
-import funkin.util.Constants;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {

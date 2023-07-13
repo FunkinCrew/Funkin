@@ -14,7 +14,6 @@ import funkin.shaderslmfao.ColorSwap;
 import funkin.shaderslmfao.LeftMaskShader;
 import funkin.shaderslmfao.TitleOutline;
 import funkin.ui.AtlasText;
-import funkin.util.Constants;
 import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;

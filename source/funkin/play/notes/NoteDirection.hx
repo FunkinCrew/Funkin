@@ -1,6 +1,5 @@
 package funkin.play.notes;
 
-import funkin.util.Constants;
 import flixel.util.FlxColor;
 
 /**

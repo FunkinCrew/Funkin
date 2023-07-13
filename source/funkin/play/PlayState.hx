@@ -47,7 +47,6 @@ import funkin.ui.PopUpStuff;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.stageBuildShit.StageOffsetSubState;
 import funkin.ui.story.StoryMenuState;
-import funkin.util.Constants;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import lime.ui.Haptic;

@@ -1,10 +1,8 @@
 package funkin.play;
 
-import funkin.util.Constants;
-
 /**
  * Manages playback of multiple songs in a row.
- * 
+ *
  * TODO: Add getters/setters for all these properties to validate them.
  */
 class PlayStatePlaylist

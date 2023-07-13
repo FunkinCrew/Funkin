@@ -26,7 +26,6 @@ import funkin.ui.story.StoryMenuState;
 import funkin.ui.OptionsState;
 import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;
-import funkin.util.Constants;
 import funkin.util.WindowUtil;
 import lime.app.Application;
 import openfl.filters.ShaderFilter;
