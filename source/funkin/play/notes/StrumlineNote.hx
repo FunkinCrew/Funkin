@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
 import funkin.play.notes.NoteSprite;
@@ -17,30 +18,21 @@ class StrumlineNote extends FlxSprite
 
   static final CONFIRM_HOLD_TIME:Float = 0.1;
 
-  public function updatePosition(parentNote:NoteSprite)
-  {
-    this.x = parentNote.x;
-    this.x += parentNote.width / 2;
-    this.x -= this.width / 2;
-
-    this.y = parentNote.y;
-    this.y += parentNote.height / 2;
-  }
-
   function set_direction(value:NoteDirection):NoteDirection
   {
     this.direction = value;
-    setup();
     return this.direction;
   }
 
-  public function new(isPlayer:Bool, direction:NoteDirection)
+  public function new(noteStyle:NoteStyle, isPlayer:Bool, direction:NoteDirection)
   {
     super(0, 0);
 
     this.isPlayer = isPlayer;
 
     this.direction = direction;
+
+    setup(noteStyle);
 
     this.animation.callback = onAnimationFrame;
     this.animation.finishCallback = onAnimationFinished;
@@ -81,39 +73,15 @@ class StrumlineNote extends FlxSprite
     }
   }
 
-  function setup():Void
+  function setup(noteStyle:NoteStyle):Void
   {
-    this.frames = Paths.getSparrowAtlas('noteStrumline');
+    noteStyle.applyStrumlineFrames(this);
+    noteStyle.applyStrumlineAnimations(this, this.direction);
 
-    switch (this.direction)
-    {
-      case NoteDirection.LEFT:
-        this.animation.addByPrefix('static', 'staticLeft0', 24, false, false, false);
-        this.animation.addByPrefix('press', 'pressLeft0', 24, false, false, false);
-        this.animation.addByPrefix('confirm', 'confirmLeft0', 24, false, false, false);
-        this.animation.addByPrefix('confirm-hold', 'confirmHoldLeft0', 24, true, false, false);
-
-      case NoteDirection.DOWN:
-        this.animation.addByPrefix('static', 'staticDown0', 24, false, false, false);
-        this.animation.addByPrefix('press', 'pressDown0', 24, false, false, false);
-        this.animation.addByPrefix('confirm', 'confirmDown0', 24, false, false, false);
-        this.animation.addByPrefix('confirm-hold', 'confirmHoldDown0', 24, true, false, false);
-
-      case NoteDirection.UP:
-        this.animation.addByPrefix('static', 'staticUp0', 24, false, false, false);
-        this.animation.addByPrefix('press', 'pressUp0', 24, false, false, false);
-        this.animation.addByPrefix('confirm', 'confirmUp0', 24, false, false, false);
-        this.animation.addByPrefix('confirm-hold', 'confirmHoldUp0', 24, true, false, false);
-
-      case NoteDirection.RIGHT:
-        this.animation.addByPrefix('static', 'staticRight0', 24, false, false, false);
-        this.animation.addByPrefix('press', 'pressRight0', 24, false, false, false);
-        this.animation.addByPrefix('confirm', 'confirmRight0', 24, false, false, false);
-        this.animation.addByPrefix('confirm-hold', 'confirmHoldRight0', 24, true, false, false);
-    }
-
-    this.setGraphicSize(Std.int(Strumline.STRUMLINE_SIZE * 1.55));
+    this.setGraphicSize(Std.int(Strumline.STRUMLINE_SIZE * noteStyle.getStrumlineScale()));
     this.updateHitbox();
+    noteStyle.applyStrumlineOffsets(this);
+
     this.playStatic();
   }
 

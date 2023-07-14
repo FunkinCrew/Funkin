@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup;
@@ -128,7 +129,7 @@ class LatencyState extends MusicBeatSubState
 
     for (i in 0...32)
     {
-      var note:NoteSprite = new NoteSprite(Conductor.beatLengthMs * i);
+      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), Conductor.beatLengthMs * i);
       noteGrp.add(note);
     }
 

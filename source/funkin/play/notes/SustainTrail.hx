@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
 import funkin.play.song.SongData.SongNoteData;
 import flixel.util.FlxDirectionFlags;
@@ -79,25 +80,28 @@ class SustainTrail extends FlxSprite
    */
   public var bottomClip:Float = 0.9;
 
+  public var isPixel:Bool;
+
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
    * @param NoteData
    * @param SustainLength Length in milliseconds.
    * @param fileName
    */
-  public function new(noteDirection:NoteDirection, sustainLength:Float, fileName:String)
+  public function new(noteDirection:NoteDirection, sustainLength:Float, fileName:String, noteStyle:NoteStyle)
   {
     super(0, 0, fileName);
 
     antialiasing = true;
 
-    // TODO: Why does this reference pixel stuff?
-    if (fileName == "arrowEnds")
+    this.isPixel = noteStyle.isHoldNotePixel();
+    if (isPixel)
     {
       endOffset = bottomClip = 1;
       antialiasing = false;
-      zoom = 6;
     }
+    zoom *= noteStyle.fetchHoldNoteScale();
+
     // BASIC SETUP
     this.sustainLength = sustainLength;
     this.fullSustainLength = sustainLength;

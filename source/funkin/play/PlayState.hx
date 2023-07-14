@@ -1,6 +1,9 @@
 package funkin.play;
 
 import haxe.Int64;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.data.notestyle.NoteStyleData;
+import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
@@ -989,6 +992,9 @@ class PlayState extends MusicBeatState
    */
   override function debug_refreshModules():Void
   {
+    // Prevent further gameplay updates, which will try to reference dead objects.
+    criticalFailure = true;
+
     // Remove the current stage. If the stage gets deleted while it's still in use,
     // it'll probably crash the game or something.
     if (this.currentStage != null)
@@ -999,8 +1005,14 @@ class PlayState extends MusicBeatState
       currentStage = null;
     }
 
+    // Stop the instrumental.
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.stop();
+    }
+
     // Stop the vocals.
-    if (vocals != null)
+    if (vocals != null && vocals.exists)
     {
       vocals.stop();
     }
@@ -1013,6 +1025,8 @@ class PlayState extends MusicBeatState
 
   override function stepHit():Bool
   {
+    if (criticalFailure) return false;
+
     // super.stepHit() returns false if a module cancelled the event.
     if (!super.stepHit()) return false;
 
@@ -1034,6 +1048,8 @@ class PlayState extends MusicBeatState
 
   override function beatHit():Bool
   {
+    if (criticalFailure) return false;
+
     // super.beatHit() returns false if a module cancelled the event.
     if (!super.beatHit()) return false;
 
@@ -1279,9 +1295,9 @@ class PlayState extends MusicBeatState
     //
     // OPPONENT HEALTH ICON
     //
-    iconP2 = new HealthIcon(currentCharData.opponent, 1);
+    iconP2 = new HealthIcon('dad', 1);
     iconP2.y = healthBar.y - (iconP2.height / 2);
-    dad.initHealthIcon(true);
+    dad.initHealthIcon(true); // Apply the character ID here
     add(iconP2);
     iconP2.cameras = [camHUD];
 
@@ -1298,9 +1314,9 @@ class PlayState extends MusicBeatState
     //
     // PLAYER HEALTH ICON
     //
-    iconP1 = new HealthIcon(currentPlayerId, 0);
+    iconP1 = new HealthIcon('bf', 0);
     iconP1.y = healthBar.y - (iconP1.height / 2);
-    boyfriend.initHealthIcon(false);
+    boyfriend.initHealthIcon(false); // Apply the character ID here
     add(iconP1);
     iconP1.cameras = [camHUD];
 
@@ -1350,19 +1366,17 @@ class PlayState extends MusicBeatState
    */
   function initStrumlines():Void
   {
-    // var strumlineStyle:StrumlineStyle = NORMAL;
-    //
-    //// TODO: Put this in the chart or something?
-    // switch (currentStageId)
-    // {
-    //  case 'school':
-    //    strumlineStyle = PIXEL;
-    //  case 'schoolEvil':
-    //    strumlineStyle = PIXEL;
-    // }
+    var noteStyleId:String = switch (currentStageId)
+    {
+      case 'school': 'pixel';
+      case 'schoolEvil': 'pixel';
+      default: 'funkin';
+    }
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
 
-    playerStrumline = new Strumline(true);
-    opponentStrumline = new Strumline(false);
+    playerStrumline = new Strumline(noteStyle, true);
+    opponentStrumline = new Strumline(noteStyle, false);
     add(playerStrumline);
     add(opponentStrumline);
 
@@ -1459,18 +1473,6 @@ class PlayState extends MusicBeatState
     // Reset song events.
     songEvents = currentChart.getEvents();
     SongEventParser.resetEvents(songEvents);
-
-    // TODO: Put this in the chart or something?
-    // var strumlineStyle:StrumlineStyle = null;
-    // switch (currentStageId)
-    // {
-    //   case 'school':
-    //     strumlineStyle = PIXEL;
-    //   case 'schoolEvil':
-    //     strumlineStyle = PIXEL;
-    //   default:
-    //     strumlineStyle = NORMAL;
-    // }
 
     // Reset the notes on each strumline.
     var playerNoteData:Array<SongNoteData> = [];
@@ -1631,6 +1633,8 @@ class PlayState extends MusicBeatState
    */
   function processNotes(elapsed:Float):Void
   {
+    if (playerStrumline?.notes?.members == null || opponentStrumline?.notes?.members == null) return;
+
     // Process notes on the opponent's side.
     for (note in opponentStrumline.notes.members)
     {

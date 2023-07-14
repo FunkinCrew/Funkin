@@ -107,7 +107,9 @@ class MusicBeatState extends FlxUIState implements IEventHandler
   {
     PolymodHandler.forceReloadAssets();
 
-    // Restart the current state, so old data is cleared.
+    this.destroy();
+
+    // Create a new instance of the current state, so old data is cleared.
     FlxG.resetState();
   }
 

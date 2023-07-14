@@ -1,6 +1,7 @@
 package funkin.play.notes;
 
 import flixel.FlxG;
+import funkin.play.notes.notestyle.NoteStyle;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
@@ -52,16 +53,19 @@ class Strumline extends FlxSpriteGroup
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
   var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
 
+  final noteStyle:NoteStyle;
+
   var noteData:Array<SongNoteData> = [];
   var nextNoteIndex:Int = -1;
 
   var heldKeys:Array<Bool> = [];
 
-  public function new(isPlayer:Bool)
+  public function new(noteStyle:NoteStyle, isPlayer:Bool)
   {
     super();
 
     this.isPlayer = isPlayer;
+    this.noteStyle = noteStyle;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
     this.strumlineNotes.zIndex = 10;
@@ -88,10 +92,11 @@ class Strumline extends FlxSpriteGroup
 
     for (i in 0...KEY_COUNT)
     {
-      var child:StrumlineNote = new StrumlineNote(isPlayer, DIRECTIONS[i]);
+      var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
       child.x = getXPos(DIRECTIONS[i]);
       child.x += INITIAL_OFFSET;
       child.y = 0;
+      noteStyle.applyStrumlineOffsets(child);
       this.strumlineNotes.add(child);
     }
 
@@ -119,20 +124,6 @@ class Strumline extends FlxSpriteGroup
     super.update(elapsed);
 
     updateNotes();
-
-    #if debug
-    if (!isPlayer)
-    {
-      FlxG.watch.addQuick("strumlineAnim", strumlineNotes.members[3]?.animation?.curAnim?.name);
-      var curFrame = strumlineNotes.members[3]?.animation?.curAnim?.curFrame;
-      frameMax = (curFrame > frameMax) ? curFrame : frameMax;
-      FlxG.watch.addQuick("strumlineFrame", strumlineNotes.members[3]?.animation?.curAnim?.curFrame);
-      FlxG.watch.addQuick("strumlineFrameMax", frameMax);
-      animFinishedEver = animFinishedEver || strumlineNotes.members[3]?.animation?.curAnim?.finished;
-      FlxG.watch.addQuick("strumlineFinished", strumlineNotes.members[3]?.animation?.curAnim?.finished);
-      FlxG.watch.addQuick("strumlineFinishedEver", animFinishedEver);
-    }
-    #end
   }
 
   var frameMax:Int;
@@ -482,6 +473,7 @@ class Strumline extends FlxSpriteGroup
   {
     // TODO: Add a setting to disable note splashes.
     // if (Settings.noSplash) return;
+    if (!noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
 
@@ -502,6 +494,7 @@ class Strumline extends FlxSpriteGroup
   {
     // TODO: Add a setting to disable note splashes.
     // if (Settings.noSplash) return;
+    if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();
 
@@ -659,7 +652,7 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new NoteSprite();
+      result = new NoteSprite(noteStyle);
       this.notes.add(result);
     }
 
@@ -685,7 +678,7 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new SustainTrail(0, 100, Paths.image("NOTE_hold_assets"));
+      result = new SustainTrail(0, 100, noteStyle.getHoldNoteAssetPath(), noteStyle);
       this.holdNotes.add(result);
     }
 

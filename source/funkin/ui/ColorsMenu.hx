@@ -1,5 +1,6 @@
 package funkin.ui;
 
+import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxOutlineEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -22,7 +23,7 @@ class ColorsMenu extends Page
 
     for (i in 0...4)
     {
-      var note:NoteSprite = new NoteSprite(0, i);
+      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), 0, i);
 
       note.x = (100 * i) + i;
       note.screenCenter(Y);

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import flixel.input.keyboard.FlxKey;
 import funkin.input.TurboKeyHandler;
@@ -2804,7 +2805,7 @@ class ChartEditorState extends HaxeUIState
       // Character preview.
 
       // NoteScriptEvent takes a sprite, ehe. Need to rework that.
-      var tempNote:NoteSprite = new NoteSprite();
+      var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
       var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, tempNote, 1, true);

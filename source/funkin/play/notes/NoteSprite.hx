@@ -1,6 +1,7 @@
 package funkin.play.notes;
 
 import funkin.play.song.SongData.SongNoteData;
+import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
 
@@ -106,7 +107,7 @@ class NoteSprite extends FlxSprite
    */
   public var handledMiss:Bool;
 
-  public function new(strumTime:Float = 0, direction:Int = 0)
+  public function new(noteStyle:NoteStyle, strumTime:Float = 0, direction:Int = 0)
   {
     super(0, -9999);
     this.strumTime = strumTime;
@@ -114,34 +115,15 @@ class NoteSprite extends FlxSprite
 
     if (this.strumTime < 0) this.strumTime = 0;
 
-    setupNoteGraphic();
+    setupNoteGraphic(noteStyle);
 
     // Disables the update() function for performance.
     this.active = false;
   }
 
-  public static function buildNoteFrames(force:Bool = false):FlxAtlasFrames
+  function setupNoteGraphic(noteStyle:NoteStyle):Void
   {
-    // static variables inside functions are a cool of Haxe 4.3.0.
-    static var noteFrames:FlxAtlasFrames = null;
-
-    if (noteFrames != null && !force) return noteFrames;
-
-    noteFrames = Paths.getSparrowAtlas('notes');
-
-    noteFrames.parent.persist = true;
-
-    return noteFrames;
-  }
-
-  function setupNoteGraphic():Void
-  {
-    this.frames = buildNoteFrames();
-
-    animation.addByPrefix('greenScroll', 'noteUp');
-    animation.addByPrefix('redScroll', 'noteRight');
-    animation.addByPrefix('blueScroll', 'noteDown');
-    animation.addByPrefix('purpleScroll', 'noteLeft');
+    noteStyle.buildNoteSprite(this);
 
     setGraphicSize(Strumline.STRUMLINE_SIZE);
     updateHitbox();
