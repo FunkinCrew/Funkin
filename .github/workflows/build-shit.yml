@@ -49,7 +49,7 @@ jobs:
         # TODO: Remove the step that builds Lime later.
         # Powershell method
         run: |
-          $LIME_PATH = &"haxelib libpath lime"
+          $LIME_PATH = haxelib libpath lime
           echo "Moving to $LIME_PATH"
           cd $LIME_PATH
           git submodule sync --recursive
