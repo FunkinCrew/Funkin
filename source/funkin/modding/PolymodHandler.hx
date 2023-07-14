@@ -10,6 +10,11 @@ import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
 import funkin.play.event.SongEventData.SongEventParser;
 import funkin.util.FileUtil;
+import funkin.data.level.LevelRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.cutscene.dialogue.ConversationDataParser;
+import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
+import funkin.play.cutscene.dialogue.SpeakerDataParser;
 
 class PolymodHandler
 {
@@ -279,12 +284,14 @@ class PolymodHandler
 
     // TODO: Reload event callbacks
 
-    funkin.data.level.LevelRegistry.instance.loadEntries();
+    // These MUST be imported at the top of the file and not referred to by fully qualified name,
+    // to ensure build macros work properly.
+    LevelRegistry.instance.loadEntries();
+    NoteStyleRegistry.instance.loadEntries();
     SongEventParser.loadEventCache();
-    // TODO: Uncomment this once conversation data is implemented.
-    // ConversationDataParser.loadConversationCache();
-    // DialogueBoxDataParser.loadDialogueBoxCache();
-    // SpeakerDataParser.loadSpeakerCache();
+    ConversationDataParser.loadConversationCache();
+    DialogueBoxDataParser.loadDialogueBoxCache();
+    SpeakerDataParser.loadSpeakerCache();
     SongDataParser.loadSongCache();
     StageDataParser.loadStageCache();
     CharacterDataParser.loadCharacterCache();

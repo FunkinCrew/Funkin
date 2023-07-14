@@ -14,6 +14,16 @@ import funkin.util.macro.MacroUtil;
 import funkin.util.WindowUtil;
 import funkin.play.PlayStatePlaylist;
 import openfl.display.BitmapData;
+import funkin.data.level.LevelRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.event.SongEventData.SongEventParser;
+import funkin.play.cutscene.dialogue.ConversationDataParser;
+import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
+import funkin.play.cutscene.dialogue.SpeakerDataParser;
+import funkin.play.song.SongData.SongDataParser;
+import funkin.play.stage.StageData.StageDataParser;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.modding.module.ModuleHandler;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -180,18 +190,22 @@ class InitState extends FlxTransitionableState
     //
     // GAME DATA PARSING
     //
-    funkin.data.level.LevelRegistry.instance.loadEntries();
-    funkin.play.event.SongEventData.SongEventParser.loadEventCache();
-    funkin.play.cutscene.dialogue.ConversationDataParser.loadConversationCache();
-    funkin.play.cutscene.dialogue.DialogueBoxDataParser.loadDialogueBoxCache();
-    funkin.play.cutscene.dialogue.SpeakerDataParser.loadSpeakerCache();
-    funkin.play.song.SongData.SongDataParser.loadSongCache();
-    funkin.play.stage.StageData.StageDataParser.loadStageCache();
-    funkin.play.character.CharacterData.CharacterDataParser.loadCharacterCache();
-    funkin.modding.module.ModuleHandler.buildModuleCallbacks();
-    funkin.modding.module.ModuleHandler.loadModuleCache();
 
-    funkin.modding.module.ModuleHandler.callOnCreate();
+    // NOTE: Registries and data parsers must be imported and not referenced with fully qualified names,
+    // to ensure build macros work properly.
+    LevelRegistry.instance.loadEntries();
+    NoteStyleRegistry.instance.loadEntries();
+    SongEventParser.loadEventCache();
+    ConversationDataParser.loadConversationCache();
+    DialogueBoxDataParser.loadDialogueBoxCache();
+    SpeakerDataParser.loadSpeakerCache();
+    SongDataParser.loadSongCache();
+    StageDataParser.loadStageCache();
+    CharacterDataParser.loadCharacterCache();
+    ModuleHandler.buildModuleCallbacks();
+    ModuleHandler.loadModuleCache();
+
+    ModuleHandler.callOnCreate();
   }
 
   /**

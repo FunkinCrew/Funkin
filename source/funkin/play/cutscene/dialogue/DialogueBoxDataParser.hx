@@ -21,7 +21,7 @@ class DialogueBoxDataParser
 
   /**
    * Parses and preloads the game's dialogueBox data and scripts when the game starts.
-   * 
+   *
    * If you want to force dialogue boxes to be reloaded, you can just call this function again.
    */
   public static function loadDialogueBoxCache():Void
@@ -123,7 +123,7 @@ class DialogueBoxDataParser
 
   /**
    * Load a dialogueBox's JSON file, parse its data, and return it.
-   * 
+   *
    * @param dialogueBoxId The dialogueBox to load.
    * @return The dialogueBox data, or null if validation failed.
    */
