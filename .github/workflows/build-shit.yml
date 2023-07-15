@@ -35,7 +35,8 @@ jobs:
           git submodule sync --recursive
           git submodule update --recursive
           git status
-          haxelib run lime rebuild windows --clean
+          sudo apt-get install -y libxinerama-dev
+          haxelib run lime rebuild linux --clean
       - name: Build game
         run: |
           sudo apt-get install -y libx11-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev libgl-dev libxi-dev libxext-dev libasound2-dev
