@@ -55,7 +55,7 @@ jobs:
           git submodule sync --recursive
           git submodule update --recursive
           git status
-          lime rebuild windows --clean
+          haxelib run lime rebuild windows --clean
       - name: Build game
         run: |
           haxelib run lime build windows -debug
