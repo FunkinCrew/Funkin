@@ -25,7 +25,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-haxeshit
-      - name: Build game?
+      - name: Build Lime
+        # TODO: Remove the step that builds Lime later.
+        # Powershell method
+        run: |
+          $LIME_PATH = haxelib libpath lime
+          echo "Moving to $LIME_PATH"
+          cd $LIME_PATH
+          git submodule sync --recursive
+          git submodule update --recursive
+          git status
+          haxelib run lime rebuild windows --clean
+      - name: Build game
         run: |
           sudo apt-get install -y libx11-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev libgl-dev libxi-dev libxext-dev libasound2-dev
           haxelib run lime build html5 -debug --times
