@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import funkin.play.event.SongEventData.SongEventParser;
+import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
 import flixel.FlxObject;
@@ -16,6 +18,8 @@ import funkin.play.song.SongData.SongEventData;
  */
 class ChartEditorEventSprite extends FlxSprite
 {
+  public static final DEFAULT_EVENT = 'Default';
+
   public var parentState:ChartEditorState;
 
   /**
@@ -35,17 +39,71 @@ class ChartEditorEventSprite extends FlxSprite
 
     this.parentState = parent;
 
-    buildGraphic();
+    this.frames = buildFrames();
+
+    buildAnimations();
+    refresh();
   }
 
-  function buildGraphic():Void
+  /**
+   * Build a set of animations to allow displaying different types of chart events.
+   * @param force `true` to force rebuilding the frames.
+   */
+  static function buildFrames(?force:Bool = false):FlxFramesCollection
   {
-    if (eventGraphic == null)
+    static var eventFrames:FlxFramesCollection = null;
+
+    if (eventFrames != null && !force) return eventFrames;
+    eventFrames = new FlxAtlasFrames(null);
+
+    // Push the default event as a frame.
+    var defaultFrames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/chart-editor/events/$DEFAULT_EVENT');
+    defaultFrames.parent.persist = true;
+    for (frame in defaultFrames.frames)
     {
-      eventGraphic = Assets.getBitmapData(Paths.image('ui/chart-editor/event'));
+      eventFrames.pushFrame(frame);
     }
 
-    loadGraphic(eventGraphic);
+    // Push all the other events as frames.
+    for (eventName in SongEventParser.listEventIds())
+    {
+      var frames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/chart-editor/events/$eventName');
+      if (frames == null) continue; // No graphic for this event.
+      frames.parent.persist = true;
+      for (frame in frames.frames)
+      {
+        eventFrames.pushFrame(frame);
+      }
+    }
+
+    return eventFrames;
+  }
+
+  function buildAnimations():Void
+  {
+    var eventNames:Array<String> = [DEFAULT_EVENT].concat(SongEventParser.listEventIds());
+    for (eventName in eventNames)
+    {
+      this.animation.addByPrefix(eventName, '${eventName}0', 24, false);
+    }
+  }
+
+  public function correctAnimationName(name:String):String
+  {
+    if (this.animation.exists(name)) return name;
+    trace('Warning: Invalid animation name "' + name + '" for song event. Using "${DEFAULT_EVENT}"');
+    return DEFAULT_EVENT;
+  }
+
+  public function playAnimation(name:String):Void
+  {
+    var correctedName = correctAnimationName(name);
+    this.animation.play(correctedName);
+    refresh();
+  }
+
+  function refresh():Void
+  {
     setGraphicSize(ChartEditorState.GRID_SIZE);
     this.updateHitbox();
   }
@@ -56,13 +114,13 @@ class ChartEditorEventSprite extends FlxSprite
 
     if (this.eventData == null)
     {
-      // Disown parent.
+      // Disown parent. MAKE SURE TO REVIVE BEFORE REUSING
       this.kill();
       return this.eventData;
     }
 
     this.visible = true;
-
+    playAnimation(this.eventData.event);
     // Update the position to match the note data.
     updateEventPosition();
 
