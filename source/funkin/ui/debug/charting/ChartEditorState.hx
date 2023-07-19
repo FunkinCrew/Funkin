@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import funkin.util.SortUtil;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import flixel.input.keyboard.FlxKey;
 import funkin.input.TurboKeyHandler;
@@ -172,29 +173,35 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * scrollPosition, converted to steps.
-   * TODO: Handle BPM changes.
+   * NOT dependant on BPM, because the size of a grid square does not change with BPM.
    */
-  var scrollPositionInSteps(get, null):Float;
+  var scrollPositionInSteps(get, set):Float;
 
   function get_scrollPositionInSteps():Float
   {
     return scrollPositionInPixels / GRID_SIZE;
   }
 
+  function set_scrollPositionInSteps(value:Float):Float
+  {
+    scrollPositionInPixels = value * GRID_SIZE;
+    return value;
+  }
+
   /**
    * scrollPosition, converted to milliseconds.
-   * TODO: Handle BPM changes.
+   * DEPENDANT on BPM, because the duration of a grid square changes with BPM.
    */
   var scrollPositionInMs(get, set):Float;
 
   function get_scrollPositionInMs():Float
   {
-    return scrollPositionInSteps * Conductor.stepLengthMs;
+    return Conductor.getStepTimeInMs(scrollPositionInSteps);
   }
 
   function set_scrollPositionInMs(value:Float):Float
   {
-    scrollPositionInPixels = value / Conductor.stepLengthMs;
+    scrollPositionInSteps = Conductor.getTimeInSteps(value);
     return value;
   }
 
@@ -206,11 +213,26 @@ class ChartEditorState extends HaxeUIState
    */
   var playheadPositionInPixels(default, set):Float;
 
-  var playheadPositionInSteps(get, null):Float;
+  function set_playheadPositionInPixels(value:Float):Float
+  {
+    // Make sure playhead doesn't go outside the song.
+    if (value + scrollPositionInPixels < 0) value = -scrollPositionInPixels;
+    if (value + scrollPositionInPixels > songLengthInPixels) value = songLengthInPixels - scrollPositionInPixels;
+
+    this.playheadPositionInPixels = value;
+
+    // Move the playhead sprite to the correct position.
+    gridPlayhead.y = this.playheadPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+
+    return this.playheadPositionInPixels;
+  }
 
   /**
    * playheadPosition, converted to steps.
+   * NOT dependant on BPM, because the size of a grid square does not change with BPM.
    */
+  var playheadPositionInSteps(get, null):Float;
+
   function get_playheadPositionInSteps():Float
   {
     return playheadPositionInPixels / GRID_SIZE;
@@ -218,60 +240,76 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * playheadPosition, converted to milliseconds.
+   * DEPENDANT on BPM, because the duration of a grid square changes with BPM.
    */
   var playheadPositionInMs(get, null):Float;
 
   function get_playheadPositionInMs():Float
   {
-    return playheadPositionInSteps * Conductor.stepLengthMs;
+    return Conductor.getStepTimeInMs(playheadPositionInSteps);
   }
 
   /**
-   * This is the song's length in PIXELS, same format as scrollPosition.
+   * songLength, in milliseconds.
    */
-  var songLengthInPixels(get, default):Int;
+  @:isVar var songLengthInMs(get, set):Float;
 
-  function get_songLengthInPixels():Int
+  function get_songLengthInMs():Float
   {
-    if (songLengthInPixels <= 0) return 1000;
+    if (songLengthInMs <= 0) return 1000;
+    return songLengthInMs;
+  }
 
-    return songLengthInPixels;
+  function set_songLengthInMs(value:Float):Float
+  {
+    this.songLengthInMs = value;
+
+    // Make sure playhead doesn't go outside the song.
+    if (playheadPositionInMs > songLengthInMs) playheadPositionInMs = songLengthInMs;
+
+    return this.songLengthInMs;
   }
 
   /**
    * songLength, converted to steps.
-   * TODO: Handle BPM changes.
+   * Dependant on BPM, because the size of a grid square does not change with BPM but the length of a beat does.
    */
   var songLengthInSteps(get, set):Float;
 
   function get_songLengthInSteps():Float
   {
-    return songLengthInPixels / GRID_SIZE;
+    return Conductor.getTimeInSteps(songLengthInMs);
   }
 
   function set_songLengthInSteps(value:Float):Float
   {
-    songLengthInPixels = Std.int(value * GRID_SIZE);
+    // Getting a reasonable result from setting songLengthInSteps requires that Conductor.mapBPMChanges be called first.
+    songLengthInMs = Conductor.getStepTimeInMs(value);
     return value;
   }
 
   /**
-   * songLength, converted to milliseconds.
-   * TODO: Handle BPM changes.
+   * This is the song's length in PIXELS, same format as scrollPosition.
+   * Dependant on BPM, because the size of a grid square does not change with BPM but the length of a beat does.
    */
-  var songLengthInMs(get, set):Float;
+  var songLengthInPixels(get, set):Int;
 
-  function get_songLengthInMs():Float
+  function get_songLengthInPixels():Int
   {
-    return songLengthInSteps * Conductor.stepLengthMs;
+    return Std.int(songLengthInSteps * GRID_SIZE);
   }
 
-  function set_songLengthInMs(value:Float):Float
+  function set_songLengthInPixels(value:Int):Int
   {
-    songLengthInSteps = Conductor.getTimeInSteps(audioInstTrack.length);
+    songLengthInSteps = value / GRID_SIZE;
     return value;
   }
 
+  /**
+   * The current theme used by the editor.
+   * Dictates the appearance of many UI elements.
+   * Currently hardcoded to just Light and Dark.
+   */
   var currentTheme(default, set):ChartEditorTheme = null;
 
   function set_currentTheme(value:ChartEditorTheme):ChartEditorTheme
@@ -1667,7 +1705,8 @@ class ChartEditorState extends HaxeUIState
       // The song position of the cursor, in steps.
       var cursorFractionalStep:Float = cursorY / GRID_SIZE / (16 / noteSnapQuant);
       var cursorStep:Int = Std.int(Math.floor(cursorFractionalStep));
-      var cursorMs:Float = cursorStep * Conductor.stepLengthMs * (16 / noteSnapQuant);
+      var cursorMs:Float = Conductor.getStepTimeInMs(cursorStep);
+      trace('${cursorFractionalStep} ${cursorStep} ${cursorMs}');
       // The direction value for the column at the cursor.
       var cursorColumn:Int = Math.floor(cursorX / GRID_SIZE);
       if (cursorColumn < 0) cursorColumn = 0;
@@ -1705,7 +1744,7 @@ class ChartEditorState extends HaxeUIState
             // We released the mouse. Select the notes in the box.
             var cursorFractionalStepStart:Float = cursorYStart / GRID_SIZE;
             var cursorStepStart:Int = Math.floor(cursorFractionalStepStart);
-            var cursorMsStart:Float = cursorStepStart * Conductor.stepLengthMs;
+            var cursorMsStart:Float = Conductor.getStepTimeInMs(cursorStepStart);
             var cursorColumnBase:Int = Math.floor(cursorX / GRID_SIZE);
             var cursorColumnBaseStart:Int = Math.floor(cursorXStart / GRID_SIZE);
 
@@ -1877,12 +1916,13 @@ class ChartEditorState extends HaxeUIState
       {
         // Handle extending the note as you drag.
 
-        // Since use Math.floor and stepLengthMs here, the hold notes will be beat snapped.
-        var dragLengthSteps:Float = Math.floor((cursorMs - currentPlaceNoteData.time) / Conductor.stepLengthMs);
+        // TODO: This should be beat snapped?
+        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorMs) - currentPlaceNoteData.stepTime;
 
         // Without this, the newly placed note feels too short compared to the user's input.
         var INCREMENT:Float = 1.0;
-        var dragLengthMs:Float = (dragLengthSteps + INCREMENT) * Conductor.stepLengthMs;
+        // TODO: Make this not busted with BPM changes
+        var dragLengthMs:Float = Math.floor(dragLengthSteps + INCREMENT) * Conductor.stepLengthMs;
 
         // TODO: Add and update some sort of preview?
 
@@ -2187,7 +2227,7 @@ class ChartEditorState extends HaxeUIState
         }
 
         // Get the position the note should be at.
-        var noteTimePixels:Float = noteData.time / Conductor.stepLengthMs * GRID_SIZE;
+        var noteTimePixels:Float = noteData.stepTime * GRID_SIZE;
 
         // Make sure the note appears when scrolling up.
         var modifiedViewAreaTop = viewAreaTop - GRID_SIZE;
@@ -2209,11 +2249,11 @@ class ChartEditorState extends HaxeUIState
         noteSprite.x += renderedNotes.x;
         noteSprite.y += renderedNotes.y;
 
+        // TODO: Replace this with SustainTrail.
         if (noteSprite.noteData.length > 0)
         {
           // If the note is a hold, we need to make sure it's long enough.
-          var noteLengthMs:Float = noteSprite.noteData.length;
-          var noteLengthSteps:Float = (noteLengthMs / Conductor.stepLengthMs);
+          var noteLengthSteps:Float = noteSprite.noteData.stepLength;
           var lastNoteSprite:ChartEditorNoteSprite = noteSprite;
 
           while (noteLengthSteps > 0)
@@ -2252,7 +2292,7 @@ class ChartEditorState extends HaxeUIState
         }
 
         // Get the position the event should be at.
-        var eventTimePixels:Float = eventData.time / Conductor.stepLengthMs * GRID_SIZE;
+        var eventTimePixels:Float = eventData.stepTime * GRID_SIZE;
 
         // Make sure the event appears when scrolling up.
         var modifiedViewAreaTop = viewAreaTop - GRID_SIZE;
@@ -2264,7 +2304,7 @@ class ChartEditorState extends HaxeUIState
         // Get an event sprite from the pool.
         // If we can reuse a deleted event, do so.
         // If a new event is needed, call buildEventSprite.
-        var eventSprite:ChartEditorEventSprite = renderedEvents.recycle(() -> new ChartEditorEventSprite(this));
+        var eventSprite:ChartEditorEventSprite = renderedEvents.recycle(() -> new ChartEditorEventSprite(this), false, true);
         eventSprite.parentState = this;
 
         // The event sprite handles animation playback and positioning.
@@ -2655,7 +2695,7 @@ class ChartEditorState extends HaxeUIState
    */
   function handleNotePreview():Void
   {
-    //
+    // TODO: Finish this.
     if (notePreviewDirty)
     {
       notePreviewDirty = false;
@@ -2924,25 +2964,6 @@ class ChartEditorState extends HaxeUIState
     return this.scrollPositionInPixels;
   }
 
-  function get_playheadPositionInPixels():Float
-  {
-    return this.playheadPositionInPixels;
-  }
-
-  function set_playheadPositionInPixels(value:Float):Float
-  {
-    // Make sure playhead doesn't go outside the song.
-    if (value + scrollPositionInPixels < 0) value = -scrollPositionInPixels;
-    if (value + scrollPositionInPixels > songLengthInPixels) value = songLengthInPixels - scrollPositionInPixels;
-
-    this.playheadPositionInPixels = value;
-
-    // Move the playhead sprite to the correct position.
-    gridPlayhead.y = this.playheadPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
-
-    return this.playheadPositionInPixels;
-  }
-
   /**
    * Loads an instrumental from an absolute file path, replacing the current instrumental.
    *
@@ -3102,7 +3123,12 @@ class ChartEditorState extends HaxeUIState
     Conductor.mapTimeChanges(currentSongMetadata.timeChanges);
 
     loadInstrumentalFromAsset(Paths.inst(songId));
-    loadVocalsFromAsset(Paths.voices(songId));
+
+    var voiceList:Array<String> = song.getDifficulty(selectedDifficulty).buildVoiceList();
+    for (voicePath in voiceList)
+    {
+      loadVocalsFromAsset(voicePath);
+    }
 
     NotificationManager.instance.addNotification(
       {

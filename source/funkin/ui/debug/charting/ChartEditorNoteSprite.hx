@@ -175,8 +175,11 @@ class ChartEditorNoteSprite extends FlxSprite
       this.x = cursorColumn * ChartEditorState.GRID_SIZE;
 
       // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
-      // TODO: stepTime doesn't account for fluctuating BPMs.
-      if (this.noteData.stepTime >= 0) this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
+      if (this.noteData.stepTime >= 0)
+      {
+        // noteData.stepTime is a calculated value which accounts for BPM changes
+        this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
+      }
 
       if (origin != null)
       {
