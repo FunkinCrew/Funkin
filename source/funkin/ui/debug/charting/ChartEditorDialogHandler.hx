@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting;
 
 import flixel.util.FlxTimer;
+import funkin.util.SortUtil;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -106,6 +107,7 @@ class ChartEditorDialogHandler
     var splashTemplateContainer:VBox = dialog.findComponent('splashTemplateContainer', VBox);
 
     var songList:Array<String> = SongDataParser.listSongIds();
+    songList.sort(SortUtil.alphabetical);
 
     for (targetSongId in songList)
     {
