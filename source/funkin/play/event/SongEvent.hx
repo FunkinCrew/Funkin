@@ -38,6 +38,15 @@ class SongEvent
   }
 
   /**
+   * Retrieves the asset path to the icon this event type should use in the chart editor.
+   * To customize this, override getIconPath().
+   */
+  public function getIconPath():String
+  {
+    return 'ui/chart-editor/events/default';
+  }
+
+  /**
    * Retrieves the human readable title of this song event type.
    * Used for the chart editor.
    * @return The title.

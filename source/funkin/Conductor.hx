@@ -322,6 +322,76 @@ class Conductor
     }
   }
 
+  /**
+   * Given a time in steps and fractional steps, return a time in milliseconds.
+   */
+  public static function getStepTimeInMs(stepTime:Float):Float
+  {
+    if (timeChanges.length == 0)
+    {
+      // Assume a constant BPM equal to the forced value.
+      return stepTime * stepLengthMs;
+    }
+    else
+    {
+      var resultMs:Float = 0;
+
+      var lastTimeChange:SongTimeChange = timeChanges[0];
+      for (timeChange in timeChanges)
+      {
+        if (stepTime >= timeChange.beatTime * 4)
+        {
+          lastTimeChange = timeChange;
+          resultMs = lastTimeChange.timeStamp;
+        }
+        else
+        {
+          // This time change is after the requested time.
+          break;
+        }
+      }
+
+      resultMs += (stepTime - lastTimeChange.beatTime * 4) * stepLengthMs;
+
+      return resultMs;
+    }
+  }
+
+  /**
+   * Given a time in beats and fractional beats, return a time in milliseconds.
+   */
+  public static function getBeatTimeInMs(beatTime:Float):Float
+  {
+    if (timeChanges.length == 0)
+    {
+      // Assume a constant BPM equal to the forced value.
+      return beatTime * stepLengthMs * Constants.STEPS_PER_BEAT;
+    }
+    else
+    {
+      var resultMs:Float = 0;
+
+      var lastTimeChange:SongTimeChange = timeChanges[0];
+      for (timeChange in timeChanges)
+      {
+        if (beatTime >= timeChange.beatTime)
+        {
+          lastTimeChange = timeChange;
+          resultMs = lastTimeChange.timeStamp;
+        }
+        else
+        {
+          // This time change is after the requested time.
+          break;
+        }
+      }
+
+      resultMs += (beatTime - lastTimeChange.beatTime) * stepLengthMs * Constants.STEPS_PER_BEAT;
+
+      return resultMs;
+    }
+  }
+
   public static function reset():Void
   {
     beatHit.removeAll();

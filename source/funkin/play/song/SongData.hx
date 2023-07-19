@@ -402,7 +402,7 @@ abstract SongNoteData(RawSongNoteData)
 
   public function get_stepTime():Float
   {
-    return Conductor.getTimeInSteps(this.t);
+    return Conductor.getTimeInSteps(abstract.time);
   }
 
   /**
@@ -428,12 +428,12 @@ abstract SongNoteData(RawSongNoteData)
    */
   public inline function getDirection(strumlineSize:Int = 4):Int
   {
-    return this.d % strumlineSize;
+    return abstract.data % strumlineSize;
   }
 
   public function getDirectionName(strumlineSize:Int = 4):String
   {
-    switch (this.d % strumlineSize)
+    switch (abstract.data % strumlineSize)
     {
       case 0:
         return 'Left';
@@ -456,7 +456,7 @@ abstract SongNoteData(RawSongNoteData)
    */
   public inline function getStrumlineIndex(strumlineSize:Int = 4):Int
   {
-    return Math.floor(this.d / strumlineSize);
+    return Math.floor(abstract.data / strumlineSize);
   }
 
   public inline function getMustHitNote(strumlineSize:Int = 4):Bool
@@ -466,19 +466,31 @@ abstract SongNoteData(RawSongNoteData)
 
   public var length(get, set):Float;
 
-  public function get_length():Float
+  function get_length():Float
   {
     return this.l;
   }
 
-  public function set_length(value:Float):Float
+  function set_length(value:Float):Float
   {
     return this.l = value;
   }
 
+  public var stepLength(get, set):Float;
+
+  function get_stepLength():Float
+  {
+    return Conductor.getTimeInSteps(abstract.time + abstract.length) - abstract.stepTime;
+  }
+
+  function set_stepLength(value:Float):Float
+  {
+    return abstract.length = Conductor.getStepTimeInMs(value) - abstract.time;
+  }
+
   public var kind(get, set):String;
 
-  public function get_kind():String
+  function get_kind():String
   {
     if (this.k == null || this.k == '') return 'normal';
 
@@ -494,21 +506,37 @@ abstract SongNoteData(RawSongNoteData)
   @:op(A == B)
   public function op_equals(other:SongNoteData):Bool
   {
-    if (this.k == '') if (other.kind != '' && other.kind != 'normal') return false;
+    if (abstract.kind == '')
+    {
+      if (other.kind != '' && other.kind != 'normal') return false;
+    }
+    else
+    {
+      if (other.kind == '' || other.kind != abstract.kind) return false;
+    }
 
-    return this.t == other.time && this.d == other.data && this.l == other.length;
+    return abstract.time == other.time && abstract.data == other.data && abstract.length == other.length;
   }
 
   @:op(A != B)
   public function op_notEquals(other:SongNoteData):Bool
   {
-    return this.t != other.time || this.d != other.data || this.l != other.length || this.k != other.kind;
+    if (abstract.kind == '')
+    {
+      if (other.kind != '' && other.kind != 'normal') return true;
+    }
+    else
+    {
+      if (other.kind == '' || other.kind != abstract.kind) return true;
+    }
+
+    return abstract.time != other.time || abstract.data != other.data || abstract.length != other.length;
   }
 
   @:op(A > B)
   public function op_greaterThan(other:SongNoteData):Bool
   {
-    return this.t > other.time;
+    return abstract.time > other.time;
   }
 
   @:op(A < B)
@@ -587,7 +615,7 @@ abstract SongEventData(RawSongEventData)
 
   public function get_stepTime():Float
   {
-    return Conductor.getTimeInSteps(this.t);
+    return Conductor.getTimeInSteps(abstract.time);
   }
 
   public var event(get, set):String;
