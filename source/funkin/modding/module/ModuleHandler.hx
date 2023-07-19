@@ -1,5 +1,6 @@
 package funkin.modding.module;
 
+import funkin.util.SortUtil;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -76,8 +77,7 @@ class ModuleHandler
       }
       else
       {
-        // Sort alphabetically. Yes that's how this works.
-        return a > b ? 1 : -1;
+        return SortUtil.alphabetical(a, b);
       }
     });
   }

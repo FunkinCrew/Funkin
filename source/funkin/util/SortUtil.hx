@@ -26,4 +26,13 @@ class SortUtil
   {
     return FlxSort.byValues(order, a.data.strumTime, b.data.strumTime);
   }
+
+  /**
+   * Sort predicate for sorting strings alphabetically.
+   */
+  public static function alphabetical(a:String, b:String):Int
+  {
+    // Sort alphabetically. Yes that's how this works.
+    return a > b ? 1 : -1;
+  }
 }
