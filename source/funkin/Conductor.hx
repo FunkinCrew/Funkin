@@ -316,7 +316,8 @@ class Conductor
         }
       }
 
-      resultStep += Math.floor((ms - lastTimeChange.timeStamp) / stepLengthMs);
+      var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / stepLengthMs;
+      resultStep += resultFractionalStep; // Math.floor();
 
       return resultStep;
     }

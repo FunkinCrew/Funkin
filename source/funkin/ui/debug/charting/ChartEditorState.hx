@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import funkin.graphics.rendering.SustainTrail;
 import funkin.util.SortUtil;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import flixel.input.keyboard.FlxKey;
@@ -944,6 +945,8 @@ class ChartEditorState extends HaxeUIState
    */
   var renderedNotes:FlxTypedSpriteGroup<ChartEditorNoteSprite>;
 
+  var renderedHoldNotes:FlxTypedSpriteGroup<SustainTrail>;
+
   /**
    * The sprite group containing the song events.
    * Only displays a subset of the data from `currentSongChartEventData`,
@@ -1706,7 +1709,6 @@ class ChartEditorState extends HaxeUIState
       var cursorFractionalStep:Float = cursorY / GRID_SIZE / (16 / noteSnapQuant);
       var cursorStep:Int = Std.int(Math.floor(cursorFractionalStep));
       var cursorMs:Float = Conductor.getStepTimeInMs(cursorStep);
-      trace('${cursorFractionalStep} ${cursorStep} ${cursorMs}');
       // The direction value for the column at the cursor.
       var cursorColumn:Int = Math.floor(cursorX / GRID_SIZE);
       if (cursorColumn < 0) cursorColumn = 0;
@@ -1858,8 +1860,7 @@ class ChartEditorState extends HaxeUIState
             {
               if (highlightedNote != null)
               {
-                // Handle the case of clicking on a sustain piece.
-                highlightedNote = highlightedNote.getBaseNoteSprite();
+                // TODO: Handle the case of clicking on a sustain piece.
                 // Control click to select/deselect an individual note.
                 if (isNoteSelected(highlightedNote.noteData))
                 {
@@ -2055,8 +2056,7 @@ class ChartEditorState extends HaxeUIState
 
           if (highlightedNote != null)
           {
-            // Handle the case of clicking on a sustain piece.
-            highlightedNote = highlightedNote.getBaseNoteSprite();
+            // TODO: Handle the case of clicking on a sustain piece.
             // Remove the note.
             performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
           }
@@ -2167,18 +2167,18 @@ class ChartEditorState extends HaxeUIState
           // Kill the note sprite and recycle it.
           noteSprite.noteData = null;
         }
-        else if (noteSprite.noteData.length > 0 && (noteSprite.parentNoteSprite == null && noteSprite.childNoteSprite == null))
-        {
-          // Note was extended.
-          // Kill the note sprite and recycle it.
-          noteSprite.noteData = null;
-        }
-        else if (noteSprite.noteData.length == 0 && (noteSprite.parentNoteSprite != null || noteSprite.childNoteSprite != null))
-        {
-          // Note was shortened.
-          // Kill the note sprite and recycle it.
-          noteSprite.noteData = null;
-        }
+          // else if (noteSprite.noteData.length > 0 && (noteSprite.parentNoteSprite == null && noteSprite.childNoteSprite == null))
+          // {
+          //   // Note was extended.
+          //   // Kill the note sprite and recycle it.
+          //   noteSprite.noteData = null;
+          // }
+          // else if (noteSprite.noteData.length == 0 && (noteSprite.parentNoteSprite != null || noteSprite.childNoteSprite != null))
+          // {
+          //   // Note was shortened.
+          //   // Kill the note sprite and recycle it.
+          //   noteSprite.noteData = null;
+        // }
         else
         {
           // Note is already displayed and should remain displayed.
@@ -2252,30 +2252,34 @@ class ChartEditorState extends HaxeUIState
         // TODO: Replace this with SustainTrail.
         if (noteSprite.noteData.length > 0)
         {
+          var holdNoteSprite:SustainTrail = renderedHoldNotes.recycle(() -> new SustainTrail(this));
+
+          var noteLengthPixels:Float = noteSprite.noteData.stepLength * GRID_SIZE;
+
           // If the note is a hold, we need to make sure it's long enough.
-          var noteLengthSteps:Float = noteSprite.noteData.stepLength;
-          var lastNoteSprite:ChartEditorNoteSprite = noteSprite;
-
-          while (noteLengthSteps > 0)
-          {
-            if (noteLengthSteps <= 1.0)
-            {
-              // Last note in the hold.
-              // TODO: We may need to make it shorter and clip it visually.
-            }
-
-            var nextNoteSprite:ChartEditorNoteSprite = renderedNotes.recycle(ChartEditorNoteSprite);
-            nextNoteSprite.parentState = this;
-            nextNoteSprite.parentNoteSprite = lastNoteSprite;
-            lastNoteSprite.childNoteSprite = nextNoteSprite;
-
-            lastNoteSprite = nextNoteSprite;
-
-            noteLengthSteps -= 1;
-          }
-
-          // Make sure the last note sprite shows the end cap properly.
-          lastNoteSprite.childNoteSprite = null;
+          // var noteLengthSteps:Float = ;
+          // var lastNoteSprite:ChartEditorNoteSprite = noteSprite;
+          //
+          // while (noteLengthSteps > 0)
+          // {
+          //   if (noteLengthSteps <= 1.0)
+          //   {
+          //     // Last note in the hold.
+          //     // TODO: We may need to make it shorter and clip it visually.
+          //   }
+          //
+          //   var nextNoteSprite:ChartEditorNoteSprite = renderedNotes.recycle(ChartEditorNoteSprite);
+          //   nextNoteSprite.parentState = this;
+          //   nextNoteSprite.parentNoteSprite = lastNoteSprite;
+          //   lastNoteSprite.childNoteSprite = nextNoteSprite;
+          //
+          //   lastNoteSprite = nextNoteSprite;
+          //
+          //   noteLengthSteps -= 1;
+          // }
+          //
+          // // Make sure the last note sprite shows the end cap properly.
+          // lastNoteSprite.childNoteSprite = null;
 
           // var noteLengthPixels:Float = (noteLengthMs / Conductor.stepLengthMs + 1) * GRID_SIZE;
           // add(new FlxSprite(noteSprite.x, noteSprite.y - renderedNotes.y + noteLengthPixels).makeGraphic(40, 2, 0xFFFF0000));
@@ -2326,7 +2330,8 @@ class ChartEditorState extends HaxeUIState
       // Recycle selection squares if possible.
       for (noteSprite in renderedNotes.members)
       {
-        if (isNoteSelected(noteSprite.noteData) && noteSprite.parentNoteSprite == null)
+        // TODO: Handle selection of hold notes.
+        if (isNoteSelected(noteSprite.noteData))
         {
           var selectionSquare:FlxSprite = renderedSelectionSquares.recycle(buildSelectionSquare);
 
@@ -2833,11 +2838,13 @@ class ChartEditorState extends HaxeUIState
     // Assume notes are sorted by time.
     for (noteData in currentSongChartNoteData)
     {
+      // Check for notes between the old and new song positions.
+
       if (noteData.time < oldSongPosition) // Note is in the past.
         continue;
 
-      if (noteData.time >= newSongPosition) // Note is in the future.
-        return;
+      if (noteData.time > newSongPosition) // Note is in the future.
+        return; // Assume all notes are also in the future.
 
       // Note was just hit.
 
@@ -3121,6 +3128,8 @@ class ChartEditorState extends HaxeUIState
 
     Conductor.forceBPM(null); // Disable the forced BPM.
     Conductor.mapTimeChanges(currentSongMetadata.timeChanges);
+
+    sortChartData();
 
     loadInstrumentalFromAsset(Paths.inst(songId));
 

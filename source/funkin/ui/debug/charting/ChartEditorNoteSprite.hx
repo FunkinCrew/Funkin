@@ -34,16 +34,6 @@ class ChartEditorNoteSprite extends FlxSprite
    */
   public var noteStyle(get, null):String;
 
-  /**
-   * This note is the previous sprite in a sustain chain.
-   */
-  public var parentNoteSprite(default, set):ChartEditorNoteSprite = null;
-
-  /**
-   * This note is the next sprite in a sustain chain.
-   */
-  public var childNoteSprite(default, set):ChartEditorNoteSprite = null;
-
   public function new(parent:ChartEditorState)
   {
     super();
@@ -124,14 +114,6 @@ class ChartEditorNoteSprite extends FlxSprite
 
     if (this.noteData == null)
     {
-      // Disown parent.
-      this.parentNoteSprite = null;
-      if (this.childNoteSprite != null)
-      {
-        // Kill all children and disown them.
-        this.childNoteSprite.noteData = null;
-        this.childNoteSprite = null;
-      }
       this.kill();
       return this.noteData;
     }
@@ -170,71 +152,22 @@ class ChartEditorNoteSprite extends FlxSprite
       }
     }
 
-    if (parentNoteSprite == null)
+    this.x = cursorColumn * ChartEditorState.GRID_SIZE;
+
+    // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
+    if (this.noteData.stepTime >= 0)
     {
-      this.x = cursorColumn * ChartEditorState.GRID_SIZE;
-
-      // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
-      if (this.noteData.stepTime >= 0)
-      {
-        // noteData.stepTime is a calculated value which accounts for BPM changes
-        this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
-      }
-
-      if (origin != null)
-      {
-        this.x += origin.x;
-        this.y += origin.y;
-      }
-    }
-    else
-    {
-      // If this is a hold note, we need to adjust the position to be centered.
-      if (parentNoteSprite.parentNoteSprite == null)
-      {
-        this.x = parentNoteSprite.x;
-        this.x += (ChartEditorState.GRID_SIZE / 2);
-        this.x -= this.width / 2;
-      }
-      else
-      {
-        this.x = parentNoteSprite.x;
-      }
-
-      this.y = parentNoteSprite.y;
-      if (parentNoteSprite.parentNoteSprite == null)
-      {
-        this.y += parentNoteSprite.height / 2;
-      }
-      else
-      {
-        this.y += parentNoteSprite.height - 1;
-      }
-    }
-  }
-
-  function set_parentNoteSprite(value:ChartEditorNoteSprite):ChartEditorNoteSprite
-  {
-    this.parentNoteSprite = value;
-
-    if (this.parentNoteSprite != null)
-    {
-      this.noteData = this.parentNoteSprite.noteData;
+      // noteData.stepTime is a calculated value which accounts for BPM changes
+      var stepTime:Float = this.noteData.stepTime;
+      var roundedStepTime:Float = Math.floor(stepTime + 0.01); // Add epsilon to fix rounding issues
+      this.y = roundedStepTime * ChartEditorState.GRID_SIZE;
     }
 
-    return this.parentNoteSprite;
-  }
-
-  function set_childNoteSprite(value:ChartEditorNoteSprite):ChartEditorNoteSprite
-  {
-    this.childNoteSprite = value;
-
-    if (this.parentNoteSprite != null)
+    if (origin != null)
     {
-      this.noteData = this.parentNoteSprite.noteData;
+      this.x += origin.x;
+      this.y += origin.y;
     }
-
-    return this.childNoteSprite;
   }
 
   function get_noteStyle():String
@@ -247,7 +180,6 @@ class ChartEditorNoteSprite extends FlxSprite
   {
     // Decide whether to display a note or a sustain.
     var baseAnimationName:String = 'tap';
-    if (this.parentNoteSprite != null) baseAnimationName = (this.childNoteSprite != null) ? 'hold' : 'holdEnd';
 
     // Play the appropriate animation for the type, direction, and skin.
     var animationName:String = '${baseAnimationName}${this.noteData.getDirectionName()}${this.noteStyle}';
@@ -260,17 +192,6 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       case 'tap':
         this.setGraphicSize(0, ChartEditorState.GRID_SIZE);
-      case 'hold':
-        if (parentNoteSprite.parentNoteSprite == null)
-        {
-          this.setGraphicSize(Std.int(ChartEditorState.GRID_SIZE / 2), Std.int(ChartEditorState.GRID_SIZE / 2));
-        }
-        else
-        {
-          this.setGraphicSize(Std.int(ChartEditorState.GRID_SIZE / 2), ChartEditorState.GRID_SIZE);
-        }
-      case 'holdEnd':
-        this.setGraphicSize(Std.int(ChartEditorState.GRID_SIZE / 2), Std.int(ChartEditorState.GRID_SIZE / 2));
     }
     this.updateHitbox();
 
@@ -293,12 +214,5 @@ class ChartEditorNoteSprite extends FlxSprite
     // TODO: Check if this note's parent or child is visible.
 
     return false;
-  }
-
-  public function getBaseNoteSprite()
-  {
-    if (this.parentNoteSprite == null) return this;
-    else
-      return this.parentNoteSprite;
   }
 }
