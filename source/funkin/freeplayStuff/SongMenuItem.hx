@@ -47,7 +47,6 @@ class SongMenuItem extends FlxSpriteGroup
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', "favorite heart", 24, false);
     favIcon.animation.play('fav');
-    favIcon.antialiasing = true;
     favIcon.setGraphicSize(60, 60);
     add(favIcon);
 

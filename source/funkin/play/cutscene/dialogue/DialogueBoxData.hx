@@ -1,5 +1,6 @@
 package funkin.play.cutscene.dialogue;
 
+import funkin.data.animation.AnimationData;
 import funkin.util.SerializerUtil;
 
 /**

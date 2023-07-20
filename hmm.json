@@ -66,10 +66,8 @@
     },
     {
       "name": "hxCodec",
-      "type": "git",
-      "dir": null,
-      "ref": "a56f4b4",
-      "url": "https://github.com/FunkinCrew/hxCodec"
+      "type": "haxelib",
+      "version": "3.0.1"
     },
     {
       "name": "hxcpp",
@@ -95,8 +93,8 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "5634ad7",
-      "url": "https://github.com/openfl/lime"
+      "ref": "2447ae6",
+      "url": "https://github.com/elitemastereric/lime"
     },
     {
       "name": "openfl",

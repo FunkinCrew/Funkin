@@ -13,6 +13,12 @@ import funkin.play.song.SongData.SongTimeChange;
  */
 class Conductor
 {
+  public static final PIXELS_PER_MS:Float = 0.45;
+  public static final HIT_WINDOW_MS:Float = 160;
+  public static final SECONDS_PER_MINUTE:Float = 60;
+  public static final MILLIS_PER_SECOND:Float = 1000;
+  public static final STEPS_PER_BEAT:Int = 4;
+
   // onBeatHit is called every quarter note
   // onStepHit is called every sixteenth note
   // 4/4 = 4 beats per measure = 16 steps per measure
@@ -82,7 +88,8 @@ class Conductor
 
   static function get_beatLengthMs():Float
   {
-    return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC);
+    // Tied directly to BPM.
+    return ((SECONDS_PER_MINUTE / bpm) * MILLIS_PER_SECOND);
   }
 
   /**

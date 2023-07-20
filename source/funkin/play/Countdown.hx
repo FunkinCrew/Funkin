@@ -1,6 +1,5 @@
 package funkin.play;
 
-import funkin.util.Constants;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.FlxSprite;

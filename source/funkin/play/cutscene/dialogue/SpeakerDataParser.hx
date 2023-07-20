@@ -21,7 +21,7 @@ class SpeakerDataParser
 
   /**
    * Parses and preloads the game's speaker data and scripts when the game starts.
-   * 
+   *
    * If you want to force speakers to be reloaded, you can just call this function again.
    */
   public static function loadSpeakerCache():Void
@@ -123,7 +123,7 @@ class SpeakerDataParser
 
   /**
    * Load a speaker's JSON file, parse its data, and return it.
-   * 
+   *
    * @param speakerId The speaker to load.
    * @return The speaker data, or null if validation failed.
    */

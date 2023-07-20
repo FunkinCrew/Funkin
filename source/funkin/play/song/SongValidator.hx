@@ -5,7 +5,6 @@ import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongPlayData;
 import funkin.play.song.SongData.SongTimeChange;
 import funkin.play.song.SongData.SongTimeFormat;
-import funkin.util.Constants;
 
 /**
  * For SongMetadata and SongChartData objects,

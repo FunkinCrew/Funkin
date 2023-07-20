@@ -243,8 +243,6 @@ class AlphaCharacter extends FlxSprite
     super(x, y);
     var tex = Paths.getSparrowAtlas('alphabet');
     frames = tex;
-
-    antialiasing = true;
   }
 
   public function createBold(letter:String)
@@ -265,8 +263,6 @@ class AlphaCharacter extends FlxSprite
     animation.addByPrefix(letter, letter + " " + letterCase, 24);
     animation.play(letter);
     updateHitbox();
-
-    FlxG.log.add('the row' + row);
 
     y = (110 - height);
     y += row * 60;

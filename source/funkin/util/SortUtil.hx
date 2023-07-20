@@ -4,6 +4,7 @@ package funkin.util;
 import flixel.FlxBasic;
 import flixel.util.FlxSort;
 #end
+import funkin.play.notes.NoteSprite;
 
 class SortUtil
 {
@@ -22,9 +23,9 @@ class SortUtil
    *
    * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
    */
-  public static inline function byStrumtime(order:Int, a:Note, b:Note)
+  public static inline function byStrumtime(order:Int, a:NoteSprite, b:NoteSprite)
   {
-    return FlxSort.byValues(order, a.data.strumTime, b.data.strumTime);
+    return FlxSort.byValues(order, a.noteData.time, b.noteData.time);
   }
 
   /**

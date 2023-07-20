@@ -1,14 +1,60 @@
-package funkin.play;
+package funkin.data.animation;
 
+class AnimationDataUtil
+{
+  public static function toNamed(data:UnnamedAnimationData, ?name:String = ""):AnimationData
+  {
+    return {
+      name: name,
+      prefix: data.prefix,
+      assetPath: data.assetPath,
+      offsets: data.offsets,
+      looped: data.looped,
+      flipX: data.flipX,
+      flipY: data.flipY,
+      frameRate: data.frameRate,
+      frameIndices: data.frameIndices
+    };
+  }
+
+  public static function toUnnamed(data:AnimationData):UnnamedAnimationData
+  {
+    return {
+      prefix: data.prefix,
+      assetPath: data.assetPath,
+      offsets: data.offsets,
+      looped: data.looped,
+      flipX: data.flipX,
+      flipY: data.flipY,
+      frameRate: data.frameRate,
+      frameIndices: data.frameIndices
+    };
+  }
+}
+
+/**
+ * A data structure representing an animation in a spritesheet.
+ * This is a generic data structure used by characters, stage props, and more!
+ * BE CAREFUL when changing it.
+ */
 typedef AnimationData =
 {
+  > UnnamedAnimationData,
+
   /**
    * The name for the animation.
    * This should match the animation name queried by the game;
    * for example, characters need animations with names `idle`, `singDOWN`, `singUPmiss`, etc.
    */
   var name:String;
+}
 
+/**
+ * A data structure representing an animation in a spritesheet.
+ * This animation doesn't specify a name, that's presumably specified by the parent data structure.
+ */
+typedef UnnamedAnimationData =
+{
   /**
    * The prefix for the frames of the animation as defined by the XML file.
    * This will may or may not differ from the `name` of the animation,

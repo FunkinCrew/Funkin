@@ -283,8 +283,9 @@ class SongDifficulty
     return timeChanges[0].bpm;
   }
 
-  public function getPlayableChar(id:String):SongPlayableChar
+  public function getPlayableChar(id:String):Null<SongPlayableChar>
   {
+    if (id == null || id == '') return null;
     return chars.get(id);
   }
 
@@ -298,9 +299,17 @@ class SongDifficulty
     return cast events;
   }
 
-  public inline function cacheInst():Void
+  public inline function cacheInst(?currentPlayerId:String = null):Void
   {
-    FlxG.sound.cache(Paths.inst(this.song.songId));
+    var currentPlayer:Null<SongPlayableChar> = getPlayableChar(currentPlayerId);
+    if (currentPlayer != null)
+    {
+      FlxG.sound.cache(Paths.inst(this.song.songId, currentPlayer.inst));
+    }
+    else
+    {
+      FlxG.sound.cache(Paths.inst(this.song.songId));
+    }
   }
 
   public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void

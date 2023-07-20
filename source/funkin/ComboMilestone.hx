@@ -26,7 +26,6 @@ class ComboMilestone extends FlxTypedSpriteGroup<FlxSprite>
     effectStuff.frames = Paths.getSparrowAtlas('comboMilestone');
     effectStuff.animation.addByPrefix('funny', 'NOTE COMBO animation', 24, false);
     effectStuff.animation.play('funny');
-    effectStuff.antialiasing = true;
     effectStuff.animation.finishCallback = function(nameThing) {
       kill();
     };
@@ -108,7 +107,6 @@ class ComboMilestoneNumber extends FlxSprite
     frames = Paths.getSparrowAtlas('comboMilestoneNumbers');
     animation.addByPrefix(stringNum, stringNum, 24, false);
     animation.play(stringNum);
-    antialiasing = true;
     updateHitbox();
   }
 

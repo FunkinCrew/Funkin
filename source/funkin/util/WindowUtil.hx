@@ -11,17 +11,21 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 #end
 class WindowUtil
 {
+  /**
+   * Runs platform-specific code to open a URL in a web browser.
+   * @param targetUrl The URL to open.
+   */
   public static function openURL(targetUrl:String)
   {
     #if CAN_OPEN_LINKS
     #if linux
-    // Sys.command('/usr/bin/xdg-open', [, "&"]);
     Sys.command('/usr/bin/xdg-open', [targetUrl, "&"]);
     #else
+    // This should work on Windows and HTML5.
     FlxG.openURL(targetUrl);
     #end
     #else
-    trace('Cannot open');
+    throw 'Cannot open URLs on this platform.';
     #end
   }
 
@@ -30,6 +34,10 @@ class WindowUtil
    */
   public static final windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
 
+  /**
+   * Wires up FlxSignals that happen based on window activity.
+   * For example, we can run a callback when the window is closed.
+   */
   public static function initWindowEvents()
   {
     // onUpdate is called every frame just before rendering.
@@ -50,5 +58,14 @@ class WindowUtil
     #else
     // Do nothing.
     #end
+  }
+
+  /**
+   * Sets the title of the application window.
+   * @param value The title to use.
+   */
+  public static function setWindowTitle(value:String):Void
+  {
+    lime.app.Application.current.window.title = value;
   }
 }

@@ -338,7 +338,6 @@ class FreeplayState extends MusicBeatSubState
     fnfHighscoreSpr.animation.addByPrefix("highscore", "highscore", 24, false);
     fnfHighscoreSpr.visible = false;
     fnfHighscoreSpr.setGraphicSize(0, Std.int(fnfHighscoreSpr.height * 1));
-    fnfHighscoreSpr.antialiasing = true;
     fnfHighscoreSpr.updateHitbox();
     add(fnfHighscoreSpr);
 

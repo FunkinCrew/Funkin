@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import funkin.play.PlayState;
-import funkin.util.Constants;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {
@@ -45,6 +44,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     if (PlayState.instance.currentStageId.startsWith('school'))
     {
       rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
+      rating.antialiasing = false;
     }
     else
     {
@@ -95,6 +95,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     if (PlayState.instance.currentStageId.startsWith('school'))
     {
       comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 0.7));
+      comboSpr.antialiasing = false;
     }
     else
     {
@@ -134,11 +135,12 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       if (PlayState.instance.currentStageId.startsWith('school'))
       {
         numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE));
+        numScore.antialiasing = false;
       }
       else
       {
-        numScore.antialiasing = true;
         numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+        numScore.antialiasing = true;
       }
       numScore.updateHitbox();
 

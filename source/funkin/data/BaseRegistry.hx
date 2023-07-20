@@ -84,6 +84,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
       }
       catch (e:Dynamic)
       {
+        // Print the error.
         trace('  Failed to load entry data: ${entryId}');
         trace(e);
         continue;
@@ -91,16 +92,29 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     }
   }
 
+  /**
+   * Retrieve a list of all entry IDs in this registry.
+   * @return The list of entry IDs.
+   */
   public function listEntryIds():Array<String>
   {
     return entries.keys().array();
   }
 
+  /**
+   * Count the number of entries in this registry.
+   * @return The number of entries.
+   */
   public function countEntries():Int
   {
     return entries.size();
   }
 
+  /**
+   * Fetch an entry by its ID.
+   * @param id The ID of the entry to fetch.
+   * @return The entry, or `null` if it does not exist.
+   */
   public function fetchEntry(id:String):Null<T>
   {
     return entries.get(id);

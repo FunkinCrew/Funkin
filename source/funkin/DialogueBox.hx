@@ -1,6 +1,5 @@
 package funkin;
 
-import funkin.util.Constants;
 import flixel.FlxSprite;
 import flixel.addons.text.FlxTypeText;
 import flixel.group.FlxSpriteGroup;

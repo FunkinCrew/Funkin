@@ -16,7 +16,6 @@ import funkin.play.song.SongData.SongDataParser;
 import funkin.play.song.SongData.SongMetadata;
 import funkin.shaderslmfao.TitleOutline;
 import funkin.ui.AtlasText;
-import funkin.util.Constants;
 import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
@@ -46,44 +45,13 @@ class TitleState extends MusicBeatState
 
   override public function create():Void
   {
+    super.create();
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
     FlxG.sound.cache(Paths.music('freakyMenu'));
 
     // DEBUG BULLSHIT
-
-    super.create();
-
-    /*
-          #elseif web
-
-
-          if (!initialized)
-          {
-
-      video = new Video();
-      FlxG.stage.addChild(video);
-
-      var netConnection = new NetConnection();
-      netConnection.connect(null);
-
-      netStream = new NetStream(netConnection);
-      netStream.client = {onMetaData: client_onMetaData};
-      netStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, netStream_onAsyncError);
-      netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
-      // netStream.addEventListener(NetStatusEvent.NET_STATUS) // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
-
-      overlay = new Sprite();
-      overlay.graphics.beginFill(0, 0.5);
-      overlay.graphics.drawRect(0, 0, 1280, 720);
-      overlay.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-
-      overlay.buttonMode = true;
-      // FlxG.stage.addChild(overlay);
-
-          }
-     */
 
     // netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
     new FlxTimer().start(1, function(tmr:FlxTimer) {
@@ -146,7 +114,6 @@ class TitleState extends MusicBeatState
 
     logoBl = new FlxSprite(-150, -100);
     logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-    logoBl.antialiasing = true;
     logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
 
@@ -158,7 +125,6 @@ class TitleState extends MusicBeatState
     gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
     gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
     gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-    gfDance.antialiasing = true;
 
     add(gfDance);
 
@@ -177,7 +143,6 @@ class TitleState extends MusicBeatState
     titleText.frames = Paths.getSparrowAtlas('titleEnter');
     titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
     titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
-    titleText.antialiasing = true;
     titleText.animation.play('idle');
     titleText.updateHitbox();
     // titleText.screenCenter(X);
@@ -220,7 +185,6 @@ class TitleState extends MusicBeatState
 
     ngSpr.updateHitbox();
     ngSpr.screenCenter(X);
-    ngSpr.antialiasing = true;
 
     FlxG.mouse.visible = false;
 

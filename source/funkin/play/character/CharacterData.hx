@@ -1,5 +1,6 @@
 package funkin.play.character;
 
+import funkin.data.animation.AnimationData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.ScriptedCharacter.ScriptedAnimateAtlasCharacter;

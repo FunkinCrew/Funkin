@@ -2,6 +2,7 @@ package funkin.ui.debug.charting;
 
 import funkin.graphics.rendering.SustainTrail;
 import funkin.util.SortUtil;
+import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import flixel.input.keyboard.FlxKey;
 import funkin.input.TurboKeyHandler;
@@ -24,6 +25,7 @@ import funkin.audio.VoicesGroup;
 import funkin.input.Cursor;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.HealthIcon;
+import funkin.play.notes.NoteSprite;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongDataParser;
@@ -35,7 +37,6 @@ import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
 import funkin.ui.debug.charting.ChartEditorToolboxHandler.ChartEditorToolMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
-import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.DateUtil;
 import funkin.util.SerializerUtil;
@@ -2850,11 +2851,9 @@ class ChartEditorState extends HaxeUIState
 
       // Character preview.
 
-      // Why does NOTESCRIPTEVENT TAKE A SPRITE AAAAA
-      var tempNote:Note = new Note(noteData.time, noteData.data, null, false, NORMAL);
-      tempNote.mustPress = noteData.getMustHitNote();
-      tempNote.data.sustainLength = noteData.length;
-      tempNote.data.noteKind = noteData.kind;
+      // NoteScriptEvent takes a sprite, ehe. Need to rework that.
+      var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
+      tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
       var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, tempNote, 1, true);
       dispatchEvent(event);

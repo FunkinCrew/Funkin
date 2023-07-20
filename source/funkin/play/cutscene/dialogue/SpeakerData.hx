@@ -1,5 +1,7 @@
 package funkin.play.cutscene.dialogue;
 
+import funkin.data.animation.AnimationData;
+
 /**
  * Data about a conversation.
  * Includes what speakers are in the conversation, and what phrases they say.
