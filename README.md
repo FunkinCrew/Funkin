@@ -1,6 +1,4 @@
-
-
-# Friday Night Funkin
+# Friday Night Funkin (Archive)
 
 This is the repository of Archive Friday Night Funkin source, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
