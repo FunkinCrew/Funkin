@@ -3,7 +3,7 @@ package funkin.play;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import funkin.ui.story.StoryMenuState;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -245,7 +245,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  override function dispatchEvent(event:ScriptEvent)
+  public override function dispatchEvent(event:ScriptEvent)
   {
     super.dispatchEvent(event);
 

@@ -5,4 +5,4 @@ package funkin.modding.base;
  * Create a scripted class that extends FlxSpriteGroup to use this.
  */
 @:hscriptClass
-class ScriptedFlxSpriteGroup extends flixel.group.FlxSpriteGroup implements HScriptedClass {}
+class ScriptedFlxSpriteGroup extends flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup<flixel.FlxSprite> implements HScriptedClass {}

@@ -8,7 +8,8 @@ import flixel.FlxG; // This one in particular causes a compile error if you're u
 // These are great.
 using Lambda;
 using StringTools;
-using funkin.util.tools.MapTools;
+using funkin.util.tools.ArrayTools;
 using funkin.util.tools.IteratorTools;
+using funkin.util.tools.MapTools;
 using funkin.util.tools.StringTools;
 #end

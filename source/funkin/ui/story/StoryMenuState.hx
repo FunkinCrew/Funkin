@@ -15,6 +15,7 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongDataParser;
 import funkin.util.Constants;
 
@@ -115,12 +116,7 @@ class StoryMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    if (!FlxG.sound.music.playing)
-    {
-      FlxG.sound.playMusic(Paths.music('freakyMenu'));
-      FlxG.sound.music.fadeIn(4, 0, 0.7);
-    }
-    Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
+    playMenuMusic();
 
     if (stickerSubState != null)
     {
@@ -129,8 +125,6 @@ class StoryMenuState extends MusicBeatState
 
       openSubState(stickerSubState);
       stickerSubState.degenStickers();
-
-      // resetSubState();
     }
 
     persistentUpdate = persistentDraw = true;
@@ -201,6 +195,18 @@ class StoryMenuState extends MusicBeatState
     // Updating Discord Rich Presence
     DiscordClient.changePresence("In the Menus", null);
     #end
+  }
+
+  function playMenuMusic():Void
+  {
+    if (FlxG.sound.music == null || !FlxG.sound.music.playing)
+    {
+      var freakyMenuMetadata:SongMetadata = SongDataParser.parseMusicMetadata('freakyMenu');
+      Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
+
+      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
+      FlxG.sound.music.fadeIn(4, 0, 0.7);
+    }
   }
 
   function updateData():Void
@@ -459,7 +465,7 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  override function dispatchEvent(event:ScriptEvent):Void
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);

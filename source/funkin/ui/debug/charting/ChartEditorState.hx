@@ -2057,7 +2057,7 @@ class ChartEditorState extends HaxeUIState
       {
         // Handle extending the note as you drag.
 
-        // Since use Math.floor and stepCrochet here, the hold notes will be beat snapped.
+        // Since use Math.floor and stepLengthMs here, the hold notes will be beat snapped.
         var dragLengthSteps:Float = Math.floor((cursorMs - currentPlaceNoteData.time) / Conductor.stepLengthMs);
 
         // Without this, the newly placed note feels too short compared to the user's input.
@@ -2770,7 +2770,7 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  override function dispatchEvent(event:ScriptEvent):Void
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 

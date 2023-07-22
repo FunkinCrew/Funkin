@@ -12,6 +12,8 @@ import flixel.util.FlxTimer;
 import funkin.audiovis.SpectogramSprite;
 import funkin.shaderslmfao.ColorSwap;
 import funkin.shaderslmfao.LeftMaskShader;
+import funkin.play.song.SongData.SongDataParser;
+import funkin.play.song.SongData.SongMetadata;
 import funkin.shaderslmfao.TitleOutline;
 import funkin.ui.AtlasText;
 import funkin.util.Constants;
@@ -135,12 +137,7 @@ class TitleState extends MusicBeatState
 
   function startIntro()
   {
-    if (FlxG.sound.music == null || !FlxG.sound.music.playing)
-    {
-      FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-      FlxG.sound.music.fadeIn(4, 0, 0.7);
-      Conductor.forceBPM(Constants.FREAKY_MENU_BPM);
-    }
+    playMenuMusic();
 
     persistentUpdate = true;
 
@@ -232,6 +229,18 @@ class TitleState extends MusicBeatState
       initialized = true;
 
     if (FlxG.sound.music != null) FlxG.sound.music.onComplete = function() FlxG.switchState(new VideoState());
+  }
+
+  function playMenuMusic():Void
+  {
+    if (FlxG.sound.music == null || !FlxG.sound.music.playing)
+    {
+      var freakyMenuMetadata:SongMetadata = SongDataParser.parseMusicMetadata('freakyMenu');
+      Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
+
+      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
+      FlxG.sound.music.fadeIn(4, 0, 0.7);
+    }
   }
 
   function getIntroTextShit():Array<Array<String>>
