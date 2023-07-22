@@ -895,12 +895,12 @@ abstract SongTimeChange(RawSongTimeChange) from RawSongTimeChange
 
   public var beatTime(get, set):Null<Float>;
 
-  function get_beatTime():Int
+  public function get_beatTime():Null<Float>
   {
     return this.b;
   }
 
-  function set_beatTime(value:Int):Int
+  public function set_beatTime(value:Null<Float>):Null<Float>
   {
     return this.b = value;
   }
