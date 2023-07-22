@@ -894,7 +894,7 @@ class PlayState extends MusicBeatState
       trace('Song difficulty could not be loaded.');
     }
 
-    Conductor.forceBPM(currentChart.getStartingBPM());
+    // Conductor.forceBPM(currentChart.getStartingBPM());
 
     vocals = currentChart.buildVocals(currentPlayerId);
     if (vocals.members.length == 0)
@@ -1208,13 +1208,10 @@ class PlayState extends MusicBeatState
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
 
-    FlxG.watch.addQuick('beatShit', Conductor.currentBeat);
-    FlxG.watch.addQuick('stepShit', Conductor.currentStep);
     if (currentStage != null)
     {
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
-    FlxG.watch.addQuick('songPos', Conductor.songPosition);
 
     // Handle GF dance speed.
     // TODO: Add a song event for this.

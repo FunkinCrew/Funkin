@@ -118,26 +118,71 @@ class Constants
   public static final DEFAULT_SONG:String = 'tutorial';
 
   /**
-   * OTHER
+   * TIMING
    */
   // ==============================
+
+  /**
+   * The number of seconds in a minute.
+   */
+  public static final SECS_PER_MIN:Int = 60;
+
+  /**
+   * The number of milliseconds in a second.
+   */
+  public static final MS_PER_SEC:Int = 1000;
+
+  /**
+   * The number of microseconds in a millisecond.
+   */
+  public static final US_PER_MS:Int = 1000;
+
+  /**
+   * The number of microseconds in a second.
+   */
+  public static final US_PER_SEC:Int = US_PER_MS * MS_PER_SEC;
+
+  /**
+   * The number of nanoseconds in a microsecond.
+   */
+  public static final NS_PER_US:Int = 1000;
+
+  /**
+   * The number of nanoseconds in a millisecond.
+   */
+  public static final NS_PER_MS:Int = NS_PER_US * US_PER_MS;
+
+  /**
+   * The number of nanoseconds in a second.
+   */
+  public static final NS_PER_SEC:Int = NS_PER_US * US_PER_MS * MS_PER_SEC;
 
   /**
    * All MP3 decoders introduce a playback delay of `528` samples,
    * which at 44,100 Hz (samples per second) is ~12 ms.
    */
-  public static final MP3_DELAY_MS:Float = 528 / 44100 * 1000;
+  public static final MP3_DELAY_MS:Float = 528 / 44100 * MS_PER_SEC;
+
+  /**
+   * The default BPM of the conductor.
+   */
+  public static final DEFAULT_BPM:Float = 100.0;
+
+  public static final DEFAULT_TIME_SIGNATURE_NUM:Int = 4;
+
+  public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
+
+  public static final STEPS_PER_BEAT:Int = 4;
+
+  /**
+   * OTHER
+   */
+  // ==============================
 
   /**
    * The scale factor to use when increasing the size of pixel art graphics.
    */
   public static final PIXEL_ART_SCALE:Float = 6;
-
-  /**
-   * The BPM of the title screen and menu music.
-   * TODO: Move to metadata file.
-   */
-  public static final FREAKY_MENU_BPM:Float = 102;
 
   /**
    * The volume at which to play the countdown before the song starts.
