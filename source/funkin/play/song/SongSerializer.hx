@@ -82,9 +82,9 @@ class SongSerializer
    * Save a SongChartData object as a JSON file to an automatically generated path.
    * Works great on HTML5 and desktop.
    */
-  public static function exportSongChartData(data:SongChartData)
+  public static function exportSongChartData(data:SongChartData, songId:String)
   {
-    var path = 'chart.json';
+    var path = '${songId}-chart.json';
     exportSongChartDataAs(path, data);
   }
 
@@ -92,9 +92,9 @@ class SongSerializer
    * Save a SongMetadata object as a JSON file to an automatically generated path.
    * Works great on HTML5 and desktop.
    */
-  public static function exportSongMetadata(data:SongMetadata)
+  public static function exportSongMetadata(data:SongMetadata, songId:String)
   {
-    var path = 'metadata.json';
+    var path = '${songId}-metadata.json';
     exportSongMetadataAs(path, data);
   }
 

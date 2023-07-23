@@ -1,7 +1,7 @@
 package funkin.play.song;
 
-import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.events.ScriptEvent;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -120,12 +120,21 @@ class SongDataParser
     }
   }
 
+  /**
+   * A list of all the song IDs available to the game.
+   * @return The list of song IDs.
+   */
   public static function listSongIds():Array<String>
   {
     return songCache.keys().array();
   }
 
-  public static function parseSongMetadata(songId:String):Array<SongMetadata>
+  /**
+   * Loads the song metadata for a particular song.
+   * @param songId The ID of the song to load.
+   * @return The song metadata for each variation, or an empty array if the song was not found.
+   */
+  public static function loadSongMetadata(songId:String):Array<SongMetadata>
   {
     var result:Array<SongMetadata> = [];
 
@@ -147,19 +156,13 @@ class SongDataParser
 
     result.push(songMetadata);
 
-    var variations = songMetadata.playData.songVariations;
+    var variations:Array<String> = songMetadata.playData.songVariations;
 
     for (variation in variations)
     {
-      var variationJsonStr:String = loadSongMetadataFile(songId, variation);
-      var variationJsonData:Dynamic = null;
-      try
-      {
-        variationJsonData = Json.parse(variationJsonStr);
-      }
-      catch (e) {}
-      var variationSongMetadata:SongMetadata = SongMigrator.migrateSongMetadata(variationJsonData, '${songId}-${variation}');
-      variationSongMetadata = SongValidator.validateSongMetadata(variationSongMetadata, '${songId}-${variation}');
+      var variationRawJson:String = loadSongMetadataFile(songId, variation);
+      var variationSongMetadata:SongMetadata = SongMigrator.migrateSongMetadata(variationRawJson, '${songId}_${variation}');
+      variationSongMetadata = SongValidator.validateSongMetadata(variationSongMetadata, '${songId}_${variation}');
       if (variationSongMetadata != null)
       {
         variationSongMetadata.variation = variation;
@@ -176,7 +179,7 @@ class SongDataParser
 
     var rawJson:String = Assets.getText(songMetadataFilePath).trim();
 
-    while (!rawJson.endsWith("}"))
+    while (!rawJson.endsWith('}') && rawJson.length > 0)
     {
       rawJson = rawJson.substr(0, rawJson.length - 1);
     }
@@ -214,7 +217,7 @@ class SongDataParser
     return rawJson;
   }
 
-  public static function parseSongChartData(songId:String, variation:String = ""):SongChartData
+  public static function parseSongChartData(songId:String, variation:String = ''):SongChartData
   {
     var rawJson:String = loadSongChartDataFile(songId, variation);
     var jsonData:Dynamic = null;
@@ -222,7 +225,11 @@ class SongDataParser
     {
       jsonData = Json.parse(rawJson);
     }
-    catch (e) {}
+    catch (e)
+    {
+      trace('Failed to parse song chart data: ${songId} (${variation})');
+      trace(e);
+    }
 
     var songChartData:SongChartData = SongMigrator.migrateSongChartData(jsonData, songId);
     songChartData = SongValidator.validateSongChartData(songChartData, songId);
@@ -242,7 +249,7 @@ class SongDataParser
 
     var rawJson:String = Assets.getText(songChartDataFilePath).trim();
 
-    while (!rawJson.endsWith("}"))
+    while (!rawJson.endsWith('}') && rawJson.length > 0)
     {
       rawJson = rawJson.substr(0, rawJson.length - 1);
     }
@@ -310,7 +317,7 @@ abstract SongMetadata(RawSongMetadata)
 
   public function clone(?newVariation:String = null):SongMetadata
   {
-    var result = new SongMetadata(this.songName, this.artist, newVariation == null ? this.variation : newVariation);
+    var result:SongMetadata = new SongMetadata(this.songName, this.artist, newVariation == null ? this.variation : newVariation);
     result.version = this.version;
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
@@ -388,19 +395,19 @@ abstract SongNoteData(RawSongNoteData)
 
   public var time(get, set):Float;
 
-  public function get_time():Float
+  function get_time():Float
   {
     return this.t;
   }
 
-  public function set_time(value:Float):Float
+  function set_time(value:Float):Float
   {
     return this.t = value;
   }
 
   public var stepTime(get, never):Float;
 
-  public function get_stepTime():Float
+  function get_stepTime():Float
   {
     return Conductor.getTimeInSteps(this.t);
   }
@@ -410,12 +417,12 @@ abstract SongNoteData(RawSongNoteData)
    */
   public var data(get, set):Int;
 
-  public function get_data():Int
+  function get_data():Int
   {
     return this.d;
   }
 
-  public function set_data(value:Int):Int
+  function set_data(value:Int):Int
   {
     return this.d = value;
   }
@@ -466,26 +473,26 @@ abstract SongNoteData(RawSongNoteData)
 
   public var length(get, set):Float;
 
-  public function get_length():Float
+  function get_length():Float
   {
     return this.l;
   }
 
-  public function set_length(value:Float):Float
+  function set_length(value:Float):Float
   {
     return this.l = value;
   }
 
   public var kind(get, set):String;
 
-  public function get_kind():String
+  function get_kind():String
   {
     if (this.k == null || this.k == '') return 'normal';
 
     return this.k;
   }
 
-  public function set_kind(value:String):String
+  function set_kind(value:String):String
   {
     if (value == 'normal' || value == '') value = null;
     return this.k = value;
@@ -573,55 +580,55 @@ abstract SongEventData(RawSongEventData)
 
   public var time(get, set):Float;
 
-  public function get_time():Float
+  function get_time():Float
   {
     return this.t;
   }
 
-  public function set_time(value:Float):Float
+  function set_time(value:Float):Float
   {
     return this.t = value;
   }
 
   public var stepTime(get, never):Float;
 
-  public function get_stepTime():Float
+  function get_stepTime():Float
   {
     return Conductor.getTimeInSteps(this.t);
   }
 
   public var event(get, set):String;
 
-  public function get_event():String
+  function get_event():String
   {
     return this.e;
   }
 
-  public function set_event(value:String):String
+  function set_event(value:String):String
   {
     return this.e = value;
   }
 
   public var value(get, set):Dynamic;
 
-  public function get_value():Dynamic
+  function get_value():Dynamic
   {
     return this.v;
   }
 
-  public function set_value(value:Dynamic):Dynamic
+  function set_value(value:Dynamic):Dynamic
   {
     return this.v = value;
   }
 
   public var activated(get, set):Bool;
 
-  public function get_activated():Bool
+  function get_activated():Bool
   {
     return this.a;
   }
 
-  public function set_activated(value:Bool):Bool
+  function set_activated(value:Bool):Bool
   {
     return this.a = value;
   }
@@ -700,7 +707,7 @@ abstract SongEventData(RawSongEventData)
 
 abstract SongPlayableChar(RawSongPlayableChar)
 {
-  public function new(girlfriend:String, opponent:String, inst:String = "")
+  public function new(girlfriend:String, opponent:String, inst:String = '')
   {
     this =
       {
@@ -712,36 +719,36 @@ abstract SongPlayableChar(RawSongPlayableChar)
 
   public var girlfriend(get, set):String;
 
-  public function get_girlfriend():String
+  function get_girlfriend():String
   {
     return this.g;
   }
 
-  public function set_girlfriend(value:String):String
+  function set_girlfriend(value:String):String
   {
     return this.g = value;
   }
 
   public var opponent(get, set):String;
 
-  public function get_opponent():String
+  function get_opponent():String
   {
     return this.o;
   }
 
-  public function set_opponent(value:String):String
+  function set_opponent(value:String):String
   {
     return this.o = value;
   }
 
   public var inst(get, set):String;
 
-  public function get_inst():String
+  function get_inst():String
   {
     return this.i;
   }
 
-  public function set_inst(value:String):String
+  function set_inst(value:String):String
   {
     return this.i = value;
   }
@@ -786,6 +793,35 @@ abstract SongChartData(RawSongChartData)
     if (result == 0.0 && diff != 'default') return getScrollSpeed('default');
 
     return (result == 0.0) ? 1.0 : result;
+  }
+
+  public function setScrollSpeed(value:Float, diff:String = 'default'):Float
+  {
+    return this.scrollSpeed.set(diff, value);
+  }
+
+  public function getNotes(diff:String):Array<SongNoteData>
+  {
+    var result:Array<SongNoteData> = this.notes.get(diff);
+
+    if (result == null && diff != 'normal') return getNotes('normal');
+
+    return (result == null) ? [] : result;
+  }
+
+  public function setNotes(value:Array<SongNoteData>, diff:String):Array<SongNoteData>
+  {
+    return this.notes.set(diff, value);
+  }
+
+  public function getEvents():Array<SongEventData>
+  {
+    return this.events;
+  }
+
+  public function setEvents(value:Array<SongEventData>):Array<SongEventData>
+  {
+    return this.events = value;
   }
 }
 
@@ -847,12 +883,12 @@ abstract SongTimeChange(RawSongTimeChange) from RawSongTimeChange
 
   public var timeStamp(get, set):Float;
 
-  public function get_timeStamp():Float
+  function get_timeStamp():Float
   {
     return this.t;
   }
 
-  public function set_timeStamp(value:Float):Float
+  function set_timeStamp(value:Float):Float
   {
     return this.t = value;
   }
@@ -871,43 +907,43 @@ abstract SongTimeChange(RawSongTimeChange) from RawSongTimeChange
 
   public var bpm(get, set):Float;
 
-  public function get_bpm():Float
+  function get_bpm():Float
   {
     return this.bpm;
   }
 
-  public function set_bpm(value:Float):Float
+  function set_bpm(value:Float):Float
   {
     return this.bpm = value;
   }
 
   public var timeSignatureNum(get, set):Int;
 
-  public function get_timeSignatureNum():Int
+  function get_timeSignatureNum():Int
   {
     return this.n;
   }
 
-  public function set_timeSignatureNum(value:Int):Int
+  function set_timeSignatureNum(value:Int):Int
   {
     return this.n = value;
   }
 
   public var timeSignatureDen(get, set):Int;
 
-  public function get_timeSignatureDen():Int
+  function get_timeSignatureDen():Int
   {
     return this.d;
   }
 
-  public function set_timeSignatureDen(value:Int):Int
+  function set_timeSignatureDen(value:Int):Int
   {
     return this.d = value;
   }
 
   public var beatTuplets(get, set):Array<Int>;
 
-  public function get_beatTuplets():Array<Int>
+  function get_beatTuplets():Array<Int>
   {
     if (Std.isOfType(this.bt, Int))
     {
@@ -919,7 +955,7 @@ abstract SongTimeChange(RawSongTimeChange) from RawSongTimeChange
     }
   }
 
-  public function set_beatTuplets(value:Array<Int>):Array<Int>
+  function set_beatTuplets(value:Array<Int>):Array<Int>
   {
     return this.bt = value;
   }
@@ -927,7 +963,7 @@ abstract SongTimeChange(RawSongTimeChange) from RawSongTimeChange
 
 enum abstract SongTimeFormat(String) from String to String
 {
-  var TICKS = "ticks";
-  var FLOAT = "float";
-  var MILLISECONDS = "ms";
+  var TICKS = 'ticks';
+  var FLOAT = 'float';
+  var MILLISECONDS = 'ms';
 }

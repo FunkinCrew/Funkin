@@ -26,7 +26,7 @@ class ChartEditorThemeHandler
   // An enum of typedefs or something?
   // ================================
   static final BACKGROUND_COLOR_LIGHT:FlxColor = 0xFF673AB7;
-  static final BACKGROUND_COLOR_DARK:FlxColor = 0xFF673AB7;
+  static final BACKGROUND_COLOR_DARK:FlxColor = 0xFF361E60;
 
   // Color 1 of the grid pattern. Alternates with Color 2.
   static final GRID_COLOR_1_LIGHT:FlxColor = 0xFFE7E6E6;
@@ -43,13 +43,11 @@ class ChartEditorThemeHandler
   // Vertical divider between characters.
   static final GRID_STRUMLINE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
   static final GRID_STRUMLINE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
-  // static final GRID_STRUMLINE_DIVIDER_WIDTH:Float = 2;
   static final GRID_STRUMLINE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
 
   // Horizontal divider between measures.
   static final GRID_MEASURE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
   static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
-  // static final GRID_MEASURE_DIVIDER_WIDTH:Float = 2;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
 
   // Border on the square highlighting selected notes.
@@ -66,6 +64,12 @@ class ChartEditorThemeHandler
   static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF9D0011;
   static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFFBD0231;
 
+  static final TOTAL_COLUMN_COUNT:Int = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
+
+  /**
+   * When the theme is changed, this function updates all of the UI elements to match the new theme.
+   * @param state The ChartEditorState to update.
+   */
   public static function updateTheme(state:ChartEditorState):Void
   {
     updateBackground(state);
@@ -73,6 +77,10 @@ class ChartEditorThemeHandler
     updateSelectionSquare(state);
   }
 
+  /**
+   * Updates the tint of the background sprite to match the current theme.
+   * @param state The ChartEditorState to update.
+   */
   static function updateBackground(state:ChartEditorState):Void
   {
     state.menuBG.color = switch (state.currentTheme)
@@ -85,7 +93,7 @@ class ChartEditorThemeHandler
 
   /**
    * Builds the checkerboard background image of the chart editor, and adds dividing lines to it.
-   * @param dark Whether to draw the grid in a dark color instead of a light one.
+   * @param state The ChartEditorState to update.
    */
   static function updateGridBitmap(state:ChartEditorState):Void
   {
@@ -107,8 +115,8 @@ class ChartEditorThemeHandler
 
     // 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
     // This gets reused to fill the screen.
-    var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2 + 1));
-    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * (Conductor.stepsPerMeasure));
+    var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT);
+    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure);
     state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
 
     // Selection borders
@@ -143,7 +151,7 @@ class ChartEditorThemeHandler
       selectionBorderColor);
 
     // Selection borders across the middle.
-    for (i in 1...(ChartEditorState.STRUMLINE_SIZE * 2 + 1))
+    for (i in 1...TOTAL_COLUMN_COUNT)
     {
       state.gridBitmap.fillRect(new Rectangle((ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0,
         ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
@@ -167,7 +175,7 @@ class ChartEditorThemeHandler
     // Divider at top
     state.gridBitmap.fillRect(new Rectangle(0, 0, state.gridBitmap.width, GRID_MEASURE_DIVIDER_WIDTH / 2), gridMeasureDividerColor);
     // Divider at bottom
-    var dividerLineBY = state.gridBitmap.height - (GRID_MEASURE_DIVIDER_WIDTH / 2);
+    var dividerLineBY:Float = state.gridBitmap.height - (GRID_MEASURE_DIVIDER_WIDTH / 2);
     state.gridBitmap.fillRect(new Rectangle(0, dividerLineBY, state.gridBitmap.width, GRID_MEASURE_DIVIDER_WIDTH / 2), gridMeasureDividerColor);
 
     // Draw dividers between the strumlines.
@@ -180,10 +188,10 @@ class ChartEditorThemeHandler
     };
 
     // Divider at 1 * (Strumline Size)
-    var dividerLineAX = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
+    var dividerLineAX:Float = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
     state.gridBitmap.fillRect(new Rectangle(dividerLineAX, 0, GRID_STRUMLINE_DIVIDER_WIDTH, state.gridBitmap.height), gridStrumlineDividerColor);
     // Divider at 2 * (Strumline Size)
-    var dividerLineBX = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
+    var dividerLineBX:Float = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
     state.gridBitmap.fillRect(new Rectangle(dividerLineBX, 0, GRID_STRUMLINE_DIVIDER_WIDTH, state.gridBitmap.height), gridStrumlineDividerColor);
 
     if (state.gridTiledSprite != null)
