@@ -1637,9 +1637,9 @@ class PlayState extends MusicBeatState
     {
       if (note == null) continue;
 
-      var hitWindowStart = note.strumTime - Conductor.HIT_WINDOW_MS;
+      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Conductor.HIT_WINDOW_MS;
+      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
       if (Conductor.songPosition > hitWindowEnd)
       {
@@ -1714,9 +1714,9 @@ class PlayState extends MusicBeatState
     {
       if (note == null || note.hasBeenHit) continue;
 
-      var hitWindowStart = note.strumTime - Conductor.HIT_WINDOW_MS;
+      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Conductor.HIT_WINDOW_MS;
+      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
       if (Conductor.songPosition > hitWindowEnd)
       {
@@ -2367,7 +2367,7 @@ class PlayState extends MusicBeatState
 
       if (targetSongId == null)
       {
-        FlxG.sound.playMusic(Paths.music('freakyMenu'));
+        FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
 
         transIn = FlxTransitionableState.defaultTransIn;
         transOut = FlxTransitionableState.defaultTransOut;

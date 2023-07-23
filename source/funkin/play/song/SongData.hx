@@ -386,6 +386,9 @@ abstract SongNoteData(RawSongNoteData)
       };
   }
 
+  /**
+   * The timestamp of the note, in milliseconds.
+   */
   public var time(get, set):Float;
 
   public function get_time():Float
@@ -398,6 +401,9 @@ abstract SongNoteData(RawSongNoteData)
     return this.t = value;
   }
 
+  /**
+   * The timestamp of the note, in steps.
+   */
   public var stepTime(get, never):Float;
 
   public function get_stepTime():Float
@@ -470,6 +476,10 @@ abstract SongNoteData(RawSongNoteData)
     return getStrumlineIndex(strumlineSize) == 0;
   }
 
+  /**
+   * If this is a hold note, this is the length of the hold note in milliseconds.
+   * @default 0 (not a hold note)
+   */
   public var length(get, set):Float;
 
   function get_length():Float
@@ -482,6 +492,10 @@ abstract SongNoteData(RawSongNoteData)
     return this.l = value;
   }
 
+  /**
+   * If this is a hold note, this is the length of the hold note in steps.
+   * @default 0 (not a hold note)
+   */
   public var stepLength(get, set):Float;
 
   function get_stepLength():Float

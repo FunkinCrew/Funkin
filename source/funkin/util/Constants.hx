@@ -123,6 +123,69 @@ class Constants
   public static final DEFAULT_VARIATION:String = 'default';
 
   /**
+   * The default intensity for camera zooms.
+   */
+  public static final DEFAULT_ZOOM_INTENSITY:Float = 0.015;
+
+  /**
+   * The default rate for camera zooms (in beats per zoom).
+   */
+  public static final DEFAULT_ZOOM_RATE:Int = 4;
+
+  /**
+   * The default BPM for charts, so things don't break if none is specified.
+   */
+  public static final DEFAULT_BPM:Int = 100;
+
+  /**
+   * Default numerator for the time signature.
+   */
+  public static final DEFAULT_TIME_SIGNATURE_NUM:Int = 4;
+
+  /**
+   * Default denominator for the time signature.
+   */
+  public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
+
+  /**
+   * TIMING
+   */
+  // ==============================
+
+  /**
+   * A magic number used when calculating scroll speed and note distances.
+   */
+  public static final PIXELS_PER_MS:Float = 0.45;
+
+  /**
+   * The maximum interval within which a note can be hit, in milliseconds.
+   */
+  public static final HIT_WINDOW_MS:Float = 160;
+
+  /**
+   * Constant for the number of seconds in a minute.
+   */
+  public static final SECS_PER_MIN:Float = 60;
+
+  /**
+   * Constant for the number of milliseconds in a second.
+   */
+  public static final MS_PER_SEC:Float = 1000;
+
+  /**
+   * The number of steps in one beat.
+   *
+   * Each beat represents ONE quarter note, so one step is one sixteenth note!
+   */
+  public static final STEPS_PER_BEAT:Int = 4;
+
+  /**
+   * All MP3 decoders introduce a playback delay of `528` samples,
+   * which at 44,100 Hz (samples per second) is ~12 ms.
+   */
+  public static final MP3_DELAY_MS:Float = 528 / 44100 * Constants.MS_PER_SEC;
+
+  /**
    * HEALTH VALUES
    */
   // ==============================
@@ -205,64 +268,11 @@ class Constants
    * OTHER
    */
   // ==============================
+
+  /**
+   * The separator between an asset library and the asset path.
+   */
   public static final LIBRARY_SEPARATOR:String = ':';
-
-  /**
-   * The number of seconds in a minute.
-   */
-  public static final SECS_PER_MIN:Int = 60;
-
-  /**
-   * The number of milliseconds in a second.
-   */
-  public static final MS_PER_SEC:Int = 1000;
-
-  /**
-   * The number of microseconds in a millisecond.
-   */
-  public static final US_PER_MS:Int = 1000;
-
-  /**
-   * The number of microseconds in a second.
-   */
-  public static final US_PER_SEC:Int = US_PER_MS * MS_PER_SEC;
-
-  /**
-   * The number of nanoseconds in a microsecond.
-   */
-  public static final NS_PER_US:Int = 1000;
-
-  /**
-   * The number of nanoseconds in a millisecond.
-   */
-  public static final NS_PER_MS:Int = NS_PER_US * US_PER_MS;
-
-  /**
-   * The number of nanoseconds in a second.
-   */
-  public static final NS_PER_SEC:Int = NS_PER_US * US_PER_MS * MS_PER_SEC;
-
-  /**
-   * All MP3 decoders introduce a playback delay of `528` samples,
-   * which at 44,100 Hz (samples per second) is ~12 ms.
-   */
-  public static final MP3_DELAY_MS:Float = 528 / 44100 * MS_PER_SEC;
-
-  /**
-   * The default BPM of the conductor.
-   */
-  public static final DEFAULT_BPM:Float = 100.0;
-
-  public static final DEFAULT_TIME_SIGNATURE_NUM:Int = 4;
-
-  public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
-
-  public static final STEPS_PER_BEAT:Int = 4;
-
-  /**
-   * OTHER
-   */
-  // ==============================
 
   /**
    * The scale factor to use when increasing the size of pixel art graphics.
@@ -276,14 +286,4 @@ class Constants
 
   public static final STRUMLINE_X_OFFSET:Float = 48;
   public static final STRUMLINE_Y_OFFSET:Float = 24;
-
-  /**
-   * The default intensity for camera zooms.
-   */
-  public static final DEFAULT_ZOOM_INTENSITY:Float = 0.015;
-
-  /**
-   * The default rate for camera zooms (in beats per zoom).
-   */
-  public static final DEFAULT_ZOOM_RATE:Int = 4;
 }

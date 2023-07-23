@@ -1,19 +1,10 @@
 package funkin.ui.debug.charting;
 
-import funkin.graphics.rendering.SustainTrail;
-import funkin.util.SortUtil;
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.ui.debug.charting.ChartEditorCommand;
-import flixel.input.keyboard.FlxKey;
-import funkin.input.TurboKeyHandler;
-import haxe.ui.notifications.NotificationType;
-import haxe.ui.notifications.NotificationManager;
-import haxe.DynamicAccess;
-import haxe.io.Path;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
@@ -22,10 +13,13 @@ import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VoicesGroup;
+import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.input.Cursor;
+import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.HealthIcon;
 import funkin.play.notes.NoteSprite;
+import funkin.play.notes.Strumline;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongDataParser;
@@ -33,13 +27,18 @@ import funkin.play.song.SongData.SongEventData;
 import funkin.play.song.SongData.SongMetadata;
 import funkin.play.song.SongData.SongNoteData;
 import funkin.play.song.SongDataUtils;
+import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
 import funkin.ui.debug.charting.ChartEditorToolboxHandler.ChartEditorToolMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
-import funkin.util.FileUtil;
 import funkin.util.DateUtil;
+import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
+import funkin.util.SortUtil;
+import funkin.util.WindowUtil;
+import haxe.DynamicAccess;
+import haxe.io.Path;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.dialogs.Dialog;
@@ -50,7 +49,8 @@ import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
-import funkin.util.WindowUtil;
+import haxe.ui.notifications.NotificationManager;
+import haxe.ui.notifications.NotificationType;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 
@@ -112,7 +112,12 @@ class ChartEditorState extends HaxeUIState
   /**
    * The height of the menu bar in the layout.
    */
-  static final MENU_BAR_HEIGHT = 32;
+  static final MENU_BAR_HEIGHT:Int = 32;
+
+  /**
+   * The height of the playbar in the layout.
+   */
+  static final PLAYBAR_HEIGHT:Int = 48;
 
   /**
    * Duration to wait before autosaving the chart.
@@ -946,7 +951,12 @@ class ChartEditorState extends HaxeUIState
    */
   var renderedNotes:FlxTypedSpriteGroup<ChartEditorNoteSprite>;
 
-  var renderedHoldNotes:FlxTypedSpriteGroup<SustainTrail>;
+  /**
+   * The sprite group containing the hold note graphics.
+   * Only displays a subset of the data from `currentSongChartNoteData`,
+   * and kills notes that are off-screen to be recycled later.
+   */
+  var renderedHoldNotes:FlxTypedSpriteGroup<ChartEditorHoldNoteSprite>;
 
   /**
    * The sprite group containing the song events.
@@ -1032,7 +1042,7 @@ class ChartEditorState extends HaxeUIState
 
     gridGhostNote = new ChartEditorNoteSprite(this);
     gridGhostNote.alpha = 0.6;
-    gridGhostNote.noteData = new SongNoteData(-1, -1, 0, "");
+    gridGhostNote.noteData = new SongNoteData(0, 0, 0, "");
     gridGhostNote.visible = false;
     add(gridGhostNote);
 
@@ -1127,6 +1137,10 @@ class ChartEditorState extends HaxeUIState
    */
   function buildNoteGroup():Void
   {
+    renderedHoldNotes = new FlxTypedSpriteGroup<ChartEditorHoldNoteSprite>();
+    renderedHoldNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
+    add(renderedHoldNotes);
+
     renderedNotes = new FlxTypedSpriteGroup<ChartEditorNoteSprite>();
     renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedNotes);
@@ -1704,12 +1718,9 @@ class ChartEditorState extends HaxeUIState
         moveSongToScrollPosition();
       }
 
-      // Cursor position snapped to the grid.
-
       // The song position of the cursor, in steps.
       var cursorFractionalStep:Float = cursorY / GRID_SIZE / (16 / noteSnapQuant);
-      var cursorStep:Int = Std.int(Math.floor(cursorFractionalStep));
-      var cursorMs:Float = Conductor.getStepTimeInMs(cursorStep);
+      var cursorMs:Float = Conductor.getStepTimeInMs(cursorFractionalStep);
       // The direction value for the column at the cursor.
       var cursorColumn:Int = Math.floor(cursorX / GRID_SIZE);
       if (cursorColumn < 0) cursorColumn = 0;
@@ -2145,10 +2156,10 @@ class ChartEditorState extends HaxeUIState
       // Update for whether downscroll is enabled.
       renderedNotes.flipX = (isViewDownscroll);
 
-      // Calculate the view bounds.
-      var viewAreaTop:Float = this.scrollPositionInPixels - GRID_TOP_PAD;
-      var viewHeight:Float = (FlxG.height - MENU_BAR_HEIGHT);
-      var viewAreaBottom:Float = this.scrollPositionInPixels + viewHeight;
+      // Calculate the top and bottom of the view area.
+      var viewAreaTopPixels:Float = MENU_BAR_HEIGHT;
+      var visibleGridHeightPixels:Float = FlxG.height - MENU_BAR_HEIGHT - PLAYBAR_HEIGHT; // The area underneath the menu bar and playbar is not visible.
+      var viewAreaBottomPixels:Float = viewAreaTopPixels + visibleGridHeightPixels;
 
       // Remove notes that are no longer visible and list the ones that are.
       var displayedNoteData:Array<SongNoteData> = [];
@@ -2156,7 +2167,7 @@ class ChartEditorState extends HaxeUIState
       {
         if (noteSprite == null || !noteSprite.exists || !noteSprite.visible) continue;
 
-        if (!noteSprite.isNoteVisible(viewAreaBottom, viewAreaTop))
+        if (!noteSprite.isNoteVisible(viewAreaBottomPixels, viewAreaTopPixels))
         {
           // This sprite is off-screen.
           // Kill the note sprite and recycle it.
@@ -2168,18 +2179,6 @@ class ChartEditorState extends HaxeUIState
           // Kill the note sprite and recycle it.
           noteSprite.noteData = null;
         }
-          // else if (noteSprite.noteData.length > 0 && (noteSprite.parentNoteSprite == null && noteSprite.childNoteSprite == null))
-          // {
-          //   // Note was extended.
-          //   // Kill the note sprite and recycle it.
-          //   noteSprite.noteData = null;
-          // }
-          // else if (noteSprite.noteData.length == 0 && (noteSprite.parentNoteSprite != null || noteSprite.childNoteSprite != null))
-          // {
-          //   // Note was shortened.
-          //   // Kill the note sprite and recycle it.
-          //   noteSprite.noteData = null;
-        // }
         else
         {
           // Note is already displayed and should remain displayed.
@@ -2190,13 +2189,42 @@ class ChartEditorState extends HaxeUIState
         }
       }
 
+      var displayedHoldNoteData:Array<SongNoteData> = [];
+      for (holdNoteSprite in renderedHoldNotes.members)
+      {
+        if (holdNoteSprite == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
+
+        if (!holdNoteSprite.isHoldNoteVisible(FlxG.height - MENU_BAR_HEIGHT, GRID_TOP_PAD))
+        {
+          holdNoteSprite.kill();
+        }
+        else if (currentSongChartNoteData.indexOf(holdNoteSprite.noteData) == -1 || holdNoteSprite.noteData.length == 0)
+        {
+          // This hold note was deleted.
+          // Kill the hold note sprite and recycle it.
+          holdNoteSprite.kill();
+        }
+        else if (displayedHoldNoteData.indexOf(holdNoteSprite.noteData) != -1)
+        {
+          // This hold note is a duplicate.
+          // Kill the hold note sprite and recycle it.
+          holdNoteSprite.kill();
+        }
+        else
+        {
+          displayedHoldNoteData.push(holdNoteSprite.noteData);
+          // Update the event sprite's position.
+          holdNoteSprite.updateHoldNotePosition(renderedNotes);
+        }
+      }
+
       // Remove events that are no longer visible and list the ones that are.
       var displayedEventData:Array<SongEventData> = [];
       for (eventSprite in renderedEvents.members)
       {
         if (eventSprite == null || !eventSprite.exists || !eventSprite.visible) continue;
 
-        if (!eventSprite.isEventVisible(viewAreaBottom, viewAreaTop))
+        if (!eventSprite.isEventVisible(FlxG.height - MENU_BAR_HEIGHT, GRID_TOP_PAD))
         {
           // This sprite is off-screen.
           // Kill the event sprite and recycle it.
@@ -2227,63 +2255,36 @@ class ChartEditorState extends HaxeUIState
           continue;
         }
 
-        // Get the position the note should be at.
-        var noteTimePixels:Float = noteData.stepTime * GRID_SIZE;
-
-        // Make sure the note appears when scrolling up.
-        var modifiedViewAreaTop = viewAreaTop - GRID_SIZE;
-
-        if (noteTimePixels < modifiedViewAreaTop || noteTimePixels > viewAreaBottom) continue;
-
-        // Else, this note is visible and we need to render it!
+        if (!ChartEditorNoteSprite.wouldNoteBeVisible(viewAreaBottomPixels, viewAreaTopPixels, noteData,
+          renderedNotes)) continue; // Else, this note is visible and we need to render it!
 
         // Get a note sprite from the pool.
         // If we can reuse a deleted note, do so.
         // If a new note is needed, call buildNoteSprite.
         var noteSprite:ChartEditorNoteSprite = renderedNotes.recycle(() -> new ChartEditorNoteSprite(this));
+        trace('Creating new Note... (${renderedNotes.members.length})');
         noteSprite.parentState = this;
 
         // The note sprite handles animation playback and positioning.
         noteSprite.noteData = noteData;
 
         // Setting note data resets position relative to the grid so we fix that.
-        noteSprite.x += renderedNotes.x;
-        noteSprite.y += renderedNotes.y;
+        noteSprite.updateNotePosition(renderedNotes);
 
-        // TODO: Replace this with SustainTrail.
-        if (noteSprite.noteData.length > 0)
+        // Add hold notes that are now visible (and not already displayed).
+        if (noteSprite.noteData.length > 0 && displayedHoldNoteData.indexOf(noteData) == -1)
         {
-          var holdNoteSprite:SustainTrail = renderedHoldNotes.recycle(() -> new SustainTrail(this));
+          var holdNoteSprite:ChartEditorHoldNoteSprite = renderedHoldNotes.recycle(() -> new ChartEditorHoldNoteSprite(this));
+          trace('Creating new HoldNote... (${renderedHoldNotes.members.length})');
 
           var noteLengthPixels:Float = noteSprite.noteData.stepLength * GRID_SIZE;
 
-          // If the note is a hold, we need to make sure it's long enough.
-          // var noteLengthSteps:Float = ;
-          // var lastNoteSprite:ChartEditorNoteSprite = noteSprite;
-          //
-          // while (noteLengthSteps > 0)
-          // {
-          //   if (noteLengthSteps <= 1.0)
-          //   {
-          //     // Last note in the hold.
-          //     // TODO: We may need to make it shorter and clip it visually.
-          //   }
-          //
-          //   var nextNoteSprite:ChartEditorNoteSprite = renderedNotes.recycle(ChartEditorNoteSprite);
-          //   nextNoteSprite.parentState = this;
-          //   nextNoteSprite.parentNoteSprite = lastNoteSprite;
-          //   lastNoteSprite.childNoteSprite = nextNoteSprite;
-          //
-          //   lastNoteSprite = nextNoteSprite;
-          //
-          //   noteLengthSteps -= 1;
-          // }
-          //
-          // // Make sure the last note sprite shows the end cap properly.
-          // lastNoteSprite.childNoteSprite = null;
+          holdNoteSprite.noteData = noteSprite.noteData;
+          holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
 
-          // var noteLengthPixels:Float = (noteLengthMs / Conductor.stepLengthMs + 1) * GRID_SIZE;
-          // add(new FlxSprite(noteSprite.x, noteSprite.y - renderedNotes.y + noteLengthPixels).makeGraphic(40, 2, 0xFFFF0000));
+          holdNoteSprite.setHeightDirectly(noteLengthPixels);
+
+          holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
         }
       }
 
@@ -2296,13 +2297,7 @@ class ChartEditorState extends HaxeUIState
           continue;
         }
 
-        // Get the position the event should be at.
-        var eventTimePixels:Float = eventData.stepTime * GRID_SIZE;
-
-        // Make sure the event appears when scrolling up.
-        var modifiedViewAreaTop = viewAreaTop - GRID_SIZE;
-
-        if (eventTimePixels < modifiedViewAreaTop || eventTimePixels > viewAreaBottom) continue;
+        if (!ChartEditorEventSprite.wouldEventBeVisible(viewAreaBottomPixels, viewAreaTopPixels, eventData, renderedNotes)) continue;
 
         // Else, this event is visible and we need to render it!
 
@@ -2311,6 +2306,7 @@ class ChartEditorState extends HaxeUIState
         // If a new event is needed, call buildEventSprite.
         var eventSprite:ChartEditorEventSprite = renderedEvents.recycle(() -> new ChartEditorEventSprite(this), false, true);
         eventSprite.parentState = this;
+        trace('Creating new Event... (${renderedEvents.members.length})');
 
         // The event sprite handles animation playback and positioning.
         eventSprite.eventData = eventData;
@@ -2318,6 +2314,34 @@ class ChartEditorState extends HaxeUIState
         // Setting event data resets position relative to the grid so we fix that.
         eventSprite.x += renderedEvents.x;
         eventSprite.y += renderedEvents.y;
+      }
+
+      // Add hold notes that have been made visible (but not their parents)
+      for (noteData in currentSongChartNoteData)
+      {
+        // Is the note a hold note?
+        if (noteData.length <= 0) continue;
+
+        // Is the hold note rendered already?
+        if (displayedHoldNoteData.indexOf(noteData) != -1) continue;
+
+        // Is the hold note offscreen?
+        if (!ChartEditorHoldNoteSprite.wouldHoldNoteBeVisible(viewAreaBottomPixels, viewAreaTopPixels, noteData, renderedHoldNotes)) continue;
+
+        // Hold note should be rendered.
+        var holdNoteSprite:ChartEditorHoldNoteSprite = renderedHoldNotes.recycle(() -> new ChartEditorHoldNoteSprite(this));
+        trace('Creating new HoldNote... (${renderedHoldNotes.members.length})');
+
+        var noteLengthPixels:Float = noteData.stepLength * GRID_SIZE;
+
+        holdNoteSprite.noteData = noteData;
+        holdNoteSprite.noteDirection = noteData.getDirection();
+
+        holdNoteSprite.setHeightDirectly(noteLengthPixels);
+
+        holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
+
+        displayedHoldNoteData.push(noteData);
       }
 
       // Destroy all existing selection squares.
@@ -2958,6 +2982,7 @@ class ChartEditorState extends HaxeUIState
     }
     // Move the rendered notes to the correct position.
     renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
+    renderedHoldNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     renderedEvents.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     renderedSelectionSquares.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     if (gridSpectrogram != null)
@@ -2974,6 +2999,7 @@ class ChartEditorState extends HaxeUIState
    * Loads an instrumental from an absolute file path, replacing the current instrumental.
    *
    * @param path The absolute path to the audio file.
+   *
    * @return Success or failure.
    */
   public function loadInstrumentalFromPath(path:Path):Bool
@@ -3114,7 +3140,7 @@ class ChartEditorState extends HaxeUIState
     for (metadata in rawSongMetadata)
     {
       var variation = (metadata.variation == null || metadata.variation == '') ? 'default' : metadata.variation;
-      this.songMetadata.set(variation, metadata);
+      this.songMetadata.set(variation, Reflect.copy(metadata));
     }
 
     this.songChartData = new Map<String, SongChartData>();
@@ -3154,7 +3180,8 @@ class ChartEditorState extends HaxeUIState
   function moveSongToScrollPosition():Void
   {
     // Update the songPosition in the Conductor.
-    Conductor.update(scrollPositionInMs);
+    var targetPos = scrollPositionInMs;
+    Conductor.update(targetPos);
 
     // Update the songPosition in the audio tracks.
     if (audioInstTrack != null) audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;

@@ -3,7 +3,6 @@ package funkin;
 import funkin.util.Constants;
 import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
-import funkin.SongLoad.SwagSong;
 import funkin.play.song.Song.SongDifficulty;
 import funkin.play.song.SongData.SongTimeChange;
 
@@ -13,12 +12,6 @@ import funkin.play.song.SongData.SongTimeChange;
  */
 class Conductor
 {
-  public static final PIXELS_PER_MS:Float = 0.45;
-  public static final HIT_WINDOW_MS:Float = 160;
-  public static final SECONDS_PER_MINUTE:Float = 60;
-  public static final MILLIS_PER_SECOND:Float = 1000;
-  public static final STEPS_PER_BEAT:Int = 4;
-
   // onBeatHit is called every quarter note
   // onStepHit is called every sixteenth note
   // 4/4 = 4 beats per measure = 16 steps per measure
@@ -82,18 +75,18 @@ class Conductor
   }
 
   /**
-   * Duration of a beat in milliseconds. Calculated based on bpm.
+   * Duration of a beat (quarter note) in milliseconds. Calculated based on bpm.
    */
   public static var beatLengthMs(get, null):Float;
 
   static function get_beatLengthMs():Float
   {
     // Tied directly to BPM.
-    return ((SECONDS_PER_MINUTE / bpm) * MILLIS_PER_SECOND);
+    return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC);
   }
 
   /**
-   * Duration of a step (quarter) in milliseconds. Calculated based on bpm.
+   * Duration of a step (sixtennth note) in milliseconds. Calculated based on bpm.
    */
   public static var stepLengthMs(get, null):Float;
 
@@ -280,7 +273,8 @@ class Conductor
           {
             var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
             currentTimeChange.beatTime = prevTimeChange.beatTime
-              + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC);
+              + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC)
+              + 0.01;
           }
         }
       }
@@ -323,7 +317,8 @@ class Conductor
         }
       }
 
-      var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / stepLengthMs;
+      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / lastStepLengthMs;
       resultStep += resultFractionalStep; // Math.floor();
 
       return resultStep;
@@ -359,7 +354,8 @@ class Conductor
         }
       }
 
-      resultMs += (stepTime - lastTimeChange.beatTime * 4) * stepLengthMs;
+      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      resultMs += (stepTime - lastTimeChange.beatTime * 4) * lastStepLengthMs;
 
       return resultMs;
     }
@@ -394,7 +390,8 @@ class Conductor
         }
       }
 
-      resultMs += (beatTime - lastTimeChange.beatTime) * stepLengthMs * Constants.STEPS_PER_BEAT;
+      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      resultMs += (beatTime - lastTimeChange.beatTime) * lastStepLengthMs * Constants.STEPS_PER_BEAT;
 
       return resultMs;
     }

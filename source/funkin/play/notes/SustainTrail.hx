@@ -88,9 +88,9 @@ class SustainTrail extends FlxSprite
    * @param SustainLength Length in milliseconds.
    * @param fileName
    */
-  public function new(noteDirection:NoteDirection, sustainLength:Float, fileName:String, noteStyle:NoteStyle)
+  public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
   {
-    super(0, 0, fileName);
+    super(0, 0, noteStyle.getHoldNoteAssetPath());
 
     antialiasing = true;
 
@@ -111,7 +111,7 @@ class SustainTrail extends FlxSprite
 
     // CALCULATE SIZE
     width = graphic.width / 8 * zoom; // amount of notes * 2
-    height = sustainHeight(sustainLength, PlayState.instance.currentChart.scrollSpeed);
+    height = sustainHeight(sustainLength, getScrollSpeed());
     // instead of scrollSpeed, PlayState.SONG.speed
 
     flipY = PreferencesMenu.getPref('downscroll');
@@ -123,6 +123,13 @@ class SustainTrail extends FlxSprite
 
     updateClipping();
     indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
+
+    this.active = true; // This NEEDS to be true for the note to be drawn!
+  }
+
+  function getScrollSpeed():Float
+  {
+    return PlayState?.instance?.currentChart?.scrollSpeed ?? 1.0;
   }
 
   /**
@@ -139,7 +146,7 @@ class SustainTrail extends FlxSprite
   {
     if (s < 0) s = 0;
 
-    height = sustainHeight(s, PlayState.instance.currentChart.scrollSpeed);
+    height = sustainHeight(s, getScrollSpeed());
     updateColorTransform();
     updateClipping();
     return sustainLength = s;
@@ -152,7 +159,7 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping(songTime:Float = 0):Void
   {
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), PlayState.instance.currentChart.scrollSpeed), 0, height);
+    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), getScrollSpeed()), 0, height);
     if (clipHeight == 0)
     {
       visible = false;

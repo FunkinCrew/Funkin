@@ -67,8 +67,12 @@ class ChartEditorEventSprite extends FlxSprite
     // Push all the other events as frames.
     for (eventName in SongEventParser.listEventIds())
     {
+      var exists:Bool = Assets.exists(Paths.image('ui/chart-editor/events/$eventName'));
+      if (!exists) continue; // No graphic for this event.
+
       var frames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/chart-editor/events/$eventName');
-      if (frames == null) continue; // No graphic for this event.
+      if (frames == null) continue; // Could not load graphic for this event.
+
       frames.parent.persist = true;
       for (frame in frames.frames)
       {
@@ -140,19 +144,34 @@ class ChartEditorEventSprite extends FlxSprite
   }
 
   /**
-   * Return whether this note (or its parent) is currently visible.
+   * Return whether this event is currently visible.
    */
-  public function isEventVisible(viewAreaBottom:Float, viewAreaTop:Float):Bool
+  public function isNoteVisible(viewAreaBottom:Float, viewAreaTop:Float):Bool
   {
-    var outsideViewArea = (this.y + this.height < viewAreaTop || this.y > viewAreaBottom);
+    // True if the note is above the view area.
+    var aboveViewArea = (this.y + this.height < viewAreaTop);
 
-    if (!outsideViewArea)
-    {
-      return true;
-    }
+    // True if the note is below the view area.
+    var belowViewArea = (this.y > viewAreaBottom);
 
-    // TODO: Check if this note's parent or child is visible.
+    return !aboveViewArea && !belowViewArea;
+  }
 
-    return false;
+  /**
+   * Return whether an event, if placed in the scene, would be visible.
+   */
+  public static function wouldNoteBeVisible(viewAreaBottom:Float, viewAreaTop:Float, eventData:SongEventData, ?origin:FlxObject):Bool
+  {
+    var noteHeight:Float = ChartEditorState.GRID_SIZE;
+    var notePosY:Float = eventData.stepTime * ChartEditorState.GRID_SIZE;
+    if (origin != null) notePosY += origin.y;
+
+    // True if the note is above the view area.
+    var aboveViewArea = (notePosY + noteHeight < viewAreaTop);
+
+    // True if the note is below the view area.
+    var belowViewArea = (notePosY > viewAreaBottom);
+
+    return !aboveViewArea && !belowViewArea;
   }
 }

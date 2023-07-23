@@ -49,7 +49,7 @@ class TitleState extends MusicBeatState
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
-    FlxG.sound.cache(Paths.music('freakyMenu'));
+    FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
 
     // DEBUG BULLSHIT
 

@@ -213,7 +213,7 @@ class Strumline extends FlxSpriteGroup
     var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
-    return Conductor.PIXELS_PER_MS * (Conductor.songPosition - strumTime) * scrollSpeed * vwoosh * (PreferencesMenu.getPref('downscroll') ? 1 : -1);
+    return Constants.PIXELS_PER_MS * (Conductor.songPosition - strumTime) * scrollSpeed * vwoosh * (PreferencesMenu.getPref('downscroll') ? 1 : -1);
   }
 
   function updateNotes():Void
@@ -273,7 +273,7 @@ class Strumline extends FlxSpriteGroup
         }
       }
 
-      var renderWindowEnd = holdNote.strumTime + holdNote.fullSustainLength + Conductor.HIT_WINDOW_MS + RENDER_DISTANCE_MS / 8;
+      var renderWindowEnd = holdNote.strumTime + holdNote.fullSustainLength + Constants.HIT_WINDOW_MS + RENDER_DISTANCE_MS / 8;
 
       if (holdNote.missedNote && Conductor.songPosition >= renderWindowEnd)
       {
@@ -308,7 +308,7 @@ class Strumline extends FlxSpriteGroup
         // Hold note was dropped before completing, keep it in its clipped state.
         holdNote.visible = true;
 
-        var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Conductor.PIXELS_PER_MS;
+        var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Constants.PIXELS_PER_MS;
 
         trace('yOffset: ' + yOffset);
         trace('holdNote.fullSustainLength: ' + holdNote.fullSustainLength);
@@ -678,7 +678,7 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new SustainTrail(0, 100, noteStyle.getHoldNoteAssetPath(), noteStyle);
+      result = new SustainTrail(0, 100, noteStyle);
       this.holdNotes.add(result);
     }
 
