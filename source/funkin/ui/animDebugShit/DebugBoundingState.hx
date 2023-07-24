@@ -1,5 +1,7 @@
 package funkin.ui.animDebugShit;
 
+import funkin.util.SerializerUtil;
+import funkin.play.character.CharacterData;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -32,6 +34,9 @@ import openfl.net.FileReference;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
+import funkin.input.Cursor;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.util.SortUtil;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -71,7 +76,7 @@ class DebugBoundingState extends FlxState
   {
     Paths.setCurrentLevel('week1');
 
-    var str = Paths.xml('ui/offset-editor-view');
+    var str = Paths.xml('ui/animation-editor/offset-editor-view');
     uiStuff = RuntimeComponentBuilder.fromAsset(str);
 
     // uiStuff.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
@@ -109,6 +114,8 @@ class DebugBoundingState extends FlxState
     initSpritesheetView();
     initOffsetView();
 
+    Cursor.show();
+
     uiStuff.cameras = [hudCam];
 
     add(uiStuff);
@@ -124,7 +131,7 @@ class DebugBoundingState extends FlxState
     spriteSheetView = new FlxGroup();
     add(spriteSheetView);
 
-    var tex = Paths.getSparrowAtlas('characters/temp');
+    var tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
     // tex.frames[0].uv
 
     bf = new FlxSprite();
@@ -239,11 +246,15 @@ class DebugBoundingState extends FlxState
     txtOffsetShit.cameras = [hudCam];
     offsetView.add(txtOffsetShit);
 
-    animDropDownMenu = new FlxUIDropDownMenu(630, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
+    animDropDownMenu = new FlxUIDropDownMenu(0, 0, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
     animDropDownMenu.cameras = [hudCam];
+    // Move to bottom right corner
+    animDropDownMenu.x = FlxG.width - animDropDownMenu.width - 20;
+    animDropDownMenu.y = FlxG.height - animDropDownMenu.height - 20;
     offsetView.add(animDropDownMenu);
 
-    var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+    var characters:Array<String> = CharacterDataParser.listCharacterIds();
+    characters.sort(SortUtil.alphabetically);
 
     var charDropdown:DropDown = cast uiStuff.findComponent('characterDropdown');
     for (char in characters)
@@ -265,19 +276,16 @@ class DebugBoundingState extends FlxState
     {
       if (FlxG.mouse.justPressed)
       {
-        mouseOffset.set(FlxG.mouse.x - -swagChar.offset.x, FlxG.mouse.y - -swagChar.offset.y);
-        // oldPos.set(swagChar.offset.x, swagChar.offset.y);
-        // oldPos.set(FlxG.mouse.x, FlxG.mouse.y);
+        mouseOffset.set(FlxG.mouse.x - -swagChar.animOffsets[0], FlxG.mouse.y - -swagChar.animOffsets[1]);
       }
 
       if (FlxG.mouse.pressed)
       {
-        swagChar.offset.x = (FlxG.mouse.x - mouseOffset.x) * -1;
-        swagChar.offset.y = (FlxG.mouse.y - mouseOffset.y) * -1;
+        swagChar.animOffsets = [(FlxG.mouse.x - mouseOffset.x) * -1, (FlxG.mouse.y - mouseOffset.y) * -1];
 
-        swagChar.animationOffsets.set(animDropDownMenu.selectedLabel, [Std.int(swagChar.offset.x), Std.int(swagChar.offset.y)]);
+        swagChar.animationOffsets.set(animDropDownMenu.selectedLabel, swagChar.animOffsets);
 
-        txtOffsetShit.text = 'Offset: ' + swagChar.offset;
+        txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
       }
     }
   }
@@ -290,6 +298,11 @@ class DebugBoundingState extends FlxState
     txtGrp.add(swagText);
 
     swagText.text = str + ": " + Std.string(value);
+  }
+
+  function clearInfo()
+  {
+    txtGrp.clear();
   }
 
   function checkLibrary(library:String)
@@ -321,7 +334,7 @@ class DebugBoundingState extends FlxState
     {
       var lv:DropDown = cast uiStuff.findComponent("swapper");
       lv.selectedIndex = 1;
-      curView = OFFSETSHIT;
+      curView = ANIMATIONS;
       if (swagChar != null)
       {
         FlxG.camera.focusOn(swagChar.getMidpoint());
@@ -335,7 +348,7 @@ class DebugBoundingState extends FlxState
         spriteSheetView.visible = true;
         offsetView.visible = false;
         offsetView.active = false;
-      case OFFSETSHIT:
+      case ANIMATIONS:
         spriteSheetView.visible = false;
         offsetView.visible = true;
         offsetView.active = true;
@@ -344,6 +357,8 @@ class DebugBoundingState extends FlxState
     }
 
     if (FlxG.keys.justPressed.H) hudCam.visible = !hudCam.visible;
+
+    if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
 
     CoolUtil.mouseCamDrag();
     CoolUtil.mouseWheelZoom();
@@ -365,14 +380,14 @@ class DebugBoundingState extends FlxState
         + 1);
       else
         animDropDownMenu.selectedId = Std.string(0);
-      animDropDownMenu.callback(animDropDownMenu.selectedId);
+      playCharacterAnimation(animDropDownMenu.selectedId, true);
     }
     if (FlxG.keys.justPressed.LBRACKET || FlxG.keys.justPressed.Q)
     {
       if (Std.parseInt(animDropDownMenu.selectedId) - 1 >= 0) animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) - 1);
       else
         animDropDownMenu.selectedId = Std.string(animDropDownMenu.length - 1);
-      animDropDownMenu.callback(animDropDownMenu.selectedId);
+      playCharacterAnimation(animDropDownMenu.selectedId, true);
     }
 
     // Keyboards controls for general WASD "movement"
@@ -380,16 +395,29 @@ class DebugBoundingState extends FlxState
     // and then it's just played and updated from the animDropDownMenu callback, which is set in the loadAnimShit() function probabbly
     if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.D || FlxG.keys.justPressed.A)
     {
-      var missShit:String = '';
+      var suffix:String = '';
+      var targetLabel:String = '';
 
-      if (FlxG.keys.pressed.SHIFT) missShit = 'miss';
+      if (FlxG.keys.pressed.SHIFT) suffix = 'miss';
 
-      if (FlxG.keys.justPressed.W) animDropDownMenu.selectedLabel = 'singUP' + missShit;
-      if (FlxG.keys.justPressed.S) animDropDownMenu.selectedLabel = 'singDOWN' + missShit;
-      if (FlxG.keys.justPressed.A) animDropDownMenu.selectedLabel = 'singLEFT' + missShit;
-      if (FlxG.keys.justPressed.D) animDropDownMenu.selectedLabel = 'singRIGHT' + missShit;
+      if (FlxG.keys.justPressed.W) targetLabel = 'singUP$suffix';
+      if (FlxG.keys.justPressed.S) targetLabel = 'singDOWN$suffix';
+      if (FlxG.keys.justPressed.A) targetLabel = 'singLEFT$suffix';
+      if (FlxG.keys.justPressed.D) targetLabel = 'singRIGHT$suffix';
 
-      animDropDownMenu.callback(animDropDownMenu.selectedId);
+      if (targetLabel != animDropDownMenu.selectedLabel)
+      {
+        // Play the new animation if the IDs are the different.
+        // Override the onion skin.
+        animDropDownMenu.selectedLabel = targetLabel;
+        playCharacterAnimation(animDropDownMenu.selectedId, true);
+      }
+      else
+      {
+        // Replay the current animation if the IDs are the same.
+        // Don't override the onion skin.
+        playCharacterAnimation(animDropDownMenu.selectedId, false);
+      }
     }
 
     if (FlxG.keys.justPressed.F)
@@ -401,16 +429,16 @@ class DebugBoundingState extends FlxState
     if (FlxG.keys.justPressed.SPACE)
     {
       animDropDownMenu.selectedLabel = 'idle';
-      animDropDownMenu.callback(animDropDownMenu.selectedId);
+      playCharacterAnimation(animDropDownMenu.selectedId, true);
     }
 
     // Playback the animation
-    if (FlxG.keys.justPressed.ENTER) animDropDownMenu.callback(animDropDownMenu.selectedId);
+    if (FlxG.keys.justPressed.ENTER) playCharacterAnimation(animDropDownMenu.selectedId, false);
 
     if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
     {
       var animName = animDropDownMenu.selectedLabel;
-      var coolValues:Array<Float> = swagChar.animationOffsets.get(animName);
+      var coolValues:Array<Float> = swagChar.animationOffsets.get(animName).copy();
 
       var multiplier:Int = 5;
 
@@ -433,16 +461,36 @@ class DebugBoundingState extends FlxState
 
     if (FlxG.keys.justPressed.ESCAPE)
     {
-      var outputString:String = "";
-
-      for (i in swagChar.animationOffsets.keys())
-      {
-        outputString += i + " " + swagChar.animationOffsets.get(i)[0] + " " + swagChar.animationOffsets.get(i)[1] + "\n";
-      }
-
-      outputString.trim();
-      saveOffsets(outputString);
+      var outputString = FlxG.keys.pressed.CONTROL ? buildOutputStringOld() : buildOutputStringNew();
+      saveOffsets(outputString, FlxG.keys.pressed.CONTROL ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
     }
+  }
+
+  function buildOutputStringOld():String
+  {
+    var outputString:String = "";
+
+    for (i in swagChar.animationOffsets.keys())
+    {
+      outputString += i + " " + swagChar.animationOffsets.get(i)[0] + " " + swagChar.animationOffsets.get(i)[1] + "\n";
+    }
+
+    outputString.trim();
+
+    return outputString;
+  }
+
+  function buildOutputStringNew():String
+  {
+    var charData:CharacterData = Reflect.copy(swagChar._data);
+
+    for (charDataAnim in charData.animations)
+    {
+      var animName:String = charDataAnim.name;
+      charDataAnim.offsets = swagChar.animationOffsets.get(animName);
+    }
+
+    return SerializerUtil.toJSON(charData, true);
   }
 
   var swagChar:BaseCharacter;
@@ -467,35 +515,51 @@ class DebugBoundingState extends FlxState
     generateOutlines(swagChar.frames.frames);
     bf.pixels = swagChar.pixels;
 
-    var animThing:Array<String> = [];
+    clearInfo();
+    addInfo(swagChar._data.assetPath, "");
+    addInfo('Width', bf.width);
+    addInfo('Height', bf.height);
+
+    characterAnimNames = [];
 
     for (i in swagChar.animationOffsets.keys())
     {
-      animThing.push(i);
+      characterAnimNames.push(i);
       trace(i);
       trace(swagChar.animationOffsets[i]);
     }
 
-    animDropDownMenu.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animThing, true));
+    animDropDownMenu.setData(FlxUIDropDownMenu.makeStrIdLabelArray(characterAnimNames, true));
     animDropDownMenu.callback = function(str:String) {
+      playCharacterAnimation(str, true);
+    };
+    txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
+    dropDownSetup = true;
+  }
+
+  private var characterAnimNames:Array<String>;
+
+  function playCharacterAnimation(str:String, setOnionSkin:Bool = true)
+  {
+    if (setOnionSkin)
+    {
       // clears the canvas
       onionSkinChar.pixels.fillRect(new Rectangle(0, 0, FlxG.width * 2, FlxG.height * 2), 0x00000000);
 
-      onionSkinChar.stamp(swagChar, Std.int(swagChar.x - swagChar.offset.x), Std.int(swagChar.y - swagChar.offset.y));
+      onionSkinChar.stamp(swagChar, Std.int(swagChar.x), Std.int(swagChar.y));
       onionSkinChar.alpha = 0.6;
+    }
 
-      var animName = animThing[Std.parseInt(str)];
-      swagChar.playAnimation(animName, true); // trace();
-      trace(swagChar.animationOffsets.get(animName));
+    var animName = characterAnimNames[Std.parseInt(str)];
+    swagChar.playAnimation(animName, true); // trace();
+    trace(swagChar.animationOffsets.get(animName));
 
-      txtOffsetShit.text = 'Offset: ' + swagChar.offset;
-    };
-    dropDownSetup = true;
+    txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
   }
 
   var _file:FileReference;
 
-  function saveOffsets(saveString:String)
+  function saveOffsets(saveString:String, fileName:String)
   {
     if ((saveString != null) && (saveString.length > 0))
     {
@@ -503,7 +567,7 @@ class DebugBoundingState extends FlxState
       _file.addEventListener(Event.COMPLETE, onSaveComplete);
       _file.addEventListener(Event.CANCEL, onSaveCancel);
       _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-      _file.save(saveString, swagChar.characterId + "Offsets.txt");
+      _file.save(saveString,);
     }
   }
 
@@ -543,5 +607,5 @@ class DebugBoundingState extends FlxState
 enum abstract ANIMDEBUGVIEW(String)
 {
   var SPRITESHEET;
-  var OFFSETSHIT;
+  var ANIMATIONS;
 }
