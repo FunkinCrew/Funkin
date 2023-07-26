@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.ui.debug.charting.ChartEditorState;
 import haxe.Int64;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.notestyle.NoteStyleData;
@@ -77,12 +78,23 @@ typedef PlayStateParams =
    * @default `bf`, or the first character in the song's character list.
    */
   ?targetCharacter:String,
+  /**
+   * Whether the song should start in Practice Mode.
+   * @default `false`
+   */
+  ?practiceMode:Bool,
+  /**
+   * Whether the song should be in minimal mode.
+   * @default `false`
+   */
+  ?minimalMode:Bool,
 }
 
 /**
  * The gameplay state, where all the rhythm gaming happens.
+ * SubState so it can be loaded as a child of the chart editor.
  */
-class PlayState extends MusicBeatState
+class PlayState extends MusicBeatSubState
 {
   /**
    * STATIC VARIABLES
@@ -210,6 +222,11 @@ class PlayState extends MusicBeatState
   public var isPracticeMode:Bool = false;
 
   /**
+   * In Minimal Mode, the stage and characters are not loaded and a standard background is used.
+   */
+  public var isMinimalMode:Bool = false;
+
+  /**
    * Whether the game is currently in an animated cutscene, and gameplay should be stopped.
    */
   public var isInCutscene:Bool = false;
@@ -218,6 +235,20 @@ class PlayState extends MusicBeatState
    * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
    */
   public var disableKeys:Bool = false;
+
+  public var isSubState(get, null):Bool;
+
+  function get_isSubState():Bool
+  {
+    return this._parentState != null;
+  }
+
+  public var isChartingMode(get, null):Bool;
+
+  function get_isChartingMode():Bool
+  {
+    return this._parentState != null && Std.isOfType(this._parentState, ChartEditorState);
+  }
 
   /**
    * The current dialogue.
@@ -438,6 +469,8 @@ class PlayState extends MusicBeatState
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
     if (params.targetCharacter != null) currentPlayerId = params.targetCharacter;
+    isPracticeMode = params.practiceMode ?? false;
+    isMinimalMode = params.minimalMode ?? false;
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
   }
@@ -457,13 +490,6 @@ class PlayState extends MusicBeatState
     instance = this;
 
     NoteSplash.buildSplashFrames();
-
-    if (currentSong != null)
-    {
-      // Load and cache the song's charts.
-      // TODO: Do this in the loading state.
-      currentSong.cacheCharts(true);
-    }
 
     // Returns null if the song failed to load or doesn't have the selected difficulty.
     if (currentSong == null || currentChart == null)
@@ -490,7 +516,14 @@ class PlayState extends MusicBeatState
       lime.app.Application.current.window.alert(message, 'Error loading PlayState');
 
       // Force the user back to the main menu.
-      FlxG.switchState(new MainMenuState());
+      if (isSubState)
+      {
+        this.close();
+      }
+      else
+      {
+        FlxG.switchState(new MainMenuState());
+      }
       return;
     }
 
@@ -532,8 +565,15 @@ class PlayState extends MusicBeatState
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
     initHealthBar();
-    initStage();
-    initCharacters();
+    if (!isMinimalMode)
+    {
+      initStage();
+      initCharacters();
+    }
+    else
+    {
+      initMinimalMode();
+    }
     initStrumlines();
 
     // Initialize the judgements and combo meter.
@@ -706,7 +746,7 @@ class PlayState extends MusicBeatState
         // There is a 1/1000 change to use a special pause menu.
         // This prevents the player from resuming, but that's the point.
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
-        if (event.gitaroo)
+        if (!isSubState && event.gitaroo)
         {
           FlxG.switchState(new GitarooPause(
             {
@@ -725,7 +765,7 @@ class PlayState extends MusicBeatState
             boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
           }
 
-          var pauseSubState:FlxSubState = new PauseSubState();
+          var pauseSubState:FlxSubState = new PauseSubState(isChartingMode);
 
           openSubState(pauseSubState);
           pauseSubState.camera = camHUD;
@@ -1200,6 +1240,19 @@ class PlayState extends MusicBeatState
   function initStage():Void
   {
     loadStage(currentStageId);
+  }
+
+  function initMinimalMode():Void
+  {
+    // Create the green background.
+    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+    menuBG.color = 0xFF4CAF50;
+    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.updateHitbox();
+    menuBG.screenCenter();
+    menuBG.scrollFactor.set(0, 0);
+    menuBG.zIndex = -1000;
+    add(menuBG);
   }
 
   /**
@@ -2132,6 +2185,7 @@ class PlayState extends MusicBeatState
     if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
     #end
 
+    // Eject button
     if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
 
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
@@ -2163,7 +2217,10 @@ class PlayState extends MusicBeatState
     }
 
     // 8: Move to the offset editor.
-    if (FlxG.keys.justPressed.EIGHT) FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+    if (FlxG.keys.justPressed.EIGHT)
+    {
+      lime.app.Application.current.window.alert("Press ~ on the main menu to get to the editor", 'LOL');
+    }
 
     // 9: Toggle the old icon.
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
@@ -2384,7 +2441,14 @@ class PlayState extends MusicBeatState
         // FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
         FlxG.save.flush();
 
-        moveToResultsScreen();
+        if (isSubState)
+        {
+          this.close();
+        }
+        else
+        {
+          moveToResultsScreen();
+        }
       }
       else
       {
@@ -2438,8 +2502,21 @@ class PlayState extends MusicBeatState
     }
     else
     {
-      moveToResultsScreen();
+      if (isSubState)
+      {
+        this.close();
+      }
+      else
+      {
+        moveToResultsScreen();
+      }
     }
+  }
+
+  public override function close():Void
+  {
+    performCleanup();
+    super.close();
   }
 
   /**
@@ -2552,6 +2629,7 @@ class PlayState extends MusicBeatState
     FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
     FlxG.camera.targetOffset.set();
     FlxG.camera.zoom = defaultCameraZoom;
+    // Snap the camera to the follow point immediately.
     FlxG.camera.focusOn(cameraFollowPoint.getPosition());
   }
 

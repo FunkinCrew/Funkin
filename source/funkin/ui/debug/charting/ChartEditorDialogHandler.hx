@@ -580,6 +580,8 @@ class ChartEditorDialogHandler
       state.isHaxeUIDialogOpen = false;
     };
 
+    dialog.zIndex = 1000;
+
     return dialog;
   }
 }

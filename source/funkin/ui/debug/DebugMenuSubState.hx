@@ -1,5 +1,6 @@
 package funkin.ui.debug;
 
+import flixel.math.FlxPoint;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import funkin.MusicBeatSubState;
@@ -48,6 +49,9 @@ class DebugMenuSubState extends MusicBeatSubState
     createItem("ANIMATION EDITOR", openAnimationEditor);
     createItem("STAGE EDITOR", openStageEditor);
     createItem("TEST STICKERS", testStickers);
+
+    FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y));
+    FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
   }
 
   function onMenuChange(selected:TextMenuItem)

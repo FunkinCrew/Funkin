@@ -56,6 +56,32 @@ class Song implements IPlayStateScriptedClass
     populateFromMetadata();
   }
 
+  @:allow(funkin.play.song.Song)
+  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
+      ?validScore:Bool = false):Song
+  {
+    var result:Song = new Song(songId);
+
+    result._metadata.clear();
+    for (meta in metadata)
+      result._metadata.push(meta);
+
+    result.variations.clear();
+    for (vari in variations)
+      result.variations.push(vari);
+
+    result.difficultyIds.clear();
+
+    result.populateFromMetadata();
+
+    for (variation => chartData in charts)
+      result.applyChartData(chartData, variation);
+
+    result.validScore = validScore;
+
+    return result;
+  }
+
   public function getRawMetadata():Array<SongMetadata>
   {
     return _metadata;
@@ -119,26 +145,31 @@ class Song implements IPlayStateScriptedClass
     for (variation in variations)
     {
       var chartData:SongChartData = SongDataParser.parseSongChartData(songId, variation);
-      var chartNotes = chartData.notes;
-
-      for (diffId in chartNotes.keys())
-      {
-        // Retrieve the cached difficulty data.
-        var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
-        if (difficulty == null)
-        {
-          trace('Fabricated new difficulty for $diffId.');
-          difficulty = new SongDifficulty(this, diffId, variation);
-          difficulties.set(diffId, difficulty);
-        }
-        // Add the chart data to the difficulty.
-        difficulty.notes = chartData.notes.get(diffId);
-        difficulty.scrollSpeed = chartData.getScrollSpeed(diffId);
-
-        difficulty.events = chartData.events;
-      }
+      applyChartData(chartData, variation);
     }
     trace('Done caching charts.');
+  }
+
+  function applyChartData(chartData:SongChartData, variation:String):Void
+  {
+    var chartNotes = chartData.notes;
+
+    for (diffId in chartNotes.keys())
+    {
+      // Retrieve the cached difficulty data.
+      var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+      if (difficulty == null)
+      {
+        trace('Fabricated new difficulty for $diffId.');
+        difficulty = new SongDifficulty(this, diffId, variation);
+        difficulties.set(diffId, difficulty);
+      }
+      // Add the chart data to the difficulty.
+      difficulty.notes = chartData.notes.get(diffId);
+      difficulty.scrollSpeed = chartData.getScrollSpeed(diffId);
+
+      difficulty.events = chartData.events;
+    }
   }
 
   /**

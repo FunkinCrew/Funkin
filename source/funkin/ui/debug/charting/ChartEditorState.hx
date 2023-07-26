@@ -2,7 +2,9 @@ package funkin.ui.debug.charting;
 
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
+import flixel.FlxCamera;
 import flixel.FlxSprite;
+import flixel.FlxSubState;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
@@ -20,6 +22,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.play.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.Strumline;
+import funkin.play.PlayState;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongDataParser;
@@ -977,6 +980,13 @@ class ChartEditorState extends HaxeUIState
 
   override function create():Void
   {
+    // super.create() must be called first, the HaxeUI components get created here.
+    super.create();
+    // Set the z-index of the HaxeUI.
+    this.component.zIndex = 100;
+
+    fixCamera();
+
     // Get rid of any music from the previous state.
     FlxG.sound.music.stop();
 
@@ -989,8 +999,6 @@ class ChartEditorState extends HaxeUIState
     buildGrid();
     buildSelectionBox();
 
-    // Add the HaxeUI components after the grid so they're on top.
-    super.create();
     buildAdditionalUI();
 
     // Setup the onClick listeners for the UI after it's been created.
@@ -998,6 +1006,8 @@ class ChartEditorState extends HaxeUIState
     setupTurboKeyHandlers();
 
     setupAutoSave();
+
+    refresh();
 
     ChartEditorDialogHandler.openWelcomeDialog(this, false);
   }
@@ -1028,6 +1038,7 @@ class ChartEditorState extends HaxeUIState
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
+    menuBG.zIndex = -100;
   }
 
   /**
@@ -1039,28 +1050,33 @@ class ChartEditorState extends HaxeUIState
     gridTiledSprite.x = FlxG.width / 2 - GRID_SIZE * STRUMLINE_SIZE; // Center the grid.
     gridTiledSprite.y = MENU_BAR_HEIGHT + GRID_TOP_PAD; // Push down to account for the menu bar.
     add(gridTiledSprite);
+    gridTiledSprite.zIndex = 10;
 
     gridGhostNote = new ChartEditorNoteSprite(this);
     gridGhostNote.alpha = 0.6;
     gridGhostNote.noteData = new SongNoteData(0, 0, 0, "");
     gridGhostNote.visible = false;
     add(gridGhostNote);
+    gridGhostNote.zIndex = 11;
 
     gridGhostEvent = new ChartEditorEventSprite(this);
     gridGhostEvent.alpha = 0.6;
     gridGhostEvent.eventData = new SongEventData(-1, "", {});
     gridGhostEvent.visible = false;
     add(gridGhostEvent);
+    gridGhostEvent.zIndex = 12;
 
     buildNoteGroup();
 
     gridPlayheadScrollArea = new FlxSprite(gridTiledSprite.x - PLAYHEAD_SCROLL_AREA_WIDTH,
       MENU_BAR_HEIGHT).makeGraphic(PLAYHEAD_SCROLL_AREA_WIDTH, FlxG.height - MENU_BAR_HEIGHT, PLAYHEAD_SCROLL_AREA_COLOR);
     add(gridPlayheadScrollArea);
+    gridPlayheadScrollArea.zIndex = 25;
 
     // The playhead that show the current position in the song.
     gridPlayhead = new FlxSpriteGroup();
     add(gridPlayhead);
+    gridPlayhead.zIndex = 30;
 
     var playheadWidth = GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + (PLAYHEAD_SCROLL_AREA_WIDTH * 2);
     var playheadBaseYPos = MENU_BAR_HEIGHT + GRID_TOP_PAD;
@@ -1082,6 +1098,7 @@ class ChartEditorState extends HaxeUIState
     healthIconDad.x = gridTiledSprite.x - 15 - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
     healthIconDad.y = gridTiledSprite.y + 5;
     add(healthIconDad);
+    healthIconDad.zIndex = 30;
 
     healthIconBF = new HealthIcon('bf');
     healthIconBF.autoUpdate = false;
@@ -1090,12 +1107,14 @@ class ChartEditorState extends HaxeUIState
     healthIconBF.y = gridTiledSprite.y + 5;
     healthIconBF.flipX = true;
     add(healthIconBF);
+    healthIconBF.zIndex = 30;
   }
 
   function buildSelectionBox():Void
   {
     selectionBoxSprite.scrollFactor.set(0, 0);
     add(selectionBoxSprite);
+    selectionBoxSprite.zIndex = 30;
 
     setSelectionBoxBounds();
   }
@@ -1140,18 +1159,22 @@ class ChartEditorState extends HaxeUIState
     renderedHoldNotes = new FlxTypedSpriteGroup<ChartEditorHoldNoteSprite>();
     renderedHoldNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedHoldNotes);
+    renderedHoldNotes.zIndex = 24;
 
     renderedNotes = new FlxTypedSpriteGroup<ChartEditorNoteSprite>();
     renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedNotes);
+    renderedNotes.zIndex = 25;
 
     renderedEvents = new FlxTypedSpriteGroup<ChartEditorEventSprite>();
     renderedEvents.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedEvents);
+    renderedNotes.zIndex = 25;
 
     renderedSelectionSquares = new FlxTypedSpriteGroup<FlxSprite>();
     renderedSelectionSquares.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedSelectionSquares);
+    renderedNotes.zIndex = 26;
   }
 
   var playbarHeadLayout:Component;
@@ -1159,6 +1182,7 @@ class ChartEditorState extends HaxeUIState
   function buildAdditionalUI():Void
   {
     playbarHeadLayout = buildComponent(CHART_EDITOR_PLAYBARHEAD_LAYOUT);
+    playbarHeadLayout.zIndex = 110;
 
     playbarHeadLayout.width = FlxG.width - 8;
     playbarHeadLayout.height = 10;
@@ -1270,6 +1294,9 @@ class ChartEditorState extends HaxeUIState
     // addUIClickListener('menubarItemSelectRegion', _ -> doSomething());
     // addUIClickListener('menubarItemSelectBeforeCursor', _ -> doSomething());
     // addUIClickListener('menubarItemSelectAfterCursor', _ -> doSomething());
+
+    addUIClickListener('menubarItemPlaytestFull', _ -> testSongInPlayState(false));
+    addUIClickListener('menubarItemPlaytestMinimal', _ -> testSongInPlayState(true));
 
     addUIClickListener('menubarItemAbout', _ -> ChartEditorDialogHandler.openAboutDialog(this));
 
@@ -1423,6 +1450,7 @@ class ChartEditorState extends HaxeUIState
     handleFileKeybinds();
     handleEditKeybinds();
     handleViewKeybinds();
+    handleTestKeybinds();
     handleHelpKeybinds();
 
     // DEBUG
@@ -2537,6 +2565,18 @@ class ChartEditorState extends HaxeUIState
   function handleViewKeybinds():Void {}
 
   /**
+   * Handle keybinds for the Test menu items.
+   */
+  function handleTestKeybinds():Void
+  {
+    if (FlxG.keys.justPressed.ENTER)
+    {
+      var minimal = FlxG.keys.pressed.SHIFT;
+      testSongInPlayState(minimal);
+    }
+  }
+
+  /**
    * Handle keybinds for Help menu items.
    */
   function handleHelpKeybinds():Void
@@ -2907,9 +2947,9 @@ class ChartEditorState extends HaxeUIState
 
   function startAudioPlayback():Void
   {
-    if (audioInstTrack != null) audioInstTrack.play();
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.play();
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.play();
+    if (audioInstTrack != null) audioInstTrack.play(false, audioInstTrack.time);
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.play(false, audioInstTrack.time);
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.play(false, audioInstTrack.time);
 
     setComponentText('playbarPlay', '||');
   }
@@ -3002,6 +3042,34 @@ class ChartEditorState extends HaxeUIState
     }
 
     return this.scrollPositionInPixels;
+  }
+
+  /**
+   * Transitions to the Play State to test the song
+   */
+  public function testSongInPlayState(?minimal:Bool = false):Void
+  {
+    var targetSong:Song = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
+
+    subStateClosed.add(fixCamera);
+
+    openSubState(new PlayState(
+      {
+        targetSong: targetSong,
+        targetDifficulty: selectedDifficulty,
+        // TODO: Add this.
+        // targetCharacter: targetCharacter,
+        practiceMode: true,
+        minimalMode: minimal,
+      }));
+  }
+
+  function fixCamera(_:FlxSubState = null):Void
+  {
+    FlxG.cameras.reset(new FlxCamera());
+    FlxG.camera.focusOn(new FlxPoint(FlxG.width / 2, FlxG.height / 2));
+
+    add(this.component);
   }
 
   /**
