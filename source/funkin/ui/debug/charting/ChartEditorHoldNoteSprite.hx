@@ -52,6 +52,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     strumTime = 999999999;
     missedNote = false;
     hitNote = false;
+    active = true;
     visible = true;
     alpha = 1.0;
     width = graphic.width / 8 * zoom; // amount of notes * 2
@@ -62,6 +63,19 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     super.revive();
 
     setup();
+  }
+
+  public override function kill():Void
+  {
+    super.kill();
+
+    active = false;
+    visible = false;
+    noteData = null;
+    strumTime = 999999999;
+    noteDirection = 0;
+    sustainLength = 0;
+    fullSustainLength = 0;
   }
 
   /**

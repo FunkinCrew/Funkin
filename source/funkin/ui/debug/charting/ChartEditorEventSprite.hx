@@ -146,7 +146,7 @@ class ChartEditorEventSprite extends FlxSprite
   /**
    * Return whether this event is currently visible.
    */
-  public function isNoteVisible(viewAreaBottom:Float, viewAreaTop:Float):Bool
+  public function isEventVisible(viewAreaBottom:Float, viewAreaTop:Float):Bool
   {
     // True if the note is above the view area.
     var aboveViewArea = (this.y + this.height < viewAreaTop);
@@ -160,7 +160,7 @@ class ChartEditorEventSprite extends FlxSprite
   /**
    * Return whether an event, if placed in the scene, would be visible.
    */
-  public static function wouldNoteBeVisible(viewAreaBottom:Float, viewAreaTop:Float, eventData:SongEventData, ?origin:FlxObject):Bool
+  public static function wouldEventBeVisible(viewAreaBottom:Float, viewAreaTop:Float, eventData:SongEventData, ?origin:FlxObject):Bool
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
     var notePosY:Float = eventData.stepTime * ChartEditorState.GRID_SIZE;

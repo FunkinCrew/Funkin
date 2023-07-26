@@ -2329,8 +2329,11 @@ class ChartEditorState extends HaxeUIState
         if (!ChartEditorHoldNoteSprite.wouldHoldNoteBeVisible(viewAreaBottomPixels, viewAreaTopPixels, noteData, renderedHoldNotes)) continue;
 
         // Hold note should be rendered.
-        var holdNoteSprite:ChartEditorHoldNoteSprite = renderedHoldNotes.recycle(() -> new ChartEditorHoldNoteSprite(this));
-        trace('Creating new HoldNote... (${renderedHoldNotes.members.length})');
+        var holdNoteFactory = function() {
+          // TODO: Print some kind of warning if `renderedHoldNotes.members` is too high?
+          return new ChartEditorHoldNoteSprite(this);
+        }
+        var holdNoteSprite:ChartEditorHoldNoteSprite = renderedHoldNotes.recycle(holdNoteFactory);
 
         var noteLengthPixels:Float = noteData.stepLength * GRID_SIZE;
 
@@ -2388,6 +2391,12 @@ class ChartEditorState extends HaxeUIState
       // Sort the events DESCENDING. This keeps the sustain behind the associated note.
       renderedEvents.sort(FlxSort.byY, FlxSort.DESCENDING);
     }
+
+    // Add a debug value which displays the current size of the note pool.
+    // The pool will grow as more notes need to be rendered at once.
+    // If this gets too big, something needs to be optimized somewhere! -Eric
+    FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
+    FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
   }
 
   function buildSelectionSquare():FlxSprite
@@ -3095,6 +3104,17 @@ class ChartEditorState extends HaxeUIState
     #end
   }
 
+  /**
+   * Clear the voices group.
+   */
+  public function clearVocals():Void
+  {
+    audioVocalTrackGroup.clear();
+  }
+
+  /**
+   * Load a vocal track for a given song and character and add it to the voices group.
+   */
   public function loadVocalsFromAsset(path:String, charKey:String = null):Bool
   {
     var vocalTrack:FlxSound = FlxG.sound.load(path, 1.0, false);
@@ -3155,6 +3175,8 @@ class ChartEditorState extends HaxeUIState
     Conductor.mapTimeChanges(currentSongMetadata.timeChanges);
 
     sortChartData();
+
+    clearVocals();
 
     loadInstrumentalFromAsset(Paths.inst(songId));
 
