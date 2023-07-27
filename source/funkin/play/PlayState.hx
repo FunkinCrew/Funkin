@@ -686,6 +686,9 @@ class PlayState extends MusicBeatSubState
 
       currentStage.resetStage();
 
+      playerStrumline.clean();
+      opponentStrumline.clean();
+
       // Delete all notes and reset the arrays.
       regenNoteData();
 

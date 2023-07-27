@@ -398,6 +398,38 @@ class Strumline extends FlxSpriteGroup
     return heldKeys[dir];
   }
 
+  /**
+   * Called when the song is reset.
+   * Removes any special animations and the like.
+   * Doesn't reset the notes from the chart, that's handled by the PlayState.
+   */
+  public function clean():Void
+  {
+    for (note in notes.members)
+    {
+      if (note == null) continue;
+      killNote(note);
+    }
+
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null) continue;
+      holdNote.kill();
+    }
+
+    for (splash in noteSplashes)
+    {
+      if (splash == null) continue;
+      splash.kill();
+    }
+
+    for (cover in noteHoldCovers)
+    {
+      if (cover == null) continue;
+      cover.kill();
+    }
+  }
+
   public function applyNoteData(data:Array<SongNoteData>):Void
   {
     this.notes.clear();
@@ -425,6 +457,7 @@ class Strumline extends FlxSpriteGroup
 
   public function killNote(note:NoteSprite):Void
   {
+    if (note == null) return;
     note.visible = false;
     notes.remove(note, false);
     note.kill();
