@@ -684,7 +684,7 @@ class PlayState extends MusicBeatSubState
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
 
-      currentStage.resetStage();
+      if (currentStage != null) currentStage.resetStage();
 
       playerStrumline.clean();
       opponentStrumline.clean();
@@ -871,6 +871,13 @@ class PlayState extends MusicBeatSubState
         trace('Found ${songEventsToActivate.length} event(s) to activate.');
         for (event in songEventsToActivate)
         {
+          // If an event is trying to play, but it's over 5 seconds old, skip it.
+          if (event.time - Conductor.songPosition < -5000)
+          {
+            event.activated = true;
+            continue;
+          };
+
           var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
           dispatchEvent(eventEvent);
           // Calling event.cancelEvent() skips the event. Neat!
@@ -1828,6 +1835,7 @@ class PlayState extends MusicBeatSubState
 
         // Judge the miss.
         // NOTE: This is what handles the scoring.
+        trace('Missed note! ${note.noteData}');
         onNoteMiss(note);
 
         note.handledMiss = true;
@@ -1861,8 +1869,7 @@ class PlayState extends MusicBeatSubState
   {
     for (note in playerStrumline.notes.members)
     {
-      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime;
+      if (note == null || note.hasBeenHit) continue;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
       if (Conductor.songPosition > hitWindowEnd)
@@ -1872,6 +1879,9 @@ class PlayState extends MusicBeatSubState
         note.handledMiss = true;
       }
     }
+
+    playerStrumline.handleSkippedNotes();
+    opponentStrumline.handleSkippedNotes();
   }
 
   /**
@@ -1935,6 +1945,7 @@ class PlayState extends MusicBeatSubState
         if (targetNote == null) continue;
 
         // Judge and hit the note.
+        trace('Hit note! ${targetNote.noteData}');
         goodNoteHit(targetNote, input);
 
         targetNote.visible = false;
@@ -2262,12 +2273,12 @@ class PlayState extends MusicBeatSubState
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
     #if debug
-    // PAGEUP: Skip forward one section.
-    // SHIFT+PAGEUP: Skip forward ten sections.
-    if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 10 : 1);
-    // PAGEDOWN: Skip backward one section. Doesn't replace notes.
-    // SHIFT+PAGEDOWN: Skip backward ten sections.
-    if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -10 : -1);
+    // PAGEUP: Skip forward two sections.
+    // SHIFT+PAGEUP: Skip forward twenty sections.
+    if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
+    // PAGEDOWN: Skip backward two section. Doesn't replace notes.
+    // SHIFT+PAGEDOWN: Skip backward twenty sections.
+    if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
     #end
 
     if (FlxG.keys.justPressed.B) trace(inputSpitter.join('\n'));
@@ -2550,6 +2561,7 @@ class PlayState extends MusicBeatSubState
 
   public override function close():Void
   {
+    criticalFailure = true; // Stop game updates.
     performCleanup();
     super.close();
   }
@@ -2563,6 +2575,10 @@ class PlayState extends MusicBeatSubState
     {
       // TODO: Uncache the song.
     }
+
+    // Stop the music.
+    FlxG.sound.music.pause();
+    vocals.stop();
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)

@@ -3063,6 +3063,7 @@ class ChartEditorState extends HaxeUIState
     var targetSong:Song = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
 
     subStateClosed.add(fixCamera);
+    subStateClosed.add(updateConductor);
 
     openSubState(new PlayState(
       {
@@ -3080,8 +3081,15 @@ class ChartEditorState extends HaxeUIState
   {
     FlxG.cameras.reset(new FlxCamera());
     FlxG.camera.focusOn(new FlxPoint(FlxG.width / 2, FlxG.height / 2));
+    FlxG.camera.zoom = 1.0;
 
     add(this.component);
+  }
+
+  function updateConductor(_:FlxSubState = null):Void
+  {
+    var targetPos = scrollPositionInMs;
+    Conductor.update(targetPos);
   }
 
   /**
