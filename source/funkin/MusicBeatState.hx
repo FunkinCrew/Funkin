@@ -72,9 +72,11 @@ class MusicBeatState extends FlxUIState implements IEventHandler
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
 
     // Display Conductor info in the watch window.
-    FlxG.watch.addQuick("songPos", Conductor.songPosition);
-    FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
+    FlxG.watch.addQuick("songPosition", Conductor.songPosition);
     FlxG.watch.addQuick("bpm", Conductor.bpm);
+    FlxG.watch.addQuick("currentMeasureTime", Conductor.currentBeatTime);
+    FlxG.watch.addQuick("currentBeatTime", Conductor.currentBeatTime);
+    FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }

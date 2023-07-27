@@ -181,6 +181,14 @@
 		<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
 		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
 	</section>
+	<section if="debug">
+		<!--
+			Use the parent assets folder rather than the exported one
+			No more will we accidentally undo our changes!
+			TODO: Add a thing to disable this on builds meant for itch.io.
+		-->
+		<haxedef name="REDIRECT_ASSETS_FOLDER" />
+	</section>
 	<!-- <prebuild haxe="trace('prebuilding');"/> -->
 	<!-- <postbuild haxe="art/Postbuild.hx"/> -->
 	<!-- <config:ios allow-provisioning-updates="true" team-id="" /> -->

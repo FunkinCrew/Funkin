@@ -27,7 +27,7 @@ class ChartEditorEventSprite extends FlxSprite
   /**
    * The image used for all song events. Cached for performance.
    */
-  var eventGraphic:BitmapData;
+  static var eventSpriteBasic:BitmapData;
 
   public function new(parent:ChartEditorState)
   {
@@ -40,12 +40,12 @@ class ChartEditorEventSprite extends FlxSprite
 
   function buildGraphic():Void
   {
-    if (eventGraphic == null)
+    if (eventSpriteBasic == null)
     {
-      eventGraphic = Assets.getBitmapData(Paths.image('ui/chart-editor/event'));
+      eventSpriteBasic = Assets.getBitmapData(Paths.image('ui/chart-editor/event'));
     }
 
-    loadGraphic(eventGraphic);
+    loadGraphic(eventSpriteBasic);
     setGraphicSize(ChartEditorState.GRID_SIZE);
     this.updateHitbox();
   }

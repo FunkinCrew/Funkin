@@ -27,4 +27,23 @@ class SortUtil
   {
     return FlxSort.byValues(order, a.noteData.time, b.noteData.time);
   }
+
+  public static inline function alphabetically(a:String, b:String)
+  {
+    a = a.toUpperCase();
+    b = b.toUpperCase();
+
+    if (a < b)
+    {
+      return -1;
+    }
+    else if (a > b)
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }
 }

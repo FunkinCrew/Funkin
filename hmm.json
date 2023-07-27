@@ -42,7 +42,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "08fbc9d",
+      "ref": "1e11510",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
@@ -95,8 +95,8 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "2447ae6",
-      "url": "https://github.com/elitemastereric/lime"
+      "ref": "acb0334",
+      "url": "https://github.com/EliteMasterEric/lime"
     },
     {
       "name": "openfl",
@@ -109,7 +109,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "6594dd8",
+      "ref": "631a363",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
