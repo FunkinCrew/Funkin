@@ -401,6 +401,11 @@ class ChartEditorState extends HaxeUIState
   }
 
   /**
+   * If true, playtesting a chart will skip to the current playhead position.
+   */
+  var playtestStartTime:Bool = false;
+
+  /**
    * Whether hitsounds are enabled for at least one character.
    */
   var hitsoundsEnabled(get, null):Bool;
@@ -1304,6 +1309,9 @@ class ChartEditorState extends HaxeUIState
 
     addUIChangeListener('menubarItemDownscroll', event -> isViewDownscroll = event.value);
     setUICheckboxSelected('menubarItemDownscroll', isViewDownscroll);
+
+    addUIChangeListener('menubarItemPlaytestStartTime', event -> playtestStartTime = event.value);
+    setUICheckboxSelected('menubarItemPlaytestStartTime', playtestStartTime);
 
     addUIChangeListener('menuBarItemThemeLight', function(event:UIEvent) {
       if (event.target.value) currentTheme = ChartEditorTheme.Light;
@@ -3049,6 +3057,9 @@ class ChartEditorState extends HaxeUIState
    */
   public function testSongInPlayState(?minimal:Bool = false):Void
   {
+    var startTimestamp:Float = 0;
+    if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
+
     var targetSong:Song = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
 
     subStateClosed.add(fixCamera);
@@ -3061,6 +3072,7 @@ class ChartEditorState extends HaxeUIState
         // targetCharacter: targetCharacter,
         practiceMode: true,
         minimalMode: minimal,
+        startTimestamp: startTimestamp,
       }));
   }
 

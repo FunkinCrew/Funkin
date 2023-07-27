@@ -220,6 +220,7 @@ class Strumline extends FlxSpriteGroup
   {
     if (noteData.length == 0) return;
 
+    var songStart:Float = PlayState.instance.startTimestamp ?? 0.0;
     var renderWindowStart:Float = Conductor.songPosition + RENDER_DISTANCE_MS;
 
     for (noteIndex in nextNoteIndex...noteData.length)
@@ -227,6 +228,7 @@ class Strumline extends FlxSpriteGroup
       var note:Null<SongNoteData> = noteData[noteIndex];
 
       if (note == null) continue;
+      if (note.time < songStart) continue;
       if (note.time > renderWindowStart) break;
 
       var noteSprite = buildNoteSprite(note);

@@ -88,6 +88,10 @@ typedef PlayStateParams =
    * @default `false`
    */
   ?minimalMode:Bool,
+  /**
+   * If specified, the game will jump to the specified timestamp after the countdown ends.
+   */
+  ?startTimestamp:Float,
 }
 
 /**
@@ -235,6 +239,8 @@ class PlayState extends MusicBeatSubState
    * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
    */
   public var disableKeys:Bool = false;
+
+  public var startTimestamp:Float = 0.0;
 
   public var isSubState(get, null):Bool;
 
@@ -471,6 +477,7 @@ class PlayState extends MusicBeatSubState
     if (params.targetCharacter != null) currentPlayerId = params.targetCharacter;
     isPracticeMode = params.practiceMode ?? false;
     isMinimalMode = params.minimalMode ?? false;
+    startTimestamp = params.startTimestamp ?? 0.0;
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
   }
@@ -560,7 +567,7 @@ class PlayState extends MusicBeatSubState
 
     // Prepare the Conductor.
     Conductor.mapTimeChanges(currentChart.timeChanges);
-    Conductor.update(-5000);
+    Conductor.update((Conductor.beatLengthMs * -5) + startTimestamp);
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
@@ -669,7 +676,7 @@ class PlayState extends MusicBeatSubState
 
       FlxG.sound.music.pause();
       vocals.pause();
-      FlxG.sound.music.time = 0;
+      FlxG.sound.music.time = (startTimestamp);
       vocals.time = 0;
 
       FlxG.sound.music.volume = 1;
@@ -700,8 +707,8 @@ class PlayState extends MusicBeatSubState
     {
       if (isInCountdown)
       {
-        Conductor.songPosition += elapsed * 1000;
-        if (Conductor.songPosition >= 0) startSong();
+        Conductor.update(Conductor.songPosition + elapsed * 1000);
+        if (Conductor.songPosition >= startTimestamp) startSong();
       }
     }
     else
@@ -1067,7 +1074,8 @@ class PlayState extends MusicBeatSubState
     // super.stepHit() returns false if a module cancelled the event.
     if (!super.stepHit()) return false;
 
-    if (FlxG.sound.music != null
+    if (!startingSong
+      && FlxG.sound.music != null
       && (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 200
         || Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 200))
     {
@@ -1515,7 +1523,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Read note data from the chart and generate the notes.
    */
-  function regenNoteData():Void
+  function regenNoteData(startTime:Float = 0):Void
   {
     Highscore.tallies.combo = 0;
     Highscore.tallies = new Tallies();
@@ -1531,6 +1539,8 @@ class PlayState extends MusicBeatSubState
     for (songNote in currentChart.notes)
     {
       var strumTime:Float = songNote.time;
+      if (strumTime < startTime) continue; // Skip notes that are before the start time.
+
       var noteData:Int = songNote.getDirection();
 
       var playerNote:Bool = true;
@@ -1617,14 +1627,22 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = endSong;
+    FlxG.sound.music.play(false, startTimestamp);
     trace('Playing vocals...');
     add(vocals);
     vocals.play();
+    resyncVocals();
 
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
     DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
     #end
+
+    if (startTimestamp > 0)
+    {
+      FlxG.sound.music.time = startTimestamp;
+      handleSkippedNotes();
+    }
   }
 
   /**
@@ -1640,7 +1658,7 @@ class PlayState extends MusicBeatSubState
     Conductor.update();
 
     vocals.time = FlxG.sound.music.time;
-    vocals.play();
+    vocals.play(false, FlxG.sound.music.time);
   }
 
   /**
@@ -1835,6 +1853,23 @@ class PlayState extends MusicBeatSubState
    * Spitting out the input for ravy 🙇‍♂️!!
    */
   var inputSpitter:Array<ScoreInput> = [];
+
+  function handleSkippedNotes():Void
+  {
+    for (note in playerStrumline.notes.members)
+    {
+      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
+      var hitWindowCenter = note.strumTime;
+      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
+
+      if (Conductor.songPosition > hitWindowEnd)
+      {
+        // We have passed this note.
+        // Flag the note for deletion without actually penalizing the player.
+        note.handledMiss = true;
+      }
+    }
+  }
 
   /**
    * PreciseInputEvents are put into a queue between update() calls,
@@ -2064,11 +2099,10 @@ class PlayState extends MusicBeatSubState
     if (event.eventCanceled) return;
 
     health -= Constants.HEALTH_MISS_PENALTY;
+    songScore -= 10;
 
     if (!isPracticeMode)
     {
-      songScore -= 10;
-
       // messy copy paste rn lol
       var pressArray:Array<Bool> = [
         controls.NOTE_LEFT_P,
@@ -2139,11 +2173,10 @@ class PlayState extends MusicBeatSubState
     if (event.eventCanceled) return;
 
     health += event.healthChange;
+    songScore += event.scoreChange;
 
     if (!isPracticeMode)
     {
-      songScore += event.scoreChange;
-
       var pressArray:Array<Bool> = [
         controls.NOTE_LEFT_P,
         controls.NOTE_DOWN_P,
@@ -2282,11 +2315,10 @@ class PlayState extends MusicBeatSubState
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
 
-    // Only add the score if you're not on practice mode
+    songScore += score;
+
     if (!isPracticeMode)
     {
-      songScore += score;
-
       // TODO: Input splitter uses old input system, make it pull from the precise input queue directly.
       var pressArray:Array<Bool> = [
         controls.NOTE_LEFT_P,
@@ -2643,29 +2675,15 @@ class PlayState extends MusicBeatSubState
   {
     FlxG.sound.music.pause();
 
-    FlxG.sound.music.time += sections * Conductor.measureLengthMs;
+    var targetTimeSteps:Float = Conductor.currentStepTime + (Conductor.timeSignatureNumerator * Constants.STEPS_PER_BEAT * sections);
+    var targetTimeMs:Float = Conductor.getStepTimeInMs(targetTimeSteps);
+
+    FlxG.sound.music.time = targetTimeMs;
+
+    handleSkippedNotes();
+    // regenNoteData(FlxG.sound.music.time);
 
     Conductor.update(FlxG.sound.music.time);
-
-    /**
-      *
-      // TODO: Redo this for the new conductor.
-      var daBPM:Float = Conductor.bpm;
-      var daPos:Float = 0;
-      for (i in 0...(Std.int(Conductor.currentStep / 16 + sec)))
-      {
-        var section = .getSong()[i];
-        if (section == null) continue;
-        if (section.changeBPM)
-        {
-          daBPM = .getSong()[i].bpm;
-        }
-        daPos += 4 * (1000 * 60 / daBPM);
-      }
-      Conductor.songPosition = FlxG.sound.music.time = daPos;
-      Conductor.songPosition += Conductor.offset;
-
-     */
 
     resyncVocals();
   }

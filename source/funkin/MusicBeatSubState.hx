@@ -61,6 +61,15 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
 
     // This can now be used in EVERY STATE YAY!
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
+
+    // Display Conductor info in the watch window.
+    FlxG.watch.addQuick("songPosition", Conductor.songPosition);
+    FlxG.watch.addQuick("bpm", Conductor.bpm);
+    FlxG.watch.addQuick("currentMeasureTime", Conductor.currentBeatTime);
+    FlxG.watch.addQuick("currentBeatTime", Conductor.currentBeatTime);
+    FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
+
+    dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
   function debug_refreshModules()

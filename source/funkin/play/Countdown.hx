@@ -37,7 +37,7 @@ class Countdown
     stopCountdown();
 
     PlayState.instance.isInCountdown = true;
-    Conductor.songPosition = Conductor.beatLengthMs * -5;
+    Conductor.update(PlayState.instance.startTimestamp + Conductor.beatLengthMs * -5);
     // Handle onBeatHit events manually
     @:privateAccess
     PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
@@ -46,6 +46,12 @@ class Countdown
     countdownTimer = new FlxTimer();
 
     countdownTimer.start(Conductor.beatLengthMs / 1000, function(tmr:FlxTimer) {
+      if (PlayState.instance == null)
+      {
+        tmr.cancel();
+        return;
+      }
+
       countdownStep = decrement(countdownStep);
 
       // Handle onBeatHit events manually
@@ -146,7 +152,7 @@ class Countdown
   {
     stopCountdown();
     // This will trigger PlayState.startSong()
-    Conductor.songPosition = 0;
+    Conductor.update(0);
     // PlayState.isInCountdown = false;
   }
 

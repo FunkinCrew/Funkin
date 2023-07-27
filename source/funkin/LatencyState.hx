@@ -191,7 +191,7 @@ class LatencyState extends MusicBeatSubState
 
     if (FlxG.keys.pressed.D) FlxG.sound.music.time += 1000 * FlxG.elapsed;
 
-    Conductor.songPosition = swagSong.getTimeWithDiff() - Conductor.offset;
+    Conductor.update(swagSong.getTimeWithDiff() - Conductor.offset);
     // Conductor.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
     songPosVis.x = songPosToX(Conductor.songPosition);

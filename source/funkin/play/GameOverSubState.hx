@@ -117,7 +117,7 @@ class GameOverSubState extends MusicBeatSubState
     gameOverMusic.stop();
 
     // The conductor now represents the BPM of the game over music.
-    Conductor.songPosition = 0;
+    Conductor.update(0);
   }
 
   var hasStartedAnimation:Bool = false;
@@ -183,7 +183,7 @@ class GameOverSubState extends MusicBeatSubState
     {
       // Match the conductor to the music.
       // This enables the stepHit and beatHit events.
-      Conductor.songPosition = gameOverMusic.time;
+      Conductor.update(gameOverMusic.time);
     }
     else
     {
