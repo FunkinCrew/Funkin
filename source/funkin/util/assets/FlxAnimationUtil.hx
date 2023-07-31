@@ -2,12 +2,12 @@ package funkin.util.assets;
 
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
-import funkin.play.AnimationData;
+import funkin.data.animation.AnimationData;
 
 class FlxAnimationUtil
 {
   /**
-   * Properly adds an animation to a sprite based on JSON data.
+   * Properly adds an animation to a sprite based on the provided animation data.
    */
   public static function addAtlasAnimation(target:FlxSprite, anim:AnimationData)
   {
@@ -31,7 +31,7 @@ class FlxAnimationUtil
   }
 
   /**
-   * Properly adds multiple animations to a sprite based on JSON data.
+   * Properly adds multiple animations to a sprite based on the provided animation data.
    */
   public static function addAtlasAnimations(target:FlxSprite, animations:Array<AnimationData>)
   {

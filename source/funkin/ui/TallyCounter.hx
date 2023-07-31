@@ -80,7 +80,6 @@ class TallyNumber extends FlxSprite
       animation.addByPrefix(Std.string(i), i + " small", 24, false);
 
     animation.play(Std.string(digit));
-    antialiasing = true;
     updateHitbox();
   }
 }

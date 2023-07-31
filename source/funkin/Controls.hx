@@ -391,6 +391,26 @@ class Controls extends FlxActionSet
     return byName[name].check();
   }
 
+  public function getKeysForAction(name:Action):Array<FlxKey> {
+    #if debug
+    if (!byName.exists(name))
+      throw 'Invalid name: $name';
+    #end
+
+    return byName[name].inputs.map(function(input) return (input.device == KEYBOARD) ? input.inputID : null)
+      .filter(function(key) return key != null);
+  }
+
+  public function getButtonsForAction(name:Action):Array<FlxGamepadInputID> {
+    #if debug
+    if (!byName.exists(name))
+      throw 'Invalid name: $name';
+    #end
+
+    return byName[name].inputs.map(function(input) return (input.device == GAMEPAD) ? input.inputID : null)
+      .filter(function(key) return key != null);
+  }
+
   public function getDialogueName(action:FlxActionDigital):String
   {
     var input = action.inputs[0];

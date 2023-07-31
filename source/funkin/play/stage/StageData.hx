@@ -1,5 +1,6 @@
 package funkin.play.stage;
 
+import funkin.data.animation.AnimationData;
 import flixel.util.typeLimit.OneOfTwo;
 import funkin.play.stage.ScriptedStage;
 import funkin.play.stage.Stage;

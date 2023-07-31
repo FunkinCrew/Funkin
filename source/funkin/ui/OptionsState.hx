@@ -5,7 +5,6 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
-import funkin.util.Constants;
 import funkin.util.WindowUtil;
 
 class OptionsState extends MusicBeatState

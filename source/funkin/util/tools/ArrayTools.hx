@@ -22,4 +22,19 @@ class ArrayTools
     }
     return result;
   }
+
+  /**
+   * Return the first element of the array that satisfies the predicate, or null if none do.
+   * @param input The array to search
+   * @param predicate The predicate to call
+   * @return The result
+   */
+  public static function find<T>(input:Array<T>, predicate:T->Bool):Null<T>
+  {
+    for (element in input)
+    {
+      if (predicate(element)) return element;
+    }
+    return null;
+  }
 }

@@ -150,7 +150,6 @@ class DebugBoundingState extends FlxState
     addInfo('Width', bf.width);
     addInfo('Height', bf.height);
 
-    swagOutlines.antialiasing = true;
     spriteSheetView.add(swagOutlines);
 
     FlxG.stage.window.onDropFile.add(function(path:String) {

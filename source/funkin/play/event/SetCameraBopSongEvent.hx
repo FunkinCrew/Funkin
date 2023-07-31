@@ -1,6 +1,5 @@
 package funkin.play.event;
 
-import funkin.util.Constants;
 import flixel.tweens.FlxTween;
 import flixel.FlxCamera;
 import flixel.tweens.FlxEase;
@@ -11,7 +10,7 @@ import funkin.play.event.SongEventData.SongEventFieldType;
 
 /**
  * This class represents a handler for configuring camera bop intensity and rate.
- * 
+ *
  * Example: Bop the camera twice as hard, once per beat (rather than once every four beats).
  * ```
  * {
@@ -22,7 +21,7 @@ import funkin.play.event.SongEventData.SongEventFieldType;
  *   }
  * }
  * ```
- * 
+ *
  * Example: Reset the camera bop to default values.
  * ```
  * {

@@ -1,27 +1,29 @@
 package funkin.ui;
 
+import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxOutlineEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
 import funkin.ui.OptionsState.Page;
+import funkin.play.notes.NoteSprite;
 
 class ColorsMenu extends Page
 {
   var curSelected:Int = 0;
 
-  var grpNotes:FlxTypedGroup<Note>;
+  var grpNotes:FlxTypedGroup<NoteSprite>;
 
   public function new()
   {
     super();
 
-    grpNotes = new FlxTypedGroup<Note>();
+    grpNotes = new FlxTypedGroup<NoteSprite>();
     add(grpNotes);
 
     for (i in 0...4)
     {
-      var note:Note = new Note(0, i);
+      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), 0, i);
 
       note.x = (100 * i) + i;
       note.screenCenter(Y);
@@ -30,7 +32,6 @@ class ColorsMenu extends Page
       add(_effectSpr);
       _effectSpr.y = 0;
       _effectSpr.x = i * 130;
-      _effectSpr.antialiasing = true;
       _effectSpr.scale.x = _effectSpr.scale.y = 0.7;
       // _effectSpr.setGraphicSize();
       _effectSpr.height = note.height;
@@ -52,14 +53,14 @@ class ColorsMenu extends Page
 
     if (controls.UI_UP)
     {
-      grpNotes.members[curSelected].colorSwap.update(elapsed * 0.3);
-      Note.arrowColors[curSelected] += elapsed * 0.3;
+      // grpNotes.members[curSelected].colorSwap.update(elapsed * 0.3);
+      // Note.arrowColors[curSelected] += elapsed * 0.3;
     }
 
     if (controls.UI_DOWN)
     {
-      grpNotes.members[curSelected].colorSwap.update(-elapsed * 0.3);
-      Note.arrowColors[curSelected] += -elapsed * 0.3;
+      // grpNotes.members[curSelected].colorSwap.update(-elapsed * 0.3);
+      // Note.arrowColors[curSelected] += -elapsed * 0.3;
     }
 
     super.update(elapsed);

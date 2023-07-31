@@ -88,9 +88,9 @@ class Constants
   public static final COLOR_HEALTH_BAR_GREEN:FlxColor = 0xFF66FF33;
 
   /**
-   * Default variation for charts.
+   * The base colors of the notes.
    */
-  public static final DEFAULT_VARIATION:String = 'default';
+  public static final COLOR_NOTES:Array<FlxColor> = [0xFFFF22AA, 0xFF00EEFF, 0xFF00CC00, 0xFFCC1111];
 
   /**
    * STAGE DEFAULTS
@@ -118,9 +118,96 @@ class Constants
   public static final DEFAULT_SONG:String = 'tutorial';
 
   /**
+   * Default variation for charts.
+   */
+  public static final DEFAULT_VARIATION:String = 'default';
+
+  /**
+   * HEALTH VALUES
+   */
+  // ==============================
+
+  /**
+   * The player's maximum health.
+   * If the player is at this value, they can't gain any more health.
+   */
+  public static final HEALTH_MAX:Float = 2.0;
+
+  /**
+   * The player's starting health.
+   */
+  public static final HEALTH_STARTING = HEALTH_MAX / 2.0;
+
+  /**
+   * The player's minimum health.
+   * If the player is at or below this value, they lose.
+   */
+  public static final HEALTH_MIN:Float = 0.0;
+
+  /**
+   * The amount of health the player gains when hitting a note with the KILLER rating.
+   */
+  public static final HEALTH_KILLER_BONUS:Float = 2.0 / 100.0 * HEALTH_MAX; // +2.0%
+
+  /**
+   * The amount of health the player gains when hitting a note with the SICK rating.
+   */
+  public static final HEALTH_SICK_BONUS:Float = 1.5 / 100.0 * HEALTH_MAX; // +1.0%
+
+  /**
+   * The amount of health the player gains when hitting a note with the GOOD rating.
+   */
+  public static final HEALTH_GOOD_BONUS:Float = 0.75 / 100.0 * HEALTH_MAX; // +0.75%
+
+  /**
+   * The amount of health the player gains when hitting a note with the BAD rating.
+   */
+  public static final HEALTH_BAD_BONUS:Float = 0.0 / 100.0 * HEALTH_MAX; // +0.0%
+
+  /**
+   * The amount of health the player gains when hitting a note with the SHIT rating.
+   * If negative, the player will actually lose health.
+   */
+  public static final HEALTH_SHIT_BONUS:Float = -1.0 / 100.0 * HEALTH_MAX; // -1.0%
+
+  /**
+   * The amount of health the player gains, while holding a hold note, per second.
+   */
+  public static final HEALTH_HOLD_BONUS_PER_SECOND:Float = 7.5 / 100.0 * HEALTH_MAX; // +7.5% / second
+
+  /**
+   * The amount of health the player loses upon missing a note.
+   */
+  public static final HEALTH_MISS_PENALTY:Float = 4.0 / 100.0 * HEALTH_MAX; // 4.0%
+
+  /**
+   * The amount of health the player loses upon pressing a key when no note is there.
+   */
+  public static final HEALTH_GHOST_MISS_PENALTY:Float = 2.0 / 100.0 * HEALTH_MAX; // 2.0%
+
+  /**
+   * The amount of health the player loses upon letting go of a hold note while it is still going.
+   */
+  public static final HEALTH_HOLD_DROP_PENALTY:Float = 0.0; // 0.0%
+
+  /**
+   * The amount of health the player loses upon hitting a mine.
+   */
+  public static final HEALTH_MINE_PENALTY:Float = 15.0 / 100.0 * HEALTH_MAX; // 15.0%
+
+  /**
+   * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
+   * This is the thing people have been begging for forever lolol.
+   */
+  public static final GHOST_TAPPING:Bool = false;
+
+  /**
    * TIMING
    */
   // ==============================
+  public static final HIT_WINDOW_MS:Int = 160;
+
+  public static final PIXELS_PER_MS:Float = 0.45;
 
   /**
    * The number of seconds in a minute.
@@ -168,16 +255,27 @@ class Constants
    */
   public static final DEFAULT_BPM:Float = 100.0;
 
+  /**
+   * The default numerator for the time signature.
+   */
   public static final DEFAULT_TIME_SIGNATURE_NUM:Int = 4;
 
+  /**
+   * The default denominator for the time signature.
+   */
   public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
 
+  /**
+   * Number of steps in a beat.
+   * One step is one 16th note and one beat is one quarter note.
+   */
   public static final STEPS_PER_BEAT:Int = 4;
 
   /**
    * OTHER
    */
   // ==============================
+  public static final LIBRARY_SEPARATOR:String = ':';
 
   /**
    * The scale factor to use when increasing the size of pixel art graphics.
@@ -188,6 +286,9 @@ class Constants
    * The volume at which to play the countdown before the song starts.
    */
   public static final COUNTDOWN_VOLUME:Float = 0.6;
+
+  public static final STRUMLINE_X_OFFSET:Float = 48;
+  public static final STRUMLINE_Y_OFFSET:Float = 24;
 
   /**
    * The default intensity for camera zooms.

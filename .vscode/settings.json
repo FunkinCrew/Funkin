@@ -116,5 +116,6 @@
       "target": "html5",
       "args": ["-debug", "-watch"]
     }
-  ]
+  ],
+  "cmake.configureOnOpen": false
 }

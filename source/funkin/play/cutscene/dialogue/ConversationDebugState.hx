@@ -4,7 +4,6 @@ import flixel.FlxState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import flixel.util.FlxColor;
-import funkin.Paths;
 
 /**
  * A state with displays a conversation with no background.
