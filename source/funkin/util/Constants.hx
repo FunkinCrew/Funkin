@@ -205,6 +205,9 @@ class Constants
    * TIMING
    */
   // ==============================
+  public static final HIT_WINDOW_MS:Int = 160;
+
+  public static final PIXELS_PER_MS:Float = 0.45;
 
   /**
    * The number of seconds in a minute.

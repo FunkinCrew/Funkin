@@ -3,7 +3,6 @@ package funkin;
 import funkin.util.Constants;
 import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
-import funkin.SongLoad.SwagSong;
 import funkin.play.song.Song.SongDifficulty;
 import funkin.play.song.SongData.SongTimeChange;
 
