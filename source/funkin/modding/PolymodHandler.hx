@@ -29,9 +29,9 @@ class PolymodHandler
   /**
    * Where relative to the executable that mods are located.
    */
-  static final MOD_FOLDER:String = #if REDIRECT_ASSETS_FOLDER "../../../../example_mods" #else "mods" #end;
+  static final MOD_FOLDER:String = #if (REDIRECT_ASSETS_FOLDER && macos) "../../../../../../example_mods" #elseif REDIRECT_ASSETS_FOLDER "../../../../example_mods" #else "mods" #end;
 
-  static final CORE_FOLDER:Null<String> = #if REDIRECT_ASSETS_FOLDER "../../../../assets" #else null #end;
+  static final CORE_FOLDER:Null<String> = #if (REDIRECT_ASSETS_FOLDER && macos) "../../../../../../assets" #elseif REDIRECT_ASSETS_FOLDER "../../../../assets" #else null #end;
 
   public static function createModRoot()
   {
