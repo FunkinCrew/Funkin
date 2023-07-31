@@ -53,6 +53,9 @@ class Strumline extends FlxSpriteGroup
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
   var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
 
+  var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
+  var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
+
   final noteStyle:NoteStyle;
 
   var noteData:Array<SongNoteData> = [];
@@ -76,9 +79,17 @@ class Strumline extends FlxSpriteGroup
     this.holdNotes.zIndex = 20;
     this.add(this.holdNotes);
 
+    this.holdNotesVwoosh = new FlxTypedSpriteGroup<SustainTrail>();
+    this.holdNotesVwoosh.zIndex = 21;
+    this.add(this.holdNotesVwoosh);
+
     this.notes = new FlxTypedSpriteGroup<NoteSprite>();
     this.notes.zIndex = 30;
     this.add(this.notes);
+
+    this.notesVwoosh = new FlxTypedSpriteGroup<NoteSprite>();
+    this.notesVwoosh.zIndex = 31;
+    this.add(this.notesVwoosh);
 
     this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>(0, 0, 4);
     this.noteHoldCovers.zIndex = 40;
@@ -202,6 +213,54 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Call this when resetting the playstate.
+   */
+  public function vwooshNotes():Void
+  {
+    for (note in notes.members)
+    {
+      if (note == null) continue;
+      if (!note.alive) continue;
+
+      notes.remove(note);
+      notesVwoosh.add(note);
+
+      var targetY:Float = FlxG.height + note.y;
+      if (PreferencesMenu.getPref('downscroll')) targetY = 0 - note.height;
+      FlxTween.tween(note, {y: targetY}, 0.5,
+        {
+          ease: FlxEase.expoIn,
+          onComplete: function(twn) {
+            note.kill();
+            notesVwoosh.remove(note, true);
+            note.destroy();
+          }
+        });
+    }
+
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null) continue;
+      if (!holdNote.alive) continue;
+
+      holdNotes.remove(holdNote);
+      holdNotesVwoosh.add(holdNote);
+
+      var targetY:Float = FlxG.height + holdNote.y;
+      if (PreferencesMenu.getPref('downscroll')) targetY = 0 - holdNote.height;
+      FlxTween.tween(holdNote, {y: targetY}, 0.5,
+        {
+          ease: FlxEase.expoIn,
+          onComplete: function(twn) {
+            holdNote.kill();
+            holdNotesVwoosh.remove(holdNote, true);
+            holdNote.destroy();
+          }
+        });
+    }
+  }
+
+  /**
    * For a note's strumTime, calculate its Y position relative to the strumline.
    * NOTE: Assumes Conductor and PlayState are both initialized.
    * @param strumTime
@@ -213,7 +272,7 @@ class Strumline extends FlxSpriteGroup
     var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
-    return Conductor.PIXELS_PER_MS * (Conductor.songPosition - strumTime) * scrollSpeed * vwoosh * (PreferencesMenu.getPref('downscroll') ? 1 : -1);
+    return Constants.PIXELS_PER_MS * (Conductor.songPosition - strumTime) * scrollSpeed * vwoosh * (PreferencesMenu.getPref('downscroll') ? 1 : -1);
   }
 
   function updateNotes():Void
@@ -273,7 +332,7 @@ class Strumline extends FlxSpriteGroup
         }
       }
 
-      var renderWindowEnd = holdNote.strumTime + holdNote.fullSustainLength + Conductor.HIT_WINDOW_MS + RENDER_DISTANCE_MS / 8;
+      var renderWindowEnd = holdNote.strumTime + holdNote.fullSustainLength + Constants.HIT_WINDOW_MS + RENDER_DISTANCE_MS / 8;
 
       if (holdNote.missedNote && Conductor.songPosition >= renderWindowEnd)
       {
@@ -308,7 +367,7 @@ class Strumline extends FlxSpriteGroup
         // Hold note was dropped before completing, keep it in its clipped state.
         holdNote.visible = true;
 
-        var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Conductor.PIXELS_PER_MS;
+        var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Constants.PIXELS_PER_MS;
 
         trace('yOffset: ' + yOffset);
         trace('holdNote.fullSustainLength: ' + holdNote.fullSustainLength);

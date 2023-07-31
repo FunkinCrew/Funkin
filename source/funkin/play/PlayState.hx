@@ -639,6 +639,9 @@ class PlayState extends MusicBeatState
 
       currentStage.resetStage();
 
+      playerStrumline.vwooshNotes();
+      opponentStrumline.vwooshNotes();
+
       playerStrumline.clean();
       opponentStrumline.clean();
 
