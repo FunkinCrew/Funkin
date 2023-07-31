@@ -972,6 +972,7 @@ class PlayState extends MusicBeatState
    * This function is called whenever Flixel switches switching to a new FlxState.
    * @return Whether to actually switch to the new state.
    */
+  @:haxe.warning("-WDeprecated")
   override function switchTo(nextState:FlxState):Bool
   {
     var result:Bool = super.switchTo(nextState);
