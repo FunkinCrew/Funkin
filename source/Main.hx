@@ -98,5 +98,6 @@ class Main extends Sprite
     // - It scans the class path and registers any HaxeUI components.
     Toolkit.init();
     Toolkit.theme = 'dark'; // don't be cringe
+    Toolkit.autoScale = false;
   }
 }
