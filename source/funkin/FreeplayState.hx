@@ -908,6 +908,7 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
+  @:haxe.warning("-WDeprecated")
   override function switchTo(nextState:FlxState):Bool
   {
     clearDaCache(songs[curSelected].songName);

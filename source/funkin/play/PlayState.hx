@@ -686,6 +686,9 @@ class PlayState extends MusicBeatSubState
 
       if (currentStage != null) currentStage.resetStage();
 
+      playerStrumline.vwooshNotes();
+      opponentStrumline.vwooshNotes();
+
       playerStrumline.clean();
       opponentStrumline.clean();
 
@@ -1023,6 +1026,7 @@ class PlayState extends MusicBeatSubState
    * This function is called whenever Flixel switches switching to a new FlxState.
    * @return Whether to actually switch to the new state.
    */
+  @:haxe.warning("-WDeprecated")
   override function switchTo(nextState:FlxState):Bool
   {
     var result:Bool = super.switchTo(nextState);

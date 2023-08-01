@@ -47,7 +47,7 @@ class Song implements IPlayStateScriptedClass
     difficultyIds = [];
     difficulties = new Map<String, SongDifficulty>();
 
-    _metadata = SongDataParser.parseSongMetadata(songId);
+    _metadata = SongDataParser.loadSongMetadata(songId);
     if (_metadata == null || _metadata.length == 0)
     {
       throw 'Could not find song data for songId: $songId';

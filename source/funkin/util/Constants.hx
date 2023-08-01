@@ -160,22 +160,46 @@ class Constants
   /**
    * The maximum interval within which a note can be hit, in milliseconds.
    */
-  public static final HIT_WINDOW_MS:Float = 160;
+  public static final HIT_WINDOW_MS:Float = 160.0;
 
   /**
    * Constant for the number of seconds in a minute.
    */
-  public static final SECS_PER_MIN:Float = 60;
+  public static final SECS_PER_MIN:Int = 60;
 
   /**
    * Constant for the number of milliseconds in a second.
    */
-  public static final MS_PER_SEC:Float = 1000;
+  public static final MS_PER_SEC:Int = 1000;
 
   /**
-   * The number of steps in one beat.
-   *
-   * Each beat represents ONE quarter note, so one step is one sixteenth note!
+   * The number of microseconds in a millisecond.
+   */
+  public static final US_PER_MS:Int = 1000;
+
+  /**
+   * The number of microseconds in a second.
+   */
+  public static final US_PER_SEC:Int = US_PER_MS * MS_PER_SEC;
+
+  /**
+   * The number of nanoseconds in a microsecond.
+   */
+  public static final NS_PER_US:Int = 1000;
+
+  /**
+   * The number of nanoseconds in a millisecond.
+   */
+  public static final NS_PER_MS:Int = NS_PER_US * US_PER_MS;
+
+  /**
+   * The number of nanoseconds in a second.
+   */
+  public static final NS_PER_SEC:Int = NS_PER_US * US_PER_MS * MS_PER_SEC;
+
+  /**
+   * Number of steps in a beat.
+   * One step is one 16th note and one beat is one quarter note.
    */
   public static final STEPS_PER_BEAT:Int = 4;
 
@@ -284,6 +308,13 @@ class Constants
    */
   public static final COUNTDOWN_VOLUME:Float = 0.6;
 
+  /**
+   * The horizontal offset of the strumline from the left edge of the screen.
+   */
   public static final STRUMLINE_X_OFFSET:Float = 48;
+
+  /**
+   * The vertical offset of the strumline from the top edge of the screen.
+   */
   public static final STRUMLINE_Y_OFFSET:Float = 24;
 }

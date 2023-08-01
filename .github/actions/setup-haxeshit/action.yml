@@ -24,5 +24,5 @@ runs:
           haxelib git haxelib https://github.com/HaxeFoundation/haxelib.git
           haxelib version
           haxelib --global install hmm
-          haxelib --global run hmm install
+          haxelib --global run hmm install --quiet
         shell: bash
