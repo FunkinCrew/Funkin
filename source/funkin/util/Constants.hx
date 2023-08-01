@@ -160,17 +160,17 @@ class Constants
   /**
    * The maximum interval within which a note can be hit, in milliseconds.
    */
-  public static final HIT_WINDOW_MS:Float = 160;
+  public static final HIT_WINDOW_MS:Float = 160.0;
 
   /**
    * Constant for the number of seconds in a minute.
    */
-  public static final SECS_PER_MIN:Float = 60;
+  public static final SECS_PER_MIN:Int = 60;
 
   /**
    * Constant for the number of milliseconds in a second.
    */
-  public static final MS_PER_SEC:Float = 1000;
+  public static final MS_PER_SEC:Int = 1000;
 
   /**
    * The number of microseconds in a millisecond.
