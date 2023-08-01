@@ -261,7 +261,7 @@ class InitState extends FlxTransitionableState
    */
   function startGameNormally():Void
   {
-    FlxG.sound.cache(Paths.music('freakyMenu'));
+    FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
     FlxG.switchState(new TitleState());
   }
 

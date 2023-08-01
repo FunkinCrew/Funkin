@@ -127,7 +127,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (FlxG.sound.music != null)
     {
-      if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu'));
+      if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
     }
 
     // if (StoryMenuState.weekUnlocked[2] || isDebug)

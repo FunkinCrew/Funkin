@@ -6,6 +6,7 @@ import funkin.util.SerializerUtil;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongMetadata;
 import flixel.util.FlxTimer;
+import funkin.util.SortUtil;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -106,8 +107,7 @@ class ChartEditorDialogHandler
     var splashTemplateContainer:VBox = dialog.findComponent('splashTemplateContainer', VBox);
 
     var songList:Array<String> = SongDataParser.listSongIds();
-    // Sort alphabetically
-    songList.sort((a, b) -> a > b ? 1 : -1);
+    songList.sort(SortUtil.alphabetically);
 
     for (targetSongId in songList)
     {

@@ -75,17 +75,18 @@ class Conductor
   }
 
   /**
-   * Duration of a beat in milliseconds. Calculated based on bpm.
+   * Duration of a beat (quarter note) in milliseconds. Calculated based on bpm.
    */
   public static var beatLengthMs(get, null):Float;
 
   static function get_beatLengthMs():Float
   {
+    // Tied directly to BPM.
     return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC);
   }
 
   /**
-   * Duration of a step (quarter) in milliseconds. Calculated based on bpm.
+   * Duration of a step (sixtennth note) in milliseconds. Calculated based on bpm.
    */
   public static var stepLengthMs(get, null):Float;
 
@@ -272,7 +273,8 @@ class Conductor
           {
             var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
             currentTimeChange.beatTime = prevTimeChange.beatTime
-              + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC);
+              + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC)
+              + 0.01;
           }
         }
       }
@@ -315,9 +317,83 @@ class Conductor
         }
       }
 
-      resultStep += Math.floor((ms - lastTimeChange.timeStamp) / stepLengthMs);
+      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / lastStepLengthMs;
+      resultStep += resultFractionalStep; // Math.floor();
 
       return resultStep;
+    }
+  }
+
+  /**
+   * Given a time in steps and fractional steps, return a time in milliseconds.
+   */
+  public static function getStepTimeInMs(stepTime:Float):Float
+  {
+    if (timeChanges.length == 0)
+    {
+      // Assume a constant BPM equal to the forced value.
+      return stepTime * stepLengthMs;
+    }
+    else
+    {
+      var resultMs:Float = 0;
+
+      var lastTimeChange:SongTimeChange = timeChanges[0];
+      for (timeChange in timeChanges)
+      {
+        if (stepTime >= timeChange.beatTime * 4)
+        {
+          lastTimeChange = timeChange;
+          resultMs = lastTimeChange.timeStamp;
+        }
+        else
+        {
+          // This time change is after the requested time.
+          break;
+        }
+      }
+
+      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      resultMs += (stepTime - lastTimeChange.beatTime * 4) * lastStepLengthMs;
+
+      return resultMs;
+    }
+  }
+
+  /**
+   * Given a time in beats and fractional beats, return a time in milliseconds.
+   */
+  public static function getBeatTimeInMs(beatTime:Float):Float
+  {
+    if (timeChanges.length == 0)
+    {
+      // Assume a constant BPM equal to the forced value.
+      return beatTime * stepLengthMs * Constants.STEPS_PER_BEAT;
+    }
+    else
+    {
+      var resultMs:Float = 0;
+
+      var lastTimeChange:SongTimeChange = timeChanges[0];
+      for (timeChange in timeChanges)
+      {
+        if (beatTime >= timeChange.beatTime)
+        {
+          lastTimeChange = timeChange;
+          resultMs = lastTimeChange.timeStamp;
+        }
+        else
+        {
+          // This time change is after the requested time.
+          break;
+        }
+      }
+
+      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      resultMs += (beatTime - lastTimeChange.beatTime) * lastStepLengthMs * Constants.STEPS_PER_BEAT;
+
+      return resultMs;
     }
   }
 

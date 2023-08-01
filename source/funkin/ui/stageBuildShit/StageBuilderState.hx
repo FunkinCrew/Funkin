@@ -66,7 +66,7 @@ class StageBuilderState extends MusicBeatState
 
     // snd.addEventListener(SampleDataEvent.SAMPLE_DATA, sineShit);
     // snd.__buffer.
-    // snd = Assets.getSound(Paths.music('freakyMenu'));
+    // snd = Assets.getSound(Paths.music('freakyMenu/freakyMenu'));
     // for (thing in snd.load)
     // thing = Std.int(thing / 2);
     // snd.play();

@@ -393,6 +393,9 @@ abstract SongNoteData(RawSongNoteData)
       };
   }
 
+  /**
+   * The timestamp of the note, in milliseconds.
+   */
   public var time(get, set):Float;
 
   function get_time():Float
@@ -405,11 +408,14 @@ abstract SongNoteData(RawSongNoteData)
     return this.t = value;
   }
 
+  /**
+   * The timestamp of the note, in steps.
+   */
   public var stepTime(get, never):Float;
 
   function get_stepTime():Float
   {
-    return Conductor.getTimeInSteps(this.t);
+    return Conductor.getTimeInSteps(abstract.time);
   }
 
   /**
@@ -435,12 +441,12 @@ abstract SongNoteData(RawSongNoteData)
    */
   public inline function getDirection(strumlineSize:Int = 4):Int
   {
-    return this.d % strumlineSize;
+    return abstract.data % strumlineSize;
   }
 
   public function getDirectionName(strumlineSize:Int = 4):String
   {
-    switch (this.d % strumlineSize)
+    switch (abstract.data % strumlineSize)
     {
       case 0:
         return 'Left';
@@ -463,7 +469,7 @@ abstract SongNoteData(RawSongNoteData)
    */
   public inline function getStrumlineIndex(strumlineSize:Int = 4):Int
   {
-    return Math.floor(this.d / strumlineSize);
+    return Math.floor(abstract.data / strumlineSize);
   }
 
   /**
@@ -477,6 +483,10 @@ abstract SongNoteData(RawSongNoteData)
     return getStrumlineIndex(strumlineSize) == 0;
   }
 
+  /**
+   * If this is a hold note, this is the length of the hold note in milliseconds.
+   * @default 0 (not a hold note)
+   */
   public var length(get, set):Float;
 
   function get_length():Float
@@ -487,6 +497,22 @@ abstract SongNoteData(RawSongNoteData)
   function set_length(value:Float):Float
   {
     return this.l = value;
+  }
+
+  /**
+   * If this is a hold note, this is the length of the hold note in steps.
+   * @default 0 (not a hold note)
+   */
+  public var stepLength(get, set):Float;
+
+  function get_stepLength():Float
+  {
+    return Conductor.getTimeInSteps(abstract.time + abstract.length) - abstract.stepTime;
+  }
+
+  function set_stepLength(value:Float):Float
+  {
+    return abstract.length = Conductor.getStepTimeInMs(value) - abstract.time;
   }
 
   public var isHoldNote(get, never):Bool;
@@ -514,21 +540,37 @@ abstract SongNoteData(RawSongNoteData)
   @:op(A == B)
   public function op_equals(other:SongNoteData):Bool
   {
-    if (this.k == '') if (other.kind != '' && other.kind != 'normal') return false;
+    if (abstract.kind == '')
+    {
+      if (other.kind != '' && other.kind != 'normal') return false;
+    }
+    else
+    {
+      if (other.kind == '' || other.kind != abstract.kind) return false;
+    }
 
-    return this.t == other.time && this.d == other.data && this.l == other.length;
+    return abstract.time == other.time && abstract.data == other.data && abstract.length == other.length;
   }
 
   @:op(A != B)
   public function op_notEquals(other:SongNoteData):Bool
   {
-    return this.t != other.time || this.d != other.data || this.l != other.length || this.k != other.kind;
+    if (abstract.kind == '')
+    {
+      if (other.kind != '' && other.kind != 'normal') return true;
+    }
+    else
+    {
+      if (other.kind == '' || other.kind != abstract.kind) return true;
+    }
+
+    return abstract.time != other.time || abstract.data != other.data || abstract.length != other.length;
   }
 
   @:op(A > B)
   public function op_greaterThan(other:SongNoteData):Bool
   {
-    return this.t > other.time;
+    return abstract.time > other.time;
   }
 
   @:op(A < B)
@@ -607,7 +649,7 @@ abstract SongEventData(RawSongEventData)
 
   function get_stepTime():Float
   {
-    return Conductor.getTimeInSteps(this.t);
+    return Conductor.getTimeInSteps(abstract.time);
   }
 
   public var event(get, set):String;

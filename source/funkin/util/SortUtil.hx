@@ -28,22 +28,15 @@ class SortUtil
     return FlxSort.byValues(order, a.noteData.time, b.noteData.time);
   }
 
-  public static inline function alphabetically(a:String, b:String)
+  /**
+   * Sort predicate for sorting strings alphabetically.
+   */
+  public static function alphabetically(a:String, b:String)
   {
     a = a.toUpperCase();
     b = b.toUpperCase();
 
-    if (a < b)
-    {
-      return -1;
-    }
-    else if (a > b)
-    {
-      return 1;
-    }
-    else
-    {
-      return 0;
-    }
+    // Sort alphabetically. Yes that's how this works.
+    return a == b ? 0 : a > b ? 1 : -1;
   }
 }
