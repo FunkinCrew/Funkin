@@ -31,7 +31,7 @@ class ChartEditorEventSprite extends FlxSprite
   /**
    * The image used for all song events. Cached for performance.
    */
-  var eventGraphic:BitmapData;
+  static var eventSpriteBasic:BitmapData;
 
   public function new(parent:ChartEditorState)
   {

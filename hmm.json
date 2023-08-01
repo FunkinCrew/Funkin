@@ -4,21 +4,21 @@
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
-      "ref": "2d83fa8",
+      "ref": "2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5",
       "url": "https://github.com/Aidan63/linc_discord-rpc"
     },
     {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "32cee07",
+      "ref": "32cee07a0e5f21e590a4b21234603b2cd5898b10",
       "url": "https://github.com/EliteMasterEric/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "f107166",
+      "ref": "f107166de3e830648e8fbf3da5526d4b94aa7dfc",
       "url": "https://github.com/EliteMasterEric/flixel-addons"
     },
     {
@@ -30,7 +30,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "a913635",
+      "ref": "a9136359271cae6ea3016b7fd9023c5c42562933",
       "url": "https://github.com/ninjamuffin99/flxanimate"
     },
     {
@@ -42,22 +42,15 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "4b927f5",
+      "ref": "3590c94858fc6dbcf9b4d522cd644ad571269677",
       "url": "https://github.com/haxeui/haxeui-core/"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "999fadd",
+      "ref": "999faddf862d8a1584ae3794d932c55e94fc65cc",
       "url": "https://github.com/haxeui/haxeui-flixel"
-    },
-    {
-      "name": "hmm",
-      "type": "git",
-      "dir": null,
-      "ref": "3ef9522",
-      "url": "https://github.com/steviegt6/hmm"
     },
     {
       "name": "hscript",
@@ -66,8 +59,10 @@
     },
     {
       "name": "hxCodec",
-      "type": "haxelib",
-      "version": "3.0.1"
+      "type": "git",
+      "dir": null,
+      "ref": "c8c47e706ad82a423783006ed901b6d93c89a421",
+      "url": "https://github.com/polybiusproxy/hxCodec"
     },
     {
       "name": "hxcpp",
@@ -93,21 +88,21 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "2447ae6",
-      "url": "https://github.com/elitemastereric/lime"
+      "ref": "acb0334c59bd4618f3c0277584d524ed0b288b5f",
+      "url": "https://github.com/EliteMasterEric/lime"
     },
     {
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "d33d489",
+      "ref": "d33d489a137ff8fdece4994cf1302f0b6334ed08",
       "url": "https://github.com/EliteMasterEric/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "6594dd8",
+      "ref": "631a3637f30997e47cd37bbab3cb6a75636a4b2a",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
@@ -118,7 +113,7 @@
     {
       "name": "tink_json",
       "type": "haxelib",
-      "version": null
+      "version": "0.11.0"
     }
   ]
 }

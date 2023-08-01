@@ -101,9 +101,11 @@ class SongDataUtils
    *
    * Offset the provided array of notes such that the first note is at 0 milliseconds.
    */
-  public static function buildNoteClipboard(notes:Array<SongNoteData>):Array<SongNoteData>
+  public static function buildNoteClipboard(notes:Array<SongNoteData>, ?timeOffset:Int = null):Array<SongNoteData>
   {
-    return offsetSongNoteData(sortNotes(notes), -Std.int(notes[0].time));
+    if (notes.length == 0) return notes;
+    if (timeOffset == null) timeOffset = -Std.int(notes[0].time);
+    return offsetSongNoteData(sortNotes(notes), timeOffset);
   }
 
   /**
@@ -111,9 +113,11 @@ class SongDataUtils
    *
    * Offset the provided array of events such that the first event is at 0 milliseconds.
    */
-  public static function buildEventClipboard(events:Array<SongEventData>):Array<SongEventData>
+  public static function buildEventClipboard(events:Array<SongEventData>, ?timeOffset:Int = null):Array<SongEventData>
   {
-    return offsetSongEventData(sortEvents(events), -Std.int(events[0].time));
+    if (events.length == 0) return events;
+    if (timeOffset == null) timeOffset = -Std.int(events[0].time);
+    return offsetSongEventData(sortEvents(events), timeOffset);
   }
 
   /**
