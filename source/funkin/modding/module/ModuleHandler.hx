@@ -77,7 +77,7 @@ class ModuleHandler
       }
       else
       {
-        return SortUtil.alphabetical(a, b);
+        return SortUtil.alphabetically(a, b);
       }
     });
   }
