@@ -289,6 +289,20 @@ class SustainTrail extends FlxSprite
     missedNote = false;
   }
 
+  public override function revive():Void
+  {
+    super.revive();
+
+    strumTime = 0;
+    noteDirection = 0;
+    sustainLength = 0;
+    fullSustainLength = 0;
+    noteData = null;
+
+    hitNote = false;
+    missedNote = false;
+  }
+
   override public function destroy():Void
   {
     vertices = null;

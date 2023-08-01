@@ -44,7 +44,16 @@ class SerializerUtil
    */
   public static function fromJSONBytes(input:Bytes):Dynamic
   {
-    return Json.parse(input.toString());
+    try
+    {
+      return Json.parse(input.toString());
+    }
+    catch (e:Dynamic)
+    {
+      trace('An error occurred while parsing JSON from byte data');
+      trace(e);
+      return null;
+    }
   }
 
   /**

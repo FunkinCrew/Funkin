@@ -20,7 +20,7 @@ class PolymodHandler
 {
   /**
    * The API version that mods should comply with.
-      * Format this with Semantic Versioning; <MAJOR>.<MINOR>.<PATCH>.
+   * Format this with Semantic Versioning; <MAJOR>.<MINOR>.<PATCH>.
    * Bug fixes increment the patch version, new features increment the minor version.
    * Changes that break old mods increment the major version.
    */
@@ -29,7 +29,9 @@ class PolymodHandler
   /**
    * Where relative to the executable that mods are located.
    */
-  static final MOD_FOLDER = "mods";
+  static final MOD_FOLDER:String = #if (REDIRECT_ASSETS_FOLDER && macos) "../../../../../../../example_mods" #elseif REDIRECT_ASSETS_FOLDER "../../../../example_mods" #else "mods" #end;
+
+  static final CORE_FOLDER:Null<String> = #if (REDIRECT_ASSETS_FOLDER && macos) "../../../../../../../assets" #elseif REDIRECT_ASSETS_FOLDER "../../../../assets" #else null #end;
 
   public static function createModRoot()
   {
@@ -202,9 +204,10 @@ class PolymodHandler
   {
     return {
       assetLibraryPaths: [
-        "songs" => "songs",     "shared" => "", "tutorial" => "tutorial", "scripts" => "scripts", "week1" => "week1",      "week2" => "week2",
-        "week3" => "week3", "week4" => "week4",       "week5" => "week5",     "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
-      ]
+        "default" => "preload", "shared" => "", "songs" => "songs", "tutorial" => "tutorial", "week1" => "week1", "week2" => "week2", "week3" => "week3",
+        "week4" => "week4", "week5" => "week5", "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
+      ],
+      coreAssetRedirect: CORE_FOLDER,
     }
   }
 

@@ -31,9 +31,12 @@ class SortUtil
   /**
    * Sort predicate for sorting strings alphabetically.
    */
-  public static function alphabetical(a:String, b:String):Int
+  public static function alphabetically(a:String, b:String)
   {
+    a = a.toUpperCase();
+    b = b.toUpperCase();
+
     // Sort alphabetically. Yes that's how this works.
-    return a > b ? 1 : -1;
+    return a == b ? 0 : a > b ? 1 : -1;
   }
 }
