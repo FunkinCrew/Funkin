@@ -124,8 +124,6 @@ class GameOverSubState extends MusicBeatSubState
 
   override function update(elapsed:Float)
   {
-    super.update(elapsed);
-
     if (!hasStartedAnimation)
     {
       hasStartedAnimation = true;
@@ -205,12 +203,13 @@ class GameOverSubState extends MusicBeatSubState
           if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
           {
             startDeathMusic(1.0, false);
+            boyfriend.playAnimation('deathLoop' + animationSuffix);
           }
       }
     }
 
-    // Dispatch the onUpdate event.
-    dispatchEvent(new UpdateScriptEvent(elapsed));
+    // Start death music before firstDeath gets replaced
+    super.update(elapsed);
   }
 
   /**

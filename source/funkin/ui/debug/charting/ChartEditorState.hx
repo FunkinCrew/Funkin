@@ -6,6 +6,7 @@ import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxSpriteGroup;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -3335,6 +3336,9 @@ class ChartEditorState extends HaxeUIState
 
     subStateClosed.add(fixCamera);
     subStateClosed.add(updateConductor);
+
+    FlxTransitionableState.skipNextTransIn = false;
+    FlxTransitionableState.skipNextTransOut = false;
 
     openSubState(new PlayState(
       {

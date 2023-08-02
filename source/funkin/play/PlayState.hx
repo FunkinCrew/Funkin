@@ -488,8 +488,6 @@ class PlayState extends MusicBeatSubState
    */
   public override function create():Void
   {
-    super.create();
-
     if (instance != null)
     {
       // TODO: Do something in this case? IDK.
@@ -629,6 +627,9 @@ class PlayState extends MusicBeatSubState
       // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
       startCountdown();
     }
+
+    // Do this last to prevent beatHit from being called before create() is done.
+    super.create();
 
     leftWatermarkText.cameras = [camHUD];
     rightWatermarkText.cameras = [camHUD];
@@ -810,6 +811,16 @@ class PlayState extends MusicBeatSubState
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
 
+    if (currentStage.getBoyfriend() != null)
+    {
+      FlxG.watch.addQuick('bfCameraFocus', currentStage.getBoyfriend().cameraFocusPoint);
+    }
+
+    if (currentStage.getDad() != null)
+    {
+      FlxG.watch.addQuick('dadCameraFocus', currentStage.getDad().cameraFocusPoint);
+    }
+
     // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.
@@ -857,6 +868,8 @@ class PlayState extends MusicBeatSubState
         #end
 
         var gameOverSubState = new GameOverSubState();
+        FlxTransitionableSubState.skipNextTransIn = true;
+        FlxTransitionableSubState.skipNextTransOut = true;
         openSubState(gameOverSubState);
 
         #if discord_rpc
@@ -970,6 +983,9 @@ class PlayState extends MusicBeatSubState
       dispatchEvent(event);
 
       if (event.eventCanceled) return;
+
+      // Resume
+      FlxG.sound.music.play();
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
@@ -1669,6 +1685,9 @@ class PlayState extends MusicBeatSubState
   {
     if (_exiting || vocals == null) return;
 
+    // Skip this if the music is paused (GameOver, Pause menu, etc.)
+    if (!FlxG.sound.music.playing) return;
+
     vocals.pause();
 
     FlxG.sound.music.play();
@@ -1700,6 +1719,8 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyPress(event:PreciseInputEvent):Void
   {
+    if (isGamePaused) return;
+
     // Do the minimal possible work here.
     inputPressQueue.push(event);
   }
@@ -1709,6 +1730,8 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    if (isGamePaused) return;
+
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }

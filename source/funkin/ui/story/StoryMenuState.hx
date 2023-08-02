@@ -5,6 +5,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -521,6 +522,9 @@ class StoryMenuState extends MusicBeatState
     }
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
+      FlxTransitionableState.skipNextTransIn = false;
+      FlxTransitionableState.skipNextTransOut = false;
+
       LoadingState.loadAndSwitchState(new PlayState(
         {
           targetSong: targetSong,

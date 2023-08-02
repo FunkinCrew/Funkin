@@ -227,12 +227,15 @@ class BaseCharacter extends Bopper
   public function resetCharacter(resetCamera:Bool = true):Void
   {
     // Reset the animation offsets. This will modify x and y to be the absolute position of the character.
-    this.animOffsets = [0, 0];
+    // this.animOffsets = [0, 0];
 
     // Now we can set the x and y to be their original values without having to account for animOffsets.
     this.resetPosition();
 
-    // Make sure we are playing the idle animation (to reapply animOffsets)...
+    // Then reapply animOffsets...
+    // applyAnimationOffsets(getCurrentAnimation());
+
+    // Make sure we are playing the idle animation
     this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
     // ...then update the hitbox so that this.width and this.height are correct.
     this.updateHitbox();
@@ -344,7 +347,7 @@ class BaseCharacter extends Bopper
 
     if (isDead)
     {
-      playDeathAnimation();
+      // playDeathAnimation();
       return;
     }
 
@@ -390,20 +393,6 @@ class BaseCharacter extends Bopper
       // super.onBeatHit handles the regular `dance()` calls.
     }
     FlxG.watch.addQuick('holdTimer-${characterId}', holdTimer);
-  }
-
-  /**
-   * Since no `onBeatHit` or `dance` calls happen in GameOverSubState,
-   * this regularly gets called instead.
-   *
-   * @param force Force the deathLoop animation to play, even if `firstDeath` is still playing.
-   */
-  public function playDeathAnimation(force:Bool = false):Void
-  {
-    if (force || (getCurrentAnimation().startsWith('firstDeath') && isAnimationFinished()))
-    {
-      playAnimation('deathLoop' + GameOverSubState.animationSuffix);
-    }
   }
 
   public function isSinging():Bool

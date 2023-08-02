@@ -78,6 +78,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     if (getBoyfriend() != null)
     {
       getBoyfriend().resetCharacter(true);
+      // Reapply the camera offsets.
+      var charData = _data.characters.bf;
+      getBoyfriend().cameraFocusPoint.x += charData.cameraOffsets[0];
+      getBoyfriend().cameraFocusPoint.y += charData.cameraOffsets[1];
     }
     else
     {
@@ -86,10 +90,18 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     if (getGirlfriend() != null)
     {
       getGirlfriend().resetCharacter(true);
+      // Reapply the camera offsets.
+      var charData = _data.characters.gf;
+      getGirlfriend().cameraFocusPoint.x += charData.cameraOffsets[0];
+      getGirlfriend().cameraFocusPoint.y += charData.cameraOffsets[1];
     }
     if (getDad() != null)
     {
       getDad().resetCharacter(true);
+      // Reapply the camera offsets.
+      var charData = _data.characters.dad;
+      getDad().cameraFocusPoint.x += charData.cameraOffsets[0];
+      getDad().cameraFocusPoint.y += charData.cameraOffsets[1];
     }
 
     // Reset positions of named props.
@@ -216,8 +228,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
         {
           cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
         }
-        cast(propSprite, Bopper).originalPosition.x = dataProp.position[0];
-        cast(propSprite, Bopper).originalPosition.y = dataProp.position[1];
+
+        if (!Std.isOfType(propSprite, BaseCharacter))
+        {
+          cast(propSprite, Bopper).originalPosition.x = dataProp.position[0];
+          cast(propSprite, Bopper).originalPosition.y = dataProp.position[1];
+        }
       }
 
       if (dataProp.startingAnimation != null)
@@ -357,8 +373,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
       character.x = charData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
       character.y = charData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
 
-      character.originalPosition.x = character.x;
-      character.originalPosition.y = character.y;
+      @:privateAccess(funkin.play.stage.Bopper)
+      {
+        // Undo animOffsets before saving original position.
+        character.originalPosition.x = character.x + character.animOffsets[0];
+        character.originalPosition.y = character.y + character.animOffsets[1];
+      }
 
       character.cameraFocusPoint.x += charData.cameraOffsets[0];
       character.cameraFocusPoint.y += charData.cameraOffsets[1];
