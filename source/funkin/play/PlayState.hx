@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.addons.transition.FlxTransitionableSubState;
 import funkin.ui.debug.charting.ChartEditorState;
 import haxe.Int64;
 import funkin.play.notes.notestyle.NoteStyle;
@@ -780,6 +781,8 @@ class PlayState extends MusicBeatSubState
 
           var pauseSubState:FlxSubState = new PauseSubState(isChartingMode);
 
+          FlxTransitionableSubState.skipNextTransIn = true;
+          FlxTransitionableSubState.skipNextTransOut = true;
           openSubState(pauseSubState);
           pauseSubState.camera = camHUD;
           // boyfriendPos.put(); // TODO: Why is this here?
