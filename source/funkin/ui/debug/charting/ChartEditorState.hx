@@ -3310,6 +3310,29 @@ class ChartEditorState extends HaxeUIState
 
     var targetSong:Song = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
 
+    // TODO: Rework asset system so we can remove this.
+    switch (currentSongId)
+    {
+      case 'tutorial':
+        Paths.setCurrentLevel('tutorial');
+      case 'bopeebo' | 'fresh' | 'dadbattle':
+        Paths.setCurrentLevel('week1');
+      case 'spookeez' | 'south' | 'monster':
+        Paths.setCurrentLevel('week2');
+      case 'pico' | 'blammed' | 'philly-nice':
+        Paths.setCurrentLevel('week3');
+      case 'satin-panties' | 'high' | 'milf':
+        Paths.setCurrentLevel('week4');
+      case 'cocoa' | 'eggnog' | 'winter-horrorland':
+        Paths.setCurrentLevel('week5');
+      case 'senpai' | 'roses' | 'thorns':
+        Paths.setCurrentLevel('week6');
+      case 'ugh' | 'guns' | 'stress':
+        Paths.setCurrentLevel('week7');
+      case 'darnell' | 'lit-up' | '2hot' | 'blazin':
+        Paths.setCurrentLevel('weekend1');
+    }
+
     subStateClosed.add(fixCamera);
     subStateClosed.add(updateConductor);
 
