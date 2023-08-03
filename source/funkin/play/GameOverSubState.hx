@@ -132,11 +132,11 @@ class GameOverSubState extends MusicBeatSubState
 
       if (boyfriend.hasAnimation('fakeoutDeath') && FlxG.random.bool((1 / 4096) * 100))
       {
-        boyfriend.playAnimation('fakeoutDeath', true, true);
+        boyfriend.playAnimation('fakeoutDeath', true, false);
       }
       else
       {
-        boyfriend.playAnimation('firstDeath', true, true);
+        boyfriend.playAnimation('firstDeath', true, false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
         // Play the "blue balled" sound. May play a variant if one has been assigned.
         playBlueBalledSFX();
       }
