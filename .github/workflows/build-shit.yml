@@ -37,11 +37,11 @@ jobs:
           git submodule sync --recursive
           git submodule update --recursive
           git status
-          sudo apt-get install -y libxinerama-dev libxrandr-dev
+          sudo apt-get install -y libxinerama-dev libxrandr-dev libgl1-mesa-dev
           haxelib run lime rebuild linux --clean
       - name: Build game
         run: |
-          sudo apt-get install -y libx11-dev xorg-dev libgl1-mesa-dev libgl-dev libxi-dev libxext-dev libasound2-dev
+          sudo apt-get install -y libx11-dev xorg-dev libgl-dev libxi-dev libxext-dev libasound2-dev
           haxelib run lime build html5 -debug --times
           ls
       - uses: ./.github/actions/upload-itch
