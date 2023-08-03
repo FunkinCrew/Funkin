@@ -509,6 +509,13 @@ class Strumline extends FlxSpriteGroup
       if (cover == null) continue;
       cover.kill();
     }
+
+    heldKeys = [false, false, false, false];
+
+    for (dir in DIRECTIONS)
+    {
+      playStatic(dir);
+    }
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
