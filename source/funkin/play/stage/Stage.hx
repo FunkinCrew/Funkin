@@ -694,6 +694,27 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     }
   }
 
+  public override function kill()
+  {
+    _skipTransformChildren = true;
+    alive = false;
+    exists = false;
+    _skipTransformChildren = false;
+    if (group != null) group.kill();
+  }
+
+  public override function remove(Sprite:FlxSprite, Splice:Bool = false):FlxSprite
+  {
+    var sprite:FlxSprite = cast Sprite;
+    sprite.x -= x;
+    sprite.y -= y;
+    // alpha
+    sprite.cameras = null;
+
+    if (group != null) group.remove(Sprite, Splice);
+    return Sprite;
+  }
+
   public function onScriptEvent(event:ScriptEvent) {}
 
   public function onPause(event:PauseScriptEvent) {}

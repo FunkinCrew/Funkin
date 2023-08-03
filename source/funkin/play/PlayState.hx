@@ -1107,6 +1107,8 @@ class PlayState extends MusicBeatSubState
     // super.stepHit() returns false if a module cancelled the event.
     if (!super.stepHit()) return false;
 
+    if (isGamePaused) return false;
+
     if (!startingSong
       && FlxG.sound.music != null
       && (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 200
@@ -1130,6 +1132,8 @@ class PlayState extends MusicBeatSubState
 
     // super.beatHit() returns false if a module cancelled the event.
     if (!super.beatHit()) return false;
+
+    if (isGamePaused) return false;
 
     if (generatedMusic)
     {
