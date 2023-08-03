@@ -92,6 +92,13 @@
       "url": "https://github.com/EliteMasterEric/lime"
     },
     {
+      "name": "mockatoo",
+      "type": "git",
+      "dir": null,
+      "ref": "master",
+      "url": "https://github.com/EliteMasterEric/mockatoo"
+    },
+    {
       "name": "openfl",
       "type": "git",
       "dir": null,

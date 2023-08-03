@@ -39,7 +39,7 @@ jobs:
           haxelib run lime rebuild linux --clean
       - name: Build game
         run: |
-          sudo apt-get install -y libx11-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev libgl-dev libxi-dev libxext-dev libasound2-dev
+          sudo apt-get install -y libx11-dev xorg-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev libgl-dev libxi-dev libxext-dev libasound2-dev
           haxelib run lime build html5 -debug --times
           ls
       - uses: ./.github/actions/upload-itch
