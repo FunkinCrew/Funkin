@@ -494,7 +494,8 @@ class FreeplayState extends MusicBeatSubState
 
     for (i in 0...tempSongs.length)
     {
-      var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, (i * 150) + 160, tempSongs[i].songName);
+      var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, 0, tempSongs[i].songName);
+      funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.targetPos.x = funnyMenu.x;
       funnyMenu.ID = i;
       funnyMenu.alpha = 0.5;
@@ -974,7 +975,7 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.selected = false;
 
-      capsule.targetPos.y = ((index - curSelected) * ((capsule.height * capsule.realScaled) + 10)) + 160;
+      capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
       // capsule.targetPos.x = 320 + (40 * (index - curSelected));
 

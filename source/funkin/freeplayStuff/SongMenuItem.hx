@@ -38,7 +38,7 @@ class SongMenuItem extends FlxSpriteGroup
     // capsule.animation
     add(capsule);
 
-    songText = new FlxText(capsule.width * 0.1, 40, 0, songTitle, Std.int(40 * realScaled));
+    songText = new FlxText(capsule.width * 0.23, 40, 0, songTitle, Std.int(40 * realScaled));
     songText.font = "5by7";
     songText.color = 0xFF43C1EA;
     add(songText);
@@ -112,6 +112,11 @@ class SongMenuItem extends FlxSpriteGroup
     }
 
     super.update(elapsed);
+  }
+
+  public function intendedY(index:Int):Float
+  {
+    return (index * ((height * realScaled) + 10)) + 160;
   }
 
   function set_selected(value:Bool):Bool
