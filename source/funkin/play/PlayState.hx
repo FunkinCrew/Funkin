@@ -811,16 +811,6 @@ class PlayState extends MusicBeatSubState
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
 
-    if (currentStage.getBoyfriend() != null)
-    {
-      FlxG.watch.addQuick('bfCameraFocus', currentStage.getBoyfriend().cameraFocusPoint);
-    }
-
-    if (currentStage.getDad() != null)
-    {
-      FlxG.watch.addQuick('dadCameraFocus', currentStage.getDad().cameraFocusPoint);
-    }
-
     // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.

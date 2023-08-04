@@ -241,7 +241,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
         propSprite.animation.play(dataProp.startingAnimation);
       }
 
-      if (Std.isOfType(propSprite, Bopper))
+      if (Std.isOfType(propSprite, BaseCharacter))
+      {
+        // Character stuff.
+      }
+      else if (Std.isOfType(propSprite, Bopper))
       {
         addBopper(cast propSprite, dataProp.name);
       }

@@ -54,9 +54,9 @@ class Countdown
 
       countdownStep = decrement(countdownStep);
 
-      // Handle onBeatHit events manually
-      @:privateAccess
-      PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
+      // onBeatHit events are now properly dispatched by the Conductor even at negative timestamps,
+      // so calling this is no longer necessary.
+      // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
       showCountdownGraphic(countdownStep, isPixelStyle);
