@@ -2326,8 +2326,7 @@ class PlayState extends MusicBeatSubState
     vocals.playerVolume = 1;
 
     // Calculate the input latency (do this as late as possible).
-    var currentTimestampNs:Int64 = PreciseInputManager.getCurrentTimestamp();
-    var inputLatencyMs:Float = haxe.Int64.toInt(currentTimestampNs - input.timestamp) / Constants.NS_PER_MS;
+    var inputLatencyMs:Float = haxe.Int64.toInt(PreciseInputManager.getCurrentTimestamp() - input.timestamp) / 1000.0 / 1000.0;
     trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
 
     // Get the offset and compensate for input latency.

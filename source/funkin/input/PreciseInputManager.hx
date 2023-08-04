@@ -85,6 +85,11 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   }
 
   /**
+   * Convert from int to Int64.
+   */
+  static final NS_PER_MS:Int64 = Constants.NS_PER_MS;
+
+  /**
    * Returns a precise timestamp, measured in nanoseconds.
    * Timestamp is only useful for comparing against other timestamps.
    *
@@ -97,11 +102,11 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     // NOTE: This timestamp isn't that precise on standard HTML5 builds.
     // This is because of browser safeguards against timing attacks.
     // See https://web.dev/coop-coep to enable headers which allow for more precise timestamps.
-    return haxe.Int64.fromFloat(js.Browser.window.performance.now() * Constants.NS_PER_MS);
+    return haxe.Int64.fromFloat(js.Browser.window.performance.now()) * NS_PER_MS;
     #elseif cpp
     // NOTE: If the game hard crashes on this line, rebuild Lime!
     // `lime rebuild windows -clean`
-    return lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks() * Constants.NS_PER_MS;
+    return lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks() * NS_PER_MS;
     #else
     throw "Eric didn't implement precise timestamps on this platform!";
     #end
