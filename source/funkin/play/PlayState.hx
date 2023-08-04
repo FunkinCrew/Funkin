@@ -952,7 +952,7 @@ class PlayState extends MusicBeatSubState
   {
     // If there is a substate which requires the game to continue,
     // then make this a condition.
-    var shouldPause = true;
+    var shouldPause = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
 
     if (shouldPause)
     {
@@ -966,6 +966,7 @@ class PlayState extends MusicBeatSubState
       // Pause the countdown.
       Countdown.pauseCountdown();
     }
+    else {}
 
     super.openSubState(subState);
   }
@@ -1672,7 +1673,8 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = endSong;
-    FlxG.sound.music.play(false, startTimestamp);
+    FlxG.sound.music.play();
+    FlxG.sound.music.time = startTimestamp;
     trace('Playing vocals...');
     add(vocals);
     vocals.play();
@@ -2627,6 +2629,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       FlxG.sound.music.pause();
+      vocals.pause();
       remove(vocals);
     }
 

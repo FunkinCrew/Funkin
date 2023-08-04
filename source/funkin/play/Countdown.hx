@@ -31,7 +31,10 @@ class Countdown
   {
     countdownStep = BEFORE;
     var cancelled:Bool = propagateCountdownEvent(countdownStep);
-    if (cancelled) return false;
+    if (cancelled)
+    {
+      return false;
+    }
 
     // Stop any existing countdown.
     stopCountdown();
@@ -67,7 +70,10 @@ class Countdown
       // Event handling bullshit.
       var cancelled:Bool = propagateCountdownEvent(countdownStep);
 
-      if (cancelled) pauseCountdown();
+      if (cancelled)
+      {
+        pauseCountdown();
+      }
 
       if (countdownStep == AFTER)
       {

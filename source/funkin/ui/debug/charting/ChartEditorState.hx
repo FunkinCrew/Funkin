@@ -1247,7 +1247,8 @@ class ChartEditorState extends HaxeUIState
     var height:Int = FlxG.height - MENU_BAR_HEIGHT - GRID_TOP_PAD - 200;
     notePreview = new ChartEditorNotePreview(height);
     notePreview.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
-    add(notePreview);
+    // TODO: Re-enable.
+    // add(notePreview);
   }
 
   function buildSpectrogram(target:FlxSound):Void
@@ -3496,14 +3497,23 @@ class ChartEditorState extends HaxeUIState
    * @param charKey Character to load the vocal track for.
    * @return Success or failure.
    */
-  public function loadVocalsFromAsset(path:String, charKey:String = 'default'):Bool
+  public function loadVocalsFromAsset(path:String, charType:CharacterType = OTHER):Bool
   {
     var vocalTrack:FlxSound = FlxG.sound.load(path, 1.0, false);
     if (vocalTrack != null)
     {
-      audioVocalTrackGroup.add(vocalTrack);
-
-      audioVocalTrackData.set(charKey, Assets.getBytes(path));
+      switch (charType)
+      {
+        case CharacterType.BF:
+          audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+          audioVocalTrackData.set(currentSongCharacterPlayer, Assets.getBytes(path));
+        case CharacterType.DAD:
+          audioVocalTrackGroup.addOpponentVoice(vocalTrack);
+          audioVocalTrackData.set(currentSongCharacterOpponent, Assets.getBytes(path));
+        default:
+          audioVocalTrackGroup.add(vocalTrack);
+          audioVocalTrackData.set('default', Assets.getBytes(path));
+      }
 
       return true;
     }
@@ -3565,9 +3575,17 @@ class ChartEditorState extends HaxeUIState
     loadInstrumentalFromAsset(Paths.inst(songId));
 
     var voiceList:Array<String> = song.getDifficulty(selectedDifficulty).buildVoiceList();
-    for (voicePath in voiceList)
+    if (voiceList.length == 2)
     {
-      loadVocalsFromAsset(voicePath);
+      loadVocalsFromAsset(voiceList[0], BF);
+      loadVocalsFromAsset(voiceList[1], DAD);
+    }
+    else
+    {
+      for (voicePath in voiceList)
+      {
+        loadVocalsFromAsset(voicePath);
+      }
     }
 
     NotificationManager.instance.addNotification(
