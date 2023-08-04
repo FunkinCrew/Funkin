@@ -970,6 +970,8 @@ class FreeplayState extends MusicBeatSubState
 
     for (index => capsule in grpCapsules.members)
     {
+      index += 1;
+
       capsule.selected = false;
 
       capsule.targetPos.y = ((index - curSelected) * 150) + 160;
