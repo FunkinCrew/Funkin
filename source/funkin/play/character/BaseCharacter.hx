@@ -235,7 +235,6 @@ class BaseCharacter extends Bopper
     // Then reapply animOffsets...
     // applyAnimationOffsets(getCurrentAnimation());
 
-    // Make sure we are playing the idle animation
     this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
     // Make sure we are playing the idle animation
     // ...then update the hitbox so that this.width and this.height are correct.
