@@ -2761,7 +2761,7 @@ class ChartEditorState extends HaxeUIState
    */
   function handleTestKeybinds():Void
   {
-    if (FlxG.keys.justPressed.ENTER)
+    if (!isHaxeUIDialogOpen && FlxG.keys.justPressed.ENTER)
     {
       var minimal = FlxG.keys.pressed.SHIFT;
       testSongInPlayState(minimal);

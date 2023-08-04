@@ -39,7 +39,11 @@ class Song implements IPlayStateScriptedClass
 
   var difficultyIds:Array<String>;
 
-  public function new(id:String)
+  /**
+   * @param id The ID of the song to load.
+   * @param ignoreErrors If false, an exception will be thrown if the song data could not be loaded.
+   */
+  public function new(id:String, ignoreErrors:Bool = false)
   {
     this.songId = id;
 
@@ -48,7 +52,7 @@ class Song implements IPlayStateScriptedClass
     difficulties = new Map<String, SongDifficulty>();
 
     _metadata = SongDataParser.loadSongMetadata(songId);
-    if (_metadata == null || _metadata.length == 0)
+    if (_metadata == null || _metadata.length == 0 && !ignoreErrors)
     {
       throw 'Could not find song data for songId: $songId';
     }
@@ -60,7 +64,7 @@ class Song implements IPlayStateScriptedClass
   public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
       ?validScore:Bool = false):Song
   {
-    var result:Song = new Song(songId);
+    var result:Song = new Song(songId, true);
 
     result._metadata.clear();
     for (meta in metadata)
