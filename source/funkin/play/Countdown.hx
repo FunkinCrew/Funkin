@@ -39,8 +39,8 @@ class Countdown
     PlayState.instance.isInCountdown = true;
     Conductor.update(PlayState.instance.startTimestamp + Conductor.beatLengthMs * -5);
     // Handle onBeatHit events manually
-    @:privateAccess
-    PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
+    // @:privateAccess
+    // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();

@@ -7,6 +7,7 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.display.FlxPieDial;
+import flixel.addons.transition.Transition;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
@@ -93,6 +94,11 @@ typedef PlayStateParams =
    * If specified, the game will jump to the specified timestamp after the countdown ends.
    */
   ?startTimestamp:Float,
+  /**
+   * If specified, the game will not load the instrumental or vocal tracks,
+   * and must be loaded externally.
+   */
+  ?overrideMusic:Bool,
 }
 
 /**
@@ -243,6 +249,8 @@ class PlayState extends MusicBeatSubState
 
   public var startTimestamp:Float = 0.0;
 
+  var overrideMusic:Bool = false;
+
   public var isSubState(get, null):Bool;
 
   function get_isSubState():Bool
@@ -316,7 +324,7 @@ class PlayState extends MusicBeatSubState
   /**
    * A group of audio tracks, used to play the song's vocals.
    */
-  var vocals:VoicesGroup;
+  public var vocals:VoicesGroup;
 
   #if discord_rpc
   // Discord RPC variables
@@ -479,6 +487,7 @@ class PlayState extends MusicBeatSubState
     isPracticeMode = params.practiceMode ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
+    overrideMusic = params.overrideMusic ?? false;
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
   }
@@ -555,16 +564,17 @@ class PlayState extends MusicBeatSubState
     this.persistentDraw = true;
 
     // Stop any pre-existing music.
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+    if (!overrideMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
 
     // Prepare the current song's instrumental and vocals to be played.
-    if (currentChart != null)
+    if (!overrideMusic && currentChart != null)
     {
       currentChart.cacheInst(currentPlayerId);
       currentChart.cacheVocals(currentPlayerId);
     }
 
     // Prepare the Conductor.
+    Conductor.forceBPM(null);
     Conductor.mapTimeChanges(currentChart.timeChanges);
     Conductor.update((Conductor.beatLengthMs * -5) + startTimestamp);
 
@@ -966,7 +976,7 @@ class PlayState extends MusicBeatSubState
    */
   public override function closeSubState():Void
   {
-    if (isGamePaused)
+    if (Std.isOfType(subState, PauseSubState))
     {
       var event:ScriptEvent = new ScriptEvent(ScriptEvent.RESUME, true);
 
@@ -993,6 +1003,10 @@ class PlayState extends MusicBeatSubState
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
       }
       #end
+    }
+    else if (Std.isOfType(subState, Transition))
+    {
+      // Do nothing.
     }
 
     super.closeSubState();
@@ -1534,12 +1548,16 @@ class PlayState extends MusicBeatSubState
       trace('Song difficulty could not be loaded.');
     }
 
-    Conductor.forceBPM(currentChart.getStartingBPM());
+    // Conductor.forceBPM(currentChart.getStartingBPM());
 
-    vocals = currentChart.buildVocals(currentPlayerId);
-    if (vocals.members.length == 0)
+    if (!overrideMusic)
     {
-      trace('WARNING: No vocals found for this song.');
+      vocals = currentChart.buildVocals(currentPlayerId);
+
+      if (vocals.members.length == 0)
+      {
+        trace('WARNING: No vocals found for this song.');
+      }
     }
 
     regenNoteData();
@@ -1648,7 +1666,7 @@ class PlayState extends MusicBeatSubState
 
     startingSong = false;
 
-    if (!isGamePaused && currentChart != null)
+    if (!overrideMusic && !isGamePaused && currentChart != null)
     {
       currentChart.playInst(1.0, false);
     }
@@ -2600,9 +2618,17 @@ class PlayState extends MusicBeatSubState
       // TODO: Uncache the song.
     }
 
-    // Stop the music.
-    FlxG.sound.music.pause();
-    vocals.stop();
+    if (!overrideMusic)
+    {
+      // Stop the music.
+      FlxG.sound.music.pause();
+      vocals.stop();
+    }
+    else
+    {
+      FlxG.sound.music.pause();
+      remove(vocals);
+    }
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)

@@ -3340,7 +3340,7 @@ class ChartEditorState extends HaxeUIState
     FlxTransitionableState.skipNextTransIn = false;
     FlxTransitionableState.skipNextTransOut = false;
 
-    openSubState(new PlayState(
+    var targetState = new PlayState(
       {
         targetSong: targetSong,
         targetDifficulty: selectedDifficulty,
@@ -3349,7 +3349,14 @@ class ChartEditorState extends HaxeUIState
         practiceMode: true,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
-      }));
+        overrideMusic: true,
+      });
+
+    // Override music.
+    FlxG.sound.music = audioInstTrack;
+    targetState.vocals = audioVocalTrackGroup;
+
+    openSubState(targetState);
   }
 
   function fixCamera(_:FlxSubState = null):Void
