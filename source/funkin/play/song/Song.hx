@@ -117,7 +117,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
       validScore:Bool = false):Song
   {
-    var result:Song = new Song(songId);
+    var result:Song = new Song(songId, true);
 
     result._metadata.clear();
     for (meta in metadata)
