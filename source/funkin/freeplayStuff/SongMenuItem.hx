@@ -38,7 +38,7 @@ class SongMenuItem extends FlxSpriteGroup
     // capsule.animation
     add(capsule);
 
-    songText = new FlxText(120, 40, 0, songTitle, 40);
+    songText = new FlxText(capsule.width * 0.1, 40, 0, songTitle, Std.int(40 * realScaled));
     songText.font = "5by7";
     songText.color = 0xFF43C1EA;
     add(songText);
@@ -63,6 +63,8 @@ class SongMenuItem extends FlxSpriteGroup
   var xPosLerpLol:Array<Float> = [0.9, 0.4, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
   var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
+  public final realScaled:Float = 0.8;
+
   override function update(elapsed:Float)
   {
     if (doJumpIn)
@@ -76,6 +78,9 @@ class SongMenuItem extends FlxSpriteGroup
         scale.x = xFrames[frameInTypeBeat];
         scale.y = 1 / xFrames[frameInTypeBeat];
         x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
+
+        scale.x *= realScaled;
+        scale.y *= realScaled;
 
         frameInTypeBeat += 1;
       }
@@ -92,6 +97,9 @@ class SongMenuItem extends FlxSpriteGroup
         scale.x = xFrames[frameOutTypeBeat];
         scale.y = 1 / xFrames[frameOutTypeBeat];
         x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+
+        scale.x *= realScaled;
+        scale.y *= realScaled;
 
         frameOutTypeBeat += 1;
       }

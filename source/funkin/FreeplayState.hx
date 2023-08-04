@@ -974,7 +974,7 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.selected = false;
 
-      capsule.targetPos.y = ((index - curSelected) * 150) + 160;
+      capsule.targetPos.y = ((index - curSelected) * ((capsule.height * capsule.realScaled) + 10)) + 160;
       capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
       // capsule.targetPos.x = 320 + (40 * (index - curSelected));
 
