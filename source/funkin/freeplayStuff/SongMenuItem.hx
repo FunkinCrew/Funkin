@@ -43,7 +43,7 @@ class SongMenuItem extends FlxSpriteGroup
     songText.color = 0xFF43C1EA;
     add(songText);
 
-    favIcon = new FlxSprite(440, 40);
+    favIcon = new FlxSprite(400, 40);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', "favorite heart", 24, false);
     favIcon.animation.play('fav');
@@ -116,7 +116,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   public function intendedY(index:Int):Float
   {
-    return (index * ((height * realScaled) + 10)) + 160;
+    return (index * ((height * realScaled) + 10)) + 120;
   }
 
   function set_selected(value:Bool):Bool

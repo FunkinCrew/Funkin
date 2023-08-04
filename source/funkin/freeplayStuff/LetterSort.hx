@@ -17,23 +17,31 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
   {
     super(x, y);
 
-    var leftArrow:FreeplayLetter = new FreeplayLetter(-20, 0);
+    var leftArrow:FreeplayLetter = new FreeplayLetter(-20, 20);
     leftArrow.animation.play("arrow");
+    leftArrow.flipX = true;
     add(leftArrow);
 
-    for (i in 0...6)
+    for (i in 0...5)
     {
       var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i);
       add(letter);
 
       letters.push(letter);
 
-      if (i == 3) letter.alpha = 0.6;
+      if (i == 2) letter.alpha = 0.6;
 
-      var sep:FreeplayLetter = new FreeplayLetter((i * 80) + 50, 0);
+      // don't put the last seperator
+      if (i == 4) continue;
+
+      var sep:FreeplayLetter = new FreeplayLetter((i * 80) + 60, 20);
       sep.animation.play("seperator");
       add(sep);
     }
+
+    var rightArrow:FreeplayLetter = new FreeplayLetter(380, 20);
+    rightArrow.animation.play("arrow");
+    add(rightArrow);
 
     // changeSelection(-3);
   }
@@ -51,7 +59,7 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
     for (letter in letters)
       letter.changeLetter(diff);
 
-    if (changeSelectionCallback != null) changeSelectionCallback(letters[3].arr[letters[3].curLetter]); // bullshit and long lol!
+    if (changeSelectionCallback != null) changeSelectionCallback(letters[2].arr[letters[2].curLetter]); // bullshit and long lol!
   }
 }
 

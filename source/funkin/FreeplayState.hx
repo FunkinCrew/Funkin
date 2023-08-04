@@ -376,7 +376,7 @@ class FreeplayState extends MusicBeatSubState
           speed: 0.26
         });
 
-      var letterSort:LetterSort = new LetterSort(300, 100);
+      var letterSort:LetterSort = new LetterSort(400, 75);
       add(letterSort);
 
       exitMovers.set([letterSort],
