@@ -6,6 +6,7 @@ import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
 
 class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 {
@@ -32,13 +33,18 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 
       letters.push(letter);
 
-      if (i == 2) letter.alpha = 0.6;
+      if (i == 2) letter.scale.x = letter.scale.y = 1.2;
+
+      var darkness:Float = Math.abs(i - 2) / 6;
+
+      letter.color = letter.color.getDarkened(darkness);
 
       // don't put the last seperator
       if (i == 4) continue;
 
-      var sep:FreeplayLetter = new FreeplayLetter((i * 80) + 60, 20);
+      var sep:FreeplayLetter = new FreeplayLetter((i * 80) + 55, 20);
       sep.animation.play("seperator");
+      sep.color = letter.color.getDarkened(darkness);
       add(sep);
     }
 
