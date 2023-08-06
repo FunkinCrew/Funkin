@@ -33,7 +33,9 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 
       letters.push(letter);
 
-      if (i == 2) letter.scale.x = letter.scale.y = 1.2;
+      if (i != 2) letter.scale.x = letter.scale.y = 0.8;
+      else
+        letter.scale.x = letter.scale.y = 1.1;
 
       var darkness:Float = Math.abs(i - 2) / 6;
 
