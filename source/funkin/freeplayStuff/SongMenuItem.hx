@@ -7,6 +7,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
+import flixel.util.FlxTimer;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -24,6 +25,8 @@ class SongMenuItem extends FlxSpriteGroup
   public var doJumpIn:Bool = false;
 
   public var doJumpOut:Bool = false;
+
+  public var onConfirm:Void->Void;
 
   public function new(x:Float, y:Float, song:String)
   {
@@ -64,6 +67,30 @@ class SongMenuItem extends FlxSpriteGroup
   var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
   public final realScaled:Float = 0.8;
+
+  public function initJumpIn(maxTimer:Float, ?force:Bool):Void
+  {
+    new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
+      doJumpIn = true;
+    });
+
+    new FlxTimer().start((0.09 * maxTimer) + 0.85, function(lerpTmr) {
+      doLerp = true;
+    });
+
+    if (!force)
+    {
+      new FlxTimer().start(((0.20 * maxTimer) / (1 + maxTimer)) + 0.75, function(swagShi) {
+        songText.visible = true;
+        alpha = 1;
+      });
+    }
+    else
+    {
+      songText.visible = true;
+      alpha = 1;
+    }
+  }
 
   override function update(elapsed:Float)
   {

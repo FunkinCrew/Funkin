@@ -466,7 +466,7 @@ class FreeplayState extends MusicBeatSubState
 
   public function generateSongList(?filterStuff:SongFilter, force:Bool = false)
   {
-    curSelected = 0;
+    curSelected = 1;
 
     grpCapsules.clear();
 
@@ -492,9 +492,38 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
+    // if (regexp != null)
+    // 	tempSongs = songs.filter(item -> regexp.match(item.songName));
+
+    // tempSongs.sort(function(a, b):Int
+    // {
+    // 	var tempA = a.songName.toUpperCase();
+    // 	var tempB = b.songName.toUpperCase();
+
+    // 	if (tempA < tempB)
+    // 		return -1;
+    // 	else if (tempA > tempB)
+    // 		return 1;
+    // 	else
+    // 		return 0;
+    // });
+
+    var randomCapsule:SongMenuItem = new SongMenuItem(FlxG.width, 0, "Random");
+    randomCapsule.onConfirm = function() {
+      trace("RANDOM SELECTED");
+    };
+    randomCapsule.y = randomCapsule.intendedY(0) + 10;
+    randomCapsule.targetPos.x = randomCapsule.x;
+    randomCapsule.alpha = 0.5;
+    randomCapsule.songText.visible = false;
+    randomCapsule.favIcon.visible = false;
+    randomCapsule.initJumpIn(0, force);
+    grpCapsules.add(randomCapsule);
+
     for (i in 0...tempSongs.length)
     {
       var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, 0, tempSongs[i].songName);
+      funnyMenu.onConfirm = capsuleOnConfirmDefault;
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.targetPos.x = funnyMenu.x;
       funnyMenu.ID = i;
@@ -503,29 +532,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
 
       // fp.updateScore(0);
-
-      var maxTimer:Float = Math.min(i, 4);
-
-      new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
-        funnyMenu.doJumpIn = true;
-      });
-
-      new FlxTimer().start((0.09 * maxTimer) + 0.85, function(lerpTmr) {
-        funnyMenu.doLerp = true;
-      });
-
-      if (!force)
-      {
-        new FlxTimer().start(((0.20 * maxTimer) / (1 + maxTimer)) + 0.75, function(swagShi) {
-          funnyMenu.songText.visible = true;
-          funnyMenu.alpha = 1;
-        });
-      }
-      else
-      {
-        funnyMenu.songText.visible = true;
-        funnyMenu.alpha = 1;
-      }
+      funnyMenu.initJumpIn(Math.min(i, 4), force);
 
       grpCapsules.add(funnyMenu);
 
@@ -831,66 +838,7 @@ class FreeplayState extends MusicBeatSubState
     {
       // if (Assets.exists())
 
-      var poop:String = songs[curSelected].songName.toLowerCase();
-
-      // does not work properly, always just accidentally sets it to normal anyways!
-      /* if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
-        {
-          // defaults to normal if HARD / EASY doesn't exist
-          // does not account if NORMAL doesn't exist!
-          FlxG.log.warn("CURRENT DIFFICULTY IS NOT CHARTED, DEFAULTING TO NORMAL!");
-          poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
-          curDifficulty = 1;
-      }*/
-
-      PlayStatePlaylist.isStoryMode = false;
-      var songId:String = songs[curSelected].songName.toLowerCase();
-      var targetSong:Song = SongRegistry.instance.fetchEntry(songId);
-      var targetDifficulty:String = switch (curDifficulty)
-      {
-        case 0:
-          'easy';
-        case 1:
-          'normal';
-        case 2:
-          'hard';
-        default: 'normal';
-      };
-
-      // TODO: Implement additional difficulties into the interface properly.
-      if (FlxG.keys.pressed.E)
-      {
-        targetDifficulty = 'erect';
-      }
-
-      // TODO: Implement Pico into the interface properly.
-      var targetCharacter:String = 'bf';
-      if (FlxG.keys.pressed.P)
-      {
-        targetCharacter = 'pico';
-      }
-
-      PlayStatePlaylist.campaignId = songs[curSelected].levelId;
-
-      // Visual and audio effects.
-      FlxG.sound.play(Paths.sound('confirmMenu'));
-      dj.confirm();
-
-      if (targetSong != null)
-      {
-        // Load and cache the song's charts.
-        // TODO: Do this in the loading state.
-        targetSong.cacheCharts(true);
-      }
-
-      new FlxTimer().start(1, function(tmr:FlxTimer) {
-        LoadingState.loadAndSwitchState(new PlayState(
-          {
-            targetSong: targetSong,
-            targetDifficulty: targetDifficulty,
-            targetCharacter: targetCharacter,
-          }), true);
-      });
+      grpCapsules.members[curSelected].onConfirm();
     }
   }
 
@@ -940,6 +888,62 @@ class FreeplayState extends MusicBeatSubState
         // openfl.Assets.cache.clear(Paths.inst(song.songName));
       }
     }
+  }
+
+  function capsuleOnConfirmDefault():Void
+  {
+    var poop:String = songs[curSelected].songName.toLowerCase();
+
+    // does not work properly, always just accidentally sets it to normal anyways!
+    /* if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
+      {
+        // defaults to normal if HARD / EASY doesn't exist
+        // does not account if NORMAL doesn't exist!
+        FlxG.log.warn("CURRENT DIFFICULTY IS NOT CHARTED, DEFAULTING TO NORMAL!");
+        poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
+        curDifficulty = 1;
+    }*/
+
+    PlayStatePlaylist.isStoryMode = false;
+    var targetSong:Song = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
+    var targetDifficulty:String = switch (curDifficulty)
+    {
+      case 0:
+        'easy';
+      case 1:
+        'normal';
+      case 2:
+        'hard';
+      default: 'normal';
+    };
+
+    // TODO: Implement additional difficulties into the interface properly.
+    if (FlxG.keys.pressed.E)
+    {
+      targetDifficulty = 'erect';
+    }
+
+    // TODO: Implement Pico into the interface properly.
+    var targetCharacter:String = 'bf';
+    if (FlxG.keys.pressed.P)
+    {
+      targetCharacter = 'pico';
+    }
+
+    PlayStatePlaylist.campaignId = songs[curSelected].levelId;
+
+    // Visual and audio effects.
+    FlxG.sound.play(Paths.sound('confirmMenu'));
+    dj.confirm();
+
+    new FlxTimer().start(1, function(tmr:FlxTimer) {
+      LoadingState.loadAndSwitchState(new PlayState(
+        {
+          targetSong: targetSong,
+          targetDifficulty: targetDifficulty,
+          targetCharacter: targetCharacter,
+        }), true);
+    });
   }
 
   function changeSelection(change:Int = 0)

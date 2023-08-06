@@ -4,6 +4,8 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 {
@@ -25,6 +27,7 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
     for (i in 0...5)
     {
       var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i);
+      letter.ogY = y;
       add(letter);
 
       letters.push(letter);
@@ -43,7 +46,7 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
     rightArrow.animation.play("arrow");
     add(rightArrow);
 
-    // changeSelection(-3);
+    changeSelection(0);
   }
 
   override function update(elapsed:Float)
@@ -56,8 +59,12 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 
   public function changeSelection(diff:Int = 0)
   {
+    curSelection += diff;
+    if (curSelection < 0) curSelection = letters.length - 1;
+    if (curSelection >= letters.length) curSelection = 0;
+
     for (letter in letters)
-      letter.changeLetter(diff);
+      letter.changeLetter(diff, curSelection);
 
     if (changeSelectionCallback != null) changeSelectionCallback(letters[2].arr[letters[2].curLetter]); // bullshit and long lol!
   }
@@ -69,16 +76,17 @@ class FreeplayLetter extends FlxSprite
 
   public var curLetter:Int = 0;
 
+  public var ogY:Float = 0;
+
   public function new(x:Float, y:Float, ?letterInd:Int)
   {
     super(x, y);
-
     frames = Paths.getSparrowAtlas("freeplay/letterStuff");
 
     var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
     arr = alphabet.split("");
-    arr.insert(0, "#");
     arr.insert(0, "ALL");
+    arr.insert(0, "#");
     arr.insert(0, "fav");
 
     for (str in arr)
@@ -96,7 +104,7 @@ class FreeplayLetter extends FlxSprite
     }
   }
 
-  public function changeLetter(diff:Int = 0)
+  public function changeLetter(diff:Int = 0, ?curSelection:Int)
   {
     curLetter += diff;
 
