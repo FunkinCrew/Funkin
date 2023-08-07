@@ -14,12 +14,13 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 {
   public var letters:Array<FreeplayLetter> = [];
 
-  var curSelection:Int = 0;
+  var curSelection:Int = 2;
 
   public var changeSelectionCallback:String->Void;
 
   var leftArrow:FlxSprite;
   var rightArrow:FlxSprite;
+  var grpSeperators:Array<FlxSprite> = [];
 
   public function new(x, y)
   {
@@ -58,6 +59,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       // sep.animation.play("seperator");
       sep.color = letter.color.getDarkened(darkness);
       add(sep);
+
+      grpSeperators.push(sep);
     }
 
     rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
@@ -78,16 +81,24 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
   public function changeSelection(diff:Int = 0)
   {
-    var ezTimer:Int->FreeplayLetter->Float->Void = function(frameNum:Int, daLetter:FreeplayLetter, offsetNum:Float) {
+    var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float) {
       new FlxTimer().start(frameNum / 24, function(_) {
-        daLetter.offset.x = offsetNum;
+        spr.offset.x = offsetNum;
       });
     };
 
-    var positions:Array<Float> = [-10, -22, -67, 2, 0];
+    var positions:Array<Float> = [-10, -22, 2, 0];
 
     if (diff < 0)
     {
+      for (sep in grpSeperators)
+      {
+        ezTimer(0, sep, positions[0]);
+        ezTimer(1, sep, positions[1]);
+        ezTimer(2, sep, positions[2]);
+        ezTimer(3, sep, positions[3]);
+      }
+
       for (index => letter in letters)
       {
         letter.offset.x = positions[0];
@@ -99,7 +110,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
         new FlxTimer().start(2 / 24, function(_) {
           letter.offset.x = positions[2];
-          if (index == 0) letter.visible = true;
+          if (index == 0.) letter.visible = true;
         });
 
         if (index == 2)
@@ -110,7 +121,6 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
         }
 
         ezTimer(3, letter, positions[3]);
-        ezTimer(4, letter, positions[4]);
       }
 
       leftArrow.offset.x = 3;
@@ -120,19 +130,27 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     }
     else if (diff > 0)
     {
+      for (sep in grpSeperators)
+      {
+        ezTimer(0, sep, -positions[0]);
+        ezTimer(1, sep, -positions[1]);
+        ezTimer(2, sep, -positions[2]);
+        ezTimer(3, sep, -positions[3]);
+      }
       // same timing and functions and shit as the left one... except to the right!!
+
       for (index => letter in letters)
       {
         letter.offset.x = -positions[0];
 
         new FlxTimer().start(1 / 24, function(_) {
           letter.offset.x = -positions[1];
-          if (index == 4) letter.visible = false;
+          if (index == 0) letter.visible = false;
         });
 
         new FlxTimer().start(2 / 24, function(_) {
           letter.offset.x = -positions[2];
-          if (index == 4) letter.visible = true;
+          if (index == 0) letter.visible = true;
         });
 
         if (index == 2)
@@ -143,7 +161,6 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
         }
 
         ezTimer(3, letter, -positions[3]);
-        ezTimer(4, letter, -positions[4]);
       }
 
       rightArrow.offset.x = -3;
@@ -157,7 +174,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     if (curSelection >= letters[0].arr.length) curSelection = 0;
 
     for (letter in letters)
-      letter.changeLetter(diff, curSelection + 2);
+      letter.changeLetter(diff, curSelection);
 
     if (changeSelectionCallback != null) changeSelectionCallback(letters[2].arr[letters[2].curLetter]); // bullshit and long lol!
   }
@@ -210,6 +227,7 @@ class FreeplayLetter extends FlxAtlasSprite
     if (curLetter >= arr.length) curLetter = 0;
 
     var animName:String = arr[curLetter] + " move";
+
     switch (arr[curLetter])
     {
       case "I L":
@@ -221,7 +239,13 @@ class FreeplayLetter extends FlxAtlasSprite
     }
 
     this.anim.play(animName);
-    if (curSelection != curLetter) this.anim.pause();
-    updateHitbox();
+    if (curSelection != curLetter)
+    {
+      trace(animName);
+      trace(curLetter);
+      trace(curSelection);
+      this.anim.pause();
+    }
+    // updateHitbox();
   }
 }
