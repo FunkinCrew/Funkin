@@ -150,7 +150,18 @@ class FreeplayLetter extends FlxAtlasSprite
     if (curLetter < 0) curLetter = arr.length - 1;
     if (curLetter >= arr.length) curLetter = 0;
 
-    this.anim.play(arr[curLetter] + " move");
+    var animName:String = arr[curLetter] + " move";
+    switch (arr[curLetter])
+    {
+      case "I L":
+        animName = "IL move";
+      case "s":
+        animName = "S move";
+      case "t":
+        animName = "T move";
+    }
+
+    this.anim.play(animName);
     if (curSelection != curLetter) this.anim.pause();
     updateHitbox();
   }
