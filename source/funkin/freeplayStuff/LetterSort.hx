@@ -33,6 +33,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     for (i in 0...5)
     {
       var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i);
+      letter.x += 50;
+      letter.y += 50;
       letter.ogY = y;
       add(letter);
 
@@ -40,7 +42,10 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
       if (i != 2) letter.scale.x = letter.scale.y = 0.8;
       else
-        letter.scale.x = letter.scale.y = 1.1;
+      {
+        // letter.x += 10;
+        // letter.scale.x = letter.scale.y = 1.1;
+      }
 
       var darkness:Float = Math.abs(i - 2) / 6;
 
@@ -89,11 +94,11 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     }
 
     curSelection += diff;
-    if (curSelection < 0) curSelection = letters.length - 1;
-    if (curSelection >= letters.length) curSelection = 0;
+    if (curSelection < 0) curSelection = letters[0].arr.length - 1;
+    if (curSelection >= letters[0].arr.length) curSelection = 0;
 
     for (letter in letters)
-      letter.changeLetter(diff, curSelection);
+      letter.changeLetter(diff, curSelection + 2);
 
     if (changeSelectionCallback != null) changeSelectionCallback(letters[2].arr[letters[2].curLetter]); // bullshit and long lol!
   }
@@ -132,7 +137,8 @@ class FreeplayLetter extends FlxAtlasSprite
 
     if (letterInd != null)
     {
-      this.anim.play(arr[letterInd]);
+      this.anim.play(arr[letterInd] + " move");
+      this.anim.pause();
       curLetter = letterInd;
     }
   }
@@ -144,6 +150,8 @@ class FreeplayLetter extends FlxAtlasSprite
     if (curLetter < 0) curLetter = arr.length - 1;
     if (curLetter >= arr.length) curLetter = 0;
 
-    this.anim.play(arr[curLetter]);
+    this.anim.play(arr[curLetter] + " move");
+    if (curSelection != curLetter) this.anim.pause();
+    updateHitbox();
   }
 }
