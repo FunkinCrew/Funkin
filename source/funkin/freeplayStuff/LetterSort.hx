@@ -78,8 +78,41 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
   public function changeSelection(diff:Int = 0)
   {
+    var ezTimer:Int->FreeplayLetter->Float->Void = function(frameNum:Int, daLetter:FreeplayLetter, offsetNum:Float) {
+      new FlxTimer().start(frameNum / 24, function(_) {
+        daLetter.offset.x = offsetNum;
+      });
+    };
+
+    var positions:Array<Float> = [-10, -22, -67, 2, 0];
+
     if (diff < 0)
     {
+      for (index => letter in letters)
+      {
+        letter.offset.x = positions[0];
+
+        new FlxTimer().start(1 / 24, function(_) {
+          letter.offset.x = positions[1];
+          if (index == 0) letter.visible = false;
+        });
+
+        new FlxTimer().start(2 / 24, function(_) {
+          letter.offset.x = positions[2];
+          if (index == 0) letter.visible = true;
+        });
+
+        if (index == 2)
+        {
+          ezTimer(3, letter, 0);
+          // letter.offset.x = 0;
+          continue;
+        }
+
+        ezTimer(3, letter, positions[3]);
+        ezTimer(4, letter, positions[4]);
+      }
+
       leftArrow.offset.x = 3;
       new FlxTimer().start(2 / 24, function(_) {
         leftArrow.offset.x = 0;
@@ -87,6 +120,32 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     }
     else if (diff > 0)
     {
+      // same timing and functions and shit as the left one... except to the right!!
+      for (index => letter in letters)
+      {
+        letter.offset.x = -positions[0];
+
+        new FlxTimer().start(1 / 24, function(_) {
+          letter.offset.x = -positions[1];
+          if (index == 4) letter.visible = false;
+        });
+
+        new FlxTimer().start(2 / 24, function(_) {
+          letter.offset.x = -positions[2];
+          if (index == 4) letter.visible = true;
+        });
+
+        if (index == 2)
+        {
+          ezTimer(3, letter, 0);
+          // letter.offset.x = 0;
+          continue;
+        }
+
+        ezTimer(3, letter, -positions[3]);
+        ezTimer(4, letter, -positions[4]);
+      }
+
       rightArrow.offset.x = -3;
       new FlxTimer().start(2 / 24, function(_) {
         rightArrow.offset.x = 0;
