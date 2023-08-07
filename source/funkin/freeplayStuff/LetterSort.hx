@@ -14,6 +14,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 {
   public var letters:Array<FreeplayLetter> = [];
 
+  // starts at 2, cuz that's the middle letter on start (accounting for fav and #, it should begin at ALL filter)
   var curSelection:Int = 2;
 
   public var changeSelectionCallback:String->Void;
