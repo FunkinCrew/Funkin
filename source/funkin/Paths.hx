@@ -49,9 +49,9 @@ class Paths
     return getPath(file, type, library);
   }
 
-  public static inline function animateAtlas(path:String, library:String)
+  public static inline function animateAtlas(path:String, ?library:String)
   {
-    return getLibraryPathForce('images/$path', library);
+    return getLibraryPath('images/$path', library);
   }
 
   inline static public function txt(key:String, ?library:String)

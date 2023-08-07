@@ -7,6 +7,8 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 {
@@ -16,11 +18,14 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 
   public var changeSelectionCallback:String->Void;
 
+  var leftArrow:FreeplayLetter;
+  var rightArrow:FreeplayLetter;
+
   public function new(x, y)
   {
     super(x, y);
 
-    var leftArrow:FreeplayLetter = new FreeplayLetter(-20, 20);
+    leftArrow = new FreeplayLetter(-20, 15);
     leftArrow.animation.play("arrow");
     leftArrow.flipX = true;
     add(leftArrow);
@@ -50,7 +55,7 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
       add(sep);
     }
 
-    var rightArrow:FreeplayLetter = new FreeplayLetter(380, 20);
+    rightArrow = new FreeplayLetter(380, leftArrow.y);
     rightArrow.animation.play("arrow");
     add(rightArrow);
 
@@ -67,6 +72,21 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 
   public function changeSelection(diff:Int = 0)
   {
+    if (diff < 0)
+    {
+      leftArrow.offset.x = 3;
+      new FlxTimer().start(2 / 24, function(_) {
+        leftArrow.offset.x = 0;
+      });
+    }
+    else if (diff > 0)
+    {
+      rightArrow.offset.x = -3;
+      new FlxTimer().start(2 / 24, function(_) {
+        rightArrow.offset.x = 0;
+      });
+    }
+
     curSelection += diff;
     if (curSelection < 0) curSelection = letters.length - 1;
     if (curSelection >= letters.length) curSelection = 0;
@@ -78,7 +98,7 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
   }
 }
 
-class FreeplayLetter extends FlxSprite
+class FreeplayLetter extends FlxAtlasSprite
 {
   public var arr:Array<String> = [];
 
@@ -88,26 +108,30 @@ class FreeplayLetter extends FlxSprite
 
   public function new(x:Float, y:Float, ?letterInd:Int)
   {
-    super(x, y);
-    frames = Paths.getSparrowAtlas("freeplay/letterStuff");
+    super(x, y, Paths.animateAtlas("freeplay/sortedLetters"));
+    // frames = Paths.getSparrowAtlas("freeplay/letterStuff");
+    // this.anim.play("AB");
+    // trace(this.anim.symbolDictionary);
 
-    var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
-    arr = alphabet.split("");
+    var alphabet:String = "AB-CD-EH-I L-MN-OR-s-t-UZ";
+    arr = alphabet.split("-");
     arr.insert(0, "ALL");
-    arr.insert(0, "#");
     arr.insert(0, "fav");
+    arr.insert(0, "#");
 
-    for (str in arr)
-    {
-      animation.addByPrefix(str, str + " "); // string followed by a space! intentional!
-    }
+    // trace(arr);
 
-    animation.addByPrefix("arrow", "mini arrow");
-    animation.addByPrefix("seperator", "seperator");
+    // for (str in arr)
+    // {
+    //   animation.addByPrefix(str, str + " "); // string followed by a space! intentional!
+    // }
+
+    // animation.addByPrefix("arrow", "mini arrow");
+    // animation.addByPrefix("seperator", "seperator");
 
     if (letterInd != null)
     {
-      animation.play(arr[letterInd]);
+      this.anim.play(arr[letterInd]);
       curLetter = letterInd;
     }
   }
@@ -119,6 +143,6 @@ class FreeplayLetter extends FlxSprite
     if (curLetter < 0) curLetter = arr.length - 1;
     if (curLetter >= arr.length) curLetter = 0;
 
-    animation.play(arr[curLetter]);
+    this.anim.play(arr[curLetter]);
   }
 }

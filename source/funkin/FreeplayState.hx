@@ -1026,7 +1026,10 @@ class DifficultySelector extends FlxSprite
 
     whiteShader.colorSet = true;
 
+    scale.x = scale.y = 0.5;
+
     new FlxTimer().start(2 / 24, function(tmr) {
+      scale.x = scale.y = 1;
       whiteShader.colorSet = false;
       updateHitbox();
     });
