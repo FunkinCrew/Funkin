@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
-class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
+class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 {
   public var letters:Array<FreeplayLetter> = [];
 
@@ -18,15 +18,15 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
 
   public var changeSelectionCallback:String->Void;
 
-  var leftArrow:FreeplayLetter;
-  var rightArrow:FreeplayLetter;
+  var leftArrow:FlxSprite;
+  var rightArrow:FlxSprite;
 
   public function new(x, y)
   {
     super(x, y);
 
-    leftArrow = new FreeplayLetter(-20, 15);
-    leftArrow.animation.play("arrow");
+    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+    // leftArrow.animation.play("arrow");
     leftArrow.flipX = true;
     add(leftArrow);
 
@@ -49,14 +49,15 @@ class LetterSort extends FlxTypedSpriteGroup<FreeplayLetter>
       // don't put the last seperator
       if (i == 4) continue;
 
-      var sep:FreeplayLetter = new FreeplayLetter((i * 80) + 55, 20);
-      sep.animation.play("seperator");
+      var sep:FlxSprite = new FlxSprite((i * 80) + 55, 20).loadGraphic(Paths.image("freeplay/seperator"));
+      // sep.animation.play("seperator");
       sep.color = letter.color.getDarkened(darkness);
       add(sep);
     }
 
-    rightArrow = new FreeplayLetter(380, leftArrow.y);
-    rightArrow.animation.play("arrow");
+    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+
+    // rightArrow.animation.play("arrow");
     add(rightArrow);
 
     changeSelection(0);
