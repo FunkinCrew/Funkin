@@ -530,6 +530,7 @@ class FreeplayState extends MusicBeatSubState
     for (i in 0...tempSongs.length)
     {
       var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, 0, tempSongs[i].songName);
+      if (tempSongs[i].songCharacter != null) funnyMenu.setCharacter(tempSongs[i].songCharacter);
       funnyMenu.onConfirm = capsuleOnConfirmDefault;
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.targetPos.x = funnyMenu.x;

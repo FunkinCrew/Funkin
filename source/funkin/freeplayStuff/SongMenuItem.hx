@@ -12,6 +12,7 @@ import flixel.util.FlxTimer;
 class SongMenuItem extends FlxSpriteGroup
 {
   var capsule:FlxSprite;
+  var pixelIcon:FlxSprite;
 
   public var selected(default, set):Bool = false;
 
@@ -28,7 +29,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var onConfirm:Void->Void;
 
-  public function new(x:Float, y:Float, song:String)
+  public function new(x:Float, y:Float, song:String, ?character:String)
   {
     super(x, y);
 
@@ -46,6 +47,13 @@ class SongMenuItem extends FlxSpriteGroup
     songText.color = 0xFF43C1EA;
     add(songText);
 
+    pixelIcon = new FlxSprite(80, 35);
+    pixelIcon.makeGraphic(32, 32, 0x00000000);
+    pixelIcon.antialiasing = false;
+    add(pixelIcon);
+
+    if (character != null) setCharacter(character);
+
     favIcon = new FlxSprite(400, 40);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', "favorite heart", 24, false);
@@ -54,6 +62,31 @@ class SongMenuItem extends FlxSpriteGroup
     add(favIcon);
 
     selected = selected; // just to kickstart the set_selected
+  }
+
+  /**
+   * [Description]
+   * @param char Should be songCharacter, and will get translated to the correct path via switch
+   */
+  public function setCharacter(char:String)
+  {
+    var charPath:String = "freeplay/icons/";
+
+    switch (char)
+    {
+      case "monster-christmas":
+        charPath += "monsterpixel";
+      case "mom":
+        charPath += "mommypixel";
+      case "dad":
+        charPath += "daddypixel";
+      default:
+        charPath += char + "pixel";
+    }
+
+    pixelIcon.loadGraphic(Paths.image(charPath));
+    pixelIcon.setGraphicSize(Std.int(pixelIcon.width * 2));
+    // pixelIcon.updateHitbox();
   }
 
   var frameInTicker:Float = 0;
@@ -102,12 +135,12 @@ class SongMenuItem extends FlxSpriteGroup
       {
         frameInTicker = 0;
 
-        scale.x = xFrames[frameInTypeBeat];
-        scale.y = 1 / xFrames[frameInTypeBeat];
+        capsule.scale.x = xFrames[frameInTypeBeat];
+        capsule.scale.y = 1 / xFrames[frameInTypeBeat];
         x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
 
-        scale.x *= realScaled;
-        scale.y *= realScaled;
+        capsule.scale.x *= realScaled;
+        capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
       }
@@ -121,12 +154,12 @@ class SongMenuItem extends FlxSpriteGroup
       {
         frameOutTicker = 0;
 
-        scale.x = xFrames[frameOutTypeBeat];
-        scale.y = 1 / xFrames[frameOutTypeBeat];
+        capsule.scale.x = xFrames[frameOutTypeBeat];
+        capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
         x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
 
-        scale.x *= realScaled;
-        scale.y *= realScaled;
+        capsule.scale.x *= realScaled;
+        capsule.scale.y *= realScaled;
 
         frameOutTypeBeat += 1;
       }
