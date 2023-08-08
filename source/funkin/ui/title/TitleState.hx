@@ -192,7 +192,13 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
+    if (FlxG.sound.music != null) FlxG.sound.music.onComplete = moveToAttract;
   }
+
+  /**
+   * After sitting on the title screen for a while, transition to the attract screen.
+   */
+  function moveToAttact():Void {}
 
   function playMenuMusic():Void
   {
