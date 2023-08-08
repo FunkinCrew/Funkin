@@ -24,6 +24,7 @@ import funkin.play.song.SongData.SongDataParser;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
+import funkin.ui.title.TitleState;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
