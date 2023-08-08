@@ -1,4 +1,4 @@
-package funkin;
+package funkin.ui.title;
 
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -28,6 +28,9 @@ import openfl.net.NetStream;
 #end
 class TitleState extends MusicBeatState
 {
+  /**
+   * Only play the credits once per session.
+   */
   public static var initialized:Bool = false;
 
   var blackScreen:FlxSprite;
@@ -148,14 +151,20 @@ class TitleState extends MusicBeatState
     // titleText.screenCenter(X);
     add(titleText);
 
-    credGroup = new FlxGroup();
-    add(credGroup);
+    if (!initialized) // Fix an issue where returning to the credits would play a black screen.
+    {
+      credGroup = new FlxGroup();
+      add(credGroup);
+    }
 
     textGroup = new FlxGroup();
 
     blackScreen = bg.clone();
-    credGroup.add(blackScreen);
-    credGroup.add(textGroup);
+    if (credGroup != null)
+    {
+      credGroup.add(blackScreen);
+      credGroup.add(textGroup);
+    }
 
     // var atlasBullShit:FlxSprite = new FlxSprite();
     // atlasBullShit.frames = CoolUtil.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
@@ -198,7 +207,10 @@ class TitleState extends MusicBeatState
   /**
    * After sitting on the title screen for a while, transition to the attract screen.
    */
-  function moveToAttact():Void {}
+  function moveToAttract():Void
+  {
+    FlxG.switchState(new AttractState());
+  }
 
   function playMenuMusic():Void
   {
@@ -289,7 +301,7 @@ class TitleState extends MusicBeatState
       #end
     }
 
-    // a faster intro thing lol!
+    // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
       FlxG.switchState(new MainMenuState());
@@ -491,7 +503,7 @@ class TitleState extends MusicBeatState
     {
       remove(ngSpr);
 
-      FlxG.camera.flash(FlxColor.WHITE, 4);
+      FlxG.camera.flash(FlxColor.WHITE, initialized ? 1 : 4);
       remove(credGroup);
       skippedIntro = true;
     }
