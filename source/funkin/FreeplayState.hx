@@ -420,7 +420,7 @@ class FreeplayState extends MusicBeatSubState
       grpTxtScrolls.visible = true;
     });
 
-    generateSongList();
+    generateSongList(null, false);
 
     // FlxG.sound.playMusic(Paths.music('title'), 0);
     // FlxG.sound.music.fadeIn(2, 0, 0.8);
@@ -468,7 +468,10 @@ class FreeplayState extends MusicBeatSubState
   {
     curSelected = 1;
 
-    grpCapsules.clear();
+    for (cap in grpCapsules.members)
+      cap.kill();
+
+    // grpCapsules.clear();
 
     // var regexp:EReg = regexp;
     var tempSongs:Array<FreeplaySongData> = songs;
@@ -499,23 +502,8 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    // if (regexp != null)
-    // 	tempSongs = songs.filter(item -> regexp.match(item.songName));
-
-    // tempSongs.sort(function(a, b):Int
-    // {
-    // 	var tempA = a.songName.toUpperCase();
-    // 	var tempB = b.songName.toUpperCase();
-
-    // 	if (tempA < tempB)
-    // 		return -1;
-    // 	else if (tempA > tempB)
-    // 		return 1;
-    // 	else
-    // 		return 0;
-    // });
-
-    var randomCapsule:SongMenuItem = new SongMenuItem(FlxG.width, 0, "Random");
+    var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
+    randomCapsule.init(FlxG.width, 0, "Random");
     randomCapsule.onConfirm = function() {
       trace("RANDOM SELECTED");
     };
@@ -529,7 +517,8 @@ class FreeplayState extends MusicBeatSubState
 
     for (i in 0...tempSongs.length)
     {
-      var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, 0, tempSongs[i].songName);
+      var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
+      funnyMenu.init(FlxG.width, 0, tempSongs[i].songName);
       if (tempSongs[i].songCharacter != null) funnyMenu.setCharacter(tempSongs[i].songCharacter);
       funnyMenu.onConfirm = capsuleOnConfirmDefault;
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
@@ -540,20 +529,12 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
 
       // fp.updateScore(0);
-      funnyMenu.initJumpIn(Math.min(i, 4), force);
+
+      if (i < 8) funnyMenu.initJumpIn(Math.min(i, 4), force);
+      else
+        funnyMenu.forcePosition();
 
       grpCapsules.add(funnyMenu);
-
-      var songText:Alphabet = new Alphabet(0, (70 * i) + 30, tempSongs[i].songName, true, false);
-      songText.x += 100;
-      songText.isMenuItem = true;
-      songText.targetY = i;
-
-      // grpSongs.add(songText);
-
-      // songText.x += 40;
-      // DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-      // songText.screenCenter(X);
     }
 
     changeSelection();
@@ -958,8 +939,6 @@ class FreeplayState extends MusicBeatSubState
   {
     // fp.updateScore(12345);
 
-    NGio.logEvent('Fresh');
-
     // NGio.logEvent('Fresh');
     FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
@@ -978,8 +957,6 @@ class FreeplayState extends MusicBeatSubState
     #if PRELOAD_ALL
     // FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
     #end
-
-    var bullShit:Int = 0;
 
     for (index => capsule in grpCapsules.members)
     {

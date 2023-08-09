@@ -38,16 +38,12 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       letter.x += 50;
       letter.y += 50;
       letter.ogY = y;
+      // letter.visible = false;
       add(letter);
 
       letters.push(letter);
 
       if (i != 2) letter.scale.x = letter.scale.y = 0.8;
-      else
-      {
-        // letter.x += 10;
-        // letter.scale.x = letter.scale.y = 1.1;
-      }
 
       var darkness:Float = Math.abs(i - 2) / 6;
 
@@ -242,9 +238,6 @@ class FreeplayLetter extends FlxAtlasSprite
     this.anim.play(animName);
     if (curSelection != curLetter)
     {
-      trace(animName);
-      trace(curLetter);
-      trace(curSelection);
       this.anim.pause();
     }
     // updateHitbox();

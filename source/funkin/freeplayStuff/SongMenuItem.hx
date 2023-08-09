@@ -50,6 +50,7 @@ class SongMenuItem extends FlxSpriteGroup
     pixelIcon = new FlxSprite(80, 35);
     pixelIcon.makeGraphic(32, 32, 0x00000000);
     pixelIcon.antialiasing = false;
+    pixelIcon.active = false;
     add(pixelIcon);
 
     if (character != null) setCharacter(character);
@@ -62,6 +63,17 @@ class SongMenuItem extends FlxSpriteGroup
     add(favIcon);
 
     selected = selected; // just to kickstart the set_selected
+  }
+
+  public function init(x:Float, y:Float, song:String, ?character:String)
+  {
+    this.x = x;
+    this.y = y;
+    this.songTitle = song;
+    songText.text = this.songTitle;
+    if (character != null) setCharacter(character);
+
+    selected = selected;
   }
 
   /**
@@ -103,6 +115,8 @@ class SongMenuItem extends FlxSpriteGroup
 
   public function initJumpIn(maxTimer:Float, ?force:Bool):Void
   {
+    frameInTypeBeat = 0;
+
     new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
       doJumpIn = true;
     });
@@ -111,18 +125,41 @@ class SongMenuItem extends FlxSpriteGroup
       doLerp = true;
     });
 
-    if (!force)
+    if (force)
     {
-      new FlxTimer().start(((0.20 * maxTimer) / (1 + maxTimer)) + 0.75, function(swagShi) {
+      alpha = 1;
+      songText.visible = true;
+    }
+    else
+    {
+      new FlxTimer().start((xFrames.length / 24) * 2.5, function(_) {
         songText.visible = true;
         alpha = 1;
       });
     }
-    else
-    {
-      songText.visible = true;
-      alpha = 1;
-    }
+  }
+
+  public function forcePosition()
+  {
+    alpha = 1;
+    doLerp = true;
+    doJumpIn = false;
+    doJumpOut = false;
+
+    frameInTypeBeat = xFrames.length;
+    frameOutTypeBeat = 0;
+
+    capsule.scale.x = xFrames[frameInTypeBeat - 1];
+    capsule.scale.y = 1 / xFrames[frameInTypeBeat - 1];
+    // x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat - 1, xPosLerpLol.length - 1))];
+
+    x = targetPos.x;
+    y = targetPos.y;
+
+    capsule.scale.x *= realScaled;
+    capsule.scale.y *= realScaled;
+
+    songText.visible = true;
   }
 
   override function update(elapsed:Float)
