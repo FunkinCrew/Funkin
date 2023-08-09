@@ -355,6 +355,28 @@ class FreeplayState extends MusicBeatSubState
     txtCompletion.visible = false;
     add(txtCompletion);
 
+    var letterSort:LetterSort = new LetterSort(400, 75);
+    add(letterSort);
+    letterSort.visible = false;
+
+    exitMovers.set([letterSort],
+      {
+        y: -100,
+        speed: 0.3
+      });
+
+    letterSort.changeSelectionCallback = (str) -> {
+      switch (str)
+      {
+        case "fav":
+          generateSongList({filterType: FAVORITE}, true);
+        case "ALL":
+        // generateSongList(null, true);
+        default:
+          generateSongList({filterType: REGEXP, filterData: str}, true);
+      }
+    };
+
     exitMovers.set([fp, txtCompletion, fnfHighscoreSpr],
       {
         x: FlxG.width,
@@ -370,32 +392,13 @@ class FreeplayState extends MusicBeatSubState
       add(diffSelLeft);
       add(diffSelRight);
 
+      letterSort.visible = true;
+
       exitMovers.set([diffSelLeft, diffSelRight],
         {
           x: -diffSelLeft.width * 2,
           speed: 0.26
         });
-
-      var letterSort:LetterSort = new LetterSort(400, 75);
-      add(letterSort);
-
-      exitMovers.set([letterSort],
-        {
-          y: -100,
-          speed: 0.3
-        });
-
-      letterSort.changeSelectionCallback = (str) -> {
-        switch (str)
-        {
-          case "fav":
-            generateSongList({filterType: FAVORITE}, true);
-          case "ALL":
-            generateSongList(null, true);
-          default:
-            generateSongList({filterType: REGEXP, filterData: str}, true);
-        }
-      };
 
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
@@ -413,7 +416,6 @@ class FreeplayState extends MusicBeatSubState
       });
 
       pinkBack.color = 0xFFffd863;
-      // fnfFreeplay.visible = true;
       bgDad.visible = true;
       orangeBackShit.visible = true;
       alsoOrangeLOL.visible = true;
