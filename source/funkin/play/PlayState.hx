@@ -276,6 +276,11 @@ class PlayState extends MusicBeatState
   var startingSong:Bool = false;
 
   /**
+   * False until `create()` has completed.
+   */
+  var initialized:Bool = false;
+
+  /**
    * A group of audio tracks, used to play the song's vocals.
    */
   var vocals:VoicesGroup;
@@ -592,6 +597,8 @@ class PlayState extends MusicBeatState
 
     FlxG.console.registerObject('playState', this);
     #end
+
+    initialized = true;
   }
 
   public override function update(elapsed:Float):Void
@@ -1029,7 +1036,7 @@ class PlayState extends MusicBeatState
 
   override function stepHit():Bool
   {
-    if (criticalFailure) return false;
+    if (criticalFailure || !initialized) return false;
 
     // super.stepHit() returns false if a module cancelled the event.
     if (!super.stepHit()) return false;
@@ -1052,7 +1059,7 @@ class PlayState extends MusicBeatState
 
   override function beatHit():Bool
   {
-    if (criticalFailure) return false;
+    if (criticalFailure || !initialized) return false;
 
     // super.beatHit() returns false if a module cancelled the event.
     if (!super.beatHit()) return false;
