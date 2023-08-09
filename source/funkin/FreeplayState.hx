@@ -38,6 +38,7 @@ import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import lime.app.Future;
 import lime.utils.Assets;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class FreeplayState extends MusicBeatSubState
 {
@@ -312,6 +313,40 @@ class FreeplayState extends MusicBeatSubState
 
     grpDifficulties.group.members[curDifficulty].visible = true;
 
+    var albumArt:FlxAtlasSprite = new FlxAtlasSprite(640, 360, Paths.animateAtlas("freeplay/albumRoll"));
+    albumArt.visible = false;
+    add(albumArt);
+
+    exitMovers.set([albumArt],
+      {
+        x: FlxG.width,
+        speed: 0.4,
+        wait: 0
+      });
+
+    var albumTitle:FlxSprite = new FlxSprite(947, 491).loadGraphic(Paths.image('freeplay/albumTitle-fnfvol1'));
+    var albumArtist:FlxSprite = new FlxSprite(1010, 607).loadGraphic(Paths.image('freeplay/albumArtist-kawaisprite'));
+
+    albumTitle.visible = false;
+    albumArtist.visible = false;
+
+    exitMovers.set([albumTitle],
+      {
+        x: FlxG.width,
+        speed: 0.2,
+        wait: 0.1
+      });
+
+    exitMovers.set([albumArtist],
+      {
+        x: FlxG.width * 1.1,
+        speed: 0.2,
+        wait: 0.2
+      });
+
+    add(albumTitle);
+    add(albumArtist);
+
     var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
     overhangStuff.y -= overhangStuff.height;
     add(overhangStuff);
@@ -371,7 +406,7 @@ class FreeplayState extends MusicBeatSubState
         case "fav":
           generateSongList({filterType: FAVORITE}, true);
         case "ALL":
-        // generateSongList(null, true);
+          generateSongList(null, true);
         default:
           generateSongList({filterType: REGEXP, filterData: str}, true);
       }
@@ -384,6 +419,22 @@ class FreeplayState extends MusicBeatSubState
       });
 
     dj.onIntroDone.add(function() {
+      // when boyfriend hits dat shiii
+      //
+      albumArt.visible = true;
+      albumArt.anim.play("");
+      albumArt.anim.onComplete = function() {
+        albumArt.anim.pause();
+      };
+
+      new FlxTimer().start(1, function(_) {
+        albumTitle.visible = true;
+      });
+
+      new FlxTimer().start(35 / 24, function(_) {
+        albumArtist.visible = true;
+      });
+
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
       var diffSelLeft = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
