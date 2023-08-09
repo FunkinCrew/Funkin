@@ -944,14 +944,24 @@ class FreeplayState extends MusicBeatSubState
 
     curSelected += change;
 
-    if (curSelected < 0) curSelected = grpCapsules.members.length - 1;
-    if (curSelected >= grpCapsules.members.length) curSelected = 0;
+    if (curSelected < 0) curSelected = grpCapsules.countLiving() - 1;
+    if (curSelected >= grpCapsules.countLiving()) curSelected = 0;
 
     // selector.y = (70 * curSelected) + 30;
 
     // intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-    intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-    intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
+
+    if (songs[curSelected] != null)
+    {
+      intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+      intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
+    }
+    else
+    {
+      intendedScore = 0;
+      intendedCompletion = 0;
+    }
+
     // lerpScore = 0;
 
     #if PRELOAD_ALL
@@ -971,7 +981,7 @@ class FreeplayState extends MusicBeatSubState
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
-    if (grpCapsules.members.length > 0) grpCapsules.members[curSelected].selected = true;
+    if (grpCapsules.countLiving() > 0) grpCapsules.members[curSelected].selected = true;
   }
 }
 
