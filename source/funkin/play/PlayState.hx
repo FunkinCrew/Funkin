@@ -923,9 +923,6 @@ class PlayState extends MusicBeatSubState
 
     // Moving notes into position is now done by Strumline.update().
     processNotes(elapsed);
-
-    // Dispatch the onUpdate event to scripted elements.
-    dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
   public override function dispatchEvent(event:ScriptEvent):Void
