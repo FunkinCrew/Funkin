@@ -378,7 +378,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Whether to play a metronome sound while the playhead is moving.
    */
-  var shouldPlayMetronome:Bool = true;
+  var isMetronomeEnabled:Bool = true;
 
   /**
    * Use the tool window to affect how the user interacts with the program.
@@ -903,7 +903,7 @@ class ChartEditorState extends HaxeUIState
 
   function get_currentSongId():String
   {
-    return currentSongName.toLowerKebabCase();
+    return currentSongName.toLowerKebabCase().replace('.', '').replace(' ', '-');
   }
 
   var currentSongArtist(get, set):String;
@@ -1197,7 +1197,7 @@ class ChartEditorState extends HaxeUIState
     gridPlayhead.add(playheadBlock);
 
     // Character icons.
-    healthIconDad = new HealthIcon('dad');
+    healthIconDad = new HealthIcon(currentSongCharacterOpponent);
     healthIconDad.autoUpdate = false;
     healthIconDad.size.set(0.5, 0.5);
     healthIconDad.x = gridTiledSprite.x - 15 - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
@@ -1205,7 +1205,7 @@ class ChartEditorState extends HaxeUIState
     add(healthIconDad);
     healthIconDad.zIndex = 30;
 
-    healthIconBF = new HealthIcon('bf');
+    healthIconBF = new HealthIcon(currentSongCharacterPlayer);
     healthIconBF.autoUpdate = false;
     healthIconBF.size.set(0.5, 0.5);
     healthIconBF.x = gridTiledSprite.x + GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + 15;
@@ -1451,8 +1451,8 @@ class ChartEditorState extends HaxeUIState
     });
     setUICheckboxSelected('menuBarItemThemeDark', currentTheme == ChartEditorTheme.Dark);
 
-    addUIChangeListener('menubarItemMetronomeEnabled', event -> shouldPlayMetronome = event.value);
-    setUICheckboxSelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
+    addUIChangeListener('menubarItemMetronomeEnabled', event -> isMetronomeEnabled = event.value);
+    setUICheckboxSelected('menubarItemMetronomeEnabled', isMetronomeEnabled);
 
     addUIChangeListener('menubarItemPlayerHitsounds', event -> hitsoundsEnabledPlayer = event.value);
     setUICheckboxSelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
@@ -1616,7 +1616,7 @@ class ChartEditorState extends HaxeUIState
     // dispatchEvent gets called here.
     if (!super.beatHit()) return false;
 
-    if (shouldPlayMetronome && (audioInstTrack != null && audioInstTrack.playing))
+    if (isMetronomeEnabled && this.subState == null && (audioInstTrack != null && audioInstTrack.playing))
     {
       playMetronomeTick(Conductor.currentBeat % 4 == 0);
     }
@@ -3574,7 +3574,7 @@ class ChartEditorState extends HaxeUIState
 
     loadInstrumentalFromAsset(Paths.inst(songId));
 
-    var voiceList:Array<String> = song.getDifficulty(selectedDifficulty).buildVoiceList();
+    var voiceList:Array<String> = song.getDifficulty(selectedDifficulty).buildVoiceList(currentSongCharacterPlayer);
     if (voiceList.length == 2)
     {
       loadVocalsFromAsset(voiceList[0], BF);
