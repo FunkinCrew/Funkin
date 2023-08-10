@@ -3313,25 +3313,23 @@ class ChartEditorState extends HaxeUIState
     var targetSong:Song = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
 
     // TODO: Rework asset system so we can remove this.
-    switch (currentSongId)
+    switch (currentSongStage)
     {
-      case 'tutorial':
-        Paths.setCurrentLevel('tutorial');
-      case 'bopeebo' | 'fresh' | 'dadbattle':
+      case 'mainStage':
         Paths.setCurrentLevel('week1');
-      case 'spookeez' | 'south' | 'monster':
+      case 'spookyMansion':
         Paths.setCurrentLevel('week2');
-      case 'pico' | 'blammed' | 'philly-nice':
+      case 'phillyTrain':
         Paths.setCurrentLevel('week3');
-      case 'satin-panties' | 'high' | 'milf':
+      case 'limoRide':
         Paths.setCurrentLevel('week4');
-      case 'cocoa' | 'eggnog' | 'winter-horrorland':
+      case 'mallXmas' | 'mallEvil':
         Paths.setCurrentLevel('week5');
-      case 'senpai' | 'roses' | 'thorns':
+      case 'school' | 'schoolEvil':
         Paths.setCurrentLevel('week6');
-      case 'ugh' | 'guns' | 'stress':
+      case 'tankmanBattlefield':
         Paths.setCurrentLevel('week7');
-      case 'darnell' | 'lit-up' | '2hot' | 'blazin':
+      case 'phillyStreets' | 'phillyBlazin':
         Paths.setCurrentLevel('weekend1');
     }
 
