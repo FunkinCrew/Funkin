@@ -71,7 +71,12 @@ class Level implements IRegistryEntry<LevelData>
   {
     var songList:Array<String> = getSongs() ?? [];
     var songNameList:Array<String> = songList.map(function(songId) {
-      return funkin.play.song.SongData.SongDataParser.fetchSong(songId) ?.getDifficulty(difficulty) ?.songName ?? 'Unknown';
+      var song:Song = funkin.play.song.SongData.SongDataParser.fetchSong(songId);
+      if (song == null) return 'Unknown';
+      var songDifficulty:SongDifficulty = song.getDifficulty(difficulty);
+      if (songDifficulty == null) songDifficulty = song.getDifficulty();
+      var songName:String = songDifficulty?.songName;
+      return songName ?? 'Unknown';
     });
     return songNameList;
   }
