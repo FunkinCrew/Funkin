@@ -269,7 +269,7 @@ typedef RawSongMetadata =
   var songName:String;
   var artist:String;
   var timeFormat:SongTimeFormat;
-  var divisions:Int;
+  var divisions:Null<Int>; // Optional field
   var timeChanges:Array<SongTimeChange>;
   var looped:Bool;
   var playData:SongPlayData;
@@ -292,7 +292,7 @@ abstract SongMetadata(RawSongMetadata)
         songName: songName,
         artist: artist,
         timeFormat: 'ms',
-        divisions: 96,
+        divisions: null,
         timeChanges: [new SongTimeChange(-1, 0, 100, 4, 4, [4, 4, 4, 4])],
         looped: false,
         playData:
