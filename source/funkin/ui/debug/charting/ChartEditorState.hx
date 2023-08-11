@@ -2804,7 +2804,10 @@ class ChartEditorState extends HaxeUIState
       var treeSong:TreeViewNode = treeView.addNode({id: 'stv_song', text: 'S: $currentSongName', icon: 'haxeui-core/styles/default/haxeui_tiny.png'});
       treeSong.expanded = true;
 
-      for (curVariation in availableVariations)
+      var variations = Reflect.copy(availableVariations);
+      variations.sort(SortUtil.alphabetically);
+
+      for (curVariation in variations)
       {
         var variationMetadata:SongMetadata = songMetadata.get(curVariation);
 
@@ -2940,13 +2943,14 @@ class ChartEditorState extends HaxeUIState
 
   function getCurrentTreeDifficultyNode():TreeViewNode
   {
-    var treeView:TreeView = findComponent('difficultyToolboxTree');
+    var difficultyToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    if (difficultyToolbox == null) return null;
 
+    var treeView:TreeView = difficultyToolbox.findComponent('difficultyToolboxTree');
     if (treeView == null) return null;
 
     var result:TreeViewNode = treeView.findNodeByPath('stv_song/stv_variation_$selectedVariation/stv_difficulty_${selectedVariation}_$selectedDifficulty',
       'id');
-
     if (result == null) return null;
 
     return result;

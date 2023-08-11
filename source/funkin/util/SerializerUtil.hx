@@ -36,7 +36,16 @@ class SerializerUtil
    */
   public static function fromJSON(input:String):Dynamic
   {
-    return Json.parse(input);
+    try
+    {
+      return Json.parse(input);
+    }
+    catch (e)
+    {
+      trace('An error occurred while parsing JSON from string data');
+      trace(e);
+      return null;
+    }
   }
 
   /**

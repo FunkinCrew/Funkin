@@ -489,6 +489,8 @@ class ChartEditorToolboxHandler
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 
+    var labelScrollSpeed:Label = toolbox.findComponent('labelScrollSpeed', Label);
+
     var inputScrollSpeed:Slider = toolbox.findComponent('inputScrollSpeed', Slider);
     inputScrollSpeed.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.value != null && event.target.value > 0;
@@ -502,8 +504,10 @@ class ChartEditorToolboxHandler
       {
         state.currentSongChartScrollSpeed = 1.0;
       }
+      labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
     };
-    inputScrollSpeed.value = state.currentSongChartData.scrollSpeed;
+    inputScrollSpeed.value = state.currentSongChartScrollSpeed;
+    labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
 
     return toolbox;
   }

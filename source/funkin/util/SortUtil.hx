@@ -30,13 +30,46 @@ class SortUtil
 
   /**
    * Sort predicate for sorting strings alphabetically.
+   * @param a The first string to compare.
+   * @param b The second string to compare.
    */
-  public static function alphabetically(a:String, b:String)
+  public static function alphabetically(a:String, b:String):Int
   {
     a = a.toUpperCase();
     b = b.toUpperCase();
 
     // Sort alphabetically. Yes that's how this works.
     return a == b ? 0 : a > b ? 1 : -1;
+  }
+
+  /**
+   * Sort predicate which sorts two strings alphabetically, but prioritizes a specific string first.
+   * Example usage: `array.sort(defaultThenAlphabetical.bind('test'))` will sort the array so that the string 'test' is first.
+   * @param a The first string to compare.
+   * @param b The second string to compare.
+   * @param defaultValue The value to prioritize. Defaults to `default`.
+   */
+  public static function defaultThenAlphabetically(a:String, b:String, defaultValue:String):Int
+  {
+    if (a == b) return 0;
+    if (a == defaultValue) return 1;
+    if (b == defaultValue) return -1;
+    return alphabetically(a, b);
+  }
+
+  /**
+   * Sort predicate which sorts two strings alphabetically, but prioritizes a specific string first.
+   * Example usage: `array.sort(defaultsThenAlphabetical.bind(['test']))` will sort the array so that the string 'test' is first.
+   * @param a The first string to compare.
+   * @param b The second string to compare.
+   * @param defaultValue The value to prioritize. Defaults to `default`.
+   */
+  public static function defaultsThenAlphabetically(a:String, b:String, defaultValues:Array<String>):Int
+  {
+    if (a == b) return 0;
+    if (defaultValues.contains(a) && defaultValues.contains(b)) return alphabetically(a, b);
+    if (defaultValues.contains(a)) return 1;
+    if (defaultValues.contains(b)) return -1;
+    return alphabetically(a, b);
   }
 }

@@ -115,7 +115,12 @@ class ChartEditorDialogHandler
 
       if (songData == null) continue;
 
-      var songName:String = songData.getDifficulty().songName;
+      var songName:Null<String> = songData.getDifficulty('normal') ?.songName;
+      if (songName == null) songName = songData.getDifficulty() ?.songName;
+      if (songName == null)
+      {
+        trace('[WARN] Could not fetch song name for ${targetSongId}');
+      }
 
       var linkTemplateSong:Link = new Link();
       linkTemplateSong.text = songName;

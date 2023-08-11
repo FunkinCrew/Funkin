@@ -11,6 +11,7 @@ import haxe.DynamicAccess;
 import haxe.Json;
 import openfl.utils.Assets;
 import thx.semver.Version;
+import funkin.util.SerializerUtil;
 
 /**
  * Contains utilities for loading and parsing stage data.
@@ -138,13 +139,8 @@ class SongDataParser
   {
     var result:Array<SongMetadata> = [];
 
-    var rawJson:String = loadSongMetadataFile(songId);
-    var jsonData:Dynamic = null;
-    try
-    {
-      jsonData = Json.parse(rawJson);
-    }
-    catch (e) {}
+    var jsonStr:String = loadSongMetadataFile(songId);
+    var jsonData:Dynamic = SerializerUtil.fromJSON(jsonStr);
 
     var songMetadata:SongMetadata = SongMigrator.migrateSongMetadata(jsonData, songId);
     songMetadata = SongValidator.validateSongMetadata(songMetadata, songId);
@@ -160,9 +156,10 @@ class SongDataParser
 
     for (variation in variations)
     {
-      var variationRawJson:String = loadSongMetadataFile(songId, variation);
-      var variationSongMetadata:SongMetadata = SongMigrator.migrateSongMetadata(variationRawJson, '${songId}_${variation}');
-      variationSongMetadata = SongValidator.validateSongMetadata(variationSongMetadata, '${songId}_${variation}');
+      var variationJsonStr:String = loadSongMetadataFile(songId, variation);
+      var variationJsonData:Dynamic = SerializerUtil.fromJSON(variationJsonStr);
+      var variationSongMetadata:SongMetadata = SongMigrator.migrateSongMetadata(variationJsonData, '${songId}:${variation}');
+      variationSongMetadata = SongValidator.validateSongMetadata(variationSongMetadata, '${songId}:${variation}');
       if (variationSongMetadata != null)
       {
         variationSongMetadata.variation = variation;
