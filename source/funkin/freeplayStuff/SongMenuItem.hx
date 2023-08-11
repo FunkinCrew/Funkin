@@ -20,6 +20,9 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var songText:FlxText;
   public var favIcon:FlxSprite;
+  public var ranking:FlxSprite;
+
+  var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect"];
 
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
@@ -41,6 +44,20 @@ class SongMenuItem extends FlxSpriteGroup
     capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
     // capsule.animation
     add(capsule);
+
+    var rank:String = FlxG.random.getObject(ranks);
+
+    ranking = new FlxSprite(capsule.width * 0.78, 30);
+    ranking.loadGraphic(Paths.image("freeplay/ranks/" + rank));
+    ranking.scale.x = ranking.scale.y = realScaled;
+    ranking.alpha = 0.75;
+    add(ranking);
+
+    switch (rank)
+    {
+      case "perfect":
+        ranking.x -= 10;
+    }
 
     songText = new FlxText(capsule.width * 0.23, 40, 0, songTitle, Std.int(40 * realScaled));
     songText.font = "5by7";
@@ -218,12 +235,12 @@ class SongMenuItem extends FlxSpriteGroup
 
   function set_selected(value:Bool):Bool
   {
-    // trace(value);
-
     // cute one liners, lol!
     songText.alpha = value ? 1 : 0.6;
     capsule.offset.x = value ? 0 : -5;
     capsule.animation.play(value ? "selected" : "unselected");
+    ranking.alpha = value ? 1 : 0.7;
+    ranking.color = value ? 0xFFFFFFFF : 0xFFAAAAAA;
     return value;
   }
 }

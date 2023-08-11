@@ -4,14 +4,14 @@
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
-      "ref": "2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5",
+      "ref": "2d83fa8",
       "url": "https://github.com/Aidan63/linc_discord-rpc"
     },
     {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "32cee07a0e5f21e590a4b21234603b2cd5898b10",
+      "ref": "32cee07a",
       "url": "https://github.com/EliteMasterEric/flixel"
     },
     {
@@ -32,7 +32,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "a9136359271cae6ea3016b7fd9023c5c42562933",
+      "ref": "a913635",
       "url": "https://github.com/ninjamuffin99/flxanimate"
     },
     {
@@ -75,7 +75,7 @@
       "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "c8c47e706ad82a423783006ed901b6d93c89a421",
+      "ref": "c8c47e7",
       "url": "https://github.com/polybiusproxy/hxCodec"
     },
     {
