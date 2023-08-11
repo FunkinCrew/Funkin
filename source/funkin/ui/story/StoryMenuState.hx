@@ -5,6 +5,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -469,7 +470,7 @@ class StoryMenuState extends MusicBeatState
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);
 
-    if ((levelProps?.length ?? 0) > 0)
+    if (levelProps != null && levelProps.length > 0)
     {
       // Dispatch event to props.
       for (prop in levelProps)
@@ -513,7 +514,17 @@ class StoryMenuState extends MusicBeatState
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
 
+    if (targetSong != null)
+    {
+      // Load and cache the song's charts.
+      // TODO: Do this in the loading state.
+      targetSong.cacheCharts(true);
+    }
+
     new FlxTimer().start(1, function(tmr:FlxTimer) {
+      FlxTransitionableState.skipNextTransIn = false;
+      FlxTransitionableState.skipNextTransOut = false;
+
       LoadingState.loadAndSwitchState(new PlayState(
         {
           targetSong: targetSong,

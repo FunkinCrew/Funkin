@@ -3,7 +3,7 @@ package funkin;
 import funkin.modding.IScriptedClass.IEventHandler;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.addons.ui.FlxUIState;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
@@ -16,7 +16,7 @@ import funkin.util.SortUtil;
  * MusicBeatState actually represents the core utility FlxState of the game.
  * It includes functionality for event handling, as well as maintaining BPM-based update events.
  */
-class MusicBeatState extends FlxUIState implements IEventHandler
+class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
   var controls(get, never):Controls;
 

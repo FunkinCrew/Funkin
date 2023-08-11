@@ -39,7 +39,11 @@ class Song implements IPlayStateScriptedClass
 
   var difficultyIds:Array<String>;
 
-  public function new(id:String)
+  /**
+   * @param id The ID of the song to load.
+   * @param ignoreErrors If false, an exception will be thrown if the song data could not be loaded.
+   */
+  public function new(id:String, ignoreErrors:Bool = false)
   {
     this.songId = id;
 
@@ -47,13 +51,49 @@ class Song implements IPlayStateScriptedClass
     difficultyIds = [];
     difficulties = new Map<String, SongDifficulty>();
 
-    _metadata = SongDataParser.loadSongMetadata(songId);
-    if (_metadata == null || _metadata.length == 0)
+    try
+    {
+      _metadata = SongDataParser.loadSongMetadata(songId);
+    }
+    catch (e)
+    {
+      _metadata = [];
+    }
+
+    if (_metadata.length == 0 && !ignoreErrors)
     {
       throw 'Could not find song data for songId: $songId';
     }
+    else
+    {
+      populateFromMetadata();
+    }
+  }
 
-    populateFromMetadata();
+  @:allow(funkin.play.song.Song)
+  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
+      ?validScore:Bool = false):Song
+  {
+    var result:Song = new Song(songId, true);
+
+    result._metadata.clear();
+    for (meta in metadata)
+      result._metadata.push(meta);
+
+    result.variations.clear();
+    for (vari in variations)
+      result.variations.push(vari);
+
+    result.difficultyIds.clear();
+
+    result.populateFromMetadata();
+
+    for (variation => chartData in charts)
+      result.applyChartData(chartData, variation);
+
+    result.validScore = validScore;
+
+    return result;
   }
 
   public function getRawMetadata():Array<SongMetadata>
@@ -67,6 +107,8 @@ class Song implements IPlayStateScriptedClass
    */
   function populateFromMetadata():Void
   {
+    if (_metadata == null || _metadata.length == 0) return;
+
     // Variations may have different artist, time format, generatedBy, etc.
     for (metadata in _metadata)
     {
@@ -119,26 +161,31 @@ class Song implements IPlayStateScriptedClass
     for (variation in variations)
     {
       var chartData:SongChartData = SongDataParser.parseSongChartData(songId, variation);
-      var chartNotes = chartData.notes;
-
-      for (diffId in chartNotes.keys())
-      {
-        // Retrieve the cached difficulty data.
-        var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
-        if (difficulty == null)
-        {
-          trace('Fabricated new difficulty for $diffId.');
-          difficulty = new SongDifficulty(this, diffId, variation);
-          difficulties.set(diffId, difficulty);
-        }
-        // Add the chart data to the difficulty.
-        difficulty.notes = chartData.notes.get(diffId);
-        difficulty.scrollSpeed = chartData.getScrollSpeed(diffId);
-
-        difficulty.events = chartData.events;
-      }
+      applyChartData(chartData, variation);
     }
     trace('Done caching charts.');
+  }
+
+  function applyChartData(chartData:SongChartData, variation:String):Void
+  {
+    var chartNotes = chartData.notes;
+
+    for (diffId in chartNotes.keys())
+    {
+      // Retrieve the cached difficulty data.
+      var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+      if (difficulty == null)
+      {
+        trace('Fabricated new difficulty for $diffId.');
+        difficulty = new SongDifficulty(this, diffId, variation);
+        difficulties.set(diffId, difficulty);
+      }
+      // Add the chart data to the difficulty.
+      difficulty.notes = chartData.notes.get(diffId);
+      difficulty.scrollSpeed = chartData.getScrollSpeed(diffId);
+
+      difficulty.events = chartData.events;
+    }
   }
 
   /**

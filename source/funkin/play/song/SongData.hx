@@ -205,7 +205,7 @@ class SongDataParser
 
   static function loadMusicMetadataFile(musicPath:String, variation:String = ''):String
   {
-    var musicMetadataFilePath:String = (variation != '') ? Paths.file('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata-$variation.json') : Paths.file('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata.json');
+    var musicMetadataFilePath:String = (variation != '' || variation == "default") ? Paths.file('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata-$variation.json') : Paths.file('$MUSIC_DATA_PATH$musicPath/$musicPath-metadata.json');
 
     var rawJson:String = Assets.getText(musicMetadataFilePath).trim();
 
@@ -245,7 +245,7 @@ class SongDataParser
 
   static function loadSongChartDataFile(songPath:String, variation:String = ''):String
   {
-    var songChartDataFilePath:String = (variation != '') ? Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart-$variation') : Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart');
+    var songChartDataFilePath:String = (variation != '' || variation == 'default') ? Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart-$variation') : Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart');
 
     var rawJson:String = Assets.getText(songChartDataFilePath).trim();
 

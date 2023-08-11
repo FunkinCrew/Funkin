@@ -16,7 +16,6 @@ import flixel.input.keyboard.FlxKey;
 import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
-import flixel.ui.FlxVirtualPad;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.ui.Haptic;

@@ -58,7 +58,12 @@ class Strumline extends FlxSpriteGroup
 
   final noteStyle:NoteStyle;
 
+  /**
+   * The note data for the song. Should NOT be altered after the song starts,
+   * so we can easily rewind.
+   */
   var noteData:Array<SongNoteData> = [];
+
   var nextNoteIndex:Int = -1;
 
   var heldKeys:Array<Bool> = [];
@@ -279,14 +284,22 @@ class Strumline extends FlxSpriteGroup
   {
     if (noteData.length == 0) return;
 
+    var songStart:Float = PlayState.instance.startTimestamp ?? 0.0;
+    var hitWindowStart:Float = Conductor.songPosition - Constants.HIT_WINDOW_MS;
     var renderWindowStart:Float = Conductor.songPosition + RENDER_DISTANCE_MS;
 
     for (noteIndex in nextNoteIndex...noteData.length)
     {
       var note:Null<SongNoteData> = noteData[noteIndex];
 
-      if (note == null) continue;
-      if (note.time > renderWindowStart) break;
+      if (note == null) continue; // Note is blank
+      if (note.time < songStart || note.time < hitWindowStart)
+      {
+        // Note is in the past, skip it.
+        nextNoteIndex = noteIndex + 1;
+        continue;
+      }
+      if (note.time > renderWindowStart) break; // Note is too far ahead to render
 
       var noteSprite = buildNoteSprite(note);
 
@@ -295,7 +308,7 @@ class Strumline extends FlxSpriteGroup
         noteSprite.holdNoteSprite = buildHoldNoteSprite(note);
       }
 
-      nextNoteIndex++; // Increment the nextNoteIndex rather than splicing the array, because splicing is slow.
+      nextNoteIndex = noteIndex + 1; // Increment the nextNoteIndex rather than splicing the array, because splicing is slow.
     }
 
     // Update rendering of notes.
@@ -433,6 +446,17 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
+  /**
+   * Called when the PlayState skips a large amount of time forward or backward.
+   */
+  public function handleSkippedNotes():Void
+  {
+    // By calling clean(), we remove all existing notes so they can be re-added.
+    clean();
+    // By setting noteIndex to 0, the next update will skip past all the notes that are in the past.
+    nextNoteIndex = 0;
+  }
+
   public function onBeatHit():Void
   {
     if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
@@ -484,6 +508,13 @@ class Strumline extends FlxSpriteGroup
     {
       if (cover == null) continue;
       cover.kill();
+    }
+
+    heldKeys = [false, false, false, false];
+
+    for (dir in DIRECTIONS)
+    {
+      playStatic(dir);
     }
   }
 

@@ -256,7 +256,7 @@ class TitleState extends MusicBeatState
       FlxTween.tween(FlxG.stage.window, {y: FlxG.stage.window.y + 100}, 0.7, {ease: FlxEase.quadInOut, type: PINGPONG});
     }
 
-    if (FlxG.sound.music != null) Conductor.songPosition = FlxG.sound.music.time;
+    if (FlxG.sound.music != null) Conductor.update(FlxG.sound.music.time);
     if (FlxG.keys.justPressed.F) FlxG.fullscreen = !FlxG.fullscreen;
 
     // do controls.PAUSE | controls.ACCEPT instead?

@@ -49,7 +49,7 @@
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "999faddf862d8a1584ae3794d932c55e94fc65cc",
+      "ref": "be0b18553189a55fd42821026618a18615b070e3",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -88,8 +88,15 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "acb0334c59bd4618f3c0277584d524ed0b288b5f",
+      "ref": "558798adc5bf0e82d70fef589a59ce88892e0b5b",
       "url": "https://github.com/EliteMasterEric/lime"
+    },
+    {
+      "name": "mockatoo",
+      "type": "git",
+      "dir": null,
+      "ref": "master",
+      "url": "https://github.com/EliteMasterEric/mockatoo"
     },
     {
       "name": "openfl",
@@ -102,7 +109,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "631a3637f30997e47cd37bbab3cb6a75636a4b2a",
+      "ref": "4bcd614103469af79a320898b823d1df8a55c3de",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

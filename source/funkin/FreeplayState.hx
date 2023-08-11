@@ -890,6 +890,13 @@ class FreeplayState extends MusicBeatSubState
       FlxG.sound.play(Paths.sound('confirmMenu'));
       dj.confirm();
 
+      if (targetSong != null)
+      {
+        // Load and cache the song's charts.
+        // TODO: Do this in the loading state.
+        targetSong.cacheCharts(true);
+      }
+
       new FlxTimer().start(1, function(tmr:FlxTimer) {
         LoadingState.loadAndSwitchState(new PlayState(
           {
