@@ -1,5 +1,6 @@
 package funkin.freeplayStuff;
 
+import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -52,6 +53,9 @@ class SongMenuItem extends FlxSpriteGroup
     // capsule.animation
     add(capsule);
 
+    // doesn't get added, simply is here to help with visibility of things for the pop in!
+    grpHide = new FlxGroup();
+
     var rank:String = FlxG.random.getObject(ranks);
 
     ranking = new FlxSprite(capsule.width * 0.78, 30);
@@ -59,12 +63,15 @@ class SongMenuItem extends FlxSpriteGroup
     ranking.scale.x = ranking.scale.y = realScaled;
     ranking.alpha = 0.75;
     add(ranking);
+    grpHide.add(ranking);
 
     diffGrayscale = new Grayscale(1);
 
     var diffRank = new FlxSprite(145, 90).loadGraphic(Paths.image("freeplay/diffRankings/diff" + FlxG.random.getObject(diffRanks)));
     diffRank.shader = diffGrayscale;
+    diffRank.visible = false;
     add(diffRank);
+    grpHide.add(diffRank);
 
     switch (rank)
     {
@@ -72,16 +79,18 @@ class SongMenuItem extends FlxSpriteGroup
         ranking.x -= 10;
     }
 
-    songText = new FlxText(capsule.width * 0.23, 40, 0, songTitle, Std.int(40 * realScaled));
+    songText = new FlxText(capsule.width * 0.26, 45, 0, songTitle, Std.int(40 * realScaled));
     songText.font = "5by7";
     songText.color = 0xFF43C1EA;
     add(songText);
+    grpHide.add(songText);
 
     pixelIcon = new FlxSprite(80, 35);
     pixelIcon.makeGraphic(32, 32, 0x00000000);
     pixelIcon.antialiasing = false;
     pixelIcon.active = false;
     add(pixelIcon);
+    grpHide.add(pixelIcon);
 
     if (character != null) setCharacter(character);
 
@@ -91,8 +100,19 @@ class SongMenuItem extends FlxSpriteGroup
     favIcon.animation.play('fav');
     favIcon.setGraphicSize(60, 60);
     add(favIcon);
+    grpHide.add(favIcon);
+
+    setVisibleGrp(false);
 
     selected = selected; // just to kickstart the set_selected
+  }
+
+  function setVisibleGrp(value:Bool)
+  {
+    for (spr in grpHide.members)
+    {
+      spr.visible = value;
+    }
   }
 
   public function init(x:Float, y:Float, song:String, ?character:String)
@@ -158,16 +178,18 @@ class SongMenuItem extends FlxSpriteGroup
     if (force)
     {
       alpha = 1;
-      songText.visible = true;
+      setVisibleGrp(true);
     }
     else
     {
       new FlxTimer().start((xFrames.length / 24) * 2.5, function(_) {
-        songText.visible = true;
+        setVisibleGrp(true);
         alpha = 1;
       });
     }
   }
+
+  var grpHide:FlxGroup;
 
   public function forcePosition()
   {
@@ -189,7 +211,7 @@ class SongMenuItem extends FlxSpriteGroup
     capsule.scale.x *= realScaled;
     capsule.scale.y *= realScaled;
 
-    songText.visible = true;
+    setVisibleGrp(true);
   }
 
   override function update(elapsed:Float)
