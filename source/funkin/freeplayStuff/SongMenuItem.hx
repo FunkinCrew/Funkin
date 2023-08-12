@@ -107,12 +107,29 @@ class SongMenuItem extends FlxSpriteGroup
     selected = selected; // just to kickstart the set_selected
   }
 
+  function textAppear()
+  {
+    songText.scale.x = 1.7;
+    songText.scale.y = 0.2;
+
+    new FlxTimer().start(1 / 24, function(_) {
+      songText.scale.x = 0.4;
+      songText.scale.y = 1.4;
+    });
+
+    new FlxTimer().start(2 / 24, function(_) {
+      songText.scale.x = songText.scale.y = 1;
+    });
+  }
+
   function setVisibleGrp(value:Bool)
   {
     for (spr in grpHide.members)
     {
       spr.visible = value;
     }
+
+    if (value) textAppear();
   }
 
   public function init(x:Float, y:Float, song:String, ?character:String)
