@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxTimer;
+import funkin.shaderslmfao.Grayscale;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -24,6 +25,11 @@ class SongMenuItem extends FlxSpriteGroup
 
   var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect"];
 
+  // lol...
+  var diffRanks:Array<String> = [
+    "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "14", "15"
+  ];
+
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
   public var doJumpIn:Bool = false;
@@ -31,6 +37,7 @@ class SongMenuItem extends FlxSpriteGroup
   public var doJumpOut:Bool = false;
 
   public var onConfirm:Void->Void;
+  public var diffGrayscale:Grayscale;
 
   public function new(x:Float, y:Float, song:String, ?character:String)
   {
@@ -52,6 +59,12 @@ class SongMenuItem extends FlxSpriteGroup
     ranking.scale.x = ranking.scale.y = realScaled;
     ranking.alpha = 0.75;
     add(ranking);
+
+    diffGrayscale = new Grayscale(1);
+
+    var diffRank = new FlxSprite(145, 90).loadGraphic(Paths.image("freeplay/diffRankings/diff" + FlxG.random.getObject(diffRanks)));
+    diffRank.shader = diffGrayscale;
+    add(diffRank);
 
     switch (rank)
     {
@@ -236,6 +249,7 @@ class SongMenuItem extends FlxSpriteGroup
   function set_selected(value:Bool):Bool
   {
     // cute one liners, lol!
+    diffGrayscale.setAmount(value ? 0 : 0.8);
     songText.alpha = value ? 1 : 0.6;
     capsule.offset.x = value ? 0 : -5;
     capsule.animation.play(value ? "selected" : "unselected");
