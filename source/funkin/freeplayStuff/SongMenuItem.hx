@@ -178,7 +178,7 @@ class SongMenuItem extends FlxSpriteGroup
   var xPosLerpLol:Array<Float> = [0.9, 0.4, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
   var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
-  public final realScaled:Float = 0.8;
+  public var realScaled:Float = 0.8;
 
   public function initJumpIn(maxTimer:Float, ?force:Bool):Void
   {

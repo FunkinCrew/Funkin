@@ -994,6 +994,7 @@ class FreeplayState extends MusicBeatSubState
 
     // NGio.logEvent('Fresh');
     FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+    // FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
     curSelected += change;
 
@@ -1034,7 +1035,15 @@ class FreeplayState extends MusicBeatSubState
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
-    if (grpCapsules.countLiving() > 0) grpCapsules.members[curSelected].selected = true;
+    if (grpCapsules.countLiving() > 0)
+    {
+      if (curSelected == 0)
+      {
+        FlxG.sound.playMusic(Paths.music('freeplay/freeplayRandom'), 0);
+        FlxG.sound.music.fadeIn(2, 0, 0.8);
+      }
+      grpCapsules.members[curSelected].selected = true;
+    }
   }
 }
 
