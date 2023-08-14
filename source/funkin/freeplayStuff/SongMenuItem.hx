@@ -1,5 +1,6 @@
 package funkin.freeplayStuff;
 
+import funkin.shaderslmfao.GaussianBlurShader;
 import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -20,7 +21,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var songTitle:String = "Test";
 
-  public var songText:FlxText;
+  public var songText:CapsuleText;
   public var favIcon:FlxSprite;
   public var ranking:FlxSprite;
 
@@ -81,9 +82,7 @@ class SongMenuItem extends FlxSpriteGroup
         ranking.x -= 10;
     }
 
-    songText = new FlxText(capsule.width * 0.26, 45, 0, songTitle, Std.int(40 * realScaled));
-    songText.font = "5by7";
-    songText.color = 0xFF43C1EA;
+    songText = new CapsuleText(capsule.width * 0.26, 45, songTitle, Std.int(40 * realScaled));
     add(songText);
     grpHide.add(songText);
 
@@ -91,7 +90,6 @@ class SongMenuItem extends FlxSpriteGroup
     pixelIcon.makeGraphic(32, 32, 0x00000000);
     pixelIcon.antialiasing = false;
     pixelIcon.active = false;
-
     add(pixelIcon);
     grpHide.add(pixelIcon);
 
@@ -297,6 +295,7 @@ class SongMenuItem extends FlxSpriteGroup
     // cute one liners, lol!
     diffGrayscale.setAmount(value ? 0 : 0.8);
     songText.alpha = value ? 1 : 0.6;
+    songText.blurredText.visible = value ? true : false;
     capsule.offset.x = value ? 0 : -5;
     capsule.animation.play(value ? "selected" : "unselected");
     ranking.alpha = value ? 1 : 0.7;
