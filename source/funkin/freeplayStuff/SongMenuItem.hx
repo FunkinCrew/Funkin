@@ -58,10 +58,11 @@ class SongMenuItem extends FlxSpriteGroup
 
     var rank:String = FlxG.random.getObject(ranks);
 
-    ranking = new FlxSprite(capsule.width * 0.78, 30);
+    ranking = new FlxSprite(capsule.width * 0.84, 30);
     ranking.loadGraphic(Paths.image("freeplay/ranks/" + rank));
     ranking.scale.x = ranking.scale.y = realScaled;
     ranking.alpha = 0.75;
+    ranking.origin.set(capsule.origin.x - ranking.x, capsule.origin.y - ranking.y);
     add(ranking);
     grpHide.add(ranking);
 
@@ -71,6 +72,7 @@ class SongMenuItem extends FlxSpriteGroup
     diffRank.shader = diffGrayscale;
     diffRank.visible = false;
     add(diffRank);
+    diffRank.origin.set(capsule.origin.x - diffRank.x, capsule.origin.y - diffRank.y);
     grpHide.add(diffRank);
 
     switch (rank)
@@ -85,10 +87,11 @@ class SongMenuItem extends FlxSpriteGroup
     add(songText);
     grpHide.add(songText);
 
-    pixelIcon = new FlxSprite(80, 35);
+    pixelIcon = new FlxSprite(155, 15);
     pixelIcon.makeGraphic(32, 32, 0x00000000);
     pixelIcon.antialiasing = false;
     pixelIcon.active = false;
+
     add(pixelIcon);
     grpHide.add(pixelIcon);
 
@@ -98,9 +101,10 @@ class SongMenuItem extends FlxSpriteGroup
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', "favorite heart", 24, false);
     favIcon.animation.play('fav');
-    favIcon.setGraphicSize(60, 60);
+    favIcon.setGraphicSize(50, 50);
+    favIcon.visible = false;
     add(favIcon);
-    grpHide.add(favIcon);
+    // grpHide.add(favIcon);
 
     setVisibleGrp(false);
 
@@ -165,7 +169,10 @@ class SongMenuItem extends FlxSpriteGroup
 
     pixelIcon.loadGraphic(Paths.image(charPath));
     pixelIcon.setGraphicSize(Std.int(pixelIcon.width * 2));
-    // pixelIcon.updateHitbox();
+    pixelIcon.updateHitbox();
+    pixelIcon.origin.x += 100;
+    // pixelIcon.origin.x = capsule.origin.x;
+    // pixelIcon.offset.x -= pixelIcon.origin.x;
   }
 
   var frameInTicker:Float = 0;
