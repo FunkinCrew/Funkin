@@ -722,11 +722,38 @@ class ChartEditorState extends HaxeUIState
    */
   var songMetadata:Map<String, SongMetadata>;
 
+  /**
+   * Retrieves the list of variations for the current song.
+   */
   var availableVariations(get, null):Array<String>;
 
   function get_availableVariations():Array<String>
   {
-    return [for (x in songMetadata.keys()) x];
+    var variations:Array<String> = [for (x in songMetadata.keys()) x];
+    variations.sort(SortUtil.defaultThenAlphabetically.bind('default'));
+    return variations;
+  }
+
+  /**
+   * Retrieves the list of difficulties for the current variation of the current song.
+   * ONLY CONTAINS DIFFICULTIES FOR THE CURRENT VARIATION so if on the default variation, erect/nightmare won't be included.
+   */
+  var availableDifficulties(get, null):Array<String>;
+
+  function get_availableDifficulties():Array<String>
+  {
+    return songMetadata.get(selectedVariation).playData.difficulties;
+  }
+
+  /**
+   * Retrieves the list of difficulties for ALL variations of the current song.
+   */
+  var allDifficulties(get, null):Array<String>;
+
+  function get_allDifficulties():Array<String>
+  {
+    var result:Array<Array<String>> = [for (x in availableVariations) songMetadata.get(x).playData.difficulties];
+    return result.flatten();
   }
 
   /**
@@ -976,6 +1003,11 @@ class ChartEditorState extends HaxeUIState
     return playableCharData.opponent = value;
   }
 
+  /**
+   * SIGNALS
+   */
+  // ==============================
+  // public var onDifficultyChange(default, null):FlxTypedSignal<ChartEditorState->Void> = new FlxTypedSignal<ChartEditorState->Void>();
   /**
    * RENDER OBJECTS
    */
@@ -1247,7 +1279,6 @@ class ChartEditorState extends HaxeUIState
     var height:Int = FlxG.height - MENU_BAR_HEIGHT - GRID_TOP_PAD - 200;
     notePreview = new ChartEditorNotePreview(height);
     notePreview.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
-    // TODO: Re-enable.
     // add(notePreview);
   }
 
@@ -1438,6 +1469,9 @@ class ChartEditorState extends HaxeUIState
     addUIChangeListener('menubarItemDownscroll', event -> isViewDownscroll = event.value);
     setUICheckboxSelected('menubarItemDownscroll', isViewDownscroll);
 
+    addUIClickListener('menubarItemDifficultyUp', _ -> incrementDifficulty(1));
+    addUIClickListener('menubarItemDifficultyDown', _ -> incrementDifficulty(-1));
+
     addUIChangeListener('menubarItemPlaytestStartTime', event -> playtestStartTime = event.value);
     setUICheckboxSelected('menubarItemPlaytestStartTime', playtestStartTime);
 
@@ -1584,6 +1618,7 @@ class ChartEditorState extends HaxeUIState
     handleToolboxes();
     handlePlaybar();
     handlePlayhead();
+    // handleNotePreview();
 
     handleFileKeybinds();
     handleEditKeybinds();
@@ -2755,7 +2790,95 @@ class ChartEditorState extends HaxeUIState
   /**
    * Handle keybinds for View menu items.
    */
-  function handleViewKeybinds():Void {}
+  function handleViewKeybinds():Void
+  {
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
+    {
+      incrementDifficulty(-1);
+    }
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
+    {
+      incrementDifficulty(1);
+    }
+  }
+
+  function incrementDifficulty(change:Int):Void
+  {
+    var currentDifficultyIndex:Int = availableDifficulties.indexOf(selectedDifficulty);
+    var currentAllDifficultyIndex:Int = allDifficulties.indexOf(selectedDifficulty);
+
+    if (currentDifficultyIndex == -1 || currentAllDifficultyIndex == -1)
+    {
+      trace('ERROR determining difficulty index!');
+    }
+
+    var isFirstDiff:Bool = currentAllDifficultyIndex == 0;
+    var isLastDiff:Bool = (currentAllDifficultyIndex == allDifficulties.length - 1);
+
+    var isFirstDiffInVariation:Bool = currentDifficultyIndex == 0;
+    var isLastDiffInVariation:Bool = (currentDifficultyIndex == availableDifficulties.length - 1);
+
+    trace(allDifficulties);
+
+    if (change < 0 && isFirstDiff)
+    {
+      trace('At lowest difficulty! Do nothing.');
+      return;
+    }
+
+    if (change > 0 && isLastDiff)
+    {
+      trace('At highest difficulty! Do nothing.');
+      return;
+    }
+
+    if (change < 0)
+    {
+      // Decrement difficulty.
+      // If we reached this point, we are not at the lowest difficulty.
+      if (isFirstDiffInVariation)
+      {
+        // Go to the previous variation, then last difficulty in that variation.
+        var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
+        var prevVariation = availableVariations[currentVariationIndex - 1];
+        selectedVariation = prevVariation;
+
+        var prevDifficulty = availableDifficulties[availableDifficulties.length - 1];
+        selectedDifficulty = prevDifficulty;
+
+        refreshDifficultyTreeSelection();
+      }
+      else
+      {
+        // Go to previous difficulty in this variation.
+        var prevDifficulty = availableDifficulties[currentDifficultyIndex - 1];
+        selectedDifficulty = prevDifficulty;
+
+        refreshDifficultyTreeSelection();
+      }
+    }
+    else
+    {
+      // Increment difficulty.
+      // If we reached this point, we are not at the highest difficulty.
+      if (isLastDiffInVariation)
+      {
+        // Go to next variation, then first difficulty in that variation.
+        var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
+        var nextVariation = availableVariations[currentVariationIndex + 1];
+        selectedVariation = nextVariation;
+
+        var nextDifficulty = availableDifficulties[0];
+        selectedDifficulty = nextDifficulty;
+      }
+      else
+      {
+        // Go to next difficulty in this variation.
+        var nextDifficulty = availableDifficulties[currentDifficultyIndex + 1];
+        selectedDifficulty = nextDifficulty;
+      }
+    }
+  }
 
   /**
    * Handle keybinds for the Test menu items.
@@ -2801,7 +2924,8 @@ class ChartEditorState extends HaxeUIState
       // Clear the tree view so we can rebuild it.
       treeView.clearNodes();
 
-      var treeSong:TreeViewNode = treeView.addNode({id: 'stv_song', text: 'S: $currentSongName', icon: 'haxeui-core/styles/default/haxeui_tiny.png'});
+      // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
+      var treeSong:TreeViewNode = treeView.addNode({id: 'stv_song', text: 'S: $currentSongName'});
       treeSong.expanded = true;
 
       var variations = Reflect.copy(availableVariations);
@@ -2831,8 +2955,24 @@ class ChartEditorState extends HaxeUIState
       }
 
       treeView.onChange = onChangeTreeDifficulty;
-      treeView.selectedNode = getCurrentTreeDifficultyNode();
+      refreshDifficultyTreeSelection(treeView);
     }
+  }
+
+  function refreshDifficultyTreeSelection(?treeView:TreeView):Void
+  {
+    if (treeView == null)
+    {
+      // Manage the Select Difficulty tree view.
+      var difficultyToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      if (difficultyToolbox == null) return;
+
+      treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
+      if (treeView == null) return;
+    }
+
+    trace(treeView);
+    treeView.selectedNode = getCurrentTreeDifficultyNode(treeView);
   }
 
   function handlePlayerPreviewToolbox():Void
@@ -2941,13 +3081,16 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
-  function getCurrentTreeDifficultyNode():TreeViewNode
+  function getCurrentTreeDifficultyNode(?treeView:TreeView = null):TreeViewNode
   {
-    var difficultyToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-    if (difficultyToolbox == null) return null;
+    if (treeView == null)
+    {
+      var difficultyToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      if (difficultyToolbox == null) return null;
 
-    var treeView:TreeView = difficultyToolbox.findComponent('difficultyToolboxTree');
-    if (treeView == null) return null;
+      treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
+      if (treeView == null) return null;
+    }
 
     var result:TreeViewNode = treeView.findNodeByPath('stv_song/stv_variation_$selectedVariation/stv_difficulty_${selectedVariation}_$selectedDifficulty',
       'id');
@@ -2956,6 +3099,10 @@ class ChartEditorState extends HaxeUIState
     return result;
   }
 
+  /**
+   * Called when selecting a tree element in the Difficulty toolbox.
+   * @param event The click event.
+   */
   function onChangeTreeDifficulty(event:UIEvent):Void
   {
     // Get the newly selected node.
@@ -2966,7 +3113,7 @@ class ChartEditorState extends HaxeUIState
     {
       trace('No target node!');
       // Reset the user's selection.
-      treeView.selectedNode = getCurrentTreeDifficultyNode();
+      treeView.selectedNode = getCurrentTreeDifficultyNode(treeView);
       return;
     }
 
@@ -2981,13 +3128,14 @@ class ChartEditorState extends HaxeUIState
           trace('Changing difficulty to $variation:$difficulty');
           selectedVariation = variation;
           selectedDifficulty = difficulty;
+          // refreshDifficultyTreeSelection(treeView);
         }
       // case 'song':
       // case 'variation':
       default:
         // Reset the user's selection.
         trace('Selected wrong node type, resetting selection.');
-        treeView.selectedNode = getCurrentTreeDifficultyNode();
+        treeView.selectedNode = getCurrentTreeDifficultyNode(treeView);
     }
   }
 

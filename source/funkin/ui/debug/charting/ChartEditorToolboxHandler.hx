@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.containers.TreeView;
+import haxe.ui.containers.TreeViewNode;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
 import funkin.play.event.SongEventData;
@@ -36,6 +38,7 @@ enum ChartEditorToolMode
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
+@:allow(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void
@@ -59,6 +62,29 @@ class ChartEditorToolboxHandler
     if (toolbox != null)
     {
       toolbox.showDialog(false);
+
+      switch (id)
+      {
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
+          onShowToolboxTools(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
+          onShowToolboxNoteData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
+          onShowToolboxEventData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
+          onShowToolboxDifficulty(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
+          onShowToolboxMetadata(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT:
+          onShowToolboxCharacters(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
+          onShowToolboxPlayerPreview(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
+          onShowToolboxOpponentPreview(state, toolbox);
+        default:
+          // This happens if you try to load an unknown layout.
+          trace('ChartEditorToolboxHandler.showToolbox() - Unknown toolbox ID: $id');
+      }
     }
     else
     {
@@ -75,6 +101,29 @@ class ChartEditorToolboxHandler
     if (toolbox != null)
     {
       toolbox.hideDialog(DialogButton.CANCEL);
+
+      switch (id)
+      {
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
+          onHideToolboxTools(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
+          onHideToolboxNoteData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
+          onHideToolboxEventData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
+          onHideToolboxDifficulty(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
+          onHideToolboxMetadata(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT:
+          onHideToolboxCharacters(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
+          onHideToolboxPlayerPreview(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
+          onHideToolboxOpponentPreview(state, toolbox);
+        default:
+          // This happens if you try to load an unknown layout.
+          trace('ChartEditorToolboxHandler.hideToolbox() - Unknown toolbox ID: $id');
+      }
     }
     else
     {
@@ -186,6 +235,10 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
+  static function onShowToolboxTools(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxTools(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
   static function buildToolboxNoteDataLayout(state:ChartEditorState):CollapsibleDialog
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT);
@@ -229,6 +282,10 @@ class ChartEditorToolboxHandler
 
     return toolbox;
   }
+
+  static function onShowToolboxNoteData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxNoteData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function buildToolboxEventDataLayout(state:ChartEditorState):CollapsibleDialog
   {
@@ -274,6 +331,10 @@ class ChartEditorToolboxHandler
 
     return toolbox;
   }
+
+  static function onShowToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function buildEventDataFormFromSchema(state:ChartEditorState, target:Box, schema:SongEventSchema):Void
   {
@@ -405,6 +466,18 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
+  static function onShowToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+    // Update the selected difficulty when reopening the toolbox.
+    var treeView:TreeView = toolbox.findComponent('difficultyToolboxTree');
+    if (treeView == null) return;
+
+    treeView.selectedNode = state.getCurrentTreeDifficultyNode(treeView);
+    trace('selected node: ${treeView.selectedNode}');
+  }
+
+  static function onHideToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
   static function buildToolboxMetadataLayout(state:ChartEditorState):CollapsibleDialog
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -512,6 +585,10 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
+  static function onShowToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
   static function buildToolboxCharactersLayout(state:ChartEditorState):CollapsibleDialog
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT);
@@ -528,6 +605,10 @@ class ChartEditorToolboxHandler
 
     return toolbox;
   }
+
+  static function onShowToolboxCharacters(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxCharacters(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function buildToolboxPlayerPreviewLayout(state:ChartEditorState):CollapsibleDialog
   {
@@ -553,6 +634,10 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
+  static function onShowToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
   static function buildToolboxOpponentPreviewLayout(state:ChartEditorState):CollapsibleDialog
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
@@ -576,4 +661,8 @@ class ChartEditorToolboxHandler
 
     return toolbox;
   }
+
+  static function onShowToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 }
