@@ -181,7 +181,8 @@
 		<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
 		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
 	</section>
-	<section if="debug">
+
+	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5">
 		<!--
 			Use the parent assets folder rather than the exported one
 			No more will we accidentally undo our changes!
@@ -189,6 +190,7 @@
 		-->
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
 	</section>
+
 	<!-- <prebuild haxe="trace('prebuilding');"/> -->
 	<!-- <postbuild haxe="art/Postbuild.hx"/> -->
 	<!-- <config:ios allow-provisioning-updates="true" team-id="" /> -->
