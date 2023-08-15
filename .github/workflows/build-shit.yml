@@ -70,7 +70,7 @@ jobs:
           haxelib run lime rebuild windows --clean
       - name: Build game
         run: |
-          haxelib run lime build windows -debug
+          haxelib run lime build windows -debug -DNO_REDIRECT_ASSETS_FOLDER
           dir
       - uses: ./.github/actions/upload-itch
         with:
