@@ -6,6 +6,19 @@ import flixel.util.FlxSort;
 #end
 import funkin.play.notes.NoteSprite;
 
+/**
+ * A set of functions related to sorting.
+ *
+ * NOTE: `Array.sort()` takes a function `(x, y) -> Int`.
+ * If the objects are in the correct order (x before y), return a negative value.
+ * If the objects need to be swapped (y before x), return a negative value.
+ * If the objects are equal, return 0.
+ *
+ * NOTE: `Array.sort()` does NOT guarantee that the order of equal elements. `haxe.ds.ArraySort.sort()` does guarantee this.
+ * NOTE: `Array.sort()` may not be the most efficient sorting algorithm for all use cases (especially if the array is known to be mostly sorted).
+ *    You may consider using one of the functions in `funkin.util.tools.ArraySortTools` instead.
+ * NOTE: Both sort functions modify the array in-place. You may consider using `Reflect.copy()` to make a copy of the array before sorting.
+ */
 class SortUtil
 {
   /**
@@ -49,11 +62,11 @@ class SortUtil
    * @param b The second string to compare.
    * @param defaultValue The value to prioritize.
    */
-  public static function defaultThenAlphabetically(a:String, b:String, defaultValue:String):Int
+  public static function defaultThenAlphabetically(defaultValue:String, a:String, b:String):Int
   {
     if (a == b) return 0;
-    if (a == defaultValue) return 1;
-    if (b == defaultValue) return -1;
+    if (a == defaultValue) return -1;
+    if (b == defaultValue) return 1;
     return alphabetically(a, b);
   }
 
@@ -64,7 +77,7 @@ class SortUtil
    * @param b The second string to compare.
    * @param defaultValues The values to prioritize.
    */
-  public static function defaultsThenAlphabetically(a:String, b:String, defaultValues:Array<String>):Int
+  public static function defaultsThenAlphabetically(defaultValues:Array<String>, a:String, b:String):Int
   {
     if (a == b) return 0;
     if (defaultValues.contains(a) && defaultValues.contains(b))
@@ -72,8 +85,8 @@ class SortUtil
       // Sort by index in defaultValues
       return defaultValues.indexOf(a) - defaultValues.indexOf(b);
     };
-    if (defaultValues.contains(a)) return 1;
-    if (defaultValues.contains(b)) return -1;
+    if (defaultValues.contains(a)) return -1;
+    if (defaultValues.contains(b)) return 1;
     return alphabetically(a, b);
   }
 }

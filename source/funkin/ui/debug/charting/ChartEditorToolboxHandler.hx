@@ -19,6 +19,7 @@ import haxe.ui.containers.Box;
 import haxe.ui.containers.Grid;
 import haxe.ui.containers.Group;
 import haxe.ui.containers.VBox;
+import haxe.ui.containers.Frame;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
@@ -537,7 +538,7 @@ class ChartEditorToolboxHandler
 
     var inputNoteSkin:DropDown = toolbox.findComponent('inputNoteSkin', DropDown);
     inputNoteSkin.onChange = function(event:UIEvent) {
-      if (event.data.id == null) return;
+      if ((event?.data?.id ?? null) == null) return;
       state.currentSongMetadata.playData.noteSkin = event.data.id;
     };
     inputNoteSkin.value = state.currentSongMetadata.playData.noteSkin;
@@ -582,10 +583,19 @@ class ChartEditorToolboxHandler
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
 
+    var frameVariation:Frame = toolbox.findComponent('frameVariation', Frame);
+    frameVariation.text = 'Variation: ${state.selectedVariation.toTitleCase()}';
+
+    var frameDifficulty:Frame = toolbox.findComponent('frameDifficulty', Frame);
+    frameDifficulty.text = 'Difficulty: ${state.selectedDifficulty.toTitleCase()}';
+
     return toolbox;
   }
 
-  static function onShowToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onShowToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+    state.refreshSongMetadataToolbox();
+  }
 
   static function onHideToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 

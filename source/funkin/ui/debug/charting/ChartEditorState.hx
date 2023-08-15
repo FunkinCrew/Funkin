@@ -1,5 +1,9 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.components.TextField;
+import haxe.ui.components.DropDown;
+import haxe.ui.components.NumberStepper;
+import haxe.ui.containers.Frame;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.FlxCamera;
@@ -2834,7 +2838,8 @@ class ChartEditorState extends HaxeUIState
 
     if (change < 0)
     {
-      // Decrement difficulty.
+      trace('Decrement difficulty.');
+
       // If we reached this point, we are not at the lowest difficulty.
       if (isFirstDiffInVariation)
       {
@@ -2847,6 +2852,7 @@ class ChartEditorState extends HaxeUIState
         selectedDifficulty = prevDifficulty;
 
         refreshDifficultyTreeSelection();
+        refreshSongMetadataToolbox();
       }
       else
       {
@@ -2855,11 +2861,13 @@ class ChartEditorState extends HaxeUIState
         selectedDifficulty = prevDifficulty;
 
         refreshDifficultyTreeSelection();
+        refreshSongMetadataToolbox();
       }
     }
     else
     {
-      // Increment difficulty.
+      trace('Increment difficulty.');
+
       // If we reached this point, we are not at the highest difficulty.
       if (isLastDiffInVariation)
       {
@@ -2870,12 +2878,18 @@ class ChartEditorState extends HaxeUIState
 
         var nextDifficulty = availableDifficulties[0];
         selectedDifficulty = nextDifficulty;
+
+        refreshDifficultyTreeSelection();
+        refreshSongMetadataToolbox();
       }
       else
       {
         // Go to next difficulty in this variation.
         var nextDifficulty = availableDifficulties[currentDifficultyIndex + 1];
         selectedDifficulty = nextDifficulty;
+
+        refreshDifficultyTreeSelection();
+        refreshSongMetadataToolbox();
       }
     }
   }
@@ -3125,10 +3139,11 @@ class ChartEditorState extends HaxeUIState
 
         if (variation != null && difficulty != null)
         {
-          trace('Changing difficulty to $variation:$difficulty');
+          trace('Changing difficulty to "$variation:$difficulty"');
           selectedVariation = variation;
           selectedDifficulty = difficulty;
           // refreshDifficultyTreeSelection(treeView);
+          refreshSongMetadataToolbox();
         }
       // case 'song':
       // case 'variation':
@@ -3136,7 +3151,42 @@ class ChartEditorState extends HaxeUIState
         // Reset the user's selection.
         trace('Selected wrong node type, resetting selection.');
         treeView.selectedNode = getCurrentTreeDifficultyNode(treeView);
+        refreshSongMetadataToolbox();
     }
+  }
+
+  /**
+   * When the difficulty changes, update the song metadata toolbox to reflect the new data.
+   */
+  function refreshSongMetadataToolbox():Void
+  {
+    var toolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+
+    var inputSongName:TextField = toolbox.findComponent('inputSongName', TextField);
+    inputSongName.value = currentSongMetadata.songName;
+
+    var inputSongArtist:TextField = toolbox.findComponent('inputSongArtist', TextField);
+    inputSongArtist.value = currentSongMetadata.artist;
+
+    var inputStage:DropDown = toolbox.findComponent('inputStage', DropDown);
+    inputStage.value = currentSongMetadata.playData.stage;
+
+    var inputNoteSkin:DropDown = toolbox.findComponent('inputNoteSkin', DropDown);
+    inputNoteSkin.value = currentSongMetadata.playData.noteSkin;
+
+    var inputBPM:NumberStepper = toolbox.findComponent('inputBPM', NumberStepper);
+    inputBPM.value = currentSongMetadata.timeChanges[0].bpm;
+
+    var labelScrollSpeed:Label = toolbox.findComponent('labelScrollSpeed', Label);
+    labelScrollSpeed.text = 'Scroll Speed: ${currentSongChartScrollSpeed}x';
+
+    var inputScrollSpeed:Slider = toolbox.findComponent('inputScrollSpeed', Slider);
+    inputScrollSpeed.value = currentSongChartScrollSpeed;
+
+    var frameVariation:Frame = toolbox.findComponent('frameVariation', Frame);
+    frameVariation.text = 'Variation: ${selectedVariation.toTitleCase()}';
+    var frameDifficulty:Frame = toolbox.findComponent('frameDifficulty', Frame);
+    frameDifficulty.text = 'Difficulty: ${selectedDifficulty.toTitleCase()}';
   }
 
   function addDifficulty(variation:String):Void {}
