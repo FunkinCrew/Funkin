@@ -1,4 +1,4 @@
-package funkin;
+package funkin.ui.title;
 
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -28,6 +28,9 @@ import openfl.net.NetStream;
 #end
 class TitleState extends MusicBeatState
 {
+  /**
+   * Only play the credits once per session.
+   */
   public static var initialized:Bool = false;
 
   var blackScreen:FlxSprite;
@@ -148,14 +151,20 @@ class TitleState extends MusicBeatState
     // titleText.screenCenter(X);
     add(titleText);
 
-    credGroup = new FlxGroup();
-    add(credGroup);
+    if (!initialized) // Fix an issue where returning to the credits would play a black screen.
+    {
+      credGroup = new FlxGroup();
+      add(credGroup);
+    }
 
     textGroup = new FlxGroup();
 
     blackScreen = bg.clone();
-    credGroup.add(blackScreen);
-    credGroup.add(textGroup);
+    if (credGroup != null)
+    {
+      credGroup.add(blackScreen);
+      credGroup.add(textGroup);
+    }
 
     // var atlasBullShit:FlxSprite = new FlxSprite();
     // atlasBullShit.frames = CoolUtil.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
@@ -192,7 +201,15 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
-    if (FlxG.sound.music != null) FlxG.sound.music.onComplete = function() FlxG.switchState(new VideoState());
+    if (FlxG.sound.music != null) FlxG.sound.music.onComplete = moveToAttract;
+  }
+
+  /**
+   * After sitting on the title screen for a while, transition to the attract screen.
+   */
+  function moveToAttract():Void
+  {
+    FlxG.switchState(new AttractState());
   }
 
   function playMenuMusic():Void
@@ -284,7 +301,7 @@ class TitleState extends MusicBeatState
       #end
     }
 
-    // a faster intro thing lol!
+    // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
       FlxG.switchState(new MainMenuState());
@@ -304,50 +321,19 @@ class TitleState extends MusicBeatState
 
       var targetState:FlxState = new MainMenuState();
 
-      #if newgrounds
-      if (!OutdatedSubState.leftState)
-      {
-        NGio.checkVersion(function(version) {
-          // Check if version is outdated
-          var localVersion:String = "v" + Application.current.meta.get('version');
-          var onlineVersion = version.split(" ")[0].trim();
-          if (version.trim() != onlineVersion)
-          {
-            trace('OLD VERSION!');
-            // targetState = new OutdatedSubState();
-          }
-          else
-          {
-            // targetState = new MainMenuState();
-          }
-          // REDO FOR ITCH/FINAL SHIT
-        });
-      }
-      #end
       new FlxTimer().start(2, function(tmr:FlxTimer) {
         // These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory
         // Saves about 50mb of RAM or so???
-        Assets.cache.clear(Paths.image('gfDanceTitle'));
-        Assets.cache.clear(Paths.image('logoBumpin'));
-        Assets.cache.clear(Paths.image('titleEnter'));
+        // TODO: This BREAKS the title screen if you return back to it! Figure out how to fix that.
+        // Assets.cache.clear(Paths.image('gfDanceTitle'));
+        // Assets.cache.clear(Paths.image('logoBumpin'));
+        // Assets.cache.clear(Paths.image('titleEnter'));
         // ngSpr??
         FlxG.switchState(targetState);
       });
       // FlxG.sound.play(Paths.music('titleShoot'), 0.7);
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
-    /*
-          #if web
-          if (!initialized && controls.ACCEPT)
-          {
-      // netStream.dispose();
-      // FlxG.stage.removeChild(video);
-
-      startIntro();
-      skipIntro();
-          }
-          #end
-     */
 
     if (controls.UI_LEFT) swagShader.update(-elapsed * 0.1);
     if (controls.UI_RIGHT) swagShader.update(elapsed * 0.1);
@@ -358,12 +344,6 @@ class TitleState extends MusicBeatState
   override function draw()
   {
     super.draw();
-
-    // if (gfDance != null)
-    // {
-    // 	trace(gfDance.frame.uv);
-    // 	maskShader.frameUV = gfDance.frame.uv;
-    // }
   }
 
   var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
@@ -523,7 +503,7 @@ class TitleState extends MusicBeatState
     {
       remove(ngSpr);
 
-      FlxG.camera.flash(FlxColor.WHITE, 4);
+      FlxG.camera.flash(FlxColor.WHITE, initialized ? 1 : 4);
       remove(credGroup);
       skippedIntro = true;
     }
