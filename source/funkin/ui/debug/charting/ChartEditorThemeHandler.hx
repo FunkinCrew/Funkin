@@ -64,6 +64,14 @@ class ChartEditorThemeHandler
   static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF9D0011;
   static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFFBD0231;
 
+  // Border on the square over the note preview.
+  static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT = 0xFFF8A657;
+  static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK = 0xFFF8A657;
+
+  // Fill on the square over the note preview.
+  static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT = 0x80F8A657;
+  static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK = 0x80F8A657;
+
   static final TOTAL_COLUMN_COUNT:Int = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
 
   /**
@@ -75,6 +83,7 @@ class ChartEditorThemeHandler
     updateBackground(state);
     updateGridBitmap(state);
     updateSelectionSquare(state);
+    updateNotePreview(state);
   }
 
   /**
@@ -116,7 +125,7 @@ class ChartEditorThemeHandler
     // 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
     // This gets reused to fill the screen.
     var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT);
-    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure);
+    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure * state.currentZoomLevel);
     state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
 
     // Selection borders
@@ -231,6 +240,39 @@ class ChartEditorThemeHandler
         - (2 * SELECTION_SQUARE_BORDER_WIDTH + 8),
         ChartEditorState.GRID_SIZE
         - (2 * SELECTION_SQUARE_BORDER_WIDTH + 8)),
+      32, 32);
+  }
+
+  static function updateNotePreview(state:ChartEditorState):Void
+  {
+    var viewportBorderColor:FlxColor = switch (state.currentTheme)
+    {
+      case Light: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
+      case Dark: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK;
+      default: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
+    };
+
+    var viewportFillColor:FlxColor = switch (state.currentTheme)
+    {
+      case Light: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
+      case Dark: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK;
+      default: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
+    };
+
+    state.notePreviewViewportBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
+
+    state.notePreviewViewportBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE), viewportBorderColor);
+    state.notePreviewViewportBitmap.fillRect(new Rectangle(SELECTION_SQUARE_BORDER_WIDTH, SELECTION_SQUARE_BORDER_WIDTH,
+      ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2), ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2)),
+      viewportFillColor);
+
+    state.notePreviewViewport = new FlxSliceSprite(state.notePreviewViewportBitmap,
+      new FlxRect(SELECTION_SQUARE_BORDER_WIDTH
+        + 1, SELECTION_SQUARE_BORDER_WIDTH
+        + 1, ChartEditorState.GRID_SIZE
+        - (2 * SELECTION_SQUARE_BORDER_WIDTH + 2),
+        ChartEditorState.GRID_SIZE
+        - (2 * SELECTION_SQUARE_BORDER_WIDTH + 2)),
       32, 32);
   }
 

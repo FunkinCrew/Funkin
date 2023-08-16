@@ -16,10 +16,10 @@ class ChartEditorNotePreview extends FlxSprite
   // Constants
   //
   static final NOTE_WIDTH:Int = 5;
-  static final NOTE_HEIGHT:Int = 1;
   static final WIDTH:Int = NOTE_WIDTH * 9;
+  static final NOTE_HEIGHT:Int = 1;
 
-  static final BG_COLOR:FlxColor = FlxColor.GRAY;
+  static final BG_COLOR:FlxColor = 0xFF606060;
   static final LEFT_COLOR:FlxColor = 0xFFFF22AA;
   static final DOWN_COLOR:FlxColor = 0xFF00EEFF;
   static final UP_COLOR:FlxColor = 0xFF00CC00;
