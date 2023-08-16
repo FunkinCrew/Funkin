@@ -297,7 +297,7 @@ class SongDifficulty
   public var songName:String = SongValidator.DEFAULT_SONGNAME;
   public var songArtist:String = SongValidator.DEFAULT_ARTIST;
   public var timeFormat:SongTimeFormat = SongValidator.DEFAULT_TIMEFORMAT;
-  public var divisions:Int = SongValidator.DEFAULT_DIVISIONS;
+  public var divisions:Null<Int> = SongValidator.DEFAULT_DIVISIONS;
   public var looped:Bool = SongValidator.DEFAULT_LOOPED;
   public var generatedBy:String = SongValidator.DEFAULT_GENERATEDBY;
 
