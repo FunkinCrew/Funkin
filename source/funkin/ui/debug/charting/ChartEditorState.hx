@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import flixel.math.FlxMath;
 import haxe.ui.components.TextField;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.NumberStepper;
@@ -416,6 +417,7 @@ class ChartEditorState extends HaxeUIState
     // Make sure view is updated when we change view modes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
     this.scrollPositionInPixels = this.scrollPositionInPixels;
 
     return isViewDownscroll;
@@ -482,6 +484,7 @@ class ChartEditorState extends HaxeUIState
     // Make sure view is updated when the variation changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
 
     return selectedVariation;
   }
@@ -498,6 +501,7 @@ class ChartEditorState extends HaxeUIState
     // Make sure view is updated when the difficulty changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
 
     return selectedDifficulty;
   }
@@ -514,6 +518,7 @@ class ChartEditorState extends HaxeUIState
     // Make sure view is updated when the character changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
 
     return selectedCharacter;
   }
@@ -531,6 +536,7 @@ class ChartEditorState extends HaxeUIState
     // Make sure view is updated when we change modes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
     this.scrollPositionInPixels = 0;
 
     return isInPatternMode;
@@ -549,6 +555,8 @@ class ChartEditorState extends HaxeUIState
    * The Bitmap can be modified by individual commands without using this.
    */
   var notePreviewDirty:Bool = true;
+
+  var notePreviewViewportBoundsDirty:Bool = true;
 
   /**
    * Whether the chart has been modified since it was last saved.
@@ -672,6 +680,12 @@ class ChartEditorState extends HaxeUIState
    * Whether the user's last mouse click was on the playhead scroll area.
    */
   var gridPlayheadScrollAreaPressed:Bool = false;
+
+  /**
+   * Where the user's last mouse click was on the note preview scroll area.
+   * `null` if the user isn't clicking on the note preview.
+   */
+  var notePreviewScrollAreaStartPos:FlxPoint = null;
 
   /**
    * The SongNoteData which is currently being placed.
@@ -1031,6 +1045,12 @@ class ChartEditorState extends HaxeUIState
   var selectionSquareBitmap:BitmapData = null;
 
   /**
+   * The IMAGE used for the note preview bitmap. Updated by ChartEditorThemeHandler.
+   * The image is split and used for a 9-slice sprite for the box over the note preview.
+   */
+  var notePreviewViewportBitmap:BitmapData = null;
+
+  /**
    * The tiled sprite used to display the grid.
    * The height is the length of the song, and scrolling is done by simply the sprite.
    */
@@ -1064,6 +1084,12 @@ class ChartEditorState extends HaxeUIState
    * We move this up and down to scroll the preview.
    */
   var notePreview:ChartEditorNotePreview;
+
+  /**
+   * The rectangular sprite used for representing the current viewport on the note preview.
+   * We move this up and down and resize it to represent the visible area.
+   */
+  var notePreviewViewport:FlxSliceSprite;
 
   /**
    * The rectangular sprite used for rendering the selection box.
@@ -1280,10 +1306,70 @@ class ChartEditorState extends HaxeUIState
 
   function buildNotePreview():Void
   {
-    var height:Int = FlxG.height - MENU_BAR_HEIGHT - GRID_TOP_PAD - 200;
+    var height:Int = FlxG.height - MENU_BAR_HEIGHT - GRID_TOP_PAD - PLAYBAR_HEIGHT - GRID_TOP_PAD - GRID_TOP_PAD;
     notePreview = new ChartEditorNotePreview(height);
+    notePreview.x = 350;
     notePreview.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
-    // add(notePreview);
+    add(notePreview);
+
+    notePreviewViewport.scrollFactor.set(0, 0);
+    add(notePreviewViewport);
+    notePreviewViewport.zIndex = 30;
+
+    setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
+  }
+
+  function calculateNotePreviewViewportBounds():FlxRect
+  {
+    var bounds:FlxRect = new FlxRect();
+
+    // Horizontal position and width are constant.
+    bounds.x = notePreview.x;
+    bounds.width = notePreview.width;
+
+    // Vertical position depends on scroll position.
+    bounds.y = notePreview.y + (notePreview.height * (scrollPositionInPixels / songLengthInPixels));
+
+    // Height depends on the viewport size.
+    bounds.height = notePreview.height * (FlxG.height / songLengthInPixels);
+
+    // Make sure the viewport doesn't go off the top or bottom of the note preview.
+    if (bounds.y < notePreview.y)
+    {
+      bounds.height -= notePreview.y - bounds.y;
+      bounds.y = notePreview.y;
+    }
+    else if (bounds.y + bounds.height > notePreview.y + notePreview.height)
+    {
+      bounds.height -= (bounds.y + bounds.height) - (notePreview.y + notePreview.height);
+    }
+
+    var MIN_HEIGHT:Int = 8;
+    if (bounds.height < MIN_HEIGHT)
+    {
+      bounds.y -= MIN_HEIGHT - bounds.height;
+      bounds.height = MIN_HEIGHT;
+    }
+
+    return bounds;
+  }
+
+  function setNotePreviewViewportBounds(bounds:FlxRect = null):Void
+  {
+    if (bounds == null)
+    {
+      notePreviewViewport.visible = false;
+      notePreviewViewport.x = -9999;
+      notePreviewViewport.y = -9999;
+    }
+    else
+    {
+      notePreviewViewport.visible = true;
+      notePreviewViewport.x = bounds.x;
+      notePreviewViewport.y = bounds.y;
+      notePreviewViewport.width = bounds.width;
+      notePreviewViewport.height = bounds.height;
+    }
   }
 
   function buildSpectrogram(target:FlxSound):Void
@@ -1622,7 +1708,7 @@ class ChartEditorState extends HaxeUIState
     handleToolboxes();
     handlePlaybar();
     handlePlayhead();
-    // handleNotePreview();
+    handleNotePreview();
 
     handleFileKeybinds();
     handleEditKeybinds();
@@ -1907,6 +1993,11 @@ class ChartEditorState extends HaxeUIState
         {
           gridPlayheadScrollAreaPressed = true;
         }
+        else if (FlxG.mouse.overlaps(notePreview))
+        {
+          // Clicked note preview
+          notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+        }
         else if (!overlapsGrid || overlapsSelectionBorder)
         {
           selectionBoxStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
@@ -1924,6 +2015,10 @@ class ChartEditorState extends HaxeUIState
       {
         Cursor.cursorMode = Grabbing;
       }
+      else if (notePreviewScrollAreaStartPos != null)
+      {
+        Cursor.cursorMode = Pointer;
+      }
       else if (FlxG.mouse.overlaps(gridPlayheadScrollArea))
       {
         Cursor.cursorMode = Pointer;
@@ -1936,6 +2031,11 @@ class ChartEditorState extends HaxeUIState
       if (gridPlayheadScrollAreaPressed && FlxG.mouse.released)
       {
         gridPlayheadScrollAreaPressed = false;
+      }
+
+      if (notePreviewScrollAreaStartPos != null && FlxG.mouse.released)
+      {
+        notePreviewScrollAreaStartPos = null;
       }
 
       if (gridPlayheadScrollAreaPressed)
@@ -2184,6 +2284,14 @@ class ChartEditorState extends HaxeUIState
             }
           }
         }
+      }
+      else if (notePreviewScrollAreaStartPos != null)
+      {
+        trace('Updating current song time while clicking and holding...');
+        var clickedPosInPixels:Float = FlxMath.remapToRange(FlxG.mouse.screenY, notePreview.y, notePreview.y + notePreview.height, 0, songLengthInPixels);
+
+        scrollPositionInPixels = clickedPosInPixels;
+        moveSongToScrollPosition();
       }
       else if (currentPlaceNoteData != null)
       {
@@ -3214,7 +3322,6 @@ class ChartEditorState extends HaxeUIState
    */
   function handleNotePreview():Void
   {
-    // TODO: Finish this.
     if (notePreviewDirty)
     {
       notePreviewDirty = false;
@@ -3224,13 +3331,12 @@ class ChartEditorState extends HaxeUIState
       notePreview.addNotes(currentSongChartNoteData, Std.int(songLengthInMs));
       notePreview.addEvents(currentSongChartEventData, Std.int(songLengthInMs));
     }
-  }
 
-  /**
-   * Perform a spot update on the note preview, by editing the note preview
-   * only where necessary. More efficient than a full update.
-   */
-  function updateNotePreview(note:SongNoteData, ?deleteNote:Bool = false):Void {}
+    if (notePreviewViewportBoundsDirty)
+    {
+      setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
+    }
+  }
 
   /**
    * Handles passive behavior of the menu bar, such as updating labels or enabled/disabled status.
@@ -3336,6 +3442,9 @@ class ChartEditorState extends HaxeUIState
 
         // We need to update the note sprites.
         noteDisplayDirty = true;
+
+        // Update the note preview viewport box.
+        setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
       }
     }
 
@@ -3500,6 +3609,8 @@ class ChartEditorState extends HaxeUIState
 
     // Offset the selection box start position, if we are dragging.
     if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
+    // Update the note preview viewport box.
+    setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
 
     return this.scrollPositionInPixels;
   }
@@ -3758,6 +3869,9 @@ class ChartEditorState extends HaxeUIState
     }
 
     loadSong(songMetadata, songChartData);
+
+    notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
 
     if (audioInstTrack != null)
     {
