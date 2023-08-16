@@ -16,14 +16,17 @@ class PauseSubState extends MusicBeatSubState
 {
   var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-  var pauseOG:Array<String> = [
+  var pauseOptionsBase:Array<String> = [
     'Resume',
     'Restart Song',
     'Change Difficulty',
     'Toggle Practice Mode',
     'Exit to Menu'
   ];
-  var difficultyChoices:Array<String> = ['EASY', 'NORMAL', 'HARD', 'ERECT', 'BACK'];
+
+  var pauseOptionsDifficulty:Array<String> = ['EASY', 'NORMAL', 'HARD', 'ERECT', 'BACK'];
+
+  var pauseOptionsCharting:Array<String> = ['Resume', 'Restart Song', 'Exit to Chart Editor'];
 
   var menuItems:Array<String> = [];
   var curSelected:Int = 0;
@@ -36,11 +39,15 @@ class PauseSubState extends MusicBeatSubState
   var bg:FlxSprite;
   var metaDataGrp:FlxTypedGroup<FlxSprite>;
 
-  public function new()
+  var isChartingMode:Bool;
+
+  public function new(?isChartingMode:Bool = false)
   {
     super();
 
-    menuItems = pauseOG;
+    this.isChartingMode = isChartingMode;
+
+    menuItems = this.isChartingMode ? pauseOptionsCharting : pauseOptionsBase;
 
     if (PlayStatePlaylist.campaignId == 'week6')
     {
@@ -180,14 +187,13 @@ class PauseSubState extends MusicBeatSubState
       {
         var daSelected:String = menuItems[curSelected];
 
-        // TODO: Why is this based on the menu item's name? Make this an enum or something.
         switch (daSelected)
         {
           case 'Resume':
             close();
 
           case 'Change Difficulty':
-            menuItems = difficultyChoices;
+            menuItems = pauseOptionsDifficulty;
             regenMenu();
 
           case 'EASY' | 'NORMAL' | 'HARD' | 'ERECT':
@@ -199,7 +205,7 @@ class PauseSubState extends MusicBeatSubState
 
             close();
           case 'BACK':
-            menuItems = pauseOG;
+            menuItems = this.isChartingMode ? pauseOptionsCharting : pauseOptionsBase;
             regenMenu();
 
           case 'Toggle Practice Mode':
@@ -226,6 +232,11 @@ class PauseSubState extends MusicBeatSubState
             if (PlayStatePlaylist.isStoryMode) openSubState(new funkin.ui.StickerSubState(null, STORY));
             else
               openSubState(new funkin.ui.StickerSubState(null, FREEPLAY));
+
+          case 'Exit to Chart Editor':
+            this.close();
+            if (FlxG.sound.music != null) FlxG.sound.music.stop();
+            PlayState.instance.close(); // This only works because PlayState is a substate!
         }
       }
 

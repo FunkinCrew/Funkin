@@ -1,24 +1,28 @@
 package funkin;
 
+import flixel.addons.transition.FlxTransitionableSubState;
 import flixel.FlxSubState;
-import funkin.modding.IScriptedClass.IEventHandler;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.modding.module.ModuleHandler;
-import flixel.text.FlxText;
 import funkin.modding.PolymodHandler;
+import funkin.util.SortUtil;
+import flixel.util.FlxSort;
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
-class MusicBeatSubState extends FlxSubState implements IEventHandler
+class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandler
 {
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;
 
   public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)
   {
-    super(bgColor);
+    super();
+    this.bgColor = bgColor;
   }
 
   var controls(get, never):Controls;
@@ -57,6 +61,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     // This can now be used in EVERY STATE YAY!
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
+
+    // Display Conductor info in the watch window.
+    FlxG.watch.addQuick("songPosition", Conductor.songPosition);
+    FlxG.watch.addQuick("bpm", Conductor.bpm);
+    FlxG.watch.addQuick("currentMeasureTime", Conductor.currentBeatTime);
+    FlxG.watch.addQuick("currentBeatTime", Conductor.currentBeatTime);
+    FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
+
+    dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
   function debug_refreshModules()
@@ -65,6 +78,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     // Restart the current state, so old data is cleared.
     FlxG.resetState();
+  }
+
+  /**
+   * Refreshes the state, by redoing the render order of all sprites.
+   * It does this based on the `zIndex` of each prop.
+   */
+  public function refresh()
+  {
+    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
   /**

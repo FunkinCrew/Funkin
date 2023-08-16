@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.addons.transition.FlxTransitionableSubState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -12,7 +13,6 @@ import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.NGio;
@@ -104,6 +104,9 @@ class MainMenuState extends MusicBeatState
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
+      // Freeplay has its own custom transition
+      FlxTransitionableSubState.skipNextTransIn = true;
+      FlxTransitionableSubState.skipNextTransOut = true;
       openSubState(new FreeplayState());
     });
 

@@ -2,8 +2,11 @@ package funkin.ui.debug.charting;
 
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
+import flixel.FlxCamera;
 import flixel.FlxSprite;
+import flixel.FlxSubState;
 import flixel.group.FlxSpriteGroup;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -25,6 +28,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.Strumline;
+import funkin.play.PlayState;
 import funkin.play.song.Song;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongDataParser;
@@ -374,7 +378,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * Whether to play a metronome sound while the playhead is moving.
    */
-  var shouldPlayMetronome:Bool = true;
+  var isMetronomeEnabled:Bool = true;
 
   /**
    * Use the tool window to affect how the user interacts with the program.
@@ -412,6 +416,11 @@ class ChartEditorState extends HaxeUIState
 
     return isViewDownscroll;
   }
+
+  /**
+   * If true, playtesting a chart will skip to the current playhead position.
+   */
+  var playtestStartTime:Bool = false;
 
   /**
    * Whether hitsounds are enabled for at least one character.
@@ -894,7 +903,7 @@ class ChartEditorState extends HaxeUIState
 
   function get_currentSongId():String
   {
-    return currentSongName.toLowerKebabCase();
+    return currentSongName.toLowerKebabCase().replace('.', '').replace(' ', '-');
   }
 
   var currentSongArtist(get, set):String;
@@ -1074,6 +1083,13 @@ class ChartEditorState extends HaxeUIState
 
   override function create():Void
   {
+    // super.create() must be called first, the HaxeUI components get created here.
+    super.create();
+    // Set the z-index of the HaxeUI.
+    this.component.zIndex = 100;
+
+    fixCamera();
+
     // Get rid of any music from the previous state.
     FlxG.sound.music.stop();
 
@@ -1088,8 +1104,6 @@ class ChartEditorState extends HaxeUIState
     buildNotePreview();
     buildSelectionBox();
 
-    // Add the HaxeUI components after the grid so they're on top.
-    super.create();
     buildAdditionalUI();
 
     // Setup the onClick listeners for the UI after it's been created.
@@ -1097,6 +1111,8 @@ class ChartEditorState extends HaxeUIState
     setupTurboKeyHandlers();
 
     setupAutoSave();
+
+    refresh();
 
     ChartEditorDialogHandler.openWelcomeDialog(this, false);
   }
@@ -1127,6 +1143,7 @@ class ChartEditorState extends HaxeUIState
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
+    menuBG.zIndex = -100;
   }
 
   /**
@@ -1138,28 +1155,33 @@ class ChartEditorState extends HaxeUIState
     gridTiledSprite.x = FlxG.width / 2 - GRID_SIZE * STRUMLINE_SIZE; // Center the grid.
     gridTiledSprite.y = MENU_BAR_HEIGHT + GRID_TOP_PAD; // Push down to account for the menu bar.
     add(gridTiledSprite);
+    gridTiledSprite.zIndex = 10;
 
     gridGhostNote = new ChartEditorNoteSprite(this);
     gridGhostNote.alpha = 0.6;
     gridGhostNote.noteData = new SongNoteData(0, 0, 0, "");
     gridGhostNote.visible = false;
     add(gridGhostNote);
+    gridGhostNote.zIndex = 11;
 
     gridGhostEvent = new ChartEditorEventSprite(this);
     gridGhostEvent.alpha = 0.6;
     gridGhostEvent.eventData = new SongEventData(-1, '', {});
     gridGhostEvent.visible = false;
     add(gridGhostEvent);
+    gridGhostEvent.zIndex = 12;
 
     buildNoteGroup();
 
     gridPlayheadScrollArea = new FlxSprite(gridTiledSprite.x - PLAYHEAD_SCROLL_AREA_WIDTH,
       MENU_BAR_HEIGHT).makeGraphic(PLAYHEAD_SCROLL_AREA_WIDTH, FlxG.height - MENU_BAR_HEIGHT, PLAYHEAD_SCROLL_AREA_COLOR);
     add(gridPlayheadScrollArea);
+    gridPlayheadScrollArea.zIndex = 25;
 
     // The playhead that show the current position in the song.
     gridPlayhead = new FlxSpriteGroup();
     add(gridPlayhead);
+    gridPlayhead.zIndex = 30;
 
     var playheadWidth:Int = GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + (PLAYHEAD_SCROLL_AREA_WIDTH * 2);
     var playheadBaseYPos:Float = MENU_BAR_HEIGHT + GRID_TOP_PAD;
@@ -1175,26 +1197,29 @@ class ChartEditorState extends HaxeUIState
     gridPlayhead.add(playheadBlock);
 
     // Character icons.
-    healthIconDad = new HealthIcon('dad');
+    healthIconDad = new HealthIcon(currentSongCharacterOpponent);
     healthIconDad.autoUpdate = false;
     healthIconDad.size.set(0.5, 0.5);
     healthIconDad.x = gridTiledSprite.x - 15 - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
     healthIconDad.y = gridTiledSprite.y + 5;
     add(healthIconDad);
+    healthIconDad.zIndex = 30;
 
-    healthIconBF = new HealthIcon('bf');
+    healthIconBF = new HealthIcon(currentSongCharacterPlayer);
     healthIconBF.autoUpdate = false;
     healthIconBF.size.set(0.5, 0.5);
     healthIconBF.x = gridTiledSprite.x + GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + 15;
     healthIconBF.y = gridTiledSprite.y + 5;
     healthIconBF.flipX = true;
     add(healthIconBF);
+    healthIconBF.zIndex = 30;
   }
 
   function buildSelectionBox():Void
   {
     selectionBoxSprite.scrollFactor.set(0, 0);
     add(selectionBoxSprite);
+    selectionBoxSprite.zIndex = 30;
 
     setSelectionBoxBounds();
   }
@@ -1222,7 +1247,8 @@ class ChartEditorState extends HaxeUIState
     var height:Int = FlxG.height - MENU_BAR_HEIGHT - GRID_TOP_PAD - 200;
     notePreview = new ChartEditorNotePreview(height);
     notePreview.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
-    add(notePreview);
+    // TODO: Re-enable.
+    // add(notePreview);
   }
 
   function buildSpectrogram(target:FlxSound):Void
@@ -1243,18 +1269,22 @@ class ChartEditorState extends HaxeUIState
     renderedHoldNotes = new FlxTypedSpriteGroup<ChartEditorHoldNoteSprite>();
     renderedHoldNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedHoldNotes);
+    renderedHoldNotes.zIndex = 24;
 
     renderedNotes = new FlxTypedSpriteGroup<ChartEditorNoteSprite>();
     renderedNotes.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedNotes);
+    renderedNotes.zIndex = 25;
 
     renderedEvents = new FlxTypedSpriteGroup<ChartEditorEventSprite>();
     renderedEvents.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedEvents);
+    renderedNotes.zIndex = 25;
 
     renderedSelectionSquares = new FlxTypedSpriteGroup<FlxSprite>();
     renderedSelectionSquares.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedSelectionSquares);
+    renderedNotes.zIndex = 26;
   }
 
   var playbarHeadLayout:Component;
@@ -1262,6 +1292,7 @@ class ChartEditorState extends HaxeUIState
   function buildAdditionalUI():Void
   {
     playbarHeadLayout = buildComponent(CHART_EDITOR_PLAYBARHEAD_LAYOUT);
+    playbarHeadLayout.zIndex = 110;
 
     playbarHeadLayout.width = FlxG.width - 8;
     playbarHeadLayout.height = 10;
@@ -1393,6 +1424,9 @@ class ChartEditorState extends HaxeUIState
     // addUIClickListener('menubarItemSelectBeforeCursor', _ -> doSomething());
     // addUIClickListener('menubarItemSelectAfterCursor', _ -> doSomething());
 
+    addUIClickListener('menubarItemPlaytestFull', _ -> testSongInPlayState(false));
+    addUIClickListener('menubarItemPlaytestMinimal', _ -> testSongInPlayState(true));
+
     addUIChangeListener('menubarItemInputStyleGroup', function(event:UIEvent) {
       trace('Change input style: ${event.target}');
     });
@@ -1404,6 +1438,9 @@ class ChartEditorState extends HaxeUIState
     addUIChangeListener('menubarItemDownscroll', event -> isViewDownscroll = event.value);
     setUICheckboxSelected('menubarItemDownscroll', isViewDownscroll);
 
+    addUIChangeListener('menubarItemPlaytestStartTime', event -> playtestStartTime = event.value);
+    setUICheckboxSelected('menubarItemPlaytestStartTime', playtestStartTime);
+
     addUIChangeListener('menuBarItemThemeLight', function(event:UIEvent) {
       if (event.target.value) currentTheme = ChartEditorTheme.Light;
     });
@@ -1414,8 +1451,8 @@ class ChartEditorState extends HaxeUIState
     });
     setUICheckboxSelected('menuBarItemThemeDark', currentTheme == ChartEditorTheme.Dark);
 
-    addUIChangeListener('menubarItemMetronomeEnabled', event -> shouldPlayMetronome = event.value);
-    setUICheckboxSelected('menubarItemMetronomeEnabled', shouldPlayMetronome);
+    addUIChangeListener('menubarItemMetronomeEnabled', event -> isMetronomeEnabled = event.value);
+    setUICheckboxSelected('menubarItemMetronomeEnabled', isMetronomeEnabled);
 
     addUIChangeListener('menubarItemPlayerHitsounds', event -> hitsoundsEnabledPlayer = event.value);
     setUICheckboxSelected('menubarItemPlayerHitsounds', hitsoundsEnabledPlayer);
@@ -1551,6 +1588,7 @@ class ChartEditorState extends HaxeUIState
     handleFileKeybinds();
     handleEditKeybinds();
     handleViewKeybinds();
+    handleTestKeybinds();
     handleHelpKeybinds();
 
     // DEBUG
@@ -1578,7 +1616,7 @@ class ChartEditorState extends HaxeUIState
     // dispatchEvent gets called here.
     if (!super.beatHit()) return false;
 
-    if (shouldPlayMetronome && (audioInstTrack != null && audioInstTrack.playing))
+    if (isMetronomeEnabled && this.subState == null && (audioInstTrack != null && audioInstTrack.playing))
     {
       playMetronomeTick(Conductor.currentBeat % 4 == 0);
     }
@@ -2720,6 +2758,18 @@ class ChartEditorState extends HaxeUIState
   function handleViewKeybinds():Void {}
 
   /**
+   * Handle keybinds for the Test menu items.
+   */
+  function handleTestKeybinds():Void
+  {
+    if (!isHaxeUIDialogOpen && FlxG.keys.justPressed.ENTER)
+    {
+      var minimal = FlxG.keys.pressed.SHIFT;
+      testSongInPlayState(minimal);
+    }
+  }
+
+  /**
    * Handle keybinds for Help menu items.
    */
   function handleHelpKeybinds():Void
@@ -3138,8 +3188,8 @@ class ChartEditorState extends HaxeUIState
 
   function startAudioPlayback():Void
   {
-    if (audioInstTrack != null) audioInstTrack.play();
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.play();
+    if (audioInstTrack != null) audioInstTrack.play(false, audioInstTrack.time);
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.play(false, audioInstTrack.time);
 
     setComponentText('playbarPlay', '||');
   }
@@ -3250,6 +3300,77 @@ class ChartEditorState extends HaxeUIState
     if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
 
     return this.scrollPositionInPixels;
+  }
+
+  /**
+   * Transitions to the Play State to test the song
+   */
+  public function testSongInPlayState(?minimal:Bool = false):Void
+  {
+    var startTimestamp:Float = 0;
+    if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
+
+    var targetSong:Song = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
+
+    // TODO: Rework asset system so we can remove this.
+    switch (currentSongStage)
+    {
+      case 'mainStage':
+        Paths.setCurrentLevel('week1');
+      case 'spookyMansion':
+        Paths.setCurrentLevel('week2');
+      case 'phillyTrain':
+        Paths.setCurrentLevel('week3');
+      case 'limoRide':
+        Paths.setCurrentLevel('week4');
+      case 'mallXmas' | 'mallEvil':
+        Paths.setCurrentLevel('week5');
+      case 'school' | 'schoolEvil':
+        Paths.setCurrentLevel('week6');
+      case 'tankmanBattlefield':
+        Paths.setCurrentLevel('week7');
+      case 'phillyStreets' | 'phillyBlazin':
+        Paths.setCurrentLevel('weekend1');
+    }
+
+    subStateClosed.add(fixCamera);
+    subStateClosed.add(updateConductor);
+
+    FlxTransitionableState.skipNextTransIn = false;
+    FlxTransitionableState.skipNextTransOut = false;
+
+    var targetState = new PlayState(
+      {
+        targetSong: targetSong,
+        targetDifficulty: selectedDifficulty,
+        // TODO: Add this.
+        // targetCharacter: targetCharacter,
+        practiceMode: true,
+        minimalMode: minimal,
+        startTimestamp: startTimestamp,
+        overrideMusic: true,
+      });
+
+    // Override music.
+    FlxG.sound.music = audioInstTrack;
+    targetState.vocals = audioVocalTrackGroup;
+
+    openSubState(targetState);
+  }
+
+  function fixCamera(_:FlxSubState = null):Void
+  {
+    FlxG.cameras.reset(new FlxCamera());
+    FlxG.camera.focusOn(new FlxPoint(FlxG.width / 2, FlxG.height / 2));
+    FlxG.camera.zoom = 1.0;
+
+    add(this.component);
+  }
+
+  function updateConductor(_:FlxSubState = null):Void
+  {
+    var targetPos = scrollPositionInMs;
+    Conductor.update(targetPos);
   }
 
   /**
@@ -3374,14 +3495,23 @@ class ChartEditorState extends HaxeUIState
    * @param charKey Character to load the vocal track for.
    * @return Success or failure.
    */
-  public function loadVocalsFromAsset(path:String, charKey:String = 'default'):Bool
+  public function loadVocalsFromAsset(path:String, charType:CharacterType = OTHER):Bool
   {
     var vocalTrack:FlxSound = FlxG.sound.load(path, 1.0, false);
     if (vocalTrack != null)
     {
-      audioVocalTrackGroup.add(vocalTrack);
-
-      audioVocalTrackData.set(charKey, Assets.getBytes(path));
+      switch (charType)
+      {
+        case CharacterType.BF:
+          audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+          audioVocalTrackData.set(currentSongCharacterPlayer, Assets.getBytes(path));
+        case CharacterType.DAD:
+          audioVocalTrackGroup.addOpponentVoice(vocalTrack);
+          audioVocalTrackData.set(currentSongCharacterOpponent, Assets.getBytes(path));
+        default:
+          audioVocalTrackGroup.add(vocalTrack);
+          audioVocalTrackData.set('default', Assets.getBytes(path));
+      }
 
       return true;
     }
@@ -3442,10 +3572,18 @@ class ChartEditorState extends HaxeUIState
 
     loadInstrumentalFromAsset(Paths.inst(songId));
 
-    var voiceList:Array<String> = song.getDifficulty(selectedDifficulty).buildVoiceList();
-    for (voicePath in voiceList)
+    var voiceList:Array<String> = song.getDifficulty(selectedDifficulty).buildVoiceList(currentSongCharacterPlayer);
+    if (voiceList.length == 2)
     {
-      loadVocalsFromAsset(voicePath);
+      loadVocalsFromAsset(voiceList[0], BF);
+      loadVocalsFromAsset(voiceList[1], DAD);
+    }
+    else
+    {
+      for (voicePath in voiceList)
+      {
+        loadVocalsFromAsset(voicePath);
+      }
     }
 
     NotificationManager.instance.addNotification(

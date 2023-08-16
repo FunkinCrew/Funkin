@@ -31,26 +31,35 @@ class Countdown
   {
     countdownStep = BEFORE;
     var cancelled:Bool = propagateCountdownEvent(countdownStep);
-    if (cancelled) return false;
+    if (cancelled)
+    {
+      return false;
+    }
 
     // Stop any existing countdown.
     stopCountdown();
 
     PlayState.instance.isInCountdown = true;
-    Conductor.songPosition = Conductor.beatLengthMs * -5;
+    Conductor.update(PlayState.instance.startTimestamp + Conductor.beatLengthMs * -5);
     // Handle onBeatHit events manually
-    @:privateAccess
-    PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
+    // @:privateAccess
+    // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
     countdownTimer.start(Conductor.beatLengthMs / 1000, function(tmr:FlxTimer) {
+      if (PlayState.instance == null)
+      {
+        tmr.cancel();
+        return;
+      }
+
       countdownStep = decrement(countdownStep);
 
-      // Handle onBeatHit events manually
-      @:privateAccess
-      PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
+      // onBeatHit events are now properly dispatched by the Conductor even at negative timestamps,
+      // so calling this is no longer necessary.
+      // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
       showCountdownGraphic(countdownStep, isPixelStyle);
@@ -61,7 +70,10 @@ class Countdown
       // Event handling bullshit.
       var cancelled:Bool = propagateCountdownEvent(countdownStep);
 
-      if (cancelled) pauseCountdown();
+      if (cancelled)
+      {
+        pauseCountdown();
+      }
 
       if (countdownStep == AFTER)
       {
@@ -146,7 +158,7 @@ class Countdown
   {
     stopCountdown();
     // This will trigger PlayState.startSong()
-    Conductor.songPosition = 0;
+    Conductor.update(0);
     // PlayState.isInCountdown = false;
   }
 

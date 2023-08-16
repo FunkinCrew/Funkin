@@ -37,4 +37,15 @@ class ArrayTools
     }
     return null;
   }
+
+  /**
+   * Remove all elements from the array, without creating a new array.
+   * @param array The array to clear.
+   */
+  public static function clear<T>(array:Array<T>):Void
+  {
+    // This method is faster than array.splice(0, array.length)
+    while (array.length > 0)
+      array.pop();
+  }
 }

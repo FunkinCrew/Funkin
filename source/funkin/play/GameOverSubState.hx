@@ -117,15 +117,13 @@ class GameOverSubState extends MusicBeatSubState
     gameOverMusic.stop();
 
     // The conductor now represents the BPM of the game over music.
-    Conductor.songPosition = 0;
+    Conductor.update(0);
   }
 
   var hasStartedAnimation:Bool = false;
 
   override function update(elapsed:Float)
   {
-    super.update(elapsed);
-
     if (!hasStartedAnimation)
     {
       hasStartedAnimation = true;
@@ -183,7 +181,7 @@ class GameOverSubState extends MusicBeatSubState
     {
       // Match the conductor to the music.
       // This enables the stepHit and beatHit events.
-      Conductor.songPosition = gameOverMusic.time;
+      Conductor.update(gameOverMusic.time);
     }
     else
     {
@@ -205,12 +203,13 @@ class GameOverSubState extends MusicBeatSubState
           if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
           {
             startDeathMusic(1.0, false);
+            boyfriend.playAnimation('deathLoop' + animationSuffix);
           }
       }
     }
 
-    // Dispatch the onUpdate event.
-    dispatchEvent(new UpdateScriptEvent(elapsed));
+    // Start death music before firstDeath gets replaced
+    super.update(elapsed);
   }
 
   /**

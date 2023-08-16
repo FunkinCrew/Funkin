@@ -3,6 +3,7 @@ package funkin;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.play.PlayState;
+import flixel.addons.transition.FlxTransitionableState;
 
 class GitarooPause extends MusicBeatState
 {
@@ -61,6 +62,8 @@ class GitarooPause extends MusicBeatState
     {
       if (replaySelect)
       {
+        FlxTransitionableState.skipNextTransIn = false;
+        FlxTransitionableState.skipNextTransOut = false;
         FlxG.switchState(new PlayState(previousParams));
       }
       else

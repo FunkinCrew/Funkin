@@ -40,7 +40,7 @@ class ChartEditorNotePreview extends FlxSprite
    */
   function buildBackground():Void
   {
-    makeGraphic(WIDTH, 0, BG_COLOR);
+    makeGraphic(WIDTH, previewHeight, BG_COLOR);
   }
 
   /**

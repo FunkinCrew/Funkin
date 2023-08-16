@@ -21,7 +21,7 @@ runs:
       - name: Installing Haxe lol
         run: |
           haxe -version
-          haxelib git haxelib https://github.com/HaxeFoundation/haxelib.git
+          haxelib git haxelib https://github.com/HaxeFoundation/haxelib.git development
           haxelib version
           haxelib --global install hmm
           haxelib --global run hmm install --quiet

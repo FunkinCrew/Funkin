@@ -1,10 +1,13 @@
 package funkin.play;
 
+import flixel.addons.transition.FlxTransitionableSubState;
+import funkin.ui.debug.charting.ChartEditorState;
 import haxe.Int64;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.display.FlxPieDial;
+import flixel.addons.transition.Transition;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
@@ -77,12 +80,32 @@ typedef PlayStateParams =
    * @default `bf`, or the first character in the song's character list.
    */
   ?targetCharacter:String,
+  /**
+   * Whether the song should start in Practice Mode.
+   * @default `false`
+   */
+  ?practiceMode:Bool,
+  /**
+   * Whether the song should be in minimal mode.
+   * @default `false`
+   */
+  ?minimalMode:Bool,
+  /**
+   * If specified, the game will jump to the specified timestamp after the countdown ends.
+   */
+  ?startTimestamp:Float,
+  /**
+   * If specified, the game will not load the instrumental or vocal tracks,
+   * and must be loaded externally.
+   */
+  ?overrideMusic:Bool,
 }
 
 /**
  * The gameplay state, where all the rhythm gaming happens.
+ * SubState so it can be loaded as a child of the chart editor.
  */
-class PlayState extends MusicBeatState
+class PlayState extends MusicBeatSubState
 {
   /**
    * STATIC VARIABLES
@@ -210,6 +233,11 @@ class PlayState extends MusicBeatState
   public var isPracticeMode:Bool = false;
 
   /**
+   * In Minimal Mode, the stage and characters are not loaded and a standard background is used.
+   */
+  public var isMinimalMode:Bool = false;
+
+  /**
    * Whether the game is currently in an animated cutscene, and gameplay should be stopped.
    */
   public var isInCutscene:Bool = false;
@@ -218,6 +246,24 @@ class PlayState extends MusicBeatState
    * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
    */
   public var disableKeys:Bool = false;
+
+  public var startTimestamp:Float = 0.0;
+
+  var overrideMusic:Bool = false;
+
+  public var isSubState(get, null):Bool;
+
+  function get_isSubState():Bool
+  {
+    return this._parentState != null;
+  }
+
+  public var isChartingMode(get, null):Bool;
+
+  function get_isChartingMode():Bool
+  {
+    return this._parentState != null && Std.isOfType(this._parentState, ChartEditorState);
+  }
 
   /**
    * The current dialogue.
@@ -276,9 +322,14 @@ class PlayState extends MusicBeatState
   var startingSong:Bool = false;
 
   /**
+   * False until `create()` has completed.
+   */
+  var initialized:Bool = false;
+
+  /**
    * A group of audio tracks, used to play the song's vocals.
    */
-  var vocals:VoicesGroup;
+  public var vocals:VoicesGroup;
 
   #if discord_rpc
   // Discord RPC variables
@@ -438,6 +489,10 @@ class PlayState extends MusicBeatState
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
     if (params.targetCharacter != null) currentPlayerId = params.targetCharacter;
+    isPracticeMode = params.practiceMode ?? false;
+    isMinimalMode = params.minimalMode ?? false;
+    startTimestamp = params.startTimestamp ?? 0.0;
+    overrideMusic = params.overrideMusic ?? false;
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
   }
@@ -447,8 +502,6 @@ class PlayState extends MusicBeatState
    */
   public override function create():Void
   {
-    super.create();
-
     if (instance != null)
     {
       // TODO: Do something in this case? IDK.
@@ -457,13 +510,6 @@ class PlayState extends MusicBeatState
     instance = this;
 
     NoteSplash.buildSplashFrames();
-
-    if (currentSong != null)
-    {
-      // Load and cache the song's charts.
-      // TODO: Do this in the loading state.
-      currentSong.cacheCharts(true);
-    }
 
     // Returns null if the song failed to load or doesn't have the selected difficulty.
     if (currentSong == null || currentChart == null)
@@ -490,7 +536,14 @@ class PlayState extends MusicBeatState
       lime.app.Application.current.window.alert(message, 'Error loading PlayState');
 
       // Force the user back to the main menu.
-      FlxG.switchState(new MainMenuState());
+      if (isSubState)
+      {
+        this.close();
+      }
+      else
+      {
+        FlxG.switchState(new MainMenuState());
+      }
       return;
     }
 
@@ -516,24 +569,32 @@ class PlayState extends MusicBeatState
     this.persistentDraw = true;
 
     // Stop any pre-existing music.
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+    if (!overrideMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
 
     // Prepare the current song's instrumental and vocals to be played.
-    if (currentChart != null)
+    if (!overrideMusic && currentChart != null)
     {
       currentChart.cacheInst(currentPlayerId);
       currentChart.cacheVocals(currentPlayerId);
     }
 
     // Prepare the Conductor.
+    Conductor.forceBPM(null);
     Conductor.mapTimeChanges(currentChart.timeChanges);
-    Conductor.update(-5000);
+    Conductor.update((Conductor.beatLengthMs * -5) + startTimestamp);
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
     initHealthBar();
-    initStage();
-    initCharacters();
+    if (!isMinimalMode)
+    {
+      initStage();
+      initCharacters();
+    }
+    else
+    {
+      initMinimalMode();
+    }
     initStrumlines();
 
     // Initialize the judgements and combo meter.
@@ -582,6 +643,9 @@ class PlayState extends MusicBeatState
       startCountdown();
     }
 
+    // Do this last to prevent beatHit from being called before create() is done.
+    super.create();
+
     leftWatermarkText.cameras = [camHUD];
     rightWatermarkText.cameras = [camHUD];
 
@@ -592,6 +656,8 @@ class PlayState extends MusicBeatState
 
     FlxG.console.registerObject('playState', this);
     #end
+
+    initialized = true;
   }
 
   public override function update(elapsed:Float):Void
@@ -629,7 +695,7 @@ class PlayState extends MusicBeatState
 
       FlxG.sound.music.pause();
       vocals.pause();
-      FlxG.sound.music.time = 0;
+      FlxG.sound.music.time = (startTimestamp);
       vocals.time = 0;
 
       FlxG.sound.music.volume = 1;
@@ -637,7 +703,7 @@ class PlayState extends MusicBeatState
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
 
-      currentStage.resetStage();
+      if (currentStage != null) currentStage.resetStage();
 
       playerStrumline.vwooshNotes();
       opponentStrumline.vwooshNotes();
@@ -666,8 +732,8 @@ class PlayState extends MusicBeatState
     {
       if (isInCountdown)
       {
-        Conductor.songPosition += elapsed * 1000;
-        if (Conductor.songPosition >= 0) startSong();
+        Conductor.update(Conductor.songPosition + elapsed * 1000);
+        if (Conductor.songPosition >= startTimestamp) startSong();
       }
     }
     else
@@ -712,7 +778,7 @@ class PlayState extends MusicBeatState
         // There is a 1/1000 change to use a special pause menu.
         // This prevents the player from resuming, but that's the point.
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
-        if (event.gitaroo)
+        if (!isSubState && event.gitaroo)
         {
           FlxG.switchState(new GitarooPause(
             {
@@ -731,8 +797,10 @@ class PlayState extends MusicBeatState
             boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
           }
 
-          var pauseSubState:FlxSubState = new PauseSubState();
+          var pauseSubState:FlxSubState = new PauseSubState(isChartingMode);
 
+          FlxTransitionableSubState.skipNextTransIn = true;
+          FlxTransitionableSubState.skipNextTransOut = true;
           openSubState(pauseSubState);
           pauseSubState.camera = camHUD;
           // boyfriendPos.put(); // TODO: Why is this here?
@@ -807,6 +875,8 @@ class PlayState extends MusicBeatState
         #end
 
         var gameOverSubState = new GameOverSubState();
+        FlxTransitionableSubState.skipNextTransIn = true;
+        FlxTransitionableSubState.skipNextTransOut = true;
         openSubState(gameOverSubState);
 
         #if discord_rpc
@@ -827,6 +897,13 @@ class PlayState extends MusicBeatState
         trace('Found ${songEventsToActivate.length} event(s) to activate.');
         for (event in songEventsToActivate)
         {
+          // If an event is trying to play, but it's over 5 seconds old, skip it.
+          if (event.time - Conductor.songPosition < -5000)
+          {
+            event.activated = true;
+            continue;
+          };
+
           var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
           dispatchEvent(eventEvent);
           // Calling event.cancelEvent() skips the event. Neat!
@@ -846,9 +923,6 @@ class PlayState extends MusicBeatState
 
     // Moving notes into position is now done by Strumline.update().
     processNotes(elapsed);
-
-    // Dispatch the onUpdate event to scripted elements.
-    dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
   public override function dispatchEvent(event:ScriptEvent):Void
@@ -882,7 +956,7 @@ class PlayState extends MusicBeatState
   {
     // If there is a substate which requires the game to continue,
     // then make this a condition.
-    var shouldPause = true;
+    var shouldPause = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
 
     if (shouldPause)
     {
@@ -896,6 +970,7 @@ class PlayState extends MusicBeatState
       // Pause the countdown.
       Countdown.pauseCountdown();
     }
+    else {}
 
     super.openSubState(subState);
   }
@@ -906,13 +981,16 @@ class PlayState extends MusicBeatState
    */
   public override function closeSubState():Void
   {
-    if (isGamePaused)
+    if (Std.isOfType(subState, PauseSubState))
     {
       var event:ScriptEvent = new ScriptEvent(ScriptEvent.RESUME, true);
 
       dispatchEvent(event);
 
       if (event.eventCanceled) return;
+
+      // Resume
+      FlxG.sound.music.play();
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
@@ -930,6 +1008,10 @@ class PlayState extends MusicBeatState
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
       }
       #end
+    }
+    else if (Std.isOfType(subState, Transition))
+    {
+      // Do nothing.
     }
 
     super.closeSubState();
@@ -1029,12 +1111,15 @@ class PlayState extends MusicBeatState
 
   override function stepHit():Bool
   {
-    if (criticalFailure) return false;
+    if (criticalFailure || !initialized) return false;
 
     // super.stepHit() returns false if a module cancelled the event.
     if (!super.stepHit()) return false;
 
-    if (FlxG.sound.music != null
+    if (isGamePaused) return false;
+
+    if (!startingSong
+      && FlxG.sound.music != null
       && (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 200
         || Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 200))
     {
@@ -1052,10 +1137,12 @@ class PlayState extends MusicBeatState
 
   override function beatHit():Bool
   {
-    if (criticalFailure) return false;
+    if (criticalFailure || !initialized) return false;
 
     // super.beatHit() returns false if a module cancelled the event.
     if (!super.beatHit()) return false;
+
+    if (isGamePaused) return false;
 
     if (generatedMusic)
     {
@@ -1207,6 +1294,19 @@ class PlayState extends MusicBeatState
   function initStage():Void
   {
     loadStage(currentStageId);
+  }
+
+  function initMinimalMode():Void
+  {
+    // Create the green background.
+    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+    menuBG.color = 0xFF4CAF50;
+    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.updateHitbox();
+    menuBG.screenCenter();
+    menuBG.scrollFactor.set(0, 0);
+    menuBG.zIndex = -1000;
+    add(menuBG);
   }
 
   /**
@@ -1453,12 +1553,16 @@ class PlayState extends MusicBeatState
       trace('Song difficulty could not be loaded.');
     }
 
-    Conductor.forceBPM(currentChart.getStartingBPM());
+    // Conductor.forceBPM(currentChart.getStartingBPM());
 
-    vocals = currentChart.buildVocals(currentPlayerId);
-    if (vocals.members.length == 0)
+    if (!overrideMusic)
     {
-      trace('WARNING: No vocals found for this song.');
+      vocals = currentChart.buildVocals(currentPlayerId);
+
+      if (vocals.members.length == 0)
+      {
+        trace('WARNING: No vocals found for this song.');
+      }
     }
 
     regenNoteData();
@@ -1469,7 +1573,7 @@ class PlayState extends MusicBeatState
   /**
    * Read note data from the chart and generate the notes.
    */
-  function regenNoteData():Void
+  function regenNoteData(startTime:Float = 0):Void
   {
     Highscore.tallies.combo = 0;
     Highscore.tallies = new Tallies();
@@ -1485,6 +1589,8 @@ class PlayState extends MusicBeatState
     for (songNote in currentChart.notes)
     {
       var strumTime:Float = songNote.time;
+      if (strumTime < startTime) continue; // Skip notes that are before the start time.
+
       var noteData:Int = songNote.getDirection();
 
       var playerNote:Bool = true;
@@ -1565,20 +1671,29 @@ class PlayState extends MusicBeatState
 
     startingSong = false;
 
-    if (!isGamePaused && currentChart != null)
+    if (!overrideMusic && !isGamePaused && currentChart != null)
     {
       currentChart.playInst(1.0, false);
     }
 
     FlxG.sound.music.onComplete = endSong;
+    FlxG.sound.music.play();
+    FlxG.sound.music.time = startTimestamp;
     trace('Playing vocals...');
     add(vocals);
     vocals.play();
+    resyncVocals();
 
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
     DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
     #end
+
+    if (startTimestamp > 0)
+    {
+      FlxG.sound.music.time = startTimestamp;
+      handleSkippedNotes();
+    }
   }
 
   /**
@@ -1588,13 +1703,16 @@ class PlayState extends MusicBeatState
   {
     if (_exiting || vocals == null) return;
 
+    // Skip this if the music is paused (GameOver, Pause menu, etc.)
+    if (!FlxG.sound.music.playing) return;
+
     vocals.pause();
 
     FlxG.sound.music.play();
     Conductor.update();
 
     vocals.time = FlxG.sound.music.time;
-    vocals.play();
+    vocals.play(false, FlxG.sound.music.time);
   }
 
   /**
@@ -1619,6 +1737,8 @@ class PlayState extends MusicBeatState
    */
   function onKeyPress(event:PreciseInputEvent):Void
   {
+    if (isGamePaused) return;
+
     // Do the minimal possible work here.
     inputPressQueue.push(event);
   }
@@ -1628,6 +1748,8 @@ class PlayState extends MusicBeatState
    */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    if (isGamePaused) return;
+
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }
@@ -1761,6 +1883,7 @@ class PlayState extends MusicBeatState
 
         // Judge the miss.
         // NOTE: This is what handles the scoring.
+        trace('Missed note! ${note.noteData}');
         onNoteMiss(note);
 
         note.handledMiss = true;
@@ -1789,6 +1912,25 @@ class PlayState extends MusicBeatState
    * Spitting out the input for ravy 🙇‍♂️!!
    */
   var inputSpitter:Array<ScoreInput> = [];
+
+  function handleSkippedNotes():Void
+  {
+    for (note in playerStrumline.notes.members)
+    {
+      if (note == null || note.hasBeenHit) continue;
+      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
+
+      if (Conductor.songPosition > hitWindowEnd)
+      {
+        // We have passed this note.
+        // Flag the note for deletion without actually penalizing the player.
+        note.handledMiss = true;
+      }
+    }
+
+    playerStrumline.handleSkippedNotes();
+    opponentStrumline.handleSkippedNotes();
+  }
 
   /**
    * PreciseInputEvents are put into a queue between update() calls,
@@ -1851,6 +1993,7 @@ class PlayState extends MusicBeatState
         if (targetNote == null) continue;
 
         // Judge and hit the note.
+        trace('Hit note! ${targetNote.noteData}');
         goodNoteHit(targetNote, input);
 
         targetNote.visible = false;
@@ -2018,11 +2161,10 @@ class PlayState extends MusicBeatState
     if (event.eventCanceled) return;
 
     health -= Constants.HEALTH_MISS_PENALTY;
+    songScore -= 10;
 
     if (!isPracticeMode)
     {
-      songScore -= 10;
-
       // messy copy paste rn lol
       var pressArray:Array<Bool> = [
         controls.NOTE_LEFT_P,
@@ -2093,11 +2235,10 @@ class PlayState extends MusicBeatState
     if (event.eventCanceled) return;
 
     health += event.healthChange;
+    songScore += event.scoreChange;
 
     if (!isPracticeMode)
     {
-      songScore += event.scoreChange;
-
       var pressArray:Array<Bool> = [
         controls.NOTE_LEFT_P,
         controls.NOTE_DOWN_P,
@@ -2139,6 +2280,7 @@ class PlayState extends MusicBeatState
     if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
     #end
 
+    // Eject button
     if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
 
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
@@ -2170,18 +2312,21 @@ class PlayState extends MusicBeatState
     }
 
     // 8: Move to the offset editor.
-    if (FlxG.keys.justPressed.EIGHT) FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+    if (FlxG.keys.justPressed.EIGHT)
+    {
+      lime.app.Application.current.window.alert("Press ~ on the main menu to get to the editor", 'LOL');
+    }
 
     // 9: Toggle the old icon.
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
     #if debug
-    // PAGEUP: Skip forward one section.
-    // SHIFT+PAGEUP: Skip forward ten sections.
-    if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 10 : 1);
-    // PAGEDOWN: Skip backward one section. Doesn't replace notes.
-    // SHIFT+PAGEDOWN: Skip backward ten sections.
-    if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -10 : -1);
+    // PAGEUP: Skip forward two sections.
+    // SHIFT+PAGEUP: Skip forward twenty sections.
+    if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
+    // PAGEDOWN: Skip backward two section. Doesn't replace notes.
+    // SHIFT+PAGEDOWN: Skip backward twenty sections.
+    if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
     #end
 
     if (FlxG.keys.justPressed.B) trace(inputSpitter.join('\n'));
@@ -2232,11 +2377,10 @@ class PlayState extends MusicBeatState
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
 
-    // Only add the score if you're not on practice mode
+    songScore += score;
+
     if (!isPracticeMode)
     {
-      songScore += score;
-
       // TODO: Input splitter uses old input system, make it pull from the precise input queue directly.
       var pressArray:Array<Bool> = [
         controls.NOTE_LEFT_P,
@@ -2391,7 +2535,14 @@ class PlayState extends MusicBeatState
         // FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
         FlxG.save.flush();
 
-        moveToResultsScreen();
+        if (isSubState)
+        {
+          this.close();
+        }
+        else
+        {
+          moveToResultsScreen();
+        }
       }
       else
       {
@@ -2445,8 +2596,22 @@ class PlayState extends MusicBeatState
     }
     else
     {
-      moveToResultsScreen();
+      if (isSubState)
+      {
+        this.close();
+      }
+      else
+      {
+        moveToResultsScreen();
+      }
     }
+  }
+
+  public override function close():Void
+  {
+    criticalFailure = true; // Stop game updates.
+    performCleanup();
+    super.close();
   }
 
   /**
@@ -2457,6 +2622,19 @@ class PlayState extends MusicBeatState
     if (currentChart != null)
     {
       // TODO: Uncache the song.
+    }
+
+    if (!overrideMusic)
+    {
+      // Stop the music.
+      FlxG.sound.music.pause();
+      vocals.stop();
+    }
+    else
+    {
+      FlxG.sound.music.pause();
+      vocals.pause();
+      remove(vocals);
     }
 
     // Remove reference to stage and remove sprites from it to save memory.
@@ -2559,6 +2737,7 @@ class PlayState extends MusicBeatState
     FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
     FlxG.camera.targetOffset.set();
     FlxG.camera.zoom = defaultCameraZoom;
+    // Snap the camera to the follow point immediately.
     FlxG.camera.focusOn(cameraFollowPoint.getPosition());
   }
 
@@ -2572,29 +2751,15 @@ class PlayState extends MusicBeatState
   {
     FlxG.sound.music.pause();
 
-    FlxG.sound.music.time += sections * Conductor.measureLengthMs;
+    var targetTimeSteps:Float = Conductor.currentStepTime + (Conductor.timeSignatureNumerator * Constants.STEPS_PER_BEAT * sections);
+    var targetTimeMs:Float = Conductor.getStepTimeInMs(targetTimeSteps);
+
+    FlxG.sound.music.time = targetTimeMs;
+
+    handleSkippedNotes();
+    // regenNoteData(FlxG.sound.music.time);
 
     Conductor.update(FlxG.sound.music.time);
-
-    /**
-      *
-      // TODO: Redo this for the new conductor.
-      var daBPM:Float = Conductor.bpm;
-      var daPos:Float = 0;
-      for (i in 0...(Std.int(Conductor.currentStep / 16 + sec)))
-      {
-        var section = .getSong()[i];
-        if (section == null) continue;
-        if (section.changeBPM)
-        {
-          daBPM = .getSong()[i].bpm;
-        }
-        daPos += 4 * (1000 * 60 / daBPM);
-      }
-      Conductor.songPosition = FlxG.sound.music.time = daPos;
-      Conductor.songPosition += Conductor.offset;
-
-     */
 
     resyncVocals();
   }
