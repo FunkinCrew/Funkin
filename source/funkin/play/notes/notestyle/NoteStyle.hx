@@ -104,6 +104,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     noteFrames = Paths.getSparrowAtlas(getNoteAssetPath(), getNoteAssetLibrary());
 
+    if (noteFrames == null) {
+      throw 'Could not load note frames for note style: $id';
+    }
+
     noteFrames.parent.persist = true;
 
     return noteFrames;
@@ -161,7 +165,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     if (raw)
     {
-      var rawPath:Null<String> = _data?.assets?.holdNote?.assetPath;
+      // TODO: figure out why ?. didn't work here
+      var rawPath:Null<String> = (_data?.assets?.holdNote == null) ? null : _data?.assets?.holdNote?.assetPath;
       return (rawPath == null) ? fallback.getHoldNoteAssetPath(true) : rawPath;
     }
 
@@ -299,6 +304,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function _fetchData(id:String):Null<NoteStyleData>
   {
-    return NoteStyleRegistry.instance.parseEntryData(id);
+    return NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
   }
 }

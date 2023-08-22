@@ -180,9 +180,15 @@ class Conductor
    */
   public static function forceBPM(?bpm:Float = null)
   {
-    if (bpm != null) trace('[CONDUCTOR] Forcing BPM to ' + bpm);
+    if (bpm != null)
+    {
+      trace('[CONDUCTOR] Forcing BPM to ${bpm}');
+    }
     else
-      trace('[CONDUCTOR] Resetting BPM to default');
+    {
+      // trace('[CONDUCTOR] Resetting BPM to default');
+    }
+
     Conductor.bpmOverride = bpm;
   }
 
@@ -272,9 +278,9 @@ class Conductor
           if (currentTimeChange.timeStamp > 0.0 && timeChanges.length > 0)
           {
             var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
-            currentTimeChange.beatTime = prevTimeChange.beatTime
-              + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC)
-              + 0.01;
+            currentTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
+              + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC),
+              4);
           }
         }
       }
@@ -282,7 +288,10 @@ class Conductor
       timeChanges.push(currentTimeChange);
     }
 
-    trace('Done mapping time changes: ' + timeChanges);
+    if (timeChanges.length > 0)
+    {
+      trace('Done mapping time changes: ${timeChanges}' + timeChanges);
+    }
 
     // Update currentStepTime
     Conductor.update(Conductor.songPosition);

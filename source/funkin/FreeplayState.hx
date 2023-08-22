@@ -492,22 +492,6 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    // if (regexp != null)
-    // 	tempSongs = songs.filter(item -> regexp.match(item.songName));
-
-    // tempSongs.sort(function(a, b):Int
-    // {
-    // 	var tempA = a.songName.toUpperCase();
-    // 	var tempB = b.songName.toUpperCase();
-
-    // 	if (tempA < tempB)
-    // 		return -1;
-    // 	else if (tempA > tempB)
-    // 		return 1;
-    // 	else
-    // 		return 0;
-    // });
-
     for (i in 0...tempSongs.length)
     {
       var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, (i * 150) + 160, tempSongs[i].songName);

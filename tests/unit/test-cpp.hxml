@@ -1,0 +1,11 @@
+# Updates TestSuite.hx to include all tests
+#-cmd haxelib run munit gen
+# Actually performs the tests
+#-cmd haxelib run munit test -debug -coverage
+# -debug may or may not be needed
+# -coverage adds code coverage reporting
+
+# Legacy style. Doesn't give detailed coverage reports,
+# but it works without crashing.
+-cmd haxelib run munit gen
+-cmd haxelib run lime test cpp

@@ -108,6 +108,9 @@ class ArraySortTools
       input[i] = input[j];
       input[j] = temp;
     }
+
+    // Don't expect to get here.
+    return -1;
   }
 
   /**

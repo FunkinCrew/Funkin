@@ -1,0 +1,5 @@
+# Update the test runner classes
+# TODO: This just opens the browser and doesn't do anything?
+-cmd haxelib run munit gen
+-cmd haxelib run lime build html5
+-cmd haxelib run lime test html5

@@ -40,27 +40,6 @@ class DJBoyfriend extends FlxSprite
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.LEFT)
-    {
-      animOffsets["confirm"] = [animOffsets["confirm"][0] + 1, animOffsets["confirm"][1]];
-      applyAnimOffset();
-    }
-    else if (FlxG.keys.justPressed.RIGHT)
-    {
-      animOffsets["confirm"] = [animOffsets["confirm"][0] - 1, animOffsets["confirm"][1]];
-      applyAnimOffset();
-    }
-    else if (FlxG.keys.justPressed.UP)
-    {
-      animOffsets["confirm"] = [animOffsets["confirm"][0], animOffsets["confirm"][1] + 1];
-      applyAnimOffset();
-    }
-    else if (FlxG.keys.justPressed.DOWN)
-    {
-      animOffsets["confirm"] = [animOffsets["confirm"][0], animOffsets["confirm"][1] - 1];
-      applyAnimOffset();
-    }
-
     switch (currentState)
     {
       case Intro:

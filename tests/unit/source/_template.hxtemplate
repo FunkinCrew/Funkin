@@ -1,0 +1,30 @@
+package funkin.play;
+
+import massive.munit.util.Timer;
+import massive.munit.Assert;
+import massive.munit.async.AsyncFactory;
+import funkin.play.PlayState;
+
+@:access(funkin.play.PlayState)
+class Template extends FunkinTest
+{
+  public function new()
+  {
+    super();
+  }
+
+  @BeforeClass
+  public function beforeClass() {}
+
+  @AfterClass
+  public function afterClass() {}
+
+  @Before
+  public function setup() {}
+
+  @After
+  public function tearDown() {}
+
+  @Test
+  public function test() {}
+}

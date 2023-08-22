@@ -88,12 +88,17 @@ class Constants
   public static final COLOR_HEALTH_BAR_GREEN:FlxColor = 0xFF66FF33;
 
   /**
-   * The base colors of the notes.
+   * The base colors used by notes.
    */
-  public static final COLOR_NOTES:Array<FlxColor> = [0xFFFF22AA, 0xFF00EEFF, 0xFF00CC00, 0xFFCC1111];
+  public static var COLOR_NOTES:Array<FlxColor> = [
+    0xFFFF22AA, // left (0)
+    0xFF00EEFF, // down (1)
+    0xFF00CC00, // up (2)
+    0xFFCC1111 // right (3)
+  ];
 
   /**
-   * STAGE DEFAULTS
+   * GAME DEFAULTS
    */
   // ==============================
 

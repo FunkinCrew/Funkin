@@ -51,6 +51,7 @@ class StringTools
 
   /**
    * Parses the string data as JSON and returns the resulting object.
+   * This is here so you can use `string.parseJSON()` when `using StringTools`.
    *
    * @return The parsed object.
    */

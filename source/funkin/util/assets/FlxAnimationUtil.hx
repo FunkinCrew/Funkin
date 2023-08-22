@@ -19,7 +19,7 @@ class FlxAnimationUtil
     if (anim.frameIndices != null && anim.frameIndices.length > 0)
     {
       // trace('addByIndices(${anim.name}, ${anim.prefix}, ${anim.frameIndices}, ${frameRate}, ${looped}, ${flipX}, ${flipY})');
-      target.animation.addByIndices(anim.name, anim.prefix, anim.frameIndices, "", frameRate, looped, flipX, flipY);
+      target.animation.addByIndices(anim.name, anim.prefix, anim.frameIndices, '', frameRate, looped, flipX, flipY);
       // trace('RESULT:${target.animation.getAnimationList()}');
     }
     else

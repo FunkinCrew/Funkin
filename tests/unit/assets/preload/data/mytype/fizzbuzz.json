@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "id": "fizzbuzz",
+  "name": "nodejs-express-mongoose-demo",
+  "data": [
+    {
+      "foo": "bar",
+      "bar": "foo"
+    },
+    {
+      "foo": "baz",
+      "bar": "baz"
+    }
+  ]
+}

@@ -2,6 +2,7 @@ package funkin.data;
 
 import openfl.Assets;
 import funkin.util.assets.DataAssets;
+import funkin.util.VersionUtil;
 import haxe.Constraints.Constructible;
 
 /**
@@ -24,16 +25,23 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   final entries:Map<String, T>;
 
+  /**
+   * The version rule to use when loading entries.
+   * If the entry's version does not match this rule, migration is needed.
+   */
+  final versionRule:thx.semver.VersionRule;
+
   // public abstract static final instance:BaseRegistry<T, J> = new BaseRegistry<>();
 
   /**
    * @param registryId A readable ID for this registry, used when logging.
    * @param dataFilePath The path (relative to `assets/data`) to search for JSON files.
    */
-  public function new(registryId:String, dataFilePath:String)
+  public function new(registryId:String, dataFilePath:String, versionRule:thx.semver.VersionRule = null)
   {
     this.registryId = registryId;
     this.dataFilePath = dataFilePath;
+    this.versionRule = versionRule == null ? "1.0.x" : versionRule;
 
     this.entries = new Map<String, T>();
   }
@@ -125,6 +133,13 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     return 'Registry(' + registryId + ', ${countEntries()} entries)';
   }
 
+  public function fetchEntryVersion(id:String):Null<thx.semver.Version>
+  {
+    var entryStr:String = loadEntryFile(id);
+    var entryVersion:thx.semver.Version = VersionUtil.getVersionFromJSON(entryStr);
+    return entryVersion;
+  }
+
   function log(message:String):Void
   {
     trace('[' + registryId + '] ' + message);
@@ -154,9 +169,35 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   /**
    * Read, parse, and validate the JSON data and produce the corresponding data object.
    *
-   * NOTE: Must be implemented on the implementation class annd
+   * NOTE: Must be implemented on the implementation class.
    */
   public abstract function parseEntryData(id:String):Null<J>;
+
+  /**
+   * Read, parse, and validate the JSON data and produce the corresponding data object,
+   * accounting for old versions of the data.
+   *
+   * NOTE: Extend this function to handle migration.
+   */
+  public function parseEntryDataWithMigration(id:String, version:thx.semver.Version):Null<J>
+  {
+    // If a version rule is not specified, do not check against it.
+    if (versionRule == null || VersionUtil.validateVersion(version, versionRule))
+    {
+      return parseEntryData(id);
+    }
+    else
+    {
+      throw '[${registryId}] Entry ${id} does not support migration.';
+    }
+
+    // Example:
+    // if (VersionUtil.validateVersion(version, "0.1.x")) {
+    //   return parseEntryData_v0_1_x(id);
+    // } else {
+    //   super.parseEntryDataWithMigration(id, version);
+    // }
+  }
 
   /**
    * Retrieve the list of scripted class names to load.

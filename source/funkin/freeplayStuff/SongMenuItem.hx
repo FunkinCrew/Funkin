@@ -103,9 +103,6 @@ class SongMenuItem extends FlxSpriteGroup
       y = CoolUtil.coolLerp(y, targetPos.y, 0.4);
     }
 
-    if (FlxG.keys.justPressed.ALT) selected = false;
-    if (FlxG.keys.justPressed.CONTROL) selected = true;
-
     super.update(elapsed);
   }
 

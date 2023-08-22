@@ -32,7 +32,7 @@ class SongMigrator
   {
     if (jsonData.version != null)
     {
-      if (VersionUtil.validateVersion(jsonData.version, CHART_VERSION_RULE))
+      if (VersionUtil.validateVersionStr(jsonData.version, CHART_VERSION_RULE))
       {
         trace('Song (${songId}) metadata version (${jsonData.version}) is valid and up-to-date.');
 
@@ -70,7 +70,7 @@ class SongMigrator
   {
     if (jsonData.version)
     {
-      if (VersionUtil.validateVersion(jsonData.version, CHART_VERSION_RULE))
+      if (VersionUtil.validateVersionStr(jsonData.version, CHART_VERSION_RULE))
       {
         trace('Song (${songId}) chart version (${jsonData.version}) is valid and up-to-date.');
 

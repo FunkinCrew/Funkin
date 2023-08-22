@@ -15,7 +15,7 @@ class BezierUtil
 
   /**
    * Linearly interpolate between three values.
-   * Depending on p, 0 = a, 0.5 = b, 1 = c, 0.25 = halfway between a and c, etc.
+   * Depending on p, 0 = a, 0.5 = b, 1 = c, 0.25 = halfway between a and b, etc.
    */
   static inline function mix3(p:Float, a:Float, b:Float, c:Float):Float
   {
@@ -30,11 +30,6 @@ class BezierUtil
   static inline function mix5(p:Float, a:Float, b:Float, c:Float, d:Float, e:Float):Float
   {
     return mix2(p, mix4(p, a, b, c, d), mix4(p, b, c, d, e));
-  }
-
-  static inline function mix6(p:Float, a:Float, b:Float, c:Float, d:Float, e:Float, f:Float):Float
-  {
-    return mix2(p, mix5(p, a, b, c, d, e), mix5(p, b, c, d, e, f));
   }
 
   /**

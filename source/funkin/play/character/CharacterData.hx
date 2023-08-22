@@ -382,7 +382,7 @@ class CharacterDataParser
       input.version = CHARACTER_DATA_VERSION;
     }
 
-    if (!VersionUtil.validateVersion(input.version, CHARACTER_DATA_VERSION_RULE))
+    if (!VersionUtil.validateVersionStr(input.version, CHARACTER_DATA_VERSION_RULE))
     {
       trace('ERROR: Could not load character data for "$id": bad version (got ${input.version}, expected ${CHARACTER_DATA_VERSION_RULE})');
       return null;

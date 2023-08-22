@@ -181,6 +181,6 @@ class Level implements IRegistryEntry<LevelData>
 
   public function _fetchData(id:String):Null<LevelData>
   {
-    return LevelRegistry.instance.parseEntryData(id);
+    return LevelRegistry.instance.parseEntryDataWithMigration(id, LevelRegistry.instance.fetchEntryVersion(id));
   }
 }

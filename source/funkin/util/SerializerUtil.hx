@@ -11,24 +11,19 @@ typedef ScoreInput =
   var t:Int; // Start timestamp
 }
 
+/**
+ * A class of functions dedicated to serializing and deserializing data.
+ */
 class SerializerUtil
 {
   static final INDENT_CHAR = "\t";
 
   /**
    * Convert a Haxe object to a JSON string.
-  **/
+   */
   public static function toJSON(input:Dynamic, ?pretty:Bool = true):String
   {
     return Json.stringify(input, replacer, pretty ? INDENT_CHAR : null);
-  }
-
-  /**
-   * Convert a JSON string to a Haxe object of the chosen type.
-   */
-  public static function fromJSONTyped<T>(input:String, type:Class<T>):T
-  {
-    return cast Json.parse(input);
   }
 
   /**
@@ -76,14 +71,19 @@ class SerializerUtil
       if (Std.isOfType(value, String)) return value;
 
       // Stringify Version objects.
-      var valueVersion:thx.semver.Version = cast value;
-      var result = '${valueVersion.major}.${valueVersion.minor}.${valueVersion.patch}';
-      if (valueVersion.hasPre) result += '-${valueVersion.pre}';
-      if (valueVersion.hasBuild) result += '+${valueVersion.build}';
-      return result;
+      return serializeVersion(cast value);
     }
 
     // Else, return the value as-is.
     return value;
+  }
+
+  static inline function serializeVersion(value:thx.semver.Version):String
+  {
+    var result = '${value.major}.${value.minor}.${value.patch}';
+    if (value.hasPre) result += '-${value.pre}';
+    // TODO: Merge fix for version.hasBuild
+    if (value.build.length > 0) result += '+${value.build}';
+    return result;
   }
 }

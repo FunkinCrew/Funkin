@@ -11,13 +11,15 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
    */
-  public static final LEVEL_DATA_VERSION:String = "1.0.0";
+  public static final LEVEL_DATA_VERSION:thx.semver.Version = "1.0.0";
+
+  public static final LEVEL_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
   public static final instance:LevelRegistry = new LevelRegistry();
 
   public function new()
   {
-    super('LEVEL', 'levels');
+    super('LEVEL', 'levels', LEVEL_DATA_VERSION_RULE);
   }
 
   /**
@@ -34,7 +36,7 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
 
     if (parser.errors.length > 0)
     {
-      trace('Failed to parse entry data: ${id}');
+      trace('[${registryId}] Failed to parse entry data: ${id}');
       for (error in parser.errors)
       {
         trace(error);

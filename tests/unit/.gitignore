@@ -1,0 +1,7 @@
+
+bin/
+# auto-generated
+source/TestSuite.hx
+.temp/
+report/
+build/

@@ -217,7 +217,7 @@ class StageDataParser
       return null;
     }
 
-    if (!VersionUtil.validateVersion(input.version, STAGE_DATA_VERSION_RULE))
+    if (!VersionUtil.validateVersionStr(input.version, STAGE_DATA_VERSION_RULE))
     {
       trace('ERROR: Could not load stage data for "$id": bad version (got ${input.version}, expected ${STAGE_DATA_VERSION_RULE})');
       return null;

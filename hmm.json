@@ -24,7 +24,7 @@
     {
       "name": "flixel-ui",
       "type": "haxelib",
-      "version": "2.4.0"
+      "version": "2.5.0"
     },
     {
       "name": "flxanimate",
@@ -37,6 +37,11 @@
       "name": "format",
       "type": "haxelib",
       "version": "3.5.0"
+    },
+    {
+      "name": "hamcrest",
+      "type": "haxelib",
+      "version": "3.0.0"
     },
     {
       "name": "haxeui-core",
@@ -92,11 +97,32 @@
       "url": "https://github.com/EliteMasterEric/lime"
     },
     {
-      "name": "mockatoo",
+      "name": "mconsole",
       "type": "git",
       "dir": null,
       "ref": "master",
+      "url": "https://github.com/massive-oss/mconsole"
+    },
+    {
+      "name": "mcover",
+      "type": "git",
+      "dir": "src",
+      "ref": "master",
+      "url": "https://github.com/massive-oss/mcover"
+    },
+    {
+      "name": "mockatoo",
+      "type": "git",
+      "dir": "src",
+      "ref": "master",
       "url": "https://github.com/EliteMasterEric/mockatoo"
+    },
+    {
+      "name": "munit",
+      "type": "git",
+      "dir": "src",
+      "ref": "master",
+      "url": "https://github.com/EliteMasterEric/MassiveUnit"
     },
     {
       "name": "openfl",
@@ -121,6 +147,13 @@
       "name": "tink_json",
       "type": "haxelib",
       "version": "0.11.0"
+    },
+    {
+      "name": "hmm",
+      "type": "git",
+      "dir": null,
+      "ref": "d514d7786cabf18b90e60fcee38399fd44c2ddfb",
+      "url": "https://github.com/andywhite37/hmm"
     }
   ]
 }

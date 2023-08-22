@@ -24,7 +24,7 @@ class PolymodHandler
    * Bug fixes increment the patch version, new features increment the minor version.
    * Changes that break old mods increment the major version.
    */
-  static final API_VERSION = "0.1.0";
+  static final API_VERSION:String = "0.1.0";
 
   /**
    * Where relative to the executable that mods are located.

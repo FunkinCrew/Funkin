@@ -67,19 +67,26 @@ class ModuleHandler
   {
     modulePriorityOrder = moduleCache.keys().array();
 
-    modulePriorityOrder.sort(function(a:String, b:String):Int {
-      var aModule:Module = moduleCache.get(a);
-      var bModule:Module = moduleCache.get(b);
+    modulePriorityOrder.sort(sortByPriority);
+  }
 
-      if (aModule.priority != bModule.priority)
-      {
-        return aModule.priority - bModule.priority;
-      }
-      else
-      {
-        return SortUtil.alphabetically(a, b);
-      }
-    });
+  /**
+   * Given two module IDs, sort them by priority.
+   * @return 1 or -1 depending on which module has a higher priority.
+   */
+  static function sortByPriority(a:String, b:String)
+  {
+    var aModule:Module = moduleCache.get(a);
+    var bModule:Module = moduleCache.get(b);
+
+    if (aModule.priority != bModule.priority)
+    {
+      return aModule.priority - bModule.priority;
+    }
+    else
+    {
+      return SortUtil.alphabetically(a, b);
+    }
   }
 
   public static function getModule(moduleId:String):Module

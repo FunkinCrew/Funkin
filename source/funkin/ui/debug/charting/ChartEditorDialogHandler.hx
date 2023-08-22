@@ -257,6 +257,7 @@ class ChartEditorDialogHandler
    * @param closable Whether the dialog can be closed by the user.
    * @return The dialog that was opened.
    */
+  @:haxe.warning("-WVarInit")
   public static function openUploadInstDialog(state:ChartEditorState, ?closable:Bool = true):Dialog
   {
     var dialog:Dialog = openDialog(state, CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT, true, closable);
@@ -416,6 +417,7 @@ class ChartEditorDialogHandler
    * @param state The ChartEditorState instance.
    * @return The dialog to open.
    */
+  @:haxe.warning("-WVarInit")
   public static function openSongMetadataDialog(state:ChartEditorState):Dialog
   {
     var dialog:Dialog = openDialog(state, CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT, true, false);

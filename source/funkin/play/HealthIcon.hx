@@ -146,13 +146,13 @@ class HealthIcon extends FlxSprite
    */
   public function toggleOldIcon():Void
   {
-    if (characterId == 'beta')
+    if (characterId == 'bf-old')
     {
       characterId = PlayState.instance.currentPlayerId;
     }
     else
     {
-      characterId = 'beta';
+      characterId = 'bf-old';
     }
   }
 

@@ -11,7 +11,9 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateNoteStyleData()` function.
    */
-  public static final NOTE_STYLE_DATA_VERSION:String = "1.0.0";
+  public static final NOTE_STYLE_DATA_VERSION:thx.semver.Version = "1.0.0";
+
+  public static final NOTE_STYLE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
   public static final DEFAULT_NOTE_STYLE_ID:String = "funkin";
 
@@ -19,7 +21,7 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 
   public function new()
   {
-    super('NOTESTYLE', 'notestyles');
+    super('NOTESTYLE', 'notestyles', NOTE_STYLE_DATA_VERSION_RULE);
   }
 
   public function fetchDefault():NoteStyle
@@ -43,7 +45,7 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 
     if (parser.errors.length > 0)
     {
-      trace('Failed to parse entry data: ${id}');
+      trace('[${registryId}] Failed to parse entry data: ${id}');
       for (error in parser.errors)
       {
         trace(error);

@@ -27,6 +27,7 @@ class MapTools
 
   /**
    * Return a list of keys from the map (as an array, rather than an iterator).
+   * TODO: Rename this?
    */
   public static function keyValues<K, T>(map:Map<K, T>):Array<K>
   {

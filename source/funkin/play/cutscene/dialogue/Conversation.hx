@@ -5,7 +5,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 import funkin.modding.events.ScriptEvent;
@@ -18,7 +18,7 @@ import flixel.addons.display.FlxPieDial;
 
 /**
  * A high-level handler for dialogue.
- * 
+ *
  * This shit is great for modders but it's pretty elaborate for how much it'll actually be used, lolol. -Eric
  */
 class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
@@ -299,7 +299,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
   /**
    * Dispatch an event to attempt to advance the conversation.
    * This is done once at the start of the conversation, and once whenever the user presses CONFIRM to advance the conversation.
-   * 
+   *
    * The broadcast event may be cancelled by modules or ScriptedConversations. This will prevent the conversation from actually advancing.
    * This is useful if you want to manually play an animation or something.
    */
@@ -365,7 +365,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   /**
    * Dispatch an event to attempt to immediately end the conversation.
-   * 
+   *
    * The broadcast event may be cancelled by modules or ScriptedConversations. This will prevent the conversation from being cancelled.
    * This is useful if you want to prevent an animation from being skipped or something.
    */
@@ -567,7 +567,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   /**
    * As this event is dispatched to the Conversation, it is also dispatched to the active speaker.
-   * @param event 
+   * @param event
    */
   function propagateEvent(event:ScriptEvent):Void
   {

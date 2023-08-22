@@ -1,0 +1,7 @@
+version=2.3.5
+src=source
+bin=bin
+report=report
+hxml=test.hxml
+classPaths=../../source
+coveragePackages=funkin
