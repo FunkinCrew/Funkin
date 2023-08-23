@@ -2561,6 +2561,9 @@ class PlayState extends MusicBeatSubState
           FlxG.sound.play(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongDataParser.fetchSong(targetSongId);
+            // Load and cache the song's charts.
+            // TODO: Do this in the loading state.
+            targetSong.cacheCharts(true);
 
             var nextPlayState:PlayState = new PlayState(
               {
@@ -2575,6 +2578,9 @@ class PlayState extends MusicBeatSubState
         else
         {
           var targetSong:Song = SongDataParser.fetchSong(targetSongId);
+          // Load and cache the song's charts.
+          // TODO: Do this in the loading state.
+          targetSong.cacheCharts(true);
           var nextPlayState:PlayState = new PlayState(
             {
               targetSong: targetSong,
