@@ -219,6 +219,8 @@ class Countdown
 
     if (isPixelStyle) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE));
 
+    countdownSprite.antialiasing = !isPixelStyle;
+
     countdownSprite.updateHitbox();
     countdownSprite.screenCenter();
 
