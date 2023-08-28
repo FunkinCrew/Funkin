@@ -1,5 +1,6 @@
 package funkin.freeplayStuff;
 
+import funkin.shaderslmfao.HSVShader;
 import funkin.shaderslmfao.GaussianBlurShader;
 import flixel.group.FlxGroup;
 import flixel.FlxSprite;
@@ -40,6 +41,8 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var onConfirm:Void->Void;
   public var diffGrayscale:Grayscale;
+
+  public var hsvShader(default, set):HSVShader;
 
   public function new(x:Float, y:Float, song:String, ?character:String)
   {
@@ -107,6 +110,15 @@ class SongMenuItem extends FlxSpriteGroup
     setVisibleGrp(false);
 
     selected = selected; // just to kickstart the set_selected
+  }
+
+  function set_hsvShader(value:HSVShader):HSVShader
+  {
+    this.hsvShader = value;
+    capsule.shader = hsvShader;
+    songText.shader = hsvShader;
+
+    return value;
   }
 
   function textAppear()

@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.shaderslmfao.HSVShader;
 import funkin.ui.StickerSubState;
 import flash.text.TextField;
 import flixel.FlxCamera;
@@ -170,7 +171,7 @@ class FreeplayState extends MusicBeatSubState
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
 
-    var orangeBackShit:FlxSprite = new FlxSprite(84, FlxG.height * 0.68).makeGraphic(Std.int(pinkBack.width), 50, 0xFFffd400);
+    var orangeBackShit:FlxSprite = new FlxSprite(84, 440).makeGraphic(Std.int(pinkBack.width), 75, 0xFFfeda00);
     add(orangeBackShit);
 
     var alsoOrangeLOL:FlxSprite = new FlxSprite(0, orangeBackShit.y).makeGraphic(100, Std.int(orangeBackShit.height), 0xFFffd400);
@@ -192,10 +193,14 @@ class FreeplayState extends MusicBeatSubState
     add(grpTxtScrolls);
     grpTxtScrolls.visible = false;
 
-    var moreWays:BGScrollingText = new BGScrollingText(0, 200, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width);
+    FlxG.debugger.addTrackerProfile(new TrackerProfile(BGScrollingText, ["x", "y", "speed", "size"]));
+
+    var moreWays:BGScrollingText = new BGScrollingText(0, 160, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width, true, 43);
     moreWays.funnyColor = 0xFFfff383;
-    moreWays.speed = 4;
+    moreWays.speed = 6.8;
     grpTxtScrolls.add(moreWays);
+
+    FlxG.debugger.track(moreWays, "HotBlooded 1");
 
     exitMovers.set([moreWays],
       {
@@ -203,10 +208,11 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4,
       });
 
-    var funnyScroll:BGScrollingText = new BGScrollingText(0, 250, "BOYFRIEND", FlxG.width / 2);
+    var funnyScroll:BGScrollingText = new BGScrollingText(0, 220, "BOYFRIEND", FlxG.width / 2, false, 60);
     funnyScroll.funnyColor = 0xFFff9963;
-    funnyScroll.speed = -1;
+    funnyScroll.speed = -3.8;
     grpTxtScrolls.add(funnyScroll);
+    FlxG.debugger.track(funnyScroll, "Boyfriend 1");
 
     exitMovers.set([funnyScroll],
       {
@@ -216,18 +222,21 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
-    var txtNuts:BGScrollingText = new BGScrollingText(0, 300, "PROTECT YO NUTS", FlxG.width / 2);
+    var txtNuts:BGScrollingText = new BGScrollingText(0, 285, "PROTECT YO NUTS", FlxG.width / 2, true, 43);
+    txtNuts.speed = 3.5;
     grpTxtScrolls.add(txtNuts);
     exitMovers.set([txtNuts],
       {
         x: FlxG.width * 2,
         speed: 0.4,
       });
+    FlxG.debugger.track(txtNuts, "Protect yo nuts 1");
 
-    var funnyScroll2:BGScrollingText = new BGScrollingText(0, 340, "BOYFRIEND", FlxG.width / 2);
+    var funnyScroll2:BGScrollingText = new BGScrollingText(0, 335, "BOYFRIEND", FlxG.width / 2, false, 60);
     funnyScroll2.funnyColor = 0xFFff9963;
-    funnyScroll2.speed = -1.2;
+    funnyScroll2.speed = -3.8;
     grpTxtScrolls.add(funnyScroll2);
+    FlxG.debugger.track(funnyScroll2, "Boyfriend 2");
 
     exitMovers.set([funnyScroll2],
       {
@@ -235,10 +244,11 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.5,
       });
 
-    var moreWays2:BGScrollingText = new BGScrollingText(0, 400, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width);
+    var moreWays2:BGScrollingText = new BGScrollingText(0, 397, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width, true, 43);
     moreWays2.funnyColor = 0xFFfff383;
-    moreWays2.speed = 4.4;
+    moreWays2.speed = 6.8;
     grpTxtScrolls.add(moreWays2);
+    FlxG.debugger.track(moreWays2, "HotBlooded 2");
 
     exitMovers.set([moreWays2],
       {
@@ -246,10 +256,11 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4
       });
 
-    var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y, "BOYFRIEND", FlxG.width / 2);
-    funnyScroll3.funnyColor = 0xFFff9963;
-    funnyScroll3.speed = -0.8;
+    var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y + 10, "BOYFRIEND", FlxG.width / 2, 60);
+    funnyScroll3.funnyColor = 0xFFfea400;
+    funnyScroll3.speed = -3.8;
     grpTxtScrolls.add(funnyScroll3);
+    FlxG.debugger.track(funnyScroll3, "Boyfriend 3");
 
     exitMovers.set([funnyScroll3],
       {
@@ -555,6 +566,11 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
+    var hsvShader:HSVShader = new HSVShader();
+
+    FlxG.debugger.addTrackerProfile(new TrackerProfile(HSVShader, ["hue", "saturation", "value"]));
+    FlxG.debugger.track(hsvShader, "capsule shader");
+
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
     randomCapsule.init(FlxG.width, 0, "Random");
     randomCapsule.onConfirm = function() {
@@ -566,6 +582,7 @@ class FreeplayState extends MusicBeatSubState
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
     randomCapsule.initJumpIn(0, force);
+    randomCapsule.hsvShader = hsvShader;
     grpCapsules.add(randomCapsule);
 
     for (i in 0...tempSongs.length)
@@ -580,6 +597,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.alpha = 0.5;
       funnyMenu.songText.visible = false;
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
+      funnyMenu.hsvShader = hsvShader;
 
       // fp.updateScore(0);
 
