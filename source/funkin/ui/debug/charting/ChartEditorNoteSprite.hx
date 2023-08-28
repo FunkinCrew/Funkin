@@ -27,7 +27,7 @@ class ChartEditorNoteSprite extends FlxSprite
    * The note data that this sprite represents.
    * You can set this to null to kill the sprite and flag it for recycling.
    */
-  public var noteData(default, set):SongNoteData;
+  public var noteData(default, set):Null<SongNoteData>;
 
   /**
    * The name of the note style currently in use.
@@ -70,7 +70,7 @@ class ChartEditorNoteSprite extends FlxSprite
     this.animation.addByPrefix('tapRightPixel', 'pixel7');
   }
 
-  static var noteFrameCollection:FlxFramesCollection = null;
+  static var noteFrameCollection:Null<FlxFramesCollection> = null;
 
   /**
    * We load all the note frames once, then reuse them.
@@ -108,7 +108,7 @@ class ChartEditorNoteSprite extends FlxSprite
     }
   }
 
-  function set_noteData(value:SongNoteData):SongNoteData
+  function set_noteData(value:Null<SongNoteData>):Null<SongNoteData>
   {
     this.noteData = value;
 

@@ -64,7 +64,7 @@ class DiscordClient
     trace("Discord Client initialized");
   }
 
-  public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float)
+  public static function changePresence(details:String, ?state:String, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float)
   {
     var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
 

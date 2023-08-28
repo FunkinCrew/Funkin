@@ -20,6 +20,7 @@
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
 	<!-- _____________________________ Path Settings ____________________________ -->
+
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
@@ -96,8 +97,9 @@
 	<haxelib name="lime" /> <!-- Game engine backend -->
 	<haxelib name="openfl" /> <!-- Game engine backend -->
 	<haxelib name="flixel" /> <!-- Game engine -->
+
 	<haxedev set="webgl" />
-	<!--In case you want to use the addons package-->
+
 	<haxelib name="flixel-addons" /> <!-- Additional utilities for Flixel -->
 	<haxelib name="hscript" /> <!-- Scripting -->
 	<haxelib name="flixel-ui" /> <!-- UI framework (deprecate this? -->
@@ -150,8 +152,11 @@
 	<haxeflag name="--macro" value="include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])" />
 	<!-- Necessary to provide stack traces for HScript. -->
 	<haxedef name="hscriptPos" />
+	<haxedef name="safeMode"/>
 	<haxedef name="HXCPP_CHECK_POINTER" />
 	<haxedef name="HXCPP_STACK_LINE" />
+	<haxedef name="HXCPP_STACK_TRACE" />
+	<haxedef name="openfl-enable-handle-error" />
 	<!-- This macro allows addition of new functionality to existing Flixel. -->
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
@@ -159,7 +164,6 @@
 	<icon path="art/icon32.png" size="32" />
 	<icon path="art/icon64.png" size="64" />
 	<icon path="art/iconOG.png" />
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
 	<haxedef name="CAN_CHEAT" if="switch debug" />
 	<haxedef name="haxeui_no_mouse_reset" />
@@ -172,7 +176,6 @@
 		<!-- Difficulty, only used for week or song, defaults to 1 -->
 		<!-- <haxedef name="dif" value="2" if="debug"/> -->
 	</section>
-	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
 	<section if="newgrounds">
 		<!-- Enables Ng.core.verbose -->
 		<!-- <haxedef name="NG_VERBOSE" /> -->
@@ -182,18 +185,21 @@
 		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
 	</section>
 
+	<!-- Uncomment this to wipe your input settings. -->
+	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
+
 	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5">
 		<!--
 			Use the parent assets folder rather than the exported one
 			No more will we accidentally undo our changes!
-			TODO: Add a thing to disable this on builds meant for itch.io.
 		-->
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
 	</section>
 
-	<!-- <prebuild haxe="trace('prebuilding');"/> -->
-	<!-- <postbuild haxe="art/Postbuild.hx"/> -->
-	<!-- <config:ios allow-provisioning-updates="true" team-id="" /> -->
+	<!-- Run a script before and after building. -->
+	<postbuild haxe="source/Prebuild.hx"/> -->
+	<postbuild haxe="source/Postbuild.hx"/> -->
+
 	<!-- Options for Polymod -->
 	<section if="polymod">
 		<!-- Turns on additional debug logging. -->
@@ -212,13 +218,5 @@
 		<haxedef name="POLYMOD_MOD_METADATA_FILE" value="_polymod_meta.json" />
 		<!-- Determines the file in the mod folder used for the icon. -->
 		<haxedef name="POLYMOD_MOD_ICON_FILE" value="_polymod_icon.png" />
-	</section>
-	<section if="TOOLS">
-		<!-- Compiles tool for old song conversion shit -->
-		<!-- Assumes you use it on windows/desktop!!!! -->
-		<postbuild command="haxe -main art/SongConverter.hx --cs export/songShit" />
-		<assets path="export/songShit/bin/SongConverter.exe" rename="SongConverter.exe" />
-		<!-- <postbuild command='ren export/songShit/bin export/songShit/tools '/> -->
-		<!-- <postbuild command='move export/songShit/tools export/release/windows/bin'/> -->
 	</section>
 </project>

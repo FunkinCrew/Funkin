@@ -93,7 +93,7 @@ class DialogueBoxTextData
   public var shadowColor:Null<String>;
   public var shadowWidth:Null<Int>;
 
-  public function new(offsets:Null<Array<Float>>, width:Null<Int>, size:Null<Int>, color:String, shadowColor:Null<String>, shadowWidth:Null<Int>)
+  public function new(offsets:Null<Array<Float>>, ?width:Int, ?size:Int, color:String, ?shadowColor:String, shadowWidth:Null<Int>)
   {
     this.offsets = offsets ?? [0, 0];
     this.width = width ?? 300;

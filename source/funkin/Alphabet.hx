@@ -38,7 +38,7 @@ class Alphabet extends FlxSpriteGroup
 
   var isBold:Bool = false;
 
-  public function new(x:Float = 0.0, y:Float = 0.0, text:String = "", ?bold:Bool = false, typed:Bool = false)
+  public function new(x:Float = 0.0, y:Float = 0.0, text:String = "", bold:Bool = false, typed:Bool = false)
   {
     super(x, y);
 

@@ -503,7 +503,7 @@ typedef StageDataCharacter =
    * Again, just like CSS.
    * @default 0
    */
-  zIndex:Null<Int>,
+  ?zIndex:Int,
 
   /**
    * The position to render the character at.

@@ -920,7 +920,7 @@ typedef RawSongTimeChange =
  */
 abstract SongTimeChange(RawSongTimeChange) from RawSongTimeChange
 {
-  public function new(timeStamp:Float, beatTime:Null<Float>, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, beatTuplets:Array<Int>)
+  public function new(timeStamp:Float, ?beatTime:Float, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, beatTuplets:Array<Int>)
   {
     this =
       {

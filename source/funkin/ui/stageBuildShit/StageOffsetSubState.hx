@@ -3,17 +3,18 @@ package funkin.ui.stageBuildShit;
 import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
-import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
+import funkin.play.PlayState;
 import funkin.play.stage.StageData;
 import funkin.play.stage.StageProp;
 import funkin.shaderslmfao.StrokeShader;
 import funkin.ui.haxeui.HaxeUISubState;
 import funkin.ui.stageBuildShit.StageEditorCommand;
-import haxe.ui.RuntimeComponentBuilder;
+import funkin.util.SerializerUtil;
 import haxe.ui.containers.ListView;
 import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
+import haxe.ui.RuntimeComponentBuilder;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
@@ -376,6 +377,6 @@ class StageOffsetSubState extends HaxeUISubState
     stageLol.characters.gf.position[0] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.x);
     stageLol.characters.gf.position[1] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.y);
 
-    return CoolUtil.jsonStringify(stageLol);
+    return SerializerUtil.toJSON(stageLol);
   }
 }

@@ -271,7 +271,7 @@ class Strumline extends FlxSpriteGroup
    * @param strumTime
    * @return Float
    */
-  static function calculateNoteYPos(strumTime:Float, ?vwoosh:Bool = true):Float
+  static function calculateNoteYPos(strumTime:Float, vwoosh:Bool = true):Float
   {
     // Make the note move faster visually as it moves offscreen.
     var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;

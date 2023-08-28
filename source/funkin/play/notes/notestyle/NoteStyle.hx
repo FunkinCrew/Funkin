@@ -113,7 +113,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return noteFrames;
   }
 
-  function getNoteAssetPath(?raw:Bool = false):String
+  function getNoteAssetPath(raw:Bool = false):String
   {
     if (raw)
     {
@@ -161,7 +161,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return (result == null) ? fallback.fetchNoteAnimationData(dir) : result;
   }
 
-  public function getHoldNoteAssetPath(?raw:Bool = false):String
+  public function getHoldNoteAssetPath(raw:Bool = false):String
   {
     if (raw)
     {
@@ -209,7 +209,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     target.antialiasing = !_data.assets.noteStrumline.isPixel;
   }
 
-  function getStrumlineAssetPath(?raw:Bool = false):String
+  function getStrumlineAssetPath(raw:Bool = false):String
   {
     if (raw)
     {

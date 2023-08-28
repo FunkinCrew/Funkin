@@ -464,7 +464,7 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  public function generateSongList(?filterStuff:SongFilter, ?force:Bool = false)
+  public function generateSongList(?filterStuff:SongFilter, force:Bool = false)
   {
     curSelected = 0;
 
@@ -1045,7 +1045,7 @@ class FreeplaySongData
   public var songCharacter:String = "";
   public var isFav:Bool = false;
 
-  public function new(song:String, levelId:String, songCharacter:String, ?isFav:Bool = false)
+  public function new(song:String, levelId:String, songCharacter:String, isFav:Bool = false)
   {
     this.songName = song;
     this.levelId = levelId;

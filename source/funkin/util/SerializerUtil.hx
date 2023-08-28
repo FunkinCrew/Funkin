@@ -21,7 +21,7 @@ class SerializerUtil
   /**
    * Convert a Haxe object to a JSON string.
    */
-  public static function toJSON(input:Dynamic, ?pretty:Bool = true):String
+  public static function toJSON(input:Dynamic, pretty:Bool = true):String
   {
     return Json.stringify(input, replacer, pretty ? INDENT_CHAR : null);
   }

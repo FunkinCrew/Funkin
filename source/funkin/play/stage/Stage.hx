@@ -450,7 +450,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * @param pop If true, the character will be removed from the stage as well.
    * @return The Boyfriend character.
    */
-  public function getBoyfriend(?pop:Bool = false):BaseCharacter
+  public function getBoyfriend(pop:Bool = false):BaseCharacter
   {
     if (pop)
     {
@@ -473,7 +473,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * @param pop If true, the character will be removed from the stage as well.
    * @return The player/Boyfriend character.
    */
-  public function getPlayer(?pop:Bool = false):BaseCharacter
+  public function getPlayer(pop:Bool = false):BaseCharacter
   {
     return getBoyfriend(pop);
   }
@@ -483,7 +483,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * @param pop If true, the character will be removed from the stage as well.
    * @return The Girlfriend character.
    */
-  public function getGirlfriend(?pop:Bool = false):BaseCharacter
+  public function getGirlfriend(pop:Bool = false):BaseCharacter
   {
     if (pop)
     {
@@ -506,7 +506,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * @param pop If true, the character will be removed from the stage as well.
    * @return The Dad character.
    */
-  public function getDad(?pop:Bool = false):BaseCharacter
+  public function getDad(pop:Bool = false):BaseCharacter
   {
     if (pop)
     {
@@ -529,7 +529,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * @param pop If true, the character will be removed from the stage as well.
    * @return The opponent character.
    */
-  public function getOpponent(?pop:Bool = false):BaseCharacter
+  public function getOpponent(pop:Bool = false):BaseCharacter
   {
     return getDad(pop);
   }

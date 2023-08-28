@@ -570,7 +570,7 @@ class BaseCharacter extends Bopper
    * @param miss If true, play the miss animation instead of the sing animation.
    * @param suffix A suffix to append to the animation name, like `alt`.
    */
-  public function playSingAnimation(dir:NoteDirection, ?miss:Bool = false, ?suffix:String = ''):Void
+  public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
@@ -578,7 +578,7 @@ class BaseCharacter extends Bopper
     playAnimation(anim, true);
   }
 
-  public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false, ?reversed:Bool = false):Void
+  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
     FlxG.watch.addQuick('playAnim(${characterName})', name);
     // trace('playAnim(${characterName}): ${name}');

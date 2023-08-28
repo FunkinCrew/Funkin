@@ -41,7 +41,7 @@ class PauseSubState extends MusicBeatSubState
 
   var isChartingMode:Bool;
 
-  public function new(?isChartingMode:Bool = false)
+  public function new(isChartingMode:Bool = false)
   {
     super();
 

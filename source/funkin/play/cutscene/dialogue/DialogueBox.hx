@@ -172,7 +172,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
 
   /**
    * Set the sprite scale to the appropriate value.
-   * @param scale 
+   * @param scale
    */
   public function setScale(scale:Null<Float>):Void
   {
@@ -218,7 +218,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
    * @param name The name of the current animation.
    * @param frameNumber The number of the current frame.
    * @param frameIndex The index of the current frame.
-   * 
+   *
    * For example, if an animation was defined as having the indexes [3, 0, 1, 2],
    * then the first callback would have frameNumber = 0 and frameIndex = 3.
    */
@@ -253,7 +253,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
    * @param restart Whether to restart the animation if it is already playing.
    * @param reversed If true, play the animation backwards, from the last frame to the first.
    */
-  public function playAnimation(name:String, restart:Bool = false, ?reversed:Bool = false):Void
+  public function playAnimation(name:String, restart:Bool = false, reversed:Bool = false):Void
   {
     var correctName:String = correctAnimationName(name);
     if (correctName == null) return;
@@ -266,7 +266,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
   /**
    * Ensure that a given animation exists before playing it.
    * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
-   * @param name 
+   * @param name
    */
   function correctAnimationName(name:String):String
   {

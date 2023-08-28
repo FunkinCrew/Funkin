@@ -190,7 +190,7 @@ class CharacterDataParser
    * @param charId The character ID to fetch.
    * @return The character instance, or null if the character was not found.
    */
-  public static function fetchCharacter(charId:String, ?debug:Bool = false):Null<BaseCharacter>
+  public static function fetchCharacter(charId:String, debug:Bool = false):Null<BaseCharacter>
   {
     if (charId == null || charId == '' || !characterCache.exists(charId))
     {

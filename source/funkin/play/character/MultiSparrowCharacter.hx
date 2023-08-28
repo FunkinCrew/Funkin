@@ -181,7 +181,7 @@ class MultiSparrowCharacter extends BaseCharacter
     trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
   }
 
-  public override function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false, ?reverse:Bool = false):Void
+  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
   {
     // Make sure we ignore other animations if we're currently playing a forced one,
     // unless we're forcing a new animation.

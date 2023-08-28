@@ -255,7 +255,7 @@ class GameOverSubState extends MusicBeatSubState
    * Starts the death music at the appropriate volume.
    * @param startingVolume
    */
-  function startDeathMusic(?startingVolume:Float = 1, ?force:Bool = false):Void
+  function startDeathMusic(?startingVolume:Float = 1, force:Bool = false):Void
   {
     var musicPath = Paths.music('gameOver' + musicSuffix);
     if (isEnding)

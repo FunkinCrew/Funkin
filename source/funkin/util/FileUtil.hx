@@ -209,7 +209,7 @@ class FileUtil
    * @return Whether the file dialog was opened successfully.
    */
   public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
-      ?force:Bool = false):Bool
+      force:Bool = false):Bool
   {
     #if desktop
     // Prompt the user for a directory, then write all of the files to there.
@@ -257,7 +257,7 @@ class FileUtil
    * Takes an array of file entries and prompts the user to save them as a ZIP file.
    */
   public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
-      ?force:Bool = false):Bool
+      force:Bool = false):Bool
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
@@ -278,7 +278,7 @@ class FileUtil
    * Use `saveFilesAsZIP` instead.
    * @param force Whether to force overwrite an existing file.
    */
-  public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, ?force:Bool = false):Bool
+  public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, force:Bool = false):Bool
   {
     #if desktop
     // Create a ZIP file.

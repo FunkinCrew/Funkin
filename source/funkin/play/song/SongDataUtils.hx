@@ -123,7 +123,7 @@ class SongDataUtils
   /**
    * Sort an array of notes by strum time.
    */
-  public static function sortNotes(notes:Array<SongNoteData>, ?desc:Bool = false):Array<SongNoteData>
+  public static function sortNotes(notes:Array<SongNoteData>, desc:Bool = false):Array<SongNoteData>
   {
     // TODO: Modifies the array in place. Is this okay?
     notes.sort(function(a:SongNoteData, b:SongNoteData):Int {
@@ -135,7 +135,7 @@ class SongDataUtils
   /**
    * Sort an array of events by strum time.
    */
-  public static function sortEvents(events:Array<SongEventData>, ?desc:Bool = false):Array<SongEventData>
+  public static function sortEvents(events:Array<SongEventData>, desc:Bool = false):Array<SongEventData>
   {
     // TODO: Modifies the array in place. Is this okay?
     events.sort(function(a:SongEventData, b:SongEventData):Int {

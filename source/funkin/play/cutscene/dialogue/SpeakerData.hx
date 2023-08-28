@@ -19,8 +19,8 @@ class SpeakerData
   public var scale:Float;
   public var animations:Array<AnimationData>;
 
-  public function new(version:String, name:String, assetPath:String, animations:Array<AnimationData>, ?offsets:Array<Float>, ?flipX:Bool = false,
-      ?isPixel:Bool = false, ?scale:Float = 1.0)
+  public function new(version:String, name:String, assetPath:String, animations:Array<AnimationData>, ?offsets:Array<Float>, flipX:Bool = false,
+      isPixel:Bool = false, ?scale:Float = 1.0)
   {
     this.version = version;
     this.name = name;

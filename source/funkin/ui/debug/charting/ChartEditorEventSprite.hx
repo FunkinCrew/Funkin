@@ -26,12 +26,12 @@ class ChartEditorEventSprite extends FlxSprite
    * The note data that this sprite represents.
    * You can set this to null to kill the sprite and flag it for recycling.
    */
-  public var eventData(default, set):SongEventData;
+  public var eventData(default, set):Null<SongEventData> = null;
 
   /**
    * The image used for all song events. Cached for performance.
    */
-  static var eventSpriteBasic:BitmapData;
+  static var eventSpriteBasic:Null<BitmapData> = null;
 
   public function new(parent:ChartEditorState)
   {
@@ -49,7 +49,7 @@ class ChartEditorEventSprite extends FlxSprite
    * Build a set of animations to allow displaying different types of chart events.
    * @param force `true` to force rebuilding the frames.
    */
-  static function buildFrames(?force:Bool = false):FlxFramesCollection
+  static function buildFrames(force:Bool = false):FlxFramesCollection
   {
     static var eventFrames:FlxFramesCollection = null;
 
@@ -112,7 +112,7 @@ class ChartEditorEventSprite extends FlxSprite
     this.updateHitbox();
   }
 
-  function set_eventData(value:SongEventData):SongEventData
+  function set_eventData(value:Null<SongEventData>):Null<SongEventData>
   {
     this.eventData = value;
 

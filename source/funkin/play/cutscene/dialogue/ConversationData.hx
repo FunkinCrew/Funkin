@@ -208,7 +208,7 @@ class OutroData
   public var type:OutroType;
   public var data:Dynamic;
 
-  public function new(typeStr:Null<String>, data:Dynamic)
+  public function new(?typeStr:String, data:Dynamic)
   {
     this.type = typeStr ?? OutroType.NONE;
     this.data = data;

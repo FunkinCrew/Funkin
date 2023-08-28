@@ -258,7 +258,7 @@ class ChartEditorDialogHandler
    * @return The dialog that was opened.
    */
   @:haxe.warning("-WVarInit")
-  public static function openUploadInstDialog(state:ChartEditorState, ?closable:Bool = true):Dialog
+  public static function openUploadInstDialog(state:ChartEditorState, closable:Bool = true):Dialog
   {
     var dialog:Dialog = openDialog(state, CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT, true, closable);
 
@@ -578,7 +578,7 @@ class ChartEditorDialogHandler
    * @param closable Whether the dialog can be closed by the user.
    * @return The dialog that was opened.
    */
-  public static function openUploadVocalsDialog(state:ChartEditorState, ?closable:Bool = true):Dialog
+  public static function openUploadVocalsDialog(state:ChartEditorState, closable:Bool = true):Dialog
   {
     var charIdsForVocals:Array<String> = [];
 
@@ -692,7 +692,7 @@ class ChartEditorDialogHandler
    * @return The dialog that was opened.
    */
   @:haxe.warning('-WVarInit')
-  public static function openChartDialog(state:ChartEditorState, ?closable:Bool = true):Dialog
+  public static function openChartDialog(state:ChartEditorState, closable:Bool = true):Dialog
   {
     var dialog:Dialog = openDialog(state, CHART_EDITOR_DIALOG_OPEN_CHART_LAYOUT, true, closable);
 
@@ -764,6 +764,19 @@ class ChartEditorDialogHandler
       var songMetadataJson:Dynamic = FileUtil.readJSONFromPath(path.toString());
       var songMetadataVariation:SongMetadata = SongMigrator.migrateSongMetadata(songMetadataJson, 'import');
       songMetadataVariation = SongValidator.validateSongMetadata(songMetadataVariation, 'import');
+
+      if (songMetadataVariation == null)
+      {
+        // Tell the user the load was not successful.
+        NotificationManager.instance.addNotification(
+          {
+            title: 'Failure',
+            body: 'Could not load metadata file (${path.file}.${path.ext})',
+            type: NotificationType.Error,
+            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+          });
+        return;
+      }
 
       songMetadata.set(variation, songMetadataVariation);
 
@@ -879,7 +892,7 @@ class ChartEditorDialogHandler
    * @param closable
    * @return Dialog
    */
-  public static function openImportChartDialog(state:ChartEditorState, format:String, ?closable:Bool = true):Dialog
+  public static function openImportChartDialog(state:ChartEditorState, format:String, closable:Bool = true):Dialog
   {
     var dialog:Dialog = openDialog(state, CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT, true, closable);
 

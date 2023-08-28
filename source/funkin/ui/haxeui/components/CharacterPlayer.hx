@@ -32,7 +32,7 @@ class CharacterPlayer extends Box
 {
   var character:BaseCharacter;
 
-  public function new(?defaultToBf:Bool = true)
+  public function new(defaultToBf:Bool = true)
   {
     super();
     _overrideSkipTransformChildren = false;

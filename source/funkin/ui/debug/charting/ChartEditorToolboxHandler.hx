@@ -168,9 +168,9 @@ class ChartEditorToolboxHandler
       case ChartEditorState.CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT:
         toolbox = buildToolboxCharactersLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
-        toolbox = null; // buildToolboxPlayerPreviewLayout(state);
+        toolbox = buildToolboxPlayerPreviewLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
-        toolbox = null; // buildToolboxOpponentPreviewLayout(state);
+        toolbox = buildToolboxOpponentPreviewLayout(state);
       default:
         // This happens if you try to load an unknown layout.
         trace('ChartEditorToolboxHandler.initToolbox() - Unknown toolbox ID: $id');
@@ -199,6 +199,8 @@ class ChartEditorToolboxHandler
 
     // Initialize the toolbox without showing it.
     if (toolbox == null) toolbox = initToolbox(state, id);
+
+    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolbox() - Could not retrieve or build toolbox: $id';
 
     return toolbox;
   }

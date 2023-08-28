@@ -2,12 +2,13 @@ package;
 
 import flixel.FlxGame;
 import flixel.FlxState;
+import funkin.util.logging.CrashHandler;
 import funkin.MemoryCounter;
 import haxe.ui.Toolkit;
-import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.Lib;
 import openfl.media.Video;
 import openfl.net.NetStream;
 
@@ -77,9 +78,17 @@ class Main extends Sprite
      * -Eric
      */
 
+    CrashHandler.initialize();
+
+    CrashHandler.queryStatus();
+
     initHaxeUI();
 
     addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
+
+    #if hxcpp_debug_server
+    trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
+    #end
 
     #if debug
     fpsCounter = new FPS(10, 3, 0xFFFFFF);

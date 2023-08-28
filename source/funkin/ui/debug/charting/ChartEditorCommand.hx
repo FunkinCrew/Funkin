@@ -225,7 +225,7 @@ class AddEventsCommand implements ChartEditorCommand
   var events:Array<SongEventData>;
   var appendToSelection:Bool;
 
-  public function new(events:Array<SongEventData>, ?appendToSelection:Bool = false)
+  public function new(events:Array<SongEventData>, appendToSelection:Bool = false)
   {
     this.events = events;
     this.appendToSelection = appendToSelection;

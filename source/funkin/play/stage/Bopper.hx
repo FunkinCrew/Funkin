@@ -268,7 +268,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * @param ignoreOther Whether to ignore all other animation inputs, until this one is done playing
    * @param reversed If true, play the animation backwards, from the last frame to the first.
    */
-  public function playAnimation(name:String, restart:Bool = false, ?ignoreOther:Bool = false, ?reversed:Bool = false):Void
+  public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
     if (!canPlayOtherAnims && !ignoreOther) return;
 

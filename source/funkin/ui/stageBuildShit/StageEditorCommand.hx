@@ -21,7 +21,7 @@ class MovePropCommand implements StageEditorCommand
   var yDiff:Float;
   var realMove:Bool; // if needs a move!
 
-  public function new(xDiff:Float = 0, yDiff:Float = 0, ?realMove:Bool = true)
+  public function new(xDiff:Float = 0, yDiff:Float = 0, realMove:Bool = true)
   {
     this.xDiff = xDiff;
     this.yDiff = yDiff;

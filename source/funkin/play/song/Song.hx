@@ -72,7 +72,7 @@ class Song implements IPlayStateScriptedClass
 
   @:allow(funkin.play.song.Song)
   public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
-      ?validScore:Bool = false):Song
+      validScore:Bool = false):Song
   {
     var result:Song = new Song(songId, true);
 
@@ -150,7 +150,7 @@ class Song implements IPlayStateScriptedClass
   /**
    * Parse and cache the chart for all difficulties of this song.
    */
-  public function cacheCharts(?force:Bool = false):Void
+  public function cacheCharts(force:Bool = false):Void
   {
     if (force)
     {

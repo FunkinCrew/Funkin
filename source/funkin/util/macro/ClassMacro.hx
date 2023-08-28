@@ -22,7 +22,7 @@ class ClassMacro
    * @param includeSubPackages Whether to include classes located in sub-packages of the target package.
    * @return A list of classes matching the specified criteria.
    */
-  public static macro function listClassesInPackage(targetPackage:String, ?includeSubPackages:Bool = true):ExprOf<Iterable<Class<Dynamic>>>
+  public static macro function listClassesInPackage(targetPackage:String, includeSubPackages:Bool = true):ExprOf<Iterable<Class<Dynamic>>>
   {
     if (!onGenerateCallbackRegistered)
     {

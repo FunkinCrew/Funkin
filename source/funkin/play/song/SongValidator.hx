@@ -63,9 +63,15 @@ class SongValidator
     }
 
     input.timeChanges = validateTimeChanges(input.timeChanges, songId);
+    if (input.timeChanges == null)
+    {
+      trace('[SONGDATA] Song ${songId} is missing a timeChanges field. ');
+      return null;
+    }
+
     input.playData = validatePlayData(input.playData, songId);
 
-    input.variation = '';
+    if (input.variation == null) input.variation = '';
 
     return input;
   }
@@ -79,6 +85,12 @@ class SongValidator
    */
   public static function validatePlayData(input:SongPlayData, songId:String = 'unknown'):SongPlayData
   {
+    if (input == null)
+    {
+      trace('[SONGDATA] Could not parse metadata.playData for song ${songId}');
+      return null;
+    }
+
     return input;
   }
 
@@ -91,6 +103,12 @@ class SongValidator
    */
   public static function validateTimeChange(input:SongTimeChange, songId:String = 'unknown'):SongTimeChange
   {
+    if (input == null)
+    {
+      trace('[SONGDATA] Could not parse metadata.timeChange for song ${songId}');
+      return null;
+    }
+
     return input;
   }
 
@@ -101,8 +119,8 @@ class SongValidator
   {
     if (input == null)
     {
-      trace('[SONGDATA] Song ${songId} is missing a timeChanges field. ');
-      return [];
+      trace('[SONGDATA] Could not parse metadata.timeChange for song ${songId}');
+      return null;
     }
 
     input = input.map((timeChange) -> validateTimeChange(timeChange, songId));

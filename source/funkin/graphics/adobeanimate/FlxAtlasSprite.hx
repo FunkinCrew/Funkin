@@ -82,7 +82,7 @@ class FlxAtlasSprite extends FlxAnimate
    * @param restart Whether to restart the animation if it is already playing.
    * @param ignoreOther Whether to ignore all other animation inputs, until this one is done playing
    */
-  public function playAnimation(id:String, ?restart:Bool = false, ?ignoreOther:Bool = false):Void
+  public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false):Void
   {
     // Skip if not allowed to play animations.
     if ((!canPlayOtherAnims && !ignoreOther)) return;
