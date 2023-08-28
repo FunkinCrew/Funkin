@@ -242,7 +242,7 @@ class SongDataParser
 
   static function loadSongChartDataFile(songPath:String, variation:String = ''):String
   {
-    var songChartDataFilePath:String = (variation != '' || variation == 'default') ? Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart-$variation') : Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart');
+    var songChartDataFilePath:String = (variation != '' && variation != 'default') ? Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart-$variation') : Paths.json('$SONG_DATA_PATH$songPath/$songPath-chart');
 
     var rawJson:String = Assets.getText(songChartDataFilePath).trim();
 
