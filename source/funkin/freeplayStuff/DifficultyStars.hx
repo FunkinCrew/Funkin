@@ -40,12 +40,6 @@ class DifficultyStars extends FlxSpriteGroup
 
     for (memb in flames.members)
       memb.shader = hsvShader;
-
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(HSVShader, ["hue", "saturation", "value"]));
-    FlxG.debugger.track(hsvShader);
-
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(DifficultyStars, ["difficulty"]));
-    FlxG.debugger.track(this);
   }
 
   override function update(elapsed:Float):Void

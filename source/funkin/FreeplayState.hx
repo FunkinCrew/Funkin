@@ -200,8 +200,6 @@ class FreeplayState extends MusicBeatSubState
     moreWays.speed = 6.8;
     grpTxtScrolls.add(moreWays);
 
-    FlxG.debugger.track(moreWays, "HotBlooded 1");
-
     exitMovers.set([moreWays],
       {
         x: FlxG.width * 2,
@@ -212,7 +210,6 @@ class FreeplayState extends MusicBeatSubState
     funnyScroll.funnyColor = 0xFFff9963;
     funnyScroll.speed = -3.8;
     grpTxtScrolls.add(funnyScroll);
-    FlxG.debugger.track(funnyScroll, "Boyfriend 1");
 
     exitMovers.set([funnyScroll],
       {
@@ -230,13 +227,11 @@ class FreeplayState extends MusicBeatSubState
         x: FlxG.width * 2,
         speed: 0.4,
       });
-    FlxG.debugger.track(txtNuts, "Protect yo nuts 1");
 
     var funnyScroll2:BGScrollingText = new BGScrollingText(0, 335, "BOYFRIEND", FlxG.width / 2, false, 60);
     funnyScroll2.funnyColor = 0xFFff9963;
     funnyScroll2.speed = -3.8;
     grpTxtScrolls.add(funnyScroll2);
-    FlxG.debugger.track(funnyScroll2, "Boyfriend 2");
 
     exitMovers.set([funnyScroll2],
       {
@@ -248,7 +243,6 @@ class FreeplayState extends MusicBeatSubState
     moreWays2.funnyColor = 0xFFfff383;
     moreWays2.speed = 6.8;
     grpTxtScrolls.add(moreWays2);
-    FlxG.debugger.track(moreWays2, "HotBlooded 2");
 
     exitMovers.set([moreWays2],
       {
@@ -260,7 +254,6 @@ class FreeplayState extends MusicBeatSubState
     funnyScroll3.funnyColor = 0xFFfea400;
     funnyScroll3.speed = -3.8;
     grpTxtScrolls.add(funnyScroll3);
-    FlxG.debugger.track(funnyScroll3, "Boyfriend 3");
 
     exitMovers.set([funnyScroll3],
       {
@@ -268,7 +261,8 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.3
       });
 
-    dj = new DJBoyfriend(0, -100);
+    // dj = new DJBoyfriend(0, -100);
+    dj = new DJBoyfriend(640, 366);
     exitMovers.set([dj],
       {
         x: -dj.width * 1.6,
@@ -567,9 +561,6 @@ class FreeplayState extends MusicBeatSubState
     }
 
     var hsvShader:HSVShader = new HSVShader();
-
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(HSVShader, ["hue", "saturation", "value"]));
-    FlxG.debugger.track(hsvShader, "capsule shader");
 
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
     randomCapsule.init(FlxG.width, 0, "Random");

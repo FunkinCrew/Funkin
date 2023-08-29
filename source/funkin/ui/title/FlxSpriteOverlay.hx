@@ -42,12 +42,12 @@ class FlxSpriteOverlay extends FlxSprite
 
     var sprRect = getScreenBounds();
 
-    dipshitBitmap.draw(camera.canvas, camera.canvas.transform.matrix);
-    blendShader.setCamera(dipshitBitmap);
+    // dipshitBitmap.draw(camera.canvas, camera.canvas.transform.matrix);
+    // blendShader.setCamera(dipshitBitmap);
 
-    FlxG.bitmapLog.add(dipshitBitmap);
+    // FlxG.bitmapLog.add(dipshitBitmap);
 
-    camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, blendShader);
+    camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
   }
 
   function copyToFlash(rect):openfl.geom.Rectangle

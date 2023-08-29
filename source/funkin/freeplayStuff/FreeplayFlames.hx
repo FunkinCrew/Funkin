@@ -34,9 +34,6 @@ class FreeplayFlames extends FlxSpriteGroup
       };
       add(flame);
     }
-
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(FreeplayFlames, ["flameTimer"]));
-    FlxG.debugger.track(this);
   }
 
   var properPositions:Bool = false;
