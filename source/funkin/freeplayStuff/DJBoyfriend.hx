@@ -176,10 +176,10 @@ class DJBoyfriend extends FlxAtlasSprite
     if (cartoonSnd == null)
     {
       // cartoonSnd = new FlxSound();
-      // cartoonSnd.loadEmbedded(Paths.sound("cartoons/peck"));
       // FlxG.sound.defaultSoundGroup.add(cartoonSnd);
-      // cartoonSnd.play();
     }
+    // cartoonSnd.loadEmbedded(Paths.sound("cartoons/peck"));
+    // cartoonSnd.play();
 
     // play sound of random flash toon
     // if tv is already playing, play a new one
