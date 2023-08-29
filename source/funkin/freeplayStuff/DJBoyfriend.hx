@@ -89,6 +89,8 @@ class DJBoyfriend extends FlxAtlasSprite
           playFlashAnimation('bf dj afk', false);
         }
         timeSinceSpook = 0;
+      case TV:
+        if (getCurrentAnimation() != 'Boyfriend DJ watchin tv OG') playFlashAnimation('Boyfriend DJ watchin tv OG', true);
       default:
         // I shit myself.
     }
@@ -109,6 +111,9 @@ class DJBoyfriend extends FlxAtlasSprite
         // trace('Finished spook');
         currentState = Idle;
       case "Boyfriend DJ confirm":
+
+      case "Boyfriend DJ watchin tv OG":
+        anim.play("Boyfriend DJ watchin tv OG", true, false, 112);
         // trace('Finished confirm');
     }
   }
@@ -176,4 +181,5 @@ enum DJBoyfriendState
   Idle;
   Confirm;
   Spook;
+  TV;
 }
