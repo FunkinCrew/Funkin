@@ -21,7 +21,10 @@ class DJBoyfriend extends FlxAtlasSprite
   // TODO: Switch this class to use SwagSprite instead.
   public var animOffsets:Map<String, Array<Dynamic>>;
 
-  static final SPOOK_PERIOD:Float = 180.0;
+  var gotSpooked:Bool = false;
+
+  static final SPOOK_PERIOD:Float = 120.0;
+  static final TV_PERIOD:Float = 180.0;
 
   // Time since dad last SPOOKED you.
   var timeSinceSpook:Float = 0;
@@ -36,8 +39,13 @@ class DJBoyfriend extends FlxAtlasSprite
     trace(listAnimations());
 
     FlxG.debugger.track(this);
+    FlxG.console.registerObject("dj", this);
 
     anim.onComplete = onFinishAnim;
+
+    FlxG.console.registerFunction("tv", function() {
+      currentState = TV;
+    });
   }
 
   /*
@@ -69,9 +77,13 @@ class DJBoyfriend extends FlxAtlasSprite
         // We are in this state the majority of the time.
         if (getCurrentAnimation() != 'Boyfriend DJ' || anim.finished)
         {
-          if (timeSinceSpook > SPOOK_PERIOD)
+          if (timeSinceSpook > SPOOK_PERIOD && !gotSpooked)
           {
             currentState = Spook;
+          }
+          else if (timeSinceSpook > TV_PERIOD)
+          {
+            currentState = TV;
           }
           else
           {
@@ -91,6 +103,7 @@ class DJBoyfriend extends FlxAtlasSprite
         timeSinceSpook = 0;
       case TV:
         if (getCurrentAnimation() != 'Boyfriend DJ watchin tv OG') playFlashAnimation('Boyfriend DJ watchin tv OG', true);
+        timeSinceSpook = 0;
       default:
         // I shit myself.
     }
@@ -113,7 +126,8 @@ class DJBoyfriend extends FlxAtlasSprite
       case "Boyfriend DJ confirm":
 
       case "Boyfriend DJ watchin tv OG":
-        anim.play("Boyfriend DJ watchin tv OG", true, false, 112);
+        var frame:Int = FlxG.random.bool(33) ? 112 : 166;
+        anim.play("Boyfriend DJ watchin tv OG", true, false, frame);
         // trace('Finished confirm');
     }
   }
