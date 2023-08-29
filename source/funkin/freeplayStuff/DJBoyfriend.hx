@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxSignal;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import flixel.system.FlxSound;
 
 class DJBoyfriend extends FlxAtlasSprite
 {
@@ -34,6 +35,15 @@ class DJBoyfriend extends FlxAtlasSprite
     super(x, y, Paths.animateAtlas("freeplay/freeplay-boyfriend", "preload"));
 
     animOffsets = new Map<String, Array<Dynamic>>();
+
+    anim.callback = function(name, number) {
+      switch (name)
+      {
+        case "Boyfriend DJ watchin tv OG":
+          if (number == 85) runTvLogic();
+        default:
+      }
+    };
 
     setupAnimations();
     trace(listAnimations());
@@ -127,6 +137,11 @@ class DJBoyfriend extends FlxAtlasSprite
 
       case "Boyfriend DJ watchin tv OG":
         var frame:Int = FlxG.random.bool(33) ? 112 : 166;
+        if (FlxG.random.bool(10))
+        {
+          frame = 60;
+          // boyfriend switches channel code?
+        }
         anim.play("Boyfriend DJ watchin tv OG", true, false, frame);
         // trace('Finished confirm');
     }
@@ -152,6 +167,22 @@ class DJBoyfriend extends FlxAtlasSprite
 
     // animation.addByPrefix('spook', "bf dj afk0", 24, false);
     addOffset('bf dj afk', 0, 0);
+  }
+
+  var cartoonSnd:FlxSound;
+
+  public function runTvLogic()
+  {
+    if (cartoonSnd == null)
+    {
+      // cartoonSnd = new FlxSound();
+      // cartoonSnd.loadEmbedded(Paths.sound("cartoons/peck"));
+      // FlxG.sound.defaultSoundGroup.add(cartoonSnd);
+      // cartoonSnd.play();
+    }
+
+    // play sound of random flash toon
+    // if tv is already playing, play a new one
   }
 
   public function confirm():Void
