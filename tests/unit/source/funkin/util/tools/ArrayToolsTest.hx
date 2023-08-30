@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.tools.ArrayTools;
 
+@:nullSafety
 @:access(funkin.util.tools.ArrayTools)
 class ArrayToolsTest extends FunkinTest
 {

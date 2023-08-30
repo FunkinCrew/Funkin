@@ -117,5 +117,12 @@
       "args": ["-debug", "-watch"]
     }
   ],
-  "cmake.configureOnOpen": false
+  "cmake.configureOnOpen": false,
+  "coverage-gutters.coverageFileNames": [
+    "lcov.info",
+    "cov.xml",
+    "coverage.xml",
+    "jacoco.xml",
+    "coverage.cobertura.xml"
+  ]
 }

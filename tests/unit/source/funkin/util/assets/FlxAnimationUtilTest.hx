@@ -9,6 +9,7 @@ import massive.munit.async.AsyncFactory;
 import funkin.util.DateUtil;
 import flixel.FlxSprite;
 
+@:nullSafety
 @:access(funkin.util.assets.FlxAnimationUtil)
 class FlxAnimationUtilTest extends FunkinTest
 {

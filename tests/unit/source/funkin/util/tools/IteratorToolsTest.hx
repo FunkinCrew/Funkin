@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.tools.IteratorTools;
 
+@:nullSafety
 @:access(funkin.util.tools.IteratorTools)
 class IteratorToolsTest extends FunkinTest
 {

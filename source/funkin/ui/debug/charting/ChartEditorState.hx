@@ -85,8 +85,8 @@ using Lambda;
  * @author MasterEric
  */
 // Give other classes access to private instance fields
+// @:nullSafety(Loose) // Enable this while developing, then disable to keep unit tests functional!
 
-@:nullSafety
 @:allow(funkin.ui.debug.charting.ChartEditorCommand)
 @:allow(funkin.ui.debug.charting.ChartEditorDialogHandler)
 @:allow(funkin.ui.debug.charting.ChartEditorThemeHandler)

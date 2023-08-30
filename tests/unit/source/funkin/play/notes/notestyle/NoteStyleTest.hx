@@ -34,7 +34,9 @@ class NoteStyleTest extends FunkinTest
   @Ignore("This test doesn't work, crashes when the project has 2 mocks of the same class???")
   public function testBuildNoteSprite()
   {
-    var target:NoteStyle = NoteStyleRegistry.instance.fetchEntry("funkin");
+    var target:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry("funkin");
+
+    Assert.isNotNull(target);
 
     var mockNoteSprite:NoteSprite = mock(NoteSprite);
     // var mockAnim = mock(FlxAnimationController);
@@ -48,8 +50,11 @@ class NoteStyleTest extends FunkinTest
   @Test
   public function testFallbackBehavior()
   {
-    var target1:NoteStyle = NoteStyleRegistry.instance.fetchEntry("funkin");
-    var target2:NoteStyle = NoteStyleRegistry.instance.fetchEntry("test2");
+    var target1:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry("funkin");
+    var target2:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry("test2");
+
+    Assert.isNotNull(target1);
+    Assert.isNotNull(target2);
 
     Assert.areEqual("funkin", target1.id);
     Assert.areEqual("test2", target2.id);
@@ -63,7 +68,6 @@ class NoteStyleTest extends FunkinTest
     // Overridden fields are different.
     Assert.areEqual("arrows", target1.getNoteAssetPath(false));
     Assert.areEqual("coolstuff", target2.getNoteAssetPath(false));
-    
     Assert.areEqual("shared:arrows", target1.getNoteAssetPath(true));
     Assert.areEqual("shared:coolstuff", target2.getNoteAssetPath(true));
 

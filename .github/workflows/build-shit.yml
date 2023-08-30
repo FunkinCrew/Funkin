@@ -58,3 +58,18 @@ jobs:
           butler-key: ${{ secrets.BUTLER_API_KEY}}
           build-dir: export/debug/windows/bin
           target: win
+  test-unit-win:
+    needs: create-nightly-win
+    runs-on: windows-latest
+    permissions:
+       contents: write
+       actions: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+      - uses: ./.github/actions/setup-haxeshit
+      - name: Run unit tests
+        run: |
+          cd ./tests/unit/
+          ./start-win-native.bat

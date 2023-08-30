@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.DateUtil;
 
+@:nullSafety
 class MockTest extends FunkinTest
 {
   public function new()
@@ -45,16 +46,12 @@ class MockTest extends FunkinTest
     // If not, a VerificationException will be thrown and the test will fail.
     mockatoo.Mockatoo.verify(mockAnim.addByPrefix("testAnim", "blablabla", 24, false, false, false), times(1));
 
-    try
-    {
+    FunkinAssert.validateThrows(function() {
       // Attempt to verify the method was called.
       // This should FAIL, since we didn't call the method.
-      mockatoo.Mockatoo.verify(mockAnim.addByIndices("testAnim", "blablabla", [], "", 24, false, false, false), times(1));
-      Assert.fail("Mocking function should have thrown but didn't.");
-    }
-    catch (_:mockatoo.exception.VerificationException)
-    {
-      // Expected.
-    }
+      mockatoo.Mockatoo.verify(mockAnim.addByPrefix("testAnim", "blablabla", 24, false, false, false), times(1));
+    }, function(err) {
+      return Std.isOfType(err, mockatoo.exception.VerificationException);
+    });
   }
 }

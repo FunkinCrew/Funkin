@@ -13,6 +13,7 @@ typedef FooBar =
   c:Int
 };
 
+@:nullSafety
 @:access(funkin.util.SerializerUtil)
 class SerializerUtilTest extends FunkinTest
 {

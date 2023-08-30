@@ -48,3 +48,9 @@ There are two parameters:
 ### `testDestroy()`
 
 `testDestroy()` tests whether an `IFlxDestroyable` can safely be `destroy()`ed more than once (null reference errors are fairly common here). For this, `destroyable` has to be set during `before()` of the test class.
+
+### Null Safety
+
+Append each test class with `@:nullSafety` to prevent crash bugs while developing.
+
+Note that `Assert.isNotNull(target)` is considered a vlid
