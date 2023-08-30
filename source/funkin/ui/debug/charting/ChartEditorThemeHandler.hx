@@ -20,6 +20,7 @@ enum ChartEditorTheme
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
+@:nullSafety
 class ChartEditorThemeHandler
 {
   // TODO: There's probably a better system of organization for these colors.

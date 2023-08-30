@@ -11,6 +11,7 @@ import funkin.play.song.SongData.SongNoteData;
  * A note sprite that can be used to display a note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
+@:nullSafety
 class ChartEditorNoteSprite extends FlxSprite
 {
   /**

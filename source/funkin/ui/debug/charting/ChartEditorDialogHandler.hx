@@ -40,6 +40,7 @@ using Lambda;
 /**
  * Handles dialogs for the new Chart Editor.
  */
+@:nullSafety
 class ChartEditorDialogHandler
 {
   static final CHART_EDITOR_DIALOG_ABOUT_LAYOUT:String = Paths.ui('chart-editor/dialogs/about');

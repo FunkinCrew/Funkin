@@ -16,6 +16,7 @@ import funkin.play.song.SongData.SongEventData;
  * A event sprite that can be used to display a song event in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
+@:nullSafety
 class ChartEditorEventSprite extends FlxSprite
 {
   public static final DEFAULT_EVENT = 'Default';
