@@ -833,6 +833,9 @@ class ChartEditorDialogHandler
       songChartDataVariation = SongValidator.validateSongChartData(songChartDataVariation, 'import');
 
       songChartData.set(variation, songChartDataVariation);
+      state.notePreviewDirty = true;
+      state.notePreviewViewportBoundsDirty = true;
+      state.noteDisplayDirty = true;
 
       // Tell the user the load was successful.
       NotificationManager.instance.addNotification(
@@ -858,6 +861,9 @@ class ChartEditorDialogHandler
             songChartDataVariation = SongValidator.validateSongChartData(songChartDataVariation, 'import');
 
             songChartData.set(variation, songChartDataVariation);
+            state.notePreviewDirty = true;
+            state.notePreviewViewportBoundsDirty = true;
+            state.noteDisplayDirty = true;
 
             // Tell the user the load was successful.
             NotificationManager.instance.addNotification(

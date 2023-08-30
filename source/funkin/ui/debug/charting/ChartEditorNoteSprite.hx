@@ -132,6 +132,8 @@ class ChartEditorNoteSprite extends FlxSprite
 
   public function updateNotePosition(?origin:FlxObject)
   {
+    if (this.noteData == null) return;
+
     var cursorColumn:Int = this.noteData.data;
 
     if (cursorColumn < 0) cursorColumn = 0;
