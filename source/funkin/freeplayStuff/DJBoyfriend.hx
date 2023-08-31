@@ -5,6 +5,8 @@ import flixel.util.FlxSignal;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.system.FlxSound;
+import flixel.util.FlxTimer;
+import funkin.audio.FlxStreamSound;
 
 class DJBoyfriend extends FlxAtlasSprite
 {
@@ -169,7 +171,7 @@ class DJBoyfriend extends FlxAtlasSprite
     addOffset('bf dj afk', 0, 0);
   }
 
-  var cartoonSnd:FlxSound;
+  var cartoonSnd:FlxStreamSound;
 
   public var playingCartoon:Bool = false;
 
@@ -180,21 +182,40 @@ class DJBoyfriend extends FlxAtlasSprite
       // tv is OFF, but getting turned on
       FlxG.sound.play(Paths.sound('tv_on'));
 
-      cartoonSnd = new FlxSound();
+      cartoonSnd = new FlxStreamSound();
       FlxG.sound.defaultSoundGroup.add(cartoonSnd);
     }
     else
     {
       // plays it smidge after the click
-      new FlxTimer().start(0.5, 1, function(_) {
+      new FlxTimer().start(0.1, function(_) {
         FlxG.sound.play(Paths.sound('channel_switch'));
       });
     }
     // cartoonSnd.loadEmbedded(Paths.sound("cartoons/peck"));
     // cartoonSnd.play();
 
-    // play sound of random flash toon
-    // if tv is already playing, play a new one
+    loadCartoon();
+  }
+
+  function loadCartoon()
+  {
+    cartoonSnd.loadEmbedded(Paths.sound(getRandomFlashToon()), false, false, function() {
+      anim.play("Boyfriend DJ watchin tv OG", true, false, 60);
+    });
+    cartoonSnd.play(true, FlxG.random.float(0, cartoonSnd.length));
+  }
+
+  var cartoonList:Array<String> = Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
+
+  function getRandomFlashToon():String
+  {
+    var randomFile = FlxG.random.getObject(cartoonList);
+
+    randomFile = randomFile.replace("assets/sounds/", "");
+    randomFile = randomFile.substring(0, randomFile.length - 4);
+
+    return randomFile;
   }
 
   public function confirm():Void
