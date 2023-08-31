@@ -171,6 +171,8 @@ class DJBoyfriend extends FlxAtlasSprite
 
   var cartoonSnd:FlxSound;
 
+  var playingCartoon:Bool = false;
+
   public function runTvLogic()
   {
     if (cartoonSnd == null)
