@@ -171,14 +171,24 @@ class DJBoyfriend extends FlxAtlasSprite
 
   var cartoonSnd:FlxSound;
 
-  var playingCartoon:Bool = false;
+  public var playingCartoon:Bool = false;
 
   public function runTvLogic()
   {
     if (cartoonSnd == null)
     {
-      // cartoonSnd = new FlxSound();
-      // FlxG.sound.defaultSoundGroup.add(cartoonSnd);
+      // tv is OFF, but getting turned on
+      FlxG.sound.play(Paths.sound('tv_on'));
+
+      cartoonSnd = new FlxSound();
+      FlxG.sound.defaultSoundGroup.add(cartoonSnd);
+    }
+    else
+    {
+      // plays it smidge after the click
+      new FlxTimer().start(0.5, 1, function(_) {
+        FlxG.sound.play(Paths.sound('channel_switch'));
+      });
     }
     // cartoonSnd.loadEmbedded(Paths.sound("cartoons/peck"));
     // cartoonSnd.play();
