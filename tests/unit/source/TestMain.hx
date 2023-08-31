@@ -6,17 +6,22 @@ import flixel.FlxState;
 import massive.munit.TestRunner;
 import massive.munit.client.HTTPClient;
 import massive.munit.client.SummaryReportClient;
+import funkin.util.logging.CrashHandler;
+import funkin.util.FileUtil;
 
 /**
  * Auto generated Test Application.
  * Refer to munit command line tool for more information (haxelib run munit)
  */
+@:nullSafety
 class TestMain
 {
   /**
    * If true, include a report with each ignored test and their descriptions.
    */
   static final INCLUDE_IGNORED_REPORT:Bool = false;
+
+  static final COVERAGE_FOLDER:String = "../../../report";
 
   static function main()
   {
@@ -25,34 +30,46 @@ class TestMain
 
   public function new()
   {
-    // Flixel was not designed for unit testing so we can only have one instance for now.
-    Lib.current.stage.addChild(new FlxGame(640, 480, FlxState, 60, 60, true));
+    try
+    {
+      CrashHandler.initialize();
 
-    var suites = new Array<Class<massive.munit.TestSuite>>();
-    suites.push(TestSuite);
+      // Flixel was not designed for unit testing so we can only have one instance for now.
+      Lib.current.stage.addChild(new FlxGame(640, 480, FlxState, 60, 60, true));
 
-    #if MCOVER
-    // Print individual test results alongside coverage results for each test class,
-    // as well as a final coverage report for the entire test suite.
-    var innerClient = new massive.munit.client.RichPrintClient(INCLUDE_IGNORED_REPORT);
-    var client = new mcover.coverage.munit.client.MCoverPrintClient(innerClient);
-    // Print final test results alongside detailed coverage results for the test suite.
-    var httpClient = new HTTPClient(new mcover.coverage.munit.client.MCoverSummaryReportClient());
-    // NOTE: You can also create a custom ICoverageTestResultClient implementation
+      var suites = new Array<Class<massive.munit.TestSuite>>();
+      suites.push(TestSuite);
 
-    mcover.coverage.MCoverage.getLogger().addClient(new mcover.coverage.client.CodecovJsonPrintClient());
-    #else
-    // Print individual test results.
-    var client = new massive.munit.client.RichPrintClient(INCLUDE_IGNORED_REPORT);
-    // Print final test suite results.
-    var httpClient = new HTTPClient(new SummaryReportClient());
-    #end
+      #if MCOVER
+      // Print individual test results alongside coverage results for each test class,
+      // as well as a final coverage report for the entire test suite.
+      var innerClient = new massive.munit.client.RichPrintClient(INCLUDE_IGNORED_REPORT);
+      var client = new mcover.coverage.munit.client.MCoverPrintClient(innerClient);
+      // Print final test results alongside detailed coverage results for the test suite.
+      var httpClient = new HTTPClient(new mcover.coverage.munit.client.MCoverSummaryReportClient());
+      // NOTE: You can also create a custom ICoverageTestResultClient implementation
 
-    var runner = new TestRunner(client);
-    runner.addResultClient(httpClient);
+      // Output coverage in LCOV format.
+      FileUtil.createDirIfNotExists(COVERAGE_FOLDER);
+      mcover.coverage.MCoverage.getLogger().addClient(new mcover.coverage.client.LcovPrintClient("Funkin' Coverage Report", '${COVERAGE_FOLDER}/lcov.info'));
+      #else
+      // Print individual test results.
+      var client = new massive.munit.client.RichPrintClient(INCLUDE_IGNORED_REPORT);
+      // Print final test suite results.
+      var httpClient = new HTTPClient(new SummaryReportClient());
+      #end
 
-    runner.completionHandler = completionHandler;
-    runner.run(suites);
+      var runner = new TestRunner(client);
+      runner.addResultClient(httpClient);
+
+      runner.completionHandler = completionHandler;
+      runner.run(suites);
+    }
+    catch (e)
+    {
+      trace('UNCAUGHT EXCEPTION');
+      trace(e);
+    }
   }
 
   /**

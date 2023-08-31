@@ -85,8 +85,8 @@ using Lambda;
  * @author MasterEric
  */
 // Give other classes access to private instance fields
+// @:nullSafety(Loose) // Enable this while developing, then disable to keep unit tests functional!
 
-@:nullSafety
 @:allow(funkin.ui.debug.charting.ChartEditorCommand)
 @:allow(funkin.ui.debug.charting.ChartEditorDialogHandler)
 @:allow(funkin.ui.debug.charting.ChartEditorThemeHandler)
@@ -569,7 +569,6 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
-   * The Bitmap can be modified by individual commands without using this.
    */
   var notePreviewDirty:Bool = true;
 
@@ -1317,7 +1316,7 @@ class ChartEditorState extends HaxeUIState
     healthIconBF = new HealthIcon(currentSongCharacterPlayer);
     healthIconBF.autoUpdate = false;
     healthIconBF.size.set(0.5, 0.5);
-    healthIconBF.x = gridTiledSprite.x + GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + 15;
+    healthIconBF.x = gridTiledSprite.x + gridTiledSprite.width + 15;
     healthIconBF.y = gridTiledSprite.y + 5;
     healthIconBF.flipX = true;
     add(healthIconBF);
@@ -1797,7 +1796,7 @@ class ChartEditorState extends HaxeUIState
     if (healthIconBF != null)
     {
       // Base X position to the right of the grid.
-      var baseHealthIconXPos:Float = gridTiledSprite?.x ?? 0.0 + GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + 15;
+      var baseHealthIconXPos:Float = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width + 15);
       // Will be 0 when not bopping. When bopping, will increase to push the icon left.
       var healthIconOffset:Float = healthIconBF.width - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
       healthIconBF.x = baseHealthIconXPos - healthIconOffset;
@@ -2718,11 +2717,11 @@ class ChartEditorState extends HaxeUIState
         trace('Creating new Note... (${renderedNotes.members.length})');
         noteSprite.parentState = this;
 
-        // Setting note data resets position relative to the grid so we fix that.
-        noteSprite.updateNotePosition(renderedNotes);
-
         // The note sprite handles animation playback and positioning.
         noteSprite.noteData = noteData;
+
+        // Setting note data resets position relative to the grid so we fix that.
+        noteSprite.updateNotePosition(renderedNotes);
 
         // Add hold notes that are now visible (and not already displayed).
         if (noteSprite.noteData != null && noteSprite.noteData.length > 0 && displayedHoldNoteData.indexOf(noteSprite.noteData) == -1)
@@ -3871,6 +3870,9 @@ class ChartEditorState extends HaxeUIState
 
     scrollPositionInPixels = 0;
     playheadPositionInPixels = 0;
+    notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
+    noteDisplayDirty = true;
     moveSongToScrollPosition();
   }
 

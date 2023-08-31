@@ -7,10 +7,11 @@ import funkin.play.song.SongData.SongTimeChange;
 import funkin.util.Constants;
 import massive.munit.Assert;
 
+@:nullSafety
 @:access(funkin.Conductor)
 class ConductorTest extends FunkinTest
 {
-  var conductorState:ConductorState;
+  var conductorState:Null<ConductorState> = null;
 
   @Before
   function before()
@@ -54,6 +55,9 @@ class ConductorTest extends FunkinTest
   @Test
   function testUpdate():Void
   {
+    var currentConductorState:Null<ConductorState> = conductorState;
+    Assert.isNotNull(currentConductorState);
+
     Assert.areEqual(0, Conductor.songPosition);
 
     step(); // 1
@@ -72,15 +76,15 @@ class ConductorTest extends FunkinTest
     Assert.areEqual(0, Conductor.currentStep);
     FunkinAssert.areNear(8 / 9, Conductor.currentStepTime);
 
-    Assert.areEqual(0, conductorState.beatsHit);
-    Assert.areEqual(0, conductorState.stepsHit);
+    Assert.areEqual(0, currentConductorState.beatsHit);
+    Assert.areEqual(0, currentConductorState.stepsHit);
 
     step(); // 9
 
-    Assert.areEqual(0, conductorState.beatsHit);
-    Assert.areEqual(1, conductorState.stepsHit);
-    conductorState.beatsHit = 0;
-    conductorState.stepsHit = 0;
+    Assert.areEqual(0, currentConductorState.beatsHit);
+    Assert.areEqual(1, currentConductorState.stepsHit);
+    currentConductorState.beatsHit = 0;
+    currentConductorState.stepsHit = 0;
 
     FunkinAssert.areNear(FunkinTest.MS_PER_STEP * 9, Conductor.songPosition);
     Assert.areEqual(0, Conductor.currentBeat);
@@ -89,10 +93,10 @@ class ConductorTest extends FunkinTest
 
     step(35 - 9); // 35
 
-    Assert.areEqual(0, conductorState.beatsHit);
-    Assert.areEqual(2, conductorState.stepsHit);
-    conductorState.beatsHit = 0;
-    conductorState.stepsHit = 0;
+    Assert.areEqual(0, currentConductorState.beatsHit);
+    Assert.areEqual(2, currentConductorState.stepsHit);
+    currentConductorState.beatsHit = 0;
+    currentConductorState.stepsHit = 0;
 
     FunkinAssert.areNear(FunkinTest.MS_PER_STEP * 35, Conductor.songPosition);
     Assert.areEqual(0, Conductor.currentBeat);
@@ -101,10 +105,10 @@ class ConductorTest extends FunkinTest
 
     step(); // 36
 
-    Assert.areEqual(1, conductorState.beatsHit);
-    Assert.areEqual(1, conductorState.stepsHit);
-    conductorState.beatsHit = 0;
-    conductorState.stepsHit = 0;
+    Assert.areEqual(1, currentConductorState.beatsHit);
+    Assert.areEqual(1, currentConductorState.stepsHit);
+    currentConductorState.beatsHit = 0;
+    currentConductorState.stepsHit = 0;
 
     FunkinAssert.areNear(FunkinTest.MS_PER_STEP * 36, Conductor.songPosition);
     Assert.areEqual(1, Conductor.currentBeat);

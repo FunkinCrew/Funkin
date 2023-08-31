@@ -37,6 +37,9 @@
 
 	<!-- This macro allows addition of new functionality to existing Flixel. -->
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
+	<!-- Macros to satisfy null safety (null safety can't check nested functions, so assertions must be inlined) -->
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.InlineMacro.makeInline(\'fail\', true))', 'massive.munit.Assert')" />
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.InlineMacro.makeInline(\'isNotNull\', true))', 'massive.munit.Assert')" />
 
 	<!-- Assets -->
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
@@ -80,12 +83,22 @@
 	<!-- Test defines -->
 	<set name="no-custom-backend" />
 	<set name="unit-test" />
-	<!--<haxedef name="no-inline" />-->
 	<haxedef name="FLX_UNIT_TEST" />
 	<haxedef name="FLX_RECORD" />
 
-	<!-- Manually set up code coverage -->
+	<!-- Clean up the output -->
+	<haxedef name="no-traces" />
+	<!--
+	-->
+	<haxedef name="ignore-inline" />
+	<haxeflag name="-w" value="-WDeprecated" />
+
+	<!-- Manually set up code coverage (because munit report and lime test are mutually exclusive) -->
+	<haxeflag name="--macro" value="mcover.MCover.coverage(['funkin'],['../../source', 'source/'],[''])" />
 	<haxelib name="mcover" />
 	<haxedef name="MCOVER" />
-	<haxeflag name="--macro" value="mcover.MCover.coverage(['funkin'],['../../source', 'source/'],[''])" />
+	<haxedef name="safeMode"/>
+	<haxedef name="HXCPP_CHECK_POINTER" />
+	<haxedef name="HXCPP_STACK_LINE" />
+	<haxedef name="HXCPP_STACK_TRACE" />
 </project>

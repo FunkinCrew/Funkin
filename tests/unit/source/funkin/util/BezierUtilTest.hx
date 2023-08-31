@@ -6,6 +6,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.BezierUtil;
 
+@:nullSafety
 @:access(funkin.util.BezierUtil)
 class BezierUtilTest extends FunkinTest
 {

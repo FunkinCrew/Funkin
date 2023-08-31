@@ -270,7 +270,7 @@ class ChartEditorDialogHandler
    * @param closable Whether the dialog can be closed by the user.
    * @return The dialog that was opened.
    */
-  @:haxe.warning("-WVarInit")
+  @:haxe.warning("-WVarInit") // Hide the warning about the onDropFile handler.
   public static function openUploadInstDialog(state:ChartEditorState, closable:Bool = true):Dialog
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT, true, closable);
@@ -876,6 +876,9 @@ class ChartEditorDialogHandler
       songChartDataVariation = SongValidator.validateSongChartData(songChartDataVariation, 'import');
 
       songChartData.set(variation, songChartDataVariation);
+      state.notePreviewDirty = true;
+      state.notePreviewViewportBoundsDirty = true;
+      state.noteDisplayDirty = true;
 
       // Tell the user the load was successful.
       NotificationManager.instance.addNotification(
@@ -901,6 +904,9 @@ class ChartEditorDialogHandler
             songChartDataVariation = SongValidator.validateSongChartData(songChartDataVariation, 'import');
 
             songChartData.set(variation, songChartDataVariation);
+            state.notePreviewDirty = true;
+            state.notePreviewViewportBoundsDirty = true;
+            state.noteDisplayDirty = true;
 
             // Tell the user the load was successful.
             NotificationManager.instance.addNotification(
