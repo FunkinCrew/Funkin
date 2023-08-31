@@ -93,6 +93,7 @@ class ChartEditorThemeHandler
    */
   static function updateBackground(state:ChartEditorState):Void
   {
+    if (state.menuBG == null) return;
     state.menuBG.color = switch (state.currentTheme)
     {
       case ChartEditorTheme.Light: BACKGROUND_COLOR_LIGHT;

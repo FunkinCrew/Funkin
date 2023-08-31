@@ -695,12 +695,13 @@ class CutItemsCommand implements ChartEditorCommand
 @:nullSafety
 class FlipNotesCommand implements ChartEditorCommand
 {
-  var notes:Array<SongNoteData>;
-  var flippedNotes:Array<SongNoteData>;
+  var notes:Array<SongNoteData> = [];
+  var flippedNotes:Array<SongNoteData> = [];
 
   public function new(notes:Array<SongNoteData>)
   {
     this.notes = notes;
+    this.flippedNotes = SongDataUtils.flipNotes(notes);
   }
 
   public function execute(state:ChartEditorState):Void
@@ -709,7 +710,6 @@ class FlipNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 
     // Add the flipped notes.
-    flippedNotes = SongDataUtils.flipNotes(notes);
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(flippedNotes);
 
     state.currentNoteSelection = flippedNotes;
@@ -748,8 +748,8 @@ class PasteItemsCommand implements ChartEditorCommand
 {
   var targetTimestamp:Float;
   // Notes we added with this command, for undo.
-  var addedNotes:Array<SongNoteData>;
-  var addedEvents:Array<SongEventData>;
+  var addedNotes:Array<SongNoteData> = [];
+  var addedEvents:Array<SongEventData> = [];
 
   public function new(targetTimestamp:Float)
   {

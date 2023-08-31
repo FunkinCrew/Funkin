@@ -20,7 +20,7 @@ class Constants
    * The current version number of the game.
    * Modify this in the `project.xml` file.
    */
-  public static var VERSION(get, null):String;
+  public static var VERSION(get, never):String;
 
   /**
    * A suffix to add to the game version.

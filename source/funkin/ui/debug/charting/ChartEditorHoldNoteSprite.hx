@@ -111,8 +111,10 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     return !aboveViewArea && !belowViewArea;
   }
 
-  public function updateHoldNotePosition(?origin:FlxObject)
+  public function updateHoldNotePosition(?origin:FlxObject):Void
   {
+    if (this.noteData == null) return;
+
     var cursorColumn:Int = this.noteData.data;
 
     if (cursorColumn < 0) cursorColumn = 0;
