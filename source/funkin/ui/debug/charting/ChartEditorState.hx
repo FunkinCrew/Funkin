@@ -179,6 +179,8 @@ class ChartEditorState extends HaxeUIState
    */
   static final SNAP_QUANTS:Array<Int> = [4, 8, 12, 16, 20, 24, 32, 48, 64, 96, 192];
 
+  static final BASE_QUANT:Int = 16;
+
   /**
    * INSTANCE DATA
    */
@@ -1770,7 +1772,7 @@ class ChartEditorState extends HaxeUIState
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();
     // handleZoom();
-    // handleSnap();
+    handleSnap();
     handleCursor();
 
     handleMenubar();
@@ -2028,11 +2030,25 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.keys.justPressed.LEFT)
     {
       noteSnapQuantIndex--;
+      NotificationManager.instance.addNotification(
+        {
+          title: 'Note Snapping',
+          body: 'Updated note snapping to 1/${noteSnapQuant}',
+          type: NotificationType.Success,
+          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+        });
     }
 
     if (FlxG.keys.justPressed.RIGHT)
     {
       noteSnapQuantIndex++;
+      NotificationManager.instance.addNotification(
+        {
+          title: 'Note Snapping',
+          body: 'Updated note snapping to 1/${noteSnapQuant}',
+          type: NotificationType.Success,
+          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+        });
     }
   }
 
