@@ -187,13 +187,32 @@ class ChartEditorState extends HaxeUIState
   // ==============================
   public var currentZoomLevel:Float = 1.0;
 
-  var noteSnapQuantIndex:Int = 3;
+  /**
+   * The internal index of what note snapping value is in use.
+   * Increment to make placement more preceise and decrement to make placement less precise.
+   */
+  var noteSnapQuantIndex:Int = 3; // default is 16
 
+  /**
+   * The current note snapping value.
+   * For example, `32` when snapping to 32nd notes.
+   */
   public var noteSnapQuant(get, never):Int;
 
   function get_noteSnapQuant():Int
   {
     return SNAP_QUANTS[noteSnapQuantIndex];
+  }
+
+  /**
+   * The ratio of the current note snapping value to the default.
+   * For example, `32` becomes `0.5` when snapping to 16th notes.
+   */
+  public var noteSnapRatio(get, never):Float;
+
+  function get_noteSnapRatio():Float
+  {
+    return BASE_QUANT / noteSnapQuant;
   }
 
   /**
@@ -2030,6 +2049,7 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.keys.justPressed.LEFT)
     {
       noteSnapQuantIndex--;
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Note Snapping',
@@ -2037,11 +2057,13 @@ class ChartEditorState extends HaxeUIState
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
     }
 
     if (FlxG.keys.justPressed.RIGHT)
     {
       noteSnapQuantIndex++;
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Note Snapping',
@@ -2049,6 +2071,7 @@ class ChartEditorState extends HaxeUIState
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
     }
   }
 
@@ -2136,8 +2159,12 @@ class ChartEditorState extends HaxeUIState
       }
 
       // The song position of the cursor, in steps.
-      var cursorFractionalStep:Float = cursorY / GRID_SIZE / (16 / noteSnapQuant);
+      var cursorFractionalStep:Float = cursorY / GRID_SIZE;
       var cursorMs:Float = Conductor.getStepTimeInMs(cursorFractionalStep);
+      // Round the cursor step to the nearest snap quant.
+      var cursorSnappedStep:Float = Math.floor(cursorFractionalStep / noteSnapRatio) * noteSnapRatio;
+      var cursorSnappedMs:Float = Conductor.getStepTimeInMs(cursorSnappedStep);
+
       // The direction value for the column at the cursor.
       var cursorColumn:Int = Math.floor(cursorX / GRID_SIZE);
       if (cursorColumn < 0) cursorColumn = 0;
@@ -2560,7 +2587,7 @@ class ChartEditorState extends HaxeUIState
             {
               eventData.event = selectedEventKind;
             }
-            eventData.time = cursorMs;
+            eventData.time = cursorSnappedMs;
 
             gridGhostEvent.visible = true;
             gridGhostEvent.eventData = eventData;
@@ -2581,7 +2608,7 @@ class ChartEditorState extends HaxeUIState
               noteData.data = cursorColumn;
               gridGhostNote.playNoteAnimation();
             }
-            noteData.time = cursorMs;
+            noteData.time = cursorSnappedMs;
 
             gridGhostNote.visible = true;
             gridGhostNote.noteData = noteData;
@@ -4017,6 +4044,7 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
+    #if !mac
     NotificationManager.instance.addNotification(
       {
         title: 'Success',
@@ -4024,6 +4052,7 @@ class ChartEditorState extends HaxeUIState
         type: NotificationType.Success,
         expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
       });
+    #end
   }
 
   /**
