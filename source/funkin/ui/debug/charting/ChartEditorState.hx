@@ -2899,6 +2899,18 @@ class ChartEditorState extends HaxeUIState
    */
   function handleFileKeybinds():Void
   {
+    // CTRL + N = New Chart
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.N)
+    {
+      ChartEditorDialogHandler.openWelcomeDialog(this, true);
+    }
+
+    // CTRL + O = Open Chart
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.N)
+    {
+      ChartEditorDialogHandler.openBrowseWizard(this, true);
+    }
+
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
     {
