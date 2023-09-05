@@ -9,6 +9,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.SortUtil;
 
+@:nullSafety
 @:access(funkin.util.SortUtil)
 class SortUtilTest extends FunkinTest
 {

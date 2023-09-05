@@ -7,6 +7,7 @@ import funkin.data.BaseRegistry;
 import funkin.util.SortUtil;
 import funkin.util.VersionUtil;
 
+@:nullSafety
 @:access(funkin.data.BaseRegistry)
 class BaseRegistryTest extends FunkinTest
 {
@@ -49,6 +50,7 @@ class BaseRegistryTest extends FunkinTest
 
     // Ensure blablabla got parsed correctly.
     var blablabla = MyTypeRegistry.instance.fetchEntry("blablabla");
+    Assert.isNotNull(blablabla);
     Assert.areEqual(blablabla.id, "blablabla");
     Assert.areEqual(blablabla._data.version, "1.0.0");
     Assert.areEqual(blablabla._data.name, "blablabla API");

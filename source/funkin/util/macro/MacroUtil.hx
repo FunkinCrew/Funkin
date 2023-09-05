@@ -99,6 +99,11 @@ class MacroUtil
     return null;
   }
 
+  public static function isFieldStatic(field:haxe.macro.Expr.Field):Bool
+  {
+    return field.access.contains(AStatic);
+  }
+
   /**
    * Converts a value to an equivalent macro expression.
    */

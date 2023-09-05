@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.tools.MapTools;
 
+@:nullSafety
 @:access(funkin.util.tools.MapTools)
 class MapToolsTest extends FunkinTest
 {

@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.ClipboardUtil;
 
+@:nullSafety
 @:access(funkin.util.ClipboardUtil)
 class ClipboardUtilTest extends FunkinTest
 {
