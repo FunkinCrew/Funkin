@@ -18,13 +18,15 @@
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "f107166de3e830648e8fbf3da5526d4b94aa7dfc",
+      "ref": "c8c41e26d463aaf2edc0582fb23b6e228235bd16",
       "url": "https://github.com/EliteMasterEric/flixel-addons"
     },
     {
       "name": "flixel-ui",
-      "type": "haxelib",
-      "version": "2.5.0"
+      "type": "git",
+      "dir": null,
+      "ref": "719b4f10d94186ed55f6fef1b6618d32abec8c15",
+      "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
       "name": "flxanimate",
@@ -56,6 +58,13 @@
       "dir": null,
       "ref": "be0b18553189a55fd42821026618a18615b070e3",
       "url": "https://github.com/haxeui/haxeui-flixel"
+    },
+    {
+      "name": "hmm",
+      "type": "git",
+      "dir": null,
+      "ref": "d514d7786cabf18b90e60fcee38399fd44c2ddfb",
+      "url": "https://github.com/andywhite37/hmm"
     },
     {
       "name": "hscript",
@@ -93,7 +102,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "558798adc5bf0e82d70fef589a59ce88892e0b5b",
+      "ref": "f195121ebec688b417e38ab115185c8d93c349d3",
       "url": "https://github.com/EliteMasterEric/lime"
     },
     {
@@ -128,14 +137,14 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "1591a6c5f1f72e65d711f7e17e8055df41424d94",
+      "ref": "ef43deb2c68d8a4bcd73abfbd77324fc8220d0c1",
       "url": "https://github.com/EliteMasterEric/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "4bcd614103469af79a320898b823d1df8a55c3de",
+      "ref": "e8a07b81e3bc535238ad8649e38f5d43c46f1b65",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
@@ -147,13 +156,6 @@
       "name": "tink_json",
       "type": "haxelib",
       "version": "0.11.0"
-    },
-    {
-      "name": "hmm",
-      "type": "git",
-      "dir": null,
-      "ref": "d514d7786cabf18b90e60fcee38399fd44c2ddfb",
-      "url": "https://github.com/andywhite37/hmm"
     }
   ]
 }

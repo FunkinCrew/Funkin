@@ -1,5 +1,6 @@
 package funkin;
 
+import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.TransitionData;
@@ -33,8 +34,10 @@ import Discord.DiscordClient;
  * The initialization state has several functions:
  * - Calls code to set up the game, including loading saves and parsing game data.
  * - Chooses whether to start via debug or via launching normally.
+ *
+ * It should not contain any sprites or rendering.
  */
-class InitState extends FlxTransitionableState
+class InitState extends FlxState
 {
   /**
    * Perform a bunch of game setup, then immediately transition to the title screen.
