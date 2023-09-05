@@ -114,6 +114,7 @@ class PolymodHandler
 
         // Parse hxc files and register the scripted classes in them.
         useScriptedClasses: true,
+        loadScriptsAsync: #if html5 true #else false #end,
       });
 
     if (loadedModList == null)
