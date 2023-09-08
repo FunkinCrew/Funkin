@@ -3,7 +3,7 @@ package funkin;
 import flixel.FlxG;
 import flixel.FlxState;
 import funkin.Conductor;
-import funkin.play.song.SongData.SongTimeChange;
+import funkin.data.song.SongData.SongTimeChange;
 import funkin.util.Constants;
 import massive.munit.Assert;
 
@@ -16,6 +16,8 @@ class ConductorTest extends FunkinTest
   @Before
   function before()
   {
+    FunkinAssert.initAssertTrace();
+
     resetGame();
 
     // The ConductorState will advance the conductor when step() is called.
@@ -193,16 +195,7 @@ class ConductorTest extends FunkinTest
   function testSingleTimeChange():Void
   {
     // Start the song with a BPM of 120.
-    var songTimeChanges:Array<SongTimeChange> = [
-      {
-        t: 0,
-        b: 0,
-        bpm: 120,
-        n: 4,
-        d: 4,
-        bt: [4, 4, 4, 4]
-      }, // 120 bpm starting 0 sec/0 beats
-    ];
+    var songTimeChanges:Array<SongTimeChange> = [new SongTimeChange(0, 120)];
     Conductor.mapTimeChanges(songTimeChanges);
 
     // All should be at 0.
@@ -253,24 +246,7 @@ class ConductorTest extends FunkinTest
   function testDoubleTimeChange():Void
   {
     // Start the song with a BPM of 120.
-    var songTimeChanges:Array<SongTimeChange> = [
-      {
-        t: 0,
-        b: 0,
-        bpm: 120,
-        n: 4,
-        d: 4,
-        bt: [4, 4, 4, 4]
-      }, // 120 bpm starting 0 sec/0 beats
-      {
-        t: 3000,
-        b: 6,
-        bpm: 90,
-        n: 4,
-        d: 4,
-        bt: [4, 4, 4, 4]
-      } // 90 bpm starting 3 sec/6 beats
-    ];
+    var songTimeChanges:Array<SongTimeChange> = [new SongTimeChange(0, 120), new SongTimeChange(3000, 90)];
     Conductor.mapTimeChanges(songTimeChanges);
 
     // All should be at 0.
@@ -354,30 +330,9 @@ class ConductorTest extends FunkinTest
   {
     // Start the song with a BPM of 120, then move to 90, then move to 180.
     var songTimeChanges:Array<SongTimeChange> = [
-      {
-        t: 0,
-        b: null,
-        bpm: 120,
-        n: 4,
-        d: 4,
-        bt: [4, 4, 4, 4]
-      }, // 120 bpm starting 0 sec/0 beats
-      {
-        t: 3000,
-        b: null,
-        bpm: 90,
-        n: 4,
-        d: 4,
-        bt: [4, 4, 4, 4]
-      }, // 90 bpm starting 3 sec/6 beats
-      {
-        t: 6000,
-        b: null,
-        bpm: 180,
-        n: 4,
-        d: 4,
-        bt: [4, 4, 4, 4]
-      } // 90 bpm starting 3 sec/6 beats
+      new SongTimeChange(0, 120),
+      new SongTimeChange(3000, 90),
+      new SongTimeChange(6000, 180)
     ];
     Conductor.mapTimeChanges(songTimeChanges);
 

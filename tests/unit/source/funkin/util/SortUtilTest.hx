@@ -3,7 +3,7 @@ package funkin.util;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxSort;
-import funkin.play.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongNoteData;
 import massive.munit.util.Timer;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;

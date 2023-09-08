@@ -86,7 +86,7 @@ class NoteStyleRegistryTest extends FunkinTest
   @Test
   public function testFetchDefault():Void
   {
-    var nsrMock:NoteStyleRegistry = mock(NoteStyleRegistry);
+    var nsrMock = Mockatoo.mock(NoteStyleRegistry);
 
     nsrMock.fetchDefault().callsRealMethod();
 
