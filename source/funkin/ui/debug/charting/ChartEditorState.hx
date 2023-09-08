@@ -1302,9 +1302,13 @@ class ChartEditorState extends HaxeUIState
 
     buildNoteGroup();
 
-    gridPlayheadScrollArea = new FlxSprite(gridTiledSprite.x - PLAYHEAD_SCROLL_AREA_WIDTH,
-      MENU_BAR_HEIGHT).makeGraphic(PLAYHEAD_SCROLL_AREA_WIDTH, FlxG.height - MENU_BAR_HEIGHT, PLAYHEAD_SCROLL_AREA_COLOR);
+    gridPlayheadScrollArea = new FlxSprite(0, 0);
+    gridPlayheadScrollArea.makeGraphic(10, 10, PLAYHEAD_SCROLL_AREA_COLOR); // Make it 10x10px and then scale it as needed.
     add(gridPlayheadScrollArea);
+    gridPlayheadScrollArea.setGraphicSize(PLAYHEAD_SCROLL_AREA_WIDTH, 3000);
+    gridPlayheadScrollArea.updateHitbox();
+    gridPlayheadScrollArea.x = gridTiledSprite.x - PLAYHEAD_SCROLL_AREA_WIDTH;
+    gridPlayheadScrollArea.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
     gridPlayheadScrollArea.zIndex = 25;
 
     // The playhead that show the current position in the song.
@@ -3728,25 +3732,29 @@ class ChartEditorState extends HaxeUIState
     this.scrollPositionInPixels = value;
 
     // Move the grid sprite to the correct position.
-    if (isViewDownscroll)
+    if (gridTiledSprite != null)
     {
-      if (gridTiledSprite != null) gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+      if (isViewDownscroll)
+      {
+        gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+        gridPlayheadScrollArea.y = gridTiledSprite.y;
+      }
+      else
+      {
+        gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
+        gridPlayheadScrollArea.y = gridTiledSprite.y;
+      }
     }
-    else
-    {
-      if (gridTiledSprite != null) gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
-    }
+
     // Move the rendered notes to the correct position.
     renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
     renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
     renderedEvents.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
     renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
-
     // Offset the selection box start position, if we are dragging.
     if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
     // Update the note preview viewport box.
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
-
     return this.scrollPositionInPixels;
   }
 
@@ -3905,6 +3913,11 @@ class ChartEditorState extends HaxeUIState
       songLengthInMs = audioInstTrack.length;
 
       if (gridTiledSprite != null) gridTiledSprite.height = songLengthInPixels;
+      if (gridPlayheadScrollArea != null)
+      {
+        gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
+        gridPlayheadScrollArea.updateHitbox();
+      }
 
       buildSpectrogram(audioInstTrack);
     }
