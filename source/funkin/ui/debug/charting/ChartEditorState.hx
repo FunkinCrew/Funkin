@@ -2644,7 +2644,7 @@ class ChartEditorState extends HaxeUIState
       var displayedHoldNoteData:Array<SongNoteData> = [];
       for (holdNoteSprite in renderedHoldNotes.members)
       {
-        if (holdNoteSprite == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
+        if (holdNoteSprite == null || holdNoteSprite.noteData == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
 
         if (!holdNoteSprite.isHoldNoteVisible(FlxG.height - MENU_BAR_HEIGHT, GRID_TOP_PAD))
         {
@@ -3127,7 +3127,8 @@ class ChartEditorState extends HaxeUIState
       difficultySelectDirty = false;
 
       // Manage the Select Difficulty tree view.
-      var difficultyToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      var difficultyToolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      if (difficultyToolbox == null) return;
 
       var treeView:Null<TreeView> = difficultyToolbox.findComponent('difficultyToolboxTree');
       if (treeView == null) return;
@@ -3173,7 +3174,7 @@ class ChartEditorState extends HaxeUIState
     if (treeView == null)
     {
       // Manage the Select Difficulty tree view.
-      var difficultyToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      var difficultyToolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return;
 
       treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
@@ -3187,7 +3188,7 @@ class ChartEditorState extends HaxeUIState
   function handlePlayerPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
+    var charPreviewToolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
 
     var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
@@ -3222,7 +3223,7 @@ class ChartEditorState extends HaxeUIState
   function handleOpponentPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
+    var charPreviewToolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
 
     var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
@@ -3294,7 +3295,7 @@ class ChartEditorState extends HaxeUIState
   {
     if (treeView == null)
     {
-      var difficultyToolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      var difficultyToolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return null;
 
       treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
@@ -3357,7 +3358,8 @@ class ChartEditorState extends HaxeUIState
    */
   function refreshSongMetadataToolbox():Void
   {
-    var toolbox:CollapsibleDialog = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    var toolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    if (toolbox == null) return;
 
     var inputSongName:Null<TextField> = toolbox.findComponent('inputSongName', TextField);
     if (inputSongName != null) inputSongName.value = currentSongMetadata.songName;

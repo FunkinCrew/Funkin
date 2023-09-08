@@ -251,14 +251,14 @@ class PlayState extends MusicBeatSubState
 
   var overrideMusic:Bool = false;
 
-  public var isSubState(get, null):Bool;
+  public var isSubState(get, never):Bool;
 
   function get_isSubState():Bool
   {
     return this._parentState != null;
   }
 
-  public var isChartingMode(get, null):Bool;
+  public var isChartingMode(get, never):Bool;
 
   function get_isChartingMode():Bool
   {
@@ -427,7 +427,7 @@ class PlayState extends MusicBeatSubState
    * Data for the current difficulty for the current song.
    * Includes chart data, scroll speed, and other information.
    */
-  public var currentChart(get, null):SongDifficulty;
+  public var currentChart(get, never):SongDifficulty;
 
   function get_currentChart():SongDifficulty
   {
@@ -439,7 +439,7 @@ class PlayState extends MusicBeatSubState
    * The internal ID of the currently active Stage.
    * Used to retrieve the data required to build the `currentStage`.
    */
-  public var currentStageId(get, null):String;
+  public var currentStageId(get, never):String;
 
   function get_currentStageId():String
   {

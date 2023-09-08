@@ -50,7 +50,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
    */
   var currentDialogueEntry:Int = 0;
 
-  var currentDialogueEntryCount(get, null):Int;
+  var currentDialogueEntryCount(get, never):Int;
 
   function get_currentDialogueEntryCount():Int
   {
@@ -62,14 +62,14 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
   * **/
   var currentDialogueLine:Int = 0;
 
-  var currentDialogueLineCount(get, null):Int;
+  var currentDialogueLineCount(get, never):Int;
 
   function get_currentDialogueLineCount():Int
   {
     return currentDialogueEntryData.text.length;
   }
 
-  var currentDialogueEntryData(get, null):DialogueEntryData;
+  var currentDialogueEntryData(get, never):DialogueEntryData;
 
   function get_currentDialogueEntryData():DialogueEntryData
   {
@@ -79,7 +79,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
     return conversationData.dialogue[currentDialogueEntry];
   }
 
-  var currentDialogueLineString(get, null):String;
+  var currentDialogueLineString(get, never):String;
 
   function get_currentDialogueLineString():String
   {
