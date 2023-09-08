@@ -2598,8 +2598,7 @@ class ChartEditorState extends HaxeUIState
 
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
-            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0,
-              selectedNoteKind);
+            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
 
             if (cursorColumn != noteData.data || selectedNoteKind != noteData.kind)
             {
@@ -2760,11 +2759,11 @@ class ChartEditorState extends HaxeUIState
         trace('Creating new Note... (${renderedNotes.members.length})');
         noteSprite.parentState = this;
 
-        // The note sprite handles animation playback and positioning.
-        noteSprite.noteData = noteData;
-
         // Setting note data resets position relative to the grid so we fix that.
         noteSprite.updateNotePosition(renderedNotes);
+
+        // The note sprite handles animation playback and positioning.
+        noteSprite.noteData = noteData;
 
         // Add hold notes that are now visible (and not already displayed).
         if (noteSprite.noteData != null && noteSprite.noteData.length > 0 && displayedHoldNoteData.indexOf(noteSprite.noteData) == -1)
