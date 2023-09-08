@@ -4,8 +4,8 @@ import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
-import funkin.play.event.SongEventData;
-import funkin.play.song.SongData.SongTimeChange;
+import funkin.data.event.SongEventData;
+import funkin.data.song.SongData.SongTimeChange;
 import funkin.play.song.SongSerializer;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import haxe.ui.components.Button;
@@ -541,9 +541,9 @@ class ChartEditorToolboxHandler
     var inputNoteSkin:DropDown = toolbox.findComponent('inputNoteSkin', DropDown);
     inputNoteSkin.onChange = function(event:UIEvent) {
       if ((event?.data?.id ?? null) == null) return;
-      state.currentSongMetadata.playData.noteSkin = event.data.id;
+      state.currentSongNoteSkin = event.data.id;
     };
-    inputNoteSkin.value = state.currentSongMetadata.playData.noteSkin;
+    inputNoteSkin.value = state.currentSongNoteSkin;
 
     var inputBPM:NumberStepper = toolbox.findComponent('inputBPM', NumberStepper);
     inputBPM.onChange = function(event:UIEvent) {
@@ -552,7 +552,7 @@ class ChartEditorToolboxHandler
       var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
       if (timeChanges == null || timeChanges.length == 0)
       {
-        timeChanges = [new SongTimeChange(-1, 0, event.value, 4, 4, [4, 4, 4, 4])];
+        timeChanges = [new SongTimeChange(0, event.value)];
       }
       else
       {

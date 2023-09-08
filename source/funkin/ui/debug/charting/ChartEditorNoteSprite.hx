@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
-import funkin.play.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongNoteData;
 
 /**
  * A note sprite that can be used to display a note in a chart.

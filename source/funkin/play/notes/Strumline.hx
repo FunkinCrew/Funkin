@@ -11,7 +11,7 @@ import funkin.play.notes.NoteHoldCover;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.SustainTrail;
-import funkin.play.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.PreferencesMenu;
 import funkin.util.SortUtil;
 

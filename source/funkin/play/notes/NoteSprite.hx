@@ -1,6 +1,6 @@
 package funkin.play.notes;
 
-import funkin.play.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;

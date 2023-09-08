@@ -4,7 +4,7 @@ import funkin.util.Constants;
 import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
 import funkin.play.song.Song.SongDifficulty;
-import funkin.play.song.SongData.SongTimeChange;
+import funkin.data.song.SongData.SongTimeChange;
 
 /**
  * A core class which handles musical timing throughout the game,

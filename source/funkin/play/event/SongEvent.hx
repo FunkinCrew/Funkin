@@ -1,7 +1,7 @@
 package funkin.play.event;
 
-import funkin.play.song.SongData.SongEventData;
-import funkin.play.event.SongEventData.SongEventSchema;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.event.SongEventData.SongEventSchema;
 
 /**
  * This class represents a handler for a type of song event.

@@ -1,10 +1,11 @@
 package funkin.play.song;
 
-import funkin.play.song.SongData.SongChartData;
-import funkin.play.song.SongData.SongMetadata;
-import funkin.play.song.SongData.SongPlayData;
-import funkin.play.song.SongData.SongTimeChange;
-import funkin.play.song.SongData.SongTimeFormat;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongPlayData;
+import funkin.data.song.SongData.SongTimeChange;
+import funkin.data.song.SongData.SongTimeFormat;
 
 /**
  * For SongMetadata and SongChartData objects,
@@ -19,13 +20,6 @@ class SongValidator
   public static final DEFAULT_LOOPED:Bool = false;
   public static final DEFAULT_STAGE:String = "mainStage";
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
-
-  public static var DEFAULT_GENERATEDBY(get, null):String;
-
-  static function get_DEFAULT_GENERATEDBY():String
-  {
-    return '${Constants.TITLE} - ${Constants.VERSION}';
-  }
 
   /**
    * Validates the fields of a SongMetadata object (excluding the version field).
@@ -59,7 +53,7 @@ class SongValidator
     }
     if (input.generatedBy == null)
     {
-      input.generatedBy = DEFAULT_GENERATEDBY;
+      input.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     }
 
     input.timeChanges = validateTimeChanges(input.timeChanges, songId);

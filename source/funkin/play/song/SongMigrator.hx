@@ -1,11 +1,11 @@
 package funkin.play.song;
 
 import funkin.play.song.formats.FNFLegacy;
-import funkin.play.song.SongData.SongChartData;
-import funkin.play.song.SongData.SongEventData;
-import funkin.play.song.SongData.SongMetadata;
-import funkin.play.song.SongData.SongNoteData;
-import funkin.play.song.SongData.SongPlayableChar;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongPlayableChar;
 import funkin.util.VersionUtil;
 
 class SongMigrator
@@ -176,7 +176,7 @@ class SongMigrator
     songMetadata.playData.songVariations = [];
 
     // Set the song's song variations.
-    songMetadata.playData.playableChars = {};
+    songMetadata.playData.playableChars = [];
     try
     {
       Reflect.setField(songMetadata.playData.playableChars, songData.song.player1, new SongPlayableChar('', songData.song.player2));
@@ -203,7 +203,7 @@ class SongMigrator
 
     var songData:FNFLegacy = cast jsonData;
 
-    var songChartData:SongChartData = new SongChartData(1.0, [], []);
+    var songChartData:SongChartData = new SongChartData(["normal" => 1.0], [], ["normal" => []]);
 
     var songEventsEmpty:Bool = songChartData.getEvents() == null || songChartData.getEvents().length == 0;
     if (songEventsEmpty) songChartData.setEvents(migrateSongEventDataFromLegacy(songData.song.notes));

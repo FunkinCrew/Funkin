@@ -35,7 +35,7 @@ import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
-import funkin.play.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventData.SongEventParser;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.Strumline;
@@ -43,10 +43,10 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.NoteSplash;
 import funkin.play.song.Song;
-import funkin.play.song.SongData.SongDataParser;
-import funkin.play.song.SongData.SongEventData;
-import funkin.play.song.SongData.SongNoteData;
-import funkin.play.song.SongData.SongPlayableChar;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongPlayableChar;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.ui.PopUpStuff;
@@ -630,7 +630,7 @@ class PlayState extends MusicBeatSubState
     startingSong = true;
 
     // TODO: We hardcoded the transition into Winter Horrorland. Do this with a ScriptedSong instead.
-    if ((currentSong?.songId ?? '').toLowerCase() == 'winter-horrorland')
+    if ((currentSong?.id ?? '').toLowerCase() == 'winter-horrorland')
     {
       // VanillaCutscenes will call startCountdown later.
       VanillaCutscenes.playHorrorStartCutscene();
@@ -2495,9 +2495,9 @@ class PlayState extends MusicBeatSubState
     if (currentSong != null && currentSong.validScore)
     {
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
-      Highscore.tallies.isNewHighscore = Highscore.saveScoreForDifficulty(currentSong.songId, songScore, currentDifficulty);
+      Highscore.tallies.isNewHighscore = Highscore.saveScoreForDifficulty(currentSong.id, songScore, currentDifficulty);
 
-      Highscore.saveCompletionForDifficulty(currentSong.songId, Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes, currentDifficulty);
+      Highscore.saveCompletionForDifficulty(currentSong.id, Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes, currentDifficulty);
     }
 
     if (PlayStatePlaylist.isStoryMode)
@@ -2549,7 +2549,7 @@ class PlayState extends MusicBeatSubState
         vocals.stop();
 
         // TODO: Softcode this cutscene.
-        if (currentSong.songId == 'eggnog')
+        if (currentSong.id == 'eggnog')
         {
           var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
             -FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
@@ -2560,7 +2560,7 @@ class PlayState extends MusicBeatSubState
 
           FlxG.sound.play(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
-            var targetSong:Song = SongDataParser.fetchSong(targetSongId);
+            var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
             // Load and cache the song's charts.
             // TODO: Do this in the loading state.
             targetSong.cacheCharts(true);
@@ -2577,7 +2577,7 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
-          var targetSong:Song = SongDataParser.fetchSong(targetSongId);
+          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
           // Load and cache the song's charts.
           // TODO: Do this in the loading state.
           targetSong.cacheCharts(true);
