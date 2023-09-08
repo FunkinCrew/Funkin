@@ -123,9 +123,12 @@ class LevelRegistryTest extends FunkinTest
   }
 
   @Test
-  @Ignore("Requires redoing validation.")
   public function testCreateEntryBlankPath():Void
   {
+    // Using @:jcustomparse, `titleAsset` has a validation function that ensures it is not blank.
+    // This test makes sure that the validation function is being called, and that the error
+    // results in the level failing to parse.
+
     FunkinAssert.validateThrows(function() {
       var result:Null<Level> = LevelRegistry.instance.createEntry("blankpathtest");
     }, function(err) {
@@ -134,7 +137,6 @@ class LevelRegistryTest extends FunkinTest
   }
 
   @Test
-  @Ignore("Requires redoing validation.")
   public function testFetchBadEntry():Void
   {
     var result:Null<Level> = LevelRegistry.instance.fetchEntry("blablabla");

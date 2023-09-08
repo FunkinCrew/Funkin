@@ -1,7 +1,8 @@
-package funkin.play.event;
+package funkin.data.event;
 
-import funkin.play.event.SongEventData.SongEventSchema;
-import funkin.play.song.SongData.SongEventData;
+import funkin.play.event.SongEvent;
+import funkin.data.event.SongEventData.SongEventSchema;
+import funkin.data.song.SongData.SongEventData;
 import funkin.util.macro.ClassMacro;
 import funkin.play.event.ScriptedSongEvent;
 

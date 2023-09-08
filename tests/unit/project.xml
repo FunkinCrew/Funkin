@@ -44,11 +44,12 @@
 	<!-- Assets -->
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.mp3" unless="web" />
+	<library name="shared" preload="true" />
 	<!--
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg" if="web" />
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/shared" library="shared" exclude="*.fla|*.mp3" unless="web" />
 	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web" />
 	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web" />
 	<assets path="assets/week1" library="week1" exclude="*.fla|*.ogg" if="web" />
@@ -68,7 +69,6 @@
 	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.ogg" if="web" />
 	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.mp3" unless="web" />
 	<library name="songs" preload="true" />
-	<library name="shared" preload="true" />
 	<library name="tutorial" preload="true" />
 	<library name="week1" preload="true" />
 	<library name="week2" preload="true" />
@@ -87,8 +87,8 @@
 	<haxedef name="FLX_RECORD" />
 
 	<!-- Clean up the output -->
-	<haxedef name="no-traces" />
 	<!--
+		<haxedef name="echo-traces" />
 	-->
 	<haxedef name="ignore-inline" />
 	<haxeflag name="-w" value="-WDeprecated" />

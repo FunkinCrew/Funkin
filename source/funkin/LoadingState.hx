@@ -159,7 +159,7 @@ class LoadingState extends MusicBeatState
 
   static function getSongPath():String
   {
-    return Paths.inst(PlayState.instance.currentSong.songId);
+    return Paths.inst(PlayState.instance.currentSong.id);
   }
 
   inline static public function loadAndSwitchState(nextState:FlxState, shouldStopMusic = false):Void

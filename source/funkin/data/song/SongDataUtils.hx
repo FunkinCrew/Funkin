@@ -1,8 +1,8 @@
-package funkin.play.song;
+package funkin.data.song;
 
 import flixel.util.FlxSort;
-import funkin.play.song.SongData.SongEventData;
-import funkin.play.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.util.ClipboardUtil;
 import funkin.util.SerializerUtil;
 

@@ -1,7 +1,7 @@
 package funkin.play.song;
 
-import funkin.play.song.SongData.SongChartData;
-import funkin.play.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
 import funkin.util.SerializerUtil;
 import lime.utils.Bytes;
 import openfl.events.Event;

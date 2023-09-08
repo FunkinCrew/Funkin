@@ -104,7 +104,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     noteFrames = Paths.getSparrowAtlas(getNoteAssetPath(), getNoteAssetLibrary());
 
-    if (noteFrames == null) {
+    if (noteFrames == null)
+    {
       throw 'Could not load note frames for note style: $id';
     }
 
@@ -139,13 +140,13 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   function buildNoteAnimations(target:NoteSprite):Void
   {
     var leftData:AnimationData = fetchNoteAnimationData(LEFT);
-    target.animation.addByPrefix('purpleScroll', leftData.prefix);
+    target.animation.addByPrefix('purpleScroll', leftData.prefix, leftData.frameRate, leftData.looped, leftData.flipX, leftData.flipY);
     var downData:AnimationData = fetchNoteAnimationData(DOWN);
-    target.animation.addByPrefix('blueScroll', downData.prefix);
+    target.animation.addByPrefix('blueScroll', downData.prefix, downData.frameRate, downData.looped, downData.flipX, downData.flipY);
     var upData:AnimationData = fetchNoteAnimationData(UP);
-    target.animation.addByPrefix('greenScroll', upData.prefix);
+    target.animation.addByPrefix('greenScroll', upData.prefix, upData.frameRate, upData.looped, upData.flipX, upData.flipY);
     var rightData:AnimationData = fetchNoteAnimationData(RIGHT);
-    target.animation.addByPrefix('redScroll', rightData.prefix);
+    target.animation.addByPrefix('redScroll', rightData.prefix, rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
   }
 
   function fetchNoteAnimationData(dir:NoteDirection):AnimationData
@@ -302,7 +303,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return 'NoteStyle($id)';
   }
 
-  public function _fetchData(id:String):Null<NoteStyleData>
+  static function _fetchData(id:String):Null<NoteStyleData>
   {
     return NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
   }

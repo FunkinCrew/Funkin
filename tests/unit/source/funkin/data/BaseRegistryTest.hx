@@ -17,7 +17,10 @@ class BaseRegistryTest extends FunkinTest
   }
 
   @BeforeClass
-  public function beforeClass() {}
+  public function beforeClass()
+  {
+    FunkinAssert.initAssertTrace();
+  }
 
   @AfterClass
   public function afterClass() {}
@@ -118,7 +121,7 @@ class MyType implements IRegistryEntry<MyTypeData>
     return 'MyType($id)';
   }
 
-  public function _fetchData(id:String):Null<MyTypeData>
+  static function _fetchData(id:String):Null<MyTypeData>
   {
     return MyTypeRegistry.instance.parseEntryDataWithMigration(id, MyTypeRegistry.instance.fetchEntryVersion(id));
   }
@@ -153,17 +156,18 @@ class MyTypeRegistry extends BaseRegistry<MyType, MyTypeData>
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
     var parser = new json2object.JsonParser<MyTypeData>();
-    var jsonStr:String = loadEntryFile(id);
 
-    parser.fromJson(jsonStr);
+    switch (loadEntryFile(id))
+    {
+      case {fileName: fileName, contents: contents}:
+        parser.fromJson(contents, fileName);
+      default:
+        return null;
+    }
 
     if (parser.errors.length > 0)
     {
-      trace('[${registryId}] Failed to parse entry data: ${id}');
-      for (error in parser.errors)
-      {
-        trace(error);
-      }
+      printErrors(parser.errors, id);
       return null;
     }
     return parser.value;
@@ -177,31 +181,33 @@ class MyTypeRegistry extends BaseRegistry<MyType, MyTypeData>
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
     var parser = new json2object.JsonParser<MyTypeData_v0_1_x>();
-    var jsonStr:String = loadEntryFile(id);
 
-    parser.fromJson(jsonStr);
+    switch (loadEntryFile(id))
+    {
+      case {fileName: fileName, contents: contents}:
+        parser.fromJson(contents, fileName);
+      default:
+        return null;
+    }
 
     if (parser.errors.length > 0)
     {
-      trace('[${registryId}] Failed to parse entry data: ${id}');
-      for (error in parser.errors)
-      {
-        trace(error);
-      }
+      printErrors(parser.errors, id);
       return null;
     }
 
     var oldData:MyTypeData_v0_1_x = parser.value;
+    return migrateData_v0_1_x(oldData);
+  }
 
-    var result:MyTypeData =
-      {
-        version: DATA_VERSION,
-        id: '${oldData.id}',
-        name: oldData.name,
-        data: []
-      };
-
-    return result;
+  function migrateData_v0_1_x(input:MyTypeData_v0_1_x):MyTypeData
+  {
+    return {
+      version: DATA_VERSION,
+      id: '${input.id}',
+      name: input.name,
+      data: []
+    };
   }
 
   public override function parseEntryDataWithMigration(id:String, version:thx.semver.Version):Null<MyTypeData>

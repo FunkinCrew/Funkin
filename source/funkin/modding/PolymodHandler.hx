@@ -3,18 +3,19 @@ package funkin.modding;
 import funkin.util.macro.ClassMacro;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.song.SongData;
+import funkin.data.song.SongData;
 import funkin.play.stage.StageData;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
-import funkin.play.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventData.SongEventParser;
 import funkin.util.FileUtil;
 import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
 import funkin.play.cutscene.dialogue.SpeakerDataParser;
+import funkin.data.song.SongRegistry;
 
 class PolymodHandler
 {
@@ -290,13 +291,13 @@ class PolymodHandler
 
     // These MUST be imported at the top of the file and not referred to by fully qualified name,
     // to ensure build macros work properly.
+    SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
     SongEventParser.loadEventCache();
     ConversationDataParser.loadConversationCache();
     DialogueBoxDataParser.loadDialogueBoxCache();
     SpeakerDataParser.loadSpeakerCache();
-    SongDataParser.loadSongCache();
     StageDataParser.loadStageCache();
     CharacterDataParser.loadCharacterCache();
     ModuleHandler.loadModuleCache();

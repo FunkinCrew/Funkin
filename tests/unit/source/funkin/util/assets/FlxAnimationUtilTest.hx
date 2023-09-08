@@ -34,8 +34,8 @@ class FlxAnimationUtilTest extends FunkinTest
   public function testAddAtlasAnimation()
   {
     // Build a mock child class of FlxSprite
-    var mockSprite = mock(FlxSprite);
-    var mockAnim = mock(FlxAnimationController);
+    var mockSprite = Mockatoo.mock(FlxSprite);
+    var mockAnim = Mockatoo.mock(FlxAnimationController);
     mockSprite.animation = mockAnim;
 
     var animData:AnimationData =
@@ -85,8 +85,8 @@ class FlxAnimationUtilTest extends FunkinTest
   public function testAddAtlasAnimations()
   {
     // Build a mock child class of FlxSprite
-    var mockSprite = mock(FlxSprite);
-    var mockAnim = mock(FlxAnimationController);
+    var mockSprite = Mockatoo.mock(FlxSprite);
+    var mockAnim = Mockatoo.mock(FlxAnimationController);
     mockSprite.animation = mockAnim;
 
     var animData:Array<AnimationData> = [

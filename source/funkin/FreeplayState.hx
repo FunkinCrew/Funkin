@@ -20,6 +20,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import funkin.data.song.SongRegistry;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.Controls.Control;
@@ -30,7 +31,6 @@ import funkin.freeplayStuff.LetterSort;
 import funkin.freeplayStuff.SongMenuItem;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
-import funkin.play.song.SongData.SongDataParser;
 import funkin.shaderslmfao.AngleMask;
 import funkin.shaderslmfao.PureColor;
 import funkin.shaderslmfao.StrokeShader;
@@ -843,7 +843,8 @@ class FreeplayState extends MusicBeatSubState
       }*/
 
       PlayStatePlaylist.isStoryMode = false;
-      var targetSong:Song = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
+      var songId:String = songs[curSelected].songName.toLowerCase();
+      var targetSong:Song = SongRegistry.instance.fetchEntry(songId);
       var targetDifficulty:String = switch (curDifficulty)
       {
         case 0:

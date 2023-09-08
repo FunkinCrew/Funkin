@@ -15,5 +15,6 @@ interface IRegistryEntry<T>
 
   // Can't make an interface field private I guess.
   public final _data:T;
-  public function _fetchData(id:String):Null<T>;
+  // Can't make a static field required by an interface I guess.
+  // private static function _fetchData(id:String):Null<T>;
 }

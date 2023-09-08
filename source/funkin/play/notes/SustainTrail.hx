@@ -2,7 +2,7 @@ package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
-import funkin.play.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongNoteData;
 import flixel.util.FlxDirectionFlags;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;

@@ -3,8 +3,8 @@ package funkin.ui.debug.charting;
 import funkin.play.character.CharacterData;
 import funkin.util.Constants;
 import funkin.util.SerializerUtil;
-import funkin.play.song.SongData.SongChartData;
-import funkin.play.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
 import flixel.util.FlxTimer;
 import funkin.util.SortUtil;
 import funkin.input.Cursor;
@@ -13,9 +13,9 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.song.Song;
 import funkin.play.song.SongMigrator;
 import funkin.play.song.SongValidator;
-import funkin.play.song.SongData.SongDataParser;
-import funkin.play.song.SongData.SongPlayableChar;
-import funkin.play.song.SongData.SongTimeChange;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongPlayableChar;
+import funkin.data.song.SongData.SongTimeChange;
 import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.ui.components.Button;
@@ -112,23 +112,17 @@ class ChartEditorDialogHandler
     var splashTemplateContainer:Null<VBox> = dialog.findComponent('splashTemplateContainer', VBox);
     if (splashTemplateContainer == null) throw 'Could not locate splashTemplateContainer in Welcome dialog';
 
-    var songList:Array<String> = SongDataParser.listSongIds();
+    var songList:Array<String> = SongRegistry.instance.listEntryIds();
     songList.sort(SortUtil.alphabetically);
 
     for (targetSongId in songList)
     {
-      var songData:Null<Song> = SongDataParser.fetchSong(targetSongId);
-
+      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
       if (songData == null) continue;
 
-      var diffNormal:Null<SongDifficulty> = songData.getDifficulty('normal');
-      var songName:Null<String> = diffNormal?.songName;
-      if (songName == null)
-      {
-        var diffDefault:Null<SongDifficulty> = songData.getDifficulty();
-        songName = diffDefault?.songName;
-      }
-      if (songName == null)
+      var songName:Null<String> = songData.getDifficulty('normal')?.songName;
+      if (songName == null) songName = songData.getDifficulty()?.songName;
+      if (songName == null) // Still null?
       {
         trace('[WARN] Could not fetch song name for ${targetSongId}');
         continue;
@@ -508,9 +502,9 @@ class ChartEditorDialogHandler
     if (dialogNoteSkin == null) throw 'Could not locate dialogNoteSkin DropDown in Song Metadata dialog';
     dialogNoteSkin.onChange = function(event:UIEvent) {
       if (event.data.id == null) return;
-      state.currentSongMetadata.playData.noteSkin = event.data.id;
+      state.currentSongNoteSkin = event.data.id;
     };
-    state.currentSongMetadata.playData.noteSkin = 'funkin';
+    state.currentSongNoteSkin = 'funkin';
 
     var dialogBPM:Null<NumberStepper> = dialog.findComponent('dialogBPM', NumberStepper);
     if (dialogBPM == null) throw 'Could not locate dialogBPM NumberStepper in Song Metadata dialog';
@@ -520,7 +514,7 @@ class ChartEditorDialogHandler
       var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
       if (timeChanges == null || timeChanges.length == 0)
       {
-        timeChanges = [new SongTimeChange(-1, 0, event.value, 4, 4, [4, 4, 4, 4])];
+        timeChanges = [new SongTimeChange(0, event.value)];
       }
       else
       {
@@ -543,7 +537,7 @@ class ChartEditorDialogHandler
     };
 
     // Empty the character list.
-    state.currentSongMetadata.playData.playableChars = {};
+    state.currentSongMetadata.playData.playableChars = [];
     // Add at least one character group with no Remove button.
     dialogCharGrid.addComponent(buildCharGroup(state, 'bf'));
 
@@ -558,7 +552,8 @@ class ChartEditorDialogHandler
   {
     var groupKey:String = key;
 
-    var getCharData:Void->SongPlayableChar = function() {
+    var getCharData:Void->Null<SongPlayableChar> = function():Null<SongPlayableChar> {
+      if (state.currentSongMetadata.playData == null) return null;
       if (groupKey == null) groupKey = 'newChar${state.currentSongMetadata.playData.playableChars.keys().count()}';
 
       var result = state.currentSongMetadata.playData.playableChars.get(groupKey);
@@ -570,46 +565,53 @@ class ChartEditorDialogHandler
       return result;
     }
 
-    var moveCharGroup:String->Void = function(target:String) {
-      var charData = getCharData();
+    var moveCharGroup:String->Void = function(target:String):Void {
+      var charData:Null<SongPlayableChar> = getCharData();
+      if (charData == null) return;
+
+      if (state.currentSongMetadata.playData.playableChars == null) return;
       state.currentSongMetadata.playData.playableChars.remove(groupKey);
       state.currentSongMetadata.playData.playableChars.set(target, charData);
       groupKey = target;
     }
 
-    var removeGroup:Void->Void = function() {
+    var removeGroup:Void->Void = function():Void {
+      if (state?.currentSongMetadata?.playData?.playableChars == null) return;
       state.currentSongMetadata.playData.playableChars.remove(groupKey);
       if (removeFunc != null) removeFunc();
     }
 
-    var charData:SongPlayableChar = getCharData();
+    var charData:Null<SongPlayableChar> = getCharData();
 
     var charGroup:PropertyGroup = cast state.buildComponent(CHART_EDITOR_DIALOG_SONG_METADATA_CHARGROUP_LAYOUT);
 
     var charGroupPlayer:Null<DropDown> = charGroup.findComponent('charGroupPlayer', DropDown);
     if (charGroupPlayer == null) throw 'Could not locate charGroupPlayer DropDown in Song Metadata dialog';
-    charGroupPlayer.onChange = function(event:UIEvent) {
+    charGroupPlayer.onChange = function(event:UIEvent):Void {
+      if (charData != null) return;
       charGroup.text = event.data.text;
       moveCharGroup(event.data.id);
     };
 
     var charGroupOpponent:Null<DropDown> = charGroup.findComponent('charGroupOpponent', DropDown);
     if (charGroupOpponent == null) throw 'Could not locate charGroupOpponent DropDown in Song Metadata dialog';
-    charGroupOpponent.onChange = function(event:UIEvent) {
+    charGroupOpponent.onChange = function(event:UIEvent):Void {
+      if (charData == null) return;
       charData.opponent = event.data.id;
     };
-    charGroupOpponent.value = getCharData().opponent;
+    charGroupOpponent.value = charData.opponent;
 
     var charGroupGirlfriend:Null<DropDown> = charGroup.findComponent('charGroupGirlfriend', DropDown);
     if (charGroupGirlfriend == null) throw 'Could not locate charGroupGirlfriend DropDown in Song Metadata dialog';
-    charGroupGirlfriend.onChange = function(event:UIEvent) {
+    charGroupGirlfriend.onChange = function(event:UIEvent):Void {
+      if (charData == null) return;
       charData.girlfriend = event.data.id;
     };
-    charGroupGirlfriend.value = getCharData().girlfriend;
+    charGroupGirlfriend.value = charData.girlfriend;
 
     var charGroupRemove:Null<Button> = charGroup.findComponent('charGroupRemove', Button);
     if (charGroupRemove == null) throw 'Could not locate charGroupRemove Button in Song Metadata dialog';
-    charGroupRemove.onClick = function(event:UIEvent) {
+    charGroupRemove.onClick = function(event:UIEvent):Void {
       removeGroup();
     };
 
@@ -630,7 +632,8 @@ class ChartEditorDialogHandler
 
     for (charKey in state.currentSongMetadata.playData.playableChars.keys())
     {
-      var charData:SongPlayableChar = state.currentSongMetadata.playData.playableChars.get(charKey);
+      var charData:Null<SongPlayableChar> = state.currentSongMetadata.playData.playableChars.get(charKey);
+      if (charData == null) continue;
       charIdsForVocals.push(charKey);
       if (charData.opponent != null) charIdsForVocals.push(charData.opponent);
     }

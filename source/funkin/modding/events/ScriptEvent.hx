@@ -1,6 +1,6 @@
 package funkin.modding.events;
 
-import funkin.play.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongNoteData;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import funkin.play.notes.NoteSprite;
@@ -435,9 +435,9 @@ class SongEventScriptEvent extends ScriptEvent
    * The note associated with this event.
    * You cannot replace it, but you can edit it.
    */
-  public var event(default, null):funkin.play.song.SongData.SongEventData;
+  public var event(default, null):funkin.data.song.SongData.SongEventData;
 
-  public function new(event:funkin.play.song.SongData.SongEventData):Void
+  public function new(event:funkin.data.song.SongData.SongEventData):Void
   {
     super(ScriptEvent.SONG_EVENT, true);
     this.event = event;

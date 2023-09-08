@@ -1,5 +1,6 @@
 package funkin.util;
 
+import flixel.graphics.frames.FlxFrame;
 #if !macro
 import flixel.FlxBasic;
 import flixel.util.FlxSort;
@@ -39,6 +40,16 @@ class SortUtil
   public static inline function byStrumtime(order:Int, a:NoteSprite, b:NoteSprite)
   {
     return FlxSort.byValues(order, a.noteData.time, b.noteData.time);
+  }
+
+  /**
+   * Given two FlxFrames, sort their names alphabetically.
+   *
+   * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   */
+  public static inline function byFrameName(a:FlxFrame, b:FlxFrame)
+  {
+    return alphabetically(a.name, b.name);
   }
 
   /**

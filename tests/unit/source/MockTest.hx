@@ -30,8 +30,8 @@ class MockTest extends FunkinTest
   {
     // Test that mocking works.
 
-    var mockSprite = mockatoo.Mockatoo.mock(flixel.FlxSprite);
-    var mockAnim = mockatoo.Mockatoo.mock(flixel.animation.FlxAnimationController);
+    var mockSprite = Mockatoo.mock(flixel.FlxSprite);
+    var mockAnim = Mockatoo.mock(flixel.animation.FlxAnimationController);
     mockSprite.animation = mockAnim;
 
     var animData:funkin.data.animation.AnimationData =
@@ -44,12 +44,12 @@ class MockTest extends FunkinTest
 
     // Verify that the method was called once.
     // If not, a VerificationException will be thrown and the test will fail.
-    mockatoo.Mockatoo.verify(mockAnim.addByPrefix("testAnim", "blablabla", 24, false, false, false), times(1));
+    mockAnim.addByPrefix("testAnim", "blablabla", 24, false, false, false).verify(times(1));
 
     FunkinAssert.validateThrows(function() {
       // Attempt to verify the method was called.
       // This should FAIL, since we didn't call the method.
-      mockatoo.Mockatoo.verify(mockAnim.addByPrefix("testAnim", "blablabla", 24, false, false, false), times(1));
+      mockAnim.addByPrefix("testAnim", "blablabla", 24, false, false, false).verify(times(1));
     }, function(err) {
       return Std.isOfType(err, mockatoo.exception.VerificationException);
     });

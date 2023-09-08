@@ -36,13 +36,13 @@ import funkin.play.notes.NoteSprite;
 import funkin.play.notes.Strumline;
 import funkin.play.PlayState;
 import funkin.play.song.Song;
-import funkin.play.song.SongData.SongChartData;
-import funkin.play.song.SongData.SongDataParser;
-import funkin.play.song.SongData.SongEventData;
-import funkin.play.song.SongData.SongMetadata;
-import funkin.play.song.SongData.SongNoteData;
-import funkin.play.song.SongData.SongPlayableChar;
-import funkin.play.song.SongDataUtils;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongPlayableChar;
+import funkin.data.song.SongDataUtils;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
@@ -865,7 +865,7 @@ class ChartEditorState extends HaxeUIState
     var result:Null<SongChartData> = songChartData.get(selectedVariation);
     if (result == null)
     {
-      result = new SongChartData(1.0, [], []);
+      result = new SongChartData(["normal" => 1.0], [], ["normal" => []]);
       songChartData.set(selectedVariation, result);
     }
     return result;
@@ -4003,7 +4003,7 @@ class ChartEditorState extends HaxeUIState
    */
   public function loadSongAsTemplate(songId:String):Void
   {
-    var song:Null<Song> = SongDataParser.fetchSong(songId);
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
 
     if (song == null) return;
 
@@ -4021,7 +4021,7 @@ class ChartEditorState extends HaxeUIState
       var metadataClone = Reflect.copy(metadata);
       if (metadataClone != null) songMetadata.set(variation, metadataClone);
 
-      songChartData.set(variation, SongDataParser.parseSongChartData(songId, metadata.variation));
+      songChartData.set(variation, SongRegistry.instance.parseEntryChartData(songId, metadata.variation));
     }
 
     loadSong(songMetadata, songChartData);

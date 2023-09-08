@@ -127,4 +127,54 @@ class FunkinAssert
     };
     validateThrows(targetFunc, predicate, info);
   }
+
+  static var capturedTraces:Array<String> = [];
+
+  public static function initAssertTrace():Void
+  {
+    var oldTrace = haxe.Log.trace;
+    haxe.Log.trace = function(v:Dynamic, ?infos:haxe.PosInfos) {
+      onTrace(v, infos);
+      // oldTrace(v, infos);
+    };
+  }
+
+  public static function clearTraces():Void
+  {
+    capturedTraces = [];
+  }
+
+  @:nullSafety(Off) // Why isn't haxe.std null-safe?
+  static function onTrace(v:Dynamic, ?infos:haxe.PosInfos)
+  {
+    // var str:String = haxe.Log.formatOutput(v, infos);
+    var str:String = Std.string(v);
+    capturedTraces.push(str);
+
+    #if (sys && echo_traces)
+    Sys.println('[TESTLOG] $str');
+    #end
+  }
+
+  /**
+   * Check the first string that was traced and validate it.
+   * @param expected
+   */
+  public static inline function assertTrace(expected:String):Void
+  {
+    var actual:Null<String> = capturedTraces.shift();
+    Assert.isNotNull(actual);
+    Assert.areEqual(expected, actual);
+  }
+
+  /**
+   * Check the first string that was traced and validate it.
+   * @param expected
+   */
+  public static inline function assertLastTrace(expected:String):Void
+  {
+    var actual:Null<String> = capturedTraces.pop();
+    Assert.isNotNull(actual);
+    Assert.areEqual(expected, actual);
+  }
 }

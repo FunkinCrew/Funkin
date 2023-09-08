@@ -3,10 +3,13 @@ package funkin.play.event;
 import flixel.tweens.FlxTween;
 import flixel.FlxCamera;
 import flixel.tweens.FlxEase;
+// Data from the chart
+import funkin.data.song.SongData;
+import funkin.data.song.SongData.SongEventData;
+// Data from the event schema
 import funkin.play.event.SongEvent;
-import funkin.play.song.SongData;
-import funkin.play.event.SongEventData;
-import funkin.play.event.SongEventData.SongEventFieldType;
+import funkin.data.event.SongEventData.SongEventSchema;
+import funkin.data.event.SongEventData.SongEventFieldType;
 
 /**
  * This class represents a handler for configuring camera bop intensity and rate.

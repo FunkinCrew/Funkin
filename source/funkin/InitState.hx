@@ -17,11 +17,11 @@ import funkin.play.PlayStatePlaylist;
 import openfl.display.BitmapData;
 import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.play.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventData.SongEventParser;
 import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
 import funkin.play.cutscene.dialogue.SpeakerDataParser;
-import funkin.play.song.SongData.SongDataParser;
+import funkin.data.song.SongRegistry;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
@@ -197,13 +197,13 @@ class InitState extends FlxState
 
     // NOTE: Registries and data parsers must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
+    SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
     SongEventParser.loadEventCache();
     ConversationDataParser.loadConversationCache();
     DialogueBoxDataParser.loadDialogueBoxCache();
     SpeakerDataParser.loadSpeakerCache();
-    SongDataParser.loadSongCache();
     StageDataParser.loadStageCache();
     CharacterDataParser.loadCharacterCache();
     ModuleHandler.buildModuleCallbacks();
@@ -276,7 +276,7 @@ class InitState extends FlxState
    */
   function startSong(songId:String, difficultyId:String = 'normal'):Void
   {
-    var songData:funkin.play.song.Song = funkin.play.song.SongData.SongDataParser.fetchSong(songId);
+    var songData:funkin.play.song.Song = funkin.data.song.SongRegistry.instance.fetchEntry(songId);
 
     if (songData == null)
     {
@@ -312,7 +312,7 @@ class InitState extends FlxState
 
     var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    var targetSong:funkin.play.song.Song = funkin.play.song.SongData.SongDataParser.fetchSong(targetSongId);
+    var targetSong:funkin.play.song.Song = SongRegistry.instance.fetchEntry(targetSongId);
 
     LoadingState.loadAndSwitchState(new funkin.play.PlayState(
       {
