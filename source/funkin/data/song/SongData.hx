@@ -86,6 +86,11 @@ class SongMetadata
 
     return result;
   }
+
+  public function toString():String
+  {
+    return 'SongMetadata(${this.songName} by ${this.artist}, variation ${this.variation})';
+  }
 }
 
 enum abstract SongTimeFormat(String) from String to String
@@ -162,6 +167,11 @@ class SongTimeChange
     this.beatTime = beatTime == null ? DEFAULT_BEAT_TIME : beatTime;
     this.beatTuplets = beatTuplets == null ? DEFAULT_BEAT_TUPLETS : beatTuplets;
   }
+
+  public function toString():String
+  {
+    return 'SongTimeChange(${this.timeStamp}ms,${this.bpm}bpm)';
+  }
 }
 
 /**
@@ -232,6 +242,11 @@ class SongMusicData
 
     return result;
   }
+
+  public function toString():String
+  {
+    return 'SongMusicData(${this.songName} by ${this.artist}, variation ${this.variation})';
+  }
 }
 
 typedef SongPlayData =
@@ -270,6 +285,11 @@ class SongPlayableChar
     this.girlfriend = girlfriend;
     this.opponent = opponent;
     this.inst = inst;
+  }
+
+  public function toString():String
+  {
+    return 'SongPlayableChar(${this.girlfriend}, ${this.opponent}, ${this.inst})';
   }
 }
 
@@ -454,6 +474,11 @@ class SongEventData
   public function op_lessThanOrEquals(other:SongEventData):Bool
   {
     return this.time <= other.time;
+  }
+
+  public function toString():String
+  {
+    return 'SongEventData(${this.time}ms, ${this.event}: ${this.value})';
   }
 }
 
@@ -645,5 +670,11 @@ class SongNoteData
   public function op_lessThanOrEquals(other:SongNoteData):Bool
   {
     return this.time <= other.time;
+  }
+
+  public function toString():String
+  {
+    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
+      + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 }

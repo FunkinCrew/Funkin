@@ -3961,25 +3961,13 @@ class ChartEditorState extends HaxeUIState
       var variation = (metadata.variation == null || metadata.variation == '') ? 'default' : metadata.variation;
 
       // Clone to prevent modifying the original.
-      var metadataClone = Reflect.copy(metadata);
+      var metadataClone:SongMetadata = metadata.clone(variation);
       if (metadataClone != null) songMetadata.set(variation, metadataClone);
 
       songChartData.set(variation, SongRegistry.instance.parseEntryChartData(songId, metadata.variation));
     }
 
     loadSong(songMetadata, songChartData);
-
-    notePreviewDirty = true;
-    notePreviewViewportBoundsDirty = true;
-
-    if (audioInstTrack != null)
-    {
-      audioInstTrack.stop();
-      audioInstTrack = null;
-    }
-
-    Conductor.forceBPM(null); // Disable the forced BPM.
-    Conductor.mapTimeChanges(currentSongMetadata.timeChanges);
 
     sortChartData();
 
@@ -4024,6 +4012,8 @@ class ChartEditorState extends HaxeUIState
     Conductor.forceBPM(null); // Disable the forced BPM.
     Conductor.mapTimeChanges(currentSongMetadata.timeChanges);
 
+    notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
     difficultySelectDirty = true;
     opponentPreviewDirty = true;
     playerPreviewDirty = true;
