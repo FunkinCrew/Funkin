@@ -1845,13 +1845,20 @@ class ChartEditorState extends HaxeUIState
   **/
   function handleScrollKeybinds():Void
   {
-    // Don't scroll when the cursor is over the UI.
-    if (isCursorOverHaxeUI) return;
+    // Don't scroll when the cursor is over the UI, unless a playbar button (the << >> ones) is pressed.
+    if (isCursorOverHaxeUI && playbarButtonPressed == null) return;
 
     var scrollAmount:Float = 0; // Amount to scroll the grid.
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
     var shouldPause:Bool = false; // Whether to pause the song when scrolling.
     var shouldEase:Bool = false; // Whether to ease the scroll.
+
+    // Mouse Wheel = Scroll
+    if (FlxG.mouse.wheel != 0 && !FlxG.keys.pressed.CONTROL)
+    {
+      scrollAmount = -10 * FlxG.mouse.wheel;
+      shouldPause = true;
+    }
 
     // Up Arrow = Scroll Up
     if (upKeyHandler.activated && currentLiveInputStyle != LiveInputStyle.WASD)
@@ -1905,13 +1912,6 @@ class ChartEditorState extends HaxeUIState
     {
       playbarButtonPressed = '';
       scrollAmount = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
-      shouldPause = true;
-    }
-
-    // Mouse Wheel = Scroll
-    if (FlxG.mouse.wheel != 0 && !FlxG.keys.pressed.CONTROL)
-    {
-      scrollAmount = -10 * FlxG.mouse.wheel;
       shouldPause = true;
     }
 
