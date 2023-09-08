@@ -306,6 +306,7 @@ class ChartEditorDialogHandler
             if (state.loadInstrumentalFromBytes(selectedFile.bytes))
             {
               trace('Selected file: ' + selectedFile.fullPath);
+              #if !mac
               NotificationManager.instance.addNotification(
                 {
                   title: 'Success',
@@ -313,6 +314,7 @@ class ChartEditorDialogHandler
                   type: NotificationType.Success,
                   expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
                 });
+              #end
 
               dialog.hideDialog(DialogButton.APPLY);
               removeDropHandler(onDropFile);
@@ -321,6 +323,7 @@ class ChartEditorDialogHandler
             {
               trace('Failed to load instrumental (${selectedFile.fullPath})');
 
+              #if !mac
               NotificationManager.instance.addNotification(
                 {
                   title: 'Failure',
@@ -328,6 +331,7 @@ class ChartEditorDialogHandler
                   type: NotificationType.Error,
                   expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
                 });
+              #end
             }
           }
       });
@@ -339,6 +343,7 @@ class ChartEditorDialogHandler
       if (state.loadInstrumentalFromPath(path))
       {
         // Tell the user the load was successful.
+        #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Success',
@@ -346,6 +351,7 @@ class ChartEditorDialogHandler
             type: NotificationType.Success,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
+        #end
 
         dialog.hideDialog(DialogButton.APPLY);
         removeDropHandler(onDropFile);
@@ -362,6 +368,7 @@ class ChartEditorDialogHandler
         }
 
         // Tell the user the load was successful.
+        #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Failure',
@@ -369,6 +376,7 @@ class ChartEditorDialogHandler
             type: NotificationType.Error,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
+        #end
       }
     };
 
@@ -656,6 +664,7 @@ class ChartEditorDialogHandler
         if (state.loadVocalsFromPath(path, charKey))
         {
           // Tell the user the load was successful.
+          #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Success',
@@ -663,6 +672,7 @@ class ChartEditorDialogHandler
               type: NotificationType.Success,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
+          #end
           vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
           dialogNoVocals.hidden = true;
           removeDropHandler(onDropFile);
@@ -679,6 +689,7 @@ class ChartEditorDialogHandler
           }
 
           // Vocals failed to load.
+          #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Failure',
@@ -686,6 +697,7 @@ class ChartEditorDialogHandler
               type: NotificationType.Error,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
+          #end
 
           vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
         }
@@ -811,6 +823,7 @@ class ChartEditorDialogHandler
       if (songMetadataVariation == null)
       {
         // Tell the user the load was not successful.
+        #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Failure',
@@ -818,12 +831,14 @@ class ChartEditorDialogHandler
             type: NotificationType.Error,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
+        #end
         return;
       }
 
       songMetadata.set(variation, songMetadataVariation);
 
       // Tell the user the load was successful.
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Success',
@@ -831,6 +846,7 @@ class ChartEditorDialogHandler
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
 
       label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
 
@@ -852,6 +868,7 @@ class ChartEditorDialogHandler
             songMetadata.set(variation, songMetadataVariation);
 
             // Tell the user the load was successful.
+            #if !mac
             NotificationManager.instance.addNotification(
               {
                 title: 'Success',
@@ -859,6 +876,7 @@ class ChartEditorDialogHandler
                 type: NotificationType.Success,
                 expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
               });
+            #end
 
             label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
 
@@ -881,6 +899,7 @@ class ChartEditorDialogHandler
       state.noteDisplayDirty = true;
 
       // Tell the user the load was successful.
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Success',
@@ -888,6 +907,7 @@ class ChartEditorDialogHandler
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
 
       label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
     };
@@ -909,6 +929,7 @@ class ChartEditorDialogHandler
             state.noteDisplayDirty = true;
 
             // Tell the user the load was successful.
+            #if !mac
             NotificationManager.instance.addNotification(
               {
                 title: 'Success',
@@ -916,6 +937,7 @@ class ChartEditorDialogHandler
                 type: NotificationType.Success,
                 expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
               });
+            #end
 
             label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
           }
@@ -995,6 +1017,7 @@ class ChartEditorDialogHandler
           state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
           dialog.hideDialog(DialogButton.APPLY);
+          #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Success',
@@ -1002,6 +1025,7 @@ class ChartEditorDialogHandler
               type: NotificationType.Success,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
+          #end
         }
       });
     }
@@ -1015,6 +1039,7 @@ class ChartEditorDialogHandler
       state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
       dialog.hideDialog(DialogButton.APPLY);
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Success',
@@ -1022,6 +1047,7 @@ class ChartEditorDialogHandler
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
     };
 
     addDropHandler(importBox, onDropFile);

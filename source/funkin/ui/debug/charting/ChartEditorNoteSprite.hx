@@ -143,7 +143,7 @@ class ChartEditorNoteSprite extends FlxSprite
     return this.noteData;
   }
 
-  public function updateNotePosition(?origin:FlxObject)
+  public function updateNotePosition(?origin:FlxObject):Void
   {
     if (this.noteData == null) return;
 
@@ -173,9 +173,7 @@ class ChartEditorNoteSprite extends FlxSprite
     if (this.noteData.stepTime >= 0)
     {
       // noteData.stepTime is a calculated value which accounts for BPM changes
-      var stepTime:Float = this.noteData.stepTime;
-      var roundedStepTime:Float = Math.floor(stepTime + 0.01); // Add epsilon to fix rounding issues
-      this.y = roundedStepTime * ChartEditorState.GRID_SIZE;
+      this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
     }
 
     if (origin != null)
