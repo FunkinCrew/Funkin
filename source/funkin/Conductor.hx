@@ -290,7 +290,7 @@ class Conductor
 
     if (timeChanges.length > 0)
     {
-      trace('Done mapping time changes: ${timeChanges}' + timeChanges);
+      trace('Done mapping time changes: ${timeChanges}');
     }
 
     // Update currentStepTime
