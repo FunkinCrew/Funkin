@@ -125,7 +125,7 @@ class ChartEditorThemeHandler
     // 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
     // This gets reused to fill the screen.
     var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT);
-    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure * state.currentZoomLevel);
+    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure);
     state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
 
     // Selection borders

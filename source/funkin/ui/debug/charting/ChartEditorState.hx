@@ -183,8 +183,6 @@ class ChartEditorState extends HaxeUIState
    * INSTANCE DATA
    */
   // ==============================
-  public var currentZoomLevel:Float = 1.0;
-
   var noteSnapQuantIndex:Int = 3;
 
   public var noteSnapQuant(get, never):Int;
@@ -1768,8 +1766,7 @@ class ChartEditorState extends HaxeUIState
 
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();
-    // handleZoom();
-    // handleSnap();
+    handleSnap();
     handleCursor();
 
     handleMenubar();
@@ -1999,37 +1996,14 @@ class ChartEditorState extends HaxeUIState
     if (shouldPause) stopAudioPlayback();
   }
 
-  function handleZoom():Void
-  {
-    if (FlxG.keys.justPressed.MINUS)
-    {
-      currentZoomLevel /= 2;
-
-      // Update the grid.
-      ChartEditorThemeHandler.updateTheme(this);
-      // Update the note positions.
-      noteDisplayDirty = true;
-    }
-
-    if (FlxG.keys.justPressed.PLUS)
-    {
-      currentZoomLevel *= 2;
-
-      // Update the grid.
-      ChartEditorThemeHandler.updateTheme(this);
-      // Update the note positions.
-      noteDisplayDirty = true;
-    }
-  }
-
   function handleSnap():Void
   {
-    if (FlxG.keys.justPressed.LEFT)
+    if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
     {
       noteSnapQuantIndex--;
     }
 
-    if (FlxG.keys.justPressed.RIGHT)
+    if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
     {
       noteSnapQuantIndex++;
     }
@@ -2555,8 +2529,7 @@ class ChartEditorState extends HaxeUIState
 
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
-            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0,
-              selectedNoteKind);
+            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
 
             if (cursorColumn != noteData.data || selectedNoteKind != noteData.kind)
             {
@@ -2892,6 +2865,8 @@ class ChartEditorState extends HaxeUIState
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
 
     setUIValue('playbarSongRemaining', songRemainingString);
+
+    setUIValue('playbarNoteSnap', '1/${noteSnapQuant}');
   }
 
   /**
@@ -3090,6 +3065,16 @@ class ChartEditorState extends HaxeUIState
         refreshSongMetadataToolbox();
       }
     }
+
+    #if !mac
+    NotificationManager.instance.addNotification(
+      {
+        title: 'Switch Difficulty',
+        body: 'Switched difficulty to ${selectedDifficulty.toTitleCase()}',
+        type: NotificationType.Success,
+        expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+      });
+    #end
   }
 
   /**
