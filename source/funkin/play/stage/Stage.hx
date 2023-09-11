@@ -276,8 +276,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     {
       namedProps.set(name, prop);
       prop.name = name;
-      FlxG.debugger.track(prop, name);
-      FlxG.debugger.track(prop.scale, name + '.scale');
     }
     this.add(prop);
   }
