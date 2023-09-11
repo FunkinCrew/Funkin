@@ -142,8 +142,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     {
       // noteData.stepTime is a calculated value which accounts for BPM changes
       var stepTime:Float = this.noteData.stepTime;
-      var roundedStepTime:Float = Math.floor(stepTime + 0.01); // Add epsilon to fix rounding issues
-      this.y = roundedStepTime * ChartEditorState.GRID_SIZE;
+      // Add epsilon to fix rounding issues?
+      // var roundedStepTime:Float = Math.floor((stepTime + 0.01) / noteSnapRatio) * noteSnapRatio;
+      this.y = stepTime * ChartEditorState.GRID_SIZE;
     }
 
     this.x += ChartEditorState.GRID_SIZE / 2;
