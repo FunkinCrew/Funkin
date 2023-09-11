@@ -2414,7 +2414,7 @@ class ChartEditorState extends HaxeUIState
         // Handle extending the note as you drag.
 
         // TODO: This should be beat snapped?
-        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorMs) - currentPlaceNoteData.stepTime;
+        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorSnappedMs) - currentPlaceNoteData.stepTime;
 
         // Without this, the newly placed note feels too short compared to the user's input.
         var INCREMENT:Float = 1.0;
@@ -2508,14 +2508,14 @@ class ChartEditorState extends HaxeUIState
                 {
                   // Create an event and place it in the chart.
                   // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorMs, selectedEventKind, selectedEventData);
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, selectedEventKind, selectedEventData);
 
                   performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
                 }
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, selectedNoteKind);
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -2598,8 +2598,7 @@ class ChartEditorState extends HaxeUIState
 
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
-            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0,
-              selectedNoteKind);
+            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
 
             if (cursorColumn != noteData.data || selectedNoteKind != noteData.kind)
             {
