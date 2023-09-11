@@ -2738,11 +2738,12 @@ class ChartEditorState extends HaxeUIState
         trace('Creating new Note... (${renderedNotes.members.length})');
         noteSprite.parentState = this;
 
-        // Setting note data resets position relative to the grid so we fix that.
-        noteSprite.updateNotePosition(renderedNotes);
-
         // The note sprite handles animation playback and positioning.
         noteSprite.noteData = noteData;
+
+        // Setting note data resets the position relative to the group!
+        // If we don't update the note position AFTER setting the note data, the note will be rendered offscreen at y=5000.
+        noteSprite.updateNotePosition(renderedNotes);
 
         // Add hold notes that are now visible (and not already displayed).
         if (noteSprite.noteData != null && noteSprite.noteData.length > 0 && displayedHoldNoteData.indexOf(noteSprite.noteData) == -1)
