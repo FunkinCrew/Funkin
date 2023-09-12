@@ -135,6 +135,7 @@ class StoryMenuState extends MusicBeatState
     this.bgColor = FlxColor.BLACK;
 
     levelTitles = new FlxTypedGroup<LevelTitle>();
+    levelTitles.zIndex = 15;
     add(levelTitles);
 
     updateBackground();
@@ -157,17 +158,20 @@ class StoryMenuState extends MusicBeatState
 
     scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
     scoreText.setFormat("VCR OSD Mono", 32);
+    scoreText.zIndex = 1000;
     add(scoreText);
 
     modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
     modeText.setFormat("VCR OSD Mono", 32);
     modeText.screenCenter(X);
     modeText.visible = hasModdedLevels();
+    modeText.zIndex = 1000;
     add(modeText);
 
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
     levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
+    levelTitleText.zIndex = 1000;
     add(levelTitleText);
 
     buildLevelTitles();
