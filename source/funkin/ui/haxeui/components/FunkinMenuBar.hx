@@ -18,15 +18,7 @@ class FunkinMenuBar extends MenuBar
     registerListeners();
   }
 
-  private function registerListeners():Void
-  {
-    var builder = cast(this._compositeBuilder, MenuBar.Builder);
-    for (button in builder._buttons)
-    {
-      button.onMouseOver = handleMouseOver;
-      button.onMouseOut = handleMouseOut;
-    }
-  }
+  private function registerListeners():Void {}
 
   private function handleMouseOver(event:MouseEvent)
   {

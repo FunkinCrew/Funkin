@@ -1877,13 +1877,15 @@ class ChartEditorState extends HaxeUIState
     if (pageUpKeyHandler.activated)
     {
       var measureHeight:Float = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
-      var targetScrollPosition:Float = Math.floor(scrollPositionInPixels / measureHeight) * measureHeight;
+      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
+      var targetScrollPosition:Float = Math.floor(playheadPos / measureHeight) * measureHeight;
       // If we would move less than one grid, instead move to the top of the previous measure.
-      if (Math.abs(targetScrollPosition - scrollPositionInPixels) < GRID_SIZE)
+      var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
+      if (targetScrollAmount < GRID_SIZE)
       {
-        targetScrollPosition -= GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+        targetScrollPosition -= GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.beatsPerMeasure;
       }
-      scrollAmount = targetScrollPosition - scrollPositionInPixels;
+      scrollAmount = targetScrollPosition - playheadPos;
 
       shouldPause = true;
     }
@@ -1898,13 +1900,15 @@ class ChartEditorState extends HaxeUIState
     if (pageDownKeyHandler.activated)
     {
       var measureHeight:Float = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
-      var targetScrollPosition:Float = Math.ceil(scrollPositionInPixels / measureHeight) * measureHeight;
+      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
+      var targetScrollPosition:Float = Math.ceil(playheadPos / measureHeight) * measureHeight;
       // If we would move less than one grid, instead move to the top of the next measure.
-      if (Math.abs(targetScrollPosition - scrollPositionInPixels) < GRID_SIZE)
+      var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
+      if (targetScrollAmount < GRID_SIZE)
       {
-        targetScrollPosition += GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+        targetScrollPosition += GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.beatsPerMeasure;
       }
-      scrollAmount = targetScrollPosition - scrollPositionInPixels;
+      scrollAmount = targetScrollPosition - playheadPos;
 
       shouldPause = true;
     }
