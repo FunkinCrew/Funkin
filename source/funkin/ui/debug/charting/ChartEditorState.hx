@@ -1220,6 +1220,9 @@ class ChartEditorState extends HaxeUIState
     // Set the z-index of the HaxeUI.
     this.component.zIndex = 100;
 
+    // Show the mouse cursor.
+    Cursor.show();
+
     fixCamera();
 
     // Get rid of any music from the previous state.
@@ -1912,13 +1915,15 @@ class ChartEditorState extends HaxeUIState
     if (pageUpKeyHandler.activated)
     {
       var measureHeight:Float = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
-      var targetScrollPosition:Float = Math.floor(scrollPositionInPixels / measureHeight) * measureHeight;
+      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
+      var targetScrollPosition:Float = Math.floor(playheadPos / measureHeight) * measureHeight;
       // If we would move less than one grid, instead move to the top of the previous measure.
-      if (Math.abs(targetScrollPosition - scrollPositionInPixels) < GRID_SIZE)
+      var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
+      if (targetScrollAmount < GRID_SIZE)
       {
-        targetScrollPosition -= GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+        targetScrollPosition -= GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.beatsPerMeasure;
       }
-      scrollAmount = targetScrollPosition - scrollPositionInPixels;
+      scrollAmount = targetScrollPosition - playheadPos;
 
       shouldPause = true;
     }
@@ -1933,13 +1938,15 @@ class ChartEditorState extends HaxeUIState
     if (pageDownKeyHandler.activated)
     {
       var measureHeight:Float = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
-      var targetScrollPosition:Float = Math.ceil(scrollPositionInPixels / measureHeight) * measureHeight;
+      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
+      var targetScrollPosition:Float = Math.ceil(playheadPos / measureHeight) * measureHeight;
       // If we would move less than one grid, instead move to the top of the next measure.
-      if (Math.abs(targetScrollPosition - scrollPositionInPixels) < GRID_SIZE)
+      var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
+      if (targetScrollAmount < GRID_SIZE)
       {
-        targetScrollPosition += GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+        targetScrollPosition += GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.beatsPerMeasure;
       }
-      scrollAmount = targetScrollPosition - scrollPositionInPixels;
+      scrollAmount = targetScrollPosition - playheadPos;
 
       shouldPause = true;
     }
@@ -2058,6 +2065,11 @@ class ChartEditorState extends HaxeUIState
 
     if (shouldHandleCursor)
     {
+      // Over the course of this big conditional block,
+      // we determine what the cursor should look like,
+      // and fall back to the default cursor if none of the conditions are met.
+      var targetCursorMode:Null<CursorMode> = null;
+
       if (gridTiledSprite == null) throw "ERROR: Tried to handle cursor, but gridTiledSprite is null! Check ChartEditorState.buildGrid()";
 
       var overlapsGrid:Bool = FlxG.mouse.overlaps(gridTiledSprite);
@@ -2067,9 +2079,9 @@ class ChartEditorState extends HaxeUIState
       var cursorY:Float = FlxG.mouse.screenY - gridTiledSprite.y;
 
       var overlapsSelectionBorder:Bool = overlapsGrid
-        && (cursorX % 40) < (GRID_SELECTION_BORDER_WIDTH / 2)
+        && ((cursorX % 40) < (GRID_SELECTION_BORDER_WIDTH / 2)
           || (cursorX % 40) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2))
-            || (cursorY % 40) < (GRID_SELECTION_BORDER_WIDTH / 2) || (cursorY % 40) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2));
+            || (cursorY % 40) < (GRID_SELECTION_BORDER_WIDTH / 2) || (cursorY % 40) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2)));
 
       if (FlxG.mouse.justPressed)
       {
@@ -2085,6 +2097,8 @@ class ChartEditorState extends HaxeUIState
         else if (!overlapsGrid || overlapsSelectionBorder)
         {
           selectionBoxStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+          // Drawing selection box.
+          targetCursorMode = Crosshair;
         }
         else
         {
@@ -2093,23 +2107,6 @@ class ChartEditorState extends HaxeUIState
           // Deselect all items.
           performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
         }
-      }
-
-      if (gridPlayheadScrollAreaPressed)
-      {
-        Cursor.cursorMode = Grabbing;
-      }
-      else if (notePreviewScrollAreaStartPos != null)
-      {
-        Cursor.cursorMode = Pointer;
-      }
-      else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
-      {
-        Cursor.cursorMode = Pointer;
-      }
-      else
-      {
-        Cursor.cursorMode = Default;
       }
 
       if (gridPlayheadScrollAreaPressed && FlxG.mouse.released)
@@ -2128,6 +2125,9 @@ class ChartEditorState extends HaxeUIState
         // Move the playhead to the cursor position.
         this.playheadPositionInPixels = FlxG.mouse.screenY - MENU_BAR_HEIGHT - GRID_TOP_PAD;
         moveSongToScrollPosition();
+
+        // Cursor should be a grabby hand.
+        if (targetCursorMode == null) targetCursorMode = Grabbing;
       }
 
       // The song position of the cursor, in steps.
@@ -2286,6 +2286,8 @@ class ChartEditorState extends HaxeUIState
             selectionRect.width = Math.abs(FlxG.mouse.screenX - selectionBoxStartPos.x);
             selectionRect.height = Math.abs(FlxG.mouse.screenY - selectionBoxStartPos.y);
             setSelectionBoxBounds(selectionRect);
+
+            targetCursorMode = Crosshair;
           }
         }
         else if (FlxG.mouse.justReleased)
@@ -2377,7 +2379,9 @@ class ChartEditorState extends HaxeUIState
       }
       else if (notePreviewScrollAreaStartPos != null)
       {
-        trace('Updating current song time while clicking and holding...');
+        // Player is clicking and holding on note preview to scrub around.
+        targetCursorMode = Grabbing;
+
         var clickedPosInPixels:Float = FlxMath.remapToRange(FlxG.mouse.screenY, (notePreview?.y ?? 0.0),
           (notePreview?.y ?? 0.0) + (notePreview?.height ?? 0.0), 0, songLengthInPixels);
 
@@ -2547,8 +2551,6 @@ class ChartEditorState extends HaxeUIState
         // Handle grid cursor.
         if (overlapsGrid && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
         {
-          Cursor.cursorMode = Pointer;
-
           // Indicate that we can place a note here.
 
           if (cursorColumn == eventColumn)
@@ -2569,6 +2571,8 @@ class ChartEditorState extends HaxeUIState
             gridGhostEvent.visible = true;
             gridGhostEvent.eventData = eventData;
             gridGhostEvent.updateEventPosition(renderedEvents);
+
+            targetCursorMode = Cell;
           }
           else
           {
@@ -2589,32 +2593,58 @@ class ChartEditorState extends HaxeUIState
             gridGhostNote.visible = true;
             gridGhostNote.noteData = noteData;
             gridGhostNote.updateNotePosition(renderedNotes);
-          }
 
-          // gridCursor.visible = true;
-          // // X and Y are the cursor position relative to the grid, snapped to the top left of the grid square.
-          // gridCursor.x = Math.floor(cursorX / GRID_SIZE) * GRID_SIZE + gridTiledSprite.x + (GRID_SELECTION_BORDER_WIDTH / 2);
-          // gridCursor.y = cursorStep * GRID_SIZE + gridTiledSprite.y + (GRID_SELECTION_BORDER_WIDTH / 2);
+            targetCursorMode = Cell;
+          }
         }
         else
         {
           if (gridGhostNote != null) gridGhostNote.visible = false;
           if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
           if (gridGhostEvent != null) gridGhostEvent.visible = false;
-          Cursor.cursorMode = Default;
         }
       }
+
+      if (targetCursorMode == null)
+      {
+        if (FlxG.mouse.pressed)
+        {
+          if (overlapsSelectionBorder)
+          {
+            targetCursorMode = Crosshair;
+          }
+        }
+        else
+        {
+          if (FlxG.mouse.overlaps(notePreview))
+          {
+            targetCursorMode = Pointer;
+          }
+          else if (FlxG.mouse.overlaps(gridPlayheadScrollArea))
+          {
+            targetCursorMode = Pointer;
+          }
+          else if (overlapsSelectionBorder)
+          {
+            targetCursorMode = Crosshair;
+          }
+          else if (overlapsGrid)
+          {
+            targetCursorMode = Cell;
+          }
+        }
+      }
+
+      // Actually set the cursor mode to the one we specified earlier.
+      Cursor.cursorMode = targetCursorMode ?? Default;
     }
     else
     {
       if (gridGhostNote != null) gridGhostNote.visible = false;
       if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
       if (gridGhostEvent != null) gridGhostEvent.visible = false;
-    }
 
-    if (isCursorOverHaxeUIButton && Cursor.cursorMode == Default)
-    {
-      Cursor.cursorMode = Pointer;
+      // Do not set Cursor.cursorMode here, because it will be set by the HaxeUI.
     }
   }
 
@@ -2861,10 +2891,10 @@ class ChartEditorState extends HaxeUIState
       }
 
       // Sort the notes DESCENDING. This keeps the sustain behind the associated note.
-      renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING);
+      renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
 
       // Sort the events DESCENDING. This keeps the sustain behind the associated note.
-      renderedEvents.sort(FlxSort.byY, FlxSort.DESCENDING);
+      renderedEvents.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
     }
 
     // Add a debug value which displays the current size of the note pool.
@@ -4196,10 +4226,12 @@ class ChartEditorState extends HaxeUIState
 
   function sortChartData():Void
   {
+    // TODO: .insertionSort()
     currentSongChartNoteData.sort(function(a:SongNoteData, b:SongNoteData):Int {
       return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
     });
 
+    // TODO: .insertionSort()
     currentSongChartEventData.sort(function(a:SongEventData, b:SongEventData):Int {
       return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
     });
@@ -4246,6 +4278,9 @@ class ChartEditorState extends HaxeUIState
     super.destroy();
 
     cleanupAutoSave();
+
+    // Hide the mouse cursor on other states.
+    Cursor.hide();
 
     @:privateAccess
     ChartEditorNoteSprite.noteFrameCollection = null;

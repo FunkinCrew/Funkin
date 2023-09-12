@@ -179,7 +179,7 @@ class SongMigrator
     songMetadata.playData.playableChars = [];
     try
     {
-      Reflect.setField(songMetadata.playData.playableChars, songData.song.player1, new SongPlayableChar('', songData.song.player2));
+      songMetadata.playData.playableChars.set(songData.song.player1, new SongPlayableChar('', songData.song.player2));
     }
     catch (e)
     {

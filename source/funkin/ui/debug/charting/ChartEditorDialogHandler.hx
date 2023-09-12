@@ -6,6 +6,7 @@ import funkin.util.SerializerUtil;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import flixel.util.FlxTimer;
+import funkin.ui.haxeui.components.FunkinLink;
 import funkin.util.SortUtil;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
@@ -128,7 +129,7 @@ class ChartEditorDialogHandler
         continue;
       }
 
-      var linkTemplateSong:Link = new Link();
+      var linkTemplateSong:Link = new FunkinLink();
       linkTemplateSong.text = songName;
       linkTemplateSong.onClick = function(_event) {
         dialog.hideDialog(DialogButton.CANCEL);
@@ -835,6 +836,14 @@ class ChartEditorDialogHandler
         songVariationMetadataEntryLabel.text = 'Click to browse for <song>-metadata-${variation}.json file.';
         #end
 
+        songVariationMetadataEntry.onMouseOver = function(_event) {
+          songVariationMetadataEntry.swapClass('upload-bg', 'upload-bg-hover');
+          Cursor.cursorMode = Pointer;
+        }
+        songVariationMetadataEntry.onMouseOut = function(_event) {
+          songVariationMetadataEntry.swapClass('upload-bg-hover', 'upload-bg');
+          Cursor.cursorMode = Default;
+        }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
         #if FILE_DROP_SUPPORTED
         addDropHandler(songVariationMetadataEntry, onDropFileMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel));
@@ -851,6 +860,14 @@ class ChartEditorDialogHandler
         songVariationChartDataEntryLabel.text = 'Click to browse for <song>-chart-${variation}.json file.';
         #end
 
+        songVariationChartDataEntry.onMouseOver = function(_event) {
+          songVariationChartDataEntry.swapClass('upload-bg', 'upload-bg-hover');
+          Cursor.cursorMode = Pointer;
+        }
+        songVariationChartDataEntry.onMouseOut = function(_event) {
+          songVariationChartDataEntry.swapClass('upload-bg-hover', 'upload-bg');
+          Cursor.cursorMode = Default;
+        }
         songVariationChartDataEntry.onClick = onClickChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel);
         #if FILE_DROP_SUPPORTED
         addDropHandler(songVariationChartDataEntry, onDropFileChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel));
@@ -1019,6 +1036,14 @@ class ChartEditorDialogHandler
 
     metadataEntry.onClick = onClickMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel);
     addDropHandler(metadataEntry, onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel));
+    metadataEntry.onMouseOver = function(_event) {
+      metadataEntry.swapClass('upload-bg', 'upload-bg-hover');
+      Cursor.cursorMode = Pointer;
+    }
+    metadataEntry.onMouseOut = function(_event) {
+      metadataEntry.swapClass('upload-bg-hover', 'upload-bg');
+      Cursor.cursorMode = Default;
+    }
 
     chartContainerA.addComponent(metadataEntry);
 
@@ -1065,7 +1090,6 @@ class ChartEditorDialogHandler
       importBox.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
     }
-
     importBox.onMouseOut = function(_event) {
       importBox.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
