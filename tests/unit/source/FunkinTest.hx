@@ -11,6 +11,7 @@ import massive.munit.Assert;
 /**
  * @see https://github.com/HaxeFlixel/flixel/tree/dev/tests/unit
  */
+@:nullSafety
 class FunkinTest
 {
   public static final MS_PER_STEP:Float = 1.0 / 60.0 * 1000;
@@ -19,7 +20,7 @@ class FunkinTest
   static inline var TICKS_PER_FRAME:UInt = 25;
   static var totalSteps:UInt = 0;
 
-  var destroyable:IFlxDestroyable;
+  var destroyable:Null<IFlxDestroyable> = null;
 
   public function new() {}
 

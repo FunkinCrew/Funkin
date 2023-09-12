@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.tools.ArrayTools;
 
+@:nullSafety
 @:access(funkin.util.tools.ArrayTools)
 class ArraySortToolsTest extends FunkinTest
 {
@@ -54,21 +55,30 @@ class ArraySortToolsTest extends FunkinTest
 
     // Just make sure these don't crash.
     ArraySortTools.mergeSort([], compare);
+  }
+
+  @Test
+  @:nullSafety(Off)
+  public function testMergeSortNull()
+  {
+    var testArray:Array<Int> = [5, 4, 3, 2, 1];
+
+    function compare(a:Int, b:Int)
+    {
+      return a - b;
+    }
+
+    // Just make sure these don't crash.
     ArraySortTools.mergeSort(null, compare);
     ArraySortTools.mergeSort([], null);
     ArraySortTools.mergeSort(null, null);
 
     // Make sure these throw an exception.
-    try
-    {
+    FunkinAssert.validateThrows(function() {
       ArraySortTools.mergeSort(testArray, null);
-
-      Assert.fail("Function should have thrown an exception.");
-    }
-    catch (e)
-    {
-      Assert.areEqual("No comparison function provided.", e);
-    }
+    }, function(err) {
+      return err == 'No comparison function provided.';
+    });
   }
 
   @Test
@@ -97,6 +107,18 @@ class ArraySortToolsTest extends FunkinTest
     Assert.areEqual(testArray2[1], 6);
     Assert.areEqual(testArray2[2], 9);
     Assert.areEqual(testArray2[3], 12);
+  }
+
+  @Test
+  @:nullSafety(Off)
+  public function testQuickSortNull()
+  {
+    var testArray:Array<Int> = [5, 4, 3, 2, 1];
+
+    function compare(a:Int, b:Int)
+    {
+      return a - b;
+    }
 
     // Just make sure these don't crash.
     ArraySortTools.quickSort([], compare);
@@ -105,16 +127,11 @@ class ArraySortToolsTest extends FunkinTest
     ArraySortTools.quickSort(null, null);
 
     // Make sure these throw an exception.
-    try
-    {
+    FunkinAssert.validateThrows(function() {
       ArraySortTools.quickSort(testArray, null);
-
-      Assert.fail("Function should have thrown an exception.");
-    }
-    catch (e)
-    {
-      Assert.areEqual("No comparison function provided.", e);
-    }
+    }, function(err) {
+      return err == 'No comparison function provided.';
+    });
   }
 
   @Test
@@ -143,6 +160,18 @@ class ArraySortToolsTest extends FunkinTest
     Assert.areEqual(testArray2[1], 6);
     Assert.areEqual(testArray2[2], 9);
     Assert.areEqual(testArray2[3], 12);
+  }
+
+  @Test
+  @:nullSafety(Off)
+  public function testInsertionSortNull()
+  {
+    var testArray:Array<Int> = [5, 4, 3, 2, 1];
+
+    function compare(a:Int, b:Int)
+    {
+      return a - b;
+    }
 
     // Just make sure these don't crash.
     ArraySortTools.insertionSort([], compare);
@@ -151,15 +180,10 @@ class ArraySortToolsTest extends FunkinTest
     ArraySortTools.insertionSort(null, null);
 
     // Make sure these throw an exception.
-    try
-    {
+    FunkinAssert.validateThrows(function() {
       ArraySortTools.insertionSort(testArray, null);
-
-      Assert.fail("Function should have thrown an exception.");
-    }
-    catch (e)
-    {
-      Assert.areEqual("No comparison function provided.", e);
-    }
+    }, function(err) {
+      return err == 'No comparison function provided.';
+    });
   }
 }

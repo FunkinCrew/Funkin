@@ -6,6 +6,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.assets.DataAssets;
 
+@:nullSafety
 @:access(funkin.util.assets.DataAssets)
 class DataAssetsTest extends FunkinTest
 {

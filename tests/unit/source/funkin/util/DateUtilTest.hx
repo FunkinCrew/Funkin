@@ -5,6 +5,7 @@ import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
 import funkin.util.DateUtil;
 
+@:nullSafety
 @:access(funkin.util.DateUtil)
 class DateUtilTest extends FunkinTest
 {

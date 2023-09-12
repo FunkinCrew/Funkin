@@ -6,6 +6,7 @@
     "vshaxe.hxcpp-debugger", // CPP debugging
     "openfl.lime-vscode-extension", // Lime integration
     "esbenp.prettier-vscode", // JSON formatting
-    "redhat.vscode-xml" // XML formatting
+    "redhat.vscode-xml", // XML formatting
+    "ryanluker.vscode-coverage-gutters" // Highlight code coverage
   ]
 }

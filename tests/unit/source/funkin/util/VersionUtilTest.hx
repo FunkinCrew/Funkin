@@ -57,8 +57,26 @@ class VersionUtilTest extends FunkinTest
   {
     var jsonStr:String = "{ \"version\": \"3.1.0\" }";
 
-    var version:thx.semver.Version = VersionUtil.getVersionFromJSON(jsonStr);
+    var version:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(jsonStr);
+
+    Assert.isNotNull(version);
 
     Assert.areEqual("3.1.0", version.toString());
+  }
+
+  @Test
+  public function testGetVersionFromJSONBad()
+  {
+    var jsonStr:String = "{ \"version\": \"bleh\" }";
+
+    Assert.throws(String, function() {
+      var version:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(jsonStr);
+    });
+
+    var jsonStr2:String = "{ \"blah\": \"3.1.0\" }";
+
+    var version2:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(jsonStr2);
+
+    Assert.isNull(version2);
   }
 }
