@@ -30,7 +30,7 @@ typedef AnimationInfo =
 @:composite(Layout)
 class CharacterPlayer extends Box
 {
-  var character:BaseCharacter;
+  var character:Null<BaseCharacter>;
 
   public function new(defaultToBf:Bool = true)
   {
@@ -47,7 +47,7 @@ class CharacterPlayer extends Box
 
   function get_charId():String
   {
-    return character.characterId;
+    return character?.characterId ?? '';
   }
 
   function set_charId(value:String):String
@@ -60,7 +60,7 @@ class CharacterPlayer extends Box
 
   function get_charName():String
   {
-    return character.characterName;
+    return character?.characterName ?? "Unknown";
   }
 
   // possible haxeui bug: if listener is added after event is dispatched, event is "lost"... is it smart to "collect and redispatch"? Not sure
@@ -86,7 +86,11 @@ class CharacterPlayer extends Box
 
     // Prevent script issues by fetching with debug=true.
     var newCharacter:BaseCharacter = CharacterDataParser.fetchCharacter(id, true);
-    if (newCharacter == null) return; // Fail if character doesn't exist.
+    if (newCharacter == null)
+    {
+      character = null;
+      return; // Fail if character doesn't exist.
+    }
 
     // Assign character.
     character = newCharacter;
