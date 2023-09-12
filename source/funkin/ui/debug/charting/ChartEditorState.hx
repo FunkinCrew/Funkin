@@ -2039,29 +2039,11 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
     {
       noteSnapQuantIndex--;
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: 'Note Snapping',
-          body: 'Updated note snapping to 1/${noteSnapQuant}',
-          type: NotificationType.Success,
-          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
-        });
-      #end
     }
 
     if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
     {
       noteSnapQuantIndex++;
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: 'Note Snapping',
-          body: 'Updated note snapping to 1/${noteSnapQuant}',
-          type: NotificationType.Success,
-          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
-        });
-      #end
     }
   }
 
