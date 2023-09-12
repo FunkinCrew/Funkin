@@ -135,9 +135,14 @@ class StoryMenuState extends MusicBeatState
     this.bgColor = FlxColor.BLACK;
 
     levelTitles = new FlxTypedGroup<LevelTitle>();
+    levelTitles.zIndex = 15;
     add(levelTitles);
 
     updateBackground();
+
+    var black:FlxSprite = new FlxSprite(levelBackground.x, 0).makeGraphic(FlxG.width, Std.int(400 + levelBackground.y), FlxColor.BLACK);
+    black.zIndex = levelBackground.zIndex - 1;
+    add(black);
 
     levelProps = new FlxTypedGroup<LevelProp>();
     levelProps.zIndex = 1000;
@@ -153,17 +158,20 @@ class StoryMenuState extends MusicBeatState
 
     scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
     scoreText.setFormat("VCR OSD Mono", 32);
+    scoreText.zIndex = 1000;
     add(scoreText);
 
     modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
     modeText.setFormat("VCR OSD Mono", 32);
     modeText.screenCenter(X);
     modeText.visible = hasModdedLevels();
+    modeText.zIndex = 1000;
     add(modeText);
 
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
     levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
+    levelTitleText.zIndex = 1000;
     add(levelTitleText);
 
     buildLevelTitles();
@@ -387,6 +395,7 @@ class StoryMenuState extends MusicBeatState
     if (currentIndex < 0) currentIndex = levelList.length - 1;
     if (currentIndex >= levelList.length) currentIndex = 0;
 
+    var previousLevelId:String = currentLevelId;
     currentLevelId = levelList[currentIndex];
 
     updateData();
@@ -402,18 +411,14 @@ class StoryMenuState extends MusicBeatState
         currentLevelTitle = item;
         item.alpha = 1.0;
       }
-      else if (index > currentIndex)
-      {
-        item.alpha = 0.6;
-      }
       else
       {
-        item.alpha = 0.0;
+        item.alpha = 0.6;
       }
     }
 
     updateText();
-    updateBackground();
+    updateBackground(previousLevelId);
     updateProps();
     refresh();
   }
@@ -536,32 +541,66 @@ class StoryMenuState extends MusicBeatState
     });
   }
 
-  function updateBackground():Void
+  function updateBackground(?previousLevelId:String = ''):Void
   {
-    if (levelBackground != null)
+    if (levelBackground == null || previousLevelId == '')
     {
-      var oldBackground:FlxSprite = levelBackground;
-
-      FlxTween.tween(oldBackground, {alpha: 0.0}, 0.6,
-        {
-          ease: FlxEase.linear,
-          onComplete: function(_) {
-            remove(oldBackground);
-          }
-        });
+      // Build a new background and display it immediately.
+      levelBackground = currentLevel.buildBackground();
+      levelBackground.x = 0;
+      levelBackground.y = 56;
+      levelBackground.zIndex = 100;
+      levelBackground.alpha = 1.0; // Not hidden.
+      add(levelBackground);
     }
+    else
+    {
+      var previousLevel = LevelRegistry.instance.fetchEntry(previousLevelId);
 
-    levelBackground = currentLevel.buildBackground();
-    levelBackground.x = 0;
-    levelBackground.y = 56;
-    levelBackground.alpha = 0.0;
-    levelBackground.zIndex = 100;
-    add(levelBackground);
-
-    FlxTween.tween(levelBackground, {alpha: 1.0}, 0.6,
+      if (currentLevel.isBackgroundSimple() && previousLevel.isBackgroundSimple())
       {
-        ease: FlxEase.linear
-      });
+        var previousColor:FlxColor = previousLevel.getBackgroundColor();
+        var currentColor:FlxColor = currentLevel.getBackgroundColor();
+        if (previousColor != currentColor)
+        {
+          // Both the previous and current level were simple backgrounds.
+          // Fade between colors directly, rather than fading one background out and another in.
+          FlxTween.color(levelBackground, 0.4, previousColor, currentColor);
+        }
+        else
+        {
+          // Do no fade at all if the colors aren't different.
+        }
+      }
+      else
+      {
+        // Either the previous or current level has a complex background.
+        // We need to fade the old background out and the new one in.
+
+        // Reference the old background and fade it out.
+        var oldBackground:FlxSprite = levelBackground;
+        FlxTween.tween(oldBackground, {alpha: 0.0}, 0.6,
+          {
+            ease: FlxEase.linear,
+            onComplete: function(_) {
+              remove(oldBackground);
+            }
+          });
+
+        // Build a new background and fade it in.
+        levelBackground = currentLevel.buildBackground();
+        levelBackground.x = 0;
+        levelBackground.y = 56;
+        levelBackground.alpha = 0.0; // Hidden to start.
+        levelBackground.zIndex = 100;
+        add(levelBackground);
+
+        FlxTween.tween(levelBackground, {alpha: 1.0}, 0.6,
+          {
+            ease: FlxEase.linear
+          });
+      }
+    }
   }
 
   function updateProps():Void
