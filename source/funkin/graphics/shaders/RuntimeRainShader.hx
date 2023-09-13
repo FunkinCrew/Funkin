@@ -24,8 +24,6 @@ class RuntimeRainShader extends RuntimePostEffectShader
       radius:ShaderParameter<Float>,
     }>;
 
-  // This is a property, whenever the value is set it calls the set_time function.
-  // This makes the code cleaner elsewhere.
   public var time(default, set):Float = 1;
 
   function set_time(value:Float):Float
@@ -34,13 +32,33 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return time = value;
   }
 
+  // The scale of the rain depends on the world coordinate system, so higher resolution makes
+  // the raindrops smaller. This parameter can be used to adjust the total scale of the scene.
+  // The size of the raindrops is proportional to the value of this parameter.
+  public var scale(default, set):Float = 1;
+
+  function set_scale(value:Float):Float
+  {
+    this.setFloat('uScale', value);
+    return scale = value;
+  }
+
+  // The intensity of the rain. Zero means no rain and one means the maximum amount of rain.
+  public var intensity(default, set):Float = 1;
+
+  function set_intensity(value:Float):Float
+  {
+    this.setFloat('uIntensity', value);
+    return intensity = value;
+  }
+
   public var puddleMap(default, set):BitmapData;
 
   public var groundMap(default, set):BitmapData;
 
   function set_groundMap(value:BitmapData):BitmapData
   {
-    trace("groundmap set");
+    trace('groundmap set');
     this.setBitmapData('uGroundMap', value);
     // this.setFloat2('uPuddleTextureSize', value.width, value.height);
     return groundMap = value;
@@ -56,7 +74,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_lightMap(value:BitmapData):BitmapData
   {
-    trace("lightmap set");
+    trace('lightmap set');
     this.setBitmapData('uLightMap', value);
     return lightMap = value;
   }
@@ -71,7 +89,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   public function new()
   {
-    super(Assets.getText(Paths.frag("rain")));
+    super(Assets.getText(Paths.frag('rain')));
   }
 
   public function update(elapsed:Float):Void
@@ -82,14 +100,14 @@ class RuntimeRainShader extends RuntimePostEffectShader
   override function __processGLData(source:String, storageType:String):Void
   {
     super.__processGLData(source, storageType);
-    if (storageType == "uniform")
+    if (storageType == 'uniform')
     {
       lights = [
         for (i in 0...MAX_LIGHTS)
           {
-            position: addFloatUniform("lights[" + i + "].position", 2),
-            color: addFloatUniform("lights[" + i + "].color", 3),
-            radius: addFloatUniform("lights[" + i + "].radius", 1),
+            position: addFloatUniform('lights[$i].position', 2),
+            color: addFloatUniform('lights[$i].color', 3),
+            radius: addFloatUniform('lights[$i].radius', 1),
           }
       ];
     }
