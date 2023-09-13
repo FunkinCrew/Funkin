@@ -2906,7 +2906,7 @@ class ChartEditorState extends HaxeUIState
     }
 
     // CTRL + O = Open Chart
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.N)
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.O)
     {
       ChartEditorDialogHandler.openBrowseWizard(this, true);
     }
