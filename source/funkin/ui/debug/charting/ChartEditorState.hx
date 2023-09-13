@@ -179,19 +179,40 @@ class ChartEditorState extends HaxeUIState
    */
   static final SNAP_QUANTS:Array<Int> = [4, 8, 12, 16, 20, 24, 32, 48, 64, 96, 192];
 
+  static final BASE_QUANT:Int = 16;
+
   /**
    * INSTANCE DATA
    */
   // ==============================
   public var currentZoomLevel:Float = 1.0;
 
-  var noteSnapQuantIndex:Int = 3;
+  /**
+   * The internal index of what note snapping value is in use.
+   * Increment to make placement more preceise and decrement to make placement less precise.
+   */
+  var noteSnapQuantIndex:Int = 3; // default is 16
 
+  /**
+   * The current note snapping value.
+   * For example, `32` when snapping to 32nd notes.
+   */
   public var noteSnapQuant(get, never):Int;
 
   function get_noteSnapQuant():Int
   {
     return SNAP_QUANTS[noteSnapQuantIndex];
+  }
+
+  /**
+   * The ratio of the current note snapping value to the default.
+   * For example, `32` becomes `0.5` when snapping to 16th notes.
+   */
+  public var noteSnapRatio(get, never):Float;
+
+  function get_noteSnapRatio():Float
+  {
+    return BASE_QUANT / noteSnapQuant;
   }
 
   /**
@@ -1776,7 +1797,7 @@ class ChartEditorState extends HaxeUIState
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();
     // handleZoom();
-    // handleSnap();
+    handleSnap();
     handleCursor();
 
     handleMenubar();
@@ -2123,8 +2144,12 @@ class ChartEditorState extends HaxeUIState
       }
 
       // The song position of the cursor, in steps.
-      var cursorFractionalStep:Float = cursorY / GRID_SIZE / (16 / noteSnapQuant);
+      var cursorFractionalStep:Float = cursorY / GRID_SIZE;
       var cursorMs:Float = Conductor.getStepTimeInMs(cursorFractionalStep);
+      // Round the cursor step to the nearest snap quant.
+      var cursorSnappedStep:Float = Math.floor(cursorFractionalStep / noteSnapRatio) * noteSnapRatio;
+      var cursorSnappedMs:Float = Conductor.getStepTimeInMs(cursorSnappedStep);
+
       // The direction value for the column at the cursor.
       var cursorColumn:Int = Math.floor(cursorX / GRID_SIZE);
       if (cursorColumn < 0) cursorColumn = 0;
@@ -2379,7 +2404,7 @@ class ChartEditorState extends HaxeUIState
         // Handle extending the note as you drag.
 
         // TODO: This should be beat snapped?
-        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorMs) - currentPlaceNoteData.stepTime;
+        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorSnappedMs) - currentPlaceNoteData.stepTime;
 
         // Without this, the newly placed note feels too short compared to the user's input.
         var INCREMENT:Float = 1.0;
@@ -2473,14 +2498,14 @@ class ChartEditorState extends HaxeUIState
                 {
                   // Create an event and place it in the chart.
                   // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorMs, selectedEventKind, selectedEventData);
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, selectedEventKind, selectedEventData);
 
                   performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
                 }
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, selectedNoteKind);
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -2549,7 +2574,7 @@ class ChartEditorState extends HaxeUIState
             {
               eventData.event = selectedEventKind;
             }
-            eventData.time = cursorMs;
+            eventData.time = cursorSnappedMs;
 
             gridGhostEvent.visible = true;
             gridGhostEvent.eventData = eventData;
@@ -2563,8 +2588,7 @@ class ChartEditorState extends HaxeUIState
 
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
-            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0,
-              selectedNoteKind);
+            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
 
             if (cursorColumn != noteData.data || selectedNoteKind != noteData.kind)
             {
@@ -2572,7 +2596,7 @@ class ChartEditorState extends HaxeUIState
               noteData.data = cursorColumn;
               gridGhostNote.playNoteAnimation();
             }
-            noteData.time = cursorMs;
+            noteData.time = cursorSnappedMs;
 
             gridGhostNote.visible = true;
             gridGhostNote.noteData = noteData;
@@ -4058,6 +4082,7 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
+    #if !mac
     NotificationManager.instance.addNotification(
       {
         title: 'Success',
@@ -4065,6 +4090,7 @@ class ChartEditorState extends HaxeUIState
         type: NotificationType.Success,
         expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
       });
+    #end
   }
 
   /**
