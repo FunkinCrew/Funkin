@@ -98,19 +98,40 @@ class Level implements IRegistryEntry<LevelData>
     return true;
   }
 
+  /**
+   * Build a sprite for the background of the level.
+   * Can be overriden by ScriptedLevel. Not used if `isBackgroundSimple` returns true.
+   */
   public function buildBackground():FlxSprite
   {
-    if (_data.background.startsWith('#'))
-    {
-      // Color specified
-      var color:FlxColor = FlxColor.fromString(_data.background);
-      return new FlxSprite().makeGraphic(FlxG.width, 400, color);
-    }
-    else
+    if (!_data.background.startsWith('#'))
     {
       // Image specified
       return new FlxSprite().loadGraphic(Paths.image(_data.background));
     }
+
+    // Color specified
+    var result:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 400, FlxColor.WHITE);
+    result.color = getBackgroundColor();
+    return result;
+  }
+
+  /**
+   * Returns true if the background is a solid color.
+   * If you have a ScriptedLevel with a fancy background, you may want to override this to false.
+   */
+  public function isBackgroundSimple():Bool
+  {
+    return _data.background.startsWith('#');
+  }
+
+  /**
+   * Returns true if the background is a solid color.
+   * If you have a ScriptedLevel with a fancy background, you may want to override this to false.
+   */
+  public function getBackgroundColor():FlxColor
+  {
+    return FlxColor.fromString(_data.background);
   }
 
   public function getDifficulties():Array<String>
