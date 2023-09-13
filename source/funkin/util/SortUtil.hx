@@ -6,6 +6,8 @@ import flixel.FlxBasic;
 import flixel.util.FlxSort;
 #end
 import funkin.play.notes.NoteSprite;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongNoteData;
 
 /**
  * A set of functions related to sorting.
@@ -39,7 +41,17 @@ class SortUtil
    */
   public static inline function byStrumtime(order:Int, a:NoteSprite, b:NoteSprite)
   {
-    return FlxSort.byValues(order, a.noteData.time, b.noteData.time);
+    return noteDataByTime(order, a.noteData, b.noteData);
+  }
+
+  public static inline function noteDataByTime(order:Int, a:SongNoteData, b:SongNoteData)
+  {
+    return FlxSort.byValues(order, a.time, b.time);
+  }
+
+  public static inline function eventDataByTime(order:Int, a:SongEventData, b:SongEventData)
+  {
+    return FlxSort.byValues(order, a.time, b.time);
   }
 
   /**

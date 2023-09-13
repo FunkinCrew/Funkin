@@ -23,17 +23,6 @@ class NoteSprite extends FlxSprite
   }
 
   /**
-   * The time at which the note should be hit, in steps.
-   */
-  public var stepTime(get, never):Float;
-
-  function get_stepTime():Float
-  {
-    // TODO: Account for changes in BPM.
-    return this.strumTime / Conductor.stepLengthMs;
-  }
-
-  /**
    * An extra attribute for the note.
    * For example, whether the note is an "alt" note, or whether it has custom behavior on hit.
    */

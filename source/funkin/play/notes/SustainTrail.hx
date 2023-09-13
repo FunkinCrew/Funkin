@@ -142,12 +142,14 @@ class SustainTrail extends FlxSprite
     return (susLength * 0.45 * scroll);
   }
 
-  function set_sustainLength(s:Float)
+  function set_sustainLength(s:Float):Float
   {
-    if (s < 0) s = 0;
+    if (s < 0.0) s = 0.0;
+
+    if (sustainLength == s) return s;
 
     height = sustainHeight(s, getScrollSpeed());
-    updateColorTransform();
+    // updateColorTransform();
     updateClipping();
     return sustainLength = s;
   }

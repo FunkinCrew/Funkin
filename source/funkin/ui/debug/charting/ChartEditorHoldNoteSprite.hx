@@ -98,8 +98,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
    */
   public static function wouldHoldNoteBeVisible(viewAreaBottom:Float, viewAreaTop:Float, noteData:SongNoteData, ?origin:FlxObject):Bool
   {
-    var noteHeight:Float = noteData.stepLength * ChartEditorState.GRID_SIZE;
-    var notePosY:Float = noteData.stepTime * ChartEditorState.GRID_SIZE;
+    var noteHeight:Float = noteData.getStepLength() * ChartEditorState.GRID_SIZE;
+    var stepTime:Float = inline noteData.getStepTime();
+    var notePosY:Float = stepTime * ChartEditorState.GRID_SIZE;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.
@@ -138,10 +139,11 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     this.x = cursorColumn * ChartEditorState.GRID_SIZE;
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
-    if (this.noteData.stepTime >= 0)
+    // noteData.getStepTime() returns a calculated value which accounts for BPM changes
+    var stepTime:Float =
+    inline this.noteData.getStepTime();
+    if (stepTime >= 0)
     {
-      // noteData.stepTime is a calculated value which accounts for BPM changes
-      var stepTime:Float = this.noteData.stepTime;
       // Add epsilon to fix rounding issues?
       // var roundedStepTime:Float = Math.floor((stepTime + 0.01) / noteSnapRatio) * noteSnapRatio;
       this.y = stepTime * ChartEditorState.GRID_SIZE;

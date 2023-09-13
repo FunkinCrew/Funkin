@@ -363,7 +363,13 @@ class SongEventData
    * The timestamp of the event. The timestamp is in the format of the song's time format.
    */
   @:alias("t")
-  public var time:Float;
+  public var time(default, set):Float;
+
+  function set_time(value:Float):Float
+  {
+    _stepTime = null;
+    return time = value;
+  }
 
   /**
    * The kind of the event.
@@ -398,11 +404,13 @@ class SongEventData
   }
 
   @:jignored
-  public var stepTime(get, never):Float;
+  var _stepTime:Null<Float> = null;
 
-  function get_stepTime():Float
+  public function getStepTime(force:Bool = false):Float
   {
-    return Conductor.getTimeInSteps(this.time);
+    if (_stepTime != null && !force) return _stepTime;
+
+    return _stepTime = Conductor.getTimeInSteps(this.time);
   }
 
   public inline function getDynamic(key:String):Null<Dynamic>
@@ -488,7 +496,13 @@ class SongNoteData
    * The timestamp of the note. The timestamp is in the format of the song's time format.
    */
   @:alias("t")
-  public var time:Float;
+  public var time(default, set):Float;
+
+  function set_time(value:Float):Float
+  {
+    _stepTime = null;
+    return time = value;
+  }
 
   /**
    * Data for the note. Represents the index on the strumline.
@@ -533,15 +547,18 @@ class SongNoteData
     this.kind = kind;
   }
 
-  /**
-   * The timestamp of the note, in steps.
-   */
   @:jignored
-  public var stepTime(get, never):Float;
+  var _stepTime:Null<Float> = null;
 
-  function get_stepTime():Float
+  /**
+   * @param force Set to `true` to force recalculation (good after BPM changes)
+   * @return The position of the note in the song, in steps.
+   */
+  public function getStepTime(force:Bool = false):Float
   {
-    return Conductor.getTimeInSteps(this.time);
+    if (_stepTime != null && !force) return _stepTime;
+
+    return _stepTime = Conductor.getTimeInSteps(this.time);
   }
 
   /**
@@ -594,20 +611,34 @@ class SongNoteData
     return getStrumlineIndex(strumlineSize) == 0;
   }
 
-  /**
-   * If this is a hold note, this is the length of the hold note in steps.
-   * @default 0 (not a hold note)
-   */
-  public var stepLength(get, set):Float;
+  @:jignored
+  var _stepLength:Null<Float> = null;
 
-  function get_stepLength():Float
+  /**
+   * @param force Set to `true` to force recalculation (good after BPM changes)
+   * @return The length of the hold note in steps, or `0` if this is not a hold note.
+   */
+  public function getStepLength(force = false):Float
   {
-    return Conductor.getTimeInSteps(this.time + this.length) - this.stepTime;
+    if (this.length <= 0) return 0.0;
+
+    if (_stepLength != null && !force) return _stepLength;
+
+    return _stepLength = Conductor.getTimeInSteps(this.time + this.length) - getStepTime();
   }
 
-  function set_stepLength(value:Float):Float
+  public function setStepLength(value:Float):Void
   {
-    return this.length = Conductor.getStepTimeInMs(value) - this.time;
+    if (value <= 0)
+    {
+      this.length = 0.0;
+    }
+    else
+    {
+      var lengthMs:Float = Conductor.getStepTimeInMs(value) - this.time;
+      this.length = lengthMs;
+    }
+    _stepLength = null;
   }
 
   @:jignored

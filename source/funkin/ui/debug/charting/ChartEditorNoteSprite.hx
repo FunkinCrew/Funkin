@@ -170,10 +170,12 @@ class ChartEditorNoteSprite extends FlxSprite
     this.x = cursorColumn * ChartEditorState.GRID_SIZE;
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
-    if (this.noteData.stepTime >= 0)
+    // noteData.getStepTime() returns a calculated value which accounts for BPM changes
+    var stepTime:Float =
+    inline this.noteData.getStepTime();
+    if (stepTime >= 0)
     {
-      // noteData.stepTime is a calculated value which accounts for BPM changes
-      this.y = this.noteData.stepTime * ChartEditorState.GRID_SIZE;
+      this.y = stepTime * ChartEditorState.GRID_SIZE;
     }
 
     if (origin != null)
@@ -230,11 +232,13 @@ class ChartEditorNoteSprite extends FlxSprite
 
   /**
    * Return whether a note, if placed in the scene, would be visible.
+   * This function should be made HYPER EFFICIENT because it's called a lot.
    */
   public static function wouldNoteBeVisible(viewAreaBottom:Float, viewAreaTop:Float, noteData:SongNoteData, ?origin:FlxObject):Bool
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
-    var notePosY:Float = noteData.stepTime * ChartEditorState.GRID_SIZE;
+    var stepTime:Float = inline noteData.getStepTime();
+    var notePosY:Float = stepTime * ChartEditorState.GRID_SIZE;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.

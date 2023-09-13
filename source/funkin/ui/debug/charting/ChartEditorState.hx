@@ -590,7 +590,13 @@ class ChartEditorState extends HaxeUIState
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
    */
-  var notePreviewDirty:Bool = true;
+  var notePreviewDirty(default, set):Bool = true;
+
+  function set_notePreviewDirty(value:Bool):Bool
+  {
+    trace('Note preview dirtied!');
+    return notePreviewDirty = value;
+  }
 
   var notePreviewViewportBoundsDirty:Bool = true;
 
@@ -1177,6 +1183,21 @@ class ChartEditorState extends HaxeUIState
    * The playbar head slider.
    */
   var playbarHead:Null<Slider> = null;
+
+  /**
+   * The label by the playbar telling the song position.
+   */
+  var playbarSongPos:Null<Label> = null;
+
+  /**
+   * The label by the playbar telling the song time remaining.
+   */
+  var playbarSongRemaining:Null<Label> = null;
+
+  /**
+   * The label by the playbar telling the note snap.
+   */
+  var playbarNoteSnap:Null<Label> = null;
 
   /**
    * The current process that is lerping the scroll position.
@@ -1799,8 +1820,6 @@ class ChartEditorState extends HaxeUIState
     // dispatchEvent gets called here.
     super.update(elapsed);
 
-    FlxG.mouse.visible = true;
-
     // These ones happen even if the modal dialog is open.
     handleMusicPlayback();
     handleNoteDisplay();
@@ -1815,30 +1834,13 @@ class ChartEditorState extends HaxeUIState
     handlePlaybar();
     handlePlayhead();
     handleNotePreview();
+    handleHealthIcons();
 
     handleFileKeybinds();
     handleEditKeybinds();
     handleViewKeybinds();
     handleTestKeybinds();
     handleHelpKeybinds();
-
-    // DEBUG
-    #if debug
-    if (FlxG.keys.justPressed.E && !isHaxeUIDialogOpen)
-    {
-      currentSongMetadata.timeChanges[0].timeSignatureNum = (currentSongMetadata.timeChanges[0].timeSignatureNum == 4 ? 3 : 4);
-    }
-    #end
-
-    // Right align the BF health icon.
-    if (healthIconBF != null)
-    {
-      // Base X position to the right of the grid.
-      var baseHealthIconXPos:Float = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width + 15);
-      // Will be 0 when not bopping. When bopping, will increase to push the icon left.
-      var healthIconOffset:Float = healthIconBF.width - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
-      healthIconBF.x = baseHealthIconXPos - healthIconOffset;
-    }
   }
 
   /**
@@ -2102,10 +2104,12 @@ class ChartEditorState extends HaxeUIState
         }
         else
         {
-          trace('Clicked outside grid, deselecting all items.');
-
           // Deselect all items.
-          performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+          if (currentNoteSelection.length > 0 || currentEventSelection.length > 0)
+          {
+            trace('Clicked outside grid, deselecting all items.');
+            performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+          }
         }
       }
 
@@ -2242,9 +2246,12 @@ class ChartEditorState extends HaxeUIState
 
                 if (!FlxG.keys.pressed.CONTROL)
                 {
-                  trace('Clicked and dragged outside grid, deselecting all items.');
                   // Deselect all items.
-                  performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+                  if (currentNoteSelection.length > 0 || currentEventSelection.length > 0)
+                  {
+                    trace('Clicked and dragged outside grid, deselecting all items.');
+                    performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+                  }
                 }
               }
             }
@@ -2370,9 +2377,12 @@ class ChartEditorState extends HaxeUIState
 
             if (!FlxG.keys.pressed.CONTROL)
             {
-              trace('Clicked outside grid, deselecting all items.');
               // Deselect all items.
-              performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+              if (currentNoteSelection.length > 0 || currentEventSelection.length > 0)
+              {
+                trace('Clicked outside grid, deselecting all items.');
+                performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+              }
             }
           }
         }
@@ -2392,7 +2402,8 @@ class ChartEditorState extends HaxeUIState
       {
         // Handle extending the note as you drag.
 
-        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorSnappedMs) - currentPlaceNoteData.stepTime;
+        var stepTime:Float = inline currentPlaceNoteData.getStepTime();
+        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorSnappedMs) - stepTime;
         var dragLengthMs:Float = dragLengthSteps * Conductor.stepLengthMs;
         var dragLengthPixels:Float = dragLengthSteps * GRID_SIZE;
 
@@ -2677,7 +2688,7 @@ class ChartEditorState extends HaxeUIState
           // Kill the note sprite and recycle it.
           noteSprite.noteData = null;
         }
-        else if (currentSongChartNoteData.indexOf(noteSprite.noteData) == -1)
+        else if (!currentSongChartNoteData.fastContains(noteSprite.noteData))
         {
           // This note was deleted.
           // Kill the note sprite and recycle it.
@@ -2692,6 +2703,9 @@ class ChartEditorState extends HaxeUIState
           noteSprite.updateNotePosition(renderedNotes);
         }
       }
+      // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
+      // We need this sorted to optimize indexing later.
+      displayedNoteData.insertionSort(SortUtil.noteDataByTime.bind(FlxSort.ASCENDING));
 
       var displayedHoldNoteData:Array<SongNoteData> = [];
       for (holdNoteSprite in renderedHoldNotes.members)
@@ -2702,13 +2716,13 @@ class ChartEditorState extends HaxeUIState
         {
           holdNoteSprite.kill();
         }
-        else if (currentSongChartNoteData.indexOf(holdNoteSprite.noteData) == -1 || holdNoteSprite.noteData.length == 0)
+        else if (!currentSongChartNoteData.fastContains(holdNoteSprite.noteData) || holdNoteSprite.noteData.length == 0)
         {
           // This hold note was deleted.
           // Kill the hold note sprite and recycle it.
           holdNoteSprite.kill();
         }
-        else if (displayedHoldNoteData.indexOf(holdNoteSprite.noteData) != -1)
+        else if (displayedHoldNoteData.fastContains(holdNoteSprite.noteData))
         {
           // This hold note is a duplicate.
           // Kill the hold note sprite and recycle it.
@@ -2721,6 +2735,9 @@ class ChartEditorState extends HaxeUIState
           holdNoteSprite.updateHoldNotePosition(renderedNotes);
         }
       }
+      // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
+      // We need this sorted to optimize indexing later.
+      displayedHoldNoteData.insertionSort(SortUtil.noteDataByTime.bind(FlxSort.ASCENDING));
 
       // Remove events that are no longer visible and list the ones that are.
       var displayedEventData:Array<SongEventData> = [];
@@ -2734,7 +2751,7 @@ class ChartEditorState extends HaxeUIState
           // Kill the event sprite and recycle it.
           eventSprite.eventData = null;
         }
-        else if (currentSongChartEventData.indexOf(eventSprite.eventData) == -1)
+        else if (!currentSongChartEventData.fastContains(eventSprite.eventData))
         {
           // This event was deleted.
           // Kill the event sprite and recycle it.
@@ -2749,12 +2766,24 @@ class ChartEditorState extends HaxeUIState
           eventSprite.updateEventPosition(renderedEvents);
         }
       }
+      // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
+      // We need this sorted to optimize indexing later.
+      displayedEventData.insertionSort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
+
+      // Let's try testing only notes within a certain range of the view area.
+      // TODO: I don't think this messes up really long sustains, does it?
+      var viewAreaTopMs:Float = scrollPositionInMs - (Conductor.measureLengthMs * 2); // Is 2 measures enough?
+      var viewAreaBottomMs:Float = scrollPositionInMs + (Conductor.measureLengthMs * 2); // Is 2 measures enough?
 
       // Add notes that are now visible.
       for (noteData in currentSongChartNoteData)
       {
         // Remember if we are already displaying this note.
-        if (noteData == null || displayedNoteData.indexOf(noteData) != -1)
+        if (noteData == null) continue;
+        // Check if we are outside a broad range around the view area.
+        if (noteData.time < viewAreaTopMs || noteData.time > viewAreaBottomMs) continue;
+
+        if (displayedNoteData.fastContains(noteData))
         {
           continue;
         }
@@ -2766,7 +2795,7 @@ class ChartEditorState extends HaxeUIState
         // If we can reuse a deleted note, do so.
         // If a new note is needed, call buildNoteSprite.
         var noteSprite:ChartEditorNoteSprite = renderedNotes.recycle(() -> new ChartEditorNoteSprite(this));
-        trace('Creating new Note... (${renderedNotes.members.length})');
+        // trace('Creating new Note... (${renderedNotes.members.length})');
         noteSprite.parentState = this;
 
         // The note sprite handles animation playback and positioning.
@@ -2780,9 +2809,9 @@ class ChartEditorState extends HaxeUIState
         if (noteSprite.noteData != null && noteSprite.noteData.length > 0 && displayedHoldNoteData.indexOf(noteSprite.noteData) == -1)
         {
           var holdNoteSprite:ChartEditorHoldNoteSprite = renderedHoldNotes.recycle(() -> new ChartEditorHoldNoteSprite(this));
-          trace('Creating new HoldNote... (${renderedHoldNotes.members.length})');
+          // trace('Creating new HoldNote... (${renderedHoldNotes.members.length})');
 
-          var noteLengthPixels:Float = noteSprite.noteData.stepLength * GRID_SIZE;
+          var noteLengthPixels:Float = noteSprite.noteData.getStepLength() * GRID_SIZE;
 
           holdNoteSprite.noteData = noteSprite.noteData;
           holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
@@ -2840,7 +2869,7 @@ class ChartEditorState extends HaxeUIState
         }
         var holdNoteSprite:ChartEditorHoldNoteSprite = renderedHoldNotes.recycle(holdNoteFactory);
 
-        var noteLengthPixels:Float = noteData.stepLength * GRID_SIZE;
+        var noteLengthPixels:Float = noteData.getStepLength() * GRID_SIZE;
 
         holdNoteSprite.noteData = noteData;
         holdNoteSprite.noteDirection = noteData.getDirection();
@@ -2904,6 +2933,22 @@ class ChartEditorState extends HaxeUIState
     FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
   }
 
+  /**
+   * Handle aligning the health icons next to the grid.
+   */
+  function handleHealthIcons():Void
+  {
+    // Right align the BF health icon.
+    if (healthIconBF != null)
+    {
+      // Base X position to the right of the grid.
+      var baseHealthIconXPos:Float = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width + 15);
+      // Will be 0 when not bopping. When bopping, will increase to push the icon left.
+      var healthIconOffset:Float = healthIconBF.width - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
+      healthIconBF.x = baseHealthIconXPos - healthIconOffset;
+    }
+  }
+
   function buildSelectionSquare():FlxSprite
   {
     if (selectionSquareBitmap == null)
@@ -2930,23 +2975,27 @@ class ChartEditorState extends HaxeUIState
     // Move the playhead to match the song position, if we aren't dragging it.
     if (!playbarHeadDragging)
     {
-      var songPosPercent:Float = songPos / songLengthInMs;
-      playbarHead.value = songPosPercent * 100;
+      var songPosPercent:Float = songPos / songLengthInMs * 100;
+      if (playbarHead.value != songPosPercent) playbarHead.value = songPosPercent;
     }
 
     var songPosSeconds:String = Std.string(Math.floor((songPos / 1000) % 60)).lpad('0', 2);
     var songPosMinutes:String = Std.string(Math.floor((songPos / 1000) / 60)).lpad('0', 2);
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}';
 
-    setUIValue('playbarSongPos', songPosString);
+    if (playbarSongPos == null) playbarSongPos = findComponent('playbarSongPos', Label);
+    if (playbarSongPos != null && playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
     var songRemainingSeconds:String = Std.string(Math.floor((songRemaining / 1000) % 60)).lpad('0', 2);
     var songRemainingMinutes:String = Std.string(Math.floor((songRemaining / 1000) / 60)).lpad('0', 2);
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
 
-    setUIValue('playbarSongRemaining', songRemainingString);
+    if (playbarSongRemaining == null) playbarSongRemaining = findComponent('playbarSongRemaining', Label);
+    if (playbarSongRemaining != null
+      && playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
-    setUIValue('playbarNoteSnap', '1/${noteSnapQuant}');
+    if (playbarNoteSnap == null) playbarNoteSnap = findComponent('playbarNoteSnap', Label);
+    if (playbarNoteSnap != null && playbarNoteSnap.value != '1/${noteSnapQuant}') playbarNoteSnap.value = '1/${noteSnapQuant}';
   }
 
   /**
@@ -3268,7 +3317,8 @@ class ChartEditorState extends HaxeUIState
     var charPreviewToolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
 
-    var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
+    // TODO: Re-enable the player preview once we figure out the performance issues.
+    var charPlayer:Null<CharacterPlayer> = null; // charPreviewToolbox.findComponent('charPlayer');
     if (charPlayer == null) return;
 
     currentPlayerCharacterPlayer = charPlayer;
@@ -3303,7 +3353,8 @@ class ChartEditorState extends HaxeUIState
     var charPreviewToolbox:Null<CollapsibleDialog> = ChartEditorToolboxHandler.getToolbox(this, CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
 
-    var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
+    // TODO: Re-enable the player preview once we figure out the performance issues.
+    var charPlayer:Null<CharacterPlayer> = null; // charPreviewToolbox.findComponent('charPlayer');
     if (charPlayer == null) return;
 
     currentOpponentCharacterPlayer = charPlayer;
