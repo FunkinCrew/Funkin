@@ -980,15 +980,22 @@ class PlayState extends MusicBeatSubState
   @:access(flixel.system.frontEnds.CameraFrontEnd)
   override function draw():Void
   {
-    super.draw();
-
+    // Clears the draw stacks buffer cameras.
     bufferCameraFrontEnd.lock();
+    // Collects draw stacks to render stuff, for ALL cameras including
+    // the main ones and buffer ones. But at this point each camera's
+    // canvas.graphics is still empty.
     super.draw();
-    camMask.render();
+    // Actually render (using canvas.graphics) stuff ONLY for the buffer cameras.
+    // For the main cameras, it will be done by FlxGame LATER.
+    bufferCameraFrontEnd.render();
+    // Possibly applies some FXs to the buffer cameras.
     bufferCameraFrontEnd.unlock();
-
+    // Update the buffer texture using `flashSprite`.
+    // This is IMMEDIATELY done while the main cameras are not rendered yet,
+    // so any shaders in the main part that refers the texture can see the updated texture!
     maskTexture.fillRect(new Rectangle(0, 0, FlxG.width, FlxG.height), 0);
-    maskTexture.draw(camMask.canvas); // TODO: this assumes tile render mode??
+    maskTexture.draw(camMask.flashSprite, new openfl.geom.Matrix(1, 0, 0, 1, camMask.flashSprite.x, camMask.flashSprite.y));
   }
 
   public override function dispatchEvent(event:ScriptEvent):Void
@@ -1384,7 +1391,7 @@ class PlayState extends MusicBeatSubState
       cam.scroll.x = camGame.scroll.x;
       cam.scroll.y = camGame.scroll.y;
       cam.zoom = camGame.zoom;
-      cam.update(FlxG.elapsed); // TODO: is this needed?
+      @:privateAccess cam.updateFlashSpritePosition();
     }
   }
 
@@ -1416,7 +1423,7 @@ class PlayState extends MusicBeatSubState
       // Add mask sprites to the mask camera.
       for (sprite in currentStage.maskSprites)
       {
-        sprite.cameras.push(camMask);
+        sprite.cameras = [camMask];
       }
       // Set buffer textures.
       currentStage.maskTexture = maskTexture;
