@@ -44,7 +44,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
   }
 
   // The intensity of the rain. Zero means no rain and one means the maximum amount of rain.
-  public var intensity(default, set):Float = 1;
+  public var intensity(default, set):Float = 0.5;
 
   function set_intensity(value:Float):Float
   {
@@ -52,17 +52,16 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return intensity = value;
   }
 
-  public var puddleMap(default, set):BitmapData;
-
   public var groundMap(default, set):BitmapData;
 
   function set_groundMap(value:BitmapData):BitmapData
   {
-    trace('groundmap set');
     this.setBitmapData('uGroundMap', value);
     // this.setFloat2('uPuddleTextureSize', value.width, value.height);
     return groundMap = value;
   }
+
+  public var puddleMap(default, set):BitmapData;
 
   function set_puddleMap(value:BitmapData):BitmapData
   {
@@ -74,9 +73,16 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_lightMap(value:BitmapData):BitmapData
   {
-    trace('lightmap set');
     this.setBitmapData('uLightMap', value);
     return lightMap = value;
+  }
+
+  public var mask(default, set):BitmapData;
+
+  function set_mask(value:BitmapData):BitmapData
+  {
+    this.setBitmapData('uMask', value);
+    return mask = value;
   }
 
   public var numLights(default, set):Int = 0;

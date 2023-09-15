@@ -25,10 +25,14 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.system.frontEnds.CameraFrontEnd;
+import flixel.util.FlxColor;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import funkin.api.newgrounds.NGio;
 import flixel.util.FlxTimer;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
 import funkin.audio.VoicesGroup;
 import funkin.save.Save;
 import funkin.Highscore.Tallies;
@@ -972,6 +976,21 @@ class PlayState extends MusicBeatSubState
     processNotes(elapsed);
   }
 
+  @:access(flixel.FlxCamera)
+  @:access(flixel.system.frontEnds.CameraFrontEnd)
+  override function draw():Void
+  {
+    super.draw();
+
+    bufferCameraFrontEnd.lock();
+    super.draw();
+    camMask.render();
+    bufferCameraFrontEnd.unlock();
+
+    maskTexture.fillRect(new Rectangle(0, 0, FlxG.width, FlxG.height), 0);
+    maskTexture.draw(camMask.canvas); // TODO: this assumes tile render mode??
+  }
+
   public override function dispatchEvent(event:ScriptEvent):Void
   {
     // ORDER: Module, Stage, Character, Song, Conversation, Note
@@ -1245,6 +1264,9 @@ class PlayState extends MusicBeatSubState
     performCleanup();
 
     super.destroy();
+
+    FlxG.signals.postUpdate.remove(syncBufferCameras);
+    bufferCameraFrontEnd.remove(camMask);
   }
 
   /**
@@ -1278,6 +1300,12 @@ class PlayState extends MusicBeatSubState
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutscene = new FlxCamera();
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
+
+    // Init cameras and stuff for buffers.
+    camMask = new FlxCamera();
+    maskTexture = new BitmapData(FlxG.width, FlxG.height, true, FlxColor.TRANSPARENT);
+    bufferCameraFrontEnd.reset(camMask);
+    FlxG.signals.postUpdate.add(syncBufferCameras);
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
@@ -1343,6 +1371,24 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * Syncs cameras for buffers; basically just copies how the main camera is doing
+   */
+  function syncBufferCameras():Void
+  {
+    final tr = @:privateAccess FlxG.log._standardTraceFunction;
+    // tr("zoom: " + camGame.zoom);
+    for (cam in bufferCameraFrontEnd.list)
+    {
+      cam.x = camGame.x;
+      cam.y = camGame.y;
+      cam.scroll.x = camGame.scroll.x;
+      cam.scroll.y = camGame.scroll.y;
+      cam.zoom = camGame.zoom;
+      cam.update(FlxG.elapsed); // TODO: is this needed?
+    }
+  }
+
+  /**
    * Loads stage data from cache, assembles the props,
    * and adds it to the state.
    * @param id
@@ -1366,6 +1412,14 @@ class PlayState extends MusicBeatSubState
       #if debug
       FlxG.console.registerObject('stage', currentStage);
       #end
+
+      // Add mask sprites to the mask camera.
+      for (sprite in currentStage.maskSprites)
+      {
+        sprite.cameras.push(camMask);
+      }
+      // Set buffer textures.
+      currentStage.maskTexture = maskTexture;
     }
     else
     {

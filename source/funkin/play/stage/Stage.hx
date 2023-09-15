@@ -1,10 +1,12 @@
 package funkin.play.stage;
 
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSort;
+import openfl.display.BitmapData;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventType;
@@ -31,6 +33,16 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   final _data:StageData;
 
   public var camZoom:Float = 1.0;
+
+  /**
+   * The list of sprites that should be rendered for mask texture.
+   */
+  public var maskSprites:Array<FlxSprite> = [];
+
+  /**
+   * The texture that has the mask information. Used for shader effects.
+   */
+  public var maskTexture:BitmapData;
 
   var namedProps:Map<String, StageProp> = new Map<String, StageProp>();
   var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
