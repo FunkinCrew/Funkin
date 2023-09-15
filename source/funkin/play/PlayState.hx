@@ -993,7 +993,7 @@ class PlayState extends MusicBeatSubState
     bufferCameraFrontEnd.unlock();
     // Update the buffer texture using `flashSprite`.
     // This is IMMEDIATELY done while the main cameras are not rendered yet,
-    // so any shaders in the main part that refers the texture can see the updated texture!
+    // so any shaders in the main part that refer the texture can see the updated texture!
     maskTexture.fillRect(new Rectangle(0, 0, FlxG.width, FlxG.height), 0);
     maskTexture.draw(camMask.flashSprite, new openfl.geom.Matrix(1, 0, 0, 1, camMask.flashSprite.x, camMask.flashSprite.y));
   }
