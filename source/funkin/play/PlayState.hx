@@ -31,6 +31,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import funkin.api.newgrounds.NGio;
 import flixel.util.FlxTimer;
+import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import funkin.audio.VoicesGroup;
@@ -588,6 +589,9 @@ class PlayState extends MusicBeatSubState
       initMinimalMode();
     }
     initStrumlines();
+
+    // Initialize sprites for the buffer texture.
+    initMaskSprites();
 
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff();
@@ -1272,6 +1276,8 @@ class PlayState extends MusicBeatSubState
 
     super.destroy();
 
+    // It's manually obtained, don't forget to release it!
+    maskTextureBase.dispose();
     FlxG.signals.postUpdate.remove(syncBufferCameras);
     bufferCameraFrontEnd.remove(camMask);
   }
@@ -1308,11 +1314,7 @@ class PlayState extends MusicBeatSubState
     camCutscene = new FlxCamera();
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
 
-    // Init cameras and stuff for buffers.
-    camMask = new FlxCamera();
-    maskTexture = new BitmapData(FlxG.width, FlxG.height, true, FlxColor.TRANSPARENT);
-    bufferCameraFrontEnd.reset(camMask);
-    FlxG.signals.postUpdate.add(syncBufferCameras);
+    initBufferCameras();
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
@@ -1325,6 +1327,24 @@ class PlayState extends MusicBeatSubState
       previousCameraFollowPoint = null;
     }
     add(cameraFollowPoint);
+  }
+
+  function initBufferCameras():Void
+  {
+    // Init cameras and stuff for buffers.
+    camMask = new FlxCamera();
+    // note: removing this line will cause NullReferenceError inside OpenGLRenderer lol
+    camMask.flashSprite.cacheAsBitmap = true;
+    // Prevent potential memory leak.
+    if (maskTextureBase != null) maskTextureBase.dispose();
+    // We need to directly create texture using Context3D, otherwise cannot render Sprite
+    // using OpenGLRenderer, which disables any shader applied to it.
+    maskTextureBase = Lib.current.stage.context3D.createTexture(FlxG.width, FlxG.height, Context3DTextureFormat.BGRA, true);
+    maskTexture = BitmapData.fromTexture(maskTextureBase);
+    // This must be done BEFORE `FlxG.cameras.reset`.
+    bufferCameraFrontEnd.reset(camMask);
+    // Sync buffer cameras after every update.
+    FlxG.signals.postUpdate.add(syncBufferCameras);
   }
 
   /**
@@ -1419,14 +1439,6 @@ class PlayState extends MusicBeatSubState
       #if debug
       FlxG.console.registerObject('stage', currentStage);
       #end
-
-      // Add mask sprites to the mask camera.
-      for (sprite in currentStage.maskSprites)
-      {
-        sprite.cameras = [camMask];
-      }
-      // Set buffer textures.
-      currentStage.maskTexture = maskTexture;
     }
     else
     {
@@ -1583,6 +1595,18 @@ class PlayState extends MusicBeatSubState
     }
 
     this.refresh();
+  }
+
+  function initMaskSprites():Void
+  {
+    // Add mask sprites to the mask camera.
+    for (sprite in currentStage.maskSprites)
+    {
+      this.add(sprite);
+      sprite.cameras = [camMask];
+    }
+    // Set buffer textures to the current stage.
+    currentStage.maskTexture = maskTexture;
   }
 
   /**
