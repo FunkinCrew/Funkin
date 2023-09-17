@@ -8,6 +8,9 @@ import flixel.FlxCamera;
 import openfl.Lib;
 import openfl.display3D.textures.TextureBase;
 
+/**
+ * A single frame buffer. Used by `FrameBufferManager`.
+ */
 class FrameBuffer
 {
   /**
@@ -37,8 +40,7 @@ class FrameBuffer
   public function create(width:Int, height:Int, bgColor:FlxColor):Void
   {
     dispose();
-    final c3d = Lib.current.stage.context3D;
-    texture = c3d.createTexture(width, height, BGRA, true);
+    texture = Lib.current.stage.context3D.createTexture(width, height, BGRA, true);
     bitmap = BitmapData.fromTexture(texture);
     camera.bgColor = bgColor;
   }
@@ -88,13 +90,15 @@ class FrameBuffer
   /**
    * Unlocks the frame buffer and makes the bitmap ready to use.
    */
-  @:access(flixel.FlxCamera)
   public function unlock():Void
   {
     bitmap.fillRect(new Rectangle(0, 0, bitmap.width, bitmap.height), 0);
     bitmap.draw(camera.flashSprite, new Matrix(1, 0, 0, 1, camera.flashSprite.x, camera.flashSprite.y));
   }
 
+  /**
+   * Diposes stuff. Call `create` again if you want to reuse the instance.
+   */
   public function dispose():Void
   {
     if (texture != null)
@@ -104,8 +108,13 @@ class FrameBuffer
       bitmap.dispose();
       bitmap = null;
     }
+    spriteCopies.clear();
   }
 
+  /**
+   * Adds a sprite copy to the frame buffer.
+   * @param spriteCopy the sprite copy
+   */
   public function addSpriteCopy(spriteCopy:SpriteCopy):Void
   {
     spriteCopies.push(spriteCopy);

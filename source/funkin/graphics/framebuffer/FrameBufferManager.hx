@@ -5,6 +5,9 @@ import openfl.display.BitmapData;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
 
+/**
+ * Manages frame buffers and gives access to each frame buffer.
+ */
 class FrameBufferManager
 {
   final camera:FlxCamera;
