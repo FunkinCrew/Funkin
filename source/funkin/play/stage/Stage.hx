@@ -23,26 +23,6 @@ import funkin.util.assets.FlxAnimationUtil;
 
 typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 
-typedef FrameBufferSprite =
-{
-  /**
-   * The name of the target frame buffer.
-   */
-  var name:String;
-
-  /**
-   * The sprite to be rendered.
-   */
-  var sprite:FlxSprite;
-
-  /**
-   * The RGB color of the sprite. The alpha component will be ignored.
-   * If this is `null`, the sprite keeps its original color.
-   */
-  @:optional
-  var color:Null<FlxColor>;
-}
-
 /**
  * A Stage is a group of objects rendered in the PlayState.
  *
@@ -58,8 +38,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   public var camZoom:Float = 1.0;
 
   var frameBufferMan:FrameBufferManager;
-
-  public final frameBufferSprites:Array<FrameBufferSprite> = [];
 
   /**
    * The texture that has the mask information. Used for shader effects.
