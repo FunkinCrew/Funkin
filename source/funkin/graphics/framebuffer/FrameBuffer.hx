@@ -22,21 +22,25 @@ class FrameBuffer
   public function new()
   {
     camera = new FlxCamera();
+    camera.antialiasing = false;
     camera.bgColor = FlxColor.TRANSPARENT;
     camera.flashSprite.cacheAsBitmap = true;
+    @:privateAccess camera.flashSprite.stage = Lib.current.stage;
   }
 
   /**
    * Creates a frame buffer with the given size.
    * @param width the width
    * @param height the height
+   * @param bgColor the background color
    */
-  public function create(width:Int, height:Int):Void
+  public function create(width:Int, height:Int, bgColor:FlxColor):Void
   {
     dispose();
     final c3d = Lib.current.stage.context3D;
     texture = c3d.createTexture(width, height, BGRA, true);
     bitmap = BitmapData.fromTexture(texture);
+    camera.bgColor = bgColor;
   }
 
   /**
@@ -45,7 +49,12 @@ class FrameBuffer
    */
   public function follow(target:FlxCamera):Void
   {
-    camera.scroll.copyFrom(target.scroll);
+    camera.x = target.x;
+    camera.y = target.y;
+    camera.width = target.width;
+    camera.height = target.height;
+    camera.scroll.x = target.scroll.x;
+    camera.scroll.y = target.scroll.y;
     camera.setScale(target.scaleX, target.scaleY);
   }
 
@@ -58,17 +67,22 @@ class FrameBuffer
     camera.clearDrawStack();
     camera.canvas.graphics.clear();
     camera.fill(camera.bgColor.to24Bit(), camera.useBgAlphaBlending, camera.bgColor.alphaFloat);
+    #if FLX_DEBUG
+    camera.debugLayer.graphics.clear();
+    #end
   }
 
   /**
    * Renders all sprite copies.
    */
+  @:access(flixel.FlxCamera)
   public function render():Void
   {
     for (spriteCopy in spriteCopies)
     {
       spriteCopy.render(camera);
     }
+    camera.render();
   }
 
   /**

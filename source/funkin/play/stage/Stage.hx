@@ -1,5 +1,8 @@
 package funkin.play.stage;
 
+import funkin.graphics.framebuffer.FrameBufferManager;
+import flixel.util.FlxColor;
+import funkin.graphics.framebuffer.SpriteCopy;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -20,6 +23,26 @@ import funkin.util.assets.FlxAnimationUtil;
 
 typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 
+typedef FrameBufferSprite =
+{
+  /**
+   * The name of the target frame buffer.
+   */
+  var name:String;
+
+  /**
+   * The sprite to be rendered.
+   */
+  var sprite:FlxSprite;
+
+  /**
+   * The RGB color of the sprite. The alpha component will be ignored.
+   * If this is `null`, the sprite keeps its original color.
+   */
+  @:optional
+  var color:Null<FlxColor>;
+}
+
 /**
  * A Stage is a group of objects rendered in the PlayState.
  *
@@ -34,10 +57,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
   public var camZoom:Float = 1.0;
 
-  /**
-   * The list of sprites that should be rendered for mask texture.
-   */
-  public var maskSprites:Array<FlxSprite> = [];
+  var frameBufferMan:FrameBufferManager;
+
+  public final frameBufferSprites:Array<FrameBufferSprite> = [];
 
   /**
    * The texture that has the mask information. Used for shader effects.
@@ -76,6 +98,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    */
   public function onCreate(event:ScriptEvent):Void
   {
+    if (frameBufferMan != null) frameBufferMan.dispose();
+    frameBufferMan = new FrameBufferManager(FlxG.camera);
+    onFrameBufferCreate();
+
     buildStage();
     this.refresh();
 
@@ -691,6 +717,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     {
       debugIconGroup = null;
     }
+
+    frameBufferMan.dispose();
   }
 
   /**
@@ -742,6 +770,19 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     if (group != null) group.remove(Sprite, Splice);
     return Sprite;
   }
+
+  override function draw():Void
+  {
+    frameBufferMan.lock();
+    super.draw();
+    frameBufferMan.unlock();
+  }
+
+  /**
+   * Called when the frame buffer manager is ready.
+   * Create frame buffers inside this method.
+   */
+  public function onFrameBufferCreate():Void {}
 
   public function onScriptEvent(event:ScriptEvent) {}
 

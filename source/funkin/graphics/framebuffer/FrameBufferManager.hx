@@ -1,5 +1,6 @@
 package funkin.graphics.framebuffer;
 
+import flixel.util.FlxColor;
 import openfl.display.BitmapData;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
@@ -21,33 +22,33 @@ class FrameBufferManager
   /**
    * Creates a new frame buffer with a name.
    * @param name the name
+   * @param bgColor the background color
+   * @return the bitmap data of the frame buffer. the bitmap data instance
+   * will not be changed through frame buffer updates.
    */
-  public function createFrameBuffer(name:String):Void
+  public function createFrameBuffer(name:String, bgColor:FlxColor):BitmapData
   {
     if (frameBufferMap.exists(name))
     {
       FlxG.log.warn('frame buffer "$name" already exists');
+      frameBufferMap[name].dispose();
+      frameBufferMap.remove(name);
     }
-    else
-    {
-      final fb = new FrameBuffer();
-      fb.create(camera.width, camera.height);
-      frameBufferMap[name] = fb;
-    }
+    final fb = new FrameBuffer();
+    fb.create(camera.width, camera.height, bgColor);
+    frameBufferMap[name] = fb;
+    return fb.bitmap;
   }
 
   /**
    * Adds a copy of the sprite to the frame buffer.
    * @param name the name of the frame buffer
    * @param sprite the sprite
-   * @param color if this is not `-1`, the sprite will have the color while keeping its shape
+   * @param color if this is not `null`, the sprite will be filled with the color.
+   * if this is `null`, the sprite will keep its original color.
    */
-  public function addSpriteTo(name:String, sprite:FlxSprite, color:Int = -1):Void
+  public function addSpriteCopyTo(name:String, sprite:FlxSprite, color:Null<FlxColor> = null):Void
   {
-    if (!frameBufferMap.exists(name))
-    {
-      createFrameBuffer(name);
-    }
     frameBufferMap[name].addSpriteCopy(new SpriteCopy(sprite, color));
   }
 
@@ -58,27 +59,20 @@ class FrameBufferManager
   {
     for (_ => fb in frameBufferMap)
     {
+      fb.follow(camera);
       fb.lock();
     }
   }
 
   /**
-   * Renders all the copies of the sprites. Make sure this is called between
-   * `lock` and `unlock`.
+   * Unlocks the frame buffers. This updates the bitmap data of each frame buffer.
    */
-  public function render():Void
+  public function unlock():Void
   {
     for (_ => fb in frameBufferMap)
     {
       fb.render();
     }
-  }
-
-  /**
-   * After calling this you can use bitmap data of all frame buffers.
-   */
-  public function unlock():Void
-  {
     for (_ => fb in frameBufferMap)
     {
       fb.unlock();
@@ -88,7 +82,7 @@ class FrameBufferManager
   /**
    * Returns the bitmap data of the frame buffer
    * @param name the name of the frame buffer
-   * @return the ready-to-use bitmap data
+   * @return the bitmap data
    */
   public function getFrameBuffer(name:String):BitmapData
   {
@@ -96,7 +90,7 @@ class FrameBufferManager
   }
 
   /**
-   * Disposes all frame buffers.
+   * Disposes all frame buffers. The instance can be reused.
    */
   public function dispose():Void
   {

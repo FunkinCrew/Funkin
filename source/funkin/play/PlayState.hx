@@ -15,7 +15,10 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.input.keyboard.FlxKey;
+import flixel.addons.display.FlxPieDial;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.Transition;
 import flixel.math.FlxMath;
 import funkin.play.components.ComboMilestone;
 import flixel.math.FlxPoint;
@@ -25,8 +28,6 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.system.frontEnds.CameraFrontEnd;
-import flixel.util.FlxColor;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import funkin.api.newgrounds.NGio;
@@ -37,21 +38,24 @@ import openfl.geom.Rectangle;
 import funkin.audio.VoicesGroup;
 import funkin.save.Save;
 import funkin.Highscore.Tallies;
+import funkin.NoteSplash;
+import funkin.audio.VoicesGroup;
+import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.data.event.SongEventData.SongEventParser;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.NoteSprite;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
@@ -66,7 +70,6 @@ import funkin.ui.options.PreferencesMenu;
 import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.SerializerUtil;
-import funkin.util.SortUtil;
 import lime.ui.Haptic;
 #if discord_rpc
 import Discord.DiscordClient;
@@ -590,9 +593,6 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
-    // Initialize sprites for the buffer texture.
-    initMaskSprites();
-
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff();
     comboPopUps.cameras = [camHUD];
@@ -980,28 +980,6 @@ class PlayState extends MusicBeatSubState
     processNotes(elapsed);
   }
 
-  @:access(flixel.FlxCamera)
-  @:access(flixel.system.frontEnds.CameraFrontEnd)
-  override function draw():Void
-  {
-    // Clears the draw stacks buffer cameras.
-    bufferCameraFrontEnd.lock();
-    // Collects draw stacks to render stuff, for ALL cameras including
-    // the main ones and buffer ones. But at this point each camera's
-    // canvas.graphics is still empty.
-    super.draw();
-    // Actually render (using canvas.graphics) stuff ONLY for the buffer cameras.
-    // For the main cameras, it will be done by FlxGame LATER.
-    bufferCameraFrontEnd.render();
-    // Possibly applies some FXs to the buffer cameras.
-    bufferCameraFrontEnd.unlock();
-    // Update the buffer texture using `flashSprite`.
-    // This is IMMEDIATELY done while the main cameras are not rendered yet,
-    // so any shaders in the main part that refer the texture can see the updated texture!
-    maskTexture.fillRect(new Rectangle(0, 0, FlxG.width, FlxG.height), 0);
-    maskTexture.draw(camMask.flashSprite, new openfl.geom.Matrix(1, 0, 0, 1, camMask.flashSprite.x, camMask.flashSprite.y));
-  }
-
   public override function dispatchEvent(event:ScriptEvent):Void
   {
     // ORDER: Module, Stage, Character, Song, Conversation, Note
@@ -1275,11 +1253,6 @@ class PlayState extends MusicBeatSubState
     performCleanup();
 
     super.destroy();
-
-    // It's manually obtained, don't forget to release it!
-    maskTextureBase.dispose();
-    FlxG.signals.postUpdate.remove(syncBufferCameras);
-    bufferCameraFrontEnd.remove(camMask);
   }
 
   /**
@@ -1314,8 +1287,6 @@ class PlayState extends MusicBeatSubState
     camCutscene = new FlxCamera();
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
 
-    initBufferCameras();
-
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
     FlxG.cameras.add(camCutscene, false);
@@ -1327,24 +1298,6 @@ class PlayState extends MusicBeatSubState
       previousCameraFollowPoint = null;
     }
     add(cameraFollowPoint);
-  }
-
-  function initBufferCameras():Void
-  {
-    // Init cameras and stuff for buffers.
-    camMask = new FlxCamera();
-    // note: removing this line will cause NullReferenceError inside OpenGLRenderer lol
-    camMask.flashSprite.cacheAsBitmap = true;
-    // Prevent potential memory leak.
-    if (maskTextureBase != null) maskTextureBase.dispose();
-    // We need to directly create texture using Context3D, otherwise cannot render Sprite
-    // using OpenGLRenderer, which disables any shader applied to it.
-    maskTextureBase = Lib.current.stage.context3D.createTexture(FlxG.width, FlxG.height, Context3DTextureFormat.BGRA, true);
-    maskTexture = BitmapData.fromTexture(maskTextureBase);
-    // This must be done BEFORE `FlxG.cameras.reset`.
-    bufferCameraFrontEnd.reset(camMask);
-    // Sync buffer cameras after every update.
-    FlxG.signals.postUpdate.add(syncBufferCameras);
   }
 
   /**
@@ -1395,24 +1348,6 @@ class PlayState extends MusicBeatSubState
     menuBG.scrollFactor.set(0, 0);
     menuBG.zIndex = -1000;
     add(menuBG);
-  }
-
-  /**
-   * Syncs cameras for buffers; basically just copies how the main camera is doing
-   */
-  function syncBufferCameras():Void
-  {
-    final tr = @:privateAccess FlxG.log._standardTraceFunction;
-    // tr("zoom: " + camGame.zoom);
-    for (cam in bufferCameraFrontEnd.list)
-    {
-      cam.x = camGame.x;
-      cam.y = camGame.y;
-      cam.scroll.x = camGame.scroll.x;
-      cam.scroll.y = camGame.scroll.y;
-      cam.zoom = camGame.zoom;
-      @:privateAccess cam.updateFlashSpritePosition();
-    }
   }
 
   /**
@@ -1595,18 +1530,6 @@ class PlayState extends MusicBeatSubState
     }
 
     this.refresh();
-  }
-
-  function initMaskSprites():Void
-  {
-    // Add mask sprites to the mask camera.
-    for (sprite in currentStage.maskSprites)
-    {
-      this.add(sprite);
-      sprite.cameras = [camMask];
-    }
-    // Set buffer textures to the current stage.
-    currentStage.maskTexture = maskTexture;
   }
 
   /**
