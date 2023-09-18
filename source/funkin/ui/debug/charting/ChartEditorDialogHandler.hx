@@ -631,7 +631,8 @@ class ChartEditorDialogHandler
 
     for (charKey in state.currentSongMetadata.playData.playableChars.keys())
     {
-      var charData:SongPlayableChar = state.currentSongMetadata.playData.playableChars.get(charKey);
+      var charData:Null<SongPlayableChar> = state.currentSongMetadata.playData.playableChars.get(charKey);
+      if (charData == null) continue;
       charIdsForVocals.push(charKey);
       if (charData.opponent != null) charIdsForVocals.push(charData.opponent);
     }
