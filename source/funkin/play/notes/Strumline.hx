@@ -31,7 +31,7 @@ class Strumline extends FlxSpriteGroup
   static final KEY_COUNT:Int = 4;
   static final NOTE_SPLASH_CAP:Int = 6;
 
-  static var RENDER_DISTANCE_MS(get, null):Float;
+  static var RENDER_DISTANCE_MS(get, never):Float;
 
   static function get_RENDER_DISTANCE_MS():Float
   {

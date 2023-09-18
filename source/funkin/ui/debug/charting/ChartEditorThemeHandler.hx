@@ -20,6 +20,7 @@ enum ChartEditorTheme
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
+@:nullSafety
 class ChartEditorThemeHandler
 {
   // TODO: There's probably a better system of organization for these colors.
@@ -97,6 +98,7 @@ class ChartEditorThemeHandler
    */
   static function updateBackground(state:ChartEditorState):Void
   {
+    if (state.menuBG == null) return;
     state.menuBG.color = switch (state.currentTheme)
     {
       case ChartEditorTheme.Light: BACKGROUND_COLOR_LIGHT;

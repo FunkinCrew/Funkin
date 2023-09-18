@@ -35,6 +35,7 @@ interface ChartEditorCommand
   public function toString():String;
 }
 
+@:nullSafety
 class AddNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -98,6 +99,7 @@ class AddNotesCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class RemoveNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -153,6 +155,7 @@ class RemoveNotesCommand implements ChartEditorCommand
 /**
  * Appends one or more items to the selection.
  */
+@:nullSafety
 class SelectItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -220,6 +223,7 @@ class SelectItemsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class AddEventsCommand implements ChartEditorCommand
 {
   var events:Array<SongEventData>;
@@ -278,6 +282,7 @@ class AddEventsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class RemoveEventsCommand implements ChartEditorCommand
 {
   var events:Array<SongEventData>;
@@ -327,6 +332,7 @@ class RemoveEventsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class RemoveItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -385,6 +391,7 @@ class RemoveItemsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class SwitchDifficultyCommand implements ChartEditorCommand
 {
   var prevDifficulty:String;
@@ -424,6 +431,7 @@ class SwitchDifficultyCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class DeselectItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -478,6 +486,7 @@ class DeselectItemsCommand implements ChartEditorCommand
  * Sets the selection rather than appends it.
  * Deselects any notes that are not in the new selection.
  */
+@:nullSafety
 class SetItemSelectionCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -518,6 +527,7 @@ class SetItemSelectionCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class SelectAllItemsCommand implements ChartEditorCommand
 {
   var previousNoteSelection:Array<SongNoteData>;
@@ -553,6 +563,7 @@ class SelectAllItemsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class InvertSelectedItemsCommand implements ChartEditorCommand
 {
   var previousNoteSelection:Array<SongNoteData>;
@@ -587,6 +598,7 @@ class InvertSelectedItemsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class DeselectAllItemsCommand implements ChartEditorCommand
 {
   var previousNoteSelection:Array<SongNoteData>;
@@ -622,6 +634,7 @@ class DeselectAllItemsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class CutItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -679,14 +692,16 @@ class CutItemsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class FlipNotesCommand implements ChartEditorCommand
 {
-  var notes:Array<SongNoteData>;
-  var flippedNotes:Array<SongNoteData>;
+  var notes:Array<SongNoteData> = [];
+  var flippedNotes:Array<SongNoteData> = [];
 
   public function new(notes:Array<SongNoteData>)
   {
     this.notes = notes;
+    this.flippedNotes = SongDataUtils.flipNotes(notes);
   }
 
   public function execute(state:ChartEditorState):Void
@@ -695,7 +710,6 @@ class FlipNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
 
     // Add the flipped notes.
-    flippedNotes = SongDataUtils.flipNotes(notes);
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(flippedNotes);
 
     state.currentNoteSelection = flippedNotes;
@@ -729,12 +743,13 @@ class FlipNotesCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class PasteItemsCommand implements ChartEditorCommand
 {
   var targetTimestamp:Float;
   // Notes we added with this command, for undo.
-  var addedNotes:Array<SongNoteData>;
-  var addedEvents:Array<SongEventData>;
+  var addedNotes:Array<SongNoteData> = [];
+  var addedEvents:Array<SongEventData> = [];
 
   public function new(targetTimestamp:Float)
   {
@@ -787,6 +802,7 @@ class PasteItemsCommand implements ChartEditorCommand
   }
 }
 
+@:nullSafety
 class ExtendNoteLengthCommand implements ChartEditorCommand
 {
   var note:SongNoteData;

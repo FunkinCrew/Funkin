@@ -56,7 +56,7 @@ class CharacterPlayer extends Box
     return value;
   }
 
-  public var charName(get, null):String;
+  public var charName(get, never):String;
 
   function get_charName():String
   {
