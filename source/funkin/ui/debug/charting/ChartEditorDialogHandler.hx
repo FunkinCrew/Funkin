@@ -6,6 +6,7 @@ import funkin.util.SerializerUtil;
 import funkin.play.song.SongData.SongChartData;
 import funkin.play.song.SongData.SongMetadata;
 import flixel.util.FlxTimer;
+import funkin.ui.haxeui.components.FunkinLink;
 import funkin.util.SortUtil;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
@@ -134,7 +135,7 @@ class ChartEditorDialogHandler
         continue;
       }
 
-      var linkTemplateSong:Link = new Link();
+      var linkTemplateSong:Link = new FunkinLink();
       linkTemplateSong.text = songName;
       linkTemplateSong.onClick = function(_event) {
         dialog.hideDialog(DialogButton.CANCEL);
@@ -306,6 +307,7 @@ class ChartEditorDialogHandler
             if (state.loadInstrumentalFromBytes(selectedFile.bytes))
             {
               trace('Selected file: ' + selectedFile.fullPath);
+              #if !mac
               NotificationManager.instance.addNotification(
                 {
                   title: 'Success',
@@ -313,6 +315,7 @@ class ChartEditorDialogHandler
                   type: NotificationType.Success,
                   expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
                 });
+              #end
 
               dialog.hideDialog(DialogButton.APPLY);
               removeDropHandler(onDropFile);
@@ -321,6 +324,7 @@ class ChartEditorDialogHandler
             {
               trace('Failed to load instrumental (${selectedFile.fullPath})');
 
+              #if !mac
               NotificationManager.instance.addNotification(
                 {
                   title: 'Failure',
@@ -328,6 +332,7 @@ class ChartEditorDialogHandler
                   type: NotificationType.Error,
                   expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
                 });
+              #end
             }
           }
       });
@@ -339,6 +344,7 @@ class ChartEditorDialogHandler
       if (state.loadInstrumentalFromPath(path))
       {
         // Tell the user the load was successful.
+        #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Success',
@@ -346,6 +352,7 @@ class ChartEditorDialogHandler
             type: NotificationType.Success,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
+        #end
 
         dialog.hideDialog(DialogButton.APPLY);
         removeDropHandler(onDropFile);
@@ -362,6 +369,7 @@ class ChartEditorDialogHandler
         }
 
         // Tell the user the load was successful.
+        #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Failure',
@@ -369,6 +377,7 @@ class ChartEditorDialogHandler
             type: NotificationType.Error,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
+        #end
       }
     };
 
@@ -383,6 +392,15 @@ class ChartEditorDialogHandler
       handler:(String->Void)
     }> = [];
 
+  /**
+   * Add a callback for when a file is dropped on a component.
+   *
+   * On OS X you can’t drop on the application window, but rather only the app icon
+   * (either in the dock while running or the icon on the hard drive) so this must be disabled
+   * and UI updated appropriately.
+   * @param component
+   * @param handler
+   */
   static function addDropHandler(component:Component, handler:String->Void):Void
   {
     #if desktop
@@ -647,7 +665,11 @@ class ChartEditorDialogHandler
 
       var vocalsEntryLabel:Null<Label> = vocalsEntry.findComponent('vocalsEntryLabel', Label);
       if (vocalsEntryLabel == null) throw 'Could not locate vocalsEntryLabel in Upload Vocals dialog';
+      #if FILE_DROP_SUPPORTED
       vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
+      #else
+      vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
+      #end
 
       var onDropFile:String->Void = function(pathStr:String) {
         trace('Selected file: $pathStr');
@@ -656,6 +678,7 @@ class ChartEditorDialogHandler
         if (state.loadVocalsFromPath(path, charKey))
         {
           // Tell the user the load was successful.
+          #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Success',
@@ -663,7 +686,12 @@ class ChartEditorDialogHandler
               type: NotificationType.Success,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
+
           vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+          #else
+          vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${path.file}.${path.ext}';
+          #end
+
           dialogNoVocals.hidden = true;
           removeDropHandler(onDropFile);
         }
@@ -679,6 +707,7 @@ class ChartEditorDialogHandler
           }
 
           // Vocals failed to load.
+          #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Failure',
@@ -686,8 +715,13 @@ class ChartEditorDialogHandler
               type: NotificationType.Error,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
+          #end
 
+          #if FILE_DROP_SUPPORTED
           vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
+          #else
+          vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
+          #end
         }
       };
 
@@ -697,7 +731,11 @@ class ChartEditorDialogHandler
             if (selectedFile != null && selectedFile.bytes != null)
             {
               trace('Selected file: ' + selectedFile.name);
+              #if FILE_DROP_SUPPORTED
+              vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+              #else
               vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${selectedFile.name}';
+              #end
               state.loadVocalsFromBytes(selectedFile.bytes, charKey);
               dialogNoVocals.hidden = true;
               removeDropHandler(onDropFile);
@@ -706,7 +744,9 @@ class ChartEditorDialogHandler
       }
 
       // onDropFile
+      #if FILE_DROP_SUPPORTED
       addDropHandler(vocalsEntry, onDropFile);
+      #end
       dialogContainer.addComponent(vocalsEntry);
     }
 
@@ -770,7 +810,11 @@ class ChartEditorDialogHandler
       var songDefaultChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
       var songDefaultChartDataEntryLabel:Null<Label> = songDefaultChartDataEntry.findComponent('chartEntryLabel', Label);
       if (songDefaultChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
+      #if FILE_DROP_SUPPORTED
       songDefaultChartDataEntryLabel.text = 'Drag and drop <song>-chart.json file, or click to browse.';
+      #else
+      songDefaultChartDataEntryLabel.text = 'Click to browse for <song>-chart.json file.';
+      #end
 
       songDefaultChartDataEntry.onClick = onClickChartDataVariation.bind(Constants.DEFAULT_VARIATION).bind(songDefaultChartDataEntryLabel);
       addDropHandler(songDefaultChartDataEntry, onDropFileChartDataVariation.bind(Constants.DEFAULT_VARIATION).bind(songDefaultChartDataEntryLabel));
@@ -782,20 +826,48 @@ class ChartEditorDialogHandler
         var songVariationMetadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
         var songVariationMetadataEntryLabel:Null<Label> = songVariationMetadataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationMetadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
+        #if FILE_DROP_SUPPORTED
         songVariationMetadataEntryLabel.text = 'Drag and drop <song>-metadata-${variation}.json file, or click to browse.';
+        #else
+        songVariationMetadataEntryLabel.text = 'Click to browse for <song>-metadata-${variation}.json file.';
+        #end
 
+        songVariationMetadataEntry.onMouseOver = function(_event) {
+          songVariationMetadataEntry.swapClass('upload-bg', 'upload-bg-hover');
+          Cursor.cursorMode = Pointer;
+        }
+        songVariationMetadataEntry.onMouseOut = function(_event) {
+          songVariationMetadataEntry.swapClass('upload-bg-hover', 'upload-bg');
+          Cursor.cursorMode = Default;
+        }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
+        #if FILE_DROP_SUPPORTED
         addDropHandler(songVariationMetadataEntry, onDropFileMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel));
+        #end
         chartContainerB.addComponent(songVariationMetadataEntry);
 
         // Build entries for -chart-<variation>.json.
         var songVariationChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
         var songVariationChartDataEntryLabel:Null<Label> = songVariationChartDataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
+        #if FILE_DROP_SUPPORTED
         songVariationChartDataEntryLabel.text = 'Drag and drop <song>-chart-${variation}.json file, or click to browse.';
+        #else
+        songVariationChartDataEntryLabel.text = 'Click to browse for <song>-chart-${variation}.json file.';
+        #end
 
+        songVariationChartDataEntry.onMouseOver = function(_event) {
+          songVariationChartDataEntry.swapClass('upload-bg', 'upload-bg-hover');
+          Cursor.cursorMode = Pointer;
+        }
+        songVariationChartDataEntry.onMouseOut = function(_event) {
+          songVariationChartDataEntry.swapClass('upload-bg-hover', 'upload-bg');
+          Cursor.cursorMode = Default;
+        }
         songVariationChartDataEntry.onClick = onClickChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel);
+        #if FILE_DROP_SUPPORTED
         addDropHandler(songVariationChartDataEntry, onDropFileChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel));
+        #end
         chartContainerB.addComponent(songVariationChartDataEntry);
       }
     }
@@ -811,6 +883,7 @@ class ChartEditorDialogHandler
       if (songMetadataVariation == null)
       {
         // Tell the user the load was not successful.
+        #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Failure',
@@ -818,12 +891,14 @@ class ChartEditorDialogHandler
             type: NotificationType.Error,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
+        #end
         return;
       }
 
       songMetadata.set(variation, songMetadataVariation);
 
       // Tell the user the load was successful.
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Success',
@@ -831,8 +906,13 @@ class ChartEditorDialogHandler
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
 
+      #if FILE_DROP_SUPPORTED
       label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+      #else
+      label.text = 'Metadata file (click to browse)\n${path.file}.${path.ext}';
+      #end
 
       if (variation == Constants.DEFAULT_VARIATION) constructVariationEntries(songMetadataVariation.playData.songVariations);
     };
@@ -852,6 +932,7 @@ class ChartEditorDialogHandler
             songMetadata.set(variation, songMetadataVariation);
 
             // Tell the user the load was successful.
+            #if !mac
             NotificationManager.instance.addNotification(
               {
                 title: 'Success',
@@ -859,8 +940,13 @@ class ChartEditorDialogHandler
                 type: NotificationType.Success,
                 expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
               });
+            #end
 
+            #if FILE_DROP_SUPPORTED
             label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+            #else
+            label.text = 'Metadata file (click to browse)\n${selectedFile.name}';
+            #end
 
             if (variation == Constants.DEFAULT_VARIATION) constructVariationEntries(songMetadataVariation.playData.songVariations);
           }
@@ -881,6 +967,7 @@ class ChartEditorDialogHandler
       state.noteDisplayDirty = true;
 
       // Tell the user the load was successful.
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Success',
@@ -888,8 +975,13 @@ class ChartEditorDialogHandler
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
 
+      #if FILE_DROP_SUPPORTED
       label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+      #else
+      label.text = 'Chart data file (click to browse)\n${path.file}.${path.ext}';
+      #end
     };
 
     onClickChartDataVariation = function(variation:String, label:Label, _event:UIEvent) {
@@ -909,6 +1001,7 @@ class ChartEditorDialogHandler
             state.noteDisplayDirty = true;
 
             // Tell the user the load was successful.
+            #if !mac
             NotificationManager.instance.addNotification(
               {
                 title: 'Success',
@@ -916,8 +1009,13 @@ class ChartEditorDialogHandler
                 type: NotificationType.Success,
                 expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
               });
+            #end
 
+            #if FILE_DROP_SUPPORTED
             label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+            #else
+            label.text = 'Chart data file (click to browse)\n${selectedFile.name}';
+            #end
           }
       });
     }
@@ -925,10 +1023,23 @@ class ChartEditorDialogHandler
     var metadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
     var metadataEntryLabel:Null<Label> = metadataEntry.findComponent('chartEntryLabel', Label);
     if (metadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
+
+    #if FILE_DROP_SUPPORTED
     metadataEntryLabel.text = 'Drag and drop <song>-metadata.json file, or click to browse.';
+    #else
+    metadataEntryLabel.text = 'Click to browse for <song>-metadata.json file.';
+    #end
 
     metadataEntry.onClick = onClickMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel);
     addDropHandler(metadataEntry, onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel));
+    metadataEntry.onMouseOver = function(_event) {
+      metadataEntry.swapClass('upload-bg', 'upload-bg-hover');
+      Cursor.cursorMode = Pointer;
+    }
+    metadataEntry.onMouseOut = function(_event) {
+      metadataEntry.swapClass('upload-bg-hover', 'upload-bg');
+      Cursor.cursorMode = Default;
+    }
 
     chartContainerA.addComponent(metadataEntry);
 
@@ -975,7 +1086,6 @@ class ChartEditorDialogHandler
       importBox.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
     }
-
     importBox.onMouseOut = function(_event) {
       importBox.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
@@ -995,6 +1105,7 @@ class ChartEditorDialogHandler
           state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
           dialog.hideDialog(DialogButton.APPLY);
+          #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Success',
@@ -1002,6 +1113,7 @@ class ChartEditorDialogHandler
               type: NotificationType.Success,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
+          #end
         }
       });
     }
@@ -1015,6 +1127,7 @@ class ChartEditorDialogHandler
       state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
       dialog.hideDialog(DialogButton.APPLY);
+      #if !mac
       NotificationManager.instance.addNotification(
         {
           title: 'Success',
@@ -1022,6 +1135,7 @@ class ChartEditorDialogHandler
           type: NotificationType.Success,
           expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
         });
+      #end
     };
 
     addDropHandler(importBox, onDropFile);

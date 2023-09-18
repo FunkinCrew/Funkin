@@ -51,6 +51,11 @@ class ChartEditorThemeHandler
   static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
 
+  // Horizontal divider between beats.
+  static final GRID_BEAT_DIVIDER_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
+  static final GRID_BEAT_DIVIDER_COLOR_DARK:FlxColor = 0xFF848484;
+  static final GRID_BEAT_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
+
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
   static final SELECTION_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFF339933;
@@ -143,7 +148,7 @@ class ChartEditorThemeHandler
       ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
       selectionBorderColor);
 
-    // Selection borders in the middle.
+    // Selection borders horizontally along the middle.
     for (i in 1...(Conductor.stepsPerMeasure))
     {
       state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
@@ -161,7 +166,7 @@ class ChartEditorThemeHandler
       state.gridBitmap.height),
       selectionBorderColor);
 
-    // Selection borders across the middle.
+    // Selection borders vertically along the middle.
     for (i in 1...TOTAL_COLUMN_COUNT)
     {
       state.gridBitmap.fillRect(new Rectangle((ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0,
@@ -174,7 +179,7 @@ class ChartEditorThemeHandler
       ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
       selectionBorderColor);
 
-    // Draw dividers between the measures.
+    // Draw horizontal dividers between the measures.
 
     var gridMeasureDividerColor:FlxColor = switch (state.currentTheme)
     {
@@ -189,7 +194,30 @@ class ChartEditorThemeHandler
     var dividerLineBY:Float = state.gridBitmap.height - (GRID_MEASURE_DIVIDER_WIDTH / 2);
     state.gridBitmap.fillRect(new Rectangle(0, dividerLineBY, state.gridBitmap.width, GRID_MEASURE_DIVIDER_WIDTH / 2), gridMeasureDividerColor);
 
-    // Draw dividers between the strumlines.
+    // Draw horizontal dividers between the beats.
+
+    var gridBeatDividerColor:FlxColor = switch (state.currentTheme)
+    {
+      case Light: GRID_BEAT_DIVIDER_COLOR_LIGHT;
+      case Dark: GRID_BEAT_DIVIDER_COLOR_DARK;
+      default: GRID_BEAT_DIVIDER_COLOR_LIGHT;
+    };
+
+    // Selection borders horizontally in the middle.
+    for (i in 1...(Conductor.stepsPerMeasure))
+    {
+      if ((i % Conductor.beatsPerMeasure) == 0)
+      {
+        state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (GRID_BEAT_DIVIDER_WIDTH / 2), state.gridBitmap.width,
+          GRID_BEAT_DIVIDER_WIDTH),
+          gridBeatDividerColor);
+      }
+    }
+
+    // Divider at top
+    state.gridBitmap.fillRect(new Rectangle(0, 0, state.gridBitmap.width, GRID_MEASURE_DIVIDER_WIDTH / 2), gridMeasureDividerColor);
+
+    // Draw vertical dividers between the strumlines.
 
     var gridStrumlineDividerColor:FlxColor = switch (state.currentTheme)
     {
