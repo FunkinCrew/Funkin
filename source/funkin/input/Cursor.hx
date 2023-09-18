@@ -4,9 +4,34 @@ import openfl.utils.Assets;
 import lime.app.Future;
 import openfl.display.BitmapData;
 
+@:nullSafety
 class Cursor
 {
-  public static var cursorMode(default, set):CursorMode;
+  /**
+   * The current cursor mode.
+   * Set this value to change the cursor graphic.
+   */
+  public static var cursorMode(default, set):Null<CursorMode> = null;
+
+  /**
+   * Show the cursor.
+   */
+  public static inline function show():Void
+  {
+    FlxG.mouse.visible = true;
+    // Reset the cursor mode.
+    Cursor.cursorMode = Default;
+  }
+
+  /**
+   * Hide the cursor.
+   */
+  public static inline function hide():Void
+  {
+    FlxG.mouse.visible = false;
+    // Reset the cursor mode.
+    Cursor.cursorMode = null;
+  }
 
   static final CURSOR_DEFAULT_PARAMS:CursorParams =
     {
@@ -15,7 +40,7 @@ class Cursor
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorDefault:BitmapData = null;
+  static var assetCursorDefault:Null<BitmapData> = null;
 
   static final CURSOR_CROSS_PARAMS:CursorParams =
     {
@@ -24,7 +49,7 @@ class Cursor
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorCross:BitmapData = null;
+  static var assetCursorCross:Null<BitmapData> = null;
 
   static final CURSOR_ERASER_PARAMS:CursorParams =
     {
@@ -33,16 +58,16 @@ class Cursor
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorEraser:BitmapData = null;
+  static var assetCursorEraser:Null<BitmapData> = null;
 
   static final CURSOR_GRABBING_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-grabbing.png",
       scale: 1.0,
-      offsetX: 32,
+      offsetX: -8,
       offsetY: 0,
     };
-  static var assetCursorGrabbing:BitmapData = null;
+  static var assetCursorGrabbing:Null<BitmapData> = null;
 
   static final CURSOR_HOURGLASS_PARAMS:CursorParams =
     {
@@ -51,25 +76,34 @@ class Cursor
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorHourglass:BitmapData = null;
+  static var assetCursorHourglass:Null<BitmapData> = null;
 
   static final CURSOR_POINTER_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-pointer.png",
       scale: 1.0,
-      offsetX: 8,
+      offsetX: -8,
       offsetY: 0,
     };
-  static var assetCursorPointer:BitmapData = null;
+  static var assetCursorPointer:Null<BitmapData> = null;
 
   static final CURSOR_TEXT_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-text.png",
-      scale: 1.0,
+      scale: 0.2,
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorText:BitmapData = null;
+  static var assetCursorText:Null<BitmapData> = null;
+
+  static final CURSOR_TEXT_VERTICAL_PARAMS:CursorParams =
+    {
+      graphic: "assets/images/cursor/cursor-text-vertical.png",
+      scale: 0.2,
+      offsetX: 0,
+      offsetY: 0,
+    };
+  static var assetCursorTextVertical:Null<BitmapData> = null;
 
   static final CURSOR_ZOOM_IN_PARAMS:CursorParams =
     {
@@ -78,7 +112,7 @@ class Cursor
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorZoomIn:BitmapData = null;
+  static var assetCursorZoomIn:Null<BitmapData> = null;
 
   static final CURSOR_ZOOM_OUT_PARAMS:CursorParams =
     {
@@ -87,11 +121,36 @@ class Cursor
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorZoomOut:BitmapData = null;
+  static var assetCursorZoomOut:Null<BitmapData> = null;
 
-  static function set_cursorMode(value:CursorMode):CursorMode
+  static final CURSOR_CROSSHAIR_PARAMS:CursorParams =
+    {
+      graphic: "assets/images/cursor/cursor-crosshair.png",
+      scale: 1.0,
+      offsetX: -16,
+      offsetY: -16,
+    };
+  static var assetCursorCrosshair:Null<BitmapData> = null;
+
+  static final CURSOR_CELL_PARAMS:CursorParams =
+    {
+      graphic: "assets/images/cursor/cursor-cell.png",
+      scale: 1.0,
+      offsetX: -16,
+      offsetY: -16,
+    };
+  static var assetCursorCell:Null<BitmapData> = null;
+
+  // DESIRED CURSOR: Resize NS (vertical)
+  // DESIRED CURSOR: Resize EW (horizontal)
+  // DESIRED CURSOR: Resize NESW (diagonal)
+  // DESIRED CURSOR: Resize NWSE (diagonal)
+  // DESIRED CURSOR: Help (Cursor with question mark)
+  // DESIRED CURSOR: Menu (Cursor with menu icon)
+
+  static function set_cursorMode(value:Null<CursorMode>):Null<CursorMode>
   {
-    if (cursorMode != value)
+    if (value != null && cursorMode != value)
     {
       cursorMode = value;
       setCursorGraphic(cursorMode);
@@ -99,17 +158,160 @@ class Cursor
     return cursorMode;
   }
 
-  public static inline function show():Void
-  {
-    FlxG.mouse.visible = true;
-  }
-
-  public static inline function hide():Void
-  {
-    FlxG.mouse.visible = false;
-  }
-
+  /**
+   * Synchronous.
+   */
   static function setCursorGraphic(?value:CursorMode = null):Void
+  {
+    if (value == null)
+    {
+      FlxG.mouse.unload();
+      return;
+    }
+
+    switch (value)
+    {
+      case Default:
+        if (assetCursorDefault == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
+          assetCursorDefault = bitmapData;
+          applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
+        }
+
+      case Cross:
+        if (assetCursorCross == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CROSS_PARAMS.graphic);
+          assetCursorCross = bitmapData;
+          applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
+        }
+
+      case Eraser:
+        if (assetCursorEraser == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ERASER_PARAMS.graphic);
+          assetCursorEraser = bitmapData;
+          applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
+        }
+
+      case Grabbing:
+        if (assetCursorGrabbing == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_GRABBING_PARAMS.graphic);
+          assetCursorGrabbing = bitmapData;
+          applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
+        }
+
+      case Hourglass:
+        if (assetCursorHourglass == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
+          assetCursorHourglass = bitmapData;
+          applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
+        }
+
+      case Pointer:
+        if (assetCursorPointer == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_POINTER_PARAMS.graphic);
+          assetCursorPointer = bitmapData;
+          applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
+        }
+
+      case Text:
+        if (assetCursorText == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_TEXT_PARAMS.graphic);
+          assetCursorText = bitmapData;
+          applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
+        }
+
+      case ZoomIn:
+        if (assetCursorZoomIn == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
+          assetCursorZoomIn = bitmapData;
+          applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
+        }
+
+      case ZoomOut:
+        if (assetCursorZoomOut == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
+          assetCursorZoomOut = bitmapData;
+          applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
+        }
+
+      case Crosshair:
+        if (assetCursorCrosshair == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
+          assetCursorCrosshair = bitmapData;
+          applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
+        }
+
+      case Cell:
+        if (assetCursorCell == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CELL_PARAMS.graphic);
+          assetCursorCell = bitmapData;
+          applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
+        }
+
+      default:
+        setCursorGraphic(null);
+    }
+  }
+
+  /**
+   * Asynchronous.
+   */
+  static function loadCursorGraphic(?value:CursorMode = null):Void
   {
     if (value == null)
     {
@@ -127,6 +329,7 @@ class Cursor
             assetCursorDefault = bitmapData;
             applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
           });
+          future.onError(onCursorError.bind(Default));
         }
         else
         {
@@ -141,6 +344,7 @@ class Cursor
             assetCursorCross = bitmapData;
             applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
           });
+          future.onError(onCursorError.bind(Cross));
         }
         else
         {
@@ -155,6 +359,7 @@ class Cursor
             assetCursorEraser = bitmapData;
             applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
           });
+          future.onError(onCursorError.bind(Eraser));
         }
         else
         {
@@ -169,6 +374,7 @@ class Cursor
             assetCursorGrabbing = bitmapData;
             applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
           });
+          future.onError(onCursorError.bind(Grabbing));
         }
         else
         {
@@ -183,6 +389,7 @@ class Cursor
             assetCursorHourglass = bitmapData;
             applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
           });
+          future.onError(onCursorError.bind(Hourglass));
         }
         else
         {
@@ -197,6 +404,7 @@ class Cursor
             assetCursorPointer = bitmapData;
             applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
           });
+          future.onError(onCursorError.bind(Pointer));
         }
         else
         {
@@ -211,6 +419,7 @@ class Cursor
             assetCursorText = bitmapData;
             applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
           });
+          future.onError(onCursorError.bind(Text));
         }
         else
         {
@@ -225,6 +434,7 @@ class Cursor
             assetCursorZoomIn = bitmapData;
             applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
           });
+          future.onError(onCursorError.bind(ZoomIn));
         }
         else
         {
@@ -239,20 +449,56 @@ class Cursor
             assetCursorZoomOut = bitmapData;
             applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
           });
+          future.onError(onCursorError.bind(ZoomOut));
         }
         else
         {
           applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
         }
 
+      case Crosshair:
+        if (assetCursorCrosshair == null)
+        {
+          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
+          future.onComplete(function(bitmapData:BitmapData) {
+            assetCursorCrosshair = bitmapData;
+            applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
+          });
+          future.onError(onCursorError.bind(Crosshair));
+        }
+        else
+        {
+          applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
+        }
+
+      case Cell:
+        if (assetCursorCell == null)
+        {
+          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CELL_PARAMS.graphic);
+          future.onComplete(function(bitmapData:BitmapData) {
+            assetCursorCell = bitmapData;
+            applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
+          });
+          future.onError(onCursorError.bind(Cell));
+        }
+        else
+        {
+          applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
+        }
+
       default:
-        setCursorGraphic(null);
+        loadCursorGraphic(null);
     }
   }
 
   static inline function applyCursorParams(graphic:BitmapData, params:CursorParams):Void
   {
     FlxG.mouse.load(graphic, params.scale, params.offsetX, params.offsetY);
+  }
+
+  static function onCursorError(cursorMode:CursorMode, error:String):Void
+  {
+    trace("Failed to load cursor graphic for cursor mode " + cursorMode + ": " + error);
   }
 }
 
@@ -268,6 +514,8 @@ enum CursorMode
   Text;
   ZoomIn;
   ZoomOut;
+  Crosshair;
+  Cell;
 }
 
 /**
