@@ -653,8 +653,6 @@ class ChartEditorDialogHandler
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
 
-          #if FILE_DROP_SUPPORTED
-
           vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
           #else
           vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${path.file}.${path.ext}';
