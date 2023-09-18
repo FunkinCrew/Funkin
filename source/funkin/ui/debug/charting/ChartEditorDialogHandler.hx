@@ -376,6 +376,15 @@ class ChartEditorDialogHandler
       handler:(String->Void)
     }> = [];
 
+  /**
+   * Add a callback for when a file is dropped on a component.
+   *
+   * On OS X you can’t drop on the application window, but rather only the app icon
+   * (either in the dock while running or the icon on the hard drive) so this must be disabled
+   * and UI updated appropriately.
+   * @param component
+   * @param handler
+   */
   static function addDropHandler(component:Component, handler:String->Void):Void
   {
     #if desktop
@@ -622,7 +631,11 @@ class ChartEditorDialogHandler
       var vocalsEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_UPLOAD_VOCALS_ENTRY_LAYOUT);
 
       var vocalsEntryLabel:Label = vocalsEntry.findComponent('vocalsEntryLabel', Label);
+      #if FILE_DROP_SUPPORTED
       vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
+      #else
+      vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
+      #end
 
       var onDropFile:String->Void = function(pathStr:String) {
         trace('Selected file: $pathStr');
@@ -639,8 +652,12 @@ class ChartEditorDialogHandler
               type: NotificationType.Success,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
-          #end
+
           vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+          #else
+          vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${path.file}.${path.ext}';
+          #end
+
           dialogNoVocals.hidden = true;
           removeDropHandler(onDropFile);
         }
@@ -666,7 +683,11 @@ class ChartEditorDialogHandler
             });
           #end
 
+          #if FILE_DROP_SUPPORTED
           vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
+          #else
+          vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
+          #end
         }
       };
 
@@ -676,7 +697,11 @@ class ChartEditorDialogHandler
             if (selectedFile != null)
             {
               trace('Selected file: ' + selectedFile.name);
+              #if FILE_DROP_SUPPORTED
+              vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+              #else
               vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${selectedFile.name}';
+              #end
               state.loadVocalsFromBytes(selectedFile.bytes, charKey);
               dialogNoVocals.hidden = true;
               removeDropHandler(onDropFile);
@@ -685,7 +710,9 @@ class ChartEditorDialogHandler
       }
 
       // onDropFile
+      #if FILE_DROP_SUPPORTED
       addDropHandler(vocalsEntry, onDropFile);
+      #end
       dialogContainer.addComponent(vocalsEntry);
     }
 
@@ -742,7 +769,11 @@ class ChartEditorDialogHandler
       // Build an entry for -chart.json.
       var songDefaultChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
       var songDefaultChartDataEntryLabel:Label = songDefaultChartDataEntry.findComponent('chartEntryLabel', Label);
+      #if FILE_DROP_SUPPORTED
       songDefaultChartDataEntryLabel.text = 'Drag and drop <song>-chart.json file, or click to browse.';
+      #else
+      songDefaultChartDataEntryLabel.text = 'Click to browse for <song>-chart.json file.';
+      #end
 
       songDefaultChartDataEntry.onClick = onClickChartDataVariation.bind(Constants.DEFAULT_VARIATION).bind(songDefaultChartDataEntryLabel);
       addDropHandler(songDefaultChartDataEntry, onDropFileChartDataVariation.bind(Constants.DEFAULT_VARIATION).bind(songDefaultChartDataEntryLabel));
@@ -753,7 +784,11 @@ class ChartEditorDialogHandler
         // Build entries for -metadata-<variation>.json.
         var songVariationMetadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
         var songVariationMetadataEntryLabel:Label = songVariationMetadataEntry.findComponent('chartEntryLabel', Label);
+        #if FILE_DROP_SUPPORTED
         songVariationMetadataEntryLabel.text = 'Drag and drop <song>-metadata-${variation}.json file, or click to browse.';
+        #else
+        songVariationMetadataEntryLabel.text = 'Click to browse for <song>-metadata-${variation}.json file.';
+        #end
 
         songVariationMetadataEntry.onMouseOver = function(_event) {
           songVariationMetadataEntry.swapClass('upload-bg', 'upload-bg-hover');
@@ -764,13 +799,19 @@ class ChartEditorDialogHandler
           Cursor.cursorMode = Default;
         }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
+        #if FILE_DROP_SUPPORTED
         addDropHandler(songVariationMetadataEntry, onDropFileMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel));
+        #end
         chartContainerB.addComponent(songVariationMetadataEntry);
 
         // Build entries for -chart-<variation>.json.
         var songVariationChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
         var songVariationChartDataEntryLabel:Label = songVariationChartDataEntry.findComponent('chartEntryLabel', Label);
+        #if FILE_DROP_SUPPORTED
         songVariationChartDataEntryLabel.text = 'Drag and drop <song>-chart-${variation}.json file, or click to browse.';
+        #else
+        songVariationChartDataEntryLabel.text = 'Click to browse for <song>-chart-${variation}.json file.';
+        #end
 
         songVariationChartDataEntry.onMouseOver = function(_event) {
           songVariationChartDataEntry.swapClass('upload-bg', 'upload-bg-hover');
@@ -781,7 +822,9 @@ class ChartEditorDialogHandler
           Cursor.cursorMode = Default;
         }
         songVariationChartDataEntry.onClick = onClickChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel);
+        #if FILE_DROP_SUPPORTED
         addDropHandler(songVariationChartDataEntry, onDropFileChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel));
+        #end
         chartContainerB.addComponent(songVariationChartDataEntry);
       }
     }
@@ -822,7 +865,11 @@ class ChartEditorDialogHandler
         });
       #end
 
+      #if FILE_DROP_SUPPORTED
       label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+      #else
+      label.text = 'Metadata file (click to browse)\n${path.file}.${path.ext}';
+      #end
 
       if (variation == Constants.DEFAULT_VARIATION) constructVariationEntries(songMetadataVariation.playData.songVariations);
     };
@@ -852,7 +899,11 @@ class ChartEditorDialogHandler
               });
             #end
 
+            #if FILE_DROP_SUPPORTED
             label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+            #else
+            label.text = 'Metadata file (click to browse)\n${selectedFile.name}';
+            #end
 
             if (variation == Constants.DEFAULT_VARIATION) constructVariationEntries(songMetadataVariation.playData.songVariations);
           }
@@ -883,7 +934,11 @@ class ChartEditorDialogHandler
         });
       #end
 
+      #if FILE_DROP_SUPPORTED
       label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+      #else
+      label.text = 'Chart data file (click to browse)\n${path.file}.${path.ext}';
+      #end
     };
 
     onClickChartDataVariation = function(variation:String, label:Label, _event:UIEvent) {
@@ -913,14 +968,28 @@ class ChartEditorDialogHandler
               });
             #end
 
+            #if FILE_DROP_SUPPORTED
             label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+            #else
+            label.text = 'Chart data file (click to browse)\n${selectedFile.name}';
+            #end
           }
       });
     }
 
     var metadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
     var metadataEntryLabel:Label = metadataEntry.findComponent('chartEntryLabel', Label);
+    #if FILE_DROP_UNSUPPORTED
+    trace('File drop unsupported');
+    #elseif FILE_DROP_SUPPORTED
+    trace('File drop supported');
+    #end
+
+    #if FILE_DROP_SUPPORTED
     metadataEntryLabel.text = 'Drag and drop <song>-metadata.json file, or click to browse.';
+    #else
+    metadataEntryLabel.text = 'Click to browse for <song>-metadata.json file.';
+    #end
 
     metadataEntry.onClick = onClickMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel);
     addDropHandler(metadataEntry, onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel));
