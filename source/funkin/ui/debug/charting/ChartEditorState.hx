@@ -2043,37 +2043,14 @@ class ChartEditorState extends HaxeUIState
     if (shouldPause) stopAudioPlayback();
   }
 
-  function handleZoom():Void
-  {
-    if (FlxG.keys.justPressed.MINUS)
-    {
-      currentZoomLevel /= 2;
-
-      // Update the grid.
-      ChartEditorThemeHandler.updateTheme(this);
-      // Update the note positions.
-      noteDisplayDirty = true;
-    }
-
-    if (FlxG.keys.justPressed.PLUS)
-    {
-      currentZoomLevel *= 2;
-
-      // Update the grid.
-      ChartEditorThemeHandler.updateTheme(this);
-      // Update the note positions.
-      noteDisplayDirty = true;
-    }
-  }
-
   function handleSnap():Void
   {
-    if (FlxG.keys.justPressed.LEFT)
+    if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
     {
       noteSnapQuantIndex--;
     }
 
-    if (FlxG.keys.justPressed.RIGHT)
+    if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
     {
       noteSnapQuantIndex++;
     }
@@ -2970,6 +2947,8 @@ class ChartEditorState extends HaxeUIState
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
 
     setUIValue('playbarSongRemaining', songRemainingString);
+
+    setUIValue('playbarNoteSnap', '1/${noteSnapQuant}');
   }
 
   /**
@@ -3180,6 +3159,16 @@ class ChartEditorState extends HaxeUIState
         refreshSongMetadataToolbox();
       }
     }
+
+    #if !mac
+    NotificationManager.instance.addNotification(
+      {
+        title: 'Switch Difficulty',
+        body: 'Switched difficulty to ${selectedDifficulty.toTitleCase()}',
+        type: NotificationType.Success,
+        expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+      });
+    #end
   }
 
   /**
