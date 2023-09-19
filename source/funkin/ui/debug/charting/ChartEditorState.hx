@@ -1122,6 +1122,11 @@ class ChartEditorState extends HaxeUIState
   var gridGhostNote:Null<ChartEditorNoteSprite> = null;
 
   /**
+   * A sprite used to indicate the note that will be placed on click.
+   */
+  var gridGhostHoldNote:Null<ChartEditorHoldNoteSprite> = null;
+
+  /**
    * A sprite used to indicate the event that will be placed on click.
    */
   var gridGhostEvent:Null<ChartEditorEventSprite> = null;
@@ -1296,6 +1301,13 @@ class ChartEditorState extends HaxeUIState
     gridGhostNote.visible = false;
     add(gridGhostNote);
     gridGhostNote.zIndex = 11;
+
+    gridGhostHoldNote = new ChartEditorHoldNoteSprite(this);
+    gridGhostHoldNote.alpha = 0.6;
+    gridGhostHoldNote.noteData = new SongNoteData(0, 0, 0, "");
+    gridGhostHoldNote.visible = false;
+    add(gridGhostHoldNote);
+    gridGhostHoldNote.zIndex = 11;
 
     gridGhostEvent = new ChartEditorEventSprite(this);
     gridGhostEvent.alpha = 0.6;
@@ -2272,6 +2284,8 @@ class ChartEditorState extends HaxeUIState
           }
           else
           {
+            // Clicking and dragging.
+
             // Scroll the screen if the mouse is above or below the grid.
             if (FlxG.mouse.screenY < MENU_BAR_HEIGHT)
             {
@@ -2403,15 +2417,17 @@ class ChartEditorState extends HaxeUIState
       {
         // Handle extending the note as you drag.
 
-        // TODO: This should be beat snapped?
         var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorSnappedMs) - currentPlaceNoteData.stepTime;
+        var dragLengthMs:Float = dragLengthSteps * Conductor.stepLengthMs;
+        var dragLengthPixels:Float = dragLengthSteps * GRID_SIZE;
 
-        // Without this, the newly placed note feels too short compared to the user's input.
-        var INCREMENT:Float = 1.0;
-        // TODO: Make this not busted with BPM changes
-        var dragLengthMs:Float = Math.floor(dragLengthSteps + INCREMENT) * Conductor.stepLengthMs;
+        gridGhostHoldNote.visible = true;
+        gridGhostHoldNote.noteData = gridGhostNote.noteData;
+        gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
 
-        // TODO: Add and update some sort of preview?
+        gridGhostHoldNote.setHeightDirectly(dragLengthPixels);
+
+        gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
 
         if (FlxG.mouse.justReleased)
         {
@@ -2565,6 +2581,7 @@ class ChartEditorState extends HaxeUIState
           if (cursorColumn == eventColumn)
           {
             if (gridGhostNote != null) gridGhostNote.visible = false;
+            gridGhostHoldNote.visible = false;
 
             if (gridGhostEvent == null) throw "ERROR: Tried to handle cursor, but gridGhostEvent is null! Check ChartEditorState.buildGrid()";
 
@@ -2608,6 +2625,7 @@ class ChartEditorState extends HaxeUIState
         else
         {
           if (gridGhostNote != null) gridGhostNote.visible = false;
+          if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
           if (gridGhostEvent != null) gridGhostEvent.visible = false;
         }
       }
@@ -2648,6 +2666,7 @@ class ChartEditorState extends HaxeUIState
     else
     {
       if (gridGhostNote != null) gridGhostNote.visible = false;
+      if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
       if (gridGhostEvent != null) gridGhostEvent.visible = false;
 
       // Do not set Cursor.cursorMode here, because it will be set by the HaxeUI.
