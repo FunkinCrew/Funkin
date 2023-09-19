@@ -64,7 +64,7 @@ class DataParse
     return switch (json.value)
     {
       case JString(s): s;
-      case JNumber(n): n;
+      case JNumber(n): Std.parseInt(n);
       case JBool(b): b;
       case JNull: null;
       case JObject(fields): jsonFieldsToDynamicObject(fields);
@@ -82,7 +82,7 @@ class DataParse
     var result:Dynamic = {};
     for (field in fields)
     {
-      Reflect.setField(result, field.name, field.value);
+      Reflect.setField(result, field.name, jsonToDynamic(field.value));
     }
     return result;
   }
