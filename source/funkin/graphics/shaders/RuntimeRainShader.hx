@@ -52,6 +52,15 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return intensity = value;
   }
 
+  // the y coord of the puddle, used to mirror things
+  public var puddleY(default, set):Float = 0;
+
+  function set_puddleY(value:Float):Float
+  {
+    this.setFloat('uPuddleY', value);
+    return puddleY = value;
+  }
+
   public var groundMap(default, set):BitmapData;
 
   function set_groundMap(value:BitmapData):BitmapData
@@ -59,14 +68,6 @@ class RuntimeRainShader extends RuntimePostEffectShader
     this.setBitmapData('uGroundMap', value);
     // this.setFloat2('uPuddleTextureSize', value.width, value.height);
     return groundMap = value;
-  }
-
-  public var puddleMap(default, set):BitmapData;
-
-  function set_puddleMap(value:BitmapData):BitmapData
-  {
-    this.setBitmapData('uPuddleMap', value);
-    return puddleMap = value;
   }
 
   public var lightMap(default, set):BitmapData;
