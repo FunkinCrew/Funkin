@@ -178,9 +178,8 @@ class SongMenuItem extends FlxSpriteGroup
     }
 
     pixelIcon.loadGraphic(Paths.image(charPath));
-    pixelIcon.setGraphicSize(Std.int(pixelIcon.width * 2));
-    pixelIcon.updateHitbox();
-    pixelIcon.origin.x += 100;
+    pixelIcon.scale.x = pixelIcon.scale.y = 2;
+    pixelIcon.origin.x = 100;
     // pixelIcon.origin.x = capsule.origin.x;
     // pixelIcon.offset.x -= pixelIcon.origin.x;
   }
