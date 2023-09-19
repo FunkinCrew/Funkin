@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import funkin.play.song.Song;
 import funkin.data.IRegistryEntry;
+import funkin.data.song.SongRegistry;
 import funkin.data.level.LevelRegistry;
 import funkin.data.level.LevelData;
 
@@ -70,15 +71,18 @@ class Level implements IRegistryEntry<LevelData>
   public function getSongDisplayNames(difficulty:String):Array<String>
   {
     var songList:Array<String> = getSongs() ?? [];
-    var songNameList:Array<String> = songList.map(function(songId) {
-      var song:Song = funkin.play.song.SongData.SongDataParser.fetchSong(songId);
-      if (song == null) return 'Unknown';
-      var songDifficulty:SongDifficulty = song.getDifficulty(difficulty);
-      if (songDifficulty == null) songDifficulty = song.getDifficulty();
-      var songName:String = songDifficulty?.songName;
-      return songName ?? 'Unknown';
+    var songNameList:Array<String> = songList.map(function(songId:String) {
+      return getSongDisplayName(songId, difficulty);
     });
     return songNameList;
+  }
+
+  static function getSongDisplayName(songId:String, difficulty:String):String
+  {
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+    if (song == null) return 'Unknown';
+
+    return song.songName;
   }
 
   /**
@@ -141,7 +145,7 @@ class Level implements IRegistryEntry<LevelData>
     var songList = getSongs();
 
     var firstSongId:String = songList[0];
-    var firstSong:Song = funkin.play.song.SongData.SongDataParser.fetchSong(firstSongId);
+    var firstSong:Song = SongRegistry.instance.fetchEntry(firstSongId);
 
     if (firstSong != null)
     {
@@ -155,7 +159,7 @@ class Level implements IRegistryEntry<LevelData>
     for (songIndex in 1...songList.length)
     {
       var songId:String = songList[songIndex];
-      var song:Song = funkin.play.song.SongData.SongDataParser.fetchSong(songId);
+      var song:Song = SongRegistry.instance.fetchEntry(songId);
 
       if (song == null) continue;
 
@@ -200,7 +204,7 @@ class Level implements IRegistryEntry<LevelData>
     return 'Level($id)';
   }
 
-  public function _fetchData(id:String):Null<LevelData>
+  static function _fetchData(id:String):Null<LevelData>
   {
     return LevelRegistry.instance.parseEntryDataWithMigration(id, LevelRegistry.instance.fetchEntryVersion(id));
   }

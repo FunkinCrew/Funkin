@@ -95,8 +95,10 @@
     },
     {
       "name": "json2object",
-      "type": "haxelib",
-      "version": "3.11.0"
+      "type": "git",
+      "dir": null,
+      "ref": "429986134031cbb1980f09d0d3d642b4b4cbcd6a",
+      "url": "https://github.com/elnabo/json2object"
     },
     {
       "name": "lime",

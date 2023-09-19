@@ -7,7 +7,7 @@
     "note": {
       "assetPath": "shared:arrows",
       "scale": 1.0,
-      "isPixel": true,
+      "isPixel": false,
       "data": {
         "left": { "prefix": "noteLeft" },
         "down": { "prefix": "noteDown" },
@@ -19,7 +19,7 @@
       "assetPath": "shared:arrows",
       "scale": 1.0,
       "offsets": [28, 32],
-      "isPixel": true,
+      "isPixel": false,
       "data": {
         "leftStatic": { "prefix": "staticLeft0" },
         "leftPress": { "prefix": "pressedLeft0" },

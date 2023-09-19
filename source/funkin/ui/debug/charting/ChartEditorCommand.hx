@@ -1,8 +1,8 @@
 package funkin.ui.debug.charting;
 
-import funkin.play.song.SongData.SongEventData;
-import funkin.play.song.SongData.SongNoteData;
-import funkin.play.song.SongDataUtils;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongDataUtils;
 
 using Lambda;
 

@@ -10,7 +10,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.play.PlayState;
-import funkin.play.song.SongData.SongDataParser;
+import funkin.data.song.SongRegistry;
 
 class PauseSubState extends MusicBeatSubState
 {
@@ -197,7 +197,7 @@ class PauseSubState extends MusicBeatSubState
             regenMenu();
 
           case 'EASY' | 'NORMAL' | 'HARD' | 'ERECT':
-            PlayState.instance.currentSong = SongDataParser.fetchSong(PlayState.instance.currentSong.songId.toLowerCase());
+            PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
 
             PlayState.instance.currentDifficulty = daSelected.toLowerCase();
 

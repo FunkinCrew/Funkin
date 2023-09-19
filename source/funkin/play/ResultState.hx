@@ -143,7 +143,7 @@ class ResultState extends MusicBeatSubState
     }
     else
     {
-      songName.text += PlayState.instance.currentSong.songId;
+      songName.text += PlayState.instance.currentSong.id;
     }
 
     songName.letterSpacing = -15;

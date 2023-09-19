@@ -1,9 +1,12 @@
 package funkin.play.event;
 
-import funkin.play.song.SongData;
+// Data from the chart
+import funkin.data.song.SongData;
+import funkin.data.song.SongData.SongEventData;
+// Data from the event schema
 import funkin.play.event.SongEvent;
-import funkin.play.event.SongEventData.SongEventFieldType;
-import funkin.play.event.SongEventData.SongEventSchema;
+import funkin.data.event.SongEventData.SongEventSchema;
+import funkin.data.event.SongEventData.SongEventFieldType;
 
 /**
  * This class represents a handler for a type of song event.

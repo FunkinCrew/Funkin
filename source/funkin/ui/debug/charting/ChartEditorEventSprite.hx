@@ -1,6 +1,6 @@
 package funkin.ui.debug.charting;
 
-import funkin.play.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventData.SongEventParser;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
@@ -10,7 +10,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
-import funkin.play.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongEventData;
 
 /**
  * A event sprite that can be used to display a song event in a chart.

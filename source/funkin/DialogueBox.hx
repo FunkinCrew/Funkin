@@ -37,7 +37,7 @@ class DialogueBox extends FlxSpriteGroup
   {
     super();
 
-    switch (PlayState.instance.currentSong.songId.toLowerCase())
+    switch (PlayState.instance.currentSong.id.toLowerCase())
     {
       case 'senpai':
         FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
@@ -78,7 +78,7 @@ class DialogueBox extends FlxSpriteGroup
     box = new FlxSprite(-20, 45);
 
     var hasDialog:Bool = false;
-    switch (PlayState.instance.currentSong.songId.toLowerCase())
+    switch (PlayState.instance.currentSong.id.toLowerCase())
     {
       case 'senpai':
         hasDialog = true;
@@ -150,8 +150,8 @@ class DialogueBox extends FlxSpriteGroup
   override function update(elapsed:Float):Void
   {
     // HARD CODING CUZ IM STUPDI
-    if (PlayState.instance.currentSong.songId.toLowerCase() == 'roses') portraitLeft.visible = false;
-    if (PlayState.instance.currentSong.songId.toLowerCase() == 'thorns')
+    if (PlayState.instance.currentSong.id.toLowerCase() == 'roses') portraitLeft.visible = false;
+    if (PlayState.instance.currentSong.id.toLowerCase() == 'thorns')
     {
       portraitLeft.color = FlxColor.BLACK;
       swagDialogue.color = FlxColor.WHITE;
@@ -187,8 +187,8 @@ class DialogueBox extends FlxSpriteGroup
         {
           isEnding = true;
 
-          if (PlayState.instance.currentSong.songId.toLowerCase() == 'senpai'
-            || PlayState.instance.currentSong.songId.toLowerCase() == 'thorns') FlxG.sound.music.fadeOut(2.2, 0);
+          if (PlayState.instance.currentSong.id.toLowerCase() == 'senpai'
+            || PlayState.instance.currentSong.id.toLowerCase() == 'thorns') FlxG.sound.music.fadeOut(2.2, 0);
 
           new FlxTimer().start(0.2, function(tmr:FlxTimer) {
             box.alpha -= 1 / 5;

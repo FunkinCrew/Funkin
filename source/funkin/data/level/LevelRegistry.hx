@@ -30,17 +30,18 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
     var parser = new json2object.JsonParser<LevelData>();
-    var jsonStr:String = loadEntryFile(id);
 
-    parser.fromJson(jsonStr);
+    switch (loadEntryFile(id))
+    {
+      case {fileName: fileName, contents: contents}:
+        parser.fromJson(contents, fileName);
+      default:
+        return null;
+    }
 
     if (parser.errors.length > 0)
     {
-      trace('[${registryId}] Failed to parse entry data: ${id}');
-      for (error in parser.errors)
-      {
-        trace(error);
-      }
+      printErrors(parser.errors, id);
       return null;
     }
     return parser.value;

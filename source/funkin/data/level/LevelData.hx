@@ -24,6 +24,7 @@ typedef LevelData =
   /**
    * The graphic for the level, as seen in the scrolling list.
    */
+  @:jcustomparse(funkin.data.DataParse.stringNotEmpty)
   var titleAsset:String;
 
   @:default([])
@@ -40,6 +41,7 @@ typedef LevelPropData =
   /**
    * The image to use for the prop. May optionally be a sprite sheet.
    */
+  // @:jcustomparse(funkin.data.DataParse.stringNotEmpty)
   var assetPath:String;
 
   /**

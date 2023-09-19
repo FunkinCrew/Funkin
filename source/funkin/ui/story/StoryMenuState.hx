@@ -16,8 +16,8 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
-import funkin.play.song.SongData.SongMetadata;
-import funkin.play.song.SongData.SongDataParser;
+import funkin.data.song.SongData.SongMusicData;
+import funkin.data.song.SongRegistry;
 
 class StoryMenuState extends MusicBeatState
 {
@@ -209,8 +209,11 @@ class StoryMenuState extends MusicBeatState
   {
     if (FlxG.sound.music == null || !FlxG.sound.music.playing)
     {
-      var freakyMenuMetadata:SongMetadata = SongDataParser.parseMusicMetadata('freakyMenu');
-      Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
+      var freakyMenuMetadata:Null<SongMusicData> = SongRegistry.instance.parseMusicData('freakyMenu');
+      if (freakyMenuMetadata != null)
+      {
+        Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
+      }
 
       FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
       FlxG.sound.music.fadeIn(4, 0, 0.7);
@@ -514,7 +517,7 @@ class StoryMenuState extends MusicBeatState
 
     var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    var targetSong:Song = SongDataParser.fetchSong(targetSongId);
+    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
 
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();

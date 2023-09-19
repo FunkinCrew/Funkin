@@ -1,10 +1,11 @@
 package funkin.play.song;
 
-import funkin.play.song.SongData.SongChartData;
-import funkin.play.song.SongData.SongMetadata;
-import funkin.play.song.SongData.SongPlayData;
-import funkin.play.song.SongData.SongTimeChange;
-import funkin.play.song.SongData.SongTimeFormat;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongPlayData;
+import funkin.data.song.SongData.SongTimeChange;
+import funkin.data.song.SongData.SongTimeFormat;
 
 /**
  * For SongMetadata and SongChartData objects,
@@ -59,7 +60,7 @@ class SongValidator
     }
     if (input.generatedBy == null)
     {
-      input.generatedBy = DEFAULT_GENERATEDBY;
+      input.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     }
 
     input.timeChanges = validateTimeChanges(input.timeChanges, songId);

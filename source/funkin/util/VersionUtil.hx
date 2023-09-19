@@ -51,8 +51,9 @@ class VersionUtil
    * @param input The JSON string to parse.
    * @return The semantic version, or null if it could not be parsed.
    */
-  public static function getVersionFromJSON(input:String):Null<thx.semver.Version>
+  public static function getVersionFromJSON(input:Null<String>):Null<thx.semver.Version>
   {
+    if (input == null) return null;
     var parsed = SerializerUtil.fromJSON(input);
     if (parsed == null) return null;
     if (parsed.version == null) return null;
