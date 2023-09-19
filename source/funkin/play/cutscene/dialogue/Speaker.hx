@@ -8,7 +8,7 @@ import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 
 /**
  * The character sprite which displays during dialogue.
- * 
+ *
  * Most conversations have two speakers, with one being flipped.
  */
 class Speaker extends FlxSprite implements IDialogueScriptedClass
@@ -26,7 +26,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
   /**
    * A readable name for this speaker.
    */
-  public var speakerName(get, null):String;
+  public var speakerName(get, never):String;
 
   function get_speakerName():String
   {
@@ -129,7 +129,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
 
   /**
    * Set the sprite scale to the appropriate value.
-   * @param scale 
+   * @param scale
    */
   public function setScale(scale:Null<Float>):Void
   {
@@ -184,7 +184,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
   /**
    * Ensure that a given animation exists before playing it.
    * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
-   * @param name 
+   * @param name
    */
   function correctAnimationName(name:String):String
   {

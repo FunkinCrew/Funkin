@@ -26,7 +26,7 @@ class TurboKeyHandler extends FlxBasic
   /**
    * Whether all of the keys for this handler are pressed.
    */
-  public var allPressed(get, null):Bool;
+  public var allPressed(get, never):Bool;
 
   /**
    * Whether all of the keys for this handler are activated,

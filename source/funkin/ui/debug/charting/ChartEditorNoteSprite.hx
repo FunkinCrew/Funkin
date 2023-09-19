@@ -3,6 +3,8 @@ package funkin.ui.debug.charting;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
 import funkin.play.song.SongData.SongNoteData;
@@ -11,6 +13,7 @@ import funkin.play.song.SongData.SongNoteData;
  * A note sprite that can be used to display a note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
+@:nullSafety
 class ChartEditorNoteSprite extends FlxSprite
 {
   /**
@@ -32,7 +35,7 @@ class ChartEditorNoteSprite extends FlxSprite
   /**
    * The name of the note style currently in use.
    */
-  public var noteStyle(get, null):String;
+  public var noteStyle(get, never):String;
 
   public function new(parent:ChartEditorState)
   {
@@ -44,6 +47,8 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       initFrameCollection();
     }
+
+    if (noteFrameCollection == null) throw 'ERROR: Could not initialize note sprite animations.';
 
     this.frames = noteFrameCollection;
 
@@ -77,18 +82,19 @@ class ChartEditorNoteSprite extends FlxSprite
    */
   static function initFrameCollection():Void
   {
-    noteFrameCollection = new FlxFramesCollection(null, ATLAS, null);
+    buildEmptyFrameCollection();
+    if (noteFrameCollection == null) return;
 
     // TODO: Automatically iterate over the list of note skins.
 
     // Normal notes
-    var frameCollectionNormal = Paths.getSparrowAtlas('NOTE_assets');
+    var frameCollectionNormal:FlxAtlasFrames = Paths.getSparrowAtlas('NOTE_assets');
 
     for (frame in frameCollectionNormal.frames)
     {
       noteFrameCollection.pushFrame(frame);
     }
-    var frameCollectionNormal2 = Paths.getSparrowAtlas('NoteHoldNormal');
+    var frameCollectionNormal2:FlxAtlasFrames = Paths.getSparrowAtlas('NoteHoldNormal');
 
     for (frame in frameCollectionNormal2.frames)
     {
@@ -101,11 +107,18 @@ class ChartEditorNoteSprite extends FlxSprite
     var frameCollectionPixel = FlxTileFrames.fromGraphic(graphicPixel, new FlxPoint(17, 17));
     for (i in 0...frameCollectionPixel.frames.length)
     {
-      var frame = frameCollectionPixel.frames[i];
+      var frame:Null<FlxFrame> = frameCollectionPixel.frames[i];
+      if (frame == null) continue;
 
       frame.name = 'pixel' + i;
       noteFrameCollection.pushFrame(frame);
     }
+  }
+
+  @:nullSafety(Off)
+  static function buildEmptyFrameCollection():Void
+  {
+    noteFrameCollection = new FlxFramesCollection(null, ATLAS, null);
   }
 
   function set_noteData(value:Null<SongNoteData>):Null<SongNoteData>
@@ -178,6 +191,8 @@ class ChartEditorNoteSprite extends FlxSprite
 
   public function playNoteAnimation():Void
   {
+    if (this.noteData == null) return;
+
     // Decide whether to display a note or a sustain.
     var baseAnimationName:String = 'tap';
 

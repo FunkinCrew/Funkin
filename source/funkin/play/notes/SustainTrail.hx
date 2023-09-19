@@ -31,7 +31,7 @@ class SustainTrail extends FlxSprite
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
-  public var noteData:SongNoteData;
+  public var noteData:Null<SongNoteData>;
 
   public var cover:NoteHoldCover = null;
 

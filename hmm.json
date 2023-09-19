@@ -49,8 +49,8 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "f5daafe93bdfa957538f199294a54e0476c805b7",
-      "url": "https://github.com/haxeui/haxeui-core/"
+      "ref": "e92d5cfac847943fac84696b103670d55c2c774f",
+      "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
@@ -137,7 +137,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "ef43deb2c68d8a4bcd73abfbd77324fc8220d0c1",
+      "ref": "d33d489a137ff8fdece4994cf1302f0b6334ed08",
       "url": "https://github.com/EliteMasterEric/openfl"
     },
     {
