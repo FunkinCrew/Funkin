@@ -585,11 +585,10 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.targetPos.x = funnyMenu.x;
       funnyMenu.ID = i;
-      funnyMenu.alpha = 0.5;
+      funnyMenu.capsule.alpha = 0.5;
       funnyMenu.songText.visible = false;
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
       funnyMenu.hsvShader = hsvShader;
-
       // fp.updateScore(0);
 
       if (i < 8) funnyMenu.initJumpIn(Math.min(i, 4), force);
@@ -943,7 +942,7 @@ class FreeplayState extends MusicBeatSubState
 
   function capsuleOnConfirmDefault():Void
   {
-    var poop:String = songs[curSelected].songName.toLowerCase();
+    // var poop:String = songs[curSelected].songName.toLowerCase();
 
     // does not work properly, always just accidentally sets it to normal anyways!
     /* if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
@@ -1035,7 +1034,7 @@ class FreeplayState extends MusicBeatSubState
     {
       index += 1;
 
-      capsule.selected = false;
+      capsule.selected = true;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));

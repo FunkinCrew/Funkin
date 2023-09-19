@@ -15,10 +15,11 @@ import funkin.shaderslmfao.Grayscale;
 
 class SongMenuItem extends FlxSpriteGroup
 {
-  var capsule:FlxSprite;
+  public var capsule:FlxSprite;
+
   var pixelIcon:FlxSprite;
 
-  public var selected(default, set):Bool = false;
+  public var selected(default, set):Bool;
 
   public var songTitle:String = "Test";
 
@@ -108,8 +109,6 @@ class SongMenuItem extends FlxSpriteGroup
     // grpHide.add(favIcon);
 
     setVisibleGrp(false);
-
-    selected = selected; // just to kickstart the set_selected
   }
 
   function set_hsvShader(value:HSVShader):HSVShader
@@ -144,6 +143,8 @@ class SongMenuItem extends FlxSpriteGroup
     }
 
     if (value) textAppear();
+
+    selectedAlpha();
   }
 
   public function init(x:Float, y:Float, song:String, ?character:String)
@@ -210,14 +211,16 @@ class SongMenuItem extends FlxSpriteGroup
 
     if (force)
     {
-      alpha = 1;
+      visible = true;
+      capsule.alpha = 1;
       setVisibleGrp(true);
     }
     else
     {
       new FlxTimer().start((xFrames.length / 24) * 2.5, function(_) {
+        visible = true;
+        capsule.alpha = 1;
         setVisibleGrp(true);
-        alpha = 1;
       });
     }
   }
@@ -226,7 +229,9 @@ class SongMenuItem extends FlxSpriteGroup
 
   public function forcePosition()
   {
-    alpha = 1;
+    visible = true;
+    capsule.alpha = 1;
+    selectedAlpha();
     doLerp = true;
     doJumpIn = false;
     doJumpOut = false;
@@ -303,6 +308,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   function set_selected(value:Bool):Bool
   {
+    trace("set_selected: " + value);
     // cute one liners, lol!
     diffGrayscale.setAmount(value ? 0 : 0.8);
     songText.alpha = value ? 1 : 0.6;
