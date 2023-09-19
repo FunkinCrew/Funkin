@@ -242,7 +242,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
   public function fetchEntryChartVersion(id:String, variation:String = ''):Null<thx.semver.Version>
   {
-    var entryStr:String = loadEntryChartFile(id, variation).contents;
+    var entryStr:Null<String> = loadEntryChartFile(id, variation)?.contents;
     var entryVersion:thx.semver.Version = VersionUtil.getVersionFromJSON(entryStr);
     return entryVersion;
   }

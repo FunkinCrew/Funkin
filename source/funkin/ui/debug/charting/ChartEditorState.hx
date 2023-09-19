@@ -2848,6 +2848,7 @@ class ChartEditorState extends HaxeUIState
     // If this gets too big, something needs to be optimized somewhere! -Eric
     FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
     FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
+    FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
   }
 
   function buildSelectionSquare():FlxSprite
