@@ -13,7 +13,7 @@ import flixel.util.FlxColor;
 class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
 {
   public final dialogueBoxId:String;
-  public var dialogueBoxName(get, null):String;
+  public var dialogueBoxName(get, never):String;
 
   function get_dialogueBoxName():String
   {

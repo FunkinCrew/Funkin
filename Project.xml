@@ -200,6 +200,12 @@
 	<postbuild haxe="source/Prebuild.hx"/> -->
 	<postbuild haxe="source/Postbuild.hx"/> -->
 
+	<!-- Enable this on platforms which do not support dropping files onto the window. -->
+	<set name="FILE_DROP_UNSUPPORTED" if="mac" />
+	<section unless="FILE_DROP_UNSUPPORTED">
+		<set name="FILE_DROP_SUPPORTED" />
+	</section>
+
 	<!-- Options for Polymod -->
 	<section if="polymod">
 		<!-- Turns on additional debug logging. -->

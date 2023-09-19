@@ -14,6 +14,7 @@ import funkin.play.song.SongData.SongNoteData;
  * A hold note sprite that can be used to display a note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
+@:nullSafety
 class ChartEditorHoldNoteSprite extends SustainTrail
 {
   /**
@@ -110,8 +111,10 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     return !aboveViewArea && !belowViewArea;
   }
 
-  public function updateHoldNotePosition(?origin:FlxObject)
+  public function updateHoldNotePosition(?origin:FlxObject):Void
   {
+    if (this.noteData == null) return;
+
     var cursorColumn:Int = this.noteData.data;
 
     if (cursorColumn < 0) cursorColumn = 0;
@@ -139,8 +142,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     {
       // noteData.stepTime is a calculated value which accounts for BPM changes
       var stepTime:Float = this.noteData.stepTime;
-      var roundedStepTime:Float = Math.floor(stepTime + 0.01); // Add epsilon to fix rounding issues
-      this.y = roundedStepTime * ChartEditorState.GRID_SIZE;
+      // Add epsilon to fix rounding issues?
+      // var roundedStepTime:Float = Math.floor((stepTime + 0.01) / noteSnapRatio) * noteSnapRatio;
+      this.y = stepTime * ChartEditorState.GRID_SIZE;
     }
 
     this.x += ChartEditorState.GRID_SIZE / 2;

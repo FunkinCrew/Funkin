@@ -240,6 +240,10 @@ class FileUtil
       onSaveAll(paths);
     }
 
+    trace('Browsing for directory to save individual files to...');
+    #if mac
+    defaultPath = null;
+    #end
     browseForDirectory(null, onSelectDir, onCancel, defaultPath, 'Choose directory to save all files to...');
 
     return true;
