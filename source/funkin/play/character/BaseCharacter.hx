@@ -66,7 +66,7 @@ class BaseCharacter extends Bopper
    * The offset between the corner of the sprite and the origin of the sprite (at the character's feet).
    * cornerPosition = stageData - characterOrigin
    */
-  public var characterOrigin(get, null):FlxPoint;
+  public var characterOrigin(get, never):FlxPoint;
 
   function get_characterOrigin():FlxPoint
   {
@@ -103,7 +103,7 @@ class BaseCharacter extends Bopper
   /**
    * The absolute position of the character's feet, at the bottom-center of the sprite.
    */
-  public var feetPosition(get, null):FlxPoint;
+  public var feetPosition(get, never):FlxPoint;
 
   function get_feetPosition():FlxPoint
   {
@@ -264,7 +264,7 @@ class BaseCharacter extends Bopper
   /**
    * The per-character camera offset.
    */
-  var characterCameraOffsets(get, null):Array<Float>;
+  var characterCameraOffsets(get, never):Array<Float>;
 
   function get_characterCameraOffsets():Array<Float>
   {

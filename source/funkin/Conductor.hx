@@ -47,7 +47,7 @@ class Conductor
   /**
    * Beats per minute of the current song at the current time.
    */
-  public static var bpm(get, null):Float;
+  public static var bpm(get, never):Float;
 
   static function get_bpm():Float
   {
@@ -67,7 +67,7 @@ class Conductor
   /**
    * Duration of a measure in milliseconds. Calculated based on bpm.
    */
-  public static var measureLengthMs(get, null):Float;
+  public static var measureLengthMs(get, never):Float;
 
   static function get_measureLengthMs():Float
   {
@@ -77,7 +77,7 @@ class Conductor
   /**
    * Duration of a beat (quarter note) in milliseconds. Calculated based on bpm.
    */
-  public static var beatLengthMs(get, null):Float;
+  public static var beatLengthMs(get, never):Float;
 
   static function get_beatLengthMs():Float
   {
@@ -88,14 +88,14 @@ class Conductor
   /**
    * Duration of a step (sixtennth note) in milliseconds. Calculated based on bpm.
    */
-  public static var stepLengthMs(get, null):Float;
+  public static var stepLengthMs(get, never):Float;
 
   static function get_stepLengthMs():Float
   {
     return beatLengthMs / timeSignatureNumerator;
   }
 
-  public static var timeSignatureNumerator(get, null):Int;
+  public static var timeSignatureNumerator(get, never):Int;
 
   static function get_timeSignatureNumerator():Int
   {
@@ -104,7 +104,7 @@ class Conductor
     return currentTimeChange.timeSignatureNum;
   }
 
-  public static var timeSignatureDenominator(get, null):Int;
+  public static var timeSignatureDenominator(get, never):Int;
 
   static function get_timeSignatureDenominator():Int
   {
@@ -151,7 +151,7 @@ class Conductor
   public static var audioOffset:Float = 0;
   public static var offset:Float = 0;
 
-  public static var beatsPerMeasure(get, null):Float;
+  public static var beatsPerMeasure(get, never):Float;
 
   static function get_beatsPerMeasure():Float
   {
@@ -159,7 +159,7 @@ class Conductor
     return stepsPerMeasure / Constants.STEPS_PER_BEAT;
   }
 
-  public static var stepsPerMeasure(get, null):Int;
+  public static var stepsPerMeasure(get, never):Int;
 
   static function get_stepsPerMeasure():Int
   {

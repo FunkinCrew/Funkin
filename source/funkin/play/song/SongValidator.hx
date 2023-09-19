@@ -21,6 +21,13 @@ class SongValidator
   public static final DEFAULT_STAGE:String = "mainStage";
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 
+  public static var DEFAULT_GENERATEDBY(get, never):String;
+
+  static function get_DEFAULT_GENERATEDBY():String
+  {
+    return '${Constants.TITLE} - ${Constants.VERSION}';
+  }
+
   /**
    * Validates the fields of a SongMetadata object (excluding the version field).
    *

@@ -39,6 +39,7 @@ enum ChartEditorToolMode
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
+@:nullSafety
 @:allow(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorToolboxHandler
 {
@@ -56,7 +57,7 @@ class ChartEditorToolboxHandler
 
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
-    var toolbox:CollapsibleDialog = state.activeToolboxes.get(id);
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     if (toolbox == null) toolbox = initToolbox(state, id);
 
@@ -95,7 +96,7 @@ class ChartEditorToolboxHandler
 
   public static function hideToolbox(state:ChartEditorState, id:String):Void
   {
-    var toolbox:CollapsibleDialog = state.activeToolboxes.get(id);
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     if (toolbox == null) toolbox = initToolbox(state, id);
 
@@ -134,7 +135,7 @@ class ChartEditorToolboxHandler
 
   public static function minimizeToolbox(state:ChartEditorState, id:String):Void
   {
-    var toolbox:CollapsibleDialog = state.activeToolboxes.get(id);
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     if (toolbox == null) return;
 
@@ -143,16 +144,16 @@ class ChartEditorToolboxHandler
 
   public static function maximizeToolbox(state:ChartEditorState, id:String):Void
   {
-    var toolbox:CollapsibleDialog = state.activeToolboxes.get(id);
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     if (toolbox == null) return;
 
     toolbox.minimized = false;
   }
 
-  public static function initToolbox(state:ChartEditorState, id:String):CollapsibleDialog
+  public static function initToolbox(state:ChartEditorState, id:String):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = null;
+    var toolbox:Null<CollapsibleDialog> = null;
     switch (id)
     {
       case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
@@ -193,9 +194,9 @@ class ChartEditorToolboxHandler
    * @param id The asset ID of the toolbox layout.
    * @return The toolbox.
    */
-  public static function getToolbox(state:ChartEditorState, id:String):CollapsibleDialog
+  public static function getToolbox(state:ChartEditorState, id:String):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = state.activeToolboxes.get(id);
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     // Initialize the toolbox without showing it.
     if (toolbox == null) toolbox = initToolbox(state, id);
@@ -205,7 +206,7 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function buildToolboxToolsLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxToolsLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT);
 
@@ -219,7 +220,8 @@ class ChartEditorToolboxHandler
       state.setUICheckboxSelected('menubarItemToggleToolboxTools', false);
     }
 
-    var toolsGroup:Group = toolbox.findComponent('toolboxToolsGroup', Group);
+    var toolsGroup:Null<Group> = toolbox.findComponent('toolboxToolsGroup', Group);
+    if (toolsGroup == null) throw 'ChartEditorToolboxHandler.buildToolboxToolsLayout() - Could not find toolboxToolsGroup component.';
 
     if (toolsGroup == null) return null;
 
@@ -242,7 +244,7 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxTools(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxNoteDataLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxNoteDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT);
 
@@ -256,9 +258,13 @@ class ChartEditorToolboxHandler
       state.setUICheckboxSelected('menubarItemToggleToolboxNotes', false);
     }
 
-    var toolboxNotesNoteKind:DropDown = toolbox.findComponent('toolboxNotesNoteKind', DropDown);
-    var toolboxNotesCustomKindLabel:Label = toolbox.findComponent('toolboxNotesCustomKindLabel', Label);
-    var toolboxNotesCustomKind:TextField = toolbox.findComponent('toolboxNotesCustomKind', TextField);
+    var toolboxNotesNoteKind:Null<DropDown> = toolbox.findComponent('toolboxNotesNoteKind', DropDown);
+    if (toolboxNotesNoteKind == null) throw 'ChartEditorToolboxHandler.buildToolboxNoteDataLayout() - Could not find toolboxNotesNoteKind component.';
+    var toolboxNotesCustomKindLabel:Null<Label> = toolbox.findComponent('toolboxNotesCustomKindLabel', Label);
+    if (toolboxNotesCustomKindLabel == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxNoteDataLayout() - Could not find toolboxNotesCustomKindLabel component.';
+    var toolboxNotesCustomKind:Null<TextField> = toolbox.findComponent('toolboxNotesCustomKind', TextField);
+    if (toolboxNotesCustomKind == null) throw 'ChartEditorToolboxHandler.buildToolboxNoteDataLayout() - Could not find toolboxNotesCustomKind component.';
 
     toolboxNotesNoteKind.onChange = function(event:UIEvent) {
       var isCustom:Bool = (event.data.id == '~CUSTOM~');
@@ -290,7 +296,7 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxNoteData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxEventDataLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxEventDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT);
 
@@ -304,8 +310,10 @@ class ChartEditorToolboxHandler
       state.setUICheckboxSelected('menubarItemToggleToolboxEvents', false);
     }
 
-    var toolboxEventsEventKind:DropDown = toolbox.findComponent('toolboxEventsEventKind', DropDown);
-    var toolboxEventsDataGrid:Grid = toolbox.findComponent('toolboxEventsDataGrid', Grid);
+    var toolboxEventsEventKind:Null<DropDown> = toolbox.findComponent('toolboxEventsEventKind', DropDown);
+    if (toolboxEventsEventKind == null) throw 'ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Could not find toolboxEventsEventKind component.';
+    var toolboxEventsDataGrid:Null<Grid> = toolbox.findComponent('toolboxEventsDataGrid', Grid);
+    if (toolboxEventsDataGrid == null) throw 'ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Could not find toolboxEventsDataGrid component.';
 
     toolboxEventsEventKind.dataSource = new ArrayDataSource();
 
@@ -349,6 +357,8 @@ class ChartEditorToolboxHandler
 
     for (field in schema)
     {
+      if (field == null) continue;
+
       // Add a label.
       var label:Label = new Label();
       label.text = field.title;
@@ -360,33 +370,36 @@ class ChartEditorToolboxHandler
         case INTEGER:
           var numberStepper:NumberStepper = new NumberStepper();
           numberStepper.id = field.name;
-          numberStepper.step = field.step == null ? 1.0 : field.step;
-          numberStepper.min = field.min;
-          numberStepper.max = field.max;
-          numberStepper.value = field.defaultValue;
+          numberStepper.step = field.step ?? 1.0;
+          numberStepper.min = field.min ?? 0.0;
+          numberStepper.max = field.max ?? 10.0;
+          if (field.defaultValue != null) numberStepper.value = field.defaultValue;
           input = numberStepper;
         case FLOAT:
           var numberStepper:NumberStepper = new NumberStepper();
           numberStepper.id = field.name;
-          numberStepper.step = field.step == null ? 0.1 : field.step;
-          numberStepper.min = field.min;
-          numberStepper.max = field.max;
-          numberStepper.value = field.defaultValue;
+          numberStepper.step = field.step ?? 0.1;
+          numberStepper.min = field.min ?? 0.0;
+          numberStepper.max = field.max ?? 1.0;
+          if (field.defaultValue != null) numberStepper.value = field.defaultValue;
           input = numberStepper;
         case BOOL:
           var checkBox:CheckBox = new CheckBox();
           checkBox.id = field.name;
-          checkBox.selected = field.defaultValue;
+          if (field.defaultValue != null) checkBox.selected = field.defaultValue;
           input = checkBox;
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
           dropDown.dataSource = new ArrayDataSource();
 
+          if (field.keys == null) throw 'Field "${field.name}" is of Enum type but has no keys.';
+
           // Add entries to the dropdown.
+
           for (optionName in field.keys.keys())
           {
-            var optionValue:String = field.keys.get(optionName);
+            var optionValue:Null<String> = field.keys.get(optionName);
             trace('$optionName : $optionValue');
             dropDown.dataSource.add({value: optionValue, text: optionName});
           }
@@ -397,7 +410,7 @@ class ChartEditorToolboxHandler
         case STRING:
           input = new TextField();
           input.id = field.name;
-          input.text = field.defaultValue;
+          if (field.defaultValue != null) input.text = field.defaultValue;
         default:
           // Unknown type. Display a label so we know what it is.
           input = new Label();
@@ -417,7 +430,7 @@ class ChartEditorToolboxHandler
     }
   }
 
-  static function buildToolboxDifficultyLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxDifficultyLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
 
@@ -431,11 +444,20 @@ class ChartEditorToolboxHandler
       state.setUICheckboxSelected('menubarItemToggleToolboxDifficulty', false);
     }
 
-    var difficultyToolboxSaveMetadata:Button = toolbox.findComponent('difficultyToolboxSaveMetadata', Button);
-    var difficultyToolboxSaveChart:Button = toolbox.findComponent('difficultyToolboxSaveChart', Button);
-    var difficultyToolboxSaveAll:Button = toolbox.findComponent('difficultyToolboxSaveAll', Button);
-    var difficultyToolboxLoadMetadata:Button = toolbox.findComponent('difficultyToolboxLoadMetadata', Button);
-    var difficultyToolboxLoadChart:Button = toolbox.findComponent('difficultyToolboxLoadChart', Button);
+    var difficultyToolboxSaveMetadata:Null<Button> = toolbox.findComponent('difficultyToolboxSaveMetadata', Button);
+    if (difficultyToolboxSaveMetadata == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveMetadata component.';
+    var difficultyToolboxSaveChart:Null<Button> = toolbox.findComponent('difficultyToolboxSaveChart', Button);
+    if (difficultyToolboxSaveChart == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveChart component.';
+    var difficultyToolboxSaveAll:Null<Button> = toolbox.findComponent('difficultyToolboxSaveAll', Button);
+    if (difficultyToolboxSaveAll == null) throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveAll component.';
+    var difficultyToolboxLoadMetadata:Null<Button> = toolbox.findComponent('difficultyToolboxLoadMetadata', Button);
+    if (difficultyToolboxLoadMetadata == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxLoadMetadata component.';
+    var difficultyToolboxLoadChart:Null<Button> = toolbox.findComponent('difficultyToolboxLoadChart', Button);
+    if (difficultyToolboxLoadChart == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxLoadChart component.';
 
     difficultyToolboxSaveMetadata.onClick = function(event:UIEvent) {
       SongSerializer.exportSongMetadata(state.currentSongMetadata, state.currentSongId);
@@ -472,16 +494,18 @@ class ChartEditorToolboxHandler
   static function onShowToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void
   {
     // Update the selected difficulty when reopening the toolbox.
-    var treeView:TreeView = toolbox.findComponent('difficultyToolboxTree');
+    var treeView:Null<TreeView> = toolbox.findComponent('difficultyToolboxTree');
     if (treeView == null) return;
 
-    treeView.selectedNode = state.getCurrentTreeDifficultyNode(treeView);
+    var current = state.getCurrentTreeDifficultyNode(treeView);
+    if (current == null) return;
+    treeView.selectedNode = current;
     trace('selected node: ${treeView.selectedNode}');
   }
 
   static function onHideToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxMetadataLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxMetadataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
@@ -495,7 +519,8 @@ class ChartEditorToolboxHandler
       state.setUICheckboxSelected('menubarItemToggleToolboxMetadata', false);
     }
 
-    var inputSongName:TextField = toolbox.findComponent('inputSongName', TextField);
+    var inputSongName:Null<TextField> = toolbox.findComponent('inputSongName', TextField);
+    if (inputSongName == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputSongName component.';
     inputSongName.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
@@ -506,12 +531,13 @@ class ChartEditorToolboxHandler
       }
       else
       {
-        state.currentSongMetadata.songName = null;
+        state.currentSongMetadata.songName = '';
       }
     };
     inputSongName.value = state.currentSongMetadata.songName;
 
-    var inputSongArtist:TextField = toolbox.findComponent('inputSongArtist', TextField);
+    var inputSongArtist:Null<TextField> = toolbox.findComponent('inputSongArtist', TextField);
+    if (inputSongArtist == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputSongArtist component.';
     inputSongArtist.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
@@ -522,12 +548,13 @@ class ChartEditorToolboxHandler
       }
       else
       {
-        state.currentSongMetadata.artist = null;
+        state.currentSongMetadata.artist = '';
       }
     };
     inputSongArtist.value = state.currentSongMetadata.artist;
 
-    var inputStage:DropDown = toolbox.findComponent('inputStage', DropDown);
+    var inputStage:Null<DropDown> = toolbox.findComponent('inputStage', DropDown);
+    if (inputStage == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputStage component.';
     inputStage.onChange = function(event:UIEvent) {
       var valid:Bool = event.data != null && event.data.id != null;
 
@@ -538,14 +565,16 @@ class ChartEditorToolboxHandler
     };
     inputStage.value = state.currentSongMetadata.playData.stage;
 
-    var inputNoteSkin:DropDown = toolbox.findComponent('inputNoteSkin', DropDown);
+    var inputNoteSkin:Null<DropDown> = toolbox.findComponent('inputNoteSkin', DropDown);
+    if (inputNoteSkin == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputNoteSkin component.';
     inputNoteSkin.onChange = function(event:UIEvent) {
       if ((event?.data?.id ?? null) == null) return;
       state.currentSongNoteSkin = event.data.id;
     };
     inputNoteSkin.value = state.currentSongNoteSkin;
 
-    var inputBPM:NumberStepper = toolbox.findComponent('inputBPM', NumberStepper);
+    var inputBPM:Null<NumberStepper> = toolbox.findComponent('inputBPM', NumberStepper);
+    if (inputBPM == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputBPM component.';
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;
 
@@ -565,9 +594,11 @@ class ChartEditorToolboxHandler
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 
-    var labelScrollSpeed:Label = toolbox.findComponent('labelScrollSpeed', Label);
+    var labelScrollSpeed:Null<Label> = toolbox.findComponent('labelScrollSpeed', Label);
+    if (labelScrollSpeed == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find labelScrollSpeed component.';
 
-    var inputScrollSpeed:Slider = toolbox.findComponent('inputScrollSpeed', Slider);
+    var inputScrollSpeed:Null<Slider> = toolbox.findComponent('inputScrollSpeed', Slider);
+    if (inputScrollSpeed == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputScrollSpeed component.';
     inputScrollSpeed.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.value != null && event.target.value > 0;
 
@@ -585,10 +616,12 @@ class ChartEditorToolboxHandler
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
 
-    var frameVariation:Frame = toolbox.findComponent('frameVariation', Frame);
+    var frameVariation:Null<Frame> = toolbox.findComponent('frameVariation', Frame);
+    if (frameVariation == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find frameVariation component.';
     frameVariation.text = 'Variation: ${state.selectedVariation.toTitleCase()}';
 
-    var frameDifficulty:Frame = toolbox.findComponent('frameDifficulty', Frame);
+    var frameDifficulty:Null<Frame> = toolbox.findComponent('frameDifficulty', Frame);
+    if (frameDifficulty == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find frameDifficulty component.';
     frameDifficulty.text = 'Difficulty: ${state.selectedDifficulty.toTitleCase()}';
 
     return toolbox;
@@ -601,7 +634,7 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxCharactersLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxCharactersLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_CHARACTERS_LAYOUT);
 
@@ -622,7 +655,7 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxCharacters(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxPlayerPreviewLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxPlayerPreviewLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
 
@@ -636,7 +669,8 @@ class ChartEditorToolboxHandler
       state.setUICheckboxSelected('menubarItemToggleToolboxPlayerPreview', false);
     }
 
-    var charPlayer:CharacterPlayer = toolbox.findComponent('charPlayer');
+    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charPlayer');
+    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxPlayerPreviewLayout() - Could not find charPlayer component.';
     // TODO: We need to implement character swapping in ChartEditorState.
     charPlayer.loadCharacter('bf');
     charPlayer.characterType = CharacterType.BF;
@@ -650,7 +684,7 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxOpponentPreviewLayout(state:ChartEditorState):CollapsibleDialog
+  static function buildToolboxOpponentPreviewLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
     var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
 
@@ -664,7 +698,8 @@ class ChartEditorToolboxHandler
       state.setUICheckboxSelected('menubarItemToggleToolboxOpponentPreview', false);
     }
 
-    var charPlayer:CharacterPlayer = toolbox.findComponent('charPlayer');
+    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charPlayer');
+    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxOpponentPreviewLayout() - Could not find charPlayer component.';
     // TODO: We need to implement character swapping in ChartEditorState.
     charPlayer.loadCharacter('dad');
     charPlayer.characterType = CharacterType.DAD;

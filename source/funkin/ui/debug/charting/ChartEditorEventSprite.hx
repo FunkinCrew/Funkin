@@ -16,6 +16,7 @@ import funkin.data.song.SongData.SongEventData;
  * A event sprite that can be used to display a song event in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
+@:nullSafety
 class ChartEditorEventSprite extends FlxSprite
 {
   public static final DEFAULT_EVENT = 'Default';
@@ -45,16 +46,18 @@ class ChartEditorEventSprite extends FlxSprite
     refresh();
   }
 
+  static var eventFrames:Null<FlxFramesCollection> = null;
+
   /**
    * Build a set of animations to allow displaying different types of chart events.
    * @param force `true` to force rebuilding the frames.
    */
   static function buildFrames(force:Bool = false):FlxFramesCollection
   {
-    static var eventFrames:FlxFramesCollection = null;
-
     if (eventFrames != null && !force) return eventFrames;
-    eventFrames = new FlxAtlasFrames(null);
+
+    initEmptyEventFrames();
+    if (eventFrames == null) throw 'Failed to initialize empty event frames.';
 
     // Push the default event as a frame.
     var defaultFrames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/chart-editor/events/$DEFAULT_EVENT');
@@ -81,6 +84,12 @@ class ChartEditorEventSprite extends FlxSprite
     }
 
     return eventFrames;
+  }
+
+  @:nullSafety(Off)
+  static function initEmptyEventFrames():Void
+  {
+    eventFrames = new FlxAtlasFrames(null);
   }
 
   function buildAnimations():Void
@@ -133,6 +142,8 @@ class ChartEditorEventSprite extends FlxSprite
 
   public function updateEventPosition(?origin:FlxObject)
   {
+    if (this.eventData == null) return;
+
     this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
     if (this.eventData.stepTime >= 0) this.y = this.eventData.stepTime * ChartEditorState.GRID_SIZE;
 
