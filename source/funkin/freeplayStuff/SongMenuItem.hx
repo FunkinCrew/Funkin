@@ -308,7 +308,6 @@ class SongMenuItem extends FlxSpriteGroup
 
   function set_selected(value:Bool):Bool
   {
-    trace("set_selected: " + value);
     // cute one liners, lol!
     diffGrayscale.setAmount(value ? 0 : 0.8);
     songText.alpha = value ? 1 : 0.6;

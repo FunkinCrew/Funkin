@@ -426,6 +426,7 @@ class FreeplayState extends MusicBeatSubState
     dj.onIntroDone.add(function() {
       // when boyfriend hits dat shiii
       //
+
       albumArt.visible = true;
       albumArt.anim.play("");
       albumArt.anim.onComplete = function() {
@@ -468,6 +469,7 @@ class FreeplayState extends MusicBeatSubState
         new FlxTimer().start(1.5 / 24, function(bold) {
           sillyStroke.width = 0;
           sillyStroke.height = 0;
+          changeSelection();
         });
       });
 
@@ -597,6 +599,8 @@ class FreeplayState extends MusicBeatSubState
 
       grpCapsules.add(funnyMenu);
     }
+
+    FlxG.console.registerFunction("changeSelection", changeSelection);
 
     changeSelection();
     changeDiff();
@@ -1034,7 +1038,7 @@ class FreeplayState extends MusicBeatSubState
     {
       index += 1;
 
-      capsule.selected = true;
+      capsule.selected = index == curSelected + 1;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
