@@ -2931,6 +2931,7 @@ class ChartEditorState extends HaxeUIState
     // If this gets too big, something needs to be optimized somewhere! -Eric
     FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
     FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
+    FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
   }
 
   /**
@@ -3010,7 +3011,7 @@ class ChartEditorState extends HaxeUIState
     }
 
     // CTRL + O = Open Chart
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.N)
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.O)
     {
       ChartEditorDialogHandler.openBrowseWizard(this, true);
     }

@@ -207,7 +207,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryChartVersion(id, variation);
       if (version == null) continue;
-      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, version, variation);
+      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, variation, version);
       if (chart == null) continue;
       applyChartData(chart, variation);
     }

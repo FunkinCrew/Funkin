@@ -203,37 +203,46 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return ScriptedSong.listScriptClasses();
   }
 
-  function loadEntryMetadataFile(id:String, variation:String = ''):BaseRegistry.JsonFile
+  function loadEntryMetadataFile(id:String, variation:String = ''):Null<BaseRegistry.JsonFile>
   {
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id${variation == '' ? '' : '-$variation'}-metadata');
-    var rawJson:String = openfl.Assets.getText(entryFilePath).trim();
+    if (!openfl.Assets.exists(entryFilePath)) return null;
+    var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
+    if (rawJson == null) return null;
+    rawJson = rawJson.trim();
     return {fileName: entryFilePath, contents: rawJson};
   }
 
-  function loadMusicDataFile(id:String, variation:String = ''):BaseRegistry.JsonFile
+  function loadMusicDataFile(id:String, variation:String = ''):Null<BaseRegistry.JsonFile>
   {
     var entryFilePath:String = Paths.file('music/$id/$id${variation == '' ? '' : '-$variation'}-metadata.json');
-    var rawJson:String = openfl.Assets.getText(entryFilePath).trim();
+    if (!openfl.Assets.exists(entryFilePath)) return null;
+    var rawJson:String = openfl.Assets.getText(entryFilePath);
+    if (rawJson == null) return null;
+    rawJson = rawJson.trim();
     return {fileName: entryFilePath, contents: rawJson};
   }
 
-  function loadEntryChartFile(id:String, variation:String = ''):BaseRegistry.JsonFile
+  function loadEntryChartFile(id:String, variation:String = ''):Null<BaseRegistry.JsonFile>
   {
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id${variation == '' ? '' : '-$variation'}-chart');
-    var rawJson:String = openfl.Assets.getText(entryFilePath).trim();
+    if (!openfl.Assets.exists(entryFilePath)) return null;
+    var rawJson:String = openfl.Assets.getText(entryFilePath);
+    if (rawJson == null) return null;
+    rawJson = rawJson.trim();
     return {fileName: entryFilePath, contents: rawJson};
   }
 
   public function fetchEntryMetadataVersion(id:String, variation:String = ''):Null<thx.semver.Version>
   {
-    var entryStr:String = loadEntryMetadataFile(id, variation).contents;
+    var entryStr:Null<String> = loadEntryMetadataFile(id, variation)?.contents;
     var entryVersion:thx.semver.Version = VersionUtil.getVersionFromJSON(entryStr);
     return entryVersion;
   }
 
   public function fetchEntryChartVersion(id:String, variation:String = ''):Null<thx.semver.Version>
   {
-    var entryStr:String = loadEntryChartFile(id, variation).contents;
+    var entryStr:Null<String> = loadEntryChartFile(id, variation)?.contents;
     var entryVersion:thx.semver.Version = VersionUtil.getVersionFromJSON(entryStr);
     return entryVersion;
   }
