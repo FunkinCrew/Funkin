@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.components.HorizontalSlider;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import funkin.play.character.BaseCharacter.CharacterType;

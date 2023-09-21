@@ -145,7 +145,9 @@ class ChartEditorEventSprite extends FlxSprite
     if (this.eventData == null) return;
 
     this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
-    if (this.eventData.stepTime >= 0) this.y = this.eventData.stepTime * ChartEditorState.GRID_SIZE;
+
+    var stepTime:Float = inline eventData.getStepTime();
+    this.y = stepTime * ChartEditorState.GRID_SIZE;
 
     if (origin != null)
     {
@@ -174,7 +176,7 @@ class ChartEditorEventSprite extends FlxSprite
   public static function wouldEventBeVisible(viewAreaBottom:Float, viewAreaTop:Float, eventData:SongEventData, ?origin:FlxObject):Bool
   {
     var noteHeight:Float = ChartEditorState.GRID_SIZE;
-    var notePosY:Float = eventData.stepTime * ChartEditorState.GRID_SIZE;
+    var notePosY:Float = eventData.getStepTime() * ChartEditorState.GRID_SIZE;
     if (origin != null) notePosY += origin.y;
 
     // True if the note is above the view area.
