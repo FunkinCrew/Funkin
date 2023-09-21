@@ -17,7 +17,7 @@ class DifficultyStars extends FlxSpriteGroup
    */
   public var difficulty(default, set):Int = 1;
 
-  var stars:FlxAtlasSprite;
+  public var stars:FlxAtlasSprite;
 
   var flames:FreeplayFlames;
 

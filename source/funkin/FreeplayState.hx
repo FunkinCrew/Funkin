@@ -331,7 +331,9 @@ class FreeplayState extends MusicBeatSubState
 
     var albumTitle:FlxSprite = new FlxSprite(947, 491).loadGraphic(Paths.image('freeplay/albumTitle-fnfvol1'));
     var albumArtist:FlxSprite = new FlxSprite(1010, 607).loadGraphic(Paths.image('freeplay/albumArtist-kawaisprite'));
+    var difficultyStars:DifficultyStars = new DifficultyStars(140, 39);
 
+    difficultyStars.stars.visible = false;
     albumTitle.visible = false;
     albumArtist.visible = false;
 
@@ -348,9 +350,16 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.2,
         wait: 0.2
       });
+    exitMovers.set([difficultyStars],
+      {
+        x: FlxG.width * 1.2,
+        speed: 0.2,
+        wait: 0.3
+      });
 
     add(albumTitle);
     add(albumArtist);
+    add(difficultyStars);
 
     var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
     overhangStuff.y -= overhangStuff.height;
@@ -439,6 +448,7 @@ class FreeplayState extends MusicBeatSubState
 
       new FlxTimer().start(35 / 24, function(_) {
         albumArtist.visible = true;
+        difficultyStars.stars.visible = true;
       });
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
