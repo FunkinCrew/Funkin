@@ -1,12 +1,10 @@
 package funkin.graphics.framebuffer;
 
 import flixel.FlxCamera;
-import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
-import flixel.system.FlxAssets.FlxShader;
 import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
@@ -24,7 +22,6 @@ class GrabbableCamera extends FlxCamera
 {
   final grabbed:Array<BitmapData> = [];
   final texturePool:Array<TextureBase> = [];
-  final defaultShader:FlxShader = new FlxShader();
 
   final bgTexture:TextureBase;
   final bgBitmap:BitmapData;
@@ -119,8 +116,8 @@ class GrabbableCamera extends FlxCamera
     // also clear grabbed bitmaps
     for (bitmap in grabbed)
     {
-      texturePool.push(@:privateAccess bitmap.__texture);
-      bitmap.dispose();
+      texturePool.push(bitmap.__texture);
+      bitmap.dispose(); // this doesn't release the texture
     }
     grabbed.clear();
   }
