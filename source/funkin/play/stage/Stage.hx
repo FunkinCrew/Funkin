@@ -3,6 +3,7 @@ package funkin.play.stage;
 import funkin.graphics.framebuffer.FrameBufferManager;
 import flixel.util.FlxColor;
 import funkin.graphics.framebuffer.SpriteCopy;
+import funkin.graphics.framebuffer.GrabbableCamera;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -78,7 +79,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
   {
     if (frameBufferMan != null) frameBufferMan.dispose();
     frameBufferMan = new FrameBufferManager(FlxG.camera);
-    onFrameBufferCreate();
+    setupFrameBuffers();
 
     buildStage();
     this.refresh();
@@ -696,7 +697,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
       debugIconGroup = null;
     }
 
-    frameBufferMan.dispose();
+    if (frameBufferMan != null)
+    {
+      frameBufferMan.dispose();
+    }
   }
 
   /**
@@ -751,16 +755,50 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
   override function draw():Void
   {
-    frameBufferMan.lock();
+    if (frameBufferMan != null)
+    {
+      frameBufferMan.lock();
+    }
     super.draw();
-    frameBufferMan.unlock();
+    if (frameBufferMan != null)
+    {
+      frameBufferMan.unlock();
+    }
+    frameBuffersUpdated();
   }
 
   /**
    * Called when the frame buffer manager is ready.
    * Create frame buffers inside this method.
    */
-  public function onFrameBufferCreate():Void {}
+  function setupFrameBuffers():Void {}
+
+  /**
+   * Called when all the frame buffers are updated. If you need any
+   * frame buffers before `grabScreen()`, make sure you
+   * grab the screen inside this method since it immediately uses the
+   * frame buffers.
+   */
+  function frameBuffersUpdated():Void {}
+
+  /**
+   * Grabs the current screen and returns it as a bitmap data. You can sefely modify it.
+   * @param applyFilters if this is `true`, the filters set to the camera will be applied to the resulting bitmap
+   * @return the grabbed screen
+   */
+  function grabScreen(applyFilters:Bool):BitmapData
+  {
+    if (Std.isOfType(FlxG.camera, GrabbableCamera))
+    {
+      final cam:GrabbableCamera = cast FlxG.camera;
+      return cam.grabScreen(applyFilters);
+    }
+    else
+    {
+      FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
+      return null;
+    }
+  }
 
   public function onScriptEvent(event:ScriptEvent) {}
 

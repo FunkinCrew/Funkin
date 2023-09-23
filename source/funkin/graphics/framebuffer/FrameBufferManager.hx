@@ -1,9 +1,10 @@
 package funkin.graphics.framebuffer;
 
+import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
-import flixel.FlxSprite;
-import flixel.FlxCamera;
 
 /**
  * Manages frame buffers and gives access to each frame buffer.
@@ -56,7 +57,7 @@ class FrameBufferManager
   }
 
   /**
-   * Call this before everything is drawn.
+   * Call this before drawing anything.
    */
   public function lock():Void
   {

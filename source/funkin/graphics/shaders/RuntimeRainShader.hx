@@ -61,21 +61,12 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return puddleY = value;
   }
 
-  public var groundMap(default, set):BitmapData;
+  public var blurredScreen(default, set):BitmapData;
 
-  function set_groundMap(value:BitmapData):BitmapData
+  function set_blurredScreen(value:BitmapData):BitmapData
   {
-    this.setBitmapData('uGroundMap', value);
-    // this.setFloat2('uPuddleTextureSize', value.width, value.height);
-    return groundMap = value;
-  }
-
-  public var lightMap(default, set):BitmapData;
-
-  function set_lightMap(value:BitmapData):BitmapData
-  {
-    this.setBitmapData('uLightMap', value);
-    return lightMap = value;
+    this.setBitmapData('uBlurredScreen', value);
+    return blurredScreen = value;
   }
 
   public var mask(default, set):BitmapData;

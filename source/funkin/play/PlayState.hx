@@ -411,7 +411,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The camera which contains, and controls visibility of, the stage and characters.
    */
-  public var camGame:FlxCamera;
+  public var camGame:SwagCamera;
 
   /**
    * The camera which contains, and controls visibility of, a video cutscene.

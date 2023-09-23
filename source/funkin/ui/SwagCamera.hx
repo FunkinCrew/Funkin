@@ -1,11 +1,12 @@
 package funkin.ui;
 
+import funkin.graphics.framebuffer.GrabbableCamera;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import funkin.util.MathUtil;
 
-class SwagCamera extends FlxCamera
+class SwagCamera extends GrabbableCamera
 {
   /**
    * properly follow framerate

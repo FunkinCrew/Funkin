@@ -1,12 +1,12 @@
 package funkin.graphics.framebuffer;
 
-import openfl.geom.Rectangle;
-import openfl.geom.Matrix;
-import openfl.display.BitmapData;
-import flixel.util.FlxColor;
 import flixel.FlxCamera;
+import flixel.util.FlxColor;
 import openfl.Lib;
+import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 /**
  * A single frame buffer. Used by `FrameBufferManager`.
@@ -27,7 +27,6 @@ class FrameBuffer
     camera = new FlxCamera();
     camera.antialiasing = false;
     camera.bgColor = FlxColor.TRANSPARENT;
-    camera.flashSprite.cacheAsBitmap = true;
     @:privateAccess camera.flashSprite.stage = Lib.current.stage;
   }
 
@@ -41,7 +40,7 @@ class FrameBuffer
   {
     dispose();
     texture = Lib.current.stage.context3D.createTexture(width, height, BGRA, true);
-    bitmap = BitmapData.fromTexture(texture);
+    bitmap = FixedBitmapData.fromTexture(texture);
     camera.bgColor = bgColor;
   }
 
@@ -108,7 +107,7 @@ class FrameBuffer
       bitmap.dispose();
       bitmap = null;
     }
-    spriteCopies.clear();
+    spriteCopies.resize(0);
   }
 
   /**
