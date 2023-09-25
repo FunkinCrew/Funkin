@@ -61,6 +61,15 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return puddleY = value;
   }
 
+  // the y scale of the puddle, the less this value the more the puddle effects squished
+  public var puddleScaleY(default, set):Float = 0;
+
+  function set_puddleScaleY(value:Float):Float
+  {
+    this.setFloat('uPuddleScaleY', value);
+    return puddleScaleY = value;
+  }
+
   public var blurredScreen(default, set):BitmapData;
 
   function set_blurredScreen(value:BitmapData):BitmapData
