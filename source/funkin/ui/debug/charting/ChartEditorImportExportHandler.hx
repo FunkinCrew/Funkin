@@ -36,7 +36,7 @@ class ChartEditorImportExportHandler
     for (metadata in rawSongMetadata)
     {
       if (metadata == null) continue;
-      var variation = (metadata.variation == null || metadata.variation == '') ? 'default' : metadata.variation;
+      var variation = (metadata.variation == null || metadata.variation == '') ? Constants.DEFAULT_VARIATION : metadata.variation;
 
       // Clone to prevent modifying the original.
       var metadataClone:SongMetadata = metadata.clone(variation);
@@ -52,22 +52,43 @@ class ChartEditorImportExportHandler
 
     state.clearVocals();
 
-    ChartEditorAudioHandler.loadInstrumentalFromAsset(state, Paths.inst(songId));
-
-    var diff:Null<SongDifficulty> = song.getDifficulty(state.selectedDifficulty);
-    var voiceList:Array<String> = diff != null ? diff.buildVoiceList() : [];
-    if (voiceList.length == 2)
+    var variations:Array<String> = state.availableVariations;
+    for (variation in variations)
     {
-      ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[0], BF);
-      ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[1], DAD);
-    }
-    else
-    {
-      for (voicePath in voiceList)
+      if (variation == Constants.DEFAULT_VARIATION)
       {
-        ChartEditorAudioHandler.loadVocalsFromAsset(state, voicePath);
+        ChartEditorAudioHandler.loadInstFromAsset(state, Paths.inst(songId));
+      }
+      else
+      {
+        ChartEditorAudioHandler.loadInstFromAsset(state, Paths.inst(songId, '-$variation'), variation);
       }
     }
+
+    for (difficultyId in song.listDifficulties())
+    {
+      var diff:Null<SongDifficulty> = song.getDifficulty(difficultyId);
+      if (diff == null) continue;
+
+      var instId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
+      var voiceList:Array<String> = diff.buildVoiceList(); // SongDifficulty accounts for variation already.
+
+      if (voiceList.length == 2)
+      {
+        ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[0], diff.characters.player, instId);
+        ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[1], diff.characters.opponent, instId);
+      }
+      else if (voiceList.length == 1)
+      {
+        ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[0], diff.characters.player, instId);
+      }
+      else
+      {
+        trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
+      }
+    }
+
+    state.switchToCurrentInstrumental();
 
     state.refreshMetadataToolbox();
 
@@ -148,13 +169,8 @@ class ChartEditorImportExportHandler
       }
     }
 
-    if (state.audioInstTrackData != null) zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', state.audioInstTrackData));
-    for (charId in state.audioVocalTrackData.keys())
-    {
-      var entryData = state.audioVocalTrackData.get(charId);
-      if (entryData == null) continue;
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Vocals-$charId.ogg', entryData));
-    }
+    if (state.audioInstTrackData != null) zipEntries.concat(ChartEditorAudioHandler.makeZIPEntriesFromInstrumentals(state));
+    if (state.audioVocalTrackData != null) zipEntries.concat(ChartEditorAudioHandler.makeZIPEntriesFromVocals(state));
 
     trace('Exporting ${zipEntries.length} files to ZIP...');
 
