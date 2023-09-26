@@ -1,8 +1,6 @@
 package funkin.data.song;
 
 import flixel.util.typeLimit.OneOfTwo;
-import funkin.play.song.SongMigrator;
-import funkin.play.song.SongValidator;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 
@@ -47,32 +45,33 @@ class SongMetadata
    * Defaults to `default` or `''`. Populated later.
    */
   @:jignored
-  public var variation:String = 'default';
+  public var variation:String;
 
   public function new(songName:String, artist:String, variation:String = 'default')
   {
-    this.version = SongMigrator.CHART_VERSION;
+    this.version = SongRegistry.SONG_METADATA_VERSION;
     this.songName = songName;
     this.artist = artist;
     this.timeFormat = 'ms';
     this.divisions = null;
     this.timeChanges = [new SongTimeChange(0, 100)];
     this.looped = false;
-    this.playData =
-      {
-        songVariations: [],
-        difficulties: ['normal'],
-
-        playableChars: ['bf' => new SongPlayableChar('gf', 'dad')],
-
-        stage: 'mainStage',
-        noteSkin: 'Normal'
-      };
+    this.playData = new SongPlayData();
+    this.playData.songVariations = [];
+    this.playData.difficulties = [];
+    this.playData.characters = new SongCharacterData('bf', 'gf', 'dad');
+    this.playData.stage = 'mainStage';
+    this.playData.noteSkin = 'funkin';
     this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     // Variation ID.
     this.variation = variation;
   }
 
+  /**
+   * Create a copy of this SongMetadata with the same information.
+   * @param newVariation Set to a new variation ID to change the new metadata.
+   * @return The cloned SongMetadata
+   */
   public function clone(?newVariation:String = null):SongMetadata
   {
     var result:SongMetadata = new SongMetadata(this.songName, this.artist, newVariation == null ? this.variation : newVariation);
@@ -87,6 +86,21 @@ class SongMetadata
     return result;
   }
 
+  /**
+   * Serialize this SongMetadata into a JSON string.
+   * @return The JSON string.
+   */
+  public function serialize(?pretty:Bool = true):String
+  {
+    var writer = new json2object.JsonWriter<SongMetadata>();
+    var output = this.clone();
+    output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
+    return writer.write(output, pretty ? '  ' : null);
+  }
+
+  /**
+   * Produces a string representation suitable for debugging.
+   */
   public function toString():String
   {
     return 'SongMetadata(${this.songName} by ${this.artist}, variation ${this.variation})';
@@ -121,7 +135,6 @@ class SongTimeChange
    */
   @:optional
   @:alias("b")
-  // @:default(funkin.data.song.SongData.SongTimeChange.DEFAULT_BEAT_TIME)
   public var beatTime:Null<Float>;
 
   /**
@@ -168,6 +181,9 @@ class SongTimeChange
     this.beatTuplets = beatTuplets == null ? DEFAULT_BEAT_TUPLETS : beatTuplets;
   }
 
+  /**
+   * Produces a string representation suitable for debugging.
+   */
   public function toString():String
   {
     return 'SongTimeChange(${this.timeStamp}ms,${this.bpm}bpm)';
@@ -199,7 +215,7 @@ class SongMusicData
 
   @:optional
   @:default(false)
-  public var looped:Bool;
+  public var looped:Null<Bool>;
 
   // @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
@@ -218,7 +234,7 @@ class SongMusicData
 
   public function new(songName:String, artist:String, variation:String = 'default')
   {
-    this.version = SongMigrator.CHART_VERSION;
+    this.version = SongRegistry.SONG_CHART_DATA_VERSION;
     this.songName = songName;
     this.artist = artist;
     this.timeFormat = 'ms';
@@ -243,53 +259,106 @@ class SongMusicData
     return result;
   }
 
+  /**
+   * Produces a string representation suitable for debugging.
+   */
   public function toString():String
   {
     return 'SongMusicData(${this.songName} by ${this.artist}, variation ${this.variation})';
   }
 }
 
-typedef SongPlayData =
+class SongPlayData
 {
+  /**
+   * The variations this song has. The associated metadata files should exist.
+   */
   public var songVariations:Array<String>;
+
+  /**
+   * The difficulties contained in this song's chart file.
+   */
   public var difficulties:Array<String>;
 
   /**
-   * Keys are the player characters and the values give info on what opponent/GF/inst to use.
+   * The characters used by this song.
    */
-  public var playableChars:Map<String, SongPlayableChar>;
+  public var characters:SongCharacterData;
 
+  /**
+   * The stage used by this song.
+   */
   public var stage:String;
+
+  /**
+   * The note style used by this song.
+   * TODO: Rename to `noteStyle`? Renaming values is a breaking change to the metadata format.
+   */
   public var noteSkin:String;
+
+  /**
+   * The difficulty rating for this song as displayed in Freeplay.
+   * TODO: Adding this is a non-breaking change to the metadata format.
+   */
+  // public var rating:Int;
+
+  /**
+   * The album ID for the album to display in Freeplay.
+   * TODO: Adding this is a non-breaking change to the metadata format.
+   */
+  // public var album:String;
+
+  public function new() {}
+
+  /**
+   * Produces a string representation suitable for debugging.
+   */
+  public function toString():String
+  {
+    return 'SongPlayData(${this.songVariations}, ${this.difficulties})';
+  }
 }
 
-class SongPlayableChar
+/**
+ * Information about the characters used in this variation of the song.
+ * Create a new variation if you want to change the characters.
+ */
+class SongCharacterData
 {
-  @:alias('g')
+  @:optional
+  @:default('')
+  public var player:String = '';
+
   @:optional
   @:default('')
   public var girlfriend:String = '';
 
-  @:alias('o')
   @:optional
   @:default('')
   public var opponent:String = '';
 
-  @:alias('i')
   @:optional
   @:default('')
-  public var inst:String = '';
+  public var instrumental:String = '';
 
-  public function new(girlfriend:String = '', opponent:String = '', inst:String = '')
+  @:optional
+  @:default([])
+  public var altInstrumentals:Array<String> = [];
+
+  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '')
   {
+    this.player = player;
     this.girlfriend = girlfriend;
     this.opponent = opponent;
-    this.inst = inst;
+    this.instrumental = instrumental;
   }
 
+  /**
+   * Produces a string representation suitable for debugging.
+   */
   public function toString():String
   {
-    return 'SongPlayableChar(${this.girlfriend}, ${this.opponent}, ${this.inst})';
+    return 'SongCharacterData(${this.player}, ${this.girlfriend}, ${this.opponent}, ${this.instrumental}, [${this.altInstrumentals.join(', ')}])';
   }
 }
 
@@ -346,14 +415,21 @@ class SongChartData
     return value;
   }
 
-  public function getEvents():Array<SongEventData>
+  /**
+   * Convert this SongChartData into a JSON string.
+   */
+  public function serialize(?pretty:Bool = true):String
   {
-    return this.events;
+    var writer = new json2object.JsonWriter<SongChartData>();
+    return writer.write(this, pretty ? '  ' : null);
   }
 
-  public function setEvents(value:Array<SongEventData>):Array<SongEventData>
+  /**
+   * Produces a string representation suitable for debugging.
+   */
+  public function toString():String
   {
-    return this.events = value;
+    return 'SongChartData(${this.events.length} events, ${this.notes.size()} difficulties, ${generatedBy})';
   }
 }
 
@@ -387,6 +463,7 @@ class SongEventData
   @:alias("v")
   @:optional
   @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
   public var value:Dynamic = null;
 
   /**
@@ -484,6 +561,9 @@ class SongEventData
     return this.time <= other.time;
   }
 
+  /**
+   * Produces a string representation suitable for debugging.
+   */
   public function toString():String
   {
     return 'SongEventData(${this.time}ms, ${this.event}: ${this.value})';
@@ -703,6 +783,9 @@ class SongNoteData
     return this.time <= other.time;
   }
 
+  /**
+   * Produces a string representation suitable for debugging.
+   */
   public function toString():String
   {
     return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'

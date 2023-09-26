@@ -11,7 +11,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongRegistry;
 import funkin.data.song.SongData.SongMetadata;
-import funkin.data.song.SongData.SongPlayableChar;
+import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongData.SongTimeFormat;
 import funkin.data.IRegistryEntry;
@@ -176,18 +176,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         difficulty.generatedBy = metadata.generatedBy;
 
         difficulty.stage = metadata.playData.stage;
-        // difficulty.noteSkin = metadata.playData.noteSkin;
+        difficulty.noteStyle = metadata.playData.noteSkin;
 
         difficulties.set(diffId, difficulty);
 
-        difficulty.chars = new Map<String, SongPlayableChar>();
-        if (metadata.playData.playableChars == null) continue;
-        for (charId in metadata.playData.playableChars.keys())
-        {
-          var char:Null<SongPlayableChar> = metadata.playData.playableChars.get(charId);
-          if (char == null) continue;
-          difficulty.chars.set(charId, char);
-        }
+        difficulty.characters = metadata.playData.characters;
       }
     }
   }
@@ -365,19 +358,20 @@ class SongDifficulty
    */
   public var events:Array<SongEventData>;
 
-  public var songName:String = SongValidator.DEFAULT_SONGNAME;
-  public var songArtist:String = SongValidator.DEFAULT_ARTIST;
-  public var timeFormat:SongTimeFormat = SongValidator.DEFAULT_TIMEFORMAT;
-  public var divisions:Null<Int> = SongValidator.DEFAULT_DIVISIONS;
-  public var looped:Bool = SongValidator.DEFAULT_LOOPED;
+  public var songName:String = Constants.DEFAULT_SONGNAME;
+  public var songArtist:String = Constants.DEFAULT_ARTIST;
+  public var timeFormat:SongTimeFormat = Constants.DEFAULT_TIMEFORMAT;
+  public var divisions:Null<Int> = null;
+  public var looped:Bool = false;
   public var generatedBy:String = SongRegistry.DEFAULT_GENERATEDBY;
 
   public var timeChanges:Array<SongTimeChange> = [];
 
-  public var stage:String = SongValidator.DEFAULT_STAGE;
-  public var chars:Map<String, SongPlayableChar> = null;
+  public var stage:String = Constants.DEFAULT_STAGE;
+  public var noteStyle:String = Constants.DEFAULT_NOTE_STYLE;
+  public var characters:SongCharacterData = null;
 
-  public var scrollSpeed:Float = SongValidator.DEFAULT_SCROLLSPEED;
+  public var scrollSpeed:Float = Constants.DEFAULT_SCROLLSPEED;
 
   public function new(song:Song, diffId:String, variation:String)
   {
@@ -401,28 +395,24 @@ class SongDifficulty
     return timeChanges[0].bpm;
   }
 
-  public function getPlayableChar(id:String):Null<SongPlayableChar>
-  {
-    if (id == null || id == '') return null;
-    return chars.get(id);
-  }
-
-  public function getPlayableChars():Array<String>
-  {
-    return chars.keys().array();
-  }
-
   public function getEvents():Array<SongEventData>
   {
     return cast events;
   }
 
-  public inline function cacheInst(?currentPlayerId:String = null):Void
+  public function cacheInst(instrumental = ''):Void
   {
-    var currentPlayer:Null<SongPlayableChar> = getPlayableChar(currentPlayerId);
-    if (currentPlayer != null)
+    if (characters != null)
     {
-      FlxG.sound.cache(Paths.inst(this.song.id, currentPlayer.inst));
+      if (instrumental != '' && characters.altInstrumentals.contains(instrumental))
+      {
+        FlxG.sound.cache(Paths.inst(this.song.id, instrumental));
+      }
+      else
+      {
+        // Fallback to default instrumental.
+        FlxG.sound.cache(Paths.inst(this.song.id, characters.instrumental));
+      }
     }
     else
     {
@@ -440,9 +430,9 @@ class SongDifficulty
    * Cache the vocals for a given character.
    * @param id The character we are about to play.
    */
-  public inline function cacheVocals(?id:String = 'bf'):Void
+  public inline function cacheVocals():Void
   {
-    for (voice in buildVoiceList(id))
+    for (voice in buildVoiceList())
     {
       FlxG.sound.cache(voice);
     }
@@ -454,22 +444,15 @@ class SongDifficulty
    *
    * @param id The character we are about to play.
    */
-  public function buildVoiceList(?id:String = 'bf'):Array<String>
+  public function buildVoiceList():Array<String>
   {
-    var playableCharData:SongPlayableChar = getPlayableChar(id);
-    if (playableCharData == null)
-    {
-      trace('Could not find playable char $id for song ${this.song.id}');
-      return [];
-    }
-
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
     // Automatically resolve voices by removing suffixes.
     // For example, if `Voices-bf-car.ogg` does not exist, check for `Voices-bf.ogg`.
 
-    var playerId:String = id;
-    var voicePlayer:String = Paths.voices(this.song.id, '-$id$suffix');
+    var playerId:String = characters.player;
+    var voicePlayer:String = Paths.voices(this.song.id, '-$playerId$suffix');
     while (voicePlayer != null && !Assets.exists(voicePlayer))
     {
       // Remove the last suffix.
@@ -479,7 +462,7 @@ class SongDifficulty
       voicePlayer = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
     }
 
-    var opponentId:String = playableCharData.opponent;
+    var opponentId:String = characters.opponent;
     var voiceOpponent:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
     while (voiceOpponent != null && !Assets.exists(voiceOpponent))
     {
@@ -505,11 +488,11 @@ class SongDifficulty
    * @param charId The player ID.
    * @return The generated vocal group.
    */
-  public function buildVocals(charId:String = 'bf'):VoicesGroup
+  public function buildVocals():VoicesGroup
   {
     var result:VoicesGroup = new VoicesGroup();
 
-    var voiceList:Array<String> = buildVoiceList(charId);
+    var voiceList:Array<String> = buildVoiceList();
 
     if (voiceList.length == 0)
     {
