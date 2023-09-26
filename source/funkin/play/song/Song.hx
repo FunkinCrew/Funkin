@@ -92,6 +92,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     _metadata = _data == null ? [] : [_data];
 
+    variations.clear();
+    variations.push(Constants.DEFAULT_VARIATION);
+
+    if (_data != null && _data.playData != null)
+    {
+      for (vari in _data.playData.songVariations)
+        variations.push(vari);
+    }
+
     for (meta in fetchVariationMetadata(id))
       _metadata.push(meta);
 
@@ -101,15 +110,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       return;
     }
 
-    variations.clear();
-    variations.push('default');
-    if (_data != null && _data.playData != null)
-    {
-      for (vari in _data.playData.songVariations)
-        variations.push(vari);
-
-      populateFromMetadata();
-    }
+    populateDifficulties();
   }
 
   @:allow(funkin.play.song.Song)
@@ -128,7 +129,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     result.difficultyIds.clear();
 
-    result.populateFromMetadata();
+    result.populateDifficulties();
 
     for (variation => chartData in charts)
       result.applyChartData(chartData, variation);
@@ -144,10 +145,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
-   * Populate the song data from the provided metadata,
-   * including data from individual difficulties. Does not load chart data.
+   * Populate the difficulty data from the provided metadata.
+   * Does not load chart data (that is triggered later when we want to play the song).
    */
-  function populateFromMetadata():Void
+  function populateDifficulties():Void
   {
     if (_metadata == null || _metadata.length == 0) return;
 
@@ -314,7 +315,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     trace('Fetching song metadata for $id');
     var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id);
     if (version == null) return null;
-    return SongRegistry.instance.parseEntryMetadataWithMigration(id, '', version);
+    return SongRegistry.instance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
   }
 
   function fetchVariationMetadata(id:String):Array<SongMetadata>

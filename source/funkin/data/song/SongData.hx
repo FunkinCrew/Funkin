@@ -47,7 +47,7 @@ class SongMetadata
   @:jignored
   public var variation:String;
 
-  public function new(songName:String, artist:String, variation:String = 'default')
+  public function new(songName:String, artist:String, ?variation:String)
   {
     this.version = SongRegistry.SONG_METADATA_VERSION;
     this.songName = songName;
@@ -64,7 +64,7 @@ class SongMetadata
     this.playData.noteSkin = 'funkin';
     this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     // Variation ID.
-    this.variation = variation;
+    this.variation = (variation == null) ? Constants.DEFAULT_VARIATION : variation;
   }
 
   /**
@@ -90,12 +90,13 @@ class SongMetadata
    * Serialize this SongMetadata into a JSON string.
    * @return The JSON string.
    */
-  public function serialize(?pretty:Bool = true):String
+  public function serialize(pretty:Bool = true):String
   {
     var writer = new json2object.JsonWriter<SongMetadata>();
-    var output = this.clone();
-    output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
-    return writer.write(output, pretty ? '  ' : null);
+    // I believe @:jignored should be iggnored by the writer?
+    // var output = this.clone();
+    // output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
+    return writer.write(this, pretty ? '  ' : null);
   }
 
   /**
@@ -230,7 +231,7 @@ class SongMusicData
    * Defaults to `default` or `''`. Populated later.
    */
   @:jignored
-  public var variation:String = 'default';
+  public var variation:String = Constants.DEFAULT_VARIATION;
 
   public function new(songName:String, artist:String, variation:String = 'default')
   {
@@ -243,7 +244,7 @@ class SongMusicData
     this.looped = false;
     this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     // Variation ID.
-    this.variation = variation;
+    this.variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
   }
 
   public function clone(?newVariation:String = null):SongMusicData
@@ -374,6 +375,9 @@ class SongChartData
   @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
+  @:jignored
+  public var variation:String;
+
   public function new(scrollSpeed:Map<String, Float>, events:Array<SongEventData>, notes:Map<String, Array<SongNoteData>>)
   {
     this.version = SongRegistry.SONG_CHART_DATA_VERSION;
@@ -418,7 +422,7 @@ class SongChartData
   /**
    * Convert this SongChartData into a JSON string.
    */
-  public function serialize(?pretty:Bool = true):String
+  public function serialize(pretty:Bool = true):String
   {
     var writer = new json2object.JsonWriter<SongChartData>();
     return writer.write(this, pretty ? '  ' : null);
