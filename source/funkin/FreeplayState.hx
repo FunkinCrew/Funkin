@@ -22,6 +22,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.data.song.SongRegistry;
+import funkin.data.level.LevelRegistry;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.Controls.Control;
@@ -71,6 +72,7 @@ class FreeplayState extends MusicBeatSubState
 
   var grpSongs:FlxTypedGroup<Alphabet>;
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
+  var curCapsule:SongMenuItem;
   var curPlaying:Bool = false;
 
   var dj:DJBoyfriend;
@@ -120,40 +122,29 @@ class FreeplayState extends MusicBeatSubState
     addSong('Pyro', 'weekend1', 'darnell');
     #end
 
-    var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
+    // var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
-    for (i in 0...initSonglist.length)
-    {
-      songs.push(new FreeplaySongData(initSonglist[i], 'tutorial', 'gf'));
-    }
+    // for (i in 0...initSonglist.length)
+    // {
+    //   songs.push(new FreeplaySongData(initSonglist[i], 'tutorial', 'gf'));
+    // }
 
     if (FlxG.sound.music != null)
     {
       if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
     }
 
-    // if (StoryMenuState.weekUnlocked[2] || isDebug)
-    addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 'week1', ['dad']);
-
-    // if (StoryMenuState.weekUnlocked[2] || isDebug)
-    addWeek(['Spookeez', 'South', 'Monster'], 'week2', ['spooky', 'spooky', 'monster']);
-
-    // if (StoryMenuState.weekUnlocked[3] || isDebug)
-    addWeek(['Pico', 'Philly-Nice', 'Blammed'], 'week3', ['pico']);
-
-    // if (StoryMenuState.weekUnlocked[4] || isDebug)
-    addWeek(['Satin-Panties', 'High', 'MILF'], 'week4', ['mom']);
-
-    // if (StoryMenuState.weekUnlocked[5] || isDebug)
-    addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 'week5', ['parents-christmas', 'parents-christmas', 'monster-christmas']);
-
-    // if (StoryMenuState.weekUnlocked[6] || isDebug)
-    addWeek(['Senpai', 'Roses', 'Thorns'], 'week6', ['senpai', 'senpai', 'spirit']);
-
-    // if (StoryMenuState.weekUnlocked[7] || isDebug)
-    addWeek(['Ugh', 'Guns', 'Stress'], 'week7', ['tankman']);
-
-    addWeek(["Darnell", "lit-up", "2hot", "blazin"], 'weekend1', ['darnell']);
+    // programmatically adds the songs via LevelRegistry and SongRegistry
+    for (coolWeek in LevelRegistry.instance.listBaseGameLevelIds())
+    {
+      for (coolSong in LevelRegistry.instance.parseEntryData(coolWeek).songs)
+      {
+        var metadata = SongRegistry.instance.parseEntryMetadata(coolSong);
+        var char = metadata.playData.characters.opponent;
+        var songName = metadata.songName;
+        addSong(songName, coolWeek, char);
+      }
+    }
 
     // LOAD MUSIC
 
@@ -593,7 +584,9 @@ class FreeplayState extends MusicBeatSubState
       var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
       funnyMenu.init(FlxG.width, 0, tempSongs[i].songName);
       if (tempSongs[i].songCharacter != null) funnyMenu.setCharacter(tempSongs[i].songCharacter);
-      funnyMenu.onConfirm = capsuleOnConfirmDefault;
+      funnyMenu.onConfirm = function() {
+        capsuleOnConfirmDefault(funnyMenu);
+      };
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.targetPos.x = funnyMenu.x;
       funnyMenu.ID = i;
@@ -954,7 +947,7 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function capsuleOnConfirmDefault():Void
+  function capsuleOnConfirmDefault(cap:SongMenuItem):Void
   {
     // var poop:String = songs[curSelected].songName.toLowerCase();
 
@@ -969,7 +962,9 @@ class FreeplayState extends MusicBeatSubState
     }*/
 
     PlayStatePlaylist.isStoryMode = false;
-    var targetSong:Song = SongDataParser.fetchSong(songs[curSelected].songName.toLowerCase());
+
+    var songId:String = cap.songTitle.toLowerCase();
+    var targetSong:Song = SongRegistry.instance.fetchEntry(songId);
     var targetDifficulty:String = switch (curDifficulty)
     {
       case 0:

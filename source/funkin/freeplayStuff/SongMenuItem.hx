@@ -166,14 +166,20 @@ class SongMenuItem extends FlxSpriteGroup
   {
     var charPath:String = "freeplay/icons/";
 
+    trace(char);
+
     switch (char)
     {
       case "monster-christmas":
         charPath += "monsterpixel";
-      case "mom":
+      case "mom-car":
         charPath += "mommypixel";
       case "dad":
         charPath += "daddypixel";
+      case "darnell-blazin":
+        charPath += "darnellpixel";
+      case "senpai-angry":
+        charPath += "senpaipixel";
       default:
         charPath += char + "pixel";
     }
