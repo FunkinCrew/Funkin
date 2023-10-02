@@ -1,5 +1,6 @@
 package funkin.play.stage;
 
+import openfl.display.BlendMode;
 import funkin.graphics.framebuffer.FrameBufferManager;
 import flixel.util.FlxColor;
 import funkin.graphics.framebuffer.SpriteCopy;
@@ -798,6 +799,22 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
       FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
       return null;
     }
+  }
+
+  /**
+   * FIXME: Polymod hack
+   */
+  function stringEndsWith(a:String, b:String):Bool
+  {
+    return a.endsWith(b);
+  }
+
+  /**
+   * FIXME: Polymod hack
+   */
+  function setBlendAdd(sprite:FlxSprite, blend:BlendMode):Void
+  {
+    sprite.blend = blend;
   }
 
   public function onScriptEvent(event:ScriptEvent) {}

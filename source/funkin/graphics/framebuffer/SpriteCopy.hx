@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 class SpriteCopy
 {
   final sprite:FlxSprite;
-  var color:Null<FlxColor>;
+  final color:Null<FlxColor>;
 
   public function new(sprite:FlxSprite, color:Null<FlxColor>)
   {

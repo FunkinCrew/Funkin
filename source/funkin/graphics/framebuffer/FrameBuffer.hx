@@ -1,5 +1,6 @@
 package funkin.graphics.framebuffer;
 
+import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.util.FlxColor;
 import openfl.Lib;
@@ -117,5 +118,15 @@ class FrameBuffer
   public function addSpriteCopy(spriteCopy:SpriteCopy):Void
   {
     spriteCopies.push(spriteCopy);
+  }
+
+  /**
+   * Adds the sprite to the frame buffer. The sprite will only be seen from
+   * the frame buffer.
+   * @param sprite the sprite
+   */
+  public function moveSprite(sprite:FlxSprite):Void
+  {
+    sprite.cameras = [camera];
   }
 }

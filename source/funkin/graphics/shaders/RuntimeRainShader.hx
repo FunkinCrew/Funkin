@@ -86,6 +86,14 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return mask = value;
   }
 
+  public var lightMap(default, set):BitmapData;
+
+  function set_lightMap(value:BitmapData):BitmapData
+  {
+    this.setBitmapData('uLightMap', value);
+    return lightMap = value;
+  }
+
   public var numLights(default, set):Int = 0;
 
   function set_numLights(value:Int):Int

@@ -51,9 +51,19 @@ class FrameBufferManager
    * @param color if this is not `null`, the sprite will be filled with the color.
    * if this is `null`, the sprite will keep its original color.
    */
-  public function addSpriteCopyTo(name:String, sprite:FlxSprite, color:Null<FlxColor> = null):Void
+  public function copySpriteTo(name:String, sprite:FlxSprite, color:Null<FlxColor> = null):Void
   {
     frameBufferMap[name].addSpriteCopy(new SpriteCopy(sprite, color));
+  }
+
+  /**
+   * Adds the sprite to the frame buffer. The sprite will only be seen from the frame buffer.
+   * @param name the name of the frame buffer
+   * @param sprite the sprite
+   */
+  public function moveSpriteTo(name:String, sprite:FlxSprite):Void
+  {
+    frameBufferMap[name].moveSprite(sprite);
   }
 
   /**
