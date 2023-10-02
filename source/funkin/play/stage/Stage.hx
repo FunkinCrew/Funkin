@@ -801,22 +801,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     }
   }
 
-  /**
-   * FIXME: Polymod hack
-   */
-  function stringEndsWith(a:String, b:String):Bool
-  {
-    return a.endsWith(b);
-  }
-
-  /**
-   * FIXME: Polymod hack
-   */
-  function setBlendAdd(sprite:FlxSprite, blend:BlendMode):Void
-  {
-    sprite.blend = blend;
-  }
-
   public function onScriptEvent(event:ScriptEvent) {}
 
   public function onPause(event:PauseScriptEvent) {}
