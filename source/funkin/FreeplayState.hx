@@ -21,6 +21,8 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.data.song.SongRegistry;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.Controls.Control;
@@ -623,11 +625,6 @@ class FreeplayState extends MusicBeatSubState
     fp.updateScore(Std.int(lerpScore));
 
     txtCompletion.text = Math.floor(lerpCompletion * 100) + "%";
-    // trace(Highscore.getCompletion(songs[curSelected].songName, curDifficulty));
-
-    // trace(intendedScore);
-    // trace(lerpScore);
-    // Highscore.getAllScores();
 
     var upP = controls.UI_UP_P;
     var downP = controls.UI_DOWN_P;
@@ -774,8 +771,6 @@ class FreeplayState extends MusicBeatSubState
 
       FlxG.sound.play(Paths.sound('cancelMenu'));
 
-      // FlxTween.tween(dj, {x: -dj.width}, 0.2, {ease: FlxEase.quartOut});
-
       var longestTimer:Float = 0;
 
       for (grpSpr in exitMovers.keys())
@@ -909,9 +904,20 @@ class FreeplayState extends MusicBeatSubState
     if (curDifficulty < 0) curDifficulty = 2;
     if (curDifficulty > 2) curDifficulty = 0;
 
-    // intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-    intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-    intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
+    var targetDifficulty:String = switch (curDifficulty)
+    {
+      case 0:
+        'easy';
+      case 1:
+        'normal';
+      case 2:
+        'hard';
+      default: 'normal';
+    };
+
+    var songScore:SaveScoreData = Save.get().getSongScore(songs[curSelected].songName, targetDifficulty);
+    intendedScore = songScore.score;
+    intendedCompletion = songScore.accuracy;
 
     grpDifficulties.group.forEach(function(spr) {
       spr.visible = false;
@@ -955,12 +961,20 @@ class FreeplayState extends MusicBeatSubState
     if (curSelected < 0) curSelected = grpCapsules.members.length - 1;
     if (curSelected >= grpCapsules.members.length) curSelected = 0;
 
-    // selector.y = (70 * curSelected) + 30;
+    var targetDifficulty:String = switch (curDifficulty)
+    {
+      case 0:
+        'easy';
+      case 1:
+        'normal';
+      case 2:
+        'hard';
+      default: 'normal';
+    };
 
-    // intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-    intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-    intendedCompletion = Highscore.getCompletion(songs[curSelected].songName, curDifficulty);
-    // lerpScore = 0;
+    var songScore:SaveScoreData = Save.get().getSongScore(songs[curSelected].songName, targetDifficulty);
+    intendedScore = songScore.score;
+    intendedCompletion = songScore.accuracy;
 
     #if PRELOAD_ALL
     // FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
