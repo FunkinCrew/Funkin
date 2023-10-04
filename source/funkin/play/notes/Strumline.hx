@@ -231,7 +231,7 @@ class Strumline extends FlxSpriteGroup
       notesVwoosh.add(note);
 
       var targetY:Float = FlxG.height + note.y;
-      if (PreferencesMenu.getPref('downscroll')) targetY = 0 - note.height;
+      if (Preferences.downscroll) targetY = 0 - note.height;
       FlxTween.tween(note, {y: targetY}, 0.5,
         {
           ease: FlxEase.expoIn,
@@ -252,7 +252,7 @@ class Strumline extends FlxSpriteGroup
       holdNotesVwoosh.add(holdNote);
 
       var targetY:Float = FlxG.height + holdNote.y;
-      if (PreferencesMenu.getPref('downscroll')) targetY = 0 - holdNote.height;
+      if (Preferences.downscroll) targetY = 0 - holdNote.height;
       FlxTween.tween(holdNote, {y: targetY}, 0.5,
         {
           ease: FlxEase.expoIn,
@@ -277,7 +277,7 @@ class Strumline extends FlxSpriteGroup
     var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
-    return Constants.PIXELS_PER_MS * (Conductor.songPosition - strumTime) * scrollSpeed * vwoosh * (PreferencesMenu.getPref('downscroll') ? 1 : -1);
+    return Constants.PIXELS_PER_MS * (Conductor.songPosition - strumTime) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
   }
 
   function updateNotes():Void
@@ -321,7 +321,7 @@ class Strumline extends FlxSpriteGroup
       note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime, vwoosh);
 
       // If the note is miss
-      var isOffscreen = PreferencesMenu.getPref('downscroll') ? note.y > FlxG.height : note.y < -note.height;
+      var isOffscreen = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
       if (note.handledMiss && isOffscreen)
       {
         killNote(note);
@@ -388,7 +388,7 @@ class Strumline extends FlxSpriteGroup
 
         var vwoosh:Bool = false;
 
-        if (PreferencesMenu.getPref('downscroll'))
+        if (Preferences.downscroll)
         {
           holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
         }
@@ -410,7 +410,7 @@ class Strumline extends FlxSpriteGroup
           holdNote.visible = false;
         }
 
-        if (PreferencesMenu.getPref('downscroll'))
+        if (Preferences.downscroll)
         {
           holdNote.y = this.y - holdNote.height + STRUMLINE_SIZE / 2;
         }
@@ -425,7 +425,7 @@ class Strumline extends FlxSpriteGroup
         holdNote.visible = true;
         var vwoosh:Bool = false;
 
-        if (PreferencesMenu.getPref('downscroll'))
+        if (Preferences.downscroll)
         {
           holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
         }

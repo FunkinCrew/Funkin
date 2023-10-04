@@ -3,6 +3,9 @@ package funkin.util;
 import flixel.util.FlxColor;
 import lime.app.Application;
 
+/**
+ * A store of unchanging, globally relevant values.
+ */
 class Constants
 {
   /**
