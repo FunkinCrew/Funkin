@@ -42,7 +42,7 @@ jobs:
   create-nightly-win:
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false'}}
-    runs-on: windows-latest
+    runs-on: 64fast
     permissions:
        contents: write
        actions: write
@@ -63,7 +63,7 @@ jobs:
           target: win
   test-unit-win:
     needs: create-nightly-win
-    runs-on: windows-latest
+    runs-on: 64fast
     permissions:
        contents: write
        actions: write
