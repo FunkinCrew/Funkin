@@ -36,7 +36,7 @@ runs:
           ./butler -V
         shell: bash
       - name: Upload game to itch.io
-        env: 
+        env:
           BUTLER_API_KEY: ${{inputs.butler-key}}
         run: |
           ./butler login
