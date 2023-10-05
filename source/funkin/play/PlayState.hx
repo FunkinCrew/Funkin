@@ -909,7 +909,6 @@ class PlayState extends MusicBeatSubState
     }
 
     // Handle keybinds.
-    // if (!isInCutscene && !disableKeys) keyShit(true);
     processInputQueue();
     if (!isInCutscene && !disableKeys) debugKeyShit();
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
@@ -2011,103 +2010,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.playStatic(input.noteDirection);
 
       playerStrumline.releaseKey(input.noteDirection);
-    }
-  }
-
-  /**
-   * Handle player inputs.
-   */
-  function keyShit(test:Bool):Void
-  {
-    // control arrays, order L D R U
-    var holdArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
-    var pressArray:Array<Bool> = [
-      controls.NOTE_LEFT_P,
-      controls.NOTE_DOWN_P,
-      controls.NOTE_UP_P,
-      controls.NOTE_RIGHT_P
-    ];
-    var releaseArray:Array<Bool> = [
-      controls.NOTE_LEFT_R,
-      controls.NOTE_DOWN_R,
-      controls.NOTE_UP_R,
-      controls.NOTE_RIGHT_R
-    ];
-
-    // if (pressArray.contains(true))
-    // {
-    //   var lol:Array<Int> = cast pressArray;
-    //   inputSpitter.push(Std.int(Conductor.songPosition) + ' ' + lol.join(' '));
-    // }
-
-    // HOLDS, check for sustain notes
-    if (holdArray.contains(true) && generatedMusic)
-    {
-      /*
-        activeNotes.forEachAlive(function(daNote:Note) {
-          if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.data.noteData]) goodNoteHit(daNote);
-        });
-       */
-    }
-
-    // PRESSES, check for note hits
-    if (pressArray.contains(true) && generatedMusic)
-    {
-      Haptic.vibrate(100, 100);
-
-      if (currentStage != null && currentStage.getBoyfriend() != null)
-      {
-        currentStage.getBoyfriend().holdTimer = 0;
-      }
-
-      var possibleNotes:Array<NoteSprite> = []; // notes that can be hit
-      var directionList:Array<Int> = []; // directions that can be hit
-      var dumbNotes:Array<NoteSprite> = []; // notes to kill later
-
-      for (note in dumbNotes)
-      {
-        FlxG.log.add('killing dumb ass note at ' + note.noteData.time);
-        note.kill();
-        // activeNotes.remove(note, true);
-        note.destroy();
-      }
-
-      possibleNotes.sort((a, b) -> Std.int(a.noteData.time - b.noteData.time));
-
-      if (perfectMode)
-      {
-        goodNoteHit(possibleNotes[0], null);
-      }
-      else if (possibleNotes.length > 0)
-      {
-        for (shit in 0...pressArray.length)
-        { // if a direction is hit that shouldn't be
-          if (pressArray[shit] && !directionList.contains(shit)) ghostNoteMiss(shit);
-        }
-        for (coolNote in possibleNotes)
-        {
-          if (pressArray[coolNote.noteData.getDirection()]) goodNoteHit(coolNote, null);
-        }
-      }
-      else
-      {
-        // HNGGG I really want to add an option for ghost tapping
-        // L + ratio
-        for (shit in 0...pressArray.length)
-          if (pressArray[shit]) ghostNoteMiss(shit, false);
-      }
-    }
-
-    if (currentStage == null) return;
-
-    for (keyId => isPressed in pressArray)
-    {
-      if (playerStrumline == null) continue;
-
-      var dir:NoteDirection = Strumline.DIRECTIONS[keyId];
-
-      if (isPressed && !playerStrumline.isConfirm(dir)) playerStrumline.playPress(dir);
-      if (!holdArray[keyId]) playerStrumline.playStatic(dir);
     }
   }
 

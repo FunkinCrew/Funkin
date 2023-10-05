@@ -67,7 +67,7 @@ class StickerSubState extends MusicBeatSubState
       new FlxTimer().start(sticker.timing, _ -> {
         sticker.visible = false;
 
-        if (ind == grpStickers.members.length - 1)
+        if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
           switchingState = false;
           close();
