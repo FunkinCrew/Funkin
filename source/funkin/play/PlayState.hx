@@ -46,7 +46,7 @@ import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongData.SongPlayableChar;
+import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.ui.PopUpStuff;
@@ -574,8 +574,8 @@ class PlayState extends MusicBeatSubState
     // Prepare the current song's instrumental and vocals to be played.
     if (!overrideMusic && currentChart != null)
     {
-      currentChart.cacheInst(currentPlayerId);
-      currentChart.cacheVocals(currentPlayerId);
+      currentChart.cacheInst();
+      currentChart.cacheVocals();
     }
 
     // Prepare the Conductor.
@@ -733,7 +733,7 @@ class PlayState extends MusicBeatSubState
       // DO NOT FORGET TO REMOVE THE HARDCODE! WHEN I MAKE BETTER OFFSET SYSTEM!
 
       // :nerd: um ackshually it's not 13 it's 11.97278911564
-      if (Paths.SOUND_EXT == 'mp3') Conductor.offset = Constants.MP3_DELAY_MS;
+      if (Constants.EXT_SOUND == 'mp3') Conductor.offset = Constants.MP3_DELAY_MS;
 
       Conductor.update();
 
@@ -1344,34 +1344,20 @@ class PlayState extends MusicBeatSubState
       trace('Song difficulty could not be loaded.');
     }
 
-    // Switch the character we are playing as by manipulating currentPlayerId.
-    // TODO: How to choose which one to use for story mode?
-    var playableChars:Array<String> = currentChart.getPlayableChars();
-
-    if (playableChars.length == 0)
-    {
-      trace('WARNING: No playable characters found for this song.');
-    }
-    else if (playableChars.indexOf(currentPlayerId) == -1)
-    {
-      currentPlayerId = playableChars[0];
-    }
-
-    //
-    var currentCharData:SongPlayableChar = currentChart.getPlayableChar(currentPlayerId);
+    var currentCharacterData:SongCharacterData = currentChart.characters; // Switch the character we are playing as by manipulating currentPlayerId.
 
     //
     // GIRLFRIEND
     //
-    var girlfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharData.girlfriend);
+    var girlfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.girlfriend);
 
     if (girlfriend != null)
     {
       girlfriend.characterType = CharacterType.GF;
     }
-    else if (currentCharData.girlfriend != '')
+    else if (currentCharacterData.girlfriend != '')
     {
-      trace('WARNING: Could not load girlfriend character with ID ${currentCharData.girlfriend}, skipping...');
+      trace('WARNING: Could not load girlfriend character with ID ${currentCharacterData.girlfriend}, skipping...');
     }
     else
     {
@@ -1381,7 +1367,7 @@ class PlayState extends MusicBeatSubState
     //
     // DAD
     //
-    var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharData.opponent);
+    var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
 
     if (dad != null)
     {
@@ -1400,7 +1386,7 @@ class PlayState extends MusicBeatSubState
     //
     // BOYFRIEND
     //
-    var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentPlayerId);
+    var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.player);
 
     if (boyfriend != null)
     {
@@ -1549,7 +1535,7 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic)
     {
-      vocals = currentChart.buildVocals(currentPlayerId);
+      vocals = currentChart.buildVocals();
 
       if (vocals.members.length == 0)
       {
