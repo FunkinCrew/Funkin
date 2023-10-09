@@ -789,6 +789,11 @@ class ChartEditorState extends HaxeUIState
   // ==============================
 
   /**
+   * The chill audio track that plays when you open the Chart Editor.
+   */
+  public var welcomeMusic:FlxSound = new FlxSound();
+
+  /**
    * The audio track for the instrumental.
    * Replaced when switching instrumentals.
    * `null` until an instrumental track is loaded.
@@ -1234,6 +1239,9 @@ class ChartEditorState extends HaxeUIState
     // Get rid of any music from the previous state.
     FlxG.sound.music.stop();
 
+    // Play the welcome music.
+    setupWelcomeMusic();
+
     buildDefaultSongData();
 
     buildBackground();
@@ -1256,6 +1264,26 @@ class ChartEditorState extends HaxeUIState
     refresh();
 
     ChartEditorDialogHandler.openWelcomeDialog(this, false);
+  }
+
+  function setupWelcomeMusic()
+  {
+    this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop/chartEditorLoop'));
+    this.welcomeMusic.looped = true;
+    // this.welcomeMusic.play();
+    // fadeInWelcomeMusic();
+  }
+
+  public function fadeInWelcomeMusic():Void
+  {
+    this.welcomeMusic.play();
+    this.welcomeMusic.fadeIn(4, 0, 1.0);
+  }
+
+  public function stopWelcomeMusic():Void
+  {
+    // this.welcomeMusic.fadeOut(4, 0);
+    this.welcomeMusic.pause();
   }
 
   function buildDefaultSongData():Void

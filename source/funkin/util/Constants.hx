@@ -324,10 +324,15 @@ class Constants
   public static final HEALTH_MINE_PENALTY:Float = 15.0 / 100.0 * HEALTH_MAX; // 15.0%
 
   /**
-   * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
-   * This is the thing people have been begging for forever lolol.
+   * SCORE VALUES
    */
-  public static final GHOST_TAPPING:Bool = false;
+  // ==============================
+
+  /**
+   * The amount of score the player gains for every send they hold a hold note.
+   * A fraction of this value is granted every frame.
+   */
+  public static final SCORE_HOLD_BONUS_PER_SECOND:Float = 250.0;
 
   /**
    * FILE EXTENSIONS
@@ -366,6 +371,12 @@ class Constants
    * OTHER
    */
   // ==============================
+
+  /**
+   * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
+   * This is the thing people have been begging for forever lolol.
+   */
+  public static final GHOST_TAPPING:Bool = false;
 
   /**
    * The separator between an asset library and the asset path.

@@ -26,9 +26,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+          token: ${{ secrets.GH_RO_PAT }}
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
+          sudo apt-get update
           sudo apt-get install -y libx11-dev xorg-dev libgl-dev libxi-dev libxext-dev libasound2-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev
           haxelib run lime build html5 -release --times
           ls
@@ -48,6 +50,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+          token: ${{ secrets.GH_RO_PAT }}
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
@@ -68,6 +71,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+          token: ${{ secrets.GH_RO_PAT }}
       - uses: ./.github/actions/setup-haxeshit
       - name: Run unit tests
         run: |

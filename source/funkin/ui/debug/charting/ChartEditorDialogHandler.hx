@@ -89,6 +89,7 @@ class ChartEditorDialogHandler
     linkCreateBasic.onClick = function(_event) {
       // Hide the welcome dialog
       dialog.hideDialog(DialogButton.CANCEL);
+      state.stopWelcomeMusic();
 
       //
       // Create Song Wizard
@@ -114,6 +115,7 @@ class ChartEditorDialogHandler
     linkImportChartLegacy.onClick = function(_event) {
       // Hide the welcome dialog
       dialog.hideDialog(DialogButton.CANCEL);
+      state.stopWelcomeMusic();
 
       // Open the "Import Chart" dialog
       openImportChartWizard(state, 'legacy', false);
@@ -124,6 +126,7 @@ class ChartEditorDialogHandler
     buttonBrowse.onClick = function(_event) {
       // Hide the welcome dialog
       dialog.hideDialog(DialogButton.CANCEL);
+      state.stopWelcomeMusic();
 
       // Open the "Open Chart" dialog
       openBrowseWizard(state, false);
@@ -152,6 +155,7 @@ class ChartEditorDialogHandler
       linkTemplateSong.text = songName;
       linkTemplateSong.onClick = function(_event) {
         dialog.hideDialog(DialogButton.CANCEL);
+        state.stopWelcomeMusic();
 
         // Load song from template
         ChartEditorImportExportHandler.loadSongAsTemplate(state, targetSongId);
@@ -160,6 +164,7 @@ class ChartEditorDialogHandler
       splashTemplateContainer.addComponent(linkTemplateSong);
     }
 
+    state.fadeInWelcomeMusic();
     return dialog;
   }
 
