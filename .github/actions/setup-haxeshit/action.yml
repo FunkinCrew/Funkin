@@ -25,7 +25,6 @@ runs:
         key: ${{ runner.os }}-hmm-${{ hashFiles('**/hmm.json') }}
         restore-keys: |
           ${{ runner.os }}-hmm-
-          ${{ runner.os }}-
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: hmm install
       run: |
