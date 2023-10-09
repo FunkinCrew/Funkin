@@ -67,7 +67,6 @@ typedef UnnamedAnimationData =
    * ONLY for use by MultiSparrow characters.
    * @default The assetPath of the parent sprite
    */
-  @:default(null)
   @:optional
   var assetPath:Null<String>;
 
@@ -85,7 +84,7 @@ typedef UnnamedAnimationData =
    */
   @:default(false)
   @:optional
-  var looped:Null<Bool>;
+  var looped:Bool;
 
   /**
    * Whether the animation's sprites should be flipped horizontally.

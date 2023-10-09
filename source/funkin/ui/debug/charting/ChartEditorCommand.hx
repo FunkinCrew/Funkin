@@ -64,7 +64,7 @@ class AddNotesCommand implements ChartEditorCommand
       state.currentEventSelection = [];
     }
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -78,7 +78,7 @@ class AddNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -114,7 +114,7 @@ class RemoveNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -131,7 +131,7 @@ class RemoveNotesCommand implements ChartEditorCommand
     }
     state.currentNoteSelection = notes;
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -252,7 +252,7 @@ class AddEventsCommand implements ChartEditorCommand
       state.currentEventSelection = events;
     }
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -296,7 +296,7 @@ class RemoveEventsCommand implements ChartEditorCommand
   {
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -312,7 +312,7 @@ class RemoveEventsCommand implements ChartEditorCommand
       state.currentSongChartEventData.push(event);
     }
     state.currentEventSelection = events;
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -352,7 +352,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -376,7 +376,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

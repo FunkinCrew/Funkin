@@ -97,8 +97,8 @@
       "name": "json2object",
       "type": "git",
       "dir": null,
-      "ref": "429986134031cbb1980f09d0d3d642b4b4cbcd6a",
-      "url": "https://github.com/elnabo/json2object"
+      "ref": "f4df19cfa196f85eece55c3367021fc965f1fa9a",
+      "url": "https://github.com/EliteMasterEric/json2object"
     },
     {
       "name": "lime",
@@ -139,7 +139,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "d33d489a137ff8fdece4994cf1302f0b6334ed08",
+      "ref": "de9395d2f367a80f93f082e1b639b9cde2258bf1",
       "url": "https://github.com/EliteMasterEric/openfl"
     },
     {

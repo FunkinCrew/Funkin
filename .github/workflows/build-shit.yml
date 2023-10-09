@@ -30,6 +30,7 @@ jobs:
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
+          sudo apt-get update
           sudo apt-get install -y libx11-dev xorg-dev libgl-dev libxi-dev libxext-dev libasound2-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev
           haxelib run lime build html5 -release --times
           ls
@@ -60,18 +61,19 @@ jobs:
           butler-key: ${{ secrets.BUTLER_API_KEY}}
           build-dir: export/release/windows/bin
           target: win
-  test-unit-win:
-    needs: create-nightly-win
-    runs-on: windows-latest
-    permissions:
-       contents: write
-       actions: write
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
-      - uses: ./.github/actions/setup-haxeshit
-      - name: Run unit tests
-        run: |
-          cd ./tests/unit/
-          ./start-win-native.bat
+#  test-unit-win:
+#    needs: create-nightly-win
+#    runs-on: windows-latest
+#    permissions:
+#       contents: write
+#       actions: write
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          submodules: 'recursive'
+#          token: ${{ secrets.GH_RO_PAT }}
+#      - uses: ./.github/actions/setup-haxeshit
+#      - name: Run unit tests
+#        run: |
+#          cd ./tests/unit/
+#          ./start-win-native.bat

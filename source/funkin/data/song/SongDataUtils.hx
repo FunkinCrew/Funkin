@@ -8,6 +8,9 @@ import funkin.util.SerializerUtil;
 
 using Lambda;
 
+/**
+ * Utility functions for working with song data, including note data, event data, metadata, etc.
+ */
 class SongDataUtils
 {
   /**
