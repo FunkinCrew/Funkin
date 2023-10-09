@@ -695,8 +695,10 @@ class PlayState extends MusicBeatSubState
       // Reset music properly.
 
       FlxG.sound.music.pause();
-      vocals.pause();
       FlxG.sound.music.time = (startTimestamp);
+
+      vocals = currentChart.buildVocals();
+      vocals.pause();
       vocals.time = 0;
 
       FlxG.sound.music.volume = 1;
