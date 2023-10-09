@@ -55,7 +55,7 @@ jobs:
       - name: Make HXCPP cache dir
         shell: bash
         run: |
-          mkdir -p ${{ runner.temp }}/hxcpp_cache
+          mkdir -p ${{ runner.temp }}\\hxcpp_cache
       - name: Restore build cache
         id: cache-build-win
         uses: actions/cache@v3
@@ -63,7 +63,7 @@ jobs:
           path: |
             .haxelib
             export
-            ${{ runner.temp }}/hxcpp_cache
+            ${{ runner.temp }}\\hxcpp_cache
           key: ${{ runner.os }}-build-win-${{ github.ref_name }}
           restore-keys: |
             ${{ runner.os }}-build-win-
@@ -72,7 +72,7 @@ jobs:
           haxelib run lime build windows -release -DNO_REDIRECT_ASSETS_FOLDER
           dir
         env:
-          HXCPP_COMPILE_CACHE: "${{ runner.temp }}/hxcpp_cache"
+          HXCPP_COMPILE_CACHE: "${{ runner.temp }}\\hxcpp_cache"
       - uses: ./.github/actions/upload-itch
         with:
           butler-key: ${{ secrets.BUTLER_API_KEY }}
