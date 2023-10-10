@@ -206,7 +206,7 @@ class DJBoyfriend extends FlxAtlasSprite
     cartoonSnd.play(true, FlxG.random.float(0, cartoonSnd.length));
   }
 
-  var cartoonList:Array<String> = Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
+  var cartoonList:Array<String> = openfl.utils.Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
 
   function getRandomFlashToon():String
   {

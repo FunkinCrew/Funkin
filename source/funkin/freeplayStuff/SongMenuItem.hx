@@ -159,8 +159,9 @@ class SongMenuItem extends FlxSpriteGroup
   }
 
   /**
-   * [Description]
-   * @param char Should be songCharacter, and will get translated to the correct path via switch
+   * Set the character displayed next to this song in the freeplay menu.
+   * @param char The character ID used by this song.
+   *             If the character has no freeplay icon, a warning will be thrown and nothing will display.
    */
   public function setCharacter(char:String)
   {
@@ -182,6 +183,12 @@ class SongMenuItem extends FlxSpriteGroup
         charPath += "senpaipixel";
       default:
         charPath += char + "pixel";
+    }
+
+    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
+    {
+      trace('[WARN] Character ${char} has no freeplay icon.');
+      return;
     }
 
     pixelIcon.loadGraphic(Paths.image(charPath));
@@ -310,6 +317,14 @@ class SongMenuItem extends FlxSpriteGroup
   public function intendedY(index:Int):Float
   {
     return (index * ((height * realScaled) + 10)) + 120;
+  }
+
+  /**
+   * Merely a helper function to call set_selected, to make sure that the alpha is correct on the rankings/selections
+   */
+  public function selectedAlpha():Void
+  {
+    selected = selected;
   }
 
   function set_selected(value:Bool):Bool

@@ -13,6 +13,7 @@ import flixel.addons.ui.FlxInputText;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
@@ -31,6 +32,7 @@ import funkin.freeplayStuff.DJBoyfriend;
 import funkin.freeplayStuff.FreeplayScore;
 import funkin.freeplayStuff.LetterSort;
 import funkin.freeplayStuff.SongMenuItem;
+import funkin.freeplayStuff.DifficultyStars;
 import funkin.play.HealthIcon;
 import funkin.play.PlayState;
 import funkin.shaderslmfao.AngleMask;
@@ -118,8 +120,8 @@ class FreeplayState extends MusicBeatSubState
 
     #if debug
     isDebug = true;
-    addSong('Test', 'tutorial', 'bf-pixel');
-    addSong('Pyro', 'weekend1', 'darnell');
+    // addSong('Test', 'tutorial', 'bf-pixel');
+    // addSong('Pyro', 'weekend1', 'darnell');
     #end
 
     // var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -994,6 +996,10 @@ class FreeplayState extends MusicBeatSubState
     // Visual and audio effects.
     FlxG.sound.play(Paths.sound('confirmMenu'));
     dj.confirm();
+
+    // Load and cache the song's charts.
+    // TODO: Do this in the loading state.
+    targetSong.cacheCharts(true);
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       LoadingState.loadAndSwitchState(new PlayState(
