@@ -19,7 +19,7 @@ class ChartEditorNoteSprite extends FlxSprite
   /**
    * The list of available note skin to validate against.
    */
-  public static final NOTE_STYLES:Array<String> = ['Normal', 'Pixel'];
+  public static final NOTE_STYLES:Array<String> = ['funkin', 'pixel'];
 
   /**
    * The ChartEditorState this note belongs to.
@@ -54,20 +54,20 @@ class ChartEditorNoteSprite extends FlxSprite
 
     // Initialize all the animations, not just the one we're going to use immediately,
     // so that later we can reuse the sprite without having to initialize more animations during scrolling.
-    this.animation.addByPrefix('tapLeftNormal', 'purple instance');
-    this.animation.addByPrefix('tapDownNormal', 'blue instance');
-    this.animation.addByPrefix('tapUpNormal', 'green instance');
-    this.animation.addByPrefix('tapRightNormal', 'red instance');
+    this.animation.addByPrefix('tapLeftFunkin', 'purple instance');
+    this.animation.addByPrefix('tapDownFunkin', 'blue instance');
+    this.animation.addByPrefix('tapUpFunkin', 'green instance');
+    this.animation.addByPrefix('tapRightFunkin', 'red instance');
 
-    this.animation.addByPrefix('holdLeftNormal', 'LeftHoldPiece');
-    this.animation.addByPrefix('holdDownNormal', 'DownHoldPiece');
-    this.animation.addByPrefix('holdUpNormal', 'UpHoldPiece');
-    this.animation.addByPrefix('holdRightNormal', 'RightHoldPiece');
+    this.animation.addByPrefix('holdLeftFunkin', 'LeftHoldPiece');
+    this.animation.addByPrefix('holdDownFunkin', 'DownHoldPiece');
+    this.animation.addByPrefix('holdUpFunkin', 'UpHoldPiece');
+    this.animation.addByPrefix('holdRightFunkin', 'RightHoldPiece');
 
-    this.animation.addByPrefix('holdEndLeftNormal', 'LeftHoldEnd');
-    this.animation.addByPrefix('holdEndDownNormal', 'DownHoldEnd');
-    this.animation.addByPrefix('holdEndUpNormal', 'UpHoldEnd');
-    this.animation.addByPrefix('holdEndRightNormal', 'RightHoldEnd');
+    this.animation.addByPrefix('holdEndLeftFunkin', 'LeftHoldEnd');
+    this.animation.addByPrefix('holdEndDownFunkin', 'DownHoldEnd');
+    this.animation.addByPrefix('holdEndUpFunkin', 'UpHoldEnd');
+    this.animation.addByPrefix('holdEndRightFunkin', 'RightHoldEnd');
 
     this.animation.addByPrefix('tapLeftPixel', 'pixel4');
     this.animation.addByPrefix('tapDownPixel', 'pixel5');
@@ -187,8 +187,8 @@ class ChartEditorNoteSprite extends FlxSprite
 
   function get_noteStyle():String
   {
-    // Fall back to 'Normal' if it's not a valid note style.
-    return if (NOTE_STYLES.contains(this.parentState.currentSongNoteSkin)) this.parentState.currentSongNoteSkin else 'Normal';
+    // Fall back to Funkin' if it's not a valid note style.
+    return if (NOTE_STYLES.contains(this.parentState.currentSongNoteStyle)) this.parentState.currentSongNoteStyle else 'funkin';
   }
 
   public function playNoteAnimation():Void
@@ -199,7 +199,7 @@ class ChartEditorNoteSprite extends FlxSprite
     var baseAnimationName:String = 'tap';
 
     // Play the appropriate animation for the type, direction, and skin.
-    var animationName:String = '${baseAnimationName}${this.noteData.getDirectionName()}${this.noteStyle}';
+    var animationName:String = '${baseAnimationName}${this.noteData.getDirectionName()}${this.noteStyle.toTitleCase()}';
 
     this.animation.play(animationName);
 
@@ -213,7 +213,7 @@ class ChartEditorNoteSprite extends FlxSprite
     this.updateHitbox();
 
     // TODO: Make this an attribute of the note skin.
-    this.antialiasing = (this.parentState.currentSongNoteSkin != 'Pixel');
+    this.antialiasing = (this.parentState.currentSongNoteStyle != 'Pixel');
   }
 
   /**
