@@ -696,6 +696,16 @@ class ChartEditorState extends HaxeUIState
   var downKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.DOWN);
 
   /**
+   * Variable used to track how long the user has been holding the W keybind.
+   */
+  var wKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.W);
+
+  /**
+   * Variable used to track how long the user has been holding the S keybind.
+   */
+  var sKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.S);
+
+  /**
    * Variable used to track how long the user has been holding the page-up keybind.
    */
   var pageUpKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.PAGEUP);
@@ -1663,16 +1673,20 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemSelectNone', _ -> performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    // TODO: Implement these.
-    // addUIClickListener('menubarItemSelectRegion', _ -> doSomething());
-    // addUIClickListener('menubarItemSelectBeforeCursor', _ -> doSomething());
-    // addUIClickListener('menubarItemSelectAfterCursor', _ -> doSomething());
-
     addUIClickListener('menubarItemPlaytestFull', _ -> testSongInPlayState(false));
     addUIClickListener('menubarItemPlaytestMinimal', _ -> testSongInPlayState(true));
 
-    addUIChangeListener('menubarItemInputStyleGroup', function(event:UIEvent) {
-      trace('Change input style: ${event.target}');
+    addUIClickListener('menuBarItemNoteSnapDecrease', _ -> noteSnapQuantIndex--);
+    addUIClickListener('menuBarItemNoteSnapIncrease', _ -> noteSnapQuantIndex++);
+
+    addUIChangeListener('menuBarItemInputStyleNone', function(event:UIEvent) {
+      currentLiveInputStyle = None;
+    });
+    addUIChangeListener('menuBarItemInputStyleNumberKeys', function(event:UIEvent) {
+      currentLiveInputStyle = NumberKeys;
+    });
+    addUIChangeListener('menuBarItemInputStyleWASD', function(event:UIEvent) {
+      currentLiveInputStyle = WASD;
     });
 
     addUIClickListener('menubarItemAbout', _ -> ChartEditorDialogHandler.openAboutDialog(this));
@@ -1769,6 +1783,8 @@ class ChartEditorState extends HaxeUIState
     add(redoKeyHandler);
     add(upKeyHandler);
     add(downKeyHandler);
+    add(wKeyHandler);
+    add(sKeyHandler);
     add(pageUpKeyHandler);
     add(pageDownKeyHandler);
   }
@@ -1901,13 +1917,26 @@ class ChartEditorState extends HaxeUIState
     }
 
     // Up Arrow = Scroll Up
-    if (upKeyHandler.activated && currentLiveInputStyle != LiveInputStyle.WASD)
+    if (upKeyHandler.activated && currentLiveInputStyle == None)
     {
       scrollAmount = -GRID_SIZE * 0.25 * 5.0;
       shouldPause = true;
     }
     // Down Arrow = Scroll Down
-    if (downKeyHandler.activated && currentLiveInputStyle != LiveInputStyle.WASD)
+    if (downKeyHandler.activated && currentLiveInputStyle == None)
+    {
+      scrollAmount = GRID_SIZE * 0.25 * 5.0;
+      shouldPause = true;
+    }
+
+    // W = Scroll Up (doesn't work with Ctrl+Scroll)
+    if (wKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
+    {
+      scrollAmount = -GRID_SIZE * 0.25 * 5.0;
+      shouldPause = true;
+    }
+    // S = Scroll Down (doesn't work with Ctrl+Scroll)
+    if (sKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
     {
       scrollAmount = GRID_SIZE * 0.25 * 5.0;
       shouldPause = true;
@@ -2045,14 +2074,17 @@ class ChartEditorState extends HaxeUIState
 
   function handleSnap():Void
   {
-    if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
+    if (currentLiveInputStyle == None)
     {
-      noteSnapQuantIndex--;
-    }
+      if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
+      {
+        noteSnapQuantIndex--;
+      }
 
-    if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
-    {
-      noteSnapQuantIndex++;
+      if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
+      {
+        noteSnapQuantIndex++;
+      }
     }
   }
 
@@ -3124,13 +3156,17 @@ class ChartEditorState extends HaxeUIState
    */
   function handleViewKeybinds():Void
   {
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
+    if (currentLiveInputStyle == None)
     {
-      incrementDifficulty(-1);
-    }
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
-    {
-      incrementDifficulty(1);
+      if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
+      {
+        incrementDifficulty(-1);
+      }
+      if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
+      {
+        incrementDifficulty(1);
+      }
+      // Would bind Ctrl+A and Ctrl+D here, but they are already bound to Select All and Select None.
     }
   }
 
@@ -3829,25 +3865,26 @@ class ChartEditorState extends HaxeUIState
     switch (currentLiveInputStyle)
     {
       case LiveInputStyle.WASD:
-        if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(0);
-        if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(1);
-        if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(2);
-        if (FlxG.keys.justPressed.D) placeNoteAtPlayhead(3);
+        if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(4);
+        if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(5);
+        if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(6);
+        if (FlxG.keys.justPressed.D) placeNoteAtPlayhead(7);
 
-        if (FlxG.keys.justPressed.LEFT) placeNoteAtPlayhead(4);
-        if (FlxG.keys.justPressed.DOWN) placeNoteAtPlayhead(5);
-        if (FlxG.keys.justPressed.UP) placeNoteAtPlayhead(6);
-        if (FlxG.keys.justPressed.RIGHT) placeNoteAtPlayhead(7);
+        if (FlxG.keys.justPressed.LEFT) placeNoteAtPlayhead(0);
+        if (FlxG.keys.justPressed.DOWN) placeNoteAtPlayhead(1);
+        if (FlxG.keys.justPressed.UP) placeNoteAtPlayhead(2);
+        if (FlxG.keys.justPressed.RIGHT) placeNoteAtPlayhead(3);
       case LiveInputStyle.NumberKeys:
-        if (FlxG.keys.justPressed.ONE) placeNoteAtPlayhead(0);
-        if (FlxG.keys.justPressed.TWO) placeNoteAtPlayhead(1);
-        if (FlxG.keys.justPressed.THREE) placeNoteAtPlayhead(2);
-        if (FlxG.keys.justPressed.FOUR) placeNoteAtPlayhead(3);
+        // Flipped because Dad is on the left but represents data 0-3.
+        if (FlxG.keys.justPressed.ONE) placeNoteAtPlayhead(4);
+        if (FlxG.keys.justPressed.TWO) placeNoteAtPlayhead(5);
+        if (FlxG.keys.justPressed.THREE) placeNoteAtPlayhead(6);
+        if (FlxG.keys.justPressed.FOUR) placeNoteAtPlayhead(7);
 
-        if (FlxG.keys.justPressed.FIVE) placeNoteAtPlayhead(4);
-        if (FlxG.keys.justPressed.SIX) placeNoteAtPlayhead(5);
-        if (FlxG.keys.justPressed.SEVEN) placeNoteAtPlayhead(6);
-        if (FlxG.keys.justPressed.EIGHT) placeNoteAtPlayhead(7);
+        if (FlxG.keys.justPressed.FIVE) placeNoteAtPlayhead(0);
+        if (FlxG.keys.justPressed.SIX) placeNoteAtPlayhead(1);
+        if (FlxG.keys.justPressed.SEVEN) placeNoteAtPlayhead(2);
+        if (FlxG.keys.justPressed.EIGHT) placeNoteAtPlayhead(3);
       case LiveInputStyle.None:
         // Do nothing.
     }
@@ -3856,12 +3893,24 @@ class ChartEditorState extends HaxeUIState
   function placeNoteAtPlayhead(column:Int):Void
   {
     var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / (16 / noteSnapQuant);
+    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
     var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-    var playheadPosMs:Float = playheadPosStep * Conductor.stepLengthMs * (16 / noteSnapQuant);
+    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.stepLengthMs * noteSnapRatio;
 
-    var newNoteData:SongNoteData = new SongNoteData(playheadPosMs, column, 0, selectedNoteKind);
-    performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+    // Look for notes within 1 step of the playhead.
+    var notesAtPos:Array<SongNoteData> = SongDataUtils.getNotesInTimeRange(currentSongChartNoteData, playheadPosSnappedMs,
+      playheadPosSnappedMs + Conductor.stepLengthMs * noteSnapRatio);
+    notesAtPos = SongDataUtils.getNotesWithData(notesAtPos, [column]);
+
+    if (notesAtPos.length == 0)
+    {
+      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, selectedNoteKind);
+      performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+    }
+    else
+    {
+      trace('Already a note there.');
+    }
   }
 
   function set_scrollPositionInPixels(value:Float):Float
