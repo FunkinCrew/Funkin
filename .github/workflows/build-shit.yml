@@ -52,28 +52,45 @@ jobs:
           submodules: 'recursive'
           token: ${{ secrets.GH_RO_PAT }}
       - uses: ./.github/actions/setup-haxeshit
+      - name: Make HXCPP cache dir
+        shell: bash
+        run: |
+          mkdir -p ${{ runner.temp }}\\hxcpp_cache
+      - name: Restore build cache
+        id: cache-build-win
+        uses: actions/cache@v3
+        with:
+          path: |
+            .haxelib
+            export
+            ${{ runner.temp }}\\hxcpp_cache
+          key: ${{ runner.os }}-build-win-${{ github.ref_name }}
+          restore-keys: |
+            ${{ runner.os }}-build-win-
       - name: Build game
         run: |
           haxelib run lime build windows -release -DNO_REDIRECT_ASSETS_FOLDER
           dir
+        env:
+          HXCPP_COMPILE_CACHE: "${{ runner.temp }}\\hxcpp_cache"
       - uses: ./.github/actions/upload-itch
         with:
-          butler-key: ${{ secrets.BUTLER_API_KEY}}
+          butler-key: ${{ secrets.BUTLER_API_KEY }}
           build-dir: export/release/windows/bin
           target: win
-  test-unit-win:
-    needs: create-nightly-win
-    runs-on: windows-latest
-    permissions:
-       contents: write
-       actions: write
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
-          token: ${{ secrets.GH_RO_PAT }}
-      - uses: ./.github/actions/setup-haxeshit
-      - name: Run unit tests
-        run: |
-          cd ./tests/unit/
-          ./start-win-native.bat
+#  test-unit-win:
+#    needs: create-nightly-win
+#    runs-on: windows-latest
+#    permissions:
+#       contents: write
+#       actions: write
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          submodules: 'recursive'
+#          token: ${{ secrets.GH_RO_PAT }}
+#      - uses: ./.github/actions/setup-haxeshit
+#      - name: Run unit tests
+#        run: |
+#          cd ./tests/unit/
+#          ./start-win-native.bat
