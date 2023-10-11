@@ -1619,6 +1619,7 @@ class ChartEditorState extends HaxeUIState
     addUIClickListener('menubarItemSaveChartAs', _ -> ChartEditorImportExportHandler.exportAllSongData(this));
     addUIClickListener('menubarItemLoadInst', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
     addUIClickListener('menubarItemImportChart', _ -> ChartEditorDialogHandler.openImportChartDialog(this, 'legacy', true));
+    addUIClickListener('menubarItemExit', _ -> quitChartEditor());
 
     addUIClickListener('menubarItemUndo', _ -> undoLastCommand());
 
@@ -1811,7 +1812,7 @@ class ChartEditorState extends HaxeUIState
     // Auto-save to local storage.
     #else
     // Auto-save to temp file.
-    ChartEditorImportExportHandler.exportAllSongData(this, true, true);
+    ChartEditorImportExportHandler.exportAllSongData(this, true);
     #end
   }
 
@@ -1833,6 +1834,13 @@ class ChartEditorState extends HaxeUIState
 
   public override function update(elapsed:Float):Void
   {
+    // Override F4 behavior to include the autosave.
+    if (FlxG.keys.justPressed.F4)
+    {
+      quitChartEditor();
+      return;
+    }
+
     // dispatchEvent gets called here.
     super.update(elapsed);
 
@@ -3064,8 +3072,14 @@ class ChartEditorState extends HaxeUIState
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
     {
-      FlxG.switchState(new MainMenuState());
+      quitChartEditor();
     }
+  }
+
+  function quitChartEditor():Void
+  {
+    autoSave();
+    FlxG.switchState(new MainMenuState());
   }
 
   /**
@@ -3969,6 +3983,8 @@ class ChartEditorState extends HaxeUIState
    */
   public function testSongInPlayState(minimal:Bool = false):Void
   {
+    autoSave();
+
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
