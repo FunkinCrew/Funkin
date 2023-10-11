@@ -56,8 +56,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public var validScore:Bool = true;
 
-  var difficultyIds:Array<String>;
-
   public var songName(get, never):String;
 
   function get_songName():String
@@ -85,7 +83,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     this.id = id;
 
     variations = [];
-    difficultyIds = [];
     difficulties = new Map<String, SongDifficulty>();
 
     _data = _fetchData(id);
@@ -127,8 +124,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     for (vari in variations)
       result.variations.push(vari);
 
-    result.difficultyIds.clear();
-
+    result.difficulties.clear();
     result.populateDifficulties();
 
     for (variation => chartData in charts)
@@ -162,8 +158,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       // but all the difficulties in the metadata must be in the chart file.
       for (diffId in metadata.playData.difficulties)
       {
-        difficultyIds.push(diffId);
-
         var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
         variations.push(metadata.variation);
@@ -237,19 +231,33 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public inline function getDifficulty(?diffId:String):Null<SongDifficulty>
   {
-    if (diffId == null) diffId = difficulties.keys().array()[0];
+    if (diffId == null) diffId = listDifficulties()[0];
 
     return difficulties.get(diffId);
   }
 
-  public function listDifficulties():Array<String>
+  /**
+   * List all the difficulties in this song.
+   * @param variationId Optionally filter by variation.
+   * @return The list of difficulties.
+   */
+  public function listDifficulties(?variationId:String):Array<String>
   {
-    return difficultyIds;
+    if (variationId == '') variationId = null;
+
+    return difficulties.keys().array().filter(function(diffId:String):Bool {
+      if (variationId == null) return true;
+      var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+      if (difficulty == null) return false;
+      return difficulty.variation == variationId;
+    });
   }
 
-  public function hasDifficulty(diffId:String):Bool
+  public function hasDifficulty(diffId:String, ?variationId:String):Bool
   {
-    return difficulties.exists(diffId);
+    if (variationId == '') variationId = null;
+    var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+    return variationId == null ? (difficulty != null) : (difficulty != null && difficulty.variation == variationId);
   }
 
   /**

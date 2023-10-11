@@ -2419,7 +2419,7 @@ class PlayState extends MusicBeatSubState
         if (currentSong.validScore)
         {
           NGio.unlockMedal(60961);
-          Highscore.saveWeekScoreForDifficulty(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignScore, currentDifficulty);
+          Highscore.saveWeekScoreForDifficulty(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignScore, PlayStatePlaylist.campaignDifficulty);
         }
 
         // FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
@@ -2466,7 +2466,7 @@ class PlayState extends MusicBeatSubState
             var nextPlayState:PlayState = new PlayState(
               {
                 targetSong: targetSong,
-                targetDifficulty: currentDifficulty,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
                 targetCharacter: currentPlayerId,
               });
             nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2482,7 +2482,7 @@ class PlayState extends MusicBeatSubState
           var nextPlayState:PlayState = new PlayState(
             {
               targetSong: targetSong,
-              targetDifficulty: currentDifficulty,
+              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
               targetCharacter: currentPlayerId,
             });
           nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2608,7 +2608,12 @@ class PlayState extends MusicBeatSubState
             persistentUpdate = false;
             vocals.stop();
             camHUD.alpha = 1;
-            var res:ResultState = new ResultState();
+            var res:ResultState = new ResultState(
+              {
+                storyMode: PlayStatePlaylist.isStoryMode,
+                title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+                tallies: Highscore.tallies,
+              });
             res.camera = camHUD;
             openSubState(res);
           }

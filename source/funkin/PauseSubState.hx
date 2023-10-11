@@ -16,17 +16,18 @@ class PauseSubState extends MusicBeatSubState
 {
   var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-  var pauseOptionsBase:Array<String> = [
+  final pauseOptionsBase:Array<String> = [
     'Resume',
     'Restart Song',
     'Change Difficulty',
     'Toggle Practice Mode',
     'Exit to Menu'
   ];
+  final pauseOptionsCharting:Array<String> = ['Resume', 'Restart Song', 'Exit to Chart Editor'];
 
-  var pauseOptionsDifficulty:Array<String> = ['EASY', 'NORMAL', 'HARD', 'ERECT', 'BACK'];
+  final pauseOptionsDifficultyBase:Array<String> = ['BACK'];
 
-  var pauseOptionsCharting:Array<String> = ['Resume', 'Restart Song', 'Exit to Chart Editor'];
+  var pauseOptionsDifficulty:Array<String> = []; // AUTO-POPULATED
 
   var menuItems:Array<String> = [];
   var curSelected:Int = 0;
@@ -48,6 +49,12 @@ class PauseSubState extends MusicBeatSubState
     this.isChartingMode = isChartingMode;
 
     menuItems = this.isChartingMode ? pauseOptionsCharting : pauseOptionsBase;
+    var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation);
+    trace('DIFFICULTIES: ${difficultiesInVariation}');
+
+    pauseOptionsDifficulty = difficultiesInVariation.map(function(item:String):String {
+      return item.toUpperCase();
+    }).concat(pauseOptionsDifficultyBase);
 
     if (PlayStatePlaylist.campaignId == 'week6')
     {
@@ -196,18 +203,6 @@ class PauseSubState extends MusicBeatSubState
             menuItems = pauseOptionsDifficulty;
             regenMenu();
 
-          case 'EASY' | 'NORMAL' | 'HARD' | 'ERECT':
-            PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
-
-            PlayState.instance.currentDifficulty = daSelected.toLowerCase();
-
-            PlayState.instance.needsReset = true;
-
-            close();
-          case 'BACK':
-            menuItems = this.isChartingMode ? pauseOptionsCharting : pauseOptionsBase;
-            regenMenu();
-
           case 'Toggle Practice Mode':
             PlayState.instance.isPracticeMode = true;
             practiceText.visible = PlayState.instance.isPracticeMode;
@@ -237,6 +232,30 @@ class PauseSubState extends MusicBeatSubState
             this.close();
             if (FlxG.sound.music != null) FlxG.sound.music.stop();
             PlayState.instance.close(); // This only works because PlayState is a substate!
+
+          case 'BACK':
+            menuItems = this.isChartingMode ? pauseOptionsCharting : pauseOptionsBase;
+            regenMenu();
+
+          default:
+            if (pauseOptionsDifficulty.contains(daSelected))
+            {
+              PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
+
+              // Reset campaign score when changing difficulty
+              // So if you switch difficulty on the last song of a week you get a really low overall score.
+              PlayStatePlaylist.campaignScore = 0;
+              PlayStatePlaylist.campaignDifficulty = daSelected.toLowerCase();
+              PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
+
+              PlayState.instance.needsReset = true;
+
+              close();
+            }
+            else
+            {
+              trace('[WARN] Unhandled pause menu option: ${daSelected}');
+            }
         }
       }
 

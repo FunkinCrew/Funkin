@@ -521,6 +521,7 @@ class StoryMenuState extends MusicBeatState
 
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
+    PlayStatePlaylist.campaignDifficulty = currentDifficultyId;
 
     if (targetSong != null)
     {
@@ -536,7 +537,7 @@ class StoryMenuState extends MusicBeatState
       LoadingState.loadAndSwitchState(new PlayState(
         {
           targetSong: targetSong,
-          targetDifficulty: currentDifficultyId,
+          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
         }), true);
     });
   }
