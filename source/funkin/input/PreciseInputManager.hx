@@ -181,7 +181,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateKeyStates(key, true);
 
-    if (getInputByKey(key) ?.justPressed ?? false)
+    if (getInputByKey(key)?.justPressed ?? false)
     {
       onInputPressed.dispatch(
         {
@@ -203,7 +203,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateKeyStates(key, false);
 
-    if (getInputByKey(key) ?.justReleased ?? false)
+    if (getInputByKey(key)?.justReleased ?? false)
     {
       onInputReleased.dispatch(
         {
@@ -264,7 +264,7 @@ class PreciseInputList extends FlxKeyList
   {
     for (key in getKeysForDir(noteDir))
     {
-      if (check(_preciseInputManager.getInputByKey(key) ?.ID)) return true;
+      if (check(_preciseInputManager.getInputByKey(key)?.ID)) return true;
     }
     return false;
   }

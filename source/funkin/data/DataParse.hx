@@ -1,7 +1,13 @@
 package funkin.data;
 
+import funkin.data.song.importer.FNFLegacyData.LegacyNote;
 import hxjsonast.Json;
+import hxjsonast.Tools;
 import hxjsonast.Json.JObjectField;
+import haxe.ds.Either;
+import funkin.data.song.importer.FNFLegacyData.LegacyNoteSection;
+import funkin.data.song.importer.FNFLegacyData.LegacyNoteData;
+import funkin.data.song.importer.FNFLegacyData.LegacyScrollSpeeds;
 
 /**
  * `json2object` has an annotation `@:jcustomparse` which allows for mutation of parsed values.
@@ -39,36 +45,40 @@ class DataParse
    */
   public static function dynamicValue(json:Json, name:String):Dynamic
   {
-    return jsonToDynamic(json);
+    return Tools.getValue(json);
   }
 
   /**
-   * Parser which outputs a Dynamic value, which must be an object with properties.
-   * @param json
-   * @param name
-   * @return Dynamic
+   * Parser which outputs a `Either<Array<LegacyNoteSection>, LegacyNoteData>`.
+   * Used by the FNF legacy JSON importer.
    */
-  public static function dynamicObject(json:Json, name:String):Dynamic
+  public static function eitherLegacyNoteData(json:Json, name:String):Either<Array<LegacyNoteSection>, LegacyNoteData>
   {
     switch (json.value)
     {
+      case JArray(values):
+        return Either.Left(legacyNoteSectionArray(json, name));
       case JObject(fields):
-        return jsonFieldsToDynamicObject(fields);
+        return Either.Right(cast Tools.getValue(json));
       default:
-        throw 'Expected property $name to be an object, but it was ${json.value}.';
+        throw 'Expected property $name to be note data, but it was ${json.value}.';
     }
   }
 
-  static function jsonToDynamic(json:Json):Null<Dynamic>
+  /**
+   * Parser which outputs a `Either<Float, LegacyScrollSpeeds>`.
+   * Used by the FNF legacy JSON importer.
+   */
+  public static function eitherLegacyScrollSpeeds(json:Json, name:String):Either<Float, LegacyScrollSpeeds>
   {
-    return switch (json.value)
+    switch (json.value)
     {
-      case JString(s): s;
-      case JNumber(n): Std.parseInt(n);
-      case JBool(b): b;
-      case JNull: null;
-      case JObject(fields): jsonFieldsToDynamicObject(fields);
-      case JArray(values): jsonArrayToDynamicArray(values);
+      case JNumber(f):
+        return Either.Left(Std.parseFloat(f));
+      case JObject(fields):
+        return Either.Right(cast Tools.getValue(json));
+      default:
+        throw 'Expected property $name to be scroll speeds, but it was ${json.value}.';
     }
   }
 
@@ -82,7 +92,7 @@ class DataParse
     var result:Dynamic = {};
     for (field in fields)
     {
-      Reflect.setField(result, field.name, jsonToDynamic(field.value));
+      Reflect.setField(result, field.name, Tools.getValue(field.value));
     }
     return result;
   }
@@ -94,6 +104,67 @@ class DataParse
    */
   static function jsonArrayToDynamicArray(jsons:Array<Json>):Array<Null<Dynamic>>
   {
-    return [for (json in jsons) jsonToDynamic(json)];
+    return [for (json in jsons) Tools.getValue(json)];
+  }
+
+  static function legacyNoteSectionArray(json:Json, name:String):Array<LegacyNoteSection>
+  {
+    switch (json.value)
+    {
+      case JArray(values):
+        return [for (value in values) legacyNoteSection(value, name)];
+      default:
+        throw 'Expected property to be an array, but it was ${json.value}.';
+    }
+  }
+
+  static function legacyNoteSection(json:Json, name:String):LegacyNoteSection
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        return cast Tools.getValue(json);
+      default:
+        throw 'Expected property $name to be an object, but it was ${json.value}.';
+    }
+  }
+
+  public static function legacyNoteData(json:Json, name:String):LegacyNoteData
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        return cast Tools.getValue(json);
+      default:
+        throw 'Expected property $name to be an object, but it was ${json.value}.';
+    }
+  }
+
+  public static function legacyNotes(json:Json, name:String):Array<LegacyNote>
+  {
+    switch (json.value)
+    {
+      case JArray(values):
+        return [for (value in values) legacyNote(value, name)];
+      default:
+        throw 'Expected property $name to be an array of notes, but it was ${json.value}.';
+    }
+  }
+
+  public static function legacyNote(json:Json, name:String):LegacyNote
+  {
+    switch (json.value)
+    {
+      case JArray(values):
+        // var time:Null<Float> = values[0] == null ? null : Tools.getValue(values[0]);
+        // var data:Null<Int> = values[1] == null ? null : Tools.getValue(values[1]);
+        // var length:Null<Float> = values[2] == null ? null : Tools.getValue(values[2]);
+        // var alt:Null<Bool> = values[3] == null ? null : Tools.getValue(values[3]);
+
+        // return new LegacyNote(time, data, length, alt);
+        return null;
+      default:
+        throw 'Expected property $name to be a note, but it was ${json.value}.';
+    }
   }
 }

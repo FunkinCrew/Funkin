@@ -13,6 +13,7 @@ typedef ScoreInput =
 
 /**
  * A class of functions dedicated to serializing and deserializing data.
+ * TODO: Rewrite/refactor this to use json2object.
  */
 class SerializerUtil
 {
