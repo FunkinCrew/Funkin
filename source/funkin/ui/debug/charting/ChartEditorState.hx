@@ -1818,6 +1818,13 @@ class ChartEditorState extends HaxeUIState
 
   public override function update(elapsed:Float):Void
   {
+    // Override F4 behavior to include the autosave.
+    if (FlxG.keys.justPressed.F4)
+    {
+      quitChartEditor();
+      return;
+    }
+
     // dispatchEvent gets called here.
     super.update(elapsed);
 
