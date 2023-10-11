@@ -511,41 +511,7 @@ class PlayState extends MusicBeatSubState
 
     NoteSplash.buildSplashFrames();
 
-    // Returns null if the song failed to load or doesn't have the selected difficulty.
-    if (currentSong == null || currentChart == null)
-    {
-      // We have encountered a critical error. Prevent Flixel from trying to run any gameplay logic.
-      criticalFailure = true;
-
-      // Choose an error message.
-      var message:String = 'There was a critical error. Click OK to return to the main menu.';
-      if (currentSong == null)
-      {
-        message = 'The was a critical error loading this song\'s chart. Click OK to return to the main menu.';
-      }
-      else if (currentDifficulty == null)
-      {
-        message = 'The was a critical error selecting a difficulty for this song. Click OK to return to the main menu.';
-      }
-      else if (currentSong.getDifficulty(currentDifficulty) == null)
-      {
-        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty. Click OK to return to the main menu.';
-      }
-
-      // Display a popup. This blocks the application until the user clicks OK.
-      lime.app.Application.current.window.alert(message, 'Error loading PlayState');
-
-      // Force the user back to the main menu.
-      if (isSubState)
-      {
-        this.close();
-      }
-      else
-      {
-        FlxG.switchState(new MainMenuState());
-      }
-      return;
-    }
+    if (!assertChartExists()) return;
 
     if (false)
     {
@@ -660,6 +626,47 @@ class PlayState extends MusicBeatSubState
     initialized = true;
   }
 
+  function assertChartExists():Bool
+  {
+    // Returns null if the song failed to load or doesn't have the selected difficulty.
+    if (currentSong == null || currentChart == null)
+    {
+      // We have encountered a critical error. Prevent Flixel from trying to run any gameplay logic.
+      criticalFailure = true;
+
+      // Choose an error message.
+      var message:String = 'There was a critical error. Click OK to return to the main menu.';
+      if (currentSong == null)
+      {
+        message = 'The was a critical error loading this song\'s chart. Click OK to return to the main menu.';
+      }
+      else if (currentDifficulty == null)
+      {
+        message = 'The was a critical error selecting a difficulty for this song. Click OK to return to the main menu.';
+      }
+      else if (currentSong.getDifficulty(currentDifficulty) == null)
+      {
+        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty. Click OK to return to the main menu.';
+      }
+
+      // Display a popup. This blocks the application until the user clicks OK.
+      lime.app.Application.current.window.alert(message, 'Error loading PlayState');
+
+      // Force the user back to the main menu.
+      if (isSubState)
+      {
+        this.close();
+      }
+      else
+      {
+        FlxG.switchState(new MainMenuState());
+      }
+      return false;
+    }
+
+    return true;
+  }
+
   public override function update(elapsed:Float):Void
   {
     if (criticalFailure) return;
@@ -672,6 +679,8 @@ class PlayState extends MusicBeatSubState
     // Handle restarting the song when needed (player death or pressing Retry)
     if (needsReset)
     {
+      if (!assertChartExists()) return;
+
       dispatchEvent(new ScriptEvent(ScriptEvent.SONG_RETRY));
 
       resetCamera();
@@ -686,8 +695,10 @@ class PlayState extends MusicBeatSubState
       // Reset music properly.
 
       FlxG.sound.music.pause();
-      vocals.pause();
       FlxG.sound.music.time = (startTimestamp);
+
+      vocals = currentChart.buildVocals();
+      vocals.pause();
       vocals.time = 0;
 
       FlxG.sound.music.volume = 1;
