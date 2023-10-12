@@ -162,7 +162,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       // but all the difficulties in the metadata must be in the chart file.
       for (diffId in metadata.playData.difficulties)
       {
-        difficultyIds.push(diffId);
+        difficultyIds.pushUnique(diffId);
 
         var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
