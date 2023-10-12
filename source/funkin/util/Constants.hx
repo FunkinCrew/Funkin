@@ -71,7 +71,7 @@ class Constants
    */
   // ==============================
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   /**
    * The current Git branch.
    */
