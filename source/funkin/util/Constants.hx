@@ -39,7 +39,7 @@ class Constants
    */
   public static final VERSION_SUFFIX:String = ' PROTOTYPE';
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   static function get_VERSION():String
   {
     return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH})' + VERSION_SUFFIX;

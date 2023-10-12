@@ -196,6 +196,13 @@
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
 	</section>
 
+	<section>
+		<!-- TODO: Add a flag to Github Actions to turn this on or something. -->
+
+		<!-- Forces the version string to include the Git hash even on release builds (which are used for performance reasons). -->
+		<haxedef name="FORCE_DEBUG_VERSION" />
+	</section>
+
 	<!-- Run a script before and after building. -->
 	<postbuild haxe="source/Prebuild.hx"/> -->
 	<postbuild haxe="source/Postbuild.hx"/> -->
