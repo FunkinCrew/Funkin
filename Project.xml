@@ -156,7 +156,6 @@
 	<haxedef name="HXCPP_CHECK_POINTER" />
 	<haxedef name="HXCPP_STACK_LINE" />
 	<haxedef name="HXCPP_STACK_TRACE" />
-	<haxedef name="openfl-enable-handle-error" />
 	<!-- This macro allows addition of new functionality to existing Flixel. -->
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
@@ -194,6 +193,15 @@
 			No more will we accidentally undo our changes!
 		-->
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
+	</section>
+
+
+	<section>
+		<!--
+			This flag enables the popup/crashlog error handler.
+			However, it also messes with breakpoints on some platforms.
+		-->
+		<haxedef name="openfl-enable-handle-error" />
 	</section>
 
 	<section>
