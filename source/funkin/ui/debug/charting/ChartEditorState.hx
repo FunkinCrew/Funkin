@@ -461,6 +461,8 @@ class ChartEditorState extends HaxeUIState
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
     this.scrollPositionInPixels = this.scrollPositionInPixels;
+    // Characters have probably changed too.
+    healthIconsDirty = true;
 
     return isViewDownscroll;
   }
@@ -519,14 +521,22 @@ class ChartEditorState extends HaxeUIState
    */
   var selectedVariation(default, set):String = Constants.DEFAULT_VARIATION;
 
+  /**
+   * Setter called when we are switching variations.
+   * We will likely need to switch instrumentals as well.
+   */
   function set_selectedVariation(value:String):String
   {
+    // Don't update if we're already on the variation.
+    if (selectedVariation == value) return selectedVariation;
     selectedVariation = value;
 
     // Make sure view is updated when the variation changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
+
+    switchToCurrentInstrumental();
 
     return selectedVariation;
   }
@@ -546,6 +556,23 @@ class ChartEditorState extends HaxeUIState
     notePreviewViewportBoundsDirty = true;
 
     return selectedDifficulty;
+  }
+
+  /**
+   * The instrumental ID which is currently selected.
+   */
+  var currentInstrumentalId(get, set):String;
+
+  function get_currentInstrumentalId():String
+  {
+    var instId:Null<String> = currentSongMetadata.playData.characters.instrumental;
+    if (instId == null || instId == '') instId = (selectedVariation == Constants.DEFAULT_VARIATION) ? '' : selectedVariation;
+    return instId;
+  }
+
+  function set_currentInstrumentalId(value:String):String
+  {
+    return currentSongMetadata.playData.characters.instrumental = value;
   }
 
   /**
@@ -591,6 +618,11 @@ class ChartEditorState extends HaxeUIState
    * This happens when we scroll or add/remove notes, and need to update what notes are displayed and where.
    */
   var noteDisplayDirty:Bool = true;
+
+  /**
+   * Whether the selected charactesr have been modified and the health icons need to be updated.
+   */
+  var healthIconsDirty:Bool = true;
 
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
@@ -773,28 +805,29 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * The audio track for the instrumental.
+   * Replaced when switching instrumentals.
    * `null` until an instrumental track is loaded.
    */
   var audioInstTrack:Null<FlxSound> = null;
 
   /**
-   * The raw byte data for the instrumental audio track.
+   * The raw byte data for the instrumental audio tracks.
+   * Key is the instrumental name.
    * `null` until an instrumental track is loaded.
    */
-  var audioInstTrackData:Null<Bytes> = null;
+  var audioInstTrackData:Map<String, Bytes> = [];
 
   /**
    * The audio track for the vocals.
    * `null` until vocal track(s) are loaded.
+   * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
   var audioVocalTrackGroup:Null<VoicesGroup> = null;
 
   /**
    * A map of the audio tracks for each character's vocals.
-   * - Keys are the character IDs.
-   * - Values are the FlxSound objects to play that character's vocals.
-   *
-   * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
+   * - Keys are `characterId-variation` (with `characterId` being the default variation).
+   * - Values are the byte data for the audio track.
    */
   var audioVocalTrackData:Map<String, Bytes> = [];
 
@@ -1043,30 +1076,6 @@ class ChartEditorState extends HaxeUIState
   function set_currentSongArtist(value:String):String
   {
     return currentSongMetadata.artist = value;
-  }
-
-  var currentSongCharacterPlayer(get, set):String;
-
-  function get_currentSongCharacterPlayer():String
-  {
-    return currentSongMetadata.playData.characters.player;
-  }
-
-  function set_currentSongCharacterPlayer(value:String):String
-  {
-    return currentSongMetadata.playData.characters.player = value;
-  }
-
-  var currentSongCharacterOpponent(get, set):String;
-
-  function get_currentSongCharacterOpponent():String
-  {
-    return currentSongMetadata.playData.characters.opponent;
-  }
-
-  function set_currentSongCharacterOpponent(value:String):String
-  {
-    return currentSongMetadata.playData.characters.opponent = value;
   }
 
   /**
@@ -1379,7 +1388,7 @@ class ChartEditorState extends HaxeUIState
     gridPlayhead.add(playheadBlock);
 
     // Character icons.
-    healthIconDad = new HealthIcon(currentSongCharacterOpponent);
+    healthIconDad = new HealthIcon(currentSongMetadata.playData.characters.opponent);
     healthIconDad.autoUpdate = false;
     healthIconDad.size.set(0.5, 0.5);
     healthIconDad.x = gridTiledSprite.x - 15 - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
@@ -1387,7 +1396,7 @@ class ChartEditorState extends HaxeUIState
     add(healthIconDad);
     healthIconDad.zIndex = 30;
 
-    healthIconBF = new HealthIcon(currentSongCharacterPlayer);
+    healthIconBF = new HealthIcon(currentSongMetadata.playData.characters.player);
     healthIconBF.autoUpdate = false;
     healthIconBF.size.set(0.5, 0.5);
     healthIconBF.x = gridTiledSprite.x + gridTiledSprite.width + 15;
@@ -1482,6 +1491,12 @@ class ChartEditorState extends HaxeUIState
     }
 
     return bounds;
+  }
+
+  public function switchToCurrentInstrumental():Void
+  {
+    ChartEditorAudioHandler.switchToInstrumental(this, currentInstrumentalId, currentSongMetadata.playData.characters.player,
+      currentSongMetadata.playData.characters.opponent);
   }
 
   function setNotePreviewViewportBounds(bounds:FlxRect = null):Void
@@ -1691,6 +1706,7 @@ class ChartEditorState extends HaxeUIState
     });
 
     addUIClickListener('menubarItemAbout', _ -> ChartEditorDialogHandler.openAboutDialog(this));
+    addUIClickListener('menubarItemWelcomeDialog', _ -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
 
     addUIClickListener('menubarItemUserGuide', _ -> ChartEditorDialogHandler.openUserGuideDialog(this));
 
@@ -1713,6 +1729,11 @@ class ChartEditorState extends HaxeUIState
     });
     setUICheckboxSelected('menuBarItemThemeDark', currentTheme == ChartEditorTheme.Dark);
 
+    addUIClickListener('menubarItemPlayPause', _ -> toggleAudioPlayback());
+
+    addUIClickListener('menubarItemLoadInstrumental', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
+    addUIClickListener('menubarItemLoadVocals', _ -> ChartEditorDialogHandler.openUploadVocalsDialog(this, true));
+
     addUIChangeListener('menubarItemMetronomeEnabled', event -> isMetronomeEnabled = event.value);
     setUICheckboxSelected('menubarItemMetronomeEnabled', isMetronomeEnabled);
 
@@ -1726,7 +1747,7 @@ class ChartEditorState extends HaxeUIState
     if (instVolumeLabel != null)
     {
       addUIChangeListener('menubarItemVolumeInstrumental', function(event:UIEvent) {
-        var volume:Float = event?.value ?? 0 / 100.0;
+        var volume:Float = (event?.value ?? 0) / 100.0;
         if (audioInstTrack != null) audioInstTrack.volume = volume;
         instVolumeLabel.text = 'Instrumental - ${Std.int(event.value)}%';
       });
@@ -1736,7 +1757,7 @@ class ChartEditorState extends HaxeUIState
     if (vocalsVolumeLabel != null)
     {
       addUIChangeListener('menubarItemVolumeVocals', function(event:UIEvent) {
-        var volume:Float = event?.value ?? 0 / 100.0;
+        var volume:Float = (event?.value ?? 0) / 100.0;
         if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
         vocalsVolumeLabel.text = 'Vocals - ${Std.int(event.value)}%';
       });
@@ -2986,6 +3007,12 @@ class ChartEditorState extends HaxeUIState
    */
   function handleHealthIcons():Void
   {
+    if (healthIconsDirty)
+    {
+      if (healthIconBF != null) healthIconBF.characterId = currentSongMetadata.playData.characters.player;
+      if (healthIconDad != null) healthIconDad.characterId = currentSongMetadata.playData.characters.opponent;
+    }
+
     // Right align the BF health icon.
     if (healthIconBF != null)
     {
@@ -3413,11 +3440,11 @@ class ChartEditorState extends HaxeUIState
     {
       playerPreviewDirty = false;
 
-      if (currentSongCharacterPlayer != charPlayer.charId)
+      if (currentSongMetadata.playData.characters.player != charPlayer.charId)
       {
-        if (healthIconBF != null) healthIconBF.characterId = currentSongCharacterPlayer;
+        if (healthIconBF != null) healthIconBF.characterId = currentSongMetadata.playData.characters.player;
 
-        charPlayer.loadCharacter(currentSongCharacterPlayer);
+        charPlayer.loadCharacter(currentSongMetadata.playData.characters.player);
         charPlayer.characterType = CharacterType.BF;
         charPlayer.flip = true;
         charPlayer.targetScale = 0.5;
@@ -3449,11 +3476,11 @@ class ChartEditorState extends HaxeUIState
     {
       opponentPreviewDirty = false;
 
-      if (currentSongCharacterOpponent != charPlayer.charId)
+      if (currentSongMetadata.playData.characters.opponent != charPlayer.charId)
       {
-        if (healthIconDad != null) healthIconDad.characterId = currentSongCharacterOpponent;
+        if (healthIconDad != null) healthIconDad.characterId = currentSongMetadata.playData.characters.opponent;
 
-        charPlayer.loadCharacter(currentSongCharacterOpponent);
+        charPlayer.loadCharacter(currentSongMetadata.playData.characters.opponent);
         charPlayer.characterType = CharacterType.DAD;
         charPlayer.flip = false;
         charPlayer.targetScale = 0.5;
@@ -3833,9 +3860,9 @@ class ChartEditorState extends HaxeUIState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-09'));
+          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('ui/chart-editor/playerHitsound'));
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-010'));
+          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('ui/chart-editor/opponentHitsound'));
       }
     }
   }
@@ -4072,12 +4099,18 @@ class ChartEditorState extends HaxeUIState
 
       buildSpectrogram(audioInstTrack);
     }
+    else
+    {
+      trace('[WARN] Instrumental track was null!');
+    }
 
+    // Pretty much everything is going to need to be reset.
     scrollPositionInPixels = 0;
     playheadPositionInPixels = 0;
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
     noteDisplayDirty = true;
+    healthIconsDirty = true;
     moveSongToScrollPosition();
   }
 
