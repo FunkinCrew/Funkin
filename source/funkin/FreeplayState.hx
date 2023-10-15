@@ -899,6 +899,7 @@ class FreeplayState extends MusicBeatSubState
   {
     for (song in songs)
     {
+      if (song == null) continue;
       if (song.songName != actualSongTho)
       {
         trace('trying to remove: ' + song.songName);
