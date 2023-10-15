@@ -557,11 +557,9 @@ class ChartEditorDialogHandler
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT, true, false);
     if (dialog == null) throw 'Could not locate Song Metadata dialog';
 
-    var dialogContainer:Null<Dialog> = dialog.findComponent('metadataDialog', Dialog);
-    if (dialogContainer == null) throw 'Could not locate metadataDialog in Song Metadata dialog';
     if (targetVariation != Constants.DEFAULT_VARIATION)
     {
-      dialogContainer.title = 'New Chart - Provide Song Metadata (${targetVariation.toTitleCase()})';
+      dialog.title = 'New Chart - Provide Song Metadata (${targetVariation.toTitleCase()})';
     }
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
