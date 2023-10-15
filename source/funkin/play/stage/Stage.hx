@@ -649,16 +649,20 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     }
     boppers = [];
 
-    for (sprite in this.group)
+    if (group != null)
     {
-      if (sprite != null)
+      for (sprite in this.group)
       {
-        sprite.kill();
-        sprite.destroy();
-        remove(sprite);
+        if (sprite != null)
+        {
+          sprite.kill();
+          sprite.destroy();
+          remove(sprite);
+        }
       }
+      group.clear();
     }
-    group.clear();
+
     if (debugIconGroup != null && debugIconGroup.group != null)
     {
       debugIconGroup.kill();

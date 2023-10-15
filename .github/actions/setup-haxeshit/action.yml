@@ -3,18 +3,30 @@ description: "sets up haxe shit, using HMM!"
 runs:
   using: "composite"
   steps:
-      - uses: krdlab/setup-haxe@v1.5.1
-        with:
-          haxe-version: 4.3.1
-      - name: Config haxelib
-        run: |
-          haxelib config
-        shell: bash
-      - name: Installing Haxe lol
-        run: |
-          haxe -version
-          haxelib git haxelib https://github.com/HaxeFoundation/haxelib.git development
-          haxelib version
-          haxelib --global install hmm
-          haxelib --global run hmm install --quiet
-        shell: bash
+    - uses: krdlab/setup-haxe@v1.5.1
+      with:
+        haxe-version: 4.3.1
+    - name: Config haxelib
+      run: |
+        haxelib config
+      shell: bash
+    - name: Installing Haxe lol
+      run: |
+        haxe -version
+        haxelib git haxelib https://github.com/HaxeFoundation/haxelib.git development
+        haxelib version
+        haxelib --global install hmm
+      shell: bash
+    - name: dependency install cache
+      id: cache-hmm
+      uses: actions/cache@v3
+      with:
+        path: .haxelib
+        key: ${{ runner.os }}-hmm-${{ hashFiles('**/hmm.json') }}
+        restore-keys: |
+          ${{ runner.os }}-hmm-
+    - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+      name: hmm install
+      run: |
+        haxelib --global run hmm install
+      shell: bash

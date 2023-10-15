@@ -137,10 +137,10 @@ class ChartEditorImportExportHandler
 
   /**
    * @param force Whether to force the export without prompting the user for a file location.
-   * @param tmp If true, save to the temporary directory instead of the local `backup` directory.
    */
-  public static function exportAllSongData(state:ChartEditorState, force:Bool = false, tmp:Bool = false):Void
+  public static function exportAllSongData(state:ChartEditorState, force:Bool = false):Void
   {
+    var tmp = false;
     var zipEntries:Array<haxe.zip.Entry> = [];
 
     for (variation in state.availableVariations)
@@ -154,9 +154,9 @@ class ChartEditorImportExportHandler
       if (variationId == '')
       {
         var variationMetadata:Null<SongMetadata> = state.songMetadata.get(variation);
-        if (variationMetadata != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata.json', SerializerUtil.toJSON(variationMetadata)));
+        if (variationMetadata != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata.json', variationMetadata.serialize()));
         var variationChart:Null<SongChartData> = state.songChartData.get(variation);
-        if (variationChart != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart.json', SerializerUtil.toJSON(variationChart)));
+        if (variationChart != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart.json', variationChart.serialize()));
       }
       else
       {
