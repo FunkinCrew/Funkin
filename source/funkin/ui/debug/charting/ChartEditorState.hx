@@ -1547,11 +1547,11 @@ class ChartEditorState extends HaxeUIState
 
     renderedEvents.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedEvents);
-    renderedNotes.zIndex = 25;
+    renderedEvents.zIndex = 25;
 
     renderedSelectionSquares.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedSelectionSquares);
-    renderedNotes.zIndex = 26;
+    renderedSelectionSquares.zIndex = 26;
   }
 
   function buildAdditionalUI():Void
@@ -1662,7 +1662,18 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemCut', _ -> performCommand(new CutItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    addUIClickListener('menubarItemPaste', _ -> performCommand(new PasteItemsCommand(scrollPositionInMs + playheadPositionInMs)));
+    addUIClickListener('menubarItemPaste', _ -> {
+      var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
+      var targetStep:Float = Conductor.getTimeInSteps(targetMs);
+      var targetSnappedStep:Float = Math.floor(targetStep / noteSnapRatio) * noteSnapRatio;
+      var targetSnappedMs:Float = Conductor.getStepTimeInMs(targetSnappedStep);
+      performCommand(new PasteItemsCommand(targetSnappedMs));
+    });
+
+    addUIClickListener('menubarItemPasteUnsnapped', _ -> {
+      var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
+      performCommand(new PasteItemsCommand(targetMs));
+    });
 
     addUIClickListener('menubarItemDelete', function(_) {
       if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
@@ -2335,7 +2346,6 @@ class ChartEditorState extends HaxeUIState
               // Scroll up.
               var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.screenY;
               scrollPositionInPixels -= diff * 0.5; // Too fast!
-              trace('Scroll up: ' + diff);
               moveSongToScrollPosition();
             }
             else if (FlxG.mouse.screenY > (playbarHeadLayout?.y ?? 0.0))
@@ -2343,7 +2353,6 @@ class ChartEditorState extends HaxeUIState
               // Scroll down.
               var diff:Float = FlxG.mouse.screenY - (playbarHeadLayout?.y ?? 0.0);
               scrollPositionInPixels += diff * 0.5; // Too fast!
-              trace('Scroll down: ' + diff);
               moveSongToScrollPosition();
             }
 
@@ -2968,8 +2977,8 @@ class ChartEditorState extends HaxeUIState
           // Set the position and size (because we might be recycling one with bad values).
           selectionSquare.x = noteSprite.x;
           selectionSquare.y = noteSprite.y;
-          selectionSquare.width = noteSprite.width;
-          selectionSquare.height = noteSprite.height;
+          selectionSquare.width = GRID_SIZE;
+          selectionSquare.height = GRID_SIZE;
         }
       }
 
@@ -3000,6 +3009,8 @@ class ChartEditorState extends HaxeUIState
     FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
     FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
     FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
+    FlxG.watch.addQuick("notesSelected", currentNoteSelection.length);
+    FlxG.watch.addQuick("eventsSelected", currentEventSelection.length);
   }
 
   /**
@@ -3028,6 +3039,8 @@ class ChartEditorState extends HaxeUIState
   {
     if (selectionSquareBitmap == null)
       throw "ERROR: Tried to build selection square, but selectionSquareBitmap is null! Check ChartEditorThemeHandler.updateSelectionSquare()";
+
+    FlxG.bitmapLog.add(selectionSquareBitmap, "selectionSquareBitmap");
 
     return new FlxSprite().loadGraphic(selectionSquareBitmap);
   }
@@ -3148,8 +3161,20 @@ class ChartEditorState extends HaxeUIState
     // CTRL + V = Paste
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V)
     {
-      // Paste notes from clipboard, at the playhead.
-      performCommand(new PasteItemsCommand(scrollPositionInMs + playheadPositionInMs));
+      // CTRL + SHIFT + V = Paste Unsnapped.
+      var targetMs:Float = if (FlxG.keys.pressed.SHIFT)
+      {
+        scrollPositionInMs + playheadPositionInMs;
+      }
+      else
+      {
+        var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
+        var targetStep:Float = Conductor.getTimeInSteps(targetMs);
+        var targetSnappedStep:Float = Math.floor(targetStep / noteSnapRatio) * noteSnapRatio;
+        var targetSnappedMs:Float = Conductor.getStepTimeInMs(targetSnappedStep);
+        targetSnappedMs;
+      }
+      performCommand(new PasteItemsCommand(targetMs));
     }
 
     // DELETE = Delete
