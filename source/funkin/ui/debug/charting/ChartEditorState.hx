@@ -1920,33 +1920,33 @@ class ChartEditorState extends HaxeUIState
     // Mouse Wheel = Scroll
     if (FlxG.mouse.wheel != 0 && !FlxG.keys.pressed.CONTROL)
     {
-      scrollAmount = -10 * FlxG.mouse.wheel;
+      scrollAmount = -50 * FlxG.mouse.wheel;
       shouldPause = true;
     }
 
     // Up Arrow = Scroll Up
     if (upKeyHandler.activated && currentLiveInputStyle == None)
     {
-      scrollAmount = -GRID_SIZE * 0.25 * 5.0;
+      scrollAmount = -GRID_SIZE * 0.25 * 25.0;
       shouldPause = true;
     }
     // Down Arrow = Scroll Down
     if (downKeyHandler.activated && currentLiveInputStyle == None)
     {
-      scrollAmount = GRID_SIZE * 0.25 * 5.0;
+      scrollAmount = GRID_SIZE * 0.25 * 25.0;
       shouldPause = true;
     }
 
     // W = Scroll Up (doesn't work with Ctrl+Scroll)
     if (wKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
     {
-      scrollAmount = -GRID_SIZE * 0.25 * 5.0;
+      scrollAmount = -GRID_SIZE * 0.25 * 25.0;
       shouldPause = true;
     }
     // S = Scroll Down (doesn't work with Ctrl+Scroll)
     if (sKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
     {
-      scrollAmount = GRID_SIZE * 0.25 * 5.0;
+      scrollAmount = GRID_SIZE * 0.25 * 25.0;
       shouldPause = true;
     }
 
@@ -2011,7 +2011,7 @@ class ChartEditorState extends HaxeUIState
     // SHIFT + Scroll = Scroll Fast
     if (FlxG.keys.pressed.SHIFT)
     {
-      scrollAmount *= 5;
+      scrollAmount *= 2;
     }
     // CONTROL + Scroll = Scroll Precise
     if (FlxG.keys.pressed.CONTROL)
@@ -3287,7 +3287,7 @@ class ChartEditorState extends HaxeUIState
    */
   function handleTestKeybinds():Void
   {
-    if (!isHaxeUIDialogOpen && FlxG.keys.justPressed.ENTER)
+    if (!isHaxeUIDialogOpen && !isCursorOverHaxeUI && FlxG.keys.justPressed.ENTER)
     {
       var minimal = FlxG.keys.pressed.SHIFT;
       testSongInPlayState(minimal);
