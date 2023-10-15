@@ -948,6 +948,7 @@ class FreeplayState extends MusicBeatSubState
     targetSong.cacheCharts(true);
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
+      Paths.setCurrentLevel(songs[curSelected].levelId);
       LoadingState.loadAndSwitchState(new PlayState(
         {
           targetSong: targetSong,
