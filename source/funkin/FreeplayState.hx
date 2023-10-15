@@ -570,7 +570,7 @@ class FreeplayState extends MusicBeatSubState
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
     randomCapsule.init(FlxG.width, 0, "Random");
     randomCapsule.onConfirm = function() {
-      trace("RANDOM SELECTED");
+      capsuleOnConfirmRandom(randomCapsule);
     };
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
@@ -643,6 +643,8 @@ class FreeplayState extends MusicBeatSubState
   var spamTimer:Float = 0;
   var spamming:Bool = false;
 
+  var busy:Bool = false; // Set to true once the user has pressed enter to select a song.
+
   override function update(elapsed:Float)
   {
     super.update(elapsed);
@@ -690,11 +692,13 @@ class FreeplayState extends MusicBeatSubState
     fp.updateScore(Std.int(lerpScore));
 
     txtCompletion.text = Math.floor(lerpCompletion * 100) + "%";
-    // trace(Highscore.getCompletion(songs[curSelected].songName, curDifficulty));
 
-    // trace(intendedScore);
-    // trace(lerpScore);
-    // Highscore.getAllScores();
+    handleInputs(elapsed);
+  }
+
+  function handleInputs(elapsed:Float):Void
+  {
+    if (busy) return;
 
     var upP = controls.UI_UP_P;
     var downP = controls.UI_DOWN_P;
@@ -949,6 +953,13 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
+  function capsuleOnConfirmRandom(cap:SongMenuItem):Void
+  {
+    trace("RANDOM SELECTED");
+
+    busy = true;
+  }
+
   function capsuleOnConfirmDefault(cap:SongMenuItem):Void
   {
     // var poop:String = songs[curSelected].songName.toLowerCase();
@@ -962,6 +973,8 @@ class FreeplayState extends MusicBeatSubState
         poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
         curDifficulty = 1;
     }*/
+
+    busy = true;
 
     PlayStatePlaylist.isStoryMode = false;
 
