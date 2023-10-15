@@ -114,7 +114,8 @@ class RemoveNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteErase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -296,7 +297,8 @@ class RemoveEventsCommand implements ChartEditorCommand
   {
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
     state.currentEventSelection = [];
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteErase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -352,7 +354,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
 
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteErase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

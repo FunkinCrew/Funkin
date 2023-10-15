@@ -3849,9 +3849,9 @@ class ChartEditorState extends HaxeUIState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-09'));
+          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/hitNotePlayer'));
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-010'));
+          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/hitNoteOpponent'));
       }
     }
   }
