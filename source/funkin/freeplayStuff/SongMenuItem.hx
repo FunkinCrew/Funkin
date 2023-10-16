@@ -1,5 +1,8 @@
 package funkin.freeplayStuff;
 
+import funkin.shaderslmfao.HSVShader;
+import funkin.shaderslmfao.GaussianBlurShader;
+import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -7,17 +10,29 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
+import flixel.util.FlxTimer;
+import funkin.shaderslmfao.Grayscale;
 
 class SongMenuItem extends FlxSpriteGroup
 {
-  var capsule:FlxSprite;
+  public var capsule:FlxSprite;
 
-  public var selected(default, set):Bool = false;
+  var pixelIcon:FlxSprite;
+
+  public var selected(default, set):Bool;
 
   public var songTitle:String = "Test";
 
-  public var songText:FlxText;
+  public var songText:CapsuleText;
   public var favIcon:FlxSprite;
+  public var ranking:FlxSprite;
+
+  var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect"];
+
+  // lol...
+  var diffRanks:Array<String> = [
+    "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "14", "15"
+  ];
 
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
@@ -25,7 +40,12 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var doJumpOut:Bool = false;
 
-  public function new(x:Float, y:Float, song:String)
+  public var onConfirm:Void->Void;
+  public var diffGrayscale:Grayscale;
+
+  public var hsvShader(default, set):HSVShader;
+
+  public function new(x:Float, y:Float, song:String, ?character:String)
   {
     super(x, y);
 
@@ -38,19 +58,144 @@ class SongMenuItem extends FlxSpriteGroup
     // capsule.animation
     add(capsule);
 
-    songText = new FlxText(120, 40, 0, songTitle, 40);
-    songText.font = "5by7";
-    songText.color = 0xFF43C1EA;
-    add(songText);
+    // doesn't get added, simply is here to help with visibility of things for the pop in!
+    grpHide = new FlxGroup();
 
-    favIcon = new FlxSprite(440, 40);
+    var rank:String = FlxG.random.getObject(ranks);
+
+    ranking = new FlxSprite(capsule.width * 0.84, 30);
+    ranking.loadGraphic(Paths.image("freeplay/ranks/" + rank));
+    ranking.scale.x = ranking.scale.y = realScaled;
+    ranking.alpha = 0.75;
+    ranking.origin.set(capsule.origin.x - ranking.x, capsule.origin.y - ranking.y);
+    add(ranking);
+    grpHide.add(ranking);
+
+    diffGrayscale = new Grayscale(1);
+
+    var diffRank = new FlxSprite(145, 90).loadGraphic(Paths.image("freeplay/diffRankings/diff" + FlxG.random.getObject(diffRanks)));
+    diffRank.shader = diffGrayscale;
+    diffRank.visible = false;
+    add(diffRank);
+    diffRank.origin.set(capsule.origin.x - diffRank.x, capsule.origin.y - diffRank.y);
+    grpHide.add(diffRank);
+
+    switch (rank)
+    {
+      case "perfect":
+        ranking.x -= 10;
+    }
+
+    songText = new CapsuleText(capsule.width * 0.26, 45, songTitle, Std.int(40 * realScaled));
+    add(songText);
+    grpHide.add(songText);
+
+    pixelIcon = new FlxSprite(155, 15);
+    pixelIcon.makeGraphic(32, 32, 0x00000000);
+    pixelIcon.antialiasing = false;
+    pixelIcon.active = false;
+    add(pixelIcon);
+    grpHide.add(pixelIcon);
+
+    if (character != null) setCharacter(character);
+
+    favIcon = new FlxSprite(400, 40);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', "favorite heart", 24, false);
     favIcon.animation.play('fav');
-    favIcon.setGraphicSize(60, 60);
+    favIcon.setGraphicSize(50, 50);
+    favIcon.visible = false;
     add(favIcon);
+    // grpHide.add(favIcon);
 
-    selected = selected; // just to kickstart the set_selected
+    setVisibleGrp(false);
+  }
+
+  function set_hsvShader(value:HSVShader):HSVShader
+  {
+    this.hsvShader = value;
+    capsule.shader = hsvShader;
+    songText.shader = hsvShader;
+
+    return value;
+  }
+
+  function textAppear()
+  {
+    songText.scale.x = 1.7;
+    songText.scale.y = 0.2;
+
+    new FlxTimer().start(1 / 24, function(_) {
+      songText.scale.x = 0.4;
+      songText.scale.y = 1.4;
+    });
+
+    new FlxTimer().start(2 / 24, function(_) {
+      songText.scale.x = songText.scale.y = 1;
+    });
+  }
+
+  function setVisibleGrp(value:Bool)
+  {
+    for (spr in grpHide.members)
+    {
+      spr.visible = value;
+    }
+
+    if (value) textAppear();
+
+    selectedAlpha();
+  }
+
+  public function init(x:Float, y:Float, song:String, ?character:String)
+  {
+    this.x = x;
+    this.y = y;
+    this.songTitle = song;
+    songText.text = this.songTitle;
+    if (character != null) setCharacter(character);
+
+    selected = selected;
+  }
+
+  /**
+   * Set the character displayed next to this song in the freeplay menu.
+   * @param char The character ID used by this song.
+   *             If the character has no freeplay icon, a warning will be thrown and nothing will display.
+   */
+  public function setCharacter(char:String)
+  {
+    var charPath:String = "freeplay/icons/";
+
+    trace(char);
+
+    switch (char)
+    {
+      case "monster-christmas":
+        charPath += "monsterpixel";
+      case "mom-car":
+        charPath += "mommypixel";
+      case "dad":
+        charPath += "daddypixel";
+      case "darnell-blazin":
+        charPath += "darnellpixel";
+      case "senpai-angry":
+        charPath += "senpaipixel";
+      default:
+        charPath += char + "pixel";
+    }
+
+    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
+    {
+      trace('[WARN] Character ${char} has no freeplay icon.');
+      return;
+    }
+
+    pixelIcon.loadGraphic(Paths.image(charPath));
+    pixelIcon.scale.x = pixelIcon.scale.y = 2;
+    pixelIcon.origin.x = 100;
+    // pixelIcon.origin.x = capsule.origin.x;
+    // pixelIcon.offset.x -= pixelIcon.origin.x;
   }
 
   var frameInTicker:Float = 0;
@@ -63,6 +208,63 @@ class SongMenuItem extends FlxSpriteGroup
   var xPosLerpLol:Array<Float> = [0.9, 0.4, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
   var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
+  public var realScaled:Float = 0.8;
+
+  public function initJumpIn(maxTimer:Float, ?force:Bool):Void
+  {
+    frameInTypeBeat = 0;
+
+    new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
+      doJumpIn = true;
+    });
+
+    new FlxTimer().start((0.09 * maxTimer) + 0.85, function(lerpTmr) {
+      doLerp = true;
+    });
+
+    if (force)
+    {
+      visible = true;
+      capsule.alpha = 1;
+      setVisibleGrp(true);
+    }
+    else
+    {
+      new FlxTimer().start((xFrames.length / 24) * 2.5, function(_) {
+        visible = true;
+        capsule.alpha = 1;
+        setVisibleGrp(true);
+      });
+    }
+  }
+
+  var grpHide:FlxGroup;
+
+  public function forcePosition()
+  {
+    visible = true;
+    capsule.alpha = 1;
+    selectedAlpha();
+    doLerp = true;
+    doJumpIn = false;
+    doJumpOut = false;
+
+    frameInTypeBeat = xFrames.length;
+    frameOutTypeBeat = 0;
+
+    capsule.scale.x = xFrames[frameInTypeBeat - 1];
+    capsule.scale.y = 1 / xFrames[frameInTypeBeat - 1];
+    // x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat - 1, xPosLerpLol.length - 1))];
+
+    x = targetPos.x;
+    y = targetPos.y;
+
+    capsule.scale.x *= realScaled;
+    capsule.scale.y *= realScaled;
+
+    setVisibleGrp(true);
+  }
+
   override function update(elapsed:Float)
   {
     if (doJumpIn)
@@ -73,9 +275,12 @@ class SongMenuItem extends FlxSpriteGroup
       {
         frameInTicker = 0;
 
-        scale.x = xFrames[frameInTypeBeat];
-        scale.y = 1 / xFrames[frameInTypeBeat];
+        capsule.scale.x = xFrames[frameInTypeBeat];
+        capsule.scale.y = 1 / xFrames[frameInTypeBeat];
         x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
+
+        capsule.scale.x *= realScaled;
+        capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
       }
@@ -89,9 +294,12 @@ class SongMenuItem extends FlxSpriteGroup
       {
         frameOutTicker = 0;
 
-        scale.x = xFrames[frameOutTypeBeat];
-        scale.y = 1 / xFrames[frameOutTypeBeat];
+        capsule.scale.x = xFrames[frameOutTypeBeat];
+        capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
         x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+
+        capsule.scale.x *= realScaled;
+        capsule.scale.y *= realScaled;
 
         frameOutTypeBeat += 1;
       }
@@ -106,14 +314,29 @@ class SongMenuItem extends FlxSpriteGroup
     super.update(elapsed);
   }
 
+  public function intendedY(index:Int):Float
+  {
+    return (index * ((height * realScaled) + 10)) + 120;
+  }
+
+  /**
+   * Merely a helper function to call set_selected, to make sure that the alpha is correct on the rankings/selections
+   */
+  public function selectedAlpha():Void
+  {
+    selected = selected;
+  }
+
   function set_selected(value:Bool):Bool
   {
-    // trace(value);
-
     // cute one liners, lol!
+    diffGrayscale.setAmount(value ? 0 : 0.8);
     songText.alpha = value ? 1 : 0.6;
+    songText.blurredText.visible = value ? true : false;
     capsule.offset.x = value ? 0 : -5;
     capsule.animation.play(value ? "selected" : "unselected");
+    ranking.alpha = value ? 1 : 0.7;
+    ranking.color = value ? 0xFFFFFFFF : 0xFFAAAAAA;
     return value;
   }
 }

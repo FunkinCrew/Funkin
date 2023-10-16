@@ -6,6 +6,7 @@ import funkin.play.cutscene.dialogue.ScriptedConversation;
 
 /**
  * Contains utilities for loading and parsing conversation data.
+ * TODO: Refactor to use the json2object + BaseRegistry system that actually validates things for you.
  */
 class ConversationDataParser
 {

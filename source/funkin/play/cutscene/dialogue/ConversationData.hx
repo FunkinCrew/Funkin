@@ -172,8 +172,12 @@ enum abstract BackdropType(String) from String to String
 class MusicData
 {
   public var asset:String;
-  public var looped:Bool;
+
   public var fadeTime:Float;
+
+  @:optional
+  @:default(false)
+  public var looped:Bool;
 
   public function new(asset:String, looped:Bool, fadeTime:Float = 0.0)
   {

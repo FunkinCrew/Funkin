@@ -2,6 +2,7 @@ package funkin.util;
 
 import flixel.util.FlxColor;
 import lime.app.Application;
+import funkin.data.song.SongData.SongTimeFormat;
 
 /**
  * A store of unchanging, globally relevant values.
@@ -26,12 +27,22 @@ class Constants
   public static var VERSION(get, never):String;
 
   /**
+   * The generatedBy string embedded in the chart files made by this application.
+   */
+  public static var GENERATED_BY(get, never):String;
+
+  static function get_GENERATED_BY():String
+  {
+    return '${Constants.TITLE} - ${Constants.VERSION}';
+  }
+
+  /**
    * A suffix to add to the game version.
    * Add a suffix to prototype builds and remove it for releases.
    */
   public static final VERSION_SUFFIX:String = ' PROTOTYPE';
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   static function get_VERSION():String
   {
     return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH})' + VERSION_SUFFIX;
@@ -63,7 +74,7 @@ class Constants
    */
   // ==============================
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   /**
    * The current Git branch.
    */
@@ -143,7 +154,32 @@ class Constants
   /**
    * The default BPM for charts, so things don't break if none is specified.
    */
-  public static final DEFAULT_BPM:Int = 100;
+  public static final DEFAULT_BPM:Float = 100.0;
+
+  /**
+   * The default name for songs.
+   */
+  public static final DEFAULT_SONGNAME:String = "Unknown";
+
+  /**
+   * The default artist for songs.
+   */
+  public static final DEFAULT_ARTIST:String = "Unknown";
+
+  /**
+   * The default note style for songs.
+   */
+  public static final DEFAULT_NOTE_STYLE:String = "funkin";
+
+  /**
+   * The default timing format for songs.
+   */
+  public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;
+
+  /**
+   * The default scroll speed for songs.
+   */
+  public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 
   /**
    * Default numerator for the time signature.
@@ -291,15 +327,59 @@ class Constants
   public static final HEALTH_MINE_PENALTY:Float = 15.0 / 100.0 * HEALTH_MAX; // 15.0%
 
   /**
-   * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
-   * This is the thing people have been begging for forever lolol.
+   * SCORE VALUES
    */
-  public static final GHOST_TAPPING:Bool = false;
+  // ==============================
+
+  /**
+   * The amount of score the player gains for every send they hold a hold note.
+   * A fraction of this value is granted every frame.
+   */
+  public static final SCORE_HOLD_BONUS_PER_SECOND:Float = 250.0;
+
+  /**
+   * FILE EXTENSIONS
+   */
+  // ==============================
+
+  /**
+   * The file extension used when exporting chart files.
+   *
+   * - "I made a new file format"
+   * - "Actually new or just a renamed ZIP?"
+   */
+  public static final EXT_CHART = "fnfc";
+
+  /**
+   * The file extension used when loading audio files.
+   */
+  public static final EXT_SOUND = #if web "mp3" #else "ogg" #end;
+
+  /**
+   * The file extension used when loading video files.
+   */
+  public static final EXT_VIDEO = "mp4";
+
+  /**
+   * The file extension used when loading image files.
+   */
+  public static final EXT_IMAGE = "png";
+
+  /**
+   * The file extension used when loading data files.
+   */
+  public static final EXT_DATA = "json";
 
   /**
    * OTHER
    */
   // ==============================
+
+  /**
+   * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
+   * This is the thing people have been begging for forever lolol.
+   */
+  public static final GHOST_TAPPING:Bool = false;
 
   /**
    * The separator between an asset library and the asset path.
