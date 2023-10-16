@@ -4,6 +4,7 @@ import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
 import funkin.MemoryCounter;
+import funkin.save.Save;
 import haxe.ui.Toolkit;
 import openfl.display.FPS;
 import openfl.display.Sprite;
@@ -83,6 +84,9 @@ class Main extends Sprite
     CrashHandler.queryStatus();
 
     initHaxeUI();
+
+    // George recommends binding the save before FlxGame is created.
+    Save.load();
 
     addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
 
