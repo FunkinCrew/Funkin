@@ -63,9 +63,7 @@ jobs:
             .haxelib
             export
             ${{ runner.temp }}\hxcpp_cache
-          key: ${{ runner.os }}-build-win-${{ github.ref_name }}
-          restore-keys: |
-            ${{ runner.os }}-build-win-
+          key: ${{ runner.os }}-build-win-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
       - name: Build game
         run: |
           haxelib run lime build windows -release -DNO_REDIRECT_ASSETS_FOLDER
