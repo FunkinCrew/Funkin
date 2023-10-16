@@ -17,6 +17,9 @@ import openfl.geom.Matrix;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 
+using Lambda;
+using StringTools;
+
 class StickerSubState extends MusicBeatSubState
 {
   public var grpStickers:FlxTypedGroup<StickerSprite>;
@@ -26,9 +29,59 @@ class StickerSubState extends MusicBeatSubState
 
   var nextState:NEXTSTATE = FREEPLAY;
 
+  // what "folders" to potentially load from (as of writing only "keys" exist)
+  var soundSelections:Array<String> = [];
+  // what "folder" was randomly selected
+  var soundSelection:String = "";
+  var sounds:Array<String> = [];
+
   public function new(?oldStickers:Array<StickerSprite>, ?nextState:NEXTSTATE = FREEPLAY):Void
   {
     super();
+
+    // todo still
+    // make sure that ONLY plays mp3/ogg files
+    // if there's no mp3/ogg file, then it regenerates/reloads the random folder
+
+    var assetsInList = openfl.utils.Assets.list();
+
+    var soundFilterFunc = function(a:String) {
+      return a.startsWith('assets/shared/sounds/stickersounds/');
+    };
+
+    soundSelections = assetsInList.filter(soundFilterFunc);
+    soundSelections = soundSelections.map(function(a:String) {
+      return a.replace('assets/shared/sounds/stickersounds/', '').split('/')[0];
+    });
+
+    // cracked cleanup... yuchh...
+    for (i in soundSelections)
+    {
+      while (soundSelections.contains(i))
+      {
+        soundSelections.remove(i);
+      }
+      soundSelections.push(i);
+    }
+
+    trace(soundSelections);
+
+    soundSelection = FlxG.random.getObject(soundSelections);
+
+    var filterFunc = function(a:String) {
+      return a.startsWith('assets/shared/sounds/stickersounds/' + soundSelection + '/');
+    };
+    var assetsInList3 = openfl.utils.Assets.list();
+    sounds = assetsInList3.filter(filterFunc);
+    for (i in 0...sounds.length)
+    {
+      sounds[i] = sounds[i].replace('assets/shared/sounds/', '');
+      sounds[i] = sounds[i].substring(0, sounds[i].lastIndexOf('.'));
+    }
+
+    trace(sounds);
+
+    // trace(assetsInList);
 
     this.nextState = nextState;
 
@@ -66,6 +119,8 @@ class StickerSubState extends MusicBeatSubState
     {
       new FlxTimer().start(sticker.timing, _ -> {
         sticker.visible = false;
+        var daSound:String = FlxG.random.getObject(sounds);
+        FlxG.sound.play(Paths.sound(daSound));
 
         if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
@@ -151,7 +206,11 @@ class StickerSubState extends MusicBeatSubState
       sticker.timing = FlxMath.remapToRange(ind, 0, grpStickers.members.length, 0, 0.9);
 
       new FlxTimer().start(sticker.timing, _ -> {
+        if (grpStickers == null) return;
+
         sticker.visible = true;
+        var daSound:String = FlxG.random.getObject(sounds);
+        FlxG.sound.play(Paths.sound(daSound));
 
         var frameTimer:Int = FlxG.random.int(0, 2);
 
@@ -212,10 +271,10 @@ class StickerSubState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.ANY)
-    {
-      regenStickers();
-    }
+    // if (FlxG.keys.justPressed.ANY)
+    // {
+    //   regenStickers();
+    // }
   }
 
   var switchingState:Bool = false;

@@ -54,6 +54,26 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
     return parser.value;
   }
 
+  /**
+   * Parse and validate the JSON data and produce the corresponding data object.
+   *
+   * NOTE: Must be implemented on the implementation class.
+   * @param contents The JSON as a string.
+   * @param fileName An optional file name for error reporting.
+   */
+  public function parseEntryDataRaw(contents:String, ?fileName:String):Null<NoteStyleData>
+  {
+    var parser = new json2object.JsonParser<NoteStyleData>();
+    parser.fromJson(contents, fileName);
+
+    if (parser.errors.length > 0)
+    {
+      printErrors(parser.errors, fileName);
+      return null;
+    }
+    return parser.value;
+  }
+
   function createScriptedEntry(clsName:String):NoteStyle
   {
     return ScriptedNoteStyle.init(clsName, "unknown");

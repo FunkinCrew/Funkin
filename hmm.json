@@ -32,7 +32,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "a9136359271cae6ea3016b7fd9023c5c42562933",
+      "ref": "dd2903f7dc7024335b981edf2a770760cec912e1",
       "url": "https://github.com/ninjamuffin99/flxanimate"
     },
     {
@@ -97,8 +97,8 @@
       "name": "json2object",
       "type": "git",
       "dir": null,
-      "ref": "429986134031cbb1980f09d0d3d642b4b4cbcd6a",
-      "url": "https://github.com/elnabo/json2object"
+      "ref": "f4df19cfa196f85eece55c3367021fc965f1fa9a",
+      "url": "https://github.com/EliteMasterEric/json2object"
     },
     {
       "name": "lime",
@@ -139,7 +139,9 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
+
       "ref": "f229d76361c7e31025a048fe7909847f75bb5d5e",
+
       "url": "https://github.com/EliteMasterEric/openfl"
     },
     {

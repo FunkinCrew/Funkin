@@ -5,10 +5,9 @@ import lime.utils.Bytes;
 import lime.ui.FileDialog;
 import openfl.net.FileFilter;
 import haxe.io.Path;
-#if html5
 import openfl.net.FileReference;
 import openfl.events.Event;
-#end
+import openfl.events.IOErrorEvent;
 
 /**
  * Utilities for reading and writing files on various platforms.
@@ -260,8 +259,7 @@ class FileUtil
   /**
    * Takes an array of file entries and prompts the user to save them as a ZIP file.
    */
-  public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
-      force:Bool = false):Bool
+  public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String, force:Bool = false):Bool
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
@@ -309,6 +307,7 @@ class FileUtil
     #if sys
     return sys.io.File.getContent(path);
     #else
+    trace('ERROR: readStringFromPath not implemented for this platform');
     return null;
     #end
   }
@@ -327,6 +326,48 @@ class FileUtil
     #else
     return null;
     #end
+  }
+
+  /**
+   * Browse for a file to read and execute a callback once we have a file reference.
+   * Works great on HTML5 or desktop.
+   *
+   * @param	callback The function to call when the file is loaded.
+   */
+  public static function browseFileReference(callback:FileReference->Void)
+  {
+    var file = new FileReference();
+
+    file.addEventListener(Event.SELECT, function(e) {
+      var selectedFileRef:FileReference = e.target;
+      trace('Selected file: ' + selectedFileRef.name);
+      selectedFileRef.addEventListener(Event.COMPLETE, function(e) {
+        var loadedFileRef:FileReference = e.target;
+        trace('Loaded file: ' + loadedFileRef.name);
+        callback(loadedFileRef);
+      });
+      selectedFileRef.load();
+    });
+
+    file.browse();
+  }
+
+  /**
+   * Prompts the user to save a file to their computer.
+   */
+  public static function writeFileReference(path:String, data:String)
+  {
+    var file = new FileReference();
+    file.addEventListener(Event.COMPLETE, function(e:Event) {
+      trace('Successfully wrote file.');
+    });
+    file.addEventListener(Event.CANCEL, function(e:Event) {
+      trace('Cancelled writing file.');
+    });
+    file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
+      trace('IO error writing file.');
+    });
+    file.save(data, path);
   }
 
   /**
