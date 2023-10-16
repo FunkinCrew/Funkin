@@ -36,9 +36,9 @@ runs:
           ./butler -V
         shell: bash
       - name: Upload game to itch.io
-        env: 
+        env:
           BUTLER_API_KEY: ${{inputs.butler-key}}
         run: |
           ./butler login
-          ./butler push ${{inputs.build-dir}} ninja-muffin24/funkin-secret:${{inputs.target}}-${GITHUB_REF##*/}
+          ./butler push ${{inputs.build-dir}} ninja-muffin24/funkin-secret:${{inputs.target}}-${GITHUB_REF_NAME}
         shell: bash

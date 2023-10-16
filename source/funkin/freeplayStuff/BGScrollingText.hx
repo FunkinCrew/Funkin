@@ -7,6 +7,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
+import flixel.util.FlxTimer;
 
 // its kinda like marqeee html lol!
 class BGScrollingText extends FlxSpriteGroup
@@ -16,34 +17,51 @@ class BGScrollingText extends FlxSpriteGroup
   public var widthShit:Float = FlxG.width;
   public var placementOffset:Float = 20;
   public var speed:Float = 1;
+  public var size(default, set):Int = 48;
 
   public var funnyColor(default, set):Int = 0xFFFFFFFF;
 
-  public function new(x:Float, y:Float, text:String, widthShit:Float = 100)
+  public function new(x:Float, y:Float, text:String, widthShit:Float = 100, ?bold:Bool = false, ?size:Int = 48)
   {
     super(x, y);
 
     this.widthShit = widthShit;
+    if (size != null) this.size = size;
 
     grpTexts = new FlxTypedSpriteGroup<FlxText>();
     add(grpTexts);
 
-    var testText:FlxText = new FlxText(0, 0, 0, text, 48);
+    var testText:FlxText = new FlxText(0, 0, 0, text, this.size);
     testText.font = "5by7";
+    testText.bold = bold;
     testText.updateHitbox();
     grpTexts.add(testText);
 
-    var needed:Int = Math.ceil(widthShit / testText.frameWidth);
+    var needed:Int = Math.ceil(widthShit / testText.frameWidth) + 1;
 
     for (i in 0...needed)
     {
       var lmfao:Int = i + 1;
 
-      var coolText:FlxText = new FlxText((lmfao * testText.frameWidth) + (lmfao * 20), 0, 0, text, 48);
+      var coolText:FlxText = new FlxText((lmfao * testText.frameWidth) + (lmfao * 20), 0, 0, text, this.size);
+
       coolText.font = "5by7";
+      coolText.bold = bold;
       coolText.updateHitbox();
       grpTexts.add(coolText);
     }
+  }
+
+  function set_size(value:Int):Int
+  {
+    if (grpTexts != null)
+    {
+      grpTexts.forEach(function(txt:FlxText) {
+        txt.size = value;
+      });
+    }
+    this.size = value;
+    return value;
   }
 
   function set_funnyColor(col:Int):Int
@@ -55,7 +73,7 @@ class BGScrollingText extends FlxSpriteGroup
     return col;
   }
 
-  override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     for (txt in grpTexts.group)
     {
@@ -66,14 +84,16 @@ class BGScrollingText extends FlxSpriteGroup
         if (txt.x < -txt.frameWidth)
         {
           txt.x = grpTexts.group.members[grpTexts.length - 1].x + grpTexts.group.members[grpTexts.length - 1].frameWidth + placementOffset;
+
           sortTextShit();
         }
       }
       else
       {
-        if (txt.x > widthShit)
+        if (txt.x > txt.frameWidth * 2)
         {
           txt.x = grpTexts.group.members[0].x - grpTexts.group.members[0].frameWidth - placementOffset;
+
           sortTextShit();
         }
       }

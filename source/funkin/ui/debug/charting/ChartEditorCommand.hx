@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.notifications.NotificationType;
+import haxe.ui.notifications.NotificationManager;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
@@ -64,7 +66,7 @@ class AddNotesCommand implements ChartEditorCommand
       state.currentEventSelection = [];
     }
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -78,7 +80,7 @@ class AddNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -114,7 +116,7 @@ class RemoveNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -131,7 +133,7 @@ class RemoveNotesCommand implements ChartEditorCommand
     }
     state.currentNoteSelection = notes;
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -252,7 +254,7 @@ class AddEventsCommand implements ChartEditorCommand
       state.currentEventSelection = events;
     }
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -296,7 +298,7 @@ class RemoveEventsCommand implements ChartEditorCommand
   {
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -312,7 +314,7 @@ class RemoveEventsCommand implements ChartEditorCommand
       state.currentSongChartEventData.push(event);
     }
     state.currentEventSelection = events;
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -352,7 +354,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -376,7 +378,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
-    state.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -760,6 +762,22 @@ class PasteItemsCommand implements ChartEditorCommand
   {
     var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
 
+    if (currentClipboard.valid != true)
+    {
+      #if !mac
+      NotificationManager.instance.addNotification(
+        {
+          title: 'Failed to Paste',
+          body: 'Could not parse clipboard contents.',
+          type: NotificationType.Error,
+          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+        });
+      #end
+      return;
+    }
+
+    trace(currentClipboard.notes);
+
     addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
 
@@ -773,6 +791,16 @@ class PasteItemsCommand implements ChartEditorCommand
     state.notePreviewDirty = true;
 
     state.sortChartData();
+
+    #if !mac
+    NotificationManager.instance.addNotification(
+      {
+        title: 'Paste Successful',
+        body: 'Successfully pasted clipboard contents.',
+        type: NotificationType.Success,
+        expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+      });
+    #end
   }
 
   public function undo(state:ChartEditorState):Void

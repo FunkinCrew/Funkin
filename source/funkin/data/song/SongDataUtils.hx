@@ -8,6 +8,9 @@ import funkin.util.SerializerUtil;
 
 using Lambda;
 
+/**
+ * Utility functions for working with song data, including note data, event data, metadata, etc.
+ */
 class SongDataUtils
 {
   /**
@@ -18,11 +21,21 @@ class SongDataUtils
    * @param notes The notes to modify.
    * @param offset The time difference to apply in milliseconds.
    */
-  public static function offsetSongNoteData(notes:Array<SongNoteData>, offset:Int):Array<SongNoteData>
+  public static function offsetSongNoteData(notes:Array<SongNoteData>, offset:Float):Array<SongNoteData>
   {
-    return notes.map(function(note:SongNoteData):SongNoteData {
-      return new SongNoteData(note.time + offset, note.data, note.length, note.kind);
-    });
+    var offsetNote = function(note:SongNoteData):SongNoteData {
+      var time:Float = note.time + offset;
+      var data:Int = note.data;
+      var length:Float = note.length;
+      var kind:String = note.kind;
+      return new SongNoteData(time, data, length, kind);
+    };
+
+    trace(notes);
+    trace(notes[0]);
+    var result = [for (i in 0...notes.length) offsetNote(notes[i])];
+    trace(result);
+    return result;
   }
 
   /**
@@ -33,7 +46,7 @@ class SongDataUtils
    * @param events The events to modify.
    * @param offset The time difference to apply in milliseconds.
    */
-  public static function offsetSongEventData(events:Array<SongEventData>, offset:Int):Array<SongEventData>
+  public static function offsetSongEventData(events:Array<SongEventData>, offset:Float):Array<SongEventData>
   {
     return events.map(function(event:SongEventData):SongEventData {
       return new SongEventData(event.time + offset, event.event, event.value);
@@ -149,7 +162,8 @@ class SongDataUtils
    */
   public static function writeItemsToClipboard(data:SongClipboardItems):Void
   {
-    var dataString = SerializerUtil.toJSON(data);
+    var writer = new json2object.JsonWriter<SongClipboardItems>();
+    var dataString:String = writer.write(data, '  ');
 
     ClipboardUtil.setClipboard(dataString);
 
@@ -167,19 +181,24 @@ class SongDataUtils
 
     trace('Read ${notesString.length} characters from clipboard.');
 
-    var data:SongClipboardItems = notesString.parseJSON();
-
-    if (data == null)
+    var parser = new json2object.JsonParser<SongClipboardItems>();
+    parser.fromJson(notesString, 'clipboard');
+    if (parser.errors.length > 0)
     {
-      trace('Failed to parse notes from clipboard.');
+      trace('[SongDataUtils] Error parsing note JSON data from clipboard.');
+      for (error in parser.errors)
+        DataError.printError(error);
       return {
+        valid: false,
         notes: [],
         events: []
       };
     }
     else
     {
+      var data:SongClipboardItems = parser.value;
       trace('Parsed ' + data.notes.length + ' notes and ' + data.events.length + ' from clipboard.');
+      data.valid = true;
       return data;
     }
   }
@@ -227,6 +246,7 @@ class SongDataUtils
 
 typedef SongClipboardItems =
 {
+  ?valid:Bool,
   notes:Array<SongNoteData>,
   events:Array<SongEventData>
 }

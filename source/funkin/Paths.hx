@@ -6,9 +6,6 @@ import openfl.utils.Assets as OpenFlAssets;
 
 class Paths
 {
-  public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
-  public static var VIDEO_EXT = "mp4";
-
   static var currentLevel:String;
 
   static public function setCurrentLevel(name:String)
@@ -52,9 +49,9 @@ class Paths
     return getPath(file, type, library);
   }
 
-  public static inline function animateAtlas(path:String, library:String)
+  public static inline function animateAtlas(path:String, ?library:String)
   {
-    return getLibraryPathForce('images/$path', library);
+    return getLibraryPath('images/$path', library);
   }
 
   inline static public function txt(key:String, ?library:String)
@@ -84,7 +81,7 @@ class Paths
 
   static public function sound(key:String, ?library:String)
   {
-    return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
+    return getPath('sounds/$key.${Constants.EXT_SOUND}', SOUND, library);
   }
 
   inline static public function soundRandom(key:String, min:Int, max:Int, ?library:String)
@@ -94,24 +91,24 @@ class Paths
 
   inline static public function music(key:String, ?library:String)
   {
-    return getPath('music/$key.$SOUND_EXT', MUSIC, library);
+    return getPath('music/$key.${Constants.EXT_SOUND}', MUSIC, library);
   }
 
   inline static public function videos(key:String, ?library:String)
   {
-    return getPath('videos/$key.$VIDEO_EXT', BINARY, library);
+    return getPath('videos/$key.${Constants.EXT_VIDEO}', BINARY, library);
   }
 
   inline static public function voices(song:String, ?suffix:String = '')
   {
     if (suffix == null) suffix = ""; // no suffix, for a sorta backwards compatibility with older-ish voice files
 
-    return 'songs:assets/songs/${song.toLowerCase()}/Voices$suffix.$SOUND_EXT';
+    return 'songs:assets/songs/${song.toLowerCase()}/Voices$suffix.${Constants.EXT_SOUND}';
   }
 
   inline static public function inst(song:String, ?suffix:String = '')
   {
-    return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix.$SOUND_EXT';
+    return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix.${Constants.EXT_SOUND}';
   }
 
   inline static public function image(key:String, ?library:String)
