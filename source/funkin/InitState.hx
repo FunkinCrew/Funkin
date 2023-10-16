@@ -48,7 +48,7 @@ class InitState extends FlxState
 
     // loadSaveData(); // Moved to Main.hx
     // Load player options from save data.
-    PreferencesMenu.initPrefs();
+    Preferences.init();
     // Load controls from save data.
     PlayerSettings.init();
 

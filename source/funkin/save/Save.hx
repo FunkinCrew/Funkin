@@ -63,10 +63,10 @@ abstract Save(RawSaveData)
             // Reasonable defaults.
             naughtyness: true,
             downscroll: false,
-            flashingMenu: true,
+            flashingLights: true,
             zoomCamera: true,
             debugDisplay: false,
-            pauseOnTabOut: true,
+            autoPause: true,
 
             controls:
               {
@@ -88,7 +88,7 @@ abstract Save(RawSaveData)
           {
             // No mods enabled.
             enabledMods: [],
-            modSettings: [],
+            modOptions: [],
           },
 
         optionsChartEditor:
@@ -96,6 +96,20 @@ abstract Save(RawSaveData)
             // Reasonable defaults.
           },
       };
+  }
+
+  public var options(get, never):SaveDataOptions;
+
+  function get_options():SaveDataOptions
+  {
+    return this.options;
+  }
+
+  public var modOptions(get, never):Map<String, Dynamic>;
+
+  function get_modOptions():Map<String, Dynamic>
+  {
+    return this.mods.modOptions;
   }
 
   /**
@@ -458,7 +472,7 @@ typedef SaveHighScoresData =
 typedef SaveDataMods =
 {
   var enabledMods:Array<String>;
-  var modSettings:Map<String, Dynamic>;
+  var modOptions:Map<String, Dynamic>;
 }
 
 /**
@@ -530,10 +544,10 @@ typedef SaveDataOptions =
   var downscroll:Bool;
 
   /**
-   * If disabled, the main menu won't flash when entering a submenu.
+   * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */
-  var flashingMenu:Bool;
+  var flashingLights:Bool;
 
   /**
    * If disabled, the camera bump synchronized to the beat.
@@ -551,7 +565,7 @@ typedef SaveDataOptions =
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
-  var pauseOnTabOut:Bool;
+  var autoPause:Bool;
 
   var controls:
     {

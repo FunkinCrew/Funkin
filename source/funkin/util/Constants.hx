@@ -4,6 +4,9 @@ import flixel.util.FlxColor;
 import lime.app.Application;
 import funkin.data.song.SongData.SongTimeFormat;
 
+/**
+ * A store of unchanging, globally relevant values.
+ */
 class Constants
 {
   /**
