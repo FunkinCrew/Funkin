@@ -4,6 +4,7 @@ import flixel.util.typeLimit.OneOfTwo;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 
+@:nullSafety
 class SongMetadata
 {
   /**
@@ -42,7 +43,7 @@ class SongMetadata
   public var timeChanges:Array<SongTimeChange>;
 
   /**
-   * Defaults to `default` or `''`. Populated later.
+   * Defaults to `Constants.DEFAULT_VARIATION`. Populated later.
    */
   @:jignored
   public var variation:String;
@@ -228,10 +229,10 @@ class SongMusicData
   public var timeChanges:Array<SongTimeChange>;
 
   /**
-   * Defaults to `default` or `''`. Populated later.
+   * Defaults to `Constants.DEFAULT_VARIATION`. Populated later.
    */
   @:jignored
-  public var variation:String = Constants.DEFAULT_VARIATION;
+  public var variation:String;
 
   public function new(songName:String, artist:String, variation:String = 'default')
   {
@@ -375,6 +376,9 @@ class SongChartData
   @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
+  /**
+   * Defaults to `Constants.DEFAULT_VARIATION`. Populated later.
+   */
   @:jignored
   public var variation:String;
 

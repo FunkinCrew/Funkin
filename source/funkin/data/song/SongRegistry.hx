@@ -156,7 +156,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return cleanMetadata(parser.value, variation);
   }
 
-  public function parseEntryMetadataWithMigration(id:String, ?variation:String, version:thx.semver.Version):Null<SongMetadata>
+  public function parseEntryMetadataWithMigration(id:String, variation:String, version:thx.semver.Version):Null<SongMetadata>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
@@ -192,7 +192,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
   }
 
-  function parseEntryMetadata_v2_0_0(id:String, variation:String = ""):Null<SongMetadata>
+  function parseEntryMetadata_v2_0_0(id:String, ?variation:String):Null<SongMetadata>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 

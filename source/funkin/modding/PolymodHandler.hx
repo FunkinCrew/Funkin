@@ -14,6 +14,7 @@ import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
+import funkin.save.Save;
 import funkin.play.cutscene.dialogue.SpeakerDataParser;
 import funkin.data.song.SongRegistry;
 
@@ -59,7 +60,7 @@ class PolymodHandler
     createModRoot();
 
     trace("Initializing Polymod (using configured mods)...");
-    loadModsById(getEnabledModIds());
+    loadModsById(Save.get().enabledModIds);
   }
 
   /**
@@ -232,33 +233,9 @@ class PolymodHandler
     return modIds;
   }
 
-  public static function setEnabledMods(newModList:Array<String>):Void
-  {
-    FlxG.save.data.enabledMods = newModList;
-    // Make sure to COMMIT the changes.
-    FlxG.save.flush();
-  }
-
-  /**
-   * Returns the list of enabled mods.
-   * @return Array<String>
-   */
-  public static function getEnabledModIds():Array<String>
-  {
-    if (FlxG.save.data.enabledMods == null)
-    {
-      // NOTE: If the value is null, the enabled mod list is unconfigured.
-      // Currently, we default to disabling newly installed mods.
-      // If we want to auto-enable new mods, but otherwise leave the configured list in place,
-      // we will need some custom logic.
-      FlxG.save.data.enabledMods = [];
-    }
-    return FlxG.save.data.enabledMods;
-  }
-
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modIds = getEnabledModIds();
+    var modIds = Save.get().enabledModIds;
     var modMetadata = getAllMods();
     var enabledMods = [];
     for (item in modMetadata)

@@ -46,7 +46,11 @@ class InitState extends FlxState
   {
     setupShit();
 
-    loadSaveData();
+    // loadSaveData(); // Moved to Main.hx
+    // Load player options from save data.
+    Preferences.init();
+    // Load controls from save data.
+    PlayerSettings.init();
 
     startGame();
   }
@@ -72,10 +76,6 @@ class InitState extends FlxState
     FlxG.sound.volumeUpKeys = [];
     FlxG.sound.volumeDownKeys = [];
     FlxG.sound.muteKeys = [];
-
-    // TODO: Make sure volume still saves/loads properly.
-    // if (FlxG.save.data.volume != null) FlxG.sound.volume = FlxG.save.data.volume;
-    // if (FlxG.save.data.mute != null) FlxG.sound.muted = FlxG.save.data.mute;
 
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
@@ -210,24 +210,6 @@ class InitState extends FlxState
     ModuleHandler.loadModuleCache();
 
     ModuleHandler.callOnCreate();
-  }
-
-  /**
-   * Retrive and parse data from the user's save.
-   */
-  function loadSaveData()
-  {
-    // Bind save data.
-    // TODO: Migrate save data to a better format.
-    FlxG.save.bind('funkin', 'ninjamuffin99');
-
-    // Load player options from save data.
-    PreferencesMenu.initPrefs();
-    // Load controls from save data.
-    PlayerSettings.init();
-    // Load highscores from save data.
-    Highscore.load();
-    // TODO: Load level/character/cosmetic unlocks from save data.
   }
 
   /**

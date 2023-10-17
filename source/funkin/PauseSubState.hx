@@ -157,6 +157,11 @@ class PauseSubState extends MusicBeatSubState
 
     super.update(elapsed);
 
+    handleInputs();
+  }
+
+  function handleInputs():Void
+  {
     var upP = controls.UI_UP_P;
     var downP = controls.UI_DOWN_P;
     var accepted = controls.ACCEPT;
@@ -224,9 +229,14 @@ class PauseSubState extends MusicBeatSubState
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
 
-            if (PlayStatePlaylist.isStoryMode) openSubState(new funkin.ui.StickerSubState(null, STORY));
+            if (PlayStatePlaylist.isStoryMode)
+            {
+              openSubState(new funkin.ui.StickerSubState(null, STORY));
+            }
             else
+            {
               openSubState(new funkin.ui.StickerSubState(null, FREEPLAY));
+            }
 
           case 'Exit to Chart Editor':
             this.close();

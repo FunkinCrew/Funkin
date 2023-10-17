@@ -114,7 +114,7 @@ class SustainTrail extends FlxSprite
     height = sustainHeight(sustainLength, getScrollSpeed());
     // instead of scrollSpeed, PlayState.SONG.speed
 
-    flipY = PreferencesMenu.getPref('downscroll');
+    flipY = Preferences.downscroll;
 
     // alpha = 0.6;
     alpha = 1.0;

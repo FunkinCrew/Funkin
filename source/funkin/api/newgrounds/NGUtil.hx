@@ -86,10 +86,10 @@ class NGUtil
     #end
 
     var onSessionFail:Error->Void = null;
-    if (sessionId == null && FlxG.save.data.sessionId != null)
+    if (sessionId == null && Save.get().ngSessionId != null)
     {
       trace("using stored session id");
-      sessionId = FlxG.save.data.sessionId;
+      sessionId = Save.get().ngSessionId;
       onSessionFail = function(error) savedSessionFailed = true;
     }
     #end
@@ -159,8 +159,8 @@ class NGUtil
   static function onNGLogin():Void
   {
     trace('logged in! user:${NG.core.user.name}');
-    FlxG.save.data.sessionId = NG.core.sessionId;
-    FlxG.save.flush();
+    Save.get().ngSessionId = NG.core.sessionId;
+    Save.get().flush();
     // Load medals then call onNGMedalFetch()
     NG.core.requestMedals(onNGMedalFetch);
 
@@ -174,8 +174,8 @@ class NGUtil
   {
     NG.core.logOut();
 
-    FlxG.save.data.sessionId = null;
-    FlxG.save.flush();
+    Save.get().ngSessionId = null;
+    Save.get().flush();
   }
 
   // --- MEDALS
