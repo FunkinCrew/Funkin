@@ -2463,9 +2463,9 @@ class PlayState extends MusicBeatSubState
               accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
             };
 
-          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, currentDifficulty, data))
+          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
-            Save.get().setLevelScore(PlayStatePlaylist.campaignId, currentDifficulty, data);
+            Save.get().setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end
