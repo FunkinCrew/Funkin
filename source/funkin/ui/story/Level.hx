@@ -155,6 +155,31 @@ class Level implements IRegistryEntry<LevelData>
       }
     }
 
+    // sort the difficulties, since they may be out of order in the chart JSON
+    var diffMap:Map<String, Int> = new Map<String, Int>();
+    for (difficulty in difficulties)
+    {
+      var num:Int = 0;
+      switch (difficulty)
+      {
+        case 'easy':
+          num = 0;
+        case 'normal':
+          num = 1;
+        case 'hard':
+          num = 2;
+        case 'erect':
+          num = 3;
+        case 'nightmare':
+          num = 4;
+      }
+      diffMap.set(difficulty, num);
+    }
+
+    difficulties.sort(function(a:String, b:String) {
+      return diffMap.get(a) - diffMap.get(b);
+    });
+
     // Filter to only include difficulties that are present in all songs
     for (songIndex in 1...songList.length)
     {
