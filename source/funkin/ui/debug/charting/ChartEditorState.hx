@@ -3129,6 +3129,7 @@ class ChartEditorState extends HaxeUIState
   function quitChartEditor():Void
   {
     autoSave();
+    stopWelcomeMusic();
     FlxG.switchState(new MainMenuState());
   }
 
