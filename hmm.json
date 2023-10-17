@@ -104,7 +104,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "f195121ebec688b417e38ab115185c8d93c349d3",
+      "ref": "737b86f121cdc90358d59e2e527934f267c94a2c",
       "url": "https://github.com/EliteMasterEric/lime"
     },
     {
@@ -139,7 +139,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "de9395d2f367a80f93f082e1b639b9cde2258bf1",
+      "ref": "f229d76361c7e31025a048fe7909847f75bb5d5e",
       "url": "https://github.com/EliteMasterEric/openfl"
     },
     {

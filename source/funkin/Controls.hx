@@ -1,5 +1,7 @@
+
 package funkin;
 
+import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxDirectionFlags;
 import flixel.FlxObject;
 import flixel.input.FlxInput;
@@ -830,6 +832,14 @@ class Controls extends FlxActionSet
     gamepadsAdded.push(id);
 
     fromSaveData(padData, Gamepad(id));
+  }
+
+  public function getGamepadIds():Array<Int> {
+    return gamepadsAdded;
+  }
+
+  public function getGamepads():Array<FlxGamepad> {
+    return [for (id in gamepadsAdded) FlxG.gamepads.getByID(id)];
   }
 
   inline function addGamepadLiteral(id:Int, ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void

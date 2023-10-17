@@ -461,6 +461,8 @@ class ChartEditorState extends HaxeUIState
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
     this.scrollPositionInPixels = this.scrollPositionInPixels;
+    // Characters have probably changed too.
+    healthIconsDirty = true;
 
     return isViewDownscroll;
   }
@@ -519,14 +521,22 @@ class ChartEditorState extends HaxeUIState
    */
   var selectedVariation(default, set):String = Constants.DEFAULT_VARIATION;
 
+  /**
+   * Setter called when we are switching variations.
+   * We will likely need to switch instrumentals as well.
+   */
   function set_selectedVariation(value:String):String
   {
+    // Don't update if we're already on the variation.
+    if (selectedVariation == value) return selectedVariation;
     selectedVariation = value;
 
     // Make sure view is updated when the variation changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
+
+    switchToCurrentInstrumental();
 
     return selectedVariation;
   }
@@ -546,6 +556,23 @@ class ChartEditorState extends HaxeUIState
     notePreviewViewportBoundsDirty = true;
 
     return selectedDifficulty;
+  }
+
+  /**
+   * The instrumental ID which is currently selected.
+   */
+  var currentInstrumentalId(get, set):String;
+
+  function get_currentInstrumentalId():String
+  {
+    var instId:Null<String> = currentSongMetadata.playData.characters.instrumental;
+    if (instId == null || instId == '') instId = (selectedVariation == Constants.DEFAULT_VARIATION) ? '' : selectedVariation;
+    return instId;
+  }
+
+  function set_currentInstrumentalId(value:String):String
+  {
+    return currentSongMetadata.playData.characters.instrumental = value;
   }
 
   /**
@@ -591,6 +618,11 @@ class ChartEditorState extends HaxeUIState
    * This happens when we scroll or add/remove notes, and need to update what notes are displayed and where.
    */
   var noteDisplayDirty:Bool = true;
+
+  /**
+   * Whether the selected charactesr have been modified and the health icons need to be updated.
+   */
+  var healthIconsDirty:Bool = true;
 
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
@@ -696,6 +728,16 @@ class ChartEditorState extends HaxeUIState
   var downKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.DOWN);
 
   /**
+   * Variable used to track how long the user has been holding the W keybind.
+   */
+  var wKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.W);
+
+  /**
+   * Variable used to track how long the user has been holding the S keybind.
+   */
+  var sKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.S);
+
+  /**
    * Variable used to track how long the user has been holding the page-up keybind.
    */
   var pageUpKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.PAGEUP);
@@ -763,28 +805,29 @@ class ChartEditorState extends HaxeUIState
 
   /**
    * The audio track for the instrumental.
+   * Replaced when switching instrumentals.
    * `null` until an instrumental track is loaded.
    */
   var audioInstTrack:Null<FlxSound> = null;
 
   /**
-   * The raw byte data for the instrumental audio track.
+   * The raw byte data for the instrumental audio tracks.
+   * Key is the instrumental name.
    * `null` until an instrumental track is loaded.
    */
-  var audioInstTrackData:Null<Bytes> = null;
+  var audioInstTrackData:Map<String, Bytes> = [];
 
   /**
    * The audio track for the vocals.
    * `null` until vocal track(s) are loaded.
+   * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
   var audioVocalTrackGroup:Null<VoicesGroup> = null;
 
   /**
    * A map of the audio tracks for each character's vocals.
-   * - Keys are the character IDs.
-   * - Values are the FlxSound objects to play that character's vocals.
-   *
-   * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
+   * - Keys are `characterId-variation` (with `characterId` being the default variation).
+   * - Values are the byte data for the audio track.
    */
   var audioVocalTrackData:Map<String, Bytes> = [];
 
@@ -1033,30 +1076,6 @@ class ChartEditorState extends HaxeUIState
   function set_currentSongArtist(value:String):String
   {
     return currentSongMetadata.artist = value;
-  }
-
-  var currentSongCharacterPlayer(get, set):String;
-
-  function get_currentSongCharacterPlayer():String
-  {
-    return currentSongMetadata.playData.characters.player;
-  }
-
-  function set_currentSongCharacterPlayer(value:String):String
-  {
-    return currentSongMetadata.playData.characters.player = value;
-  }
-
-  var currentSongCharacterOpponent(get, set):String;
-
-  function get_currentSongCharacterOpponent():String
-  {
-    return currentSongMetadata.playData.characters.opponent;
-  }
-
-  function set_currentSongCharacterOpponent(value:String):String
-  {
-    return currentSongMetadata.playData.characters.opponent = value;
   }
 
   /**
@@ -1369,7 +1388,7 @@ class ChartEditorState extends HaxeUIState
     gridPlayhead.add(playheadBlock);
 
     // Character icons.
-    healthIconDad = new HealthIcon(currentSongCharacterOpponent);
+    healthIconDad = new HealthIcon(currentSongMetadata.playData.characters.opponent);
     healthIconDad.autoUpdate = false;
     healthIconDad.size.set(0.5, 0.5);
     healthIconDad.x = gridTiledSprite.x - 15 - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
@@ -1377,7 +1396,7 @@ class ChartEditorState extends HaxeUIState
     add(healthIconDad);
     healthIconDad.zIndex = 30;
 
-    healthIconBF = new HealthIcon(currentSongCharacterPlayer);
+    healthIconBF = new HealthIcon(currentSongMetadata.playData.characters.player);
     healthIconBF.autoUpdate = false;
     healthIconBF.size.set(0.5, 0.5);
     healthIconBF.x = gridTiledSprite.x + gridTiledSprite.width + 15;
@@ -1474,6 +1493,12 @@ class ChartEditorState extends HaxeUIState
     return bounds;
   }
 
+  public function switchToCurrentInstrumental():Void
+  {
+    ChartEditorAudioHandler.switchToInstrumental(this, currentInstrumentalId, currentSongMetadata.playData.characters.player,
+      currentSongMetadata.playData.characters.opponent);
+  }
+
   function setNotePreviewViewportBounds(bounds:FlxRect = null):Void
   {
     if (notePreviewViewport == null)
@@ -1522,11 +1547,11 @@ class ChartEditorState extends HaxeUIState
 
     renderedEvents.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedEvents);
-    renderedNotes.zIndex = 25;
+    renderedEvents.zIndex = 25;
 
     renderedSelectionSquares.setPosition(gridTiledSprite.x, gridTiledSprite.y);
     add(renderedSelectionSquares);
-    renderedNotes.zIndex = 26;
+    renderedSelectionSquares.zIndex = 26;
   }
 
   function buildAdditionalUI():Void
@@ -1609,6 +1634,7 @@ class ChartEditorState extends HaxeUIState
     addUIClickListener('menubarItemSaveChartAs', _ -> ChartEditorImportExportHandler.exportAllSongData(this));
     addUIClickListener('menubarItemLoadInst', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
     addUIClickListener('menubarItemImportChart', _ -> ChartEditorDialogHandler.openImportChartDialog(this, 'legacy', true));
+    addUIClickListener('menubarItemExit', _ -> quitChartEditor());
 
     addUIClickListener('menubarItemUndo', _ -> undoLastCommand());
 
@@ -1636,7 +1662,18 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemCut', _ -> performCommand(new CutItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    addUIClickListener('menubarItemPaste', _ -> performCommand(new PasteItemsCommand(scrollPositionInMs + playheadPositionInMs)));
+    addUIClickListener('menubarItemPaste', _ -> {
+      var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
+      var targetStep:Float = Conductor.getTimeInSteps(targetMs);
+      var targetSnappedStep:Float = Math.floor(targetStep / noteSnapRatio) * noteSnapRatio;
+      var targetSnappedMs:Float = Conductor.getStepTimeInMs(targetSnappedStep);
+      performCommand(new PasteItemsCommand(targetSnappedMs));
+    });
+
+    addUIClickListener('menubarItemPasteUnsnapped', _ -> {
+      var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
+      performCommand(new PasteItemsCommand(targetMs));
+    });
 
     addUIClickListener('menubarItemDelete', function(_) {
       if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
@@ -1663,19 +1700,24 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemSelectNone', _ -> performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection)));
 
-    // TODO: Implement these.
-    // addUIClickListener('menubarItemSelectRegion', _ -> doSomething());
-    // addUIClickListener('menubarItemSelectBeforeCursor', _ -> doSomething());
-    // addUIClickListener('menubarItemSelectAfterCursor', _ -> doSomething());
-
     addUIClickListener('menubarItemPlaytestFull', _ -> testSongInPlayState(false));
     addUIClickListener('menubarItemPlaytestMinimal', _ -> testSongInPlayState(true));
 
-    addUIChangeListener('menubarItemInputStyleGroup', function(event:UIEvent) {
-      trace('Change input style: ${event.target}');
+    addUIClickListener('menuBarItemNoteSnapDecrease', _ -> noteSnapQuantIndex--);
+    addUIClickListener('menuBarItemNoteSnapIncrease', _ -> noteSnapQuantIndex++);
+
+    addUIChangeListener('menuBarItemInputStyleNone', function(event:UIEvent) {
+      currentLiveInputStyle = None;
+    });
+    addUIChangeListener('menuBarItemInputStyleNumberKeys', function(event:UIEvent) {
+      currentLiveInputStyle = NumberKeys;
+    });
+    addUIChangeListener('menuBarItemInputStyleWASD', function(event:UIEvent) {
+      currentLiveInputStyle = WASD;
     });
 
     addUIClickListener('menubarItemAbout', _ -> ChartEditorDialogHandler.openAboutDialog(this));
+    addUIClickListener('menubarItemWelcomeDialog', _ -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
 
     addUIClickListener('menubarItemUserGuide', _ -> ChartEditorDialogHandler.openUserGuideDialog(this));
 
@@ -1698,6 +1740,11 @@ class ChartEditorState extends HaxeUIState
     });
     setUICheckboxSelected('menuBarItemThemeDark', currentTheme == ChartEditorTheme.Dark);
 
+    addUIClickListener('menubarItemPlayPause', _ -> toggleAudioPlayback());
+
+    addUIClickListener('menubarItemLoadInstrumental', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
+    addUIClickListener('menubarItemLoadVocals', _ -> ChartEditorDialogHandler.openUploadVocalsDialog(this, true));
+
     addUIChangeListener('menubarItemMetronomeEnabled', event -> isMetronomeEnabled = event.value);
     setUICheckboxSelected('menubarItemMetronomeEnabled', isMetronomeEnabled);
 
@@ -1711,7 +1758,7 @@ class ChartEditorState extends HaxeUIState
     if (instVolumeLabel != null)
     {
       addUIChangeListener('menubarItemVolumeInstrumental', function(event:UIEvent) {
-        var volume:Float = event?.value ?? 0 / 100.0;
+        var volume:Float = (event?.value ?? 0) / 100.0;
         if (audioInstTrack != null) audioInstTrack.volume = volume;
         instVolumeLabel.text = 'Instrumental - ${Std.int(event.value)}%';
       });
@@ -1721,7 +1768,7 @@ class ChartEditorState extends HaxeUIState
     if (vocalsVolumeLabel != null)
     {
       addUIChangeListener('menubarItemVolumeVocals', function(event:UIEvent) {
-        var volume:Float = event?.value ?? 0 / 100.0;
+        var volume:Float = (event?.value ?? 0) / 100.0;
         if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
         vocalsVolumeLabel.text = 'Vocals - ${Std.int(event.value)}%';
       });
@@ -1769,6 +1816,8 @@ class ChartEditorState extends HaxeUIState
     add(redoKeyHandler);
     add(upKeyHandler);
     add(downKeyHandler);
+    add(wKeyHandler);
+    add(sKeyHandler);
     add(pageUpKeyHandler);
     add(pageDownKeyHandler);
   }
@@ -1795,7 +1844,7 @@ class ChartEditorState extends HaxeUIState
     // Auto-save to local storage.
     #else
     // Auto-save to temp file.
-    ChartEditorImportExportHandler.exportAllSongData(this, true, true);
+    ChartEditorImportExportHandler.exportAllSongData(this, true);
     #end
   }
 
@@ -1817,6 +1866,13 @@ class ChartEditorState extends HaxeUIState
 
   public override function update(elapsed:Float):Void
   {
+    // Override F4 behavior to include the autosave.
+    if (FlxG.keys.justPressed.F4)
+    {
+      quitChartEditor();
+      return;
+    }
+
     // dispatchEvent gets called here.
     super.update(elapsed);
 
@@ -1896,20 +1952,33 @@ class ChartEditorState extends HaxeUIState
     // Mouse Wheel = Scroll
     if (FlxG.mouse.wheel != 0 && !FlxG.keys.pressed.CONTROL)
     {
-      scrollAmount = -10 * FlxG.mouse.wheel;
+      scrollAmount = -50 * FlxG.mouse.wheel;
       shouldPause = true;
     }
 
     // Up Arrow = Scroll Up
-    if (upKeyHandler.activated && currentLiveInputStyle != LiveInputStyle.WASD)
+    if (upKeyHandler.activated && currentLiveInputStyle == None)
     {
-      scrollAmount = -GRID_SIZE * 0.25 * 5.0;
+      scrollAmount = -GRID_SIZE * 0.25 * 25.0;
       shouldPause = true;
     }
     // Down Arrow = Scroll Down
-    if (downKeyHandler.activated && currentLiveInputStyle != LiveInputStyle.WASD)
+    if (downKeyHandler.activated && currentLiveInputStyle == None)
     {
-      scrollAmount = GRID_SIZE * 0.25 * 5.0;
+      scrollAmount = GRID_SIZE * 0.25 * 25.0;
+      shouldPause = true;
+    }
+
+    // W = Scroll Up (doesn't work with Ctrl+Scroll)
+    if (wKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
+    {
+      scrollAmount = -GRID_SIZE * 0.25 * 25.0;
+      shouldPause = true;
+    }
+    // S = Scroll Down (doesn't work with Ctrl+Scroll)
+    if (sKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
+    {
+      scrollAmount = GRID_SIZE * 0.25 * 25.0;
       shouldPause = true;
     }
 
@@ -1974,7 +2043,7 @@ class ChartEditorState extends HaxeUIState
     // SHIFT + Scroll = Scroll Fast
     if (FlxG.keys.pressed.SHIFT)
     {
-      scrollAmount *= 5;
+      scrollAmount *= 2;
     }
     // CONTROL + Scroll = Scroll Precise
     if (FlxG.keys.pressed.CONTROL)
@@ -2045,14 +2114,17 @@ class ChartEditorState extends HaxeUIState
 
   function handleSnap():Void
   {
-    if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
+    if (currentLiveInputStyle == None)
     {
-      noteSnapQuantIndex--;
-    }
+      if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
+      {
+        noteSnapQuantIndex--;
+      }
 
-    if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
-    {
-      noteSnapQuantIndex++;
+      if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
+      {
+        noteSnapQuantIndex++;
+      }
     }
   }
 
@@ -2274,7 +2346,6 @@ class ChartEditorState extends HaxeUIState
               // Scroll up.
               var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.screenY;
               scrollPositionInPixels -= diff * 0.5; // Too fast!
-              trace('Scroll up: ' + diff);
               moveSongToScrollPosition();
             }
             else if (FlxG.mouse.screenY > (playbarHeadLayout?.y ?? 0.0))
@@ -2282,7 +2353,6 @@ class ChartEditorState extends HaxeUIState
               // Scroll down.
               var diff:Float = FlxG.mouse.screenY - (playbarHeadLayout?.y ?? 0.0);
               scrollPositionInPixels += diff * 0.5; // Too fast!
-              trace('Scroll down: ' + diff);
               moveSongToScrollPosition();
             }
 
@@ -2907,8 +2977,8 @@ class ChartEditorState extends HaxeUIState
           // Set the position and size (because we might be recycling one with bad values).
           selectionSquare.x = noteSprite.x;
           selectionSquare.y = noteSprite.y;
-          selectionSquare.width = noteSprite.width;
-          selectionSquare.height = noteSprite.height;
+          selectionSquare.width = GRID_SIZE;
+          selectionSquare.height = GRID_SIZE;
         }
       }
 
@@ -2939,6 +3009,8 @@ class ChartEditorState extends HaxeUIState
     FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
     FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
     FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
+    FlxG.watch.addQuick("notesSelected", currentNoteSelection.length);
+    FlxG.watch.addQuick("eventsSelected", currentEventSelection.length);
   }
 
   /**
@@ -2946,6 +3018,12 @@ class ChartEditorState extends HaxeUIState
    */
   function handleHealthIcons():Void
   {
+    if (healthIconsDirty)
+    {
+      if (healthIconBF != null) healthIconBF.characterId = currentSongMetadata.playData.characters.player;
+      if (healthIconDad != null) healthIconDad.characterId = currentSongMetadata.playData.characters.opponent;
+    }
+
     // Right align the BF health icon.
     if (healthIconBF != null)
     {
@@ -2961,6 +3039,8 @@ class ChartEditorState extends HaxeUIState
   {
     if (selectionSquareBitmap == null)
       throw "ERROR: Tried to build selection square, but selectionSquareBitmap is null! Check ChartEditorThemeHandler.updateSelectionSquare()";
+
+    FlxG.bitmapLog.add(selectionSquareBitmap, "selectionSquareBitmap");
 
     return new FlxSprite().loadGraphic(selectionSquareBitmap);
   }
@@ -3032,8 +3112,14 @@ class ChartEditorState extends HaxeUIState
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
     {
-      FlxG.switchState(new MainMenuState());
+      quitChartEditor();
     }
+  }
+
+  function quitChartEditor():Void
+  {
+    autoSave();
+    FlxG.switchState(new MainMenuState());
   }
 
   /**
@@ -3075,8 +3161,20 @@ class ChartEditorState extends HaxeUIState
     // CTRL + V = Paste
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V)
     {
-      // Paste notes from clipboard, at the playhead.
-      performCommand(new PasteItemsCommand(scrollPositionInMs + playheadPositionInMs));
+      // CTRL + SHIFT + V = Paste Unsnapped.
+      var targetMs:Float = if (FlxG.keys.pressed.SHIFT)
+      {
+        scrollPositionInMs + playheadPositionInMs;
+      }
+      else
+      {
+        var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
+        var targetStep:Float = Conductor.getTimeInSteps(targetMs);
+        var targetSnappedStep:Float = Math.floor(targetStep / noteSnapRatio) * noteSnapRatio;
+        var targetSnappedMs:Float = Conductor.getStepTimeInMs(targetSnappedStep);
+        targetSnappedMs;
+      }
+      performCommand(new PasteItemsCommand(targetMs));
     }
 
     // DELETE = Delete
@@ -3124,13 +3222,17 @@ class ChartEditorState extends HaxeUIState
    */
   function handleViewKeybinds():Void
   {
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
+    if (currentLiveInputStyle == None)
     {
-      incrementDifficulty(-1);
-    }
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
-    {
-      incrementDifficulty(1);
+      if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
+      {
+        incrementDifficulty(-1);
+      }
+      if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
+      {
+        incrementDifficulty(1);
+      }
+      // Would bind Ctrl+A and Ctrl+D here, but they are already bound to Select All and Select None.
     }
   }
 
@@ -3237,7 +3339,7 @@ class ChartEditorState extends HaxeUIState
    */
   function handleTestKeybinds():Void
   {
-    if (!isHaxeUIDialogOpen && FlxG.keys.justPressed.ENTER)
+    if (!isHaxeUIDialogOpen && !isCursorOverHaxeUI && FlxG.keys.justPressed.ENTER)
     {
       var minimal = FlxG.keys.pressed.SHIFT;
       testSongInPlayState(minimal);
@@ -3363,11 +3465,11 @@ class ChartEditorState extends HaxeUIState
     {
       playerPreviewDirty = false;
 
-      if (currentSongCharacterPlayer != charPlayer.charId)
+      if (currentSongMetadata.playData.characters.player != charPlayer.charId)
       {
-        if (healthIconBF != null) healthIconBF.characterId = currentSongCharacterPlayer;
+        if (healthIconBF != null) healthIconBF.characterId = currentSongMetadata.playData.characters.player;
 
-        charPlayer.loadCharacter(currentSongCharacterPlayer);
+        charPlayer.loadCharacter(currentSongMetadata.playData.characters.player);
         charPlayer.characterType = CharacterType.BF;
         charPlayer.flip = true;
         charPlayer.targetScale = 0.5;
@@ -3399,11 +3501,11 @@ class ChartEditorState extends HaxeUIState
     {
       opponentPreviewDirty = false;
 
-      if (currentSongCharacterOpponent != charPlayer.charId)
+      if (currentSongMetadata.playData.characters.opponent != charPlayer.charId)
       {
-        if (healthIconDad != null) healthIconDad.characterId = currentSongCharacterOpponent;
+        if (healthIconDad != null) healthIconDad.characterId = currentSongMetadata.playData.characters.opponent;
 
-        charPlayer.loadCharacter(currentSongCharacterOpponent);
+        charPlayer.loadCharacter(currentSongMetadata.playData.characters.opponent);
         charPlayer.characterType = CharacterType.DAD;
         charPlayer.flip = false;
         charPlayer.targetScale = 0.5;
@@ -3783,9 +3885,9 @@ class ChartEditorState extends HaxeUIState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-09'));
+          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('ui/chart-editor/playerHitsound'));
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-010'));
+          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('ui/chart-editor/opponentHitsound'));
       }
     }
   }
@@ -3829,25 +3931,26 @@ class ChartEditorState extends HaxeUIState
     switch (currentLiveInputStyle)
     {
       case LiveInputStyle.WASD:
-        if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(0);
-        if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(1);
-        if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(2);
-        if (FlxG.keys.justPressed.D) placeNoteAtPlayhead(3);
+        if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(4);
+        if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(5);
+        if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(6);
+        if (FlxG.keys.justPressed.D) placeNoteAtPlayhead(7);
 
-        if (FlxG.keys.justPressed.LEFT) placeNoteAtPlayhead(4);
-        if (FlxG.keys.justPressed.DOWN) placeNoteAtPlayhead(5);
-        if (FlxG.keys.justPressed.UP) placeNoteAtPlayhead(6);
-        if (FlxG.keys.justPressed.RIGHT) placeNoteAtPlayhead(7);
+        if (FlxG.keys.justPressed.LEFT) placeNoteAtPlayhead(0);
+        if (FlxG.keys.justPressed.DOWN) placeNoteAtPlayhead(1);
+        if (FlxG.keys.justPressed.UP) placeNoteAtPlayhead(2);
+        if (FlxG.keys.justPressed.RIGHT) placeNoteAtPlayhead(3);
       case LiveInputStyle.NumberKeys:
-        if (FlxG.keys.justPressed.ONE) placeNoteAtPlayhead(0);
-        if (FlxG.keys.justPressed.TWO) placeNoteAtPlayhead(1);
-        if (FlxG.keys.justPressed.THREE) placeNoteAtPlayhead(2);
-        if (FlxG.keys.justPressed.FOUR) placeNoteAtPlayhead(3);
+        // Flipped because Dad is on the left but represents data 0-3.
+        if (FlxG.keys.justPressed.ONE) placeNoteAtPlayhead(4);
+        if (FlxG.keys.justPressed.TWO) placeNoteAtPlayhead(5);
+        if (FlxG.keys.justPressed.THREE) placeNoteAtPlayhead(6);
+        if (FlxG.keys.justPressed.FOUR) placeNoteAtPlayhead(7);
 
-        if (FlxG.keys.justPressed.FIVE) placeNoteAtPlayhead(4);
-        if (FlxG.keys.justPressed.SIX) placeNoteAtPlayhead(5);
-        if (FlxG.keys.justPressed.SEVEN) placeNoteAtPlayhead(6);
-        if (FlxG.keys.justPressed.EIGHT) placeNoteAtPlayhead(7);
+        if (FlxG.keys.justPressed.FIVE) placeNoteAtPlayhead(0);
+        if (FlxG.keys.justPressed.SIX) placeNoteAtPlayhead(1);
+        if (FlxG.keys.justPressed.SEVEN) placeNoteAtPlayhead(2);
+        if (FlxG.keys.justPressed.EIGHT) placeNoteAtPlayhead(3);
       case LiveInputStyle.None:
         // Do nothing.
     }
@@ -3856,12 +3959,24 @@ class ChartEditorState extends HaxeUIState
   function placeNoteAtPlayhead(column:Int):Void
   {
     var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / (16 / noteSnapQuant);
+    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
     var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-    var playheadPosMs:Float = playheadPosStep * Conductor.stepLengthMs * (16 / noteSnapQuant);
+    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.stepLengthMs * noteSnapRatio;
 
-    var newNoteData:SongNoteData = new SongNoteData(playheadPosMs, column, 0, selectedNoteKind);
-    performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+    // Look for notes within 1 step of the playhead.
+    var notesAtPos:Array<SongNoteData> = SongDataUtils.getNotesInTimeRange(currentSongChartNoteData, playheadPosSnappedMs,
+      playheadPosSnappedMs + Conductor.stepLengthMs * noteSnapRatio);
+    notesAtPos = SongDataUtils.getNotesWithData(notesAtPos, [column]);
+
+    if (notesAtPos.length == 0)
+    {
+      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, selectedNoteKind);
+      performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+    }
+    else
+    {
+      trace('Already a note there.');
+    }
   }
 
   function set_scrollPositionInPixels(value:Float):Float
@@ -3920,6 +4035,8 @@ class ChartEditorState extends HaxeUIState
    */
   public function testSongInPlayState(minimal:Bool = false):Void
   {
+    autoSave();
+
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
@@ -4007,12 +4124,18 @@ class ChartEditorState extends HaxeUIState
 
       buildSpectrogram(audioInstTrack);
     }
+    else
+    {
+      trace('[WARN] Instrumental track was null!');
+    }
 
+    // Pretty much everything is going to need to be reset.
     scrollPositionInPixels = 0;
     playheadPositionInPixels = 0;
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
     noteDisplayDirty = true;
+    healthIconsDirty = true;
     moveSongToScrollPosition();
   }
 

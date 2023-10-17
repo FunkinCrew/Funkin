@@ -920,7 +920,6 @@ class PlayState extends MusicBeatSubState
     }
 
     // Handle keybinds.
-    // if (!isInCutscene && !disableKeys) keyShit(true);
     processInputQueue();
     if (!isInCutscene && !disableKeys) debugKeyShit();
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
@@ -1268,7 +1267,7 @@ class PlayState extends MusicBeatSubState
    */
   function initHealthBar():Void
   {
-    var healthBarYPos:Float = PreferencesMenu.getPref('downscroll') ? FlxG.height * 0.1 : FlxG.height * 0.9;
+    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
     healthBarBG = new FlxSprite(0, healthBarYPos).loadGraphic(Paths.image('healthBar'));
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
@@ -1477,13 +1476,13 @@ class PlayState extends MusicBeatSubState
     // Position the player strumline on the right half of the screen
     playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
-    playerStrumline.y = PreferencesMenu.getPref('downscroll') ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     playerStrumline.zIndex = 200;
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
     opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
-    opponentStrumline.y = PreferencesMenu.getPref('downscroll') ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.zIndex = 100;
     opponentStrumline.cameras = [camHUD];
 
@@ -2464,9 +2463,9 @@ class PlayState extends MusicBeatSubState
               accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
             };
 
-          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, currentDifficulty, data))
+          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
-            Save.get().setLevelScore(PlayStatePlaylist.campaignId, currentDifficulty, data);
+            Save.get().setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end
@@ -2514,7 +2513,7 @@ class PlayState extends MusicBeatSubState
             var nextPlayState:PlayState = new PlayState(
               {
                 targetSong: targetSong,
-                targetDifficulty: currentDifficulty,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
                 targetCharacter: currentPlayerId,
               });
             nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2530,7 +2529,7 @@ class PlayState extends MusicBeatSubState
           var nextPlayState:PlayState = new PlayState(
             {
               targetSong: targetSong,
-              targetDifficulty: currentDifficulty,
+              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
               targetCharacter: currentPlayerId,
             });
           nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2656,7 +2655,12 @@ class PlayState extends MusicBeatSubState
             persistentUpdate = false;
             vocals.stop();
             camHUD.alpha = 1;
-            var res:ResultState = new ResultState();
+            var res:ResultState = new ResultState(
+              {
+                storyMode: PlayStatePlaylist.isStoryMode,
+                title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+                tallies: Highscore.tallies,
+              });
             res.camera = camHUD;
             openSubState(res);
           }
