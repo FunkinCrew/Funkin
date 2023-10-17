@@ -122,7 +122,7 @@ class StickerSubState extends MusicBeatSubState
         var daSound:String = FlxG.random.getObject(sounds);
         FlxG.sound.play(Paths.sound(daSound));
 
-        if (ind == grpStickers.members.length - 1)
+        if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
           switchingState = false;
           close();

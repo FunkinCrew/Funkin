@@ -77,6 +77,11 @@ class PlayerSettings
     this.id = id;
     this.controls = new Controls('player$id', None);
 
+    addKeyboard();
+  }
+
+  function addKeyboard():Void
+  {
     var useDefault = true;
     if (Save.get().hasControls(id, Keys))
     {
@@ -96,7 +101,6 @@ class PlayerSettings
       controls.setKeyboardScheme(Solo);
     }
 
-    // Apply loaded settings.
     PreciseInputManager.instance.initializeKeys(controls);
   }
 
@@ -124,6 +128,7 @@ class PlayerSettings
       trace("Loading gamepad control scheme");
       controls.addDefaultGamepad(gamepad.id);
     }
+    PreciseInputManager.instance.initializeButtons(controls, gamepad);
   }
 
   /**

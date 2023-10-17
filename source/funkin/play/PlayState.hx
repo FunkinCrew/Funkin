@@ -920,7 +920,6 @@ class PlayState extends MusicBeatSubState
     }
 
     // Handle keybinds.
-    // if (!isInCutscene && !disableKeys) keyShit(true);
     processInputQueue();
     if (!isInCutscene && !disableKeys) debugKeyShit();
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
