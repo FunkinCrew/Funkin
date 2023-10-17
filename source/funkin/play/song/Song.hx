@@ -245,12 +245,41 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     if (variationId == '') variationId = null;
 
-    return difficulties.keys().array().filter(function(diffId:String):Bool {
+    var diffFiltered:Array<String> = difficulties.keys().array().filter(function(diffId:String):Bool {
       if (variationId == null) return true;
       var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
       if (difficulty == null) return false;
       return difficulty.variation == variationId;
     });
+
+    // sort the difficulties, since they may be out of order in the chart JSON
+    // maybe be careful of lowercase/uppercase?
+    // also used in Level.listDifficulties()!!
+    var diffMap:Map<String, Int> = new Map<String, Int>();
+    for (difficulty in diffFiltered)
+    {
+      var num:Int = 0;
+      switch (difficulty)
+      {
+        case 'easy':
+          num = 0;
+        case 'normal':
+          num = 1;
+        case 'hard':
+          num = 2;
+        case 'erect':
+          num = 3;
+        case 'nightmare':
+          num = 4;
+      }
+      diffMap.set(difficulty, num);
+    }
+
+    diffFiltered.sort(function(a:String, b:String) {
+      return (diffMap.get(a) ?? 0) - (diffMap.get(b) ?? 0);
+    });
+
+    return diffFiltered;
   }
 
   public function hasDifficulty(diffId:String, ?variationId:String):Bool

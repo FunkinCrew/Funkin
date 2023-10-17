@@ -156,6 +156,7 @@ class Level implements IRegistryEntry<LevelData>
     }
 
     // sort the difficulties, since they may be out of order in the chart JSON
+    // also copy/pasted to Song.listDifficulties()!
     var diffMap:Map<String, Int> = new Map<String, Int>();
     for (difficulty in difficulties)
     {
