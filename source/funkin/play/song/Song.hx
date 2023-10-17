@@ -1,5 +1,6 @@
 package funkin.play.song;
 
+import funkin.util.SortUtil;
 import flixel.sound.FlxSound;
 import openfl.utils.Assets;
 import funkin.modding.events.ScriptEvent;
@@ -252,32 +253,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       return difficulty.variation == variationId;
     });
 
-    // sort the difficulties, since they may be out of order in the chart JSON
-    // maybe be careful of lowercase/uppercase?
-    // also used in Level.listDifficulties()!!
-    var diffMap:Map<String, Int> = new Map<String, Int>();
-    for (difficulty in diffFiltered)
-    {
-      var num:Int = 0;
-      switch (difficulty)
-      {
-        case 'easy':
-          num = 0;
-        case 'normal':
-          num = 1;
-        case 'hard':
-          num = 2;
-        case 'erect':
-          num = 3;
-        case 'nightmare':
-          num = 4;
-      }
-      diffMap.set(difficulty, num);
-    }
-
-    diffFiltered.sort(function(a:String, b:String) {
-      return (diffMap.get(a) ?? 0) - (diffMap.get(b) ?? 0);
-    });
+    diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
 
     return diffFiltered;
   }
