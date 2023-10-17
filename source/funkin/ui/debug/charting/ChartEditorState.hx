@@ -1897,6 +1897,16 @@ class ChartEditorState extends HaxeUIState
     handleViewKeybinds();
     handleTestKeybinds();
     handleHelpKeybinds();
+
+    #if debug
+    handleQuickWatch();
+    #end
+  }
+
+  function handleQuickWatch():Void
+  {
+    FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
+    FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
   }
 
   /**
@@ -3119,6 +3129,7 @@ class ChartEditorState extends HaxeUIState
   function quitChartEditor():Void
   {
     autoSave();
+    stopWelcomeMusic();
     FlxG.switchState(new MainMenuState());
   }
 
@@ -3342,6 +3353,7 @@ class ChartEditorState extends HaxeUIState
     if (!isHaxeUIDialogOpen && !isCursorOverHaxeUI && FlxG.keys.justPressed.ENTER)
     {
       var minimal = FlxG.keys.pressed.SHIFT;
+      ChartEditorToolboxHandler.hideAllToolboxes(this);
       testSongInPlayState(minimal);
     }
   }
@@ -4153,13 +4165,12 @@ class ChartEditorState extends HaxeUIState
    */
   function moveSongToScrollPosition():Void
   {
-    // Update the songPosition in the Conductor.
-    var targetPos = scrollPositionInMs;
-    Conductor.update(targetPos);
-
     // Update the songPosition in the audio tracks.
     if (audioInstTrack != null) audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = scrollPositionInMs + playheadPositionInMs;
+
+    // Update the songPosition in the Conductor.
+    Conductor.update(audioInstTrack.time);
 
     // We need to update the note sprites because we changed the scroll position.
     noteDisplayDirty = true;

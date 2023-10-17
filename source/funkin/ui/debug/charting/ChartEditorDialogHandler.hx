@@ -667,8 +667,6 @@ class ChartEditorDialogHandler
         timeChanges[0].bpm = event.value;
       }
 
-      Conductor.forceBPM(event.value);
-
       newSongMetadata.timeChanges = timeChanges;
     };
 
@@ -676,6 +674,8 @@ class ChartEditorDialogHandler
     if (dialogContinue == null) throw 'Could not locate dialogContinue button in Song Metadata dialog';
     dialogContinue.onClick = (_event) -> {
       state.songMetadata.set(targetVariation, newSongMetadata);
+
+      Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
       dialog.hideDialog(DialogButton.APPLY);
     }
@@ -696,6 +696,8 @@ class ChartEditorDialogHandler
 
     var charData:SongCharacterData = state.currentSongMetadata.playData.characters;
 
+    var hasClearedVocals:Bool = false;
+
     charIdsForVocals.push(charData.player);
     charIdsForVocals.push(charData.opponent);
 
@@ -715,6 +717,7 @@ class ChartEditorDialogHandler
     if (dialogNoVocals == null) throw 'Could not locate dialogNoVocals button in Upload Vocals dialog';
     dialogNoVocals.onClick = function(_event) {
       // Dismiss
+      ChartEditorAudioHandler.stopExistingVocals(state);
       dialog.hideDialog(DialogButton.APPLY);
     };
 
@@ -737,6 +740,12 @@ class ChartEditorDialogHandler
       var onDropFile:String->Void = function(pathStr:String) {
         trace('Selected file: $pathStr');
         var path:Path = new Path(pathStr);
+
+        if (!hasClearedVocals)
+        {
+          hasClearedVocals = true;
+          ChartEditorAudioHandler.stopExistingVocals(state);
+        }
 
         if (ChartEditorAudioHandler.loadVocalsFromPath(state, path, charKey, instId))
         {
@@ -788,6 +797,11 @@ class ChartEditorDialogHandler
             if (selectedFile != null && selectedFile.bytes != null)
             {
               trace('Selected file: ' + selectedFile.name);
+              if (!hasClearedVocals)
+              {
+                hasClearedVocals = true;
+                ChartEditorAudioHandler.stopExistingVocals(state);
+              }
               if (ChartEditorAudioHandler.loadVocalsFromBytes(state, selectedFile.bytes, charKey, instId))
               {
                 // Tell the user the load was successful.
