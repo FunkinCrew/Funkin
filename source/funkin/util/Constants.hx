@@ -127,6 +127,11 @@ class Constants
   public static final DEFAULT_CHARACTER:String = 'bf';
 
   /**
+   * Default player character for health icons.
+   */
+  public static final DEFAULT_HEALTH_ICON:String = 'face';
+
+  /**
    * Default stage for charts.
    */
   public static final DEFAULT_STAGE:String = 'mainStage';
