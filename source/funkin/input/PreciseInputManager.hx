@@ -100,6 +100,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     _dirReleaseTimestamps = new Map<NoteDirection, Int64>();
 
     // Keyboard
+    FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+    FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
     FlxG.stage.application.window.onKeyDownPrecise.add(handleKeyDown);
     FlxG.stage.application.window.onKeyUpPrecise.add(handleKeyUp);
 

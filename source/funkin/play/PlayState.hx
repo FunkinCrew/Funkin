@@ -2443,7 +2443,7 @@ class PlayState extends MusicBeatSubState
         {
           NGio.unlockMedal(60961);
 
-          var data:SaveScoreData =
+          var data =
             {
               score: PlayStatePlaylist.campaignScore,
               tallies:
