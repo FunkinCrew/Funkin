@@ -23,8 +23,6 @@ runs:
       with:
         path: .haxelib
         key: ${{ runner.os }}-hmm-${{ hashFiles('**/hmm.json') }}
-        restore-keys: |
-          ${{ runner.os }}-hmm-
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: hmm install
       run: |

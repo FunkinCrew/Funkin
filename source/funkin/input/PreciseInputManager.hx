@@ -1,18 +1,25 @@
 package funkin.input;
 
-import openfl.ui.Keyboard;
-import funkin.play.notes.NoteDirection;
-import flixel.input.keyboard.FlxKeyboard.FlxKeyInput;
-import openfl.events.KeyboardEvent;
 import flixel.FlxG;
+import flixel.input.FlxInput;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.input.FlxKeyManager;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import flixel.input.keyboard.FlxKeyboard.FlxKeyInput;
 import flixel.input.keyboard.FlxKeyList;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import funkin.play.notes.NoteDirection;
+import funkin.util.FlxGamepadUtil;
 import haxe.Int64;
+import lime.ui.Gamepad as LimeGamepad;
+import lime.ui.GamepadAxis as LimeGamepadAxis;
+import lime.ui.GamepadButton as LimeGamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
+import openfl.events.KeyboardEvent;
+import openfl.ui.Keyboard;
 
 /**
  * A precise input manager that:
@@ -44,6 +51,20 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   var _keyListDir:Map<FlxKey, NoteDirection>;
 
   /**
+   * A FlxGamepadID->Array<FlxGamepadInputID>, with FlxGamepadInputID being the counterpart to FlxKey.
+   */
+  var _buttonList:Map<Int, Array<FlxGamepadInputID>>;
+
+  var _buttonListArray:Array<FlxInput<FlxGamepadInputID>>;
+
+  var _buttonListMap:Map<Int, Map<FlxGamepadInputID, FlxInput<FlxGamepadInputID>>>;
+
+  /**
+   * A FlxGamepadID->FlxGamepadInputID->NoteDirection, with FlxGamepadInputID being the counterpart to FlxKey.
+   */
+  var _buttonListDir:Map<Int, Map<FlxGamepadInputID, NoteDirection>>;
+
+  /**
    * The timestamp at which a given note direction was last pressed.
    */
   var _dirPressTimestamps:Map<NoteDirection, Int64>;
@@ -53,17 +74,32 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
    */
   var _dirReleaseTimestamps:Map<NoteDirection, Int64>;
 
+  var _deviceBinds:Map<FlxGamepad,
+    {
+      onButtonDown:LimeGamepadButton->Int64->Void,
+      onButtonUp:LimeGamepadButton->Int64->Void
+    }>;
+
   public function new()
   {
     super(PreciseInputList.new);
 
+    _deviceBinds = [];
+
     _keyList = [];
-    _dirPressTimestamps = new Map<NoteDirection, Int64>();
-    _dirReleaseTimestamps = new Map<NoteDirection, Int64>();
+    // _keyListMap
+    // _keyListArray
     _keyListDir = new Map<FlxKey, NoteDirection>();
 
-    FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-    FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+    _buttonList = [];
+    _buttonListMap = [];
+    _buttonListArray = [];
+    _buttonListDir = new Map<Int, Map<FlxGamepadInputID, NoteDirection>>();
+
+    _dirPressTimestamps = new Map<NoteDirection, Int64>();
+    _dirReleaseTimestamps = new Map<NoteDirection, Int64>();
+
+    // Keyboard
     FlxG.stage.application.window.onKeyDownPrecise.add(handleKeyDown);
     FlxG.stage.application.window.onKeyUpPrecise.add(handleKeyUp);
 
@@ -81,6 +117,17 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       case NoteDirection.DOWN: controls.getKeysForAction(NOTE_DOWN);
       case NoteDirection.UP: controls.getKeysForAction(NOTE_UP);
       case NoteDirection.RIGHT: controls.getKeysForAction(NOTE_RIGHT);
+    };
+  }
+
+  public static function getButtonsForDirection(controls:Controls, noteDirection:NoteDirection)
+  {
+    return switch (noteDirection)
+    {
+      case NoteDirection.LEFT: controls.getButtonsForAction(NOTE_LEFT);
+      case NoteDirection.DOWN: controls.getButtonsForAction(NOTE_DOWN);
+      case NoteDirection.UP: controls.getButtonsForAction(NOTE_UP);
+      case NoteDirection.RIGHT: controls.getButtonsForAction(NOTE_RIGHT);
     };
   }
 
@@ -138,6 +185,43 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     }
   }
 
+  public function initializeButtons(controls:Controls, gamepad:FlxGamepad):Void
+  {
+    clearButtons();
+
+    var limeGamepad = FlxGamepadUtil.getLimeGamepad(gamepad);
+    var callbacks =
+      {
+        onButtonDown: handleButtonDown.bind(gamepad),
+        onButtonUp: handleButtonUp.bind(gamepad)
+      };
+    limeGamepad.onButtonDownPrecise.add(callbacks.onButtonDown);
+    limeGamepad.onButtonUpPrecise.add(callbacks.onButtonUp);
+
+    for (noteDirection in DIRECTIONS)
+    {
+      var buttons = getButtonsForDirection(controls, noteDirection);
+      for (button in buttons)
+      {
+        var input = new FlxInput<FlxGamepadInputID>(button);
+
+        var buttonListEntry = _buttonList.get(gamepad.id);
+        if (buttonListEntry == null) _buttonList.set(gamepad.id, buttonListEntry = []);
+        buttonListEntry.push(button);
+
+        _buttonListArray.push(input);
+
+        var buttonListMapEntry = _buttonListMap.get(gamepad.id);
+        if (buttonListMapEntry == null) _buttonListMap.set(gamepad.id, buttonListMapEntry = new Map<FlxGamepadInputID, FlxInput<FlxGamepadInputID>>());
+        buttonListMapEntry.set(button, input);
+
+        var buttonListDirEntry = _buttonListDir.get(gamepad.id);
+        if (buttonListDirEntry == null) _buttonListDir.set(gamepad.id, buttonListDirEntry = new Map<FlxGamepadInputID, NoteDirection>());
+        buttonListDirEntry.set(button, noteDirection);
+      }
+    }
+  }
+
   /**
    * Get the time, in nanoseconds, since the given note direction was last pressed.
    * @param noteDirection The note direction to check.
@@ -165,9 +249,39 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     return _keyListMap.get(key);
   }
 
+  public function getInputByButton(gamepad:FlxGamepad, button:FlxGamepadInputID):FlxInput<FlxGamepadInputID>
+  {
+    return _buttonListMap.get(gamepad.id).get(button);
+  }
+
   public function getDirectionForKey(key:FlxKey):NoteDirection
   {
     return _keyListDir.get(key);
+  }
+
+  public function getDirectionForButton(gamepad:FlxGamepad, button:FlxGamepadInputID):NoteDirection
+  {
+    return _buttonListDir.get(gamepad.id).get(button);
+  }
+
+  function getButton(gamepad:FlxGamepad, button:FlxGamepadInputID):FlxInput<FlxGamepadInputID>
+  {
+    return _buttonListMap.get(gamepad.id).get(button);
+  }
+
+  function updateButtonStates(gamepad:FlxGamepad, button:FlxGamepadInputID, down:Bool):Void
+  {
+    var input = getButton(gamepad, button);
+    if (input == null) return;
+
+    if (down)
+    {
+      input.press();
+    }
+    else
+    {
+      input.release();
+    }
   }
 
   function handleKeyDown(keyCode:KeyCode, _:KeyModifier, timestamp:Int64):Void
@@ -198,7 +312,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     if (_keyList.indexOf(key) == -1) return;
 
     // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps are measured in nanoseconds, not milliseconds.
+    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
     timestamp *= Constants.NS_PER_MS;
 
     updateKeyStates(key, false);
@@ -211,6 +325,54 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
           timestamp: timestamp
         });
       _dirReleaseTimestamps.set(getDirectionForKey(key), timestamp);
+    }
+  }
+
+  function handleButtonDown(gamepad:FlxGamepad, button:LimeGamepadButton, timestamp:Int64):Void
+  {
+    var buttonId:FlxGamepadInputID = FlxGamepadUtil.getInputID(gamepad, button);
+
+    var buttonListEntry = _buttonList.get(gamepad.id);
+    if (buttonListEntry == null || buttonListEntry.indexOf(buttonId) == -1) return;
+
+    // TODO: Remove this line with SDL3 when timestamps change meaning.
+    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
+    timestamp *= Constants.NS_PER_MS;
+
+    updateButtonStates(gamepad, buttonId, true);
+
+    if (getInputByButton(gamepad, buttonId)?.justPressed ?? false)
+    {
+      onInputPressed.dispatch(
+        {
+          noteDirection: getDirectionForButton(gamepad, buttonId),
+          timestamp: timestamp
+        });
+      _dirPressTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
+    }
+  }
+
+  function handleButtonUp(gamepad:FlxGamepad, button:LimeGamepadButton, timestamp:Int64):Void
+  {
+    var buttonId:FlxGamepadInputID = FlxGamepadUtil.getInputID(gamepad, button);
+
+    var buttonListEntry = _buttonList.get(gamepad.id);
+    if (buttonListEntry == null || buttonListEntry.indexOf(buttonId) == -1) return;
+
+    // TODO: Remove this line with SDL3 when timestamps change meaning.
+    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
+    timestamp *= Constants.NS_PER_MS;
+
+    updateButtonStates(gamepad, buttonId, false);
+
+    if (getInputByButton(gamepad, buttonId)?.justReleased ?? false)
+    {
+      onInputReleased.dispatch(
+        {
+          noteDirection: getDirectionForButton(gamepad, buttonId),
+          timestamp: timestamp
+        });
+      _dirReleaseTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
   }
 
@@ -227,6 +389,31 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     _keyListArray = [];
     _keyListMap.clear();
     _keyListDir.clear();
+  }
+
+  function clearButtons():Void
+  {
+    _buttonListArray = [];
+    _buttonListDir.clear();
+
+    for (gamepad in _deviceBinds.keys())
+    {
+      var callbacks = _deviceBinds.get(gamepad);
+      var limeGamepad = FlxGamepadUtil.getLimeGamepad(gamepad);
+      limeGamepad.onButtonDownPrecise.remove(callbacks.onButtonDown);
+      limeGamepad.onButtonUpPrecise.remove(callbacks.onButtonUp);
+    }
+    _deviceBinds.clear();
+  }
+
+  public override function destroy():Void
+  {
+    // Keyboard
+    FlxG.stage.application.window.onKeyDownPrecise.remove(handleKeyDown);
+    FlxG.stage.application.window.onKeyUpPrecise.remove(handleKeyUp);
+
+    clearKeys();
+    clearButtons();
   }
 }
 

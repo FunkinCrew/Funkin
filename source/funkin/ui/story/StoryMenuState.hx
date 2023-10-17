@@ -1,5 +1,7 @@
 package funkin.ui.story;
 
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
 import openfl.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
@@ -624,7 +626,8 @@ class StoryMenuState extends MusicBeatState
     tracklistText.screenCenter(X);
     tracklistText.x -= FlxG.width * 0.35;
 
-    // TODO: Fix this.
-    highScore = Highscore.getWeekScore(0, 0);
+    var levelScore:Null<SaveScoreData> = Save.get().getLevelScore(currentLevelId, currentDifficultyId);
+    highScore = levelScore?.score ?? 0;
+    // levelScore.accuracy
   }
 }

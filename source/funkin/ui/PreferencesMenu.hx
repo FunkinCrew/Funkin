@@ -3,17 +3,16 @@ package funkin.ui;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.OptionsState.Page;
 import funkin.ui.TextMenuList.TextMenuItem;
 
 class PreferencesMenu extends Page
 {
-  public static var preferences:Map<String, Dynamic> = new Map();
-
   var items:TextMenuList;
+  var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
 
-  var checkboxes:Array<CheckboxThingie> = [];
   var menuCamera:FlxCamera;
   var camFollow:FlxObject;
 
@@ -27,13 +26,9 @@ class PreferencesMenu extends Page
     camera = menuCamera;
 
     add(items = new TextMenuList());
+    add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
 
-    createPrefItem('naughtyness', 'censor-naughty', true);
-    createPrefItem('downscroll', 'downscroll', false);
-    createPrefItem('flashing menu', 'flashing-menu', true);
-    createPrefItem('Camera Zooming on Beat', 'camera-zoom', true);
-    createPrefItem('FPS Counter', 'fps-counter', true);
-    createPrefItem('Auto Pause', 'auto-pause', false);
+    createPrefItems();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
     if (items != null) camFollow.y = items.selectedItem.y;
@@ -48,128 +43,63 @@ class PreferencesMenu extends Page
     });
   }
 
-  public static function getPref(pref:String):Dynamic
+  /**
+   * Create the menu items for each of the preferences.
+   */
+  function createPrefItems():Void
   {
-    return preferences.get(pref);
+    createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
+      Preferences.naughtyness = value;
+    }, Preferences.naughtyness);
+    createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
+      Preferences.downscroll = value;
+    }, Preferences.downscroll);
+    createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
+      Preferences.flashingLights = value;
+    }, Preferences.flashingLights);
+    createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
+      Preferences.zoomCamera = value;
+    }, Preferences.zoomCamera);
+    createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
+      Preferences.debugDisplay = value;
+    }, Preferences.debugDisplay);
+    createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
+      Preferences.autoPause = value;
+    }, Preferences.autoPause);
   }
 
-  // easy shorthand?
-  public static function setPref(pref:String, value:Dynamic):Void
+  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
   {
-    preferences.set(pref, value);
-  }
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
 
-  public static function initPrefs():Void
-  {
-    preferenceCheck('censor-naughty', true);
-    preferenceCheck('downscroll', false);
-    preferenceCheck('flashing-menu', true);
-    preferenceCheck('camera-zoom', true);
-    preferenceCheck('fps-counter', true);
-    preferenceCheck('auto-pause', false);
-    preferenceCheck('master-volume', 1);
-
-    #if muted
-    setPref('master-volume', 0);
-    FlxG.sound.muted = true;
-    #end
-
-    if (!getPref('fps-counter')) FlxG.stage.removeChild(Main.fpsCounter);
-
-    FlxG.autoPause = getPref('auto-pause');
-  }
-
-  function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
-  {
     items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
-      preferenceCheck(prefString, prefValue);
-
-      switch (Type.typeof(prefValue).getName())
-      {
-        case 'TBool':
-          prefToggle(prefString);
-
-        default:
-          trace('swag');
-      }
+      var value = !checkbox.currentValue;
+      onChange(value);
+      checkbox.currentValue = value;
     });
 
-    switch (Type.typeof(prefValue).getName())
-    {
-      case 'TBool':
-        createCheckbox(prefString);
-
-      default:
-        trace('swag');
-    }
-
-    trace(Type.typeof(prefValue).getName());
-  }
-
-  function createCheckbox(prefString:String)
-  {
-    var checkbox:CheckboxThingie = new CheckboxThingie(0, 120 * (items.length - 1), preferences.get(prefString));
-    checkboxes.push(checkbox);
-    add(checkbox);
-  }
-
-  /**
-   * Assumes that the preference has already been checked/set?
-   */
-  function prefToggle(prefName:String)
-  {
-    var daSwap:Bool = preferences.get(prefName);
-    daSwap = !daSwap;
-    preferences.set(prefName, daSwap);
-    checkboxes[items.selectedIndex].daValue = daSwap;
-    trace('toggled? ' + preferences.get(prefName));
-
-    switch (prefName)
-    {
-      case 'fps-counter':
-        if (getPref('fps-counter')) FlxG.stage.addChild(Main.fpsCounter);
-        else
-          FlxG.stage.removeChild(Main.fpsCounter);
-      case 'auto-pause':
-        FlxG.autoPause = getPref('auto-pause');
-    }
-
-    if (prefName == 'fps-counter') {}
+    preferenceItems.add(checkbox);
   }
 
   override function update(elapsed:Float)
   {
     super.update(elapsed);
 
-    // menuCamera.followLerp = CoolUtil.camLerpShit(0.05);
-
+    // Indent the selected item.
+    // TODO: Only do this on menu change?
     items.forEach(function(daItem:TextMenuItem) {
       if (items.selectedItem == daItem) daItem.x = 150;
       else
         daItem.x = 120;
     });
   }
-
-  static function preferenceCheck(prefString:String, defaultValue:Dynamic):Void
-  {
-    if (preferences.get(prefString) == null)
-    {
-      // Set the value to default.
-      preferences.set(prefString, defaultValue);
-      trace('Set preference to default: ${prefString} = ${defaultValue}');
-    }
-    else
-    {
-      trace('Found preference: ${prefString} = ${preferences.get(prefString)}');
-    }
-  }
 }
 
-class CheckboxThingie extends FlxSprite
+class CheckboxPreferenceItem extends FlxSprite
 {
-  public var daValue(default, set):Bool;
+  public var currentValue(default, set):Bool;
 
-  public function new(x:Float, y:Float, daValue:Bool = false)
+  public function new(x:Float, y:Float, defaultValue:Bool = false)
   {
     super(x, y);
 
@@ -180,7 +110,7 @@ class CheckboxThingie extends FlxSprite
     setGraphicSize(Std.int(width * 0.7));
     updateHitbox();
 
-    this.daValue = daValue;
+    this.currentValue = defaultValue;
   }
 
   override function update(elapsed:Float)
@@ -196,12 +126,17 @@ class CheckboxThingie extends FlxSprite
     }
   }
 
-  function set_daValue(value:Bool):Bool
+  function set_currentValue(value:Bool):Bool
   {
-    if (value) animation.play('checked', true);
+    if (value)
+    {
+      animation.play('checked', true);
+    }
     else
+    {
       animation.play('static');
+    }
 
-    return value;
+    return currentValue = value;
   }
 }

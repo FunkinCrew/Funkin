@@ -7,7 +7,6 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
-import funkin.ui.PreferencesMenu.CheckboxThingie;
 
 using Lambda;
 
