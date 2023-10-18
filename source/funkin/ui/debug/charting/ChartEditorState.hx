@@ -2144,11 +2144,18 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
+  var dragLengthCurrent:Float = 0;
+  var stretchySounds:Bool = false;
+
   /**
    * Handle display of the mouse cursor.
    */
   function handleCursor():Void
   {
+    // Mouse sounds
+    if (FlxG.mouse.justPressed) FlxG.sound.play(Paths.sound("chartingSounds/ClickDown"));
+    if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
+
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool = !isCursorOverHaxeUI || (selectionBoxStartPos != null);
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
@@ -2497,6 +2504,14 @@ class ChartEditorState extends HaxeUIState
         {
           if (dragLengthSteps > 0)
           {
+            if (dragLengthCurrent != dragLengthSteps)
+            {
+              stretchySounds = !stretchySounds;
+              ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
+
+              dragLengthCurrent = dragLengthSteps;
+            }
+
             gridGhostHoldNote.visible = true;
             gridGhostHoldNote.noteData = gridGhostNote.noteData;
             gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
@@ -2515,6 +2530,7 @@ class ChartEditorState extends HaxeUIState
         {
           if (dragLengthSteps > 0)
           {
+            ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
             // Apply the new length.
             performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
           }
@@ -3915,9 +3931,9 @@ class ChartEditorState extends HaxeUIState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('ui/chart-editor/playerHitsound'));
+          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/hitNotePlayer'));
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('ui/chart-editor/opponentHitsound'));
+          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/hitNoteOpponent'));
       }
     }
   }
@@ -4294,7 +4310,7 @@ class ChartEditorState extends HaxeUIState
 
   function playMetronomeTick(high:Bool = false):Void
   {
-    ChartEditorAudioHandler.playSound(Paths.sound('pianoStuff/piano-${high ? '001' : '008'}'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/metronome${high ? '1' : '2'}'));
   }
 
   function isNoteSelected(note:Null<SongNoteData>):Bool

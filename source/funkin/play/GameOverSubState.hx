@@ -102,6 +102,9 @@ class GameOverSubState extends MusicBeatSubState
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
     cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
     cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
+    var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
+    cameraFollowPoint.x += offsets[0];
+    cameraFollowPoint.y += offsets[1];
     add(cameraFollowPoint);
 
     FlxG.camera.target = null;
