@@ -4,6 +4,9 @@ import flixel.util.FlxColor;
 import lime.app.Application;
 import funkin.data.song.SongData.SongTimeFormat;
 
+/**
+ * A store of unchanging, globally relevant values.
+ */
 class Constants
 {
   /**
@@ -117,6 +120,11 @@ class Constants
    * Default difficulty for charts.
    */
   public static final DEFAULT_DIFFICULTY:String = 'normal';
+
+  /**
+   * Default list of difficulties for charts.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
 
   /**
    * Default player character for charts.

@@ -34,10 +34,7 @@ class PlayStatePlaylist
    */
   public static var campaignId:String = 'unknown';
 
-  /**
-   * The current difficulty selected for this level (as a named ID).
-   */
-  public static var currentDifficulty(default, default):String = Constants.DEFAULT_DIFFICULTY;
+  public static var campaignDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   /**
    * Resets the playlist to its default state.
@@ -49,6 +46,6 @@ class PlayStatePlaylist
     campaignScore = 0;
     campaignTitle = 'UNKNOWN';
     campaignId = 'unknown';
-    currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+    campaignDifficulty = Constants.DEFAULT_DIFFICULTY;
   }
 }

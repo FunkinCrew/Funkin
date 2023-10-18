@@ -13,23 +13,13 @@ import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import funkin.NGio;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import funkin.modding.module.ModuleHandler;
-import funkin.shaderslmfao.ScreenWipeShader;
 import funkin.ui.AtlasMenuList;
-import funkin.ui.MenuList.MenuItem;
 import funkin.ui.MenuList;
 import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
-import funkin.ui.OptionsState;
-import funkin.ui.PreferencesMenu;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
-import lime.app.Application;
-import openfl.filters.ShaderFilter;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -82,8 +72,10 @@ class MainMenuState extends MusicBeatState
     magenta.y = bg.y;
     magenta.visible = false;
     magenta.color = 0xFFfd719b;
-    if (PreferencesMenu.preferences.get('flashing-menu')) add(magenta);
-    // magenta.scrollFactor.set();
+
+    // TODO: Why doesn't this line compile I'm going fucking feral
+
+    if (Preferences.flashingLights) add(magenta);
 
     menuItems = new MenuTypedList<AtlasMenuItem>();
     add(menuItems);
@@ -116,7 +108,7 @@ class MainMenuState extends MusicBeatState
     #end
 
     createMenuItem('options', 'mainmenu/options', function() {
-      startExitState(new OptionsState());
+      startExitState(new funkin.ui.OptionsState());
     });
 
     // Reset position of menu items.
