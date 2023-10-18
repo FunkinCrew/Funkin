@@ -72,6 +72,8 @@ class ChartEditorToolboxHandler
     {
       toolbox.showDialog(false);
 
+      ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/openWindow'));
+
       switch (id)
       {
         case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
@@ -108,6 +110,8 @@ class ChartEditorToolboxHandler
     if (toolbox != null)
     {
       toolbox.hideDialog(DialogButton.CANCEL);
+
+      ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/exitWindow'));
 
       switch (id)
       {
