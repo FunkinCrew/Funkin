@@ -1641,7 +1641,7 @@ class PlayState extends MusicBeatSubState
    */
   function onConversationComplete():Void
   {
-    isInCutscene = true;
+    isInCutscene = false;
     remove(currentConversation);
     currentConversation = null;
 
@@ -2463,9 +2463,9 @@ class PlayState extends MusicBeatSubState
               accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
             };
 
-          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, currentDifficulty, data))
+          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
-            Save.get().setLevelScore(PlayStatePlaylist.campaignId, currentDifficulty, data);
+            Save.get().setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end
@@ -2513,7 +2513,7 @@ class PlayState extends MusicBeatSubState
             var nextPlayState:PlayState = new PlayState(
               {
                 targetSong: targetSong,
-                targetDifficulty: currentDifficulty,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
                 targetCharacter: currentPlayerId,
               });
             nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2529,7 +2529,7 @@ class PlayState extends MusicBeatSubState
           var nextPlayState:PlayState = new PlayState(
             {
               targetSong: targetSong,
-              targetDifficulty: currentDifficulty,
+              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
               targetCharacter: currentPlayerId,
             });
           nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2655,7 +2655,12 @@ class PlayState extends MusicBeatSubState
             persistentUpdate = false;
             vocals.stop();
             camHUD.alpha = 1;
-            var res:ResultState = new ResultState();
+            var res:ResultState = new ResultState(
+              {
+                storyMode: PlayStatePlaylist.isStoryMode,
+                title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+                tallies: Highscore.tallies,
+              });
             res.camera = camHUD;
             openSubState(res);
           }

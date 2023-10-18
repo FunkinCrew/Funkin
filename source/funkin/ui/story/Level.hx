@@ -1,5 +1,6 @@
 package funkin.ui.story;
 
+import funkin.util.SortUtil;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import funkin.play.song.Song;
@@ -154,6 +155,8 @@ class Level implements IRegistryEntry<LevelData>
         difficulties.push(difficulty);
       }
     }
+
+    difficulties.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
 
     // Filter to only include difficulties that are present in all songs
     for (songIndex in 1...songList.length)
