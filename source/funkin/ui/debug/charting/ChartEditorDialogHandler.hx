@@ -404,7 +404,6 @@ class ChartEditorDialogHandler
           {
             if (ChartEditorAudioHandler.loadInstFromBytes(state, selectedFile.bytes, instId))
             {
-              trace('Selected file: ' + selectedFile.fullPath);
               #if !mac
               NotificationManager.instance.addNotification(
                 {
@@ -415,13 +414,12 @@ class ChartEditorDialogHandler
                 });
               #end
 
+              state.switchToCurrentInstrumental();
               dialog.hideDialog(DialogButton.APPLY);
               removeDropHandler(onDropFile);
             }
             else
             {
-              trace('Failed to load instrumental (${selectedFile.fullPath})');
-
               #if !mac
               NotificationManager.instance.addNotification(
                 {
@@ -452,6 +450,7 @@ class ChartEditorDialogHandler
           });
         #end
 
+        state.switchToCurrentInstrumental();
         dialog.hideDialog(DialogButton.APPLY);
         removeDropHandler(onDropFile);
       }
@@ -569,6 +568,12 @@ class ChartEditorDialogHandler
     }
 
     var newSongMetadata:SongMetadata = new SongMetadata('', '', 'default');
+
+    newSongMetadata.playData.difficulties = switch (targetVariation)
+    {
+      case 'erect': ['erect', 'nightmare'];
+      default: ['easy', 'normal', 'hard'];
+    };
 
     var inputSongName:Null<TextField> = dialog.findComponent('inputSongName', TextField);
     if (inputSongName == null) throw 'Could not locate inputSongName TextField in Song Metadata dialog';

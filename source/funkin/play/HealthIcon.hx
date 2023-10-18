@@ -129,7 +129,6 @@ class HealthIcon extends FlxSprite
     if (value == characterId) return value;
 
     characterId = value ?? Constants.DEFAULT_HEALTH_ICON;
-    loadCharacter(characterId);
     return characterId;
   }
 
@@ -138,7 +137,6 @@ class HealthIcon extends FlxSprite
     if (value == isPixel) return value;
 
     isPixel = value;
-    loadCharacter(characterId);
     return isPixel;
   }
 
@@ -165,8 +163,11 @@ class HealthIcon extends FlxSprite
   {
     if (data == null)
     {
-      this.isPixel = false;
       this.characterId = Constants.DEFAULT_HEALTH_ICON;
+      this.isPixel = false;
+
+      loadCharacter(characterId);
+
       this.size.set(1.0, 1.0);
       this.offset.x = 0.0;
       this.offset.y = 0.0;
@@ -174,8 +175,11 @@ class HealthIcon extends FlxSprite
     }
     else
     {
-      this.isPixel = data.isPixel ?? false;
       this.characterId = data.id;
+      this.isPixel = data.isPixel ?? false;
+
+      loadCharacter(characterId);
+
       this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
       this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
       this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;

@@ -554,6 +554,9 @@ class ChartEditorState extends HaxeUIState
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
 
+    // Make sure the difficulty we selected is in the list of difficulties.
+    currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
+
     return selectedDifficulty;
   }
 
@@ -971,6 +974,7 @@ class ChartEditorState extends HaxeUIState
       result = [];
       trace('Initializing blank note data for difficulty ' + selectedDifficulty);
       currentSongChartData.notes.set(selectedDifficulty, result);
+      currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
       return result;
     }
     return result;
@@ -979,6 +983,7 @@ class ChartEditorState extends HaxeUIState
   function set_currentSongChartNoteData(value:Array<SongNoteData>):Array<SongNoteData>
   {
     currentSongChartData.notes.set(selectedDifficulty, value);
+    currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
     return value;
   }
 
@@ -4089,7 +4094,7 @@ class ChartEditorState extends HaxeUIState
     }
 
     subStateClosed.add(fixCamera);
-    subStateClosed.add(updateConductor);
+    subStateClosed.add(resetConductorAfterTest);
 
     FlxTransitionableState.skipNextTransIn = false;
     FlxTransitionableState.skipNextTransOut = false;
@@ -4122,10 +4127,9 @@ class ChartEditorState extends HaxeUIState
     add(this.component);
   }
 
-  function updateConductor(_:FlxSubState = null):Void
+  function resetConductorAfterTest(_:FlxSubState = null):Void
   {
-    var targetPos = scrollPositionInMs;
-    Conductor.update(targetPos);
+    moveSongToScrollPosition();
   }
 
   public function postLoadInstrumental():Void
@@ -4179,11 +4183,13 @@ class ChartEditorState extends HaxeUIState
   function moveSongToScrollPosition():Void
   {
     // Update the songPosition in the audio tracks.
-    if (audioInstTrack != null) audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+    if (audioInstTrack != null)
+    {
+      audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+      // Update the songPosition in the Conductor.
+      Conductor.update(audioInstTrack.time);
+    }
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = scrollPositionInMs + playheadPositionInMs;
-
-    // Update the songPosition in the Conductor.
-    Conductor.update(audioInstTrack.time);
 
     // We need to update the note sprites because we changed the scroll position.
     noteDisplayDirty = true;

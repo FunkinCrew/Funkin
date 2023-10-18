@@ -421,6 +421,8 @@ typedef RawSaveData =
   /**
    * A semantic versioning string for the save data format.
    */
+  @:jcustomparse(funkin.data.DataParse.semverVersion)
+  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   var version:Version;
 
   var api:SaveApiData;
