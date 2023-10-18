@@ -1641,7 +1641,7 @@ class PlayState extends MusicBeatSubState
    */
   function onConversationComplete():Void
   {
-    isInCutscene = true;
+    isInCutscene = false;
     remove(currentConversation);
     currentConversation = null;
 
