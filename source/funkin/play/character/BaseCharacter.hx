@@ -188,6 +188,11 @@ class BaseCharacter extends Bopper
     shouldBop = false;
   }
 
+  public function getDeathCameraOffsets():Array<Float>
+  {
+    return _data.death?.cameraOffsets ?? [0.0, 0.0];
+  }
+
   /**
    * Gets the value of flipX from the character data.
    * `!getFlipX()` is the direction Boyfriend should face.
