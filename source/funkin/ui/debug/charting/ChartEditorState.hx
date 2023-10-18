@@ -4179,11 +4179,13 @@ class ChartEditorState extends HaxeUIState
   function moveSongToScrollPosition():Void
   {
     // Update the songPosition in the audio tracks.
-    if (audioInstTrack != null) audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+    if (audioInstTrack != null)
+    {
+      audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+      // Update the songPosition in the Conductor.
+      Conductor.update(audioInstTrack.time);
+    }
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = scrollPositionInMs + playheadPositionInMs;
-
-    // Update the songPosition in the Conductor.
-    Conductor.update(audioInstTrack.time);
 
     // We need to update the note sprites because we changed the scroll position.
     noteDisplayDirty = true;
