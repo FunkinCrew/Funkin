@@ -317,12 +317,8 @@ class BaseCharacter extends Bopper
         trace('[WARN] Player 1 health icon not found!');
         return;
       }
-      PlayState.instance.iconP1.isPixel = _data.healthIcon?.isPixel ?? false;
-      PlayState.instance.iconP1.characterId = _data.healthIcon.id;
-      PlayState.instance.iconP1.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
-      PlayState.instance.iconP1.offset.x = _data.healthIcon.offsets[0];
-      PlayState.instance.iconP1.offset.y = _data.healthIcon.offsets[1];
-      PlayState.instance.iconP1.flipX = !_data.healthIcon.flipX;
+      PlayState.instance.iconP1.configure(_data.healthIcon);
+      PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
     }
     else
     {
@@ -331,12 +327,7 @@ class BaseCharacter extends Bopper
         trace('[WARN] Player 2 health icon not found!');
         return;
       }
-      PlayState.instance.iconP2.isPixel = _data.healthIcon?.isPixel ?? false;
-      PlayState.instance.iconP2.characterId = _data.healthIcon.id;
-      PlayState.instance.iconP2.size.set(_data.healthIcon.scale, _data.healthIcon.scale);
-      PlayState.instance.iconP2.offset.x = _data.healthIcon.offsets[0];
-      PlayState.instance.iconP2.offset.y = _data.healthIcon.offsets[1];
-      PlayState.instance.iconP2.flipX = _data.healthIcon.flipX;
+      PlayState.instance.iconP2.configure(_data.healthIcon);
     }
   }
 

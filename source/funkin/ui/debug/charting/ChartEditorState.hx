@@ -87,9 +87,8 @@ using Lambda;
  *
  * @author MasterEric
  */
+@:nullSafety
 // Give other classes access to private instance fields
-// @:nullSafety(Loose) // Enable this while developing, then disable to keep unit tests functional!
-
 @:allow(funkin.ui.debug.charting.ChartEditorCommand)
 @:allow(funkin.ui.debug.charting.ChartEditorDropdowns)
 @:allow(funkin.ui.debug.charting.ChartEditorDialogHandler)
@@ -965,7 +964,7 @@ class ChartEditorState extends HaxeUIState
 
   function get_currentSongChartNoteData():Array<SongNoteData>
   {
-    var result:Array<SongNoteData> = currentSongChartData.notes.get(selectedDifficulty);
+    var result:Null<Array<SongNoteData>> = currentSongChartData.notes.get(selectedDifficulty);
     if (result == null)
     {
       // Initialize to the default value if not set.
@@ -1391,16 +1390,12 @@ class ChartEditorState extends HaxeUIState
     healthIconDad = new HealthIcon(currentSongMetadata.playData.characters.opponent);
     healthIconDad.autoUpdate = false;
     healthIconDad.size.set(0.5, 0.5);
-    healthIconDad.x = gridTiledSprite.x - 15 - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
-    healthIconDad.y = gridTiledSprite.y + 5;
     add(healthIconDad);
     healthIconDad.zIndex = 30;
 
     healthIconBF = new HealthIcon(currentSongMetadata.playData.characters.player);
     healthIconBF.autoUpdate = false;
     healthIconBF.size.set(0.5, 0.5);
-    healthIconBF.x = gridTiledSprite.x + gridTiledSprite.width + 15;
-    healthIconBF.y = gridTiledSprite.y + 5;
     healthIconBF.flipX = true;
     add(healthIconBF);
     healthIconBF.zIndex = 30;
@@ -1626,6 +1621,12 @@ class ChartEditorState extends HaxeUIState
     addUIClickListener('playbarBack', _ -> playbarButtonPressed = 'playbarBack');
     addUIClickListener('playbarForward', _ -> playbarButtonPressed = 'playbarForward');
     addUIClickListener('playbarEnd', _ -> playbarButtonPressed = 'playbarEnd');
+
+    // Cycle note snap quant.
+    addUIClickListener('playbarNoteSnap', function(_) {
+      noteSnapQuantIndex++;
+      if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
+    });
 
     // Add functionality to the menu items.
 
@@ -2494,27 +2495,30 @@ class ChartEditorState extends HaxeUIState
         var dragLengthMs:Float = dragLengthSteps * Conductor.stepLengthMs;
         var dragLengthPixels:Float = dragLengthSteps * GRID_SIZE;
 
-        if (dragLengthSteps > 0)
+        if (gridGhostNote != null && gridGhostNote.noteData != null && gridGhostHoldNote != null)
         {
-          if (dragLengthCurrent != dragLengthSteps)
+          if (dragLengthSteps > 0)
           {
-            stretchySounds = !stretchySounds;
-            ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
+            if (dragLengthCurrent != dragLengthSteps)
+            {
+              stretchySounds = !stretchySounds;
+              ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
 
-            dragLengthCurrent = dragLengthSteps;
+              dragLengthCurrent = dragLengthSteps;
+            }
+
+            gridGhostHoldNote.visible = true;
+            gridGhostHoldNote.noteData = gridGhostNote.noteData;
+            gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
+
+            gridGhostHoldNote.setHeightDirectly(dragLengthPixels);
+
+            gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
           }
-
-          gridGhostHoldNote.visible = true;
-          gridGhostHoldNote.noteData = gridGhostNote.noteData;
-          gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
-
-          gridGhostHoldNote.setHeightDirectly(dragLengthPixels);
-
-          gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
-        }
-        else
-        {
-          gridGhostHoldNote.visible = false;
+          else
+          {
+            gridGhostHoldNote.visible = false;
+          }
         }
 
         if (FlxG.mouse.justReleased)
@@ -2670,7 +2674,7 @@ class ChartEditorState extends HaxeUIState
           if (cursorColumn == eventColumn)
           {
             if (gridGhostNote != null) gridGhostNote.visible = false;
-            gridGhostHoldNote.visible = false;
+            if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
 
             if (gridGhostEvent == null) throw "ERROR: Tried to handle cursor, but gridGhostEvent is null! Check ChartEditorState.buildGrid()";
 
@@ -2730,11 +2734,11 @@ class ChartEditorState extends HaxeUIState
         }
         else
         {
-          if (FlxG.mouse.overlaps(notePreview))
+          if (notePreview != null && FlxG.mouse.overlaps(notePreview))
           {
             targetCursorMode = Pointer;
           }
-          else if (FlxG.mouse.overlaps(gridPlayheadScrollArea))
+          else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
           {
             targetCursorMode = Pointer;
           }
@@ -3046,18 +3050,35 @@ class ChartEditorState extends HaxeUIState
   {
     if (healthIconsDirty)
     {
-      if (healthIconBF != null) healthIconBF.characterId = currentSongMetadata.playData.characters.player;
-      if (healthIconDad != null) healthIconDad.characterId = currentSongMetadata.playData.characters.opponent;
+      var charDataBF = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.player);
+      var charDataDad = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
+      if (healthIconBF != null)
+      {
+        healthIconBF.configure(charDataBF?.healthIcon);
+        healthIconBF.size *= 0.5; // Make the icon smaller in Chart Editor.
+        healthIconBF.flipX = !healthIconBF.flipX; // BF faces the other way.
+      }
+      if (healthIconDad != null)
+      {
+        healthIconDad.configure(charDataDad?.healthIcon);
+        healthIconDad.size *= 0.5; // Make the icon smaller in Chart Editor.
+      }
+      healthIconsDirty = false;
     }
 
-    // Right align the BF health icon.
+    // Right align, and visibly center, the BF health icon.
     if (healthIconBF != null)
     {
       // Base X position to the right of the grid.
-      var baseHealthIconXPos:Float = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width + 15);
-      // Will be 0 when not bopping. When bopping, will increase to push the icon left.
-      var healthIconOffset:Float = healthIconBF.width - (HealthIcon.HEALTH_ICON_SIZE * 0.5);
-      healthIconBF.x = baseHealthIconXPos - healthIconOffset;
+      healthIconBF.x = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width + 45 - (healthIconBF.width / 2));
+      healthIconBF.y = (gridTiledSprite == null) ? (0) : (MENU_BAR_HEIGHT + GRID_TOP_PAD + 30 - (healthIconBF.height / 2));
+    }
+
+    // Visibly center the Dad health icon.
+    if (healthIconDad != null)
+    {
+      healthIconDad.x = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x - 45 - (healthIconDad.width / 2));
+      healthIconDad.y = (gridTiledSprite == null) ? (0) : (MENU_BAR_HEIGHT + GRID_TOP_PAD + 30 - (healthIconDad.height / 2));
     }
   }
 
@@ -3684,49 +3705,41 @@ class ChartEditorState extends HaxeUIState
     var inputStage:Null<DropDown> = toolbox.findComponent('inputStage', DropDown);
     var stageId:String = currentSongMetadata.playData.stage;
     var stageData:Null<StageData> = StageDataParser.parseStageData(stageId);
-    if (stageData != null)
+    if (inputStage != null)
     {
-      inputStage.value = {id: stageId, text: stageData.name};
-    }
-    else
-    {
-      inputStage.value = {id: "mainStage", text: "Main Stage"};
+      inputStage.value = (stageData != null) ?
+        {id: stageId, text: stageData.name} :
+          {id: "mainStage", text: "Main Stage"};
     }
 
     var inputCharacterPlayer:Null<DropDown> = toolbox.findComponent('inputCharacterPlayer', DropDown);
     var charIdPlayer:String = currentSongMetadata.playData.characters.player;
     var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charIdPlayer);
-    if (charDataPlayer != null)
+    if (inputCharacterPlayer != null)
     {
-      inputCharacterPlayer.value = {id: charIdPlayer, text: charDataPlayer.name};
-    }
-    else
-    {
-      inputCharacterPlayer.value = {id: "bf", text: "Boyfriend"};
+      inputCharacterPlayer.value = (charDataPlayer != null) ?
+        {id: charIdPlayer, text: charDataPlayer.name} :
+          {id: "bf", text: "Boyfriend"};
     }
 
     var inputCharacterOpponent:Null<DropDown> = toolbox.findComponent('inputCharacterOpponent', DropDown);
     var charIdOpponent:String = currentSongMetadata.playData.characters.opponent;
     var charDataOpponent:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charIdOpponent);
-    if (charDataOpponent != null)
+    if (inputCharacterOpponent != null)
     {
-      inputCharacterOpponent.value = {id: charIdOpponent, text: charDataOpponent.name};
-    }
-    else
-    {
-      inputCharacterOpponent.value = {id: "dad", text: "Dad"};
+      inputCharacterOpponent.value = (charDataOpponent != null) ?
+        {id: charIdOpponent, text: charDataOpponent.name} :
+          {id: "dad", text: "Dad"};
     }
 
     var inputCharacterGirlfriend:Null<DropDown> = toolbox.findComponent('inputCharacterGirlfriend', DropDown);
     var charIdGirlfriend:String = currentSongMetadata.playData.characters.girlfriend;
     var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charIdGirlfriend);
-    if (charDataGirlfriend != null)
+    if (inputCharacterGirlfriend != null)
     {
-      inputCharacterGirlfriend.value = {id: charIdGirlfriend, text: charDataGirlfriend.name};
-    }
-    else
-    {
-      inputCharacterGirlfriend.value = {id: "none", text: "None"};
+      inputCharacterGirlfriend.value = (charDataGirlfriend != null) ?
+        {id: charIdGirlfriend, text: charDataGirlfriend.name} :
+          {id: "none", text: "None"};
     }
   }
 
@@ -4032,7 +4045,7 @@ class ChartEditorState extends HaxeUIState
     this.scrollPositionInPixels = value;
 
     // Move the grid sprite to the correct position.
-    if (gridTiledSprite != null)
+    if (gridTiledSprite != null && gridPlayheadScrollArea != null)
     {
       if (isViewDownscroll)
       {
@@ -4182,11 +4195,13 @@ class ChartEditorState extends HaxeUIState
   function moveSongToScrollPosition():Void
   {
     // Update the songPosition in the audio tracks.
-    if (audioInstTrack != null) audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+    if (audioInstTrack != null)
+    {
+      audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+      // Update the songPosition in the Conductor.
+      Conductor.update(audioInstTrack.time);
+    }
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = scrollPositionInMs + playheadPositionInMs;
-
-    // Update the songPosition in the Conductor.
-    Conductor.update(audioInstTrack.time);
 
     // We need to update the note sprites because we changed the scroll position.
     noteDisplayDirty = true;
