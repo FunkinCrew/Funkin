@@ -83,7 +83,7 @@ class ChartEditorDialogHandler
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_WELCOME_LAYOUT, true, closable);
     if (dialog == null) throw 'Could not locate Welcome dialog';
 
-    // Add handlers to the "Create From Song" section.
+    // Create New Song "Easy/Normal/Hard"
     var linkCreateBasic:Null<Link> = dialog.findComponent('splashCreateFromSongBasic', Link);
     if (linkCreateBasic == null) throw 'Could not locate splashCreateFromSongBasic link in Welcome dialog';
     linkCreateBasic.onClick = function(_event) {
@@ -94,7 +94,20 @@ class ChartEditorDialogHandler
       //
       // Create Song Wizard
       //
-      openCreateSongWizard(state, false);
+      openCreateSongWizardBasic(state, false);
+    }
+
+    // Create New Song "Erect/Nightmare"
+    var linkCreateErect:Null<Link> = dialog.findComponent('splashCreateFromSongErect', Link);
+    if (linkCreateErect == null) throw 'Could not locate splashCreateFromSongErect link in Welcome dialog';
+    linkCreateErect.onClick = function(_event) {
+      // Hide the welcome dialog
+      dialog.hideDialog(DialogButton.CANCEL);
+
+      //
+      // Create Song Wizard
+      //
+      openCreateSongWizardErect(state, false);
     }
 
     var linkImportChartLegacy:Null<Link> = dialog.findComponent('splashImportChartLegacy', Link);
@@ -237,34 +250,112 @@ class ChartEditorDialogHandler
     };
   }
 
-  public static function openCreateSongWizard(state:ChartEditorState, closable:Bool):Void
+  public static function openCreateSongWizardBasic(state:ChartEditorState, closable:Bool):Void
   {
-    // Step 1. Upload Instrumental
-    var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
-    uploadInstDialog.onDialogClosed = function(_event) {
+    // Step 1. Song Metadata
+    var songMetadataDialog:Dialog = openSongMetadataDialog(state);
+    songMetadataDialog.onDialogClosed = function(_event) {
       state.isHaxeUIDialogOpen = false;
       if (_event.button == DialogButton.APPLY)
       {
-        // Step 2. Song Metadata
-        var songMetadataDialog:Dialog = openSongMetadataDialog(state);
-        songMetadataDialog.onDialogClosed = function(_event) {
+        // Step 2. Upload Instrumental
+        var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
+        uploadInstDialog.onDialogClosed = function(_event) {
           state.isHaxeUIDialogOpen = false;
           if (_event.button == DialogButton.APPLY)
           {
             // Step 3. Upload Vocals
             // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
-            openUploadVocalsDialog(state, false); // var uploadVocalsDialog:Dialog
+            var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
+            uploadVocalsDialog.onDialogClosed = function(_event) {
+              state.isHaxeUIDialogOpen = false;
+              state.switchToCurrentInstrumental();
+              state.postLoadInstrumental();
+            }
           }
           else
           {
-            // User cancelled the wizard! Back to the welcome dialog.
+            // User cancelled the wizard at Step 2! Back to the welcome dialog.
             openWelcomeDialog(state);
           }
         };
       }
       else
       {
-        // User cancelled the wizard! Back to the welcome dialog.
+        // User cancelled the wizard at Step 1! Back to the welcome dialog.
+        openWelcomeDialog(state);
+      }
+    };
+  }
+
+  public static function openCreateSongWizardErect(state:ChartEditorState, closable:Bool):Void
+  {
+    // Step 1. Song Metadata
+    var songMetadataDialog:Dialog = openSongMetadataDialog(state);
+    songMetadataDialog.onDialogClosed = function(_event) {
+      state.isHaxeUIDialogOpen = false;
+      if (_event.button == DialogButton.APPLY)
+      {
+        // Step 2. Upload Instrumental
+        var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
+        uploadInstDialog.onDialogClosed = function(_event) {
+          state.isHaxeUIDialogOpen = false;
+          if (_event.button == DialogButton.APPLY)
+          {
+            // Step 3. Upload Vocals
+            // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
+            var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
+            uploadVocalsDialog.onDialogClosed = function(_event) {
+              state.switchToCurrentInstrumental();
+              // Step 4. Song Metadata (Erect)
+              var songMetadataDialogErect:Dialog = openSongMetadataDialog(state, 'erect');
+              songMetadataDialogErect.onDialogClosed = function(_event) {
+                state.isHaxeUIDialogOpen = false;
+                if (_event.button == DialogButton.APPLY)
+                {
+                  // Switch to the Erect variation so uploading the instrumental applies properly.
+                  state.selectedVariation = 'erect';
+
+                  // Step 5. Upload Instrumental (Erect)
+                  var uploadInstDialogErect:Dialog = openUploadInstDialog(state, closable);
+                  uploadInstDialogErect.onDialogClosed = function(_event) {
+                    state.isHaxeUIDialogOpen = false;
+                    if (_event.button == DialogButton.APPLY)
+                    {
+                      // Step 6. Upload Vocals (Erect)
+                      // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
+                      var uploadVocalsDialogErect:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
+                      uploadVocalsDialogErect.onDialogClosed = function(_event) {
+                        state.isHaxeUIDialogOpen = false;
+                        state.switchToCurrentInstrumental();
+                        state.postLoadInstrumental();
+                      }
+                    }
+                    else
+                    {
+                      // User cancelled the wizard at Step 5! Back to the welcome dialog.
+                      openWelcomeDialog(state);
+                    }
+                  };
+                }
+                else
+                {
+                  // User cancelled the wizard at Step 4! Back to the welcome dialog.
+                  openWelcomeDialog(state);
+                }
+              }
+            }
+          }
+          else
+          {
+            // User cancelled the wizard at Step 2! Back to the welcome dialog.
+            openWelcomeDialog(state);
+          }
+        };
+      }
+      else
+      {
+        // User cancelled the wizard at Step 1! Back to the welcome dialog.
         openWelcomeDialog(state);
       }
     };
@@ -302,6 +393,8 @@ class ChartEditorDialogHandler
       Cursor.cursorMode = Default;
     }
 
+    var instId:String = state.currentInstrumentalId;
+
     var onDropFile:String->Void;
 
     instrumentalBox.onClick = function(_event) {
@@ -309,14 +402,14 @@ class ChartEditorDialogHandler
         {label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile:SelectedFileInfo) {
           if (selectedFile != null && selectedFile.bytes != null)
           {
-            if (ChartEditorAudioHandler.loadInstrumentalFromBytes(state, selectedFile.bytes))
+            if (ChartEditorAudioHandler.loadInstFromBytes(state, selectedFile.bytes, instId))
             {
               trace('Selected file: ' + selectedFile.fullPath);
               #if !mac
               NotificationManager.instance.addNotification(
                 {
                   title: 'Success',
-                  body: 'Loaded instrumental track (${selectedFile.name})',
+                  body: 'Loaded instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})',
                   type: NotificationType.Success,
                   expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
                 });
@@ -333,7 +426,7 @@ class ChartEditorDialogHandler
               NotificationManager.instance.addNotification(
                 {
                   title: 'Failure',
-                  body: 'Failed to load instrumental track (${selectedFile.name})',
+                  body: 'Failed to load instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})',
                   type: NotificationType.Error,
                   expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
                 });
@@ -346,14 +439,14 @@ class ChartEditorDialogHandler
     onDropFile = function(pathStr:String) {
       var path:Path = new Path(pathStr);
       trace('Dropped file (${path})');
-      if (ChartEditorAudioHandler.loadInstrumentalFromPath(state, path))
+      if (ChartEditorAudioHandler.loadInstFromPath(state, path, instId))
       {
         // Tell the user the load was successful.
         #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Success',
-            body: 'Loaded instrumental track (${path.file}.${path.ext})',
+            body: 'Loaded instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})',
             type: NotificationType.Success,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
@@ -370,7 +463,7 @@ class ChartEditorDialogHandler
         }
         else
         {
-          'Failed to load instrumental track (${path.file}.${path.ext})';
+          'Failed to load instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})';
         }
 
         // Tell the user the load was successful.
@@ -457,10 +550,17 @@ class ChartEditorDialogHandler
    * @return The dialog to open.
    */
   @:haxe.warning("-WVarInit")
-  public static function openSongMetadataDialog(state:ChartEditorState):Dialog
+  public static function openSongMetadataDialog(state:ChartEditorState, ?targetVariation:String):Dialog
   {
+    if (targetVariation == null) targetVariation = Constants.DEFAULT_VARIATION;
+
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT, true, false);
     if (dialog == null) throw 'Could not locate Song Metadata dialog';
+
+    if (targetVariation != Constants.DEFAULT_VARIATION)
+    {
+      dialog.title = 'New Chart - Provide Song Metadata (${targetVariation.toTitleCase()})';
+    }
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Song Metadata dialog';
@@ -567,14 +667,18 @@ class ChartEditorDialogHandler
         timeChanges[0].bpm = event.value;
       }
 
-      Conductor.forceBPM(event.value);
-
       newSongMetadata.timeChanges = timeChanges;
     };
 
     var dialogContinue:Null<Button> = dialog.findComponent('dialogContinue', Button);
     if (dialogContinue == null) throw 'Could not locate dialogContinue button in Song Metadata dialog';
-    dialogContinue.onClick = (_event) -> dialog.hideDialog(DialogButton.APPLY);
+    dialogContinue.onClick = (_event) -> {
+      state.songMetadata.set(targetVariation, newSongMetadata);
+
+      Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+      dialog.hideDialog(DialogButton.APPLY);
+    }
 
     return dialog;
   }
@@ -587,9 +691,12 @@ class ChartEditorDialogHandler
    */
   public static function openUploadVocalsDialog(state:ChartEditorState, closable:Bool = true):Dialog
   {
+    var instId:String = state.currentInstrumentalId;
     var charIdsForVocals:Array<String> = [];
 
     var charData:SongCharacterData = state.currentSongMetadata.playData.characters;
+
+    var hasClearedVocals:Bool = false;
 
     charIdsForVocals.push(charData.player);
     charIdsForVocals.push(charData.opponent);
@@ -610,6 +717,7 @@ class ChartEditorDialogHandler
     if (dialogNoVocals == null) throw 'Could not locate dialogNoVocals button in Upload Vocals dialog';
     dialogNoVocals.onClick = function(_event) {
       // Dismiss
+      ChartEditorAudioHandler.stopExistingVocals(state);
       dialog.hideDialog(DialogButton.APPLY);
     };
 
@@ -633,14 +741,20 @@ class ChartEditorDialogHandler
         trace('Selected file: $pathStr');
         var path:Path = new Path(pathStr);
 
-        if (ChartEditorAudioHandler.loadVocalsFromPath(state, path, charKey))
+        if (!hasClearedVocals)
+        {
+          hasClearedVocals = true;
+          ChartEditorAudioHandler.stopExistingVocals(state);
+        }
+
+        if (ChartEditorAudioHandler.loadVocalsFromPath(state, path, charKey, instId))
         {
           // Tell the user the load was successful.
           #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Success',
-              body: 'Loaded vocal track for $charName (${path.file}.${path.ext})',
+              body: 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${state.selectedVariation}',
               type: NotificationType.Success,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
@@ -656,21 +770,14 @@ class ChartEditorDialogHandler
         }
         else
         {
-          var message:String = if (!ChartEditorState.SUPPORTED_MUSIC_FORMATS.contains(path.ext ?? ''))
-          {
-            'File format (${path.ext}) not supported for vocal track (${path.file}.${path.ext})';
-          }
-          else
-          {
-            'Failed to load vocal track (${path.file}.${path.ext})';
-          }
+          trace('Failed to load vocal track (${path.file}.${path.ext})');
 
           // Vocals failed to load.
           #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Failure',
-              body: message,
+              body: 'Failed to load vocal track (${path.file}.${path.ext}) for variation (${state.selectedVariation})',
               type: NotificationType.Error,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
@@ -690,14 +797,51 @@ class ChartEditorDialogHandler
             if (selectedFile != null && selectedFile.bytes != null)
             {
               trace('Selected file: ' + selectedFile.name);
-              #if FILE_DROP_SUPPORTED
-              vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
-              #else
-              vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${selectedFile.name}';
-              #end
-              ChartEditorAudioHandler.loadVocalsFromBytes(state, selectedFile.bytes, charKey);
-              dialogNoVocals.hidden = true;
-              removeDropHandler(onDropFile);
+              if (!hasClearedVocals)
+              {
+                hasClearedVocals = true;
+                ChartEditorAudioHandler.stopExistingVocals(state);
+              }
+              if (ChartEditorAudioHandler.loadVocalsFromBytes(state, selectedFile.bytes, charKey, instId))
+              {
+                // Tell the user the load was successful.
+                #if !mac
+                NotificationManager.instance.addNotification(
+                  {
+                    title: 'Success',
+                    body: 'Loaded vocals for $charName (${selectedFile.name}), variation ${state.selectedVariation}',
+                    type: NotificationType.Success,
+                    expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  });
+                #end
+                #if FILE_DROP_SUPPORTED
+                vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+                #else
+                vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${selectedFile.name}';
+                #end
+
+                dialogNoVocals.hidden = true;
+              }
+              else
+              {
+                trace('Failed to load vocal track (${selectedFile.fullPath})');
+
+                #if !mac
+                NotificationManager.instance.addNotification(
+                  {
+                    title: 'Failure',
+                    body: 'Failed to load vocal track (${selectedFile.name}) for variation (${state.selectedVariation})',
+                    type: NotificationType.Error,
+                    expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  });
+                #end
+
+                #if FILE_DROP_SUPPORTED
+                vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
+                #else
+                vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
+                #end
+              }
             }
         });
       }

@@ -19,8 +19,10 @@ class CharacterDataParser
    * The current version string for the stage data format.
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
+   *
+   * - Version 1.0.1 adds `death.cameraOffsets`
    */
-  public static final CHARACTER_DATA_VERSION:String = '1.0.0';
+  public static final CHARACTER_DATA_VERSION:String = '1.0.1';
 
   /**
    * The current version rule check for the stage data format.
@@ -603,6 +605,8 @@ typedef CharacterData =
    */
   var healthIcon:Null<HealthIconData>;
 
+  var death:Null<DeathData>;
+
   /**
    * The global offset to the character's position, in pixels.
    * @default [0, 0]
@@ -694,4 +698,14 @@ typedef HealthIconData =
    * @default [0, 25]
    */
   var offsets:Null<Array<Float>>;
+}
+
+typedef DeathData =
+{
+  /**
+   * The amount to offset the camera by while focusing on this character as they die.
+   * Default value focuses on the character's graphic midpoint.
+   * @default [0, 0]
+   */
+  var ?cameraOffsets:Array<Float>;
 }

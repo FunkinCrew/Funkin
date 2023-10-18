@@ -163,7 +163,17 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
 
   function onSelect():Void
   {
-    keyUsedToEnterPrompt = FlxG.keys.firstJustPressed();
+    switch (currentDevice)
+    {
+      case Keys:
+        {
+          keyUsedToEnterPrompt = FlxG.keys.firstJustPressed();
+        }
+      case Gamepad(id):
+        {
+          buttonUsedToEnterPrompt = FlxG.gamepads.getByID(id).firstJustPressedID();
+        }
+    }
 
     controlGrid.enabled = false;
     canExit = false;
@@ -204,6 +214,7 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
   }
 
   var keyUsedToEnterPrompt:Null<Int> = null;
+  var buttonUsedToEnterPrompt:Null<Int> = null;
 
   override function update(elapsed:Float):Void
   {
@@ -246,19 +257,49 @@ class ControlsMenu extends funkin.ui.OptionsState.Page
         case Gamepad(id):
           {
             var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
-            if (button != NONE && button != keyUsedToEnterPrompt)
+            if (button != NONE && button != buttonUsedToEnterPrompt)
             {
               if (button != BACK) onInputSelect(button);
               closePrompt();
+            }
+
+            var key = FlxG.keys.firstJustReleased();
+            if (key != NONE && key != keyUsedToEnterPrompt)
+            {
+              if (key == ESCAPE)
+              {
+                closePrompt();
+              }
+              else if (key == BACKSPACE)
+              {
+                onInputSelect(NONE);
+                closePrompt();
+              }
             }
           }
       }
     }
 
-    var keyJustReleased:Int = FlxG.keys.firstJustReleased();
-    if (keyJustReleased != NONE && keyJustReleased == keyUsedToEnterPrompt)
+    switch (currentDevice)
     {
-      keyUsedToEnterPrompt = null;
+      case Keys:
+        {
+          var keyJustReleased:Int = FlxG.keys.firstJustReleased();
+          if (keyJustReleased != NONE && keyJustReleased == keyUsedToEnterPrompt)
+          {
+            keyUsedToEnterPrompt = null;
+          }
+          buttonUsedToEnterPrompt = null;
+        }
+      case Gamepad(id):
+        {
+          var buttonJustReleased:Int = FlxG.gamepads.getByID(id).firstJustReleasedID();
+          if (buttonJustReleased != NONE && buttonJustReleased == buttonUsedToEnterPrompt)
+          {
+            buttonUsedToEnterPrompt = null;
+          }
+          keyUsedToEnterPrompt = null;
+        }
     }
   }
 

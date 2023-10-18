@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.notifications.NotificationType;
+import haxe.ui.notifications.NotificationManager;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
@@ -762,6 +764,22 @@ class PasteItemsCommand implements ChartEditorCommand
   {
     var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
 
+    if (currentClipboard.valid != true)
+    {
+      #if !mac
+      NotificationManager.instance.addNotification(
+        {
+          title: 'Failed to Paste',
+          body: 'Could not parse clipboard contents.',
+          type: NotificationType.Error,
+          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+        });
+      #end
+      return;
+    }
+
+    trace(currentClipboard.notes);
+
     addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
 
@@ -775,6 +793,16 @@ class PasteItemsCommand implements ChartEditorCommand
     state.notePreviewDirty = true;
 
     state.sortChartData();
+
+    #if !mac
+    NotificationManager.instance.addNotification(
+      {
+        title: 'Paste Successful',
+        body: 'Successfully pasted clipboard contents.',
+        type: NotificationType.Success,
+        expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+      });
+    #end
   }
 
   public function undo(state:ChartEditorState):Void

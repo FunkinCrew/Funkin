@@ -25,6 +25,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.VoicesGroup;
+import funkin.save.Save;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
@@ -919,7 +920,6 @@ class PlayState extends MusicBeatSubState
     }
 
     // Handle keybinds.
-    // if (!isInCutscene && !disableKeys) keyShit(true);
     processInputQueue();
     if (!isInCutscene && !disableKeys) debugKeyShit();
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
@@ -1267,7 +1267,7 @@ class PlayState extends MusicBeatSubState
    */
   function initHealthBar():Void
   {
-    var healthBarYPos:Float = PreferencesMenu.getPref('downscroll') ? FlxG.height * 0.1 : FlxG.height * 0.9;
+    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
     healthBarBG = new FlxSprite(0, healthBarYPos).loadGraphic(Paths.image('healthBar'));
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
@@ -1476,13 +1476,13 @@ class PlayState extends MusicBeatSubState
     // Position the player strumline on the right half of the screen
     playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
-    playerStrumline.y = PreferencesMenu.getPref('downscroll') ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     playerStrumline.zIndex = 200;
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
     opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
-    opponentStrumline.y = PreferencesMenu.getPref('downscroll') ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.zIndex = 100;
     opponentStrumline.cameras = [camHUD];
 
@@ -1641,7 +1641,7 @@ class PlayState extends MusicBeatSubState
    */
   function onConversationComplete():Void
   {
-    isInCutscene = true;
+    isInCutscene = false;
     remove(currentConversation);
     currentConversation = null;
 
@@ -2393,9 +2393,32 @@ class PlayState extends MusicBeatSubState
     if (currentSong != null && currentSong.validScore)
     {
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
-      Highscore.tallies.isNewHighscore = Highscore.saveScoreForDifficulty(currentSong.id, songScore, currentDifficulty);
+      var data =
+        {
+          score: songScore,
+          tallies:
+            {
+              killer: Highscore.tallies.killer,
+              sick: Highscore.tallies.sick,
+              good: Highscore.tallies.good,
+              bad: Highscore.tallies.bad,
+              shit: Highscore.tallies.shit,
+              missed: Highscore.tallies.missed,
+              combo: Highscore.tallies.combo,
+              maxCombo: Highscore.tallies.maxCombo,
+              totalNotesHit: Highscore.tallies.totalNotesHit,
+              totalNotes: Highscore.tallies.totalNotes,
+            },
+          accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+        };
 
-      Highscore.saveCompletionForDifficulty(currentSong.id, Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes, currentDifficulty);
+      if (Save.get().isSongHighScore(currentSong.id, currentDifficulty, data))
+      {
+        Save.get().setSongScore(currentSong.id, currentDifficulty, data);
+        #if newgrounds
+        NGio.postScore(score, currentSong.id);
+        #end
+      }
     }
 
     if (PlayStatePlaylist.isStoryMode)
@@ -2419,11 +2442,35 @@ class PlayState extends MusicBeatSubState
         if (currentSong.validScore)
         {
           NGio.unlockMedal(60961);
-          Highscore.saveWeekScoreForDifficulty(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignScore, currentDifficulty);
-        }
 
-        // FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-        FlxG.save.flush();
+          var data =
+            {
+              score: PlayStatePlaylist.campaignScore,
+              tallies:
+                {
+                  // TODO: Sum up the values for the whole level!
+                  killer: 0,
+                  sick: 0,
+                  good: 0,
+                  bad: 0,
+                  shit: 0,
+                  missed: 0,
+                  combo: 0,
+                  maxCombo: 0,
+                  totalNotesHit: 0,
+                  totalNotes: 0,
+                },
+              accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+            };
+
+          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
+          {
+            Save.get().setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
+            #if newgrounds
+            NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
+            #end
+          }
+        }
 
         if (isSubState)
         {
@@ -2466,7 +2513,7 @@ class PlayState extends MusicBeatSubState
             var nextPlayState:PlayState = new PlayState(
               {
                 targetSong: targetSong,
-                targetDifficulty: currentDifficulty,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
                 targetCharacter: currentPlayerId,
               });
             nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2482,7 +2529,7 @@ class PlayState extends MusicBeatSubState
           var nextPlayState:PlayState = new PlayState(
             {
               targetSong: targetSong,
-              targetDifficulty: currentDifficulty,
+              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
               targetCharacter: currentPlayerId,
             });
           nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
@@ -2608,7 +2655,12 @@ class PlayState extends MusicBeatSubState
             persistentUpdate = false;
             vocals.stop();
             camHUD.alpha = 1;
-            var res:ResultState = new ResultState();
+            var res:ResultState = new ResultState(
+              {
+                storyMode: PlayStatePlaylist.isStoryMode,
+                title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+                tallies: Highscore.tallies,
+              });
             res.camera = camHUD;
             openSubState(res);
           }

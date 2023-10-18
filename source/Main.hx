@@ -4,6 +4,7 @@ import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
 import funkin.MemoryCounter;
+import funkin.save.Save;
 import haxe.ui.Toolkit;
 import openfl.display.FPS;
 import openfl.display.Sprite;
@@ -84,19 +85,20 @@ class Main extends Sprite
 
     initHaxeUI();
 
+    fpsCounter = new FPS(10, 3, 0xFFFFFF);
+    // addChild(fpsCounter); // Handled by Preferences.init
+    #if !html5
+    memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
+    // addChild(memoryCounter);
+    #end
+
+    // George recommends binding the save before FlxGame is created.
+    Save.load();
+
     addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
 
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
-    #end
-
-    #if debug
-    fpsCounter = new FPS(10, 3, 0xFFFFFF);
-    addChild(fpsCounter);
-    #if !html5
-    memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
-    addChild(memoryCounter);
-    #end
     #end
   }
 

@@ -140,6 +140,18 @@ class ChartEditorToolboxHandler
     }
   }
 
+  public static function rememberOpenToolboxes(state:ChartEditorState):Void {}
+
+  public static function openRememberedToolboxes(state:ChartEditorState):Void {}
+
+  public static function hideAllToolboxes(state:ChartEditorState):Void
+  {
+    for (toolbox in state.activeToolboxes.values())
+    {
+      toolbox.hideDialog(DialogButton.CANCEL);
+    }
+  }
+
   public static function minimizeToolbox(state:ChartEditorState, id:String):Void
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
@@ -638,9 +650,9 @@ class ChartEditorToolboxHandler
         timeChanges[0].bpm = event.value;
       }
 
-      Conductor.forceBPM(event.value);
-
       state.currentSongMetadata.timeChanges = timeChanges;
+
+      Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 

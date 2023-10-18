@@ -4,6 +4,9 @@ import flixel.util.FlxColor;
 import lime.app.Application;
 import funkin.data.song.SongData.SongTimeFormat;
 
+/**
+ * A store of unchanging, globally relevant values.
+ */
 class Constants
 {
   /**
@@ -39,7 +42,7 @@ class Constants
    */
   public static final VERSION_SUFFIX:String = ' PROTOTYPE';
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   static function get_VERSION():String
   {
     return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH})' + VERSION_SUFFIX;
@@ -71,7 +74,7 @@ class Constants
    */
   // ==============================
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   /**
    * The current Git branch.
    */
@@ -117,6 +120,11 @@ class Constants
    * Default difficulty for charts.
    */
   public static final DEFAULT_DIFFICULTY:String = 'normal';
+
+  /**
+   * Default list of difficulties for charts.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
 
   /**
    * Default player character for charts.

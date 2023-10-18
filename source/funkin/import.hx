@@ -4,6 +4,7 @@ package;
 // Only import these when we aren't in a macro.
 import funkin.util.Constants;
 import funkin.Paths;
+import funkin.Preferences;
 import flixel.FlxG; // This one in particular causes a compile error if you're using macros.
 
 // These are great.
