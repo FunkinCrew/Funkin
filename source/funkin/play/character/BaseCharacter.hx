@@ -188,6 +188,11 @@ class BaseCharacter extends Bopper
     shouldBop = false;
   }
 
+  public function getDeathCameraOffsets():Array<Float>
+  {
+    return _data.death?.cameraOffsets ?? [0.0, 0.0];
+  }
+
   /**
    * Gets the value of flipX from the character data.
    * `!getFlipX()` is the direction Boyfriend should face.
@@ -580,8 +585,7 @@ class BaseCharacter extends Bopper
 
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
-    FlxG.watch.addQuick('playAnim(${characterName})', name);
-    // trace('playAnim(${characterName}): ${name}');
+    // FlxG.watch.addQuick('playAnim(${characterName})', name);
     super.playAnimation(name, restart, ignoreOther, reversed);
   }
 }
