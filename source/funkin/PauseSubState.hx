@@ -240,7 +240,7 @@ class PauseSubState extends MusicBeatSubState
 
           case 'Exit to Chart Editor':
             this.close();
-            if (FlxG.sound.music != null) FlxG.sound.music.stop();
+            if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
             PlayState.instance.close(); // This only works because PlayState is a substate!
 
           case 'BACK':

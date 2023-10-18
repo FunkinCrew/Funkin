@@ -24,6 +24,8 @@ class SongMetadata_v2_0_0
   // ==========
   // UNMODIFIED VALUES
   // ==========
+  @:jcustomparse(funkin.data.DataParse.semverVersion)
+  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
   @:default("Unknown")

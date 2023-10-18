@@ -246,7 +246,8 @@ class SongDataUtils
 
 typedef SongClipboardItems =
 {
-  ?valid:Bool,
-  notes:Array<SongNoteData>,
-  events:Array<SongEventData>
+  @:optional
+  var valid:Bool;
+  var notes:Array<SongNoteData>;
+  var events:Array<SongEventData>;
 }
