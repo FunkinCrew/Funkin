@@ -154,6 +154,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       if (metadata == null || metadata.playData == null) continue;
 
+      // If there are no difficulties in the metadata, there's a problem.
+      if (metadata.playData.difficulties.length == 0)
+      {
+        throw 'Song $id has no difficulties listed in metadata!';
+      }
+
       // There may be more difficulties in the chart file than in the metadata,
       // (i.e. non-playable charts like the one used for Pico on the speaker in Stress)
       // but all the difficulties in the metadata must be in the chart file.

@@ -1,6 +1,7 @@
 [submodule "assets"]
 	path = assets
 	url = https://github.com/FunkinCrew/Funkin-history-rewrite-assets
+	branch = master
 [submodule "art"]
 	path = art
 	url = https://github.com/FunkinCrew/Funkin-history-rewrite-art

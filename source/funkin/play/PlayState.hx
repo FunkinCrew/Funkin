@@ -698,7 +698,15 @@ class PlayState extends MusicBeatSubState
       FlxG.sound.music.pause();
       FlxG.sound.music.time = (startTimestamp);
 
-      vocals = currentChart.buildVocals();
+      if (!overrideMusic)
+      {
+        vocals = currentChart.buildVocals();
+
+        if (vocals.members.length == 0)
+        {
+          trace('WARNING: No vocals found for this song.');
+        }
+      }
       vocals.pause();
       vocals.time = 0;
 

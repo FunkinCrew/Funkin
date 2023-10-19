@@ -66,7 +66,7 @@ class AddNotesCommand implements ChartEditorCommand
       state.currentEventSelection = [];
     }
 
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteLay'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -80,7 +80,7 @@ class AddNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -116,7 +116,8 @@ class RemoveNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteErase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -133,7 +134,7 @@ class RemoveNotesCommand implements ChartEditorCommand
     }
     state.currentNoteSelection = notes;
     state.currentEventSelection = [];
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -254,7 +255,7 @@ class AddEventsCommand implements ChartEditorCommand
       state.currentEventSelection = events;
     }
 
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteLay'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -298,7 +299,8 @@ class RemoveEventsCommand implements ChartEditorCommand
   {
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
     state.currentEventSelection = [];
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteErase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -314,7 +316,7 @@ class RemoveEventsCommand implements ChartEditorCommand
       state.currentSongChartEventData.push(event);
     }
     state.currentEventSelection = events;
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -354,7 +356,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
 
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-01'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/noteErase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -378,7 +380,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
-    ChartEditorAudioHandler.playSound(Paths.sound('funnyNoise/funnyNoise-08'));
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -805,6 +807,8 @@ class PasteItemsCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/undo'));
+
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
     state.currentNoteSelection = [];
@@ -857,6 +861,8 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
+    ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/undo'));
+
     note.length = oldLength;
 
     state.saveDataDirty = true;
