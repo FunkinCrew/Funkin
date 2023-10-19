@@ -22,6 +22,8 @@ import flxanimate.FlxAnimate.Settings;
 
 class ResultState extends MusicBeatSubState
 {
+  final params:ResultsStateParams;
+
   var resultsVariation:ResultVariations;
   var songName:FlxBitmapText;
   var difficulty:FlxSprite;
@@ -29,13 +31,18 @@ class ResultState extends MusicBeatSubState
   var maskShaderSongName = new LeftMaskShader();
   var maskShaderDifficulty = new LeftMaskShader();
 
+  public function new(params:ResultsStateParams)
+  {
+    super();
+
+    this.params = params;
+  }
+
   override function create():Void
   {
-    if (Highscore.tallies.sick == Highscore.tallies.totalNotesHit
-      && Highscore.tallies.maxCombo == Highscore.tallies.totalNotesHit) resultsVariation = PERFECT;
-    else if (Highscore.tallies.missed
-      + Highscore.tallies.bad
-      + Highscore.tallies.shit >= Highscore.tallies.totalNotes * 0.50)
+    if (params.tallies.sick == params.tallies.totalNotesHit
+      && params.tallies.maxCombo == params.tallies.totalNotesHit) resultsVariation = PERFECT;
+    else if (params.tallies.missed + params.tallies.bad + params.tallies.shit >= params.tallies.totalNotes * 0.50)
       resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
     else
       resultsVariation = NORMAL;
@@ -135,17 +142,7 @@ class ResultState extends MusicBeatSubState
 
     var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
     songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
-
-    // stole this from PauseSubState, I think eric wrote it!!
-    if (PlayState.instance.currentChart != null)
-    {
-      songName.text += '${PlayState.instance.currentChart.songName}:${PlayState.instance.currentChart.songArtist}';
-    }
-    else
-    {
-      songName.text += PlayState.instance.currentSong.id;
-    }
-
+    songName.text = params.title;
     songName.letterSpacing = -15;
     songName.angle = -4.1;
     add(songName);
@@ -194,27 +191,27 @@ class ResultState extends MusicBeatSubState
     var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
     add(ratingGrp);
 
-    var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, Highscore.tallies.totalNotesHit);
+    var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, params.tallies.totalNotesHit);
     ratingGrp.add(totalHit);
 
-    var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, Highscore.tallies.maxCombo);
+    var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.tallies.maxCombo);
     ratingGrp.add(maxCombo);
 
     hStuf += 2;
     var extraYOffset:Float = 5;
-    var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, Highscore.tallies.sick, 0xFF89E59E);
+    var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, params.tallies.sick, 0xFF89E59E);
     ratingGrp.add(tallySick);
 
-    var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, Highscore.tallies.good, 0xFF89C9E5);
+    var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, params.tallies.good, 0xFF89C9E5);
     ratingGrp.add(tallyGood);
 
-    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, Highscore.tallies.bad, 0xffE6CF8A);
+    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, params.tallies.bad, 0xffE6CF8A);
     ratingGrp.add(tallyBad);
 
-    var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, Highscore.tallies.shit, 0xFFE68C8A);
+    var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, params.tallies.shit, 0xFFE68C8A);
     ratingGrp.add(tallyShit);
 
-    var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, Highscore.tallies.missed, 0xFFC68AE6);
+    var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.tallies.missed, 0xFFC68AE6);
     ratingGrp.add(tallyMissed);
 
     for (ind => rating in ratingGrp.members)
@@ -275,7 +272,7 @@ class ResultState extends MusicBeatSubState
       }
     });
 
-    if (Highscore.tallies.isNewHighscore) trace("ITS A NEW HIGHSCORE!!!");
+    if (params.tallies.isNewHighscore) trace("ITS A NEW HIGHSCORE!!!");
 
     super.create();
   }
@@ -351,7 +348,7 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE)
     {
-      if (PlayStatePlaylist.isStoryMode)
+      if (params.storyMode)
       {
         FlxG.switchState(new StoryMenuState());
       }
@@ -372,3 +369,21 @@ enum abstract ResultVariations(String)
   var NORMAL;
   var SHIT;
 }
+
+typedef ResultsStateParams =
+{
+  /**
+   * True if results are for a level, false if results are for a single song.
+   */
+  var storyMode:Bool;
+
+  /**
+   * Either "Song Name by Artist Name" or "Week Name"
+   */
+  var title:String;
+
+  /**
+   * The score, accuracy, and judgements.
+   */
+  var tallies:Highscore.Tallies;
+};

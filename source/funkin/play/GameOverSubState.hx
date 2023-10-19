@@ -11,7 +11,6 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
-import funkin.ui.PreferencesMenu;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -103,6 +102,9 @@ class GameOverSubState extends MusicBeatSubState
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
     cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
     cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
+    var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
+    cameraFollowPoint.x += offsets[0];
+    cameraFollowPoint.y += offsets[1];
     add(cameraFollowPoint);
 
     FlxG.camera.target = null;
@@ -292,7 +294,7 @@ class GameOverSubState extends MusicBeatSubState
   {
     var randomCensor:Array<Int> = [];
 
-    if (PreferencesMenu.getPref('censor-naughty')) randomCensor = [1, 3, 8, 13, 17, 21];
+    if (!Preferences.naughtyness) randomCensor = [1, 3, 8, 13, 17, 21];
 
     FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), 1, false, null, true, function() {
       // Once the quote ends, fade in the game over music.

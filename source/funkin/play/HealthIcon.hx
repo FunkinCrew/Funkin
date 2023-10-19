@@ -24,13 +24,14 @@ import openfl.utils.Assets;
  *     - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
  * @author MasterEric
  */
+@:nullSafety
 class HealthIcon extends FlxSprite
 {
   /**
    * The character this icon is representing.
    * Setting this variable will automatically update the graphic.
    */
-  public var characterId(default, set):String;
+  public var characterId(default, set):Null<String>;
 
   /**
    * Whether this health icon should automatically update its state based on the character's health.
@@ -123,13 +124,12 @@ class HealthIcon extends FlxSprite
     initTargetSize();
   }
 
-  function set_characterId(value:String):String
+  function set_characterId(value:Null<String>):Null<String>
   {
     if (value == characterId) return value;
 
-    characterId = value;
-    loadCharacter(characterId);
-    return value;
+    characterId = value ?? Constants.DEFAULT_HEALTH_ICON;
+    return characterId;
   }
 
   function set_isPixel(value:Bool):Bool
@@ -137,8 +137,7 @@ class HealthIcon extends FlxSprite
     if (value == isPixel) return value;
 
     isPixel = value;
-    loadCharacter(characterId);
-    return value;
+    return isPixel;
   }
 
   /**
@@ -153,6 +152,38 @@ class HealthIcon extends FlxSprite
     else
     {
       characterId = 'bf-old';
+    }
+  }
+
+  /**
+   * Use the provided CharacterHealthIconData to configure this health icon's appearance.
+   * @param data The data to use to configure this health icon.
+   */
+  public function configure(data:Null<HealthIconData>):Void
+  {
+    if (data == null)
+    {
+      this.characterId = Constants.DEFAULT_HEALTH_ICON;
+      this.isPixel = false;
+
+      loadCharacter(characterId);
+
+      this.size.set(1.0, 1.0);
+      this.offset.x = 0.0;
+      this.offset.y = 0.0;
+      this.flipX = false;
+    }
+    else
+    {
+      this.characterId = data.id;
+      this.isPixel = data.isPixel ?? false;
+
+      loadCharacter(characterId);
+
+      this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
+      this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
+      this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;
+      this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
     }
   }
 
@@ -341,12 +372,17 @@ class HealthIcon extends FlxSprite
     this.animation.add(Losing, [1], 0, false, false);
   }
 
-  function correctCharacterId(charId:String):String
+  function correctCharacterId(charId:Null<String>):String
   {
+    if (charId == null)
+    {
+      return Constants.DEFAULT_HEALTH_ICON;
+    }
+
     if (!Assets.exists(Paths.image('icons/icon-$charId')))
     {
       FlxG.log.warn('No icon for character: $charId : using default placeholder face instead!');
-      return 'face';
+      return Constants.DEFAULT_HEALTH_ICON;
     }
 
     return charId;
@@ -357,10 +393,11 @@ class HealthIcon extends FlxSprite
     return Assets.exists(Paths.file('images/icons/icon-$characterId.xml'));
   }
 
-  function loadCharacter(charId:String):Void
+  function loadCharacter(charId:Null<String>):Void
   {
-    if (correctCharacterId(charId) != charId)
+    if (charId == null || correctCharacterId(charId) != charId)
     {
+      // This will recursively trigger loadCharacter to be called again.
       characterId = correctCharacterId(charId);
       return;
     }

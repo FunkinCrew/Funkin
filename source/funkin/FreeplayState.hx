@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.play.song.Song;
 import flash.text.TextField;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
@@ -48,10 +49,13 @@ import lime.utils.Assets;
 
 class FreeplayState extends MusicBeatSubState
 {
-  var songs:Array<FreeplaySongData> = [];
+  var songs:Array<Null<FreeplaySongData>> = [];
+
+  var diffIdsCurrent:Array<String> = [];
+  var diffIdsTotal:Array<String> = [];
 
   var curSelected:Int = 0;
-  var curDifficulty:Int = 1;
+  var currentDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   var fp:FreeplayScore;
   var txtCompletion:FlxText;
@@ -60,7 +64,7 @@ class FreeplayState extends MusicBeatSubState
   var lerpScore:Float = 0;
   var intendedScore:Int = 0;
 
-  var grpDifficulties:FlxSpriteGroup;
+  var grpDifficulties:FlxTypedSpriteGroup<DifficultySprite>;
 
   var coolColors:Array<Int> = [
     0xff9271fd,
@@ -84,6 +88,10 @@ class FreeplayState extends MusicBeatSubState
   var exitMovers:Map<Array<FlxSprite>, MoveData> = new Map();
 
   var stickerSubState:StickerSubState;
+
+  //
+  static var rememberedDifficulty:Null<String> = "normal";
+  static var rememberedSongId:Null<String> = null;
 
   public function new(?stickers:StickerSubState = null)
   {
@@ -130,14 +138,23 @@ class FreeplayState extends MusicBeatSubState
     songs.push(null);
 
     // programmatically adds the songs via LevelRegistry and SongRegistry
-    for (coolWeek in LevelRegistry.instance.listBaseGameLevelIds())
+    for (levelId in LevelRegistry.instance.listBaseGameLevelIds())
     {
-      for (songId in LevelRegistry.instance.parseEntryData(coolWeek).songs)
+      for (songId in LevelRegistry.instance.parseEntryData(levelId).songs)
       {
-        var metadata = SongRegistry.instance.parseEntryMetadata(songId);
-        var char = metadata.playData.characters.opponent;
-        var songName = metadata.songName;
-        addSong(songId, songName, coolWeek, char);
+        var song:Song = SongRegistry.instance.fetchEntry(songId);
+        var songBaseDifficulty:SongDifficulty = song.getDifficulty(Constants.DEFAULT_DIFFICULTY);
+
+        var songName = songBaseDifficulty.songName;
+        var songOpponent = songBaseDifficulty.characters.opponent;
+        var songDifficulties = song.listDifficulties();
+
+        songs.push(new FreeplaySongData(songId, songName, levelId, songOpponent, songDifficulties));
+
+        for (difficulty in songDifficulties)
+        {
+          diffIdsTotal.pushUnique(difficulty);
+        }
       }
     }
 
@@ -283,7 +300,7 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     add(grpCapsules);
 
-    grpDifficulties = new FlxSpriteGroup(-300, 80);
+    grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
     add(grpDifficulties);
 
     exitMovers.set([grpDifficulties],
@@ -293,15 +310,22 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
-    grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayEasy')));
-    grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayNorm')));
-    grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayHard')));
+    for (diffId in diffIdsTotal)
+    {
+      var diffSprite:DifficultySprite = new DifficultySprite(diffId);
+      diffSprite.difficultyId = diffId;
+      grpDifficulties.add(diffSprite);
+    }
 
     grpDifficulties.group.forEach(function(spr) {
       spr.visible = false;
     });
 
-    grpDifficulties.group.members[curDifficulty].visible = true;
+    for (diffSprite in grpDifficulties.group.members)
+    {
+      if (diffSprite == null) continue;
+      if (diffSprite.difficultyId == currentDifficulty) diffSprite.visible = true;
+    }
 
     var albumArt:FlxAtlasSprite = new FlxAtlasSprite(640, 360, Paths.animateAtlas("freeplay/albumRoll"));
     albumArt.visible = false;
@@ -574,13 +598,10 @@ class FreeplayState extends MusicBeatSubState
 
     FlxG.console.registerFunction("changeSelection", changeSelection);
 
+    rememberSelection();
+
     changeSelection();
     changeDiff();
-  }
-
-  public function addSong(songId:String, songName:String, levelId:String, songCharacter:String)
-  {
-    songs.push(new FreeplaySongData(songId, songName, levelId, songCharacter));
   }
 
   var touchY:Float = 0;
@@ -861,28 +882,24 @@ class FreeplayState extends MusicBeatSubState
   {
     touchTimer = 0;
 
-    curDifficulty += change;
+    var currentDifficultyIndex = diffIdsCurrent.indexOf(currentDifficulty);
 
-    if (curDifficulty < 0) curDifficulty = 2;
-    if (curDifficulty > 2) curDifficulty = 0;
+    if (currentDifficultyIndex == -1) currentDifficultyIndex = diffIdsCurrent.indexOf(Constants.DEFAULT_DIFFICULTY);
 
-    var targetDifficulty:String = switch (curDifficulty)
-    {
-      case 0:
-        'easy';
-      case 1:
-        'normal';
-      case 2:
-        'hard';
-      default: 'normal';
-    };
+    currentDifficultyIndex += change;
+
+    if (currentDifficultyIndex < 0) currentDifficultyIndex = diffIdsCurrent.length - 1;
+    if (currentDifficultyIndex >= diffIdsCurrent.length) currentDifficultyIndex = 0;
+
+    currentDifficulty = diffIdsCurrent[currentDifficultyIndex];
 
     var daSong = songs[curSelected];
     if (daSong != null)
     {
-      var songScore:SaveScoreData = Save.get().getSongScore(songs[curSelected].songId, targetDifficulty);
+      var songScore:SaveScoreData = Save.get().getSongScore(songs[curSelected].songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
+      rememberedDifficulty = currentDifficulty;
     }
     else
     {
@@ -890,19 +907,31 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0.0;
     }
 
-    grpDifficulties.group.forEach(function(spr) {
-      spr.visible = false;
+    grpDifficulties.group.forEach(function(diffSprite) {
+      diffSprite.visible = false;
     });
 
-    var curShit:FlxSprite = grpDifficulties.group.members[curDifficulty];
-
-    curShit.visible = true;
-    curShit.offset.y += 5;
-    curShit.alpha = 0.5;
-    new FlxTimer().start(1 / 24, function(swag) {
-      curShit.alpha = 1;
-      curShit.updateHitbox();
-    });
+    for (diffSprite in grpDifficulties.group.members)
+    {
+      if (diffSprite == null) continue;
+      if (diffSprite.difficultyId == currentDifficulty)
+      {
+        if (change != 0)
+        {
+          diffSprite.visible = true;
+          diffSprite.offset.y += 5;
+          diffSprite.alpha = 0.5;
+          new FlxTimer().start(1 / 24, function(swag) {
+            diffSprite.alpha = 1;
+            diffSprite.updateHitbox();
+          });
+        }
+        else
+        {
+          diffSprite.visible = true;
+        }
+      }
+    }
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
@@ -950,35 +979,9 @@ class FreeplayState extends MusicBeatSubState
 
     PlayStatePlaylist.isStoryMode = false;
 
-    if (cap.songData == null)
-    {
-      trace('[WARN] Failure while trying to load song!');
-      busy = false;
-      return;
-    }
-
-    var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(cap.songData.songId);
-    if (targetSong == null)
-    {
-      trace('[WARN] Could not retrieve song ${targetSong}.');
-    }
-
-    var targetDifficulty:String = switch (curDifficulty)
-    {
-      case 0:
-        'easy';
-      case 1:
-        'normal';
-      case 2:
-        'hard';
-      default: 'normal';
-    };
-
-    // TODO: Implement additional difficulties into the interface properly.
-    if (FlxG.keys.pressed.E)
-    {
-      targetDifficulty = 'erect';
-    }
+    var songId:String = cap.songTitle.toLowerCase();
+    var targetSong:Song = SongRegistry.instance.fetchEntry(songId);
+    var targetDifficulty:String = currentDifficulty;
 
     // TODO: Implement Pico into the interface properly.
     var targetCharacter:String = 'bf';
@@ -1006,6 +1009,22 @@ class FreeplayState extends MusicBeatSubState
           targetCharacter: targetCharacter,
         }), true);
     });
+  }
+
+  function rememberSelection():Void
+  {
+    if (rememberedSongId != null)
+    {
+      curSelected = songs.findIndex(function(song) {
+        if (song == null) return false;
+        return song.songId == rememberedSongId;
+      });
+    }
+
+    if (rememberedDifficulty != null)
+    {
+      currentDifficulty = rememberedDifficulty;
+    }
   }
 
   function changeSelection(change:Int = 0)
@@ -1038,11 +1057,16 @@ class FreeplayState extends MusicBeatSubState
       var songScore:SaveScoreData = Save.get().getSongScore(daSongCapsule.songData.songId, targetDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
+      diffIdsCurrent = daSong.songDifficulties;
+      rememberedSongId = daSong.songId;
+      changeDiff();
     }
     else
     {
       intendedScore = 0;
       intendedCompletion = 0.0;
+      rememberedSongId = null;
+      rememberedDifficulty = null;
     }
 
     for (index => capsule in grpCapsules.members)
@@ -1140,19 +1164,21 @@ enum abstract FilterType(String)
 
 class FreeplaySongData
 {
+  public var isFav:Bool = false;
+
   public var songId:String = "";
   public var songName:String = "";
   public var levelId:String = "";
   public var songCharacter:String = "";
-  public var isFav:Bool = false;
+  public var songDifficulties:Array<String> = [];
 
-  public function new(songId:String, songName:String, levelId:String, songCharacter:String, isFav:Bool = false)
+  public function new(songId:String, songName:String, levelId:String, songCharacter:String, songDifficulties:Array<String>)
   {
     this.songId = songId;
     this.songName = songName;
     this.levelId = levelId;
     this.songCharacter = songCharacter;
-    this.isFav = isFav;
+    this.songDifficulties = songDifficulties;
   }
 }
 
@@ -1162,4 +1188,18 @@ typedef MoveData =
   var ?y:Float;
   var ?speed:Float;
   var ?wait:Float;
+}
+
+class DifficultySprite extends FlxSprite
+{
+  public var difficultyId:String;
+
+  public function new(diffId:String)
+  {
+    super();
+
+    difficultyId = diffId;
+
+    loadGraphic(Paths.image('freeplay/freeplay' + diffId));
+  }
 }

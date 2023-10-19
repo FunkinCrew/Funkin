@@ -1,5 +1,6 @@
 package funkin.play.song;
 
+import funkin.util.SortUtil;
 import flixel.sound.FlxSound;
 import openfl.utils.Assets;
 import funkin.modding.events.ScriptEvent;
@@ -56,8 +57,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public var validScore:Bool = true;
 
-  var difficultyIds:Array<String>;
-
   public var songName(get, never):String;
 
   function get_songName():String
@@ -85,7 +84,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     this.id = id;
 
     variations = [];
-    difficultyIds = [];
     difficulties = new Map<String, SongDifficulty>();
 
     _data = _fetchData(id);
@@ -127,8 +125,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     for (vari in variations)
       result.variations.push(vari);
 
-    result.difficultyIds.clear();
-
+    result.difficulties.clear();
     result.populateDifficulties();
 
     for (variation => chartData in charts)
@@ -157,13 +154,17 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       if (metadata == null || metadata.playData == null) continue;
 
+      // If there are no difficulties in the metadata, there's a problem.
+      if (metadata.playData.difficulties.length == 0)
+      {
+        throw 'Song $id has no difficulties listed in metadata!';
+      }
+
       // There may be more difficulties in the chart file than in the metadata,
       // (i.e. non-playable charts like the one used for Pico on the speaker in Stress)
       // but all the difficulties in the metadata must be in the chart file.
       for (diffId in metadata.playData.difficulties)
       {
-        difficultyIds.push(diffId);
-
         var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
         variations.push(metadata.variation);
@@ -237,19 +238,37 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public inline function getDifficulty(?diffId:String):Null<SongDifficulty>
   {
-    if (diffId == null) diffId = difficulties.keys().array()[0];
+    if (diffId == null) diffId = listDifficulties()[0];
 
     return difficulties.get(diffId);
   }
 
-  public function listDifficulties():Array<String>
+  /**
+   * List all the difficulties in this song.
+   * @param variationId Optionally filter by variation.
+   * @return The list of difficulties.
+   */
+  public function listDifficulties(?variationId:String):Array<String>
   {
-    return difficultyIds;
+    if (variationId == '') variationId = null;
+
+    var diffFiltered:Array<String> = difficulties.keys().array().filter(function(diffId:String):Bool {
+      if (variationId == null) return true;
+      var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+      if (difficulty == null) return false;
+      return difficulty.variation == variationId;
+    });
+
+    diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
+
+    return diffFiltered;
   }
 
-  public function hasDifficulty(diffId:String):Bool
+  public function hasDifficulty(diffId:String, ?variationId:String):Bool
   {
-    return difficulties.exists(diffId);
+    if (variationId == '') variationId = null;
+    var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+    return variationId == null ? (difficulty != null) : (difficulty != null && difficulty.variation == variationId);
   }
 
   /**

@@ -23,6 +23,12 @@
       "name": "Haxe Eval",
       "type": "haxe-eval",
       "request": "launch"
+    },
+    {
+      // Attaches the debugger to an already running game
+      "name": "HXCPP - Attach",
+      "type": "hxcpp",
+      "request": "attach"
     }
   ]
 }

@@ -72,6 +72,8 @@ class ChartEditorToolboxHandler
     {
       toolbox.showDialog(false);
 
+      ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/openWindow'));
+
       switch (id)
       {
         case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
@@ -109,6 +111,8 @@ class ChartEditorToolboxHandler
     {
       toolbox.hideDialog(DialogButton.CANCEL);
 
+      ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/exitWindow'));
+
       switch (id)
       {
         case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
@@ -133,6 +137,18 @@ class ChartEditorToolboxHandler
     else
     {
       trace('ChartEditorToolboxHandler.hideToolbox() - Could not retrieve toolbox: $id');
+    }
+  }
+
+  public static function rememberOpenToolboxes(state:ChartEditorState):Void {}
+
+  public static function openRememberedToolboxes(state:ChartEditorState):Void {}
+
+  public static function hideAllToolboxes(state:ChartEditorState):Void
+  {
+    for (toolbox in state.activeToolboxes.values())
+    {
+      toolbox.hideDialog(DialogButton.CANCEL);
     }
   }
 
@@ -634,9 +650,9 @@ class ChartEditorToolboxHandler
         timeChanges[0].bpm = event.value;
       }
 
-      Conductor.forceBPM(event.value);
-
       state.currentSongMetadata.timeChanges = timeChanges;
+
+      Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 

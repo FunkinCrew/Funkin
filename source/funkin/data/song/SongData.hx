@@ -12,6 +12,8 @@ class SongMetadata
    *
    */
   // @:default(funkin.data.song.SongRegistry.SONG_METADATA_VERSION)
+  @:jcustomparse(funkin.data.DataParse.semverVersion)
+  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
   @:default("Unknown")
@@ -203,6 +205,8 @@ class SongMusicData
    *
    */
   // @:default(funkin.data.song.SongRegistry.SONG_METADATA_VERSION)
+  @:jcustomparse(funkin.data.DataParse.semverVersion)
+  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
   @:default("Unknown")
@@ -367,6 +371,8 @@ class SongCharacterData
 class SongChartData
 {
   @:default(funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION)
+  @:jcustomparse(funkin.data.DataParse.semverVersion)
+  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
   public var scrollSpeed:Map<String, Float>;
