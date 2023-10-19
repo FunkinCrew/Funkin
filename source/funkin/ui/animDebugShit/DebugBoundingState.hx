@@ -253,6 +253,10 @@ class DebugBoundingState extends FlxState
     offsetView.add(animDropDownMenu);
 
     var characters:Array<String> = CharacterDataParser.listCharacterIds();
+    characters = characters.filter(function(charId:String) {
+      var char = CharacterDataParser.fetchCharacterData(charId);
+      return char.renderType != AnimateAtlas;
+    });
     characters.sort(SortUtil.alphabetically);
 
     var charDropdown:DropDown = cast uiStuff.findComponent('characterDropdown');
