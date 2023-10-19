@@ -23,13 +23,6 @@ class ArrayTools
     return result;
   }
 
-  public static function pushUnique<T>(array:Array<T>, element:T):Bool
-  {
-    if (array.contains(element)) return false;
-    array.push(element);
-    return true;
-  }
-
   /**
    * Return the first element of the array that satisfies the predicate, or null if none do.
    * @param input The array to search
