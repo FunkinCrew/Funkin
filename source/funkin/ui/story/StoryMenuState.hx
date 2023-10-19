@@ -99,6 +99,9 @@ class StoryMenuState extends MusicBeatState
 
   var stickerSubState:StickerSubState;
 
+  static var rememberedLevelId:Null<String> = null;
+  static var rememberedDifficulty:Null<String> = "normal";
+
   public function new(?stickers:StickerSubState = null)
   {
     super();
@@ -132,6 +135,8 @@ class StoryMenuState extends MusicBeatState
     persistentUpdate = persistentDraw = true;
 
     updateData();
+
+    rememberSelection();
 
     // Explicitly define the background color.
     this.bgColor = FlxColor.BLACK;
@@ -185,6 +190,7 @@ class StoryMenuState extends MusicBeatState
     leftDifficultyArrow.animation.play('idle');
     add(leftDifficultyArrow);
 
+    buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
     rightDifficultyArrow = new FlxSprite(difficultySprite.x + difficultySprite.width + 10, leftDifficultyArrow.y);
@@ -205,6 +211,18 @@ class StoryMenuState extends MusicBeatState
     // Updating Discord Rich Presence
     DiscordClient.changePresence("In the Menus", null);
     #end
+  }
+
+  function rememberSelection():Void
+  {
+    if (rememberedLevelId != null)
+    {
+      currentLevelId = rememberedLevelId;
+    }
+    if (rememberedDifficulty != null)
+    {
+      currentDifficultyId = rememberedDifficulty;
+    }
   }
 
   function playMenuMusic():Void
@@ -228,34 +246,35 @@ class StoryMenuState extends MusicBeatState
     isLevelUnlocked = currentLevel == null ? false : currentLevel.isUnlocked();
   }
 
-  function buildDifficultySprite():Void
+  function buildDifficultySprite(?diff:String):Void
   {
+    if (diff == null) diff = currentDifficultyId;
     remove(difficultySprite);
-    difficultySprite = difficultySprites.get(currentDifficultyId);
+    difficultySprite = difficultySprites.get(diff);
     if (difficultySprite == null)
     {
       difficultySprite = new FlxSprite(leftDifficultyArrow.x + leftDifficultyArrow.width + 10, leftDifficultyArrow.y);
 
-      if (Assets.exists(Paths.file('images/storymenu/difficulties/${currentDifficultyId}.xml')))
+      if (Assets.exists(Paths.file('images/storymenu/difficulties/${diff}.xml')))
       {
-        difficultySprite.frames = Paths.getSparrowAtlas('storymenu/difficulties/${currentDifficultyId}');
+        difficultySprite.frames = Paths.getSparrowAtlas('storymenu/difficulties/${diff}');
         difficultySprite.animation.addByPrefix('idle', 'idle0', 24, true);
         difficultySprite.animation.play('idle');
       }
       else
       {
-        difficultySprite.loadGraphic(Paths.image('storymenu/difficulties/${currentDifficultyId}'));
+        difficultySprite.loadGraphic(Paths.image('storymenu/difficulties/${diff}'));
       }
 
-      difficultySprites.set(currentDifficultyId, difficultySprite);
+      difficultySprites.set(diff, difficultySprite);
 
-      difficultySprite.x += (difficultySprites.get('normal').width - difficultySprite.width) / 2;
+      difficultySprite.x += (difficultySprites.get(Constants.DEFAULT_DIFFICULTY).width - difficultySprite.width) / 2;
     }
     difficultySprite.alpha = 0;
 
     difficultySprite.y = leftDifficultyArrow.y - 15;
     var targetY:Float = leftDifficultyArrow.y + 10;
-    targetY -= (difficultySprite.height - difficultySprites.get('normal').height) / 2;
+    targetY -= (difficultySprite.height - difficultySprites.get(Constants.DEFAULT_DIFFICULTY).height) / 2;
     FlxTween.tween(difficultySprite, {y: targetY, alpha: 1}, 0.07);
 
     add(difficultySprite);
@@ -399,6 +418,7 @@ class StoryMenuState extends MusicBeatState
 
     var previousLevelId:String = currentLevelId;
     currentLevelId = levelList[currentIndex];
+    rememberedLevelId = currentLevelId;
 
     updateData();
 
@@ -442,6 +462,7 @@ class StoryMenuState extends MusicBeatState
 
     var hasChanged:Bool = currentDifficultyId != difficultyList[currentIndex];
     currentDifficultyId = difficultyList[currentIndex];
+    rememberedDifficulty = currentDifficultyId;
 
     if (difficultyList.length <= 1)
     {
