@@ -15,8 +15,6 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 
   public static final NOTE_STYLE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static final DEFAULT_NOTE_STYLE_ID:String = "funkin";
-
   public static final instance:NoteStyleRegistry = new NoteStyleRegistry();
 
   public function new()
@@ -26,7 +24,7 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 
   public function fetchDefault():NoteStyle
   {
-    return fetchEntry(DEFAULT_NOTE_STYLE_ID);
+    return fetchEntry(Constants.DEFAULT_NOTE_STYLE);
   }
 
   /**

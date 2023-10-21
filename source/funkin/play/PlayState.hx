@@ -1471,7 +1471,7 @@ class PlayState extends MusicBeatSubState
     {
       case 'school': 'pixel';
       case 'schoolEvil': 'pixel';
-      default: 'funkin';
+      default: Constants.DEFAULT_NOTE_STYLE;
     }
     var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
@@ -2389,8 +2389,8 @@ class PlayState extends MusicBeatSubState
 
     #if sys
     // spitter for ravy, teehee!!
-
-    var output = SerializerUtil.toJSON(inputSpitter);
+    var writer = new json2object.JsonWriter<Array<ScoreInput>>();
+    var output = writer.write(inputSpitter, '  ');
     sys.io.File.saveContent("./scores.json", output);
     #end
 

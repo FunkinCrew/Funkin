@@ -96,11 +96,13 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (_data != null && _data.playData != null)
     {
       for (vari in _data.playData.songVariations)
+      {
         variations.push(vari);
-    }
 
-    for (meta in fetchVariationMetadata(id))
-      _metadata.push(meta);
+        var variMeta = fetchVariationMetadata(id, vari);
+        if (variMeta != null) _metadata.push(variMeta);
+      }
+    }
 
     if (_metadata.length == 0)
     {
@@ -178,7 +180,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         difficulty.generatedBy = metadata.generatedBy;
 
         difficulty.stage = metadata.playData.stage;
-        difficulty.noteStyle = metadata.playData.noteSkin;
+        difficulty.noteStyle = metadata.playData.noteStyle;
 
         difficulties.set(diffId, difficulty);
 
@@ -337,17 +339,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return SongRegistry.instance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
   }
 
-  function fetchVariationMetadata(id:String):Array<SongMetadata>
+  function fetchVariationMetadata(id:String, vari:String):Null<SongMetadata>
   {
-    var result:Array<SongMetadata> = [];
-    for (vari in variations)
-    {
-      var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id, vari);
-      if (version == null) continue;
-      var meta:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataWithMigration(id, vari, version);
-      if (meta != null) result.push(meta);
-    }
-    return result;
+    var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id, vari);
+    if (version == null) return null;
+    var meta:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataWithMigration(id, vari, version);
+    return meta;
   }
 }
 

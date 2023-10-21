@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.ui.debug.charting.ChartEditorState;
 import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -26,6 +27,8 @@ import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
+import funkin.util.CLIUtil;
+import funkin.util.CLIUtil.CLIParams;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -247,8 +250,21 @@ class InitState extends FlxState
    */
   function startGameNormally():Void
   {
-    FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-    FlxG.switchState(new TitleState());
+    var params:CLIParams = CLIUtil.processArgs();
+    trace('Command line args: ${params}');
+
+    if (params.chart.shouldLoadChart)
+    {
+      FlxG.switchState(new ChartEditorState(
+        {
+          fnfcTargetPath: params.chart.chartPath,
+        }));
+    }
+    else
+    {
+      FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      FlxG.switchState(new TitleState());
+    }
   }
 
   /**

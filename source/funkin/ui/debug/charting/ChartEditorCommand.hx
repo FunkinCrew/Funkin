@@ -182,8 +182,8 @@ class SelectItemsCommand implements ChartEditorCommand
       state.currentEventSelection.push(event);
     }
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
+    // state.noteDisplayDirty = true;
+    // state.notePreviewDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -191,8 +191,8 @@ class SelectItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
+    // state.noteDisplayDirty = true;
+    // state.notePreviewDirty = true;
   }
 
   public function toString():String
@@ -452,8 +452,8 @@ class DeselectItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
+    // state.noteDisplayDirty = true;
+    // state.notePreviewDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -468,8 +468,8 @@ class DeselectItemsCommand implements ChartEditorCommand
       state.currentEventSelection.push(event);
     }
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
+    // state.noteDisplayDirty = true;
+    // state.notePreviewDirty = true;
   }
 
   public function toString():String

@@ -95,6 +95,6 @@ class NoteStyleRegistryTest extends FunkinTest
 
     // Verify the underlying call.
 
-    nsrMock.fetchEntry(NoteStyleRegistry.DEFAULT_NOTE_STYLE_ID).verify(times(1));
+    nsrMock.fetchEntry(Constants.DEFAULT_NOTE_STYLE).verify(times(1));
   }
 }

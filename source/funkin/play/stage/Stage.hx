@@ -176,13 +176,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
         continue;
       }
 
-      if (Std.isOfType(dataProp.scale, Array))
+      switch (dataProp.scale)
       {
-        propSprite.scale.set(dataProp.scale[0], dataProp.scale[1]);
-      }
-      else
-      {
-        propSprite.scale.set(dataProp.scale);
+        case Left(value):
+          propSprite.scale.set(value);
+
+        case Right(values):
+          propSprite.scale.set(values[0], values[1]);
       }
       propSprite.updateHitbox();
 
@@ -194,8 +194,15 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
       // If pixel, disable antialiasing.
       propSprite.antialiasing = !dataProp.isPixel;
 
-      propSprite.scrollFactor.x = dataProp.scroll[0];
-      propSprite.scrollFactor.y = dataProp.scroll[1];
+      switch (dataProp.scroll)
+      {
+        case Left(value):
+          propSprite.scrollFactor.x = value;
+          propSprite.scrollFactor.y = value;
+        case Right(values):
+          propSprite.scrollFactor.x = values[0];
+          propSprite.scrollFactor.y = values[1];
+      }
 
       propSprite.zIndex = dataProp.zIndex;
 

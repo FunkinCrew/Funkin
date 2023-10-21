@@ -265,7 +265,7 @@ class ChartEditorAudioHandler
     {
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);
       if (data == null) continue;
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Vocals-${key}.ogg', data));
+      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
     }
 
     return zipEntries;

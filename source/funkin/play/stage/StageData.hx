@@ -1,7 +1,6 @@
 package funkin.play.stage;
 
 import funkin.data.animation.AnimationData;
-import flixel.util.typeLimit.OneOfTwo;
 import funkin.play.stage.ScriptedStage;
 import funkin.play.stage.Stage;
 import funkin.util.VersionUtil;
@@ -157,15 +156,26 @@ class StageDataParser
     return rawJson;
   }
 
-  static function migrateStageData(rawJson:String, stageId:String)
+  static function migrateStageData(rawJson:String, stageId:String):Null<StageData>
   {
     // If you update the stage data format in a breaking way,
     // handle migration here by checking the `version` value.
 
     try
     {
-      var stageData:StageData = cast Json.parse(rawJson);
-      return stageData;
+      var parser = new json2object.JsonParser<StageData>();
+      parser.fromJson(rawJson, '$stageId.json');
+
+      if (parser.errors.length > 0)
+      {
+        trace('[STAGE] Failed to parse stage data');
+
+        for (error in parser.errors)
+          funkin.data.DataError.printError(error);
+
+        return null;
+      }
+      return parser.value;
     }
     catch (e)
     {
@@ -269,34 +279,34 @@ class StageDataParser
         inputProp.danceEvery = DEFAULT_DANCEEVERY;
       }
 
-      if (inputProp.scale == null)
-      {
-        inputProp.scale = DEFAULT_SCALE;
-      }
-
       if (inputProp.animType == null)
       {
         inputProp.animType = DEFAULT_ANIMTYPE;
       }
 
-      if (Std.isOfType(inputProp.scale, Float))
+      switch (inputProp.scale)
       {
-        inputProp.scale = [inputProp.scale, inputProp.scale];
+        case null:
+          inputProp.scale = Right([DEFAULT_SCALE, DEFAULT_SCALE]);
+        case Left(value):
+          inputProp.scale = Right([value, value]);
+        case Right(_):
+          // Do nothing
       }
 
-      if (inputProp.scroll == null)
+      switch (inputProp.scroll)
       {
-        inputProp.scroll = DEFAULT_SCROLL;
+        case null:
+          inputProp.scroll = Right(DEFAULT_SCROLL);
+        case Left(value):
+          inputProp.scroll = Right([value, value]);
+        case Right(_):
+          // Do nothing
       }
 
       if (inputProp.alpha == null)
       {
         inputProp.alpha = DEFAULT_ALPHA;
-      }
-
-      if (Std.isOfType(inputProp.scroll, Float))
-      {
-        inputProp.scroll = [inputProp.scroll, inputProp.scroll];
       }
 
       if (inputProp.animations == null)
@@ -392,23 +402,39 @@ class StageDataParser
   }
 }
 
-typedef StageData =
+class StageData
 {
   /**
    * The sematic version number of the stage data JSON format.
    * Supports fancy comparisons like NPM does it's neat.
    */
-  var version:String;
+  public var version:String;
 
-  var name:String;
-  var cameraZoom:Null<Float>;
-  var props:Array<StageDataProp>;
-  var characters:
-    {
-      bf:StageDataCharacter,
-      dad:StageDataCharacter,
-      gf:StageDataCharacter,
-    };
+  public var name:String;
+  public var cameraZoom:Null<Float>;
+  public var props:Array<StageDataProp>;
+  public var characters:StageDataCharacters;
+
+  public function new()
+  {
+    this.version = StageDataParser.STAGE_DATA_VERSION;
+  }
+
+  /**
+   * Convert this StageData into a JSON string.
+   */
+  public function serialize(pretty:Bool = true):String
+  {
+    var writer = new json2object.JsonWriter<StageData>();
+    return writer.write(this, pretty ? '  ' : null);
+  }
+}
+
+typedef StageDataCharacters =
+{
+  var bf:StageDataCharacter;
+  var dad:StageDataCharacter;
+  var gf:StageDataCharacter;
 };
 
 typedef StageDataProp =
@@ -417,6 +443,7 @@ typedef StageDataProp =
    * The name of the prop for later lookup by scripts.
    * Optional; if unspecified, the prop can't be referenced by scripts.
    */
+  @:optional
   var name:String;
 
   /**
@@ -435,27 +462,35 @@ typedef StageDataProp =
    * This is just like CSS, it isn't hard.
    * @default 0
    */
-  var zIndex:Null<Int>;
+  @:optional
+  @:default(0)
+  var zIndex:Int;
 
   /**
    * If set to true, anti-aliasing will be forcibly disabled on the sprite.
    * This prevents blurry images on pixel-art levels.
    * @default false
    */
-  var isPixel:Null<Bool>;
+  @:optional
+  @:default(false)
+  var isPixel:Bool;
 
   /**
    * Either the scale of the prop as a float, or the [w, h] scale as an array of two floats.
    * Pro tip: On pixel-art levels, save the sprite small and set this value to 6 or so to save memory.
-   * @default 1
    */
-  var scale:OneOfTwo<Float, Array<Float>>;
+  @:jcustomparse(funkin.data.DataParse.eitherFloatOrFloats)
+  @:jcustomwrite(funkin.data.DataWrite.eitherFloatOrFloats)
+  @:optional
+  var scale:haxe.ds.Either<Float, Array<Float>>;
 
   /**
    * The alpha of the prop, as a float.
    * @default 1.0
    */
-  var alpha:Null<Float>;
+  @:optional
+  @:default(1.0)
+  var alpha:Float;
 
   /**
    * If not zero, this prop will play an animation every X beats of the song.
@@ -464,7 +499,9 @@ typedef StageDataProp =
    *
    * @default 0
    */
-  var danceEvery:Null<Int>;
+  @:default(0)
+  @:optional
+  var danceEvery:Int;
 
   /**
    * How much the prop scrolls relative to the camera. Used to create a parallax effect.
@@ -474,25 +511,32 @@ typedef StageDataProp =
    * [0, 0] means the prop is not moved.
    * @default [0, 0]
    */
-  var scroll:OneOfTwo<Float, Array<Float>>;
+  @:jcustomparse(funkin.data.DataParse.eitherFloatOrFloats)
+  @:jcustomwrite(funkin.data.DataWrite.eitherFloatOrFloats)
+  @:optional
+  var scroll:haxe.ds.Either<Float, Array<Float>>;
 
   /**
    * An optional array of animations which the prop can play.
    * @default Prop has no animations.
    */
+  @:optional
   var animations:Array<AnimationData>;
 
   /**
    * If animations are used, this is the name of the animation to play first.
    * @default Don't play an animation.
    */
-  var startingAnimation:String;
+  @:optional
+  var startingAnimation:Null<String>;
 
   /**
    * The animation type to use.
    * Options: "sparrow", "packer"
    * @default "sparrow"
    */
+  @:default("sparrow")
+  @:optional
   var animType:String;
 };
 
@@ -503,16 +547,22 @@ typedef StageDataCharacter =
    * Again, just like CSS.
    * @default 0
    */
-  ?zIndex:Int,
+  @:optional
+  @:default(0)
+  var zIndex:Int;
 
   /**
    * The position to render the character at.
    */
-  position:Array<Float>,
+  @:optional
+  @:default([0, 0])
+  var position:Array<Float>;
 
   /**
    * The camera offsets to apply when focusing on the character on this stage.
    * @default [-100, -100] for BF, [100, -100] for DAD/OPPONENT, [0, 0] for GF
    */
-  cameraOffsets:Array<Float>,
+  @:optional
+  @:default([0, 0])
+  var cameraOffsets:Array<Float>;
 };

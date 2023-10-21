@@ -1011,17 +1011,17 @@ class ChartEditorState extends HaxeUIState
 
   function get_currentSongNoteStyle():String
   {
-    if (currentSongMetadata.playData.noteSkin == null)
+    if (currentSongMetadata.playData.noteStyle == null)
     {
       // Initialize to the default value if not set.
-      currentSongMetadata.playData.noteSkin = 'funkin';
+      currentSongMetadata.playData.noteStyle = Constants.DEFAULT_NOTE_STYLE;
     }
-    return currentSongMetadata.playData.noteSkin;
+    return currentSongMetadata.playData.noteStyle;
   }
 
   function set_currentSongNoteStyle(value:String):String
   {
-    return currentSongMetadata.playData.noteSkin = value;
+    return currentSongMetadata.playData.noteStyle = value;
   }
 
   var currentSongStage(get, set):String;
@@ -1232,10 +1232,22 @@ class ChartEditorState extends HaxeUIState
 
   var renderedSelectionSquares:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
 
-  public function new()
+  /**
+   * The params which were passed in when the Chart Editor was initialized.
+   */
+  var params:Null<ChartEditorParams>;
+
+  /**
+   * The current file path which the chart editor is working with.
+   */
+  public var currentWorkingFilePath:Null<String>;
+
+  public function new(?params:ChartEditorParams)
   {
     // Load the HaxeUI XML file.
     super(CHART_EDITOR_LAYOUT);
+
+    this.params = params;
   }
 
   override function create():Void
@@ -1251,7 +1263,7 @@ class ChartEditorState extends HaxeUIState
     fixCamera();
 
     // Get rid of any music from the previous state.
-    FlxG.sound.music.stop();
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
     // Play the welcome music.
     setupWelcomeMusic();
@@ -1277,7 +1289,33 @@ class ChartEditorState extends HaxeUIState
 
     refresh();
 
-    ChartEditorDialogHandler.openWelcomeDialog(this, false);
+    if (params != null && params.fnfcTargetPath != null)
+    {
+      // Chart editor was opened from the command line. Open the FNFC file now!
+      if (ChartEditorImportExportHandler.loadFromFNFCPath(this, params.fnfcTargetPath))
+      {
+        // Don't open the welcome dialog!
+
+        #if !mac
+        NotificationManager.instance.addNotification(
+          {
+            title: 'Success',
+            body: 'Loaded chart (${params.fnfcTargetPath})',
+            type: NotificationType.Success,
+            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+          });
+        #end
+      }
+      else
+      {
+        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+        ChartEditorDialogHandler.openWelcomeDialog(this, false);
+      }
+    }
+    else
+    {
+      ChartEditorDialogHandler.openWelcomeDialog(this, false);
+    }
   }
 
   function setupWelcomeMusic()
@@ -1632,11 +1670,15 @@ class ChartEditorState extends HaxeUIState
       noteSnapQuantIndex++;
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     });
+    addUIRightClickListener('playbarNoteSnap', function(_) {
+      noteSnapQuantIndex--;
+      if (noteSnapQuantIndex < 0) noteSnapQuantIndex = SNAP_QUANTS.length - 1;
+    });
 
     // Add functionality to the menu items.
 
     addUIClickListener('menubarItemNewChart', _ -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
-    addUIClickListener('menubarItemOpenChart', _ -> ChartEditorDialogHandler.openBrowseWizard(this, true));
+    addUIClickListener('menubarItemOpenChart', _ -> ChartEditorDialogHandler.openBrowseFNFC(this, true));
     addUIClickListener('menubarItemSaveChartAs', _ -> ChartEditorImportExportHandler.exportAllSongData(this));
     addUIClickListener('menubarItemLoadInst', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
     addUIClickListener('menubarItemImportChart', _ -> ChartEditorDialogHandler.openImportChartDialog(this, 'legacy', true));
@@ -1776,7 +1818,7 @@ class ChartEditorState extends HaxeUIState
       addUIChangeListener('menubarItemVolumeVocals', function(event:UIEvent) {
         var volume:Float = (event?.value ?? 0) / 100.0;
         if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
-        vocalsVolumeLabel.text = 'Vocals - ${Std.int(event.value)}%';
+        vocalsVolumeLabel.text = 'Voices - ${Std.int(event.value)}%';
       });
     }
 
@@ -1913,6 +1955,15 @@ class ChartEditorState extends HaxeUIState
   {
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
     FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
+
+    // Add a debug value which displays the current size of the note pool.
+    // The pool will grow as more notes need to be rendered at once.
+    // If this gets too big, something needs to be optimized somewhere! -Eric
+    if (renderedNotes != null && renderedNotes.members != null) FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
+    if (renderedHoldNotes != null && renderedHoldNotes.members != null) FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
+    if (renderedEvents != null && renderedEvents.members != null) FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
+    if (currentNoteSelection != null) FlxG.watch.addQuick("notesSelected", currentNoteSelection.length);
+    if (currentEventSelection != null) FlxG.watch.addQuick("eventsSelected", currentEventSelection.length);
   }
 
   /**
@@ -3037,15 +3088,6 @@ class ChartEditorState extends HaxeUIState
       // Sort the events DESCENDING. This keeps the sustain behind the associated note.
       renderedEvents.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
     }
-
-    // Add a debug value which displays the current size of the note pool.
-    // The pool will grow as more notes need to be rendered at once.
-    // If this gets too big, something needs to be optimized somewhere! -Eric
-    FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
-    FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
-    FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
-    FlxG.watch.addQuick("notesSelected", currentNoteSelection.length);
-    FlxG.watch.addQuick("eventsSelected", currentEventSelection.length);
   }
 
   /**
@@ -3152,7 +3194,7 @@ class ChartEditorState extends HaxeUIState
     // CTRL + O = Open Chart
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.O)
     {
-      ChartEditorDialogHandler.openBrowseWizard(this, true);
+      ChartEditorDialogHandler.openBrowseFNFC(this, true);
     }
 
     // CTRL + SHIFT + S = Save As
@@ -3168,10 +3210,13 @@ class ChartEditorState extends HaxeUIState
     }
   }
 
+  @:nullSafety(Off)
   function quitChartEditor():Void
   {
     autoSave();
     stopWelcomeMusic();
+    // TODO: PR Flixel to make onComplete nullable.
+    if (audioInstTrack != null) audioInstTrack.onComplete = null;
     FlxG.switchState(new MainMenuState());
   }
 
@@ -3691,7 +3736,7 @@ class ChartEditorState extends HaxeUIState
     if (inputStage != null) inputStage.value = currentSongMetadata.playData.stage;
 
     var inputNoteStyle:Null<DropDown> = toolbox.findComponent('inputNoteStyle', DropDown);
-    if (inputNoteStyle != null) inputNoteStyle.value = currentSongMetadata.playData.noteSkin;
+    if (inputNoteStyle != null) inputNoteStyle.value = currentSongMetadata.playData.noteStyle;
 
     var inputBPM:Null<NumberStepper> = toolbox.findComponent('inputBPM', NumberStepper);
     if (inputBPM != null) inputBPM.value = currentSongMetadata.timeChanges[0].bpm;
@@ -4351,3 +4396,11 @@ enum LiveInputStyle
   NumberKeys;
   WASD;
 }
+
+typedef ChartEditorParams =
+{
+  /**
+   * If non-null, load this song immediately instead of the welcome screen.
+   */
+  var ?fnfcTargetPath:String;
+};
