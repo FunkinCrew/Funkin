@@ -344,10 +344,19 @@ class FileUtil
   public static function readBytesFromPath(path:String):Bytes
   {
     #if sys
-    if (!sys.FileSystem.exists(path)) return null;
+    if (!doesFileExist(path)) return null;
     return sys.io.File.getBytes(path);
     #else
     return null;
+    #end
+  }
+
+  public static function doesFileExist(path:String):Bool
+  {
+    #if sys
+    return sys.FileSystem.exists(path);
+    #else
+    return false;
     #end
   }
 
@@ -434,7 +443,7 @@ class FileUtil
       case Force:
         sys.io.File.saveContent(path, data);
       case Skip:
-        if (!sys.FileSystem.exists(path))
+        if (!doesFileExist(path))
         {
           sys.io.File.saveContent(path, data);
         }
@@ -443,7 +452,7 @@ class FileUtil
           throw 'File already exists: $path';
         }
       case Ask:
-        if (sys.FileSystem.exists(path))
+        if (doesFileExist(path))
         {
           // TODO: We don't have the technology to use native popups yet.
         }
@@ -475,7 +484,7 @@ class FileUtil
       case Force:
         sys.io.File.saveBytes(path, data);
       case Skip:
-        if (!sys.FileSystem.exists(path))
+        if (!doesFileExist(path))
         {
           sys.io.File.saveBytes(path, data);
         }
@@ -484,7 +493,7 @@ class FileUtil
           throw 'File already exists: $path';
         }
       case Ask:
-        if (sys.FileSystem.exists(path))
+        if (doesFileExist(path))
         {
           // TODO: We don't have the technology to use native popups yet.
         }
@@ -523,7 +532,7 @@ class FileUtil
   public static function createDirIfNotExists(dir:String):Void
   {
     #if sys
-    if (!sys.FileSystem.exists(dir))
+    if (!doesFileExist(dir))
     {
       sys.FileSystem.createDirectory(dir);
     }

@@ -84,10 +84,46 @@ class ChartEditorDialogHandler
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_WELCOME_LAYOUT, true, closable);
     if (dialog == null) throw 'Could not locate Welcome dialog';
 
+    state.isHaxeUIDialogOpen = true;
     dialog.onDialogClosed = function(_event) {
+      state.isHaxeUIDialogOpen = false;
       // Called when the Welcome dialog is closed while it is closable.
       state.stopWelcomeMusic();
     }
+
+    #if sys
+    var splashRecentContainer:Null<VBox> = dialog.findComponent('splashRecentContainer', VBox);
+    if (splashRecentContainer == null) throw 'Could not locate splashRecentContainer in Welcome dialog';
+
+    for (chartPath in state.previousWorkingFilePaths)
+    {
+      var linkRecentChart:Link = new FunkinLink();
+      linkRecentChart.text = chartPath;
+      linkRecentChart.onClick = function(_event) {
+        dialog.hideDialog(DialogButton.CANCEL);
+        state.stopWelcomeMusic();
+
+        // Load chart from file
+        ChartEditorImportExportHandler.loadFromFNFCPath(state, chartPath);
+      }
+
+      if (!FileUtil.doesFileExist(chartPath))
+      {
+        trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
+        linkRecentChart.disabled = true;
+      }
+
+      splashRecentContainer.addComponent(linkRecentChart);
+    }
+    #else
+    var splashRecentContainer:Null<VBox> = dialog.findComponent('splashRecentContainer', VBox);
+    if (splashRecentContainer == null) throw 'Could not locate splashRecentContainer in Welcome dialog';
+
+    var webLoadLabel:Label = new Label();
+    webLoadLabel.text = 'Click the button below to load a chart file (.fnfc) from your computer.';
+
+    splashRecentContainer.add(webLoadLabel);
+    #end
 
     // Create New Song "Easy/Normal/Hard"
     var linkCreateBasic:Null<Link> = dialog.findComponent('splashCreateFromSongBasic', Link);
@@ -180,6 +216,7 @@ class ChartEditorDialogHandler
     if (dialog == null) throw 'Could not locate Upload Chart dialog';
 
     dialog.onDialogClosed = function(_event) {
+      state.isHaxeUIDialogOpen = false;
       if (_event.button == DialogButton.APPLY)
       {
         // Simply let the dialog close.
@@ -194,6 +231,7 @@ class ChartEditorDialogHandler
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Upload Chart dialog';
 
+    state.isHaxeUIDialogOpen = true;
     buttonCancel.onClick = function(_event) {
       dialog.hideDialog(DialogButton.CANCEL);
     }
@@ -232,6 +270,10 @@ class ChartEditorDialogHandler
                   });
                 #end
 
+                trace(selectedFile.name);
+                trace(selectedFile.text);
+                trace(selectedFile.isBinary);
+                trace(selectedFile.fullPath);
                 if (selectedFile.fullPath != null) state.currentWorkingFilePath = selectedFile.fullPath;
                 dialog.hideDialog(DialogButton.APPLY);
                 removeDropHandler(onDropFile);
@@ -689,7 +731,9 @@ class ChartEditorDialogHandler
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Song Metadata dialog';
+    state.isHaxeUIDialogOpen = true;
     buttonCancel.onClick = function(_event) {
+      state.isHaxeUIDialogOpen = false;
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
@@ -1411,7 +1455,9 @@ class ChartEditorDialogHandler
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Import Chart dialog';
 
+    state.isHaxeUIDialogOpen = true;
     buttonCancel.onClick = function(_event) {
+      state.isHaxeUIDialogOpen = false;
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
@@ -1596,7 +1642,9 @@ class ChartEditorDialogHandler
 
     // If all validators succeeded, this callback is called.
 
+    state.isHaxeUIDialogOpen = true;
     variationForm.onSubmit = function(_event) {
+      state.isHaxeUIDialogOpen = false;
       trace('Add Variation dialog submitted, validation succeeded!');
 
       var dialogVariationName:Null<TextField> = dialog.findComponent('dialogVariationName', TextField);

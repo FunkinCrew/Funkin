@@ -1,25 +1,18 @@
 package funkin.ui.debug.charting;
 
-import funkin.play.stage.StageData;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.character.CharacterData;
-import flixel.system.FlxAssets.FlxSoundAsset;
-import flixel.math.FlxMath;
-import haxe.ui.components.TextField;
-import haxe.ui.components.DropDown;
-import haxe.ui.components.NumberStepper;
-import haxe.ui.containers.Frame;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxSpriteGroup;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.input.keyboard.FlxKey;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
+import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.misc.VarTween;
@@ -29,28 +22,31 @@ import flixel.util.FlxTimer;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VoicesGroup;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongRegistry;
 import funkin.input.Cursor;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.BaseCharacter.CharacterType;
+import funkin.play.character.CharacterData;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.Strumline;
 import funkin.play.PlayState;
 import funkin.play.song.Song;
-import funkin.data.song.SongData.SongChartData;
-import funkin.data.song.SongRegistry;
-import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongMetadata;
-import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongData.SongCharacterData;
-import funkin.data.song.SongDataUtils;
-import funkin.ui.debug.charting.ChartEditorCommand;
+import funkin.play.stage.StageData;
+import funkin.save.Save;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
 import funkin.ui.debug.charting.ChartEditorToolboxHandler.ChartEditorToolMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
+import funkin.ui.haxeui.components.FunkinMenuItem;
 import funkin.ui.haxeui.HaxeUIState;
 import funkin.util.Constants;
 import funkin.util.DateUtil;
@@ -61,10 +57,14 @@ import funkin.util.WindowUtil;
 import haxe.DynamicAccess;
 import haxe.io.Bytes;
 import haxe.io.Path;
+import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
+import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
+import haxe.ui.components.TextField;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
-import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.Frame;
+import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import haxe.ui.core.Component;
@@ -593,27 +593,6 @@ class ChartEditorState extends HaxeUIState
 
     return selectedCharacter;
   }
-
-  /**
-   * Whether the user is currently in Pattern Mode.
-   * This overrides the chart editor's normal behavior.
-   */
-  var isInPatternMode(default, set):Bool = false;
-
-  function set_isInPatternMode(value:Bool):Bool
-  {
-    isInPatternMode = value;
-
-    // Make sure view is updated when we change modes.
-    noteDisplayDirty = true;
-    notePreviewDirty = true;
-    notePreviewViewportBoundsDirty = true;
-    this.scrollPositionInPixels = 0;
-
-    return isInPatternMode;
-  }
-
-  var currentPattern:String = '';
 
   /**
    * Whether the note display render group has been modified and needs to be updated.
@@ -1184,6 +1163,11 @@ class ChartEditorState extends HaxeUIState
   var playbarHeadLayout:Null<Component> = null;
 
   /**
+   * The submenu in the menubar containing recently opened files.
+   */
+  var menubarOpenRecent:Null<Menu> = null;
+
+  /**
    * The playbar head slider.
    */
   var playbarHead:Null<Slider> = null;
@@ -1238,9 +1222,49 @@ class ChartEditorState extends HaxeUIState
   var params:Null<ChartEditorParams>;
 
   /**
+   * A list of previous working file paths.
+   * Also known as the "recent files" list.
+   */
+  public var previousWorkingFilePaths:Array<String> = [];
+
+  /**
    * The current file path which the chart editor is working with.
    */
-  public var currentWorkingFilePath:Null<String>;
+  public var currentWorkingFilePath(get, set):Null<String>;
+
+  function get_currentWorkingFilePath():Null<String>
+  {
+    return previousWorkingFilePaths[0];
+  }
+
+  function set_currentWorkingFilePath(value:Null<String>):Null<String>
+  {
+    if (value == null) return null;
+
+    if (value == previousWorkingFilePaths[0]) return value;
+
+    if (previousWorkingFilePaths.contains(value))
+    {
+      // Move the path to the front of the list.
+      previousWorkingFilePaths.remove(value);
+      previousWorkingFilePaths.unshift(value);
+    }
+    else
+    {
+      // Add the path to the front of the list.
+      previousWorkingFilePaths.unshift(value);
+    }
+
+    while (previousWorkingFilePaths.length > Constants.MAX_PREVIOUS_WORKING_FILES)
+    {
+      // Remove the oldest path.
+      previousWorkingFilePaths.pop();
+    }
+
+    populateOpenRecentMenu();
+
+    return value;
+  }
 
   public function new(?params:ChartEditorParams)
   {
@@ -1259,6 +1283,8 @@ class ChartEditorState extends HaxeUIState
 
     // Show the mouse cursor.
     Cursor.show();
+
+    loadPreferences();
 
     fixCamera();
 
@@ -1280,6 +1306,7 @@ class ChartEditorState extends HaxeUIState
     buildSelectionBox();
 
     buildAdditionalUI();
+    populateOpenRecentMenu();
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
@@ -1322,8 +1349,80 @@ class ChartEditorState extends HaxeUIState
   {
     this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop/chartEditorLoop'));
     this.welcomeMusic.looped = true;
-    // this.welcomeMusic.play();
-    // fadeInWelcomeMusic();
+  }
+
+  public function loadPreferences():Void
+  {
+    var save:Save = Save.get();
+
+    previousWorkingFilePaths = save.chartEditorPreviousFiles;
+    noteSnapQuantIndex = save.chartEditorNoteQuant;
+    currentLiveInputStyle = save.chartEditorLiveInputStyle;
+    isViewDownscroll = save.chartEditorDownscroll;
+    playtestStartTime = save.chartEditorPlaytestStartTime;
+    currentTheme = save.chartEditorTheme;
+    isMetronomeEnabled = save.chartEditorMetronomeEnabled;
+    hitsoundsEnabledPlayer = save.chartEditorHitsoundsEnabledPlayer;
+    hitsoundsEnabledOpponent = save.chartEditorHitsoundsEnabledOpponent;
+
+    // audioInstTrack.volume = save.chartEditorInstVolume;
+    // audioInstTrack.pitch = save.chartEditorPlaybackSpeed;
+    // audioVocalTrackGroup.volume = save.chartEditorVoicesVolume;
+    // audioVocalTrackGroup.pitch = save.chartEditorPlaybackSpeed;
+  }
+
+  public function writePreferences():Void
+  {
+    var save:Save = Save.get();
+
+    save.chartEditorPreviousFiles = previousWorkingFilePaths;
+    save.chartEditorNoteQuant = noteSnapQuantIndex;
+    save.chartEditorLiveInputStyle = currentLiveInputStyle;
+    save.chartEditorDownscroll = isViewDownscroll;
+    save.chartEditorPlaytestStartTime = playtestStartTime;
+    save.chartEditorTheme = currentTheme;
+    save.chartEditorMetronomeEnabled = isMetronomeEnabled;
+    save.chartEditorHitsoundsEnabledPlayer = hitsoundsEnabledPlayer;
+    save.chartEditorHitsoundsEnabledOpponent = hitsoundsEnabledOpponent;
+
+    // save.chartEditorInstVolume = audioInstTrack.volume;
+    // save.chartEditorVoicesVolume = audioVocalTrackGroup.volume;
+    // save.chartEditorPlaybackSpeed = audioInstTrack.pitch;
+  }
+
+  public function populateOpenRecentMenu():Void
+  {
+    if (menubarOpenRecent == null) return;
+
+    #if sys
+    menubarOpenRecent.clear();
+
+    for (chartPath in previousWorkingFilePaths)
+    {
+      var menuItemRecentChart:FunkinMenuItem = new FunkinMenuItem();
+      menuItemRecentChart.text = chartPath;
+      menuItemRecentChart.onClick = function(_event) {
+        stopWelcomeMusic();
+
+        // Load chart from file
+        ChartEditorImportExportHandler.loadFromFNFCPath(this, chartPath);
+      }
+
+      if (!FileUtil.doesFileExist(chartPath))
+      {
+        trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
+        menuItemRecentChart.disabled = true;
+      }
+      else
+      {
+        menuItemRecentChart.disabled = false;
+      }
+
+      menubarOpenRecent.addComponent(menuItemRecentChart);
+    }
+    #else
+    menubarOpenRecent.hide();
+    #end
   }
 
   public function fadeInWelcomeMusic():Void
@@ -1540,7 +1639,10 @@ class ChartEditorState extends HaxeUIState
   function setNotePreviewViewportBounds(bounds:FlxRect = null):Void
   {
     if (notePreviewViewport == null)
-      throw 'ERROR: Tried to set note preview viewport bounds, but notePreviewViewport is null! Check ChartEditorThemeHandler.updateTheme().';
+    {
+      trace('[WARN] Tried to set note preview viewport bounds, but notePreviewViewport is null!');
+      return;
+    }
 
     if (bounds == null)
     {
@@ -1646,9 +1748,11 @@ class ChartEditorState extends HaxeUIState
 
     add(playbarHeadLayout);
 
+    menubarOpenRecent = findComponent('menubarOpenRecent', Menu);
+    if (menubarOpenRecent == null) throw "Could not find menubarOpenRecent!";
+
     // Setup notifications.
     @:privateAccess
-    // NotificationManager.GUTTER_SIZE = 56;
     NotificationManager.GUTTER_SIZE = 20;
   }
 
@@ -1886,10 +1990,13 @@ class ChartEditorState extends HaxeUIState
   {
     saveDataDirty = false;
 
-    // Auto-save the chart.
+    // Auto-save preferences.
+    writePreferences();
 
+    // Auto-save the chart.
     #if html5
     // Auto-save to local storage.
+    // TODO: Implement this.
     #else
     // Auto-save to temp file.
     ChartEditorImportExportHandler.exportAllSongData(this, true);
@@ -3835,7 +3942,7 @@ class ChartEditorState extends HaxeUIState
       commandHistoryDirty = false;
 
       // Update the Undo and Redo buttons.
-      var undoButton:Null<MenuItem> = findComponent('menubarItemUndo', MenuItem);
+      var undoButton:Null<FunkinMenuItem> = findComponent('menubarItemUndo', FunkinMenuItem);
 
       if (undoButton != null)
       {
@@ -3857,7 +3964,7 @@ class ChartEditorState extends HaxeUIState
         trace('undoButton is null');
       }
 
-      var redoButton:Null<MenuItem> = findComponent('menubarItemRedo', MenuItem);
+      var redoButton:Null<FunkinMenuItem> = findComponent('menubarItemRedo', FunkinMenuItem);
 
       if (redoButton != null)
       {
