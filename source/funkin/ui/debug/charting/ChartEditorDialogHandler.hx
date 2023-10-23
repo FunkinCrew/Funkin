@@ -97,6 +97,8 @@ class ChartEditorDialogHandler
 
     for (chartPath in state.previousWorkingFilePaths)
     {
+      if (chartPath == null) continue;
+
       var linkRecentChart:Link = new FunkinLink();
       linkRecentChart.text = chartPath;
       linkRecentChart.onClick = function(_event) {
@@ -270,10 +272,6 @@ class ChartEditorDialogHandler
                   });
                 #end
 
-                trace(selectedFile.name);
-                trace(selectedFile.text);
-                trace(selectedFile.isBinary);
-                trace(selectedFile.fullPath);
                 if (selectedFile.fullPath != null) state.currentWorkingFilePath = selectedFile.fullPath;
                 dialog.hideDialog(DialogButton.APPLY);
                 removeDropHandler(onDropFile);
@@ -437,6 +435,7 @@ class ChartEditorDialogHandler
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
             uploadVocalsDialog.onDialogClosed = function(_event) {
               state.isHaxeUIDialogOpen = false;
+              state.currentWorkingFilePath = null; // New file, so no path.
               state.switchToCurrentInstrumental();
               state.postLoadInstrumental();
             }
@@ -495,6 +494,7 @@ class ChartEditorDialogHandler
                       var uploadVocalsDialogErect:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
                       uploadVocalsDialogErect.onDialogClosed = function(_event) {
                         state.isHaxeUIDialogOpen = false;
+                        state.currentWorkingFilePath = null; // New file, so no path.
                         state.switchToCurrentInstrumental();
                         state.postLoadInstrumental();
                       }

@@ -361,7 +361,15 @@ class ChartEditorImportExportHandler
     {
       // Prompt and save.
       var onSave:Array<String>->Void = function(paths:Array<String>) {
-        trace('Successfully exported files.');
+        if (paths.length != 1)
+        {
+          trace('[WARN] Could not get save path.');
+        }
+        else
+        {
+          state.currentWorkingFilePath = paths[0];
+          state.applyWindowTitle();
+        }
       };
 
       var onCancel:Void->Void = function() {

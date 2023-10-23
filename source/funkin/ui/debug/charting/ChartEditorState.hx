@@ -1168,6 +1168,11 @@ class ChartEditorState extends HaxeUIState
   var menubarOpenRecent:Null<Menu> = null;
 
   /**
+   * The item in the menubar to save the currently opened chart.
+   */
+  var menubarItemSave:Null<FunkinMenuItem> = null;
+
+  /**
    * The playbar head slider.
    */
   var playbarHead:Null<Slider> = null;
@@ -1225,10 +1230,21 @@ class ChartEditorState extends HaxeUIState
    * A list of previous working file paths.
    * Also known as the "recent files" list.
    */
-  public var previousWorkingFilePaths:Array<String> = [];
+  public var previousWorkingFilePaths(default, set):Array<String> = [];
+
+  function set_previousWorkingFilePaths(value:Array<String>):Array<String>
+  {
+    // Called only when the WHOLE LIST is overridden.
+    previousWorkingFilePaths = value;
+    applyWindowTitle();
+    populateOpenRecentMenu();
+    applyCanQuickSave();
+    return value;
+  }
 
   /**
    * The current file path which the chart editor is working with.
+   * If `null`, the current chart has not been saved yet.
    */
   public var currentWorkingFilePath(get, set):Null<String>;
 
@@ -1239,9 +1255,13 @@ class ChartEditorState extends HaxeUIState
 
   function set_currentWorkingFilePath(value:Null<String>):Null<String>
   {
-    if (value == null) return null;
-
     if (value == previousWorkingFilePaths[0]) return value;
+
+    if (previousWorkingFilePaths.contains(null))
+    {
+      // Filter all instances of `null` from the array.
+      previousWorkingFilePaths = previousWorkingFilePaths.filter((x) -> x != null);
+    }
 
     if (previousWorkingFilePaths.contains(value))
     {
@@ -1257,11 +1277,12 @@ class ChartEditorState extends HaxeUIState
 
     while (previousWorkingFilePaths.length > Constants.MAX_PREVIOUS_WORKING_FILES)
     {
-      // Remove the oldest path.
+      // Remove the last path in the list.
       previousWorkingFilePaths.pop();
     }
 
     populateOpenRecentMenu();
+    applyWindowTitle();
 
     return value;
   }
@@ -1395,10 +1416,12 @@ class ChartEditorState extends HaxeUIState
     if (menubarOpenRecent == null) return;
 
     #if sys
-    menubarOpenRecent.clear();
+    menubarOpenRecent.removeAllComponents();
 
     for (chartPath in previousWorkingFilePaths)
     {
+      if (chartPath == null) continue;
+
       var menuItemRecentChart:FunkinMenuItem = new FunkinMenuItem();
       menuItemRecentChart.text = chartPath;
       menuItemRecentChart.onClick = function(_event) {
@@ -1751,6 +1774,9 @@ class ChartEditorState extends HaxeUIState
     menubarOpenRecent = findComponent('menubarOpenRecent', Menu);
     if (menubarOpenRecent == null) throw "Could not find menubarOpenRecent!";
 
+    menubarItemSave = findComponent('menubarItemSave', FunkinMenuItem);
+    if (menubarItemSave == null) throw "Could not find menubarItemSave!";
+
     // Setup notifications.
     @:privateAccess
     NotificationManager.GUTTER_SIZE = 20;
@@ -1783,6 +1809,16 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemNewChart', _ -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
     addUIClickListener('menubarItemOpenChart', _ -> ChartEditorDialogHandler.openBrowseFNFC(this, true));
+    addUIClickListener('menubarItemSaveChart', _ -> {
+      if (currentWorkingFilePath != null)
+      {
+        ChartEditorImportExportHandler.exportAllSongData(this, true, currentWorkingFilePath);
+      }
+      else
+      {
+        ChartEditorImportExportHandler.exportAllSongData(this, false);
+      }
+    });
     addUIClickListener('menubarItemSaveChartAs', _ -> ChartEditorImportExportHandler.exportAllSongData(this));
     addUIClickListener('menubarItemLoadInst', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
     addUIClickListener('menubarItemImportChart', _ -> ChartEditorDialogHandler.openImportChartDialog(this, 'legacy', true));
@@ -4494,6 +4530,26 @@ class ChartEditorState extends HaxeUIState
   function dismissNotifications():Void
   {
     NotificationManager.instance.clearNotifications();
+  }
+
+  function applyCanQuickSave():Void
+  {
+    if (currentWorkingFilePath == null) {}
+    else {}
+  }
+
+  function applyWindowTitle():Void
+  {
+    var inner:String = (currentSongMetadata.songName != null) ? currentSongMetadata.songName : 'Untitled';
+    if (currentWorkingFilePath == null)
+    {
+      inner += '*';
+    }
+    else
+    {
+      inner += ' (${currentWorkingFilePath})';
+    }
+    WindowUtil.setWindowTitle('FNF Chart Editor - ${inner}');
   }
 }
 
