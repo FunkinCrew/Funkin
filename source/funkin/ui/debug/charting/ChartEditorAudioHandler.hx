@@ -218,6 +218,18 @@ class ChartEditorAudioHandler
     snd.play();
   }
 
+  public static function wipeInstrumentalData(state:ChartEditorState):Void
+  {
+    state.audioInstTrackData.clear();
+    stopExistingInstrumental(state);
+  }
+
+  public static function wipeVocalData(state:ChartEditorState):Void
+  {
+    state.audioVocalTrackData.clear();
+    stopExistingVocals(state);
+  }
+
   /**
    * Convert byte data into a playable sound.
    *
@@ -238,18 +250,27 @@ class ChartEditorAudioHandler
   {
     var zipEntries = [];
 
-    for (key in state.audioInstTrackData.keys())
+    var instTrackIds = state.audioInstTrackData.keys().array();
+    for (key in instTrackIds)
     {
       if (key == 'default')
       {
         var data:Null<Bytes> = state.audioInstTrackData.get('default');
-        if (data == null) continue;
+        if (data == null)
+        {
+          trace('[WARN] Failed to access inst track ($key)');
+          continue;
+        }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
       }
       else
       {
         var data:Null<Bytes> = state.audioInstTrackData.get(key);
-        if (data == null) continue;
+        if (data == null)
+        {
+          trace('[WARN] Failed to access inst track ($key)');
+          continue;
+        }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
       }
     }
@@ -261,10 +282,15 @@ class ChartEditorAudioHandler
   {
     var zipEntries = [];
 
+    var vocalTrackIds = state.audioVocalTrackData.keys().array();
     for (key in state.audioVocalTrackData.keys())
     {
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);
-      if (data == null) continue;
+      if (data == null)
+      {
+        trace('[WARN] Failed to access vocal track ($key)');
+        continue;
+      }
       zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
     }
 

@@ -106,7 +106,31 @@ class ChartEditorDialogHandler
         state.stopWelcomeMusic();
 
         // Load chart from file
-        ChartEditorImportExportHandler.loadFromFNFCPath(state, chartPath);
+        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, chartPath);
+        if (result != null)
+        {
+          #if !mac
+          NotificationManager.instance.addNotification(
+            {
+              title: 'Success',
+              body: result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}',
+              type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
+              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            });
+          #end
+        }
+        else
+        {
+          #if !mac
+          NotificationManager.instance.addNotification(
+            {
+              title: 'Failure',
+              body: 'Failed to load chart (${chartPath.toString()})',
+              type: NotificationType.Error,
+              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            });
+          #end
+        }
       }
 
       if (!FileUtil.doesFileExist(chartPath))
@@ -260,7 +284,8 @@ class ChartEditorDialogHandler
           {
             try
             {
-              if (ChartEditorImportExportHandler.loadFromFNFC(state, selectedFile.bytes))
+              var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFC(state, selectedFile.bytes);
+              if (result != null)
               {
                 #if !mac
                 NotificationManager.instance.addNotification(
@@ -299,20 +324,32 @@ class ChartEditorDialogHandler
 
       try
       {
-        if (ChartEditorImportExportHandler.loadFromFNFCPath(state, path.toString()))
+        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, path.toString());
+        if (result != null)
         {
           #if !mac
           NotificationManager.instance.addNotification(
             {
               title: 'Success',
-              body: 'Loaded chart (${path.toString()})',
-              type: NotificationType.Success,
+              body: result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}',
+              type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
               expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
             });
           #end
-
           dialog.hideDialog(DialogButton.APPLY);
           removeDropHandler(onDropFile);
+        }
+        else
+        {
+          #if !mac
+          NotificationManager.instance.addNotification(
+            {
+              title: 'Failure',
+              body: 'Failed to load chart (${path.toString()})',
+              type: NotificationType.Error,
+              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            });
+          #end
         }
       }
       catch (err)
@@ -359,6 +396,8 @@ class ChartEditorDialogHandler
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
             uploadVocalsDialog.onDialogClosed = function(_event) {
               state.isHaxeUIDialogOpen = false;
+              state.currentWorkingFilePath = null; // Built from parts, so no .fnfc to save to.
+              state.switchToCurrentInstrumental();
               state.postLoadInstrumental();
             }
           }
@@ -398,6 +437,8 @@ class ChartEditorDialogHandler
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
             uploadVocalsDialog.onDialogClosed = function(_event) {
               state.isHaxeUIDialogOpen = false;
+              state.currentWorkingFilePath = null; // New file, so no path.
+              state.switchToCurrentInstrumental();
               state.postLoadInstrumental();
             }
           }
@@ -848,6 +889,7 @@ class ChartEditorDialogHandler
     var dialogContinue:Null<Button> = dialog.findComponent('dialogContinue', Button);
     if (dialogContinue == null) throw 'Could not locate dialogContinue button in Song Metadata dialog';
     dialogContinue.onClick = (_event) -> {
+      state.songMetadata.clear();
       state.songMetadata.set(targetVariation, newSongMetadata);
 
       Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);

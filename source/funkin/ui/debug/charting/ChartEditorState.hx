@@ -644,7 +644,9 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
-    return saveDataDirty = value;
+    saveDataDirty = value;
+    applyWindowTitle();
+    return saveDataDirty;
   }
 
   /**
@@ -882,7 +884,7 @@ class ChartEditorState extends HaxeUIState
     var result:Null<SongMetadata> = songMetadata.get(selectedVariation);
     if (result == null)
     {
-      result = new SongMetadata('Dad Battle', 'Kawai Sprite', selectedVariation);
+      result = new SongMetadata('DadBattle', 'Kawai Sprite', selectedVariation);
       songMetadata.set(selectedVariation, result);
     }
     return result;
@@ -1170,7 +1172,7 @@ class ChartEditorState extends HaxeUIState
   /**
    * The item in the menubar to save the currently opened chart.
    */
-  var menubarItemSave:Null<FunkinMenuItem> = null;
+  var menubarItemSaveChart:Null<FunkinMenuItem> = null;
 
   /**
    * The playbar head slider.
@@ -1229,10 +1231,11 @@ class ChartEditorState extends HaxeUIState
   /**
    * A list of previous working file paths.
    * Also known as the "recent files" list.
+   * The first element is [null] if the current working file has not been saved anywhere yet.
    */
-  public var previousWorkingFilePaths(default, set):Array<String> = [];
+  public var previousWorkingFilePaths(default, set):Array<Null<String>> = [null];
 
-  function set_previousWorkingFilePaths(value:Array<String>):Array<String>
+  function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>>
   {
     // Called only when the WHOLE LIST is overridden.
     previousWorkingFilePaths = value;
@@ -1260,7 +1263,9 @@ class ChartEditorState extends HaxeUIState
     if (previousWorkingFilePaths.contains(null))
     {
       // Filter all instances of `null` from the array.
-      previousWorkingFilePaths = previousWorkingFilePaths.filter((x) -> x != null);
+      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
+        return x != null;
+      });
     }
 
     if (previousWorkingFilePaths.contains(value))
@@ -1340,22 +1345,31 @@ class ChartEditorState extends HaxeUIState
     if (params != null && params.fnfcTargetPath != null)
     {
       // Chart editor was opened from the command line. Open the FNFC file now!
-      if (ChartEditorImportExportHandler.loadFromFNFCPath(this, params.fnfcTargetPath))
+      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(this, params.fnfcTargetPath);
+      if (result != null)
       {
-        // Don't open the welcome dialog!
-
         #if !mac
         NotificationManager.instance.addNotification(
           {
             title: 'Success',
-            body: 'Loaded chart (${params.fnfcTargetPath})',
-            type: NotificationType.Success,
+            body: result.length == 0 ? 'Loaded chart (${params.fnfcTargetPath})' : 'Loaded chart (${params.fnfcTargetPath})\n${result.join("\n")}',
+            type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
             expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
           });
         #end
       }
       else
       {
+        #if !mac
+        NotificationManager.instance.addNotification(
+          {
+            title: 'Failure',
+            body: 'Failed to load chart (${params.fnfcTargetPath})',
+            type: NotificationType.Error,
+            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+          });
+        #end
+
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         ChartEditorDialogHandler.openWelcomeDialog(this, false);
       }
@@ -1376,7 +1390,14 @@ class ChartEditorState extends HaxeUIState
   {
     var save:Save = Save.get();
 
-    previousWorkingFilePaths = save.chartEditorPreviousFiles;
+    if (previousWorkingFilePaths[0] == null)
+    {
+      previousWorkingFilePaths = [null].concat(save.chartEditorPreviousFiles);
+    }
+    else
+    {
+      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.chartEditorPreviousFiles);
+    }
     noteSnapQuantIndex = save.chartEditorNoteQuant;
     currentLiveInputStyle = save.chartEditorLiveInputStyle;
     isViewDownscroll = save.chartEditorDownscroll;
@@ -1396,7 +1417,12 @@ class ChartEditorState extends HaxeUIState
   {
     var save:Save = Save.get();
 
-    save.chartEditorPreviousFiles = previousWorkingFilePaths;
+    // Can't use filter() because of null safety checking!
+    var filteredWorkingFilePaths:Array<String> = [];
+    for (chartPath in previousWorkingFilePaths)
+      if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
+
+    save.chartEditorPreviousFiles = filteredWorkingFilePaths;
     save.chartEditorNoteQuant = noteSnapQuantIndex;
     save.chartEditorLiveInputStyle = currentLiveInputStyle;
     save.chartEditorDownscroll = isViewDownscroll;
@@ -1428,7 +1454,31 @@ class ChartEditorState extends HaxeUIState
         stopWelcomeMusic();
 
         // Load chart from file
-        ChartEditorImportExportHandler.loadFromFNFCPath(this, chartPath);
+        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(this, chartPath);
+        if (result != null)
+        {
+          #if !mac
+          NotificationManager.instance.addNotification(
+            {
+              title: 'Success',
+              body: result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}',
+              type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
+              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            });
+          #end
+        }
+        else
+        {
+          #if !mac
+          NotificationManager.instance.addNotification(
+            {
+              title: 'Failure',
+              body: 'Failed to load chart (${chartPath.toString()})',
+              type: NotificationType.Error,
+              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            });
+          #end
+        }
       }
 
       if (!FileUtil.doesFileExist(chartPath))
@@ -1774,8 +1824,8 @@ class ChartEditorState extends HaxeUIState
     menubarOpenRecent = findComponent('menubarOpenRecent', Menu);
     if (menubarOpenRecent == null) throw "Could not find menubarOpenRecent!";
 
-    menubarItemSave = findComponent('menubarItemSave', FunkinMenuItem);
-    if (menubarItemSave == null) throw "Could not find menubarItemSave!";
+    menubarItemSaveChart = findComponent('menubarItemSaveChart', FunkinMenuItem);
+    if (menubarItemSaveChart == null) throw "Could not find menubarItemSaveChart!";
 
     // Setup notifications.
     @:privateAccess
@@ -3340,12 +3390,24 @@ class ChartEditorState extends HaxeUIState
       ChartEditorDialogHandler.openBrowseFNFC(this, true);
     }
 
-    // CTRL + SHIFT + S = Save As
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.S)
+    {
+      if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
+      {
+        // CTRL + SHIFT + S = Save As
+        ChartEditorImportExportHandler.exportAllSongData(this, false);
+      }
+      else
+      {
+        // CTRL + S = Save Chart
+        ChartEditorImportExportHandler.exportAllSongData(this, true, currentWorkingFilePath);
+      }
+    }
+
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.S)
     {
       ChartEditorImportExportHandler.exportAllSongData(this, false);
     }
-
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
     {
@@ -3361,6 +3423,8 @@ class ChartEditorState extends HaxeUIState
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
     FlxG.switchState(new MainMenuState());
+
+    resetWindowTitle();
   }
 
   /**
@@ -4534,22 +4598,36 @@ class ChartEditorState extends HaxeUIState
 
   function applyCanQuickSave():Void
   {
-    if (currentWorkingFilePath == null) {}
-    else {}
+    if (menubarItemSaveChart == null) return;
+
+    if (currentWorkingFilePath == null)
+    {
+      menubarItemSaveChart.disabled = true;
+    }
+    else
+    {
+      menubarItemSaveChart.disabled = false;
+    }
   }
 
   function applyWindowTitle():Void
   {
-    var inner:String = (currentSongMetadata.songName != null) ? currentSongMetadata.songName : 'Untitled';
-    if (currentWorkingFilePath == null)
+    var inner:String = 'New Chart';
+    var cwfp:Null<String> = currentWorkingFilePath;
+    if (cwfp != null)
+    {
+      inner = cwfp;
+    }
+    if (currentWorkingFilePath == null || saveDataDirty)
     {
       inner += '*';
     }
-    else
-    {
-      inner += ' (${currentWorkingFilePath})';
-    }
-    WindowUtil.setWindowTitle('FNF Chart Editor - ${inner}');
+    WindowUtil.setWindowTitle('Friday Night Funkin\' Chart Editor - ${inner}');
+  }
+
+  function resetWindowTitle():Void
+  {
+    WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 }
 

@@ -7,7 +7,7 @@ import haxe.io.Path;
 import funkin.util.SerializerUtil;
 import haxe.ui.notifications.NotificationManager;
 import funkin.util.FileUtil;
-import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileWriteMode;
 import haxe.io.Bytes;
 import funkin.play.song.Song;
 import funkin.data.song.SongData.SongChartData;
@@ -53,7 +53,8 @@ class ChartEditorImportExportHandler
 
     state.sortChartData();
 
-    state.clearVocals();
+    ChartEditorAudioHandler.wipeInstrumentalData(state);
+    ChartEditorAudioHandler.wipeVocalData(state);
 
     var variations:Array<String> = state.availableVariations;
     for (variation in variations)
@@ -91,7 +92,10 @@ class ChartEditorImportExportHandler
       }
     }
 
+    state.isHaxeUIDialogOpen = false;
+    state.currentWorkingFilePath = null; // New file, so no path.
     state.switchToCurrentInstrumental();
+    state.postLoadInstrumental();
 
     state.refreshMetadataToolbox();
 
@@ -138,31 +142,40 @@ class ChartEditorImportExportHandler
     }
   }
 
-  public static function loadFromFNFCPath(state:ChartEditorState, path:String):Bool
+  /**
+   * Load a chart's metadata, chart data, and audio from an FNFC file path.
+   * @param state
+   * @param path
+   * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
+   */
+  public static function loadFromFNFCPath(state:ChartEditorState, path:String):Null<Array<String>>
   {
     var bytes:Null<Bytes> = FileUtil.readBytesFromPath(path);
-    if (bytes == null) return false;
+    if (bytes == null) return null;
 
     trace('Loaded ${bytes.length} bytes from $path');
 
-    var result:Bool = loadFromFNFC(state, bytes);
-    if (result)
+    var result:Null<Array<String>> = loadFromFNFC(state, bytes);
+    if (result != null)
     {
       state.currentWorkingFilePath = path;
+      state.saveDataDirty = false; // Just loaded file!
     }
 
     return result;
   }
 
   /**
-   * Load a chart's metadata, chart data, and audio from an FNFC archive..
+   * Load a chart's metadata, chart data, and audio from an FNFC archive.
    * @param state
    * @param bytes
    * @param instId
-   * @return Bool
+   * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadFromFNFC(state:ChartEditorState, bytes:Bytes):Bool
+  public static function loadFromFNFC(state:ChartEditorState, bytes:Bytes):Null<Array<String>>
   {
+    var warnings:Array<String> = [];
+
     var songMetadatas:Map<String, SongMetadata> = [];
     var songChartDatas:Map<String, SongChartData> = [];
 
@@ -231,8 +244,8 @@ class ChartEditorImportExportHandler
       songChartDatas.set(variation, variChartData);
     }
 
-    ChartEditorAudioHandler.stopExistingInstrumental(state);
-    ChartEditorAudioHandler.stopExistingVocals(state);
+    ChartEditorAudioHandler.wipeInstrumentalData(state);
+    ChartEditorAudioHandler.wipeVocalData(state);
 
     // Load instrumentals
     for (variation in [Constants.DEFAULT_VARIATION].concat(variationList))
@@ -264,12 +277,14 @@ class ChartEditorImportExportHandler
       {
         if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, playerVocalsFileBytes, playerCharId, instId))
         {
-          throw 'Could not load vocals ($playerCharId).';
+          warnings.push('Could not parse vocals ($playerCharId).');
+          // throw 'Could not parse vocals ($playerCharId).';
         }
       }
       else
       {
-        throw 'Could not find vocals ($playerVocalsFileName).';
+        warnings.push('Could not find vocals ($playerVocalsFileName).');
+        // throw 'Could not find vocals ($playerVocalsFileName).';
       }
 
       if (opponentCharId != null)
@@ -280,12 +295,14 @@ class ChartEditorImportExportHandler
         {
           if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, opponentVocalsFileBytes, opponentCharId, instId))
           {
-            throw 'Could not load vocals ($opponentCharId).';
+            warnings.push('Could not parse vocals ($opponentCharId).');
+            // throw 'Could not parse vocals ($opponentCharId).';
           }
         }
         else
         {
-          throw 'Could not load vocals ($playerCharId-$instId).';
+          warnings.push('Could not find vocals ($opponentVocalsFileName).');
+          // throw 'Could not find vocals ($opponentVocalsFileName).';
         }
       }
     }
@@ -297,7 +314,7 @@ class ChartEditorImportExportHandler
 
     state.switchToCurrentInstrumental();
 
-    return true;
+    return warnings;
   }
 
   /**
@@ -345,8 +362,10 @@ class ChartEditorImportExportHandler
 
     if (force)
     {
+      var targetMode:FileWriteMode = Force;
       if (targetPath == null)
       {
+        targetMode = Skip;
         targetPath = Path.join([
           './backups/',
           'chart-editor-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
@@ -355,7 +374,8 @@ class ChartEditorImportExportHandler
 
       // We have to force write because the program will die before the save dialog is closed.
       trace('Force exporting to $targetPath...');
-      FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath);
+      FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+      state.saveDataDirty = false;
     }
     else
     {
@@ -364,9 +384,11 @@ class ChartEditorImportExportHandler
         if (paths.length != 1)
         {
           trace('[WARN] Could not get save path.');
+          state.applyWindowTitle();
         }
         else
         {
+          trace('Saved to "${paths[0]}"');
           state.currentWorkingFilePath = paths[0];
           state.applyWindowTitle();
         }
@@ -380,6 +402,7 @@ class ChartEditorImportExportHandler
       try
       {
         FileUtil.saveChartAsFNFC(zipEntries, onSave, onCancel, '${state.currentSongId}.${Constants.EXT_CHART}');
+        state.saveDataDirty = false;
       }
       catch (e) {}
     }

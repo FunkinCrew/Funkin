@@ -101,7 +101,7 @@ class FileUtil
   }
 
   /**
-   * Browses for a file location to save to, then calls `onSelect(path)` when a path chosen.
+   * Browses for a file location to save to, then calls `onSave(path)` when a path chosen.
    * Note that on HTML5 you can't do much with this, you should call `saveFile(resource:haxe.io.Bytes)` instead.
    *
    * @param typeFilter TODO What does this do?
@@ -183,7 +183,7 @@ class FileUtil
     var filter:String = convertTypeFilter(typeFilter);
 
     var fileDialog:FileDialog = new FileDialog();
-    if (onSave != null) fileDialog.onSelect.add(onSave);
+    if (onSave != null) fileDialog.onSave.add(onSave);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
 
     fileDialog.save(data, filter, defaultFileName, dialogTitle);
@@ -268,7 +268,8 @@ class FileUtil
     var zipBytes:Bytes = createZIPFromEntries(resources);
 
     var onSave:String->Void = function(path:String) {
-      onSave([path]);
+      trace('Saved ${resources.length} files to ZIP at "$path".');
+      if (onSave != null) onSave([path]);
     };
 
     // Prompt the user to save the ZIP file.
@@ -287,7 +288,8 @@ class FileUtil
     var zipBytes:Bytes = createZIPFromEntries(resources);
 
     var onSave:String->Void = function(path:String) {
-      onSave([path]);
+      trace('Saved FNF file to "$path"');
+      if (onSave != null) onSave([path]);
     };
 
     // Prompt the user to save the ZIP file.
@@ -302,14 +304,14 @@ class FileUtil
    * Use `saveFilesAsZIP` instead.
    * @param force Whether to force overwrite an existing file.
    */
-  public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, force:Bool = false):Bool
+  public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, mode:FileWriteMode = Skip):Bool
   {
     #if desktop
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
 
     // Write the ZIP.
-    writeBytesToPath(path, zipBytes, force ? Force : Skip);
+    writeBytesToPath(path, zipBytes, mode);
 
     return true;
     #else
@@ -449,12 +451,14 @@ class FileUtil
         }
         else
         {
-          throw 'File already exists: $path';
+          // Do nothing.
+          // throw 'File already exists: $path';
         }
       case Ask:
         if (doesFileExist(path))
         {
           // TODO: We don't have the technology to use native popups yet.
+          throw 'File already exists: $path';
         }
         else
         {
@@ -490,12 +494,14 @@ class FileUtil
         }
         else
         {
-          throw 'File already exists: $path';
+          // Do nothing.
+          // throw 'File already exists: $path';
         }
       case Ask:
         if (doesFileExist(path))
         {
           // TODO: We don't have the technology to use native popups yet.
+          throw 'File already exists: $path';
         }
         else
         {
