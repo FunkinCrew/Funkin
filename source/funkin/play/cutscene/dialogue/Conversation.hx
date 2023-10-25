@@ -405,7 +405,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
   public function endOutro():Void
   {
     outroTween = null;
-    ScriptEventDispatcher.callEvent(this, new ScriptEvent(ScriptEvent.DESTROY, false));
+    ScriptEventDispatcher.callEvent(this, new ScriptEvent(ScriptEventType.DESTROY, false));
   }
 
   /**
@@ -445,7 +445,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
       if (currentDialogueEntry >= currentDialogueEntryCount)
       {
-        dispatchEvent(new DialogueScriptEvent(ScriptEvent.DIALOGUE_END, this, false));
+        dispatchEvent(new DialogueScriptEvent(ScriptEventType.DIALOGUE_END, this, false));
       }
       else
       {
@@ -485,7 +485,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
     propagateEvent(event);
     if (event.eventCanceled) return;
 
-    dispatchEvent(new DialogueScriptEvent(ScriptEvent.DIALOGUE_END, this, false));
+    dispatchEvent(new DialogueScriptEvent(ScriptEventType.DIALOGUE_END, this, false));
   }
 
   public function onDialogueEnd(event:DialogueScriptEvent):Void
