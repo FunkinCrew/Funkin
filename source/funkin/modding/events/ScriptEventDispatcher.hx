@@ -23,13 +23,13 @@ class ScriptEventDispatcher
     // IScriptedClass
     switch (event.type)
     {
-      case ScriptEvent.CREATE:
+      case ScriptEventType.CREATE:
         target.onCreate(event);
         return;
-      case ScriptEvent.DESTROY:
+      case ScriptEventType.DESTROY:
         target.onDestroy(event);
         return;
-      case ScriptEvent.UPDATE:
+      case ScriptEventType.UPDATE:
         target.onUpdate(cast event);
         return;
     }
@@ -39,7 +39,7 @@ class ScriptEventDispatcher
       var t:IStateStageProp = cast(target, IStateStageProp);
       switch (event.type)
       {
-        case ScriptEvent.ADDED:
+        case ScriptEventType.ADDED:
           t.onAdd(cast event);
           return;
       }
@@ -50,19 +50,19 @@ class ScriptEventDispatcher
       var t:IDialogueScriptedClass = cast(target, IDialogueScriptedClass);
       switch (event.type)
       {
-        case ScriptEvent.DIALOGUE_START:
+        case ScriptEventType.DIALOGUE_START:
           t.onDialogueStart(cast event);
           return;
-        case ScriptEvent.DIALOGUE_LINE:
+        case ScriptEventType.DIALOGUE_LINE:
           t.onDialogueLine(cast event);
           return;
-        case ScriptEvent.DIALOGUE_COMPLETE_LINE:
+        case ScriptEventType.DIALOGUE_COMPLETE_LINE:
           t.onDialogueCompleteLine(cast event);
           return;
-        case ScriptEvent.DIALOGUE_SKIP:
+        case ScriptEventType.DIALOGUE_SKIP:
           t.onDialogueSkip(cast event);
           return;
-        case ScriptEvent.DIALOGUE_END:
+        case ScriptEventType.DIALOGUE_END:
           t.onDialogueEnd(cast event);
           return;
       }
@@ -73,52 +73,52 @@ class ScriptEventDispatcher
       var t:IPlayStateScriptedClass = cast(target, IPlayStateScriptedClass);
       switch (event.type)
       {
-        case ScriptEvent.NOTE_HIT:
+        case ScriptEventType.NOTE_HIT:
           t.onNoteHit(cast event);
           return;
-        case ScriptEvent.NOTE_MISS:
+        case ScriptEventType.NOTE_MISS:
           t.onNoteMiss(cast event);
           return;
-        case ScriptEvent.NOTE_GHOST_MISS:
+        case ScriptEventType.NOTE_GHOST_MISS:
           t.onNoteGhostMiss(cast event);
           return;
-        case ScriptEvent.SONG_BEAT_HIT:
+        case ScriptEventType.SONG_BEAT_HIT:
           t.onBeatHit(cast event);
           return;
-        case ScriptEvent.SONG_STEP_HIT:
+        case ScriptEventType.SONG_STEP_HIT:
           t.onStepHit(cast event);
           return;
-        case ScriptEvent.SONG_START:
+        case ScriptEventType.SONG_START:
           t.onSongStart(event);
           return;
-        case ScriptEvent.SONG_END:
+        case ScriptEventType.SONG_END:
           t.onSongEnd(event);
           return;
-        case ScriptEvent.SONG_RETRY:
+        case ScriptEventType.SONG_RETRY:
           t.onSongRetry(event);
           return;
-        case ScriptEvent.GAME_OVER:
+        case ScriptEventType.GAME_OVER:
           t.onGameOver(event);
           return;
-        case ScriptEvent.PAUSE:
+        case ScriptEventType.PAUSE:
           t.onPause(cast event);
           return;
-        case ScriptEvent.RESUME:
+        case ScriptEventType.RESUME:
           t.onResume(event);
           return;
-        case ScriptEvent.SONG_EVENT:
+        case ScriptEventType.SONG_EVENT:
           t.onSongEvent(cast event);
           return;
-        case ScriptEvent.COUNTDOWN_START:
+        case ScriptEventType.COUNTDOWN_START:
           t.onCountdownStart(cast event);
           return;
-        case ScriptEvent.COUNTDOWN_STEP:
+        case ScriptEventType.COUNTDOWN_STEP:
           t.onCountdownStep(cast event);
           return;
-        case ScriptEvent.COUNTDOWN_END:
+        case ScriptEventType.COUNTDOWN_END:
           t.onCountdownEnd(cast event);
           return;
-        case ScriptEvent.SONG_LOADED:
+        case ScriptEventType.SONG_LOADED:
           t.onSongLoaded(cast event);
           return;
       }
@@ -129,22 +129,22 @@ class ScriptEventDispatcher
       var t = cast(target, IStateChangingScriptedClass);
       switch (event.type)
       {
-        case ScriptEvent.STATE_CHANGE_BEGIN:
+        case ScriptEventType.STATE_CHANGE_BEGIN:
           t.onStateChangeBegin(cast event);
           return;
-        case ScriptEvent.STATE_CHANGE_END:
+        case ScriptEventType.STATE_CHANGE_END:
           t.onStateChangeEnd(cast event);
           return;
-        case ScriptEvent.SUBSTATE_OPEN_BEGIN:
+        case ScriptEventType.SUBSTATE_OPEN_BEGIN:
           t.onSubStateOpenBegin(cast event);
           return;
-        case ScriptEvent.SUBSTATE_OPEN_END:
+        case ScriptEventType.SUBSTATE_OPEN_END:
           t.onSubStateOpenEnd(cast event);
           return;
-        case ScriptEvent.SUBSTATE_CLOSE_BEGIN:
+        case ScriptEventType.SUBSTATE_CLOSE_BEGIN:
           t.onSubStateCloseBegin(cast event);
           return;
-        case ScriptEvent.SUBSTATE_CLOSE_END:
+        case ScriptEventType.SUBSTATE_CLOSE_END:
           t.onSubStateCloseEnd(cast event);
           return;
       }

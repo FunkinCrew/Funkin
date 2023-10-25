@@ -402,7 +402,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     // Add the character to the scene.
     this.add(character);
 
-    ScriptEventDispatcher.callEvent(character, new ScriptEvent(ScriptEvent.ADDED, false));
+    ScriptEventDispatcher.callEvent(character, new ScriptEvent(ScriptEventType.ADDED, false));
 
     #if debug
     debugIconGroup.add(debugIcon);

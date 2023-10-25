@@ -1,9 +1,9 @@
 package funkin.ui.haxeui.components;
 
-import funkin.modding.events.ScriptEvent.GhostMissNoteScriptEvent;
-import funkin.modding.events.ScriptEvent.NoteScriptEvent;
-import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
+import funkin.modding.events.ScriptEventType.GhostMissNoteScriptEvent;
+import funkin.modding.events.ScriptEventType.NoteScriptEvent;
+import funkin.modding.events.ScriptEventType.SongTimeScriptEvent;
+import funkin.modding.events.ScriptEventType.UpdateScriptEvent;
 import haxe.ui.core.IDataComponent;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;

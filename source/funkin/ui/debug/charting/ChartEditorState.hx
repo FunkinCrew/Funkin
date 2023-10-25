@@ -697,8 +697,6 @@ class ChartEditorState extends HaxeUIState
    */
   var opponentPreviewDirty:Bool = true;
 
-  var isInPlaytestMode:Bool = false;
-
   /**
    * The list of command previously performed. Used for undoing previous actions.
    */
@@ -3584,13 +3582,13 @@ class ChartEditorState extends HaxeUIState
     {
       switch (event.type)
       {
-        case ScriptEvent.UPDATE:
+        case ScriptEventType.UPDATE:
           currentPlayerCharacterPlayer.onUpdate(cast event);
-        case ScriptEvent.SONG_BEAT_HIT:
+        case ScriptEventType.SONG_BEAT_HIT:
           currentPlayerCharacterPlayer.onBeatHit(cast event);
-        case ScriptEvent.SONG_STEP_HIT:
+        case ScriptEventType.SONG_STEP_HIT:
           currentPlayerCharacterPlayer.onStepHit(cast event);
-        case ScriptEvent.NOTE_HIT:
+        case ScriptEventType.NOTE_HIT:
           currentPlayerCharacterPlayer.onNoteHit(cast event);
       }
     }
@@ -3599,13 +3597,13 @@ class ChartEditorState extends HaxeUIState
     {
       switch (event.type)
       {
-        case ScriptEvent.UPDATE:
+        case ScriptEventType.UPDATE:
           currentOpponentCharacterPlayer.onUpdate(cast event);
-        case ScriptEvent.SONG_BEAT_HIT:
+        case ScriptEventType.SONG_BEAT_HIT:
           currentOpponentCharacterPlayer.onBeatHit(cast event);
-        case ScriptEvent.SONG_STEP_HIT:
+        case ScriptEventType.SONG_STEP_HIT:
           currentOpponentCharacterPlayer.onStepHit(cast event);
-        case ScriptEvent.NOTE_HIT:
+        case ScriptEventType.NOTE_HIT:
           currentOpponentCharacterPlayer.onNoteHit(cast event);
       }
     }
@@ -3921,7 +3919,7 @@ class ChartEditorState extends HaxeUIState
       var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
-      var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, tempNote, 1, true);
+      var event:NoteScriptEvent = new NoteScriptEvent(ScriptEventType.NOTE_HIT, tempNote, 1, true);
       dispatchEvent(event);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!
