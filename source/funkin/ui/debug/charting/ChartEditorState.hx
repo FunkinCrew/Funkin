@@ -3582,13 +3582,13 @@ class ChartEditorState extends HaxeUIState
     {
       switch (event.type)
       {
-        case ScriptEventType.UPDATE:
+        case UPDATE:
           currentPlayerCharacterPlayer.onUpdate(cast event);
-        case ScriptEventType.SONG_BEAT_HIT:
+        case SONG_BEAT_HIT:
           currentPlayerCharacterPlayer.onBeatHit(cast event);
-        case ScriptEventType.SONG_STEP_HIT:
+        case SONG_STEP_HIT:
           currentPlayerCharacterPlayer.onStepHit(cast event);
-        case ScriptEventType.NOTE_HIT:
+        case NOTE_HIT:
           currentPlayerCharacterPlayer.onNoteHit(cast event);
       }
     }
@@ -3597,13 +3597,13 @@ class ChartEditorState extends HaxeUIState
     {
       switch (event.type)
       {
-        case ScriptEventType.UPDATE:
+        case UPDATE:
           currentOpponentCharacterPlayer.onUpdate(cast event);
-        case ScriptEventType.SONG_BEAT_HIT:
+        case SONG_BEAT_HIT:
           currentOpponentCharacterPlayer.onBeatHit(cast event);
-        case ScriptEventType.SONG_STEP_HIT:
+        case SONG_STEP_HIT:
           currentOpponentCharacterPlayer.onStepHit(cast event);
-        case ScriptEventType.NOTE_HIT:
+        case NOTE_HIT:
           currentOpponentCharacterPlayer.onNoteHit(cast event);
       }
     }
@@ -3919,7 +3919,7 @@ class ChartEditorState extends HaxeUIState
       var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
-      var event:NoteScriptEvent = new NoteScriptEvent(ScriptEventType.NOTE_HIT, tempNote, 1, true);
+      var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, tempNote, 1, true);
       dispatchEvent(event);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!
