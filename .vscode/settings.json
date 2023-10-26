@@ -71,7 +71,7 @@
   "files.eol": "\n",
 
   "haxe.displayPort": "auto",
-  "haxe.enableCompilationServer": true,
+  "haxe.enableCompilationServer": false,
   "haxe.displayServer": {
     "arguments": ["-v"]
   },
@@ -97,14 +97,34 @@
       "args": ["-debug"]
     },
     {
-      "label": "Windows / Debug (DEBUG ASSETS)",
-      "target": "windows",
-      "args": ["-debug", "-DDEBUG_ASSETS"]
-    },
-    {
-      "label": "Windows / Debug (ANIMATE)",
+      "label": "Windows / Debug (FlxAnimate Test)",
       "target": "windows",
       "args": ["-debug", "-DANIMATE"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Freeplay)",
+      "target": "windows",
+      "args": ["-debug", "-DFREEPLAY"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Play - Bopeebo Normal)",
+      "target": "windows",
+      "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Chart Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DCHARTING"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Animation Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DANIMDEBUG"]
+    },
+    {
+      "label": "Windows / Debug (Latency Test)",
+      "target": "windows",
+      "args": ["-debug", "-DLATENCY"]
     },
     {
       "label": "HTML5 / Debug",

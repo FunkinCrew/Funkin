@@ -682,7 +682,7 @@ class PlayState extends MusicBeatSubState
     {
       if (!assertChartExists()) return;
 
-      dispatchEvent(new ScriptEvent(ScriptEventType.SONG_RETRY));
+      dispatchEvent(new ScriptEvent(SONG_RETRY));
 
       resetCamera();
 
@@ -867,7 +867,7 @@ class PlayState extends MusicBeatSubState
 
         deathCounter += 1;
 
-        dispatchEvent(new ScriptEvent(ScriptEventType.GAME_OVER));
+        dispatchEvent(new ScriptEvent(GAME_OVER));
 
         // Disable updates, preventing animations in the background from playing.
         persistentUpdate = false;
@@ -994,7 +994,7 @@ class PlayState extends MusicBeatSubState
   {
     if (Std.isOfType(subState, PauseSubState))
     {
-      var event:ScriptEvent = new ScriptEvent(ScriptEventType.RESUME, true);
+      var event:ScriptEvent = new ScriptEvent(RESUME, true);
 
       dispatchEvent(event);
 
@@ -1097,7 +1097,7 @@ class PlayState extends MusicBeatSubState
     if (this.currentStage != null)
     {
       remove(currentStage);
-      var event:ScriptEvent = new ScriptEvent(ScriptEventType.DESTROY, false);
+      var event:ScriptEvent = new ScriptEvent(DESTROY, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
       currentStage = null;
     }
@@ -1116,7 +1116,7 @@ class PlayState extends MusicBeatSubState
 
     super.debug_refreshModules();
 
-    var event:ScriptEvent = new ScriptEvent(ScriptEventType.CREATE, false);
+    var event:ScriptEvent = new ScriptEvent(CREATE, false);
     ScriptEventDispatcher.callEvent(currentSong, event);
   }
 
@@ -1332,7 +1332,7 @@ class PlayState extends MusicBeatSubState
     if (currentStage != null)
     {
       // Actually create and position the sprites.
-      var event:ScriptEvent = new ScriptEvent(ScriptEventType.CREATE, false);
+      var event:ScriptEvent = new ScriptEvent(CREATE, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
 
       // Apply camera zoom level from stage data.
@@ -1640,7 +1640,7 @@ class PlayState extends MusicBeatSubState
     add(currentConversation);
     refresh();
 
-    var event:ScriptEvent = new ScriptEvent(ScriptEventType.CREATE, false);
+    var event:ScriptEvent = new ScriptEvent(CREATE, false);
     ScriptEventDispatcher.callEvent(currentConversation, event);
   }
 
@@ -1664,7 +1664,7 @@ class PlayState extends MusicBeatSubState
    */
   function startSong():Void
   {
-    dispatchEvent(new ScriptEvent(ScriptEventType.SONG_START));
+    dispatchEvent(new ScriptEvent(SONG_START));
 
     startingSong = false;
 
@@ -1783,7 +1783,7 @@ class PlayState extends MusicBeatSubState
 
         // Call an event to allow canceling the note hit.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(ScriptEventType.NOTE_HIT, note, 0, true);
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -1872,7 +1872,7 @@ class PlayState extends MusicBeatSubState
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(ScriptEventType.NOTE_MISS, note, 0, true);
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, 0, true);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2021,7 +2021,7 @@ class PlayState extends MusicBeatSubState
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
   {
-    var event:NoteScriptEvent = new NoteScriptEvent(ScriptEventType.NOTE_HIT, note, Highscore.tallies.combo + 1, true);
+    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, Highscore.tallies.combo + 1, true);
     dispatchEvent(event);
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2053,7 +2053,7 @@ class PlayState extends MusicBeatSubState
     // a MISS is when you let a note scroll past you!!
     Highscore.tallies.missed++;
 
-    var event:NoteScriptEvent = new NoteScriptEvent(ScriptEventType.NOTE_MISS, note, Highscore.tallies.combo, true);
+    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Highscore.tallies.combo, true);
     dispatchEvent(event);
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
@@ -2385,7 +2385,7 @@ class PlayState extends MusicBeatSubState
    */
   function endSong():Void
   {
-    dispatchEvent(new ScriptEvent(ScriptEventType.SONG_END));
+    dispatchEvent(new ScriptEvent(SONG_END));
 
     #if sys
     // spitter for ravy, teehee!!
@@ -2593,7 +2593,7 @@ class PlayState extends MusicBeatSubState
     {
       remove(currentStage);
       currentStage.kill();
-      dispatchEvent(new ScriptEvent(ScriptEventType.DESTROY, false));
+      dispatchEvent(new ScriptEvent(DESTROY, false));
       currentStage = null;
     }
 

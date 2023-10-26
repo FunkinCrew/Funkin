@@ -6,7 +6,7 @@ import flixel.FlxSprite;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.ModuleHandler;
 import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEventType.CountdownScriptEvent;
+import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import flixel.util.FlxTimer;
 
 class Countdown
@@ -43,7 +43,7 @@ class Countdown
     Conductor.update(PlayState.instance.startTimestamp + Conductor.beatLengthMs * -5);
     // Handle onBeatHit events manually
     // @:privateAccess
-    // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEventType.SONG_BEAT_HIT, 0, 0));
+    // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
@@ -59,7 +59,7 @@ class Countdown
 
       // onBeatHit events are now properly dispatched by the Conductor even at negative timestamps,
       // so calling this is no longer necessary.
-      // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(ScriptEventType.SONG_BEAT_HIT, 0, 0));
+      // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
       showCountdownGraphic(countdownStep, isPixelStyle);
@@ -94,11 +94,11 @@ class Countdown
     switch (index)
     {
       case BEFORE:
-        event = new CountdownScriptEvent(ScriptEventType.COUNTDOWN_START, index);
+        event = new CountdownScriptEvent(COUNTDOWN_START, index);
       case THREE | TWO | ONE | GO: // I didn't know you could use `|` in a switch/case block!
-        event = new CountdownScriptEvent(ScriptEventType.COUNTDOWN_STEP, index);
+        event = new CountdownScriptEvent(COUNTDOWN_STEP, index);
       case AFTER:
-        event = new CountdownScriptEvent(ScriptEventType.COUNTDOWN_END, index, false);
+        event = new CountdownScriptEvent(COUNTDOWN_END, index, false);
       default:
         return true;
     }

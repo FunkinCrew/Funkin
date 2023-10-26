@@ -158,7 +158,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
 
   public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int):Void
   {
-    super(ScriptEventType.NOTE_GHOST_MISS, true);
+    super(NOTE_GHOST_MISS, true);
     this.dir = dir;
     this.hasPossibleNotes = hasPossibleNotes;
     this.healthChange = healthChange;
@@ -186,7 +186,7 @@ class SongEventScriptEvent extends ScriptEvent
 
   public function new(event:funkin.data.song.SongData.SongEventData):Void
   {
-    super(ScriptEventType.SONG_EVENT, true);
+    super(SONG_EVENT, true);
     this.event = event;
   }
 
@@ -209,7 +209,7 @@ class UpdateScriptEvent extends ScriptEvent
 
   public function new(elapsed:Float):Void
   {
-    super(ScriptEventType.UPDATE, false);
+    super(UPDATE, false);
     this.elapsed = elapsed;
   }
 
@@ -338,7 +338,7 @@ class SongLoadScriptEvent extends ScriptEvent
 
   public function new(id:String, difficulty:String, notes:Array<SongNoteData>):Void
   {
-    super(ScriptEventType.SONG_LOADED, false);
+    super(SONG_LOADED, false);
     this.id = id;
     this.difficulty = difficulty;
     this.notes = notes;
@@ -407,7 +407,7 @@ class PauseScriptEvent extends ScriptEvent
 
   public function new(gitaroo:Bool):Void
   {
-    super(ScriptEventType.PAUSE, true);
+    super(PAUSE, true);
     this.gitaroo = gitaroo;
   }
 }

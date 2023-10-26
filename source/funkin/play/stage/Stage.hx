@@ -7,6 +7,7 @@ import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSort;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventType;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.stage.StageData.StageDataCharacter;
@@ -402,7 +403,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     // Add the character to the scene.
     this.add(character);
 
-    ScriptEventDispatcher.callEvent(character, new ScriptEvent(ScriptEventType.ADDED, false));
+    ScriptEventDispatcher.callEvent(character, new ScriptEvent(ADDED, false));
 
     #if debug
     debugIconGroup.add(debugIcon);
