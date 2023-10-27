@@ -71,6 +71,7 @@ import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
+import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
 import openfl.Assets;
@@ -492,22 +493,14 @@ class ChartEditorState extends HaxeUIState
   var hitsoundsEnabledOpponent:Bool = true;
 
   /**
-   * Whether the user's mouse cursor is hovering over a SOLID component of the HaxeUI.
-   * If so, ignore mouse events underneath.
+   * Whether the user is focused on an input in the Haxe UI, and inputs are being fed into it.
+   * If the user clicks off the input, focus will leave.
    */
-  var isCursorOverHaxeUI(get, never):Bool;
+  var isHaxeUIFocused(get, never):Bool;
 
-  function get_isCursorOverHaxeUI():Bool
+  function get_isHaxeUIFocused():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
-  }
-
-  var isCursorOverHaxeUIButton(get, never):Bool;
-
-  function get_isCursorOverHaxeUIButton():Bool
-  {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY, haxe.ui.components.Button)
-      || Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY, haxe.ui.components.Link);
+    return FocusManager.instance.focus != null;
   }
 
   /**
@@ -1905,11 +1898,11 @@ class ChartEditorState extends HaxeUIState
     handleHelpKeybinds();
 
     #if debug
-    handleQuickWatch();
+    handleQuickWatches();
     #end
   }
 
-  function handleQuickWatch():Void
+  function handleQuickWatches():Void
   {
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
     FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
@@ -1957,8 +1950,8 @@ class ChartEditorState extends HaxeUIState
   **/
   function handleScrollKeybinds():Void
   {
-    // Don't scroll when the cursor is over the UI, unless a playbar button (the << >> ones) is pressed.
-    if (isCursorOverHaxeUI && playbarButtonPressed == null) return;
+    // Don't scroll when the user is interacting with the UI, unless a playbar button (the << >> ones) is pressed.
+    if (isHaxeUIFocused && playbarButtonPressed == null) return;
 
     var scrollAmount:Float = 0; // Amount to scroll the grid.
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
@@ -2157,7 +2150,7 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
-    var shouldHandleCursor:Bool = !isCursorOverHaxeUI || (selectionBoxStartPos != null);
+    var shouldHandleCursor:Bool = !isHaxeUIFocused || (selectionBoxStartPos != null);
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
 
     if (shouldHandleCursor)
@@ -2612,14 +2605,14 @@ class ChartEditorState extends HaxeUIState
                 {
                   // Create an event and place it in the chart.
                   // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, selectedEventKind, selectedEventData);
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, selectedEventKind, selectedEventData.clone());
 
                   performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
                 }
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, selectedNoteKind);
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, selectedNoteKind.clone());
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -3392,7 +3385,7 @@ class ChartEditorState extends HaxeUIState
    */
   function handleTestKeybinds():Void
   {
-    if (!isHaxeUIDialogOpen && !isCursorOverHaxeUI && FlxG.keys.justPressed.ENTER)
+    if (!isHaxeUIDialogOpen && !isHaxeUIFocused && FlxG.keys.justPressed.ENTER)
     {
       var minimal = FlxG.keys.pressed.SHIFT;
       ChartEditorToolboxHandler.hideAllToolboxes(this);
@@ -3889,7 +3882,7 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
-    if (FlxG.keys.justPressed.SPACE && !isHaxeUIDialogOpen)
+    if (FlxG.keys.justPressed.SPACE && !(isHaxeUIDialogOpen || isHaxeUIFocused))
     {
       toggleAudioPlayback();
     }

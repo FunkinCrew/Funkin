@@ -123,21 +123,25 @@ class ChartEditorEventSprite extends FlxSprite
 
   function set_eventData(value:Null<SongEventData>):Null<SongEventData>
   {
-    this.eventData = value;
-
-    if (this.eventData == null)
+    if (value == null)
     {
+      this.eventData = null;
       // Disown parent. MAKE SURE TO REVIVE BEFORE REUSING
       this.kill();
+      this.visible = false;
+      return null;
+    }
+    else
+    {
+      this.visible = true;
+      // Only play the animation if the event type has changed.
+      // if (this.eventData == null || this.eventData.event != value.event)
+      playAnimation(value.event);
+      this.eventData = value;
+      // Update the position to match the note data.
+      updateEventPosition();
       return this.eventData;
     }
-
-    this.visible = true;
-    playAnimation(this.eventData.event);
-    // Update the position to match the note data.
-    updateEventPosition();
-
-    return this.eventData;
   }
 
   public function updateEventPosition(?origin:FlxObject)

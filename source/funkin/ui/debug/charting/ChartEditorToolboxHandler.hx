@@ -346,6 +346,8 @@ class ChartEditorToolboxHandler
 
       trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event type changed: $eventType');
 
+      state.selectedEventKind = eventType;
+
       var schema:SongEventSchema = SongEventParser.getEventSchema(eventType);
 
       if (schema == null)
@@ -356,6 +358,7 @@ class ChartEditorToolboxHandler
 
       buildEventDataFormFromSchema(state, toolboxEventsDataGrid, schema);
     }
+    toolboxEventsEventKind.value = state.selectedEventKind;
 
     return toolbox;
   }
@@ -379,6 +382,7 @@ class ChartEditorToolboxHandler
       // Add a label.
       var label:Label = new Label();
       label.text = field.title;
+      label.verticalAlign = "center";
       target.addComponent(label);
 
       var input:Component;
@@ -396,8 +400,8 @@ class ChartEditorToolboxHandler
           var numberStepper:NumberStepper = new NumberStepper();
           numberStepper.id = field.name;
           numberStepper.step = field.step ?? 0.1;
-          numberStepper.min = field.min ?? 0.0;
-          numberStepper.max = field.max ?? 1.0;
+          if (field.min != null) numberStepper.min = field.min;
+          if (field.max != null) numberStepper.max = field.max;
           if (field.defaultValue != null) numberStepper.value = field.defaultValue;
           input = numberStepper;
         case BOOL:
@@ -416,7 +420,7 @@ class ChartEditorToolboxHandler
 
           for (optionName in field.keys.keys())
           {
-            var optionValue:Null<String> = field.keys.get(optionName);
+            var optionValue:Null<Dynamic> = field.keys.get(optionName);
             trace('$optionName : $optionValue');
             dropDown.dataSource.add({value: optionValue, text: optionName});
           }
@@ -438,11 +442,21 @@ class ChartEditorToolboxHandler
       target.addComponent(input);
 
       input.onChange = function(event:UIEvent) {
-        trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${event.target.value}');
+        var value = event.target.value;
+        if (field.type == ENUM)
+        {
+          value = event.target.value.value;
+        }
+        trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${value}');
 
-        if (event.target.value == null) state.selectedEventData.remove(event.target.id);
+        if (value == null)
+        {
+          state.selectedEventData.remove(event.target.id);
+        }
         else
-          state.selectedEventData.set(event.target.id, event.target.value);
+        {
+          state.selectedEventData.set(event.target.id, value);
+        }
       }
     }
   }
