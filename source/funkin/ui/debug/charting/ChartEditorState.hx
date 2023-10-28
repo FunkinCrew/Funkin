@@ -49,6 +49,7 @@ import funkin.data.song.SongDataUtils;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorCommand;
 import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
+import funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
 import funkin.ui.debug.charting.ChartEditorToolboxHandler.ChartEditorToolMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
@@ -1268,6 +1269,7 @@ class ChartEditorState extends HaxeUIState
     buildSelectionBox();
 
     buildAdditionalUI();
+    ChartEditorShortcutHandler.applyPlatformShortcutText(this);
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
