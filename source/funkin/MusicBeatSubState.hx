@@ -10,6 +10,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
+import funkin.input.Controls;
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.

@@ -51,7 +51,7 @@ import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData.StageDataParser;
 import funkin.ui.PopUpStuff;
-import funkin.ui.PreferencesMenu;
+import funkin.ui.options.PreferencesMenu;
 import funkin.ui.stageBuildShit.StageOffsetSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.SerializerUtil;

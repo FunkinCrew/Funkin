@@ -1,4 +1,4 @@
-package funkin.ui;
+package funkin.ui.options;
 
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -6,6 +6,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
 import funkin.util.WindowUtil;
+import funkin.input.Controls;
 
 class OptionsState extends MusicBeatState
 {
@@ -33,7 +34,7 @@ class OptionsState extends MusicBeatState
     if (options.hasMultipleOptions())
     {
       options.onExit.add(exitToMainMenu);
-      controls.onExit.add(switchPage.bind(Options));
+      controls.onExit.add(exitControls);
       preferences.onExit.add(switchPage.bind(Options));
     }
     else
@@ -83,8 +84,17 @@ class OptionsState extends MusicBeatState
 
   function switchPage(name:PageName)
   {
-    // Todo animate?
+    // TODO: Animate this transition?
     setPage(name);
+  }
+
+  function exitControls():Void
+  {
+    // Apply any changes to the controls.
+    PlayerSettings.reset();
+    PlayerSettings.init();
+
+    switchPage(Options);
   }
 
   function exitToMainMenu()

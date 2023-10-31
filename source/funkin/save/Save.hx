@@ -3,7 +3,7 @@ package funkin.save;
 import flixel.util.FlxSave;
 import funkin.save.migrator.SaveDataMigrator;
 import thx.semver.Version;
-import funkin.Controls.Device;
+import funkin.input.Controls.Device;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 
 @:nullSafety

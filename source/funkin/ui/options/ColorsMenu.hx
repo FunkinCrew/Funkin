@@ -1,11 +1,11 @@
-package funkin.ui;
+package funkin.ui.options;
 
 import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxOutlineEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
-import funkin.ui.OptionsState.Page;
+import funkin.ui.options.OptionsState.Page;
 import funkin.play.notes.NoteSprite;
 
 class ColorsMenu extends Page

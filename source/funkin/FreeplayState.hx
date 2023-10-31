@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.input.Controls;
 import funkin.play.song.Song;
 import flash.text.TextField;
 import flixel.addons.display.FlxGridOverlay;
@@ -23,7 +24,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
-import funkin.Controls.Control;
+import funkin.input.Controls.Control;
 import funkin.data.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.freeplayStuff.BGScrollingText;

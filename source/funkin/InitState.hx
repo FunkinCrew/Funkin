@@ -10,7 +10,7 @@ import flixel.math.FlxRect;
 import flixel.FlxSprite;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
-import funkin.ui.PreferencesMenu;
+import funkin.ui.options.PreferencesMenu;
 import funkin.util.macro.MacroUtil;
 import funkin.util.WindowUtil;
 import funkin.play.PlayStatePlaylist;

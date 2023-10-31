@@ -108,7 +108,7 @@ class MainMenuState extends MusicBeatState
     #end
 
     createMenuItem('options', 'mainmenu/options', function() {
-      startExitState(new funkin.ui.OptionsState());
+      startExitState(new funkin.ui.options.OptionsState());
     });
 
     // Reset position of menu items.

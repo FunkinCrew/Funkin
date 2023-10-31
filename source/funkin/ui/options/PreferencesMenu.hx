@@ -1,11 +1,11 @@
-package funkin.ui;
+package funkin.ui.options;
 
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
-import funkin.ui.OptionsState.Page;
+import funkin.ui.options.OptionsState.Page;
 import funkin.ui.TextMenuList.TextMenuItem;
 
 class PreferencesMenu extends Page

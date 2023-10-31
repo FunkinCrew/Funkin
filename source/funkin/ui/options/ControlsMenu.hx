@@ -1,4 +1,4 @@
-package funkin.ui;
+package funkin.ui.options;
 
 import flixel.FlxCamera;
 import flixel.FlxObject;
@@ -7,12 +7,12 @@ import flixel.group.FlxGroup;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import funkin.Controls;
+import funkin.input.Controls;
 import funkin.ui.AtlasText;
 import funkin.ui.MenuList;
 import funkin.ui.TextMenuList;
 
-class ControlsMenu extends funkin.ui.OptionsState.Page
+class ControlsMenu extends funkin.ui.options.OptionsState.Page
 {
   public static inline final COLUMNS = 2;
   static var controlList = Control.createAll();
