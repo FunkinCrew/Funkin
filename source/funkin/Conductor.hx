@@ -5,6 +5,7 @@ import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
 import funkin.play.song.Song.SongDifficulty;
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.data.song.SongDataUtils;
 
 /**
  * A core class which handles musical timing throughout the game,
@@ -256,6 +257,9 @@ class Conductor
   public static function mapTimeChanges(songTimeChanges:Array<SongTimeChange>)
   {
     timeChanges = [];
+
+    // Sort in place just in case it's out of order.
+    SongDataUtils.sortTimeChanges(songTimeChanges);
 
     for (currentTimeChange in songTimeChanges)
     {

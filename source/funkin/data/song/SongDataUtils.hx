@@ -3,6 +3,7 @@ package funkin.data.song;
 import flixel.util.FlxSort;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongTimeChange;
 import funkin.util.ClipboardUtil;
 import funkin.util.SerializerUtil;
 
@@ -155,6 +156,18 @@ class SongDataUtils
       return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.time, b.time);
     });
     return events;
+  }
+
+  /**
+   * Sort an array of notes by strum time.
+   */
+  public static function sortTimeChanges(timeChanges:Array<SongTimeChange>, desc:Bool = false):Array<SongTimeChange>
+  {
+    // TODO: Modifies the array in place. Is this okay?
+    timeChanges.sort(function(a:SongTimeChange, b:SongTimeChange):Int {
+      return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.timeStamp, b.timeStamp);
+    });
+    return timeChanges;
   }
 
   /**
