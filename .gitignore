@@ -1,3 +1,4 @@
 export/
 .vscode/
 .DS_STORE
+vscode-project.hxml
