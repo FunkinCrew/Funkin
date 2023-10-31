@@ -1,0 +1,83 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "workflowtests" ]
+  pull_request:
+    branches: [ "workflowtests" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  WindowsBuild:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.1
+      # Runs a set of commands using the runners shell
+      - name: HaxeLib shit
+        run: |
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install hscript
+          haxelib install newgrounds
+          haxelib git polymod https://github.com/larsiusprime/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+      - name: Build
+        run: haxelib run lime build windows
+      - name: Publish Build
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Windows
+          path: export/release/windows/bin
+
+
+  # This workflow contains a single job called "build"
+  HTML5:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.1
+      # Runs a set of commands using the runners shell
+      - name: HaxeLib shit
+        run: |
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install hscript
+          haxelib install newgrounds
+          haxelib git polymod https://github.com/larsiusprime/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+      - name: Build
+        run: haxelib run lime build html5
+      - name: Publish Build
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: HTML5
+          path: export/release/html5/bin
