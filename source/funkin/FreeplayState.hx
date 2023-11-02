@@ -979,8 +979,7 @@ class FreeplayState extends MusicBeatSubState
 
     PlayStatePlaylist.isStoryMode = false;
 
-    var songId:String = cap.songTitle.toLowerCase();
-    var targetSong:Song = SongRegistry.instance.fetchEntry(songId);
+    var targetSong:Song = SongRegistry.instance.fetchEntry(cap.songData.songId);
     var targetDifficulty:String = currentDifficulty;
 
     // TODO: Implement Pico into the interface properly.
@@ -1040,25 +1039,14 @@ class FreeplayState extends MusicBeatSubState
     if (curSelected < 0) curSelected = grpCapsules.countLiving() - 1;
     if (curSelected >= grpCapsules.countLiving()) curSelected = 0;
 
-    var targetDifficulty:String = switch (curDifficulty)
-    {
-      case 0:
-        'easy';
-      case 1:
-        'normal';
-      case 2:
-        'hard';
-      default: 'normal';
-    };
-
     var daSongCapsule = grpCapsules.members[curSelected];
     if (daSongCapsule.songData != null)
     {
-      var songScore:SaveScoreData = Save.get().getSongScore(daSongCapsule.songData.songId, targetDifficulty);
+      var songScore:SaveScoreData = Save.get().getSongScore(daSongCapsule.songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
-      diffIdsCurrent = daSong.songDifficulties;
-      rememberedSongId = daSong.songId;
+      diffIdsCurrent = daSongCapsule.songData.songDifficulties;
+      rememberedSongId = daSongCapsule.songData.songId;
       changeDiff();
     }
     else
