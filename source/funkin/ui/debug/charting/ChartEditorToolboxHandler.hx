@@ -411,6 +411,7 @@ class ChartEditorToolboxHandler
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
+          dropDown.width = 200.0;
           dropDown.dataSource = new ArrayDataSource();
 
           if (field.keys == null) throw 'Field "${field.name}" is of Enum type but has no keys.';
