@@ -1,5 +1,7 @@
 package funkin.util;
 
+import haxe.io.Path;
+
 /**
  * Utilties for interpreting command line arguments.
  */
@@ -13,9 +15,20 @@ class CLIUtil
   public static function resetWorkingDir():Void
   {
     #if sys
-    var exeDir:String = haxe.io.Path.directory(Sys.programPath());
-    trace('Changing working directory from ${Sys.getCwd()} to ${exeDir}');
-    Sys.setCwd(exeDir);
+    var exeDir:String = Path.addTrailingSlash(Path.directory(Sys.programPath()));
+    #if mac
+    exeDir = Path.addTrailingSlash(Path.join([exeDir, '../Resources/']));
+    #end
+    var cwd:String = Path.addTrailingSlash(Sys.getCwd());
+    if (cwd == exeDir)
+    {
+      trace('Working directory is already correct.');
+    }
+    else
+    {
+      trace('Changing working directory from ${Sys.getCwd()} to ${exeDir}');
+      Sys.setCwd(exeDir);
+    }
     #end
   }
 
