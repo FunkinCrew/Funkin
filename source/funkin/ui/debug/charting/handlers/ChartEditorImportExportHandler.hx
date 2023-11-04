@@ -1,4 +1,4 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.handlers;
 
 import haxe.ui.notifications.NotificationType;
 import funkin.util.DateUtil;
@@ -16,7 +16,7 @@ import funkin.data.song.SongRegistry;
  * Contains functions for importing, loading, saving, and exporting charts.
  */
 @:nullSafety
-@:allow(funkin.ui.debug.charting.ChartEditorState)
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorImportExportHandler
 {
   /**
@@ -50,18 +50,18 @@ class ChartEditorImportExportHandler
 
     state.sortChartData();
 
-    state.clearVocals();
+    state.stopExistingVocals();
 
     var variations:Array<String> = state.availableVariations;
     for (variation in variations)
     {
       if (variation == Constants.DEFAULT_VARIATION)
       {
-        ChartEditorAudioHandler.loadInstFromAsset(state, Paths.inst(songId));
+        state.loadInstFromAsset(Paths.inst(songId));
       }
       else
       {
-        ChartEditorAudioHandler.loadInstFromAsset(state, Paths.inst(songId, '-$variation'), variation);
+        state.loadInstFromAsset(Paths.inst(songId, '-$variation'), variation);
       }
     }
 
@@ -75,12 +75,12 @@ class ChartEditorImportExportHandler
 
       if (voiceList.length == 2)
       {
-        ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[0], diff.characters.player, instId);
-        ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[1], diff.characters.opponent, instId);
+        state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
+        state.loadVocalsFromAsset(voiceList[1], diff.characters.opponent, instId);
       }
       else if (voiceList.length == 1)
       {
-        ChartEditorAudioHandler.loadVocalsFromAsset(state, voiceList[0], diff.characters.player, instId);
+        state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
       }
       else
       {
@@ -98,7 +98,7 @@ class ChartEditorImportExportHandler
         title: 'Success',
         body: 'Loaded song (${rawSongMetadata[0].songName})',
         type: NotificationType.Success,
-        expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+        expiryMs: Constants.NOTIFICATION_DISMISS_TIME
       });
     #end
   }
@@ -169,8 +169,8 @@ class ChartEditorImportExportHandler
       }
     }
 
-    if (state.audioInstTrackData != null) zipEntries.concat(ChartEditorAudioHandler.makeZIPEntriesFromInstrumentals(state));
-    if (state.audioVocalTrackData != null) zipEntries.concat(ChartEditorAudioHandler.makeZIPEntriesFromVocals(state));
+    if (state.audioInstTrackData != null) zipEntries.concat(state.makeZIPEntriesFromInstrumentals());
+    if (state.audioVocalTrackData != null) zipEntries.concat(state.makeZIPEntriesFromVocals());
 
     trace('Exporting ${zipEntries.length} files to ZIP...');
 
