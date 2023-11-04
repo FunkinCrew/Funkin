@@ -1,5 +1,6 @@
 package funkin.freeplayStuff;
 
+import funkin.FreeplayState.FreeplaySongData;
 import funkin.shaderslmfao.HSVShader;
 import funkin.shaderslmfao.GaussianBlurShader;
 import flixel.group.FlxGroup;
@@ -19,9 +20,13 @@ class SongMenuItem extends FlxSpriteGroup
 
   var pixelIcon:FlxSprite;
 
-  public var selected(default, set):Bool;
+  /**
+   * Modify this by calling `init()`
+   * If `null`, assume this SongMenuItem is for the "Random Song" option.
+   */
+  public var songData(default, null):Null<FreeplaySongData> = null;
 
-  public var songTitle:String = "Test";
+  public var selected(default, set):Bool;
 
   public var songText:CapsuleText;
   public var favIcon:FlxSprite;
@@ -45,11 +50,9 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var hsvShader(default, set):HSVShader;
 
-  public function new(x:Float, y:Float, song:String, ?character:String)
+  public function new(x:Float, y:Float)
   {
     super(x, y);
-
-    this.songTitle = song;
 
     capsule = new FlxSprite();
     capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule');
@@ -86,7 +89,7 @@ class SongMenuItem extends FlxSpriteGroup
         ranking.x -= 10;
     }
 
-    songText = new CapsuleText(capsule.width * 0.26, 45, songTitle, Std.int(40 * realScaled));
+    songText = new CapsuleText(capsule.width * 0.26, 45, 'Random', Std.int(40 * realScaled));
     add(songText);
     grpHide.add(songText);
 
@@ -96,8 +99,6 @@ class SongMenuItem extends FlxSpriteGroup
     pixelIcon.active = false;
     add(pixelIcon);
     grpHide.add(pixelIcon);
-
-    if (character != null) setCharacter(character);
 
     favIcon = new FlxSprite(400, 40);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
@@ -144,18 +145,21 @@ class SongMenuItem extends FlxSpriteGroup
 
     if (value) textAppear();
 
-    selectedAlpha();
+    updateSelected();
   }
 
-  public function init(x:Float, y:Float, song:String, ?character:String)
+  public function init(x:Float, y:Float, songData:Null<FreeplaySongData>)
   {
     this.x = x;
     this.y = y;
-    this.songTitle = song;
-    songText.text = this.songTitle;
-    if (character != null) setCharacter(character);
+    this.songData = songData;
 
-    selected = selected;
+    // Update capsule text.
+    songText.text = songData?.songName ?? 'Random';
+    // Update capsule character.
+    if (songData?.songCharacter != null) setCharacter(songData.songCharacter);
+    // Update opacity, offsets, etc.
+    updateSelected();
   }
 
   /**
@@ -169,6 +173,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     trace(char);
 
+    // TODO: Put this in the character metadata where it belongs.
     switch (char)
     {
       case "monster-christmas":
@@ -244,7 +249,7 @@ class SongMenuItem extends FlxSpriteGroup
   {
     visible = true;
     capsule.alpha = 1;
-    selectedAlpha();
+    updateSelected();
     doLerp = true;
     doJumpIn = false;
     doJumpOut = false;
@@ -319,24 +324,22 @@ class SongMenuItem extends FlxSpriteGroup
     return (index * ((height * realScaled) + 10)) + 120;
   }
 
-  /**
-   * Merely a helper function to call set_selected, to make sure that the alpha is correct on the rankings/selections
-   */
-  public function selectedAlpha():Void
-  {
-    selected = selected;
-  }
-
   function set_selected(value:Bool):Bool
   {
     // cute one liners, lol!
-    diffGrayscale.setAmount(value ? 0 : 0.8);
-    songText.alpha = value ? 1 : 0.6;
-    songText.blurredText.visible = value ? true : false;
-    capsule.offset.x = value ? 0 : -5;
-    capsule.animation.play(value ? "selected" : "unselected");
-    ranking.alpha = value ? 1 : 0.7;
-    ranking.color = value ? 0xFFFFFFFF : 0xFFAAAAAA;
-    return value;
+    selected = value;
+    updateSelected();
+    return selected;
+  }
+
+  function updateSelected():Void
+  {
+    diffGrayscale.setAmount(this.selected ? 0 : 0.8);
+    songText.alpha = this.selected ? 1 : 0.6;
+    songText.blurredText.visible = this.selected ? true : false;
+    capsule.offset.x = this.selected ? 0 : -5;
+    capsule.animation.play(this.selected ? "selected" : "unselected");
+    ranking.alpha = this.selected ? 1 : 0.7;
+    ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
   }
 }
