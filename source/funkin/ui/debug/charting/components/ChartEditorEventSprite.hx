@@ -1,4 +1,4 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.components;
 
 import funkin.data.event.SongEventData.SongEventParser;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -13,7 +13,7 @@ import flixel.math.FlxPoint;
 import funkin.data.song.SongData.SongEventData;
 
 /**
- * A event sprite that can be used to display a song event in a chart.
+ * A sprite that can be used to display a song event in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
 @:nullSafety
@@ -33,6 +33,17 @@ class ChartEditorEventSprite extends FlxSprite
    * The image used for all song events. Cached for performance.
    */
   static var eventSpriteBasic:Null<BitmapData> = null;
+
+  public var overrideStepTime(default, set):Null<Float> = null;
+
+  function set_overrideStepTime(value:Null<Float>):Null<Float>
+  {
+    if (overrideStepTime == value) return overrideStepTime;
+
+    overrideStepTime = value;
+    updateEventPosition();
+    return overrideStepTime;
+  }
 
   public function new(parent:ChartEditorState)
   {
@@ -146,7 +157,7 @@ class ChartEditorEventSprite extends FlxSprite
 
     this.x = (ChartEditorState.STRUMLINE_SIZE * 2 + 1 - 1) * ChartEditorState.GRID_SIZE;
 
-    var stepTime:Float = inline eventData.getStepTime();
+    var stepTime:Float = (overrideStepTime != null) ? overrideStepTime : eventData.getStepTime();
     this.y = stepTime * ChartEditorState.GRID_SIZE;
 
     if (origin != null)

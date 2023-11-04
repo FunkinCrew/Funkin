@@ -1,4 +1,4 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.util;
 
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
@@ -10,13 +10,16 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData.CharacterDataParser;
 
 /**
- * This class contains functions for populating dropdowns based on game data.
+ * Functions for populating dropdowns based on game data.
  * These get used by both dialogs and toolboxes so they're in their own class to prevent "reaching over."
  */
 @:nullSafety
-@:access(ChartEditorState)
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorDropdowns
 {
+  /**
+   * Populate a dropdown with a list of characters.
+   */
   public static function populateDropdownWithCharacters(dropDown:DropDown, charType:CharacterType, startingCharId:String):DropDownEntry
   {
     dropDown.dataSource.clear();
@@ -50,6 +53,9 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  /**
+   * Populate a dropdown with a list of stages.
+   */
   public static function populateDropdownWithStages(dropDown:DropDown, startingStageId:String):DropDownEntry
   {
     dropDown.dataSource.clear();
@@ -74,6 +80,9 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  /**
+   * Populate a dropdown with a list of note styles.
+   */
   public static function populateDropdownWithNoteStyles(dropDown:DropDown, startingStyleId:String):DropDownEntry
   {
     dropDown.dataSource.clear();
@@ -98,6 +107,9 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  /**
+   * Populate a dropdown with a list of song variations.
+   */
   public static function populateDropdownWithVariations(dropDown:DropDown, state:ChartEditorState, includeNone:Bool = true):DropDownEntry
   {
     dropDown.dataSource.clear();
@@ -122,6 +134,9 @@ class ChartEditorDropdowns
   }
 }
 
+/**
+ * An entry in a dropdown.
+ */
 typedef DropDownEntry =
 {
   id:String,
