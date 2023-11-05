@@ -15,8 +15,6 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.song.Song;
 import funkin.play.stage.StageData;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
-import funkin.ui.haxeui.components.FunkinDropDown;
-import funkin.ui.haxeui.components.FunkinLink;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;

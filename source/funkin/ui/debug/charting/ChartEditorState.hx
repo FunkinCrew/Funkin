@@ -3921,8 +3921,10 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.keys.justPressed.F1) this.openUserGuideDialog();
   }
 
-  function handleQuickWatch():Void
+  override function handleQuickWatch():Void
   {
+    super.handleQuickWatch();
+
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
     FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
 
