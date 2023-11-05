@@ -24,7 +24,7 @@ Example:
 ```
 /**
  * Finds the largest deviation from the desired time inside this VoicesGroup.
- * 
+ *
  * @param targetTime	The time to check against.
  * 						If none is provided, it checks the time of all members against the first member of this VoicesGroup.
  * @return The largest deviation from the target time found.
@@ -52,3 +52,10 @@ import sys.io.File;
 #end
 ```
 
+## Argument Formatting
+
+[Optional arguments](https://haxe.org/manual/types-function-optional-arguments.html) and [default arguments](https://haxe.org/manual/types-function-default-values.html) should be mutually exclusive and not used together!
+
+For example, `myFunction(?input:Int)` should be used if you want the argument to be a `Null<Int>` whose value is `null` if no value is passed, and `myFunction(input:Int = 0)` should be used if you want the argument to be an `Int`, whose value is `0` if no value is passed.
+
+Using both at the same time is considered valid by Haxe, but `myFunction(?input:Int = 0)` results in a `Null<Int>` whose value defaults to 0 anyway, so it's never null, but it's annotated as nullable! The biggest consequence of this is that it makes null safety more annoying.

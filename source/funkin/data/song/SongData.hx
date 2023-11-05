@@ -447,7 +447,7 @@ class SongChartData
   }
 }
 
-class SongEventData
+class SongEventDataRaw
 {
   /**
    * The timestamp of the event. The timestamp is in the format of the song's time format.
@@ -503,15 +503,27 @@ class SongEventData
 
     return _stepTime = Conductor.getTimeInSteps(this.time);
   }
+}
+
+/**
+ * Wrap SongEventData in an abstract so we can overload operators.
+ */
+@:forward(time, event, value, activated, getStepTime)
+abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
+{
+  public function new(time:Float, event:String, value:Dynamic = null)
+  {
+    this = new SongEventDataRaw(time, event, value);
+  }
 
   public inline function getDynamic(key:String):Null<Dynamic>
   {
-    return value == null ? null : Reflect.field(value, key);
+    return this.value == null ? null : Reflect.field(this.value, key);
   }
 
   public inline function getBool(key:String):Null<Bool>
   {
-    return value == null ? null : cast Reflect.field(value, key);
+    return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
   public inline function getInt(key:String):Null<Int>
@@ -536,17 +548,22 @@ class SongEventData
 
   public inline function getString(key:String):String
   {
-    return value == null ? null : cast Reflect.field(value, key);
+    return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
   public inline function getArray(key:String):Array<Dynamic>
   {
-    return value == null ? null : cast Reflect.field(value, key);
+    return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
   public inline function getBoolArray(key:String):Array<Bool>
   {
-    return value == null ? null : cast Reflect.field(value, key);
+    return this.value == null ? null : cast Reflect.field(this.value, key);
+  }
+
+  public function clone():SongEventData
+  {
+    return new SongEventData(this.time, this.event, this.value);
   }
 
   @:op(A == B)
@@ -594,7 +611,7 @@ class SongEventData
   }
 }
 
-class SongNoteData
+class SongNoteDataRaw
 {
   /**
    * The timestamp of the note. The timestamp is in the format of the song's time format.
@@ -665,6 +682,48 @@ class SongNoteData
     return _stepTime = Conductor.getTimeInSteps(this.time);
   }
 
+  @:jignored
+  var _stepLength:Null<Float> = null;
+
+  /**
+   * @param force Set to `true` to force recalculation (good after BPM changes)
+   * @return The length of the hold note in steps, or `0` if this is not a hold note.
+   */
+  public function getStepLength(force = false):Float
+  {
+    if (this.length <= 0) return 0.0;
+
+    if (_stepLength != null && !force) return _stepLength;
+
+    return _stepLength = Conductor.getTimeInSteps(this.time + this.length) - getStepTime();
+  }
+
+  public function setStepLength(value:Float):Void
+  {
+    if (value <= 0)
+    {
+      this.length = 0.0;
+    }
+    else
+    {
+      var lengthMs:Float = Conductor.getStepTimeInMs(value) - this.time;
+      this.length = lengthMs;
+    }
+    _stepLength = null;
+  }
+}
+
+/**
+ * Wrap SongNoteData in an abstract so we can overload operators.
+ */
+@:forward
+abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
+{
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
+  {
+    this = new SongNoteDataRaw(time, data, length, kind);
+  }
+
   /**
    * The direction of the note, if applicable.
    * Strips the strumline index from the data.
@@ -678,7 +737,12 @@ class SongNoteData
 
   public function getDirectionName(strumlineSize:Int = 4):String
   {
-    switch (this.data % strumlineSize)
+    return SongNoteData.buildDirectionName(this.data, strumlineSize);
+  }
+
+  public static function buildDirectionName(data:Int, strumlineSize:Int = 4):String
+  {
+    switch (data % strumlineSize)
     {
       case 0:
         return 'Left';
@@ -713,36 +777,6 @@ class SongNoteData
   public inline function getMustHitNote(strumlineSize:Int = 4):Bool
   {
     return getStrumlineIndex(strumlineSize) == 0;
-  }
-
-  @:jignored
-  var _stepLength:Null<Float> = null;
-
-  /**
-   * @param force Set to `true` to force recalculation (good after BPM changes)
-   * @return The length of the hold note in steps, or `0` if this is not a hold note.
-   */
-  public function getStepLength(force = false):Float
-  {
-    if (this.length <= 0) return 0.0;
-
-    if (_stepLength != null && !force) return _stepLength;
-
-    return _stepLength = Conductor.getTimeInSteps(this.time + this.length) - getStepTime();
-  }
-
-  public function setStepLength(value:Float):Void
-  {
-    if (value <= 0)
-    {
-      this.length = 0.0;
-    }
-    else
-    {
-      var lengthMs:Float = Conductor.getStepTimeInMs(value) - this.time;
-      this.length = lengthMs;
-    }
-    _stepLength = null;
   }
 
   @:jignored
@@ -805,6 +839,11 @@ class SongNoteData
   public function op_lessThanOrEquals(other:SongNoteData):Bool
   {
     return this.time <= other.time;
+  }
+
+  public function clone():SongNoteData
+  {
+    return new SongNoteData(this.time, this.data, this.length, this.kind);
   }
 
   /**
