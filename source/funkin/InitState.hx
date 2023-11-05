@@ -282,6 +282,10 @@ class InitState extends FlxState
       return;
     }
 
+    // Load and cache the song's charts.
+    // TODO: Do this in the loading state.
+    songData.cacheCharts(true);
+
     LoadingState.loadAndSwitchState(new funkin.play.PlayState(
       {
         targetSong: songData,

@@ -1,26 +1,19 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.handlers;
 
-import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxSliceSprite;
+import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
-
-/**
- * Available themes for the chart editor state.
- */
-enum ChartEditorTheme
-{
-  Light;
-  Dark;
-}
 
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
 @:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorThemeHandler
 {
   // TODO: There's probably a better system of organization for these colors.

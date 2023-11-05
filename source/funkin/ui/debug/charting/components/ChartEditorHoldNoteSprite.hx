@@ -1,4 +1,4 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.components;
 
 import funkin.play.notes.Strumline;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -11,7 +11,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.data.song.SongData.SongNoteData;
 
 /**
- * A hold note sprite that can be used to display a note in a chart.
+ * A sprite that can be used to display the trail of a hold note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
 @:nullSafety

@@ -1,22 +1,21 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.handlers;
 
 import flixel.system.FlxAssets.FlxSoundAsset;
-import flixel.system.FlxSound;
 import flixel.system.FlxSound;
 import funkin.audio.VoicesGroup;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
+import funkin.util.assets.SoundUtil;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import openfl.utils.Assets;
 
 /**
  * Functions for loading audio for the chart editor.
+ * Handlers split up the functionality of the Chart Editor into different classes based on focus to limit the amount of code in each class.
  */
 @:nullSafety
-@:allow(funkin.ui.debug.charting.ChartEditorState)
-@:allow(funkin.ui.debug.charting.ChartEditorDialogHandler)
-@:allow(funkin.ui.debug.charting.ChartEditorImportExportHandler)
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorAudioHandler
 {
   /**
@@ -27,7 +26,7 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  static function loadVocalsFromPath(state:ChartEditorState, path:Path, charId:String, instId:String = ''):Bool
+  public static function loadVocalsFromPath(state:ChartEditorState, path:Path, charId:String, instId:String = ''):Bool
   {
     #if sys
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
@@ -46,7 +45,7 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  static function loadVocalsFromAsset(state:ChartEditorState, path:String, charId:String, instId:String = ''):Bool
+  public static function loadVocalsFromAsset(state:ChartEditorState, path:String, charId:String, instId:String = ''):Bool
   {
     var trackData:Null<Bytes> = Assets.getBytes(path);
     if (trackData != null)
@@ -63,7 +62,7 @@ class ChartEditorAudioHandler
    * @param charId The character this vocal track will be for.
    * @param instId The instrumental this vocal track will be for.
    */
-  static function loadVocalsFromBytes(state:ChartEditorState, bytes:Bytes, charId:String, instId:String = ''):Bool
+  public static function loadVocalsFromBytes(state:ChartEditorState, bytes:Bytes, charId:String, instId:String = ''):Bool
   {
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     state.audioVocalTrackData.set(trackId, bytes);
@@ -77,7 +76,7 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  static function loadInstFromPath(state:ChartEditorState, path:Path, instId:String = ''):Bool
+  public static function loadInstFromPath(state:ChartEditorState, path:Path, instId:String = ''):Bool
   {
     #if sys
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
@@ -95,7 +94,7 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  static function loadInstFromAsset(state:ChartEditorState, path:String, instId:String = ''):Bool
+  public static function loadInstFromAsset(state:ChartEditorState, path:String, instId:String = ''):Bool
   {
     var trackData:Null<Bytes> = Assets.getBytes(path);
     if (trackData != null)
@@ -112,7 +111,7 @@ class ChartEditorAudioHandler
    * @param charId The character this vocal track will be for.
    * @param instId The instrumental this vocal track will be for.
    */
-  static function loadInstFromBytes(state:ChartEditorState, bytes:Bytes, instId:String = ''):Bool
+  public static function loadInstFromBytes(state:ChartEditorState, bytes:Bytes, instId:String = ''):Bool
   {
     if (instId == '') instId = 'default';
     state.audioInstTrackData.set(instId, bytes);
@@ -136,11 +135,11 @@ class ChartEditorAudioHandler
   /**
    * Tell the Chart Editor to select a specific instrumental track, that is already loaded.
    */
-  static function playInstrumental(state:ChartEditorState, instId:String = ''):Bool
+  public static function playInstrumental(state:ChartEditorState, instId:String = ''):Bool
   {
     if (instId == '') instId = 'default';
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
-    var instTrack:Null<FlxSound> = buildFlxSoundFromBytes(instTrackData);
+    var instTrack:Null<FlxSound> = SoundUtil.buildFlxSoundFromBytes(instTrackData);
     if (instTrack == null) return false;
 
     stopExistingInstrumental(state);
@@ -149,7 +148,7 @@ class ChartEditorAudioHandler
     return true;
   }
 
-  static function stopExistingInstrumental(state:ChartEditorState):Void
+  public static function stopExistingInstrumental(state:ChartEditorState):Void
   {
     if (state.audioInstTrack != null)
     {
@@ -162,11 +161,11 @@ class ChartEditorAudioHandler
   /**
    * Tell the Chart Editor to select a specific vocal track, that is already loaded.
    */
-  static function playVocals(state:ChartEditorState, charType:CharacterType, charId:String, instId:String = ''):Bool
+  public static function playVocals(state:ChartEditorState, charType:CharacterType, charId:String, instId:String = ''):Bool
   {
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackId);
-    var vocalTrack:Null<FlxSound> = buildFlxSoundFromBytes(vocalTrackData);
+    var vocalTrack:Null<FlxSound> = SoundUtil.buildFlxSoundFromBytes(vocalTrackData);
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
@@ -190,7 +189,7 @@ class ChartEditorAudioHandler
     return false;
   }
 
-  static function stopExistingVocals(state:ChartEditorState):Void
+  public static function stopExistingVocals(state:ChartEditorState):Void
   {
     if (state.audioVocalTrackGroup != null)
     {
@@ -203,7 +202,7 @@ class ChartEditorAudioHandler
    * Automatically cleans up after itself and recycles previous FlxSound instances if available, for performance.
    * @param path The path to the sound effect. Use `Paths` to build this.
    */
-  public static function playSound(path:String):Void
+  public static function playSound(_state:ChartEditorState, path:String):Void
   {
     var snd:FlxSound = FlxG.sound.list.recycle(FlxSound) ?? new FlxSound();
     var asset:Null<FlxSoundAsset> = FlxG.sound.cache(path);
@@ -219,22 +218,11 @@ class ChartEditorAudioHandler
   }
 
   /**
-   * Convert byte data into a playable sound.
-   *
-   * @param input The byte data.
-   * @return The playable sound, or `null` if loading failed.
+   * Create a list of ZIP file entries from the current loaded instrumental tracks in the chart eidtor.
+   * @param state The chart editor state.
+   * @return `Array<haxe.zip.Entry>`
    */
-  public static function buildFlxSoundFromBytes(input:Null<Bytes>):Null<FlxSound>
-  {
-    if (input == null) return null;
-
-    var openflSound:openfl.media.Sound = new openfl.media.Sound();
-    openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(input), input.length);
-    var output:FlxSound = FlxG.sound.load(openflSound, 1.0, false);
-    return output;
-  }
-
-  static function makeZIPEntriesFromInstrumentals(state:ChartEditorState):Array<haxe.zip.Entry>
+  public static function makeZIPEntriesFromInstrumentals(state:ChartEditorState):Array<haxe.zip.Entry>
   {
     var zipEntries = [];
 
@@ -257,7 +245,12 @@ class ChartEditorAudioHandler
     return zipEntries;
   }
 
-  static function makeZIPEntriesFromVocals(state:ChartEditorState):Array<haxe.zip.Entry>
+  /**
+   * Create a list of ZIP file entries from the current loaded vocal tracks in the chart eidtor.
+   * @param state The chart editor state.
+   * @return `Array<haxe.zip.Entry>`
+   */
+  public static function makeZIPEntriesFromVocals(state:ChartEditorState):Array<haxe.zip.Entry>
   {
     var zipEntries = [];
 

@@ -1,4 +1,4 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.components;
 
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -10,10 +10,11 @@ import flixel.math.FlxPoint;
 import funkin.data.song.SongData.SongNoteData;
 
 /**
- * A note sprite that can be used to display a note in a chart.
+ * A sprite that can be used to display a note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
 @:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorNoteSprite extends FlxSprite
 {
   /**
@@ -36,6 +37,28 @@ class ChartEditorNoteSprite extends FlxSprite
    * The name of the note style currently in use.
    */
   public var noteStyle(get, never):String;
+
+  public var overrideStepTime(default, set):Null<Float> = null;
+
+  function set_overrideStepTime(value:Null<Float>):Null<Float>
+  {
+    if (overrideStepTime == value) return overrideStepTime;
+
+    overrideStepTime = value;
+    updateNotePosition();
+    return overrideStepTime;
+  }
+
+  public var overrideData(default, set):Null<Int> = null;
+
+  function set_overrideData(value:Null<Int>):Null<Int>
+  {
+    if (overrideData == value) return overrideData;
+
+    overrideData = value;
+    playNoteAnimation();
+    return overrideData;
+  }
 
   public function new(parent:ChartEditorState)
   {
@@ -147,32 +170,15 @@ class ChartEditorNoteSprite extends FlxSprite
   {
     if (this.noteData == null) return;
 
-    var cursorColumn:Int = this.noteData.data;
+    var cursorColumn:Int = (overrideData != null) ? overrideData : this.noteData.data;
 
-    if (cursorColumn < 0) cursorColumn = 0;
-    if (cursorColumn >= (ChartEditorState.STRUMLINE_SIZE * 2 + 1))
-    {
-      cursorColumn = (ChartEditorState.STRUMLINE_SIZE * 2 + 1);
-    }
-    else
-    {
-      // Invert player and opponent columns.
-      if (cursorColumn >= ChartEditorState.STRUMLINE_SIZE)
-      {
-        cursorColumn -= ChartEditorState.STRUMLINE_SIZE;
-      }
-      else
-      {
-        cursorColumn += ChartEditorState.STRUMLINE_SIZE;
-      }
-    }
+    cursorColumn = ChartEditorState.noteDataToGridColumn(cursorColumn);
 
     this.x = cursorColumn * ChartEditorState.GRID_SIZE;
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes
-    var stepTime:Float =
-    inline this.noteData.getStepTime();
+    var stepTime:Float = (overrideStepTime != null) ? overrideStepTime : noteData.getStepTime();
     if (stepTime >= 0)
     {
       this.y = stepTime * ChartEditorState.GRID_SIZE;
@@ -199,7 +205,8 @@ class ChartEditorNoteSprite extends FlxSprite
     var baseAnimationName:String = 'tap';
 
     // Play the appropriate animation for the type, direction, and skin.
-    var animationName:String = '${baseAnimationName}${this.noteData.getDirectionName()}${this.noteStyle.toTitleCase()}';
+    var dirName:String = overrideData != null ? SongNoteData.buildDirectionName(overrideData) : this.noteData.getDirectionName();
+    var animationName:String = '${baseAnimationName}${dirName}${this.noteStyle.toTitleCase()}';
 
     this.animation.play(animationName);
 

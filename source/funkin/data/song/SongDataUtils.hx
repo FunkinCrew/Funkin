@@ -66,8 +66,14 @@ class SongDataUtils
 
     var result = notes.filter(function(note:SongNoteData):Bool {
       for (x in subtrahend)
+      {
+        // The currently iterated note is in the subtrahend array.
         // SongNoteData's == operation has been overridden so that this will work.
-        if (x == note) return false;
+        if (x == note)
+        {
+          return false;
+        }
+      }
 
       return true;
     });

@@ -117,7 +117,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function stepHit():Bool
   {
-    var event = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, Conductor.currentBeat, Conductor.currentStep);
+    var event = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.currentBeat, Conductor.currentStep);
 
     dispatchEvent(event);
 
@@ -128,7 +128,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function beatHit():Bool
   {
-    var event = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, Conductor.currentBeat, Conductor.currentStep);
+    var event = new SongTimeScriptEvent(SONG_BEAT_HIT, Conductor.currentBeat, Conductor.currentStep);
 
     dispatchEvent(event);
 
@@ -148,7 +148,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override function startOutro(onComplete:() -> Void):Void
   {
-    var event = new StateChangeScriptEvent(ScriptEvent.STATE_CHANGE_BEGIN, null, true);
+    var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
 
     dispatchEvent(event);
 
@@ -164,7 +164,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public override function openSubState(targetSubState:FlxSubState):Void
   {
-    var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_BEGIN, targetSubState, true);
+    var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
     dispatchEvent(event);
 
@@ -175,12 +175,12 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   function onOpenSubStateComplete(targetState:FlxSubState):Void
   {
-    dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_OPEN_END, targetState, true));
+    dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
   }
 
   public override function closeSubState():Void
   {
-    var event = new SubStateScriptEvent(ScriptEvent.SUBSTATE_CLOSE_BEGIN, this.subState, true);
+    var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 
     dispatchEvent(event);
 
@@ -191,6 +191,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   function onCloseSubStateComplete(targetState:FlxSubState):Void
   {
-    dispatchEvent(new SubStateScriptEvent(ScriptEvent.SUBSTATE_CLOSE_END, targetState, true));
+    dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
   }
 }

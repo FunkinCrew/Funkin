@@ -1,6 +1,5 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.handlers;
 
-import funkin.ui.haxeui.components.FunkinDropDown;
 import flixel.util.FlxTimer;
 import funkin.data.song.importer.FNFLegacyData;
 import funkin.data.song.importer.FNFLegacyImporter;
@@ -15,6 +14,8 @@ import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.song.Song;
 import funkin.play.stage.StageData;
+import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.ui.haxeui.components.FunkinDropDown;
 import funkin.ui.haxeui.components.FunkinLink;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
@@ -47,8 +48,10 @@ using Lambda;
  * Handles dialogs for the new Chart Editor.
  */
 @:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorDialogHandler
 {
+  // Paths to HaxeUI layout files for each dialog.
   static final CHART_EDITOR_DIALOG_ABOUT_LAYOUT:String = Paths.ui('chart-editor/dialogs/about');
   static final CHART_EDITOR_DIALOG_WELCOME_LAYOUT:String = Paths.ui('chart-editor/dialogs/welcome');
   static final CHART_EDITOR_DIALOG_UPLOAD_CHART_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-chart');
@@ -68,7 +71,7 @@ class ChartEditorDialogHandler
    * @param state The current chart editor state.
    * @return The dialog that was opened.
    */
-  public static inline function openAboutDialog(state:ChartEditorState):Null<Dialog>
+  public static function openAboutDialog(state:ChartEditorState):Null<Dialog>
   {
     return openDialog(state, CHART_EDITOR_DIALOG_ABOUT_LAYOUT, true, true);
   }
@@ -164,7 +167,7 @@ class ChartEditorDialogHandler
         state.stopWelcomeMusic();
 
         // Load song from template
-        ChartEditorImportExportHandler.loadSongAsTemplate(state, targetSongId);
+        state.loadSongAsTemplate(targetSongId);
       }
 
       splashTemplateContainer.addComponent(linkTemplateSong);
@@ -528,7 +531,7 @@ class ChartEditorDialogHandler
         {label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile:SelectedFileInfo) {
           if (selectedFile != null && selectedFile.bytes != null)
           {
-            if (ChartEditorAudioHandler.loadInstFromBytes(state, selectedFile.bytes, instId))
+            if (state.loadInstFromBytes(selectedFile.bytes, instId))
             {
               #if !mac
               NotificationManager.instance.addNotification(
@@ -536,7 +539,7 @@ class ChartEditorDialogHandler
                   title: 'Success',
                   body: 'Loaded instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})',
                   type: NotificationType.Success,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
 
@@ -552,7 +555,7 @@ class ChartEditorDialogHandler
                   title: 'Failure',
                   body: 'Failed to load instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})',
                   type: NotificationType.Error,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
             }
@@ -563,7 +566,7 @@ class ChartEditorDialogHandler
     onDropFile = function(pathStr:String) {
       var path:Path = new Path(pathStr);
       trace('Dropped file (${path})');
-      if (ChartEditorAudioHandler.loadInstFromPath(state, path, instId))
+      if (state.loadInstFromPath(path, instId))
       {
         // Tell the user the load was successful.
         #if !mac
@@ -572,7 +575,7 @@ class ChartEditorDialogHandler
             title: 'Success',
             body: 'Loaded instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})',
             type: NotificationType.Success,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
 
@@ -598,7 +601,7 @@ class ChartEditorDialogHandler
             title: 'Failure',
             body: message,
             type: NotificationType.Error,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
       }
@@ -607,66 +610,6 @@ class ChartEditorDialogHandler
     addDropHandler(instrumentalBox, onDropFile);
 
     return dialog;
-  }
-
-  static var dropHandlers:Array<
-    {
-      component:Component,
-      handler:(String->Void)
-    }> = [];
-
-  /**
-   * Add a callback for when a file is dropped on a component.
-   *
-   * On OS X you can’t drop on the application window, but rather only the app icon
-   * (either in the dock while running or the icon on the hard drive) so this must be disabled
-   * and UI updated appropriately.
-   * @param component
-   * @param handler
-   */
-  static function addDropHandler(component:Component, handler:String->Void):Void
-  {
-    #if desktop
-    if (!FlxG.stage.window.onDropFile.has(onDropFile)) FlxG.stage.window.onDropFile.add(onDropFile);
-
-    dropHandlers.push(
-      {
-        component: component,
-        handler: handler
-      });
-    #else
-    trace('addDropHandler not implemented for this platform');
-    #end
-  }
-
-  static function removeDropHandler(handler:String->Void):Void
-  {
-    #if desktop
-    FlxG.stage.window.onDropFile.remove(handler);
-    #end
-  }
-
-  static function clearDropHandlers():Void
-  {
-    #if desktop
-    dropHandlers = [];
-    FlxG.stage.window.onDropFile.remove(onDropFile);
-    #end
-  }
-
-  static function onDropFile(path:String):Void
-  {
-    // a VERY short timer to wait for the mouse position to update
-    new FlxTimer().start(0.01, function(_) {
-      for (handler in dropHandlers)
-      {
-        if (handler.component.hitTest(FlxG.mouse.screenX, FlxG.mouse.screenY))
-        {
-          handler.handler(path);
-          return;
-        }
-      }
-    });
   }
 
   /**
@@ -848,7 +791,7 @@ class ChartEditorDialogHandler
     if (dialogNoVocals == null) throw 'Could not locate dialogNoVocals button in Upload Vocals dialog';
     dialogNoVocals.onClick = function(_event) {
       // Dismiss
-      ChartEditorAudioHandler.stopExistingVocals(state);
+      state.stopExistingVocals();
       dialog.hideDialog(DialogButton.APPLY);
     };
 
@@ -875,10 +818,10 @@ class ChartEditorDialogHandler
         if (!hasClearedVocals)
         {
           hasClearedVocals = true;
-          ChartEditorAudioHandler.stopExistingVocals(state);
+          state.stopExistingVocals();
         }
 
-        if (ChartEditorAudioHandler.loadVocalsFromPath(state, path, charKey, instId))
+        if (state.loadVocalsFromPath(path, charKey, instId))
         {
           // Tell the user the load was successful.
           #if !mac
@@ -887,7 +830,7 @@ class ChartEditorDialogHandler
               title: 'Success',
               body: 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${state.selectedVariation}',
               type: NotificationType.Success,
-              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
             });
           #end
           #if FILE_DROP_SUPPORTED
@@ -910,7 +853,7 @@ class ChartEditorDialogHandler
               title: 'Failure',
               body: 'Failed to load vocal track (${path.file}.${path.ext}) for variation (${state.selectedVariation})',
               type: NotificationType.Error,
-              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
             });
           #end
 
@@ -931,9 +874,9 @@ class ChartEditorDialogHandler
               if (!hasClearedVocals)
               {
                 hasClearedVocals = true;
-                ChartEditorAudioHandler.stopExistingVocals(state);
+                state.stopExistingVocals();
               }
-              if (ChartEditorAudioHandler.loadVocalsFromBytes(state, selectedFile.bytes, charKey, instId))
+              if (state.loadVocalsFromBytes(selectedFile.bytes, charKey, instId))
               {
                 // Tell the user the load was successful.
                 #if !mac
@@ -942,7 +885,7 @@ class ChartEditorDialogHandler
                     title: 'Success',
                     body: 'Loaded vocals for $charName (${selectedFile.name}), variation ${state.selectedVariation}',
                     type: NotificationType.Success,
-                    expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                    expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                   });
                 #end
                 #if FILE_DROP_SUPPORTED
@@ -963,7 +906,7 @@ class ChartEditorDialogHandler
                     title: 'Failure',
                     body: 'Failed to load vocal track (${selectedFile.name}) for variation (${state.selectedVariation})',
                     type: NotificationType.Error,
-                    expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                    expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                   });
                 #end
 
@@ -1023,7 +966,7 @@ class ChartEditorDialogHandler
     var buttonContinue:Null<Button> = dialog.findComponent('dialogContinue', Button);
     if (buttonContinue == null) throw 'Could not locate dialogContinue button in Open Chart dialog';
     buttonContinue.onClick = function(_event) {
-      ChartEditorImportExportHandler.loadSong(state, songMetadata, songChartData);
+      state.loadSong(songMetadata, songChartData);
 
       dialog.hideDialog(DialogButton.APPLY);
     }
@@ -1122,7 +1065,7 @@ class ChartEditorDialogHandler
             title: 'Failure',
             body: 'Could not parse metadata file version (${path.file}.${path.ext})',
             type: NotificationType.Error,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
         return;
@@ -1140,7 +1083,7 @@ class ChartEditorDialogHandler
             title: 'Failure',
             body: 'Could not load metadata file (${path.file}.${path.ext})',
             type: NotificationType.Error,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
         return;
@@ -1155,7 +1098,7 @@ class ChartEditorDialogHandler
           title: 'Success',
           body: 'Loaded metadata file (${path.file}.${path.ext})',
           type: NotificationType.Success,
-          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+          expiryMs: Constants.NOTIFICATION_DISMISS_TIME
         });
       #end
 
@@ -1187,7 +1130,7 @@ class ChartEditorDialogHandler
                   title: 'Failure',
                   body: 'Could not parse metadata file version (${selectedFile.name})',
                   type: NotificationType.Error,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
               return;
@@ -1207,7 +1150,7 @@ class ChartEditorDialogHandler
                   title: 'Success',
                   body: 'Loaded metadata file (${selectedFile.name})',
                   type: NotificationType.Success,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
 
@@ -1228,7 +1171,7 @@ class ChartEditorDialogHandler
                   title: 'Failure',
                   body: 'Failed to load metadata file (${selectedFile.name})',
                   type: NotificationType.Error,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
             }
@@ -1252,7 +1195,7 @@ class ChartEditorDialogHandler
             title: 'Failure',
             body: 'Could not parse chart data file version (${path.file}.${path.ext})',
             type: NotificationType.Error,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
         return;
@@ -1275,7 +1218,7 @@ class ChartEditorDialogHandler
             title: 'Success',
             body: 'Loaded chart data file (${path.file}.${path.ext})',
             type: NotificationType.Success,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
 
@@ -1294,7 +1237,7 @@ class ChartEditorDialogHandler
             title: 'Failure',
             body: 'Failed to load chart data file (${path.file}.${path.ext})',
             type: NotificationType.Error,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
       }
@@ -1319,7 +1262,7 @@ class ChartEditorDialogHandler
                   title: 'Failure',
                   body: 'Could not parse chart data file version (${selectedFile.name})',
                   type: NotificationType.Error,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
               return;
@@ -1342,7 +1285,7 @@ class ChartEditorDialogHandler
                   title: 'Success',
                   body: 'Loaded chart data file (${selectedFile.name})',
                   type: NotificationType.Success,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
 
@@ -1445,7 +1388,7 @@ class ChartEditorDialogHandler
                 title: 'Failure',
                 body: 'Failed to parse FNF chart file (${selectedFile.name})',
                 type: NotificationType.Error,
-                expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                expiryMs: Constants.NOTIFICATION_DISMISS_TIME
               });
             #end
             return;
@@ -1454,7 +1397,7 @@ class ChartEditorDialogHandler
           var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(fnfLegacyData);
           var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(fnfLegacyData);
 
-          ChartEditorImportExportHandler.loadSong(state, [Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
+          state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
           dialog.hideDialog(DialogButton.APPLY);
           #if !mac
@@ -1463,7 +1406,7 @@ class ChartEditorDialogHandler
               title: 'Success',
               body: 'Loaded chart file (${selectedFile.name})',
               type: NotificationType.Success,
-              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
             });
           #end
         }
@@ -1477,7 +1420,7 @@ class ChartEditorDialogHandler
       var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(selectedFileData);
       var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(selectedFileData);
 
-      ChartEditorImportExportHandler.loadSong(state, [Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
+      state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
       dialog.hideDialog(DialogButton.APPLY);
       #if !mac
@@ -1486,7 +1429,7 @@ class ChartEditorDialogHandler
           title: 'Success',
           body: 'Loaded chart file (${path.file}.${path.ext})',
           type: NotificationType.Success,
-          expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+          expiryMs: Constants.NOTIFICATION_DISMISS_TIME
         });
       #end
     };
@@ -1502,33 +1445,9 @@ class ChartEditorDialogHandler
    * @param state The current chart editor state.
    * @return The dialog that was opened.
    */
-  public static inline function openUserGuideDialog(state:ChartEditorState):Null<Dialog>
+  public static function openUserGuideDialog(state:ChartEditorState):Null<Dialog>
   {
     return openDialog(state, CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT, true, true);
-  }
-
-  /**
-   * Builds and opens a dialog from a given layout path.
-   * @param modal Makes the background uninteractable while the dialog is open.
-   * @param closable Hides the close button on the dialog, preventing it from being closed unless the user interacts with the dialog.
-   */
-  static function openDialog(state:ChartEditorState, key:String, modal:Bool = true, closable:Bool = true):Null<Dialog>
-  {
-    var dialog:Null<Dialog> = cast state.buildComponent(key);
-    if (dialog == null) return null;
-
-    dialog.destroyOnClose = true;
-    dialog.closable = closable;
-    dialog.showDialog(modal);
-
-    state.isHaxeUIDialogOpen = true;
-    dialog.onDialogClosed = function(event:UIEvent) {
-      state.isHaxeUIDialogOpen = false;
-    };
-
-    dialog.zIndex = 1000;
-
-    return dialog;
   }
 
   /**
@@ -1686,5 +1605,92 @@ class ChartEditorDialogHandler
     }
 
     return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog from a given layout path.
+   * @param modal Makes the background uninteractable while the dialog is open.
+   * @param closable Hides the close button on the dialog, preventing it from being closed unless the user interacts with the dialog.
+   */
+  static function openDialog(state:ChartEditorState, key:String, modal:Bool = true, closable:Bool = true):Null<Dialog>
+  {
+    var dialog:Null<Dialog> = cast state.buildComponent(key);
+    if (dialog == null) return null;
+
+    dialog.destroyOnClose = true;
+    dialog.closable = closable;
+    dialog.showDialog(modal);
+
+    state.isHaxeUIDialogOpen = true;
+    dialog.onDialogClosed = function(event:UIEvent) {
+      state.isHaxeUIDialogOpen = false;
+    };
+
+    dialog.zIndex = 1000;
+
+    return dialog;
+  }
+
+  // ==========
+  // DROP HANDLERS
+  // ==========
+  static var dropHandlers:Array<
+    {
+      component:Component,
+      handler:(String->Void)
+    }> = [];
+
+  /**
+   * Add a callback for when a file is dropped on a component.
+   *
+   * On OS X you can’t drop on the application window, but rather only the app icon
+   * (either in the dock while running or the icon on the hard drive) so this must be disabled
+   * and UI updated appropriately.
+   * @param component
+   * @param handler
+   */
+  static function addDropHandler(component:Component, handler:String->Void):Void
+  {
+    #if desktop
+    if (!FlxG.stage.window.onDropFile.has(onDropFile)) FlxG.stage.window.onDropFile.add(onDropFile);
+
+    dropHandlers.push(
+      {
+        component: component,
+        handler: handler
+      });
+    #else
+    trace('addDropHandler not implemented for this platform');
+    #end
+  }
+
+  static function removeDropHandler(handler:String->Void):Void
+  {
+    #if desktop
+    FlxG.stage.window.onDropFile.remove(handler);
+    #end
+  }
+
+  static function clearDropHandlers():Void
+  {
+    #if desktop
+    dropHandlers = [];
+    FlxG.stage.window.onDropFile.remove(onDropFile);
+    #end
+  }
+
+  static function onDropFile(path:String):Void
+  {
+    // a VERY short timer to wait for the mouse position to update
+    new FlxTimer().start(0.01, function(_) {
+      for (handler in dropHandlers)
+      {
+        if (handler.component.hitTest(FlxG.mouse.screenX, FlxG.mouse.screenY))
+        {
+          handler.handler(path);
+          return;
+        }
+      }
+    });
   }
 }
