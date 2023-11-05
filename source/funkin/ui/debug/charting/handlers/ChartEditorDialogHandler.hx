@@ -231,7 +231,7 @@ class ChartEditorDialogHandler
                     title: 'Success',
                     body: 'Loaded chart (${selectedFile.name})',
                     type: NotificationType.Success,
-                    expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                    expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                   });
                 #end
 
@@ -248,7 +248,7 @@ class ChartEditorDialogHandler
                   title: 'Failure',
                   body: 'Failed to load chart (${selectedFile.name}): ${err}',
                   type: NotificationType.Error,
-                  expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
                 });
               #end
             }
@@ -270,7 +270,7 @@ class ChartEditorDialogHandler
               title: 'Success',
               body: 'Loaded chart (${path.toString()})',
               type: NotificationType.Success,
-              expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
             });
           #end
 
@@ -286,7 +286,7 @@ class ChartEditorDialogHandler
             title: 'Failure',
             body: 'Failed to load chart (${path.toString()}): ${err}',
             type: NotificationType.Error,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
       }

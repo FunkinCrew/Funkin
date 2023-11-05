@@ -1425,7 +1425,7 @@ class ChartEditorState extends HaxeUIState
             title: 'Success',
             body: 'Loaded chart (${params.fnfcTargetPath})',
             type: NotificationType.Success,
-            expiryMs: ChartEditorState.NOTIFICATION_DISMISS_TIME
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
           });
         #end
       }
