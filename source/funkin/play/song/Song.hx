@@ -98,10 +98,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       for (vari in _data.playData.songVariations)
       {
         variations.push(vari);
-      }
 
-      for (meta in fetchVariationMetadata(id))
-        _metadata.set(meta.variation, meta);
+        var variMeta = fetchVariationMetadata(id, vari);
+        if (variMeta != null) _metadata.set(variMeta.variation, variMeta);
+      }
     }
 
     if (_metadata.size() == 0)

@@ -285,7 +285,7 @@ class ChartEditorImportExportHandler
         }
         else
         {
-          throw 'Could not load vocals ($playerCharId-$instId).';
+          throw 'Could not load vocals ($opponentCharId).';
         }
       }
     }
