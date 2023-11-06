@@ -49,22 +49,20 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "e92d5cfac847943fac84696b103670d55c2c774f",
+      "ref": "815e94dd5aa6cf09c5ddcef1666a54449ffde8dc",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "be0b18553189a55fd42821026618a18615b070e3",
+      "ref": "9bd0b9e0fea40b8e06a89aac4949512d95064609",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
       "name": "hmm",
-      "type": "git",
-      "dir": null,
-      "ref": "d514d7786cabf18b90e60fcee38399fd44c2ddfb",
-      "url": "https://github.com/andywhite37/hmm"
+      "type": "haxelib",
+      "version": "3.1.0"
     },
     {
       "name": "hscript",
