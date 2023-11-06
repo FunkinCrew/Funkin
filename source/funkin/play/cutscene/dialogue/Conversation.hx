@@ -581,6 +581,19 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
     }
   }
 
+  /**
+   * Calls `kill()` on the group's members and then on the group itself.
+   * You can revive this group later via `revive()` after this.
+   */
+  public override function kill():Void
+  {
+    _skipTransformChildren = true;
+    alive = false;
+    exists = false;
+    _skipTransformChildren = false;
+    if (group != null) group.kill();
+  }
+
   public override function toString():String
   {
     return 'Conversation($conversationId)';
