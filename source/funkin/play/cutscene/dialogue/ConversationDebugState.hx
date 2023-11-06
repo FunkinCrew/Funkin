@@ -30,7 +30,7 @@ class ConversationDebugState extends MusicBeatState
     conversation.completeCallback = onConversationComplete;
     add(conversation);
 
-    ScriptEventDispatcher.callEvent(conversation, new ScriptEvent(ScriptEvent.CREATE, false));
+    ScriptEventDispatcher.callEvent(conversation, new ScriptEvent(CREATE, false));
   }
 
   function onConversationComplete():Void

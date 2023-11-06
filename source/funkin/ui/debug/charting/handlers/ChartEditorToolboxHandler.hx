@@ -1,53 +1,43 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.handlers;
 
-import funkin.ui.haxeui.components.FunkinDropDown;
-import funkin.play.stage.StageData.StageDataParser;
-import funkin.play.stage.StageData;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import haxe.ui.components.HorizontalSlider;
-import haxe.ui.containers.TreeView;
-import haxe.ui.containers.TreeViewNode;
-import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventData;
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.play.character.BaseCharacter.CharacterType;
+import funkin.play.character.CharacterData;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.event.SongEvent;
 import funkin.play.song.SongSerializer;
+import funkin.play.stage.StageData;
+import funkin.play.stage.StageData.StageDataParser;
+import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.haxeui.components.CharacterPlayer;
+import funkin.ui.haxeui.components.FunkinDropDown;
 import funkin.util.FileUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
+import haxe.ui.components.HorizontalSlider;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
-import haxe.ui.containers.Grid;
-import haxe.ui.containers.Group;
-import haxe.ui.containers.VBox;
-import haxe.ui.containers.Frame;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.containers.Frame;
+import haxe.ui.containers.Grid;
+import haxe.ui.containers.TreeView;
+import haxe.ui.containers.TreeViewNode;
 import haxe.ui.core.Component;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.events.UIEvent;
 
 /**
- * Available tools for the chart editor state.
- */
-enum ChartEditorToolMode
-{
-  Select;
-  Place;
-}
-
-/**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
 @:nullSafety
-@:allow(funkin.ui.debug.charting.ChartEditorState)
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void
@@ -72,12 +62,10 @@ class ChartEditorToolboxHandler
     {
       toolbox.showDialog(false);
 
-      ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/openWindow'));
+      state.playSound(Paths.sound('chartingSounds/openWindow'));
 
       switch (id)
       {
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
-          onShowToolboxTools(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
           onShowToolboxNoteData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
@@ -111,12 +99,10 @@ class ChartEditorToolboxHandler
     {
       toolbox.hideDialog(DialogButton.CANCEL);
 
-      ChartEditorAudioHandler.playSound(Paths.sound('chartingSounds/exitWindow'));
+      state.playSound(Paths.sound('chartingSounds/exitWindow'));
 
       switch (id)
       {
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
-          onHideToolboxTools(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
           onHideToolboxNoteData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
@@ -175,8 +161,6 @@ class ChartEditorToolboxHandler
     var toolbox:Null<CollapsibleDialog> = null;
     switch (id)
     {
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT:
-        toolbox = buildToolboxToolsLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
         toolbox = buildToolboxNoteDataLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
@@ -222,44 +206,6 @@ class ChartEditorToolboxHandler
 
     return toolbox;
   }
-
-  static function buildToolboxToolsLayout(state:ChartEditorState):Null<CollapsibleDialog>
-  {
-    var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_TOOLS_LAYOUT);
-
-    if (toolbox == null) return null;
-
-    // Starting position.
-    toolbox.x = 50;
-    toolbox.y = 50;
-
-    toolbox.onDialogClosed = function(event:DialogEvent) {
-      state.setUICheckboxSelected('menubarItemToggleToolboxTools', false);
-    }
-
-    var toolsGroup:Null<Group> = toolbox.findComponent('toolboxToolsGroup', Group);
-    if (toolsGroup == null) throw 'ChartEditorToolboxHandler.buildToolboxToolsLayout() - Could not find toolboxToolsGroup component.';
-
-    if (toolsGroup == null) return null;
-
-    toolsGroup.onChange = function(event:UIEvent) {
-      switch (event.target.id)
-      {
-        case 'toolboxToolsGroupSelect':
-          state.currentToolMode = ChartEditorToolMode.Select;
-        case 'toolboxToolsGroupPlace':
-          state.currentToolMode = ChartEditorToolMode.Place;
-        default:
-          trace('ChartEditorToolboxHandler.buildToolboxToolsLayout() - Unknown toolbox tool selected: $event.target.id');
-      }
-    }
-
-    return toolbox;
-  }
-
-  static function onShowToolboxTools(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
-
-  static function onHideToolboxTools(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function buildToolboxNoteDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
@@ -483,11 +429,11 @@ class ChartEditorToolboxHandler
       throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxLoadChart component.';
 
     difficultyToolboxAddVariation.onClick = function(_:UIEvent) {
-      ChartEditorDialogHandler.openAddVariationDialog(state, true);
+      state.openAddVariationDialog(true);
     };
 
     difficultyToolboxAddDifficulty.onClick = function(_:UIEvent) {
-      ChartEditorDialogHandler.openAddDifficultyDialog(state, true);
+      state.openAddDifficultyDialog(true);
     };
 
     difficultyToolboxSaveMetadata.onClick = function(_:UIEvent) {

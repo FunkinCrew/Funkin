@@ -252,6 +252,16 @@ class Constants
   public static final NS_PER_SEC:Int = NS_PER_US * US_PER_MS * MS_PER_SEC;
 
   /**
+   * Duration, in milliseconds, until toast notifications are automatically hidden.
+   */
+  public static final NOTIFICATION_DISMISS_TIME:Int = 5 * MS_PER_SEC;
+
+  /**
+   * Duration to wait before autosaving the chart.
+   */
+  public static final AUTOSAVE_TIMER_DELAY_SEC:Float = 5.0 * SECS_PER_MIN;
+
+  /**
    * Number of steps in a beat.
    * One step is one 16th note and one beat is one quarter note.
    */
@@ -392,7 +402,8 @@ class Constants
   public static final GHOST_TAPPING:Bool = false;
 
   /**
-   * The separator between an asset library and the asset path.
+    * The separator between an asset library and the asset path.
+
    */
   public static final LIBRARY_SEPARATOR:String = ':';
 

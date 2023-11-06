@@ -47,8 +47,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public final _data:Null<SongMetadata>;
 
-  final _metadata:Array<SongMetadata>;
-
+  // key = variation id, value = metadata
+  final _metadata:Map<String, SongMetadata>;
   final variations:Array<String>;
   final difficulties:Map<String, SongDifficulty>;
 
@@ -62,7 +62,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   function get_songName():String
   {
     if (_data != null) return _data?.songName ?? DEFAULT_SONGNAME;
-    if (_metadata.length > 0) return _metadata[0]?.songName ?? DEFAULT_SONGNAME;
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.songName ?? DEFAULT_SONGNAME;
     return DEFAULT_SONGNAME;
   }
 
@@ -71,7 +71,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   function get_songArtist():String
   {
     if (_data != null) return _data?.artist ?? DEFAULT_ARTIST;
-    if (_metadata.length > 0) return _metadata[0]?.artist ?? DEFAULT_ARTIST;
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.artist ?? DEFAULT_ARTIST;
     return DEFAULT_ARTIST;
   }
 
@@ -88,7 +88,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     _data = _fetchData(id);
 
-    _metadata = _data == null ? [] : [_data];
+    _metadata = _data == null ? [] : [Constants.DEFAULT_VARIATION => _data];
 
     variations.clear();
     variations.push(Constants.DEFAULT_VARIATION);
@@ -100,9 +100,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
 
     for (meta in fetchVariationMetadata(id))
-      _metadata.push(meta);
+      _metadata.set(meta.variation, meta);
 
-    if (_metadata.length == 0)
+    if (_metadata.size() == 0)
     {
       trace('[WARN] Could not find song data for songId: $id');
       return;
@@ -119,7 +119,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     result._metadata.clear();
     for (meta in metadata)
-      result._metadata.push(meta);
+      result._metadata.set(meta.variation, meta);
 
     result.variations.clear();
     for (vari in variations)
@@ -138,7 +138,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function getRawMetadata():Array<SongMetadata>
   {
-    return _metadata;
+    return _metadata.values();
   }
 
   /**
@@ -147,10 +147,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   function populateDifficulties():Void
   {
-    if (_metadata == null || _metadata.length == 0) return;
+    if (_metadata == null || _metadata.size() == 0) return;
 
     // Variations may have different artist, time format, generatedBy, etc.
-    for (metadata in _metadata)
+    for (metadata in _metadata.values())
     {
       if (metadata == null || metadata.playData == null) continue;
 

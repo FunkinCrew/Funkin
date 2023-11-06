@@ -97,7 +97,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
    */
   public function stepHit():Bool
   {
-    var event:ScriptEvent = new SongTimeScriptEvent(ScriptEvent.SONG_STEP_HIT, Conductor.currentBeat, Conductor.currentStep);
+    var event:ScriptEvent = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.currentBeat, Conductor.currentStep);
 
     dispatchEvent(event);
 
@@ -113,7 +113,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
    */
   public function beatHit():Bool
   {
-    var event:ScriptEvent = new SongTimeScriptEvent(ScriptEvent.SONG_BEAT_HIT, Conductor.currentBeat, Conductor.currentStep);
+    var event:ScriptEvent = new SongTimeScriptEvent(SONG_BEAT_HIT, Conductor.currentBeat, Conductor.currentStep);
 
     dispatchEvent(event);
 

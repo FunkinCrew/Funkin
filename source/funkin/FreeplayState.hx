@@ -536,16 +536,19 @@ class FreeplayState extends MusicBeatSubState
           // this creates a filter to return all the songs that start with a letter between those two
           var filterRegexp = new EReg("^[" + filterStuff.filterData + "].*", "i");
           tempSongs = tempSongs.filter(str -> {
+            if (str == null) return true; // Random
             return filterRegexp.match(str.songName);
           });
         case STARTSWITH:
           tempSongs = tempSongs.filter(str -> {
+            if (str == null) return true; // Random
             return str.songName.toLowerCase().startsWith(filterStuff.filterData);
           });
         case ALL:
         // no filter!
         case FAVORITE:
           tempSongs = tempSongs.filter(str -> {
+            if (str == null) return true; // Random
             return str.isFav;
           });
         default:
@@ -556,7 +559,7 @@ class FreeplayState extends MusicBeatSubState
     var hsvShader:HSVShader = new HSVShader();
 
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
-    randomCapsule.init(FlxG.width, 0, "Random");
+    randomCapsule.init(FlxG.width, 0, null);
     randomCapsule.onConfirm = function() {
       capsuleOnConfirmRandom(randomCapsule);
     };
@@ -575,8 +578,7 @@ class FreeplayState extends MusicBeatSubState
 
       var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
 
-      funnyMenu.init(FlxG.width, 0, tempSongs[i].songName);
-      if (tempSongs[i].songCharacter != null) funnyMenu.setCharacter(tempSongs[i].songCharacter);
+      funnyMenu.init(FlxG.width, 0, tempSongs[i]);
       funnyMenu.onConfirm = function() {
         capsuleOnConfirmDefault(funnyMenu);
       };
@@ -947,11 +949,29 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function capsuleOnConfirmRandom(cap:SongMenuItem):Void
+  function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
   {
     trace("RANDOM SELECTED");
 
     busy = true;
+
+    var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+      // Dead capsules are ones which were removed from the list when changing filters.
+      return cap.alive && cap.songData != null;
+    });
+
+    trace('Available songs: ${availableSongCapsules.map(function(cap) {
+      return cap.songData.songName;
+    })}');
+
+    var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+    // Seeing if I can do an animation...
+    curSelected = grpCapsules.members.indexOf(targetSong);
+    changeSelection(0); // Trigger an update.
+
+    // Act like we hit Confirm on that song.
+    capsuleOnConfirmDefault(targetSong);
   }
 
   function capsuleOnConfirmDefault(cap:SongMenuItem):Void
@@ -960,8 +980,7 @@ class FreeplayState extends MusicBeatSubState
 
     PlayStatePlaylist.isStoryMode = false;
 
-    var songId:String = cap.songTitle.toLowerCase();
-    var targetSong:Song = SongRegistry.instance.fetchEntry(songId);
+    var targetSong:Song = SongRegistry.instance.fetchEntry(cap.songData.songId);
     var targetDifficulty:String = currentDifficulty;
 
     // TODO: Implement Pico into the interface properly.
@@ -971,7 +990,7 @@ class FreeplayState extends MusicBeatSubState
       targetCharacter = 'pico';
     }
 
-    PlayStatePlaylist.campaignId = songs[curSelected].levelId;
+    PlayStatePlaylist.campaignId = cap.songData.levelId;
 
     // Visual and audio effects.
     FlxG.sound.play(Paths.sound('confirmMenu'));
@@ -982,7 +1001,7 @@ class FreeplayState extends MusicBeatSubState
     targetSong.cacheCharts(true);
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
-      Paths.setCurrentLevel(songs[curSelected].levelId);
+      Paths.setCurrentLevel(cap.songData.levelId);
       LoadingState.loadAndSwitchState(new PlayState(
         {
           targetSong: targetSong,
@@ -1014,16 +1033,21 @@ class FreeplayState extends MusicBeatSubState
     FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
     // FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
+    var prevSelected = curSelected;
+
     curSelected += change;
 
     if (curSelected < 0) curSelected = grpCapsules.countLiving() - 1;
     if (curSelected >= grpCapsules.countLiving()) curSelected = 0;
 
-    var daSong = songs[curSelected];
-    if (daSong != null)
+    var daSongCapsule = grpCapsules.members[curSelected];
+    if (daSongCapsule.songData != null)
     {
-      diffIdsCurrent = daSong.songDifficulties;
-      rememberedSongId = daSong.songId;
+      var songScore:SaveScoreData = Save.get().getSongScore(daSongCapsule.songData.songId, currentDifficulty);
+      intendedScore = songScore?.score ?? 0;
+      intendedCompletion = songScore?.accuracy ?? 0.0;
+      diffIdsCurrent = daSongCapsule.songData.songDifficulties;
+      rememberedSongId = daSongCapsule.songData.songId;
       changeDiff();
     }
     else
@@ -1055,7 +1079,12 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
-        // TODO: Try to stream the music?
+        // TODO: Stream the instrumental of the selected song?
+        if (prevSelected == 0)
+        {
+          FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+          FlxG.sound.music.fadeIn(2, 0, 0.8);
+        }
       }
       grpCapsules.members[curSelected].selected = true;
     }

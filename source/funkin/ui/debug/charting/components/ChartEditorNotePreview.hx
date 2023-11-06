@@ -1,4 +1,4 @@
-package funkin.ui.debug.charting;
+package funkin.ui.debug.charting.components;
 
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
