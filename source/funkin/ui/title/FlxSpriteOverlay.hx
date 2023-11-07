@@ -1,7 +1,7 @@
 package funkin.ui.title;
 
 import flixel.FlxSprite;
-import funkin.shaderslmfao.BlendModesShader;
+import funkin.graphics.shaders.BlendModesShader;
 import openfl.display.BitmapData;
 import flixel.FlxCamera;
 import flixel.FlxG;
