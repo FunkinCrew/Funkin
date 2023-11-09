@@ -5,3 +5,4 @@
 [submodule "art"]
 	path = art
 	url = https://github.com/FunkinCrew/Funkin-history-rewrite-art
+	branch = master
