@@ -23,6 +23,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
   var rightArrow:FlxSprite;
   var grpSeperators:Array<FlxSprite> = [];
 
+  public var inputEnabled:Bool = true;
+
   public function new(x, y)
   {
     super(x, y);
@@ -72,8 +74,11 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.E) changeSelection(1);
-    if (FlxG.keys.justPressed.Q) changeSelection(-1);
+    if (inputEnabled)
+    {
+      if (FlxG.keys.justPressed.E) changeSelection(1);
+      if (FlxG.keys.justPressed.Q) changeSelection(-1);
+    }
   }
 
   public function changeSelection(diff:Int = 0)
