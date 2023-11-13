@@ -4464,6 +4464,16 @@ class ChartEditorState extends HaxeUIState
   function resetConductorAfterTest(_:FlxSubState = null):Void
   {
     moveSongToScrollPosition();
+
+    var instVolumeSlider:Null<Slider> = findComponent('menubarItemVolumeInstrumental', Slider);
+    var vocalVolumeSlider:Null<Slider> = findComponent('menubarItemVolumeVocals', Slider);
+
+    // Reapply the volume.
+    var instTargetVolume:Float = instVolumeSlider?.value ?? 1.0;
+    var vocalTargetVolume:Float = vocalVolumeSlider?.value ?? 1.0;
+
+    if (audioInstTrack != null) audioInstTrack.volume = instTargetVolume;
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = vocalTargetVolume;
   }
 
   /**
