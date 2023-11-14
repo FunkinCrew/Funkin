@@ -1,5 +1,8 @@
 package funkin.util;
 
+/**
+ * Utility functions related to specific platforms.
+ */
 class PlatformUtil
 {
   /**
