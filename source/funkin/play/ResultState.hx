@@ -8,16 +8,18 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
+import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
-import funkin.shaderslmfao.LeftMaskShader;
-import funkin.ui.TallyCounter;
+import funkin.graphics.shaders.LeftMaskShader;
+import funkin.play.components.TallyCounter;
 import flxanimate.FlxAnimate.Settings;
 
 class ResultState extends MusicBeatSubState

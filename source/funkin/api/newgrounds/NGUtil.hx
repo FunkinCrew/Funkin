@@ -241,15 +241,3 @@ class NGUtil
   }
   #end
 }
-
-enum ConnectionResult
-{
-  /** Log in successful */
-  Success;
-
-  /** Could not login */
-  Fail(msg:String);
-
-  /** User cancelled the login */
-  Cancelled;
-}
