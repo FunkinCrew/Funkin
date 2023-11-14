@@ -90,6 +90,7 @@ class FreeplayState extends MusicBeatSubState
 
   var dj:DJBoyfriend;
 
+  var letterSort:LetterSort;
   var typing:FlxInputText;
   var exitMovers:Map<Array<FlxSprite>, MoveData> = new Map();
 
@@ -419,7 +420,7 @@ class FreeplayState extends MusicBeatSubState
     txtCompletion.visible = false;
     add(txtCompletion);
 
-    var letterSort:LetterSort = new LetterSort(400, 75);
+    letterSort = new LetterSort(400, 75);
     add(letterSort);
     letterSort.visible = false;
 
@@ -959,6 +960,7 @@ class FreeplayState extends MusicBeatSubState
     trace("RANDOM SELECTED");
 
     busy = true;
+    letterSort.inputEnabled = false;
 
     var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
       // Dead capsules are ones which were removed from the list when changing filters.
@@ -968,6 +970,15 @@ class FreeplayState extends MusicBeatSubState
     trace('Available songs: ${availableSongCapsules.map(function(cap) {
       return cap.songData.songName;
     })}');
+
+    if (availableSongCapsules.length == 0)
+    {
+      trace("No songs available!");
+      busy = false;
+      letterSort.inputEnabled = true;
+      FlxG.sound.play(Paths.sound('cancelMenu'));
+      return;
+    }
 
     var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
 
@@ -982,6 +993,7 @@ class FreeplayState extends MusicBeatSubState
   function capsuleOnConfirmDefault(cap:SongMenuItem):Void
   {
     busy = true;
+    letterSort.inputEnabled = false;
 
     PlayStatePlaylist.isStoryMode = false;
 

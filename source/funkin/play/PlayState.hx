@@ -704,6 +704,8 @@ class PlayState extends MusicBeatSubState
 
       if (!overrideMusic)
       {
+        // Stop the vocals if they already exist.
+        if (vocals != null) vocals.stop();
         vocals = currentChart.buildVocals();
 
         if (vocals.members.length == 0)
@@ -1558,6 +1560,8 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic)
     {
+      // Stop the vocals if they already exist.
+      if (vocals != null) vocals.stop();
       vocals = currentChart.buildVocals();
 
       if (vocals.members.length == 0)
