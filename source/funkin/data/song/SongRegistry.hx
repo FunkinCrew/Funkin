@@ -2,6 +2,7 @@ package funkin.data.song;
 
 import funkin.data.song.SongData;
 import funkin.data.song.migrator.SongData_v2_0_0.SongMetadata_v2_0_0;
+import funkin.data.song.migrator.SongData_v2_1_0.SongMetadata_v2_1_0;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.play.song.ScriptedSong;
@@ -18,9 +19,9 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
    */
-  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.1.0";
+  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.0";
 
-  public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = "2.1.x";
+  public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = "2.2.x";
 
   public static final SONG_CHART_DATA_VERSION:thx.semver.Version = "2.0.0";
 
@@ -165,6 +166,10 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     {
       return parseEntryMetadata(id, variation);
     }
+    else if (VersionUtil.validateVersion(version, "2.1.x"))
+    {
+      return parseEntryMetadata_v2_1_0(id, variation);
+    }
     else if (VersionUtil.validateVersion(version, "2.0.x"))
     {
       return parseEntryMetadata_v2_0_0(id, variation);
@@ -182,6 +187,10 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     {
       return parseEntryMetadataRaw(contents, fileName);
     }
+    else if (VersionUtil.validateVersion(version, "2.1.x"))
+    {
+      return parseEntryMetadataRaw_v2_1_0(contents, fileName);
+    }
     else if (VersionUtil.validateVersion(version, "2.0.x"))
     {
       return parseEntryMetadataRaw_v2_0_0(contents, fileName);
@@ -192,12 +201,12 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
   }
 
-  function parseEntryMetadata_v2_0_0(id:String, ?variation:String):Null<SongMetadata>
+  function parseEntryMetadata_v2_1_0(id:String, ?variation:String):Null<SongMetadata>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongMetadata_v2_0_0>();
-    switch (loadEntryMetadataFile(id))
+    var parser = new json2object.JsonParser<SongMetadata_v2_1_0>();
+    switch (loadEntryMetadataFile(id, variation))
     {
       case {fileName: fileName, contents: contents}:
         parser.fromJson(contents, fileName);
@@ -207,6 +216,39 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     if (parser.errors.length > 0)
     {
       printErrors(parser.errors, id);
+      return null;
+    }
+    return cleanMetadata(parser.value.migrate(), variation);
+  }
+
+  function parseEntryMetadata_v2_0_0(id:String, ?variation:String):Null<SongMetadata>
+  {
+    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
+
+    var parser = new json2object.JsonParser<SongMetadata_v2_0_0>();
+    switch (loadEntryMetadataFile(id, variation))
+    {
+      case {fileName: fileName, contents: contents}:
+        parser.fromJson(contents, fileName);
+      default:
+        return null;
+    }
+    if (parser.errors.length > 0)
+    {
+      printErrors(parser.errors, id);
+      return null;
+    }
+    return cleanMetadata(parser.value.migrate(), variation);
+  }
+
+  function parseEntryMetadataRaw_v2_1_0(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
+  {
+    var parser = new json2object.JsonParser<SongMetadata_v2_1_0>();
+    parser.fromJson(contents, fileName);
+
+    if (parser.errors.length > 0)
+    {
+      printErrors(parser.errors, fileName);
       return null;
     }
     return parser.value.migrate();

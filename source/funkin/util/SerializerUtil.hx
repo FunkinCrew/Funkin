@@ -21,6 +21,8 @@ class SerializerUtil
 
   /**
    * Convert a Haxe object to a JSON string.
+   * NOTE: Use `json2object.JsonWriter<T>` WHEREVER POSSIBLE. Do not use this one unless you ABSOLUTELY HAVE TO it's SLOW!
+   * And don't even THINK about using `haxe.Json.stringify` without the replacer!
    */
   public static function toJSON(input:Dynamic, pretty:Bool = true):String
   {

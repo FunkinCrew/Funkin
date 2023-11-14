@@ -42,6 +42,7 @@ class SongMetadata_v2_0_0
   @:default(false)
   public var looped:Bool;
 
+  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   public var timeFormat:SongData.SongTimeFormat;
@@ -70,6 +71,13 @@ class SongPlayData_v2_0_0
    */
   public var playableChars:Map<String, SongPlayableChar_v2_0_0>;
 
+  /**
+   * In metadata version `v2.2.0`, this was renamed to `noteStyle`.
+   */
+  public var noteSkin:String;
+
+  // In 2.2.0, the ratings value was added.
+  // In 2.2.0, the album value was added.
   // ==========
   // UNMODIFIED VALUES
   // ==========
@@ -77,7 +85,6 @@ class SongPlayData_v2_0_0
   public var difficulties:Array<String>;
 
   public var stage:String;
-  public var noteSkin:String;
 
   public function new() {}
 

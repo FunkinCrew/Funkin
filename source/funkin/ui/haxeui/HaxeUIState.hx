@@ -110,6 +110,23 @@ class HaxeUIState extends MusicBeatState
     }
   }
 
+  /**
+   * Add an onRightClick listener to a HaxeUI menu bar item.
+   */
+  function addUIRightClickListener(key:String, callback:MouseEvent->Void):Void
+  {
+    var target:Component = findComponent(key);
+    if (target == null)
+    {
+      // Gracefully handle the case where the item can't be located.
+      trace('WARN: Could not locate menu item: $key');
+    }
+    else
+    {
+      target.onRightClick = callback;
+    }
+  }
+
   function setComponentText(key:String, text:String):Void
   {
     var target:Component = findComponent(key);

@@ -1,4 +1,4 @@
-package;
+package funkin;
 
 import flash.Lib;
 import flash.display.Bitmap;
@@ -7,6 +7,7 @@ import flash.display.BlendMode;
 import flash.display.Sprite;
 import flixel.system.FlxBasePreloader;
 import openfl.display.Sprite;
+import funkin.util.CLIUtil;
 
 @:bitmap("art/preloaderArt.png") class LogoImage extends BitmapData {}
 
@@ -15,6 +16,8 @@ class Preloader extends FlxBasePreloader
   public function new(MinDisplayTime:Float = 0, ?AllowedURLs:Array<String>)
   {
     super(MinDisplayTime, AllowedURLs);
+
+    CLIUtil.resetWorkingDir(); // Bug fix for drag-and-drop.
   }
 
   var logo:Sprite;

@@ -52,12 +52,13 @@ class ChartEditorDialogHandler
   // Paths to HaxeUI layout files for each dialog.
   static final CHART_EDITOR_DIALOG_ABOUT_LAYOUT:String = Paths.ui('chart-editor/dialogs/about');
   static final CHART_EDITOR_DIALOG_WELCOME_LAYOUT:String = Paths.ui('chart-editor/dialogs/welcome');
+  static final CHART_EDITOR_DIALOG_UPLOAD_CHART_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-chart');
   static final CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-inst');
   static final CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT:String = Paths.ui('chart-editor/dialogs/song-metadata');
   static final CHART_EDITOR_DIALOG_UPLOAD_VOCALS_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-vocals');
   static final CHART_EDITOR_DIALOG_UPLOAD_VOCALS_ENTRY_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-vocals-entry');
-  static final CHART_EDITOR_DIALOG_OPEN_CHART_LAYOUT:String = Paths.ui('chart-editor/dialogs/open-chart');
-  static final CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT:String = Paths.ui('chart-editor/dialogs/open-chart-entry');
+  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_LAYOUT:String = Paths.ui('chart-editor/dialogs/open-chart-parts');
+  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT:String = Paths.ui('chart-editor/dialogs/open-chart-parts-entry');
   static final CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT:String = Paths.ui('chart-editor/dialogs/import-chart');
   static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = Paths.ui('chart-editor/dialogs/user-guide');
   static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = Paths.ui('chart-editor/dialogs/add-variation');
@@ -83,6 +84,11 @@ class ChartEditorDialogHandler
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_WELCOME_LAYOUT, true, closable);
     if (dialog == null) throw 'Could not locate Welcome dialog';
+
+    dialog.onDialogClosed = function(_event) {
+      // Called when the Welcome dialog is closed while it is closable.
+      state.stopWelcomeMusic();
+    }
 
     // Create New Song "Easy/Normal/Hard"
     var linkCreateBasic:Null<Link> = dialog.findComponent('splashCreateFromSongBasic', Link);
@@ -130,7 +136,7 @@ class ChartEditorDialogHandler
       state.stopWelcomeMusic();
 
       // Open the "Open Chart" dialog
-      openBrowseWizard(state, false);
+      openBrowseFNFC(state, false);
     }
 
     var splashTemplateContainer:Null<VBox> = dialog.findComponent('splashTemplateContainer', VBox);
@@ -166,6 +172,126 @@ class ChartEditorDialogHandler
     }
 
     state.fadeInWelcomeMusic();
+    return dialog;
+  }
+
+  public static function openBrowseFNFC(state:ChartEditorState, closable:Bool):Null<Dialog>
+  {
+    var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_UPLOAD_CHART_LAYOUT, true, closable);
+    if (dialog == null) throw 'Could not locate Upload Chart dialog';
+
+    dialog.onDialogClosed = function(_event) {
+      if (_event.button == DialogButton.APPLY)
+      {
+        // Simply let the dialog close.
+      }
+      else
+      {
+        // User cancelled the wizard! Back to the welcome dialog.
+        openWelcomeDialog(state);
+      }
+    };
+
+    var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
+    if (buttonCancel == null) throw 'Could not locate dialogCancel button in Upload Chart dialog';
+
+    buttonCancel.onClick = function(_event) {
+      dialog.hideDialog(DialogButton.CANCEL);
+    }
+
+    var chartBox:Null<Box> = dialog.findComponent('chartBox', Box);
+    if (chartBox == null) throw 'Could not locate chartBox in Upload Chart dialog';
+
+    chartBox.onMouseOver = function(_event) {
+      chartBox.swapClass('upload-bg', 'upload-bg-hover');
+      Cursor.cursorMode = Pointer;
+    }
+
+    chartBox.onMouseOut = function(_event) {
+      chartBox.swapClass('upload-bg-hover', 'upload-bg');
+      Cursor.cursorMode = Default;
+    }
+
+    var onDropFile:String->Void;
+
+    chartBox.onClick = function(_event) {
+      Dialogs.openBinaryFile('Open Chart', [
+        {label: 'Friday Night Funkin\' Chart (.fnfc)', extension: 'fnfc'}], function(selectedFile:SelectedFileInfo) {
+          if (selectedFile != null && selectedFile.bytes != null)
+          {
+            try
+            {
+              if (ChartEditorImportExportHandler.loadFromFNFC(state, selectedFile.bytes))
+              {
+                #if !mac
+                NotificationManager.instance.addNotification(
+                  {
+                    title: 'Success',
+                    body: 'Loaded chart (${selectedFile.name})',
+                    type: NotificationType.Success,
+                    expiryMs: Constants.NOTIFICATION_DISMISS_TIME
+                  });
+                #end
+
+                if (selectedFile.fullPath != null) state.currentWorkingFilePath = selectedFile.fullPath;
+                dialog.hideDialog(DialogButton.APPLY);
+                removeDropHandler(onDropFile);
+              }
+            }
+            catch (err)
+            {
+              #if !mac
+              NotificationManager.instance.addNotification(
+                {
+                  title: 'Failure',
+                  body: 'Failed to load chart (${selectedFile.name}): ${err}',
+                  type: NotificationType.Error,
+                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
+                });
+              #end
+            }
+          }
+      });
+    }
+
+    onDropFile = function(pathStr:String) {
+      var path:Path = new Path(pathStr);
+      trace('Dropped file (${path})');
+
+      try
+      {
+        if (ChartEditorImportExportHandler.loadFromFNFCPath(state, path.toString()))
+        {
+          #if !mac
+          NotificationManager.instance.addNotification(
+            {
+              title: 'Success',
+              body: 'Loaded chart (${path.toString()})',
+              type: NotificationType.Success,
+              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
+            });
+          #end
+
+          dialog.hideDialog(DialogButton.APPLY);
+          removeDropHandler(onDropFile);
+        }
+      }
+      catch (err)
+      {
+        #if !mac
+        NotificationManager.instance.addNotification(
+          {
+            title: 'Failure',
+            body: 'Failed to load chart (${path.toString()}): ${err}',
+            type: NotificationType.Error,
+            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
+          });
+        #end
+      }
+    };
+
+    addDropHandler(chartBox, onDropFile);
+
     return dialog;
   }
 
@@ -563,9 +689,9 @@ class ChartEditorDialogHandler
     if (inputNoteStyle == null) throw 'Could not locate inputNoteStyle DropDown in Song Metadata dialog';
     inputNoteStyle.onChange = function(event:UIEvent) {
       if (event.data.id == null) return;
-      newSongMetadata.playData.noteSkin = event.data.id;
+      newSongMetadata.playData.noteStyle = event.data.id;
     };
-    var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, newSongMetadata.playData.noteSkin);
+    var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, newSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
     var inputCharacterPlayer:Null<DropDown> = dialog.findComponent('inputCharacterPlayer', DropDown);
@@ -706,9 +832,9 @@ class ChartEditorDialogHandler
             });
           #end
           #if FILE_DROP_SUPPORTED
-          vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+          vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
           #else
-          vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${path.file}.${path.ext}';
+          vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${path.file}.${path.ext}';
           #end
 
           dialogNoVocals.hidden = true;
@@ -761,9 +887,9 @@ class ChartEditorDialogHandler
                   });
                 #end
                 #if FILE_DROP_SUPPORTED
-                vocalsEntryLabel.text = 'Vocals for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+                vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
                 #else
-                vocalsEntryLabel.text = 'Vocals for $charName (click to browse)\n${selectedFile.name}';
+                vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${selectedFile.name}';
                 #end
 
                 dialogNoVocals.hidden = true;
@@ -818,7 +944,7 @@ class ChartEditorDialogHandler
   @:haxe.warning('-WVarInit')
   public static function openChartDialog(state:ChartEditorState, closable:Bool = true):Dialog
   {
-    var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_OPEN_CHART_LAYOUT, true, closable);
+    var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_LAYOUT, true, closable);
     if (dialog == null) throw 'Could not locate Open Chart dialog';
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
@@ -856,7 +982,7 @@ class ChartEditorDialogHandler
       }
 
       // Build an entry for -chart.json.
-      var songDefaultChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
+      var songDefaultChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
       var songDefaultChartDataEntryLabel:Null<Label> = songDefaultChartDataEntry.findComponent('chartEntryLabel', Label);
       if (songDefaultChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
       #if FILE_DROP_SUPPORTED
@@ -872,7 +998,7 @@ class ChartEditorDialogHandler
       for (variation in variations)
       {
         // Build entries for -metadata-<variation>.json.
-        var songVariationMetadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
+        var songVariationMetadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
         var songVariationMetadataEntryLabel:Null<Label> = songVariationMetadataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationMetadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
         #if FILE_DROP_SUPPORTED
@@ -896,7 +1022,7 @@ class ChartEditorDialogHandler
         chartContainerB.addComponent(songVariationMetadataEntry);
 
         // Build entries for -chart-<variation>.json.
-        var songVariationChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
+        var songVariationChartDataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
         var songVariationChartDataEntryLabel:Null<Label> = songVariationChartDataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
         #if FILE_DROP_SUPPORTED
@@ -1171,7 +1297,7 @@ class ChartEditorDialogHandler
       });
     }
 
-    var metadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_ENTRY_LAYOUT);
+    var metadataEntry:Component = state.buildComponent(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
     var metadataEntryLabel:Null<Label> = metadataEntry.findComponent('chartEntryLabel', Label);
     if (metadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
 
@@ -1364,7 +1490,7 @@ class ChartEditorDialogHandler
 
     var dialogNoteStyle:Null<DropDown> = dialog.findComponent('dialogNoteStyle', DropDown);
     if (dialogNoteStyle == null) throw 'Could not locate dialogNoteStyle DropDown in Add Variation dialog';
-    dialogNoteStyle.value = state.currentSongMetadata.playData.noteSkin;
+    dialogNoteStyle.value = state.currentSongMetadata.playData.noteStyle;
 
     var dialogCharacterPlayer:Null<DropDown> = dialog.findComponent('dialogCharacterPlayer', DropDown);
     if (dialogCharacterPlayer == null) throw 'Could not locate dialogCharacterPlayer DropDown in Add Variation dialog';
@@ -1396,7 +1522,7 @@ class ChartEditorDialogHandler
       var pendingVariation:SongMetadata = new SongMetadata(dialogSongName.text, dialogSongArtist.text, dialogVariationName.text.toLowerCase());
 
       pendingVariation.playData.stage = dialogStage.value.id;
-      pendingVariation.playData.noteSkin = dialogNoteStyle.value;
+      pendingVariation.playData.noteStyle = dialogNoteStyle.value;
       pendingVariation.timeChanges[0].bpm = dialogBPM.value;
 
       state.songMetadata.set(pendingVariation.variation, pendingVariation);

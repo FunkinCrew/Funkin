@@ -59,7 +59,10 @@ typedef UnnamedAnimationData =
    * The prefix for the frames of the animation as defined by the XML file.
    * This will may or may not differ from the `name` of the animation,
    * depending on how your animator organized their FLA or whatever.
+   *
+   * NOTE: For Sparrow animations, this is not optional, but for Packer animations it is.
    */
+  @:optional
   var prefix:String;
 
   /**

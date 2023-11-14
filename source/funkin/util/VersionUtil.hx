@@ -63,4 +63,22 @@ class VersionUtil
     var version:thx.semver.Version = versionStr; // Implicit, not explicit, cast.
     return version;
   }
+
+  public static function parseVersion(input:Dynamic):Null<thx.semver.Version>
+  {
+    if (input == null) return null;
+
+    if (Std.isOfType(input, String))
+    {
+      var inputStr:String = input;
+      var version:thx.semver.Version = inputStr;
+      return version;
+    }
+    else
+    {
+      var semVer:thx.semver.Version.SemVer = input;
+      var version:thx.semver.Version = semVer;
+      return version;
+    }
+  }
 }

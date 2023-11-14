@@ -11,6 +11,7 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
 import openfl.media.Video;
+import funkin.util.CLIUtil;
 import openfl.net.NetStream;
 
 class Main extends Sprite

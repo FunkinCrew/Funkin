@@ -105,6 +105,22 @@ class DataParse
   }
 
   /**
+   * Parser which outputs a `Either<Float, Array<Float>>`.
+   */
+  public static function eitherFloatOrFloats(json:Json, name:String):Null<Either<Float, Array<Float>>>
+  {
+    switch (json.value)
+    {
+      case JNumber(f):
+        return Either.Left(Std.parseFloat(f));
+      case JArray(fields):
+        return Either.Right(fields.map((field) -> cast Tools.getValue(field)));
+      default:
+        throw 'Expected property $name to be one or multiple floats, but it was ${json.value}.';
+    }
+  }
+
+  /**
    * Parser which outputs a `Either<Float, LegacyScrollSpeeds>`.
    * Used by the FNF legacy JSON importer.
    */
