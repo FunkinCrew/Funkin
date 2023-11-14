@@ -528,12 +528,22 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
 
   public inline function getInt(key:String):Null<Int>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    if (this.value == null) return null;
+    var result = Reflect.field(this.value, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Int)) return result;
+    if (Std.isOfType(result, String)) return Std.parseInt(cast result);
+    return cast result;
   }
 
   public inline function getFloat(key:String):Null<Float>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    if (this.value == null) return null;
+    var result = Reflect.field(this.value, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Float)) return result;
+    if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
+    return cast result;
   }
 
   public inline function getString(key:String):String

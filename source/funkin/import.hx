@@ -12,6 +12,7 @@ using Lambda;
 using StringTools;
 using funkin.util.tools.ArraySortTools;
 using funkin.util.tools.ArrayTools;
+using funkin.util.tools.DynamicTools;
 using funkin.util.tools.FloatTools;
 using funkin.util.tools.Int64Tools;
 using funkin.util.tools.IntTools;
