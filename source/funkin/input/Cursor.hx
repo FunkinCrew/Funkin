@@ -1,5 +1,6 @@
 package funkin.input;
 
+import haxe.ui.backend.flixel.CursorHelper;
 import openfl.utils.Assets;
 import lime.app.Future;
 import openfl.display.BitmapData;
@@ -33,7 +34,7 @@ class Cursor
     Cursor.cursorMode = null;
   }
 
-  static final CURSOR_DEFAULT_PARAMS:CursorParams =
+  public static final CURSOR_DEFAULT_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-default.png",
       scale: 1.0,
@@ -42,7 +43,7 @@ class Cursor
     };
   static var assetCursorDefault:Null<BitmapData> = null;
 
-  static final CURSOR_CROSS_PARAMS:CursorParams =
+  public static final CURSOR_CROSS_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-cross.png",
       scale: 1.0,
@@ -51,7 +52,7 @@ class Cursor
     };
   static var assetCursorCross:Null<BitmapData> = null;
 
-  static final CURSOR_ERASER_PARAMS:CursorParams =
+  public static final CURSOR_ERASER_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-eraser.png",
       scale: 1.0,
@@ -60,7 +61,7 @@ class Cursor
     };
   static var assetCursorEraser:Null<BitmapData> = null;
 
-  static final CURSOR_GRABBING_PARAMS:CursorParams =
+  public static final CURSOR_GRABBING_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-grabbing.png",
       scale: 1.0,
@@ -69,7 +70,7 @@ class Cursor
     };
   static var assetCursorGrabbing:Null<BitmapData> = null;
 
-  static final CURSOR_HOURGLASS_PARAMS:CursorParams =
+  public static final CURSOR_HOURGLASS_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-hourglass.png",
       scale: 1.0,
@@ -78,7 +79,7 @@ class Cursor
     };
   static var assetCursorHourglass:Null<BitmapData> = null;
 
-  static final CURSOR_POINTER_PARAMS:CursorParams =
+  public static final CURSOR_POINTER_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-pointer.png",
       scale: 1.0,
@@ -87,7 +88,7 @@ class Cursor
     };
   static var assetCursorPointer:Null<BitmapData> = null;
 
-  static final CURSOR_TEXT_PARAMS:CursorParams =
+  public static final CURSOR_TEXT_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-text.png",
       scale: 0.2,
@@ -96,7 +97,7 @@ class Cursor
     };
   static var assetCursorText:Null<BitmapData> = null;
 
-  static final CURSOR_TEXT_VERTICAL_PARAMS:CursorParams =
+  public static final CURSOR_TEXT_VERTICAL_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-text-vertical.png",
       scale: 0.2,
@@ -105,7 +106,7 @@ class Cursor
     };
   static var assetCursorTextVertical:Null<BitmapData> = null;
 
-  static final CURSOR_ZOOM_IN_PARAMS:CursorParams =
+  public static final CURSOR_ZOOM_IN_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-zoom-in.png",
       scale: 1.0,
@@ -114,7 +115,7 @@ class Cursor
     };
   static var assetCursorZoomIn:Null<BitmapData> = null;
 
-  static final CURSOR_ZOOM_OUT_PARAMS:CursorParams =
+  public static final CURSOR_ZOOM_OUT_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-zoom-out.png",
       scale: 1.0,
@@ -123,7 +124,7 @@ class Cursor
     };
   static var assetCursorZoomOut:Null<BitmapData> = null;
 
-  static final CURSOR_CROSSHAIR_PARAMS:CursorParams =
+  public static final CURSOR_CROSSHAIR_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-crosshair.png",
       scale: 1.0,
@@ -132,7 +133,7 @@ class Cursor
     };
   static var assetCursorCrosshair:Null<BitmapData> = null;
 
-  static final CURSOR_CELL_PARAMS:CursorParams =
+  public static final CURSOR_CELL_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-cell.png",
       scale: 1.0,
@@ -499,6 +500,28 @@ class Cursor
   static function onCursorError(cursorMode:CursorMode, error:String):Void
   {
     trace("Failed to load cursor graphic for cursor mode " + cursorMode + ": " + error);
+  }
+
+  public static function registerHaxeUICursors():Void
+  {
+    CursorHelper.useCustomCursors = true;
+    registerHaxeUICursor('default', CURSOR_DEFAULT_PARAMS);
+    registerHaxeUICursor('cross', CURSOR_CROSS_PARAMS);
+    registerHaxeUICursor('eraser', CURSOR_ERASER_PARAMS);
+    registerHaxeUICursor('grabbing', CURSOR_GRABBING_PARAMS);
+    registerHaxeUICursor('hourglass', CURSOR_HOURGLASS_PARAMS);
+    registerHaxeUICursor('pointer', CURSOR_POINTER_PARAMS);
+    registerHaxeUICursor('text', CURSOR_TEXT_PARAMS);
+    registerHaxeUICursor('text-vertical', CURSOR_TEXT_VERTICAL_PARAMS);
+    registerHaxeUICursor('zoom-in', CURSOR_ZOOM_IN_PARAMS);
+    registerHaxeUICursor('zoom-out', CURSOR_ZOOM_OUT_PARAMS);
+    registerHaxeUICursor('crosshair', CURSOR_CROSSHAIR_PARAMS);
+    registerHaxeUICursor('cell', CURSOR_CELL_PARAMS);
+  }
+
+  public static function registerHaxeUICursor(id:String, params:CursorParams):Void
+  {
+    CursorHelper.registerCursor(id, params.graphic, params.scale, params.offsetX, params.offsetY);
   }
 }
 

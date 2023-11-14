@@ -111,5 +111,6 @@ class Main extends Sprite
     Toolkit.init();
     Toolkit.theme = 'dark'; // don't be cringe
     Toolkit.autoScale = false;
+    funkin.input.Cursor.registerHaxeUICursors();
   }
 }

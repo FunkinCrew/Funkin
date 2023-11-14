@@ -208,25 +208,32 @@ typedef SongEventSchemaField =
   type:SongEventFieldType,
 
   /**
-   * Used for ENUM values.
+   * Used only for ENUM values.
    * The key is the display name and the value is the actual value.
    */
   ?keys:Map<String, Dynamic>,
+
   /**
    * Used for INTEGER and FLOAT values.
    * The minimum value that can be entered.
+   * @default No minimum
    */
   ?min:Float,
+
   /**
    * Used for INTEGER and FLOAT values.
    * The maximum value that can be entered.
+   * @default No maximum
    */
   ?max:Float,
+
   /**
    * Used for INTEGER and FLOAT values.
    * The step value that will be used when incrementing/decrementing the value.
+   * @default `0.1`
    */
   ?step:Float,
+
   /**
    * An optional default value for the field.
    */

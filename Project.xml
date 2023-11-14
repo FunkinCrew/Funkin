@@ -162,7 +162,10 @@
 	<icon path="art/iconOG.png" />
 	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
 	<haxedef name="CAN_CHEAT" if="switch debug" />
+	<!-- I don't -->
 	<haxedef name="haxeui_no_mouse_reset" />
+	<!-- Clicking outside a dialog should deselect the current focused component. -->
+	<haxedef name="haxeui_focus_out_on_click" />
 	<!-- Skip the Intro -->
 	<section if="debug">
 		<!-- Starts the game at the specified week, at the first song -->

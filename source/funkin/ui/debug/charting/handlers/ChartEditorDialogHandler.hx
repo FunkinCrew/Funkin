@@ -15,8 +15,6 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.song.Song;
 import funkin.play.stage.StageData;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
-import funkin.ui.haxeui.components.FunkinDropDown;
-import funkin.ui.haxeui.components.FunkinLink;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
@@ -160,7 +158,7 @@ class ChartEditorDialogHandler
         continue;
       }
 
-      var linkTemplateSong:Link = new FunkinLink();
+      var linkTemplateSong:Link = new Link();
       linkTemplateSong.text = songName;
       linkTemplateSong.onClick = function(_event) {
         dialog.hideDialog(DialogButton.CANCEL);
@@ -687,7 +685,7 @@ class ChartEditorDialogHandler
     var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(inputStage, newSongMetadata.playData.stage);
     inputStage.value = startingValueStage;
 
-    var inputNoteStyle:Null<FunkinDropDown> = dialog.findComponent('inputNoteStyle', FunkinDropDown);
+    var inputNoteStyle:Null<DropDown> = dialog.findComponent('inputNoteStyle', DropDown);
     if (inputNoteStyle == null) throw 'Could not locate inputNoteStyle DropDown in Song Metadata dialog';
     inputNoteStyle.onChange = function(event:UIEvent) {
       if (event.data.id == null) return;
@@ -696,7 +694,7 @@ class ChartEditorDialogHandler
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, newSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
-    var inputCharacterPlayer:Null<FunkinDropDown> = dialog.findComponent('inputCharacterPlayer', FunkinDropDown);
+    var inputCharacterPlayer:Null<DropDown> = dialog.findComponent('inputCharacterPlayer', DropDown);
     if (inputCharacterPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterPlayer component.';
     inputCharacterPlayer.onChange = function(event:UIEvent) {
       if (event.data?.id == null) return;
@@ -706,7 +704,7 @@ class ChartEditorDialogHandler
       newSongMetadata.playData.characters.player);
     inputCharacterPlayer.value = startingValuePlayer;
 
-    var inputCharacterOpponent:Null<FunkinDropDown> = dialog.findComponent('inputCharacterOpponent', FunkinDropDown);
+    var inputCharacterOpponent:Null<DropDown> = dialog.findComponent('inputCharacterOpponent', DropDown);
     if (inputCharacterOpponent == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterOpponent component.';
     inputCharacterOpponent.onChange = function(event:UIEvent) {
       if (event.data?.id == null) return;
@@ -716,7 +714,7 @@ class ChartEditorDialogHandler
       newSongMetadata.playData.characters.opponent);
     inputCharacterOpponent.value = startingValueOpponent;
 
-    var inputCharacterGirlfriend:Null<FunkinDropDown> = dialog.findComponent('inputCharacterGirlfriend', FunkinDropDown);
+    var inputCharacterGirlfriend:Null<DropDown> = dialog.findComponent('inputCharacterGirlfriend', DropDown);
     if (inputCharacterGirlfriend == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterGirlfriend component.';
     inputCharacterGirlfriend.onChange = function(event:UIEvent) {
       if (event.data?.id == null) return;
