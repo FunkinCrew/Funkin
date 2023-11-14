@@ -56,15 +56,13 @@
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "bc706d67efc093cd3b1623d0e9d599b326bbd330",
+      "ref": "9bd0b9e0fea40b8e06a89aac4949512d95064609",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
       "name": "hmm",
-      "type": "git",
-      "dir": null,
-      "ref": "d514d7786cabf18b90e60fcee38399fd44c2ddfb",
-      "url": "https://github.com/andywhite37/hmm"
+      "type": "haxelib",
+      "version": "3.1.0"
     },
     {
       "name": "hscript",

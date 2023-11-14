@@ -16,6 +16,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.misc.VarTween;
 import flixel.util.FlxColor;
+import funkin.ui.mainmenu.MainMenuState;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.audio.visualize.PolygonSpectogram;
@@ -31,10 +32,19 @@ import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
-import funkin.play.HealthIcon;
+import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayState;
 import funkin.play.song.Song;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongDataUtils;
+import funkin.ui.debug.charting.commands.ChartEditorCommand;
+import funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
 import funkin.play.stage.StageData;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
@@ -1384,6 +1394,7 @@ class ChartEditorState extends HaxeUIState
     buildSelectionBox();
 
     buildAdditionalUI();
+    ChartEditorShortcutHandler.applyPlatformShortcutText(this);
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();

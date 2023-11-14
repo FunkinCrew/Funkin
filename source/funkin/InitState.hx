@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.ui.transition.LoadingState;
 import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -10,7 +11,7 @@ import flixel.math.FlxRect;
 import flixel.FlxSprite;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
-import funkin.ui.PreferencesMenu;
+import funkin.ui.options.PreferencesMenu;
 import funkin.util.macro.MacroUtil;
 import funkin.util.WindowUtil;
 import funkin.play.PlayStatePlaylist;
@@ -26,11 +27,13 @@ import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
+import funkin.ui.transition.LoadingState;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
 
 /**
+ * A core class which performs initialization of the game.
  * The initialization state has several functions:
  * - Calls code to set up the game, including loading saves and parsing game data.
  * - Chooses whether to start via debug or via launching normally.
@@ -228,13 +231,13 @@ class InitState extends FlxState
     #elseif FREEPLAY // -DFREEPLAY
     FlxG.switchState(new FreeplayState());
     #elseif ANIMATE // -DANIMATE
-    FlxG.switchState(new funkin.ui.animDebugShit.FlxAnimateTest());
+    FlxG.switchState(new funkin.ui.debug.anim.FlxAnimateTest());
     #elseif CHARTING // -DCHARTING
     FlxG.switchState(new funkin.ui.debug.charting.ChartEditorState());
     #elseif STAGEBUILD // -DSTAGEBUILD
-    FlxG.switchState(new funkin.ui.stageBullshit.StageBuilderState());
+    FlxG.switchState(new funkin.ui.debug.stage.StageBuilderState());
     #elseif ANIMDEBUG // -DANIMDEBUG
-    FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+    FlxG.switchState(new funkin.ui.debug.anim.DebugBoundingState());
     #elseif LATENCY // -DLATENCY
     FlxG.switchState(new funkin.LatencyState());
     #else

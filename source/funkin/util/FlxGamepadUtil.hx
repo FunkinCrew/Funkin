@@ -6,6 +6,9 @@ import lime.ui.Gamepad as LimeGamepad;
 import lime.ui.GamepadAxis as LimeGamepadAxis;
 import lime.ui.GamepadButton as LimeGamepadButton;
 
+/**
+ * Utilities for working with Flixel gamepads.
+ */
 class FlxGamepadUtil
 {
   public static function getInputID(gamepad:FlxGamepad, button:LimeGamepadButton):FlxGamepadInputID

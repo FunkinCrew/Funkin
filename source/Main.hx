@@ -3,7 +3,7 @@ package;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
-import funkin.MemoryCounter;
+import funkin.ui.debug.MemoryCounter;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
 import openfl.display.FPS;

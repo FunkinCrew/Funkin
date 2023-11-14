@@ -5,4 +5,4 @@ package funkin.modding.base;
  * Create a scripted class that extends MusicBeatState to use this.
  */
 @:hscriptClass
-class ScriptedMusicBeatState extends funkin.MusicBeatState implements HScriptedClass {}
+class ScriptedMusicBeatState extends funkin.ui.MusicBeatState implements HScriptedClass {}

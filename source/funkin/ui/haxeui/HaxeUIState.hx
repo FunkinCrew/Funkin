@@ -2,8 +2,10 @@ package funkin.ui.haxeui;
 
 import haxe.ui.components.CheckBox;
 import haxe.ui.containers.menus.MenuCheckBox;
+import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
+import funkin.ui.MusicBeatState;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
@@ -119,6 +121,20 @@ class HaxeUIState extends MusicBeatState
     else
     {
       target.text = text;
+    }
+  }
+
+  function setComponentShortcutText(key:String, text:String):Void
+  {
+    var target:MenuItem = findComponent(key, MenuItem);
+    if (target == null)
+    {
+      // Gracefully handle the case where the item can't be located.
+      trace('WARN: Could not locate menu item: $key');
+    }
+    else
+    {
+      target.shortcutText = text;
     }
   }
 
