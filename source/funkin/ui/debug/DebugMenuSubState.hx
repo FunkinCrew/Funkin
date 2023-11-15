@@ -3,9 +3,10 @@ package funkin.ui.debug;
 import flixel.math.FlxPoint;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import funkin.MusicBeatSubState;
+import funkin.ui.MusicBeatSubState;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.MusicBeatSubState;
 
 class DebugMenuSubState extends MusicBeatSubState
 {
@@ -85,13 +86,13 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openAnimationEditor()
   {
-    FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+    FlxG.switchState(new funkin.ui.debug.anim.DebugBoundingState());
     trace('Animation Editor');
   }
 
   function testStickers()
   {
-    openSubState(new funkin.ui.StickerSubState());
+    openSubState(new funkin.ui.transition.StickerSubState());
     trace('opened stickers');
   }
 

@@ -9,20 +9,25 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
-import funkin.audiovis.SpectogramSprite;
-import funkin.shaderslmfao.ColorSwap;
-import funkin.shaderslmfao.LeftMaskShader;
+import funkin.audio.visualize.SpectogramSprite;
+import funkin.graphics.shaders.ColorSwap;
+import funkin.graphics.shaders.LeftMaskShader;
 import funkin.data.song.SongRegistry;
+import funkin.ui.MusicBeatState;
 import funkin.data.song.SongData.SongMusicData;
-import funkin.shaderslmfao.TitleOutline;
+import funkin.graphics.shaders.TitleOutline;
+import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.AtlasText;
 import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
+import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
+import funkin.ui.freeplay.FreeplayState;
 import openfl.media.Video;
 import openfl.net.NetStream;
+import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
 
 #if desktop
@@ -166,10 +171,6 @@ class TitleState extends MusicBeatState
       credGroup.add(blackScreen);
       credGroup.add(textGroup);
     }
-
-    // var atlasBullShit:FlxSprite = new FlxSprite();
-    // atlasBullShit.frames = CoolUtil.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
-    // credGroup.add(atlasBullShit);
 
     ngSpr = new FlxSprite(0, FlxG.height * 0.52);
 

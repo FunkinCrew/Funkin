@@ -4,6 +4,9 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+/**
+ * A core class which handles determining asset paths.
+ */
 class Paths
 {
   static var currentLevel:String;

@@ -3,7 +3,7 @@ package funkin;
 import funkin.save.Save;
 
 /**
- * A store of user-configurable, globally relevant values.
+ * A core class which provides a store of user-configurable, globally relevant values.
  */
 class Preferences
 {

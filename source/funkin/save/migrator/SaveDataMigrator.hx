@@ -13,8 +13,7 @@ class SaveDataMigrator
    */
   public static function migrate(inputData:Dynamic):Save
   {
-    // This deserializes directly into a `Version` object, not a `String`.
-    var version:Null<Version> = inputData?.version ?? null;
+    var version:Null<thx.semver.Version> = VersionUtil.parseVersion(inputData?.version ?? null);
 
     if (version == null)
     {
@@ -24,7 +23,7 @@ class SaveDataMigrator
     }
     else
     {
-      if (VersionUtil.validateVersionStr(version, Save.SAVE_DATA_VERSION_RULE))
+      if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
         // Simply cast the structured data.
         var save:Save = inputData;
