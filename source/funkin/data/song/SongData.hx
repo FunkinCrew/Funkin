@@ -1,9 +1,13 @@
 package funkin.data.song;
 
-import flixel.util.typeLimit.OneOfTwo;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 
+/**
+ * Data containing information about a song.
+ * It should contain all the data needed to display a song in the Freeplay menu, or to load the assets required to play its chart.
+ * Data which is only necessary in-game should be stored in the SongChartData.
+ */
 @:nullSafety
 class SongMetadata
 {
@@ -35,13 +39,11 @@ class SongMetadata
    */
   public var playData:SongPlayData;
 
-  // @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
+  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
-  // @:default(funkin.data.song.SongData.SongTimeFormat.MILLISECONDS)
   public var timeFormat:SongTimeFormat;
 
-  // @:default(funkin.data.song.SongData.SongTimeChange.DEFAULT_SONGTIMECHANGES)
   public var timeChanges:Array<SongTimeChange>;
 
   /**
@@ -64,7 +66,7 @@ class SongMetadata
     this.playData.difficulties = [];
     this.playData.characters = new SongCharacterData('bf', 'gf', 'dad');
     this.playData.stage = 'mainStage';
-    this.playData.noteSkin = 'funkin';
+    this.playData.noteStyle = Constants.DEFAULT_NOTE_STYLE;
     this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     // Variation ID.
     this.variation = (variation == null) ? Constants.DEFAULT_VARIATION : variation;
@@ -298,23 +300,27 @@ class SongPlayData
 
   /**
    * The note style used by this song.
-   * TODO: Rename to `noteStyle`? Renaming values is a breaking change to the metadata format.
    */
-  public var noteSkin:String;
+  public var noteStyle:String;
 
   /**
-   * The difficulty rating for this song as displayed in Freeplay.
-   * TODO: Adding this is a non-breaking change to the metadata format.
+   * The difficulty ratings for this song as displayed in Freeplay.
+   * Key is a difficulty ID or `default`.
    */
-  // public var rating:Int;
+  @:default(['default' => 1])
+  public var ratings:Map<String, Int>;
 
   /**
    * The album ID for the album to display in Freeplay.
-   * TODO: Adding this is a non-breaking change to the metadata format.
+   * If `null`, display no album.
    */
-  // public var album:String;
+  @:optional
+  public var album:Null<String>;
 
-  public function new() {}
+  public function new()
+  {
+    ratings = new Map<String, Int>();
+  }
 
   /**
    * Produces a string representation suitable for debugging.
@@ -528,12 +534,22 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
 
   public inline function getInt(key:String):Null<Int>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    if (this.value == null) return null;
+    var result = Reflect.field(this.value, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Int)) return result;
+    if (Std.isOfType(result, String)) return Std.parseInt(cast result);
+    return cast result;
   }
 
   public inline function getFloat(key:String):Null<Float>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    if (this.value == null) return null;
+    var result = Reflect.field(this.value, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Float)) return result;
+    if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
+    return cast result;
   }
 
   public inline function getString(key:String):String

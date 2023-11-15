@@ -3,7 +3,7 @@ package;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
-import funkin.MemoryCounter;
+import funkin.ui.debug.MemoryCounter;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
 import openfl.display.FPS;
@@ -11,6 +11,7 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
 import openfl.media.Video;
+import funkin.util.CLIUtil;
 import openfl.net.NetStream;
 
 class Main extends Sprite
@@ -110,5 +111,6 @@ class Main extends Sprite
     Toolkit.init();
     Toolkit.theme = 'dark'; // don't be cringe
     Toolkit.autoScale = false;
+    funkin.input.Cursor.registerHaxeUICursors();
   }
 }

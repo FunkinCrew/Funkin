@@ -6,7 +6,7 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 
-class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
+class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
   public var selectedIndex(default, null) = 0;
   public var selectedItem(get, never):T;
@@ -206,7 +206,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
   }
 }
 
-class MenuItem extends FlxSprite
+class MenuListItem extends FlxSprite
 {
   public var callback:Void->Void;
   public var name:String;
@@ -261,7 +261,7 @@ class MenuItem extends FlxSprite
   }
 }
 
-class MenuTypedItem<T:FlxSprite> extends MenuItem
+class MenuTypedItem<T:FlxSprite> extends MenuListItem
 {
   public var label(default, set):T;
 

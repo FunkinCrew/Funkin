@@ -38,7 +38,7 @@ class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 /**
  * A menu list item which uses single texture atlas.
  */
-class AtlasMenuItem extends MenuItem
+class AtlasMenuItem extends MenuListItem
 {
   var atlas:FlxAtlasFrames;
 
