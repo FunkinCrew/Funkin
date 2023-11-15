@@ -1,6 +1,6 @@
 package funkin.util;
 
-import funkin.Controls;
+import funkin.input.Controls;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;

@@ -8,7 +8,7 @@ import flixel.group.FlxGroup;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import funkin.Controls;
+import funkin.input.Controls;
 import funkin.ui.AtlasText;
 import funkin.ui.MenuList;
 import funkin.ui.TextMenuList;

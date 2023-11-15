@@ -12,6 +12,7 @@ import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
+import funkin.input.Controls;
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.

@@ -1,5 +1,4 @@
-
-package funkin;
+package funkin.input;
 
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxDirectionFlags;

@@ -1,5 +1,6 @@
 package funkin.ui.freeplay;
 
+import funkin.input.Controls;
 import flash.text.TextField;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
@@ -22,7 +23,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
-import funkin.Controls.Control;
+import funkin.input.Controls.Control;
 import funkin.data.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
@@ -34,7 +35,6 @@ import funkin.graphics.shaders.StrokeShader;
 import funkin.play.components.HealthIcon;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
-import funkin.play.song.Song;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
