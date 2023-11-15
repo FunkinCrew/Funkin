@@ -2,6 +2,9 @@ package funkin.util;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
+/**
+ * Utilities for operating on the current window, such as changing the title.
+ */
 #if (cpp && windows)
 @:cppFileCode('
 #include <iostream>

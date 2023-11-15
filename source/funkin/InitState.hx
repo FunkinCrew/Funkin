@@ -1,5 +1,7 @@
 package funkin;
 
+import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.transition.LoadingState;
 import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -26,11 +28,15 @@ import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
+import funkin.util.CLIUtil;
+import funkin.util.CLIUtil.CLIParams;
+import funkin.ui.transition.LoadingState;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
 
 /**
+ * A core class which performs initialization of the game.
  * The initialization state has several functions:
  * - Calls code to set up the game, including loading saves and parsing game data.
  * - Chooses whether to start via debug or via launching normally.
@@ -228,13 +234,13 @@ class InitState extends FlxState
     #elseif FREEPLAY // -DFREEPLAY
     FlxG.switchState(new FreeplayState());
     #elseif ANIMATE // -DANIMATE
-    FlxG.switchState(new funkin.ui.animDebugShit.FlxAnimateTest());
+    FlxG.switchState(new funkin.ui.debug.anim.FlxAnimateTest());
     #elseif CHARTING // -DCHARTING
     FlxG.switchState(new funkin.ui.debug.charting.ChartEditorState());
     #elseif STAGEBUILD // -DSTAGEBUILD
-    FlxG.switchState(new funkin.ui.stageBullshit.StageBuilderState());
+    FlxG.switchState(new funkin.ui.debug.stage.StageBuilderState());
     #elseif ANIMDEBUG // -DANIMDEBUG
-    FlxG.switchState(new funkin.ui.animDebugShit.DebugBoundingState());
+    FlxG.switchState(new funkin.ui.debug.anim.DebugBoundingState());
     #elseif LATENCY // -DLATENCY
     FlxG.switchState(new funkin.LatencyState());
     #else
@@ -247,8 +253,21 @@ class InitState extends FlxState
    */
   function startGameNormally():Void
   {
-    FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-    FlxG.switchState(new TitleState());
+    var params:CLIParams = CLIUtil.processArgs();
+    trace('Command line args: ${params}');
+
+    if (params.chart.shouldLoadChart)
+    {
+      FlxG.switchState(new ChartEditorState(
+        {
+          fnfcTargetPath: params.chart.chartPath,
+        }));
+    }
+    else
+    {
+      FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      FlxG.switchState(new TitleState());
+    }
   }
 
   /**

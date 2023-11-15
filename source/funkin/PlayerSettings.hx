@@ -8,8 +8,9 @@ import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxSignal;
 
-// import ui.DeviceManager;
-// import props.Player;
+/**
+ * A core class which represents the current player(s) and their controls and other configuration.
+ */
 class PlayerSettings
 {
   public static var numPlayers(default, null) = 0;

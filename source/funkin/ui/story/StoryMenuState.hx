@@ -1,5 +1,6 @@
 package funkin.ui.story;
 
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import openfl.utils.Assets;
@@ -9,6 +10,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
+import funkin.ui.MusicBeatState;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -17,9 +19,13 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.song.Song;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
+import funkin.util.MathUtil;
+import funkin.ui.transition.LoadingState;
+import funkin.ui.transition.StickerSubState;
 
 class StoryMenuState extends MusicBeatState
 {
@@ -313,7 +319,7 @@ class StoryMenuState extends MusicBeatState
   {
     Conductor.update();
 
-    highScoreLerp = Std.int(CoolUtil.coolLerp(highScoreLerp, highScore, 0.5));
+    highScoreLerp = Std.int(MathUtil.coolLerp(highScoreLerp, highScore, 0.5));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 

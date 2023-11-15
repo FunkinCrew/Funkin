@@ -14,6 +14,9 @@ import openfl.events.IOErrorEvent;
  */
 class FileUtil
 {
+  public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
+  public static final FILE_FILTER_ZIP:FileFilter = new FileFilter("ZIP Archive (.zip)", "*.zip");
+
   /**
    * Browses for a single file, then calls `onSelect(path)` when a path chosen.
    * Note that on HTML5 this will immediately fail, you should call `openFile(onOpen:Resource->Void)` instead.
@@ -173,10 +176,11 @@ class FileUtil
    *
    * @return Whether the file dialog was opened successfully.
    */
-  public static function saveFile(data:Bytes, ?onSave:String->Void, ?onCancel:Void->Void, ?defaultFileName:String, ?dialogTitle:String):Bool
+  public static function saveFile(data:Bytes, ?typeFilter:Array<FileFilter>, ?onSave:String->Void, ?onCancel:Void->Void, ?defaultFileName:String,
+      ?dialogTitle:String):Bool
   {
     #if desktop
-    var filter:String = defaultFileName != null ? Path.extension(defaultFileName) : null;
+    var filter:String = convertTypeFilter(typeFilter);
 
     var fileDialog:FileDialog = new FileDialog();
     if (onSave != null) fileDialog.onSelect.add(onSave);
@@ -231,8 +235,7 @@ class FileUtil
         }
         catch (_)
         {
-          trace('Failed to write file (probably already exists): $filePath' + filePath);
-          continue;
+          throw 'Failed to write file (probably already exists): $filePath';
         }
         paths.push(filePath);
       }
@@ -269,7 +272,26 @@ class FileUtil
     };
 
     // Prompt the user to save the ZIP file.
-    saveFile(zipBytes, onSave, onCancel, defaultPath, 'Save files as ZIP...');
+    saveFile(zipBytes, [FILE_FILTER_ZIP], onSave, onCancel, defaultPath, 'Save files as ZIP...');
+
+    return true;
+  }
+
+  /**
+   * Takes an array of file entries and prompts the user to save them as a FNFC file.
+   */
+  public static function saveChartAsFNFC(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
+      force:Bool = false):Bool
+  {
+    // Create a ZIP file.
+    var zipBytes:Bytes = createZIPFromEntries(resources);
+
+    var onSave:String->Void = function(path:String) {
+      onSave([path]);
+    };
+
+    // Prompt the user to save the ZIP file.
+    saveFile(zipBytes, [FILE_FILTER_FNFC], onSave, onCancel, defaultPath, 'Save chart as FNFC...');
 
     return true;
   }
@@ -322,7 +344,8 @@ class FileUtil
   public static function readBytesFromPath(path:String):Bytes
   {
     #if sys
-    return Bytes.ofString(sys.io.File.getContent(path));
+    if (!sys.FileSystem.exists(path)) return null;
+    return sys.io.File.getBytes(path);
     #else
     return null;
     #end
@@ -557,6 +580,36 @@ class FileUtil
     zipWriter.write(entries.list());
 
     return o.getBytes();
+  }
+
+  public static function readZIPFromBytes(input:Bytes):Array<Entry>
+  {
+    trace('TEST: ' + input.length);
+    trace(input.sub(0, 30).toHex());
+
+    var bytesInput = new haxe.io.BytesInput(input);
+    var zippedEntries = haxe.zip.Reader.readZip(bytesInput);
+
+    var results:Array<Entry> = [];
+    for (entry in zippedEntries)
+    {
+      if (entry.compressed)
+      {
+        entry.data = haxe.zip.Reader.unzip(entry);
+      }
+      results.push(entry);
+    }
+    return results;
+  }
+
+  public static function mapZIPEntriesByName(input:Array<Entry>):Map<String, Entry>
+  {
+    var results:Map<String, Entry> = [];
+    for (entry in input)
+    {
+      results.set(entry.fileName, entry);
+    }
+    return results;
   }
 
   /**

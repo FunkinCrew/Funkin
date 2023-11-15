@@ -5,6 +5,8 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatState;
 import funkin.util.WindowUtil;
 import funkin.input.Controls;
 

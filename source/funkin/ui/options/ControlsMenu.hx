@@ -1,5 +1,6 @@
 package funkin.ui.options;
 
+import funkin.util.InputUtil;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -456,6 +457,6 @@ class InputItem extends TextMenuItem
 
   public function getLabel(input:Int)
   {
-    return input == FlxKey.NONE ? "---" : InputFormatter.format(input, device);
+    return input == FlxKey.NONE ? "---" : InputUtil.format(input, device);
   }
 }
