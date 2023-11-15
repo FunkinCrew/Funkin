@@ -1238,11 +1238,6 @@ class ChartEditorState extends HaxeUIState
   var gridGhostEvent:Null<ChartEditorEventSprite> = null;
 
   /**
-   * The waveform which (optionally) displays over the grid, underneath the notes and playhead.
-   */
-  var gridSpectrogram:Null<PolygonSpectogram> = null;
-
-  /**
    * The sprite used to display the note preview area.
    * We move this up and down to scroll the preview.
    */
@@ -1480,7 +1475,6 @@ class ChartEditorState extends HaxeUIState
     this.updateTheme();
 
     buildGrid();
-    // buildSpectrogram(audioInstTrack);
     buildNotePreview();
     buildSelectionBox();
 
@@ -1879,16 +1873,6 @@ class ChartEditorState extends HaxeUIState
       notePreviewViewport.width = bounds.width;
       notePreviewViewport.height = bounds.height;
     }
-  }
-
-  function buildSpectrogram(target:FlxSound):Void
-  {
-    gridSpectrogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height / 2, Math.floor(FlxG.height / 2));
-    gridSpectrogram.x += 170;
-    gridSpectrogram.scrollFactor.set();
-    gridSpectrogram.waveAmplitude = 50;
-    gridSpectrogram.visType = UPDATED;
-    add(gridSpectrogram);
   }
 
   /**
@@ -4857,8 +4841,6 @@ class ChartEditorState extends HaxeUIState
         gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
         gridPlayheadScrollArea.updateHitbox();
       }
-
-      buildSpectrogram(audioInstTrack);
     }
     else
     {
