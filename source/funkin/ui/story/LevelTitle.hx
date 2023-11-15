@@ -4,7 +4,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
-import funkin.CoolUtil;
+import funkin.util.MathUtil;
 
 class LevelTitle extends FlxSpriteGroup
 {
@@ -54,7 +54,7 @@ class LevelTitle extends FlxSpriteGroup
 
   public override function update(elapsed:Float):Void
   {
-    this.y = CoolUtil.coolLerp(y, targetY, 0.17);
+    this.y = MathUtil.coolLerp(y, targetY, 0.17);
 
     if (isFlashing) flashingInt += 1;
     if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2)) title.color = 0xFF33ffff;

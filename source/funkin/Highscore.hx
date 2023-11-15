@@ -1,5 +1,8 @@
 package funkin;
 
+/**
+ * A core class which handles tracking score and combo for the current song.
+ */
 class Highscore
 {
   public static var tallies:Tallies = new Tallies();

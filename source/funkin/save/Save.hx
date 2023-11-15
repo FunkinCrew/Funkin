@@ -1,11 +1,13 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
-import funkin.Controls.Device;
+import funkin.save.migrator.SaveDataMigrator;
+import thx.semver.Version;
+import funkin.input.Controls.Device;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
-import funkin.ui.debug.charting.ChartEditorState.LiveInputStyle;
-import funkin.ui.debug.charting.ChartEditorThemeHandler.ChartEditorTheme;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import thx.semver.Version;
 
 @:nullSafety
@@ -99,7 +101,7 @@ abstract Save(RawSaveData)
             // Reasonable defaults.
             previousFiles: [],
             noteQuant: 3,
-            liveInputStyle: LiveInputStyle.None,
+            chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
             theme: ChartEditorTheme.Light,
             playtestStartTime: false,
             downscroll: false,
@@ -192,21 +194,21 @@ abstract Save(RawSaveData)
     return this.optionsChartEditor.noteQuant;
   }
 
-  public var chartEditorLiveInputStyle(get, set):LiveInputStyle;
+  public var chartEditorLiveInputStyle(get, set):ChartEditorLiveInputStyle;
 
-  function get_chartEditorLiveInputStyle():LiveInputStyle
+  function get_chartEditorLiveInputStyle():ChartEditorLiveInputStyle
   {
-    if (this.optionsChartEditor.liveInputStyle == null) this.optionsChartEditor.liveInputStyle = LiveInputStyle.None;
+    if (this.optionsChartEditor.chartEditorLiveInputStyle == null) this.optionsChartEditor.chartEditorLiveInputStyle = ChartEditorLiveInputStyle.None;
 
-    return this.optionsChartEditor.liveInputStyle;
+    return this.optionsChartEditor.chartEditorLiveInputStyle;
   }
 
-  function set_chartEditorLiveInputStyle(value:LiveInputStyle):LiveInputStyle
+  function set_chartEditorLiveInputStyle(value:ChartEditorLiveInputStyle):ChartEditorLiveInputStyle
   {
     // Set and apply.
-    this.optionsChartEditor.liveInputStyle = value;
+    this.optionsChartEditor.chartEditorLiveInputStyle = value;
     flush();
-    return this.optionsChartEditor.liveInputStyle;
+    return this.optionsChartEditor.chartEditorLiveInputStyle;
   }
 
   public var chartEditorDownscroll(get, set):Bool;
@@ -938,9 +940,9 @@ typedef SaveDataChartEditorOptions =
 
   /**
    * Live input style in the Chart Editor.
-   * @default `LiveInputStyle.None`
+   * @default `ChartEditorLiveInputStyle.None`
    */
-  var ?liveInputStyle:LiveInputStyle;
+  var ?chartEditorLiveInputStyle:ChartEditorLiveInputStyle;
 
   /**
    * Theme in the Chart Editor.

@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.ui.SwagCamera;
 import flixel.addons.transition.FlxTransitionableSubState;
 import funkin.ui.debug.charting.ChartEditorState;
 import haxe.Int64;
@@ -16,19 +17,24 @@ import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
+import funkin.play.components.ComboMilestone;
 import flixel.math.FlxPoint;
+import funkin.play.components.HealthIcon;
+import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import funkin.api.newgrounds.NGio;
 import flixel.util.FlxTimer;
 import funkin.audio.VoicesGroup;
 import funkin.save.Save;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -42,7 +48,6 @@ import funkin.play.notes.NoteDirection;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
-import funkin.NoteSplash;
 import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
 import funkin.data.song.SongData.SongEventData;
@@ -50,9 +55,10 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData.StageDataParser;
-import funkin.ui.PopUpStuff;
-import funkin.ui.PreferencesMenu;
-import funkin.ui.stageBuildShit.StageOffsetSubState;
+import funkin.ui.transition.LoadingState;
+import funkin.play.components.PopUpStuff;
+import funkin.ui.options.PreferencesMenu;
+import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
@@ -510,8 +516,6 @@ class PlayState extends MusicBeatSubState
     }
     instance = this;
 
-    NoteSplash.buildSplashFrames();
-
     if (!assertChartExists()) return;
 
     if (false)
@@ -682,7 +686,7 @@ class PlayState extends MusicBeatSubState
     {
       if (!assertChartExists()) return;
 
-      dispatchEvent(new ScriptEvent(ScriptEvent.SONG_RETRY));
+      dispatchEvent(new ScriptEvent(SONG_RETRY));
 
       resetCamera();
 
@@ -700,6 +704,8 @@ class PlayState extends MusicBeatSubState
 
       if (!overrideMusic)
       {
+        // Stop the vocals if they already exist.
+        if (vocals != null) vocals.stop();
         vocals = currentChart.buildVocals();
 
         if (vocals.members.length == 0)
@@ -867,7 +873,7 @@ class PlayState extends MusicBeatSubState
 
         deathCounter += 1;
 
-        dispatchEvent(new ScriptEvent(ScriptEvent.GAME_OVER));
+        dispatchEvent(new ScriptEvent(GAME_OVER));
 
         // Disable updates, preventing animations in the background from playing.
         persistentUpdate = false;
@@ -994,7 +1000,7 @@ class PlayState extends MusicBeatSubState
   {
     if (Std.isOfType(subState, PauseSubState))
     {
-      var event:ScriptEvent = new ScriptEvent(ScriptEvent.RESUME, true);
+      var event:ScriptEvent = new ScriptEvent(RESUME, true);
 
       dispatchEvent(event);
 
@@ -1097,7 +1103,7 @@ class PlayState extends MusicBeatSubState
     if (this.currentStage != null)
     {
       remove(currentStage);
-      var event:ScriptEvent = new ScriptEvent(ScriptEvent.DESTROY, false);
+      var event:ScriptEvent = new ScriptEvent(DESTROY, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
       currentStage = null;
     }
@@ -1116,7 +1122,7 @@ class PlayState extends MusicBeatSubState
 
     super.debug_refreshModules();
 
-    var event:ScriptEvent = new ScriptEvent(ScriptEvent.CREATE, false);
+    var event:ScriptEvent = new ScriptEvent(CREATE, false);
     ScriptEventDispatcher.callEvent(currentSong, event);
   }
 
@@ -1332,7 +1338,7 @@ class PlayState extends MusicBeatSubState
     if (currentStage != null)
     {
       // Actually create and position the sprites.
-      var event:ScriptEvent = new ScriptEvent(ScriptEvent.CREATE, false);
+      var event:ScriptEvent = new ScriptEvent(CREATE, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
 
       // Apply camera zoom level from stage data.
@@ -1554,6 +1560,8 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic)
     {
+      // Stop the vocals if they already exist.
+      if (vocals != null) vocals.stop();
       vocals = currentChart.buildVocals();
 
       if (vocals.members.length == 0)
@@ -1640,7 +1648,7 @@ class PlayState extends MusicBeatSubState
     add(currentConversation);
     refresh();
 
-    var event:ScriptEvent = new ScriptEvent(ScriptEvent.CREATE, false);
+    var event:ScriptEvent = new ScriptEvent(CREATE, false);
     ScriptEventDispatcher.callEvent(currentConversation, event);
   }
 
@@ -1664,7 +1672,7 @@ class PlayState extends MusicBeatSubState
    */
   function startSong():Void
   {
-    dispatchEvent(new ScriptEvent(ScriptEvent.SONG_START));
+    dispatchEvent(new ScriptEvent(SONG_START));
 
     startingSong = false;
 
@@ -1783,7 +1791,7 @@ class PlayState extends MusicBeatSubState
 
         // Call an event to allow canceling the note hit.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, 0, true);
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -1872,7 +1880,7 @@ class PlayState extends MusicBeatSubState
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, note, 0, true);
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, 0, true);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2021,7 +2029,7 @@ class PlayState extends MusicBeatSubState
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
   {
-    var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_HIT, note, Highscore.tallies.combo + 1, true);
+    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, Highscore.tallies.combo + 1, true);
     dispatchEvent(event);
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2053,7 +2061,7 @@ class PlayState extends MusicBeatSubState
     // a MISS is when you let a note scroll past you!!
     Highscore.tallies.missed++;
 
-    var event:NoteScriptEvent = new NoteScriptEvent(ScriptEvent.NOTE_MISS, note, Highscore.tallies.combo, true);
+    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Highscore.tallies.combo, true);
     dispatchEvent(event);
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
@@ -2385,7 +2393,7 @@ class PlayState extends MusicBeatSubState
    */
   function endSong():Void
   {
-    dispatchEvent(new ScriptEvent(ScriptEvent.SONG_END));
+    dispatchEvent(new ScriptEvent(SONG_END));
 
     #if sys
     // spitter for ravy, teehee!!
@@ -2593,7 +2601,7 @@ class PlayState extends MusicBeatSubState
     {
       remove(currentStage);
       currentStage.kill();
-      dispatchEvent(new ScriptEvent(ScriptEvent.DESTROY, false));
+      dispatchEvent(new ScriptEvent(DESTROY, false));
       currentStage = null;
     }
 
