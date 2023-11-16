@@ -1522,6 +1522,10 @@ class ChartEditorState extends HaxeUIState
         ChartEditorDialogHandler.openWelcomeDialog(this, false);
       }
     }
+    else if (params != null && params.targetSongId != null)
+    {
+      this.loadSongAsTemplate(params.targetSongId);
+    }
     else
     {
       ChartEditorDialogHandler.openWelcomeDialog(this, false);
@@ -5015,6 +5019,11 @@ typedef ChartEditorParams =
    * If non-null, load this song immediately instead of the welcome screen.
    */
   var ?fnfcTargetPath:String;
+
+  /**
+   * If non-null, load this song immediately instead of the welcome screen.
+   */
+  var ?targetSongId:String;
 };
 
 /**
