@@ -4,6 +4,8 @@ import thx.semver.Version;
 import thx.semver.VersionRule;
 
 /**
+ * Utility functions for operating on semantic versions.
+ *
  * Remember, increment the patch version (1.0.x) if you make a bugfix,
  * increment the minor version (1.x.0) if you make a new feature (but previous content is still compatible),
  * and increment the major version (x.0.0) if you make a breaking change (e.g. new API or reorganized file format).
@@ -60,5 +62,23 @@ class VersionUtil
     var versionStr:String = parsed.version; // Dynamic -> String cast
     var version:thx.semver.Version = versionStr; // Implicit, not explicit, cast.
     return version;
+  }
+
+  public static function parseVersion(input:Dynamic):Null<thx.semver.Version>
+  {
+    if (input == null) return null;
+
+    if (Std.isOfType(input, String))
+    {
+      var inputStr:String = input;
+      var version:thx.semver.Version = inputStr;
+      return version;
+    }
+    else
+    {
+      var semVer:thx.semver.Version.SemVer = input;
+      var version:thx.semver.Version = semVer;
+      return version;
+    }
   }
 }

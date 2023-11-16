@@ -7,9 +7,11 @@ import flixel.sound.FlxSound;
 import funkin.ui.story.StoryMenuState;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.ui.MusicBeatSubState;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
+import funkin.ui.freeplay.FreeplayState;
 import funkin.play.character.BaseCharacter;
 
 /**

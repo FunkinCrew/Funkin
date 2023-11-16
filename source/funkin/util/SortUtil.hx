@@ -10,7 +10,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 
 /**
- * A set of functions related to sorting.
+ * Utility functions related to sorting.
  *
  * NOTE: `Array.sort()` takes a function `(x, y) -> Int`.
  * If the objects are in the correct order (x before y), return a negative value.

@@ -2,6 +2,9 @@
 	path = assets
 	url = https://github.com/FunkinCrew/Funkin-history-rewrite-assets
 	branch = master
+	update = merge
 [submodule "art"]
 	path = art
 	url = https://github.com/FunkinCrew/Funkin-history-rewrite-art
+	branch = master
+	update = merge

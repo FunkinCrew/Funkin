@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.ui.SwagCamera;
 import flixel.addons.transition.FlxTransitionableSubState;
 import funkin.ui.debug.charting.ChartEditorState;
 import haxe.Int64;
@@ -16,19 +17,24 @@ import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
+import funkin.play.components.ComboMilestone;
 import flixel.math.FlxPoint;
+import funkin.play.components.HealthIcon;
+import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import funkin.api.newgrounds.NGio;
 import flixel.util.FlxTimer;
 import funkin.audio.VoicesGroup;
 import funkin.save.Save;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -42,7 +48,6 @@ import funkin.play.notes.NoteDirection;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
-import funkin.NoteSplash;
 import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
 import funkin.data.song.SongData.SongEventData;
@@ -50,9 +55,10 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageData.StageDataParser;
-import funkin.ui.PopUpStuff;
-import funkin.ui.PreferencesMenu;
-import funkin.ui.stageBuildShit.StageOffsetSubState;
+import funkin.ui.transition.LoadingState;
+import funkin.play.components.PopUpStuff;
+import funkin.ui.options.PreferencesMenu;
+import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
@@ -510,8 +516,6 @@ class PlayState extends MusicBeatSubState
     }
     instance = this;
 
-    NoteSplash.buildSplashFrames();
-
     if (!assertChartExists()) return;
 
     if (false)
@@ -700,6 +704,8 @@ class PlayState extends MusicBeatSubState
 
       if (!overrideMusic)
       {
+        // Stop the vocals if they already exist.
+        if (vocals != null) vocals.stop();
         vocals = currentChart.buildVocals();
 
         if (vocals.members.length == 0)
@@ -1471,7 +1477,7 @@ class PlayState extends MusicBeatSubState
     {
       case 'school': 'pixel';
       case 'schoolEvil': 'pixel';
-      default: 'funkin';
+      default: Constants.DEFAULT_NOTE_STYLE;
     }
     var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
@@ -1554,6 +1560,8 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic)
     {
+      // Stop the vocals if they already exist.
+      if (vocals != null) vocals.stop();
       vocals = currentChart.buildVocals();
 
       if (vocals.members.length == 0)
@@ -2389,8 +2397,8 @@ class PlayState extends MusicBeatSubState
 
     #if sys
     // spitter for ravy, teehee!!
-
-    var output = SerializerUtil.toJSON(inputSpitter);
+    var writer = new json2object.JsonWriter<Array<ScoreInput>>();
+    var output = writer.write(inputSpitter, '  ');
     sys.io.File.saveContent("./scores.json", output);
     #end
 

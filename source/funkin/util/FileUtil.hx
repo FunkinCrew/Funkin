@@ -14,6 +14,9 @@ import openfl.events.IOErrorEvent;
  */
 class FileUtil
 {
+  public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
+  public static final FILE_FILTER_ZIP:FileFilter = new FileFilter("ZIP Archive (.zip)", "*.zip");
+
   /**
    * Browses for a single file, then calls `onSelect(path)` when a path chosen.
    * Note that on HTML5 this will immediately fail, you should call `openFile(onOpen:Resource->Void)` instead.
@@ -98,7 +101,7 @@ class FileUtil
   }
 
   /**
-   * Browses for a file location to save to, then calls `onSelect(path)` when a path chosen.
+   * Browses for a file location to save to, then calls `onSave(path)` when a path chosen.
    * Note that on HTML5 you can't do much with this, you should call `saveFile(resource:haxe.io.Bytes)` instead.
    *
    * @param typeFilter TODO What does this do?
@@ -173,13 +176,14 @@ class FileUtil
    *
    * @return Whether the file dialog was opened successfully.
    */
-  public static function saveFile(data:Bytes, ?onSave:String->Void, ?onCancel:Void->Void, ?defaultFileName:String, ?dialogTitle:String):Bool
+  public static function saveFile(data:Bytes, ?typeFilter:Array<FileFilter>, ?onSave:String->Void, ?onCancel:Void->Void, ?defaultFileName:String,
+      ?dialogTitle:String):Bool
   {
     #if desktop
-    var filter:String = defaultFileName != null ? Path.extension(defaultFileName) : null;
+    var filter:String = convertTypeFilter(typeFilter);
 
     var fileDialog:FileDialog = new FileDialog();
-    if (onSave != null) fileDialog.onSelect.add(onSave);
+    if (onSave != null) fileDialog.onSave.add(onSave);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
 
     fileDialog.save(data, filter, defaultFileName, dialogTitle);
@@ -231,8 +235,7 @@ class FileUtil
         }
         catch (_)
         {
-          trace('Failed to write file (probably already exists): $filePath' + filePath);
-          continue;
+          throw 'Failed to write file (probably already exists): $filePath';
         }
         paths.push(filePath);
       }
@@ -265,11 +268,32 @@ class FileUtil
     var zipBytes:Bytes = createZIPFromEntries(resources);
 
     var onSave:String->Void = function(path:String) {
-      onSave([path]);
+      trace('Saved ${resources.length} files to ZIP at "$path".');
+      if (onSave != null) onSave([path]);
     };
 
     // Prompt the user to save the ZIP file.
-    saveFile(zipBytes, onSave, onCancel, defaultPath, 'Save files as ZIP...');
+    saveFile(zipBytes, [FILE_FILTER_ZIP], onSave, onCancel, defaultPath, 'Save files as ZIP...');
+
+    return true;
+  }
+
+  /**
+   * Takes an array of file entries and prompts the user to save them as a FNFC file.
+   */
+  public static function saveChartAsFNFC(resources:Array<Entry>, ?onSave:Array<String>->Void, ?onCancel:Void->Void, ?defaultPath:String,
+      force:Bool = false):Bool
+  {
+    // Create a ZIP file.
+    var zipBytes:Bytes = createZIPFromEntries(resources);
+
+    var onSave:String->Void = function(path:String) {
+      trace('Saved FNF file to "$path"');
+      if (onSave != null) onSave([path]);
+    };
+
+    // Prompt the user to save the ZIP file.
+    saveFile(zipBytes, [FILE_FILTER_FNFC], onSave, onCancel, defaultPath, 'Save chart as FNFC...');
 
     return true;
   }
@@ -280,14 +304,14 @@ class FileUtil
    * Use `saveFilesAsZIP` instead.
    * @param force Whether to force overwrite an existing file.
    */
-  public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, force:Bool = false):Bool
+  public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, mode:FileWriteMode = Skip):Bool
   {
     #if desktop
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
 
     // Write the ZIP.
-    writeBytesToPath(path, zipBytes, force ? Force : Skip);
+    writeBytesToPath(path, zipBytes, mode);
 
     return true;
     #else
@@ -322,9 +346,19 @@ class FileUtil
   public static function readBytesFromPath(path:String):Bytes
   {
     #if sys
-    return Bytes.ofString(sys.io.File.getContent(path));
+    if (!doesFileExist(path)) return null;
+    return sys.io.File.getBytes(path);
     #else
     return null;
+    #end
+  }
+
+  public static function doesFileExist(path:String):Bool
+  {
+    #if sys
+    return sys.FileSystem.exists(path);
+    #else
+    return false;
     #end
   }
 
@@ -411,18 +445,20 @@ class FileUtil
       case Force:
         sys.io.File.saveContent(path, data);
       case Skip:
-        if (!sys.FileSystem.exists(path))
+        if (!doesFileExist(path))
         {
           sys.io.File.saveContent(path, data);
         }
         else
         {
-          throw 'File already exists: $path';
+          // Do nothing.
+          // throw 'File already exists: $path';
         }
       case Ask:
-        if (sys.FileSystem.exists(path))
+        if (doesFileExist(path))
         {
           // TODO: We don't have the technology to use native popups yet.
+          throw 'File already exists: $path';
         }
         else
         {
@@ -452,18 +488,20 @@ class FileUtil
       case Force:
         sys.io.File.saveBytes(path, data);
       case Skip:
-        if (!sys.FileSystem.exists(path))
+        if (!doesFileExist(path))
         {
           sys.io.File.saveBytes(path, data);
         }
         else
         {
-          throw 'File already exists: $path';
+          // Do nothing.
+          // throw 'File already exists: $path';
         }
       case Ask:
-        if (sys.FileSystem.exists(path))
+        if (doesFileExist(path))
         {
           // TODO: We don't have the technology to use native popups yet.
+          throw 'File already exists: $path';
         }
         else
         {
@@ -500,7 +538,7 @@ class FileUtil
   public static function createDirIfNotExists(dir:String):Void
   {
     #if sys
-    if (!sys.FileSystem.exists(dir))
+    if (!doesFileExist(dir))
     {
       sys.FileSystem.createDirectory(dir);
     }
@@ -557,6 +595,36 @@ class FileUtil
     zipWriter.write(entries.list());
 
     return o.getBytes();
+  }
+
+  public static function readZIPFromBytes(input:Bytes):Array<Entry>
+  {
+    trace('TEST: ' + input.length);
+    trace(input.sub(0, 30).toHex());
+
+    var bytesInput = new haxe.io.BytesInput(input);
+    var zippedEntries = haxe.zip.Reader.readZip(bytesInput);
+
+    var results:Array<Entry> = [];
+    for (entry in zippedEntries)
+    {
+      if (entry.compressed)
+      {
+        entry.data = haxe.zip.Reader.unzip(entry);
+      }
+      results.push(entry);
+    }
+    return results;
+  }
+
+  public static function mapZIPEntriesByName(input:Array<Entry>):Map<String, Entry>
+  {
+    var results:Map<String, Entry> = [];
+    for (entry in input)
+    {
+      results.set(entry.fileName, entry);
+    }
+    return results;
   }
 
   /**
