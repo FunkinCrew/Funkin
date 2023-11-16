@@ -49,8 +49,14 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
-  final variations:Array<String>;
   final difficulties:Map<String, SongDifficulty>;
+
+  public var variations(get, never):Array<String>;
+
+  function get_variations():Array<String>
+  {
+    return _metadata.keys().array();
+  }
 
   /**
    * Set to false if the song was edited in the charter and should not be saved as a high score.
@@ -83,22 +89,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     this.id = id;
 
-    variations = [];
     difficulties = new Map<String, SongDifficulty>();
 
     _data = _fetchData(id);
 
     _metadata = _data == null ? [] : [Constants.DEFAULT_VARIATION => _data];
 
-    variations.clear();
-    variations.push(Constants.DEFAULT_VARIATION);
-
     if (_data != null && _data.playData != null)
     {
       for (vari in _data.playData.songVariations)
       {
-        variations.push(vari);
-
         var variMeta = fetchVariationMetadata(id, vari);
         if (variMeta != null) _metadata.set(variMeta.variation, variMeta);
       }
@@ -122,10 +122,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     result._metadata.clear();
     for (meta in metadata)
       result._metadata.set(meta.variation, meta);
-
-    result.variations.clear();
-    for (vari in variations)
-      result.variations.push(vari);
 
     result.difficulties.clear();
     result.populateDifficulties();
@@ -169,8 +165,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         var difficulty:SongDifficulty = new SongDifficulty(this, diffId, metadata.variation);
 
-        variations.push(metadata.variation);
-
         difficulty.songName = metadata.songName;
         difficulty.songArtist = metadata.artist;
         difficulty.timeFormat = metadata.timeFormat;
@@ -182,9 +176,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         difficulty.stage = metadata.playData.stage;
         difficulty.noteStyle = metadata.playData.noteStyle;
 
-        difficulties.set(diffId, difficulty);
-
         difficulty.characters = metadata.playData.characters;
+
+        difficulties.set(diffId, difficulty);
       }
     }
   }
@@ -223,7 +217,24 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         trace('Fabricated new difficulty for $diffId.');
         difficulty = new SongDifficulty(this, diffId, variation);
+        var metadata = _metadata.get(variation);
         difficulties.set(diffId, difficulty);
+
+        if (metadata != null)
+        {
+          difficulty.songName = metadata.songName;
+          difficulty.songArtist = metadata.artist;
+          difficulty.timeFormat = metadata.timeFormat;
+          difficulty.divisions = metadata.divisions;
+          difficulty.timeChanges = metadata.timeChanges;
+          difficulty.looped = metadata.looped;
+          difficulty.generatedBy = metadata.generatedBy;
+
+          difficulty.stage = metadata.playData.stage;
+          difficulty.noteStyle = metadata.playData.noteStyle;
+
+          difficulty.characters = metadata.playData.characters;
+        }
       }
       // Add the chart data to the difficulty.
       difficulty.notes = chartNotes.get(diffId) ?? [];

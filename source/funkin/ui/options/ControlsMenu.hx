@@ -26,7 +26,8 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
     [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
     [CUTSCENE_ADVANCE, CUTSCENE_SKIP],
-    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE]
+    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
+    [DEBUG_MENU, DEBUG_CHART]
   ];
 
   var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
@@ -109,6 +110,12 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
       {
         currentHeader = "VOLUME_";
         headers.add(new AtlasText(0, y, "VOLUME", AtlasFont.BOLD)).screenCenter(X);
+        y += spacer;
+      }
+      else if (currentHeader != "DEBUG_" && name.indexOf("DEBUG_") == 0)
+      {
+        currentHeader = "DEBUG_";
+        headers.add(new AtlasText(0, y, "DEBUG", AtlasFont.BOLD)).screenCenter(X);
         y += spacer;
       }
 

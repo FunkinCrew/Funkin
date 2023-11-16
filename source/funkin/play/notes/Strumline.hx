@@ -284,7 +284,7 @@ class Strumline extends FlxSpriteGroup
   {
     if (noteData.length == 0) return;
 
-    var songStart:Float = PlayState.instance.startTimestamp ?? 0.0;
+    var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
     var hitWindowStart:Float = Conductor.songPosition - Constants.HIT_WINDOW_MS;
     var renderWindowStart:Float = Conductor.songPosition + RENDER_DISTANCE_MS;
 

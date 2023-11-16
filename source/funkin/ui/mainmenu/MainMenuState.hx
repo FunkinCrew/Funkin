@@ -295,10 +295,9 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    // ` / ~ to open the debug menu.
-    if (FlxG.keys.justPressed.GRAVEACCENT)
+    // Open the debug menu, defaults to ` / ~
+    if (controls.DEBUG_MENU)
     {
-      // TODO: Does this break anything?
       this.persistentUpdate = false;
       this.persistentDraw = false;
       FlxG.state.openSubState(new DebugMenuSubState());

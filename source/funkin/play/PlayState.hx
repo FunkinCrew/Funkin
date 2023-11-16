@@ -2191,13 +2191,24 @@ class PlayState extends MusicBeatSubState
 
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
 
-    // Press U to open stage ditor.
-    if (FlxG.keys.justPressed.U)
+    // Open the stage editor overlaying the current state.
+    if (controls.DEBUG_STAGE)
     {
       // hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
       disableKeys = true;
       persistentUpdate = false;
       openSubState(new StageOffsetSubState());
+    }
+
+    // Redirect to the chart editor playing the current song.
+    if (controls.DEBUG_CHART)
+    {
+      disableKeys = true;
+      persistentUpdate = false;
+      FlxG.switchState(new ChartEditorState(
+        {
+          targetSongId: currentSong.id,
+        }));
     }
 
     #if debug
@@ -2210,18 +2221,6 @@ class PlayState extends MusicBeatSubState
     // 3: Lose 5% health.
     if (FlxG.keys.justPressed.THREE) health -= 0.05 * Constants.HEALTH_MAX;
     #end
-
-    // 7: Move to the charter.
-    if (FlxG.keys.justPressed.SEVEN)
-    {
-      lime.app.Application.current.window.alert("Press ~ on the main menu to get to the editor", 'LOL');
-    }
-
-    // 8: Move to the offset editor.
-    if (FlxG.keys.justPressed.EIGHT)
-    {
-      lime.app.Application.current.window.alert("Press ~ on the main menu to get to the editor", 'LOL');
-    }
 
     // 9: Toggle the old icon.
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();

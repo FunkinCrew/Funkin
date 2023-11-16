@@ -60,6 +60,9 @@ class Controls extends FlxActionSet
   var _reset = new FlxActionDigital(Action.RESET);
   var _cutscene_advance = new FlxActionDigital(Action.CUTSCENE_ADVANCE);
   var _cutscene_skip = new FlxActionDigital(Action.CUTSCENE_SKIP);
+  var _debug_menu = new FlxActionDigital(Action.DEBUG_MENU);
+  var _debug_chart = new FlxActionDigital(Action.DEBUG_CHART);
+  var _debug_stage = new FlxActionDigital(Action.DEBUG_STAGE);
   var _volume_up = new FlxActionDigital(Action.VOLUME_UP);
   var _volume_down = new FlxActionDigital(Action.VOLUME_DOWN);
   var _volume_mute = new FlxActionDigital(Action.VOLUME_MUTE);
@@ -217,6 +220,21 @@ class Controls extends FlxActionSet
   inline function get_CUTSCENE_SKIP()
     return _cutscene_skip.check();
 
+  public var DEBUG_MENU(get, never):Bool;
+
+  inline function get_DEBUG_MENU()
+    return _debug_menu.check();
+
+  public var DEBUG_CHART(get, never):Bool;
+
+  inline function get_DEBUG_CHART()
+    return _debug_chart.check();
+
+  public var DEBUG_STAGE(get, never):Bool;
+
+  inline function get_DEBUG_STAGE()
+    return _debug_stage.check();
+
   public var VOLUME_UP(get, never):Bool;
 
   inline function get_VOLUME_UP()
@@ -363,6 +381,9 @@ class Controls extends FlxActionSet
       case RESET: _reset;
       case CUTSCENE_ADVANCE: _cutscene_advance;
       case CUTSCENE_SKIP: _cutscene_skip;
+      case DEBUG_MENU: _debug_menu;
+      case DEBUG_CHART: _debug_chart;
+      case DEBUG_STAGE: _debug_stage;
       case VOLUME_UP: _volume_up;
       case VOLUME_DOWN: _volume_down;
       case VOLUME_MUTE: _volume_mute;
@@ -430,6 +451,12 @@ class Controls extends FlxActionSet
         func(_cutscene_advance, JUST_PRESSED);
       case CUTSCENE_SKIP:
         func(_cutscene_skip, PRESSED);
+      case DEBUG_MENU:
+        func(_debug_menu, JUST_PRESSED);
+      case DEBUG_CHART:
+        func(_debug_chart, JUST_PRESSED);
+      case DEBUG_STAGE:
+        func(_debug_stage, JUST_PRESSED);
       case VOLUME_UP:
         func(_volume_up, JUST_PRESSED);
       case VOLUME_DOWN:
@@ -629,6 +656,9 @@ class Controls extends FlxActionSet
     bindKeys(Control.PAUSE, getDefaultKeybinds(scheme, Control.PAUSE));
     bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
     bindKeys(Control.CUTSCENE_SKIP, getDefaultKeybinds(scheme, Control.CUTSCENE_SKIP));
+    bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
+    bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(scheme, Control.DEBUG_CHART));
+    bindKeys(Control.DEBUG_STAGE, getDefaultKeybinds(scheme, Control.DEBUG_STAGE));
     bindKeys(Control.VOLUME_UP, getDefaultKeybinds(scheme, Control.VOLUME_UP));
     bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(scheme, Control.VOLUME_DOWN));
     bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(scheme, Control.VOLUME_MUTE));
@@ -653,6 +683,9 @@ class Controls extends FlxActionSet
           case Control.PAUSE: return [P, ENTER, ESCAPE];
           case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
           case Control.CUTSCENE_SKIP: return [P, ESCAPE];
+          case Control.DEBUG_MENU: return [GRAVEACCENT];
+          case Control.DEBUG_CHART: return [];
+          case Control.DEBUG_STAGE: return [];
           case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
           case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
           case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
@@ -673,6 +706,9 @@ class Controls extends FlxActionSet
           case Control.PAUSE: return [ONE];
           case Control.CUTSCENE_ADVANCE: return [G, Z];
           case Control.CUTSCENE_SKIP: return [ONE];
+          case Control.DEBUG_MENU: return [GRAVEACCENT];
+          case Control.DEBUG_CHART: return [];
+          case Control.DEBUG_STAGE: return [];
           case Control.VOLUME_UP: return [PLUS];
           case Control.VOLUME_DOWN: return [MINUS];
           case Control.VOLUME_MUTE: return [ZERO];
@@ -693,6 +729,9 @@ class Controls extends FlxActionSet
           case Control.PAUSE: return [ONE];
           case Control.CUTSCENE_ADVANCE: return [ENTER];
           case Control.CUTSCENE_SKIP: return [ONE];
+          case Control.DEBUG_MENU: return [GRAVEACCENT];
+          case Control.DEBUG_CHART: return [];
+          case Control.DEBUG_STAGE: return [];
           case Control.VOLUME_UP: return [NUMPADPLUS];
           case Control.VOLUME_DOWN: return [NUMPADMINUS];
           case Control.VOLUME_MUTE: return [NUMPADZERO];
@@ -804,6 +843,8 @@ class Controls extends FlxActionSet
       // Control.VOLUME_MUTE => [RIGHT_TRIGGER],
       Control.CUTSCENE_ADVANCE => getDefaultGamepadBinds(Control.CUTSCENE_ADVANCE),
       Control.CUTSCENE_SKIP => getDefaultGamepadBinds(Control.CUTSCENE_SKIP),
+      // Control.DEBUG_MENU
+      // Control.DEBUG_CHART
       Control.RESET => getDefaultGamepadBinds(Control.RESET),
       #if CAN_CHEAT, Control.CHEAT => getDefaultGamepadBinds(Control.CHEAT) #end
     ]);
@@ -822,8 +863,13 @@ class Controls extends FlxActionSet
       case Control.NOTE_LEFT: return [DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT];
       case Control.NOTE_RIGHT: return [DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT];
       case Control.PAUSE: return [START];
+      case Control.VOLUME_UP: return [];
+      case Control.VOLUME_DOWN: return [];
+      case Control.VOLUME_MUTE: return [];
       case Control.CUTSCENE_ADVANCE: return [A];
       case Control.CUTSCENE_SKIP: return [START];
+      case Control.DEBUG_MENU: return [];
+      case Control.DEBUG_CHART: return [];
       case Control.RESET: return [RIGHT_SHOULDER];
       #if CAN_CHEAT, Control.CHEAT: return [X]; #end
       default:
@@ -1166,11 +1212,12 @@ class FlxActionInputDigitalAndroid extends FlxActionInputDigital
  */
 enum Control
 {
-  // List notes in order from left to right on gameplay screen.
+  // NOTE
   NOTE_LEFT;
   NOTE_DOWN;
   NOTE_UP;
   NOTE_RIGHT;
+  // UI
   UI_UP;
   UI_LEFT;
   UI_RIGHT;
@@ -1179,11 +1226,17 @@ enum Control
   ACCEPT;
   BACK;
   PAUSE;
+  // CUTSCENE
   CUTSCENE_ADVANCE;
   CUTSCENE_SKIP;
+  // VOLUME
   VOLUME_UP;
   VOLUME_DOWN;
   VOLUME_MUTE;
+  // DEBUG
+  DEBUG_MENU;
+  DEBUG_CHART;
+  DEBUG_STAGE;
   #if CAN_CHEAT
   CHEAT;
   #end
@@ -1192,18 +1245,7 @@ enum Control
 enum
 abstract Action(String) to String from String
 {
-  var UI_UP = "ui_up";
-  var UI_LEFT = "ui_left";
-  var UI_RIGHT = "ui_right";
-  var UI_DOWN = "ui_down";
-  var UI_UP_P = "ui_up-press";
-  var UI_LEFT_P = "ui_left-press";
-  var UI_RIGHT_P = "ui_right-press";
-  var UI_DOWN_P = "ui_down-press";
-  var UI_UP_R = "ui_up-release";
-  var UI_LEFT_R = "ui_left-release";
-  var UI_RIGHT_R = "ui_right-release";
-  var UI_DOWN_R = "ui_down-release";
+  // NOTE
   var NOTE_UP = "note_up";
   var NOTE_LEFT = "note_left";
   var NOTE_RIGHT = "note_right";
@@ -1216,15 +1258,34 @@ abstract Action(String) to String from String
   var NOTE_LEFT_R = "note_left-release";
   var NOTE_RIGHT_R = "note_right-release";
   var NOTE_DOWN_R = "note_down-release";
+  // UI
+  var UI_UP = "ui_up";
+  var UI_LEFT = "ui_left";
+  var UI_RIGHT = "ui_right";
+  var UI_DOWN = "ui_down";
+  var UI_UP_P = "ui_up-press";
+  var UI_LEFT_P = "ui_left-press";
+  var UI_RIGHT_P = "ui_right-press";
+  var UI_DOWN_P = "ui_down-press";
+  var UI_UP_R = "ui_up-release";
+  var UI_LEFT_R = "ui_left-release";
+  var UI_RIGHT_R = "ui_right-release";
+  var UI_DOWN_R = "ui_down-release";
   var ACCEPT = "accept";
   var BACK = "back";
   var PAUSE = "pause";
+  var RESET = "reset";
+  // CUTSCENE
   var CUTSCENE_ADVANCE = "cutscene_advance";
   var CUTSCENE_SKIP = "cutscene_skip";
+  // VOLUME
   var VOLUME_UP = "volume_up";
   var VOLUME_DOWN = "volume_down";
   var VOLUME_MUTE = "volume_mute";
-  var RESET = "reset";
+  // DEBUG
+  var DEBUG_MENU = "debug_menu";
+  var DEBUG_CHART = "debug_chart";
+  var DEBUG_STAGE = "debug_stage";
   #if CAN_CHEAT
   var CHEAT = "cheat";
   #end
