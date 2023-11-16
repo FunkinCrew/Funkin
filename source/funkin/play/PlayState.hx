@@ -1572,6 +1572,9 @@ class PlayState extends MusicBeatSubState
 
     regenNoteData();
 
+    var event:ScriptEvent = new ScriptEvent(CREATE, false);
+    ScriptEventDispatcher.callEvent(currentSong, event);
+
     generatedMusic = true;
   }
 
