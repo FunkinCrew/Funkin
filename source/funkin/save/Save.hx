@@ -5,12 +5,17 @@ import funkin.save.migrator.SaveDataMigrator;
 import thx.semver.Version;
 import funkin.input.Controls.Device;
 import funkin.save.migrator.RawSaveData_v1_0_0;
+import funkin.save.migrator.SaveDataMigrator;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
+import thx.semver.Version;
 
 @:nullSafety
 @:forward(volume, mute)
 abstract Save(RawSaveData)
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.0";
+  // Version 2.0.1 adds attributes to `optionsChartEditor`, that should return default values if they are null.
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -94,6 +99,18 @@ abstract Save(RawSaveData)
         optionsChartEditor:
           {
             // Reasonable defaults.
+            previousFiles: [],
+            noteQuant: 3,
+            chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
+            theme: ChartEditorTheme.Light,
+            playtestStartTime: false,
+            downscroll: false,
+            metronomeEnabled: true,
+            hitsoundsEnabledPlayer: true,
+            hitsoundsEnabledOpponent: true,
+            instVolume: 1.0,
+            voicesVolume: 1.0,
+            playbackSpeed: 1.0,
           },
       };
   }
@@ -124,7 +141,9 @@ abstract Save(RawSaveData)
 
   function set_ngSessionId(value:Null<String>):Null<String>
   {
-    return this.api.newgrounds.sessionId = value;
+    this.api.newgrounds.sessionId = value;
+    flush();
+    return this.api.newgrounds.sessionId;
   }
 
   public var enabledModIds(get, set):Array<String>;
@@ -136,7 +155,213 @@ abstract Save(RawSaveData)
 
   function set_enabledModIds(value:Array<String>):Array<String>
   {
-    return this.mods.enabledMods = value;
+    this.mods.enabledMods = value;
+    flush();
+    return this.mods.enabledMods;
+  }
+
+  public var chartEditorPreviousFiles(get, set):Array<String>;
+
+  function get_chartEditorPreviousFiles():Array<String>
+  {
+    if (this.optionsChartEditor.previousFiles == null) this.optionsChartEditor.previousFiles = [];
+
+    return this.optionsChartEditor.previousFiles;
+  }
+
+  function set_chartEditorPreviousFiles(value:Array<String>):Array<String>
+  {
+    // Set and apply.
+    this.optionsChartEditor.previousFiles = value;
+    flush();
+    return this.optionsChartEditor.previousFiles;
+  }
+
+  public var chartEditorNoteQuant(get, set):Int;
+
+  function get_chartEditorNoteQuant():Int
+  {
+    if (this.optionsChartEditor.noteQuant == null) this.optionsChartEditor.noteQuant = 3;
+
+    return this.optionsChartEditor.noteQuant;
+  }
+
+  function set_chartEditorNoteQuant(value:Int):Int
+  {
+    // Set and apply.
+    this.optionsChartEditor.noteQuant = value;
+    flush();
+    return this.optionsChartEditor.noteQuant;
+  }
+
+  public var chartEditorLiveInputStyle(get, set):ChartEditorLiveInputStyle;
+
+  function get_chartEditorLiveInputStyle():ChartEditorLiveInputStyle
+  {
+    if (this.optionsChartEditor.chartEditorLiveInputStyle == null) this.optionsChartEditor.chartEditorLiveInputStyle = ChartEditorLiveInputStyle.None;
+
+    return this.optionsChartEditor.chartEditorLiveInputStyle;
+  }
+
+  function set_chartEditorLiveInputStyle(value:ChartEditorLiveInputStyle):ChartEditorLiveInputStyle
+  {
+    // Set and apply.
+    this.optionsChartEditor.chartEditorLiveInputStyle = value;
+    flush();
+    return this.optionsChartEditor.chartEditorLiveInputStyle;
+  }
+
+  public var chartEditorDownscroll(get, set):Bool;
+
+  function get_chartEditorDownscroll():Bool
+  {
+    if (this.optionsChartEditor.downscroll == null) this.optionsChartEditor.downscroll = false;
+
+    return this.optionsChartEditor.downscroll;
+  }
+
+  function set_chartEditorDownscroll(value:Bool):Bool
+  {
+    // Set and apply.
+    this.optionsChartEditor.downscroll = value;
+    flush();
+    return this.optionsChartEditor.downscroll;
+  }
+
+  public var chartEditorPlaytestStartTime(get, set):Bool;
+
+  function get_chartEditorPlaytestStartTime():Bool
+  {
+    if (this.optionsChartEditor.playtestStartTime == null) this.optionsChartEditor.playtestStartTime = false;
+
+    return this.optionsChartEditor.playtestStartTime;
+  }
+
+  function set_chartEditorPlaytestStartTime(value:Bool):Bool
+  {
+    // Set and apply.
+    this.optionsChartEditor.playtestStartTime = value;
+    flush();
+    return this.optionsChartEditor.playtestStartTime;
+  }
+
+  public var chartEditorTheme(get, set):ChartEditorTheme;
+
+  function get_chartEditorTheme():ChartEditorTheme
+  {
+    if (this.optionsChartEditor.theme == null) this.optionsChartEditor.theme = ChartEditorTheme.Light;
+
+    return this.optionsChartEditor.theme;
+  }
+
+  function set_chartEditorTheme(value:ChartEditorTheme):ChartEditorTheme
+  {
+    // Set and apply.
+    this.optionsChartEditor.theme = value;
+    flush();
+    return this.optionsChartEditor.theme;
+  }
+
+  public var chartEditorMetronomeEnabled(get, set):Bool;
+
+  function get_chartEditorMetronomeEnabled():Bool
+  {
+    if (this.optionsChartEditor.metronomeEnabled == null) this.optionsChartEditor.metronomeEnabled = true;
+
+    return this.optionsChartEditor.metronomeEnabled;
+  }
+
+  function set_chartEditorMetronomeEnabled(value:Bool):Bool
+  {
+    // Set and apply.
+    this.optionsChartEditor.metronomeEnabled = value;
+    flush();
+    return this.optionsChartEditor.metronomeEnabled;
+  }
+
+  public var chartEditorHitsoundsEnabledPlayer(get, set):Bool;
+
+  function get_chartEditorHitsoundsEnabledPlayer():Bool
+  {
+    if (this.optionsChartEditor.hitsoundsEnabledPlayer == null) this.optionsChartEditor.hitsoundsEnabledPlayer = true;
+
+    return this.optionsChartEditor.hitsoundsEnabledPlayer;
+  }
+
+  function set_chartEditorHitsoundsEnabledPlayer(value:Bool):Bool
+  {
+    // Set and apply.
+    this.optionsChartEditor.hitsoundsEnabledPlayer = value;
+    flush();
+    return this.optionsChartEditor.hitsoundsEnabledPlayer;
+  }
+
+  public var chartEditorHitsoundsEnabledOpponent(get, set):Bool;
+
+  function get_chartEditorHitsoundsEnabledOpponent():Bool
+  {
+    if (this.optionsChartEditor.hitsoundsEnabledOpponent == null) this.optionsChartEditor.hitsoundsEnabledOpponent = true;
+
+    return this.optionsChartEditor.hitsoundsEnabledOpponent;
+  }
+
+  function set_chartEditorHitsoundsEnabledOpponent(value:Bool):Bool
+  {
+    // Set and apply.
+    this.optionsChartEditor.hitsoundsEnabledOpponent = value;
+    flush();
+    return this.optionsChartEditor.hitsoundsEnabledOpponent;
+  }
+
+  public var chartEditorInstVolume(get, set):Float;
+
+  function get_chartEditorInstVolume():Float
+  {
+    if (this.optionsChartEditor.instVolume == null) this.optionsChartEditor.instVolume = 1.0;
+
+    return this.optionsChartEditor.instVolume;
+  }
+
+  function set_chartEditorInstVolume(value:Float):Float
+  {
+    // Set and apply.
+    this.optionsChartEditor.instVolume = value;
+    flush();
+    return this.optionsChartEditor.instVolume;
+  }
+
+  public var chartEditorVoicesVolume(get, set):Float;
+
+  function get_chartEditorVoicesVolume():Float
+  {
+    if (this.optionsChartEditor.voicesVolume == null) this.optionsChartEditor.voicesVolume = 1.0;
+
+    return this.optionsChartEditor.voicesVolume;
+  }
+
+  function set_chartEditorVoicesVolume(value:Float):Float
+  {
+    // Set and apply.
+    this.optionsChartEditor.voicesVolume = value;
+    flush();
+    return this.optionsChartEditor.voicesVolume;
+  }
+
+  public var chartEditorPlaybackSpeed(get, set):Float;
+
+  function get_chartEditorPlaybackSpeed():Float
+  {
+    if (this.optionsChartEditor.playbackSpeed == null) this.optionsChartEditor.playbackSpeed = 1.0;
+
+    return this.optionsChartEditor.playbackSpeed;
+  }
+
+  function set_chartEditorPlaybackSpeed(value:Float):Float
+  {
+    // Set and apply.
+    this.optionsChartEditor.playbackSpeed = value;
+    flush();
+    return this.optionsChartEditor.playbackSpeed;
   }
 
   /**
@@ -699,4 +924,77 @@ typedef SaveControlsData =
 /**
  * An anonymous structure containing all the user's options and preferences, specific to the Chart Editor.
  */
-typedef SaveDataChartEditorOptions = {};
+typedef SaveDataChartEditorOptions =
+{
+  /**
+   * Previous files opened in the Chart Editor.
+   * @default `[]`
+   */
+  var ?previousFiles:Array<String>;
+
+  /**
+   * Note snapping level in the Chart Editor.
+   * @default `3`
+   */
+  var ?noteQuant:Int;
+
+  /**
+   * Live input style in the Chart Editor.
+   * @default `ChartEditorLiveInputStyle.None`
+   */
+  var ?chartEditorLiveInputStyle:ChartEditorLiveInputStyle;
+
+  /**
+   * Theme in the Chart Editor.
+   * @default `ChartEditorTheme.Light`
+   */
+  var ?theme:ChartEditorTheme;
+
+  /**
+   * Downscroll in the Chart Editor.
+   * @default `false`
+   */
+  var ?downscroll:Bool;
+
+  /**
+   * Metronome sounds in the Chart Editor.
+   * @default `true`
+   */
+  var ?metronomeEnabled:Bool;
+
+  /**
+   * If true, playtest songs from the current position in the Chart Editor.
+   * @default `false`
+   */
+  var ?playtestStartTime:Bool;
+
+  /**
+   * Player note hit sounds in the Chart Editor.
+   * @default `true`
+   */
+  var ?hitsoundsEnabledPlayer:Bool;
+
+  /**
+   * Opponent note hit sounds in the Chart Editor.
+   * @default `true`
+   */
+  var ?hitsoundsEnabledOpponent:Bool;
+
+  /**
+   * Instrumental volume in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?instVolume:Float;
+
+  /**
+   * Voices volume in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?voicesVolume:Float;
+
+  /**
+   * Playback speed in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?playbackSpeed:Float;
+};
