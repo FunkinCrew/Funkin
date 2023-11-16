@@ -674,6 +674,22 @@ class SongNoteDataRaw
     this.kind = kind;
   }
 
+  /**
+   * The direction of the note, if applicable.
+   * Strips the strumline index from the data.
+   *
+   * 0 = left, 1 = down, 2 = up, 3 = right
+   */
+  public inline function getDirection(strumlineSize:Int = 4):Int
+  {
+    return this.data % strumlineSize;
+  }
+
+  public function getDirectionName(strumlineSize:Int = 4):String
+  {
+    return SongNoteData.buildDirectionName(this.data, strumlineSize);
+  }
+
   @:jignored
   var _stepTime:Null<Float> = null;
 
@@ -728,22 +744,6 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
   {
     this = new SongNoteDataRaw(time, data, length, kind);
-  }
-
-  /**
-   * The direction of the note, if applicable.
-   * Strips the strumline index from the data.
-   *
-   * 0 = left, 1 = down, 2 = up, 3 = right
-   */
-  public inline function getDirection(strumlineSize:Int = 4):Int
-  {
-    return this.data % strumlineSize;
-  }
-
-  public function getDirectionName(strumlineSize:Int = 4):String
-  {
-    return SongNoteData.buildDirectionName(this.data, strumlineSize);
   }
 
   public static function buildDirectionName(data:Int, strumlineSize:Int = 4):String
