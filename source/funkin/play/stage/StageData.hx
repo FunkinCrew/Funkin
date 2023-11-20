@@ -364,12 +364,10 @@ class StageDataParser
     if (input.characters.bf == null)
     {
       input.characters.bf = DEFAULT_CHARACTER_DATA;
-      input.characters.bf.cameraOffsets = DEFAULT_CAMERA_OFFSETS_BF;
     }
     if (input.characters.dad == null)
     {
       input.characters.dad = DEFAULT_CHARACTER_DATA;
-      input.characters.dad.cameraOffsets = DEFAULT_CAMERA_OFFSETS_DAD;
     }
     if (input.characters.gf == null)
     {
@@ -378,22 +376,9 @@ class StageDataParser
 
     for (inputCharacter in [input.characters.bf, input.characters.dad, input.characters.gf])
     {
-      if (inputCharacter.zIndex == null)
-      {
-        inputCharacter.zIndex = 0;
-      }
       if (inputCharacter.position == null || inputCharacter.position.length != 2)
       {
         inputCharacter.position = [0, 0];
-      }
-      if (inputCharacter.cameraOffsets == null || inputCharacter.cameraOffsets.length != 2)
-      {
-        if (inputCharacter == input.characters.bf) inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_BF;
-        else if (inputCharacter == input.characters.dad) inputCharacter.cameraOffsets = DEFAULT_CAMERA_OFFSETS_DAD;
-        else
-        {
-          inputCharacter.cameraOffsets = [0, 0];
-        }
       }
     }
 
@@ -547,22 +532,16 @@ typedef StageDataCharacter =
    * Again, just like CSS.
    * @default 0
    */
-  @:optional
-  @:default(0)
   var zIndex:Int;
 
   /**
    * The position to render the character at.
    */
-  @:optional
-  @:default([0, 0])
   var position:Array<Float>;
 
   /**
    * The camera offsets to apply when focusing on the character on this stage.
    * @default [-100, -100] for BF, [100, -100] for DAD/OPPONENT, [0, 0] for GF
    */
-  @:optional
-  @:default([0, 0])
   var cameraOffsets:Array<Float>;
 };
