@@ -1982,13 +1982,13 @@ class ChartEditorState extends HaxeUIState
     addUIClickListener('playbarEnd', _ -> playbarButtonPressed = 'playbarEnd');
 
     // Cycle note snap quant.
-    addUIClickListener('playbarNoteSnap', function(_) {
-      noteSnapQuantIndex++;
-      if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
-    });
     addUIRightClickListener('playbarNoteSnap', function(_) {
       noteSnapQuantIndex--;
       if (noteSnapQuantIndex < 0) noteSnapQuantIndex = SNAP_QUANTS.length - 1;
+    });
+    addUIClickListener('playbarNoteSnap', function(_) {
+      noteSnapQuantIndex++;
+      if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     });
 
     // Add functionality to the menu items.
@@ -2079,8 +2079,14 @@ class ChartEditorState extends HaxeUIState
     addUIClickListener('menubarItemPlaytestFull', _ -> testSongInPlayState(false));
     addUIClickListener('menubarItemPlaytestMinimal', _ -> testSongInPlayState(true));
 
-    addUIClickListener('menuBarItemNoteSnapDecrease', _ -> noteSnapQuantIndex--);
-    addUIClickListener('menuBarItemNoteSnapIncrease', _ -> noteSnapQuantIndex++);
+    addUIClickListener('menuBarItemNoteSnapDecrease', _ -> {
+      noteSnapQuantIndex--;
+      if (noteSnapQuantIndex < 0) noteSnapQuantIndex = SNAP_QUANTS.length - 1;
+    });
+    addUIClickListener('menuBarItemNoteSnapIncrease', _ -> {
+      noteSnapQuantIndex++;
+      if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
+    });
 
     addUIChangeListener('menuBarItemInputStyleNone', function(event:UIEvent) {
       currentLiveInputStyle = None;
@@ -2898,11 +2904,13 @@ class ChartEditorState extends HaxeUIState
       if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
       {
         noteSnapQuantIndex--;
+        if (noteSnapQuantIndex < 0) noteSnapQuantIndex = SNAP_QUANTS.length - 1;
       }
 
       if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
       {
         noteSnapQuantIndex++;
+        if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
       }
     }
   }
@@ -2922,7 +2930,7 @@ class ChartEditorState extends HaxeUIState
       || (dragTargetNote != null || dragTargetEvent != null);
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
 
-    trace('shouldHandleCursor: $shouldHandleCursor');
+    // trace('shouldHandleCursor: $shouldHandleCursor');
 
     if (shouldHandleCursor)
     {
@@ -3811,7 +3819,7 @@ class ChartEditorState extends HaxeUIState
       && playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
     if (playbarNoteSnap == null) playbarNoteSnap = findComponent('playbarNoteSnap', Label);
-    if (playbarNoteSnap != null && playbarNoteSnap.value != '1/${noteSnapQuant}') playbarNoteSnap.value = '1/${noteSnapQuant}';
+    if (playbarNoteSnap != null) playbarNoteSnap.text = '1/${noteSnapQuant}';
   }
 
   function handlePlayhead():Void

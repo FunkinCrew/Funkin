@@ -23,4 +23,39 @@ class PlatformUtil
     return false;
     #end
   }
+
+  /**
+   * Detects and returns the current host platform.
+   * Always returns `HTML5` on web, regardless of the computer running that browser.
+   * Returns `null` if the platform could not be detected.
+   */
+  public static function detectHostPlatform():Null<HostPlatform>
+  {
+    #if html5
+    return HTML5;
+    #else
+    switch (Sys.systemName())
+    {
+      case ~/window/i.match(_) => true:
+        return WINDOWS;
+      case ~/linux/i.match(_) => true:
+        return LINUX;
+      case ~/mac/i.match(_) => true:
+        return MAC;
+      default:
+        return null;
+    }
+    #end
+  }
+}
+
+/**
+ * Represents a host platform.
+ */
+enum HostPlatform
+{
+  WINDOWS;
+  LINUX;
+  MAC;
+  HTML5;
 }

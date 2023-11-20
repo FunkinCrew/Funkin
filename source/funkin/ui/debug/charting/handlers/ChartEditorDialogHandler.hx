@@ -875,7 +875,7 @@ class ChartEditorDialogHandler
     if (dialogNoVocals == null) throw 'Could not locate dialogNoVocals button in Upload Vocals dialog';
     dialogNoVocals.onClick = function(_event) {
       // Dismiss
-      state.stopExistingVocals();
+      state.wipeVocalData();
       dialog.hideDialog(DialogButton.APPLY);
     };
 
