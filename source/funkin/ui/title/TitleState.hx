@@ -232,7 +232,8 @@ class TitleState extends MusicBeatState
   {
     var fullText:String = Assets.getText(Paths.txt('introText'));
 
-    var firstArray:Array<String> = fullText.split('\n');
+    // Split into lines and remove empty lines
+    var firstArray:Array<String> = fullText.split('\n').filter(function(s:String) return s != '');
     var swagGoodArray:Array<Array<String>> = [];
 
     for (i in firstArray)

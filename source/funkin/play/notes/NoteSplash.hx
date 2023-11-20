@@ -17,6 +17,7 @@ class NoteSplash extends FlxSprite
   public static function preloadFrames():Void
   {
     frameCollection = Paths.getSparrowAtlas('noteSplashes');
+    frameCollection.parent.persist = true;
   }
 
   public function new()
