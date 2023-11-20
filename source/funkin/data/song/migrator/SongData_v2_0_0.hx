@@ -81,6 +81,8 @@ class SongPlayData_v2_0_0
   // ==========
   // UNMODIFIED VALUES
   // ==========
+  @:default([])
+  @:optional
   public var songVariations:Array<String>;
   public var difficulties:Array<String>;
 

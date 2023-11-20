@@ -1206,6 +1206,15 @@ class DifficultySprite extends FlxSprite
 
     difficultyId = diffId;
 
-    loadGraphic(Paths.image('freeplay/freeplay' + diffId));
+    if (Assets.exists(Paths.file('images/freeplay/freeplay${diffId}.xml')))
+    {
+      this.frames = Paths.getSparrowAtlas('freeplay/freeplay${diffId}');
+      this.animation.addByPrefix('idle', 'idle0', 24, true);
+      if (Preferences.flashingLights) this.animation.play('idle');
+    }
+    else
+    {
+      this.loadGraphic(Paths.image('freeplay/freeplay' + diffId));
+    }
   }
 }

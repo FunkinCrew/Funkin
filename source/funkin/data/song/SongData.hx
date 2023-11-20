@@ -281,6 +281,8 @@ class SongPlayData
   /**
    * The variations this song has. The associated metadata files should exist.
    */
+  @:default([])
+  @:optional
   public var songVariations:Array<String>;
 
   /**

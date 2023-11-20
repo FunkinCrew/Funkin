@@ -265,7 +265,7 @@ class StoryMenuState extends MusicBeatState
       {
         difficultySprite.frames = Paths.getSparrowAtlas('storymenu/difficulties/${diff}');
         difficultySprite.animation.addByPrefix('idle', 'idle0', 24, true);
-        difficultySprite.animation.play('idle');
+        if (Preferences.flashingLights) difficultySprite.animation.play('idle');
       }
       else
       {
@@ -484,7 +484,8 @@ class StoryMenuState extends MusicBeatState
     if (hasChanged)
     {
       buildDifficultySprite();
-      funnyMusicThing();
+      // Disable the funny music thing for now.
+      // funnyMusicThing();
     }
   }
 
