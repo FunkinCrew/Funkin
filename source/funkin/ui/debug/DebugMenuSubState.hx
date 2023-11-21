@@ -7,6 +7,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.MusicBeatSubState;
+import funkin.util.logging.CrashHandler;
 
 class DebugMenuSubState extends MusicBeatSubState
 {
@@ -50,7 +51,9 @@ class DebugMenuSubState extends MusicBeatSubState
     createItem("ANIMATION EDITOR", openAnimationEditor);
     createItem("STAGE EDITOR", openStageEditor);
     createItem("TEST STICKERS", testStickers);
-
+    #if sys
+    createItem("OPEN CRASH LOG FOLDER", openLogFolder);
+    #end
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y));
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
   }
@@ -100,6 +103,22 @@ class DebugMenuSubState extends MusicBeatSubState
   {
     trace('Stage Editor');
   }
+
+  #if sys
+  function openLogFolder()
+  {
+    #if windows
+    Sys.command('explorer', [CrashHandler.LOG_FOLDER]);
+    #elseif mac
+    // mac could be fuckie with where the log folder is relative to the game file...
+    // if this comment is still here... it means it has NOT been verified on mac yet!
+    Sys.command('open', [CrashHandler.LOG_FOLDER]);
+    #end
+
+    // TODO: implement linux
+    // some shit with xdg-open :thinking: emoji...
+  }
+  #end
 
   function exitDebugMenu()
   {
