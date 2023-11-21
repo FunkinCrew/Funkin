@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: ensure git cli is installed
         run: apt update && apt install sudo git -y
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
           token: ${{ secrets.GH_RO_PAT }}
@@ -45,7 +45,7 @@ jobs:
           apt install sudo git curl unzip -y
           echo $GITHUB_WORKSPACE
           git config --global --add safe.directory $GITHUB_WORKSPACE
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
           token: ${{ secrets.GH_RO_PAT }}
@@ -68,7 +68,7 @@ jobs:
        contents: write
        actions: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
           token: ${{ secrets.GH_RO_PAT }}
@@ -103,7 +103,7 @@ jobs:
 #       contents: write
 #       actions: write
 #    steps:
-#      - uses: actions/checkout@v3
+#      - uses: actions/checkout@v4
 #        with:
 #          submodules: 'recursive'
 #          token: ${{ secrets.GH_RO_PAT }}
