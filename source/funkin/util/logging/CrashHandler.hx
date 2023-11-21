@@ -9,7 +9,7 @@ import openfl.events.UncaughtErrorEvent;
 @:nullSafety
 class CrashHandler
 {
-  static final LOG_FOLDER = 'logs';
+  public static final LOG_FOLDER = 'logs';
 
   /**
    * Initializes
