@@ -9,6 +9,7 @@ import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
 import funkin.play.notes.SustainTrail;
 import funkin.data.song.SongData.SongNoteData;
+import flixel.math.FlxMath;
 
 /**
  * A sprite that can be used to display the trail of a hold note in a chart.
@@ -42,9 +43,12 @@ class ChartEditorHoldNoteSprite extends SustainTrail
    * Set the height directly, to a value in pixels.
    * @param h The desired height in pixels.
    */
-  public function setHeightDirectly(h:Float)
+  public function setHeightDirectly(h:Float, ?lerp:Bool = false)
   {
-    sustainLength = h / (getScrollSpeed() * Constants.PIXELS_PER_MS);
+    if (lerp != null && lerp) sustainLength = FlxMath.lerp(sustainLength, h / (getScrollSpeed() * Constants.PIXELS_PER_MS), 0.25);
+    else
+      sustainLength = h / (getScrollSpeed() * Constants.PIXELS_PER_MS);
+
     fullSustainLength = sustainLength;
   }
 
