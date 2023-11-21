@@ -153,8 +153,8 @@ class ChartEditorDialogHandler
     #end
 
     // Create New Song "Easy/Normal/Hard"
-    var linkCreateBasic:Null<Link> = dialog.findComponent('splashCreateFromSongBasic', Link);
-    if (linkCreateBasic == null) throw 'Could not locate splashCreateFromSongBasic link in Welcome dialog';
+    var linkCreateBasic:Null<Link> = dialog.findComponent('splashCreateFromSongBasicOnly', Link);
+    if (linkCreateBasic == null) throw 'Could not locate splashCreateFromSongBasicOnly link in Welcome dialog';
     linkCreateBasic.onClick = function(_event) {
       // Hide the welcome dialog
       dialog.hideDialog(DialogButton.CANCEL);
@@ -163,12 +163,12 @@ class ChartEditorDialogHandler
       //
       // Create Song Wizard
       //
-      openCreateSongWizardBasic(state, false);
+      openCreateSongWizardBasicOnly(state, false);
     }
 
     // Create New Song "Erect/Nightmare"
-    var linkCreateErect:Null<Link> = dialog.findComponent('splashCreateFromSongErect', Link);
-    if (linkCreateErect == null) throw 'Could not locate splashCreateFromSongErect link in Welcome dialog';
+    var linkCreateErect:Null<Link> = dialog.findComponent('splashCreateFromSongErectOnly', Link);
+    if (linkCreateErect == null) throw 'Could not locate splashCreateFromSongErectOnly link in Welcome dialog';
     linkCreateErect.onClick = function(_event) {
       // Hide the welcome dialog
       dialog.hideDialog(DialogButton.CANCEL);
@@ -176,7 +176,20 @@ class ChartEditorDialogHandler
       //
       // Create Song Wizard
       //
-      openCreateSongWizardErect(state, false);
+      openCreateSongWizardErectOnly(state, false);
+    }
+
+    // Create New Song "Easy/Normal/Hard/Erect/Nightmare"
+    var linkCreateErect:Null<Link> = dialog.findComponent('splashCreateFromSongBasicErect', Link);
+    if (linkCreateErect == null) throw 'Could not locate splashCreateFromSongBasicErect link in Welcome dialog';
+    linkCreateErect.onClick = function(_event) {
+      // Hide the welcome dialog
+      dialog.hideDialog(DialogButton.CANCEL);
+
+      //
+      // Create Song Wizard
+      //
+      openCreateSongWizardBasicErect(state, false);
     }
 
     var linkImportChartLegacy:Null<Link> = dialog.findComponent('splashImportChartLegacy', Link);
@@ -458,10 +471,10 @@ class ChartEditorDialogHandler
     };
   }
 
-  public static function openCreateSongWizardBasic(state:ChartEditorState, closable:Bool):Void
+  public static function openCreateSongWizardBasicOnly(state:ChartEditorState, closable:Bool):Void
   {
     // Step 1. Song Metadata
-    var songMetadataDialog:Dialog = openSongMetadataDialog(state);
+    var songMetadataDialog:Dialog = openSongMetadataDialog(state, false, Constants.DEFAULT_VARIATION);
     songMetadataDialog.onDialogClosed = function(_event) {
       state.isHaxeUIDialogOpen = false;
       if (_event.button == DialogButton.APPLY)
@@ -497,10 +510,49 @@ class ChartEditorDialogHandler
     };
   }
 
-  public static function openCreateSongWizardErect(state:ChartEditorState, closable:Bool):Void
+  public static function openCreateSongWizardErectOnly(state:ChartEditorState, closable:Bool):Void
   {
     // Step 1. Song Metadata
-    var songMetadataDialog:Dialog = openSongMetadataDialog(state);
+    var songMetadataDialog:Dialog = openSongMetadataDialog(state, true, Constants.DEFAULT_VARIATION);
+    songMetadataDialog.onDialogClosed = function(_event) {
+      state.isHaxeUIDialogOpen = false;
+      if (_event.button == DialogButton.APPLY)
+      {
+        // Step 2. Upload Instrumental
+        var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
+        uploadInstDialog.onDialogClosed = function(_event) {
+          state.isHaxeUIDialogOpen = false;
+          if (_event.button == DialogButton.APPLY)
+          {
+            // Step 3. Upload Vocals
+            // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
+            var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
+            uploadVocalsDialog.onDialogClosed = function(_event) {
+              state.isHaxeUIDialogOpen = false;
+              state.currentWorkingFilePath = null; // New file, so no path.
+              state.switchToCurrentInstrumental();
+              state.postLoadInstrumental();
+            }
+          }
+          else
+          {
+            // User cancelled the wizard at Step 2! Back to the welcome dialog.
+            openWelcomeDialog(state);
+          }
+        };
+      }
+      else
+      {
+        // User cancelled the wizard at Step 1! Back to the welcome dialog.
+        openWelcomeDialog(state);
+      }
+    };
+  }
+
+  public static function openCreateSongWizardBasicErect(state:ChartEditorState, closable:Bool):Void
+  {
+    // Step 1. Song Metadata
+    var songMetadataDialog:Dialog = openSongMetadataDialog(state, false, Constants.DEFAULT_VARIATION);
     songMetadataDialog.onDialogClosed = function(_event) {
       state.isHaxeUIDialogOpen = false;
       if (_event.button == DialogButton.APPLY)
@@ -517,7 +569,7 @@ class ChartEditorDialogHandler
             uploadVocalsDialog.onDialogClosed = function(_event) {
               state.switchToCurrentInstrumental();
               // Step 4. Song Metadata (Erect)
-              var songMetadataDialogErect:Dialog = openSongMetadataDialog(state, 'erect');
+              var songMetadataDialogErect:Dialog = openSongMetadataDialog(state, true, 'erect');
               songMetadataDialogErect.onDialogClosed = function(_event) {
                 state.isHaxeUIDialogOpen = false;
                 if (_event.button == DialogButton.APPLY)
@@ -699,10 +751,8 @@ class ChartEditorDialogHandler
    * @return The dialog to open.
    */
   @:haxe.warning("-WVarInit")
-  public static function openSongMetadataDialog(state:ChartEditorState, ?targetVariation:String):Dialog
+  public static function openSongMetadataDialog(state:ChartEditorState, erect:Bool, targetVariation:String):Dialog
   {
-    if (targetVariation == null) targetVariation = Constants.DEFAULT_VARIATION;
-
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT, true, false);
     if (dialog == null) throw 'Could not locate Song Metadata dialog';
 
@@ -719,13 +769,10 @@ class ChartEditorDialogHandler
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
-    var newSongMetadata:SongMetadata = new SongMetadata('', '', 'default');
+    var newSongMetadata:SongMetadata = new SongMetadata('', '', Constants.DEFAULT_VARIATION);
 
-    newSongMetadata.playData.difficulties = switch (targetVariation)
-    {
-      case 'erect': ['erect', 'nightmare'];
-      default: ['easy', 'normal', 'hard'];
-    };
+    newSongMetadata.variation = targetVariation;
+    newSongMetadata.playData.difficulties = (erect) ? ['erect', 'nightmare'] : ['easy', 'normal', 'hard'];
 
     var inputSongName:Null<TextField> = dialog.findComponent('inputSongName', TextField);
     if (inputSongName == null) throw 'Could not locate inputSongName TextField in Song Metadata dialog';
@@ -830,10 +877,13 @@ class ChartEditorDialogHandler
     var dialogContinue:Null<Button> = dialog.findComponent('dialogContinue', Button);
     if (dialogContinue == null) throw 'Could not locate dialogContinue button in Song Metadata dialog';
     dialogContinue.onClick = (_event) -> {
-      state.songMetadata.clear();
+      if (targetVariation == Constants.DEFAULT_VARIATION) state.songMetadata.clear();
+
       state.songMetadata.set(targetVariation, newSongMetadata);
 
       Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+      state.difficultySelectDirty = true;
 
       dialog.hideDialog(DialogButton.APPLY);
     }

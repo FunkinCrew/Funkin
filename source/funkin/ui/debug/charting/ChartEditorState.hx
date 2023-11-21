@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import haxe.ui.containers.menus.MenuBar;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -566,6 +567,23 @@ class ChartEditorState extends HaxeUIState
   }
 
   /**
+   * Whether the user's mouse cursor is hovering over a SOLID component of the HaxeUI.
+   * If so, we can ignore certain mouse events underneath.
+   */
+  var isCursorOverHaxeUI(get, never):Bool;
+
+  function get_isCursorOverHaxeUI():Bool
+  {
+    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+  }
+
+  /**
+   * The value of `isCursorOverHaxeUI` from the previous frame.
+   * This is useful because we may have just clicked a menu item, causing the menu to disappear.
+   */
+  var wasCursorOverHaxeUI:Bool = false;
+
+  /**
    * Set by ChartEditorDialogHandler, used to prevent background interaction while the dialog is open.
    */
   var isHaxeUIDialogOpen:Bool = false;
@@ -1009,7 +1027,7 @@ class ChartEditorState extends HaxeUIState
     {
       // Initialize to the default value if not set.
       result = [];
-      trace('Initializing blank note data for difficulty ' + selectedDifficulty);
+      trace('Initializing blank chart for difficulty ' + selectedDifficulty);
       currentSongChartData.notes.set(selectedDifficulty, result);
       currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
       return result;
@@ -1941,8 +1959,10 @@ class ChartEditorState extends HaxeUIState
     playbarHead.onDragEnd = function(_:DragEvent) {
       playbarHeadDragging = false;
 
+      var value:Null<Float> = playbarHead?.value;
+
       // Set the song position to where the playhead was moved to.
-      scrollPositionInPixels = songLengthInPixels * (playbarHead?.value ?? 0 / 100);
+      scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
       // Update the conductor and audio tracks to match.
       moveSongToScrollPosition();
 
@@ -1962,6 +1982,10 @@ class ChartEditorState extends HaxeUIState
 
     menubarItemSaveChart = findComponent('menubarItemSaveChart', MenuItem);
     if (menubarItemSaveChart == null) throw "Could not find menubarItemSaveChart!";
+
+    var menubar = findComponent('menubar', MenuBar);
+    if (menubar == null) throw "Could not find menubar!";
+    if (!Preferences.debugDisplay) menubar.paddingLeft = null;
 
     // Setup notifications.
     @:privateAccess
@@ -2280,6 +2304,8 @@ class ChartEditorState extends HaxeUIState
     #if debug
     handleQuickWatch();
     #end
+
+    handlePostUpdate();
   }
 
   /**
@@ -2724,7 +2750,7 @@ class ChartEditorState extends HaxeUIState
   function handleScrollKeybinds():Void
   {
     // Don't scroll when the user is interacting with the UI, unless a playbar button (the << >> ones) is pressed.
-    if (isHaxeUIFocused && playbarButtonPressed == null) return;
+    if ((isHaxeUIFocused || isCursorOverHaxeUI) && playbarButtonPressed == null) return;
 
     var scrollAmount:Float = 0; // Amount to scroll the grid.
     var playheadAmount:Float = 0; // Amount to scroll the playhead relative to the grid.
@@ -2925,7 +2951,7 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
-    var shouldHandleCursor:Bool = !isHaxeUIFocused
+    var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging)
       || (selectionBoxStartPos != null)
       || (dragTargetNote != null || dragTargetEvent != null);
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
@@ -3095,9 +3121,9 @@ class ChartEditorState extends HaxeUIState
                 if (!FlxG.keys.pressed.CONTROL)
                 {
                   // Deselect all items.
-                  if (currentNoteSelection.length > 0 || currentEventSelection.length > 0)
+                  var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
+                  if (shouldDeselect)
                   {
-                    trace('Clicked and dragged outside grid, deselecting all items.');
                     performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
                   }
                 }
@@ -3213,7 +3239,11 @@ class ChartEditorState extends HaxeUIState
               else
               {
                 // Click on an empty space to deselect everything.
-                performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+                var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
+                if (shouldDeselect)
+                {
+                  performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
+                }
               }
             }
           }
@@ -3224,9 +3254,9 @@ class ChartEditorState extends HaxeUIState
             if (!FlxG.keys.pressed.CONTROL)
             {
               // Deselect all items.
-              if (currentNoteSelection.length > 0 || currentEventSelection.length > 0)
+              var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
+              if (shouldDeselect)
               {
-                trace('Clicked outside grid, deselecting all items.');
                 performCommand(new DeselectAllItemsCommand(currentNoteSelection, currentEventSelection));
               }
             }
@@ -3295,7 +3325,6 @@ class ChartEditorState extends HaxeUIState
           if (FlxG.mouse.screenY < MENU_BAR_HEIGHT)
           {
             // Scroll up.
-            trace('Scroll up!');
             var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.screenY;
             scrollPositionInPixels -= diff * 0.5; // Too fast!
             moveSongToScrollPosition();
@@ -3303,7 +3332,6 @@ class ChartEditorState extends HaxeUIState
           else if (FlxG.mouse.screenY > (playbarHeadLayout?.y ?? 0.0))
           {
             // Scroll down.
-            trace('Scroll down!');
             var diff:Float = FlxG.mouse.screenY - (playbarHeadLayout?.y ?? 0.0);
             scrollPositionInPixels += diff * 0.5; // Too fast!
             moveSongToScrollPosition();
@@ -3454,7 +3482,6 @@ class ChartEditorState extends HaxeUIState
                 if (isNoteSelected(highlightedNote.noteData))
                 {
                   // Clicked a selected event, start dragging.
-                  trace('Ready to drag!');
                   dragTargetNote = highlightedNote;
                 }
                 else
@@ -3468,7 +3495,6 @@ class ChartEditorState extends HaxeUIState
                 if (isEventSelected(highlightedEvent.eventData))
                 {
                   // Clicked a selected event, start dragging.
-                  trace('Ready to drag!');
                   dragTargetEvent = highlightedEvent;
                 }
                 else
@@ -3682,6 +3708,7 @@ class ChartEditorState extends HaxeUIState
 
       for (curVariation in availableVariations)
       {
+        trace('DIFFICULTY TOOLBOX: Variation ${curVariation}');
         var variationMetadata:Null<SongMetadata> = songMetadata.get(curVariation);
         if (variationMetadata == null) continue;
 
@@ -3696,6 +3723,7 @@ class ChartEditorState extends HaxeUIState
 
         for (difficulty in difficultyList)
         {
+          trace('DIFFICULTY TOOLBOX: Difficulty ${curVariation}_$difficulty');
           var _treeDifficulty:TreeViewNode = treeVariation.addNode(
             {
               id: 'stv_difficulty_${curVariation}_$difficulty',
@@ -4042,6 +4070,13 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
+    // CTRL + F = Flip Notes
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F)
+    {
+      // Flip selected notes.
+      performCommand(new FlipNotesCommand(currentNoteSelection));
+    }
+
     // CTRL + A = Select All
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.A)
     {
@@ -4117,6 +4152,11 @@ class ChartEditorState extends HaxeUIState
     FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
     FlxG.watch.addQuick("notesSelected", currentNoteSelection.length);
     FlxG.watch.addQuick("eventsSelected", currentEventSelection.length);
+  }
+
+  function handlePostUpdate():Void
+  {
+    wasCursorOverHaxeUI = isCursorOverHaxeUI;
   }
 
   /**

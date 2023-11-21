@@ -155,6 +155,20 @@ class HaxeUIState extends MusicBeatState
     }
   }
 
+  function addTooltip(key:String, text:String):Void
+  {
+    var target:Component = findComponent(key);
+    if (target == null)
+    {
+      // Gracefully handle the case where the item can't be located.
+      trace('WARN: Could not locate menu item: $key');
+    }
+    else
+    {
+      target.tooltip = text;
+    }
+  }
+
   /**
    * Add an onChange listener to a HaxeUI input component such as a slider or text field.
    */

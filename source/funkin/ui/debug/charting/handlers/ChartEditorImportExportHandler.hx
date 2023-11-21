@@ -375,14 +375,15 @@ class ChartEditorImportExportHandler
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
         FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
-        // state.saveDataDirty = false; // Don't edit the saveData flag because the app might be closing.
+
       }
       else
       {
-        // Force writing to the specific path (user pressed CTRL-SHIFT-S)
+        // Force write since we know what file the user wants to overwrite.
         trace('Force exporting to $targetPath...');
         FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
-        state.saveDataDirty = false; // Don't edit the saveData flag because the app might be closing.
+        state.saveDataDirty = false;
+
       }
     }
     else
