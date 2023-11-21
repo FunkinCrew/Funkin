@@ -14,8 +14,19 @@ jobs:
       - name: ensure git cli is installed
         run: apt update && apt install sudo git -y
       - uses: actions/checkout@v3
-      - name: print latest_commit
-        run: echo ${{ github.sha }}
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.GH_RO_PAT }}
+      - name: check whether submodules exist
+        run:
+          # debug output
+          echo gh=${{ github.sha }}
+          echo head=$(git rev-parse HEAD)
+          echo art=$(git -C art rev-parse HEAD)
+          echo assets=$(git -C assets rev-parse HEAD)
+          # checks if HEAD commit hash in submodules is diff from current repo, and therefore exists
+          test $(git rev-parse HEAD) != $(git -C art rev-parse HEAD)
+          test $(git rev-parse HEAD) != $(git -C assets rev-parse HEAD)
       - id: should_run
         continue-on-error: true
         name: check latest commit is less than a day
