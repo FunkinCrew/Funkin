@@ -18,12 +18,13 @@ jobs:
           submodules: 'recursive'
           token: ${{ secrets.GH_RO_PAT }}
       - name: check whether submodules exist
-        run:
+        run: |
           # debug output
           echo gh=${{ github.sha }}
           echo head=$(git rev-parse HEAD)
           echo art=$(git -C art rev-parse HEAD)
           echo assets=$(git -C assets rev-parse HEAD)
+
           # checks if HEAD commit hash in submodules is diff from current repo, and therefore exists
           test $(git rev-parse HEAD) != $(git -C art rev-parse HEAD)
           test $(git rev-parse HEAD) != $(git -C assets rev-parse HEAD)
