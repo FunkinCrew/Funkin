@@ -70,10 +70,7 @@ class SongDataUtils
       {
         // The currently iterated note is in the subtrahend array.
         // SongNoteData's == operation has been overridden so that this will work.
-        if (x == note)
-        {
-          return false;
-        }
+        if (x == note) return false;
       }
 
       return true;
@@ -94,8 +91,13 @@ class SongDataUtils
     if (events.length == 0 || subtrahend.length == 0) return events;
 
     return events.filter(function(event:SongEventData):Bool {
-      // SongEventData's == operation has been overridden so that this will work.
-      return !subtrahend.has(event);
+      for (x in subtrahend)
+      {
+        // The currently iterated event is in the subtrahend array.
+        // SongEventData's == operation has been overridden so that this will work.
+        if (x == event) return false;
+      }
+      return true;
     });
   }
 

@@ -15,7 +15,7 @@ class MoveEventsCommand implements ChartEditorCommand
   var movedEvents:Array<SongEventData>;
   var offset:Float;
 
-  public function new(notes:Array<SongEventData>, offset:Float)
+  public function new(events:Array<SongEventData>, offset:Float)
   {
     // Clone the notes to prevent editing from affecting the history.
     this.events = [for (event in events) event.clone()];
@@ -38,6 +38,7 @@ class MoveEventsCommand implements ChartEditorCommand
       movedEvents.push(resultEvent);
     }
 
+    state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(movedEvents);
     state.currentEventSelection = movedEvents;
 
