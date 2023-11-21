@@ -73,6 +73,11 @@ class FileUtil
     #end
   }
 
+  public static function openFolderInExplorer():Void
+  {
+    throw 'Not implemented yet.';
+  }
+
   /**
    * Browses for multiple file, then calls `onSelect(paths)` when a path chosen.
    * Note that on HTML5 this will immediately fail.

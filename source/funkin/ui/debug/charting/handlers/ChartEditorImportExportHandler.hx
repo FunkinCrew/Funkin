@@ -318,6 +318,16 @@ class ChartEditorImportExportHandler
     return warnings;
   }
 
+  public static function getLatestBackupPath()
+  {
+    throw 'Not implemented yet.';
+  }
+
+  public static function getLatestBackupDate()
+  {
+    throw 'Not implemented yet.';
+  }
+
   /**
    * @param force Whether to export without prompting. `false` will prompt the user for a location.
    * @param targetPath where to export if `force` is `true`. If `null`, will export to the `backups` folder.
@@ -375,7 +385,6 @@ class ChartEditorImportExportHandler
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
         FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
-
       }
       else
       {
@@ -383,7 +392,6 @@ class ChartEditorImportExportHandler
         trace('Force exporting to $targetPath...');
         FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
         state.saveDataDirty = false;
-
       }
     }
     else

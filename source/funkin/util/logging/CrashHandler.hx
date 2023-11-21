@@ -2,6 +2,7 @@ package funkin.util.logging;
 
 import openfl.Lib;
 import openfl.events.UncaughtErrorEvent;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 /**
  * A custom crash handler that writes to a log file and displays a message box.
@@ -10,6 +11,19 @@ import openfl.events.UncaughtErrorEvent;
 class CrashHandler
 {
   static final LOG_FOLDER = 'logs';
+
+  /**
+   * Called before exiting the game when a standard error occurs, like a thrown exception.
+   * @param message The error message.
+   */
+  public static var errorSignal(default, null):FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+  /**
+   * Called before exiting the game when a critical error occurs, like a stack overflow or null object reference.
+   * CAREFUL: The game may be in an unstable state when this is called.
+   * @param message The error message.
+   */
+  public static var criticalErrorSignal(default, null):FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
   /**
    * Initializes
@@ -34,6 +48,8 @@ class CrashHandler
   {
     try
     {
+      errorSignal.dispatch(generateErrorMessage(error));
+
       #if sys
       logError(error);
       #end
@@ -50,6 +66,8 @@ class CrashHandler
   {
     try
     {
+      criticalErrorSignal.dispatch(message);
+
       #if sys
       logErrorMessage(message, true);
       #end

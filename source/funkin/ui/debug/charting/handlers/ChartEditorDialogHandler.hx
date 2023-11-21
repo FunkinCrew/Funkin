@@ -250,6 +250,39 @@ class ChartEditorDialogHandler
     return dialog;
   }
 
+  /**
+   * [Description]
+   * @param state
+   * @return Null<Dialog>
+   */
+  public static function openBackupAvailableDialog(state:ChartEditorState):Null<Dialog>
+  {
+    var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT, true, true);
+    if (dialog == null) throw 'Could not locate Backup Available dialog';
+
+    state.isHaxeUIDialogOpen = true;
+
+    var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
+    if (buttonCancel == null) throw 'Could not locate dialogCancel button in Backup Available dialog';
+    buttonCancel.onClick = function(_event) {
+      dialog.hideDialog(DialogButton.CANCEL);
+    }
+
+    var buttonGoToFolder:Null<Button> = dialog.findComponent('buttonGoToFolder', Button);
+    if (buttonGoToFolder == null) throw 'Could not locate buttonGoToFolder button in Backup Available dialog';
+    buttonGoToFolder.onClick = function(_event) {
+      dialog.hideDialog(DialogButton.CANCEL);
+      state.openBackupFolder();
+    }
+
+    var buttonOpenBackup:Null<Button> = dialog.findComponent('buttonOpenBackup', Button);
+    if (buttonOpenBackup == null) throw 'Could not locate buttonOpenBackup button in Backup Available dialog';
+    buttonOpenBackup.onClick = function(_event) {
+      dialog.hideDialog(DialogButton.CANCEL);
+      state.openBackup();
+    }
+  }
+
   public static function openBrowseFNFC(state:ChartEditorState, closable:Bool):Null<Dialog>
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_UPLOAD_CHART_LAYOUT, true, closable);

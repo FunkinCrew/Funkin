@@ -177,6 +177,23 @@ abstract Save(RawSaveData)
     return this.optionsChartEditor.previousFiles;
   }
 
+  public var chartEditorHasBackup(get, set):Bool;
+
+  function get_chartEditorHasBackup():Bool
+  {
+    if (this.optionsChartEditor.hasBackup == null) this.optionsChartEditor.hasBackup = [];
+
+    return this.optionsChartEditor.hasBackup;
+  }
+
+  function set_chartEditorHasBackup(value:Array<String>):Bool
+  {
+    // Set and apply.
+    this.optionsChartEditor.hasBackup = value;
+    flush();
+    return this.optionsChartEditor.hasBackup;
+  }
+
   public var chartEditorNoteQuant(get, set):Int;
 
   function get_chartEditorNoteQuant():Int
@@ -926,6 +943,13 @@ typedef SaveControlsData =
  */
 typedef SaveDataChartEditorOptions =
 {
+  /**
+   * Whether the Chart Editor created a backup the last time it closed.
+   * Prompt the user to load it, then set this back to `false`.
+   * @default `false`
+   */
+  var ?hasBackup:Bool;
+
   /**
    * Previous files opened in the Chart Editor.
    * @default `[]`
