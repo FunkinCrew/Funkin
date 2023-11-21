@@ -19,6 +19,8 @@ jobs:
           token: ${{ secrets.GH_RO_PAT }}
       - name: check whether submodules exist
         run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+
           # debug output
           echo gh=${{ github.sha }}
           echo head=$(git rev-parse HEAD)
