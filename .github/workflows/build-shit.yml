@@ -5,11 +5,14 @@ on:
 
 jobs:
   check_date:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
+    container: ubuntu:latest
     name: Check latest commit
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
     steps:
+      - name: ensure git cli is installed
+        run: apt update && apt install sudo git -y
       - uses: actions/checkout@v3
       - name: print latest_commit
         run: echo ${{ github.sha }}
@@ -21,8 +24,15 @@ jobs:
   create-nightly-html5:
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false'}}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
+    container: ubuntu:latest
     steps:
+      - name: prepare container
+        run: |
+          apt update
+          apt install sudo git curl unzip -y
+          echo $GITHUB_WORKSPACE
+          git config --global --add safe.directory $GITHUB_WORKSPACE
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
@@ -30,7 +40,6 @@ jobs:
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
         run: |
-          sudo apt-get update
           sudo apt-get install -y libx11-dev xorg-dev libgl-dev libxi-dev libxext-dev libasound2-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev
           haxelib run lime build html5 -release --times
           ls

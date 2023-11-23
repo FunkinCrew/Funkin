@@ -3466,13 +3466,14 @@ class ChartEditorState extends HaxeUIState
             gridGhostHoldNote.noteData = gridGhostNote.noteData;
             gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
 
-            gridGhostHoldNote.setHeightDirectly(dragLengthPixels);
+            gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
 
             gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
           }
           else
           {
             gridGhostHoldNote.visible = false;
+            gridGhostHoldNote.setHeightDirectly(0);
           }
         }
 

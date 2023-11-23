@@ -10,7 +10,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 @:nullSafety
 class CrashHandler
 {
-  static final LOG_FOLDER = 'logs';
+  public static final LOG_FOLDER = 'logs';
 
   /**
    * Called before exiting the game when a standard error occurs, like a thrown exception.
