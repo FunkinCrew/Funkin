@@ -1650,13 +1650,13 @@ class ChartEditorState extends HaxeUIState
         }
         else
         {
-          this.error('Failure', 'Failed to load chart (${params.fnfcTargetPath})');
+          this.error('Failure', 'Failed to load chart (${chartPath.toString()})');
         }
       }
 
       if (!FileUtil.doesFileExist(chartPath))
       {
-        trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
+        trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
         menuItemRecentChart.disabled = true;
       }
       else
@@ -2030,7 +2030,7 @@ class ChartEditorState extends HaxeUIState
         this.exportAllSongData(false, null);
       }
     });
-    addUIClickListener('menubarItemSaveChartAs', _ -> this.exportAllSongData());
+    addUIClickListener('menubarItemSaveChartAs', _ -> this.exportAllSongData(false, null));
     addUIClickListener('menubarItemLoadInst', _ -> this.openUploadInstDialog(true));
     addUIClickListener('menubarItemImportChart', _ -> this.openImportChartDialog('legacy', true));
     addUIClickListener('menubarItemExit', _ -> quitChartEditor());
@@ -2269,12 +2269,13 @@ class ChartEditorState extends HaxeUIState
     if (needsAutoSave)
     {
       this.exportAllSongData(true, null);
-      this.infoWithActions('Auto-Save', 'Chart auto-saved to your backups folder.', [
+      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+      this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
         {
-          "text": "Take Me There",
-          action: openBackupsFolder,
+          text: "Take Me There",
+          callback: openBackupsFolder,
         }
-      ], true);
+      ]);
     }
     #end
   }
@@ -3487,6 +3488,11 @@ class ChartEditorState extends HaxeUIState
           // Finished dragging. Release the note.
           currentPlaceNoteData = null;
         }
+        else
+        {
+          // Cursor should be a grabby hand.
+          if (targetCursorMode == null) targetCursorMode = Grabbing;
+        }
       }
       else
       {
@@ -4031,23 +4037,21 @@ class ChartEditorState extends HaxeUIState
       if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
       {
         // CTRL + SHIFT + S = Save As
-        this.exportAllSongData(false, null);
+        this.exportAllSongData(false, null, function(path:String) {
+          // CTRL + SHIFT + S Successful
+          this.success('Saved Chart', 'Chart saved successfully to ${path}.');
+        }, function() {
+          // CTRL + SHIFT + S Cancelled
+        });
       }
       else
       {
         // CTRL + S = Save Chart
         this.exportAllSongData(true, currentWorkingFilePath);
+        this.success('Saved Chart', 'Chart saved successfully to ${currentWorkingFilePath}.');
       }
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.S)
-    {
-      this.exportAllSongData(false, null, function(path:String) {
-        // CTRL + SHIFT + S Successful
-      }, function() {
-        // CTRL + SHIFT + S Cancelled
-      });
-    }
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
     {

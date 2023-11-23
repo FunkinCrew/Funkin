@@ -77,9 +77,9 @@ class ChartEditorNotificationHandler
    * @param actions The actions to add to the notification.
    * @return The notification that was sent.
    */
-  public static function info(state:ChartEditorState, title:String, body:String):Notification
+  public static function infoWithActions(state:ChartEditorState, title:String, body:String, actions:Array<NotificationAction>):Notification
   {
-    return sendNotification(title, body, NotificationType.Info);
+    return sendNotification(title, body, NotificationType.Info, actions);
   }
 
   /**
@@ -104,7 +104,7 @@ class ChartEditorNotificationHandler
   static function sendNotification(title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationAction>):Notification
   {
     #if !mac
-    var actionNames:Array<String> = actions.map(action -> action.text);
+    var actionNames:Array<String> = actions == null ? [] : actions.map(action -> action.text);
 
     var notif = NotificationManager.instance.addNotification(
       {
@@ -115,21 +115,25 @@ class ChartEditorNotificationHandler
         actions: actionNames
       });
 
-    // TODO: Tell Ian that this is REALLY dumb.
-    var actionsContainer:HBox = notif.findComponent('actionsContainer', HBox);
-    actionsContainer.walkComponents(function(component) {
-      if (Std.isOfType(component, Button))
-      {
-        var button:Button = cast component;
-        var action:Null<NotificationAction> = actions.find(action -> action.text == button.text);
-        if (action != null && action.callback != null)
+    if (actionNames.length > 0)
+    {
+      // TODO: Tell Ian that this is REALLY dumb.
+      var actionsContainer:HBox = notif.findComponent('actionsContainer', HBox);
+      actionsContainer.walkComponents(function(component) {
+        if (Std.isOfType(component, Button))
         {
-          button.onClick = function(_) {
-            action.callback();
-          };
+          var button:Button = cast component;
+          var action:Null<NotificationAction> = actions.find(action -> action.text == button.text);
+          if (action != null && action.callback != null)
+          {
+            button.onClick = function(_) {
+              action.callback();
+            };
+          }
         }
-      }
-    });
+        return true; // Continue walking.
+      });
+    }
 
     return notif;
     #else
