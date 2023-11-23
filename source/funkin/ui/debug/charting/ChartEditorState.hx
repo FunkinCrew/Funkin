@@ -2126,6 +2126,16 @@ class ChartEditorState extends HaxeUIState
     addUIClickListener('menubarItemAbout', _ -> this.openAboutDialog());
     addUIClickListener('menubarItemWelcomeDialog', _ -> this.openWelcomeDialog(true));
 
+    #if sys
+    addUIClickListener('menubarItemGoToBackupsFolder', _ -> this.openBackupsFolder());
+    #else
+    // Disable the menu item if we're not on a desktop platform.
+    var menubarItemGoToBackupsFolder = findComponent('menubarItemGoToBackupsFolder', MenuItem);
+    if (menubarItemGoToBackupsFolder != null) menubarItemGoToBackupsFolder.disabled = true;
+
+    menubarItemGoToBackupsFolder.disabled = true;
+    #end
+
     addUIClickListener('menubarItemUserGuide', _ -> this.openUserGuideDialog());
 
     addUIChangeListener('menubarItemDownscroll', event -> isViewDownscroll = event.value);
@@ -2259,8 +2269,25 @@ class ChartEditorState extends HaxeUIState
     if (needsAutoSave)
     {
       this.exportAllSongData(true, null);
+      this.infoWithActions('Auto-Save', 'Chart auto-saved to your backups folder.', [
+        {
+          "text": "Take Me There",
+          action: openBackupsFolder,
+        }
+      ], true);
     }
     #end
+  }
+
+  /**
+   * Open the backups folder in the file explorer.
+   * Don't call this on HTML5.
+   */
+  function openBackupsFolder():Void
+  {
+    // TODO: Is there a way to open a folder and highlight a file in it?
+    var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+    WindowUtil.openFolder(absoluteBackupsPath);
   }
 
   /**

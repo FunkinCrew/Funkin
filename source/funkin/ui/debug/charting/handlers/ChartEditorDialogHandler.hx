@@ -288,9 +288,7 @@ class ChartEditorDialogHandler
     var buttonGoToFolder:Null<Button> = dialog.findComponent('buttonGoToFolder', Button);
     if (buttonGoToFolder == null) throw 'Could not locate buttonGoToFolder button in Backup Available dialog';
     buttonGoToFolder.onClick = function(_event) {
-      // TODO: Is there a way to open a folder and highlight a file in it?
-      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
-      WindowUtil.openFolder(absoluteBackupsPath);
+      state.openBackupsFolder();
       // Don't hide the welcome dialog behind this.
       dialog.hideDialog(DialogButton.CANCEL);
     }
