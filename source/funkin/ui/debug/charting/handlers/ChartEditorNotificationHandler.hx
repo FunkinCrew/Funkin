@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting.handlers;
 
+import haxe.ui.components.Button;
+import haxe.ui.containers.HBox;
 import haxe.ui.notifications.Notification;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
@@ -68,6 +70,19 @@ class ChartEditorNotificationHandler
   }
 
   /**
+   * Send a notification with an info icon and one or more actions.
+   * @param state The current state of the chart editor.
+   * @param title The title of the notification.
+   * @param body The body of the notification.
+   * @param actions The actions to add to the notification.
+   * @return The notification that was sent.
+   */
+  public static function info(state:ChartEditorState, title:String, body:String):Notification
+  {
+    return sendNotification(title, body, NotificationType.Info);
+  }
+
+  /**
    * Clear all active notifications.
    * @param state The current state of the chart editor.
    */
@@ -86,18 +101,45 @@ class ChartEditorNotificationHandler
     NotificationManager.instance.removeNotification(notif);
   }
 
-  static function sendNotification(title:String, body:String, ?type:NotificationType):Notification
+  static function sendNotification(title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationAction>):Notification
   {
     #if !mac
-    return NotificationManager.instance.addNotification(
+    var actionNames:Array<String> = actions.map(action -> action.text);
+
+    var notif = NotificationManager.instance.addNotification(
       {
         title: title,
         body: body,
         type: type ?? NotificationType.Default,
-        expiryMs: Constants.NOTIFICATION_DISMISS_TIME
+        expiryMs: Constants.NOTIFICATION_DISMISS_TIME,
+        actions: actionNames
       });
+
+    // TODO: Tell Ian that this is REALLY dumb.
+    var actionsContainer:HBox = notif.findComponent('actionsContainer', HBox);
+    actionsContainer.walkComponents(function(component) {
+      if (Std.isOfType(component, Button))
+      {
+        var button:Button = cast component;
+        var action:Null<NotificationAction> = actions.find(action -> action.text == button.text);
+        if (action != null && action.callback != null)
+        {
+          button.onClick = function(_) {
+            action.callback();
+          };
+        }
+      }
+    });
+
+    return notif;
     #else
     trace('WARNING: Notifications are not supported on Mac OS.');
     #end
   }
+}
+
+typedef NotificationAction =
+{
+  text:String,
+  callback:Void->Void
 }
