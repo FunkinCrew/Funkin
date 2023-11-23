@@ -290,7 +290,7 @@ class ChartEditorDialogHandler
     buttonGoToFolder.onClick = function(_event) {
       state.openBackupsFolder();
       // Don't hide the welcome dialog behind this.
-      dialog.hideDialog(DialogButton.CANCEL);
+      // dialog.hideDialog(DialogButton.CANCEL);
     }
 
     var buttonOpenBackup:Null<Button> = dialog.findComponent('buttonOpenBackup', Button);
