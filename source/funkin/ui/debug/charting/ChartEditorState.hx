@@ -2956,9 +2956,10 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
-    var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging)
+    var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
       || (selectionBoxStartPos != null)
       || (dragTargetNote != null || dragTargetEvent != null);
+
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
 
     // trace('shouldHandleCursor: $shouldHandleCursor');

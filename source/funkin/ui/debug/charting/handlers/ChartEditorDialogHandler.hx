@@ -101,7 +101,13 @@ class ChartEditorDialogHandler
       if (chartPath == null) continue;
 
       var linkRecentChart:Link = new Link();
-      linkRecentChart.text = chartPath;
+      // regex to only use the filename, not the full path
+      // "dadbattle.fnc" insted of "c:/user/docs/funkin/dadbattle.fnc"
+      // hovering tooltip shows full path
+      var fileNamePattern:EReg = new EReg("([^/\\\\]+)$", "");
+      var fileName:String = fileNamePattern.match(chartPath) ? fileNamePattern.matched(1) : chartPath;
+      linkRecentChart.text = fileName;
+      linkRecentChart.tooltip = chartPath;
       linkRecentChart.onClick = function(_event) {
         dialog.hideDialog(DialogButton.CANCEL);
         state.stopWelcomeMusic();
