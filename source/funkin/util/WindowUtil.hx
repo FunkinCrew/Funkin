@@ -18,7 +18,7 @@ class WindowUtil
    * Runs platform-specific code to open a URL in a web browser.
    * @param targetUrl The URL to open.
    */
-  public static function openURL(targetUrl:String)
+  public static function openURL(targetUrl:String):Void
   {
     #if CAN_OPEN_LINKS
     #if linux
@@ -26,6 +26,25 @@ class WindowUtil
     #else
     // This should work on Windows and HTML5.
     FlxG.openURL(targetUrl);
+    #end
+    #else
+    throw 'Cannot open URLs on this platform.';
+    #end
+  }
+
+  /**
+   * Runs platform-specific code to open a path in the file explorer.
+   * @param targetPath The path to open.
+   */
+  public static function openFolder(targetPath:String):Void
+  {
+    #if CAN_OPEN_LINKS
+    #if windows
+    Sys.command('explorer', [targetPath]);
+    #elseif mac
+    Sys.command('open', [targetPath]);
+    #elseif linux
+    Sys.command('open', [targetPath]);
     #end
     #else
     throw 'Cannot open URLs on this platform.';

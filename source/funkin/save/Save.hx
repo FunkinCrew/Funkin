@@ -181,12 +181,12 @@ abstract Save(RawSaveData)
 
   function get_chartEditorHasBackup():Bool
   {
-    if (this.optionsChartEditor.hasBackup == null) this.optionsChartEditor.hasBackup = [];
+    if (this.optionsChartEditor.hasBackup == null) this.optionsChartEditor.hasBackup = false;
 
     return this.optionsChartEditor.hasBackup;
   }
 
-  function set_chartEditorHasBackup(value:Array<String>):Bool
+  function set_chartEditorHasBackup(value:Bool):Bool
   {
     // Set and apply.
     this.optionsChartEditor.hasBackup = value;

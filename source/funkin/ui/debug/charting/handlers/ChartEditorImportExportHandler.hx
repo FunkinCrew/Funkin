@@ -1,11 +1,10 @@
 package funkin.ui.debug.charting.handlers;
 
 import funkin.util.VersionUtil;
-import haxe.ui.notifications.NotificationType;
 import funkin.util.DateUtil;
 import haxe.io.Path;
 import funkin.util.SerializerUtil;
-import haxe.ui.notifications.NotificationManager;
+import funkin.util.SortUtil;
 import funkin.util.FileUtil;
 import funkin.util.FileUtil.FileWriteMode;
 import haxe.io.Bytes;
@@ -22,6 +21,8 @@ import funkin.data.song.importer.ChartManifestData;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorImportExportHandler
 {
+  public static final BACKUPS_PATH:String = './backups/';
+
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
    */
@@ -310,21 +311,56 @@ class ChartEditorImportExportHandler
     return warnings;
   }
 
-  public static function getLatestBackupPath()
+  public static function getLatestBackupPath():Null<String>
   {
-    throw 'Not implemented yet.';
+    #if sys
+    var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
+    entries.sort(SortUtil.alphabetically);
+
+    var latestBackupPath:Null<String> = entries[(entries.length - 1)];
+
+    if (latestBackupPath == null) return null;
+    return haxe.io.Path.join([BACKUPS_PATH, latestBackupPath]);
+    #else
+    return null;
+    #end
   }
 
-  public static function getLatestBackupDate()
+  public static function getLatestBackupDate():Null<Date>
   {
-    throw 'Not implemented yet.';
+    #if sys
+    var latestBackupPath:Null<String> = getLatestBackupPath();
+    if (latestBackupPath == null) return null;
+
+    var latestBackupName:String = haxe.io.Path.withoutDirectory(latestBackupPath);
+    latestBackupName = haxe.io.Path.withoutExtension(latestBackupName);
+
+    var parts = latestBackupName.split('-');
+
+    // var chart:String = parts[0];
+    // var editor:String = parts[1];
+    var year:Int = Std.parseInt(parts[2] ?? '0') ?? 0;
+    var month:Int = Std.parseInt(parts[3] ?? '1') ?? 1;
+    var day:Int = Std.parseInt(parts[4] ?? '0') ?? 0;
+    var hour:Int = Std.parseInt(parts[5] ?? '0') ?? 0;
+    var minute:Int = Std.parseInt(parts[6] ?? '0') ?? 0;
+    var second:Int = Std.parseInt(parts[7] ?? '0') ?? 0;
+
+    var date:Date = new Date(year, month - 1, day, hour, minute, second);
+    return date;
+    #else
+    return null;
+    #end
   }
 
   /**
    * @param force Whether to export without prompting. `false` will prompt the user for a location.
    * @param targetPath where to export if `force` is `true`. If `null`, will export to the `backups` folder.
+   * @param onSaveCb Callback for when the file is saved.
+   * @param onCancelCb Callback for when saving is cancelled.
    */
-  public static function exportAllSongData(state:ChartEditorState, force:Bool = false, ?targetPath:String):Void
+  public static function exportAllSongData(state:ChartEditorState, force:Bool = false, targetPath:Null<String>, ?onSaveCb:String->Void,
+      ?onCancelCb:Void->Void):Void
   {
     var zipEntries:Array<haxe.zip.Entry> = [];
 
@@ -371,12 +407,13 @@ class ChartEditorImportExportHandler
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
         targetPath = Path.join([
-          './backups/',
+          BACKUPS_PATH,
           'chart-editor-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
         ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
         FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+        if (onSaveCb != null) onSaveCb(targetPath);
       }
       else
       {
@@ -384,6 +421,7 @@ class ChartEditorImportExportHandler
         trace('Force exporting to $targetPath...');
         FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
         state.saveDataDirty = false;
+        if (onSaveCb != null) onSaveCb(targetPath);
       }
     }
     else
@@ -400,11 +438,13 @@ class ChartEditorImportExportHandler
           trace('Saved to "${paths[0]}"');
           state.currentWorkingFilePath = paths[0];
           state.applyWindowTitle();
+          if (onSaveCb != null) onSaveCb(paths[0]);
         }
       };
 
       var onCancel:Void->Void = function() {
         trace('Export cancelled.');
+        if (onCancelCb != null) onCancelCb();
       };
 
       trace('Exporting to user-defined location...');

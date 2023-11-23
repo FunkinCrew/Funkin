@@ -20,6 +20,8 @@ import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import funkin.util.VersionUtil;
+import funkin.util.DateUtil;
+import funkin.util.WindowUtil;
 import haxe.io.Path;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -61,6 +63,7 @@ class ChartEditorDialogHandler
   static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = Paths.ui('chart-editor/dialogs/user-guide');
   static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = Paths.ui('chart-editor/dialogs/add-variation');
   static final CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/dialogs/add-difficulty');
+  static final CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT:String = Paths.ui('chart-editor/dialogs/backup-available');
 
   /**
    * Builds and opens a dialog giving brief credits for the chart editor.
@@ -246,32 +249,84 @@ class ChartEditorDialogHandler
    * @param state
    * @return Null<Dialog>
    */
-  public static function openBackupAvailableDialog(state:ChartEditorState):Null<Dialog>
+  public static function openBackupAvailableDialog(state:ChartEditorState, welcomeDialog:Null<Dialog>):Null<Dialog>
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT, true, true);
     if (dialog == null) throw 'Could not locate Backup Available dialog';
+    dialog.onDialogClosed = function(_event) {
+      state.isHaxeUIDialogOpen = false;
+      if (_event.button == DialogButton.APPLY)
+      {
+        // User loaded the backup! Close the welcome dialog behind this.
+        if (welcomeDialog != null) welcomeDialog.hideDialog(DialogButton.CANCEL);
+      }
+      else
+      {
+        // User cancelled the dialog, don't close the welcome dialog so we aren't in a broken state.
+      }
+    };
 
     state.isHaxeUIDialogOpen = true;
+
+    var backupTimeLabel:Null<Label> = dialog.findComponent('backupTimeLabel', Label);
+    if (backupTimeLabel == null) throw 'Could not locate backupTimeLabel button in Backup Available dialog';
+
+    var latestBackupDate:Null<Date> = ChartEditorImportExportHandler.getLatestBackupDate();
+    if (latestBackupDate != null)
+    {
+      var latestBackupDateStr:String = DateUtil.generateCleanTimestamp(latestBackupDate);
+      backupTimeLabel.text = latestBackupDateStr;
+    }
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Backup Available dialog';
     buttonCancel.onClick = function(_event) {
+      // Don't hide the welcome dialog behind this.
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
     var buttonGoToFolder:Null<Button> = dialog.findComponent('buttonGoToFolder', Button);
     if (buttonGoToFolder == null) throw 'Could not locate buttonGoToFolder button in Backup Available dialog';
     buttonGoToFolder.onClick = function(_event) {
+      // TODO: Is there a way to open a folder and highlight a file in it?
+      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+      WindowUtil.openFolder(absoluteBackupsPath);
+      // Don't hide the welcome dialog behind this.
       dialog.hideDialog(DialogButton.CANCEL);
-      state.openBackupFolder();
     }
 
     var buttonOpenBackup:Null<Button> = dialog.findComponent('buttonOpenBackup', Button);
     if (buttonOpenBackup == null) throw 'Could not locate buttonOpenBackup button in Backup Available dialog';
     buttonOpenBackup.onClick = function(_event) {
-      dialog.hideDialog(DialogButton.CANCEL);
-      state.openBackup();
+      var latestBackupPath:Null<String> = ChartEditorImportExportHandler.getLatestBackupPath();
+
+      var result:Null<Array<String>> = (latestBackupPath != null) ? state.loadFromFNFCPath(latestBackupPath) : null;
+      if (result != null)
+      {
+        if (result.length == 0)
+        {
+          // No warnings.
+          state.success('Loaded Chart', 'Loaded chart (${latestBackupPath})');
+        }
+        else
+        {
+          // One or more warnings.
+          state.warning('Loaded Chart', 'Loaded chart (${latestBackupPath})\n${result.join("\n")}');
+        }
+
+        // Close the welcome dialog behind this.
+        dialog.hideDialog(DialogButton.APPLY);
+      }
+      else
+      {
+        state.error('Failed to Load Chart', 'Failed to load chart (${latestBackupPath})');
+
+        // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
+        dialog.hideDialog(DialogButton.CANCEL);
+      }
     }
+
+    return dialog;
   }
 
   public static function openBrowseFNFC(state:ChartEditorState, closable:Bool):Null<Dialog>

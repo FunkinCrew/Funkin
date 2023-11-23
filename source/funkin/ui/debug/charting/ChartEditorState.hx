@@ -48,7 +48,6 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
 import funkin.play.stage.StageData;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
@@ -1539,8 +1538,12 @@ class ChartEditorState extends HaxeUIState
         this.error('Failure', 'Failed to load chart (${params.fnfcTargetPath})');
 
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        this.openWelcomeDialog(false);
-        if (shouldShowBackupAvailableDialog)}
+        var welcomeDialog = this.openWelcomeDialog(false);
+        if (shouldShowBackupAvailableDialog)
+        {
+          this.openBackupAvailableDialog(welcomeDialog);
+        }
+      }
     }
     else if (params != null && params.targetSongId != null)
     {
@@ -1566,7 +1569,6 @@ class ChartEditorState extends HaxeUIState
   {
     var save:Save = Save.get();
 
-    showBackupAvailablePopup = save.chartEditorHasBackup;
     if (previousWorkingFilePaths[0] == null)
     {
       previousWorkingFilePaths = [null].concat(save.chartEditorPreviousFiles);
@@ -1598,9 +1600,11 @@ class ChartEditorState extends HaxeUIState
     var filteredWorkingFilePaths:Array<String> = [];
     for (chartPath in previousWorkingFilePaths)
       if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
-
-    save.chartEditorHasBackup = hasBackup;
     save.chartEditorPreviousFiles = filteredWorkingFilePaths;
+
+    if (hasBackup) trace('Queuing backup prompt for next time!');
+    save.chartEditorHasBackup = hasBackup;
+
     save.chartEditorNoteQuant = noteSnapQuantIndex;
     save.chartEditorLiveInputStyle = currentLiveInputStyle;
     save.chartEditorDownscroll = isViewDownscroll;
@@ -2023,7 +2027,7 @@ class ChartEditorState extends HaxeUIState
       }
       else
       {
-        this.exportAllSongData(false);
+        this.exportAllSongData(false, null);
       }
     });
     addUIClickListener('menubarItemSaveChartAs', _ -> this.exportAllSongData());
@@ -2239,10 +2243,12 @@ class ChartEditorState extends HaxeUIState
    */
   function autoSave():Void
   {
+    var needsAutoSave:Bool = saveDataDirty;
+
     saveDataDirty = false;
 
     // Auto-save preferences.
-    writePreferences(false);
+    writePreferences(needsAutoSave);
 
     // Auto-save the chart.
     #if html5
@@ -2250,7 +2256,10 @@ class ChartEditorState extends HaxeUIState
     // TODO: Implement this.
     #else
     // Auto-save to temp file.
-    this.exportAllSongData(true);
+    if (needsAutoSave)
+    {
+      this.exportAllSongData(true, null);
+    }
     #end
   }
 
@@ -2269,7 +2278,7 @@ class ChartEditorState extends HaxeUIState
 
     if (needsAutoSave)
     {
-      this.exportAllSongData(true);
+      this.exportAllSongData(true, null);
     }
   }
 
@@ -2286,7 +2295,7 @@ class ChartEditorState extends HaxeUIState
 
     if (needsAutoSave)
     {
-      this.exportAllSongData(true);
+      this.exportAllSongData(true, null);
     }
   }
 
@@ -3995,7 +4004,7 @@ class ChartEditorState extends HaxeUIState
       if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
       {
         // CTRL + SHIFT + S = Save As
-        this.exportAllSongData(false);
+        this.exportAllSongData(false, null);
       }
       else
       {
@@ -4006,7 +4015,11 @@ class ChartEditorState extends HaxeUIState
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.S)
     {
-      this.exportAllSongData(false);
+      this.exportAllSongData(false, null, function(path:String) {
+        // CTRL + SHIFT + S Successful
+      }, function() {
+        // CTRL + SHIFT + S Cancelled
+      });
     }
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
