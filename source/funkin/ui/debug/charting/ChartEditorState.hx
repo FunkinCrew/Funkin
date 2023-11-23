@@ -1956,15 +1956,20 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
+    playbarHead.onDrag = function(_:DragEvent) {
+      if (playbarHeadDragging)
+      {
+        var value:Null<Float> = playbarHead?.value;
+
+        // Set the song position to where the playhead was moved to.
+        scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
+        // Update the conductor and audio tracks to match.
+        moveSongToScrollPosition();
+      }
+    }
+
     playbarHead.onDragEnd = function(_:DragEvent) {
       playbarHeadDragging = false;
-
-      var value:Null<Float> = playbarHead?.value;
-
-      // Set the song position to where the playhead was moved to.
-      scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
-      // Update the conductor and audio tracks to match.
-      moveSongToScrollPosition();
 
       // If we were dragging the playhead while the song was playing, resume playing.
       if (playbarHeadDraggingWasPlaying)
