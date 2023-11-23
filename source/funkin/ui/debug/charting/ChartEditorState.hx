@@ -99,8 +99,6 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.notifications.NotificationType;
 import openfl.display.BitmapData;
 import funkin.util.FileUtil;
 
@@ -1527,27 +1525,18 @@ class ChartEditorState extends HaxeUIState
       var result:Null<Array<String>> = this.loadFromFNFCPath(params.fnfcTargetPath);
       if (result != null)
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Success',
-            body: result.length == 0 ? 'Loaded chart (${params.fnfcTargetPath})' : 'Loaded chart (${params.fnfcTargetPath})\n${result.join("\n")}',
-            type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        if (result.length == 0)
+        {
+          this.success('Loaded Chart', 'Loaded chart (${params.fnfcTargetPath})');
+        }
+        else
+        {
+          this.warning('Loaded Chart', 'Loaded chart with issues (${params.fnfcTargetPath})\n${result.join("\n")}');
+        }
       }
       else
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Failed to load chart (${params.fnfcTargetPath})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        this.error('Failure', 'Failed to load chart (${params.fnfcTargetPath})');
 
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         this.openWelcomeDialog(false);
@@ -1559,7 +1548,11 @@ class ChartEditorState extends HaxeUIState
     }
     else
     {
-      this.openWelcomeDialog(false);
+      var welcomeDialog = this.openWelcomeDialog(false);
+      if (shouldShowBackupAvailableDialog)
+      {
+        this.openBackupAvailableDialog(welcomeDialog);
+      }
     }
   }
 
@@ -1642,27 +1635,18 @@ class ChartEditorState extends HaxeUIState
         var result:Null<Array<String>> = this.loadFromFNFCPath(chartPath);
         if (result != null)
         {
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Success',
-              body: result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}',
-              type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          if (result.length == 0)
+          {
+            this.success('Loaded Chart', 'Loaded chart (${chartPath.toString()})');
+          }
+          else
+          {
+            this.warning('Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})\n${result.join("\n")}');
+          }
         }
         else
         {
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Failure',
-              body: 'Failed to load chart (${chartPath.toString()})',
-              type: NotificationType.Error,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          this.error('Failure', 'Failed to load chart (${params.fnfcTargetPath})');
         }
       }
 
@@ -2002,9 +1986,7 @@ class ChartEditorState extends HaxeUIState
     if (menubar == null) throw "Could not find menubar!";
     if (!Preferences.debugDisplay) menubar.paddingLeft = null;
 
-    // Setup notifications.
-    @:privateAccess
-    NotificationManager.GUTTER_SIZE = 20;
+    this.setupNotifications();
   }
 
   /**
@@ -4530,15 +4512,7 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
-    #if !mac
-    NotificationManager.instance.addNotification(
-      {
-        title: 'Switch Difficulty',
-        body: 'Switched difficulty to ${selectedDifficulty.toTitleCase()}',
-        type: NotificationType.Success,
-        expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-      });
-    #end
+    this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
   }
 
   /**
@@ -4803,9 +4777,6 @@ class ChartEditorState extends HaxeUIState
    */
   // ====================
 
-  /**
-   * Dismiss any existing HaxeUI notifications, if there are any.
-   */
   function handleNotePreview():Void
   {
     if (notePreviewDirty && notePreview != null)
@@ -5004,14 +4975,6 @@ class ChartEditorState extends HaxeUIState
 
     @:privateAccess
     ChartEditorNoteSprite.noteFrameCollection = null;
-  }
-
-  /**
-   * Dismiss any existing notifications, if there are any.
-   */
-  function dismissNotifications():Void
-  {
-    NotificationManager.instance.clearNotifications();
   }
 
   function applyCanQuickSave():Void

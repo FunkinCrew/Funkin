@@ -100,15 +100,7 @@ class ChartEditorImportExportHandler
 
     state.refreshMetadataToolbox();
 
-    #if !mac
-    NotificationManager.instance.addNotification(
-      {
-        title: 'Success',
-        body: 'Loaded song (${rawSongMetadata[0].songName})',
-        type: NotificationType.Success,
-        expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-      });
-    #end
+    state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
   }
 
   /**
