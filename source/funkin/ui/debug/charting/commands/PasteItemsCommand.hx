@@ -4,8 +4,6 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.notifications.NotificationType;
 
 /**
  * A command which inserts the contents of the clipboard into the chart editor.
@@ -30,15 +28,7 @@ class PasteItemsCommand implements ChartEditorCommand
 
     if (currentClipboard.valid != true)
     {
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: 'Failed to Paste',
-          body: 'Could not parse clipboard contents.',
-          type: NotificationType.Error,
-          expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-        });
-      #end
+      state.error('Failed to Paste', 'Could not parse clipboard contents.');
       return;
     }
 
@@ -58,15 +48,7 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    #if !mac
-    NotificationManager.instance.addNotification(
-      {
-        title: 'Paste Successful',
-        body: 'Successfully pasted clipboard contents.',
-        type: NotificationType.Success,
-        expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-      });
-    #end
+    state.success('Paste Successful', 'Successfully pasted clipboard contents.');
   }
 
   public function undo(state:ChartEditorState):Void

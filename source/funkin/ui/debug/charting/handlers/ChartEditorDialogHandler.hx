@@ -14,16 +14,18 @@ import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.song.Song;
 import funkin.play.stage.StageData;
-import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;
+import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadChartDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.util.Constants;
+import funkin.util.DateUtil;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import funkin.util.VersionUtil;
+import funkin.util.WindowUtil;
 import haxe.io.Path;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -66,6 +68,7 @@ class ChartEditorDialogHandler
   static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = Paths.ui('chart-editor/dialogs/user-guide');
   static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = Paths.ui('chart-editor/dialogs/add-variation');
   static final CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/dialogs/add-difficulty');
+  static final CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT:String = Paths.ui('chart-editor/dialogs/backup-available');
 
   /**
    * Builds and opens a dialog giving brief credits for the chart editor.
@@ -397,15 +400,7 @@ class ChartEditorDialogHandler
           {
             if (state.loadInstFromBytes(selectedFile.bytes, instId))
             {
-              #if !mac
-              NotificationManager.instance.addNotification(
-                {
-                  title: 'Success',
-                  body: 'Loaded instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})',
-                  type: NotificationType.Success,
-                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                });
-              #end
+              state.success('Loaded Instrumental', 'Loaded instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})');
 
               state.switchToCurrentInstrumental();
               dialog.hideDialog(DialogButton.APPLY);
@@ -413,15 +408,7 @@ class ChartEditorDialogHandler
             }
             else
             {
-              #if !mac
-              NotificationManager.instance.addNotification(
-                {
-                  title: 'Failure',
-                  body: 'Failed to load instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})',
-                  type: NotificationType.Error,
-                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                });
-              #end
+              state.error('Failed to Load Instrumental', 'Failed to load instrumental track (${selectedFile.name}) for variation (${state.selectedVariation})');
             }
           }
       });
@@ -433,15 +420,7 @@ class ChartEditorDialogHandler
       if (state.loadInstFromPath(path, instId))
       {
         // Tell the user the load was successful.
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Success',
-            body: 'Loaded instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})',
-            type: NotificationType.Success,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.success('Loaded Instrumental', 'Loaded instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})');
 
         state.switchToCurrentInstrumental();
         dialog.hideDialog(DialogButton.APPLY);
@@ -459,15 +438,7 @@ class ChartEditorDialogHandler
         }
 
         // Tell the user the load was successful.
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: message,
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.error('Failed to Load Instrumental', message);
       }
     };
 
@@ -693,15 +664,7 @@ class ChartEditorDialogHandler
         if (state.loadVocalsFromPath(path, charKey, instId))
         {
           // Tell the user the load was successful.
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Success',
-              body: 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${state.selectedVariation}',
-              type: NotificationType.Success,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          state.success('Loaded Vocals', 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${state.selectedVariation}');
           #if FILE_DROP_SUPPORTED
           vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
           #else
@@ -715,16 +678,7 @@ class ChartEditorDialogHandler
         {
           trace('Failed to load vocal track (${path.file}.${path.ext})');
 
-          // Vocals failed to load.
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Failure',
-              body: 'Failed to load vocal track (${path.file}.${path.ext}) for variation (${state.selectedVariation})',
-              type: NotificationType.Error,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          state.error('Failed to Load Vocals', 'Failed to load vocal track (${path.file}.${path.ext}) for variation (${state.selectedVariation})');
 
           #if FILE_DROP_SUPPORTED
           vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
@@ -750,15 +704,8 @@ class ChartEditorDialogHandler
               if (state.loadVocalsFromBytes(selectedFile.bytes, charKey, instId))
               {
                 // Tell the user the load was successful.
-                #if !mac
-                NotificationManager.instance.addNotification(
-                  {
-                    title: 'Success',
-                    body: 'Loaded vocals for $charName (${selectedFile.name}), variation ${state.selectedVariation}',
-                    type: NotificationType.Success,
-                    expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                  });
-                #end
+                state.success('Loaded Vocals', 'Loaded vocals for $charName (${selectedFile.name}), variation ${state.selectedVariation}');
+
                 #if FILE_DROP_SUPPORTED
                 vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
                 #else
@@ -771,15 +718,7 @@ class ChartEditorDialogHandler
               {
                 trace('Failed to load vocal track (${selectedFile.fullPath})');
 
-                #if !mac
-                NotificationManager.instance.addNotification(
-                  {
-                    title: 'Failure',
-                    body: 'Failed to load vocal track (${selectedFile.name}) for variation (${state.selectedVariation})',
-                    type: NotificationType.Error,
-                    expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                  });
-                #end
+                state.error('Failed to Load Vocals', 'Failed to load vocal track (${selectedFile.name}) for variation (${state.selectedVariation})');
 
                 #if FILE_DROP_SUPPORTED
                 vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
@@ -934,15 +873,7 @@ class ChartEditorDialogHandler
       if (songMetadataVersion == null)
       {
         // Tell the user the load was not successful.
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Could not parse metadata file version (${path.file}.${path.ext})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.error('Failure', 'Could not parse metadata file version (${path.file}.${path.ext})');
         return;
       }
 
@@ -952,30 +883,14 @@ class ChartEditorDialogHandler
       if (songMetadataVariation == null)
       {
         // Tell the user the load was not successful.
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Could not load metadata file (${path.file}.${path.ext})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.error('Failure', 'Could not load metadata file (${path.file}.${path.ext})');
         return;
       }
 
       songMetadata.set(variation, songMetadataVariation);
 
       // Tell the user the load was successful.
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: 'Success',
-          body: 'Loaded metadata file (${path.file}.${path.ext})',
-          type: NotificationType.Success,
-          expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-        });
-      #end
+      state.success('Loaded Metadata', 'Loaded metadata file (${path.file}.${path.ext})');
 
       #if FILE_DROP_SUPPORTED
       label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
@@ -999,15 +914,7 @@ class ChartEditorDialogHandler
             if (songMetadataVersion == null)
             {
               // Tell the user the load was not successful.
-              #if !mac
-              NotificationManager.instance.addNotification(
-                {
-                  title: 'Failure',
-                  body: 'Could not parse metadata file version (${selectedFile.name})',
-                  type: NotificationType.Error,
-                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                });
-              #end
+              state.error('Failure', 'Could not parse metadata file version (${selectedFile.name})');
               return;
             }
 
@@ -1019,15 +926,7 @@ class ChartEditorDialogHandler
               songMetadata.set(variation, songMetadataVariation);
 
               // Tell the user the load was successful.
-              #if !mac
-              NotificationManager.instance.addNotification(
-                {
-                  title: 'Success',
-                  body: 'Loaded metadata file (${selectedFile.name})',
-                  type: NotificationType.Success,
-                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                });
-              #end
+              state.success('Loaded Metadata', 'Loaded metadata file (${selectedFile.name})');
 
               #if FILE_DROP_SUPPORTED
               label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
@@ -1040,15 +939,7 @@ class ChartEditorDialogHandler
             else
             {
               // Tell the user the load was unsuccessful.
-              #if !mac
-              NotificationManager.instance.addNotification(
-                {
-                  title: 'Failure',
-                  body: 'Failed to load metadata file (${selectedFile.name})',
-                  type: NotificationType.Error,
-                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                });
-              #end
+              state.error('Failure', 'Failed to load metadata file (${selectedFile.name})');
             }
           }
       });
@@ -1064,15 +955,7 @@ class ChartEditorDialogHandler
       if (songChartDataVersion == null)
       {
         // Tell the user the load was not successful.
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Could not parse chart data file version (${path.file}.${path.ext})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.error('Failure', 'Could not parse chart data file version (${path.file}.${path.ext})');
         return;
       }
 
@@ -1087,15 +970,7 @@ class ChartEditorDialogHandler
         state.noteDisplayDirty = true;
 
         // Tell the user the load was successful.
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Success',
-            body: 'Loaded chart data file (${path.file}.${path.ext})',
-            type: NotificationType.Success,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.success('Loaded Chart Data', 'Loaded chart data file (${path.file}.${path.ext})');
 
         #if FILE_DROP_SUPPORTED
         label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
@@ -1106,15 +981,7 @@ class ChartEditorDialogHandler
       else
       {
         // Tell the user the load was unsuccessful.
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Failed to load chart data file (${path.file}.${path.ext})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.error('Failure', 'Failed to load chart data file (${path.file}.${path.ext})');
       }
     };
 
@@ -1131,15 +998,7 @@ class ChartEditorDialogHandler
             if (songChartDataVersion == null)
             {
               // Tell the user the load was not successful.
-              #if !mac
-              NotificationManager.instance.addNotification(
-                {
-                  title: 'Failure',
-                  body: 'Could not parse chart data file version (${selectedFile.name})',
-                  type: NotificationType.Error,
-                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                });
-              #end
+              state.error('Failure', 'Could not parse chart data file version (${selectedFile.name})');
               return;
             }
 
@@ -1154,15 +1013,7 @@ class ChartEditorDialogHandler
               state.noteDisplayDirty = true;
 
               // Tell the user the load was successful.
-              #if !mac
-              NotificationManager.instance.addNotification(
-                {
-                  title: 'Success',
-                  body: 'Loaded chart data file (${selectedFile.name})',
-                  type: NotificationType.Success,
-                  expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-                });
-              #end
+              state.success('Loaded Chart Data', 'Loaded chart data file (${selectedFile.name})');
 
               #if FILE_DROP_SUPPORTED
               label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
@@ -1259,15 +1110,7 @@ class ChartEditorDialogHandler
 
           if (fnfLegacyData == null)
           {
-            #if !mac
-            NotificationManager.instance.addNotification(
-              {
-                title: 'Failure',
-                body: 'Failed to parse FNF chart file (${selectedFile.name})',
-                type: NotificationType.Error,
-                expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-              });
-            #end
+            state.error('Failure', 'Failed to parse FNF chart file (${selectedFile.name})');
             return;
           }
 
@@ -1277,15 +1120,7 @@ class ChartEditorDialogHandler
           state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
           dialog.hideDialog(DialogButton.APPLY);
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Success',
-              body: 'Loaded chart file (${selectedFile.name})',
-              type: NotificationType.Success,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          state.success('Success', 'Loaded chart file (${selectedFile.name})');
         }
       });
     }
@@ -1300,15 +1135,7 @@ class ChartEditorDialogHandler
       state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
       dialog.hideDialog(DialogButton.APPLY);
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: 'Success',
-          body: 'Loaded chart file (${path.file}.${path.ext})',
-          type: NotificationType.Success,
-          expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-        });
-      #end
+      state.success('Success', 'Loaded chart file (${path.file}.${path.ext})');
     };
 
     state.addDropHandler({component: importBox, handler: onDropFile});
@@ -1408,14 +1235,9 @@ class ChartEditorDialogHandler
 
       state.songMetadata.set(pendingVariation.variation, pendingVariation);
       state.difficultySelectDirty = true; // Force the Difficulty toolbox to update.
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: "Add Variation",
-          body: 'Added new variation "${pendingVariation.variation}"',
-          type: NotificationType.Success
-        });
-      #end
+
+      state.success('Add Variation', 'Added new variation "${pendingVariation.variation}"');
+
       dialog.hideDialog(DialogButton.APPLY);
     }
 
@@ -1472,14 +1294,8 @@ class ChartEditorDialogHandler
 
       state.createDifficulty(dialogVariation.value.id, dialogDifficultyName.text.toLowerCase(), inputScrollSpeed.value ?? 1.0);
 
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: "Add Difficulty",
-          body: 'Added new difficulty "${dialogDifficultyName.text.toLowerCase()}"',
-          type: NotificationType.Success
-        });
-      #end
+      state.success('Add Difficulty', 'Added new difficulty "${dialogDifficultyName.text.toLowerCase()}"');
+
       dialog.hideDialog(DialogButton.APPLY);
     }
 

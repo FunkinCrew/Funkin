@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import funkin.util.logging.CrashHandler;
+import haxe.ui.containers.menus.MenuBar;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -39,6 +41,14 @@ import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayState;
 import funkin.play.song.Song;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongDataUtils;
+import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.play.stage.StageData;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
@@ -99,8 +109,6 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.notifications.NotificationType;
 import openfl.display.BitmapData;
 
 using Lambda;
@@ -775,6 +783,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     saveDataDirty = value;
     applyWindowTitle();
     return saveDataDirty;
+  }
+
+  var shouldShowBackupAvailableDialog(get, set):Bool;
+
+  function get_shouldShowBackupAvailableDialog():Bool
+  {
+    return Save.get().chartEditorHasBackup;
+  }
+
+  function set_shouldShowBackupAvailableDialog(value:Bool):Bool
+  {
+    return Save.get().chartEditorHasBackup = value;
   }
 
   /**
@@ -1563,7 +1583,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     buildAdditionalUI();
     populateOpenRecentMenu();
-    ChartEditorShortcutHandler.applyPlatformShortcutText(this);
+    this.applyPlatformShortcutText();
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
@@ -1576,33 +1596,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (params != null && params.fnfcTargetPath != null)
     {
       // Chart editor was opened from the command line. Open the FNFC file now!
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(this, params.fnfcTargetPath);
+      var result:Null<Array<String>> = this.loadFromFNFCPath(params.fnfcTargetPath);
       if (result != null)
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Success',
-            body: result.length == 0 ? 'Loaded chart (${params.fnfcTargetPath})' : 'Loaded chart (${params.fnfcTargetPath})\n${result.join("\n")}',
-            type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        if (result.length == 0)
+        {
+          this.success('Loaded Chart', 'Loaded chart (${params.fnfcTargetPath})');
+        }
+        else
+        {
+          this.warning('Loaded Chart', 'Loaded chart with issues (${params.fnfcTargetPath})\n${result.join("\n")}');
+        }
       }
       else
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Failed to load chart (${params.fnfcTargetPath})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        this.error('Failure', 'Failed to load chart (${params.fnfcTargetPath})');
 
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        ChartEditorDialogHandler.openWelcomeDialog(this, false);
+        var welcomeDialog = this.openWelcomeDialog(false);
+        if (shouldShowBackupAvailableDialog)
+        {
+          this.openBackupAvailableDialog(welcomeDialog);
+        }
       }
     }
     else if (params != null && params.targetSongId != null)
@@ -1611,7 +1626,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else
     {
-      ChartEditorDialogHandler.openWelcomeDialog(this, false);
+      var welcomeDialog = this.openWelcomeDialog(false);
+      if (shouldShowBackupAvailableDialog)
+      {
+        this.openBackupAvailableDialog(welcomeDialog);
+      }
     }
   }
 
@@ -1649,7 +1668,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // audioVocalTrackGroup.pitch = save.chartEditorPlaybackSpeed;
   }
 
-  public function writePreferences():Void
+  public function writePreferences(hasBackup:Bool):Void
   {
     var save:Save = Save.get();
 
@@ -1657,8 +1676,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var filteredWorkingFilePaths:Array<String> = [];
     for (chartPath in previousWorkingFilePaths)
       if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
-
     save.chartEditorPreviousFiles = filteredWorkingFilePaths;
+
+    if (hasBackup) trace('Queuing backup prompt for next time!');
+    save.chartEditorHasBackup = hasBackup;
+
     save.chartEditorNoteQuant = noteSnapQuantIndex;
     save.chartEditorLiveInputStyle = currentLiveInputStyle;
     save.chartEditorDownscroll = isViewDownscroll;
@@ -1690,36 +1712,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         stopWelcomeMusic();
 
         // Load chart from file
-        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(this, chartPath);
+        var result:Null<Array<String>> = this.loadFromFNFCPath(chartPath);
         if (result != null)
         {
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Success',
-              body: result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}',
-              type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          if (result.length == 0)
+          {
+            this.success('Loaded Chart', 'Loaded chart (${chartPath.toString()})');
+          }
+          else
+          {
+            this.warning('Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})\n${result.join("\n")}');
+          }
         }
         else
         {
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Failure',
-              body: 'Failed to load chart (${chartPath.toString()})',
-              type: NotificationType.Error,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          this.error('Failure', 'Failed to load chart (${chartPath.toString()})');
         }
       }
 
       if (!FileUtil.doesFileExist(chartPath))
       {
-        trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
+        trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
         menuItemRecentChart.disabled = true;
       }
       else
@@ -2017,15 +2030,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
 
+    playbarHeadLayout.playbarHead.onDrag = function(_:DragEvent) {
+      if (playbarHeadDragging)
+      {
+        var value:Null<Float> = playbarHeadLayout.playbarHead?.value;
+
+        // Set the song position to where the playhead was moved to.
+        scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
+        // Update the conductor and audio tracks to match.
+        moveSongToScrollPosition();
+      }
+    }
+
     playbarHeadLayout.playbarHead.onDragEnd = function(_:DragEvent) {
       playbarHeadDragging = false;
-
-      var value:Null<Float> = playbarHeadLayout?.playbarHead?.value;
-
-      // Set the song position to where the playhead was moved to.
-      scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
-      // Update the conductor and audio tracks to match.
-      moveSongToScrollPosition();
 
       // If we were dragging the playhead while the song was playing, resume playing.
       if (playbarHeadDraggingWasPlaying)
@@ -2040,9 +2058,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (!Preferences.debugDisplay) menubar.paddingLeft = null;
 
-    // Setup notifications.
-    @:privateAccess
-    NotificationManager.GUTTER_SIZE = 20;
+    this.setupNotifications();
   }
 
   /**
@@ -2071,19 +2087,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Add functionality to the menu items.
 
     // File
-    menubarItemNewChart.onClick = _ -> ChartEditorDialogHandler.openWelcomeDialog(this, true);
-    menubarItemOpenChart.onClick = _ -> ChartEditorDialogHandler.openBrowseFNFC(this, true);
+    menubarItemNewChart.onClick = _ -> this.openWelcomeDialog(true);
+    menubarItemOpenChart.onClick = _ -> this.openBrowseFNFC(true);
     menubarItemSaveChart.onClick = _ -> {
       if (currentWorkingFilePath != null)
       {
-        ChartEditorImportExportHandler.exportAllSongData(this, true, currentWorkingFilePath);
+        this.exportAllSongData(true, currentWorkingFilePath);
       }
       else
       {
-        ChartEditorImportExportHandler.exportAllSongData(this, false);
+        this.exportAllSongData(false, null);
       }
     };
-    menubarItemSaveChartAs.onClick = _ -> ChartEditorImportExportHandler.exportAllSongData(this);
+    menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null);
     menubarItemExit.onClick = _ -> quitChartEditor();
 
     // Edit
@@ -2175,6 +2191,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
 
+    #if sys
+    menubarItemGoToBackupsFolder.onClick = _ -> this.openBackupsFolder();
+    #else
+    // Disable if no file system or command access
+    menubarItemGoToBackupsFolder.disabled = true;
+    #end
+
     menubarItemUserGuide.onClick = _ -> this.openUserGuideDialog();
 
     menubarItemDownscroll.onClick = event -> isViewDownscroll = event.value;
@@ -2265,7 +2288,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function setupAutoSave():Void
   {
+    // Called when clicking the X button on the window.
     WindowUtil.windowExit.add(onWindowClose);
+
+    // Called when the game crashes.
+    CrashHandler.errorSignal.add(onWindowCrash);
+    CrashHandler.criticalErrorSignal.add(onWindowCrash);
+
     saveDataDirty = false;
   }
 
@@ -2274,10 +2303,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function autoSave():Void
   {
+    var needsAutoSave:Bool = saveDataDirty;
+
     saveDataDirty = false;
 
     // Auto-save preferences.
-    writePreferences();
+    writePreferences(needsAutoSave);
 
     // Auto-save the chart.
     #if html5
@@ -2285,24 +2316,72 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // TODO: Implement this.
     #else
     // Auto-save to temp file.
-    ChartEditorImportExportHandler.exportAllSongData(this, true);
+    if (needsAutoSave)
+    {
+      this.exportAllSongData(true, null);
+      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+      this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
+        {
+          text: "Take Me There",
+          callback: openBackupsFolder,
+        }
+      ]);
+    }
     #end
   }
 
+  /**
+   * Open the backups folder in the file explorer.
+   * Don't call this on HTML5.
+   */
+  function openBackupsFolder():Void
+  {
+    // TODO: Is there a way to open a folder and highlight a file in it?
+    var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+    WindowUtil.openFolder(absoluteBackupsPath);
+  }
+
+  /**
+   * Called when the window was closed, to save a backup of the chart.
+   * @param exitCode The exit code of the window. We use `-1` when calling the function due to a game crash.
+   */
   function onWindowClose(exitCode:Int):Void
   {
     trace('Window exited with exit code: $exitCode');
     trace('Should save chart? $saveDataDirty');
 
-    if (saveDataDirty)
+    var needsAutoSave:Bool = saveDataDirty;
+
+    writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
     {
-      ChartEditorImportExportHandler.exportAllSongData(this, true);
+      this.exportAllSongData(true, null);
+    }
+  }
+
+  function onWindowCrash(message:String):Void
+  {
+    trace('Chart editor intercepted crash:');
+    trace('${message}');
+
+    trace('Should save chart? $saveDataDirty');
+
+    var needsAutoSave:Bool = saveDataDirty;
+
+    writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportAllSongData(true, null);
     }
   }
 
   function cleanupAutoSave():Void
   {
     WindowUtil.windowExit.remove(onWindowClose);
+    CrashHandler.errorSignal.remove(onWindowCrash);
+    CrashHandler.criticalErrorSignal.remove(onWindowCrash);
   }
 
   public override function update(elapsed:Float):Void
@@ -2989,9 +3068,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
-    var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging)
+    var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
       || (selectionBoxStartPos != null)
       || (dragTargetNote != null || dragTargetEvent != null);
+
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
 
     // trace('shouldHandleCursor: $shouldHandleCursor');
@@ -3459,6 +3539,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           // Finished dragging. Release the note.
           currentPlaceNoteData = null;
+        }
+        else
+        {
+          // Cursor should be a grabby hand.
+          if (targetCursorMode == null) targetCursorMode = Grabbing;
         }
       }
       else
@@ -3999,18 +4084,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
       {
         // CTRL + SHIFT + S = Save As
-        ChartEditorImportExportHandler.exportAllSongData(this, false);
+        this.exportAllSongData(false, null, function(path:String) {
+          // CTRL + SHIFT + S Successful
+          this.success('Saved Chart', 'Chart saved successfully to ${path}.');
+        }, function() {
+          // CTRL + SHIFT + S Cancelled
+        });
       }
       else
       {
         // CTRL + S = Save Chart
-        ChartEditorImportExportHandler.exportAllSongData(this, true, currentWorkingFilePath);
+        this.exportAllSongData(true, currentWorkingFilePath);
+        this.success('Saved Chart', 'Chart saved successfully to ${currentWorkingFilePath}.');
       }
-    }
-
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.S && !isHaxeUIDialogOpen)
-    {
-      this.exportAllSongData(false);
     }
 
     // CTRL + Q = Quit to Menu
@@ -4173,6 +4259,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // F1 = Open Help
     if (FlxG.keys.justPressed.F1) this.openUserGuideDialog();
+
+    // DEBUG KEYBIND: Ctrl + Alt + Shift + L = Crash the game.
+    #if debug
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    {
+      throw "DEBUG: Crashing the chart editor!";
+    }
+    #end
   }
 
   override function handleQuickWatch():Void
@@ -4509,15 +4603,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
 
-    #if !mac
-    NotificationManager.instance.addNotification(
-      {
-        title: 'Switch Difficulty',
-        body: 'Switched difficulty to ${selectedDifficulty.toTitleCase()}',
-        type: NotificationType.Success,
-        expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-      });
-    #end
+    this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
   }
 
   /**
@@ -4779,9 +4865,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ====================
 
-  /**
-   * Dismiss any existing HaxeUI notifications, if there are any.
-   */
   function handleNotePreview():Void
   {
     if (notePreviewDirty && notePreview != null)
@@ -4962,14 +5045,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     @:privateAccess
     ChartEditorNoteSprite.noteFrameCollection = null;
-  }
-
-  /**
-   * Dismiss any existing notifications, if there are any.
-   */
-  function dismissNotifications():Void
-  {
-    NotificationManager.instance.clearNotifications();
   }
 
   function applyCanQuickSave():Void
