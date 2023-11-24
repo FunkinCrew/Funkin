@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import funkin.util.logging.CrashHandler;
 import haxe.ui.containers.menus.MenuBar;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
@@ -47,7 +48,6 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
 import funkin.play.stage.StageData;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
@@ -98,8 +98,6 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.notifications.NotificationType;
 import openfl.display.BitmapData;
 import funkin.util.FileUtil;
 
@@ -777,6 +775,18 @@ class ChartEditorState extends HaxeUIState
     saveDataDirty = value;
     applyWindowTitle();
     return saveDataDirty;
+  }
+
+  var shouldShowBackupAvailableDialog(get, set):Bool;
+
+  function get_shouldShowBackupAvailableDialog():Bool
+  {
+    return Save.get().chartEditorHasBackup;
+  }
+
+  function set_shouldShowBackupAvailableDialog(value:Bool):Bool
+  {
+    return Save.get().chartEditorHasBackup = value;
   }
 
   /**
@@ -1498,7 +1508,7 @@ class ChartEditorState extends HaxeUIState
 
     buildAdditionalUI();
     populateOpenRecentMenu();
-    ChartEditorShortcutHandler.applyPlatformShortcutText(this);
+    this.applyPlatformShortcutText();
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
@@ -1511,33 +1521,28 @@ class ChartEditorState extends HaxeUIState
     if (params != null && params.fnfcTargetPath != null)
     {
       // Chart editor was opened from the command line. Open the FNFC file now!
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(this, params.fnfcTargetPath);
+      var result:Null<Array<String>> = this.loadFromFNFCPath(params.fnfcTargetPath);
       if (result != null)
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Success',
-            body: result.length == 0 ? 'Loaded chart (${params.fnfcTargetPath})' : 'Loaded chart (${params.fnfcTargetPath})\n${result.join("\n")}',
-            type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        if (result.length == 0)
+        {
+          this.success('Loaded Chart', 'Loaded chart (${params.fnfcTargetPath})');
+        }
+        else
+        {
+          this.warning('Loaded Chart', 'Loaded chart with issues (${params.fnfcTargetPath})\n${result.join("\n")}');
+        }
       }
       else
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Failed to load chart (${params.fnfcTargetPath})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        this.error('Failure', 'Failed to load chart (${params.fnfcTargetPath})');
 
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        ChartEditorDialogHandler.openWelcomeDialog(this, false);
+        var welcomeDialog = this.openWelcomeDialog(false);
+        if (shouldShowBackupAvailableDialog)
+        {
+          this.openBackupAvailableDialog(welcomeDialog);
+        }
       }
     }
     else if (params != null && params.targetSongId != null)
@@ -1546,7 +1551,11 @@ class ChartEditorState extends HaxeUIState
     }
     else
     {
-      ChartEditorDialogHandler.openWelcomeDialog(this, false);
+      var welcomeDialog = this.openWelcomeDialog(false);
+      if (shouldShowBackupAvailableDialog)
+      {
+        this.openBackupAvailableDialog(welcomeDialog);
+      }
     }
   }
 
@@ -1583,7 +1592,7 @@ class ChartEditorState extends HaxeUIState
     // audioVocalTrackGroup.pitch = save.chartEditorPlaybackSpeed;
   }
 
-  public function writePreferences():Void
+  public function writePreferences(hasBackup:Bool):Void
   {
     var save:Save = Save.get();
 
@@ -1591,8 +1600,11 @@ class ChartEditorState extends HaxeUIState
     var filteredWorkingFilePaths:Array<String> = [];
     for (chartPath in previousWorkingFilePaths)
       if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
-
     save.chartEditorPreviousFiles = filteredWorkingFilePaths;
+
+    if (hasBackup) trace('Queuing backup prompt for next time!');
+    save.chartEditorHasBackup = hasBackup;
+
     save.chartEditorNoteQuant = noteSnapQuantIndex;
     save.chartEditorLiveInputStyle = currentLiveInputStyle;
     save.chartEditorDownscroll = isViewDownscroll;
@@ -1624,36 +1636,27 @@ class ChartEditorState extends HaxeUIState
         stopWelcomeMusic();
 
         // Load chart from file
-        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(this, chartPath);
+        var result:Null<Array<String>> = this.loadFromFNFCPath(chartPath);
         if (result != null)
         {
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Success',
-              body: result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}',
-              type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          if (result.length == 0)
+          {
+            this.success('Loaded Chart', 'Loaded chart (${chartPath.toString()})');
+          }
+          else
+          {
+            this.warning('Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})\n${result.join("\n")}');
+          }
         }
         else
         {
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Failure',
-              body: 'Failed to load chart (${chartPath.toString()})',
-              type: NotificationType.Error,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          this.error('Failure', 'Failed to load chart (${chartPath.toString()})');
         }
       }
 
       if (!FileUtil.doesFileExist(chartPath))
       {
-        trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
+        trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
         menuItemRecentChart.disabled = true;
       }
       else
@@ -1992,9 +1995,7 @@ class ChartEditorState extends HaxeUIState
     if (menubar == null) throw "Could not find menubar!";
     if (!Preferences.debugDisplay) menubar.paddingLeft = null;
 
-    // Setup notifications.
-    @:privateAccess
-    NotificationManager.GUTTER_SIZE = 20;
+    this.setupNotifications();
   }
 
   /**
@@ -2022,21 +2023,21 @@ class ChartEditorState extends HaxeUIState
 
     // Add functionality to the menu items.
 
-    addUIClickListener('menubarItemNewChart', _ -> ChartEditorDialogHandler.openWelcomeDialog(this, true));
-    addUIClickListener('menubarItemOpenChart', _ -> ChartEditorDialogHandler.openBrowseFNFC(this, true));
+    addUIClickListener('menubarItemNewChart', _ -> this.openWelcomeDialog(true));
+    addUIClickListener('menubarItemOpenChart', _ -> this.openBrowseFNFC(true));
     addUIClickListener('menubarItemSaveChart', _ -> {
       if (currentWorkingFilePath != null)
       {
-        ChartEditorImportExportHandler.exportAllSongData(this, true, currentWorkingFilePath);
+        this.exportAllSongData(true, currentWorkingFilePath);
       }
       else
       {
-        ChartEditorImportExportHandler.exportAllSongData(this, false);
+        this.exportAllSongData(false, null);
       }
     });
-    addUIClickListener('menubarItemSaveChartAs', _ -> ChartEditorImportExportHandler.exportAllSongData(this));
-    addUIClickListener('menubarItemLoadInst', _ -> ChartEditorDialogHandler.openUploadInstDialog(this, true));
-    addUIClickListener('menubarItemImportChart', _ -> ChartEditorDialogHandler.openImportChartDialog(this, 'legacy', true));
+    addUIClickListener('menubarItemSaveChartAs', _ -> this.exportAllSongData(false, null));
+    addUIClickListener('menubarItemLoadInst', _ -> this.openUploadInstDialog(true));
+    addUIClickListener('menubarItemImportChart', _ -> this.openImportChartDialog('legacy', true));
     addUIClickListener('menubarItemExit', _ -> quitChartEditor());
 
     addUIClickListener('menubarItemUndo', _ -> undoLastCommand());
@@ -2129,6 +2130,16 @@ class ChartEditorState extends HaxeUIState
 
     addUIClickListener('menubarItemAbout', _ -> this.openAboutDialog());
     addUIClickListener('menubarItemWelcomeDialog', _ -> this.openWelcomeDialog(true));
+
+    #if sys
+    addUIClickListener('menubarItemGoToBackupsFolder', _ -> this.openBackupsFolder());
+    #else
+    // Disable the menu item if we're not on a desktop platform.
+    var menubarItemGoToBackupsFolder = findComponent('menubarItemGoToBackupsFolder', MenuItem);
+    if (menubarItemGoToBackupsFolder != null) menubarItemGoToBackupsFolder.disabled = true;
+
+    menubarItemGoToBackupsFolder.disabled = true;
+    #end
 
     addUIClickListener('menubarItemUserGuide', _ -> this.openUserGuideDialog());
 
@@ -2232,7 +2243,13 @@ class ChartEditorState extends HaxeUIState
    */
   function setupAutoSave():Void
   {
+    // Called when clicking the X button on the window.
     WindowUtil.windowExit.add(onWindowClose);
+
+    // Called when the game crashes.
+    CrashHandler.errorSignal.add(onWindowCrash);
+    CrashHandler.criticalErrorSignal.add(onWindowCrash);
+
     saveDataDirty = false;
   }
 
@@ -2241,10 +2258,12 @@ class ChartEditorState extends HaxeUIState
    */
   function autoSave():Void
   {
+    var needsAutoSave:Bool = saveDataDirty;
+
     saveDataDirty = false;
 
     // Auto-save preferences.
-    writePreferences();
+    writePreferences(needsAutoSave);
 
     // Auto-save the chart.
     #if html5
@@ -2252,24 +2271,72 @@ class ChartEditorState extends HaxeUIState
     // TODO: Implement this.
     #else
     // Auto-save to temp file.
-    ChartEditorImportExportHandler.exportAllSongData(this, true);
+    if (needsAutoSave)
+    {
+      this.exportAllSongData(true, null);
+      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+      this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
+        {
+          text: "Take Me There",
+          callback: openBackupsFolder,
+        }
+      ]);
+    }
     #end
   }
 
+  /**
+   * Open the backups folder in the file explorer.
+   * Don't call this on HTML5.
+   */
+  function openBackupsFolder():Void
+  {
+    // TODO: Is there a way to open a folder and highlight a file in it?
+    var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+    WindowUtil.openFolder(absoluteBackupsPath);
+  }
+
+  /**
+   * Called when the window was closed, to save a backup of the chart.
+   * @param exitCode The exit code of the window. We use `-1` when calling the function due to a game crash.
+   */
   function onWindowClose(exitCode:Int):Void
   {
     trace('Window exited with exit code: $exitCode');
     trace('Should save chart? $saveDataDirty');
 
-    if (saveDataDirty)
+    var needsAutoSave:Bool = saveDataDirty;
+
+    writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
     {
-      ChartEditorImportExportHandler.exportAllSongData(this, true);
+      this.exportAllSongData(true, null);
+    }
+  }
+
+  function onWindowCrash(message:String):Void
+  {
+    trace('Chart editor intercepted crash:');
+    trace('${message}');
+
+    trace('Should save chart? $saveDataDirty');
+
+    var needsAutoSave:Bool = saveDataDirty;
+
+    writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportAllSongData(true, null);
     }
   }
 
   function cleanupAutoSave():Void
   {
     WindowUtil.windowExit.remove(onWindowClose);
+    CrashHandler.errorSignal.remove(onWindowCrash);
+    CrashHandler.criticalErrorSignal.remove(onWindowCrash);
   }
 
   public override function update(elapsed:Float):Void
@@ -3428,6 +3495,11 @@ class ChartEditorState extends HaxeUIState
           // Finished dragging. Release the note.
           currentPlaceNoteData = null;
         }
+        else
+        {
+          // Cursor should be a grabby hand.
+          if (targetCursorMode == null) targetCursorMode = Grabbing;
+        }
       }
       else
       {
@@ -3972,19 +4044,21 @@ class ChartEditorState extends HaxeUIState
       if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
       {
         // CTRL + SHIFT + S = Save As
-        ChartEditorImportExportHandler.exportAllSongData(this, false);
+        this.exportAllSongData(false, null, function(path:String) {
+          // CTRL + SHIFT + S Successful
+          this.success('Saved Chart', 'Chart saved successfully to ${path}.');
+        }, function() {
+          // CTRL + SHIFT + S Cancelled
+        });
       }
       else
       {
         // CTRL + S = Save Chart
-        ChartEditorImportExportHandler.exportAllSongData(this, true, currentWorkingFilePath);
+        this.exportAllSongData(true, currentWorkingFilePath);
+        this.success('Saved Chart', 'Chart saved successfully to ${currentWorkingFilePath}.');
       }
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.S)
-    {
-      this.exportAllSongData(false);
-    }
     // CTRL + Q = Quit to Menu
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
     {
@@ -4145,6 +4219,14 @@ class ChartEditorState extends HaxeUIState
   {
     // F1 = Open Help
     if (FlxG.keys.justPressed.F1) this.openUserGuideDialog();
+
+    // DEBUG KEYBIND: Ctrl + Alt + Shift + L = Crash the game.
+    #if debug
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    {
+      throw "DEBUG: Crashing the chart editor!";
+    }
+    #end
   }
 
   override function handleQuickWatch():Void
@@ -4481,15 +4563,7 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
-    #if !mac
-    NotificationManager.instance.addNotification(
-      {
-        title: 'Switch Difficulty',
-        body: 'Switched difficulty to ${selectedDifficulty.toTitleCase()}',
-        type: NotificationType.Success,
-        expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-      });
-    #end
+    this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
   }
 
   /**
@@ -4754,9 +4828,6 @@ class ChartEditorState extends HaxeUIState
    */
   // ====================
 
-  /**
-   * Dismiss any existing HaxeUI notifications, if there are any.
-   */
   function handleNotePreview():Void
   {
     if (notePreviewDirty && notePreview != null)
@@ -4868,9 +4939,9 @@ class ChartEditorState extends HaxeUIState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) ChartEditorAudioHandler.playSound(this, Paths.sound('chartingSounds/hitNotePlayer'));
+          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'));
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) ChartEditorAudioHandler.playSound(this, Paths.sound('chartingSounds/hitNoteOpponent'));
+          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'));
       }
     }
   }
@@ -4955,14 +5026,6 @@ class ChartEditorState extends HaxeUIState
 
     @:privateAccess
     ChartEditorNoteSprite.noteFrameCollection = null;
-  }
-
-  /**
-   * Dismiss any existing notifications, if there are any.
-   */
-  function dismissNotifications():Void
-  {
-    NotificationManager.instance.clearNotifications();
   }
 
   function applyCanQuickSave():Void
