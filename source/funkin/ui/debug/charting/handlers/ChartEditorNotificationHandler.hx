@@ -21,7 +21,7 @@ class ChartEditorNotificationHandler
    */
   public static function success(state:ChartEditorState, title:String, body:String):Notification
   {
-    return sendNotification(title, body, NotificationType.Success);
+    return sendNotification(state, title, body, NotificationType.Success);
   }
 
   /**
@@ -30,7 +30,7 @@ class ChartEditorNotificationHandler
    */
   public static function warning(state:ChartEditorState, title:String, body:String):Notification
   {
-    return sendNotification(title, body, NotificationType.Warning);
+    return sendNotification(state, title, body, NotificationType.Warning);
   }
 
   /**
@@ -48,7 +48,7 @@ class ChartEditorNotificationHandler
    */
   public static function error(state:ChartEditorState, title:String, body:String):Notification
   {
-    return sendNotification(title, body, NotificationType.Error);
+    return sendNotification(state, title, body, NotificationType.Error);
   }
 
   /**
@@ -66,7 +66,7 @@ class ChartEditorNotificationHandler
    */
   public static function info(state:ChartEditorState, title:String, body:String):Notification
   {
-    return sendNotification(title, body, NotificationType.Info);
+    return sendNotification(state, title, body, NotificationType.Info);
   }
 
   /**
@@ -79,7 +79,7 @@ class ChartEditorNotificationHandler
    */
   public static function infoWithActions(state:ChartEditorState, title:String, body:String, actions:Array<NotificationAction>):Notification
   {
-    return sendNotification(title, body, NotificationType.Info, actions);
+    return sendNotification(state, title, body, NotificationType.Info, actions);
   }
 
   /**
@@ -101,7 +101,7 @@ class ChartEditorNotificationHandler
     NotificationManager.instance.removeNotification(notif);
   }
 
-  static function sendNotification(title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationAction>):Notification
+  static function sendNotification(state:ChartEditorState, title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationAction>):Notification
   {
     #if !mac
     var actionNames:Array<String> = actions == null ? [] : actions.map(action -> action.text);
@@ -127,6 +127,8 @@ class ChartEditorNotificationHandler
           if (action != null && action.callback != null)
           {
             button.onClick = function(_) {
+              // Don't allow actions to be clicked while the playtest is open.
+              if (state.subState != null) return;
               action.callback();
             };
           }
