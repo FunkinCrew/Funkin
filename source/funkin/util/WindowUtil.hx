@@ -54,6 +54,26 @@ class WindowUtil
   }
 
   /**
+   * Runs platform-specific code to open a file explorer and select a specific file.
+   * @param targetPath The path of the file to select.
+   */
+  public static function openSelectFile(targetPath:String):Void
+  {
+    #if CAN_OPEN_LINKS
+    #if windows
+    Sys.command('explorer', ["/select," + targetPath.replace("/", "\\")]);
+    #elseif mac
+    Sys.command('open', ["-R", targetPath]);
+    #elseif linux
+    // TODO: unsure of the linux equivalent to opening a folder and then "selecting" a file.
+    Sys.command('open', [targetPath]);
+    #end
+    #else
+    throw 'Cannot open URLs on this platform.';
+    #end
+  }
+
+  /**
    * Dispatched when the game window is closed.
    */
   public static final windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
