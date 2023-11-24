@@ -1354,8 +1354,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       // lolol
-      lime.app.Application.current.window.alert('Nice job, you ignoramus. $id isn\'t a real stage.\nI\'m falling back to the default so the game doesn\'t shit itself.',
-        'Stage Error');
+      lime.app.Application.current.window.alert('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
     }
   }
 

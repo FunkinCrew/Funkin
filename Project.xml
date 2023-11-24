@@ -162,10 +162,13 @@
 	<icon path="art/iconOG.png" />
 	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
 	<haxedef name="CAN_CHEAT" if="switch debug" />
-	<!-- I don't -->
+	<!-- I don't remember what this is for. -->
 	<haxedef name="haxeui_no_mouse_reset" />
 	<!-- Clicking outside a dialog should deselect the current focused component. -->
 	<haxedef name="haxeui_focus_out_on_click" />
+	<!-- Required to use haxe.ui.backend.flixel.UIState with build macros. -->
+	<haxedef name="haxeui_dont_impose_base_class" />
+
 	<!-- Skip the Intro -->
 	<section if="debug">
 		<!-- Starts the game at the specified week, at the first song -->
