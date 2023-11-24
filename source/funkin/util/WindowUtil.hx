@@ -2,6 +2,8 @@ package funkin.util;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 
+using StringTools;
+
 /**
  * Utilities for operating on the current window, such as changing the title.
  */
@@ -40,7 +42,7 @@ class WindowUtil
   {
     #if CAN_OPEN_LINKS
     #if windows
-    Sys.command('explorer', [targetPath]);
+    Sys.command('explorer', [targetPath.replace("/", "\\")]);
     #elseif mac
     Sys.command('open', [targetPath]);
     #elseif linux
