@@ -1959,15 +1959,20 @@ class ChartEditorState extends HaxeUIState
       }
     }
 
+    playbarHead.onDrag = function(_:DragEvent) {
+      if (playbarHeadDragging)
+      {
+        var value:Null<Float> = playbarHead?.value;
+
+        // Set the song position to where the playhead was moved to.
+        scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
+        // Update the conductor and audio tracks to match.
+        moveSongToScrollPosition();
+      }
+    }
+
     playbarHead.onDragEnd = function(_:DragEvent) {
       playbarHeadDragging = false;
-
-      var value:Null<Float> = playbarHead?.value;
-
-      // Set the song position to where the playhead was moved to.
-      scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
-      // Update the conductor and audio tracks to match.
-      moveSongToScrollPosition();
 
       // If we were dragging the playhead while the song was playing, resume playing.
       if (playbarHeadDraggingWasPlaying)
@@ -3018,9 +3023,10 @@ class ChartEditorState extends HaxeUIState
     if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
-    var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging)
+    var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
       || (selectionBoxStartPos != null)
       || (dragTargetNote != null || dragTargetEvent != null);
+
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
 
     // trace('shouldHandleCursor: $shouldHandleCursor');

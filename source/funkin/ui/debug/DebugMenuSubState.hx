@@ -8,6 +8,7 @@ import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.MusicBeatSubState;
 import funkin.util.logging.CrashHandler;
+import flixel.addons.transition.FlxTransitionableState;
 
 class DebugMenuSubState extends MusicBeatSubState
 {
@@ -84,6 +85,8 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openChartEditor()
   {
+    FlxTransitionableState.skipNextTransIn = true;
+
     FlxG.switchState(new ChartEditorState());
   }
 
