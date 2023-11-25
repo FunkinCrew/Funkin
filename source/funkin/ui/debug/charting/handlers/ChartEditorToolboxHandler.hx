@@ -18,6 +18,7 @@ import funkin.play.event.SongEvent;
 import funkin.play.song.SongSerializer;
 import funkin.play.stage.StageData;
 import funkin.play.stage.StageData.StageDataParser;
+import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.util.FileUtil;
@@ -217,7 +218,7 @@ class ChartEditorToolboxHandler
 
   static function buildToolboxNoteDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT);
+    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT);
 
     if (toolbox == null) return null;
 
@@ -226,7 +227,7 @@ class ChartEditorToolboxHandler
     toolbox.y = 100;
 
     toolbox.onDialogClosed = function(event:DialogEvent) {
-      state.setUICheckboxSelected('menubarItemToggleToolboxNotes', false);
+      state.menubarItemToggleToolboxNotes.selected = false;
     }
 
     var toolboxNotesNoteKind:Null<DropDown> = toolbox.findComponent('toolboxNotesNoteKind', DropDown);
@@ -269,7 +270,7 @@ class ChartEditorToolboxHandler
 
   static function buildToolboxEventDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT);
+    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT);
 
     if (toolbox == null) return null;
 
@@ -278,7 +279,7 @@ class ChartEditorToolboxHandler
     toolbox.y = 150;
 
     toolbox.onDialogClosed = function(event:DialogEvent) {
-      state.setUICheckboxSelected('menubarItemToggleToolboxEvents', false);
+      state.menubarItemToggleToolboxEvents.selected = false;
     }
 
     var toolboxEventsEventKind:Null<DropDown> = toolbox.findComponent('toolboxEventsEventKind', DropDown);
@@ -418,7 +419,7 @@ class ChartEditorToolboxHandler
 
   static function buildToolboxDifficultyLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
 
     if (toolbox == null) return null;
 
@@ -427,7 +428,7 @@ class ChartEditorToolboxHandler
     toolbox.y = 200;
 
     toolbox.onDialogClosed = function(event:UIEvent) {
-      state.setUICheckboxSelected('menubarItemToggleToolboxDifficulty', false);
+      state.menubarItemToggleToolboxDifficulty.selected = false;
     }
 
     var difficultyToolboxAddVariation:Null<Button> = toolbox.findComponent('difficultyToolboxAddVariation', Button);
@@ -505,7 +506,7 @@ class ChartEditorToolboxHandler
 
   static function buildToolboxMetadataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
     if (toolbox == null) return null;
 
@@ -514,7 +515,7 @@ class ChartEditorToolboxHandler
     toolbox.y = 250;
 
     toolbox.onDialogClosed = function(event:UIEvent) {
-      state.setUICheckboxSelected('menubarItemToggleToolboxMetadata', false);
+      state.menubarItemToggleToolboxMetadata.selected = false;
     }
 
     var inputSongName:Null<TextField> = toolbox.findComponent('inputSongName', TextField);
@@ -667,7 +668,7 @@ class ChartEditorToolboxHandler
 
   static function buildToolboxPlayerPreviewLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
+    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
 
     if (toolbox == null) return null;
 
@@ -676,7 +677,7 @@ class ChartEditorToolboxHandler
     toolbox.y = 350;
 
     toolbox.onDialogClosed = function(event:DialogEvent) {
-      state.setUICheckboxSelected('menubarItemToggleToolboxPlayerPreview', false);
+      state.menubarItemToggleToolboxPlayerPreview.selected = false;
     }
 
     var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charPlayer');
@@ -696,7 +697,7 @@ class ChartEditorToolboxHandler
 
   static function buildToolboxOpponentPreviewLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = cast state.buildComponent(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
+    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
 
     if (toolbox == null) return null;
 
@@ -705,7 +706,7 @@ class ChartEditorToolboxHandler
     toolbox.y = 350;
 
     toolbox.onDialogClosed = (event:DialogEvent) -> {
-      state.setUICheckboxSelected('menubarItemToggleToolboxOpponentPreview', false);
+      state.menubarItemToggleToolboxOpponentPreview.selected = false;
     }
 
     var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charPlayer');

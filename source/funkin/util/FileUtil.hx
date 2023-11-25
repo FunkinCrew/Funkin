@@ -8,6 +8,10 @@ import haxe.io.Path;
 import openfl.net.FileReference;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
+import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
+import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
 
 /**
  * Utilities for reading and writing files on various platforms.
@@ -17,32 +21,81 @@ class FileUtil
   public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
   public static final FILE_FILTER_ZIP:FileFilter = new FileFilter("ZIP Archive (.zip)", "*.zip");
 
+  public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo =
+    {
+      extension: 'fnfc',
+      label: 'Friday Night Funkin\' Chart',
+    };
+  public static final FILE_EXTENSION_INFO_ZIP:FileDialogExtensionInfo =
+    {
+      extension: 'zip',
+      label: 'ZIP Archive',
+    };
+
   /**
-   * Browses for a single file, then calls `onSelect(path)` when a path chosen.
-   * Note that on HTML5 this will immediately fail, you should call `openFile(onOpen:Resource->Void)` instead.
+   * Browses for a single file, then calls `onSelect(fileInfo)` when a file is selected.
+   * Powered by HaxeUI, so it works on all platforms.
+   * File contents will be binary, not String.
    *
-   * @param typeFilter Filters what kinds of files can be selected.
-   * @return Whether the file dialog was opened successfully.
+   * @param typeFilter
+   * @param onSelect A callback that provides a `SelectedFileInfo` object when a file is selected.
+   * @param onCancel A callback that is called when the user closes the dialog without selecting a file.
    */
-  public static function browseForFile(?typeFilter:Array<FileFilter>, ?onSelect:String->Void, ?onCancel:Void->Void, ?defaultPath:String,
-      ?dialogTitle:String):Bool
+  public static function browseForBinaryFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, ?onSelect:SelectedFileInfo->Void,
+      ?onCancel:Void->Void)
   {
-    #if desktop
-    var filter:String = convertTypeFilter(typeFilter);
+    var onComplete = function(button, selectedFiles) {
+      if (button == DialogButton.OK && selectedFiles.length > 0)
+      {
+        onSelect(selectedFiles[0]);
+      }
+      else
+      {
+        onCancel();
+      }
+    };
 
-    var fileDialog:FileDialog = new FileDialog();
-    if (onSelect != null) fileDialog.onSelect.add(onSelect);
-    if (onCancel != null) fileDialog.onCancel.add(onCancel);
+    Dialogs.openFile(onComplete,
+      {
+        readContents: true,
+        readAsBinary: true, // Binary
+        multiple: false,
+        extensions: typeFilter ?? [],
+        title: dialogTitle,
+      });
+  }
 
-    fileDialog.browse(OPEN, filter, defaultPath, dialogTitle);
-    return true;
-    #elseif html5
-    onCancel();
-    return false;
-    #else
-    onCancel();
-    return false;
-    #end
+  /**
+   * Browses for a single file, then calls `onSelect(fileInfo)` when a file is selected.
+   * Powered by HaxeUI, so it works on all platforms.
+   * File contents will be a String, not binary.
+   *
+   * @param typeFilter
+   * @param onSelect A callback that provides a `SelectedFileInfo` object when a file is selected.
+   * @param onCancel A callback that is called when the user closes the dialog without selecting a file.
+   */
+  public static function browseForTextFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, ?onSelect:SelectedFileInfo->Void,
+      ?onCancel:Void->Void)
+  {
+    var onComplete = function(button, selectedFiles) {
+      if (button == DialogButton.OK && selectedFiles.length > 0)
+      {
+        onSelect(selectedFiles[0]);
+      }
+      else
+      {
+        onCancel();
+      }
+    };
+
+    Dialogs.openFile(onComplete,
+      {
+        readContents: true,
+        readAsBinary: false, // Text
+        multiple: false,
+        extensions: typeFilter ?? [],
+        title: dialogTitle,
+      });
   }
 
   /**
@@ -57,11 +110,9 @@ class FileUtil
   {
     #if desktop
     var filter:String = convertTypeFilter(typeFilter);
-
     var fileDialog:FileDialog = new FileDialog();
     if (onSelect != null) fileDialog.onSelect.add(onSelect);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
-
     fileDialog.browse(OPEN_DIRECTORY, filter, defaultPath, dialogTitle);
     return true;
     #elseif html5
@@ -84,11 +135,9 @@ class FileUtil
   {
     #if desktop
     var filter:String = convertTypeFilter(typeFilter);
-
     var fileDialog:FileDialog = new FileDialog();
     if (onSelect != null) fileDialog.onSelectMultiple.add(onSelect);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
-
     fileDialog.browse(OPEN_MULTIPLE, filter, defaultPath, dialogTitle);
     return true;
     #elseif html5
@@ -112,58 +161,14 @@ class FileUtil
   {
     #if desktop
     var filter:String = convertTypeFilter(typeFilter);
-
     var fileDialog:FileDialog = new FileDialog();
     if (onSelect != null) fileDialog.onSelect.add(onSelect);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
-
     fileDialog.browse(SAVE, filter, defaultPath, dialogTitle);
     return true;
     #elseif html5
     onCancel();
     return false;
-    #else
-    onCancel();
-    return false;
-    #end
-  }
-
-  /**
-   * Browses for a single file location, then reads it and passes it to `onOpen(resource:haxe.io.Bytes)`.
-   * Works great on desktop and HTML5.
-   *
-   * @param typeFilter TODO What does this do?
-   * @return Whether the file dialog was opened successfully.
-   */
-  public static function openFile(?typeFilter:Array<FileFilter>, ?onOpen:Bytes->Void, ?onCancel:Void->Void, ?defaultPath:String, ?dialogTitle:String):Bool
-  {
-    #if desktop
-    var filter:String = convertTypeFilter(typeFilter);
-
-    var fileDialog:FileDialog = new FileDialog();
-    if (onOpen != null) fileDialog.onOpen.add(onOpen);
-    if (onCancel != null) fileDialog.onCancel.add(onCancel);
-
-    fileDialog.open(filter, defaultPath, dialogTitle);
-    return true;
-    #elseif html5
-    var onFileLoaded:Event->Void = function(event) {
-      var loadedFileRef:FileReference = event.target;
-      trace('Loaded file: ' + loadedFileRef.name);
-      onOpen(loadedFileRef.data);
-    }
-
-    var onFileSelected:Event->Void = function(event) {
-      var selectedFileRef:FileReference = event.target;
-      trace('Selected file: ' + selectedFileRef.name);
-      selectedFileRef.addEventListener(Event.COMPLETE, onFileLoaded);
-      selectedFileRef.load();
-    }
-
-    var fileRef:FileReference = new FileReference();
-    fileRef.addEventListener(Event.SELECT, onFileSelected);
-    fileRef.browse(typeFilter);
-    return true;
     #else
     onCancel();
     return false;
@@ -181,20 +186,16 @@ class FileUtil
   {
     #if desktop
     var filter:String = convertTypeFilter(typeFilter);
-
     var fileDialog:FileDialog = new FileDialog();
     if (onSave != null) fileDialog.onSave.add(onSave);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
-
     fileDialog.save(data, filter, defaultFileName, dialogTitle);
     return true;
     #elseif html5
     var filter:String = defaultFileName != null ? Path.extension(defaultFileName) : null;
-
     var fileDialog:FileDialog = new FileDialog();
     if (onSave != null) fileDialog.onSave.add(onSave);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
-
     fileDialog.save(data, filter, defaultFileName, dialogTitle);
     return true;
     #else
@@ -241,17 +242,14 @@ class FileUtil
       }
       onSaveAll(paths);
     }
-
     trace('Browsing for directory to save individual files to...');
     #if mac
     defaultPath = null;
     #end
     browseForDirectory(null, onSelectDir, onCancel, defaultPath, 'Choose directory to save all files to...');
-
     return true;
     #elseif html5
     saveFilesAsZIP(resources, onSaveAll, onCancel, defaultPath, force);
-
     return true;
     #else
     onCancel();
@@ -266,15 +264,12 @@ class FileUtil
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
-
     var onSave:String->Void = function(path:String) {
       trace('Saved ${resources.length} files to ZIP at "$path".');
       if (onSave != null) onSave([path]);
     };
-
     // Prompt the user to save the ZIP file.
     saveFile(zipBytes, [FILE_FILTER_ZIP], onSave, onCancel, defaultPath, 'Save files as ZIP...');
-
     return true;
   }
 
@@ -286,15 +281,12 @@ class FileUtil
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
-
     var onSave:String->Void = function(path:String) {
       trace('Saved FNF file to "$path"');
       if (onSave != null) onSave([path]);
     };
-
     // Prompt the user to save the ZIP file.
     saveFile(zipBytes, [FILE_FILTER_FNFC], onSave, onCancel, defaultPath, 'Save chart as FNFC...');
-
     return true;
   }
 
@@ -309,10 +301,8 @@ class FileUtil
     #if desktop
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
-
     // Write the ZIP.
     writeBytesToPath(path, zipBytes, mode);
-
     return true;
     #else
     return false;
@@ -371,7 +361,6 @@ class FileUtil
   public static function browseFileReference(callback:FileReference->Void)
   {
     var file = new FileReference();
-
     file.addEventListener(Event.SELECT, function(e) {
       var selectedFileRef:FileReference = e.target;
       trace('Selected file: ' + selectedFileRef.name);
@@ -382,7 +371,6 @@ class FileUtil
       });
       selectedFileRef.load();
     });
-
     file.browse();
   }
 
@@ -439,7 +427,6 @@ class FileUtil
   {
     #if sys
     createDirIfNotExists(Path.directory(path));
-
     switch (mode)
     {
       case Force:
@@ -482,7 +469,6 @@ class FileUtil
   {
     #if sys
     createDirIfNotExists(Path.directory(path));
-
     switch (mode)
     {
       case Force:
@@ -557,19 +543,15 @@ class FileUtil
   public static function getTempDir():String
   {
     if (tempDir != null) return tempDir;
-
     #if sys
     #if windows
     var path:String = null;
-
     for (envName in TEMP_ENV_VARS)
     {
       path = Sys.getEnv(envName);
-
       if (path == '') path = null;
       if (path != null) break;
     }
-
     tempDir = Path.join([path, 'funkin/']);
     return tempDir;
     #else
@@ -590,10 +572,8 @@ class FileUtil
   public static function createZIPFromEntries(entries:Array<Entry>):Bytes
   {
     var o:haxe.io.BytesOutput = new haxe.io.BytesOutput();
-
     var zipWriter:haxe.zip.Writer = new haxe.zip.Writer(o);
     zipWriter.write(entries.list());
-
     return o.getBytes();
   }
 
@@ -601,10 +581,8 @@ class FileUtil
   {
     trace('TEST: ' + input.length);
     trace(input.sub(0, 30).toHex());
-
     var bytesInput = new haxe.io.BytesInput(input);
     var zippedEntries = haxe.zip.Reader.readZip(bytesInput);
-
     var results:Array<Entry> = [];
     for (entry in zippedEntries)
     {
@@ -637,7 +615,6 @@ class FileUtil
   public static function makeZIPEntry(name:String, content:String):Entry
   {
     var data:Bytes = haxe.io.Bytes.ofString(content, UTF8);
-
     return makeZIPEntryFromBytes(name, data);
   }
 
@@ -653,12 +630,9 @@ class FileUtil
     return {
       fileName: name,
       fileSize: data.length,
-
       data: data,
       dataSize: data.length,
-
       compressed: false,
-
       fileTime: Date.now(),
       crc32: null,
       extraFields: null,
@@ -677,7 +651,6 @@ class FileUtil
       }
       filter = filters.join(';');
     }
-
     return filter;
   }
 }
