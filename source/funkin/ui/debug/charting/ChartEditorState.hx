@@ -4989,7 +4989,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else
     {
-      welcomeMusic.pause();
+      stopWelcomeMusic();
       startAudioPlayback();
     }
   }
