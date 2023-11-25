@@ -4352,7 +4352,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Override music.
     if (audioInstTrack != null) FlxG.sound.music = audioInstTrack;
     if (audioVocalTrackGroup != null) targetState.vocals = audioVocalTrackGroup;
-
+    stopWelcomeMusic();
     openSubState(targetState);
   }
 
