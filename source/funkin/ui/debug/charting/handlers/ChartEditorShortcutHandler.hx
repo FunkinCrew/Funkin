@@ -7,28 +7,28 @@ class ChartEditorShortcutHandler
 {
   public static function applyPlatformShortcutText(state:ChartEditorState):Void
   {
-    state.setComponentShortcutText('menubarItemNewChart', ctrlOrCmd('N'));
-    state.setComponentShortcutText('menubarItemOpenChart', ctrlOrCmd('O'));
-    state.setComponentShortcutText('menubarItemSaveChartAs', ctrlOrCmd(shift('S')));
-    state.setComponentShortcutText('menubarItemExit', ctrlOrCmd('Q'));
+    state.menubarItemNewChart.shortcutText = ctrlOrCmd('N');
+    state.menubarItemOpenChart.shortcutText = ctrlOrCmd('O');
+    state.menubarItemSaveChartAs.shortcutText = ctrlOrCmd(shift('S'));
+    state.menubarItemExit.shortcutText = ctrlOrCmd('Q');
 
-    state.setComponentShortcutText('menubarItemUndo', ctrlOrCmd('Z'));
-    state.setComponentShortcutText('menubarItemRedo', ctrlOrCmd('Y'));
-    state.setComponentShortcutText('menubarItemCut', ctrlOrCmd('X'));
-    state.setComponentShortcutText('menubarItemCopy', ctrlOrCmd('C'));
-    state.setComponentShortcutText('menubarItemPaste', ctrlOrCmd('V'));
+    state.menubarItemUndo.shortcutText = ctrlOrCmd('Z');
+    state.menubarItemRedo.shortcutText = ctrlOrCmd('Y');
+    state.menubarItemCut.shortcutText = ctrlOrCmd('X');
+    state.menubarItemCopy.shortcutText = ctrlOrCmd('C');
+    state.menubarItemPaste.shortcutText = ctrlOrCmd('V');
 
-    state.setComponentShortcutText('menubarItemSelectAll', ctrlOrCmd('A'));
-    state.setComponentShortcutText('menubarItemSelectInverse', ctrlOrCmd('I'));
-    state.setComponentShortcutText('menubarItemSelectNone', ctrlOrCmd('D'));
-    state.setComponentShortcutText('menubarItemSelectBeforeCursor', shift('Home'));
-    state.setComponentShortcutText('menubarItemSelectAfterCursor', shift('End'));
+    state.menubarItemSelectAll.shortcutText = ctrlOrCmd('A');
+    state.menubarItemSelectInverse.shortcutText = ctrlOrCmd('I');
+    state.menubarItemSelectNone.shortcutText = ctrlOrCmd('D');
+    state.menubarItemSelectBeforeCursor.shortcutText = shift('Home');
+    state.menubarItemSelectAfterCursor.shortcutText = shift('End');
 
-    state.setComponentShortcutText('menubarItemDifficultyDown', ctrlOrCmd('←'));
-    state.setComponentShortcutText('menubarItemDifficultyUp', ctrlOrCmd('→'));
+    state.menubarItemDifficultyDown.shortcutText = ctrlOrCmd('←');
+    state.menubarItemDifficultyUp.shortcutText = ctrlOrCmd('→');
 
-    state.setComponentShortcutText('menubarItemPlaytestFull', 'Enter');
-    state.setComponentShortcutText('menubarItemPlaytestMinimal', shift('Enter'));
+    state.menubarItemPlaytestFull.shortcutText = 'Enter';
+    state.menubarItemPlaytestMinimal.shortcutText = shift('Enter');
   }
 
   /**
