@@ -874,7 +874,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // ==============================
 
   /**
-   * The chill audio track that plays when you open the Chart Editor.
+   * The chill audio track that plays in the chart editor.
+   * Plays when the main music is NOT being played.
    */
   var welcomeMusic:FlxSound = new FlxSound();
 
@@ -1709,8 +1710,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var menuItemRecentChart:MenuItem = new MenuItem();
       menuItemRecentChart.text = chartPath;
       menuItemRecentChart.onClick = function(_event) {
-        stopWelcomeMusic();
-
         // Load chart from file
         var result:Null<Array<String>> = this.loadFromFNFCPath(chartPath);
         if (result != null)
@@ -1747,14 +1746,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #end
   }
 
-  function fadeInWelcomeMusic():Void
+  var bgMusicTimer:FlxTimer;
+
+  function fadeInWelcomeMusic(?extraWait:Float = 0, ?fadeInTime:Float = 5):Void
   {
-    this.welcomeMusic.play();
-    this.welcomeMusic.fadeIn(4, 0, 1.0);
+    bgMusicTimer = new FlxTimer().start(extraWait, (_) -> {
+      this.welcomeMusic.volume = 0;
+      this.welcomeMusic.play();
+      this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
+    });
   }
 
   function stopWelcomeMusic():Void
   {
+    if (bgMusicTimer != null) bgMusicTimer.cancel();
     // this.welcomeMusic.fadeOut(4, 0);
     this.welcomeMusic.pause();
   }
@@ -4979,10 +4984,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (audioInstTrack.playing)
     {
+      fadeInWelcomeMusic(7, 10);
       stopAudioPlayback();
     }
     else
     {
+      welcomeMusic.pause();
       startAudioPlayback();
     }
   }
