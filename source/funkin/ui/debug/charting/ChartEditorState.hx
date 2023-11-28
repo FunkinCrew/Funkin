@@ -2096,6 +2096,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
 
+    playbarBPM.onClick = _ -> {
+      if (FlxG.keys.pressed.CONTROL)
+      {
+        this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, true);
+      }
+      else
+      {
+        currentSongMetadata.timeChanges[0].bpm += 1;
+        refreshMetadataToolbox();
+      }
+    }
+
+    playbarBPM.onRightClick = _ -> {
+      currentSongMetadata.timeChanges[0].bpm -= 1;
+      refreshMetadataToolbox();
+    }
+
     // Add functionality to the menu items.
 
     // File
@@ -2266,6 +2283,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
+    }
+
+    playbarDifficulty.onClick = _ -> {
+      this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
     }
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
@@ -3980,6 +4001,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
+    playbarBPM.text = "BPM: " + currentSongMetadata.timeChanges[0].bpm;
   }
 
   function handlePlayhead():Void
