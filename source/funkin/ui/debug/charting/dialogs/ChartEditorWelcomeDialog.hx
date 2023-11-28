@@ -83,10 +83,18 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   public function addRecentFilePath(state:ChartEditorState, chartPath:String):Void
   {
     var linkRecentChart:Link = new Link();
+
     var fileNamePattern:EReg = new EReg("([^/\\\\]+)$", "");
     var fileName:String = fileNamePattern.match(chartPath) ? fileNamePattern.matched(1) : chartPath;
     linkRecentChart.text = fileName;
+
     linkRecentChart.tooltip = chartPath;
+
+    #if sys
+    var lastModified:String = "Last Modified: " + sys.FileSystem.stat(chartPath).mtime.toString();
+    linkRecentChart.tooltip += "\n" + lastModified;
+    #end
+
     linkRecentChart.onClick = function(_event) {
       this.hideDialog(DialogButton.CANCEL);
 
