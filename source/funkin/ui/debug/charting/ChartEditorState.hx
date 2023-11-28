@@ -3979,6 +3979,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
+    playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
   }
 
   function handlePlayhead():Void
