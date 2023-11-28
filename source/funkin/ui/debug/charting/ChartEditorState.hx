@@ -2085,8 +2085,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex < 0) noteSnapQuantIndex = SNAP_QUANTS.length - 1;
     };
     playbarNoteSnap.onClick = _ -> {
-      noteSnapQuantIndex++;
-      if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
+      if (FlxG.keys.pressed.SHIFT)
+      {
+        noteSnapQuantIndex = BASE_QUANT_INDEX;
+      }
+      else
+      {
+        noteSnapQuantIndex++;
+        if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
+      }
     };
 
     // Add functionality to the menu items.
