@@ -74,7 +74,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   public override function onClose(event:DialogEvent):Void
   {
     super.onClose(event);
-    state.stopWelcomeMusic();
   }
 
   /**
@@ -84,10 +83,12 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   public function addRecentFilePath(state:ChartEditorState, chartPath:String):Void
   {
     var linkRecentChart:Link = new Link();
-    linkRecentChart.text = chartPath;
+    var fileNamePattern:EReg = new EReg("([^/\\\\]+)$", "");
+    var fileName:String = fileNamePattern.match(chartPath) ? fileNamePattern.matched(1) : chartPath;
+    linkRecentChart.text = fileName;
+    linkRecentChart.tooltip = chartPath;
     linkRecentChart.onClick = function(_event) {
       this.hideDialog(DialogButton.CANCEL);
-      state.stopWelcomeMusic();
 
       // Load chart from file
       var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, chartPath);
@@ -161,7 +162,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 
       this.addTemplateSong(songName, targetSongId, (_) -> {
         this.hideDialog(DialogButton.CANCEL);
-        state.stopWelcomeMusic();
 
         // Load song from template
         state.loadSongAsTemplate(targetSongId);
@@ -189,7 +189,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   {
     // Hide the welcome dialog
     this.hideDialog(DialogButton.CANCEL);
-    state.stopWelcomeMusic();
 
     // Open the "Open Chart" dialog
     state.openBrowseFNFC(false);
@@ -203,7 +202,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   {
     // Hide the welcome dialog
     this.hideDialog(DialogButton.CANCEL);
-    state.stopWelcomeMusic();
 
     //
     // Create Song Wizard
@@ -219,7 +217,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   {
     // Hide the welcome dialog
     this.hideDialog(DialogButton.CANCEL);
-    state.stopWelcomeMusic();
 
     //
     // Create Song Wizard
@@ -235,7 +232,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   {
     // Hide the welcome dialog
     this.hideDialog(DialogButton.CANCEL);
-    state.stopWelcomeMusic();
 
     //
     // Create Song Wizard
@@ -251,7 +247,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   {
     // Hide the welcome dialog
     this.hideDialog(DialogButton.CANCEL);
-    state.stopWelcomeMusic();
 
     // Open the "Import Chart" dialog
     state.openImportChartWizard('legacy', false);
