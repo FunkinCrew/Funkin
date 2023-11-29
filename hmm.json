@@ -49,7 +49,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "bfdb49886f256a8c37edfc4f46586727d68e2756",
+      "ref": "91ed8d7867c52af5ea2a9513204057d69ab33c8e",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
@@ -144,7 +144,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "41aea83dbc267234b301434553ce8c17742b8ab7",
+      "ref": "80d1d309803c1b111866524f9769325e3b8b0b1b",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

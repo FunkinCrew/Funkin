@@ -2137,8 +2137,6 @@ class ChartEditorState extends HaxeUIState
     // Disable the menu item if we're not on a desktop platform.
     var menubarItemGoToBackupsFolder = findComponent('menubarItemGoToBackupsFolder', MenuItem);
     if (menubarItemGoToBackupsFolder != null) menubarItemGoToBackupsFolder.disabled = true;
-
-    menubarItemGoToBackupsFolder.disabled = true;
     #end
 
     addUIClickListener('menubarItemUserGuide', _ -> this.openUserGuideDialog());
@@ -2291,9 +2289,13 @@ class ChartEditorState extends HaxeUIState
    */
   function openBackupsFolder():Void
   {
+    #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?
     var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
     WindowUtil.openFolder(absoluteBackupsPath);
+    #else
+    trace('No file system access, cannot open backups folder.');
+    #end
   }
 
   /**
