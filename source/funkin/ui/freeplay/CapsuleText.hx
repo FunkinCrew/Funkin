@@ -38,12 +38,19 @@ class CapsuleText extends FlxSpriteGroup
 
   function set_text(value:String):String
   {
+    if (value == null) return value;
+    if (blurredText == null || whiteText == null)
+    {
+      trace('WARN: Capsule not initialized properly');
+      return text = value;
+    }
+
     blurredText.text = value;
     whiteText.text = value;
     whiteText.textField.filters = [
       new openfl.filters.GlowFilter(0x00ccff, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
       // new openfl.filters.BlurFilter(5, 5, BitmapFilterQuality.LOW)
     ];
-    return value;
+    return text = value;
   }
 }

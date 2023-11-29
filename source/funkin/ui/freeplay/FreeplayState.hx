@@ -998,6 +998,11 @@ class FreeplayState extends MusicBeatSubState
     PlayStatePlaylist.isStoryMode = false;
 
     var targetSong:Song = SongRegistry.instance.fetchEntry(cap.songData.songId);
+    if (targetSong == null)
+    {
+      FlxG.log.warn('WARN: could not find song with id (${cap.songData.songId})');
+      return;
+    }
     var targetDifficulty:String = currentDifficulty;
 
     // TODO: Implement Pico into the interface properly.
