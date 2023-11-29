@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.handlers;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.system.FlxSound;
 import funkin.audio.VoicesGroup;
+import funkin.audio.visualize.PolygonVisGroup;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
 import funkin.util.assets.SoundUtil;
@@ -168,6 +169,7 @@ class ChartEditorAudioHandler
     var vocalTrack:Null<FlxSound> = SoundUtil.buildFlxSoundFromBytes(vocalTrackData);
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
+    if (state.audioVisGroup == null) state.audioVisGroup = new PolygonVisGroup();
 
     if (vocalTrack != null)
     {
@@ -175,6 +177,7 @@ class ChartEditorAudioHandler
       {
         case BF:
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+          state.audioVisGroup.addPlayerVis(vocalTrack);
           return true;
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);

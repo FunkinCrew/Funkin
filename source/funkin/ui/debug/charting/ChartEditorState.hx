@@ -112,6 +112,7 @@ import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
 import funkin.audio.visualize.PolygonSpectogram;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import funkin.audio.visualize.PolygonVisGroup;
 
 using Lambda;
 
@@ -901,6 +902,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
   var audioVocalTrackGroup:Null<VoicesGroup> = null;
+
+  /**
+   * The audio vis for the inst/vocals.
+   * `null` until vocal track(s) are loaded.
+   * When switching characters, the elements of the PolygonVisGroup will be swapped to match the new character.
+   */
+  var audioVisGroup:Null<PolygonVisGroup> = null;
 
   /**
    * A map of the audio tracks for each character's vocals.
@@ -1877,8 +1885,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(healthIconBF);
     healthIconBF.zIndex = 30;
 
-    visulizerGrps = new FlxTypedGroup<PolygonSpectogram>();
-    add(visulizerGrps);
+    audioVisGroup = new PolygonVisGroup();
+    add(audioVisGroup);
   }
 
   function buildNotePreview():Void
@@ -5058,10 +5066,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
         gridPlayheadScrollArea.updateHitbox();
       }
-
-      var vis:PolygonSpectogram = new PolygonSpectogram(audioInstTrack);
-      vis.realtimeVisLenght = 1;
-      visulizerGrps.add(vis);
     }
     else
     {

@@ -26,11 +26,11 @@ class PolygonSpectogram extends MeshRender
   public var thickness:Float = 2;
   public var waveAmplitude:Int = 100;
 
-  public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?detail:Float = 1)
+  public function new(?daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?detail:Float = 1)
   {
     super(0, 0, col);
 
-    setSound(daSound);
+    if (daSound != null) setSound(daSound);
 
     if (height != null) this.daHeight = height;
 
