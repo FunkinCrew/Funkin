@@ -2103,13 +2103,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       else
       {
-        currentSongMetadata.timeChanges[0].bpm += 1;
+        Conductor.currentTimeChange.bpm += 1;
         refreshMetadataToolbox();
       }
     }
 
     playbarBPM.onRightClick = _ -> {
-      currentSongMetadata.timeChanges[0].bpm -= 1;
+      Conductor.currentTimeChange.bpm -= 1;
       refreshMetadataToolbox();
     }
 
@@ -4001,7 +4001,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
-    playbarBPM.text = "BPM: " + currentSongMetadata.timeChanges[0].bpm;
+    playbarBPM.text = "BPM: " + Conductor.currentTimeChange.bpm;
   }
 
   function handlePlayhead():Void
