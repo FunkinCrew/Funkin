@@ -13,9 +13,24 @@ jobs:
     steps:
       - name: ensure git cli is installed
         run: apt update && apt install sudo git -y
-      - uses: actions/checkout@v3
-      - name: print latest_commit
-        run: echo ${{ github.sha }}
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+          token: ${{ secrets.GH_RO_PAT }}
+      - name: check whether submodules exist
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+
+          # debug output
+          echo gh=${{ github.sha }}
+          echo head=$(git rev-parse HEAD)
+          echo art=$(git -C art rev-parse HEAD)
+          echo assets=$(git -C assets rev-parse HEAD)
+
+          # checks if HEAD commit hash in submodules is diff from current repo, and therefore exists
+          test $(git rev-parse HEAD) != $(git -C art rev-parse HEAD)
+          test $(git rev-parse HEAD) != $(git -C assets rev-parse HEAD)
       - id: should_run
         continue-on-error: true
         name: check latest commit is less than a day
@@ -33,9 +48,10 @@ jobs:
           apt install sudo git curl unzip -y
           echo $GITHUB_WORKSPACE
           git config --global --add safe.directory $GITHUB_WORKSPACE
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+          fetch-depth: 0
           token: ${{ secrets.GH_RO_PAT }}
       - uses: ./.github/actions/setup-haxeshit
       - name: Build game
@@ -56,9 +72,10 @@ jobs:
        contents: write
        actions: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+          fetch-depth: 0
           token: ${{ secrets.GH_RO_PAT }}
       - uses: ./.github/actions/setup-haxeshit
       - name: Make HXCPP cache dir
@@ -91,9 +108,10 @@ jobs:
 #       contents: write
 #       actions: write
 #    steps:
-#      - uses: actions/checkout@v3
+#      - uses: actions/checkout@v4
 #        with:
 #          submodules: 'recursive'
+#          fetch-depth: 0
 #          token: ${{ secrets.GH_RO_PAT }}
 #      - uses: ./.github/actions/setup-haxeshit
 #      - name: Run unit tests

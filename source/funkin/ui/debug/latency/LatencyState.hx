@@ -267,7 +267,7 @@ class LatencyState extends MusicBeatSubState
 
   function generateBeatStuff()
   {
-    Conductor.songPosition = swagSong.getTimeWithDiff();
+    Conductor.update(swagSong.getTimeWithDiff());
 
     var closestBeat:Int = Math.round(Conductor.songPosition / Conductor.beatLengthMs) % diffGrp.members.length;
     var getDiff:Float = Conductor.songPosition - (closestBeat * Conductor.beatLengthMs);

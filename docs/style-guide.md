@@ -32,6 +32,10 @@ Example:
 public function checkSyncError(?targetTime:Float):Float
 ```
 
+## Commenting Unused Code
+
+Do not comment out sections of code that are unused. Keep these snippets elsewhere or remove them. Older chunks of code can be retrieved by referring to the older Git commits, and having large chunks of commented code makes files longer and more confusing to navigate.
+
 ## License Headers
 
 Do not include headers specifying code license on individual files in the repo, since the main `LICENSE.md` file covers all of them.

@@ -11,7 +11,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "8437a86aa5dafdb3f5dcb91d212cb10a4ee6e53b",
+      "ref": "da04cbda49a4c5eebe93fb61296dbaf4f0f1b556",
       "url": "https://github.com/EliteMasterEric/flixel"
     },
     {
@@ -49,7 +49,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "bfdb49886f256a8c37edfc4f46586727d68e2756",
+      "ref": "91ed8d7867c52af5ea2a9513204057d69ab33c8e",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
@@ -144,7 +144,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "e8a07b81e3bc535238ad8649e38f5d43c46f1b65",
+      "ref": "80d1d309803c1b111866524f9769325e3b8b0b1b",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
