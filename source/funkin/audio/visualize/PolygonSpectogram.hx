@@ -73,9 +73,16 @@ class PolygonSpectogram extends MeshRender
 
       start = Math.max(start, 0);
 
+      // gets how many samples to generate
       var samplesToGen:Int = Std.int(sampleRate * seconds);
+
+      if (samplesToGen == 0) return;
       // gets which sample to start at
       var startSample:Int = Std.int(FlxMath.remapToRange(start, 0, vis.snd.length, 0, numSamples));
+
+      // Check if startSample and samplesToGen are within the bounds of the audioData array
+      if (startSample < 0 || startSample >= numSamples) return;
+      if (samplesToGen <= 0 || startSample + samplesToGen > numSamples) samplesToGen = numSamples - startSample;
 
       var prevPoint:FlxPoint = new FlxPoint();
 
@@ -123,7 +130,7 @@ class PolygonSpectogram extends MeshRender
 
         curTime = vis.snd.time;
 
-        generateSection(vis.snd.time, realtimeVisLenght);
+        if (vis.snd.time < vis.snd.length - realtimeVisLenght) generateSection(vis.snd.time, realtimeVisLenght);
       }
     }
   }

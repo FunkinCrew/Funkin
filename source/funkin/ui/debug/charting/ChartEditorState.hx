@@ -111,6 +111,7 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
 import funkin.audio.visualize.PolygonSpectogram;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 using Lambda;
 
@@ -1329,6 +1330,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // ==============================
 
   /**
+   * The group containing the visulizers! */
+  var visulizerGrps:FlxTypedGroup<PolygonSpectogram> = null;
+
+  /**
    * The IMAGE used for the grid. Updated by ChartEditorThemeHandler.
    */
   var gridBitmap:Null<BitmapData> = null;
@@ -1871,6 +1876,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.flipX = true;
     add(healthIconBF);
     healthIconBF.zIndex = 30;
+
+    visulizerGrps = new FlxTypedGroup<PolygonSpectogram>();
+    add(visulizerGrps);
   }
 
   function buildNotePreview():Void
@@ -2226,11 +2234,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #if sys
     menubarItemGoToBackupsFolder.onClick = _ -> this.openBackupsFolder();
     #else
-
     // Disable the menu item if we're not on a desktop platform.
     var menubarItemGoToBackupsFolder = findComponent('menubarItemGoToBackupsFolder', MenuItem);
     if (menubarItemGoToBackupsFolder != null) menubarItemGoToBackupsFolder.disabled = true;
-
     #end
 
     menubarItemUserGuide.onClick = _ -> this.openUserGuideDialog();
@@ -5054,8 +5060,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
 
       var vis:PolygonSpectogram = new PolygonSpectogram(audioInstTrack);
-      vis.generateSection(0, 4);
-      add(vis);
+      vis.realtimeVisLenght = 1;
+      visulizerGrps.add(vis);
     }
     else
     {
