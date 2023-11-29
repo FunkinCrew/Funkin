@@ -32,10 +32,14 @@ class PasteItemsCommand implements ChartEditorCommand
       return;
     }
 
-    trace(currentClipboard.notes);
+    var stepEndOfSong:Float = Conductor.getTimeInSteps(state.songLengthInMs);
+    var stepCutoff:Float = stepEndOfSong - 1.0;
+    var msCutoff:Float = Conductor.getStepTimeInMs(stepCutoff);
 
     addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, Std.int(targetTimestamp));
+    addedNotes = SongDataUtils.clampSongNoteData(addedNotes, 0.0, msCutoff);
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
+    addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);

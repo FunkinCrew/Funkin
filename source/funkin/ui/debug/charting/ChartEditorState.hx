@@ -2137,8 +2137,6 @@ class ChartEditorState extends HaxeUIState
     // Disable the menu item if we're not on a desktop platform.
     var menubarItemGoToBackupsFolder = findComponent('menubarItemGoToBackupsFolder', MenuItem);
     if (menubarItemGoToBackupsFolder != null) menubarItemGoToBackupsFolder.disabled = true;
-
-    menubarItemGoToBackupsFolder.disabled = true;
     #end
 
     addUIClickListener('menubarItemUserGuide', _ -> this.openUserGuideDialog());
@@ -2291,9 +2289,11 @@ class ChartEditorState extends HaxeUIState
    */
   function openBackupsFolder():Void
   {
+    #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?
     var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
     WindowUtil.openFolder(absoluteBackupsPath);
+    #end
   }
 
   /**
@@ -4263,7 +4263,16 @@ class ChartEditorState extends HaxeUIState
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
-    var targetSong:Song = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
+    var targetSong:Song;
+    try
+    {
+      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
+    }
+    catch (e)
+    {
+      this.error("Could Not Playtest", 'Got an error trying to playtest the song.\n${e}');
+      return;
+    }
 
     // TODO: Rework asset system so we can remove this.
     switch (currentSongStage)
@@ -4308,6 +4317,8 @@ class ChartEditorState extends HaxeUIState
     if (audioInstTrack != null) FlxG.sound.music = audioInstTrack;
     if (audioVocalTrackGroup != null) targetState.vocals = audioVocalTrackGroup;
 
+    this.persistentUpdate = false;
+    this.persistentDraw = false;
     openSubState(targetState);
   }
 
@@ -4521,6 +4532,8 @@ class ChartEditorState extends HaxeUIState
         var prevDifficulty = availableDifficulties[availableDifficulties.length - 1];
         selectedDifficulty = prevDifficulty;
 
+        Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
         refreshDifficultyTreeSelection();
         refreshMetadataToolbox();
       }
@@ -4639,6 +4652,9 @@ class ChartEditorState extends HaxeUIState
   @:nullSafety(Off)
   function resetConductorAfterTest(_:FlxSubState = null):Void
   {
+    this.persistentUpdate = true;
+    this.persistentDraw = true;
+
     moveSongToScrollPosition();
 
     var instVolumeSlider:Null<Slider> = findComponent('menubarItemVolumeInstrumental', Slider);

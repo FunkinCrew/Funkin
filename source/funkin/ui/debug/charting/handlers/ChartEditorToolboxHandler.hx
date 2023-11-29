@@ -609,19 +609,8 @@ class ChartEditorToolboxHandler
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;
 
-      var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
-      if (timeChanges == null || timeChanges.length == 0)
-      {
-        timeChanges = [new SongTimeChange(0, event.value)];
-      }
-      else
-      {
-        timeChanges[0].bpm = event.value;
-      }
-
-      state.currentSongMetadata.timeChanges = timeChanges;
-
-      Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+      // Use a command so we can undo/redo this action.
+      state.performCommand(new ChangeStartingBPMCommand(event.value));
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 
