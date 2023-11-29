@@ -110,6 +110,7 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
+import funkin.audio.visualize.PolygonSpectogram;
 
 using Lambda;
 
@@ -1792,6 +1793,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBG.scrollFactor.set(0, 0);
     menuBG.zIndex = -100;
   }
+
+  var oppSpectogram:PolygonSpectogram;
 
   /**
    * Builds and displays the chart editor grid, including the playhead and cursor.
@@ -5012,6 +5015,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
         gridPlayheadScrollArea.updateHitbox();
       }
+
+      var vis:PolygonSpectogram = new PolygonSpectogram(audioInstTrack);
+      vis.generateSection(0, 4);
+      add(vis);
     }
     else
     {
