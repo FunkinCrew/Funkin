@@ -2085,9 +2085,33 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex < 0) noteSnapQuantIndex = SNAP_QUANTS.length - 1;
     };
     playbarNoteSnap.onClick = _ -> {
-      noteSnapQuantIndex++;
-      if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
+      if (FlxG.keys.pressed.SHIFT)
+      {
+        noteSnapQuantIndex = BASE_QUANT_INDEX;
+      }
+      else
+      {
+        noteSnapQuantIndex++;
+        if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
+      }
     };
+
+    playbarBPM.onClick = _ -> {
+      if (FlxG.keys.pressed.CONTROL)
+      {
+        this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, true);
+      }
+      else
+      {
+        Conductor.currentTimeChange.bpm += 1;
+        refreshMetadataToolbox();
+      }
+    }
+
+    playbarBPM.onRightClick = _ -> {
+      Conductor.currentTimeChange.bpm -= 1;
+      refreshMetadataToolbox();
+    }
 
     // Add functionality to the menu items.
 
@@ -2262,6 +2286,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
+    }
+
+    playbarDifficulty.onClick = _ -> {
+      this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
     }
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
@@ -3979,6 +4007,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
+    playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
+    playbarBPM.text = "BPM: " + Conductor.currentTimeChange.bpm;
   }
 
   function handlePlayhead():Void
