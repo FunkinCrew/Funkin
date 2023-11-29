@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting.commands;
 
+import funkin.data.song.SongData.SongTimeChange;
+
 /**
  * A command which changes the starting BPM of the song.
  */
@@ -22,12 +24,12 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
     if (timeChanges == null || timeChanges.length == 0)
     {
       previousBPM = 100;
-      timeChanges = [new SongTimeChange(0, event.value)];
+      timeChanges = [new SongTimeChange(0, targetBPM)];
     }
     else
     {
       previousBPM = timeChanges[0].bpm;
-      timeChanges[0].bpm = event.value;
+      timeChanges[0].bpm = targetBPM;
     }
 
     state.currentSongMetadata.timeChanges = timeChanges;
@@ -50,5 +52,10 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
     state.currentSongMetadata.timeChanges = timeChanges;
 
     Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+  }
+
+  public function toString():String
+  {
+    return 'Change Starting BPM to ${targetBPM}';
   }
 }

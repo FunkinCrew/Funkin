@@ -4613,7 +4613,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var prevDifficulty = availableDifficulties[availableDifficulties.length - 1];
         selectedDifficulty = prevDifficulty;
 
-        Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+        Conductor.mapTimeChanges(this.currentSongMetadata.timeChanges);
 
         refreshDifficultyTreeSelection();
         refreshMetadataToolbox();

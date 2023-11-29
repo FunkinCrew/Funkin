@@ -11,6 +11,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventData;
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -611,7 +612,11 @@ class ChartEditorToolboxHandler
       if (event.value == null || event.value <= 0) return;
 
       // Use a command so we can undo/redo this action.
-      state.performCommand(new ChangeStartingBPMCommand(event.value));
+      var startingBPM = state.currentSongMetadata.timeChanges[0].bpm;
+      if (event.value != startingBPM)
+      {
+        state.performCommand(new ChangeStartingBPMCommand(event.value));
+      }
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 
