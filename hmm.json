@@ -11,7 +11,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "8437a86aa5dafdb3f5dcb91d212cb10a4ee6e53b",
+      "ref": "da04cbda49a4c5eebe93fb61296dbaf4f0f1b556",
       "url": "https://github.com/EliteMasterEric/flixel"
     },
     {
@@ -144,7 +144,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "e8a07b81e3bc535238ad8649e38f5d43c46f1b65",
+      "ref": "41aea83dbc267234b301434553ce8c17742b8ab7",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
