@@ -1,24 +1,25 @@
 package funkin.ui.transition;
 
-import funkin.play.PlayStatePlaylist;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import funkin.graphics.shaders.ScreenWipeShader;
 import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song.SongDifficulty;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatState;
 import haxe.io.Path;
 import lime.app.Future;
-import flixel.tweens.FlxTween;
-import funkin.ui.MusicBeatState;
 import lime.app.Promise;
 import lime.utils.AssetLibrary;
-import flixel.tweens.FlxEase;
 import lime.utils.AssetManifest;
 import lime.utils.Assets as LimeAssets;
-import openfl.utils.Assets;
-import funkin.ui.mainmenu.MainMenuState;
 import openfl.filters.ShaderFilter;
+import openfl.utils.Assets;
 
 class LoadingState extends MusicBeatState
 {
@@ -59,18 +60,20 @@ class LoadingState extends MusicBeatState
     initSongsManifest().onComplete(function(lib) {
       callbacks = new MultiCallback(onLoad);
       var introComplete = callbacks.add('introComplete');
-      // checkLoadSong(getSongPath());
-      // if (PlayState.currentSong.needsVoices)
-      // {
-      //  var files = PlayState.currentSong.voiceList;
-      //
-      //  if (files == null) files = ['']; // loads with no file name assumption, to load 'Voices.ogg' or whatev normally
-      //
-      //  for (sndFile in files)
-      //  {
-      //    checkLoadSong(getVocalPath(sndFile));
-      //  }
-      // }
+
+      if (Std.isOfType(target, PlayState))
+      {
+        var targetPlayState:PlayState = cast target;
+        var targetChart:SongDifficulty = targetPlayState.currentChart;
+        var instPath:String = Paths.inst(targetChart.song.id);
+        var voicesPaths:Array<String> = targetChart.buildVoiceList();
+
+        checkLoadSong(instPath);
+        for (voicePath in voicesPaths)
+        {
+          checkLoadSong(voicePath);
+        }
+      }
 
       checkLibrary('shared');
       checkLibrary(PlayStatePlaylist.campaignId);

@@ -35,15 +35,15 @@ class Conductor
   static var timeChanges:Array<SongTimeChange> = [];
 
   /**
-   * The current time change.
+   * The most recent time change for the current song position.
    */
-  static var currentTimeChange:SongTimeChange;
+  public static var currentTimeChange(default, null):SongTimeChange;
 
   /**
    * The current position in the song in milliseconds.
-   * Updated every frame based on the audio position.
+   * Update this every frame based on the audio position using `Conductor.update()`.
    */
-  public static var songPosition:Float = 0;
+  public static var songPosition(default, null):Float = 0;
 
   /**
    * Beats per minute of the current song at the current time.
