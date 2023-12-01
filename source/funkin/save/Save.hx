@@ -105,7 +105,7 @@ abstract Save(RawSaveData)
             theme: ChartEditorTheme.Light,
             playtestStartTime: false,
             downscroll: false,
-            metronomeEnabled: true,
+            metronomeVolume: 1.0,
             hitsoundsEnabledPlayer: true,
             hitsoundsEnabledOpponent: true,
             instVolume: 1.0,
@@ -279,21 +279,38 @@ abstract Save(RawSaveData)
     return this.optionsChartEditor.theme;
   }
 
-  public var chartEditorMetronomeEnabled(get, set):Bool;
+  public var chartEditorMetronomeVolume(get, set):Float;
 
-  function get_chartEditorMetronomeEnabled():Bool
+  function get_chartEditorMetronomeVolume():Float
   {
-    if (this.optionsChartEditor.metronomeEnabled == null) this.optionsChartEditor.metronomeEnabled = true;
+    if (this.optionsChartEditor.metronomeVolume == null) this.optionsChartEditor.metronomeVolume = 1.0;
 
-    return this.optionsChartEditor.metronomeEnabled;
+    return this.optionsChartEditor.metronomeVolume;
   }
 
-  function set_chartEditorMetronomeEnabled(value:Bool):Bool
+  function set_chartEditorMetronomeVolume(value:Float):Float
   {
     // Set and apply.
-    this.optionsChartEditor.metronomeEnabled = value;
+    this.optionsChartEditor.metronomeVolume = value;
     flush();
-    return this.optionsChartEditor.metronomeEnabled;
+    return this.optionsChartEditor.metronomeVolume;
+  }
+
+  public var chartEditorHitsoundVolume(get, set):Float;
+
+  function get_chartEditorHitsoundVolume():Float
+  {
+    if (this.optionsChartEditor.hitsoundVolume == null) this.optionsChartEditor.hitsoundVolume = 1.0;
+
+    return this.optionsChartEditor.hitsoundVolume;
+  }
+
+  function set_chartEditorHitsoundVolume(value:Float):Float
+  {
+    // Set and apply.
+    this.optionsChartEditor.hitsoundVolume = value;
+    flush();
+    return this.optionsChartEditor.hitsoundVolume;
   }
 
   public var chartEditorHitsoundsEnabledPlayer(get, set):Bool;
@@ -981,10 +998,16 @@ typedef SaveDataChartEditorOptions =
   var ?downscroll:Bool;
 
   /**
-   * Metronome sounds in the Chart Editor.
-   * @default `true`
+   * Metronome volume in the Chart Editor.
+   * @default `1.0`
    */
-  var ?metronomeEnabled:Bool;
+  var ?metronomeVolume:Float;
+
+  /**
+   * Hitsound volume in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?hitsoundVolume:Float;
 
   /**
    * If true, playtest songs from the current position in the Chart Editor.
