@@ -6,8 +6,9 @@ import flixel.sound.FlxSound;
 
 class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
 {
-  var playerVis:PolygonSpectogram;
-  var opponentVis:PolygonSpectogram;
+  public var playerVis:PolygonSpectogram;
+  public var opponentVis:PolygonSpectogram;
+
   var instVis:PolygonSpectogram;
 
   public function new()

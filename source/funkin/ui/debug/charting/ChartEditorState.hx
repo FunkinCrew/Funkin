@@ -330,6 +330,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
         gridPlayheadScrollArea.y = gridTiledSprite.y;
+
+        if (audioVisGroup != null && audioVisGroup.playerVis != null)
+        {
+          audioVisGroup.playerVis.y = Math.max(gridTiledSprite.y, MENU_BAR_HEIGHT);
+        }
       }
     }
 
@@ -428,12 +433,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_playheadPositionInMs():Float
   {
+    if (audioVisGroup != null && audioVisGroup.playerVis != null)
+      audioVisGroup.playerVis.realtimeStartOffset = -Conductor.getStepTimeInMs(playheadPositionInSteps);
     return Conductor.getStepTimeInMs(playheadPositionInSteps);
   }
 
   function set_playheadPositionInMs(value:Float):Float
   {
     playheadPositionInSteps = Conductor.getTimeInSteps(value);
+
+    if (audioVisGroup != null && audioVisGroup.playerVis != null) audioVisGroup.playerVis.realtimeStartOffset = -value;
     return value;
   }
 

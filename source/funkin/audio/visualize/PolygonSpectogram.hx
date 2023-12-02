@@ -16,6 +16,7 @@ class PolygonSpectogram extends MeshRender
   public var visType:VISTYPE = UPDATED;
   public var daHeight:Float = FlxG.height;
   public var realtimeVisLenght:Float = 0.2;
+  public var realtimeStartOffset:Float = 0;
 
   var numSamples:Int = 0;
   var setBuffer:Bool = false;
@@ -86,7 +87,7 @@ class PolygonSpectogram extends MeshRender
 
       var prevPoint:FlxPoint = new FlxPoint();
 
-      var funnyPixels:Int = Std.int(daHeight); // sorta redundant but just need it for different var...
+      var funnyPixels:Int = Std.int(daHeight * detail); // sorta redundant but just need it for different var...
 
       if (prevAudioData == audioData.subarray(startSample, startSample + samplesToGen)) return; // optimize / finish funciton here, no need to re-render
 
@@ -130,7 +131,7 @@ class PolygonSpectogram extends MeshRender
 
         curTime = vis.snd.time;
 
-        if (vis.snd.time < vis.snd.length - realtimeVisLenght) generateSection(vis.snd.time, realtimeVisLenght);
+        if (vis.snd.time < vis.snd.length - realtimeVisLenght) generateSection(vis.snd.time + realtimeStartOffset, realtimeVisLenght);
       }
     }
   }
