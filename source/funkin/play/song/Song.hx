@@ -1,21 +1,22 @@
 package funkin.play.song;
 
-import funkin.util.SortUtil;
 import flixel.sound.FlxSound;
-import openfl.utils.Assets;
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.IScriptedClass;
 import funkin.audio.VoicesGroup;
-import funkin.data.song.SongRegistry;
+import funkin.data.IRegistryEntry;
+import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongRegistry;
 import funkin.data.song.SongData.SongMetadata;
-import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongData.SongTimeFormat;
-import funkin.data.IRegistryEntry;
+import funkin.data.song.SongRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.IScriptedClass;
+import funkin.util.SortUtil;
+import openfl.utils.Assets;
 
 /**
  * This is a data structure managing information about the current song.
@@ -172,6 +173,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         difficulty.timeChanges = metadata.timeChanges;
         difficulty.looped = metadata.looped;
         difficulty.generatedBy = metadata.generatedBy;
+        difficulty.offsets = metadata.offsets;
 
         difficulty.stage = metadata.playData.stage;
         difficulty.noteStyle = metadata.playData.noteStyle;
@@ -391,6 +393,7 @@ class SongDifficulty
   public var timeFormat:SongTimeFormat = Constants.DEFAULT_TIMEFORMAT;
   public var divisions:Null<Int> = null;
   public var looped:Bool = false;
+  public var offsets:SongOffsets = new SongOffsets();
   public var generatedBy:String = SongRegistry.DEFAULT_GENERATEDBY;
 
   public var timeChanges:Array<SongTimeChange> = [];
@@ -541,6 +544,9 @@ class SongDifficulty
         result.add(new FlxSound().loadEmbedded(Assets.getSound(voiceList[i])));
       }
     }
+
+    result.playerVoicesOffset = offsets.getVocalOffset(characters.player);
+    result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent);
 
     return result;
   }
