@@ -2,12 +2,13 @@ package funkin.audio;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
+import funkin.audio.FunkinSound;
 
 /**
- * A group of FlxSounds that are all synced together.
- * Unlike FlxSoundGroup, you cann also control their time and pitch.
+ * A group of FunkinSounds that are all synced together.
+ * Unlike FlxSoundGroup, you can also control their time and pitch.
  */
-class SoundGroup extends FlxTypedGroup<FlxSound>
+class SoundGroup extends FlxTypedGroup<FunkinSound>
 {
   public var time(get, set):Float;
 
@@ -28,14 +29,13 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
     if (files == null)
     {
       // Add an empty voice.
-      result.add(new FlxSound());
+      result.add(new FunkinSound());
       return result;
     }
 
     for (sndFile in files)
     {
-      var snd:FlxSound = new FlxSound().loadEmbedded(Paths.voices(song, '$sndFile'));
-      FlxG.sound.list.add(snd); // adds it to sound group for proper volumes
+      var snd:FunkinSound = FunkinSound.load(Paths.voices(song, '$sndFile'));
       result.add(snd); // adds it to main group for other shit
     }
 
@@ -67,9 +67,9 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
   /**
    * Add a sound to the group.
    */
-  public override function add(sound:FlxSound):FlxSound
+  public override function add(sound:FunkinSound):FunkinSound
   {
-    var result:FlxSound = super.add(sound);
+    var result:FunkinSound = super.add(sound);
 
     if (result == null) return null;
 
@@ -97,7 +97,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
    */
   public function pause()
   {
-    forEachAlive(function(sound:FlxSound) {
+    forEachAlive(function(sound:FunkinSound) {
       sound.pause();
     });
   }
@@ -107,7 +107,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
    */
   public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
   {
-    forEachAlive(function(sound:FlxSound) {
+    forEachAlive(function(sound:FunkinSound) {
       sound.play(forceRestart, startTime, endTime);
     });
   }
@@ -117,7 +117,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
    */
   public function resume()
   {
-    forEachAlive(function(sound:FlxSound) {
+    forEachAlive(function(sound:FunkinSound) {
       sound.resume();
     });
   }
@@ -127,7 +127,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
    */
   public function stop()
   {
-    forEachAlive(function(sound:FlxSound) {
+    forEachAlive(function(sound:FunkinSound) {
       sound.stop();
     });
   }
@@ -151,7 +151,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
 
   function set_time(time:Float):Float
   {
-    forEachAlive(function(snd) {
+    forEachAlive(function(snd:FunkinSound) {
       // account for different offsets per sound?
       snd.time = time;
     });
@@ -169,7 +169,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
   // in PlayState, adjust the code so that it only mutes the player1 vocal tracks?
   function set_volume(volume:Float):Float
   {
-    forEachAlive(function(snd) {
+    forEachAlive(function(snd:FunkinSound) {
       snd.volume = volume;
     });
 
@@ -189,7 +189,7 @@ class SoundGroup extends FlxTypedGroup<FlxSound>
   {
     #if FLX_PITCH
     trace('Setting audio pitch to ' + val);
-    forEachAlive(function(snd) {
+    forEachAlive(function(snd:FunkinSound) {
       snd.pitch = val;
     });
     #end
