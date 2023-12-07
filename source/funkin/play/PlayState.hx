@@ -327,12 +327,6 @@ class PlayState extends MusicBeatSubState
   var overrideMusic:Bool = false;
 
   /**
-   * After the song starts, the song offset may dictate we wait before the instrumental starts.
-   * This variable represents that delay, and is subtracted from until it reaches 0, before calling `music.play()`
-   */
-  var songStartDelay:Float = 0.0;
-
-  /**
    * Forcibly disables all update logic while the game moves back to the Menu state.
    * This is used only when a critical error occurs and the game absolutely cannot continue.
    */
@@ -781,26 +775,7 @@ class PlayState extends MusicBeatSubState
         Conductor.formatOffset = 0.0;
       }
 
-      if (songStartDelay > 0)
-      {
-        // Code to handle the song not starting yet (positive instrumental offset in metadata).
-        // Wait for offset to elapse before actually hitting play on the instrumental.
-        songStartDelay -= elapsed * 1000;
-        if (songStartDelay <= 0)
-        {
-          FlxG.sound.music.play();
-          Conductor.update(); // Normal conductor update.
-        }
-        else
-        {
-          // Make beat events still happen.
-          Conductor.update(Conductor.songPosition + elapsed * 1000);
-        }
-      }
-      else
-      {
-        Conductor.update(); // Normal conductor update.
-      }
+      Conductor.update(); // Normal conductor update.
 
       if (!isGamePaused)
       {
@@ -1046,7 +1021,7 @@ class PlayState extends MusicBeatSubState
       if (event.eventCanceled) return;
 
       // Resume
-      FlxG.sound.music.play();
+      FlxG.sound.music.play(FlxG.sound.music.time);
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
@@ -1730,21 +1705,9 @@ class PlayState extends MusicBeatSubState
     trace('Playing vocals...');
     add(vocals);
 
-    if (FlxG.sound.music.time < 0)
-    {
-      // A positive instrumentalOffset means Conductor.songPosition will still be negative after the countdown elapses.
-      trace('POSITIVE OFFSET: Waiting to start song...');
-      songStartDelay = Math.abs(FlxG.sound.music.time);
-      FlxG.sound.music.time = 0;
-      FlxG.sound.music.pause();
-      vocals.pause();
-    }
-    else
-    {
-      FlxG.sound.music.play();
-      vocals.play();
-      resyncVocals();
-    }
+    FlxG.sound.music.play(FlxG.sound.music.time);
+    vocals.play();
+    resyncVocals();
 
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
@@ -1753,7 +1716,7 @@ class PlayState extends MusicBeatSubState
 
     if (startTimestamp > 0)
     {
-      FlxG.sound.music.time = startTimestamp - Conductor.instrumentalOffset;
+      // FlxG.sound.music.time = startTimestamp - Conductor.instrumentalOffset;
       handleSkippedNotes();
     }
   }
@@ -1767,11 +1730,10 @@ class PlayState extends MusicBeatSubState
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!FlxG.sound.music.playing) return;
-    if (songStartDelay > 0) return;
 
     vocals.pause();
 
-    FlxG.sound.music.play();
+    FlxG.sound.music.play(FlxG.sound.music.time);
 
     vocals.time = FlxG.sound.music.time;
     vocals.play(false, FlxG.sound.music.time);

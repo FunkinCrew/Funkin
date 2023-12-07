@@ -90,6 +90,7 @@ class SongMetadata
     result.version = this.version;
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
+    result.offsets = this.offsets;
     result.timeChanges = this.timeChanges;
     result.looped = this.looped;
     result.playData = this.playData;

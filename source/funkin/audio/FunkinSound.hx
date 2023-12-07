@@ -21,10 +21,22 @@ class FunkinSound extends FlxSound
 {
   static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
+  public var isPlaying(get, never):Bool;
+
+  function get_isPlaying():Bool
+  {
+    return this.playing || this._shouldPlay;
+  }
+
   /**
    * Are we in a state where the song should play but time is negative?
    */
-  var shouldPlay:Bool = false;
+  var _shouldPlay:Bool = false;
+
+  /**
+   * For debug purposes.
+   */
+  var _label:String = "unknown";
 
   public function new()
   {
@@ -33,7 +45,7 @@ class FunkinSound extends FlxSound
 
   public override function update(elapsedSec:Float)
   {
-    if (!playing && !shouldPlay) return;
+    if (!playing && !_shouldPlay) return;
 
     if (_time < 0)
     {
@@ -41,9 +53,8 @@ class FunkinSound extends FlxSound
       _time += elapsedMs;
       if (_time >= 0)
       {
-        _time = 0;
-        shouldPlay = false;
         super.play();
+        _shouldPlay = false;
       }
     }
     else
@@ -60,29 +71,52 @@ class FunkinSound extends FlxSound
     {
       cleanup(false, true);
     }
-    else if (playing || shouldPlay)
+    else if (playing)
     {
       return this;
     }
 
     if (startTime < 0)
     {
-      shouldPlay = true;
-      _time = startTime;
+      this.active = true;
+      this._shouldPlay = true;
+      this._time = startTime;
       this.endTime = endTime;
       return this;
     }
-
-    if (_paused)
+    else
     {
-      resume();
+      if (_paused)
+      {
+        resume();
+      }
+      else
+      {
+        startSound(startTime);
+      }
+
+      this.endTime = endTime;
+      return this;
+    }
+  }
+
+  public override function pause():FunkinSound
+  {
+    super.pause();
+    this._shouldPlay = false;
+    return this;
+  }
+
+  public override function resume():FunkinSound
+  {
+    if (this._time < 0)
+    {
+      this._shouldPlay = true;
     }
     else
     {
-      startSound(startTime);
+      super.resume();
     }
-
-    this.endTime = endTime;
     return this;
   }
 
@@ -107,8 +141,14 @@ class FunkinSound extends FlxSound
 
     sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
 
+    if (embeddedSound is String)
+    {
+      sound._label = embeddedSound;
+    }
+
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
+    sound.persist = true;
     if (autoPlay) sound.play();
 
     // Call OnlLoad() because the sound already loaded

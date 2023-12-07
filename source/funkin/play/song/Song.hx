@@ -455,7 +455,11 @@ class SongDifficulty
   public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
-    FlxG.sound.playMusic(Paths.inst(this.song.id, suffix), volume, looped);
+
+    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped);
+
+    // Workaround for a bug where FlxG.sound.music.update() was being called twice.
+    FlxG.sound.list.remove(FlxG.sound.music);
   }
 
   /**
