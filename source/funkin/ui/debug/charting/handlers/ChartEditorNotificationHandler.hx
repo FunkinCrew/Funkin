@@ -139,6 +139,8 @@ class ChartEditorNotificationHandler
 
     return notif;
     #else
+    // TODO: Implement notifications on Mac OS OR... make sure the null is handled properly on mac?
+    return null;
     trace('WARNING: Notifications are not supported on Mac OS.');
     #end
   }
