@@ -32,10 +32,7 @@ class SongDataUtils
       return new SongNoteData(time, data, length, kind);
     };
 
-    trace(notes);
-    trace(notes[0]);
     var result = [for (i in 0...notes.length) offsetNote(notes[i])];
-    trace(result);
     return result;
   }
 
@@ -51,6 +48,36 @@ class SongDataUtils
   {
     return events.map(function(event:SongEventData):SongEventData {
       return new SongEventData(event.time + offset, event.event, event.value);
+    });
+  }
+
+  /**
+   * Given an array of SongNoteData objects, return a new array of SongNoteData objects
+   * which excludes any notes whose timestamps are outside of the given range.
+   * @param notes The notes to modify.
+   * @param startTime The start of the range in milliseconds.
+   * @param endTime The end of the range in milliseconds.
+   * @return The filtered array of notes.
+   */
+  public static function clampSongNoteData(notes:Array<SongNoteData>, startTime:Float, endTime:Float):Array<SongNoteData>
+  {
+    return notes.filter(function(note:SongNoteData):Bool {
+      return note.time >= startTime && note.time <= endTime;
+    });
+  }
+
+  /**
+   * Given an array of SongEventData objects, return a new array of SongEventData objects
+   * which excludes any events whose timestamps are outside of the given range.
+   * @param events The events to modify.
+   * @param startTime The start of the range in milliseconds.
+   * @param endTime The end of the range in milliseconds.
+   * @return The filtered array of events.
+   */
+  public static function clampSongEventData(events:Array<SongEventData>, startTime:Float, endTime:Float):Array<SongEventData>
+  {
+    return events.filter(function(event:SongEventData):Bool {
+      return event.time >= startTime && event.time <= endTime;
     });
   }
 
