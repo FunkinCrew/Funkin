@@ -142,12 +142,14 @@ class Cursor
     };
   static var assetCursorCell:Null<BitmapData> = null;
 
-  // DESIRED CURSOR: Resize NS (vertical)
-  // DESIRED CURSOR: Resize EW (horizontal)
-  // DESIRED CURSOR: Resize NESW (diagonal)
-  // DESIRED CURSOR: Resize NWSE (diagonal)
-  // DESIRED CURSOR: Help (Cursor with question mark)
-  // DESIRED CURSOR: Menu (Cursor with menu icon)
+  public static final CURSOR_SCROLL_PARAMS:CursorParams =
+    {
+      graphic: "assets/images/cursor/cursor-scroll.png",
+      scale: 0.2,
+      offsetX: -15,
+      offsetY: -15,
+    };
+  static var assetCursorScroll:Null<BitmapData> = null;
 
   static function set_cursorMode(value:Null<CursorMode>):Null<CursorMode>
   {
@@ -302,6 +304,18 @@ class Cursor
         else
         {
           applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
+        }
+
+      case Scroll:
+        if (assetCursorScroll == null)
+        {
+          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_SCROLL_PARAMS.graphic);
+          assetCursorScroll = bitmapData;
+          applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
+        }
+        else
+        {
+          applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
         }
 
       default:
@@ -487,6 +501,21 @@ class Cursor
           applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
         }
 
+      case Scroll:
+        if (assetCursorScroll == null)
+        {
+          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_SCROLL_PARAMS.graphic);
+          future.onComplete(function(bitmapData:BitmapData) {
+            assetCursorScroll = bitmapData;
+            applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
+          });
+          future.onError(onCursorError.bind(Scroll));
+        }
+        else
+        {
+          applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
+        }
+
       default:
         loadCursorGraphic(null);
     }
@@ -517,6 +546,7 @@ class Cursor
     registerHaxeUICursor('zoom-out', CURSOR_ZOOM_OUT_PARAMS);
     registerHaxeUICursor('crosshair', CURSOR_CROSSHAIR_PARAMS);
     registerHaxeUICursor('cell', CURSOR_CELL_PARAMS);
+    registerHaxeUICursor('scroll', CURSOR_SCROLL_PARAMS);
   }
 
   public static function registerHaxeUICursor(id:String, params:CursorParams):Void
@@ -539,6 +569,7 @@ enum CursorMode
   ZoomOut;
   Crosshair;
   Cell;
+  Scroll;
 }
 
 /**

@@ -483,6 +483,8 @@ class PlayState extends MusicBeatSubState
   var generatedMusic:Bool = false;
   var perfectMode:Bool = false;
 
+  static final BACKGROUND_COLOR:FlxColor = FlxColor.MAGENTA;
+
   /**
    * Instantiate a new PlayState.
    * @param params The parameters used to initialize the PlayState.
@@ -645,6 +647,24 @@ class PlayState extends MusicBeatSubState
     #end
 
     initialized = true;
+  }
+
+  public override function draw():Void
+  {
+    // if (FlxG.renderBlit)
+    // {
+    //  camGame.fill(BACKGROUND_COLOR);
+    // }
+    // else if (FlxG.renderTile)
+    // {
+    //  FlxG.log.warn("PlayState background not displayed properly on tile renderer!");
+    // }
+    // else
+    // {
+    //  FlxG.log.warn("PlayState background not displayed properly, unknown renderer!");
+    // }
+
+    super.draw();
   }
 
   function assertChartExists():Bool
@@ -1297,6 +1317,7 @@ class PlayState extends MusicBeatSubState
   function initCameras():Void
   {
     camGame = new SwagCamera();
+    camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutscene = new FlxCamera();
