@@ -11,6 +11,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventData;
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -610,19 +611,12 @@ class ChartEditorToolboxHandler
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;
 
-      var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
-      if (timeChanges == null || timeChanges.length == 0)
+      // Use a command so we can undo/redo this action.
+      var startingBPM = state.currentSongMetadata.timeChanges[0].bpm;
+      if (event.value != startingBPM)
       {
-        timeChanges = [new SongTimeChange(0, event.value)];
+        state.performCommand(new ChangeStartingBPMCommand(event.value));
       }
-      else
-      {
-        timeChanges[0].bpm = event.value;
-      }
-
-      state.currentSongMetadata.timeChanges = timeChanges;
-
-      Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 

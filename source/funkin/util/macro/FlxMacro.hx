@@ -1,5 +1,6 @@
 package funkin.util.macro;
 
+#if !display
 #if macro
 class FlxMacro
 {
@@ -32,4 +33,5 @@ class FlxMacro
     return fields;
   }
 }
+#end
 #end
