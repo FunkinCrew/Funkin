@@ -92,7 +92,12 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     if (this.locked) return;
 
     this.lock();
+    // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
+    #if !mac
     FileUtil.browseForBinaryFile('Open Chart', [FileUtil.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
+    #else
+    FileUtil.browseForBinaryFile('Open Chart', null, onSelectFile, onCancelBrowse);
+    #end
   }
 
   /**
