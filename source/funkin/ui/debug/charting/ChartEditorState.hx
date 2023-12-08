@@ -2468,7 +2468,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemLoadVocals.onClick = _ -> this.openUploadVocalsDialog(true);
 
     menubarItemVolumeMetronome.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       metronomeVolume = volume;
       menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
     };
@@ -2481,26 +2481,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemOpponentHitsounds.selected = hitsoundsEnabledOpponent;
 
     menubarItemVolumeHitsound.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       hitsoundVolume = volume;
       menubarLabelVolumeHitsound.text = 'Hitsound - ${Std.int(event.value)}%';
     };
     menubarItemVolumeHitsound.value = Std.int(hitsoundVolume * 100);
 
     menubarItemVolumeInstrumental.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
 
     menubarItemVolumeVocals.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
       menubarLabelVolumeVocals.text = 'Voices - ${Std.int(event.value)}%';
     }
 
     menubarItemPlaybackSpeed.onChange = event -> {
-      var pitch:Float = event.value * 2.0 / 100.0;
+      var pitch:Float = (event.value * 2.0) / 100.0;
       pitch = Math.floor(pitch / 0.25) * 0.25; // Round to nearest 0.25.
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
@@ -5347,7 +5347,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       trace('ERROR: Instrumental track is null!');
     }
 
-    state.songLengthInMs = state.audioInstTrack?.length ?? 1000.0 + Conductor.instrumentalOffset;
+    this.songLengthInMs = audioInstTrack?.length ?? 1000.0 + Conductor.instrumentalOffset;
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
