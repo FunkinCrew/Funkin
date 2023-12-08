@@ -568,7 +568,12 @@ class PlayState extends MusicBeatSubState
 
     // Prepare the Conductor.
     Conductor.forceBPM(null);
-    Conductor.instrumentalOffset = currentChart.offsets.getInstrumentalOffset();
+
+    if (currentChart.offsets != null)
+    {
+      Conductor.instrumentalOffset = currentChart.offsets.getInstrumentalOffset();
+    }
+
     Conductor.mapTimeChanges(currentChart.timeChanges);
     Conductor.update((Conductor.beatLengthMs * -5) + startTimestamp);
 
