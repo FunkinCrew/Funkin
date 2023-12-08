@@ -2252,10 +2252,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.playbarHead.onDrag = function(_:DragEvent) {
       if (playbarHeadDragging)
       {
-        var value:Null<Float> = playbarHeadLayout.playbarHead?.value;
-
         // Set the song position to where the playhead was moved to.
-        scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
+        scrollPositionInPixels = (songLengthInPixels) * playbarHeadLayout.playbarHead.value / 100;
         // Update the conductor and audio tracks to match.
         moveSongToScrollPosition();
       }
@@ -2740,6 +2738,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // but we handle instrumental updates manually to prevent FlxG.sound.music.update()
       // from being called twice when we move to the PlayState.
       audioInstTrack.update(elapsed);
+
+      // If the song starts 50ms in, make sure we start the song there.
+      if (Conductor.instrumentalOffset < 0)
+      {
+        if (audioInstTrack.time < -Conductor.instrumentalOffset)
+        {
+          trace('Resetting instrumental time to ${- Conductor.instrumentalOffset}ms');
+          audioInstTrack.time = -Conductor.instrumentalOffset;
+        }
+      }
     }
 
     if (audioInstTrack != null && audioInstTrack.isPlaying)
@@ -4239,16 +4247,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.x = 4;
     playbarHeadLayout.y = FlxG.height - 48 - 8;
 
-    var songPos:Float = Conductor.songPosition;
-    var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
-
     // Move the playhead to match the song position, if we aren't dragging it.
     if (!playbarHeadDragging)
     {
-      var songPosPercent:Float = songPos / songLengthInMs * 100;
+      var songPosPercent = scrollPositionInPixels / (songLengthInPixels) * 100;
+
       if (playbarHeadLayout.playbarHead.value != songPosPercent) playbarHeadLayout.playbarHead.value = songPosPercent;
     }
 
+    var songPos:Float = Conductor.songPosition + Conductor.instrumentalOffset;
     var songPosSeconds:String = Std.string(Math.floor((Math.abs(songPos) / 1000) % 60)).lpad('0', 2);
     var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / 1000) / 60)).lpad('0', 2);
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
@@ -4256,6 +4263,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
+    var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
     var songRemainingSeconds:String = Std.string(Math.floor((songRemaining / 1000) % 60)).lpad('0', 2);
     var songRemainingMinutes:String = Std.string(Math.floor((songRemaining / 1000) / 60)).lpad('0', 2);
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
@@ -4796,6 +4804,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
       gridPlayheadScrollArea.updateHitbox();
     }
+
+    // Remove any notes past the end of the song.
+    var songCutoffPointSteps:Float = songLengthInSteps - 0.1;
+    var songCutoffPointMs:Float = Conductor.getStepTimeInMs(songCutoffPointSteps);
+    currentSongChartNoteData = SongDataUtils.clampSongNoteData(currentSongChartNoteData, 0.0, songCutoffPointMs);
+    currentSongChartEventData = SongDataUtils.clampSongEventData(currentSongChartEventData, 0.0, songCutoffPointMs);
 
     scrollPositionInPixels = 0;
     playheadPositionInPixels = 0;
@@ -5338,7 +5352,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Prevent the time from skipping back to 0 when the song ends.
       audioInstTrack.onComplete = function() {
-        if (audioInstTrack != null) audioInstTrack.pause();
+        if (audioInstTrack != null)
+        {
+          audioInstTrack.pause();
+          // Keep the track at the end.
+          audioInstTrack.time = audioInstTrack.length;
+        }
         if (audioVocalTrackGroup != null) audioVocalTrackGroup.pause();
       };
     }
@@ -5347,7 +5366,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       trace('ERROR: Instrumental track is null!');
     }
 
-    this.songLengthInMs = audioInstTrack?.length ?? 1000.0 + Conductor.instrumentalOffset;
+    this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instrumentalOffset;
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;

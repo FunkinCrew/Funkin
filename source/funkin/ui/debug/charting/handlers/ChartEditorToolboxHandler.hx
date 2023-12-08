@@ -628,7 +628,7 @@ class ChartEditorToolboxHandler
       state.currentInstrumentalOffset = event.value;
       Conductor.instrumentalOffset = event.value;
       // Update song length.
-      state.songLengthInMs = state.audioInstTrack?.length ?? 1000.0 + Conductor.instrumentalOffset;
+      state.songLengthInMs = (state.audioInstTrack?.length ?? 1000.0) + Conductor.instrumentalOffset;
     };
     inputOffsetInst.value = state.currentInstrumentalOffset;
 
