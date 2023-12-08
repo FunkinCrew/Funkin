@@ -94,6 +94,7 @@ import haxe.ui.backend.flixel.UIRuntimeState;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
+import haxe.ui.components.Button;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
@@ -102,6 +103,7 @@ import haxe.ui.containers.Frame;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import haxe.ui.core.Component;
@@ -607,9 +609,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // Audio
 
   /**
-   * Whether to play a metronome sound while the playhead is moving.
+   * Whether to play a metronome sound while the playhead is moving, and what volume.
    */
-  var isMetronomeEnabled:Bool = true;
+  var metronomeVolume:Float = 1.0;
+
+  /**
+   * The volume to play hitsounds at.
+   */
+  var hitsoundVolume:Float = 1.0;
 
   /**
    * Whether hitsounds are enabled for the player.
@@ -656,6 +663,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Used to cancel the previous lerp if the user scrolls again.
    */
   var currentScrollEase:Null<VarTween>;
+
+  /**
+   * The position where the user middle clicked to place a scroll anchor.
+   * Scroll each frame with speed based on the distance between the mouse and the scroll anchor.
+   * `null` if no scroll anchor is present.
+   */
+  var scrollAnchorScreenPos:Null<FlxPoint> = null;
 
   // Note Placement
 
@@ -1269,98 +1283,257 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playbarHeadLayout:Null<ChartEditorPlaybarHead> = null;
 
   // NOTE: All the components below are automatically assigned via HaxeUI macros.
+
   /**
    * The menubar at the top of the screen.
    */
-  // var menubar:MenuBar;
+  var menubar:MenuBar;
+
   /**
    * The `File -> New Chart` menu item.
    */
-  // var menubarItemNewChart:MenuItem;
+  var menubarItemNewChart:MenuItem;
+
   /**
    * The `File -> Open Chart` menu item.
    */
-  // var menubarItemOpenChart:MenuItem;
+  var menubarItemOpenChart:MenuItem;
+
   /**
    * The `File -> Open Recent` menu.
    */
-  // var menubarOpenRecent:Menu;
+  var menubarOpenRecent:Menu;
+
   /**
    * The `File -> Save Chart` menu item.
    */
-  // var menubarItemSaveChart:MenuItem;
+  var menubarItemSaveChart:MenuItem;
+
   /**
    * The `File -> Save Chart As` menu item.
    */
-  // var menubarItemSaveChartAs:MenuItem;
+  var menubarItemSaveChartAs:MenuItem;
+
   /**
    * The `File -> Preferences` menu item.
    */
-  // var menubarItemPreferences:MenuItem;
+  var menubarItemPreferences:MenuItem;
+
   /**
    * The `File -> Exit` menu item.
    */
-  // var menubarItemExit:MenuItem;
+  var menubarItemExit:MenuItem;
+
   /**
    * The `Edit -> Undo` menu item.
    */
-  // var menubarItemUndo:MenuItem;
+  var menubarItemUndo:MenuItem;
+
   /**
    * The `Edit -> Redo` menu item.
    */
-  // var menubarItemRedo:MenuItem;
+  var menubarItemRedo:MenuItem;
+
   /**
    * The `Edit -> Cut` menu item.
    */
-  // var menubarItemCut:MenuItem;
+  var menubarItemCut:MenuItem;
+
   /**
    * The `Edit -> Copy` menu item.
    */
-  // var menubarItemCopy:MenuItem;
+  var menubarItemCopy:MenuItem;
+
   /**
    * The `Edit -> Paste` menu item.
    */
-  // var menubarItemPaste:MenuItem;
+  var menubarItemPaste:MenuItem;
+
   /**
    * The `Edit -> Paste Unsnapped` menu item.
    */
-  // var menubarItemPasteUnsnapped:MenuItem;
+  var menubarItemPasteUnsnapped:MenuItem;
+
   /**
    * The `Edit -> Delete` menu item.
    */
-  // var menubarItemDelete:MenuItem;
+  var menubarItemDelete:MenuItem;
+
+  /**
+   * The `Edit -> Flip Notes` menu item.
+   */
+  var menubarItemFlipNotes:MenuItem;
+
+  /**
+   * The `Edit -> Select All` menu item.
+   */
+  var menubarItemSelectAll:MenuItem;
+
+  /**
+   * The `Edit -> Select Inverse` menu item.
+   */
+  var menubarItemSelectInverse:MenuItem;
+
+  /**
+   * The `Edit -> Select None` menu item.
+   */
+  var menubarItemSelectNone:MenuItem;
+
+  /**
+   * The `Edit -> Select Region` menu item.
+   */
+  var menubarItemSelectRegion:MenuItem;
+
+  /**
+   * The `Edit -> Select Before Cursor` menu item.
+   */
+  var menubarItemSelectBeforeCursor:MenuItem;
+
+  /**
+   * The `Edit -> Select After Cursor` menu item.
+   */
+  var menubarItemSelectAfterCursor:MenuItem;
+
+  /**
+   * The `Edit -> Decrease Note Snap Precision` menu item.
+   */
+  var menuBarItemNoteSnapDecrease:MenuItem;
+
+  /**
+   * The `Edit -> Decrease Note Snap Precision` menu item.
+   */
+  var menuBarItemNoteSnapIncrease:MenuItem;
+
+  /**
+   * The `View -> Downscroll` menu item.
+   */
+  var menubarItemDownscroll:MenuCheckBox;
+
+  /**
+   * The `View -> Increase Difficulty` menu item.
+   */
+  var menubarItemDifficultyUp:MenuItem;
+
+  /**
+   * The `View -> Decrease Difficulty` menu item.
+   */
+  var menubarItemDifficultyDown:MenuItem;
+
+  /**
+   * The `Audio -> Play/Pause` menu item.
+   */
+  var menubarItemPlayPause:MenuItem;
+
+  /**
+   * The `Audio -> Load Instrumental` menu item.
+   */
+  var menubarItemLoadInstrumental:MenuItem;
+
+  /**
+   * The `Audio -> Load Vocals` menu item.
+   */
+  var menubarItemLoadVocals:MenuItem;
+
+  /**
+   * The `Audio -> Metronome Volume` label.
+   */
+  var menubarLabelVolumeMetronome:Label;
+
+  /**
+   * The `Audio -> Metronome Volume` slider.
+   */
+  var menubarItemVolumeMetronome:Slider;
+
+  /**
+   * The `Audio -> Enable Player Hitsounds` menu checkbox.
+   */
+  var menubarItemPlayerHitsounds:MenuCheckBox;
+
+  /**
+   * The `Audio -> Enable Opponent Hitsounds` menu checkbox.
+   */
+  var menubarItemOpponentHitsounds:MenuCheckBox;
+
+  /**
+   * The `Audio -> Hitsound Volume` label.
+   */
+  var menubarLabelVolumeHitsounds:Label;
+
+  /**
+   * The `Audio -> Hitsound Volume` slider.
+   */
+  var menubarItemVolumeHitsounds:Slider;
+
+  /**
+   * The `Audio -> Instrumental Volume` label.
+   */
+  var menubarLabelVolumeInstrumental:Label;
+
+  /**
+   * The `Audio -> Instrumental Volume` slider.
+   */
+  var menubarItemVolumeInstrumental:Slider;
+
+  /**
+   * The `Audio -> Vocal Volume` label.
+   */
+  var menubarLabelVolumeVocals:Label;
+
+  /**
+   * The `Audio -> Vocal Volume` slider.
+   */
+  var menubarItemVolumeVocals:Slider;
+
+  /**
+   * The `Audio -> Playback Speed` label.
+   */
+  var menubarLabelPlaybackSpeed:Label;
+
+  /**
+   * The `Audio -> Playback Speed` slider.
+   */
+  var menubarItemPlaybackSpeed:Slider;
+
   /**
    * The label by the playbar telling the song position.
    */
-  // var playbarSongPos:Label;
+  var playbarSongPos:Label;
+
   /**
    * The label by the playbar telling the song time remaining.
    */
-  // var playbarSongRemaining:Label;
+  var playbarSongRemaining:Label;
+
   /**
    * The label by the playbar telling the note snap.
    */
-  // var playbarNoteSnap:Label;
+  var playbarNoteSnap:Label;
+
   /**
    * The button by the playbar to jump to the start of the song.
    */
-  // var playbarStart:Button;
+  var playbarStart:Button;
+
   /**
    * The button by the playbar to jump backwards in the song.
    */
-  // var playbarBack:Button;
+  var playbarBack:Button;
+
   /**
    * The button by the playbar to play or pause the song.
    */
-  // var playbarPlay:Button;
+  var playbarPlay:Button;
+
   /**
    * The button by the playbar to jump forwards in the song.
    */
-  // var playbarForward:Button;
+  var playbarForward:Button;
+
   /**
    * The button by the playbar to jump to the end of the song.
    */
-  // var playbarEnd:Button;
+  var playbarEnd:Button;
+
   /**
    * RENDER OBJECTS
    */
@@ -1698,7 +1871,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     isViewDownscroll = save.chartEditorDownscroll;
     playtestStartTime = save.chartEditorPlaytestStartTime;
     currentTheme = save.chartEditorTheme;
-    isMetronomeEnabled = save.chartEditorMetronomeEnabled;
+    metronomeVolume = save.chartEditorMetronomeVolume;
+    hitsoundVolume = save.chartEditorHitsoundVolume;
     hitsoundsEnabledPlayer = save.chartEditorHitsoundsEnabledPlayer;
     hitsoundsEnabledOpponent = save.chartEditorHitsoundsEnabledOpponent;
 
@@ -1726,7 +1900,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorDownscroll = isViewDownscroll;
     save.chartEditorPlaytestStartTime = playtestStartTime;
     save.chartEditorTheme = currentTheme;
-    save.chartEditorMetronomeEnabled = isMetronomeEnabled;
+    save.chartEditorMetronomeVolume = metronomeVolume;
+    save.chartEditorHitsoundVolume = hitsoundVolume;
     save.chartEditorHitsoundsEnabledPlayer = hitsoundsEnabledPlayer;
     save.chartEditorHitsoundsEnabledOpponent = hitsoundsEnabledOpponent;
 
@@ -2292,14 +2467,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemLoadInstrumental.onClick = _ -> this.openUploadInstDialog(true);
     menubarItemLoadVocals.onClick = _ -> this.openUploadVocalsDialog(true);
 
-    menubarItemMetronomeEnabled.onChange = event -> isMetronomeEnabled = event.value;
-    menubarItemMetronomeEnabled.selected = isMetronomeEnabled;
+    menubarItemVolumeMetronome.onChange = event -> {
+      var volume:Float = (event?.value ?? 0) / 100.0;
+      metronomeVolume = volume;
+      menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
+    };
+    menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
 
     menubarItemPlayerHitsounds.onChange = event -> hitsoundsEnabledPlayer = event.value;
     menubarItemPlayerHitsounds.selected = hitsoundsEnabledPlayer;
 
     menubarItemOpponentHitsounds.onChange = event -> hitsoundsEnabledOpponent = event.value;
     menubarItemOpponentHitsounds.selected = hitsoundsEnabledOpponent;
+
+    menubarItemVolumeHitsound.onChange = event -> {
+      var volume:Float = (event?.value ?? 0) / 100.0;
+      hitsoundVolume = volume;
+      menubarLabelVolumeHitsound.text = 'Hitsound - ${Std.int(event.value)}%';
+    };
+    menubarItemVolumeHitsound.value = Std.int(hitsoundVolume * 100);
 
     menubarItemVolumeInstrumental.onChange = event -> {
       var volume:Float = (event?.value ?? 0) / 100.0;
@@ -2509,7 +2695,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // dispatchEvent gets called here.
     if (!super.beatHit()) return false;
 
-    if (isMetronomeEnabled && this.subState == null && (audioInstTrack != null && audioInstTrack.isPlaying))
+    if (metronomeVolume > 0.0 && this.subState == null && (audioInstTrack != null && audioInstTrack.isPlaying))
     {
       playMetronomeTick(Conductor.currentBeat % 4 == 0);
     }
@@ -2558,7 +2744,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (audioInstTrack != null && audioInstTrack.isPlaying)
     {
-      if (FlxG.mouse.pressedMiddle)
+      if (FlxG.keys.pressed.ALT)
       {
         // If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
@@ -2958,6 +3144,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var shouldPause:Bool = false; // Whether to pause the song when scrolling.
     var shouldEase:Bool = false; // Whether to ease the scroll.
 
+    // Handle scroll anchor
+    if (scrollAnchorScreenPos != null)
+    {
+      var currentScreenPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+      var distance = currentScreenPos - scrollAnchorScreenPos;
+
+      var verticalDistance = distance.y;
+
+      // How much scrolling should be done based on the distance of the cursor from the anchor.
+      final ANCHOR_SCROLL_SPEED = 0.2;
+
+      scrollAmount = ANCHOR_SCROLL_SPEED * verticalDistance;
+      shouldPause = true;
+    }
+
     // Mouse Wheel = Scroll
     if (FlxG.mouse.wheel != 0 && !FlxG.keys.pressed.CONTROL)
     {
@@ -3037,18 +3238,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       shouldPause = true;
     }
 
-    // Middle Mouse + Drag = Scroll but move the playhead the same amount.
-    if (FlxG.mouse.pressedMiddle)
-    {
-      if (FlxG.mouse.deltaY != 0)
-      {
-        // Scroll down by the amount dragged.
-        scrollAmount += -FlxG.mouse.deltaY;
-        // Move the playhead by the same amount in the other direction so it is stationary.
-        playheadAmount += FlxG.mouse.deltaY;
-      }
-    }
-
     // SHIFT + Scroll = Scroll Fast
     if (FlxG.keys.pressed.SHIFT)
     {
@@ -3060,7 +3249,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       scrollAmount /= 10;
     }
 
-    // ALT = Move playhead instead.
+    // Alt + Drag = Scroll but move the playhead the same amount.
     if (FlxG.keys.pressed.ALT)
     {
       playheadAmount = scrollAmount;
@@ -3182,9 +3371,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var overlapsSelection:Bool = FlxG.mouse.overlaps(renderedSelectionSquares);
 
+      if (FlxG.mouse.justPressedMiddle)
+      {
+        if (scrollAnchorScreenPos == null)
+        {
+          scrollAnchorScreenPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+          selectionBoxStartPos = null;
+        }
+        else
+        {
+          scrollAnchorScreenPos = null;
+        }
+      }
+
       if (FlxG.mouse.justPressed)
       {
-        if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
+        if (scrollAnchorScreenPos != null)
+        {
+          scrollAnchorScreenPos = null;
+        }
+        else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
         {
           gridPlayheadScrollAreaPressed = true;
         }
@@ -3193,7 +3399,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Clicked note preview
           notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
         }
-        else if (!overlapsGrid || overlapsSelectionBorder)
+        else if (!isCursorOverHaxeUI && (!overlapsGrid || overlapsSelectionBorder))
         {
           selectionBoxStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
           // Drawing selection box.
@@ -3475,6 +3681,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         scrollPositionInPixels = clickedPosInPixels;
         moveSongToScrollPosition();
+      }
+      else if (scrollAnchorScreenPos != null)
+      {
+        // Cursor should be a scroll anchor.
+        targetCursorMode = Scroll;
       }
       else if (dragTargetNote != null || dragTargetEvent != null)
       {
@@ -4568,7 +4779,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function playMetronomeTick(high:Bool = false):Void
   {
-    this.playSound(Paths.sound('chartingSounds/metronome${high ? '1' : '2'}'));
+    this.playSound(Paths.sound('chartingSounds/metronome${high ? '1' : '2'}'), metronomeVolume);
   }
 
   function switchToCurrentInstrumental():Void
@@ -5088,9 +5299,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'));
+          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolume);
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'));
+          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolume);
       }
     }
   }
