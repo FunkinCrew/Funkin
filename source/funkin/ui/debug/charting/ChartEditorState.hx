@@ -337,6 +337,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           audioVisGroup.playerVis.y = Math.max(gridTiledSprite.y, MENU_BAR_HEIGHT);
         }
+        if (audioVisGroup != null && audioVisGroup.opponentVis != null)
+        {
+          audioVisGroup.opponentVis.y = Math.max(gridTiledSprite.y, MENU_BAR_HEIGHT);
+        }
       }
     }
 
