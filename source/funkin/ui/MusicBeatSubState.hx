@@ -66,6 +66,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
 
     // Display Conductor info in the watch window.
     FlxG.watch.addQuick("songPosition", Conductor.songPosition);
+    FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
     FlxG.watch.addQuick("bpm", Conductor.bpm);
     FlxG.watch.addQuick("currentMeasureTime", Conductor.currentBeatTime);
     FlxG.watch.addQuick("currentBeatTime", Conductor.currentBeatTime);

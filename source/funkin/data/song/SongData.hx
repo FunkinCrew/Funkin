@@ -35,6 +35,12 @@ class SongMetadata
   public var looped:Bool;
 
   /**
+   * Instrumental and vocal offsets. Optional, defaults to 0.
+   */
+  @:optional
+  public var offsets:SongOffsets;
+
+  /**
    * Data relating to the song's gameplay.
    */
   public var playData:SongPlayData;
@@ -59,6 +65,7 @@ class SongMetadata
     this.artist = artist;
     this.timeFormat = 'ms';
     this.divisions = null;
+    this.offsets = new SongOffsets();
     this.timeChanges = [new SongTimeChange(0, 100)];
     this.looped = false;
     this.playData = new SongPlayData();
@@ -197,6 +204,90 @@ class SongTimeChange
 }
 
 /**
+ * Offsets to apply to the song's instrumental and vocals, relative to the chart.
+ * These are intended to correct for issues with the chart, or with the song's audio (for example a 10ms delay before the song starts).
+ * This is independent of the offsets applied in the user's settings, which are applied after these offsets and intended to correct for the user's hardware.
+ */
+class SongOffsets
+{
+  /**
+   * The offset, in milliseconds, to apply to the song's instrumental relative to the chart.
+   * For example, setting this to `-10.0` will start the instrumental 10ms earlier than the chart.
+   *
+   * Setting this to `-5000.0` means the chart start 5 seconds into the song.
+   * Setting this to `5000.0` means there will be 5 seconds of silence before the song starts.
+   */
+  @:optional
+  @:default(0)
+  public var instrumental:Float;
+
+  /**
+   * Apply different offsets to different alternate instrumentals.
+   */
+  @:optional
+  @:default([])
+  public var altInstrumentals:Map<String, Float>;
+
+  /**
+   * The offset, in milliseconds, to apply to the song's vocals, relative to the chart.
+   * These are applied ON TOP OF the instrumental offset.
+   */
+  @:optional
+  @:default([])
+  public var vocals:Map<String, Float>;
+
+  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>)
+  {
+    this.instrumental = instrumental;
+    this.altInstrumentals = altInstrumentals == null ? new Map<String, Float>() : altInstrumentals;
+    this.vocals = vocals == null ? new Map<String, Float>() : vocals;
+  }
+
+  public function getInstrumentalOffset(?instrumental:String):Float
+  {
+    if (instrumental == null || instrumental == '') return this.instrumental;
+
+    if (!this.altInstrumentals.exists(instrumental)) return this.instrumental;
+
+    return this.altInstrumentals.get(instrumental);
+  }
+
+  public function setInstrumentalOffset(value:Float, ?instrumental:String):Float
+  {
+    if (instrumental == null || instrumental == '')
+    {
+      this.instrumental = value;
+    }
+    else
+    {
+      this.altInstrumentals.set(instrumental, value);
+    }
+    return value;
+  }
+
+  public function getVocalOffset(charId:String):Float
+  {
+    if (!this.vocals.exists(charId)) return 0.0;
+
+    return this.vocals.get(charId);
+  }
+
+  public function setVocalOffset(charId:String, value:Float):Float
+  {
+    this.vocals.set(charId, value);
+    return value;
+  }
+
+  /**
+   * Produces a string representation suitable for debugging.
+   */
+  public function toString():String
+  {
+    return 'SongOffsets(${this.instrumental}ms, ${this.altInstrumentals}, ${this.vocals})';
+  }
+}
+
+/**
  * Metadata for a song only used for the music.
  * For example, the menu music.
  */
@@ -309,6 +400,7 @@ class SongPlayData
    * The difficulty ratings for this song as displayed in Freeplay.
    * Key is a difficulty ID or `default`.
    */
+  @:optional
   @:default(['default' => 1])
   public var ratings:Map<String, Int>;
 

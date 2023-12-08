@@ -192,15 +192,15 @@ class LatencyState extends MusicBeatSubState
 
     if (FlxG.keys.pressed.D) FlxG.sound.music.time += 1000 * FlxG.elapsed;
 
-    Conductor.update(swagSong.getTimeWithDiff() - Conductor.offset);
+    Conductor.update(swagSong.getTimeWithDiff() - Conductor.inputOffset);
     // Conductor.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
     songPosVis.x = songPosToX(Conductor.songPosition);
-    songVisFollowAudio.x = songPosToX(Conductor.songPosition - Conductor.audioOffset);
-    songVisFollowVideo.x = songPosToX(Conductor.songPosition - Conductor.visualOffset);
+    songVisFollowAudio.x = songPosToX(Conductor.songPosition - Conductor.instrumentalOffset);
+    songVisFollowVideo.x = songPosToX(Conductor.songPosition - Conductor.inputOffset);
 
-    offsetText.text = "AUDIO Offset: " + Conductor.audioOffset + "ms";
-    offsetText.text += "\nVIDOE Offset: " + Conductor.visualOffset + "ms";
+    offsetText.text = "INST Offset: " + Conductor.instrumentalOffset + "ms";
+    offsetText.text += "\nINPUT Offset: " + Conductor.inputOffset + "ms";
     offsetText.text += "\ncurrentStep: " + Conductor.currentStep;
     offsetText.text += "\ncurrentBeat: " + Conductor.currentBeat;
 
@@ -221,24 +221,24 @@ class LatencyState extends MusicBeatSubState
     {
       if (FlxG.keys.justPressed.RIGHT)
       {
-        Conductor.audioOffset += 1 * multiply;
+        Conductor.instrumentalOffset += 1.0 * multiply;
       }
 
       if (FlxG.keys.justPressed.LEFT)
       {
-        Conductor.audioOffset -= 1 * multiply;
+        Conductor.instrumentalOffset -= 1.0 * multiply;
       }
     }
     else
     {
       if (FlxG.keys.justPressed.RIGHT)
       {
-        Conductor.visualOffset += 1 * multiply;
+        Conductor.inputOffset += 1.0 * multiply;
       }
 
       if (FlxG.keys.justPressed.LEFT)
       {
-        Conductor.visualOffset -= 1 * multiply;
+        Conductor.inputOffset -= 1.0 * multiply;
       }
     }
 
@@ -250,7 +250,7 @@ class LatencyState extends MusicBeatSubState
     }*/
 
     noteGrp.forEach(function(daNote:NoteSprite) {
-      daNote.y = (strumLine.y - ((Conductor.songPosition - Conductor.audioOffset) - daNote.noteData.time) * 0.45);
+      daNote.y = (strumLine.y - ((Conductor.songPosition - Conductor.instrumentalOffset) - daNote.noteData.time) * 0.45);
       daNote.x = strumLine.x + 30;
 
       if (daNote.y < strumLine.y) daNote.alpha = 0.5;
@@ -271,7 +271,7 @@ class LatencyState extends MusicBeatSubState
 
     var closestBeat:Int = Math.round(Conductor.songPosition / Conductor.beatLengthMs) % diffGrp.members.length;
     var getDiff:Float = Conductor.songPosition - (closestBeat * Conductor.beatLengthMs);
-    getDiff -= Conductor.visualOffset;
+    getDiff -= Conductor.inputOffset;
 
     // lil fix for end of song
     if (closestBeat == 0 && getDiff >= Conductor.beatLengthMs * 2) getDiff -= FlxG.sound.music.length;

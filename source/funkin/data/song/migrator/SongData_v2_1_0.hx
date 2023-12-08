@@ -16,6 +16,8 @@ class SongMetadata_v2_1_0
    */
   public var playData:SongPlayData_v2_1_0;
 
+  // In metadata `v2.2.1`, `SongOffsets` was added.
+  // var offsets:SongOffsets;
   // ==========
   // UNMODIFIED VALUES
   // ==========
