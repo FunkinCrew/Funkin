@@ -620,6 +620,27 @@ class ChartEditorToolboxHandler
     };
     inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
 
+    var inputOffsetInst:Null<NumberStepper> = toolbox.findComponent('inputOffsetInst', NumberStepper);
+    if (inputOffsetInst == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputOffsetInst component.';
+    inputOffsetInst.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+
+      state.currentInstrumentalOffset = event.value;
+      Conductor.instrumentalOffset = event.value;
+      // Update song length.
+      state.songLengthInMs = state.audioInstTrack?.length ?? 1000.0 + Conductor.instrumentalOffset;
+    };
+    inputOffsetInst.value = state.currentInstrumentalOffset;
+
+    var inputOffsetVocal:Null<NumberStepper> = toolbox.findComponent('inputOffsetVocal', NumberStepper);
+    if (inputOffsetVocal == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputOffsetVocal component.';
+    inputOffsetVocal.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+
+      state.currentSongMetadata.offsets.setVocalOffset(state.currentSongMetadata.playData.characters.player, event.value);
+    };
+    inputOffsetVocal.value = state.currentSongMetadata.offsets.getVocalOffset(state.currentSongMetadata.playData.characters.player);
+
     var labelScrollSpeed:Null<Label> = toolbox.findComponent('labelScrollSpeed', Label);
     if (labelScrollSpeed == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find labelScrollSpeed component.';
 

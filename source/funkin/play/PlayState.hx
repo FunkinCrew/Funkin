@@ -796,15 +796,6 @@ class PlayState extends MusicBeatSubState
       }
 
       Conductor.update(); // Normal conductor update.
-
-      if (!isGamePaused)
-      {
-        // Interpolation type beat
-        if (Conductor.lastSongPos != Conductor.songPosition)
-        {
-          Conductor.lastSongPos = Conductor.songPosition;
-        }
-      }
     }
 
     var androidPause:Bool = false;
@@ -1171,12 +1162,12 @@ class PlayState extends MusicBeatSubState
 
     if (!startingSong
       && FlxG.sound.music != null
-      && (Math.abs(FlxG.sound.music.time - (Conductor.songPositionNoOffset)) > 200
-        || Math.abs(vocals.checkSyncError(Conductor.songPositionNoOffset)) > 200))
+      && (Math.abs(FlxG.sound.music.time - (Conductor.songPosition + Conductor.instrumentalOffset)) > 200
+        || Math.abs(vocals.checkSyncError(Conductor.songPosition + Conductor.instrumentalOffset)) > 200))
     {
       trace("VOCALS NEED RESYNC");
-      if (vocals != null) trace(vocals.checkSyncError(Conductor.songPositionNoOffset));
-      trace(FlxG.sound.music.time - (Conductor.songPositionNoOffset));
+      if (vocals != null) trace(vocals.checkSyncError(Conductor.songPosition + Conductor.instrumentalOffset));
+      trace(FlxG.sound.music.time - (Conductor.songPosition + Conductor.instrumentalOffset));
       resyncVocals();
     }
 
