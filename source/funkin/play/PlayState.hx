@@ -180,6 +180,13 @@ class PlayState extends MusicBeatSubState
   public var songScore:Int = 0;
 
   /**
+   * Start at this point in the song once the countdown is done.
+   * For example, if `startTimestamp` is `30000`, the song will start at the 30 second mark.
+   * Used for chart playtesting or practice.
+   */
+  public var startTimestamp:Float = 0.0;
+
+  /**
    * An empty FlxObject contained in the scene.
    * The current gameplay camera will always follow this object. Tween its position to move the camera smoothly.
    *
@@ -254,10 +261,6 @@ class PlayState extends MusicBeatSubState
    */
   public var disableKeys:Bool = false;
 
-  public var startTimestamp:Float = 0.0;
-
-  var overrideMusic:Bool = false;
-
   public var isSubState(get, never):Bool;
 
   function get_isSubState():Bool
@@ -316,6 +319,18 @@ class PlayState extends MusicBeatSubState
    * How long the user has held the "Skip Video Cutscene" button for.
    */
   var skipHeldTimer:Float = 0;
+
+  /**
+   * Whether the PlayState was started with instrumentals and vocals already provided.
+   * Used by the chart editor to prevent replacing the music.
+   */
+  var overrideMusic:Bool = false;
+
+  /**
+   * After the song starts, the song offset may dictate we wait before the instrumental starts.
+   * This variable represents that delay, and is subtracted from until it reaches 0, before calling `music.play()`
+   */
+  var songStartDelay:Float = 0.0;
 
   /**
    * Forcibly disables all update logic while the game moves back to the Menu state.
@@ -553,6 +568,7 @@ class PlayState extends MusicBeatSubState
 
     // Prepare the Conductor.
     Conductor.forceBPM(null);
+    Conductor.instrumentalOffset = currentChart.offsets.getInstrumentalOffset();
     Conductor.mapTimeChanges(currentChart.timeChanges);
     Conductor.update((Conductor.beatLengthMs * -5) + startTimestamp);
 
@@ -719,8 +735,8 @@ class PlayState extends MusicBeatSubState
 
       // Reset music properly.
 
+      FlxG.sound.music.time = Math.max(0, startTimestamp - Conductor.instrumentalOffset);
       FlxG.sound.music.pause();
-      FlxG.sound.music.time = (startTimestamp);
 
       if (!overrideMusic)
       {
@@ -771,17 +787,40 @@ class PlayState extends MusicBeatSubState
       if (isInCountdown)
       {
         Conductor.update(Conductor.songPosition + elapsed * 1000);
-        if (Conductor.songPosition >= startTimestamp) startSong();
+        if (Conductor.songPosition >= (startTimestamp)) startSong();
       }
     }
     else
     {
-      // DO NOT FORGET TO REMOVE THE HARDCODE! WHEN I MAKE BETTER OFFSET SYSTEM!
+      if (Constants.EXT_SOUND == 'mp3')
+      {
+        Conductor.formatOffset = Constants.MP3_DELAY_MS;
+      }
+      else
+      {
+        Conductor.formatOffset = 0.0;
+      }
 
-      // :nerd: um ackshually it's not 13 it's 11.97278911564
-      if (Constants.EXT_SOUND == 'mp3') Conductor.offset = Constants.MP3_DELAY_MS;
-
-      Conductor.update();
+      if (songStartDelay > 0)
+      {
+        // Code to handle the song not starting yet (positive instrumental offset in metadata).
+        // Wait for offset to elapse before actually hitting play on the instrumental.
+        songStartDelay -= elapsed * 1000;
+        if (songStartDelay <= 0)
+        {
+          FlxG.sound.music.play();
+          Conductor.update(); // Normal conductor update.
+        }
+        else
+        {
+          // Make beat events still happen.
+          Conductor.update(Conductor.songPosition + elapsed * 1000);
+        }
+      }
+      else
+      {
+        Conductor.update(); // Normal conductor update.
+      }
 
       if (!isGamePaused)
       {
@@ -1157,12 +1196,12 @@ class PlayState extends MusicBeatSubState
 
     if (!startingSong
       && FlxG.sound.music != null
-      && (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > 200
-        || Math.abs(vocals.checkSyncError(Conductor.songPosition - Conductor.offset)) > 200))
+      && (Math.abs(FlxG.sound.music.time - (Conductor.songPositionNoOffset)) > 200
+        || Math.abs(vocals.checkSyncError(Conductor.songPositionNoOffset)) > 200))
     {
       trace("VOCALS NEED RESYNC");
-      if (vocals != null) trace(vocals.checkSyncError(Conductor.songPosition - Conductor.offset));
-      trace(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset));
+      if (vocals != null) trace(vocals.checkSyncError(Conductor.songPositionNoOffset));
+      trace(FlxG.sound.music.time - (Conductor.songPositionNoOffset));
       resyncVocals();
     }
 
@@ -1705,12 +1744,28 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = endSong;
-    FlxG.sound.music.play();
-    FlxG.sound.music.time = startTimestamp;
+    // A negative instrumental offset means the song skips the first few milliseconds of the track.
+    // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
+    FlxG.sound.music.time = startTimestamp - Conductor.instrumentalOffset;
+
     trace('Playing vocals...');
     add(vocals);
-    vocals.play();
-    resyncVocals();
+
+    if (FlxG.sound.music.time < 0)
+    {
+      // A positive instrumentalOffset means Conductor.songPosition will still be negative after the countdown elapses.
+      trace('POSITIVE OFFSET: Waiting to start song...');
+      songStartDelay = Math.abs(FlxG.sound.music.time);
+      FlxG.sound.music.time = 0;
+      FlxG.sound.music.pause();
+      vocals.pause();
+    }
+    else
+    {
+      FlxG.sound.music.play();
+      vocals.play();
+      resyncVocals();
+    }
 
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
@@ -1719,7 +1774,7 @@ class PlayState extends MusicBeatSubState
 
     if (startTimestamp > 0)
     {
-      FlxG.sound.music.time = startTimestamp;
+      FlxG.sound.music.time = startTimestamp - Conductor.instrumentalOffset;
       handleSkippedNotes();
     }
   }
@@ -1731,13 +1786,13 @@ class PlayState extends MusicBeatSubState
   {
     if (_exiting || vocals == null) return;
 
-    // Skip this if the music is paused (GameOver, Pause menu, etc.)
+    // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!FlxG.sound.music.playing) return;
+    if (songStartDelay > 0) return;
 
     vocals.pause();
 
     FlxG.sound.music.play();
-    Conductor.update();
 
     vocals.time = FlxG.sound.music.time;
     vocals.play(false, FlxG.sound.music.time);

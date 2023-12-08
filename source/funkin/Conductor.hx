@@ -45,6 +45,8 @@ class Conductor
    */
   public static var songPosition(default, null):Float = 0;
 
+  public static var songPositionNoOffset(default, null):Float = 0;
+
   /**
    * Beats per minute of the current song at the current time.
    */
@@ -144,13 +146,27 @@ class Conductor
    */
   public static var currentStepTime(default, null):Float;
 
+  public static var currentStepTimeNoOffset(default, null):Float;
+
   public static var beatHit(default, null):FlxSignal = new FlxSignal();
   public static var stepHit(default, null):FlxSignal = new FlxSignal();
 
   public static var lastSongPos:Float;
-  public static var visualOffset:Float = 0;
-  public static var audioOffset:Float = 0;
-  public static var offset:Float = 0;
+
+  /**
+   * An offset tied to the current chart file to compensate for a delay in the instrumental.
+   */
+  public static var instrumentalOffset:Float = 0;
+
+  /**
+   * An offset tied to the file format of the audio file being played.
+   */
+  public static var formatOffset:Float = 0;
+
+  /**
+   * An offset set by the user to compensate for input lag.
+   */
+  public static var inputOffset:Float = 0;
 
   public static var beatsPerMeasure(get, never):Float;
 
@@ -200,14 +216,23 @@ class Conductor
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    */
-  public static function update(songPosition:Float = null)
+  public static function update(?songPosition:Float)
   {
-    if (songPosition == null) songPosition = (FlxG.sound.music != null) ? FlxG.sound.music.time + Conductor.offset : 0.0;
+    if (songPosition == null)
+    {
+      // Take into account instrumental and file format song offsets.
+      songPosition = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset) : 0.0;
+    }
 
     var oldBeat = currentBeat;
     var oldStep = currentStep;
 
+    // Set the song position we are at (for purposes of calculating note positions, etc).
     Conductor.songPosition = songPosition;
+
+    // Exclude the offsets we just included earlier.
+    // This is the "true" song position that the audio should be using.
+    Conductor.songPositionNoOffset = Conductor.songPosition - instrumentalOffset - formatOffset;
 
     currentTimeChange = timeChanges[0];
     for (i in 0...timeChanges.length)
@@ -230,6 +255,9 @@ class Conductor
       currentStep = Math.floor(currentStepTime);
       currentBeat = Math.floor(currentBeatTime);
       currentMeasure = Math.floor(currentMeasureTime);
+
+      currentStepTimeNoOffset = FlxMath.roundDecimal((currentTimeChange.beatTime * 4)
+        + (songPositionNoOffset - currentTimeChange.timeStamp) / stepLengthMs, 6);
     }
     else
     {
@@ -240,6 +268,8 @@ class Conductor
       currentStep = Math.floor(currentStepTime);
       currentBeat = Math.floor(currentBeatTime);
       currentMeasure = Math.floor(currentMeasureTime);
+
+      currentStepTimeNoOffset = FlxMath.roundDecimal((songPositionNoOffset / stepLengthMs), 4);
     }
 
     // FlxSignals are really cool.

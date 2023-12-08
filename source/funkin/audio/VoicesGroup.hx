@@ -11,12 +11,22 @@ class VoicesGroup extends SoundGroup
   /**
    * Control the volume of only the sounds in the player group.
    */
-  public var playerVolume(default, set):Float;
+  public var playerVolume(default, set):Float = 1.0;
 
   /**
    * Control the volume of only the sounds in the opponent group.
    */
-  public var opponentVolume(default, set):Float;
+  public var opponentVolume(default, set):Float = 1.0;
+
+  /**
+   * Set the time offset for the player's vocal track.
+   */
+  public var playerVoicesOffset(default, set):Float = 0.0;
+
+  /**
+   * Set the time offset for the opponent's vocal track.
+   */
+  public var opponentVoicesOffset(default, set):Float = 0.0;
 
   public function new()
   {
@@ -40,6 +50,57 @@ class VoicesGroup extends SoundGroup
       voice.volume = volume;
     });
     return playerVolume = volume;
+  }
+
+  override function set_time(time:Float):Float
+  {
+    forEachAlive(function(snd) {
+      // account for different offsets per sound?
+      snd.time = time;
+    });
+
+    playerVoices.forEachAlive(function(voice:FlxSound) {
+      voice.time -= playerVoicesOffset;
+    });
+    opponentVoices.forEachAlive(function(voice:FlxSound) {
+      voice.time -= opponentVoicesOffset;
+    });
+
+    return time;
+  }
+
+  function set_playerVoicesOffset(offset:Float):Float
+  {
+    playerVoices.forEachAlive(function(voice:FlxSound) {
+      voice.time += playerVoicesOffset;
+      voice.time -= offset;
+    });
+    return playerVoicesOffset = offset;
+  }
+
+  function set_opponentVoicesOffset(offset:Float):Float
+  {
+    opponentVoices.forEachAlive(function(voice:FlxSound) {
+      voice.time += opponentVoicesOffset;
+      voice.time -= offset;
+    });
+    return opponentVoicesOffset = offset;
+  }
+
+  public override function update(elapsed:Float):Void
+  {
+    forEachAlive(function(snd) {
+      if (snd.time < 0)
+      {
+        // Sync the time without calling update().
+        // time gets reset if it's negative.
+        snd.time += elapsed * 1000;
+      }
+      else
+      {
+        snd.update(elapsed);
+      }
+    });
   }
 
   /**
