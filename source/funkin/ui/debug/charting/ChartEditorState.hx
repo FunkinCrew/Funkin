@@ -4480,7 +4480,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // DELETE = Delete
-    if (FlxG.keys.justPressed.DELETE)
+    var delete:Bool = FlxG.keys.justPressed.DELETE;
+
+    // on macbooks, Delete == backspace
+    #if mac
+    delete = delete || FlxG.keys.justPressed.BACKSPACE;
+    #end
+
+    if (delete)
     {
       // Delete selected items.
       if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
