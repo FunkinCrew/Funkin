@@ -45,8 +45,6 @@ class Conductor
    */
   public static var songPosition(default, null):Float = 0;
 
-  public static var songPositionNoOffset(default, null):Float = 0;
-
   /**
    * Beats per minute of the current song at the current time.
    */
@@ -59,6 +57,21 @@ class Conductor
     if (currentTimeChange == null) return Constants.DEFAULT_BPM;
 
     return currentTimeChange.bpm;
+  }
+
+  /**
+   * Beats per minute of the current song at the start time.
+   */
+  public static var startingBPM(get, never):Float;
+
+  static function get_startingBPM():Float
+  {
+    if (bpmOverride != null) return bpmOverride;
+
+    var timeChange = timeChanges[0];
+    if (timeChange == null) return Constants.DEFAULT_BPM;
+
+    return timeChange.bpm;
   }
 
   /**
@@ -146,17 +159,22 @@ class Conductor
    */
   public static var currentStepTime(default, null):Float;
 
-  public static var currentStepTimeNoOffset(default, null):Float;
-
-  public static var beatHit(default, null):FlxSignal = new FlxSignal();
-  public static var stepHit(default, null):FlxSignal = new FlxSignal();
-
-  public static var lastSongPos:Float;
-
   /**
    * An offset tied to the current chart file to compensate for a delay in the instrumental.
    */
   public static var instrumentalOffset:Float = 0;
+
+  /**
+   * The instrumental offset, in terms of steps.
+   */
+  public static var instrumentalOffsetSteps(get, never):Float;
+
+  static function get_instrumentalOffsetSteps():Float
+  {
+    var startingStepLengthMs:Float = ((Constants.SECS_PER_MIN / startingBPM) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+
+    return instrumentalOffset / startingStepLengthMs;
+  }
 
   /**
    * An offset tied to the file format of the audio file being played.
@@ -168,6 +186,9 @@ class Conductor
    */
   public static var inputOffset:Float = 0;
 
+  /**
+   * The number of beats in a measure. May be fractional depending on the time signature.
+   */
   public static var beatsPerMeasure(get, never):Float;
 
   static function get_beatsPerMeasure():Float
@@ -176,6 +197,10 @@ class Conductor
     return stepsPerMeasure / Constants.STEPS_PER_BEAT;
   }
 
+  /**
+   * The number of steps in a measure.
+   * TODO: I don't think this can be fractional?
+   */
   public static var stepsPerMeasure(get, never):Int;
 
   static function get_stepsPerMeasure():Int
@@ -183,6 +208,21 @@ class Conductor
     // TODO: Is this always an integer?
     return Std.int(timeSignatureNumerator / timeSignatureDenominator * Constants.STEPS_PER_BEAT * Constants.STEPS_PER_BEAT);
   }
+
+  /**
+   * Signal fired when the Conductor advances to a new measure.
+   */
+  public static var measureHit(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Signal fired when the Conductor advances to a new beat.
+   */
+  public static var beatHit(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Signal fired when the Conductor advances to a new step.
+   */
+  public static var stepHit(default, null):FlxSignal = new FlxSignal();
 
   function new() {}
 
@@ -224,29 +264,29 @@ class Conductor
       songPosition = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset) : 0.0;
     }
 
+    var oldMeasure = currentMeasure;
     var oldBeat = currentBeat;
     var oldStep = currentStep;
 
     // Set the song position we are at (for purposes of calculating note positions, etc).
     Conductor.songPosition = songPosition;
 
-    // Exclude the offsets we just included earlier.
-    // This is the "true" song position that the audio should be using.
-    Conductor.songPositionNoOffset = Conductor.songPosition - instrumentalOffset - formatOffset;
-
     currentTimeChange = timeChanges[0];
-    for (i in 0...timeChanges.length)
+    if (Conductor.songPosition > 0.0)
     {
-      if (songPosition >= timeChanges[i].timeStamp) currentTimeChange = timeChanges[i];
+      for (i in 0...timeChanges.length)
+      {
+        if (songPosition >= timeChanges[i].timeStamp) currentTimeChange = timeChanges[i];
 
-      if (songPosition < timeChanges[i].timeStamp) break;
+        if (songPosition < timeChanges[i].timeStamp) break;
+      }
     }
 
     if (currentTimeChange == null && bpmOverride == null && FlxG.sound.music != null)
     {
       trace('WARNING: Conductor is broken, timeChanges is empty.');
     }
-    else if (currentTimeChange != null)
+    else if (currentTimeChange != null && Conductor.songPosition > 0.0)
     {
       // roundDecimal prevents representing 8 as 7.9999999
       currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * 4) + (songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
@@ -255,9 +295,6 @@ class Conductor
       currentStep = Math.floor(currentStepTime);
       currentBeat = Math.floor(currentBeatTime);
       currentMeasure = Math.floor(currentMeasureTime);
-
-      currentStepTimeNoOffset = FlxMath.roundDecimal((currentTimeChange.beatTime * 4)
-        + (songPositionNoOffset - currentTimeChange.timeStamp) / stepLengthMs, 6);
     }
     else
     {
@@ -268,8 +305,6 @@ class Conductor
       currentStep = Math.floor(currentStepTime);
       currentBeat = Math.floor(currentBeatTime);
       currentMeasure = Math.floor(currentMeasureTime);
-
-      currentStepTimeNoOffset = FlxMath.roundDecimal((songPositionNoOffset / stepLengthMs), 4);
     }
 
     // FlxSignals are really cool.
@@ -281,6 +316,11 @@ class Conductor
     if (currentBeat != oldBeat)
     {
       beatHit.dispatch();
+    }
+
+    if (currentMeasure != oldMeasure)
+    {
+      measureHit.dispatch();
     }
   }
 

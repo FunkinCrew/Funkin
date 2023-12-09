@@ -115,6 +115,7 @@ class ChartEditorImportExportHandler
     state.songChartData = newSongChartData;
 
     Conductor.forceBPM(null); // Disable the forced BPM.
+    Conductor.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
     Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
     state.notePreviewDirty = true;
