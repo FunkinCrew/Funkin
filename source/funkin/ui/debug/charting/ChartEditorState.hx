@@ -720,7 +720,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The notes which are currently in the user's selection.
    */
-  var currentNoteSelection:Array<SongNoteData> = [];
+  var currentNoteSelection(default, set):Array<SongNoteData> = [];
+
+  function set_currentNoteSelection(value:Array<SongNoteData>):Array<SongNoteData>
+  {
+    currentNoteSelection = value;
+
+    if (currentNoteSelection.length > 0)
+    {
+      notePreview.addNotes(currentNoteSelection, Std.int(songLengthInMs), true);
+    }
+    else
+    {
+      notePreviewDirty = true;
+    }
+
+    return currentNoteSelection;
+  }
 
   /**
    * The events which are currently in the user's selection.
