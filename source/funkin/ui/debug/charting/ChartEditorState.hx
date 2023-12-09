@@ -114,6 +114,7 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
+import flixel.text.FlxText;
 
 using Lambda;
 
@@ -1619,6 +1620,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var healthIconBF:Null<HealthIcon> = null;
 
   /**
+   * The text that pop's up when copying something
+   */
+  var txtCopyNotif:Null<FlxText> = null;
+
+  /**
    * The purple background sprite.
    */
   var menuBG:Null<FlxSprite> = null;
@@ -2272,6 +2278,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     add(playbarHeadLayout);
+
+    txtCopyNotif = new FlxText(0, 0, 0, '', 24);
+    txtCopyNotif.setBorderStyle(OUTLINE, 0xFF074809, 1);
+    txtCopyNotif.color = 0xFF52FF77;
+    txtCopyNotif.zIndex = 120;
+    add(txtCopyNotif);
 
     if (!Preferences.debugDisplay) menubar.paddingLeft = null;
 
@@ -4444,7 +4456,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // CTRL + C = Copy
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
     {
-      // Copy selected notes.
+      if (currentNoteSelection.length > 0)
+      {
+        txtCopyNotif.visible = true;
+        txtCopyNotif.text = "Copied " + currentNoteSelection.length + " notes to clipboard";
+        txtCopyNotif.x = FlxG.mouse.x - (txtCopyNotif.width / 2);
+        txtCopyNotif.y = FlxG.mouse.y - 16;
+        FlxTween.tween(txtCopyNotif, {y: txtCopyNotif.y - 32}, 0.5,
+          {
+            type: FlxTween.ONESHOT,
+            ease: FlxEase.quadOut,
+            onComplete: function(_) {
+              txtCopyNotif.visible = false;
+            }
+          });
+      }
+
       // We don't need a command for this since we can't undo it.
       SongDataUtils.writeItemsToClipboard(
         {
