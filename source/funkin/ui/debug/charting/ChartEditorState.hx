@@ -23,12 +23,14 @@ import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VoicesGroup;
+import funkin.audio.FunkinSound;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongRegistry;
 import funkin.input.Cursor;
@@ -249,6 +251,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Make sure playhead doesn't go outside the song.
     if (playheadPositionInMs > songLengthInMs) playheadPositionInMs = songLengthInMs;
+
+    onSongLengthChanged();
 
     return this.songLengthInMs;
   }
@@ -914,7 +918,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Replaced when switching instrumentals.
    * `null` until an instrumental track is loaded.
    */
-  var audioInstTrack:Null<FlxSound> = null;
+  var audioInstTrack:Null<FunkinSound> = null;
 
   /**
    * The raw byte data for the instrumental audio tracks.
@@ -1191,6 +1195,41 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_currentSongArtist(value:String):String
   {
     return currentSongMetadata.artist = value;
+  }
+
+  /**
+   * Convenience property to get the song offset data for the current variation.
+   */
+  var currentSongOffsets(get, set):SongOffsets;
+
+  function get_currentSongOffsets():SongOffsets
+  {
+    if (currentSongMetadata.offsets == null)
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.offsets = new SongOffsets();
+    }
+    return currentSongMetadata.offsets;
+  }
+
+  function set_currentSongOffsets(value:SongOffsets):SongOffsets
+  {
+    return currentSongMetadata.offsets = value;
+  }
+
+  var currentInstrumentalOffset(get, set):Float;
+
+  function get_currentInstrumentalOffset():Float
+  {
+    // TODO: Apply for alt instrumentals.
+    return currentSongOffsets.getInstrumentalOffset();
+  }
+
+  function set_currentInstrumentalOffset(value:Float):Float
+  {
+    // TODO: Apply for alt instrumentals.
+    currentSongOffsets.setInstrumentalOffset(value);
+    return value;
   }
 
   /**
@@ -2231,7 +2270,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       playbarHeadDragging = true;
 
       // If we were dragging the playhead while the song was playing, resume playing.
-      if (audioInstTrack != null && audioInstTrack.playing)
+      if (audioInstTrack != null && audioInstTrack.isPlaying)
       {
         playbarHeadDraggingWasPlaying = true;
         stopAudioPlayback();
@@ -2245,10 +2284,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.playbarHead.onDrag = function(_:DragEvent) {
       if (playbarHeadDragging)
       {
-        var value:Null<Float> = playbarHeadLayout.playbarHead?.value;
-
         // Set the song position to where the playhead was moved to.
-        scrollPositionInPixels = songLengthInPixels * ((value ?? 0.0) / 100);
+        scrollPositionInPixels = (songLengthInPixels) * playbarHeadLayout.playbarHead.value / 100;
         // Update the conductor and audio tracks to match.
         moveSongToScrollPosition();
       }
@@ -2431,8 +2468,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemGoToBackupsFolder.onClick = _ -> this.openBackupsFolder();
     #else
     // Disable the menu item if we're not on a desktop platform.
-    var menubarItemGoToBackupsFolder = findComponent('menubarItemGoToBackupsFolder', MenuItem);
-    if (menubarItemGoToBackupsFolder != null) menubarItemGoToBackupsFolder.disabled = true;
+    menubarItemGoToBackupsFolder.disabled = true;
     #end
 
     menubarItemUserGuide.onClick = _ -> this.openUserGuideDialog();
@@ -2462,7 +2498,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemLoadVocals.onClick = _ -> this.openUploadVocalsDialog(true);
 
     menubarItemVolumeMetronome.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       metronomeVolume = volume;
       menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
     };
@@ -2475,26 +2511,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemOpponentHitsounds.selected = hitsoundsEnabledOpponent;
 
     menubarItemVolumeHitsound.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       hitsoundVolume = volume;
       menubarLabelVolumeHitsound.text = 'Hitsound - ${Std.int(event.value)}%';
     };
     menubarItemVolumeHitsound.value = Std.int(hitsoundVolume * 100);
 
     menubarItemVolumeInstrumental.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
 
     menubarItemVolumeVocals.onChange = event -> {
-      var volume:Float = (event?.value ?? 0) / 100.0;
+      var volume:Float = event.value.toFloat() / 100.0;
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
       menubarLabelVolumeVocals.text = 'Voices - ${Std.int(event.value)}%';
     }
 
     menubarItemPlaybackSpeed.onChange = event -> {
-      var pitch:Float = event.value * 2.0 / 100.0;
+      var pitch:Float = (event.value * 2.0) / 100.0;
       pitch = Math.floor(pitch / 0.25) * 0.25; // Round to nearest 0.25.
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
@@ -2653,7 +2689,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.update(elapsed);
 
     // These ones happen even if the modal dialog is open.
-    handleMusicPlayback();
+    handleMusicPlayback(elapsed);
     handleNoteDisplay();
 
     // These ones only happen if the modal dialog is not open.
@@ -2689,7 +2725,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // dispatchEvent gets called here.
     if (!super.beatHit()) return false;
 
-    if (metronomeVolume > 0.0 && this.subState == null && (audioInstTrack != null && audioInstTrack.playing))
+    if (metronomeVolume > 0.0 && this.subState == null && (audioInstTrack != null && audioInstTrack.isPlaying))
     {
       playMetronomeTick(Conductor.currentBeat % 4 == 0);
     }
@@ -2705,7 +2741,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // dispatchEvent gets called here.
     if (!super.stepHit()) return false;
 
-    if (audioInstTrack != null && audioInstTrack.playing)
+    if (audioInstTrack != null && audioInstTrack.isPlaying)
     {
       if (healthIconDad != null) healthIconDad.onStepHit(Conductor.currentStep);
       if (healthIconBF != null) healthIconBF.onStepHit(Conductor.currentStep);
@@ -2726,18 +2762,36 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Handle syncronizing the conductor with the music playback.
    */
-  function handleMusicPlayback():Void
+  function handleMusicPlayback(elapsed:Float):Void
   {
-    if (audioInstTrack != null && audioInstTrack.playing)
+    if (audioInstTrack != null)
+    {
+      // This normally gets called by FlxG.sound.update()
+      // but we handle instrumental updates manually to prevent FlxG.sound.music.update()
+      // from being called twice when we move to the PlayState.
+      audioInstTrack.update(elapsed);
+
+      // If the song starts 50ms in, make sure we start the song there.
+      if (Conductor.instrumentalOffset < 0)
+      {
+        if (audioInstTrack.time < -Conductor.instrumentalOffset)
+        {
+          trace('Resetting instrumental time to ${- Conductor.instrumentalOffset}ms');
+          audioInstTrack.time = -Conductor.instrumentalOffset;
+        }
+      }
+    }
+
+    if (audioInstTrack != null && audioInstTrack.isPlaying)
     {
       if (FlxG.keys.pressed.ALT)
       {
         // If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
         var oldStepTime:Float = Conductor.currentStepTime;
-        var oldSongPosition:Float = Conductor.songPosition;
+        var oldSongPosition:Float = Conductor.songPosition + Conductor.instrumentalOffset;
         Conductor.update(audioInstTrack.time);
-        handleHitsounds(oldSongPosition, Conductor.songPosition);
+        handleHitsounds(oldSongPosition, Conductor.songPosition + Conductor.instrumentalOffset);
         // Resync vocals.
         if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -2753,9 +2807,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         // Else, move the entire view.
-        var oldSongPosition:Float = Conductor.songPosition;
+        var oldSongPosition:Float = Conductor.songPosition + Conductor.instrumentalOffset;
         Conductor.update(audioInstTrack.time);
-        handleHitsounds(oldSongPosition, Conductor.songPosition);
+        handleHitsounds(oldSongPosition, Conductor.songPosition + Conductor.instrumentalOffset);
         // Resync vocals.
         if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -2764,7 +2818,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         // We need time in fractional steps here to allow the song to actually play.
         // Also account for a potentially offset playhead.
-        scrollPositionInPixels = Conductor.currentStepTime * GRID_SIZE - playheadPositionInPixels;
+        scrollPositionInPixels = (Conductor.currentStepTime + Conductor.instrumentalOffsetSteps) * GRID_SIZE - playheadPositionInPixels;
 
         // DO NOT move song to scroll position here specifically.
 
@@ -4225,22 +4279,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.x = 4;
     playbarHeadLayout.y = FlxG.height - 48 - 8;
 
-    var songPos:Float = Conductor.songPosition;
-    var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
-
     // Move the playhead to match the song position, if we aren't dragging it.
     if (!playbarHeadDragging)
     {
-      var songPosPercent:Float = songPos / songLengthInMs * 100;
+      var songPosPercent = scrollPositionInPixels / (songLengthInPixels) * 100;
+
       if (playbarHeadLayout.playbarHead.value != songPosPercent) playbarHeadLayout.playbarHead.value = songPosPercent;
     }
 
-    var songPosSeconds:String = Std.string(Math.floor((songPos / 1000) % 60)).lpad('0', 2);
-    var songPosMinutes:String = Std.string(Math.floor((songPos / 1000) / 60)).lpad('0', 2);
+    var songPos:Float = Conductor.songPosition + Conductor.instrumentalOffset;
+    var songPosSeconds:String = Std.string(Math.floor((Math.abs(songPos) / 1000) % 60)).lpad('0', 2);
+    var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / 1000) / 60)).lpad('0', 2);
+    if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}';
 
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
+    var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
     var songRemainingSeconds:String = Std.string(Math.floor((songRemaining / 1000) % 60)).lpad('0', 2);
     var songRemainingMinutes:String = Std.string(Math.floor((songRemaining / 1000) / 60)).lpad('0', 2);
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
@@ -4556,6 +4611,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     super.handleQuickWatch();
 
+    FlxG.watch.addQuick('musicTime', audioInstTrack?.time ?? 0.0);
+
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
     FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
 
@@ -4582,6 +4639,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function testSongInPlayState(minimal:Bool = false):Void
   {
     autoSave();
+
+    stopWelcomeMusic();
 
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
@@ -4637,7 +4696,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       });
 
     // Override music.
-    if (audioInstTrack != null) FlxG.sound.music = audioInstTrack;
+    if (audioInstTrack != null)
+    {
+      FlxG.sound.music = audioInstTrack;
+    }
     if (audioVocalTrackGroup != null) targetState.vocals = audioVocalTrackGroup;
 
     this.persistentUpdate = false;
@@ -4764,6 +4826,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // ChartEditorAudioHandler
     this.switchToInstrumental(currentInstrumentalId, currentSongMetadata.playData.characters.player, currentSongMetadata.playData.characters.opponent);
+  }
+
+  function onSongLengthChanged():Void
+  {
+    if (gridTiledSprite != null) gridTiledSprite.height = songLengthInPixels;
+    if (gridPlayheadScrollArea != null)
+    {
+      gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
+      gridPlayheadScrollArea.updateHitbox();
+    }
+
+    // Remove any notes past the end of the song.
+    var songCutoffPointSteps:Float = songLengthInSteps - 0.1;
+    var songCutoffPointMs:Float = Conductor.getStepTimeInMs(songCutoffPointSteps);
+    currentSongChartNoteData = SongDataUtils.clampSongNoteData(currentSongChartNoteData, 0.0, songCutoffPointMs);
+    currentSongChartEventData = SongDataUtils.clampSongEventData(currentSongChartEventData, 0.0, songCutoffPointMs);
+
+    scrollPositionInPixels = 0;
+    playheadPositionInPixels = 0;
+    notePreviewDirty = true;
+    notePreviewViewportBoundsDirty = true;
+    noteDisplayDirty = true;
+    moveSongToScrollPosition();
   }
 
   /**
@@ -4917,11 +5002,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Update the songPosition in the audio tracks.
     if (audioInstTrack != null)
     {
-      audioInstTrack.time = scrollPositionInMs + playheadPositionInMs;
+      audioInstTrack.time = scrollPositionInMs + playheadPositionInMs - Conductor.instrumentalOffset;
       // Update the songPosition in the Conductor.
       Conductor.update(audioInstTrack.time);
+      if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = audioInstTrack.time;
     }
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = scrollPositionInMs + playheadPositionInMs;
 
     // We need to update the note sprites because we changed the scroll position.
     noteDisplayDirty = true;
@@ -4980,6 +5065,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.persistentDraw = true;
 
     moveSongToScrollPosition();
+
+    fadeInWelcomeMusic(7, 10);
 
     // Reapply the volume.
     var instTargetVolume:Float = menubarItemVolumeInstrumental.value ?? 1.0;
@@ -5277,15 +5364,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (audioInstTrack == null) return;
 
-    if (audioInstTrack.playing)
+    if (audioInstTrack.isPlaying)
     {
-      fadeInWelcomeMusic(7, 10);
+      // Pause
       stopAudioPlayback();
+      fadeInWelcomeMusic(7, 10);
     }
     else
     {
-      stopWelcomeMusic();
+      // Play
       startAudioPlayback();
+      stopWelcomeMusic();
     }
   }
 
@@ -5295,32 +5384,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Prevent the time from skipping back to 0 when the song ends.
       audioInstTrack.onComplete = function() {
-        if (audioInstTrack != null) audioInstTrack.pause();
+        if (audioInstTrack != null)
+        {
+          audioInstTrack.pause();
+          // Keep the track at the end.
+          audioInstTrack.time = audioInstTrack.length;
+        }
         if (audioVocalTrackGroup != null) audioVocalTrackGroup.pause();
       };
-
-      songLengthInMs = audioInstTrack.length;
-
-      if (gridTiledSprite != null) gridTiledSprite.height = songLengthInPixels;
-      if (gridPlayheadScrollArea != null)
-      {
-        gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
-        gridPlayheadScrollArea.updateHitbox();
-      }
     }
     else
     {
-      trace('[WARN] Instrumental track was null!');
+      trace('ERROR: Instrumental track is null!');
     }
 
-    // Pretty much everything is going to need to be reset.
-    scrollPositionInPixels = 0;
-    playheadPositionInPixels = 0;
-    notePreviewDirty = true;
-    notePreviewViewportBoundsDirty = true;
-    noteDisplayDirty = true;
+    this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instrumentalOffset;
+
+    // Many things get reset when song length changes.
     healthIconsDirty = true;
-    moveSongToScrollPosition();
   }
 
   /**

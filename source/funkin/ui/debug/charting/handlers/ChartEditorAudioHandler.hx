@@ -4,6 +4,7 @@ import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.system.FlxSound;
 import funkin.audio.VoicesGroup;
 import funkin.audio.visualize.PolygonVisGroup;
+import funkin.audio.FunkinSound;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
 import funkin.util.assets.SoundUtil;
@@ -140,12 +141,14 @@ class ChartEditorAudioHandler
   {
     if (instId == '') instId = 'default';
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
-    var instTrack:Null<FlxSound> = SoundUtil.buildFlxSoundFromBytes(instTrackData);
+    var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
     if (instTrack == null) return false;
 
     stopExistingInstrumental(state);
     state.audioInstTrack = instTrack;
     state.postLoadInstrumental();
+    // Workaround for a bug where FlxG.sound.music.update() was being called twice.
+    FlxG.sound.list.remove(instTrack);
     return true;
   }
 
@@ -166,7 +169,7 @@ class ChartEditorAudioHandler
   {
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackId);
-    var vocalTrack:Null<FlxSound> = SoundUtil.buildFlxSoundFromBytes(vocalTrackData);
+    var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
     if (state.audioVisGroup == null) state.audioVisGroup = new PolygonVisGroup();
@@ -182,6 +185,8 @@ class ChartEditorAudioHandler
           state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
           state.audioVisGroup.playerVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.playerVis.detail = 1;
+
+          state.audioVocalTrackGroup.playerVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
           return true;
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
@@ -192,14 +197,18 @@ class ChartEditorAudioHandler
           state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.opponentVis.detail = 1;
 
+          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
+
           return true;
         case OTHER:
           state.audioVocalTrackGroup.add(vocalTrack);
+          // TODO: Add offset for other characters.
           return true;
         default:
           // Do nothing.
       }
     }
+
     return false;
   }
 

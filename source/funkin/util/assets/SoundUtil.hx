@@ -1,7 +1,8 @@
 package funkin.util.assets;
 
 import haxe.io.Bytes;
-import flixel.system.FlxSound;
+import openfl.media.Sound as OpenFLSound;
+import funkin.audio.FunkinSound;
 
 class SoundUtil
 {
@@ -11,13 +12,13 @@ class SoundUtil
    * @param input The byte data.
    * @return The playable sound, or `null` if loading failed.
    */
-  public static function buildFlxSoundFromBytes(input:Null<Bytes>):Null<FlxSound>
+  public static function buildSoundFromBytes(input:Null<Bytes>):Null<FunkinSound>
   {
     if (input == null) return null;
 
-    var openflSound:openfl.media.Sound = new openfl.media.Sound();
+    var openflSound:OpenFLSound = new OpenFLSound();
     openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(input), input.length);
-    var output:FlxSound = FlxG.sound.load(openflSound, 1.0, false);
+    var output:FunkinSound = FunkinSound.load(openflSound, 1.0, false);
     return output;
   }
 }

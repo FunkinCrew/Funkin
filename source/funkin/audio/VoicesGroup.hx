@@ -1,12 +1,12 @@
 package funkin.audio;
 
-import flixel.sound.FlxSound;
+import funkin.audio.FunkinSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 class VoicesGroup extends SoundGroup
 {
-  var playerVoices:FlxTypedGroup<FlxSound>;
-  var opponentVoices:FlxTypedGroup<FlxSound>;
+  var playerVoices:FlxTypedGroup<FunkinSound>;
+  var opponentVoices:FlxTypedGroup<FunkinSound>;
 
   /**
    * Control the volume of only the sounds in the player group.
@@ -31,14 +31,14 @@ class VoicesGroup extends SoundGroup
   public function new()
   {
     super();
-    playerVoices = new FlxTypedGroup<FlxSound>();
-    opponentVoices = new FlxTypedGroup<FlxSound>();
+    playerVoices = new FlxTypedGroup<FunkinSound>();
+    opponentVoices = new FlxTypedGroup<FunkinSound>();
   }
 
   /**
    * Add a voice to the player group.
    */
-  public function addPlayerVoice(sound:FlxSound):Void
+  public function addPlayerVoice(sound:FunkinSound):Void
   {
     super.add(sound);
     playerVoices.add(sound);
@@ -46,7 +46,7 @@ class VoicesGroup extends SoundGroup
 
   function set_playerVolume(volume:Float):Float
   {
-    playerVoices.forEachAlive(function(voice:FlxSound) {
+    playerVoices.forEachAlive(function(voice:FunkinSound) {
       voice.volume = volume;
     });
     return playerVolume = volume;
@@ -59,10 +59,10 @@ class VoicesGroup extends SoundGroup
       snd.time = time;
     });
 
-    playerVoices.forEachAlive(function(voice:FlxSound) {
+    playerVoices.forEachAlive(function(voice:FunkinSound) {
       voice.time -= playerVoicesOffset;
     });
-    opponentVoices.forEachAlive(function(voice:FlxSound) {
+    opponentVoices.forEachAlive(function(voice:FunkinSound) {
       voice.time -= opponentVoicesOffset;
     });
 
@@ -71,7 +71,7 @@ class VoicesGroup extends SoundGroup
 
   function set_playerVoicesOffset(offset:Float):Float
   {
-    playerVoices.forEachAlive(function(voice:FlxSound) {
+    playerVoices.forEachAlive(function(voice:FunkinSound) {
       voice.time += playerVoicesOffset;
       voice.time -= offset;
     });
@@ -80,33 +80,17 @@ class VoicesGroup extends SoundGroup
 
   function set_opponentVoicesOffset(offset:Float):Float
   {
-    opponentVoices.forEachAlive(function(voice:FlxSound) {
+    opponentVoices.forEachAlive(function(voice:FunkinSound) {
       voice.time += opponentVoicesOffset;
       voice.time -= offset;
     });
     return opponentVoicesOffset = offset;
   }
 
-  public override function update(elapsed:Float):Void
-  {
-    forEachAlive(function(snd) {
-      if (snd.time < 0)
-      {
-        // Sync the time without calling update().
-        // time gets reset if it's negative.
-        snd.time += elapsed * 1000;
-      }
-      else
-      {
-        snd.update(elapsed);
-      }
-    });
-  }
-
   /**
    * Add a voice to the opponent group.
    */
-  public function addOpponentVoice(sound:FlxSound):Void
+  public function addOpponentVoice(sound:FunkinSound):Void
   {
     super.add(sound);
     opponentVoices.add(sound);
@@ -114,7 +98,7 @@ class VoicesGroup extends SoundGroup
 
   function set_opponentVolume(volume:Float):Float
   {
-    opponentVoices.forEachAlive(function(voice:FlxSound) {
+    opponentVoices.forEachAlive(function(voice:FunkinSound) {
       voice.volume = volume;
     });
     return opponentVolume = volume;
