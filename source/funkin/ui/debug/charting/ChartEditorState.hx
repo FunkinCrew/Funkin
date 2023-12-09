@@ -4470,6 +4470,32 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               txtCopyNotif.visible = false;
             }
           });
+
+        for (note in renderedNotes.members)
+        {
+          if (isNoteSelected(note.noteData))
+          {
+            FlxTween.globalManager.cancelTweensOf(note);
+            FlxTween.globalManager.cancelTweensOf(note.scale);
+            note.playNoteAnimation();
+            var prevX:Float = note.scale.x;
+            var prevY:Float = note.scale.y;
+
+            note.scale.x *= 1.2;
+            note.scale.y *= 1.2;
+
+            note.angle = FlxG.random.bool() ? -10 : 10;
+            FlxTween.tween(note, {"angle": 0}, 0.8, {ease: FlxEase.elasticOut});
+
+            FlxTween.tween(note.scale, {"y": prevX, "x": prevY}, 0.7,
+              {
+                ease: FlxEase.elasticOut,
+                onComplete: function(_) {
+                  note.playNoteAnimation();
+                }
+              });
+          }
+        }
       }
 
       // We don't need a command for this since we can't undo it.
