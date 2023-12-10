@@ -3409,7 +3409,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           gridPlayheadScrollAreaPressed = true;
         }
-        else if (notePreview != null && FlxG.mouse.overlaps(notePreview))
+        else if (notePreview != null && !isCursorOverHaxeUI && FlxG.mouse.overlaps(notePreview))
         {
           // Clicked note preview
           notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
@@ -3861,7 +3861,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (FlxG.mouse.justPressed)
         {
           // Just clicked to place a note.
-          if (overlapsGrid && !overlapsSelectionBorder)
+          if (!isCursorOverHaxeUI && overlapsGrid && !overlapsSelectionBorder)
           {
             // We clicked on the grid without moving the mouse.
 
@@ -4006,7 +4006,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         var isOrWillSelect = overlapsSelection || dragTargetNote != null || dragTargetEvent != null;
         // Handle grid cursor.
-        if (overlapsGrid && !isOrWillSelect && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
+        if (!isCursorOverHaxeUI && overlapsGrid && !isOrWillSelect && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
         {
           // Indicate that we can place a note here.
 
@@ -4077,25 +4077,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
-          if (notePreview != null && FlxG.mouse.overlaps(notePreview))
+          if (!isCursorOverHaxeUI)
           {
-            targetCursorMode = Pointer;
-          }
-          else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
-          {
-            targetCursorMode = Pointer;
-          }
-          else if (overlapsSelection)
-          {
-            targetCursorMode = Pointer;
-          }
-          else if (overlapsSelectionBorder)
-          {
-            targetCursorMode = Crosshair;
-          }
-          else if (overlapsGrid)
-          {
-            targetCursorMode = Cell;
+            if (notePreview != null && FlxG.mouse.overlaps(notePreview))
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (overlapsSelection)
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (overlapsSelectionBorder)
+            {
+              targetCursorMode = Crosshair;
+            }
+            else if (overlapsGrid)
+            {
+              targetCursorMode = Cell;
+            }
           }
         }
       }
