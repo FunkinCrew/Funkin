@@ -435,6 +435,10 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
+    toolbox.onDialogClosed = function(_) {
+      state.menubarItemToggleToolboxPlaytestProperties.selected = false;
+    }
+
     var checkboxPracticeMode:Null<CheckBox> = toolbox.findComponent('practiceModeCheckbox', CheckBox);
     if (checkboxPracticeMode == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find practiceModeCheckbox component.';
 
