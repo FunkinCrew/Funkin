@@ -80,6 +80,8 @@ class ChartEditorToolboxHandler
           onShowToolboxNoteData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
           onShowToolboxEventData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
+          onShowToolboxPlaytestProperties(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
           onShowToolboxDifficulty(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
@@ -117,6 +119,8 @@ class ChartEditorToolboxHandler
           onHideToolboxNoteData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
           onHideToolboxEventData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
+          onHideToolboxPlaytestProperties(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
           onHideToolboxDifficulty(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
@@ -175,6 +179,8 @@ class ChartEditorToolboxHandler
         toolbox = buildToolboxNoteDataLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
         toolbox = buildToolboxEventDataLayout(state);
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
+        toolbox = buildToolboxPlaytestPropertiesLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
         toolbox = buildToolboxDifficultyLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
@@ -321,7 +327,11 @@ class ChartEditorToolboxHandler
 
   static function onShowToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
+  static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
   static function onHideToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+
+  static function onHideToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function buildEventDataFormFromSchema(state:ChartEditorState, target:Box, schema:SongEventSchema):Void
   {
@@ -416,6 +426,25 @@ class ChartEditorToolboxHandler
         }
       }
     }
+  }
+
+  static function buildToolboxPlaytestPropertiesLayout(state:ChartEditorState):Null<CollapsibleDialog>
+  {
+    // fill with playtest properties
+    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT);
+
+    if (toolbox == null) return null;
+
+    var checkboxPracticeMode:Null<CheckBox> = toolbox.findComponent('practiceModeCheckbox', CheckBox);
+    if (checkboxPracticeMode == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find practiceModeCheckbox component.';
+
+    state.playtestPracticeMode = checkboxPracticeMode.selected;
+
+    checkboxPracticeMode.onClick = _ -> {
+      state.playtestPracticeMode = checkboxPracticeMode.selected;
+    };
+
+    return toolbox;
   }
 
   static function buildToolboxDifficultyLayout(state:ChartEditorState):Null<CollapsibleDialog>
