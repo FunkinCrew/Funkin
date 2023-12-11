@@ -2123,9 +2123,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         image.width = 70;
         image.height = 70;
 
+        if (char == currentSongMetadata.playData.characters.opponent) image.selected = true;
+
         image.icon = CharacterDataParser.getCharPixelIconAsset(char);
         image.onClick = _ -> {
+          healthIconsDirty = true;
+          currentSongMetadata.playData.characters.opponent = char;
           toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.APPLY);
+
           // var label = toolbox.findComponent('charIconName');
           // label.text = char;
         };
