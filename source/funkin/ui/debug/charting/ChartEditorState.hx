@@ -1,6 +1,9 @@
 package funkin.ui.debug.charting;
 
 import funkin.util.logging.CrashHandler;
+import haxe.ui.containers.HBox;
+import haxe.ui.containers.Grid;
+import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.menus.MenuBar;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
@@ -106,6 +109,7 @@ import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
+import haxe.ui.components.Image;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
@@ -114,6 +118,7 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
+import flixel.input.mouse.FlxMouseEvent;
 
 using Lambda;
 
@@ -2082,6 +2087,63 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.flipX = true;
     add(healthIconBF);
     healthIconBF.zIndex = 30;
+
+    FlxMouseEvent.add(healthIconDad, function(_) {
+      trace("clicked dad");
+
+      var toolbox:CollapsibleDialog = cast haxe.ui.RuntimeComponentBuilder.fromAsset(Paths.ui('chart-editor/toolbox/iconselector'));
+      toolbox.showDialog(false);
+      var scrollView = toolbox.findComponent('charSelectScroll');
+
+      var hbox = new Grid();
+      hbox.columns = 5;
+      hbox.width = 100;
+      scrollView.addComponent(hbox);
+
+      var charIds:Array<String> = CharacterDataParser.listCharacterIds();
+
+      charIds.sort(function(a, b) {
+        var result:Int = 0;
+
+        if (a < b)
+        {
+          result = -1;
+        }
+        else if (a > b)
+        {
+          result = 1;
+        }
+
+        return result;
+      });
+
+      for (char in charIds)
+      {
+        var image = new haxe.ui.components.Button();
+        image.width = 70;
+        image.height = 70;
+
+        image.icon = CharacterDataParser.getCharPixelIconAsset(char);
+        image.onClick = _ -> {
+          toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.APPLY);
+          // var label = toolbox.findComponent('charIconName');
+          // label.text = char;
+        };
+
+        image.onMouseOver = _ -> {
+          var label = toolbox.findComponent('charIconName');
+          label.text = char;
+        };
+        hbox.addComponent(image);
+      }
+
+      toolbox.x = FlxG.mouse.screenX;
+      toolbox.y = FlxG.mouse.screenY;
+    });
+
+    FlxMouseEvent.add(healthIconBF, function(_) {
+      trace("clicked bf");
+    });
   }
 
   function buildNotePreview():Void
