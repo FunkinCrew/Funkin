@@ -2110,6 +2110,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       default: throw 'Invalid charType: ' + charType;
     };
     var toolbox:CollapsibleDialog = cast haxe.ui.RuntimeComponentBuilder.fromAsset(Paths.ui('chart-editor/toolbox/iconselector'));
+
+    toolbox.x = FlxG.mouse.screenX - toolbox.width / 2;
+    toolbox.y = FlxG.mouse.screenY - 16;
+
     toolbox.title += " - " + switch (charType)
     {
       case 0: "Player";
@@ -2118,21 +2122,38 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
 
     var _overlay = new Component();
+
+    var hideCharIconPicker = function() {
+      FlxTween.tween(_overlay, {opacity: 0}, 0.05,
+        {
+          ease: FlxEase.quartOut
+        });
+      FlxTween.tween(toolbox, {opacity: 0, y: toolbox.y + 10}, 0.1,
+        {
+          ease: FlxEase.quartOut,
+          onComplete: function(_) {
+            toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.CANCEL);
+            Screen.instance.removeComponent(_overlay);
+          }
+        });
+    };
+
     _overlay.id = "modal-background";
     _overlay.addClass("modal-background");
     _overlay.percentWidth = _overlay.percentHeight = 100;
     _overlay.opacity = 0;
     FlxTween.tween(_overlay, {opacity: 0.2}, 0.1, {ease: FlxEase.quartOut});
     _overlay.onClick = function(_) {
-      toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.CANCEL);
-      Screen.instance.removeComponent(_overlay);
+      hideCharIconPicker();
     };
 
     Screen.instance.addComponent(_overlay);
 
     toolbox.showDialog(false);
+    toolbox.opacity = 0;
+    FlxTween.tween(toolbox, {opacity: 1, y: toolbox.y + 10}, 0.1, {ease: FlxEase.quartOut});
     toolbox.closable = false;
-    var scrollView = toolbox.findComponent('charSelectScroll');
+    var scrollView:ScrollView = cast toolbox.findComponent('charSelectScroll');
 
     var hbox = new Grid();
     hbox.columns = 5;
@@ -2156,13 +2177,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return result;
     });
 
-    for (char in charIds)
+    for (ind => char in charIds)
     {
       var image = new haxe.ui.components.Button();
       image.width = 70;
       image.height = 70;
+      image.iconPosition = "top";
+      image.text = char;
 
-      if (char == currentChar) image.selected = true;
+      if (char == currentChar)
+      {
+        scrollView.hscrollPos = Math.floor(ind / 5) * 80;
+        image.selected = true;
+      }
 
       image.icon = CharacterDataParser.getCharPixelIconAsset(char);
       image.onClick = _ -> {
@@ -2173,8 +2200,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           case 1: currentSongMetadata.playData.characters.opponent = char;
           default: throw 'Invalid charType: ' + charType;
         };
-        toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.APPLY);
-        Screen.instance.removeComponent(_overlay);
+        hideCharIconPicker();
+
         // var label = toolbox.findComponent('charIconName');
         // label.text = char;
       };
@@ -2185,9 +2212,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       };
       hbox.addComponent(image);
     }
-
-    toolbox.x = FlxG.mouse.screenX - toolbox.width / 2;
-    toolbox.y = FlxG.mouse.screenY - 16;
   }
 
   function buildNotePreview():Void
