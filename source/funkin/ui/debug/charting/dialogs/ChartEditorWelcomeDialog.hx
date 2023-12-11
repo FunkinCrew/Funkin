@@ -102,27 +102,12 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, chartPath);
       if (result != null)
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Success',
-            body: result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}',
-            type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.success('Loaded Chart',
+          result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}');
       }
       else
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Failed to load chart (${chartPath.toString()})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.error('Failed to Load Chart', 'Failed to load chart (${chartPath.toString()})');
       }
     }
 

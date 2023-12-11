@@ -113,41 +113,17 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
       var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, path.toString());
       if (result != null)
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Success',
-            body: result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}',
-            type: result.length == 0 ? NotificationType.Success : NotificationType.Warning,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.success('Loaded Chart', result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}');
         this.hideDialog(DialogButton.APPLY);
       }
       else
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Failed to load chart (${path.toString()})',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()})');
       }
     }
     catch (err)
     {
-      #if !mac
-      NotificationManager.instance.addNotification(
-        {
-          title: 'Failure',
-          body: 'Failed to load chart (${path.toString()}): ${err}',
-          type: NotificationType.Error,
-          expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-        });
-      #end
+      state.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}): ${err}');
     }
   }
 
@@ -165,15 +141,8 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
         var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFC(state, selectedFile.bytes);
         if (result != null)
         {
-          #if !mac
-          NotificationManager.instance.addNotification(
-            {
-              title: 'Success',
-              body: 'Loaded chart (${selectedFile.name})',
-              type: NotificationType.Success,
-              expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-            });
-          #end
+          state.success('Loaded Chart',
+            result.length == 0 ? 'Loaded chart (${selectedFile.name})' : 'Loaded chart (${selectedFile.name})\n${result.join("\n")}');
 
           if (selectedFile.fullPath != null) state.currentWorkingFilePath = selectedFile.fullPath;
           this.hideDialog(DialogButton.APPLY);
@@ -181,15 +150,7 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
       }
       catch (err)
       {
-        #if !mac
-        NotificationManager.instance.addNotification(
-          {
-            title: 'Failure',
-            body: 'Failed to load chart (${selectedFile.name}): ${err}',
-            type: NotificationType.Error,
-            expiryMs: Constants.NOTIFICATION_DISMISS_TIME
-          });
-        #end
+        state.failure('Failed to Load Chart', 'Failed to load chart (${selectedFile.name}): ${err}');
       }
     }
   }
