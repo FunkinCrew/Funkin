@@ -2089,66 +2089,84 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.zIndex = 30;
 
     FlxMouseEvent.add(healthIconDad, function(_) {
-      trace("clicked dad");
-
-      var toolbox:CollapsibleDialog = cast haxe.ui.RuntimeComponentBuilder.fromAsset(Paths.ui('chart-editor/toolbox/iconselector'));
-      toolbox.showDialog(false);
-      var scrollView = toolbox.findComponent('charSelectScroll');
-
-      var hbox = new Grid();
-      hbox.columns = 5;
-      hbox.width = 100;
-      scrollView.addComponent(hbox);
-
-      var charIds:Array<String> = CharacterDataParser.listCharacterIds();
-
-      charIds.sort(function(a, b) {
-        var result:Int = 0;
-
-        if (a < b)
-        {
-          result = -1;
-        }
-        else if (a > b)
-        {
-          result = 1;
-        }
-
-        return result;
-      });
-
-      for (char in charIds)
-      {
-        var image = new haxe.ui.components.Button();
-        image.width = 70;
-        image.height = 70;
-
-        if (char == currentSongMetadata.playData.characters.opponent) image.selected = true;
-
-        image.icon = CharacterDataParser.getCharPixelIconAsset(char);
-        image.onClick = _ -> {
-          healthIconsDirty = true;
-          currentSongMetadata.playData.characters.opponent = char;
-          toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.APPLY);
-
-          // var label = toolbox.findComponent('charIconName');
-          // label.text = char;
-        };
-
-        image.onMouseOver = _ -> {
-          var label = toolbox.findComponent('charIconName');
-          label.text = char;
-        };
-        hbox.addComponent(image);
-      }
-
-      toolbox.x = FlxG.mouse.screenX;
-      toolbox.y = FlxG.mouse.screenY;
+      createAndOpenCharSelect(1);
     });
 
     FlxMouseEvent.add(healthIconBF, function(_) {
-      trace("clicked bf");
+      createAndOpenCharSelect(0);
     });
+  }
+
+  /**
+   * @param charType 0 == BF, 1 == Dad
+   */
+  function createAndOpenCharSelect(charType:Int = 0):Void
+  {
+    var charData = currentSongMetadata.playData.characters;
+    var currentChar:String = switch (charType)
+    {
+      case 0: charData.player;
+      case 1: charData.opponent;
+      default: throw 'Invalid charType: ' + charType;
+    };
+    var toolbox:CollapsibleDialog = cast haxe.ui.RuntimeComponentBuilder.fromAsset(Paths.ui('chart-editor/toolbox/iconselector'));
+    toolbox.showDialog(false);
+    var scrollView = toolbox.findComponent('charSelectScroll');
+
+    var hbox = new Grid();
+    hbox.columns = 5;
+    hbox.width = 100;
+    scrollView.addComponent(hbox);
+
+    var charIds:Array<String> = CharacterDataParser.listCharacterIds();
+
+    charIds.sort(function(a, b) {
+      var result:Int = 0;
+
+      if (a < b)
+      {
+        result = -1;
+      }
+      else if (a > b)
+      {
+        result = 1;
+      }
+
+      return result;
+    });
+
+    for (char in charIds)
+    {
+      var image = new haxe.ui.components.Button();
+      image.width = 70;
+      image.height = 70;
+
+      if (char == currentChar) image.selected = true;
+
+      image.icon = CharacterDataParser.getCharPixelIconAsset(char);
+      image.onClick = _ -> {
+        healthIconsDirty = true;
+        switch (charType)
+        {
+          case 0: currentSongMetadata.playData.characters.player = char;
+          case 1: currentSongMetadata.playData.characters.opponent = char;
+          default: throw 'Invalid charType: ' + charType;
+        };
+        toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.APPLY);
+
+        // var label = toolbox.findComponent('charIconName');
+        // label.text = char;
+      };
+
+      image.onMouseOver = _ -> {
+        var label = toolbox.findComponent('charIconName');
+        label.text = char;
+      };
+      hbox.addComponent(image);
+    }
+
+    toolbox.x = FlxG.mouse.screenX;
+    toolbox.y = FlxG.mouse.screenY;
   }
 
   function buildNotePreview():Void
