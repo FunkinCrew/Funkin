@@ -1,16 +1,22 @@
 package funkin.graphics.framebuffer;
 
+import flash.geom.ColorTransform;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
+import flixel.system.FlxAssets.FlxShader;
+import funkin.shaderslmfao.RuntimeCustomBlendShader;
 import openfl.Lib;
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display3D.textures.TextureBase;
+import openfl.filters.BitmapFilter;
+import openfl.filters.ShaderFilter;
 
 /**
- * A camera, but grabbable.
+ * A camera, but grabbable. Also supports several additional blend modes.
  */
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
@@ -27,6 +33,12 @@ class GrabbableCamera extends FlxCamera
   final bgBitmap:BitmapData;
   final bgFrame:FlxFrame;
 
+  final customBlendShader:RuntimeCustomBlendShader;
+  final customBlendFilter:ShaderFilter;
+
+  var filtersApplied:Bool = false;
+  var bgItemCount:Int = 0;
+
   public function new(x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
   {
     super(x, y, width, height, zoom);
@@ -35,41 +47,75 @@ class GrabbableCamera extends FlxCamera
     bgFrame = new FlxFrame(new FlxGraphic('', null));
     bgFrame.parent.bitmap = bgBitmap;
     bgFrame.frame = new FlxRect();
+    customBlendShader = new RuntimeCustomBlendShader();
+    customBlendFilter = new ShaderFilter(customBlendShader);
   }
 
   /**
    * Grabs the camera screen and returns it as a `BitmapData`. The returned bitmap
-   * will not be referred by the camera, so changing it will not affect the scene.
-   * @param applyFilters if this is `true`, the camera's filters will be applied to the grabbed bitmap
+   * will not be referred by the camera so, changing it will not affect the scene.
+   * The returned bitmap **will be reused in the next frame**, so the content is available
+   * only in the current frame.
+   * @param applyFilters if this is `true`, the camera's filters will be applied to the grabbed bitmap,
+   * and the camera's filters will be disabled until the beginning of the next frame
+   * @param isolate if this is `true`, sprites to be rendered will only be rendered to the grabbed bitmap,
+   * and the grabbed bitmap will not include any previously rendered sprites
    * @return the grabbed bitmap data
    */
-  public function grabScreen(applyFilters:Bool):BitmapData
+  public function grabScreen(applyFilters:Bool, isolate:Bool = false):BitmapData
   {
     final texture = pickTexture(width, height);
     final bitmap = FixedBitmapData.fromTexture(texture);
-    squashTo(bitmap, applyFilters);
+    squashTo(bitmap, applyFilters, isolate);
+    grabbed.push(bitmap);
     return bitmap;
   }
 
-  function squashTo(bitmap:BitmapData, applyFilters:Bool):Void
+  /**
+   * Applies the filter immediately to the camera. This will be done independently from
+   * the camera's filters. This method can only be called after the first `grabScreen`
+   * in the frame.
+   * @param filter the filter
+   */
+  public function applyFilter(filter:BitmapFilter):Void
   {
+    if (grabbed.length == 0)
+    {
+      FlxG.log.error('grab screen before you can apply a filter!');
+      return;
+    }
+    BitmapDataUtil.applyFilter(bgBitmap, filter);
+  }
+
+  function squashTo(bitmap:BitmapData, applyFilters:Bool, isolate:Bool):Void
+  {
+    if (applyFilters && isolate)
+    {
+      FlxG.log.error('cannot apply filters while isolating!');
+    }
+    if (filtersApplied && applyFilters)
+    {
+      FlxG.log.warn('filters already applied!');
+    }
     static final matrix = new FlxMatrix();
 
     // resize the background bitmap if needed
     if (bgTexture.__width != width || bgTexture.__height != height)
     {
-      resizeTexture(bgTexture, width, height);
+      BitmapDataUtil.resizeTexture(bgTexture, width, height);
       bgBitmap.__resize(width, height);
       bgFrame.parent.bitmap = bgBitmap;
     }
 
     // grab the bitmap
-    render();
+    renderSkipping(isolate ? bgItemCount : 0);
     bitmap.fillRect(bitmap.rect, 0);
     matrix.setTo(1, 0, 0, 1, flashSprite.x, flashSprite.y);
     if (applyFilters)
     {
       bitmap.draw(flashSprite, matrix);
+      flashSprite.filters = null;
+      filtersApplied = true;
     }
     else
     {
@@ -79,9 +125,12 @@ class GrabbableCamera extends FlxCamera
       flashSprite.filters = tmp;
     }
 
-    // also copy to the background bitmap
-    bgBitmap.fillRect(bgBitmap.rect, 0);
-    bgBitmap.draw(bitmap);
+    if (!isolate)
+    {
+      // also copy to the background bitmap
+      bgBitmap.fillRect(bgBitmap.rect, 0);
+      bgBitmap.draw(bitmap);
+    }
 
     // clear graphics data
     super.clearDrawStack();
@@ -91,17 +140,54 @@ class GrabbableCamera extends FlxCamera
     bgFrame.frame.set(0, 0, width, height);
     matrix.setTo(viewWidth / width, 0, 0, viewHeight / height, viewMarginLeft, viewMarginTop);
     drawPixels(bgFrame, matrix);
+
+    // count background draw items for future isolation
+    bgItemCount = 0;
+    {
+      var item = _headOfDrawStack;
+      while (item != null)
+      {
+        item = item.next;
+        bgItemCount++;
+      }
+    }
   }
 
-  function resizeTexture(texture:TextureBase, width:Int, height:Int):Void
+  function renderSkipping(count:Int):Void
   {
-    texture.__width = width;
-    texture.__height = height;
-    final context = texture.__context;
-    final gl = context.gl;
-    context.__bindGLTexture2D(texture.__textureID);
-    gl.texImage2D(gl.TEXTURE_2D, 0, texture.__internalFormat, width, height, 0, texture.__format, gl.UNSIGNED_BYTE, null);
-    context.__bindGLTexture2D(null);
+    var item = _headOfDrawStack;
+    while (item != null)
+    {
+      if (--count < 0) item.render(this);
+      item = item.next;
+    }
+  }
+
+  override function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
+      ?shader:FlxShader):Void
+  {
+    if ( switch blend
+      {
+        case DARKEN | HARDLIGHT | LIGHTEN | OVERLAY: true;
+        case _: false;
+      })
+    {
+      // squash the screen
+      grabScreen(false);
+      // render without blend
+      super.drawPixels(frame, pixels, matrix, transform, null, smoothing, shader);
+      // get the isolated bitmap
+      final isolated = grabScreen(false, true);
+      // apply fullscreen blend
+      customBlendShader.blend = blend;
+      customBlendShader.source = isolated;
+      customBlendShader.updateViewInfo(FlxG.width, FlxG.height, this);
+      applyFilter(customBlendFilter);
+    }
+    else
+    {
+      super.drawPixels(frame, pixels, matrix, transform, blend, smoothing, shader);
+    }
   }
 
   override function destroy():Void
@@ -120,6 +206,9 @@ class GrabbableCamera extends FlxCamera
       bitmap.dispose(); // this doesn't release the texture
     }
     grabbed.clear();
+    // clear filters applied flag
+    filtersApplied = false;
+    bgItemCount = 0;
   }
 
   function pickTexture(width:Int, height:Int):TextureBase
@@ -130,10 +219,7 @@ class GrabbableCamera extends FlxCamera
     if (texturePool.length > 0)
     {
       final res = texturePool.pop();
-      if (res.__width != width || res.__height != height)
-      {
-        resizeTexture(res, width, height);
-      }
+      BitmapDataUtil.resizeTexture(res, width, height);
       return res;
     }
     return Lib.current.stage.context3D.createTexture(width, height, BGRA, true);
