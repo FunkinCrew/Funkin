@@ -2089,11 +2089,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.zIndex = 30;
 
     FlxMouseEvent.add(healthIconDad, function(_) {
-      createAndOpenCharSelect(1);
+      if (!isCursorOverHaxeUI) createAndOpenCharSelect(1);
     });
 
     FlxMouseEvent.add(healthIconBF, function(_) {
-      createAndOpenCharSelect(0);
+      if (!isCursorOverHaxeUI) createAndOpenCharSelect(0);
     });
   }
 
@@ -2110,7 +2110,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       default: throw 'Invalid charType: ' + charType;
     };
     var toolbox:CollapsibleDialog = cast haxe.ui.RuntimeComponentBuilder.fromAsset(Paths.ui('chart-editor/toolbox/iconselector'));
+    toolbox.title += " - " + switch (charType)
+    {
+      case 0: "Player";
+      case 1: "Opponent";
+      default: throw 'Invalid charType: ' + charType;
+    };
+
+    var _overlay = new Component();
+    _overlay.id = "modal-background";
+    _overlay.addClass("modal-background");
+    _overlay.percentWidth = _overlay.percentHeight = 100;
+    _overlay.opacity = 0;
+    FlxTween.tween(_overlay, {opacity: 0.2}, 0.1, {ease: FlxEase.quartOut});
+    _overlay.onClick = function(_) {
+      toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.CANCEL);
+      Screen.instance.removeComponent(_overlay);
+    };
+
+    Screen.instance.addComponent(_overlay);
+
     toolbox.showDialog(false);
+    toolbox.closable = false;
     var scrollView = toolbox.findComponent('charSelectScroll');
 
     var hbox = new Grid();
@@ -2153,7 +2174,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           default: throw 'Invalid charType: ' + charType;
         };
         toolbox.hideDialog(haxe.ui.containers.dialogs.Dialog.DialogButton.APPLY);
-
+        Screen.instance.removeComponent(_overlay);
         // var label = toolbox.findComponent('charIconName');
         // label.text = char;
       };
@@ -2165,8 +2186,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       hbox.addComponent(image);
     }
 
-    toolbox.x = FlxG.mouse.screenX;
-    toolbox.y = FlxG.mouse.screenY;
+    toolbox.x = FlxG.mouse.screenX - toolbox.width / 2;
+    toolbox.y = FlxG.mouse.screenY - 16;
   }
 
   function buildNotePreview():Void
