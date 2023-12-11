@@ -21,7 +21,9 @@ class DebugMenuSubState extends MusicBeatSubState
 
   override function create():Void
   {
+    FlxTransitionableState.skipNextTransIn = true;
     super.create();
+
     bgColor = 0x00000000;
 
     // Create an object for the camera to track.
