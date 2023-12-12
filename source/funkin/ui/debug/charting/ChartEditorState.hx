@@ -2453,9 +2453,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
 
-    menubarItemPlaytestStartTime.onChange = event -> playtestStartTime = event.value;
-    menubarItemPlaytestStartTime.selected = playtestStartTime;
-
     menuBarItemThemeLight.onChange = function(event:UIEvent) {
       if (event.target.value) currentTheme = ChartEditorTheme.Light;
     };

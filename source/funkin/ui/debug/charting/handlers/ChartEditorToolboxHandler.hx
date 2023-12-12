@@ -442,10 +442,20 @@ class ChartEditorToolboxHandler
     var checkboxPracticeMode:Null<CheckBox> = toolbox.findComponent('practiceModeCheckbox', CheckBox);
     if (checkboxPracticeMode == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find practiceModeCheckbox component.';
 
-    state.playtestPracticeMode = checkboxPracticeMode.selected;
+    checkboxPracticeMode.selected = state.playtestPracticeMode;
 
     checkboxPracticeMode.onClick = _ -> {
       state.playtestPracticeMode = checkboxPracticeMode.selected;
+    };
+
+    var checkboxStartTime:Null<CheckBox> = toolbox.findComponent('playtestStartTimeCheckbox', CheckBox);
+    if (checkboxStartTime == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestStartTimeCheckbox component.';
+
+    checkboxStartTime.selected = state.playtestStartTime;
+
+    checkboxStartTime.onClick = _ -> {
+      state.playtestStartTime = checkboxStartTime.selected;
     };
 
     return toolbox;
