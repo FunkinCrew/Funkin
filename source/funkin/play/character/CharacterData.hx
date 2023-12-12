@@ -280,6 +280,9 @@ class CharacterDataParser
     return characterCache.keys().array();
   }
 
+  /**
+   * TODO: Hardcode this.
+   */
   public static function getCharPixelIconAsset(char:String):String
   {
     var icon:String = char;
@@ -290,9 +293,9 @@ class CharacterDataParser
         icon = "bf";
       case "monster-christmas":
         icon = "monster";
-      case "mom-car":
+      case "mom" | "mom-car":
         icon = "mommy";
-      case "pico-blazin":
+      case "pico-blazin" | "pico-playable" | "pico-speaker":
         icon = "pico";
       case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
         icon = "gf";

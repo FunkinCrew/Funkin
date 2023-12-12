@@ -11,7 +11,6 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventData;
 import funkin.data.song.SongData.SongTimeChange;
-import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -35,6 +34,8 @@ import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 import haxe.ui.containers.Frame;
 import haxe.ui.containers.Grid;
 import haxe.ui.containers.TreeView;
@@ -83,7 +84,8 @@ class ChartEditorToolboxHandler
         case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
           onShowToolboxDifficulty(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
-          onShowToolboxMetadata(state, toolbox);
+          // TODO: Fix this.
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
           onShowToolboxPlayerPreview(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -133,6 +135,22 @@ class ChartEditorToolboxHandler
     else
     {
       trace('ChartEditorToolboxHandler.hideToolbox() - Could not retrieve toolbox: $id');
+    }
+  }
+
+  public static function refreshToolbox(state:ChartEditorState, id:String):Void
+  {
+    var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
+
+    if (toolbox == null) return;
+
+    if (toolbox != null)
+    {
+      toolbox.refresh();
+    }
+    else
+    {
+      trace('ChartEditorToolboxHandler.refreshToolbox() - Could not retrieve toolbox: $id');
     }
   }
 
@@ -205,7 +223,19 @@ class ChartEditorToolboxHandler
    * @param id The asset ID of the toolbox layout.
    * @return The toolbox.
    */
-  public static function getToolbox(state:ChartEditorState, id:String):Null<CollapsibleDialog>
+  public static function getToolbox_OLD(state:ChartEditorState, id:String):Null<CollapsibleDialog>
+  {
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
+
+    // Initialize the toolbox without showing it.
+    if (toolbox == null) toolbox = initToolbox(state, id);
+
+    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolbox_OLD() - Could not retrieve or build toolbox: $id';
+
+    return toolbox;
+  }
+
+  public static function getToolbox(state:ChartEditorState, id:String):Null<ChartEditorBaseToolbox>
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
@@ -214,7 +244,7 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolbox() - Could not retrieve or build toolbox: $id';
 
-    return toolbox;
+    return cast toolbox;
   }
 
   static function buildToolboxNoteDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
@@ -505,178 +535,13 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxMetadataLayout(state:ChartEditorState):Null<CollapsibleDialog>
+  static function buildToolboxMetadataLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
-    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    var toolbox:ChartEditorBaseToolbox = ChartEditorMetadataToolbox.build(state);
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 150;
-    toolbox.y = 250;
-
-    toolbox.onDialogClosed = function(event:UIEvent) {
-      state.menubarItemToggleToolboxMetadata.selected = false;
-    }
-
-    var inputSongName:Null<TextField> = toolbox.findComponent('inputSongName', TextField);
-    if (inputSongName == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputSongName component.';
-    inputSongName.onChange = function(event:UIEvent) {
-      var valid:Bool = event.target.text != null && event.target.text != '';
-
-      if (valid)
-      {
-        inputSongName.removeClass('invalid-value');
-        state.currentSongMetadata.songName = event.target.text;
-      }
-      else
-      {
-        state.currentSongMetadata.songName = '';
-      }
-    };
-    inputSongName.value = state.currentSongMetadata.songName;
-
-    var inputSongArtist:Null<TextField> = toolbox.findComponent('inputSongArtist', TextField);
-    if (inputSongArtist == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputSongArtist component.';
-    inputSongArtist.onChange = function(event:UIEvent) {
-      var valid:Bool = event.target.text != null && event.target.text != '';
-
-      if (valid)
-      {
-        inputSongArtist.removeClass('invalid-value');
-        state.currentSongMetadata.artist = event.target.text;
-      }
-      else
-      {
-        state.currentSongMetadata.artist = '';
-      }
-    };
-    inputSongArtist.value = state.currentSongMetadata.artist;
-
-    var inputStage:Null<DropDown> = toolbox.findComponent('inputStage', DropDown);
-    if (inputStage == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputStage component.';
-    inputStage.onChange = function(event:UIEvent) {
-      var valid:Bool = event.data != null && event.data.id != null;
-
-      if (valid)
-      {
-        state.currentSongMetadata.playData.stage = event.data.id;
-      }
-    };
-    var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(inputStage, state.currentSongMetadata.playData.stage);
-    inputStage.value = startingValueStage;
-
-    var inputNoteStyle:Null<DropDown> = toolbox.findComponent('inputNoteStyle', DropDown);
-    if (inputNoteStyle == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputNoteStyle component.';
-    inputNoteStyle.onChange = function(event:UIEvent) {
-      if (event.data?.id == null) return;
-      state.currentSongNoteStyle = event.data.id;
-    };
-    inputNoteStyle.value = state.currentSongNoteStyle;
-
-    // By using this flag, we prevent the dropdown value from changing while it is being populated.
-
-    var inputCharacterPlayer:Null<DropDown> = toolbox.findComponent('inputCharacterPlayer', DropDown);
-    if (inputCharacterPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterPlayer component.';
-    inputCharacterPlayer.onChange = function(event:UIEvent) {
-      if (event.data?.id == null) return;
-      state.currentSongMetadata.playData.characters.player = event.data.id;
-    };
-    var startingValuePlayer = ChartEditorDropdowns.populateDropdownWithCharacters(inputCharacterPlayer, CharacterType.BF,
-      state.currentSongMetadata.playData.characters.player);
-    inputCharacterPlayer.value = startingValuePlayer;
-
-    var inputCharacterOpponent:Null<DropDown> = toolbox.findComponent('inputCharacterOpponent', DropDown);
-    if (inputCharacterOpponent == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterOpponent component.';
-    inputCharacterOpponent.onChange = function(event:UIEvent) {
-      if (event.data?.id == null) return;
-      state.currentSongMetadata.playData.characters.opponent = event.data.id;
-    };
-    var startingValueOpponent = ChartEditorDropdowns.populateDropdownWithCharacters(inputCharacterOpponent, CharacterType.DAD,
-      state.currentSongMetadata.playData.characters.opponent);
-    inputCharacterOpponent.value = startingValueOpponent;
-
-    var inputCharacterGirlfriend:Null<DropDown> = toolbox.findComponent('inputCharacterGirlfriend', DropDown);
-    if (inputCharacterGirlfriend == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterGirlfriend component.';
-    inputCharacterGirlfriend.onChange = function(event:UIEvent) {
-      if (event.data?.id == null) return;
-      state.currentSongMetadata.playData.characters.girlfriend = event.data.id == "none" ? "" : event.data.id;
-    };
-    var startingValueGirlfriend = ChartEditorDropdowns.populateDropdownWithCharacters(inputCharacterGirlfriend, CharacterType.GF,
-      state.currentSongMetadata.playData.characters.girlfriend);
-    inputCharacterGirlfriend.value = startingValueGirlfriend;
-
-    var inputBPM:Null<NumberStepper> = toolbox.findComponent('inputBPM', NumberStepper);
-    if (inputBPM == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputBPM component.';
-    inputBPM.onChange = function(event:UIEvent) {
-      if (event.value == null || event.value <= 0) return;
-
-      // Use a command so we can undo/redo this action.
-      var startingBPM = state.currentSongMetadata.timeChanges[0].bpm;
-      if (event.value != startingBPM)
-      {
-        state.performCommand(new ChangeStartingBPMCommand(event.value));
-      }
-    };
-    inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
-
-    var inputOffsetInst:Null<NumberStepper> = toolbox.findComponent('inputOffsetInst', NumberStepper);
-    if (inputOffsetInst == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputOffsetInst component.';
-    inputOffsetInst.onChange = function(event:UIEvent) {
-      if (event.value == null) return;
-
-      state.currentInstrumentalOffset = event.value;
-      Conductor.instrumentalOffset = event.value;
-      // Update song length.
-      state.songLengthInMs = (state.audioInstTrack?.length ?? 1000.0) + Conductor.instrumentalOffset;
-    };
-    inputOffsetInst.value = state.currentInstrumentalOffset;
-
-    var inputOffsetVocal:Null<NumberStepper> = toolbox.findComponent('inputOffsetVocal', NumberStepper);
-    if (inputOffsetVocal == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputOffsetVocal component.';
-    inputOffsetVocal.onChange = function(event:UIEvent) {
-      if (event.value == null) return;
-
-      state.currentSongMetadata.offsets.setVocalOffset(state.currentSongMetadata.playData.characters.player, event.value);
-    };
-    inputOffsetVocal.value = state.currentSongMetadata.offsets.getVocalOffset(state.currentSongMetadata.playData.characters.player);
-
-    var labelScrollSpeed:Null<Label> = toolbox.findComponent('labelScrollSpeed', Label);
-    if (labelScrollSpeed == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find labelScrollSpeed component.';
-
-    var inputScrollSpeed:Null<Slider> = toolbox.findComponent('inputScrollSpeed', Slider);
-    if (inputScrollSpeed == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputScrollSpeed component.';
-    inputScrollSpeed.onChange = function(event:UIEvent) {
-      var valid:Bool = event.target.value != null && event.target.value > 0;
-
-      if (valid)
-      {
-        inputScrollSpeed.removeClass('invalid-value');
-        state.currentSongChartScrollSpeed = event.target.value;
-      }
-      else
-      {
-        state.currentSongChartScrollSpeed = 1.0;
-      }
-      labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
-    };
-    inputScrollSpeed.value = state.currentSongChartScrollSpeed;
-    labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
-
-    var frameVariation:Null<Frame> = toolbox.findComponent('frameVariation', Frame);
-    if (frameVariation == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find frameVariation component.';
-    frameVariation.text = 'Variation: ${state.selectedVariation.toTitleCase()}';
-
-    var frameDifficulty:Null<Frame> = toolbox.findComponent('frameDifficulty', Frame);
-    if (frameDifficulty == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find frameDifficulty component.';
-    frameDifficulty.text = 'Difficulty: ${state.selectedDifficulty.toTitleCase()}';
-
     return toolbox;
-  }
-
-  static function onShowToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void
-  {
-    state.refreshMetadataToolbox();
   }
 
   static function onHideToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}

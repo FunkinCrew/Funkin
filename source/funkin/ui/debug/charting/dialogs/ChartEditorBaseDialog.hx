@@ -2,7 +2,11 @@ package funkin.ui.debug.charting.dialogs;
 
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.animation.AnimationBuilder;
+import haxe.ui.styles.EasingFunction;
 import haxe.ui.core.Component;
+
+// @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorBaseDialog extends Dialog
@@ -23,6 +27,12 @@ class ChartEditorBaseDialog extends Dialog
     this.closable = params.closable ?? false;
 
     this.onDialogClosed = event -> onClose(event);
+  }
+
+  private override function onReady():Void
+  {
+    _overlay.opacity = 0;
+    fadeInDialogOverlay();
   }
 
   /**
@@ -53,6 +63,31 @@ class ChartEditorBaseDialog extends Dialog
     this.locked = false;
 
     this.closable = params.closable ?? false;
+  }
+
+  static final OVERLAY_EASE_DURATION:Float = 5.0;
+  static final OVERLAY_EASE_TYPE:String = "linear";
+
+  function fadeInDialogOverlay():Void
+  {
+    if (!modal)
+    {
+      trace('Dialog is not modal, skipping overlay fade...');
+      return;
+    }
+
+    if (_overlay == null)
+    {
+      trace('[WARN] Dialog overlay is null, skipping overlay fade...');
+      return;
+    }
+
+    var builder = new AnimationBuilder(_overlay, OVERLAY_EASE_DURATION, "linear");
+    builder.setPosition(0, "opacity", 0, true); // 0% absolute
+    builder.setPosition(100, "opacity", 0.80, true);
+
+    trace('Fading in dialog overlay...');
+    builder.play();
   }
 }
 
