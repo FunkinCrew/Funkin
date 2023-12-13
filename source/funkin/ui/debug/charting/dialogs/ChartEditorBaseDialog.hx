@@ -84,7 +84,7 @@ class ChartEditorBaseDialog extends Dialog
 
     var builder = new AnimationBuilder(_overlay, OVERLAY_EASE_DURATION, "linear");
     builder.setPosition(0, "opacity", 0, true); // 0% absolute
-    builder.setPosition(100, "opacity", 0.80, true);
+    builder.setPosition(100, "opacity", 1, true);
 
     trace('Fading in dialog overlay...');
     builder.play();
