@@ -145,6 +145,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/notedata');
 
   public static final CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
+  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
   public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/toolbox/difficulty');
   public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/player-preview');
@@ -521,6 +522,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * If true, playtesting a chart will skip to the current playhead position.
    */
   var playtestStartTime:Bool = false;
+
+  /**
+   * If true, playtesting a chart will let you "gameover" / die when you lose ur health!
+   */
+  var playtestPracticeMode:Bool = false;
 
   // Visuals
 
@@ -2496,9 +2502,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
 
-    menubarItemPlaytestStartTime.onChange = event -> playtestStartTime = event.value;
-    menubarItemPlaytestStartTime.selected = playtestStartTime;
-
     menuBarItemThemeLight.onChange = function(event:UIEvent) {
       if (event.target.value) currentTheme = ChartEditorTheme.Light;
     };
@@ -2565,6 +2568,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemToggleToolboxMetadata.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
     menubarItemToggleToolboxNotes.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
     menubarItemToggleToolboxEvents.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT, event.value);
+    menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
     menubarItemToggleToolboxPlayerPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
     menubarItemToggleToolboxOpponentPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
 
@@ -3905,7 +3909,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (FlxG.mouse.justPressed)
         {
           // Just clicked to place a note.
-          if (overlapsGrid && !overlapsSelectionBorder)
+          if (!isCursorOverHaxeUI && overlapsGrid && !overlapsSelectionBorder)
           {
             // We clicked on the grid without moving the mouse.
 
@@ -4050,7 +4054,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         var isOrWillSelect = overlapsSelection || dragTargetNote != null || dragTargetEvent != null;
         // Handle grid cursor.
-        if (overlapsGrid && !isOrWillSelect && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
+        if (!isCursorOverHaxeUI && overlapsGrid && !isOrWillSelect && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
         {
           // Indicate that we can place a note here.
 
@@ -4121,25 +4125,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
-          if (notePreview != null && FlxG.mouse.overlaps(notePreview))
+          if (!isCursorOverHaxeUI)
           {
-            targetCursorMode = Pointer;
-          }
-          else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
-          {
-            targetCursorMode = Pointer;
-          }
-          else if (overlapsSelection)
-          {
-            targetCursorMode = Pointer;
-          }
-          else if (overlapsSelectionBorder)
-          {
-            targetCursorMode = Crosshair;
-          }
-          else if (overlapsGrid)
-          {
-            targetCursorMode = Cell;
+            if (notePreview != null && FlxG.mouse.overlaps(notePreview))
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (overlapsSelection)
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (overlapsSelectionBorder)
+            {
+              targetCursorMode = Crosshair;
+            }
+            else if (overlapsGrid)
+            {
+              targetCursorMode = Cell;
+            }
           }
           else if (overlapsHealthIcons)
           {
@@ -4760,7 +4767,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         targetDifficulty: selectedDifficulty,
         // TODO: Add this.
         // targetCharacter: targetCharacter,
-        practiceMode: true,
+        practiceMode: playtestPracticeMode,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
         overrideMusic: true,
