@@ -2643,7 +2643,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Open the backups folder in the file explorer.
    * Don't call this on HTML5.
    */
-  function openBackupsFolder():Void
+  function openBackupsFolder(?_):Void
   {
     #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?

@@ -29,6 +29,12 @@ class ChartEditorBaseDialog extends Dialog
     this.onDialogClosed = event -> onClose(event);
   }
 
+  public override function showDialog(modal:Bool = true):Void
+  {
+    super.showDialog(modal);
+    fadeInComponent(this, 1);
+  }
+
   private override function onReady():Void
   {
     _overlay.opacity = 0;
@@ -65,8 +71,8 @@ class ChartEditorBaseDialog extends Dialog
     this.closable = params.closable ?? false;
   }
 
-  static final OVERLAY_EASE_DURATION:Float = 5.0;
-  static final OVERLAY_EASE_TYPE:String = "linear";
+  static final OVERLAY_EASE_DURATION:Float = 0.2;
+  static final OVERLAY_EASE_TYPE:String = "easeOut";
 
   function fadeInDialogOverlay():Void
   {
@@ -82,11 +88,16 @@ class ChartEditorBaseDialog extends Dialog
       return;
     }
 
-    var builder = new AnimationBuilder(_overlay, OVERLAY_EASE_DURATION, "linear");
-    builder.setPosition(0, "opacity", 0, true); // 0% absolute
-    builder.setPosition(100, "opacity", 1, true);
+    fadeInComponent(_overlay, 0.5);
+  }
 
-    trace('Fading in dialog overlay...');
+  function fadeInComponent(component:Component, fadeTo:Float = 1):Void
+  {
+    var builder = new AnimationBuilder(component, OVERLAY_EASE_DURATION, OVERLAY_EASE_TYPE);
+    builder.setPosition(0, "opacity", 0, true); // 0% absolute
+    builder.setPosition(100, "opacity", fadeTo, true);
+
+    trace('Fading in dialog component...');
     builder.play();
   }
 }
