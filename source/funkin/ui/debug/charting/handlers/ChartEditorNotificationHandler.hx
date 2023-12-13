@@ -103,7 +103,6 @@ class ChartEditorNotificationHandler
 
   static function sendNotification(state:ChartEditorState, title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationAction>):Notification
   {
-    #if !mac
     var actionNames:Array<String> = actions == null ? [] : actions.map(action -> action.text);
 
     var notif = NotificationManager.instance.addNotification(
@@ -138,7 +137,7 @@ class ChartEditorNotificationHandler
     }
 
     return notif;
-    #else
+    #if false
     // TODO: Implement notifications on Mac OS OR... make sure the null is handled properly on mac?
     return null;
     trace('WARNING: Notifications are not supported on Mac OS.');

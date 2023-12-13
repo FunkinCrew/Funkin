@@ -26,6 +26,7 @@ class ChartEditorNotePreview extends FlxSprite
   static final UP_COLOR:FlxColor = 0xFF00CC00;
   static final RIGHT_COLOR:FlxColor = 0xFFCC1111;
   static final EVENT_COLOR:FlxColor = 0xFF111111;
+  static final SELECTED_COLOR:FlxColor = 0xFFFFFF00;
 
   var previewHeight:Int;
 
@@ -57,11 +58,11 @@ class ChartEditorNotePreview extends FlxSprite
    * @param note The data for the note.
    * @param songLengthInMs The total length of the song in milliseconds.
    */
-  public function addNote(note:SongNoteData, songLengthInMs:Int):Void
+  public function addNote(note:SongNoteData, songLengthInMs:Int, ?isSelection:Bool = false):Void
   {
     var noteDir:Int = note.getDirection();
     var mustHit:Bool = note.getStrumlineIndex() == 0;
-    drawNote(noteDir, mustHit, Std.int(note.time), songLengthInMs);
+    drawNote(noteDir, mustHit, Std.int(note.time), songLengthInMs, isSelection);
   }
 
   /**
@@ -79,11 +80,11 @@ class ChartEditorNotePreview extends FlxSprite
    * @param notes The data for the notes.
    * @param songLengthInMs The total length of the song in milliseconds.
    */
-  public function addNotes(notes:Array<SongNoteData>, songLengthInMs:Int):Void
+  public function addNotes(notes:Array<SongNoteData>, songLengthInMs:Int, ?isSelection:Bool = false):Void
   {
     for (note in notes)
     {
-      addNote(note, songLengthInMs);
+      addNote(note, songLengthInMs, isSelection);
     }
   }
 
@@ -106,8 +107,9 @@ class ChartEditorNotePreview extends FlxSprite
    * @param mustHit False if opponent, true if player.
    * @param strumTimeInMs Time in milliseconds to strum the note.
    * @param songLengthInMs Length of the song in milliseconds.
+   * @param isSelection If current note is selected note, which then it's forced to be green
    */
-  function drawNote(dir:Int, mustHit:Bool, strumTimeInMs:Int, songLengthInMs:Int):Void
+  public function drawNote(dir:Int, mustHit:Bool, strumTimeInMs:Int, songLengthInMs:Int, ?isSelection:Bool = false):Void
   {
     var color:FlxColor = switch (dir)
     {
@@ -118,13 +120,20 @@ class ChartEditorNotePreview extends FlxSprite
       default: EVENT_COLOR;
     };
 
+    var noteHeight:Int = NOTE_HEIGHT;
+
+    if (isSelection != null && isSelection)
+    {
+      color = SELECTED_COLOR;
+      noteHeight += 1;
+    }
+
     var noteX:Float = NOTE_WIDTH * dir;
     if (mustHit) noteX += NOTE_WIDTH * 4;
     if (dir == -1) noteX = NOTE_WIDTH * 8;
 
     var noteY:Float = FlxMath.remapToRange(strumTimeInMs, 0, songLengthInMs, 0, previewHeight);
-
-    drawRect(noteX, noteY, NOTE_WIDTH, NOTE_HEIGHT, color);
+    drawRect(noteX, noteY, NOTE_WIDTH, noteHeight, color);
   }
 
   function eraseNote(dir:Int, mustHit:Bool, strumTimeInMs:Int, songLengthInMs:Int):Void
