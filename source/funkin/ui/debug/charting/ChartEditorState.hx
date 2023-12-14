@@ -4179,10 +4179,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             {
               targetCursorMode = Cell;
             }
-          }
-          else if (overlapsHealthIcons)
-          {
-            targetCursorMode = Pointer;
+            else if (overlapsHealthIcons)
+            {
+              targetCursorMode = Pointer;
+            }
           }
         }
       }
