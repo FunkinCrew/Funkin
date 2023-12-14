@@ -83,13 +83,13 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   function handleQuickWatch():Void
   {
     // Display Conductor info in the watch window.
-    FlxG.watch.addQuick("songPosition", Conductor.songPosition);
-    FlxG.watch.addQuick("songPositionNoOffset", Conductor.songPosition + Conductor.instrumentalOffset);
+    FlxG.watch.addQuick("songPosition", Conductor.instance.songPosition);
+    FlxG.watch.addQuick("songPositionNoOffset", Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
     FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
-    FlxG.watch.addQuick("bpm", Conductor.bpm);
-    FlxG.watch.addQuick("currentMeasureTime", Conductor.currentBeatTime);
-    FlxG.watch.addQuick("currentBeatTime", Conductor.currentBeatTime);
-    FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
+    FlxG.watch.addQuick("bpm", Conductor.instance.bpm);
+    FlxG.watch.addQuick("currentMeasureTime", Conductor.instance.currentBeatTime);
+    FlxG.watch.addQuick("currentBeatTime", Conductor.instance.currentBeatTime);
+    FlxG.watch.addQuick("currentStepTime", Conductor.instance.currentStepTime);
   }
 
   override function update(elapsed:Float)
@@ -139,7 +139,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function stepHit():Bool
   {
-    var event = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.currentBeat, Conductor.currentStep);
+    var event = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
 
     dispatchEvent(event);
 
@@ -150,7 +150,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function beatHit():Bool
   {
-    var event = new SongTimeScriptEvent(SONG_BEAT_HIT, Conductor.currentBeat, Conductor.currentStep);
+    var event = new SongTimeScriptEvent(SONG_BEAT_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
 
     dispatchEvent(event);
 

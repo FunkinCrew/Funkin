@@ -684,8 +684,8 @@ class ChartEditorDialogHandler
 
       state.songMetadata.set(targetVariation, newSongMetadata);
 
-      Conductor.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
-      Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+      Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
+      Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
       state.difficultySelectDirty = true;
 

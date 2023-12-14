@@ -21,6 +21,7 @@ import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.misc.VarTween;
+import haxe.ui.Toolkit;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
@@ -273,13 +274,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_songLengthInSteps():Float
   {
-    return Conductor.getTimeInSteps(songLengthInMs);
+    return Conductor.instance.getTimeInSteps(songLengthInMs);
   }
 
   function set_songLengthInSteps(value:Float):Float
   {
-    // Getting a reasonable result from setting songLengthInSteps requires that Conductor.mapBPMChanges be called first.
-    songLengthInMs = Conductor.getStepTimeInMs(value);
+    // Getting a reasonable result from setting songLengthInSteps requires that Conductor.instance.mapBPMChanges be called first.
+    songLengthInMs = Conductor.instance.getStepTimeInMs(value);
     return value;
   }
 
@@ -393,12 +394,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_scrollPositionInMs():Float
   {
-    return Conductor.getStepTimeInMs(scrollPositionInSteps);
+    return Conductor.instance.getStepTimeInMs(scrollPositionInSteps);
   }
 
   function set_scrollPositionInMs(value:Float):Float
   {
-    scrollPositionInSteps = Conductor.getTimeInSteps(value);
+    scrollPositionInSteps = Conductor.instance.getTimeInSteps(value);
     return value;
   }
 
@@ -452,13 +453,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_playheadPositionInMs():Float
   {
     if (audioVisGroup != null && audioVisGroup.playerVis != null)
-      audioVisGroup.playerVis.realtimeStartOffset = -Conductor.getStepTimeInMs(playheadPositionInSteps);
-    return Conductor.getStepTimeInMs(playheadPositionInSteps);
+      audioVisGroup.playerVis.realtimeStartOffset = -Conductor.instance.getStepTimeInMs(playheadPositionInSteps);
+    return Conductor.instance.getStepTimeInMs(playheadPositionInSteps);
   }
 
   function set_playheadPositionInMs(value:Float):Float
   {
-    playheadPositionInSteps = Conductor.getTimeInSteps(value);
+    playheadPositionInSteps = Conductor.instance.getTimeInSteps(value);
 
     if (audioVisGroup != null && audioVisGroup.playerVis != null) audioVisGroup.playerVis.realtimeStartOffset = -value;
     return value;
@@ -2402,13 +2403,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       else
       {
-        Conductor.currentTimeChange.bpm += 1;
+        Conductor.instance.currentTimeChange.bpm += 1;
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
     }
 
     playbarBPM.onRightClick = _ -> {
-      Conductor.currentTimeChange.bpm -= 1;
+      Conductor.instance.currentTimeChange.bpm -= 1;
       this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }
 
@@ -2456,9 +2457,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemPaste.onClick = _ -> {
       var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
-      var targetStep:Float = Conductor.getTimeInSteps(targetMs);
+      var targetStep:Float = Conductor.instance.getTimeInSteps(targetMs);
       var targetSnappedStep:Float = Math.floor(targetStep / noteSnapRatio) * noteSnapRatio;
-      var targetSnappedMs:Float = Conductor.getStepTimeInMs(targetSnappedStep);
+      var targetSnappedMs:Float = Conductor.instance.getStepTimeInMs(targetSnappedStep);
       performCommand(new PasteItemsCommand(targetSnappedMs));
     };
 
@@ -2639,10 +2640,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     saveDataDirty = false;
   }
 
+  var displayAutosavePopup:Bool = false;
+
   /**
    * UPDATE FUNCTIONS
    */
-  function autoSave():Void
+  function autoSave(?beforePlaytest:Bool = false):Void
   {
     var needsAutoSave:Bool = saveDataDirty;
 
@@ -2660,13 +2663,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (needsAutoSave)
     {
       this.exportAllSongData(true, null);
-      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
-      this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
-        {
-          text: "Take Me There",
-          callback: openBackupsFolder,
-        }
-      ]);
+      if (beforePlaytest)
+      {
+        displayAutosavePopup = true;
+      }
+      else
+      {
+        displayAutosavePopup = false;
+        var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+        this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
+          {
+            text: "Take Me There",
+            callback: openBackupsFolder,
+          }
+        ]);
+      }
     }
     #end
   }
@@ -2780,7 +2791,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (metronomeVolume > 0.0 && this.subState == null && (audioInstTrack != null && audioInstTrack.isPlaying))
     {
-      playMetronomeTick(Conductor.currentBeat % 4 == 0);
+      playMetronomeTick(Conductor.instance.currentBeat % 4 == 0);
     }
 
     return true;
@@ -2796,8 +2807,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (audioInstTrack != null && audioInstTrack.isPlaying)
     {
-      if (healthIconDad != null) healthIconDad.onStepHit(Conductor.currentStep);
-      if (healthIconBF != null) healthIconBF.onStepHit(Conductor.currentStep);
+      if (healthIconDad != null) healthIconDad.onStepHit(Conductor.instance.currentStep);
+      if (healthIconBF != null) healthIconBF.onStepHit(Conductor.instance.currentStep);
     }
 
     // Updating these every step keeps it more accurate.
@@ -2825,12 +2836,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioInstTrack.update(elapsed);
 
       // If the song starts 50ms in, make sure we start the song there.
-      if (Conductor.instrumentalOffset < 0)
+      if (Conductor.instance.instrumentalOffset < 0)
       {
-        if (audioInstTrack.time < -Conductor.instrumentalOffset)
+        if (audioInstTrack.time < -Conductor.instance.instrumentalOffset)
         {
-          trace('Resetting instrumental time to ${- Conductor.instrumentalOffset}ms');
-          audioInstTrack.time = -Conductor.instrumentalOffset;
+          trace('Resetting instrumental time to ${- Conductor.instance.instrumentalOffset}ms');
+          audioInstTrack.time = -Conductor.instance.instrumentalOffset;
         }
       }
     }
@@ -2841,16 +2852,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
-        var oldStepTime:Float = Conductor.currentStepTime;
-        var oldSongPosition:Float = Conductor.songPosition + Conductor.instrumentalOffset;
-        Conductor.update(audioInstTrack.time);
-        handleHitsounds(oldSongPosition, Conductor.songPosition + Conductor.instrumentalOffset);
+        var oldStepTime:Float = Conductor.instance.currentStepTime;
+        var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
+        Conductor.instance.update(audioInstTrack.time);
+        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
           audioVocalTrackGroup.time = audioInstTrack.time;
         }
-        var diffStepTime:Float = Conductor.currentStepTime - oldStepTime;
+        var diffStepTime:Float = Conductor.instance.currentStepTime - oldStepTime;
 
         // Move the playhead.
         playheadPositionInPixels += diffStepTime * GRID_SIZE;
@@ -2860,9 +2871,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         // Else, move the entire view.
-        var oldSongPosition:Float = Conductor.songPosition + Conductor.instrumentalOffset;
-        Conductor.update(audioInstTrack.time);
-        handleHitsounds(oldSongPosition, Conductor.songPosition + Conductor.instrumentalOffset);
+        var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
+        Conductor.instance.update(audioInstTrack.time);
+        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -2871,7 +2882,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         // We need time in fractional steps here to allow the song to actually play.
         // Also account for a potentially offset playhead.
-        scrollPositionInPixels = (Conductor.currentStepTime + Conductor.instrumentalOffsetSteps) * GRID_SIZE - playheadPositionInPixels;
+        scrollPositionInPixels = (Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps) * GRID_SIZE - playheadPositionInPixels;
 
         // DO NOT move song to scroll position here specifically.
 
@@ -3000,8 +3011,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       // Let's try testing only notes within a certain range of the view area.
       // TODO: I don't think this messes up really long sustains, does it?
-      var viewAreaTopMs:Float = scrollPositionInMs - (Conductor.measureLengthMs * 2); // Is 2 measures enough?
-      var viewAreaBottomMs:Float = scrollPositionInMs + (Conductor.measureLengthMs * 2); // Is 2 measures enough?
+      var viewAreaTopMs:Float = scrollPositionInMs - (Conductor.instance.measureLengthMs * 2); // Is 2 measures enough?
+      var viewAreaBottomMs:Float = scrollPositionInMs + (Conductor.instance.measureLengthMs * 2); // Is 2 measures enough?
 
       // Add notes that are now visible.
       for (noteData in currentSongChartNoteData)
@@ -3288,14 +3299,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // PAGE UP = Jump up to nearest measure
     if (pageUpKeyHandler.activated)
     {
-      var measureHeight:Float = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      var measureHeight:Float = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
       var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
       var targetScrollPosition:Float = Math.floor(playheadPos / measureHeight) * measureHeight;
       // If we would move less than one grid, instead move to the top of the previous measure.
       var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
       if (targetScrollAmount < GRID_SIZE)
       {
-        targetScrollPosition -= GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.beatsPerMeasure;
+        targetScrollPosition -= GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.instance.beatsPerMeasure;
       }
       scrollAmount = targetScrollPosition - playheadPos;
 
@@ -3304,21 +3315,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarButtonPressed == 'playbarBack')
     {
       playbarButtonPressed = '';
-      scrollAmount = -GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      scrollAmount = -GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
       shouldPause = true;
     }
 
     // PAGE DOWN = Jump down to nearest measure
     if (pageDownKeyHandler.activated)
     {
-      var measureHeight:Float = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      var measureHeight:Float = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
       var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
       var targetScrollPosition:Float = Math.ceil(playheadPos / measureHeight) * measureHeight;
       // If we would move less than one grid, instead move to the top of the next measure.
       var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
       if (targetScrollAmount < GRID_SIZE)
       {
-        targetScrollPosition += GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.beatsPerMeasure;
+        targetScrollPosition += GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.instance.beatsPerMeasure;
       }
       scrollAmount = targetScrollPosition - playheadPos;
 
@@ -3327,7 +3338,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarButtonPressed == 'playbarForward')
     {
       playbarButtonPressed = '';
-      scrollAmount = GRID_SIZE * 4 * Conductor.beatsPerMeasure;
+      scrollAmount = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
       shouldPause = true;
     }
 
@@ -3530,10 +3541,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       // The song position of the cursor, in steps.
       var cursorFractionalStep:Float = cursorY / GRID_SIZE;
-      var cursorMs:Float = Conductor.getStepTimeInMs(cursorFractionalStep);
+      var cursorMs:Float = Conductor.instance.getStepTimeInMs(cursorFractionalStep);
       // Round the cursor step to the nearest snap quant.
       var cursorSnappedStep:Float = Math.floor(cursorFractionalStep / noteSnapRatio) * noteSnapRatio;
-      var cursorSnappedMs:Float = Conductor.getStepTimeInMs(cursorSnappedStep);
+      var cursorSnappedMs:Float = Conductor.instance.getStepTimeInMs(cursorSnappedStep);
 
       // The direction value for the column at the cursor.
       var cursorGridPos:Int = Math.floor(cursorX / GRID_SIZE);
@@ -3555,7 +3566,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             // We released the mouse. Select the notes in the box.
             var cursorFractionalStepStart:Float = cursorYStart / GRID_SIZE;
             var cursorStepStart:Int = Math.floor(cursorFractionalStepStart);
-            var cursorMsStart:Float = Conductor.getStepTimeInMs(cursorStepStart);
+            var cursorMsStart:Float = Conductor.instance.getStepTimeInMs(cursorStepStart);
             var cursorColumnBase:Int = Math.floor(cursorX / GRID_SIZE);
             var cursorColumnBaseStart:Int = Math.floor(cursorXStart / GRID_SIZE);
 
@@ -3791,11 +3802,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           var dragDistanceMs:Float = 0;
           if (dragTargetNote != null && dragTargetNote.noteData != null)
           {
-            dragDistanceMs = Conductor.getStepTimeInMs(dragTargetNote.noteData.getStepTime() + dragDistanceSteps) - dragTargetNote.noteData.time;
+            dragDistanceMs = Conductor.instance.getStepTimeInMs(dragTargetNote.noteData.getStepTime() + dragDistanceSteps) - dragTargetNote.noteData.time;
           }
           else if (dragTargetEvent != null && dragTargetEvent.eventData != null)
           {
-            dragDistanceMs = Conductor.getStepTimeInMs(dragTargetEvent.eventData.getStepTime() + dragDistanceSteps) - dragTargetEvent.eventData.time;
+            dragDistanceMs = Conductor.instance.getStepTimeInMs(dragTargetEvent.eventData.getStepTime() + dragDistanceSteps) - dragTargetEvent.eventData.time;
           }
           var dragDistanceColumns:Int = dragTargetCurrentColumn;
 
@@ -3855,7 +3866,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             stepTime = dragTargetEvent.eventData.getStepTime();
           }
-          var dragDistanceSteps:Float = Conductor.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio)) - stepTime;
+          var dragDistanceSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs).clamp(0, songLengthInSteps - (1 * noteSnapRatio)) - stepTime;
           var data:Int = 0;
           var noteGridPos:Int = 0;
           if (dragTargetNote != null && dragTargetNote.noteData != null)
@@ -3887,8 +3898,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Handle extending the note as you drag.
 
         var stepTime:Float = inline currentPlaceNoteData.getStepTime();
-        var dragLengthSteps:Float = Conductor.getTimeInSteps(cursorSnappedMs) - stepTime;
-        var dragLengthMs:Float = dragLengthSteps * Conductor.stepLengthMs;
+        var dragLengthSteps:Float = Conductor.instance.getTimeInSteps(cursorSnappedMs) - stepTime;
+        var dragLengthMs:Float = dragLengthSteps * Conductor.instance.stepLengthMs;
         var dragLengthPixels:Float = dragLengthSteps * GRID_SIZE;
 
         if (gridGhostNote != null && gridGhostNote.noteData != null && gridGhostHoldNote != null)
@@ -4349,7 +4360,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (playbarHeadLayout.playbarHead.value != songPosPercent) playbarHeadLayout.playbarHead.value = songPosPercent;
     }
 
-    var songPos:Float = Conductor.songPosition + Conductor.instrumentalOffset;
+    var songPos:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
     var songPosSeconds:String = Std.string(Math.floor((Math.abs(songPos) / 1000) % 60)).lpad('0', 2);
     var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / 1000) / 60)).lpad('0', 2);
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
@@ -4366,7 +4377,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
-    playbarBPM.text = "BPM: " + Conductor.currentTimeChange.bpm;
+    playbarBPM.text = "BPM: " + Conductor.instance.currentTimeChange.bpm;
   }
 
   function handlePlayhead():Void
@@ -4405,11 +4416,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
     var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
     var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.stepLengthMs * noteSnapRatio;
+    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
 
     // Look for notes within 1 step of the playhead.
     var notesAtPos:Array<SongNoteData> = SongDataUtils.getNotesInTimeRange(currentSongChartNoteData, playheadPosSnappedMs,
-      playheadPosSnappedMs + Conductor.stepLengthMs * noteSnapRatio);
+      playheadPosSnappedMs + Conductor.instance.stepLengthMs * noteSnapRatio);
     notesAtPos = SongDataUtils.getNotesWithData(notesAtPos, [column]);
 
     if (notesAtPos.length == 0)
@@ -4606,9 +4617,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         var targetMs:Float = scrollPositionInMs + playheadPositionInMs;
-        var targetStep:Float = Conductor.getTimeInSteps(targetMs);
+        var targetStep:Float = Conductor.instance.getTimeInSteps(targetMs);
         var targetSnappedStep:Float = Math.floor(targetStep / noteSnapRatio) * noteSnapRatio;
-        var targetSnappedMs:Float = Conductor.getStepTimeInMs(targetSnappedStep);
+        var targetSnappedMs:Float = Conductor.instance.getStepTimeInMs(targetSnappedStep);
         targetSnappedMs;
       }
       performCommand(new PasteItemsCommand(targetMs));
@@ -4748,7 +4759,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function testSongInPlayState(minimal:Bool = false):Void
   {
-    autoSave();
+    autoSave(true);
 
     stopWelcomeMusic();
 
@@ -4949,7 +4960,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Remove any notes past the end of the song.
     var songCutoffPointSteps:Float = songLengthInSteps - 0.1;
-    var songCutoffPointMs:Float = Conductor.getStepTimeInMs(songCutoffPointSteps);
+    var songCutoffPointMs:Float = Conductor.instance.getStepTimeInMs(songCutoffPointSteps);
     currentSongChartNoteData = SongDataUtils.clampSongNoteData(currentSongChartNoteData, 0.0, songCutoffPointMs);
     currentSongChartEventData = SongDataUtils.clampSongEventData(currentSongChartEventData, 0.0, songCutoffPointMs);
 
@@ -5051,7 +5062,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var prevDifficulty = availableDifficulties[availableDifficulties.length - 1];
         selectedDifficulty = prevDifficulty;
 
-        Conductor.mapTimeChanges(this.currentSongMetadata.timeChanges);
+        Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
 
         refreshDifficultyTreeSelection();
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -5112,9 +5123,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Update the songPosition in the audio tracks.
     if (audioInstTrack != null)
     {
-      audioInstTrack.time = scrollPositionInMs + playheadPositionInMs - Conductor.instrumentalOffset;
+      audioInstTrack.time = scrollPositionInMs + playheadPositionInMs - Conductor.instance.instrumentalOffset;
       // Update the songPosition in the Conductor.
-      Conductor.update(audioInstTrack.time);
+      Conductor.instance.update(audioInstTrack.time);
       if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = audioInstTrack.time;
     }
 
@@ -5173,6 +5184,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     this.persistentUpdate = true;
     this.persistentDraw = true;
+
+    if (displayAutosavePopup)
+    {
+      displayAutosavePopup = false;
+      Toolkit.callLater(() -> {
+        var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
+        this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
+          {
+            text: "Take Me There",
+            callback: openBackupsFolder,
+          }
+        ]);
+      });
+    }
 
     moveSongToScrollPosition();
 
@@ -5432,7 +5457,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       trace('ERROR: Instrumental track is null!');
     }
 
-    this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instrumentalOffset;
+    this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;

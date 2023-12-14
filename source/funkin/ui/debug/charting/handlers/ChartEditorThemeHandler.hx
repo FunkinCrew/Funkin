@@ -125,7 +125,7 @@ class ChartEditorThemeHandler
     // 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
     // This gets reused to fill the screen.
     var gridWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT);
-    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure);
+    var gridHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure);
     state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
 
     // Selection borders
@@ -142,7 +142,7 @@ class ChartEditorThemeHandler
       selectionBorderColor);
 
     // Selection borders horizontally along the middle.
-    for (i in 1...(Conductor.stepsPerMeasure))
+    for (i in 1...(Conductor.instance.stepsPerMeasure))
     {
       state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
         state.gridBitmap.width, ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
@@ -197,9 +197,9 @@ class ChartEditorThemeHandler
     };
 
     // Selection borders horizontally in the middle.
-    for (i in 1...(Conductor.stepsPerMeasure))
+    for (i in 1...(Conductor.instance.stepsPerMeasure))
     {
-      if ((i % Conductor.beatsPerMeasure) == 0)
+      if ((i % Conductor.instance.beatsPerMeasure) == 0)
       {
         state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (GRID_BEAT_DIVIDER_WIDTH / 2), state.gridBitmap.width,
           GRID_BEAT_DIVIDER_WIDTH),

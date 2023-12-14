@@ -64,7 +64,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
         if (vis.snd.playing) remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, vis.numSamples));
         else
-          remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, vis.snd.length, 0, vis.numSamples));
+          remappedShit = Std.int(FlxMath.remapToRange(Conductor.instance.songPosition, 0, vis.snd.length, 0, vis.numSamples));
 
         var fftSamples:Array<Float> = [];
 
