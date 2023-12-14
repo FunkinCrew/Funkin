@@ -80,11 +80,24 @@ class ChartEditorNotePreview extends FlxSprite
    * @param notes The data for the notes.
    * @param songLengthInMs The total length of the song in milliseconds.
    */
-  public function addNotes(notes:Array<SongNoteData>, songLengthInMs:Int, ?isSelection:Bool = false):Void
+  public function addNotes(notes:Array<SongNoteData>, songLengthInMs:Int):Void
   {
     for (note in notes)
     {
-      addNote(note, songLengthInMs, isSelection);
+      addNote(note, songLengthInMs, false);
+    }
+  }
+
+  /**
+   * Add an array of selected notes to the preview.
+   * @param notes The data for the notes.
+   * @param songLengthInMs The total length of the song in milliseconds.
+   */
+  public function addSelectedNotes(notes:Array<SongNoteData>, songLengthInMs:Int):Void
+  {
+    for (note in notes)
+    {
+      addNote(note, songLengthInMs, true);
     }
   }
 
