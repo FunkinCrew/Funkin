@@ -16,6 +16,7 @@ import funkin.play.song.Song;
 import funkin.play.stage.StageData;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
+import funkin.ui.debug.charting.dialogs.ChartEditorCharacterIconSelectorMenu;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadChartDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
@@ -39,6 +40,7 @@ import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.Form;
+import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
@@ -284,6 +286,15 @@ class ChartEditorDialogHandler
         state.openWelcomeDialog(closable);
       }
     };
+  }
+
+  public static function openCharacterDropdown(state:ChartEditorState, charType:CharacterType, lockPosition:Bool = false):Null<Menu>
+  {
+    var menu = ChartEditorCharacterIconSelectorMenu.build(state, charType, lockPosition);
+
+    menu.zIndex = 1000;
+
+    return menu;
   }
 
   public static function openCreateSongWizardBasicOnly(state:ChartEditorState, closable:Bool):Void

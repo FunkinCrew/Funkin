@@ -175,6 +175,7 @@ class SongMenuItem extends FlxSpriteGroup
     trace(char);
 
     // TODO: Put this in the character metadata where it belongs.
+    // TODO: Also, can use CharacterDataParser.getCharPixelIconAsset()
     switch (char)
     {
       case "monster-christmas":

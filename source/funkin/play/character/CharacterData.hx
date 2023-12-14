@@ -281,6 +281,36 @@ class CharacterDataParser
   }
 
   /**
+   * TODO: Hardcode this.
+   */
+  public static function getCharPixelIconAsset(char:String):String
+  {
+    var icon:String = char;
+
+    switch (icon)
+    {
+      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
+        icon = "bf";
+      case "monster-christmas":
+        icon = "monster";
+      case "mom" | "mom-car":
+        icon = "mommy";
+      case "pico-blazin" | "pico-playable" | "pico-speaker":
+        icon = "pico";
+      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
+        icon = "gf";
+      case "dad":
+        icon = "daddy";
+      case "darnell-blazin":
+        icon = "darnell";
+      case "senpai-angry":
+        icon = "senpai";
+    }
+
+    return Paths.image("freeplay/icons/" + icon + "pixel");
+  }
+
+  /**
    * Clears the character data cache.
    */
   static function clearCharacterCache():Void
