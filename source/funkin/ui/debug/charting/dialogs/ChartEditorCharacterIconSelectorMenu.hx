@@ -13,6 +13,8 @@ import haxe.ui.containers.HBox;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.core.Screen;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -27,6 +29,9 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     super(state2);
 
     initialize(charType, lockPosition);
+    this.alpha = 0;
+    this.y -= 10;
+    FlxTween.tween(this, {alpha: 1, y: this.y + 10}, 0.2, {ease: FlxEase.quartOut});
   }
 
   function initialize(charType:CharacterType, lockPosition:Bool)
