@@ -99,18 +99,20 @@
 
 	<haxelib name="flixel-addons" /> <!-- Additional utilities for Flixel -->
 	<haxelib name="hscript" /> <!-- Scripting -->
-	<haxelib name="flixel-ui" /> <!-- UI framework (deprecate this? -->
+	<haxelib name="flixel-ui" /> <!-- UI framework (DEPRECATED) -->
 	<haxelib name="haxeui-core" /> <!-- UI framework -->
 	<haxelib name="haxeui-flixel" /> <!-- Integrate HaxeUI with Flixel -->
+	<haxelib name="flixel-text-input" /> <!-- Improved text field rendering for HaxeUI -->
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
 	<haxelib name="hxCodec" /> <!-- Video playback -->
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
-	<haxelib name="tink_json" /> <!-- JSON parsing -->
+	<haxelib name="tink_json" /> <!-- JSON parsing (DEPRECATED) -->
+	<haxelib name="thx.semver" /> <!-- Version string handling -->
 
-	<haxelib name="thx.semver" />
-	<haxelib name="hxcpp-debug-server" if="desktop debug" />
+	<haxelib name="hxcpp-debug-server" if="desktop debug" /> <!-- VSCode debug support -->
+
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->

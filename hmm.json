@@ -11,7 +11,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "da04cbda49a4c5eebe93fb61296dbaf4f0f1b556",
+      "ref": "9bdea914f3d0485b9b3ec158f28875b5ac95d476",
       "url": "https://github.com/EliteMasterEric/flixel"
     },
     {
@@ -20,6 +20,11 @@
       "dir": null,
       "ref": "c8c41e26d463aaf2edc0582fb23b6e228235bd16",
       "url": "https://github.com/EliteMasterEric/flixel-addons"
+    },
+    {
+      "name": "flixel-text-input",
+      "type": "haxelib",
+      "version": "1.1.0"
     },
     {
       "name": "flixel-ui",
@@ -32,8 +37,8 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "dd2903f7dc7024335b981edf2a770760cec912e1",
-      "url": "https://github.com/ninjamuffin99/flxanimate"
+      "ref": "d7c5621be742e2c98d523dfe5af7528835eaff1e",
+      "url": "https://github.com/EliteMasterEric/flxanimate"
     },
     {
       "name": "format",
