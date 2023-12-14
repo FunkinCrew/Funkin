@@ -1,6 +1,9 @@
 package funkin.ui.debug.charting;
 
 import funkin.util.logging.CrashHandler;
+import haxe.ui.containers.HBox;
+import haxe.ui.containers.Grid;
+import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.menus.MenuBar;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
@@ -106,6 +109,8 @@ import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
+import haxe.ui.components.Image;
+import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
@@ -114,6 +119,7 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
 
 using Lambda;
@@ -2310,6 +2316,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (!Preferences.debugDisplay) menubar.paddingLeft = null;
 
     this.setupNotifications();
+
+    // Setup character dropdowns.
+    FlxMouseEvent.add(healthIconDad, function(_) {
+      if (!isCursorOverHaxeUI)
+      {
+        this.openCharacterDropdown(CharacterType.DAD, true);
+      }
+    });
+
+    FlxMouseEvent.add(healthIconBF, function(_) {
+      if (!isCursorOverHaxeUI)
+      {
+        this.openCharacterDropdown(CharacterType.BF, true);
+      }
+    });
   }
 
   /**
@@ -2350,13 +2371,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         Conductor.currentTimeChange.bpm += 1;
-        refreshMetadataToolbox();
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
     }
 
     playbarBPM.onRightClick = _ -> {
       Conductor.currentTimeChange.bpm -= 1;
-      refreshMetadataToolbox();
+      this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }
 
     // Add functionality to the menu items.
@@ -2622,7 +2643,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Open the backups folder in the file explorer.
    * Don't call this on HTML5.
    */
-  function openBackupsFolder():Void
+  function openBackupsFolder(?_):Void
   {
     #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?
@@ -3411,6 +3432,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var overlapsSelection:Bool = FlxG.mouse.overlaps(renderedSelectionSquares);
 
+      var overlapsHealthIcons:Bool = FlxG.mouse.overlaps(healthIconBF) || FlxG.mouse.overlaps(healthIconDad);
+
       if (FlxG.mouse.justPressedMiddle)
       {
         if (scrollAnchorScreenPos == null)
@@ -3430,11 +3453,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           scrollAnchorScreenPos = null;
         }
-        else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
+        else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea) && !isCursorOverHaxeUI)
         {
           gridPlayheadScrollAreaPressed = true;
         }
-        else if (notePreview != null && !isCursorOverHaxeUI && FlxG.mouse.overlaps(notePreview))
+        else if (notePreview != null && FlxG.mouse.overlaps(notePreview) && !isCursorOverHaxeUI)
         {
           // Clicked note preview
           notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
@@ -4125,6 +4148,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               targetCursorMode = Cell;
             }
           }
+          else if (overlapsHealthIcons)
+          {
+            targetCursorMode = Pointer;
+          }
         }
       }
 
@@ -4155,7 +4182,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       difficultySelectDirty = false;
 
       // Manage the Select Difficulty tree view.
-      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return;
 
       var treeView:Null<TreeView> = difficultyToolbox.findComponent('difficultyToolboxTree');
@@ -4202,7 +4229,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handlePlayerPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolbox(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
+    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
 
     // TODO: Re-enable the player preview once we figure out the performance issues.
@@ -4238,7 +4265,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleOpponentPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolbox(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
+    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
 
     // TODO: Re-enable the player preview once we figure out the performance issues.
@@ -4995,7 +5022,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Conductor.mapTimeChanges(this.currentSongMetadata.timeChanges);
 
         refreshDifficultyTreeSelection();
-        refreshMetadataToolbox();
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
       else
       {
@@ -5004,7 +5031,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         selectedDifficulty = prevDifficulty;
 
         refreshDifficultyTreeSelection();
-        refreshMetadataToolbox();
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
     }
     else
@@ -5023,7 +5050,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         selectedDifficulty = nextDifficulty;
 
         refreshDifficultyTreeSelection();
-        refreshMetadataToolbox();
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
       else
       {
@@ -5032,7 +5059,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         selectedDifficulty = nextDifficulty;
 
         refreshDifficultyTreeSelection();
-        refreshMetadataToolbox();
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
     }
 
@@ -5145,7 +5172,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (treeView == null)
     {
       // Manage the Select Difficulty tree view.
-      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return;
 
       treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
@@ -5165,7 +5192,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (treeView == null)
     {
-      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return null;
 
       treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
@@ -5209,8 +5236,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           trace('Changing difficulty to "$variation:$difficulty"');
           selectedVariation = variation;
           selectedDifficulty = difficulty;
-          // refreshDifficultyTreeSelection(treeView);
-          refreshMetadataToolbox();
+          this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
         }
       // case 'song':
       // case 'variation':
@@ -5219,82 +5245,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         trace('Selected wrong node type, resetting selection.');
         var currentTreeDifficultyNode = getCurrentTreeDifficultyNode(treeView);
         if (currentTreeDifficultyNode != null) treeView.selectedNode = currentTreeDifficultyNode;
-        refreshMetadataToolbox();
-    }
-  }
-
-  /**
-   * When the difficulty changes, update the song metadata toolbox to reflect the new data.
-   */
-  function refreshMetadataToolbox():Void
-  {
-    var toolbox:Null<CollapsibleDialog> = this.getToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-    if (toolbox == null) return;
-
-    var inputSongName:Null<TextField> = toolbox.findComponent('inputSongName', TextField);
-    if (inputSongName != null) inputSongName.value = currentSongMetadata.songName;
-
-    var inputSongArtist:Null<TextField> = toolbox.findComponent('inputSongArtist', TextField);
-    if (inputSongArtist != null) inputSongArtist.value = currentSongMetadata.artist;
-
-    var inputStage:Null<DropDown> = toolbox.findComponent('inputStage', DropDown);
-    if (inputStage != null) inputStage.value = currentSongMetadata.playData.stage;
-
-    var inputNoteStyle:Null<DropDown> = toolbox.findComponent('inputNoteStyle', DropDown);
-    if (inputNoteStyle != null) inputNoteStyle.value = currentSongMetadata.playData.noteStyle;
-
-    var inputBPM:Null<NumberStepper> = toolbox.findComponent('inputBPM', NumberStepper);
-    if (inputBPM != null) inputBPM.value = currentSongMetadata.timeChanges[0].bpm;
-
-    var labelScrollSpeed:Null<Label> = toolbox.findComponent('labelScrollSpeed', Label);
-    if (labelScrollSpeed != null) labelScrollSpeed.text = 'Scroll Speed: ${currentSongChartScrollSpeed}x';
-
-    var inputScrollSpeed:Null<Slider> = toolbox.findComponent('inputScrollSpeed', Slider);
-    if (inputScrollSpeed != null) inputScrollSpeed.value = currentSongChartScrollSpeed;
-
-    var frameVariation:Null<Frame> = toolbox.findComponent('frameVariation', Frame);
-    if (frameVariation != null) frameVariation.text = 'Variation: ${selectedVariation.toTitleCase()}';
-    var frameDifficulty:Null<Frame> = toolbox.findComponent('frameDifficulty', Frame);
-    if (frameDifficulty != null) frameDifficulty.text = 'Difficulty: ${selectedDifficulty.toTitleCase()}';
-
-    var inputStage:Null<DropDown> = toolbox.findComponent('inputStage', DropDown);
-    var stageId:String = currentSongMetadata.playData.stage;
-    var stageData:Null<StageData> = StageDataParser.parseStageData(stageId);
-    if (inputStage != null)
-    {
-      inputStage.value = (stageData != null) ?
-        {id: stageId, text: stageData.name} :
-          {id: "mainStage", text: "Main Stage"};
-    }
-
-    var inputCharacterPlayer:Null<DropDown> = toolbox.findComponent('inputCharacterPlayer', DropDown);
-    var charIdPlayer:String = currentSongMetadata.playData.characters.player;
-    var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charIdPlayer);
-    if (inputCharacterPlayer != null)
-    {
-      inputCharacterPlayer.value = (charDataPlayer != null) ?
-        {id: charIdPlayer, text: charDataPlayer.name} :
-          {id: "bf", text: "Boyfriend"};
-    }
-
-    var inputCharacterOpponent:Null<DropDown> = toolbox.findComponent('inputCharacterOpponent', DropDown);
-    var charIdOpponent:String = currentSongMetadata.playData.characters.opponent;
-    var charDataOpponent:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charIdOpponent);
-    if (inputCharacterOpponent != null)
-    {
-      inputCharacterOpponent.value = (charDataOpponent != null) ?
-        {id: charIdOpponent, text: charDataOpponent.name} :
-          {id: "dad", text: "Dad"};
-    }
-
-    var inputCharacterGirlfriend:Null<DropDown> = toolbox.findComponent('inputCharacterGirlfriend', DropDown);
-    var charIdGirlfriend:String = currentSongMetadata.playData.characters.girlfriend;
-    var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charIdGirlfriend);
-    if (inputCharacterGirlfriend != null)
-    {
-      inputCharacterGirlfriend.value = (charDataGirlfriend != null) ?
-        {id: charIdGirlfriend, text: charDataGirlfriend.name} :
-          {id: "none", text: "None"};
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }
   }
 

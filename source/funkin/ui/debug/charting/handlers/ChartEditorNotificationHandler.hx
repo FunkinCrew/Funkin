@@ -5,6 +5,7 @@ import haxe.ui.containers.HBox;
 import haxe.ui.notifications.Notification;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
+import haxe.ui.notifications.NotificationData.NotificationActionData;
 
 class ChartEditorNotificationHandler
 {
@@ -77,7 +78,7 @@ class ChartEditorNotificationHandler
    * @param actions The actions to add to the notification.
    * @return The notification that was sent.
    */
-  public static function infoWithActions(state:ChartEditorState, title:String, body:String, actions:Array<NotificationAction>):Notification
+  public static function infoWithActions(state:ChartEditorState, title:String, body:String, actions:Array<NotificationActionData>):Notification
   {
     return sendNotification(state, title, body, NotificationType.Info, actions);
   }
@@ -101,7 +102,8 @@ class ChartEditorNotificationHandler
     NotificationManager.instance.removeNotification(notif);
   }
 
-  static function sendNotification(state:ChartEditorState, title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationAction>):Notification
+  static function sendNotification(state:ChartEditorState, title:String, body:String, ?type:NotificationType,
+      ?actions:Array<NotificationActionData>):Notification
   {
     var actionNames:Array<String> = actions == null ? [] : actions.map(action -> action.text);
 
@@ -111,10 +113,10 @@ class ChartEditorNotificationHandler
         body: body,
         type: type ?? NotificationType.Default,
         expiryMs: Constants.NOTIFICATION_DISMISS_TIME,
-        actions: actionNames
+        actions: actions
       });
 
-    if (actionNames.length > 0)
+    if (actions != null && actions.length > 0)
     {
       // TODO: Tell Ian that this is REALLY dumb.
       var actionsContainer:HBox = notif.findComponent('actionsContainer', HBox);
@@ -122,13 +124,13 @@ class ChartEditorNotificationHandler
         if (Std.isOfType(component, Button))
         {
           var button:Button = cast component;
-          var action:Null<NotificationAction> = actions.find(action -> action.text == button.text);
+          var action:Null<NotificationActionData> = actions.find(action -> action.text == button.text);
           if (action != null && action.callback != null)
           {
             button.onClick = function(_) {
               // Don't allow actions to be clicked while the playtest is open.
               if (state.subState != null) return;
-              action.callback();
+              action.callback(action);
             };
           }
         }

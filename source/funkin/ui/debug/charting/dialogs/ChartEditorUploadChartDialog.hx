@@ -11,6 +11,7 @@ import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
 
+// @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-chart.xml"))
 class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 {
