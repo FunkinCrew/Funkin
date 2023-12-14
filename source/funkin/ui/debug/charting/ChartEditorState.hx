@@ -119,6 +119,9 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
+import funkin.audio.visualize.PolygonSpectogram;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import funkin.audio.visualize.PolygonVisGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
 
@@ -341,6 +344,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
         gridPlayheadScrollArea.y = gridTiledSprite.y;
+
+        if (audioVisGroup != null && audioVisGroup.playerVis != null)
+        {
+          audioVisGroup.playerVis.y = Math.max(gridTiledSprite.y, MENU_BAR_HEIGHT);
+        }
+        if (audioVisGroup != null && audioVisGroup.opponentVis != null)
+        {
+          audioVisGroup.opponentVis.y = Math.max(gridTiledSprite.y, MENU_BAR_HEIGHT);
+        }
       }
     }
 
@@ -439,12 +451,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_playheadPositionInMs():Float
   {
+    if (audioVisGroup != null && audioVisGroup.playerVis != null)
+      audioVisGroup.playerVis.realtimeStartOffset = -Conductor.getStepTimeInMs(playheadPositionInSteps);
     return Conductor.getStepTimeInMs(playheadPositionInSteps);
   }
 
   function set_playheadPositionInMs(value:Float):Float
   {
     playheadPositionInSteps = Conductor.getTimeInSteps(value);
+
+    if (audioVisGroup != null && audioVisGroup.playerVis != null) audioVisGroup.playerVis.realtimeStartOffset = -value;
     return value;
   }
 
@@ -946,6 +962,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
   var audioVocalTrackGroup:Null<VoicesGroup> = null;
+
+  /**
+   * The audio vis for the inst/vocals.
+   * `null` until vocal track(s) are loaded.
+   * When switching characters, the elements of the PolygonVisGroup will be swapped to match the new character.
+   */
+  var audioVisGroup:Null<PolygonVisGroup> = null;
 
   /**
    * A map of the audio tracks for each character's vocals.
@@ -1569,6 +1592,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // ==============================
 
   /**
+   * The group containing the visulizers! */
+  var visulizerGrps:FlxTypedGroup<PolygonSpectogram> = null;
+
+  /**
    * The IMAGE used for the grid. Updated by ChartEditorThemeHandler.
    */
   var gridBitmap:Null<BitmapData> = null;
@@ -2041,6 +2068,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBG.zIndex = -100;
   }
 
+  var oppSpectogram:PolygonSpectogram;
+
   /**
    * Builds and displays the chart editor grid, including the playhead and cursor.
    */
@@ -2116,6 +2145,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.flipX = true;
     add(healthIconBF);
     healthIconBF.zIndex = 30;
+
+    audioVisGroup = new PolygonVisGroup();
+    add(audioVisGroup);
   }
 
   function buildNotePreview():Void
@@ -4147,10 +4179,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             {
               targetCursorMode = Cell;
             }
-          }
-          else if (overlapsHealthIcons)
-          {
-            targetCursorMode = Pointer;
+            else if (overlapsHealthIcons)
+            {
+              targetCursorMode = Pointer;
+            }
           }
         }
       }

@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.handlers;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.system.FlxSound;
 import funkin.audio.VoicesGroup;
+import funkin.audio.visualize.PolygonVisGroup;
 import funkin.audio.FunkinSound;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
@@ -171,6 +172,7 @@ class ChartEditorAudioHandler
     var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
+    if (state.audioVisGroup == null) state.audioVisGroup = new PolygonVisGroup();
 
     if (vocalTrack != null)
     {
@@ -178,11 +180,25 @@ class ChartEditorAudioHandler
       {
         case BF:
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+          state.audioVisGroup.addPlayerVis(vocalTrack);
+          state.audioVisGroup.playerVis.x = 885;
+          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.playerVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
+          state.audioVisGroup.playerVis.detail = 1;
+
           state.audioVocalTrackGroup.playerVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
           return true;
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
+          state.audioVisGroup.addOpponentVis(vocalTrack);
+          state.audioVisGroup.opponentVis.x = 435;
+
+          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
+          state.audioVisGroup.opponentVis.detail = 1;
+
           state.audioVocalTrackGroup.opponentVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
+
           return true;
         case OTHER:
           state.audioVocalTrackGroup.add(vocalTrack);
