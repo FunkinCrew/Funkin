@@ -124,6 +124,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import funkin.audio.visualize.PolygonVisGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
+import flixel.system.debug.log.LogStyle;
 
 using Lambda;
 
@@ -543,6 +544,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * If true, playtesting a chart will let you "gameover" / die when you lose ur health!
    */
   var playtestPracticeMode:Bool = false;
+
+  /**
+   * Enables or disables the "debugger" popup that appears when you run into a flixel error.
+   */
+  var enabledDebuggerPopup:Bool = true;
 
   // Visuals
 
@@ -4765,6 +4771,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       this.error("Could Not Playtest", 'Got an error trying to playtest the song.\n${e}');
       return;
     }
+
+    LogStyle.WARNING.openConsole = enabledDebuggerPopup;
+    LogStyle.ERROR.openConsole = enabledDebuggerPopup;
 
     // TODO: Rework asset system so we can remove this.
     switch (currentSongStage)
