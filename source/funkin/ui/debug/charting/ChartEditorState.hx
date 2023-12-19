@@ -1010,7 +1010,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_availableDifficulties():Array<String>
   {
     var m:Null<SongMetadata> = songMetadata.get(selectedVariation);
-    return m?.playData?.difficulties ?? [];
+    return m?.playData?.difficulties ?? [Constants.DEFAULT_DIFFICULTY];
   }
 
   /**
@@ -1069,7 +1069,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var result:Null<SongChartData> = songChartData.get(selectedVariation);
     if (result == null)
     {
-      result = new SongChartData(["normal" => 1.0], [], ["normal" => []]);
+      result = new SongChartData([Constants.DEFAULT_DIFFICULTY => 1.0], [], [Constants.DEFAULT_DIFFICULTY => []]);
       songChartData.set(selectedVariation, result);
     }
     return result;
@@ -1293,6 +1293,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_selectedDifficulty(value:String):String
   {
+    if (value == null) value = availableDifficulties[0] ?? Constants.DEFAULT_DIFFICULTY;
+
     selectedDifficulty = value;
 
     // Make sure view is updated when the difficulty changes.

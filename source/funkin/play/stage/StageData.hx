@@ -164,6 +164,7 @@ class StageDataParser
     try
     {
       var parser = new json2object.JsonParser<StageData>();
+      parser.ignoreUnknownVariables = false;
       parser.fromJson(rawJson, '$stageId.json');
 
       if (parser.errors.length > 0)

@@ -687,6 +687,9 @@ class ChartEditorDialogHandler
       Conductor.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
       Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
+      state.selectedVariation = Constants.DEFAULT_VARIATION;
+      state.selectedDifficulty = state.availableDifficulties[0];
+
       state.difficultySelectDirty = true;
 
       dialog.hideDialog(DialogButton.APPLY);
