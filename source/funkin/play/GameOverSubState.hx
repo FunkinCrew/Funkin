@@ -64,9 +64,13 @@ class GameOverSubState extends MusicBeatSubState
    */
   var isEnding:Bool = false;
 
-  public function new()
+  var isChartingMode:Bool = false;
+
+  public function new(?params:GameOverParams)
   {
     super();
+
+    this.isChartingMode = params?.isChartingMode ?? false;
   }
 
   /**
@@ -176,9 +180,20 @@ class GameOverSubState extends MusicBeatSubState
       // PlayState.seenCutscene = false; // old thing...
       gameOverMusic.stop();
 
-      if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
+      if (isChartingMode)
+      {
+        this.close();
+        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+        PlayState.instance.close(); // This only works because PlayState is a substate!
+      }
+      else if (PlayStatePlaylist.isStoryMode)
+      {
+        FlxG.switchState(new StoryMenuState());
+      }
       else
+      {
         FlxG.switchState(new FreeplayState());
+      }
     }
 
     if (gameOverMusic.playing)
@@ -306,4 +321,9 @@ class GameOverSubState extends MusicBeatSubState
       }
     });
   }
+}
+
+typedef GameOverParams =
+{
+  var isChartingMode:Bool;
 }
