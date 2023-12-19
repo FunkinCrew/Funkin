@@ -1,4 +1,4 @@
-package funkin.shaderslmfao;
+package funkin.graphics.shaders;
 
 import flixel.FlxCamera;
 import flixel.FlxG;

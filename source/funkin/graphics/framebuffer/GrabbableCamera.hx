@@ -7,7 +7,7 @@ import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxShader;
-import funkin.shaderslmfao.RuntimeCustomBlendShader;
+import funkin.graphics.shaders.RuntimeCustomBlendShader;
 import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;

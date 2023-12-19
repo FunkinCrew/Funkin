@@ -1,4 +1,4 @@
-package funkin.shaderslmfao;
+package funkin.graphics.shaders;
 
 import flixel.addons.display.FlxRuntimeShader;
 import openfl.Assets;
