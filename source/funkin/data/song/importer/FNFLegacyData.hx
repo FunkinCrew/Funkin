@@ -19,7 +19,8 @@ class LegacySongData
 
   @:jcustomparse(funkin.data.DataParse.eitherLegacyScrollSpeeds)
   public var speed:Either<Float, LegacyScrollSpeeds>;
-  public var stageDefault:String;
+  @:optional
+  public var stageDefault:Null<String>;
   public var bpm:Float;
 
   @:jcustomparse(funkin.data.DataParse.eitherLegacyNoteData)
