@@ -35,7 +35,7 @@ class CharacterPlayer extends Box
   public function new(defaultToBf:Bool = true)
   {
     super();
-    _overrideSkipTransformChildren = false;
+    // _overrideSkipTransformChildren = false;
 
     if (defaultToBf)
     {
