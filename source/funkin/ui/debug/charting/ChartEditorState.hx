@@ -2548,8 +2548,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
-    menubarItemLoadInstrumental.onClick = _ -> this.openUploadInstDialog(true);
-    menubarItemLoadVocals.onClick = _ -> this.openUploadVocalsDialog(true);
+    menubarItemLoadInstrumental.onClick = _ -> {
+      var dialog = this.openUploadInstDialog(true);
+      // Ensure instrumental and vocals are reloaded properly.
+      dialog.onDialogClosed = function(_) {
+        this.isHaxeUIDialogOpen = false;
+        this.switchToCurrentInstrumental();
+        this.postLoadInstrumental();
+      }
+    };
+
+    menubarItemLoadVocals.onClick = _ -> {
+      var dialog = this.openUploadVocalsDialog(true);
+      // Ensure instrumental and vocals are reloaded properly.
+      dialog.onDialogClosed = function(_) {
+        this.isHaxeUIDialogOpen = false;
+        this.switchToCurrentInstrumental();
+        this.postLoadInstrumental();
+      }
+    };
 
     menubarItemVolumeMetronome.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -4047,7 +4064,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
           else
           {
-            // If we clicked and released outside the grid, do nothing.
+            // If we clicked and released outside the grid (or on HaxeUI), do nothing.
           }
         }
 
