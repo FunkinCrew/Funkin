@@ -753,15 +753,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_currentNoteSelection(value:Array<SongNoteData>):Array<SongNoteData>
   {
+    // This value is true if all elements of the current selection are also in the new selection.
+    var isSuperset:Bool = currentNoteSelection.isSubset(value);
+    var isEqual:Bool = currentNoteSelection.isEqualUnordered(value);
+
     currentNoteSelection = value;
 
-    if (currentNoteSelection.length > 0)
+    if (!isEqual)
     {
-      notePreview.addNotes(currentNoteSelection, Std.int(songLengthInMs), true);
-    }
-    else
-    {
-      notePreviewDirty = true;
+      if (currentNoteSelection.length > 0 && isSuperset)
+      {
+        notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
+      }
+      else
+      {
+        // The new selection removes elements from the old selection, so we have to redraw the note preview.
+        notePreviewDirty = true;
+      }
     }
 
     return currentNoteSelection;
@@ -5297,6 +5305,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // TODO: Only update the notes that have changed.
       notePreview.erase();
       notePreview.addNotes(currentSongChartNoteData, Std.int(songLengthInMs));
+      notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
       notePreview.addEvents(currentSongChartEventData, Std.int(songLengthInMs));
     }
 
