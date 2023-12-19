@@ -37,7 +37,7 @@ class Conductor
   /**
    * The most recent time change for the current song position.
    */
-  public static var currentTimeChange(default, null):SongTimeChange;
+  public static var currentTimeChange(default, null):Null<SongTimeChange>;
 
   /**
    * The current position in the song in milliseconds.
@@ -132,32 +132,32 @@ class Conductor
   /**
    * Current position in the song, in measures.
    */
-  public static var currentMeasure(default, null):Int;
+  public static var currentMeasure(default, null):Int = 0;
 
   /**
    * Current position in the song, in beats.
    */
-  public static var currentBeat(default, null):Int;
+  public static var currentBeat(default, null):Int = 0;
 
   /**
    * Current position in the song, in steps.
    */
-  public static var currentStep(default, null):Int;
+  public static var currentStep(default, null):Int = 0;
 
   /**
    * Current position in the song, in measures and fractions of a measure.
    */
-  public static var currentMeasureTime(default, null):Float;
+  public static var currentMeasureTime(default, null):Float = 0;
 
   /**
    * Current position in the song, in beats and fractions of a measure.
    */
-  public static var currentBeatTime(default, null):Float;
+  public static var currentBeatTime(default, null):Float = 0;
 
   /**
    * Current position in the song, in steps and fractions of a step.
    */
-  public static var currentStepTime(default, null):Float;
+  public static var currentStepTime(default, null):Float = 0;
 
   /**
    * An offset tied to the current chart file to compensate for a delay in the instrumental.
