@@ -205,7 +205,7 @@ class MultiSparrowCharacter extends BaseCharacter
       graphic = value.parent;
       this.frames = value;
       this.frame = value.getByIndex(0);
-      this.numFrames = value.numFrames;
+      // this.numFrames = value.numFrames;
       resetHelpers();
       this.bakedRotationAngle = 0;
       this.animation.frameIndex = 0;

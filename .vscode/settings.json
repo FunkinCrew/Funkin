@@ -4,8 +4,7 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.codeActionsOnSave": {
-      // Compilation server issues can cause auto-cleanup to remove valid imports.
-      "source.organizeImports": false
+      "source.organizeImports": "never"
     },
     "editor.defaultFormatter": "nadako.vshaxe",
     "editor.tabSize": 2

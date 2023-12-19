@@ -64,12 +64,12 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     if (event.button != DialogButton.APPLY && !this.closable)
     {
       // User cancelled the wizard! Back to the welcome dialog.
-      state.openWelcomeDialog(this.closable);
+      chartEditorState.openWelcomeDialog(this.closable);
     }
 
     for (dropTarget in dropHandlers)
     {
-      state.removeDropHandler(dropTarget);
+      chartEditorState.removeDropHandler(dropTarget);
     }
   }
 
@@ -111,20 +111,21 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 
     try
     {
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, path.toString());
+      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(chartEditorState, path.toString());
       if (result != null)
       {
-        state.success('Loaded Chart', result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}');
+        chartEditorState.success('Loaded Chart',
+          result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}');
         this.hideDialog(DialogButton.APPLY);
       }
       else
       {
-        state.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()})');
+        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()})');
       }
     }
     catch (err)
     {
-      state.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}): ${err}');
+      chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}): ${err}');
     }
   }
 
@@ -139,19 +140,19 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     {
       try
       {
-        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFC(state, selectedFile.bytes);
+        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFC(chartEditorState, selectedFile.bytes);
         if (result != null)
         {
-          state.success('Loaded Chart',
+          chartEditorState.success('Loaded Chart',
             result.length == 0 ? 'Loaded chart (${selectedFile.name})' : 'Loaded chart (${selectedFile.name})\n${result.join("\n")}');
 
-          if (selectedFile.fullPath != null) state.currentWorkingFilePath = selectedFile.fullPath;
+          if (selectedFile.fullPath != null) chartEditorState.currentWorkingFilePath = selectedFile.fullPath;
           this.hideDialog(DialogButton.APPLY);
         }
       }
       catch (err)
       {
-        state.failure('Failed to Load Chart', 'Failed to load chart (${selectedFile.name}): ${err}');
+        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${selectedFile.name}): ${err}');
       }
     }
   }
