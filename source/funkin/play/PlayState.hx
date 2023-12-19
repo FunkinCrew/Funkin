@@ -38,7 +38,7 @@ import openfl.geom.Rectangle;
 import funkin.audio.VoicesGroup;
 import funkin.save.Save;
 import funkin.Highscore.Tallies;
-import funkin.NoteSplash;
+import funkin.play.notes.NoteSplash;
 import funkin.audio.VoicesGroup;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.input.PreciseInputManager;
@@ -71,6 +71,8 @@ import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.SerializerUtil;
 import lime.ui.Haptic;
+import funkin.play.cutscene.dialogue.Conversation;
+import funkin.play.cutscene.dialogue.ConversationDataParser;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
