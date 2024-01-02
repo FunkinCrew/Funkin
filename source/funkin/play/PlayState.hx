@@ -924,7 +924,8 @@ class PlayState extends MusicBeatSubState
 
         var gameOverSubState = new GameOverSubState(
           {
-            transparent: persistentDraw,
+            isChartingMode: isChartingMode,
+            transparent: persistentDraw
           });
         FlxTransitionableSubState.skipNextTransIn = true;
         FlxTransitionableSubState.skipNextTransOut = true;

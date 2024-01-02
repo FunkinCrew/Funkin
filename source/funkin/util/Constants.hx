@@ -123,6 +123,7 @@ class Constants
 
   /**
    * Default list of difficulties for charts.
+   * Assumes no Erect mode, etc.
    */
   public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
 

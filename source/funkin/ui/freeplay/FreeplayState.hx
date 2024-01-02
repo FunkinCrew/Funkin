@@ -97,7 +97,7 @@ class FreeplayState extends MusicBeatSubState
   var stickerSubState:StickerSubState;
 
   //
-  static var rememberedDifficulty:Null<String> = "normal";
+  static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   static var rememberedSongId:Null<String> = null;
 
   public function new(?stickers:StickerSubState = null)

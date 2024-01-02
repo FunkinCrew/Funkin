@@ -1018,7 +1018,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_availableDifficulties():Array<String>
   {
     var m:Null<SongMetadata> = songMetadata.get(selectedVariation);
-    return m?.playData?.difficulties ?? [];
+    return m?.playData?.difficulties ?? [Constants.DEFAULT_DIFFICULTY];
   }
 
   /**
@@ -1077,7 +1077,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var result:Null<SongChartData> = songChartData.get(selectedVariation);
     if (result == null)
     {
-      result = new SongChartData(["normal" => 1.0], [], ["normal" => []]);
+      result = new SongChartData([Constants.DEFAULT_DIFFICULTY => 1.0], [], [Constants.DEFAULT_DIFFICULTY => []]);
       songChartData.set(selectedVariation, result);
     }
     return result;
@@ -1301,6 +1301,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_selectedDifficulty(value:String):String
   {
+    if (value == null) value = availableDifficulties[0] ?? Constants.DEFAULT_DIFFICULTY;
+
     selectedDifficulty = value;
 
     // Make sure view is updated when the difficulty changes.
@@ -2554,8 +2556,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
-    menubarItemLoadInstrumental.onClick = _ -> this.openUploadInstDialog(true);
-    menubarItemLoadVocals.onClick = _ -> this.openUploadVocalsDialog(true);
+    menubarItemLoadInstrumental.onClick = _ -> {
+      var dialog = this.openUploadInstDialog(true);
+      // Ensure instrumental and vocals are reloaded properly.
+      dialog.onDialogClosed = function(_) {
+        this.isHaxeUIDialogOpen = false;
+        this.switchToCurrentInstrumental();
+        this.postLoadInstrumental();
+      }
+    };
+
+    menubarItemLoadVocals.onClick = _ -> {
+      var dialog = this.openUploadVocalsDialog(true);
+      // Ensure instrumental and vocals are reloaded properly.
+      dialog.onDialogClosed = function(_) {
+        this.isHaxeUIDialogOpen = false;
+        this.switchToCurrentInstrumental();
+        this.postLoadInstrumental();
+      }
+    };
 
     menubarItemVolumeMetronome.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -4053,7 +4072,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
           else
           {
-            // If we clicked and released outside the grid, do nothing.
+            // If we clicked and released outside the grid (or on HaxeUI), do nothing.
           }
         }
 
@@ -4376,7 +4395,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
-    playbarBPM.text = "BPM: " + Conductor.currentTimeChange.bpm;
+    playbarBPM.text = "BPM: " + (Conductor.currentTimeChange?.bpm ?? 0.0);
   }
 
   function handlePlayhead():Void

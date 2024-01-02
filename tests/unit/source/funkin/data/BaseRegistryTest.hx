@@ -156,6 +156,7 @@ class MyTypeRegistry extends BaseRegistry<MyType, MyTypeData>
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
     var parser = new json2object.JsonParser<MyTypeData>();
+    parser.ignoreUnknownVariables = false;
 
     switch (loadEntryFile(id))
     {
@@ -181,6 +182,7 @@ class MyTypeRegistry extends BaseRegistry<MyType, MyTypeData>
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
     var parser = new json2object.JsonParser<MyTypeData_v0_1_x>();
+    parser.ignoreUnknownVariables = false;
 
     switch (loadEntryFile(id))
     {

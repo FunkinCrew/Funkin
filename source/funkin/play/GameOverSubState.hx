@@ -64,12 +64,15 @@ class GameOverSubState extends MusicBeatSubState
    */
   var isEnding:Bool = false;
 
+  var isChartingMode:Bool = false;
+
   var transparent:Bool;
 
   public function new(params:GameOverParams)
   {
     super();
 
+    this.isChartingMode = params?.isChartingMode ?? false;
     transparent = params.transparent;
   }
 
@@ -181,9 +184,20 @@ class GameOverSubState extends MusicBeatSubState
       // PlayState.seenCutscene = false; // old thing...
       gameOverMusic.stop();
 
-      if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
+      if (isChartingMode)
+      {
+        this.close();
+        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+        PlayState.instance.close(); // This only works because PlayState is a substate!
+      }
+      else if (PlayStatePlaylist.isStoryMode)
+      {
+        FlxG.switchState(new StoryMenuState());
+      }
       else
+      {
         FlxG.switchState(new FreeplayState());
+      }
     }
 
     if (gameOverMusic.playing)
@@ -315,5 +329,6 @@ class GameOverSubState extends MusicBeatSubState
 
 typedef GameOverParams =
 {
+  var isChartingMode:Bool;
   var transparent:Bool;
 }
