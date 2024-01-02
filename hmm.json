@@ -11,7 +11,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "9bdea914f3d0485b9b3ec158f28875b5ac95d476",
+      "ref": "a83738673e7edbf8acba3a1426af284dfe6719fe",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -54,14 +54,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "7021f1fbab928268d9196a73e7f47461ca3c3e4d",
+      "ref": "e765a3e0b7a653823e8dec765e04623f27f573f8",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "26b6bb132c92dfa9b77b4a61eaeda8f9a9efda98",
+      "ref": "7a517d561eff49d8123c128bf9f5c1123b84d014",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {

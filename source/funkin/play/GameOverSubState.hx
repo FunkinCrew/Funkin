@@ -66,11 +66,14 @@ class GameOverSubState extends MusicBeatSubState
 
   var isChartingMode:Bool = false;
 
-  public function new(?params:GameOverParams)
+  var transparent:Bool;
+
+  public function new(params:GameOverParams)
   {
     super();
 
     this.isChartingMode = params?.isChartingMode ?? false;
+    transparent = params.transparent;
   }
 
   /**
@@ -91,9 +94,10 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Add a black background to the screen.
-    // We make this transparent so that we can see the stage underneath during debugging.
     var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-    bg.alpha = 0.25;
+    // We make this transparent so that we can see the stage underneath during debugging,
+    // but it's normally opaque.
+    bg.alpha = transparent ? 0.25 : 1.0;
     bg.scrollFactor.set();
     add(bg);
 
@@ -326,4 +330,5 @@ class GameOverSubState extends MusicBeatSubState
 typedef GameOverParams =
 {
   var isChartingMode:Bool;
+  var transparent:Bool;
 }
