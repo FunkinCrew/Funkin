@@ -11,6 +11,7 @@ import funkin.data.song.SongDataUtils;
  * A core class which handles musical timing throughout the game,
  * both in gameplay and in menus.
  */
+@:nullSafety
 class Conductor
 {
   // onBeatHit is called every quarter note
@@ -61,7 +62,7 @@ class Conductor
   /**
    * The most recent time change for the current song position.
    */
-  public var currentTimeChange(default, null):SongTimeChange;
+  public var currentTimeChange(default, null):Null<SongTimeChange>;
 
   /**
    * The current position in the song in milliseconds.
@@ -156,32 +157,32 @@ class Conductor
   /**
    * Current position in the song, in measures.
    */
-  public var currentMeasure(default, null):Int;
+  public var currentMeasure(default, null):Int = 0;
 
   /**
    * Current position in the song, in beats.
    */
-  public var currentBeat(default, null):Int;
+  public var currentBeat(default, null):Int = 0;
 
   /**
    * Current position in the song, in steps.
    */
-  public var currentStep(default, null):Int;
+  public var currentStep(default, null):Int = 0;
 
   /**
    * Current position in the song, in measures and fractions of a measure.
    */
-  public var currentMeasureTime(default, null):Float;
+  public var currentMeasureTime(default, null):Float = 0;
 
   /**
    * Current position in the song, in beats and fractions of a measure.
    */
-  public var currentBeatTime(default, null):Float;
+  public var currentBeatTime(default, null):Float = 0;
 
   /**
    * Current position in the song, in steps and fractions of a step.
    */
-  public var currentStepTime(default, null):Float;
+  public var currentStepTime(default, null):Float = 0;
 
   /**
    * An offset tied to the current chart file to compensate for a delay in the instrumental.

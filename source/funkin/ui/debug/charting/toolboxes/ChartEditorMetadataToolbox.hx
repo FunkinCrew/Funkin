@@ -40,9 +40,9 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var frameVariation:Frame;
   var frameDifficulty:Frame;
 
-  public function new(state2:ChartEditorState)
+  public function new(chartEditorState2:ChartEditorState)
   {
-    super(state2);
+    super(chartEditorState2);
 
     initialize();
 
@@ -51,7 +51,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
   function onClose(event:UIEvent)
   {
-    state.menubarItemToggleToolboxMetadata.selected = false;
+    chartEditorState.menubarItemToggleToolboxMetadata.selected = false;
   }
 
   function initialize():Void
@@ -67,11 +67,11 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (valid)
       {
         inputSongName.removeClass('invalid-value');
-        state.currentSongMetadata.songName = event.target.text;
+        chartEditorState.currentSongMetadata.songName = event.target.text;
       }
       else
       {
-        state.currentSongMetadata.songName = '';
+        chartEditorState.currentSongMetadata.songName = '';
       }
     };
 
@@ -81,11 +81,11 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (valid)
       {
         inputSongArtist.removeClass('invalid-value');
-        state.currentSongMetadata.artist = event.target.text;
+        chartEditorState.currentSongMetadata.artist = event.target.text;
       }
       else
       {
-        state.currentSongMetadata.artist = '';
+        chartEditorState.currentSongMetadata.artist = '';
       }
     };
 
@@ -94,41 +94,41 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
       if (valid)
       {
-        state.currentSongMetadata.playData.stage = event.data.id;
+        chartEditorState.currentSongMetadata.playData.stage = event.data.id;
       }
     };
-    var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(inputStage, state.currentSongMetadata.playData.stage);
+    var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(inputStage, chartEditorState.currentSongMetadata.playData.stage);
     inputStage.value = startingValueStage;
 
     inputNoteStyle.onChange = function(event:UIEvent) {
       if (event.data?.id == null) return;
-      state.currentSongNoteStyle = event.data.id;
+      chartEditorState.currentSongNoteStyle = event.data.id;
     };
 
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;
 
       // Use a command so we can undo/redo this action.
-      var startingBPM = state.currentSongMetadata.timeChanges[0].bpm;
+      var startingBPM = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
       if (event.value != startingBPM)
       {
-        state.performCommand(new ChangeStartingBPMCommand(event.value));
+        chartEditorState.performCommand(new ChangeStartingBPMCommand(event.value));
       }
     };
 
     inputOffsetInst.onChange = function(event:UIEvent) {
       if (event.value == null) return;
 
-      state.currentInstrumentalOffset = event.value;
+      chartEditorState.currentInstrumentalOffset = event.value;
       Conductor.instance.instrumentalOffset = event.value;
       // Update song length.
-      state.songLengthInMs = (state.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
+      chartEditorState.songLengthInMs = (chartEditorState.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
     };
 
     inputOffsetVocal.onChange = function(event:UIEvent) {
       if (event.value == null) return;
 
-      state.currentSongMetadata.offsets.setVocalOffset(state.currentSongMetadata.playData.characters.player, event.value);
+      chartEditorState.currentSongMetadata.offsets.setVocalOffset(chartEditorState.currentSongMetadata.playData.characters.player, event.value);
     };
     inputScrollSpeed.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.value != null && event.target.value > 0;
@@ -136,25 +136,25 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (valid)
       {
         inputScrollSpeed.removeClass('invalid-value');
-        state.currentSongChartScrollSpeed = event.target.value;
+        chartEditorState.currentSongChartScrollSpeed = event.target.value;
       }
       else
       {
-        state.currentSongChartScrollSpeed = 1.0;
+        chartEditorState.currentSongChartScrollSpeed = 1.0;
       }
-      labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
+      labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     };
 
     buttonCharacterOpponent.onClick = function(_) {
-      state.openCharacterDropdown(CharacterType.DAD, false);
+      chartEditorState.openCharacterDropdown(CharacterType.DAD, false);
     };
 
     buttonCharacterGirlfriend.onClick = function(_) {
-      state.openCharacterDropdown(CharacterType.GF, false);
+      chartEditorState.openCharacterDropdown(CharacterType.GF, false);
     };
 
     buttonCharacterPlayer.onClick = function(_) {
-      state.openCharacterDropdown(CharacterType.BF, false);
+      chartEditorState.openCharacterDropdown(CharacterType.BF, false);
     };
 
     refresh();
@@ -162,17 +162,17 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
   public override function refresh():Void
   {
-    inputSongName.value = state.currentSongMetadata.songName;
-    inputSongArtist.value = state.currentSongMetadata.artist;
-    inputStage.value = state.currentSongMetadata.playData.stage;
-    inputNoteStyle.value = state.currentSongMetadata.playData.noteStyle;
-    inputBPM.value = state.currentSongMetadata.timeChanges[0].bpm;
-    inputScrollSpeed.value = state.currentSongChartScrollSpeed;
-    labelScrollSpeed.text = 'Scroll Speed: ${state.currentSongChartScrollSpeed}x';
-    frameVariation.text = 'Variation: ${state.selectedVariation.toTitleCase()}';
-    frameDifficulty.text = 'Difficulty: ${state.selectedDifficulty.toTitleCase()}';
+    inputSongName.value = chartEditorState.currentSongMetadata.songName;
+    inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
+    inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
+    inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
+    inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
+    inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
+    labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
+    frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
+    frameDifficulty.text = 'Difficulty: ${chartEditorState.selectedDifficulty.toTitleCase()}';
 
-    var stageId:String = state.currentSongMetadata.playData.stage;
+    var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
     var stageData:Null<StageData> = StageDataParser.parseStageData(stageId);
     if (inputStage != null)
     {
@@ -183,21 +183,45 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
     var LIMIT = 6;
 
-    var charDataOpponent:CharacterData = CharacterDataParser.fetchCharacterData(state.currentSongMetadata.playData.characters.opponent);
-    buttonCharacterOpponent.icon = CharacterDataParser.getCharPixelIconAsset(state.currentSongMetadata.playData.characters.opponent);
-    buttonCharacterOpponent.text = charDataOpponent.name.length > LIMIT ? '${charDataOpponent.name.substr(0, LIMIT)}.' : '${charDataOpponent.name}';
+    var charDataOpponent:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.opponent);
+    if (charDataOpponent != null)
+    {
+      buttonCharacterOpponent.icon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.opponent);
+      buttonCharacterOpponent.text = charDataOpponent.name.length > LIMIT ? '${charDataOpponent.name.substr(0, LIMIT)}.' : '${charDataOpponent.name}';
+    }
+    else
+    {
+      buttonCharacterOpponent.icon = null;
+      buttonCharacterOpponent.text = "None";
+    }
 
-    var charDataGirlfriend:CharacterData = CharacterDataParser.fetchCharacterData(state.currentSongMetadata.playData.characters.girlfriend);
-    buttonCharacterGirlfriend.icon = CharacterDataParser.getCharPixelIconAsset(state.currentSongMetadata.playData.characters.girlfriend);
-    buttonCharacterGirlfriend.text = charDataGirlfriend.name.length > LIMIT ? '${charDataGirlfriend.name.substr(0, LIMIT)}.' : '${charDataGirlfriend.name}';
+    var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
+    if (charDataGirlfriend != null)
+    {
+      buttonCharacterGirlfriend.icon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
+      buttonCharacterGirlfriend.text = charDataGirlfriend.name.length > LIMIT ? '${charDataGirlfriend.name.substr(0, LIMIT)}.' : '${charDataGirlfriend.name}';
+    }
+    else
+    {
+      buttonCharacterGirlfriend.icon = null;
+      buttonCharacterGirlfriend.text = "None";
+    }
 
-    var charDataPlayer:CharacterData = CharacterDataParser.fetchCharacterData(state.currentSongMetadata.playData.characters.player);
-    buttonCharacterPlayer.icon = CharacterDataParser.getCharPixelIconAsset(state.currentSongMetadata.playData.characters.player);
-    buttonCharacterPlayer.text = charDataPlayer.name.length > LIMIT ? '${charDataPlayer.name.substr(0, LIMIT)}.' : '${charDataPlayer.name}';
+    var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
+    if (charDataPlayer != null)
+    {
+      buttonCharacterPlayer.icon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.player);
+      buttonCharacterPlayer.text = charDataPlayer.name.length > LIMIT ? '${charDataPlayer.name.substr(0, LIMIT)}.' : '${charDataPlayer.name}';
+    }
+    else
+    {
+      buttonCharacterPlayer.icon = null;
+      buttonCharacterPlayer.text = "None";
+    }
   }
 
-  public static function build(state:ChartEditorState):ChartEditorMetadataToolbox
+  public static function build(chartEditorState:ChartEditorState):ChartEditorMetadataToolbox
   {
-    return new ChartEditorMetadataToolbox(state);
+    return new ChartEditorMetadataToolbox(chartEditorState);
   }
 }

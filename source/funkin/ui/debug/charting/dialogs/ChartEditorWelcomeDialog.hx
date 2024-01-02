@@ -41,26 +41,26 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 
     // Add items to the Recent Charts list
     #if sys
-    for (chartPath in state.previousWorkingFilePaths)
+    for (chartPath in chartEditorState.previousWorkingFilePaths)
     {
       if (chartPath == null) continue;
-      this.addRecentFilePath(state, chartPath);
+      this.addRecentFilePath(chartEditorState, chartPath);
     }
     #else
     this.addHTML5RecentFileMessage();
     #end
 
     // Add items to the Load From Template list
-    this.buildTemplateSongList(state);
+    this.buildTemplateSongList(chartEditorState);
   }
 
   /**
    * @param state The current state of the chart editor.
    * @return A newly created `ChartEditorWelcomeDialog`.
    */
-  public static function build(state:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorWelcomeDialog
+  public static function build(chartEditorState:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorWelcomeDialog
   {
-    var dialog = new ChartEditorWelcomeDialog(state,
+    var dialog = new ChartEditorWelcomeDialog(chartEditorState,
       {
         closable: closable ?? false,
         modal: modal ?? true
@@ -102,12 +102,12 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, chartPath);
       if (result != null)
       {
-        state.success('Loaded Chart',
+        chartEditorState.success('Loaded Chart',
           result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}');
       }
       else
       {
-        state.error('Failed to Load Chart', 'Failed to load chart (${chartPath.toString()})');
+        chartEditorState.error('Failed to Load Chart', 'Failed to load chart (${chartPath.toString()})');
       }
     }
 
@@ -157,7 +157,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
         this.hideDialog(DialogButton.CANCEL);
 
         // Load song from template
-        state.loadSongAsTemplate(targetSongId);
+        chartEditorState.loadSongAsTemplate(targetSongId);
       });
     }
   }
@@ -184,7 +184,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     this.hideDialog(DialogButton.CANCEL);
 
     // Open the "Open Chart" dialog
-    state.openBrowseFNFC(false);
+    chartEditorState.openBrowseFNFC(false);
   }
 
   /**
@@ -199,7 +199,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     //
     // Create Song Wizard
     //
-    state.openCreateSongWizardBasicOnly(false);
+    chartEditorState.openCreateSongWizardBasicOnly(false);
   }
 
   /**
@@ -214,7 +214,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     //
     // Create Song Wizard
     //
-    state.openCreateSongWizardErectOnly(false);
+    chartEditorState.openCreateSongWizardErectOnly(false);
   }
 
   /**
@@ -229,7 +229,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     //
     // Create Song Wizard
     //
-    state.openCreateSongWizardBasicErect(false);
+    chartEditorState.openCreateSongWizardBasicErect(false);
   }
 
   /**
@@ -242,6 +242,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     this.hideDialog(DialogButton.CANCEL);
 
     // Open the "Import Chart" dialog
-    state.openImportChartWizard('legacy', false);
+    chartEditorState.openImportChartWizard('legacy', false);
   }
 }

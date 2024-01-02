@@ -106,7 +106,7 @@ class StoryMenuState extends MusicBeatState
   var stickerSubState:StickerSubState;
 
   static var rememberedLevelId:Null<String> = null;
-  static var rememberedDifficulty:Null<String> = "normal";
+  static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
 
   public function new(?stickers:StickerSubState = null)
   {

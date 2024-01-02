@@ -747,7 +747,7 @@ class SongNoteDataRaw
   /**
    * The kind of the note.
    * This can allow the note to include information used for custom behavior.
-   * Defaults to blank or `"normal"`.
+   * Defaults to blank or `Constants.DEFAULT_DIFFICULTY`.
    */
   @:alias("k")
   @:default("normal")

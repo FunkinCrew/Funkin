@@ -687,6 +687,9 @@ class ChartEditorDialogHandler
       Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
       Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
+      state.selectedVariation = Constants.DEFAULT_VARIATION;
+      state.selectedDifficulty = state.availableDifficulties[0];
+
       state.difficultySelectDirty = true;
 
       dialog.hideDialog(DialogButton.APPLY);
@@ -755,14 +758,9 @@ class ChartEditorDialogHandler
         trace('Selected file: $pathStr');
         var path:Path = new Path(pathStr);
 
-        if (!hasClearedVocals)
+        if (state.loadVocalsFromPath(path, charKey, instId, !hasClearedVocals))
         {
           hasClearedVocals = true;
-          state.stopExistingVocals();
-        }
-
-        if (state.loadVocalsFromPath(path, charKey, instId))
-        {
           // Tell the user the load was successful.
           state.success('Loaded Vocals', 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${state.selectedVariation}');
           #if FILE_DROP_SUPPORTED
@@ -796,13 +794,10 @@ class ChartEditorDialogHandler
             if (selectedFile != null && selectedFile.bytes != null)
             {
               trace('Selected file: ' + selectedFile.name);
-              if (!hasClearedVocals)
+
+              if (state.loadVocalsFromBytes(selectedFile.bytes, charKey, instId, !hasClearedVocals))
               {
                 hasClearedVocals = true;
-                state.stopExistingVocals();
-              }
-              if (state.loadVocalsFromBytes(selectedFile.bytes, charKey, instId))
-              {
                 // Tell the user the load was successful.
                 state.success('Loaded Vocals', 'Loaded vocals for $charName (${selectedFile.name}), variation ${state.selectedVariation}');
 

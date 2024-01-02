@@ -11,13 +11,13 @@ import haxe.ui.containers.menus.Menu;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorBaseMenu extends Menu
 {
-  var state:ChartEditorState;
+  var chartEditorState:ChartEditorState;
 
-  public function new(state:ChartEditorState)
+  public function new(chartEditorState:ChartEditorState)
   {
     super();
 
-    this.state = state;
+    this.chartEditorState = chartEditorState;
 
     // this.destroyOnClose = true;
   }

@@ -754,15 +754,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_currentNoteSelection(value:Array<SongNoteData>):Array<SongNoteData>
   {
+    // This value is true if all elements of the current selection are also in the new selection.
+    var isSuperset:Bool = currentNoteSelection.isSubset(value);
+    var isEqual:Bool = currentNoteSelection.isEqualUnordered(value);
+
     currentNoteSelection = value;
 
-    if (currentNoteSelection.length > 0)
+    if (!isEqual)
     {
-      notePreview.addNotes(currentNoteSelection, Std.int(songLengthInMs), true);
-    }
-    else
-    {
-      notePreviewDirty = true;
+      if (currentNoteSelection.length > 0 && isSuperset)
+      {
+        notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
+      }
+      else
+      {
+        // The new selection removes elements from the old selection, so we have to redraw the note preview.
+        notePreviewDirty = true;
+      }
     }
 
     return currentNoteSelection;
@@ -1011,7 +1019,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_availableDifficulties():Array<String>
   {
     var m:Null<SongMetadata> = songMetadata.get(selectedVariation);
-    return m?.playData?.difficulties ?? [];
+    return m?.playData?.difficulties ?? [Constants.DEFAULT_DIFFICULTY];
   }
 
   /**
@@ -1070,7 +1078,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var result:Null<SongChartData> = songChartData.get(selectedVariation);
     if (result == null)
     {
-      result = new SongChartData(["normal" => 1.0], [], ["normal" => []]);
+      result = new SongChartData([Constants.DEFAULT_DIFFICULTY => 1.0], [], [Constants.DEFAULT_DIFFICULTY => []]);
       songChartData.set(selectedVariation, result);
     }
     return result;
@@ -1294,6 +1302,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_selectedDifficulty(value:String):String
   {
+    if (value == null) value = availableDifficulties[0] ?? Constants.DEFAULT_DIFFICULTY;
+
     selectedDifficulty = value;
 
     // Make sure view is updated when the difficulty changes.
@@ -2547,8 +2557,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
-    menubarItemLoadInstrumental.onClick = _ -> this.openUploadInstDialog(true);
-    menubarItemLoadVocals.onClick = _ -> this.openUploadVocalsDialog(true);
+    menubarItemLoadInstrumental.onClick = _ -> {
+      var dialog = this.openUploadInstDialog(true);
+      // Ensure instrumental and vocals are reloaded properly.
+      dialog.onDialogClosed = function(_) {
+        this.isHaxeUIDialogOpen = false;
+        this.switchToCurrentInstrumental();
+        this.postLoadInstrumental();
+      }
+    };
+
+    menubarItemLoadVocals.onClick = _ -> {
+      var dialog = this.openUploadVocalsDialog(true);
+      // Ensure instrumental and vocals are reloaded properly.
+      dialog.onDialogClosed = function(_) {
+        this.isHaxeUIDialogOpen = false;
+        this.switchToCurrentInstrumental();
+        this.postLoadInstrumental();
+      }
+    };
 
     menubarItemVolumeMetronome.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -2686,14 +2713,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Open the backups folder in the file explorer.
    * Don't call this on HTML5.
    */
-  function openBackupsFolder(?_):Void
+  function openBackupsFolder(?_):Bool
   {
     #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?
     var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
     WindowUtil.openFolder(absoluteBackupsPath);
+    return true;
     #else
     trace('No file system access, cannot open backups folder.');
+    return false;
     #end
   }
 
@@ -4054,7 +4083,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
           else
           {
-            // If we clicked and released outside the grid, do nothing.
+            // If we clicked and released outside the grid (or on HaxeUI), do nothing.
           }
         }
 
@@ -4377,7 +4406,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
-    playbarBPM.text = "BPM: " + Conductor.instance.currentTimeChange.bpm;
+    playbarBPM.text = 'BPM: ${Conductor.instance.currentTimeChange.bpm}';
   }
 
   function handlePlayhead():Void
@@ -5320,6 +5349,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // TODO: Only update the notes that have changed.
       notePreview.erase();
       notePreview.addNotes(currentSongChartNoteData, Std.int(songLengthInMs));
+      notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
       notePreview.addEvents(currentSongChartEventData, Std.int(songLengthInMs));
     }
 

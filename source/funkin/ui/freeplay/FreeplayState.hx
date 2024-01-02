@@ -97,7 +97,7 @@ class FreeplayState extends MusicBeatSubState
   var stickerSubState:StickerSubState;
 
   //
-  static var rememberedDifficulty:Null<String> = "normal";
+  static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   static var rememberedSongId:Null<String> = null;
 
   public function new(?stickers:StickerSubState = null)
@@ -874,15 +874,14 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  @:haxe.warning("-WDeprecated")
-  override function switchTo(nextState:FlxState):Bool
+  public override function destroy():Void
   {
+    super.destroy();
     var daSong = songs[curSelected];
     if (daSong != null)
     {
       clearDaCache(daSong.songName);
     }
-    return super.switchTo(nextState);
   }
 
   function changeDiff(change:Int = 0)
