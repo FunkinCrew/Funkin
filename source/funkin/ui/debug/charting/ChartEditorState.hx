@@ -2422,6 +2422,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }
 
+    playbarDifficulty.onClick = _ -> {
+      if (FlxG.keys.pressed.CONTROL)
+      {
+        this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
+      }
+      else
+      {
+        incrementDifficulty(-1);
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      }
+    }
+
+    playbarDifficulty.onRightClick = _ -> {
+      incrementDifficulty(1);
+      this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    }
+
     // Add functionality to the menu items.
 
     // File
@@ -2617,10 +2634,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
-    }
-
-    playbarDifficulty.onClick = _ -> {
-      this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
     }
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
@@ -4394,8 +4407,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
-    playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
-    playbarBPM.text = "BPM: " + (Conductor.currentTimeChange?.bpm ?? 0.0);
+    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
+    // playbarBPM.text = 'BPM: ${(Conductor.currentTimeChange?.bpm ?? 0.0)}';
   }
 
   function handlePlayhead():Void
@@ -4750,16 +4763,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     super.handleQuickWatch();
 
-    FlxG.watch.addQuick('musicTime', audioInstTrack?.time ?? 0.0);
+    FlxG.watch.addQuick('musicTime', audioInstTrack?.time);
 
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
     FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
 
-    FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
-    FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
-    FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
-    FlxG.watch.addQuick("notesSelected", currentNoteSelection.length);
-    FlxG.watch.addQuick("eventsSelected", currentEventSelection.length);
+    FlxG.watch.addQuick("tapNotesRendered", renderedNotes?.members?.length);
+    FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes?.members?.length);
+    FlxG.watch.addQuick("eventsRendered", renderedEvents?.members?.length);
+    FlxG.watch.addQuick("notesSelected", currentNoteSelection?.length);
+    FlxG.watch.addQuick("eventsSelected", currentEventSelection?.length);
   }
 
   function handlePostUpdate():Void
@@ -5124,7 +5137,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
 
-    this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
+    // Removed this notification because you can see your difficulty in the playbar now.
+    // this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
   }
 
   /**
