@@ -2,6 +2,10 @@ package funkin.ui.debug.charting.handlers;
 
 import funkin.util.PlatformUtil;
 
+/**
+ * Handles modifying the shortcut text of menu items based on the current platform.
+ * On MacOS, `Ctrl`, `Alt`, and `Shift` are replaced with `⌘` (or `^`), `⌥`, and `⇧`, respectively.
+ */
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorShortcutHandler
 {
@@ -18,7 +22,8 @@ class ChartEditorShortcutHandler
     state.menubarItemCopy.shortcutText = ctrlOrCmd('C');
     state.menubarItemPaste.shortcutText = ctrlOrCmd('V');
 
-    state.menubarItemSelectAll.shortcutText = ctrlOrCmd('A');
+    state.menubarItemSelectAllNotes.shortcutText = ctrlOrCmd('A');
+    state.menubarItemSelectAllEvents.shortcutText = ctrlOrCmd(alt('A'));
     state.menubarItemSelectInverse.shortcutText = ctrlOrCmd('I');
     state.menubarItemSelectNone.shortcutText = ctrlOrCmd('D');
     state.menubarItemSelectBeforeCursor.shortcutText = shift('Home');

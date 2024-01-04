@@ -10,19 +10,25 @@ import funkin.data.song.SongData.SongEventData;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class SelectAllItemsCommand implements ChartEditorCommand
 {
-  var previousNoteSelection:Array<SongNoteData>;
-  var previousEventSelection:Array<SongEventData>;
+  var shouldSelectNotes:Bool;
+  var shouldSelectEvents:Bool;
 
-  public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
+  var previousNoteSelection:Array<SongNoteData> = [];
+  var previousEventSelection:Array<SongEventData> = [];
+
+  public function new(shouldSelectNotes:Bool, shouldSelectEvents:Bool)
   {
-    this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
-    this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
+    this.shouldSelectNotes = shouldSelectNotes;
+    this.shouldSelectEvents = shouldSelectEvents;
   }
 
   public function execute(state:ChartEditorState):Void
   {
-    state.currentNoteSelection = state.currentSongChartNoteData;
-    state.currentEventSelection = state.currentSongChartEventData;
+    this.previousNoteSelection = state.currentNoteSelection;
+    this.previousEventSelection = state.currentEventSelection;
+
+    state.currentNoteSelection = shouldSelectNotes ? state.currentSongChartNoteData : [];
+    state.currentEventSelection = shouldSelectEvents ? state.currentSongChartEventData : [];
 
     state.noteDisplayDirty = true;
   }
@@ -35,8 +41,29 @@ class SelectAllItemsCommand implements ChartEditorCommand
     state.noteDisplayDirty = true;
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (state.currentNoteSelection.length > 0 || state.currentEventSelection.length > 0);
+  }
+
   public function toString():String
   {
-    return 'Select All Items';
+    if (shouldSelectNotes && !shouldSelectEvents)
+    {
+      return 'Select All Notes';
+    }
+    else if (shouldSelectEvents && !shouldSelectNotes)
+    {
+      return 'Select All Events';
+    }
+    else if (shouldSelectNotes && shouldSelectEvents)
+    {
+      return 'Select All Notes and Events';
+    }
+    else
+    {
+      return 'Select Nothing (Huh?)';
+    }
   }
 }

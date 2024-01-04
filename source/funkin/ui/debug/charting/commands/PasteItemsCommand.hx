@@ -71,6 +71,12 @@ class PasteItemsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (addedNotes.length > 0 || addedEvents.length > 0);
+  }
+
   public function toString():String
   {
     var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();

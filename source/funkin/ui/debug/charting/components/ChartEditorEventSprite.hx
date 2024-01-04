@@ -119,8 +119,10 @@ class ChartEditorEventSprite extends FlxSprite
     return DEFAULT_EVENT;
   }
 
-  public function playAnimation(name:String):Void
+  public function playAnimation(?name:String):Void
   {
+    if (name == null) name = eventData?.event ?? DEFAULT_EVENT;
+
     var correctedName = correctAnimationName(name);
     this.animation.play(correctedName);
     refresh();
