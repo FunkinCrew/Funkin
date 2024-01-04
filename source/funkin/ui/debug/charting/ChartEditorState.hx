@@ -147,7 +147,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // Layouts
   public static final CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/notedata');
 
-  public static final CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
   public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
   public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/toolbox/difficulty');
@@ -489,17 +489,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The note kind to use for notes being placed in the chart. Defaults to `''`.
    */
-  var selectedNoteKind:String = '';
+  var noteKindToPlace:String = '';
 
   /**
    * The event type to use for events being placed in the chart. Defaults to `''`.
    */
-  var selectedEventKind:String = 'FocusCamera';
+  var eventKindToPlace:String = 'FocusCamera';
 
   /**
    * The event data to use for events being placed in the chart.
    */
-  var selectedEventData:DynamicAccess<Dynamic> = {};
+  var eventDataToPlace:DynamicAccess<Dynamic> = {};
 
   /**
    * The internal index of what note snapping value is in use.
@@ -1871,6 +1871,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
+    setupContextMenu();
     setupTurboKeyHandlers();
 
     setupAutoSave();
@@ -2444,23 +2445,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemUndo.onClick = _ -> undoLastCommand();
     menubarItemRedo.onClick = _ -> redoLastCommand();
     menubarItemCopy.onClick = function(_) {
-      // Doesn't use a command because it's not undoable.
-
-      // Calculate a single time offset for all the notes and events.
-      var timeOffset:Null<Int> = currentNoteSelection.length > 0 ? Std.int(currentNoteSelection[0].time) : null;
-      if (currentEventSelection.length > 0)
-      {
-        if (timeOffset == null || currentEventSelection[0].time < timeOffset)
-        {
-          timeOffset = Std.int(currentEventSelection[0].time);
-        }
-      }
-
-      SongDataUtils.writeItemsToClipboard(
-        {
-          notes: SongDataUtils.buildNoteClipboard(currentNoteSelection, timeOffset),
-          events: SongDataUtils.buildEventClipboard(currentEventSelection, timeOffset),
-        });
+      copySelection();
     };
     menubarItemCut.onClick = _ -> performCommand(new CutItemsCommand(currentNoteSelection, currentEventSelection));
 
@@ -2626,13 +2611,49 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
     menubarItemToggleToolboxMetadata.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
     menubarItemToggleToolboxNotes.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
-    menubarItemToggleToolboxEvents.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT, event.value);
+    menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
     menubarItemToggleToolboxPlayerPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
     menubarItemToggleToolboxOpponentPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     // registerContextMenu(null, Paths.ui('chart-editor/context/test'));
+  }
+
+  function setupContextMenu():Void
+  {
+    Screen.instance.registerEvent(MouseEvent.RIGHT_MOUSE_UP, function(e:MouseEvent) {
+      var xPos = e.screenX;
+      var yPos = e.screenY;
+      onContextMenu(xPos, yPos);
+    });
+  }
+
+  function onContextMenu(xPos:Float, yPos:Float)
+  {
+    trace('User right clicked to open menu at (${xPos}, ${yPos})');
+    // this.openDefaultContextMenu(xPos, yPos);
+  }
+
+  function copySelection():Void
+  {
+    // Doesn't use a command because it's not undoable.
+
+    // Calculate a single time offset for all the notes and events.
+    var timeOffset:Null<Int> = currentNoteSelection.length > 0 ? Std.int(currentNoteSelection[0].time) : null;
+    if (currentEventSelection.length > 0)
+    {
+      if (timeOffset == null || currentEventSelection[0].time < timeOffset)
+      {
+        timeOffset = Std.int(currentEventSelection[0].time);
+      }
+    }
+
+    SongDataUtils.writeItemsToClipboard(
+      {
+        notes: SongDataUtils.buildNoteClipboard(currentNoteSelection, timeOffset),
+        events: SongDataUtils.buildEventClipboard(currentEventSelection, timeOffset),
+      });
   }
 
   /**
@@ -2811,6 +2832,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       playMetronomeTick(Conductor.currentBeat % 4 == 0);
     }
+
+    // Show the mouse cursor.
+    // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
+    Cursor.show();
 
     return true;
   }
@@ -3015,6 +3040,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           // Update the event sprite's position.
           eventSprite.updateEventPosition(renderedEvents);
+          // Update the sprite's graphic. TODO: Is this inefficient?
+          eventSprite.playAnimation(eventSprite.eventData.event);
         }
         else
         {
@@ -3470,6 +3497,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
 
     // trace('shouldHandleCursor: $shouldHandleCursor');
+
+    // TODO: TBH some of this should be using FlxMouseEventManager...
 
     if (shouldHandleCursor)
     {
@@ -4054,14 +4083,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 {
                   // Create an event and place it in the chart.
                   // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, selectedEventKind, selectedEventData.clone());
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.clone());
 
                   performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
                 }
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, selectedNoteKind.clone());
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace.clone());
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -4099,13 +4128,52 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           if (highlightedNote != null && highlightedNote.noteData != null)
           {
             // TODO: Handle the case of clicking on a sustain piece.
-            // Remove the note.
-            performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
+            if (FlxG.keys.pressed.SHIFT)
+            {
+              // Shift + Right click opens the context menu.
+              // If we are clicking a large selection, open the Selection context menu, otherwise open the Note context menu.
+              var isHighlightedNoteSelected:Bool = isNoteSelected(highlightedNote.noteData);
+              var useSingleNoteContextMenu:Bool = (!isHighlightedNoteSelected)
+                || (isHighlightedNoteSelected && currentNoteSelection.length == 1);
+              // Show the context menu connected to the note.
+              if (useSingleNoteContextMenu)
+              {
+                this.openNoteContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY, highlightedNote.noteData);
+              }
+              else
+              {
+                this.openSelectionContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY);
+              }
+            }
+            else
+            {
+              // Right click removes the note.
+              performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
+            }
           }
           else if (highlightedEvent != null && highlightedEvent.eventData != null)
           {
-            // Remove the event.
-            performCommand(new RemoveEventsCommand([highlightedEvent.eventData]));
+            if (FlxG.keys.pressed.SHIFT)
+            {
+              // Shift + Right click opens the context menu.
+              // If we are clicking a large selection, open the Selection context menu, otherwise open the Event context menu.
+              var isHighlightedEventSelected:Bool = isEventSelected(highlightedEvent.eventData);
+              var useSingleEventContextMenu:Bool = (!isHighlightedEventSelected)
+                || (isHighlightedEventSelected && currentEventSelection.length == 1);
+              if (useSingleEventContextMenu)
+              {
+                this.openEventContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY, highlightedEvent.eventData);
+              }
+              else
+              {
+                this.openSelectionContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY);
+              }
+            }
+            else
+            {
+              // Right click removes the event.
+              performCommand(new RemoveEventsCommand([highlightedEvent.eventData]));
+            }
           }
           else
           {
@@ -4126,11 +4194,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
             if (gridGhostEvent == null) throw "ERROR: Tried to handle cursor, but gridGhostEvent is null! Check ChartEditorState.buildGrid()";
 
-            var eventData:SongEventData = gridGhostEvent.eventData != null ? gridGhostEvent.eventData : new SongEventData(cursorMs, selectedEventKind, null);
+            var eventData:SongEventData = gridGhostEvent.eventData != null ? gridGhostEvent.eventData : new SongEventData(cursorMs, eventKindToPlace, null);
 
-            if (selectedEventKind != eventData.event)
+            if (eventKindToPlace != eventData.event)
             {
-              eventData.event = selectedEventKind;
+              eventData.event = eventKindToPlace;
             }
             eventData.time = cursorSnappedMs;
 
@@ -4146,11 +4214,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
-            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, selectedNoteKind);
+            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, noteKindToPlace);
 
-            if (cursorColumn != noteData.data || selectedNoteKind != noteData.kind)
+            if (cursorColumn != noteData.data || noteKindToPlace != noteData.kind)
             {
-              noteData.kind = selectedNoteKind;
+              noteData.kind = noteKindToPlace;
               noteData.data = cursorColumn;
               gridGhostNote.playNoteAnimation();
             }
@@ -4443,7 +4511,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (notesAtPos.length == 0)
     {
-      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, selectedNoteKind);
+      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace);
       performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
     }
     else
@@ -4746,10 +4814,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #end
   }
 
-  override function handleQuickWatch():Void
+  function handleQuickWatch():Void
   {
-    super.handleQuickWatch();
-
     FlxG.watch.addQuick('musicTime', audioInstTrack?.time ?? 0.0);
 
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
@@ -5486,6 +5552,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.destroy();
 
     cleanupAutoSave();
+
+    this.closeAllMenus();
 
     // Hide the mouse cursor on other states.
     Cursor.hide();

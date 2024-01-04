@@ -198,6 +198,13 @@ class InitState extends FlxState
     #end
 
     //
+    // FLIXEL PLUGINS
+    //
+    funkin.util.plugins.EvacuateDebugPlugin.initialize();
+    funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
+    funkin.util.plugins.WatchPlugin.initialize();
+
+    //
     // GAME DATA PARSING
     //
 

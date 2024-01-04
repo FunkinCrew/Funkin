@@ -240,4 +240,28 @@ typedef SongEventSchemaField =
   ?defaultValue:Dynamic,
 }
 
-typedef SongEventSchema = Array<SongEventSchemaField>;
+@:forward
+abstract SongEventSchema(SongEventSchemaRaw)
+{
+  public function new(?fields:Array<SongEventSchemaField>)
+  {
+    this = fields;
+  }
+
+  public function getByName(name:String):SongEventSchemaField
+  {
+    for (field in this)
+    {
+      if (field.name == name) return field;
+    }
+
+    return null;
+  }
+
+  public function getFirstField():SongEventSchemaField
+  {
+    return this[0];
+  }
+}
+
+typedef SongEventSchemaRaw = Array<SongEventSchemaField>;

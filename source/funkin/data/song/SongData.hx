@@ -617,6 +617,23 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     this = new SongEventDataRaw(time, event, value);
   }
 
+  public inline function valueAsStruct(?defaultKey:String = "key"):Dynamic
+  {
+    if (this.value == null) return {};
+    // TODO: How to check if it's a dynamic struct?
+    if (Std.isOfType(this.value, Int) || Std.isOfType(this.value, String) || Std.isOfType(this.value, Float) || Std.isOfType(this.value, Bool)
+      || Std.isOfType(this.value, Array))
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.value);
+      return cast result;
+    }
+    else
+    {
+      return cast this.value;
+    }
+  }
+
   public inline function getDynamic(key:String):Null<Dynamic>
   {
     return this.value == null ? null : Reflect.field(this.value, key);

@@ -145,8 +145,6 @@ class ChartEditorEventSprite extends FlxSprite
     else
     {
       this.visible = true;
-      // Only play the animation if the event type has changed.
-      // if (this.eventData == null || this.eventData.event != value.event)
       playAnimation(value.event);
       this.eventData = value;
       // Update the position to match the note data.

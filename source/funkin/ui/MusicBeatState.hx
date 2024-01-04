@@ -71,34 +71,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
   }
 
-  function handleFunctionControls():Void
-  {
-    // Emergency exit button.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
-
-    // This can now be used in EVERY STATE YAY!
-    if (FlxG.keys.justPressed.F5) debug_refreshModules();
-  }
-
-  function handleQuickWatch():Void
-  {
-    // Display Conductor info in the watch window.
-    FlxG.watch.addQuick("songPosition", Conductor.songPosition);
-    FlxG.watch.addQuick("songPositionNoOffset", Conductor.songPosition + Conductor.instrumentalOffset);
-    FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
-    FlxG.watch.addQuick("bpm", Conductor.bpm);
-    FlxG.watch.addQuick("currentMeasureTime", Conductor.currentBeatTime);
-    FlxG.watch.addQuick("currentBeatTime", Conductor.currentBeatTime);
-    FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
-  }
-
   override function update(elapsed:Float)
   {
     super.update(elapsed);
 
     handleControls();
-    handleFunctionControls();
-    handleQuickWatch();
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
@@ -125,16 +102,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public function dispatchEvent(event:ScriptEvent)
   {
     ModuleHandler.callEvent(event);
-  }
-
-  function debug_refreshModules()
-  {
-    PolymodHandler.forceReloadAssets();
-
-    this.destroy();
-
-    // Create a new instance of the current state, so old data is cleared.
-    FlxG.resetState();
   }
 
   public function stepHit():Bool

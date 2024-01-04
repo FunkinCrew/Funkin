@@ -30,6 +30,16 @@ class SetItemSelectionCommand implements ChartEditorCommand
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
+    // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
+    if (this.notes.length == 0 && this.events.length >= 1)
+    {
+      var eventSelected = this.events[0];
+      state.eventKindToPlace = eventSelected.event;
+      var eventData = eventSelected.valueAsStruct();
+      state.eventDataToPlace = eventData;
+      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+    }
+
     state.noteDisplayDirty = true;
   }
 
