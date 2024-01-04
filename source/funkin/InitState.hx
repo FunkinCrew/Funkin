@@ -19,7 +19,7 @@ import funkin.play.PlayStatePlaylist;
 import openfl.display.BitmapData;
 import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventRegistry;
 import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
 import funkin.play.cutscene.dialogue.SpeakerDataParser;
@@ -213,7 +213,7 @@ class InitState extends FlxState
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
-    SongEventParser.loadEventCache();
+    SongEventRegistry.loadEventCache();
     ConversationDataParser.loadConversationCache();
     DialogueBoxDataParser.loadDialogueBoxCache();
     SpeakerDataParser.loadSpeakerCache();

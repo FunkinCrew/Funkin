@@ -1,5 +1,7 @@
 package funkin.data.song;
 
+import funkin.data.event.SongEventRegistry;
+import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 
@@ -620,18 +622,28 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   public inline function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
     if (this.value == null) return {};
-    // TODO: How to check if it's a dynamic struct?
-    if (Std.isOfType(this.value, Int) || Std.isOfType(this.value, String) || Std.isOfType(this.value, Float) || Std.isOfType(this.value, Bool)
-      || Std.isOfType(this.value, Array))
+    if (Std.isOfType(this.value, Array))
     {
       var result:haxe.DynamicAccess<Dynamic> = {};
       result.set(defaultKey, this.value);
       return cast result;
     }
-    else
+    else if (Reflect.isObject(this.value))
     {
+      // We enter this case if the value is a struct.
       return cast this.value;
     }
+    else
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.value);
+      return cast result;
+    }
+  }
+
+  public inline function getSchema():Null<SongEventSchema>
+  {
+    return SongEventRegistry.getEventSchema(this.event);
   }
 
   public inline function getDynamic(key:String):Null<Dynamic>

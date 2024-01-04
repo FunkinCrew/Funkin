@@ -4,7 +4,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.stage.StageData;
 import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventData.SongEventSchema;
+import funkin.data.event.SongEventSchema;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
@@ -15,7 +15,7 @@ import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.core.Component;
-import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventRegistry;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.Frame;
@@ -59,7 +59,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   {
     toolboxEventsEventKind.dataSource = new ArrayDataSource();
 
-    var songEvents:Array<SongEvent> = SongEventParser.listEvents();
+    var songEvents:Array<SongEvent> = SongEventRegistry.listEvents();
 
     for (event in songEvents)
     {
@@ -74,7 +74,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       // Edit the event data to place.
       chartEditorState.eventKindToPlace = eventType;
 
-      var schema:SongEventSchema = SongEventParser.getEventSchema(eventType);
+      var schema:SongEventSchema = SongEventRegistry.getEventSchema(eventType);
 
       if (schema == null)
       {

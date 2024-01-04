@@ -9,7 +9,7 @@ import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventData;
+import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;

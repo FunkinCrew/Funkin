@@ -5,8 +5,8 @@ import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
 import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventData.SongEventSchema;
-import funkin.data.event.SongEventData.SongEventFieldType;
+import funkin.data.event.SongEventSchema;
+import funkin.data.event.SongEventSchema.SongEventFieldType;
 
 /**
  * This class represents a handler for a type of song event.
@@ -132,7 +132,7 @@ class FocusCameraSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return [
+    return new SongEventSchema([
       {
         name: "char",
         title: "Character",
@@ -154,6 +154,6 @@ class FocusCameraSongEvent extends SongEvent
         step: 10.0,
         type: SongEventFieldType.FLOAT,
       }
-    ];
+    ]);
   }
 }

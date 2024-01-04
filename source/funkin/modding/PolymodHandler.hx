@@ -8,7 +8,7 @@ import funkin.play.stage.StageData;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
-import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventRegistry;
 import funkin.util.FileUtil;
 import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -271,7 +271,7 @@ class PolymodHandler
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
-    SongEventParser.loadEventCache();
+    SongEventRegistry.loadEventCache();
     ConversationDataParser.loadConversationCache();
     DialogueBoxDataParser.loadDialogueBoxCache();
     SpeakerDataParser.loadSpeakerCache();

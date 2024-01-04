@@ -1,7 +1,7 @@
 package funkin.data.event;
 
 import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventData.SongEventSchema;
+import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongData.SongEventData;
 import funkin.util.macro.ClassMacro;
 import funkin.play.event.ScriptedSongEvent;
@@ -9,7 +9,7 @@ import funkin.play.event.ScriptedSongEvent;
 /**
  * This class statically handles the parsing of internal and scripted song event handlers.
  */
-class SongEventParser
+class SongEventRegistry
 {
   /**
    * Every built-in event class must be added to this list.
@@ -160,108 +160,3 @@ class SongEventParser
     }
   }
 }
-
-enum abstract SongEventFieldType(String) from String to String
-{
-  /**
-   * The STRING type will display as a text field.
-   */
-  var STRING = "string";
-
-  /**
-   * The INTEGER type will display as a text field that only accepts numbers.
-   */
-  var INTEGER = "integer";
-
-  /**
-   * The FLOAT type will display as a text field that only accepts numbers.
-   */
-  var FLOAT = "float";
-
-  /**
-   * The BOOL type will display as a checkbox.
-   */
-  var BOOL = "bool";
-
-  /**
-   * The ENUM type will display as a dropdown.
-   * Make sure to specify the `keys` field in the schema.
-   */
-  var ENUM = "enum";
-}
-
-typedef SongEventSchemaField =
-{
-  /**
-   * The name of the property as it should be saved in the event data.
-   */
-  name:String,
-
-  /**
-   * The title of the field to display in the UI.
-   */
-  title:String,
-
-  /**
-   * The type of the field.
-   */
-  type:SongEventFieldType,
-
-  /**
-   * Used only for ENUM values.
-   * The key is the display name and the value is the actual value.
-   */
-  ?keys:Map<String, Dynamic>,
-
-  /**
-   * Used for INTEGER and FLOAT values.
-   * The minimum value that can be entered.
-   * @default No minimum
-   */
-  ?min:Float,
-
-  /**
-   * Used for INTEGER and FLOAT values.
-   * The maximum value that can be entered.
-   * @default No maximum
-   */
-  ?max:Float,
-
-  /**
-   * Used for INTEGER and FLOAT values.
-   * The step value that will be used when incrementing/decrementing the value.
-   * @default `0.1`
-   */
-  ?step:Float,
-
-  /**
-   * An optional default value for the field.
-   */
-  ?defaultValue:Dynamic,
-}
-
-@:forward
-abstract SongEventSchema(SongEventSchemaRaw)
-{
-  public function new(?fields:Array<SongEventSchemaField>)
-  {
-    this = fields;
-  }
-
-  public function getByName(name:String):SongEventSchemaField
-  {
-    for (field in this)
-    {
-      if (field.name == name) return field;
-    }
-
-    return null;
-  }
-
-  public function getFirstField():SongEventSchemaField
-  {
-    return this[0];
-  }
-}
-
-typedef SongEventSchemaRaw = Array<SongEventSchemaField>;
