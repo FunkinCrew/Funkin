@@ -124,6 +124,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import funkin.audio.visualize.PolygonVisGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
+import flixel.system.debug.log.LogStyle;
 
 using Lambda;
 
@@ -543,6 +544,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * If true, playtesting a chart will let you "gameover" / die when you lose ur health!
    */
   var playtestPracticeMode:Bool = false;
+
+  /**
+   * Enables or disables the "debugger" popup that appears when you run into a flixel error.
+   */
+  var enabledDebuggerPopup:Bool = true;
 
   // Visuals
 
@@ -2423,6 +2429,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }
 
+    playbarDifficulty.onClick = _ -> {
+      if (FlxG.keys.pressed.CONTROL)
+      {
+        this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
+      }
+      else
+      {
+        incrementDifficulty(-1);
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      }
+    }
+
+    playbarDifficulty.onRightClick = _ -> {
+      incrementDifficulty(1);
+      this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    }
+
     // Add functionality to the menu items.
 
     // File
@@ -2602,10 +2625,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
-    }
-
-    playbarDifficulty.onClick = _ -> {
-      this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
     }
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
@@ -4462,8 +4481,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
-    playbarDifficulty.text = "Difficulty: " + selectedDifficulty.toTitleCase();
-    playbarBPM.text = "BPM: " + (Conductor.currentTimeChange?.bpm ?? 0.0);
+    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
+    // playbarBPM.text = 'BPM: ${(Conductor.currentTimeChange?.bpm ?? 0.0)}';
   }
 
   function handlePlayhead():Void
@@ -4821,11 +4840,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
     FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
 
-    FlxG.watch.addQuick("tapNotesRendered", renderedNotes.members.length);
-    FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes.members.length);
-    FlxG.watch.addQuick("eventsRendered", renderedEvents.members.length);
-    FlxG.watch.addQuick("notesSelected", currentNoteSelection.length);
-    FlxG.watch.addQuick("eventsSelected", currentEventSelection.length);
+    FlxG.watch.addQuick("tapNotesRendered", renderedNotes?.members?.length);
+    FlxG.watch.addQuick("holdNotesRendered", renderedHoldNotes?.members?.length);
+    FlxG.watch.addQuick("eventsRendered", renderedEvents?.members?.length);
+    FlxG.watch.addQuick("notesSelected", currentNoteSelection?.length);
+    FlxG.watch.addQuick("eventsSelected", currentEventSelection?.length);
   }
 
   function handlePostUpdate():Void
@@ -4860,6 +4879,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       this.error("Could Not Playtest", 'Got an error trying to playtest the song.\n${e}');
       return;
     }
+
+    LogStyle.WARNING.openConsole = enabledDebuggerPopup;
+    LogStyle.ERROR.openConsole = enabledDebuggerPopup;
 
     // TODO: Rework asset system so we can remove this.
     switch (currentSongStage)
@@ -5190,7 +5212,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
 
-    this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
+    // Removed this notification because you can see your difficulty in the playbar now.
+    // this.success('Switch Difficulty', 'Switched difficulty to ${selectedDifficulty.toTitleCase()}');
   }
 
   /**

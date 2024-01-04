@@ -149,9 +149,9 @@ class SustainTrail extends FlxSprite
     if (sustainLength == s) return s;
 
     height = sustainHeight(s, getScrollSpeed());
-    // updateColorTransform();
+    this.sustainLength = s;
     updateClipping();
-    return sustainLength = s;
+    return this.sustainLength;
   }
 
   /**
@@ -162,13 +162,15 @@ class SustainTrail extends FlxSprite
   public function updateClipping(songTime:Float = 0):Void
   {
     var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), getScrollSpeed()), 0, height);
-    if (clipHeight == 0)
+    if (clipHeight <= 0.1)
     {
       visible = false;
       return;
     }
     else
+    {
       visible = true;
+    }
 
     var bottomHeight:Float = graphic.height * zoom * endOffset;
     var partHeight:Float = clipHeight - bottomHeight;
