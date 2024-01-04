@@ -11,16 +11,16 @@ import haxe.ui.core.Component;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorBaseDialog extends Dialog
 {
-  var state:ChartEditorState;
+  var chartEditorState:ChartEditorState;
   var params:DialogParams;
 
   var locked:Bool = false;
 
-  public function new(state:ChartEditorState, params:DialogParams)
+  public function new(chartEditorState:ChartEditorState, params:DialogParams)
   {
     super();
 
-    this.state = state;
+    this.chartEditorState = chartEditorState;
     this.params = params;
 
     this.destroyOnClose = true;
@@ -47,7 +47,7 @@ class ChartEditorBaseDialog extends Dialog
    */
   public function onClose(event:DialogEvent):Void
   {
-    state.isHaxeUIDialogOpen = false;
+    chartEditorState.isHaxeUIDialogOpen = false;
   }
 
   /**

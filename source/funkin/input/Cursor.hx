@@ -34,6 +34,18 @@ class Cursor
     Cursor.cursorMode = null;
   }
 
+  public static inline function toggle():Void
+  {
+    if (FlxG.mouse.visible)
+    {
+      hide();
+    }
+    else
+    {
+      show();
+    }
+  }
+
   public static final CURSOR_DEFAULT_PARAMS:CursorParams =
     {
       graphic: "assets/images/cursor/cursor-default.png",

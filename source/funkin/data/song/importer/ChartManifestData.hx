@@ -68,6 +68,7 @@ class ChartManifestData
   public static function deserialize(contents:String):Null<ChartManifestData>
   {
     var parser = new json2object.JsonParser<ChartManifestData>();
+    parser.ignoreUnknownVariables = false;
     parser.fromJson(contents, 'manifest.json');
 
     if (parser.errors.length > 0)

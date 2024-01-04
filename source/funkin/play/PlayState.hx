@@ -922,7 +922,11 @@ class PlayState extends MusicBeatSubState
         }
         #end
 
-        var gameOverSubState = new GameOverSubState();
+        var gameOverSubState = new GameOverSubState(
+          {
+            isChartingMode: isChartingMode,
+            transparent: persistentDraw
+          });
         FlxTransitionableSubState.skipNextTransIn = true;
         FlxTransitionableSubState.skipNextTransOut = true;
         openSubState(gameOverSubState);
@@ -1098,23 +1102,6 @@ class PlayState extends MusicBeatSubState
   #end
 
   /**
-   * This function is called whenever Flixel switches switching to a new FlxState.
-   * @return Whether to actually switch to the new state.
-   */
-  @:haxe.warning("-WDeprecated")
-  override function switchTo(nextState:FlxState):Bool
-  {
-    var result:Bool = super.switchTo(nextState);
-
-    if (result)
-    {
-      performCleanup();
-    }
-
-    return result;
-  }
-
-  /**
    * Removes any references to the current stage, then clears the stage cache,
    * then reloads all the stages.
    *
@@ -1251,13 +1238,15 @@ class PlayState extends MusicBeatSubState
     return true;
   }
 
-  override function destroy():Void
+  public override function destroy():Void
   {
     if (currentConversation != null)
     {
       remove(currentConversation);
       currentConversation.kill();
     }
+
+    performCleanup();
 
     super.destroy();
   }
