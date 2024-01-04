@@ -289,7 +289,7 @@ class GameOverSubState extends MusicBeatSubState
     {
       gameOverMusic.loadEmbedded(musicPath);
       gameOverMusic.volume = startingVolume;
-      gameOverMusic.looped = true;
+      gameOverMusic.looped = !isEnding;
       gameOverMusic.play();
     }
   }
