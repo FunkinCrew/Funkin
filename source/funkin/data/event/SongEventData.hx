@@ -161,34 +161,70 @@ class SongEventParser
   }
 }
 
-enum abstract SongEventFieldType(String) from String to String
+@:forward(name, title, type, keys, min, max, step, defaultValue, iterator)
+abstract SongEventSchema(SongEventSchemaRaw)
 {
-  /**
-   * The STRING type will display as a text field.
-   */
-  var STRING = "string";
+  public function new(?fields:Array<SongEventSchemaField>)
+  {
+    this = fields;
+  }
 
-  /**
-   * The INTEGER type will display as a text field that only accepts numbers.
-   */
-  var INTEGER = "integer";
+  @:arrayAccess
+  public function getByName(name:String):SongEventSchemaField
+  {
+    for (field in this)
+    {
+      if (field.name == name) return field;
+    }
 
-  /**
-   * The FLOAT type will display as a text field that only accepts numbers.
-   */
-  var FLOAT = "float";
+    return null;
+  }
 
-  /**
-   * The BOOL type will display as a checkbox.
-   */
-  var BOOL = "bool";
+  public function getFirstField():SongEventSchemaField
+  {
+    return this[0];
+  }
 
-  /**
-   * The ENUM type will display as a dropdown.
-   * Make sure to specify the `keys` field in the schema.
-   */
-  var ENUM = "enum";
+  public function stringifyFieldValue(name:String, value:Dynamic):String
+  {
+    var field:SongEventSchemaField = getByName(name);
+    if (field == null) return 'Unknown';
+
+    switch (field.type)
+    {
+      case SongEventFieldType.STRING:
+        return Std.string(value);
+      case SongEventFieldType.INTEGER:
+        return Std.string(value);
+      case SongEventFieldType.FLOAT:
+        return Std.string(value);
+      case SongEventFieldType.BOOL:
+        return Std.string(value);
+      case SongEventFieldType.ENUM:
+        for (key in field.keys.keys())
+        {
+          if (field.keys.get(key) == value) return key;
+        }
+        return Std.string(value);
+      default:
+        return 'Unknown';
+    }
+  }
+
+  @:arrayAccess
+  public inline function get(key:Int)
+  {
+    return this[key];
+  }
+
+  @:arrayAccess
+  public inline function arrayWrite(k:Int, v:SongEventSchemaField):SongEventSchemaField
+  {
+    return this[k] = v;
+  }
 }
+
+typedef SongEventSchemaRaw = Array<SongEventSchemaField>;
 
 typedef SongEventSchemaField =
 {
@@ -240,4 +276,31 @@ typedef SongEventSchemaField =
   ?defaultValue:Dynamic,
 }
 
-typedef SongEventSchema = Array<SongEventSchemaField>;
+enum abstract SongEventFieldType(String) from String to String
+{
+  /**
+   * The STRING type will display as a text field.
+   */
+  var STRING = "string";
+
+  /**
+   * The INTEGER type will display as a text field that only accepts numbers.
+   */
+  var INTEGER = "integer";
+
+  /**
+   * The FLOAT type will display as a text field that only accepts numbers.
+   */
+  var FLOAT = "float";
+
+  /**
+   * The BOOL type will display as a checkbox.
+   */
+  var BOOL = "bool";
+
+  /**
+   * The ENUM type will display as a dropdown.
+   * Make sure to specify the `keys` field in the schema.
+   */
+  var ENUM = "enum";
+}

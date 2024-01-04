@@ -132,7 +132,7 @@ class FocusCameraSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return [
+    return new SongEventSchema([
       {
         name: "char",
         title: "Character",
@@ -154,6 +154,6 @@ class FocusCameraSongEvent extends SongEvent
         step: 10.0,
         type: SongEventFieldType.FLOAT,
       }
-    ];
+    ]);
   }
 }

@@ -99,7 +99,7 @@ class ZoomCameraSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return [
+    return new SongEventSchema([
       {
         name: 'zoom',
         title: 'Zoom Level',
@@ -145,6 +145,6 @@ class ZoomCameraSongEvent extends SongEvent
           'Elastic In/Out' => 'elasticInOut',
         ]
       }
-    ];
+    ]);
   }
 }

@@ -89,7 +89,7 @@ class PlayAnimationSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return [
+    return new SongEventSchema([
       {
         name: 'target',
         title: 'Target',
@@ -108,6 +108,6 @@ class PlayAnimationSongEvent extends SongEvent
         type: SongEventFieldType.BOOL,
         defaultValue: false
       }
-    ];
+    ]);
   }
 }

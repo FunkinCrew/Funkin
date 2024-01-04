@@ -72,7 +72,7 @@ class SetCameraBopSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return [
+    return new SongEventSchema([
       {
         name: 'intensity',
         title: 'Intensity',
@@ -87,6 +87,6 @@ class SetCameraBopSongEvent extends SongEvent
         step: 1,
         type: SongEventFieldType.INTEGER,
       }
-    ];
+    ]);
   }
 }

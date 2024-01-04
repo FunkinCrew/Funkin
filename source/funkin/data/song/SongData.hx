@@ -1,5 +1,8 @@
 package funkin.data.song;
 
+import funkin.play.event.SongEvent;
+import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventData.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 
@@ -617,6 +620,38 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     this = new SongEventDataRaw(time, event, value);
   }
 
+  public inline function valueAsStruct(?defaultKey:String = "key"):Dynamic
+  {
+    if (this.value == null) return {};
+    if (Std.isOfType(this.value, Array))
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.value);
+      return cast result;
+    }
+    else if (Reflect.isObject(this.value))
+    {
+      // We enter this case if the value is a struct.
+      return cast this.value;
+    }
+    else
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.value);
+      return cast result;
+    }
+  }
+
+  public inline function getHandler():Null<SongEvent>
+  {
+    return SongEventParser.getEvent(this.event);
+  }
+
+  public inline function getSchema():Null<SongEventSchema>
+  {
+    return SongEventParser.getEventSchema(this.event);
+  }
+
   public inline function getDynamic(key:String):Null<Dynamic>
   {
     return this.value == null ? null : Reflect.field(this.value, key);
@@ -660,6 +695,32 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   public inline function getBoolArray(key:String):Array<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
+  }
+
+  public function buildTooltip():String
+  {
+    var eventHandler = getHandler();
+    var eventSchema = getSchema();
+
+    if (eventSchema == null) return 'Unknown Event: ${this.event}';
+
+    var result = '${eventHandler.getTitle()}';
+
+    var defaultKey = eventSchema.getFirstField()?.name;
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(defaultKey);
+
+    for (pair in valueStruct.keyValueIterator())
+    {
+      var key = pair.key;
+      var value = pair.value;
+
+      var title = eventSchema.getByName(key)?.title ?? 'UnknownField';
+      var valueStr = eventSchema.stringifyFieldValue(key, value);
+
+      result += '\n- ${title}: ${valueStr}';
+    }
+
+    return result;
   }
 
   public function clone():SongEventData

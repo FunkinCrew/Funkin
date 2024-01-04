@@ -2113,7 +2113,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(gridGhostHoldNote);
     gridGhostHoldNote.zIndex = 11;
 
-    gridGhostEvent = new ChartEditorEventSprite(this);
+    gridGhostEvent = new ChartEditorEventSprite(this, true);
     gridGhostEvent.alpha = 0.6;
     gridGhostEvent.eventData = new SongEventData(-1, '', {});
     gridGhostEvent.visible = false;
@@ -3127,6 +3127,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Setting event data resets position relative to the grid so we fix that.
         eventSprite.x += renderedEvents.x;
         eventSprite.y += renderedEvents.y;
+        eventSprite.updateTooltipPosition();
       }
 
       // Add hold notes that have been made visible (but not their parents)
