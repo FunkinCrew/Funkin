@@ -149,7 +149,7 @@ class SongTimeChange
    */
   @:optional
   @:alias("b")
-  public var beatTime:Null<Float>;
+  public var beatTime:Float;
 
   /**
    * Quarter notes per minute (float). Cannot be empty in the first element of the list,
@@ -602,7 +602,7 @@ class SongEventDataRaw
   {
     if (_stepTime != null && !force) return _stepTime;
 
-    return _stepTime = Conductor.getTimeInSteps(this.time);
+    return _stepTime = Conductor.instance.getTimeInSteps(this.time);
   }
 }
 
@@ -796,7 +796,7 @@ class SongNoteDataRaw
   {
     if (_stepTime != null && !force) return _stepTime;
 
-    return _stepTime = Conductor.getTimeInSteps(this.time);
+    return _stepTime = Conductor.instance.getTimeInSteps(this.time);
   }
 
   @:jignored
@@ -812,7 +812,7 @@ class SongNoteDataRaw
 
     if (_stepLength != null && !force) return _stepLength;
 
-    return _stepLength = Conductor.getTimeInSteps(this.time + this.length) - getStepTime();
+    return _stepLength = Conductor.instance.getTimeInSteps(this.time + this.length) - getStepTime();
   }
 
   public function setStepLength(value:Float):Void
@@ -823,7 +823,7 @@ class SongNoteDataRaw
     }
     else
     {
-      var lengthMs:Float = Conductor.getStepTimeInMs(value) - this.time;
+      var lengthMs:Float = Conductor.instance.getStepTimeInMs(value) - this.time;
       this.length = lengthMs;
     }
     _stepLength = null;
