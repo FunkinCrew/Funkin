@@ -149,7 +149,7 @@ class SongTimeChange
    */
   @:optional
   @:alias("b")
-  public var beatTime:Null<Float>;
+  public var beatTime:Float;
 
   /**
    * Quarter notes per minute (float). Cannot be empty in the first element of the list,

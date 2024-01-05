@@ -352,24 +352,21 @@ class Conductor
       // Without any custom handling, `currentStepTime` becomes non-zero at `songPosition = 0`.
       if (currentTimeChange.timeStamp < 0.0) currentTimeChange.timeStamp = 0.0;
 
-      if (currentTimeChange.beatTime == null)
+      if (currentTimeChange.timeStamp <= 0.0)
       {
-        if (currentTimeChange.timeStamp <= 0.0)
-        {
-          currentTimeChange.beatTime = 0.0;
-        }
-        else
-        {
-          // Calculate the beat time of this timestamp.
-          currentTimeChange.beatTime = 0.0;
+        currentTimeChange.beatTime = 0.0;
+      }
+      else
+      {
+        // Calculate the beat time of this timestamp.
+        currentTimeChange.beatTime = 0.0;
 
-          if (currentTimeChange.timeStamp > 0.0 && timeChanges.length > 0)
-          {
-            var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
-            currentTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
-              + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC),
-              4);
-          }
+        if (currentTimeChange.timeStamp > 0.0 && timeChanges.length > 0)
+        {
+          var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
+          currentTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
+            + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC),
+            4);
         }
       }
 
