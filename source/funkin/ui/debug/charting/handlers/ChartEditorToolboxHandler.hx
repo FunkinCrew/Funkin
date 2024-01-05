@@ -488,6 +488,16 @@ class ChartEditorToolboxHandler
       state.playtestStartTime = checkboxStartTime.selected;
     };
 
+    var checkboxDebugger:Null<CheckBox> = toolbox.findComponent('playtestDebuggerCheckbox', CheckBox);
+
+    if (checkboxDebugger == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestDebuggerCheckbox component.';
+
+    state.enabledDebuggerPopup = checkboxDebugger.selected;
+
+    checkboxDebugger.onClick = _ -> {
+      state.enabledDebuggerPopup = checkboxDebugger.selected;
+    };
+
     return toolbox;
   }
 
