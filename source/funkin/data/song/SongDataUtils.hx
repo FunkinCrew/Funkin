@@ -230,6 +230,7 @@ class SongDataUtils
     trace('Read ${notesString.length} characters from clipboard.');
 
     var parser = new json2object.JsonParser<SongClipboardItems>();
+    parser.ignoreUnknownVariables = false;
     parser.fromJson(notesString, 'clipboard');
     if (parser.errors.length > 0)
     {

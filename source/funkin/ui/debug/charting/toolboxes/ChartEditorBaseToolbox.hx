@@ -12,13 +12,13 @@ import haxe.ui.core.Component;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorBaseToolbox extends CollapsibleDialog
 {
-  var state:ChartEditorState;
+  var chartEditorState:ChartEditorState;
 
-  private function new(state:ChartEditorState)
+  private function new(chartEditorState:ChartEditorState)
   {
     super();
 
-    this.state = state;
+    this.chartEditorState = chartEditorState;
   }
 
   /**

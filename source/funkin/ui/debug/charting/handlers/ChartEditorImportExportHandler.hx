@@ -115,9 +115,9 @@ class ChartEditorImportExportHandler
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
 
-    Conductor.forceBPM(null); // Disable the forced BPM.
-    Conductor.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
-    Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    Conductor.instance.forceBPM(null); // Disable the forced BPM.
+    Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
@@ -316,6 +316,8 @@ class ChartEditorImportExportHandler
   public static function getLatestBackupPath():Null<String>
   {
     #if sys
+    if (!sys.FileSystem.exists(BACKUPS_PATH)) sys.FileSystem.createDirectory(BACKUPS_PATH);
+
     var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
     entries.sort(SortUtil.alphabetically);
 
@@ -414,16 +416,34 @@ class ChartEditorImportExportHandler
         ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
-        FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
-        if (onSaveCb != null) onSaveCb(targetPath);
+        try
+        {
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          // On success.
+          if (onSaveCb != null) onSaveCb(targetPath);
+        }
+        catch (e)
+        {
+          // On failure.
+          if (onCancelCb != null) onCancelCb();
+        }
       }
       else
       {
         // Force write since we know what file the user wants to overwrite.
         trace('Force exporting to $targetPath...');
-        FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
-        state.saveDataDirty = false;
-        if (onSaveCb != null) onSaveCb(targetPath);
+        try
+        {
+          // On success.
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          state.saveDataDirty = false;
+          if (onSaveCb != null) onSaveCb(targetPath);
+        }
+        catch (e)
+        {
+          // On failure.
+          if (onCancelCb != null) onCancelCb();
+        }
       }
     }
     else

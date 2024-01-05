@@ -150,7 +150,7 @@ class SongTimeChange implements ICloneable<SongTimeChange>
    */
   @:optional
   @:alias("b")
-  public var beatTime:Null<Float>;
+  public var beatTime:Float;
 
   /**
    * Quarter notes per minute (float). Cannot be empty in the first element of the list,
@@ -657,7 +657,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   {
     if (_stepTime != null && !force) return _stepTime;
 
-    return _stepTime = Conductor.getTimeInSteps(this.time);
+    return _stepTime = Conductor.instance.getTimeInSteps(this.time);
   }
 
   public function clone():SongEventDataRaw
@@ -802,7 +802,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   /**
    * The kind of the note.
    * This can allow the note to include information used for custom behavior.
-   * Defaults to blank or `"normal"`.
+   * Defaults to blank or `Constants.DEFAULT_DIFFICULTY`.
    */
   @:alias("k")
   @:default("normal")
@@ -851,7 +851,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   {
     if (_stepTime != null && !force) return _stepTime;
 
-    return _stepTime = Conductor.getTimeInSteps(this.time);
+    return _stepTime = Conductor.instance.getTimeInSteps(this.time);
   }
 
   @:jignored
@@ -867,7 +867,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 
     if (_stepLength != null && !force) return _stepLength;
 
-    return _stepLength = Conductor.getTimeInSteps(this.time + this.length) - getStepTime();
+    return _stepLength = Conductor.instance.getTimeInSteps(this.time + this.length) - getStepTime();
   }
 
   public function setStepLength(value:Float):Void
@@ -878,7 +878,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     }
     else
     {
-      var lengthMs:Float = Conductor.getStepTimeInMs(value) - this.time;
+      var lengthMs:Float = Conductor.instance.getStepTimeInMs(value) - this.time;
       this.length = lengthMs;
     }
     _stepLength = null;

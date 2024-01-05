@@ -64,9 +64,16 @@ class GameOverSubState extends MusicBeatSubState
    */
   var isEnding:Bool = false;
 
-  public function new()
+  var isChartingMode:Bool = false;
+
+  var transparent:Bool;
+
+  public function new(params:GameOverParams)
   {
     super();
+
+    this.isChartingMode = params?.isChartingMode ?? false;
+    transparent = params.transparent;
   }
 
   /**
@@ -87,9 +94,10 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Add a black background to the screen.
-    // We make this transparent so that we can see the stage underneath during debugging.
     var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-    bg.alpha = 0.25;
+    // We make this transparent so that we can see the stage underneath during debugging,
+    // but it's normally opaque.
+    bg.alpha = transparent ? 0.25 : 1.0;
     bg.scrollFactor.set();
     add(bg);
 
@@ -121,7 +129,7 @@ class GameOverSubState extends MusicBeatSubState
     gameOverMusic.stop();
 
     // The conductor now represents the BPM of the game over music.
-    Conductor.update(0);
+    Conductor.instance.update(0);
   }
 
   var hasStartedAnimation:Bool = false;
@@ -176,16 +184,27 @@ class GameOverSubState extends MusicBeatSubState
       // PlayState.seenCutscene = false; // old thing...
       gameOverMusic.stop();
 
-      if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
+      if (isChartingMode)
+      {
+        this.close();
+        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+        PlayState.instance.close(); // This only works because PlayState is a substate!
+      }
+      else if (PlayStatePlaylist.isStoryMode)
+      {
+        FlxG.switchState(new StoryMenuState());
+      }
       else
+      {
         FlxG.switchState(new FreeplayState());
+      }
     }
 
     if (gameOverMusic.playing)
     {
       // Match the conductor to the music.
       // This enables the stepHit and beatHit events.
-      Conductor.update(gameOverMusic.time);
+      Conductor.instance.update(gameOverMusic.time);
     }
     else
     {
@@ -270,6 +289,7 @@ class GameOverSubState extends MusicBeatSubState
     {
       gameOverMusic.loadEmbedded(musicPath);
       gameOverMusic.volume = startingVolume;
+      gameOverMusic.looped = !isEnding;
       gameOverMusic.play();
     }
   }
@@ -306,4 +326,10 @@ class GameOverSubState extends MusicBeatSubState
       }
     });
   }
+}
+
+typedef GameOverParams =
+{
+  var isChartingMode:Bool;
+  var transparent:Bool;
 }

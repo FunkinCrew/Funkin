@@ -24,9 +24,9 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
   public var charSelectScroll:ScrollView;
   public var charIconName:Label;
 
-  public function new(state2:ChartEditorState, charType:CharacterType, lockPosition:Bool = false)
+  public function new(chartEditorState2:ChartEditorState, charType:CharacterType, lockPosition:Bool = false)
   {
-    super(state2);
+    super(chartEditorState2);
 
     initialize(charType, lockPosition);
     this.alpha = 0;
@@ -38,17 +38,17 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
   {
     var currentCharId:String = switch (charType)
     {
-      case BF: state.currentSongMetadata.playData.characters.player;
-      case GF: state.currentSongMetadata.playData.characters.girlfriend;
-      case DAD: state.currentSongMetadata.playData.characters.opponent;
+      case BF: chartEditorState.currentSongMetadata.playData.characters.player;
+      case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend;
+      case DAD: chartEditorState.currentSongMetadata.playData.characters.opponent;
       default: throw 'Invalid charType: ' + charType;
     };
 
     // Position this menu.
     var targetHealthIcon:Null<HealthIcon> = switch (charType)
     {
-      case BF: state.healthIconBF;
-      case DAD: state.healthIconDad;
+      case BF: chartEditorState.healthIconBF;
+      case DAD: chartEditorState.healthIconDad;
       default: null;
     };
 
@@ -101,14 +101,14 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       charButton.onClick = _ -> {
         switch (charType)
         {
-          case BF: state.currentSongMetadata.playData.characters.player = charId;
-          case GF: state.currentSongMetadata.playData.characters.girlfriend = charId;
-          case DAD: state.currentSongMetadata.playData.characters.opponent = charId;
+          case BF: chartEditorState.currentSongMetadata.playData.characters.player = charId;
+          case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend = charId;
+          case DAD: chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
           default: throw 'Invalid charType: ' + charType;
         };
 
-        state.healthIconsDirty = true;
-        state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+        chartEditorState.healthIconsDirty = true;
+        chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       };
 
       charButton.onMouseOver = _ -> {
@@ -123,9 +123,9 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     charIconName.text = defaultText;
   }
 
-  public static function build(state2:ChartEditorState, charType:CharacterType, lockPosition:Bool = false):ChartEditorCharacterIconSelectorMenu
+  public static function build(chartEditorState:ChartEditorState, charType:CharacterType, lockPosition:Bool = false):ChartEditorCharacterIconSelectorMenu
   {
-    var menu = new ChartEditorCharacterIconSelectorMenu(state2, charType, lockPosition);
+    var menu = new ChartEditorCharacterIconSelectorMenu(chartEditorState, charType, lockPosition);
 
     Screen.instance.addComponent(menu);
 

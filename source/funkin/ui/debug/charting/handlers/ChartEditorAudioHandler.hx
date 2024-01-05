@@ -28,11 +28,11 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  public static function loadVocalsFromPath(state:ChartEditorState, path:Path, charId:String, instId:String = ''):Bool
+  public static function loadVocalsFromPath(state:ChartEditorState, path:Path, charId:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
     #if sys
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
-    return loadVocalsFromBytes(state, fileBytes, charId, instId);
+    return loadVocalsFromBytes(state, fileBytes, charId, instId, wipeFirst);
     #else
     trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     return false;
@@ -47,12 +47,12 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  public static function loadVocalsFromAsset(state:ChartEditorState, path:String, charId:String, instId:String = ''):Bool
+  public static function loadVocalsFromAsset(state:ChartEditorState, path:String, charId:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
     var trackData:Null<Bytes> = Assets.getBytes(path);
     if (trackData != null)
     {
-      return loadVocalsFromBytes(state, trackData, charId, instId);
+      return loadVocalsFromBytes(state, trackData, charId, instId, wipeFirst);
     }
     return false;
   }
@@ -63,10 +63,12 @@ class ChartEditorAudioHandler
    * @param bytes The audio byte data.
    * @param charId The character this vocal track will be for.
    * @param instId The instrumental this vocal track will be for.
+   * @param wipeFirst Whether to wipe the existing vocal data before loading.
    */
-  public static function loadVocalsFromBytes(state:ChartEditorState, bytes:Bytes, charId:String, instId:String = ''):Bool
+  public static function loadVocalsFromBytes(state:ChartEditorState, bytes:Bytes, charId:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
+    if (wipeFirst) wipeVocalData(state);
     state.audioVocalTrackData.set(trackId, bytes);
     return true;
   }
@@ -78,11 +80,11 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  public static function loadInstFromPath(state:ChartEditorState, path:Path, instId:String = ''):Bool
+  public static function loadInstFromPath(state:ChartEditorState, path:Path, instId:String = '', wipeFirst:Bool = false):Bool
   {
     #if sys
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
-    return loadInstFromBytes(state, fileBytes, instId);
+    return loadInstFromBytes(state, fileBytes, instId, wipeFirst);
     #else
     trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     return false;
@@ -96,12 +98,12 @@ class ChartEditorAudioHandler
    * @param instId The instrumental this vocal track will be for.
    * @return Success or failure.
    */
-  public static function loadInstFromAsset(state:ChartEditorState, path:String, instId:String = ''):Bool
+  public static function loadInstFromAsset(state:ChartEditorState, path:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
     var trackData:Null<Bytes> = Assets.getBytes(path);
     if (trackData != null)
     {
-      return loadInstFromBytes(state, trackData, instId);
+      return loadInstFromBytes(state, trackData, instId, wipeFirst);
     }
     return false;
   }
@@ -113,9 +115,10 @@ class ChartEditorAudioHandler
    * @param charId The character this vocal track will be for.
    * @param instId The instrumental this vocal track will be for.
    */
-  public static function loadInstFromBytes(state:ChartEditorState, bytes:Bytes, instId:String = ''):Bool
+  public static function loadInstFromBytes(state:ChartEditorState, bytes:Bytes, instId:String = '', wipeFirst:Bool = false):Bool
   {
     if (instId == '') instId = 'default';
+    if (wipeFirst) wipeInstrumentalData(state);
     state.audioInstTrackData.set(instId, bytes);
     return true;
   }
@@ -127,9 +130,9 @@ class ChartEditorAudioHandler
 
     stopExistingVocals(state);
     result = playVocals(state, BF, playerId, instId);
-    if (!result) return false;
+    // if (!result) return false;
     result = playVocals(state, DAD, opponentId, instId);
-    if (!result) return false;
+    // if (!result) return false;
 
     return true;
   }
@@ -182,7 +185,7 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
           state.audioVisGroup.addPlayerVis(vocalTrack);
           state.audioVisGroup.playerVis.x = 885;
-          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
           state.audioVisGroup.playerVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.playerVis.detail = 1;
 
@@ -193,7 +196,7 @@ class ChartEditorAudioHandler
           state.audioVisGroup.addOpponentVis(vocalTrack);
           state.audioVisGroup.opponentVis.x = 435;
 
-          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
           state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.opponentVis.detail = 1;
 

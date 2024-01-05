@@ -14,6 +14,7 @@ class FNFLegacyImporter
   public static function parseLegacyDataRaw(input:String, fileName:String = 'raw'):FNFLegacyData
   {
     var parser = new json2object.JsonParser<FNFLegacyData>();
+    parser.ignoreUnknownVariables = true; // Set to true to ignore extra variables that might be included in the JSON.
     parser.fromJson(input, fileName);
 
     if (parser.errors.length > 0)
@@ -185,15 +186,34 @@ class FNFLegacyImporter
     return result;
   }
 
+  static final STRUMLINE_SIZE = 4;
+
   static function migrateNoteSections(input:Array<LegacyNoteSection>):Array<SongNoteData>
   {
     var result:Array<SongNoteData> = [];
 
     for (section in input)
     {
+      var mustHitSection = section.mustHitSection ?? false;
       for (note in section.sectionNotes)
       {
-        result.push(new SongNoteData(note.time, note.data, note.length, note.getKind()));
+        // Handle the dumb logic for mustHitSection.
+        var noteData = note.data;
+
+        // Flip notes if mustHitSection is FALSE (not true lol).
+        if (!mustHitSection)
+        {
+          if (noteData >= STRUMLINE_SIZE)
+          {
+            noteData -= STRUMLINE_SIZE;
+          }
+          else
+          {
+            noteData += STRUMLINE_SIZE;
+          }
+        }
+
+        result.push(new SongNoteData(note.time, noteData, note.length, note.getKind()));
       }
     }
 

@@ -39,7 +39,7 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
     state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
-    Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
   }
 
   public function undo(state:ChartEditorState):Void
@@ -61,7 +61,7 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
     state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
-    Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
   }
 
   public function toString():String

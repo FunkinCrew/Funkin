@@ -40,7 +40,7 @@ class Countdown
     stopCountdown();
 
     PlayState.instance.isInCountdown = true;
-    Conductor.update(PlayState.instance.startTimestamp + Conductor.beatLengthMs * -5);
+    Conductor.instance.update(PlayState.instance.startTimestamp + Conductor.instance.beatLengthMs * -5);
     // Handle onBeatHit events manually
     // @:privateAccess
     // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
@@ -48,7 +48,7 @@ class Countdown
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
-    countdownTimer.start(Conductor.beatLengthMs / 1000, function(tmr:FlxTimer) {
+    countdownTimer.start(Conductor.instance.beatLengthMs / 1000, function(tmr:FlxTimer) {
       if (PlayState.instance == null)
       {
         tmr.cancel();
@@ -158,7 +158,7 @@ class Countdown
   {
     stopCountdown();
     // This will trigger PlayState.startSong()
-    Conductor.update(0);
+    Conductor.instance.update(0);
     // PlayState.isInCountdown = false;
   }
 
@@ -225,7 +225,7 @@ class Countdown
     countdownSprite.screenCenter();
 
     // Fade sprite in, then out, then destroy it.
-    FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.beatLengthMs / 1000,
+    FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.instance.beatLengthMs / 1000,
       {
         ease: FlxEase.cubeInOut,
         onComplete: function(twn:FlxTween) {

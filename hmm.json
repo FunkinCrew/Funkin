@@ -11,15 +11,20 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "da04cbda49a4c5eebe93fb61296dbaf4f0f1b556",
-      "url": "https://github.com/EliteMasterEric/flixel"
+      "ref": "a83738673e7edbf8acba3a1426af284dfe6719fe",
+      "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "c8c41e26d463aaf2edc0582fb23b6e228235bd16",
-      "url": "https://github.com/EliteMasterEric/flixel-addons"
+      "ref": "fd3aecdeb5635fa0428dffee204fc78fc26b5885",
+      "url": "https://github.com/FunkinCrew/flixel-addons"
+    },
+    {
+      "name": "flixel-text-input",
+      "type": "haxelib",
+      "version": "1.1.0"
     },
     {
       "name": "flixel-ui",
@@ -32,8 +37,8 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "dd2903f7dc7024335b981edf2a770760cec912e1",
-      "url": "https://github.com/ninjamuffin99/flxanimate"
+      "ref": "d7c5621be742e2c98d523dfe5af7528835eaff1e",
+      "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
       "name": "format",
@@ -49,14 +54,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "032192e849cdb7d1070c0a3241c58ee555ffaccc",
+      "ref": "5086e59e7551d775ed4d1fb0188e31de22d1312b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "d90758b229d05206400df867d333c79d9fdbd478",
+      "ref": "2b9cff727999b53ed292b1675ac1c9089ac77600",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -95,15 +100,15 @@
       "name": "json2object",
       "type": "git",
       "dir": null,
-      "ref": "f4df19cfa196f85eece55c3367021fc965f1fa9a",
-      "url": "https://github.com/EliteMasterEric/json2object"
+      "ref": "a8c26f18463c98da32f744c214fe02273e1823fa",
+      "url": "https://github.com/FunkinCrew/json2object"
     },
     {
       "name": "lime",
       "type": "git",
       "dir": null,
       "ref": "737b86f121cdc90358d59e2e527934f267c94a2c",
-      "url": "https://github.com/EliteMasterEric/lime"
+      "url": "https://github.com/FunkinCrew/lime"
     },
     {
       "name": "mconsole",
@@ -124,21 +129,21 @@
       "type": "git",
       "dir": "src",
       "ref": "master",
-      "url": "https://github.com/EliteMasterEric/mockatoo"
+      "url": "https://github.com/FunkinCrew/mockatoo"
     },
     {
       "name": "munit",
       "type": "git",
       "dir": "src",
       "ref": "master",
-      "url": "https://github.com/EliteMasterEric/MassiveUnit"
+      "url": "https://github.com/FunkinCrew/MassiveUnit"
     },
     {
       "name": "openfl",
       "type": "git",
       "dir": null,
       "ref": "f229d76361c7e31025a048fe7909847f75bb5d5e",
-      "url": "https://github.com/EliteMasterEric/openfl"
+      "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
