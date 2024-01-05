@@ -21,8 +21,8 @@ class MoveItemsCommand implements ChartEditorCommand
   public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, offset:Float, columns:Int)
   {
     // Clone the notes to prevent editing from affecting the history.
-    this.notes = [for (note in notes) note.clone()];
-    this.events = [for (event in events) event.clone()];
+    this.notes = notes.clone();
+    this.events = events.clone();
     this.offset = offset;
     this.columns = columns;
     this.movedNotes = [];

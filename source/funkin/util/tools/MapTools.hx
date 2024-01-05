@@ -26,6 +26,33 @@ class MapTools
   }
 
   /**
+   * Create a new array with all elements of the given array, to prevent modifying the original.
+   */
+  public static function clone<K, T>(map:Map<K, T>):Map<K, T>
+  {
+    return map.copy();
+  }
+
+  /**
+   * Create a new array with clones of all elements of the given array, to prevent modifying the original.
+   */
+  public static function deepClone<K, T, U:ICloneable<T>>(map:Map<K, U>):Map<K, T>
+  {
+    // TODO: This function does NOT work.
+    throw "Not implemented";
+
+    /*
+      var newMap:Map<K, T> = [];
+      // Replace each value with a clone of itself.
+      for (key in newMap.keys())
+      {
+        newMap.set(key, newMap.get(key).clone());
+      }
+      return newMap;
+     */
+  }
+
+  /**
    * Return a list of keys from the map (as an array, rather than an iterator).
    * TODO: Rename this?
    */

@@ -876,6 +876,70 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * A list of previous working file paths.
+   * Also known as the "recent files" list.
+   * The first element is [null] if the current working file has not been saved anywhere yet.
+   */
+  public var previousWorkingFilePaths(default, set):Array<Null<String>> = [null];
+
+  function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>>
+  {
+    // Called only when the WHOLE LIST is overridden.
+    previousWorkingFilePaths = value;
+    applyWindowTitle();
+    populateOpenRecentMenu();
+    applyCanQuickSave();
+    return value;
+  }
+
+  /**
+   * The current file path which the chart editor is working with.
+   * If `null`, the current chart has not been saved yet.
+   */
+  public var currentWorkingFilePath(get, set):Null<String>;
+
+  function get_currentWorkingFilePath():Null<String>
+  {
+    return previousWorkingFilePaths[0];
+  }
+
+  function set_currentWorkingFilePath(value:Null<String>):Null<String>
+  {
+    if (value == previousWorkingFilePaths[0]) return value;
+
+    if (previousWorkingFilePaths.contains(null))
+    {
+      // Filter all instances of `null` from the array.
+      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
+        return x != null;
+      });
+    }
+
+    if (previousWorkingFilePaths.contains(value))
+    {
+      // Move the path to the front of the list.
+      previousWorkingFilePaths.remove(value);
+      previousWorkingFilePaths.unshift(value);
+    }
+    else
+    {
+      // Add the path to the front of the list.
+      previousWorkingFilePaths.unshift(value);
+    }
+
+    while (previousWorkingFilePaths.length > Constants.MAX_PREVIOUS_WORKING_FILES)
+    {
+      // Remove the last path in the list.
+      previousWorkingFilePaths.pop();
+    }
+
+    populateOpenRecentMenu();
+    applyWindowTitle();
+
+    return value;
+  }
+
+  /**
    * Whether the difficulty tree view in the toolbox has been modified and needs to be updated.
    * This happens when we add/remove difficulties.
    */
@@ -903,6 +967,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Whether the undo/redo histories have changed since the last time the UI was updated.
    */
   var commandHistoryDirty:Bool = true;
+
+  /**
+   * If true, we are currently in the process of quitting the chart editor.
+   * Skip any update functions as most of them will call a crash.
+   */
+  var criticalFailure:Bool = false;
 
   // Input
 
@@ -1733,70 +1803,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The params which were passed in when the Chart Editor was initialized.
    */
   var params:Null<ChartEditorParams>;
-
-  /**
-   * A list of previous working file paths.
-   * Also known as the "recent files" list.
-   * The first element is [null] if the current working file has not been saved anywhere yet.
-   */
-  public var previousWorkingFilePaths(default, set):Array<Null<String>> = [null];
-
-  function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>>
-  {
-    // Called only when the WHOLE LIST is overridden.
-    previousWorkingFilePaths = value;
-    applyWindowTitle();
-    populateOpenRecentMenu();
-    applyCanQuickSave();
-    return value;
-  }
-
-  /**
-   * The current file path which the chart editor is working with.
-   * If `null`, the current chart has not been saved yet.
-   */
-  public var currentWorkingFilePath(get, set):Null<String>;
-
-  function get_currentWorkingFilePath():Null<String>
-  {
-    return previousWorkingFilePaths[0];
-  }
-
-  function set_currentWorkingFilePath(value:Null<String>):Null<String>
-  {
-    if (value == previousWorkingFilePaths[0]) return value;
-
-    if (previousWorkingFilePaths.contains(null))
-    {
-      // Filter all instances of `null` from the array.
-      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
-        return x != null;
-      });
-    }
-
-    if (previousWorkingFilePaths.contains(value))
-    {
-      // Move the path to the front of the list.
-      previousWorkingFilePaths.remove(value);
-      previousWorkingFilePaths.unshift(value);
-    }
-    else
-    {
-      // Add the path to the front of the list.
-      previousWorkingFilePaths.unshift(value);
-    }
-
-    while (previousWorkingFilePaths.length > Constants.MAX_PREVIOUS_WORKING_FILES)
-    {
-      // Remove the last path in the list.
-      previousWorkingFilePaths.pop();
-    }
-
-    populateOpenRecentMenu();
-    applyWindowTitle();
-
-    return value;
-  }
 
   public function new(?params:ChartEditorParams)
   {
@@ -2791,7 +2797,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public override function update(elapsed:Float):Void
   {
     // Override F4 behavior to include the autosave.
-    if (FlxG.keys.justPressed.F4)
+    if (FlxG.keys.justPressed.F4 && !criticalFailure)
     {
       quitChartEditor();
       return;
@@ -2799,6 +2805,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // dispatchEvent gets called here.
     super.update(elapsed);
+
+    if (criticalFailure) return;
 
     // These ones happen even if the modal dialog is open.
     handleMusicPlayback(elapsed);
@@ -4575,6 +4583,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     FlxG.switchState(new MainMenuState());
 
     resetWindowTitle();
+
+    criticalFailure = true;
   }
 
   /**

@@ -43,7 +43,8 @@ class ChartEditorImportExportHandler
       var variation = (metadata.variation == null || metadata.variation == '') ? Constants.DEFAULT_VARIATION : metadata.variation;
 
       // Clone to prevent modifying the original.
-      var metadataClone:SongMetadata = metadata.clone(variation);
+      var metadataClone:SongMetadata = metadata.clone();
+      metadataClone.variation = variation;
       if (metadataClone != null) songMetadata.set(variation, metadataClone);
 
       var chartData:Null<SongChartData> = SongRegistry.instance.parseEntryChartData(songId, metadata.variation);
