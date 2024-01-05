@@ -116,6 +116,26 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
+    inputTimeSignature.onChange = function(event:UIEvent) {
+      var timeSignatureStr:String = event.data.text;
+      var timeSignature = timeSignatureStr.split('/');
+      if (timeSignature.length != 2) return;
+
+      var timeSignatureNum:Int = Std.parseInt(timeSignature[0]);
+      var timeSignatureDen:Int = Std.parseInt(timeSignature[1]);
+
+      var previousTimeSignatureNum:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum;
+      var previousTimeSignatureDen:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen;
+      if (timeSignatureNum == previousTimeSignatureNum && timeSignatureDen == previousTimeSignatureDen) return;
+
+      chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum = timeSignatureNum;
+      chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen = timeSignatureDen;
+
+      trace('Time signature changed to ${timeSignatureNum}/${timeSignatureDen}');
+
+      chartEditorState.updateTimeSignature();
+    };
+
     inputOffsetInst.onChange = function(event:UIEvent) {
       if (event.value == null) return;
 
@@ -171,6 +191,10 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
     frameDifficulty.text = 'Difficulty: ${chartEditorState.selectedDifficulty.toTitleCase()}';
+
+    var currentTimeSignature = '${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum}/${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen}';
+    trace('Setting time signature to ${currentTimeSignature}');
+    inputTimeSignature.value = {id: currentTimeSignature, text: currentTimeSignature};
 
     var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
     var stageData:Null<StageData> = StageDataParser.parseStageData(stageId);

@@ -194,7 +194,7 @@ class ChartEditorAudioHandler
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
           state.audioVisGroup.addOpponentVis(vocalTrack);
-          state.audioVisGroup.opponentVis.x = 435;
+          state.audioVisGroup.opponentVis.x = 405;
 
           state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
           state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;

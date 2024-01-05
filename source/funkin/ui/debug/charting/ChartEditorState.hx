@@ -15,6 +15,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.graphics.FlxGraphic;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
@@ -80,6 +81,7 @@ import funkin.ui.debug.charting.components.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
+import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorPlaybarHead;
 import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
 import funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
@@ -168,7 +170,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The width of the scroll area.
    */
-  public static final PLAYHEAD_SCROLL_AREA_WIDTH:Int = 12;
+  public static final PLAYHEAD_SCROLL_AREA_WIDTH:Int = Std.int(GRID_SIZE);
 
   /**
    * The height of the playhead, in pixels.
@@ -334,17 +336,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.scrollPositionInPixels = value;
 
     // Move the grid sprite to the correct position.
-    if (gridTiledSprite != null && gridPlayheadScrollArea != null)
+    if (gridTiledSprite != null && measureTicks != null)
     {
       if (isViewDownscroll)
       {
         gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
-        gridPlayheadScrollArea.y = gridTiledSprite.y;
+        measureTicks.y = gridTiledSprite.y;
       }
       else
       {
         gridTiledSprite.y = -scrollPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
-        gridPlayheadScrollArea.y = gridTiledSprite.y;
+        measureTicks.y = gridTiledSprite.y;
 
         if (audioVisGroup != null && audioVisGroup.playerVis != null)
         {
@@ -366,6 +368,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
     // Update the note preview viewport box.
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
+    // Update the measure tick display.
+    if (measureTicks != null) measureTicks.y = gridTiledSprite?.y ?? 0.0;
     return this.scrollPositionInPixels;
   }
 
@@ -1630,6 +1634,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var notePreviewViewportBitmap:Null<BitmapData> = null;
 
+  /**r
+   * The IMAGE used for the measure ticks. Updated by ChartEditorThemeHandler.
+   */
+  var measureTickBitmap:Null<BitmapData> = null;
+
   /**
    * The tiled sprite used to display the grid.
    * The height is the length of the song, and scrolling is done by simply the sprite.
@@ -1637,15 +1646,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var gridTiledSprite:Null<FlxSprite> = null;
 
   /**
+   * The measure ticks area. Includes the numbers and the background sprite.
+   */
+  var measureTicks:Null<ChartEditorMeasureTicks> = null;
+
+  /**
    * The playhead representing the current position in the song.
    * Can move around on the grid independently of the view.
    */
   var gridPlayhead:FlxSpriteGroup = new FlxSpriteGroup();
-
-  /**
-   * The sprite for the scroll area under
-   */
-  var gridPlayheadScrollArea:Null<FlxSprite> = null;
 
   /**
    * A sprite used to indicate the note that will be placed on click.
@@ -1868,6 +1877,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.updateTheme();
 
     buildGrid();
+    buildMeasureTicks();
     buildNotePreview();
     buildSelectionBox();
 
@@ -2122,20 +2132,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     buildNoteGroup();
 
-    gridPlayheadScrollArea = new FlxSprite(0, 0);
-    gridPlayheadScrollArea.makeGraphic(10, 10, PLAYHEAD_SCROLL_AREA_COLOR); // Make it 10x10px and then scale it as needed.
-    add(gridPlayheadScrollArea);
-    gridPlayheadScrollArea.setGraphicSize(PLAYHEAD_SCROLL_AREA_WIDTH, 3000);
-    gridPlayheadScrollArea.updateHitbox();
-    gridPlayheadScrollArea.x = gridTiledSprite.x - PLAYHEAD_SCROLL_AREA_WIDTH;
-    gridPlayheadScrollArea.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
-    gridPlayheadScrollArea.zIndex = 25;
-
     // The playhead that show the current position in the song.
     add(gridPlayhead);
     gridPlayhead.zIndex = 30;
 
-    var playheadWidth:Int = GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + (PLAYHEAD_SCROLL_AREA_WIDTH * 2);
+    var playheadWidth:Int = GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + (PLAYHEAD_SCROLL_AREA_WIDTH);
     var playheadBaseYPos:Float = MENU_BAR_HEIGHT + GRID_TOP_PAD;
     gridPlayhead.setPosition(gridTiledSprite.x, playheadBaseYPos);
     var playheadSprite:FlxSprite = new FlxSprite().makeGraphic(playheadWidth, PLAYHEAD_HEIGHT, PLAYHEAD_COLOR);
@@ -2166,11 +2167,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(audioVisGroup);
   }
 
+  function buildMeasureTicks():Void
+  {
+    measureTicks = new ChartEditorMeasureTicks(this);
+    var measureTicksWidth = (GRID_SIZE);
+    measureTicks.x = gridTiledSprite.x - measureTicksWidth;
+    measureTicks.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
+    measureTicks.zIndex = 20;
+
+    add(measureTicks);
+  }
+
   function buildNotePreview():Void
   {
     var height:Int = FlxG.height - MENU_BAR_HEIGHT - GRID_TOP_PAD - PLAYBAR_HEIGHT - GRID_TOP_PAD - GRID_TOP_PAD;
     notePreview = new ChartEditorNotePreview(height);
-    notePreview.x = 350;
+    notePreview.x = 320;
     notePreview.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
     add(notePreview);
 
@@ -2249,6 +2261,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       bounds.y -= MIN_HEIGHT - bounds.height;
       bounds.height = MIN_HEIGHT;
     }
+
+    trace('Note preview viewport bounds: ' + bounds.toString());
 
     return bounds;
   }
@@ -2828,7 +2842,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (metronomeVolume > 0.0 && this.subState == null && (audioInstTrack != null && audioInstTrack.isPlaying))
     {
-      playMetronomeTick(Conductor.currentBeat % 4 == 0);
+      playMetronomeTick(Conductor.currentBeat % Conductor.beatsPerMeasure == 0);
     }
 
     return true;
@@ -3533,7 +3547,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           scrollAnchorScreenPos = null;
         }
-        else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea) && !isCursorOverHaxeUI)
+        else if (measureTicks != null && FlxG.mouse.overlaps(measureTicks) && !isCursorOverHaxeUI)
         {
           gridPlayheadScrollAreaPressed = true;
         }
@@ -4211,7 +4225,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             {
               targetCursorMode = Pointer;
             }
-            else if (gridPlayheadScrollArea != null && FlxG.mouse.overlaps(gridPlayheadScrollArea))
+            else if (measureTicks != null && FlxG.mouse.overlaps(measureTicks))
             {
               targetCursorMode = Pointer;
             }
@@ -4505,7 +4519,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Visibly center the Dad health icon.
     if (healthIconDad != null)
     {
-      healthIconDad.x = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x - 45 - (healthIconDad.width / 2));
+      healthIconDad.x = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x - 75 - (healthIconDad.width / 2));
       healthIconDad.y = (gridTiledSprite == null) ? (0) : (MENU_BAR_HEIGHT + GRID_TOP_PAD + 30 - (healthIconDad.height / 2));
     }
   }
@@ -4991,11 +5005,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function onSongLengthChanged():Void
   {
-    if (gridTiledSprite != null) gridTiledSprite.height = songLengthInPixels;
-    if (gridPlayheadScrollArea != null)
+    if (gridTiledSprite != null)
     {
-      gridPlayheadScrollArea.setGraphicSize(Std.int(gridPlayheadScrollArea.width), songLengthInPixels);
-      gridPlayheadScrollArea.updateHitbox();
+      gridTiledSprite.height = songLengthInPixels;
+    }
+    if (measureTicks != null)
+    {
+      measureTicks.setHeight(songLengthInPixels);
     }
 
     // Remove any notes past the end of the song.
@@ -5103,6 +5119,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         selectedDifficulty = prevDifficulty;
 
         Conductor.mapTimeChanges(this.currentSongMetadata.timeChanges);
+        updateTimeSignature();
 
         refreshDifficultyTreeSelection();
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -5242,6 +5259,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = vocalTargetVolume;
   }
 
+  function updateTimeSignature():Void
+  {
+    // Redo the grid bitmap to be 4/4.
+    this.updateTheme();
+    gridTiledSprite.loadGraphic(gridBitmap);
+    measureTicks.reloadTickBitmap();
+  }
+
   /**
    * HAXEUI FUNCTIONS
    */
@@ -5354,6 +5379,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (notePreviewViewportBoundsDirty)
     {
       setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
+      notePreviewViewportBoundsDirty = false;
     }
   }
 
