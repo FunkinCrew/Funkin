@@ -249,9 +249,9 @@ class ChartEditorThemeHandler
     state.measureTickBitmap.fillRect(new Rectangle(0, bottomTickY, state.measureTickBitmap.width, measureTickWidth / 2), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
 
     // Draw the beat ticks.
-    var beatTick2Y:Float = state.measureTickBitmap.height * 1 / Conductor.beatsPerMeasure - (beatTickWidth / 2);
-    var beatTick3Y:Float = state.measureTickBitmap.height * 2 / Conductor.beatsPerMeasure - (beatTickWidth / 2);
-    var beatTick4Y:Float = state.measureTickBitmap.height * 3 / Conductor.beatsPerMeasure - (beatTickWidth / 2);
+    var beatTick2Y:Float = state.measureTickBitmap.height * 1 / Conductor.instance.beatsPerMeasure - (beatTickWidth / 2);
+    var beatTick3Y:Float = state.measureTickBitmap.height * 2 / Conductor.instance.beatsPerMeasure - (beatTickWidth / 2);
+    var beatTick4Y:Float = state.measureTickBitmap.height * 3 / Conductor.instance.beatsPerMeasure - (beatTickWidth / 2);
     var beatTickLength:Float = state.measureTickBitmap.width * 2 / 3;
     state.measureTickBitmap.fillRect(new Rectangle(0, beatTick2Y, beatTickLength, beatTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
     state.measureTickBitmap.fillRect(new Rectangle(0, beatTick3Y, beatTickLength, beatTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
