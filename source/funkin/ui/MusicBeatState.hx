@@ -125,6 +125,16 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     ModuleHandler.callEvent(event);
   }
 
+  function debug_refreshModules()
+  {
+    PolymodHandler.forceReloadAssets();
+
+    this.destroy();
+
+    // Create a new instance of the current state, so old data is cleared.
+    FlxG.resetState();
+  }
+
   public function stepHit():Bool
   {
     var event = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
