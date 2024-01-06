@@ -21,8 +21,8 @@ class MoveItemsCommand implements ChartEditorCommand
   public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, offset:Float, columns:Int)
   {
     // Clone the notes to prevent editing from affecting the history.
-    this.notes = [for (note in notes) note.clone()];
-    this.events = [for (event in events) event.clone()];
+    this.notes = notes.clone();
+    this.events = events.clone();
     this.offset = offset;
     this.columns = columns;
     this.movedNotes = [];
@@ -41,7 +41,7 @@ class MoveItemsCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultNote = note.clone();
-      resultNote.time = (resultNote.time + offset).clamp(0, Conductor.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+      resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
       resultNote.data = ChartEditorState.gridColumnToNoteData((ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0,
         ChartEditorState.STRUMLINE_SIZE * 2 - 1));
 
@@ -52,7 +52,7 @@ class MoveItemsCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultEvent = event.clone();
-      resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+      resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
 
       movedEvents.push(resultEvent);
     }

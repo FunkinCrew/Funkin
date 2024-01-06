@@ -140,9 +140,9 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (event.value == null) return;
 
       chartEditorState.currentInstrumentalOffset = event.value;
-      Conductor.instrumentalOffset = event.value;
+      Conductor.instance.instrumentalOffset = event.value;
       // Update song length.
-      chartEditorState.songLengthInMs = (chartEditorState.audioInstTrack?.length ?? 1000.0) + Conductor.instrumentalOffset;
+      chartEditorState.songLengthInMs = (chartEditorState.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
     };
 
     inputOffsetVocal.onChange = function(event:UIEvent) {
@@ -182,6 +182,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
   public override function refresh():Void
   {
+    super.refresh();
+
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
