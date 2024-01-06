@@ -686,6 +686,7 @@ class ChartEditorDialogHandler
 
       Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
       Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+      state.updateTimeSignature();
 
       state.selectedVariation = Constants.DEFAULT_VARIATION;
       state.selectedDifficulty = state.availableDifficulties[0];
