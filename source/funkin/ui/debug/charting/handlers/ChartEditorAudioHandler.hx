@@ -185,7 +185,7 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
           state.audioVisGroup.addPlayerVis(vocalTrack);
           state.audioVisGroup.playerVis.x = 885;
-          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
           state.audioVisGroup.playerVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.playerVis.detail = 1;
 
@@ -196,7 +196,7 @@ class ChartEditorAudioHandler
           state.audioVisGroup.addOpponentVis(vocalTrack);
           state.audioVisGroup.opponentVis.x = 435;
 
-          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
           state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.opponentVis.detail = 1;
 
