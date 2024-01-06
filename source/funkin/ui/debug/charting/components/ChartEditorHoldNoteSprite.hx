@@ -43,11 +43,16 @@ class ChartEditorHoldNoteSprite extends SustainTrail
    * Set the height directly, to a value in pixels.
    * @param h The desired height in pixels.
    */
-  public function setHeightDirectly(h:Float, ?lerp:Bool = false)
+  public function setHeightDirectly(h:Float, lerp:Bool = false)
   {
-    if (lerp != null && lerp) sustainLength = FlxMath.lerp(sustainLength, h / (getScrollSpeed() * Constants.PIXELS_PER_MS), 0.25);
+    if (lerp)
+    {
+      sustainLength = FlxMath.lerp(sustainLength, h / (getScrollSpeed() * Constants.PIXELS_PER_MS), 0.25);
+    }
     else
+    {
       sustainLength = h / (getScrollSpeed() * Constants.PIXELS_PER_MS);
+    }
 
     fullSustainLength = sustainLength;
   }

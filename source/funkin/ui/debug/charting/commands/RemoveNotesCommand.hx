@@ -20,6 +20,8 @@ class RemoveNotesCommand implements ChartEditorCommand
 
   public function execute(state:ChartEditorState):Void
   {
+    if (notes.length == 0) return;
+
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
@@ -35,6 +37,8 @@ class RemoveNotesCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
+    if (notes.length == 0) return;
+
     for (note in notes)
     {
       state.currentSongChartNoteData.push(note);
