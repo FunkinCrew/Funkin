@@ -22,13 +22,13 @@ class WatchPlugin extends FlxBasic
   {
     super.update(elapsed);
 
-    FlxG.watch.addQuick("songPosition", Conductor.songPosition);
-    FlxG.watch.addQuick("songPositionNoOffset", Conductor.songPosition + Conductor.instrumentalOffset);
+    FlxG.watch.addQuick("songPosition", Conductor.instance.songPosition);
+    FlxG.watch.addQuick("songPositionNoOffset", Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
     FlxG.watch.addQuick("musicTime", FlxG.sound?.music?.time ?? 0.0);
-    FlxG.watch.addQuick("bpm", Conductor.bpm);
-    FlxG.watch.addQuick("currentMeasureTime", Conductor.currentMeasureTime);
-    FlxG.watch.addQuick("currentBeatTime", Conductor.currentBeatTime);
-    FlxG.watch.addQuick("currentStepTime", Conductor.currentStepTime);
+    FlxG.watch.addQuick("bpm", Conductor.instance.bpm);
+    FlxG.watch.addQuick("currentMeasureTime", Conductor.instance.currentMeasureTime);
+    FlxG.watch.addQuick("currentBeatTime", Conductor.instance.currentBeatTime);
+    FlxG.watch.addQuick("currentStepTime", Conductor.instance.currentStepTime);
   }
 
   public override function destroy():Void
