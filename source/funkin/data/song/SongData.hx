@@ -1,5 +1,7 @@
 package funkin.data.song;
 
+import funkin.data.event.SongEventRegistry;
+import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 import funkin.util.tools.ICloneable;
@@ -675,6 +677,33 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   public function new(time:Float, event:String, value:Dynamic = null)
   {
     this = new SongEventDataRaw(time, event, value);
+  }
+
+  public inline function valueAsStruct(?defaultKey:String = "key"):Dynamic
+  {
+    if (this.value == null) return {};
+    if (Std.isOfType(this.value, Array))
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.value);
+      return cast result;
+    }
+    else if (Reflect.isObject(this.value))
+    {
+      // We enter this case if the value is a struct.
+      return cast this.value;
+    }
+    else
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.value);
+      return cast result;
+    }
+  }
+
+  public inline function getSchema():Null<SongEventSchema>
+  {
+    return SongEventRegistry.getEventSchema(this.event);
   }
 
   public inline function getDynamic(key:String):Null<Dynamic>

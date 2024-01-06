@@ -162,6 +162,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
   public override function refresh():Void
   {
+    super.refresh();
+
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;

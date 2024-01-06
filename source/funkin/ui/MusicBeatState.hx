@@ -80,25 +80,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
   }
 
-  function handleQuickWatch():Void
-  {
-    // Display Conductor info in the watch window.
-    FlxG.watch.addQuick("songPosition", Conductor.instance.songPosition);
-    FlxG.watch.addQuick("songPositionNoOffset", Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
-    FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
-    FlxG.watch.addQuick("bpm", Conductor.instance.bpm);
-    FlxG.watch.addQuick("currentMeasureTime", Conductor.instance.currentBeatTime);
-    FlxG.watch.addQuick("currentBeatTime", Conductor.instance.currentBeatTime);
-    FlxG.watch.addQuick("currentStepTime", Conductor.instance.currentStepTime);
-  }
-
   override function update(elapsed:Float)
   {
     super.update(elapsed);
 
     handleControls();
-    handleFunctionControls();
-    handleQuickWatch();
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }

@@ -42,7 +42,7 @@ import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
-import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventRegistry;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.Strumline;
@@ -942,7 +942,7 @@ class PlayState extends MusicBeatSubState
     // TODO: Check that these work even when songPosition is less than 0.
     if (songEvents != null && songEvents.length > 0)
     {
-      var songEventsToActivate:Array<SongEventData> = SongEventParser.queryEvents(songEvents, Conductor.instance.songPosition);
+      var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEvents(songEvents, Conductor.instance.songPosition);
 
       if (songEventsToActivate.length > 0)
       {
@@ -961,7 +961,7 @@ class PlayState extends MusicBeatSubState
           // Calling event.cancelEvent() skips the event. Neat!
           if (!eventEvent.eventCanceled)
           {
-            SongEventParser.handleEvent(event);
+            SongEventRegistry.handleEvent(event);
           }
         }
       }
@@ -1607,7 +1607,7 @@ class PlayState extends MusicBeatSubState
 
     // Reset song events.
     songEvents = currentChart.getEvents();
-    SongEventParser.resetEvents(songEvents);
+    SongEventRegistry.resetEvents(songEvents);
 
     // Reset the notes on each strumline.
     var playerNoteData:Array<SongNoteData> = [];
