@@ -2882,7 +2882,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (metronomeVolume > 0.0 && this.subState == null && (audioInstTrack != null && audioInstTrack.isPlaying))
     {
-      playMetronomeTick(Conductor.instance.currentBeat % Conductor.beatsPerMeasure == 0);
+      playMetronomeTick(Conductor.instance.currentBeat % Conductor.instance.beatsPerMeasure == 0);
     }
 
     // Show the mouse cursor.
