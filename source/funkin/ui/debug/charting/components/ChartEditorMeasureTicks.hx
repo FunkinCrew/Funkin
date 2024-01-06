@@ -55,8 +55,8 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     var viewHeight = FlxG.height - ChartEditorState.MENU_BAR_HEIGHT - ChartEditorState.PLAYBAR_HEIGHT;
     var viewBottomPosition = viewTopPosition + viewHeight;
 
-    var measureNumberInViewport = Math.floor(viewTopPosition / ChartEditorState.GRID_SIZE / Conductor.stepsPerMeasure) + 1;
-    var measureNumberPosition = measureNumberInViewport * ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure;
+    var measureNumberInViewport = Math.floor(viewTopPosition / ChartEditorState.GRID_SIZE / Conductor.instance.stepsPerMeasure) + 1;
+    var measureNumberPosition = measureNumberInViewport * ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure;
 
     measureNumber.text = '${measureNumberInViewport + 1}';
     measureNumber.y = measureNumberPosition + this.y;

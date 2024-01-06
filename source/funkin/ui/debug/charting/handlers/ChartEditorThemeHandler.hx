@@ -239,7 +239,7 @@ class ChartEditorThemeHandler
 
     // Draw the measure ticks.
     var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE); // 1 grid squares wide.
-    var ticksHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.stepsPerMeasure); // 1 measure tall.
+    var ticksHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure); // 1 measure tall.
     state.measureTickBitmap = new BitmapData(ticksWidth, ticksHeight, true);
     state.measureTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, ticksHeight), GRID_BEAT_DIVIDER_COLOR_DARK);
 
@@ -259,18 +259,18 @@ class ChartEditorThemeHandler
 
     // Draw the step ticks.
     // TODO: Make this a loop or something.
-    var stepTick2Y:Float = state.measureTickBitmap.height * 1 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick3Y:Float = state.measureTickBitmap.height * 2 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick4Y:Float = state.measureTickBitmap.height * 3 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick6Y:Float = state.measureTickBitmap.height * 5 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick7Y:Float = state.measureTickBitmap.height * 6 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick8Y:Float = state.measureTickBitmap.height * 7 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick10Y:Float = state.measureTickBitmap.height * 9 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick11Y:Float = state.measureTickBitmap.height * 10 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick12Y:Float = state.measureTickBitmap.height * 11 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick14Y:Float = state.measureTickBitmap.height * 13 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick15Y:Float = state.measureTickBitmap.height * 14 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick16Y:Float = state.measureTickBitmap.height * 15 / Conductor.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick2Y:Float = state.measureTickBitmap.height * 1 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick3Y:Float = state.measureTickBitmap.height * 2 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick4Y:Float = state.measureTickBitmap.height * 3 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick6Y:Float = state.measureTickBitmap.height * 5 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick7Y:Float = state.measureTickBitmap.height * 6 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick8Y:Float = state.measureTickBitmap.height * 7 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick10Y:Float = state.measureTickBitmap.height * 9 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick11Y:Float = state.measureTickBitmap.height * 10 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick12Y:Float = state.measureTickBitmap.height * 11 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick14Y:Float = state.measureTickBitmap.height * 13 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick15Y:Float = state.measureTickBitmap.height * 14 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+    var stepTick16Y:Float = state.measureTickBitmap.height * 15 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
     var stepTickLength:Float = state.measureTickBitmap.width * 1 / 3;
     state.measureTickBitmap.fillRect(new Rectangle(0, stepTick2Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
     state.measureTickBitmap.fillRect(new Rectangle(0, stepTick3Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
