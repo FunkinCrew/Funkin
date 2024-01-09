@@ -14,6 +14,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -140,6 +141,86 @@ class Strumline extends FlxSpriteGroup
     super.update(elapsed);
 
     updateNotes();
+  }
+
+  /**
+   * Process the notes in this strumline.
+   * @param onNoteMiss
+   * @param dispatchEvent TODO: better way to do this? Maybe passing in current dispatchEvent function from current state?
+   */
+  public function processNotes(?onNoteMiss:NoteSprite->Void, ?dispatchEvent:ScriptEvent->Void)
+  {
+    for (note in notes.members)
+    {
+      if (note == null || (isPlayer && note.hasBeenHit)) continue;
+
+      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
+      var hitWindowCenter = note.strumTime;
+      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
+
+      if (Conductor.instance.songPosition > hitWindowEnd)
+      {
+        if (!isPlayer && note.hasMissed) continue;
+
+        note.tooEarly = false;
+        note.mayHit = false;
+        note.hasMissed = true;
+
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
+      }
+      else if (Conductor.instance.songPosition > hitWindowCenter)
+      {
+        // only run this on opponent strumlines!
+        if (!isPlayer) continue;
+
+        // Call an event to allow canceling the note hit.
+        // NOTE: This is what handles the character animations!
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
+        if (dispatchEvent != null) dispatchEvent(event);
+
+        // Calling event.cancelEvent() skips all other logic! Neat!
+        if (event.eventCanceled) continue;
+
+        // Command the opponent to hit the note on time.
+        // NOTE: This is what handles the strumline and cleaning up the note itself!
+
+        hitNote(note);
+
+        if (note.holdNoteSprite != null)
+        {
+          playNoteHoldCover(note.holdNoteSprite);
+        }
+      }
+      else if (Conductor.instance.songPosition > hitWindowStart)
+      {
+        if (!isPlayer && (note.hasBeenHit || note.hasMissed)) continue;
+
+        note.tooEarly = false;
+        note.mayHit = true;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+      else
+      {
+        note.tooEarly = true;
+        note.mayHit = false;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+
+      if (note.hasMissed && !note.handledMiss)
+      {
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, 0, true);
+
+        if (dispatchEvent != null) dispatchEvent(event);
+
+        if (event.eventCanceled) continue;
+
+        if (onNoteMiss != null) onNoteMiss(note);
+
+        note.handledMiss = true;
+      }
+    }
   }
 
   var frameMax:Int;

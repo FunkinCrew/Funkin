@@ -1791,63 +1791,7 @@ class PlayState extends MusicBeatSubState
   {
     if (playerStrumline?.notes?.members == null || opponentStrumline?.notes?.members == null) return;
 
-    // Process notes on the opponent's side.
-    for (note in opponentStrumline.notes.members)
-    {
-      if (note == null) continue;
-
-      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
-
-      if (Conductor.instance.songPosition > hitWindowEnd)
-      {
-        if (note.hasMissed) continue;
-
-        note.tooEarly = false;
-        note.mayHit = false;
-        note.hasMissed = true;
-
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
-      }
-      else if (Conductor.instance.songPosition > hitWindowCenter)
-      {
-        if (note.hasBeenHit) continue;
-
-        // Call an event to allow canceling the note hit.
-        // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
-        dispatchEvent(event);
-
-        // Calling event.cancelEvent() skips all the other logic! Neat!
-        if (event.eventCanceled) continue;
-
-        // Command the opponent to hit the note on time.
-        // NOTE: This is what handles the strumline and cleaning up the note itself!
-        opponentStrumline.hitNote(note);
-
-        if (note.holdNoteSprite != null)
-        {
-          opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
-        }
-      }
-      else if (Conductor.instance.songPosition > hitWindowStart)
-      {
-        if (note.hasBeenHit || note.hasMissed) continue;
-
-        note.tooEarly = false;
-        note.mayHit = true;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-      else
-      {
-        note.tooEarly = true;
-        note.mayHit = false;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-    }
+    opponentStrumline.processNotes(null, dispatchEvent);
 
     // Process hold notes on the opponent's side.
     for (holdNote in opponentStrumline.holdNotes.members)
@@ -1868,57 +1812,7 @@ class PlayState extends MusicBeatSubState
       // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
     }
 
-    // Process notes on the player's side.
-    for (note in playerStrumline.notes.members)
-    {
-      if (note == null || note.hasBeenHit) continue;
-
-      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
-
-      if (Conductor.instance.songPosition > hitWindowEnd)
-      {
-        note.tooEarly = false;
-        note.mayHit = false;
-        note.hasMissed = true;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
-      }
-      else if (Conductor.instance.songPosition > hitWindowStart)
-      {
-        note.tooEarly = false;
-        note.mayHit = true;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-      else
-      {
-        note.tooEarly = true;
-        note.mayHit = false;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-
-      // This becomes true when the note leaves the hit window.
-      // It might still be on screen.
-      if (note.hasMissed && !note.handledMiss)
-      {
-        // Call an event to allow canceling the note miss.
-        // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, 0, true);
-        dispatchEvent(event);
-
-        // Calling event.cancelEvent() skips all the other logic! Neat!
-        if (event.eventCanceled) continue;
-
-        // Judge the miss.
-        // NOTE: This is what handles the scoring.
-        trace('Missed note! ${note.noteData}');
-        onNoteMiss(note);
-
-        note.handledMiss = true;
-      }
-    }
+    playerStrumline.processNotes(onNoteMiss, dispatchEvent);
 
     // Process hold notes on the player's side.
     // This handles scoring so we don't need it on the opponent's side.

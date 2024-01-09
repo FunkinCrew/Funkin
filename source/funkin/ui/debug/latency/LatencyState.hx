@@ -8,7 +8,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import funkin.ui.MusicBeatSubState;
 import flixel.sound.FlxSound;
-import flixel.system.debug.stats.StatsGraph;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audio.visualize.PolygonSpectogram;
@@ -16,12 +15,17 @@ import funkin.play.notes.NoteSprite;
 import funkin.ui.debug.latency.CoolStatsGraph;
 import haxe.Timer;
 import openfl.events.KeyboardEvent;
+import funkin.input.PreciseInputManager;
+import funkin.play.notes.Strumline;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.data.notestyle.NoteStyleData;
+import funkin.data.notestyle.NoteStyleRegistry;
 
 class LatencyState extends MusicBeatSubState
 {
   var offsetText:FlxText;
   var noteGrp:FlxTypedGroup<NoteSprite>;
-  var strumLine:FlxSprite;
+  var strumLine:Strumline;
 
   var blocks:FlxTypedGroup<FlxSprite>;
 
@@ -34,10 +38,8 @@ class LatencyState extends MusicBeatSubState
   var offsetsPerBeat:Array<Int> = [];
   var swagSong:HomemadeMusic;
 
-  #if FLX_DEBUG
   var funnyStatsGraph:CoolStatsGraph;
   var realStats:CoolStatsGraph;
-  #end
 
   override function create()
   {
@@ -51,33 +53,24 @@ class LatencyState extends MusicBeatSubState
     FlxG.sound.music = swagSong;
     FlxG.sound.music.play();
 
-    #if FLX_DEBUG
-    funnyStatsGraph = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.PINK, "time");
+    funnyStatsGraph = new CoolStatsGraph(0, Std.int(FlxG.height / 3), Std.int(FlxG.width / 2), Std.int(FlxG.height / 3), FlxColor.PINK, "time");
+    funnyStatsGraph.curLabel.y += 32;
     FlxG.addChildBelowMouse(funnyStatsGraph);
 
-    realStats = new CoolStatsGraph(0, Std.int(FlxG.height / 2), FlxG.width, Std.int(FlxG.height / 2), FlxColor.YELLOW, "REAL");
+    realStats = new CoolStatsGraph(0, Std.int(FlxG.height / 3), Std.int(FlxG.width / 2), Std.int(FlxG.height / 3), FlxColor.YELLOW, "REAL");
+    realStats.curLabel.y -= 32;
     FlxG.addChildBelowMouse(realStats);
-    #end
 
-    FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key -> {
-      trace(key.charCode);
-
-      if (key.charCode == 120) generateBeatStuff();
-
-      trace("\tEVENT PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
-      // trace(FlxG.sound.music.prevTimestamp);
-      trace(FlxG.sound.music.time);
-      trace("\tFR FR PRESS: \t" + swagSong.getTimeWithDiff());
-
-      // trace("\tREDDIT: \t" + swagSong.frfrTime + " " + Timer.stamp());
-      // @:privateAccess
-      // trace("\tREDDIT: \t" + FlxG.sound.music._channel.position + " " + Timer.stamp());
-      // trace("EVENT LISTENER: " + key);
+    PreciseInputManager.instance.onInputPressed.add(function(event:PreciseInputEvent) {
+      strumLine.pressKey(event.noteDirection);
+      strumLine.playPress(event.noteDirection);
+      generateBeatStuff(event);
     });
 
-    // FlxG.sound.playMusic(Paths.sound('soundTest'));
-
-    // funnyStatsGraph.hi
+    PreciseInputManager.instance.onInputReleased.add(function(event:PreciseInputEvent) {
+      strumLine.playStatic(event.noteDirection);
+      strumLine.releaseKey(event.noteDirection);
+    });
 
     Conductor.instance.forceBPM(60);
 
@@ -139,10 +132,11 @@ class LatencyState extends MusicBeatSubState
     }
 
     offsetText = new FlxText();
+    offsetText.size = 20;
     offsetText.screenCenter();
     add(offsetText);
 
-    strumLine = new FlxSprite(FlxG.width / 2, 100).makeGraphic(FlxG.width, 5);
+    strumLine = new Strumline(NoteStyleRegistry.instance.fetchDefault(), true);
     add(strumLine);
   }
 
@@ -175,15 +169,8 @@ class LatencyState extends MusicBeatSubState
       trace(FlxG.sound.music._channel.position);
      */
 
-    #if FLX_DEBUG
-    funnyStatsGraph.update(FlxG.sound.music.time % 500);
+    funnyStatsGraph.update(Conductor.instance.songPosition % 500);
     realStats.update(swagSong.getTimeWithDiff() % 500);
-    #end
-
-    if (FlxG.keys.justPressed.S)
-    {
-      trace("\tUPDATE PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
-    }
 
     // if (FlxG.keys.justPressed.SPACE)
     // {
@@ -192,17 +179,15 @@ class LatencyState extends MusicBeatSubState
     //     FlxG.sound.music.resume();
     // }
 
-    if (FlxG.keys.pressed.D) FlxG.sound.music.time += 1000 * FlxG.elapsed;
-
-    Conductor.instance.update(swagSong.getTimeWithDiff() - Conductor.instance.inputOffset);
+    Conductor.instance.update();
     // Conductor.instance.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
     songPosVis.x = songPosToX(Conductor.instance.songPosition);
     songVisFollowAudio.x = songPosToX(Conductor.instance.songPosition - Conductor.instance.instrumentalOffset);
     songVisFollowVideo.x = songPosToX(Conductor.instance.songPosition - Conductor.instance.inputOffset);
 
-    offsetText.text = "INST Offset: " + Conductor.instance.instrumentalOffset + "ms";
-    offsetText.text += "\nINPUT Offset: " + Conductor.instance.inputOffset + "ms";
+    offsetText.text = "INST Offset (CTRL+Left/Right to change): " + Conductor.instance.instrumentalOffset + "ms";
+    offsetText.text += "\nINPUT Offset (Left/Right to change): " + Conductor.instance.inputOffset + "ms";
     offsetText.text += "\ncurrentStep: " + Conductor.instance.currentStep;
     offsetText.text += "\ncurrentBeat: " + Conductor.instance.currentBeat;
 
@@ -267,19 +252,23 @@ class LatencyState extends MusicBeatSubState
     super.update(elapsed);
   }
 
-  function generateBeatStuff()
+  function generateBeatStuff(event:PreciseInputEvent)
   {
-    Conductor.instance.update(swagSong.getTimeWithDiff());
+    // Conductor.instance.update(swagSong.getTimeWithDiff());
+
+    var inputLatencyMs:Float = haxe.Int64.toInt(PreciseInputManager.getCurrentTimestamp() - event.timestamp) / 1000.0 / 1000.0;
+    trace("input latency: " + inputLatencyMs + "ms");
+    trace("cur timestamp: " + PreciseInputManager.getCurrentTimestamp() + "ns");
+    trace("event timestamp: " + event.timestamp + "ns");
 
     var closestBeat:Int = Math.round(Conductor.instance.songPosition / (Conductor.instance.stepLengthMs * 2)) % diffGrp.members.length;
     var getDiff:Float = Conductor.instance.songPosition - (closestBeat * (Conductor.instance.stepLengthMs * 2));
     getDiff -= Conductor.instance.inputOffset;
+    getDiff -= inputLatencyMs;
 
     // lil fix for end of song
     if (closestBeat == 0 && getDiff >= Conductor.instance.stepLengthMs * 2) getDiff -= FlxG.sound.music.length;
 
-    trace("\tDISTANCE TO CLOSEST BEAT: " + getDiff + "ms");
-    trace("\tCLOSEST BEAT: " + closestBeat);
     beatTrail.x = songPosVis.x;
 
     diffGrp.members[closestBeat].text = getDiff + "ms";
@@ -295,7 +284,6 @@ class LatencyState extends MusicBeatSubState
 class HomemadeMusic extends FlxSound
 {
   public var prevTimestamp:Int = 0;
-  public var timeWithDiff:Float = 0;
 
   public function new()
   {

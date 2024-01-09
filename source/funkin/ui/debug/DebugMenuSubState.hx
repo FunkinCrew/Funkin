@@ -48,6 +48,8 @@ class DebugMenuSubState extends MusicBeatSubState
     items.onChange.add(onMenuChange);
     add(items);
 
+    FlxTransitionableState.skipNextTransIn = true;
+
     // Create each menu item.
     // Call onMenuChange when the first item is created to move the camera .
     onMenuChange(createItem("CHART EDITOR", openChartEditor));
@@ -88,8 +90,6 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openChartEditor()
   {
-    FlxTransitionableState.skipNextTransIn = true;
-
     FlxG.switchState(new ChartEditorState());
   }
 
