@@ -366,8 +366,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
 
-    updatePlayheadGhostHoldNotes();
-
     // Move the rendered notes to the correct position.
     renderedNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
     renderedHoldNotes.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
@@ -375,8 +373,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
     // Offset the selection box start position, if we are dragging.
     if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
-    // Update the note preview viewport box.
+
+    // Update the note preview.
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
+    refreshNotePreviewPlayheadPosition();
+
     // Update the measure tick display.
     if (measureTicks != null) measureTicks.y = gridTiledSprite?.y ?? 0.0;
     return this.scrollPositionInPixels;
@@ -438,6 +439,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     gridPlayhead.y = this.playheadPositionInPixels + (MENU_BAR_HEIGHT + GRID_TOP_PAD);
 
     updatePlayheadGhostHoldNotes();
+    refreshNotePreviewPlayheadPosition();
 
     return this.playheadPositionInPixels;
   }
@@ -1843,6 +1845,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var notePreviewViewport:Null<FlxSliceSprite> = null;
 
   /**
+   * The thin sprite used for representing the playhead on the note preview.
+   * We move this up and down to represent the current position.
+   */
+  var notePreviewPlayhead:Null<FlxSprite> = null;
+
+  /**
    * The rectangular sprite used for rendering the selection box.
    * Uses a 9-slice to stretch the selection box to the correct size without warping.
    */
@@ -2219,18 +2227,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(gridGhostHoldNote);
     gridGhostHoldNote.zIndex = 11;
 
-    while (gridPlayheadGhostHoldNotes.length < (STRUMLINE_SIZE * 2))
-    {
-      var ghost = new ChartEditorHoldNoteSprite(this);
-      ghost.alpha = 0.6;
-      ghost.noteData = null;
-      ghost.visible = false;
-      add(ghost);
-      ghost.zIndex = 11;
-
-      gridPlayheadGhostHoldNotes.push(ghost);
-    }
-
     gridGhostEvent = new ChartEditorEventSprite(this);
     gridGhostEvent.alpha = 0.6;
     gridGhostEvent.eventData = new SongEventData(-1, '', {});
@@ -2299,6 +2295,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewViewport.scrollFactor.set(0, 0);
     add(notePreviewViewport);
     notePreviewViewport.zIndex = 30;
+
+    notePreviewPlayhead = new FlxSprite().makeGraphic(2, 2, 0xFFFF0000);
+    notePreviewPlayhead.scrollFactor.set(0, 0);
+    notePreviewPlayhead.scale.set(notePreview.width / 2, 0.5); // Setting width does nothing.
+    notePreviewPlayhead.updateHitbox();
+    notePreviewPlayhead.x = notePreview.x;
+    notePreviewPlayhead.y = notePreview.y;
+    add(notePreviewPlayhead);
+    notePreviewPlayhead.zIndex = 31;
 
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
   }
@@ -2397,6 +2402,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       notePreviewViewport.width = bounds.width;
       notePreviewViewport.height = bounds.height;
     }
+  }
+
+  function refreshNotePreviewPlayheadPosition():Void
+  {
+    if (notePreviewPlayhead == null) return;
+
+    notePreviewPlayhead.y = notePreview.y + (notePreview.height * ((scrollPositionInPixels + playheadPositionInPixels) / songLengthInPixels));
   }
 
   /**
@@ -4194,7 +4206,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             gridGhostHoldNote.visible = true;
             gridGhostHoldNote.noteData = gridGhostNote.noteData;
             gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
-
             gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
 
             gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
@@ -4741,27 +4752,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Do nothing.
     }
 
-    // Place notes at the playhead with the gamepad.
-    if (FlxG.gamepads.firstActive != null)
-    {
-      if (FlxG.gamepads.firstActive.justPressed.DPAD_LEFT) placeNoteAtPlayhead(4);
-      if (FlxG.gamepads.firstActive.justReleased.DPAD_LEFT) finishPlaceNoteAtPlayhead(4);
-      if (FlxG.gamepads.firstActive.justPressed.DPAD_DOWN) placeNoteAtPlayhead(5);
-      if (FlxG.gamepads.firstActive.justReleased.DPAD_DOWN) finishPlaceNoteAtPlayhead(5);
-      if (FlxG.gamepads.firstActive.justPressed.DPAD_UP) placeNoteAtPlayhead(6);
-      if (FlxG.gamepads.firstActive.justReleased.DPAD_UP) finishPlaceNoteAtPlayhead(6);
-      if (FlxG.gamepads.firstActive.justPressed.DPAD_RIGHT) placeNoteAtPlayhead(7);
-      if (FlxG.gamepads.firstActive.justReleased.DPAD_RIGHT) finishPlaceNoteAtPlayhead(7);
-
-      if (FlxG.gamepads.firstActive.justPressed.X) placeNoteAtPlayhead(0);
-      if (FlxG.gamepads.firstActive.justReleased.X) finishPlaceNoteAtPlayhead(0);
-      if (FlxG.gamepads.firstActive.justPressed.A) placeNoteAtPlayhead(1);
-      if (FlxG.gamepads.firstActive.justReleased.A) finishPlaceNoteAtPlayhead(1);
-      if (FlxG.gamepads.firstActive.justPressed.Y) placeNoteAtPlayhead(2);
-      if (FlxG.gamepads.firstActive.justReleased.Y) finishPlaceNoteAtPlayhead(2);
-      if (FlxG.gamepads.firstActive.justPressed.B) placeNoteAtPlayhead(3);
-      if (FlxG.gamepads.firstActive.justReleased.B) finishPlaceNoteAtPlayhead(3);
-    }
+    updatePlayheadGhostHoldNotes();
   }
 
   function placeNoteAtPlayhead(column:Int):Void
@@ -4781,38 +4772,68 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (notesAtPos.length == 0 && !removeNoteInstead)
     {
+      trace('Placing note. ${column}');
       var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace);
       performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
       currentLiveInputPlaceNoteData[column] = newNoteData;
-      gridPlayheadGhostHoldNotes[column].noteData = newNoteData.clone();
-      gridPlayheadGhostHoldNotes[column].noteDirection = newNoteData.getDirection();
     }
     else if (removeNoteInstead)
     {
-      trace('Removing existing note at position.');
+      trace('Removing existing note at position. ${column}');
       performCommand(new RemoveNotesCommand(notesAtPos));
     }
     else
     {
-      trace('Already a note there.');
+      trace('Already a note there. ${column}');
     }
   }
 
   function updatePlayheadGhostHoldNotes():Void
   {
-    // Update playhead ghost hold notes.
-    for (index in 0...gridPlayheadGhostHoldNotes.length)
+    // Ensure all the ghost hold notes exist.
+    while (gridPlayheadGhostHoldNotes.length < (STRUMLINE_SIZE * 2))
     {
-      var ghostHold = gridPlayheadGhostHoldNotes[index];
-      if (ghostHold == null) continue;
+      var ghost = new ChartEditorHoldNoteSprite(this);
+      ghost.alpha = 0.6;
+      ghost.noteData = null;
+      ghost.visible = false;
+      ghost.zIndex = 11;
+      add(ghost); // Don't add to `renderedHoldNotes` because then it will get killed every frame.
+
+      gridPlayheadGhostHoldNotes.push(ghost);
+      refresh();
+    }
+
+    // Update playhead ghost hold notes.
+    for (column in 0...gridPlayheadGhostHoldNotes.length)
+    {
+      var targetNoteData = currentLiveInputPlaceNoteData[column];
+      var ghostHold = gridPlayheadGhostHoldNotes[column];
+
+      if (targetNoteData == null && ghostHold.noteData != null)
+      {
+        // Remove the ghost hold note.
+        ghostHold.noteData = null;
+      }
+
+      if (targetNoteData != null && ghostHold.noteData == null)
+      {
+        // Readd the new ghost hold note.
+        ghostHold.noteData = targetNoteData.clone();
+        ghostHold.noteDirection = ghostHold.noteData.getDirection();
+        ghostHold.visible = true;
+        ghostHold.alpha = 0.6;
+        ghostHold.setHeightDirectly(0);
+        ghostHold.updateHoldNotePosition(renderedHoldNotes);
+      }
 
       if (ghostHold.noteData == null)
       {
         ghostHold.visible = false;
         ghostHold.setHeightDirectly(0);
-        playheadDragLengthCurrent[index] = 0;
+        playheadDragLengthCurrent[column] = 0;
         continue;
-      };
+      }
 
       var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
       var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
@@ -4829,22 +4850,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var targetNoteLengthStepsInt:Int = Std.int(Math.floor(targetNoteLengthSteps));
         var targetNoteLengthPixels:Float = targetNoteLengthSteps * GRID_SIZE;
 
-        if (playheadDragLengthCurrent[index] != targetNoteLengthStepsInt)
+        if (playheadDragLengthCurrent[column] != targetNoteLengthStepsInt)
         {
           stretchySounds = !stretchySounds;
           this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
-          playheadDragLengthCurrent[index] = targetNoteLengthStepsInt;
+          playheadDragLengthCurrent[column] = targetNoteLengthStepsInt;
         }
         ghostHold.visible = true;
-        trace('newHeight: ${targetNoteLengthPixels}');
+        ghostHold.alpha = 0.6;
         ghostHold.setHeightDirectly(targetNoteLengthPixels, true);
         ghostHold.updateHoldNotePosition(renderedHoldNotes);
+        trace('lerpLength: ${ghostHold.fullSustainLength}');
+        trace('position: ${ghostHold.x}, ${ghostHold.y}');
       }
       else
       {
         ghostHold.visible = false;
         ghostHold.setHeightDirectly(0);
-        playheadDragLengthCurrent[index] = 0;
+        playheadDragLengthCurrent[column] = 0;
+        continue;
       }
     }
   }
@@ -4864,14 +4888,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (newNoteLength < Conductor.instance.stepLengthMs)
     {
       // Don't extend the note if it's too short.
-      trace('Not extending note.');
+      trace('Not extending note. ${column}');
       currentLiveInputPlaceNoteData[column] = null;
       gridPlayheadGhostHoldNotes[column].noteData = null;
     }
     else
     {
       // Extend the note to the playhead position.
-      trace('Extending note.');
+      trace('Extending note. ${column}');
       this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
       performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
       currentLiveInputPlaceNoteData[column] = null;
