@@ -15,7 +15,7 @@ import thx.semver.Version;
 abstract Save(RawSaveData)
 {
   // Version 2.0.1 adds attributes to `optionsChartEditor`, that should return default values if they are null.
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.1";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.2";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -72,6 +72,8 @@ abstract Save(RawSaveData)
             zoomCamera: true,
             debugDisplay: false,
             autoPause: true,
+            inputOffset: 0,
+            audioVisualOffset: 0,
 
             controls:
               {
@@ -827,6 +829,18 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * Offset the users inputs by this many ms.
+   * @default `0`
+   */
+  var inputOffset:Int;
+
+  /**
+   * Affects the delay between the audio and the visuals during gameplay
+   * @default `0`
+   */
+  var audioVisualOffset:Int;
 
   var controls:
     {
