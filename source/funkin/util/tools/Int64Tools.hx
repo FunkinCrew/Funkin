@@ -1,32 +1,42 @@
 package funkin.util.tools;
 
+import haxe.Int64;
+
 /**
- * @see https://github.com/fponticelli/thx.core/blob/master/src/thx/Int64s.hx
+ * Why `haxe.Int64` doesn't have a built-in `toFloat` function is beyond me.
  */
 class Int64Tools
 {
-  static var min = haxe.Int64.make(0x80000000, 0);
-  static var one = haxe.Int64.make(0, 1);
-  static var two = haxe.Int64.ofInt(2);
-  static var zero = haxe.Int64.make(0, 0);
-  static var ten = haxe.Int64.ofInt(10);
+  private inline static var MAX_32_PRECISION:Float = 4294967296.0;
 
-  public static function toFloat(i:haxe.Int64):Float
+  public static function fromFloat(f:Float):Int64
   {
-    var isNegative = false;
-    if (i < 0)
+    var h = Std.int(f / MAX_32_PRECISION);
+    var l = Std.int(f);
+    return Int64.make(h, l);
+  }
+
+  public static function toFloat(i:Int64):Float
+  {
+    var f:Float = Int64.getLow(i);
+    if (f < 0) f += MAX_32_PRECISION;
+    return (Int64.getHigh(i) * MAX_32_PRECISION + f);
+  }
+
+  public static function isToIntSafe(i:Int64):Bool
+  {
+    return i.high != i.low >> 31;
+  }
+
+  public static function toIntSafe(i:Int64):Int
+  {
+    try
     {
-      if (i < min) return -9223372036854775808.0; // most -ve value can't be made +ve
-      isNegative = true;
-      i = -i;
+      return Int64.toInt(i);
     }
-    var multiplier = 1.0, ret = 0.0;
-    for (_ in 0...64)
+    catch (e:Dynamic)
     {
-      if (haxe.Int64.and(i, one) != zero) ret += multiplier;
-      multiplier *= 2.0;
-      i = haxe.Int64.shr(i, 1);
+      throw 'Could not represent value "${Int64.toStr(i)}" as an integer.';
     }
-    return (isNegative ? -1 : 1) * ret;
   }
 }
