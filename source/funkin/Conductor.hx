@@ -209,7 +209,17 @@ class Conductor
   /**
    * An offset set by the user to compensate for input lag.
    */
-  public var inputOffset:Float = 0;
+  public var inputOffset(get, set):Float;
+
+  function get_inputOffset():Float
+  {
+    return Save.get().options.inputOffset;
+  }
+
+  function set_inputOffset(value:Float):Float
+  {
+    return Save.get().options.inputOffset = value;
+  }
 
   /**
    * The number of beats in a measure. May be fractional depending on the time signature.
