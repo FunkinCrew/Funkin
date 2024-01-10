@@ -6,6 +6,7 @@ import flixel.math.FlxMath;
 import funkin.play.song.Song.SongDifficulty;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
+import funkin.save.Save;
 
 /**
  * A core class which handles musical timing throughout the game,
@@ -209,16 +210,18 @@ class Conductor
   /**
    * An offset set by the user to compensate for input lag.
    */
-  public var inputOffset(get, set):Float;
+  public var inputOffset(get, set):Int;
 
-  function get_inputOffset():Float
+  function get_inputOffset():Int
   {
     return Save.get().options.inputOffset;
   }
 
-  function set_inputOffset(value:Float):Float
+  function set_inputOffset(value:Int):Int
   {
-    return Save.get().options.inputOffset = value;
+    Save.get().options.inputOffset = value;
+    Save.get().flush();
+    return Save.get().options.inputOffset;
   }
 
   /**

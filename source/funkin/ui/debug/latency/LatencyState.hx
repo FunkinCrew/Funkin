@@ -200,7 +200,7 @@ class LatencyState extends MusicBeatSubState
 
     offsetText.text += "\naverage input offset needed: " + avgOffsetInput;
 
-    var multiply:Float = 10;
+    var multiply:Int = 10;
 
     if (FlxG.keys.pressed.SHIFT) multiply = 1;
 
@@ -208,24 +208,24 @@ class LatencyState extends MusicBeatSubState
     {
       if (FlxG.keys.justPressed.RIGHT)
       {
-        Conductor.instance.instrumentalOffset += 1.0 * multiply;
+        Conductor.instance.instrumentalOffset += 1 * multiply;
       }
 
       if (FlxG.keys.justPressed.LEFT)
       {
-        Conductor.instance.instrumentalOffset -= 1.0 * multiply;
+        Conductor.instance.instrumentalOffset -= 1 * multiply;
       }
     }
     else
     {
       if (FlxG.keys.justPressed.RIGHT)
       {
-        Conductor.instance.inputOffset += 1.0 * multiply;
+        Conductor.instance.inputOffset += 1 * multiply;
       }
 
       if (FlxG.keys.justPressed.LEFT)
       {
-        Conductor.instance.inputOffset -= 1.0 * multiply;
+        Conductor.instance.inputOffset -= 1 * multiply;
       }
     }
 
