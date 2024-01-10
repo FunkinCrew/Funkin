@@ -123,6 +123,17 @@ class CrashHandler
 
     fullContents += '=====================\n';
 
+    fullContents += 'Haxelibs: \n';
+
+    for (lib in Constants.LIBRARY_VERSIONS)
+    {
+      fullContents += '- ${lib}\n';
+    }
+
+    fullContents += '\n';
+
+    fullContents += '=====================\n';
+
     fullContents += '\n';
 
     fullContents += message;

@@ -70,7 +70,7 @@ class Constants
   public static final URL_KICKSTARTER:String = 'https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/';
 
   /**
-   * GIT REPO DATA
+   * REPOSITORY DATA
    */
   // ==============================
 
@@ -85,6 +85,11 @@ class Constants
    */
   public static final GIT_HASH:String = funkin.util.macro.GitCommit.getGitCommitHash();
   #end
+
+  /**
+   * The current library versions, as provided by hmm.
+   */
+  public static final LIBRARY_VERSIONS:Array<String> = funkin.util.macro.HaxelibVersions.getLibraryVersions();
 
   /**
    * COLORS
