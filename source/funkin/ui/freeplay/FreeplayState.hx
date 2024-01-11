@@ -382,16 +382,16 @@ class FreeplayState extends MusicBeatSubState
     add(overhangStuff);
     FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
 
-    var fnfFreeplay:FlxText = new FlxText(4, 10, 0, "FREEPLAY", 48);
+    var fnfFreeplay:FlxText = new FlxText(8, 8, 0, "FREEPLAY", 48);
     fnfFreeplay.font = "VCR OSD Mono";
     fnfFreeplay.visible = false;
 
-    ostName = new FlxText(4, 10, FlxG.width - 4 - 4, "OFFICIAL OST", 48);
+    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, "OFFICIAL OST", 48);
     ostName.font = "VCR OSD Mono";
     ostName.alignment = RIGHT;
     ostName.visible = false;
 
-    exitMovers.set([overhangStuff, fnfFreeplay],
+    exitMovers.set([overhangStuff, fnfFreeplay, ostName],
       {
         y: -overhangStuff.height,
         x: 0,
@@ -402,6 +402,7 @@ class FreeplayState extends MusicBeatSubState
     var sillyStroke = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
     add(fnfFreeplay);
+    add(ostName);
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(860, 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
@@ -492,6 +493,7 @@ class FreeplayState extends MusicBeatSubState
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
         fnfFreeplay.visible = true;
+        ostName.visible = true;
         fp.visible = true;
         fp.updateScore(0);
 
