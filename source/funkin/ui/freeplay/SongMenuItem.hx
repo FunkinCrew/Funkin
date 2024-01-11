@@ -94,7 +94,7 @@ class SongMenuItem extends FlxSpriteGroup
     add(songText);
     grpHide.add(songText);
 
-    pixelIcon = new FlxSprite(155, 15);
+    pixelIcon = new FlxSprite(160, 35);
     pixelIcon.makeGraphic(32, 32, 0x00000000);
     pixelIcon.antialiasing = false;
     pixelIcon.active = false;
