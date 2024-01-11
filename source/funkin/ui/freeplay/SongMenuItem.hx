@@ -35,11 +35,6 @@ class SongMenuItem extends FlxSpriteGroup
 
   var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect"];
 
-  // lol...
-  var diffRanks:Array<String> = [
-    "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "14", "15"
-  ];
-
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
   public var doJumpIn:Bool = false;
@@ -47,9 +42,11 @@ class SongMenuItem extends FlxSpriteGroup
   public var doJumpOut:Bool = false;
 
   public var onConfirm:Void->Void;
-  public var diffGrayscale:Grayscale;
+  public var grayscaleShader:Grayscale;
 
   public var hsvShader(default, set):HSVShader;
+
+  var diffRatingSprite:FlxSprite;
 
   public function new(x:Float, y:Float)
   {
@@ -75,26 +72,30 @@ class SongMenuItem extends FlxSpriteGroup
     add(ranking);
     grpHide.add(ranking);
 
-    diffGrayscale = new Grayscale(1);
-
-    var diffRank = new FlxSprite(145, 90).loadGraphic(Paths.image("freeplay/diffRankings/diff" + FlxG.random.getObject(diffRanks)));
-    diffRank.shader = diffGrayscale;
-    diffRank.visible = false;
-    add(diffRank);
-    diffRank.origin.set(capsule.origin.x - diffRank.x, capsule.origin.y - diffRank.y);
-    grpHide.add(diffRank);
-
     switch (rank)
     {
       case "perfect":
         ranking.x -= 10;
     }
 
+    grayscaleShader = new Grayscale(1);
+
+    diffRatingSprite = new FlxSprite(145, 90).loadGraphic(Paths.image("freeplay/diffRatings/diff00"));
+    diffRatingSprite.shader = grayscaleShader;
+    diffRatingSprite.visible = false;
+    add(diffRatingSprite);
+    diffRatingSprite.origin.set(capsule.origin.x - diffRatingSprite.x, capsule.origin.y - diffRatingSprite.y);
+    grpHide.add(diffRatingSprite);
+
     songText = new CapsuleText(capsule.width * 0.26, 45, 'Random', Std.int(40 * realScaled));
     add(songText);
     grpHide.add(songText);
 
+    // TODO: Use value from metadata instead of random.
+    updateDifficultyRating(FlxG.random.int(0, 15));
+
     pixelIcon = new FlxSprite(160, 35);
+
     pixelIcon.makeGraphic(32, 32, 0x00000000);
     pixelIcon.antialiasing = false;
     pixelIcon.active = false;
@@ -111,6 +112,12 @@ class SongMenuItem extends FlxSpriteGroup
     // grpHide.add(favIcon);
 
     setVisibleGrp(false);
+  }
+
+  function updateDifficultyRating(newRating:Int)
+  {
+    var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
+    diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
   }
 
   function set_hsvShader(value:HSVShader):HSVShader
@@ -149,16 +156,17 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
-  public function init(x:Float, y:Float, songData:Null<FreeplaySongData>)
+  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>)
   {
-    this.x = x;
-    this.y = y;
+    if (x != null) this.x = x;
+    if (y != null) this.y = y;
     this.songData = songData;
 
     // Update capsule text.
     songText.text = songData?.songName ?? 'Random';
     // Update capsule character.
     if (songData?.songCharacter != null) setCharacter(songData.songCharacter);
+    updateDifficultyRating(songData?.songRating ?? 0);
     // Update opacity, offsets, etc.
     updateSelected();
   }
@@ -336,7 +344,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateSelected():Void
   {
-    diffGrayscale.setAmount(this.selected ? 0 : 0.8);
+    grayscaleShader.setAmount(this.selected ? 0 : 0.8);
     songText.alpha = this.selected ? 1 : 0.6;
     songText.blurredText.visible = this.selected ? true : false;
     capsule.offset.x = this.selected ? 0 : -5;
