@@ -9,8 +9,8 @@ import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/note.xml"))
-class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/hold-note.xml"))
+class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuFlip:MenuItem;
   var contextmenuDelete:MenuItem;
@@ -32,8 +32,8 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
       chartEditorState.performCommand(new FlipNotesCommand([data]));
     }
 
-    contextmenuAddHold.onClick = function(_) {
-      chartEditorState.performCommand(new ExtendNoteLengthCommand(data, 4, STEPS));
+    contextmenuRemoveHold.onClick = function(_) {
+      chartEditorState.performCommand(new ExtendNoteLengthCommand(data, 0));
     }
 
     contextmenuDelete.onClick = function(_) {

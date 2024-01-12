@@ -93,7 +93,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     result.version = this.version;
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
-    result.offsets = this.offsets.clone();
+    result.offsets = this.offsets != null ? this.offsets.clone() : new SongOffsets(); // if no song offsets found (aka null), so just create new ones
     result.timeChanges = this.timeChanges.deepClone();
     result.looped = this.looped;
     result.playData = this.playData.clone();
@@ -826,7 +826,13 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   @:alias("l")
   @:default(0)
   @:optional
-  public var length:Float;
+  public var length(default, set):Float;
+
+  function set_length(value:Float):Float
+  {
+    _stepLength = null;
+    return length = value;
+  }
 
   /**
    * The kind of the note.
@@ -883,6 +889,11 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return _stepTime = Conductor.instance.getTimeInSteps(this.time);
   }
 
+  /**
+   * The length of the note, if applicable, in steps.
+   * Calculated from the length and the BPM.
+   * Cached for performance. Set to `null` to recalculate.
+   */
   @:jignored
   var _stepLength:Null<Float> = null;
 
@@ -907,9 +918,14 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     }
     else
     {
-      var lengthMs:Float = Conductor.instance.getStepTimeInMs(value) - this.time;
+      var endStep:Float = getStepTime() + value;
+      var endMs:Float = Conductor.instance.getStepTimeInMs(endStep);
+      var lengthMs:Float = endMs - this.time;
+
       this.length = lengthMs;
     }
+
+    // Recalculate the step length next time it's requested.
     _stepLength = null;
   }
 
@@ -980,6 +996,10 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   @:op(A == B)
   public function op_equals(other:SongNoteData):Bool
   {
+    // Handle the case where one value is null.
+    if (this == null) return other == null;
+    if (other == null) return false;
+
     if (this.kind == '')
     {
       if (other.kind != '' && other.kind != 'normal') return false;
@@ -995,6 +1015,10 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   @:op(A != B)
   public function op_notEquals(other:SongNoteData):Bool
   {
+    // Handle the case where one value is null.
+    if (this == null) return other == null;
+    if (other == null) return false;
+
     if (this.kind == '')
     {
       if (other.kind != '' && other.kind != 'normal') return true;
@@ -1010,24 +1034,32 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   @:op(A > B)
   public function op_greaterThan(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time > other.time;
   }
 
   @:op(A < B)
   public function op_lessThan(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time < other.time;
   }
 
   @:op(A >= B)
   public function op_greaterThanOrEquals(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time >= other.time;
   }
 
   @:op(A <= B)
   public function op_lessThanOrEquals(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time <= other.time;
   }
 

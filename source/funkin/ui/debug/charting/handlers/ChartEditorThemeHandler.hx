@@ -52,7 +52,7 @@ class ChartEditorThemeHandler
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
   static final SELECTION_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFF339933;
-  static final SELECTION_SQUARE_BORDER_WIDTH:Int = 1;
+  public static final SELECTION_SQUARE_BORDER_WIDTH:Int = 1;
 
   // Fill on the square highlighting selected notes.
   // Make sure this is transparent so you can see the notes underneath.
