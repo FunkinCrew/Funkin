@@ -39,6 +39,17 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     setup();
   }
 
+  public override function updateHitbox():Void
+  {
+    // Expand the clickable hitbox to the full column width, then nudge to the left to re-center it.
+    width = ChartEditorState.GRID_SIZE;
+    height = graphicHeight;
+
+    var xOffset = (ChartEditorState.GRID_SIZE - graphicWidth) / 2;
+    offset.set(-xOffset, 0);
+    origin.set(width * 0.5, height * 0.5);
+  }
+
   /**
    * Set the height directly, to a value in pixels.
    * @param h The desired height in pixels.
@@ -52,6 +63,23 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     fullSustainLength = sustainLength;
   }
 
+  /**
+   * Call this to override how debug bounding boxes are drawn for this sprite.
+   */
+  public override function drawDebugOnCamera(camera:flixel.FlxCamera):Void
+  {
+    if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
+
+    var rect = getBoundingBox(camera);
+    trace('hold note bounding box: ' + rect.x + ', ' + rect.y + ', ' + rect.width + ', ' + rect.height);
+
+    var gfx = beginDrawDebug(camera);
+    debugBoundingBoxColor = 0xffFF66FF;
+    gfx.lineStyle(2, color, 0.5); // thickness, color, alpha
+    gfx.drawRect(rect.x, rect.y, rect.width, rect.height);
+    endDrawDebug(camera);
+  }
+
   function setup():Void
   {
     strumTime = 999999999;
@@ -60,7 +88,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     active = true;
     visible = true;
     alpha = 1.0;
-    width = graphic.width / 8 * zoom; // amount of notes * 2
+    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
+
+    updateHitbox();
   }
 
   public override function revive():Void
@@ -154,7 +184,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     }
 
     this.x += ChartEditorState.GRID_SIZE / 2;
-    this.x -= this.width / 2;
+    this.x -= this.graphicWidth / 2;
 
     this.y += ChartEditorState.GRID_SIZE / 2;
 
@@ -163,5 +193,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
       this.x += origin.x;
       this.y += origin.y;
     }
+
+    // Account for expanded clickable hitbox.
+    this.x += this.offset.x;
   }
 }
