@@ -65,6 +65,12 @@ class MoveEventsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (events.length > 0);
+  }
+
   public function toString():String
   {
     var len:Int = events.length;

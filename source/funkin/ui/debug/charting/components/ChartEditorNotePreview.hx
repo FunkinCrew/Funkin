@@ -70,9 +70,9 @@ class ChartEditorNotePreview extends FlxSprite
    * @param event The data for the event.
    * @param songLengthInMs The total length of the song in milliseconds.
    */
-  public function addEvent(event:SongEventData, songLengthInMs:Int):Void
+  public function addEvent(event:SongEventData, songLengthInMs:Int, ?isSelection:Bool = false):Void
   {
-    drawNote(-1, false, Std.int(event.time), songLengthInMs);
+    drawNote(-1, false, Std.int(event.time), songLengthInMs, isSelection);
   }
 
   /**
@@ -111,6 +111,19 @@ class ChartEditorNotePreview extends FlxSprite
     for (event in events)
     {
       addEvent(event, songLengthInMs);
+    }
+  }
+
+  /**
+   * Add an array of selected events to the preview.
+   * @param events The data for the events.
+   * @param songLengthInMs The total length of the song in milliseconds.
+   */
+  public function addSelectedEvents(events:Array<SongEventData>, songLengthInMs:Int):Void
+  {
+    for (event in events)
+    {
+      addEvent(event, songLengthInMs, true);
     }
   }
 
