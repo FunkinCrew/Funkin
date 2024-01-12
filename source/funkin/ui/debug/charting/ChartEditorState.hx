@@ -273,6 +273,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final BASE_QUANT_INDEX:Int = 3;
 
   /**
+   * The duration before the welcome music starts to fade back in after the user stops playing music in the chart editor.
+   */
+  public static final WELCOME_MUSIC_FADE_IN_DELAY:Float = 30.0;
+
+  /**
+   * The duration of the welcome music fade in.
+   */
+  public static final WELCOME_MUSIC_FADE_IN_DURATION:Float = 10.0;
+
+  /**
    * INSTANCE DATA
    */
   // ==============================
@@ -1637,6 +1647,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemOpponentHitsounds:MenuCheckBox;
 
   /**
+   * The `Audio -> Play Theme Music` menu checkbox.
+   */
+  var menubarItemThemeMusic:MenuCheckBox;
+
+  /**
    * The `Audio -> Hitsound Volume` label.
    */
   var menubarLabelVolumeHitsounds:Label;
@@ -1921,18 +1936,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Set the z-index of the HaxeUI.
     this.root.zIndex = 100;
 
+    // Get rid of any music from the previous state.
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
+    // Play the welcome music.
+    setupWelcomeMusic();
+
     // Show the mouse cursor.
     Cursor.show();
 
     loadPreferences();
 
     fixCamera();
-
-    // Get rid of any music from the previous state.
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
-
-    // Play the welcome music.
-    setupWelcomeMusic();
 
     buildDefaultSongData();
 
@@ -2027,6 +2042,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     hitsoundVolume = save.chartEditorHitsoundVolume;
     hitsoundsEnabledPlayer = save.chartEditorHitsoundsEnabledPlayer;
     hitsoundsEnabledOpponent = save.chartEditorHitsoundsEnabledOpponent;
+    this.welcomeMusic.active = save.chartEditorThemeMusic;
 
     // audioInstTrack.volume = save.chartEditorInstVolume;
     // audioInstTrack.pitch = save.chartEditorPlaybackSpeed;
@@ -2056,6 +2072,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorHitsoundVolume = hitsoundVolume;
     save.chartEditorHitsoundsEnabledPlayer = hitsoundsEnabledPlayer;
     save.chartEditorHitsoundsEnabledOpponent = hitsoundsEnabledOpponent;
+    save.chartEditorThemeMusic = this.welcomeMusic.active;
 
     // save.chartEditorInstVolume = audioInstTrack.volume;
     // save.chartEditorVoicesVolume = audioVocalTrackGroup.volume;
@@ -2116,10 +2133,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function fadeInWelcomeMusic(?extraWait:Float = 0, ?fadeInTime:Float = 5):Void
   {
+    if (!this.welcomeMusic.active)
+    {
+      stopWelcomeMusic();
+      return;
+    }
+
     bgMusicTimer = new FlxTimer().start(extraWait, (_) -> {
       this.welcomeMusic.volume = 0;
-      this.welcomeMusic.play();
-      this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
+      if (this.welcomeMusic.active)
+      {
+        this.welcomeMusic.play();
+        this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
+      }
     });
   }
 
@@ -2749,6 +2775,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemOpponentHitsounds.onChange = event -> hitsoundsEnabledOpponent = event.value;
     menubarItemOpponentHitsounds.selected = hitsoundsEnabledOpponent;
+
+    menubarItemThemeMusic.onChange = event -> {
+      this.welcomeMusic.active = event.value;
+      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+    };
+    menubarItemThemeMusic.selected = this.welcomeMusic.active;
 
     menubarItemVolumeHitsound.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -5619,7 +5651,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     moveSongToScrollPosition();
 
-    fadeInWelcomeMusic(7, 10);
+    fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
 
     // Reapply the volume.
     var instTargetVolume:Float = menubarItemVolumeInstrumental.value ?? 1.0;
@@ -5855,7 +5887,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Pause
       stopAudioPlayback();
-      fadeInWelcomeMusic(7, 10);
+      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     }
     else
     {
