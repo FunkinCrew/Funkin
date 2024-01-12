@@ -5468,6 +5468,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (displayAutosavePopup)
     {
       displayAutosavePopup = false;
+      #if sys
       Toolkit.callLater(() -> {
         var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
         this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
@@ -5477,6 +5478,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
         ]);
       });
+      #else
+      // TODO: No auto-save on HTML5?
+      #end
     }
 
     moveSongToScrollPosition();

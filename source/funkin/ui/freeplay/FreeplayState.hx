@@ -1,6 +1,5 @@
 package funkin.ui.freeplay;
 
-import funkin.input.Controls;
 import flash.text.TextField;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
@@ -23,32 +22,34 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
-import funkin.input.Controls.Control;
 import funkin.data.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.shaders.AngleMask;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.PureColor;
-import funkin.util.MathUtil;
 import funkin.graphics.shaders.StrokeShader;
+import funkin.input.Controls;
+import funkin.input.Controls.Control;
 import funkin.play.components.HealthIcon;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
+import funkin.ui.AtlasText;
 import funkin.ui.freeplay.BGScrollingText;
 import funkin.ui.freeplay.DifficultyStars;
 import funkin.ui.freeplay.DJBoyfriend;
 import funkin.ui.freeplay.FreeplayScore;
 import funkin.ui.freeplay.LetterSort;
 import funkin.ui.freeplay.SongMenuItem;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
+import funkin.util.MathUtil;
 import funkin.util.MathUtil;
 import lime.app.Future;
 import lime.utils.Assets;
@@ -64,7 +65,7 @@ class FreeplayState extends MusicBeatSubState
   var currentDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   var fp:FreeplayScore;
-  var txtCompletion:FlxText;
+  var txtCompletion:AtlasText;
   var lerpCompletion:Float = 0;
   var intendedCompletion:Float = 0;
   var lerpScore:Float = 0;
@@ -87,6 +88,8 @@ class FreeplayState extends MusicBeatSubState
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
   var curCapsule:SongMenuItem;
   var curPlaying:Bool = false;
+  var ostName:FlxText;
+  var difficultyStars:DifficultyStars;
 
   var dj:DJBoyfriend;
 
@@ -150,15 +153,10 @@ class FreeplayState extends MusicBeatSubState
       for (songId in LevelRegistry.instance.parseEntryData(levelId).songs)
       {
         var song:Song = SongRegistry.instance.fetchEntry(songId);
-        var songBaseDifficulty:SongDifficulty = song.getDifficulty(Constants.DEFAULT_DIFFICULTY);
 
-        var songName = songBaseDifficulty.songName;
-        var songOpponent = songBaseDifficulty.characters.opponent;
-        var songDifficulties = song.listDifficulties();
+        songs.push(new FreeplaySongData(levelId, songId, song));
 
-        songs.push(new FreeplaySongData(songId, songName, levelId, songOpponent, songDifficulties));
-
-        for (difficulty in songDifficulties)
+        for (difficulty in song.listDifficulties())
         {
           diffIdsTotal.pushUnique(difficulty);
         }
@@ -334,6 +332,8 @@ class FreeplayState extends MusicBeatSubState
       if (diffSprite.difficultyId == currentDifficulty) diffSprite.visible = true;
     }
 
+    // NOTE: This is an AtlasSprite because we use an animation to bring it into view.
+    // TODO: Add the ability to select the album graphic.
     var albumArt:FlxAtlasSprite = new FlxAtlasSprite(640, 360, Paths.animateAtlas("freeplay/albumRoll"));
     albumArt.visible = false;
     add(albumArt);
@@ -347,7 +347,7 @@ class FreeplayState extends MusicBeatSubState
 
     var albumTitle:FlxSprite = new FlxSprite(947, 491).loadGraphic(Paths.image('freeplay/albumTitle-fnfvol1'));
     var albumArtist:FlxSprite = new FlxSprite(1010, 607).loadGraphic(Paths.image('freeplay/albumArtist-kawaisprite'));
-    var difficultyStars:DifficultyStars = new DifficultyStars(140, 39);
+    difficultyStars = new DifficultyStars(140, 39);
 
     difficultyStars.stars.visible = false;
     albumTitle.visible = false;
@@ -382,11 +382,16 @@ class FreeplayState extends MusicBeatSubState
     add(overhangStuff);
     FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
 
-    var fnfFreeplay:FlxText = new FlxText(0, 12, 0, "FREEPLAY", 48);
+    var fnfFreeplay:FlxText = new FlxText(8, 8, 0, "FREEPLAY", 48);
     fnfFreeplay.font = "VCR OSD Mono";
     fnfFreeplay.visible = false;
 
-    exitMovers.set([overhangStuff, fnfFreeplay],
+    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, "OFFICIAL OST", 48);
+    ostName.font = "VCR OSD Mono";
+    ostName.alignment = RIGHT;
+    ostName.visible = false;
+
+    exitMovers.set([overhangStuff, fnfFreeplay, ostName],
       {
         y: -overhangStuff.height,
         x: 0,
@@ -397,8 +402,9 @@ class FreeplayState extends MusicBeatSubState
     var sillyStroke = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
     add(fnfFreeplay);
+    add(ostName);
 
-    var fnfHighscoreSpr:FlxSprite = new FlxSprite(890, 70);
+    var fnfHighscoreSpr:FlxSprite = new FlxSprite(860, 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
     fnfHighscoreSpr.animation.addByPrefix("highscore", "highscore", 24, false);
     fnfHighscoreSpr.visible = false;
@@ -415,8 +421,10 @@ class FreeplayState extends MusicBeatSubState
     fp.visible = false;
     add(fp);
 
-    txtCompletion = new FlxText(1200, 77, 0, "0", 32);
-    txtCompletion.font = "VCR OSD Mono";
+    var clearBoxSprite:FlxSprite = new FlxSprite(1165, 65).loadGraphic(Paths.image('freeplay/clearBox'));
+    add(clearBoxSprite);
+
+    txtCompletion = new AtlasText(1185, 87, "69", AtlasFont.FREEPLAY_CLEAR);
     txtCompletion.visible = false;
     add(txtCompletion);
 
@@ -485,6 +493,7 @@ class FreeplayState extends MusicBeatSubState
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
         fnfFreeplay.visible = true;
+        ostName.visible = true;
         fp.visible = true;
         fp.updateScore(0);
 
@@ -674,9 +683,32 @@ class FreeplayState extends MusicBeatSubState
     lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
     lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
 
+    if (Math.isNaN(lerpScore))
+    {
+      lerpScore = intendedScore;
+    }
+
+    if (Math.isNaN(lerpCompletion))
+    {
+      lerpCompletion = intendedCompletion;
+    }
+
     fp.updateScore(Std.int(lerpScore));
 
-    txtCompletion.text = Math.floor(lerpCompletion * 100) + "%";
+    txtCompletion.text = '${Math.floor(lerpCompletion * 100)}';
+
+    // Right align the completion percentage
+    switch (txtCompletion.text.length)
+    {
+      case 3:
+        txtCompletion.x = 1185 - 10;
+      case 2:
+        txtCompletion.x = 1185;
+      case 1:
+        txtCompletion.x = 1185 + 24;
+      default:
+        txtCompletion.x = 1185;
+    }
 
     handleInputs(elapsed);
   }
@@ -913,6 +945,11 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0.0;
     }
 
+    if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
+    {
+      intendedCompletion = 0;
+    }
+
     grpDifficulties.group.forEach(function(diffSprite) {
       diffSprite.visible = false;
     });
@@ -938,6 +975,27 @@ class FreeplayState extends MusicBeatSubState
         }
       }
     }
+
+    if (change != 0)
+    {
+      // Update the song capsules to reflect the new difficulty info.
+      for (songCapsule in grpCapsules.members)
+      {
+        if (songCapsule == null) continue;
+        if (songCapsule.songData != null)
+        {
+          songCapsule.songData.currentDifficulty = currentDifficulty;
+          songCapsule.init(null, null, songCapsule.songData);
+        }
+        else
+        {
+          songCapsule.init(null, null, null);
+        }
+      }
+    }
+
+    // Set the difficulty star count on the right.
+    difficultyStars.difficulty = daSong.songRating;
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
@@ -1046,6 +1104,10 @@ class FreeplayState extends MusicBeatSubState
     {
       currentDifficulty = rememberedDifficulty;
     }
+
+    // Set the difficulty star count on the right.
+    var daSong = songs[curSelected];
+    difficultyStars.difficulty = daSong?.songRating ?? 0;
   }
 
   function changeSelection(change:Int = 0)
@@ -1176,19 +1238,47 @@ class FreeplaySongData
 {
   public var isFav:Bool = false;
 
-  public var songId:String = "";
-  public var songName:String = "";
-  public var levelId:String = "";
-  public var songCharacter:String = "";
-  public var songDifficulties:Array<String> = [];
+  var song:Song;
 
-  public function new(songId:String, songName:String, levelId:String, songCharacter:String, songDifficulties:Array<String>)
+  public var levelId(default, null):String = "";
+  public var songId(default, null):String = "";
+
+  public var songDifficulties(default, null):Array<String> = [];
+
+  public var songName(default, null):String = "";
+  public var songCharacter(default, null):String = "";
+  public var songRating(default, null):Int = 0;
+
+  public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
+
+  function set_currentDifficulty(value:String):String
   {
-    this.songId = songId;
-    this.songName = songName;
+    if (currentDifficulty == value) return value;
+
+    currentDifficulty = value;
+    updateValues();
+    return value;
+  }
+
+  public function new(levelId:String, songId:String, song:Song)
+  {
     this.levelId = levelId;
-    this.songCharacter = songCharacter;
-    this.songDifficulties = songDifficulties;
+    this.songId = songId;
+    this.song = song;
+
+    updateValues();
+  }
+
+  function updateValues():Void
+  {
+    this.songDifficulties = song.listDifficulties();
+    if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+
+    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty);
+    if (songDifficulty == null) return;
+    this.songName = songDifficulty.songName;
+    this.songCharacter = songDifficulty.characters.opponent;
+    this.songRating = songDifficulty.difficultyRating;
   }
 }
 
