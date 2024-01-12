@@ -213,7 +213,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The X position of the note preview area.
    */
-  public static final NOTE_PREVIEW_X_POS:Int = 350;
+  public static final NOTE_PREVIEW_X_POS:Int = 320;
 
   /**
    * The Y position of the note preview area.
@@ -383,11 +383,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         if (audioVisGroup != null && audioVisGroup.playerVis != null)
         {
-          audioVisGroup.playerVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS);
+          audioVisGroup.playerVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS - GRID_TOP_PAD);
         }
         if (audioVisGroup != null && audioVisGroup.opponentVis != null)
         {
-          audioVisGroup.opponentVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS);
+          audioVisGroup.opponentVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS - GRID_TOP_PAD);
         }
       }
     }
@@ -4890,7 +4890,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Visibly center the Dad health icon.
     if (healthIconDad != null)
     {
-      var xOffset = 45 + (healthIconDad.width / 2);
+      var xOffset = 75 + (healthIconDad.width / 2);
       healthIconDad.x = (gridTiledSprite == null) ? (0) : (GRID_X_POS - xOffset);
       var yOffset = 30 - (healthIconDad.height / 2);
       healthIconDad.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT) + yOffset;
