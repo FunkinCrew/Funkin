@@ -13,20 +13,20 @@ class SetItemSelectionCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
   var events:Array<SongEventData>;
-  var previousNoteSelection:Array<SongNoteData>;
-  var previousEventSelection:Array<SongEventData>;
+  var previousNoteSelection:Array<SongNoteData> = [];
+  var previousEventSelection:Array<SongEventData> = [];
 
-  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, previousNoteSelection:Array<SongNoteData>,
-      previousEventSelection:Array<SongEventData>)
+  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
   {
     this.notes = notes;
     this.events = events;
-    this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
-    this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
   }
 
   public function execute(state:ChartEditorState):Void
   {
+    this.previousNoteSelection = state.currentNoteSelection;
+    this.previousEventSelection = state.currentEventSelection;
+
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
@@ -67,8 +67,14 @@ class SetItemSelectionCommand implements ChartEditorCommand
     state.noteDisplayDirty = true;
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // Add to the history if we actually performed an action.
+    return (state.currentNoteSelection != previousNoteSelection && state.currentEventSelection != previousEventSelection);
+  }
+
   public function toString():String
   {
-    return 'Select ${notes.length} Items';
+    return 'Select ${notes.length + events.length} Items';
   }
 }
