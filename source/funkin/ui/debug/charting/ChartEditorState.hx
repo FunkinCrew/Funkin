@@ -718,7 +718,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * `null` if the user isn't currently placing a note.
    * As the user drags, we will update this note's sustain length, and finalize the note when they release.
    */
-  var currentPlaceNoteData:Null<SongNoteData> = null;
+  var currentPlaceNoteData(default, set):Null<SongNoteData> = null;
+
+  function set_currentPlaceNoteData(value:Null<SongNoteData>):Null<SongNoteData>
+  {
+    noteDisplayDirty = true;
+
+    return currentPlaceNoteData = value;
+  }
 
   // Note Movement
 
@@ -2270,7 +2277,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       bounds.height = MIN_HEIGHT;
     }
 
-    trace('Note preview viewport bounds: ' + bounds.toString());
+    // trace('Note preview viewport bounds: ' + bounds.toString());
 
     return bounds;
   }
@@ -3047,8 +3054,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (holdNoteSprite == null || holdNoteSprite.noteData == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
 
-        if (!holdNoteSprite.isHoldNoteVisible(FlxG.height - MENU_BAR_HEIGHT, GRID_TOP_PAD))
+        if (holdNoteSprite.noteData == currentPlaceNoteData)
         {
+          // This hold note is for the note we are currently dragging.
+          // It will be displayed by gridGhostHoldNoteSprite instead.
+          holdNoteSprite.kill();
+        }
+        else if (!holdNoteSprite.isHoldNoteVisible(FlxG.height - MENU_BAR_HEIGHT, GRID_TOP_PAD))
+        {
+          // This hold note is off-screen.
+          // Kill the hold note sprite and recycle it.
           holdNoteSprite.kill();
         }
         else if (!currentSongChartNoteData.fastContains(holdNoteSprite.noteData) || holdNoteSprite.noteData.length == 0)
@@ -3066,7 +3081,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else
         {
           displayedHoldNoteData.push(holdNoteSprite.noteData);
-          // Update the event sprite's position.
+          // Update the event sprite's height and position.
+          // var holdNoteHeight = holdNoteSprite.noteData.getStepLength() * GRID_SIZE;
+          // holdNoteSprite.setHeightDirectly(holdNoteHeight);
           holdNoteSprite.updateHoldNotePosition(renderedNotes);
         }
       }
@@ -3144,7 +3161,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         noteSprite.updateNotePosition(renderedNotes);
 
         // Add hold notes that are now visible (and not already displayed).
-        if (noteSprite.noteData != null && noteSprite.noteData.length > 0 && displayedHoldNoteData.indexOf(noteSprite.noteData) == -1)
+        if (noteSprite.noteData != null
+          && noteSprite.noteData.length > 0
+          && displayedHoldNoteData.indexOf(noteSprite.noteData) == -1
+          && noteSprite.noteData != currentPlaceNoteData)
         {
           var holdNoteSprite:ChartEditorHoldNoteSprite = renderedHoldNotes.recycle(() -> new ChartEditorHoldNoteSprite(this));
           // trace('Creating new HoldNote... (${renderedHoldNotes.members.length})');
@@ -3157,6 +3177,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           holdNoteSprite.setHeightDirectly(noteLengthPixels);
 
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
+
+          trace(holdNoteSprite.x + ', ' + holdNoteSprite.y + ', ' + holdNoteSprite.width + ', ' + holdNoteSprite.height);
         }
       }
 
@@ -3194,6 +3216,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Is the note a hold note?
         if (noteData == null || noteData.length <= 0) continue;
+
+        // Is the note the one we are dragging? If so, ghostHoldNoteSprite will handle it.
+        if (noteData == currentPlaceNoteData) continue;
 
         // Is the hold note rendered already?
         if (displayedHoldNoteData.indexOf(noteData) != -1) continue;
@@ -3284,7 +3309,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.x = noteSprite.x;
           selectionSquare.y = noteSprite.y;
           selectionSquare.width = GRID_SIZE;
-          selectionSquare.height = GRID_SIZE;
+
+          var stepLength = noteSprite.noteData.getStepLength();
+          selectionSquare.height = (stepLength <= 0) ? GRID_SIZE : ((stepLength + 1) * GRID_SIZE);
         }
       }
 
@@ -3563,6 +3590,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var overlapsGrid:Bool = FlxG.mouse.overlaps(gridTiledSprite);
 
+      var overlapsRenderedNotes:Bool = FlxG.mouse.overlaps(renderedNotes);
+      var overlapsRenderedHoldNotes:Bool = FlxG.mouse.overlaps(renderedHoldNotes);
+      var overlapsRenderedEvents:Bool = FlxG.mouse.overlaps(renderedEvents);
+
       // Cursor position relative to the grid.
       var cursorX:Float = FlxG.mouse.screenX - gridTiledSprite.x;
       var cursorY:Float = FlxG.mouse.screenY - gridTiledSprite.y;
@@ -3804,12 +3835,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 return event.alive && FlxG.mouse.overlaps(event);
               });
             }
+            var highlightedHoldNote:Null<ChartEditorHoldNoteSprite> = null;
+            if (highlightedNote == null && highlightedEvent == null)
+            {
+              highlightedHoldNote = renderedHoldNotes.members.find(function(holdNote:ChartEditorHoldNoteSprite):Bool {
+                return holdNote.alive && FlxG.mouse.overlaps(holdNote);
+              });
+            }
 
             if (FlxG.keys.pressed.CONTROL)
             {
               if (highlightedNote != null && highlightedNote.noteData != null)
               {
-                // TODO: Handle the case of clicking on a sustain piece.
                 // Control click to select/deselect an individual note.
                 if (isNoteSelected(highlightedNote.noteData))
                 {
@@ -3832,6 +3869,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                   performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
                 }
               }
+              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+              {
+                // Control click to select/deselect an individual note.
+                if (isNoteSelected(highlightedNote.noteData))
+                {
+                  performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
+                }
+                else
+                {
+                  performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
+                }
+              }
               else
               {
                 // Do nothing if you control-clicked on an empty space.
@@ -3848,6 +3897,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 // Click an event to select it.
                 performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData], currentNoteSelection, currentEventSelection));
+              }
+              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+              {
+                // Click a hold note to select it.
+                performCommand(new SetItemSelectionCommand([highlightedHoldNote.noteData], [], currentNoteSelection, currentEventSelection));
               }
               else
               {
@@ -4001,7 +4055,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var dragLengthMs:Float = dragLengthSteps * Conductor.instance.stepLengthMs;
         var dragLengthPixels:Float = dragLengthSteps * GRID_SIZE;
 
-        if (gridGhostNote != null && gridGhostNote.noteData != null && gridGhostHoldNote != null)
+        if (gridGhostHoldNote != null)
         {
           if (dragLengthSteps > 0)
           {
@@ -4014,8 +4068,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
 
             gridGhostHoldNote.visible = true;
-            gridGhostHoldNote.noteData = gridGhostNote.noteData;
-            gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
+            gridGhostHoldNote.noteData = currentPlaceNoteData;
+            gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
 
             gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
 
@@ -4035,6 +4089,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
             // Apply the new length.
             performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
+          }
+          else
+          {
+            // Apply the new (zero) length if we are changing the length.
+            if (currentPlaceNoteData.length > 0)
+            {
+              this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+              performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
+            }
           }
 
           // Finished dragging. Release the note.
@@ -4068,6 +4131,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 return event.alive && FlxG.mouse.overlaps(event);
               });
             }
+            var highlightedHoldNote:Null<ChartEditorHoldNoteSprite> = null;
+            if (highlightedNote == null && highlightedEvent == null)
+            {
+              highlightedHoldNote = renderedHoldNotes.members.find(function(holdNote:ChartEditorHoldNoteSprite):Bool {
+                // If holdNote.alive is false, the holdNote is dead and awaiting recycling.
+                return holdNote.alive && FlxG.mouse.overlaps(holdNote);
+              });
+            }
 
             if (FlxG.keys.pressed.CONTROL)
             {
@@ -4092,6 +4163,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 else
                 {
                   performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
+                }
+              }
+              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+              {
+                if (isNoteSelected(highlightedNote.noteData))
+                {
+                  performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
+                }
+                else
+                {
+                  performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
                 }
               }
               else
@@ -4126,6 +4208,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                   // If you click an unselected event, and aren't holding Control, deselect everything else.
                   performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData], currentNoteSelection, currentEventSelection));
                 }
+              }
+              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+              {
+                // Clicked a hold note, start dragging TO EXTEND NOTE LENGTH.
+                currentPlaceNoteData = highlightedHoldNote.noteData;
               }
               else
               {
@@ -4174,6 +4261,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool {
               // If event.alive is false, the event is dead and awaiting recycling.
               return event.alive && FlxG.mouse.overlaps(event);
+            });
+          }
+          var highlightedHoldNote:Null<ChartEditorHoldNoteSprite> = null;
+          if (highlightedNote == null && highlightedEvent == null)
+          {
+            highlightedHoldNote = renderedHoldNotes.members.find(function(holdNote:ChartEditorHoldNoteSprite):Bool {
+              // If holdNote.alive is false, the holdNote is dead and awaiting recycling.
+              return holdNote.alive && FlxG.mouse.overlaps(holdNote);
             });
           }
 
@@ -4227,13 +4322,40 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               performCommand(new RemoveEventsCommand([highlightedEvent.eventData]));
             }
           }
+          else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+          {
+            if (FlxG.keys.pressed.SHIFT)
+            {
+              // Shift + Right click opens the context menu.
+              // If we are clicking a large selection, open the Selection context menu, otherwise open the Note context menu.
+              var isHighlightedNoteSelected:Bool = isNoteSelected(highlightedHoldNote.noteData);
+              var useSingleNoteContextMenu:Bool = (!isHighlightedNoteSelected)
+                || (isHighlightedNoteSelected && currentNoteSelection.length == 1);
+              // Show the context menu connected to the note.
+              if (useSingleNoteContextMenu)
+              {
+                this.openHoldNoteContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY, highlightedHoldNote.noteData);
+              }
+              else
+              {
+                this.openSelectionContextMenu(FlxG.mouse.screenX, FlxG.mouse.screenY);
+              }
+            }
+            else
+            {
+              // Right click removes hold from the note.
+              this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+              performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
+            }
+          }
           else
           {
             // Right clicked on nothing.
           }
         }
 
-        var isOrWillSelect = overlapsSelection || dragTargetNote != null || dragTargetEvent != null;
+        var isOrWillSelect = overlapsSelection || dragTargetNote != null || dragTargetEvent != null || overlapsRenderedNotes || overlapsRenderedHoldNotes
+          || overlapsRenderedEvents;
         // Handle grid cursor.
         if (!isCursorOverHaxeUI && overlapsGrid && !isOrWillSelect && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
         {
@@ -4323,6 +4445,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             else if (overlapsSelectionBorder)
             {
               targetCursorMode = Crosshair;
+            }
+            else if (overlapsRenderedNotes)
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (overlapsRenderedHoldNotes)
+            {
+              targetCursorMode = Pointer;
+            }
+            else if (overlapsRenderedEvents)
+            {
+              targetCursorMode = Pointer;
             }
             else if (overlapsGrid)
             {
@@ -5042,7 +5176,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       throw "ERROR: Tried to build selection square, but selectionSquareBitmap is null! Check ChartEditorThemeHandler.updateSelectionSquare()";
 
     // FlxG.bitmapLog.add(selectionSquareBitmap, "selectionSquareBitmap");
-    var result = new ChartEditorSelectionSquareSprite();
+    var result = new ChartEditorSelectionSquareSprite(this);
     result.loadGraphic(selectionSquareBitmap);
     return result;
   }
@@ -5371,7 +5505,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * HAXEUI FUNCTIONS
    */
-  // ====================
+  // ==================
 
   /**
    * Set the currently selected item in the Difficulty tree view to the node representing the current difficulty.
@@ -5462,7 +5596,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * STATIC FUNCTIONS
    */
-  // ====================
+  // ==================
 
   function handleNotePreview():Void
   {
