@@ -14,8 +14,8 @@ import thx.semver.Version;
 @:forward(volume, mute)
 abstract Save(RawSaveData)
 {
-  // Version 2.0.1 adds attributes to `optionsChartEditor`, that should return default values if they are null.
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.1";
+  // Version 2.0.2 adds attributes to `optionsChartEditor`, that should return default values if they are null.
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.2";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -108,6 +108,7 @@ abstract Save(RawSaveData)
             metronomeVolume: 1.0,
             hitsoundsEnabledPlayer: true,
             hitsoundsEnabledOpponent: true,
+            themeMusic: true,
             instVolume: 1.0,
             voicesVolume: 1.0,
             playbackSpeed: 1.0,
@@ -345,6 +346,23 @@ abstract Save(RawSaveData)
     this.optionsChartEditor.hitsoundsEnabledOpponent = value;
     flush();
     return this.optionsChartEditor.hitsoundsEnabledOpponent;
+  }
+
+  public var chartEditorThemeMusic(get, set):Bool;
+
+  function get_chartEditorThemeMusic():Bool
+  {
+    if (this.optionsChartEditor.themeMusic == null) this.optionsChartEditor.themeMusic = true;
+
+    return this.optionsChartEditor.themeMusic;
+  }
+
+  function set_chartEditorThemeMusic(value:Bool):Bool
+  {
+    // Set and apply.
+    this.optionsChartEditor.themeMusic = value;
+    flush();
+    return this.optionsChartEditor.themeMusic;
   }
 
   public var chartEditorInstVolume(get, set):Float;
@@ -1026,6 +1044,12 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?hitsoundsEnabledOpponent:Bool;
+
+  /**
+   * Theme music in the Chart Editor.
+   * @default `true`
+   */
+  var ?themeMusic:Bool;
 
   /**
    * Instrumental volume in the Chart Editor.
