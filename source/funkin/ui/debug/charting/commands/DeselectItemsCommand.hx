@@ -45,16 +45,27 @@ class DeselectItemsCommand implements ChartEditorCommand
     state.notePreviewDirty = true;
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (notes.length > 0 || events.length > 0);
+  }
+
   public function toString():String
   {
-    var noteCount = notes.length + events.length;
+    var isPlural = (notes.length + events.length) > 1;
+    var notesOnly = (notes.length > 0 && events.length == 0);
+    var eventsOnly = (notes.length == 0 && events.length > 0);
 
-    if (noteCount == 1)
+    if (notesOnly)
     {
-      var dir:String = notes[0].getDirectionName();
-      return 'Deselect $dir Items';
+      return 'Deselect ${notes.length} ${isPlural ? 'Notes' : 'Note'}';
+    }
+    else if (eventsOnly)
+    {
+      return 'Deselect ${events.length} ${isPlural ? 'Events' : 'Event'}';
     }
 
-    return 'Deselect ${noteCount} Items';
+    return 'Deselect ${notes.length + events.length} Items';
   }
 }

@@ -11,12 +11,12 @@ class HaxelibVersions
     #else
     // `#if display` is used for code completion. In this case returning an
     // empty string is good enough; We don't want to call functions on every hint.
-    var commitHash:String = "";
-    return macro $v{commitHashSplice};
+    var commitHash:Array<String> = [];
+    return macro $v{commitHash};
     #end
   }
 
-  #if (debug && macro)
+  #if (macro)
   static function readHmmData():hmm.HmmConfig
   {
     return hmm.HmmConfig.HmmConfigs.readHmmJsonOrThrow();

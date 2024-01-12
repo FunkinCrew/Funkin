@@ -273,7 +273,7 @@ class SongDataUtils
   }
 
   /**
-   * Filter a list of notes to only include notes whose data is within the given range.
+   * Filter a list of notes to only include notes whose data is within the given range, inclusive.
    */
   public static function getNotesInDataRange(notes:Array<SongNoteData>, start:Int, end:Int):Array<SongNoteData>
   {
