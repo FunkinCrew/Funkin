@@ -59,7 +59,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
           remove(rating, true);
           rating.destroy();
         },
-        startDelay: Conductor.beatLengthMs * 0.001
+        startDelay: Conductor.instance.beatLengthMs * 0.001
       });
   }
 
@@ -110,7 +110,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
           remove(comboSpr, true);
           comboSpr.destroy();
         },
-        startDelay: Conductor.beatLengthMs * 0.001
+        startDelay: Conductor.instance.beatLengthMs * 0.001
       });
 
     var seperatedScore:Array<Int> = [];
@@ -157,7 +157,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
             remove(numScore, true);
             numScore.destroy();
           },
-          startDelay: Conductor.beatLengthMs * 0.002
+          startDelay: Conductor.instance.beatLengthMs * 0.002
         });
 
       daLoop++;

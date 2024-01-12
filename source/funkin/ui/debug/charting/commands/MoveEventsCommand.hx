@@ -33,7 +33,7 @@ class MoveEventsCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultEvent = event.clone();
-      resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+      resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
 
       movedEvents.push(resultEvent);
     }

@@ -164,7 +164,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
         if (vis.snd.playing) remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, numSamples));
         else
-          remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, vis.snd.length, 0, numSamples));
+          remappedShit = Std.int(FlxMath.remapToRange(Conductor.instance.songPosition, 0, vis.snd.length, 0, numSamples));
 
         var fftSamples:Array<Float> = [];
         var i = remappedShit;
@@ -235,15 +235,15 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
         if (vis.snd.playing) remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, numSamples));
         else
         {
-          if (curTime == Conductor.songPosition)
+          if (curTime == Conductor.instance.songPosition)
           {
             wavOptimiz = 3;
             return; // already did shit, so finishes function early
           }
 
-          curTime = Conductor.songPosition;
+          curTime = Conductor.instance.songPosition;
 
-          remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, vis.snd.length, 0, numSamples));
+          remappedShit = Std.int(FlxMath.remapToRange(Conductor.instance.songPosition, 0, vis.snd.length, 0, numSamples));
         }
 
         wavOptimiz = 8;

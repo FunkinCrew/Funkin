@@ -185,8 +185,8 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
           state.audioVisGroup.addPlayerVis(vocalTrack);
           state.audioVisGroup.playerVis.x = 885;
-          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195; // The height of the visualizer, in time.
-          state.audioVisGroup.playerVis.daHeight = (ChartEditorState.GRID_SIZE) * 16; // The height of the visualizer, in pixels.
+          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.playerVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.playerVis.detail = 1;
           state.audioVisGroup.playerVis.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS);
 
@@ -196,8 +196,9 @@ class ChartEditorAudioHandler
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
           state.audioVisGroup.addOpponentVis(vocalTrack);
           state.audioVisGroup.opponentVis.x = 435;
-          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.getStepTimeInMs(16) * 0.00195; // The height of the visualizer, in time.
-          state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16; // The height of the visualizer, in pixels.
+
+          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
+          state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
           state.audioVisGroup.opponentVis.detail = 1;
           state.audioVisGroup.opponentVis.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS);
 

@@ -40,7 +40,7 @@ class ComboMilestone extends FlxTypedSpriteGroup<FlxSprite>
   {
     if (onScreenTime < 0.9)
     {
-      new FlxTimer().start((Conductor.beatLengthMs / 1000) * 0.25, function(tmr) {
+      new FlxTimer().start((Conductor.instance.beatLengthMs / 1000) * 0.25, function(tmr) {
         forceFinish();
       });
     }

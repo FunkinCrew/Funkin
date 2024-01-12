@@ -238,7 +238,7 @@ class StoryMenuState extends MusicBeatState
       var freakyMenuMetadata:Null<SongMusicData> = SongRegistry.instance.parseMusicData('freakyMenu');
       if (freakyMenuMetadata != null)
       {
-        Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
+        Conductor.instance.mapTimeChanges(freakyMenuMetadata.timeChanges);
       }
 
       FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
@@ -317,7 +317,7 @@ class StoryMenuState extends MusicBeatState
 
   override function update(elapsed:Float)
   {
-    Conductor.update();
+    Conductor.instance.update();
 
     highScoreLerp = Std.int(MathUtil.coolLerp(highScoreLerp, highScore, 0.5));
 

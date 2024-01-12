@@ -34,7 +34,12 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
 
     state.currentSongMetadata.timeChanges = timeChanges;
 
-    Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.notePreviewViewportBoundsDirty = true;
+    state.scrollPositionInPixels = 0;
+
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
   }
 
   public function undo(state:ChartEditorState):Void
@@ -51,7 +56,12 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
 
     state.currentSongMetadata.timeChanges = timeChanges;
 
-    Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    state.noteDisplayDirty = true;
+    state.notePreviewDirty = true;
+    state.notePreviewViewportBoundsDirty = true;
+    state.scrollPositionInPixels = 0;
+
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool

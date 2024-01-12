@@ -111,6 +111,7 @@
 	<haxelib name="tink_json" /> <!-- JSON parsing (DEPRECATED) -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->
 
+	<haxelib name="hmm" if="debug" /> <!-- Read library version data at compile time -->
 	<haxelib name="hxcpp-debug-server" if="desktop debug" /> <!-- VSCode debug support -->
 
 	<!--Disable the Flixel core focus lost screen-->
@@ -127,7 +128,7 @@
 	<haxeflag name="-w" value="-WDeprecated" />
 
 	<!-- Haxe 4.3.0+: Enable pretty syntax errors and stuff. -->
-	<haxedef name="message-reporting" value="pretty" />
+	<haxedef name="message.reporting" value="pretty" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 	<!-- Disable trace() calls in release builds to bump up performance. -->

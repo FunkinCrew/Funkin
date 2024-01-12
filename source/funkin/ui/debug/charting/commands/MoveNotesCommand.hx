@@ -34,7 +34,7 @@ class MoveNotesCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultNote = note.clone();
-      resultNote.time = (resultNote.time + offset).clamp(0, Conductor.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+      resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
       resultNote.data = ChartEditorState.gridColumnToNoteData((ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0,
         ChartEditorState.STRUMLINE_SIZE * 2 - 1));
 
