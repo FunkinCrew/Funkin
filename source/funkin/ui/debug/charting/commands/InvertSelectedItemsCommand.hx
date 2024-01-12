@@ -12,19 +12,19 @@ import funkin.data.song.SongDataUtils;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class InvertSelectedItemsCommand implements ChartEditorCommand
 {
-  var previousNoteSelection:Array<SongNoteData>;
-  var previousEventSelection:Array<SongEventData>;
+  var previousNoteSelection:Array<SongNoteData> = [];
+  var previousEventSelection:Array<SongEventData> = [];
 
-  public function new(?previousNoteSelection:Array<SongNoteData>, ?previousEventSelection:Array<SongEventData>)
-  {
-    this.previousNoteSelection = previousNoteSelection == null ? [] : previousNoteSelection;
-    this.previousEventSelection = previousEventSelection == null ? [] : previousEventSelection;
-  }
+  public function new() {}
 
   public function execute(state:ChartEditorState):Void
   {
+    this.previousNoteSelection = state.currentNoteSelection;
+    this.previousEventSelection = state.currentEventSelection;
+
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentSongChartNoteData, previousNoteSelection);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentSongChartEventData, previousEventSelection);
+
     state.noteDisplayDirty = true;
   }
 
@@ -34,6 +34,12 @@ class InvertSelectedItemsCommand implements ChartEditorCommand
     state.currentEventSelection = previousEventSelection;
 
     state.noteDisplayDirty = true;
+  }
+
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (previousNoteSelection.length > 0 || previousEventSelection.length > 0);
   }
 
   public function toString():String

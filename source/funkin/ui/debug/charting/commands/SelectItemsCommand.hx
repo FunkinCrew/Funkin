@@ -15,10 +15,10 @@ class SelectItemsCommand implements ChartEditorCommand
   var notes:Array<SongNoteData>;
   var events:Array<SongEventData>;
 
-  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>)
+  public function new(?notes:Array<SongNoteData>, ?events:Array<SongEventData>)
   {
-    this.notes = notes;
-    this.events = events;
+    this.notes = notes ?? [];
+    this.events = events ?? [];
   }
 
   public function execute(state:ChartEditorState):Void
@@ -70,6 +70,12 @@ class SelectItemsCommand implements ChartEditorCommand
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+  }
+
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (notes.length > 0 || events.length > 0);
   }
 
   public function toString():String

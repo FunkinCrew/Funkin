@@ -64,6 +64,12 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (targetBPM != previousBPM);
+  }
+
   public function toString():String
   {
     return 'Change Starting BPM to ${targetBPM}';
