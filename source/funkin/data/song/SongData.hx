@@ -93,7 +93,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     result.version = this.version;
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
-    result.offsets = this.offsets.clone();
+    result.offsets = this.offsets != null ? this.offsets.clone() : new SongOffsets(); // if no song offsets found (aka null), so just create new ones
     result.timeChanges = this.timeChanges.deepClone();
     result.looped = this.looped;
     result.playData = this.playData.clone();
