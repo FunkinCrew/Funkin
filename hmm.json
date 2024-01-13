@@ -107,7 +107,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "fff39ba6fc64969cd51987ef7491d9345043dc5d",
+      "ref": "1359fe6ad52e91175dc636a516d460bd54ea22ed",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -149,13 +149,15 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "80d1d309803c1b111866524f9769325e3b8b0b1b",
+      "ref": "a9963b3a982e5f66a2ba02421aabf4b926953fbc",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
       "name": "thx.semver",
-      "type": "haxelib",
-      "version": "0.2.2"
+      "type": "git",
+      "dir": null,
+      "ref": "cf8d213589a2c7ce4a59b0fdba9e8ff36bc029fa",
+      "url": "https://github.com/FunkinCrew/thx.semver"
     },
     {
       "name": "tink_json",
