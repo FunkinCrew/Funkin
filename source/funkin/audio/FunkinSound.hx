@@ -107,6 +107,26 @@ class FunkinSound extends FlxSound
     return this;
   }
 
+  /**
+   * Called when the user clicks to focus on the window.
+   */
+  override function onFocus():Void
+  {
+    if (!_alreadyPaused && this._shouldPlay)
+    {
+      resume();
+    }
+  }
+
+  /**
+   * Called when the user tabs away from the window.
+   */
+  override function onFocusLost():Void
+  {
+    _alreadyPaused = _paused;
+    pause();
+  }
+
   public override function resume():FunkinSound
   {
     if (this._time < 0)
