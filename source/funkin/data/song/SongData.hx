@@ -38,10 +38,11 @@ class SongMetadata implements ICloneable<SongMetadata>
   public var looped:Bool;
 
   /**
-   * Instrumental and vocal offsets. Optional, defaults to 0.
+   * Instrumental and vocal offsets.
+   * Defaults to an empty SongOffsets object.
    */
   @:optional
-  public var offsets:SongOffsets;
+  public var offsets:Null<SongOffsets>;
 
   /**
    * Data relating to the song's gameplay.
