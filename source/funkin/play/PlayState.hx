@@ -1796,6 +1796,7 @@ class PlayState extends MusicBeatSubState
     {
       if (note == null) continue;
 
+      // TODO: Does this properly account for offsets?
       var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
@@ -1865,7 +1866,10 @@ class PlayState extends MusicBeatSubState
       }
 
       // TODO: Potential penalty for dropping a hold note?
-      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        holdNote.handledMiss = true;
+      }
     }
 
     // Process notes on the player's side.

@@ -343,7 +343,7 @@ class Strumline extends FlxSpriteGroup
           playStatic(holdNote.noteDirection);
           holdNote.missedNote = true;
           holdNote.visible = true;
-          holdNote.alpha = 0.0;
+          holdNote.alpha = 0.0; // Completely hide the dropped hold note.
         }
       }
 

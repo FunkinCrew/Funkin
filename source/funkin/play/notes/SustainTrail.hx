@@ -47,6 +47,11 @@ class SustainTrail extends FlxSprite
    */
   public var missedNote:Bool = false;
 
+  /**
+   * Set to `true` after handling additional logic for missing notes.
+   */
+  public var handledMiss:Bool = false;
+
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
   /**
