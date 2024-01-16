@@ -2307,9 +2307,6 @@ class PlayState extends MusicBeatSubState
       return;
     }
 
-    // TODO: DEBUG OVERRIDE DON'T BE A DUMBASS
-    daRating = 'bad';
-
     var isComboBreak = false;
     switch (daRating)
     {
