@@ -94,11 +94,12 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Add a black background to the screen.
-    var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    var bg = new FlxSprite().makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     // We make this transparent so that we can see the stage underneath during debugging,
     // but it's normally opaque.
     bg.alpha = transparent ? 0.25 : 1.0;
     bg.scrollFactor.set();
+    bg.screenCenter();
     add(bg);
 
     // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
@@ -220,6 +221,7 @@ class GameOverSubState extends MusicBeatSubState
             playJeffQuote();
             // Start music at lower volume
             startDeathMusic(0.2, false);
+            boyfriend.playAnimation('deathLoop' + animationSuffix);
           }
         default:
           // Start music at normal volume once the initial death animation finishes.
