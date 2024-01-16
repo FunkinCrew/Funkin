@@ -21,7 +21,6 @@ abstract Tallies(RawTallies)
         bad: 0,
         good: 0,
         sick: 0,
-        killer: 0,
         totalNotes: 0,
         totalNotesHit: 0,
         maxCombo: 0,
@@ -43,7 +42,6 @@ typedef RawTallies =
   var bad:Int;
   var good:Int;
   var sick:Int;
-  var killer:Int;
   var maxCombo:Int;
   var isNewHighscore:Bool;
 

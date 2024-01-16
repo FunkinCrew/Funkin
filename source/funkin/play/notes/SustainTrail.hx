@@ -326,6 +326,7 @@ class SustainTrail extends FlxSprite
 
     hitNote = false;
     missedNote = false;
+    handledMiss = false;
   }
 
   override public function destroy():Void
