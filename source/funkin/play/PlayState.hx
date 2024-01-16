@@ -1796,6 +1796,7 @@ class PlayState extends MusicBeatSubState
     {
       if (note == null) continue;
 
+      // TODO: Does this properly account for offsets?
       var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
@@ -1864,14 +1865,30 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      // TODO: Potential penalty for dropping a hold note?
-      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        // When the opponent drops a hold note.
+        holdNote.handledMiss = true;
+
+        // We dropped a hold note.
+        // Mute vocals and play miss animation, but don't penalize.
+        vocals.opponentVolume = 0;
+        currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
+      }
     }
 
     // Process notes on the player's side.
     for (note in playerStrumline.notes.members)
     {
-      if (note == null || note.hasBeenHit) continue;
+      if (note == null) continue;
+
+      if (note.hasBeenHit)
+      {
+        note.tooEarly = false;
+        note.mayHit = false;
+        note.hasMissed = false;
+        continue;
+      }
 
       var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime;
@@ -1934,8 +1951,15 @@ class PlayState extends MusicBeatSubState
         songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
       }
 
-      // TODO: Potential penalty for dropping a hold note?
-      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        // The player dropped a hold note.
+        holdNote.handledMiss = true;
+
+        // Mute vocals and play miss animation, but don't penalize.
+        vocals.playerVolume = 0;
+        currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+      }
     }
   }
 
@@ -2027,8 +2051,6 @@ class PlayState extends MusicBeatSubState
         trace('Hit note! ${targetNote.noteData}');
         goodNoteHit(targetNote, input);
 
-        targetNote.visible = false;
-        targetNote.kill();
         notesInDirection.remove(targetNote);
 
         // Play the strumline animation.
@@ -2060,14 +2082,7 @@ class PlayState extends MusicBeatSubState
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
 
-    Highscore.tallies.combo++;
-    Highscore.tallies.totalNotesHit++;
-
-    if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
-
     popUpScore(note, input);
-
-    playerStrumline.hitNote(note);
 
     if (note.isHoldNote && note.holdNoteSprite != null)
     {
@@ -2084,8 +2099,6 @@ class PlayState extends MusicBeatSubState
   function onNoteMiss(note:NoteSprite):Void
   {
     // a MISS is when you let a note scroll past you!!
-    Highscore.tallies.missed++;
-
     var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Highscore.tallies.combo, true);
     dispatchEvent(event);
     // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2133,8 +2146,11 @@ class PlayState extends MusicBeatSubState
     }
     vocals.playerVolume = 0;
 
+    Highscore.tallies.missed++;
+
     if (Highscore.tallies.combo != 0)
     {
+      // Break the combo.
       Highscore.tallies.combo = comboPopUps.displayCombo(0);
     }
 
@@ -2282,29 +2298,51 @@ class PlayState extends MusicBeatSubState
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
 
+    if (daRating == 'miss')
+    {
+      // If daRating is 'miss', that means we made a mistake and should not continue.
+      trace('[WARNING] popUpScore judged a note as a miss!');
+      // TODO: Remove this.
+      comboPopUps.displayRating('miss');
+      return;
+    }
+
+    var isComboBreak = false;
     switch (daRating)
     {
-      case 'killer':
-        Highscore.tallies.killer += 1;
-        health += Constants.HEALTH_KILLER_BONUS;
       case 'sick':
         Highscore.tallies.sick += 1;
         health += Constants.HEALTH_SICK_BONUS;
+        isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
         health += Constants.HEALTH_GOOD_BONUS;
+        isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
         health += Constants.HEALTH_BAD_BONUS;
+        isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
         health += Constants.HEALTH_SHIT_BONUS;
-      case 'miss':
-        Highscore.tallies.missed += 1;
-        health -= Constants.HEALTH_MISS_PENALTY;
+        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 
-    if (daRating == "sick" || daRating == "killer")
+    if (isComboBreak)
+    {
+      // Break the combo, but don't increment tallies.misses.
+      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+    }
+    else
+    {
+      Highscore.tallies.combo++;
+      Highscore.tallies.totalNotesHit++;
+      if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
+    }
+
+    playerStrumline.hitNote(daNote, !isComboBreak);
+
+    if (daRating == "sick")
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
@@ -2440,7 +2478,6 @@ class PlayState extends MusicBeatSubState
           score: songScore,
           tallies:
             {
-              killer: Highscore.tallies.killer,
               sick: Highscore.tallies.sick,
               good: Highscore.tallies.good,
               bad: Highscore.tallies.bad,
@@ -2491,7 +2528,6 @@ class PlayState extends MusicBeatSubState
               tallies:
                 {
                   // TODO: Sum up the values for the whole level!
-                  killer: 0,
                   sick: 0,
                   good: 0,
                   bad: 0,

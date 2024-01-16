@@ -363,6 +363,12 @@ class Constants
    */
   public static final SCORE_HOLD_BONUS_PER_SECOND:Float = 250.0;
 
+  public static final JUDGEMENT_KILLER_COMBO_BREAK:Bool = false;
+  public static final JUDGEMENT_SICK_COMBO_BREAK:Bool = false;
+  public static final JUDGEMENT_GOOD_COMBO_BREAK:Bool = false;
+  public static final JUDGEMENT_BAD_COMBO_BREAK:Bool = true;
+  public static final JUDGEMENT_SHIT_COMBO_BREAK:Bool = true;
+
   /**
    * FILE EXTENSIONS
    */

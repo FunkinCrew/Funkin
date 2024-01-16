@@ -4,12 +4,15 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
+import funkin.graphics.shaders.HSVShader;
 
 class NoteSprite extends FlxSprite
 {
   static final DIRECTION_COLORS:Array<String> = ['purple', 'blue', 'green', 'red'];
 
   public var holdNoteSprite:SustainTrail;
+
+  var hsvShader:HSVShader;
 
   /**
    * The time at which the note should be hit, in milliseconds.
@@ -102,6 +105,8 @@ class NoteSprite extends FlxSprite
     this.strumTime = strumTime;
     this.direction = direction;
 
+    this.hsvShader = new HSVShader();
+
     if (this.strumTime < 0) this.strumTime = 0;
 
     setupNoteGraphic(noteStyle);
@@ -116,16 +121,57 @@ class NoteSprite extends FlxSprite
 
     setGraphicSize(Strumline.STRUMLINE_SIZE);
     updateHitbox();
+
+    this.shader = hsvShader;
+  }
+
+  #if FLX_DEBUG
+  /**
+   * Call this to override how debug bounding boxes are drawn for this sprite.
+   */
+  public override function drawDebugOnCamera(camera:flixel.FlxCamera):Void
+  {
+    if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
+
+    var gfx = beginDrawDebug(camera);
+
+    var rect = getBoundingBox(camera);
+    trace('note sprite bounding box: ' + rect.x + ', ' + rect.y + ', ' + rect.width + ', ' + rect.height);
+
+    gfx.lineStyle(2, 0xFFFF66FF, 0.5); // thickness, color, alpha
+    gfx.drawRect(rect.x, rect.y, rect.width, rect.height);
+
+    gfx.lineStyle(2, 0xFFFFFF66, 0.5); // thickness, color, alpha
+    gfx.drawRect(rect.x, rect.y + rect.height / 2, rect.width, 1);
+
+    endDrawDebug(camera);
+  }
+  #end
+
+  public function desaturate():Void
+  {
+    this.hsvShader.saturation = 0.2;
+  }
+
+  public function setHue(hue:Float):Void
+  {
+    this.hsvShader.hue = hue;
   }
 
   public override function revive():Void
   {
     super.revive();
+    this.visible = true;
+    this.alpha = 1.0;
     this.active = false;
     this.tooEarly = false;
     this.hasBeenHit = false;
     this.mayHit = false;
     this.hasMissed = false;
+
+    this.hsvShader.hue = 1.0;
+    this.hsvShader.saturation = 1.0;
+    this.hsvShader.value = 1.0;
   }
 
   public override function kill():Void
