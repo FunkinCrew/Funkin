@@ -220,6 +220,7 @@ class GameOverSubState extends MusicBeatSubState
             playJeffQuote();
             // Start music at lower volume
             startDeathMusic(0.2, false);
+            boyfriend.playAnimation('deathLoop' + animationSuffix);
           }
         default:
           // Start music at normal volume once the initial death animation finishes.
