@@ -7,6 +7,7 @@ import funkin.play.song.Song.SongDifficulty;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 import funkin.save.Save;
+import haxe.Timer;
 
 /**
  * A core class which handles musical timing throughout the game,
@@ -70,6 +71,9 @@ class Conductor
    * Update this every frame based on the audio position using `Conductor.instance.update()`.
    */
   public var songPosition(default, null):Float = 0;
+
+  var prevTimestamp:Float = 0;
+  var prevTime:Float = 0;
 
   /**
    * Beats per minute of the current song at the current time.
@@ -349,6 +353,27 @@ class Conductor
         Conductor.measureHit.dispatch();
       }
     }
+
+    // only update the timestamp if songPosition actually changed
+    // which it doesn't do every frame!
+    if (prevTime != this.songPosition)
+    {
+      // Update the timestamp for use in-between frames
+      prevTime = this.songPosition;
+      prevTimestamp = Std.int(Timer.stamp() * 1000);
+    }
+  }
+
+  /**
+   * Can be called in-between frames, usually for input related things
+   * that can potentially get processed on exact milliseconds/timestmaps.
+   * If you need song position, use `Conductor.instance.songPosition` instead
+   * for use in update() related functions.
+   * @return Float
+   */
+  public function getTimeWithDiff():Float
+  {
+    return this.songPosition + (Std.int(Timer.stamp() * 1000) - prevTimestamp);
   }
 
   public function mapTimeChanges(songTimeChanges:Array<SongTimeChange>)
