@@ -1,5 +1,6 @@
 package funkin.play.character;
 
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
@@ -7,35 +8,17 @@ import funkin.play.character.CharacterData.CharacterRenderType;
 
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
- * into multiple files. This character renderer handles by showing the appropriate sprite.
+ * into multiple files. This character renderer concatenates these together into a single sprite.
  *
  * Examples in base game include BF Holding GF (most of the sprites are in one file
  * but the death animation is in a separate file).
  * Only example I can think of in mods is Tricky (which has a separate file for each animation).
  *
- * BaseCharacter has game logic, SparrowCharacter has only rendering logic.
+ * BaseCharacter has game logic, MultiSparrowCharacter has only rendering logic.
  * KEEP THEM SEPARATE!
- *
- * TODO: Rewrite this to use a single frame collection.
- * @see https://github.com/HaxeFlixel/flixel/issues/2587#issuecomment-1179620637
  */
 class MultiSparrowCharacter extends BaseCharacter
 {
-  /**
-   * The actual group which holds all spritesheets this character uses.
-   */
-  var members:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
-
-  /**
-   * A map between animation names and what frame collection the animation should use.
-   */
-  var animAssetPath:Map<String, String> = new Map<String, String>();
-
-  /**
-   * The current frame collection being used.
-   */
-  var activeMember:String;
-
   public function new(id:String)
   {
     super(id, CharacterRenderType.MultiSparrow);
@@ -51,7 +34,7 @@ class MultiSparrowCharacter extends BaseCharacter
 
   function buildSprites():Void
   {
-    buildSpritesheets();
+    buildSpritesheet();
     buildAnimations();
 
     if (_data.isPixel)
@@ -66,95 +49,49 @@ class MultiSparrowCharacter extends BaseCharacter
     }
   }
 
-  function buildSpritesheets():Void
+  function buildSpritesheet():Void
   {
-    // TODO: This currently works by creating like 5 frame collections and switching between them.
-    // It would be better to refactor this to simply concatenate the frame collections together.
-
-    // Build the list of asset paths to use.
-    // Ignore nulls and duplicates.
-    var assetList = [_data.assetPath];
+    var assetList = [];
     for (anim in _data.animations)
     {
       if (anim.assetPath != null && !assetList.contains(anim.assetPath))
       {
         assetList.push(anim.assetPath);
       }
-      animAssetPath.set(anim.name, anim.assetPath);
     }
 
-    // Load the Sparrow atlas for each path and store them in the members map.
+    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath, 'shared');
+
+    if (texture == null)
+    {
+      trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+    }
+    else
+    {
+      trace('Creating multi-sparrow atlas: ${_data.assetPath}');
+      texture.parent.destroyOnNoUse = false;
+    }
+
     for (asset in assetList)
     {
-      var texture:FlxFramesCollection = Paths.getSparrowAtlas(asset, 'shared');
+      var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset, 'shared');
       // If we don't do this, the unused textures will be removed as soon as they're loaded.
 
-      if (texture == null)
+      if (subTexture == null)
       {
-        trace('Multi-Sparrow atlas could not load texture: ${asset}');
+        trace('Multi-Sparrow atlas could not load subtexture: ${asset}');
       }
       else
       {
-        trace('Adding multi-sparrow atlas: ${asset}');
-        texture.parent.destroyOnNoUse = false;
-        members.set(asset, texture);
+        trace('Concatenating multi-sparrow atlas: ${asset}');
+        subTexture.parent.destroyOnNoUse = false;
       }
+
+      texture.addAtlas(subTexture);
     }
 
-    // Use the default frame collection to start.
-    loadFramesByAssetPath(_data.assetPath);
-  }
-
-  /**
-   * Replace this sprite's animation frames with the ones at this asset path.
-   */
-  function loadFramesByAssetPath(assetPath:String):Void
-  {
-    if (_data.assetPath == null)
-    {
-      trace('[ERROR] Multi-Sparrow character has no default asset path!');
-      return;
-    }
-    if (assetPath == null)
-    {
-      // trace('Asset path is null, falling back to default. This is normal!');
-      loadFramesByAssetPath(_data.assetPath);
-      return;
-    }
-
-    if (this.activeMember == assetPath)
-    {
-      // trace('Already using this asset path: ${assetPath}');
-      return;
-    }
-
-    if (members.exists(assetPath))
-    {
-      // Switch to a new set of sprites.
-      // trace('Loading frames from asset path: ${assetPath}');
-      this.frames = members.get(assetPath);
-      this.activeMember = assetPath;
-      this.setScale(_data.scale);
-    }
-    else
-    {
-      trace('[WARN] MultiSparrow character ${characterId} could not find asset path: ${assetPath}');
-    }
-  }
-
-  /**
-   * Replace this sprite's animation frames with the ones needed to play this animation.
-   */
-  function loadFramesByAnimName(animName)
-  {
-    if (animAssetPath.exists(animName))
-    {
-      loadFramesByAssetPath(animAssetPath.get(animName));
-    }
-    else
-    {
-      trace('[WARN] MultiSparrow character ${characterId} could not find animation: ${animName}');
-    }
+    this.frames = texture;
+    this.setScale(_data.scale);
   }
 
   function buildAnimations()
@@ -164,7 +101,6 @@ class MultiSparrowCharacter extends BaseCharacter
     // We need to swap to the proper frame collection before adding the animations, I think?
     for (anim in _data.animations)
     {
-      loadFramesByAnimName(anim.name);
       FlxAnimationUtil.addAtlasAnimation(this, anim);
 
       if (anim.offsets == null)
@@ -187,37 +123,6 @@ class MultiSparrowCharacter extends BaseCharacter
     // unless we're forcing a new animation.
     if (!this.canPlayOtherAnims && !ignoreOther) return;
 
-    loadFramesByAnimName(name);
     super.playAnimation(name, restart, ignoreOther, reverse);
-  }
-
-  override function set_frames(value:FlxFramesCollection):FlxFramesCollection
-  {
-    // DISABLE THIS SO WE DON'T DESTROY OUR HARD WORK
-    // WE WILL MAKE SURE TO LOAD THE PROPER SPRITESHEET BEFORE PLAYING AN ANIM
-    // if (animation != null)
-    // {
-    // 	animation.destroyAnimations();
-    // }
-
-    if (value != null)
-    {
-      graphic = value.parent;
-      this.frames = value;
-      this.frame = value.getByIndex(0);
-      // this.numFrames = value.numFrames;
-      resetHelpers();
-      this.bakedRotationAngle = 0;
-      this.animation.frameIndex = 0;
-      graphicLoaded();
-    }
-    else
-    {
-      this.frames = null;
-      this.frame = null;
-      this.graphic = null;
-    }
-
-    return this.frames;
   }
 }

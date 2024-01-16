@@ -5951,9 +5951,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     ChartEditorNoteSprite.noteFrameCollection = null;
 
     // Stop the music.
-    welcomeMusic.destroy();
-    audioInstTrack.destroy();
-    audioVocalTrackGroup.destroy();
+    if (welcomeMusic != null) welcomeMusic.destroy();
+    if (audioInstTrack != null) audioInstTrack.destroy();
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.destroy();
   }
 
   function applyCanQuickSave():Void

@@ -995,7 +995,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Set the difficulty star count on the right.
-    difficultyStars.difficulty = daSong.songRating;
+    difficultyStars.difficulty = daSong?.songRating ?? difficultyStars.difficulty; // yay haxe 4.3
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
