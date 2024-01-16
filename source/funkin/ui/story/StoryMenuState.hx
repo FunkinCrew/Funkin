@@ -10,6 +10,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -153,7 +154,7 @@ class StoryMenuState extends MusicBeatState
 
     updateBackground();
 
-    var black:FlxSprite = new FlxSprite(levelBackground.x, 0).makeGraphic(FlxG.width, Std.int(400 + levelBackground.y), FlxColor.BLACK);
+    var black:FunkinSprite = new FunkinSprite(levelBackground.x, 0).makeSolidColor(FlxG.width, Std.int(400 + levelBackground.y), FlxColor.BLACK);
     black.zIndex = levelBackground.zIndex - 1;
     add(black);
 

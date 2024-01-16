@@ -2,10 +2,11 @@ package funkin.ui.debug.charting.util;
 
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.stage.StageData;
-import funkin.play.stage.StageData.StageDataParser;
+import funkin.data.stage.StageData;
+import funkin.data.stage.StageRegistry;
 import funkin.play.character.CharacterData;
 import haxe.ui.components.DropDown;
+import funkin.play.stage.Stage;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData.CharacterDataParser;
 
@@ -60,16 +61,16 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var stageIds:Array<String> = StageDataParser.listStageIds();
+    var stageIds:Array<String> = StageRegistry.instance.listEntryIds();
 
     var returnValue:DropDownEntry = {id: "mainStage", text: "Main Stage"};
 
     for (stageId in stageIds)
     {
-      var stage:Null<StageData> = StageDataParser.parseStageData(stageId);
+      var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
       if (stage == null) continue;
 
-      var value = {id: stageId, text: stage.name};
+      var value = {id: stage.id, text: stage.stageName};
       if (startingStageId == stageId) returnValue = value;
 
       dropDown.dataSource.add(value);

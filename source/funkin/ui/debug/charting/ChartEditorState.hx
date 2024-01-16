@@ -12,6 +12,7 @@ import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxSpriteGroup;
+import funkin.graphics.FunkinSprite;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -56,7 +57,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongDataUtils;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
@@ -2230,7 +2231,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var playheadWidth:Int = GRID_SIZE * (STRUMLINE_SIZE * 2 + 1) + (PLAYHEAD_SCROLL_AREA_WIDTH * 2);
     var playheadBaseYPos:Float = GRID_INITIAL_Y_POS;
     gridPlayhead.setPosition(GRID_X_POS, playheadBaseYPos);
-    var playheadSprite:FlxSprite = new FlxSprite().makeGraphic(playheadWidth, PLAYHEAD_HEIGHT, PLAYHEAD_COLOR);
+    var playheadSprite:FunkinSprite = new FunkinSprite().makeSolidColor(playheadWidth, PLAYHEAD_HEIGHT, PLAYHEAD_COLOR);
     playheadSprite.x = -PLAYHEAD_SCROLL_AREA_WIDTH;
     playheadSprite.y = 0;
     gridPlayhead.add(playheadSprite);
@@ -5951,9 +5952,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     ChartEditorNoteSprite.noteFrameCollection = null;
 
     // Stop the music.
-    welcomeMusic.destroy();
-    audioInstTrack.destroy();
-    audioVocalTrackGroup.destroy();
+    if (welcomeMusic != null) welcomeMusic.destroy();
+    if (audioInstTrack != null) audioInstTrack.destroy();
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.destroy();
   }
 
   function applyCanQuickSave():Void

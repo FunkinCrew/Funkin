@@ -9,6 +9,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint.FlxCallbackPoint;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import funkin.graphics.FunkinSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
@@ -621,7 +622,7 @@ class AnimateAtlasCharacter extends BaseCharacter
    * This functionality isn't supported in SpriteGroup
    * @return this sprite group
    */
-  public override function loadGraphicFromSprite(Sprite:FlxSprite):FlxSprite
+  public override function loadGraphicFromSprite(Sprite:FlxSprite):FunkinSprite
   {
     #if FLX_DEBUG
     throw "This function is not supported in FlxSpriteGroup";

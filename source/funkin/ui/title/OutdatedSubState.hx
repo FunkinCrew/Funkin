@@ -15,7 +15,7 @@ class OutdatedSubState extends MusicBeatState
   override function create()
   {
     super.create();
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
     add(bg);
     var ver = "v" + Application.current.meta.get('version');
     var txt:FlxText = new FlxText(0, 0, FlxG.width,

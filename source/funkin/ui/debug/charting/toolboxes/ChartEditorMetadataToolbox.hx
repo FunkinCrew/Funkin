@@ -2,7 +2,8 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
+import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
@@ -13,6 +14,7 @@ import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
+import funkin.play.stage.Stage;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
@@ -199,11 +201,11 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputTimeSignature.value = {id: currentTimeSignature, text: currentTimeSignature};
 
     var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
-    var stageData:Null<StageData> = StageDataParser.parseStageData(stageId);
+    var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stageData != null) ?
-        {id: stageId, text: stageData.name} :
+      inputStage.value = (stage != null) ?
+        {id: stage.id, text: stage.stageName} :
           {id: "mainStage", text: "Main Stage"};
     }
 
