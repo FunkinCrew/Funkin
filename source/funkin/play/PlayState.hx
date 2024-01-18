@@ -1354,6 +1354,7 @@ class PlayState extends MusicBeatSubState
   function loadStage(id:String):Void
   {
     currentStage = StageRegistry.instance.fetchEntry(id);
+    currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
     if (currentStage != null)
     {
