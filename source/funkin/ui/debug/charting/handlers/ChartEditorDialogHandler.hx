@@ -19,6 +19,7 @@ import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorCharacterIconSelectorMenu;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadChartDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
+import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.util.Constants;
 import funkin.util.DateUtil;
@@ -59,11 +60,8 @@ using Lambda;
 class ChartEditorDialogHandler
 {
   // Paths to HaxeUI layout files for each dialog.
-  static final CHART_EDITOR_DIALOG_UPLOAD_CHART_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-chart');
   static final CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-inst');
   static final CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT:String = Paths.ui('chart-editor/dialogs/song-metadata');
-  static final CHART_EDITOR_DIALOG_UPLOAD_VOCALS_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-vocals');
-  static final CHART_EDITOR_DIALOG_UPLOAD_VOCALS_ENTRY_LAYOUT:String = Paths.ui('chart-editor/dialogs/upload-vocals-entry');
   static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_LAYOUT:String = Paths.ui('chart-editor/dialogs/open-chart-parts');
   static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT:String = Paths.ui('chart-editor/dialogs/open-chart-parts-entry');
   static final CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT:String = Paths.ui('chart-editor/dialogs/import-chart');
@@ -103,6 +101,56 @@ class ChartEditorDialogHandler
     state.fadeInWelcomeMusic();
 
     return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog letting the user browse for a chart file to open.
+   * @param state The current chart editor state.
+   * @param closable Whether the dialog can be closed by the user.
+   * @return The dialog that was opened.
+   */
+  public static function openBrowseFNFC(state:ChartEditorState, closable:Bool):Null<Dialog>
+  {
+    var dialog = ChartEditorUploadChartDialog.build(state, closable);
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog where the user uploads vocals for the current song.
+   * @param state The current chart editor state.
+   * @param closable Whether the dialog can be closed by the user.
+   * @return The dialog that was opened.
+   */
+  public static function openUploadVocalsDialog(state:ChartEditorState, closable:Bool = true):Dialog
+  {
+    var charData:SongCharacterData = state.currentSongMetadata.playData.characters;
+
+    var hasClearedVocals:Bool = false;
+
+    var charIdsForVocals:Array<String> = [charData.player, charData.opponent];
+
+    var dialog = ChartEditorUploadVocalsDialog.build(state, charIdsForVocals, closable);
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens the dialog for selecting a character.
+   */
+  public static function openCharacterDropdown(state:ChartEditorState, charType:CharacterType, lockPosition:Bool = false):Null<Menu>
+  {
+    var menu = ChartEditorCharacterIconSelectorMenu.build(state, charType, lockPosition);
+
+    menu.zIndex = 1000;
+
+    return menu;
   }
 
   /**
@@ -182,22 +230,6 @@ class ChartEditorDialogHandler
         dialog.hideDialog(DialogButton.CANCEL);
       }
     }
-
-    return dialog;
-  }
-
-  /**
-   * Builds and opens a dialog letting the user browse for a chart file to open.
-   * @param state The current chart editor state.
-   * @param closable Whether the dialog can be closed by the user.
-   * @return The dialog that was opened.
-   */
-  public static function openBrowseFNFC(state:ChartEditorState, closable:Bool):Null<Dialog>
-  {
-    var dialog = ChartEditorUploadChartDialog.build(state, closable);
-
-    dialog.zIndex = 1000;
-    state.isHaxeUIDialogOpen = true;
 
     return dialog;
   }
@@ -286,15 +318,6 @@ class ChartEditorDialogHandler
         state.openWelcomeDialog(closable);
       }
     };
-  }
-
-  public static function openCharacterDropdown(state:ChartEditorState, charType:CharacterType, lockPosition:Bool = false):Null<Menu>
-  {
-    var menu = ChartEditorCharacterIconSelectorMenu.build(state, charType, lockPosition);
-
-    menu.zIndex = 1000;
-
-    return menu;
   }
 
   public static function openCreateSongWizardBasicOnly(state:ChartEditorState, closable:Bool):Void
@@ -695,150 +718,6 @@ class ChartEditorDialogHandler
 
       dialog.hideDialog(DialogButton.APPLY);
     }
-
-    return dialog;
-  }
-
-  /**
-   * Builds and opens a dialog where the user uploads vocals for the current song.
-   * @param state The current chart editor state.
-   * @param closable Whether the dialog can be closed by the user.
-   * @return The dialog that was opened.
-   */
-  public static function openUploadVocalsDialog(state:ChartEditorState, closable:Bool = true):Dialog
-  {
-    var instId:String = state.currentInstrumentalId;
-    var charIdsForVocals:Array<String> = [];
-
-    var charData:SongCharacterData = state.currentSongMetadata.playData.characters;
-
-    var hasClearedVocals:Bool = false;
-
-    charIdsForVocals.push(charData.player);
-    charIdsForVocals.push(charData.opponent);
-
-    var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_UPLOAD_VOCALS_LAYOUT, true, closable);
-    if (dialog == null) throw 'Could not locate Upload Vocals dialog';
-
-    var dialogContainer:Null<Component> = dialog.findComponent('vocalContainer');
-    if (dialogContainer == null) throw 'Could not locate vocalContainer in Upload Vocals dialog';
-
-    var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
-    if (buttonCancel == null) throw 'Could not locate dialogCancel button in Upload Vocals dialog';
-    buttonCancel.onClick = function(_) {
-      dialog.hideDialog(DialogButton.CANCEL);
-    }
-
-    var dialogNoVocals:Null<Button> = dialog.findComponent('dialogNoVocals', Button);
-    if (dialogNoVocals == null) throw 'Could not locate dialogNoVocals button in Upload Vocals dialog';
-    dialogNoVocals.onClick = function(_) {
-      // Dismiss
-      state.wipeVocalData();
-      dialog.hideDialog(DialogButton.APPLY);
-    };
-
-    for (charKey in charIdsForVocals)
-    {
-      trace('Adding vocal upload for character ${charKey}');
-      var charMetadata:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charKey);
-      var charName:String = charMetadata != null ? charMetadata.name : charKey;
-
-      var vocalsEntry:Component = RuntimeComponentBuilder.fromAsset(CHART_EDITOR_DIALOG_UPLOAD_VOCALS_ENTRY_LAYOUT);
-
-      var vocalsEntryLabel:Null<Label> = vocalsEntry.findComponent('vocalsEntryLabel', Label);
-      if (vocalsEntryLabel == null) throw 'Could not locate vocalsEntryLabel in Upload Vocals dialog';
-      #if FILE_DROP_SUPPORTED
-      vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
-      #else
-      vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
-      #end
-
-      var dropHandler:DialogDropTarget = {component: vocalsEntry, handler: null};
-
-      var onDropFile:String->Void = function(pathStr:String) {
-        trace('Selected file: $pathStr');
-        var path:Path = new Path(pathStr);
-
-        if (state.loadVocalsFromPath(path, charKey, instId, !hasClearedVocals))
-        {
-          hasClearedVocals = true;
-          // Tell the user the load was successful.
-          state.success('Loaded Vocals', 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${state.selectedVariation}');
-          #if FILE_DROP_SUPPORTED
-          vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
-          #else
-          vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${path.file}.${path.ext}';
-          #end
-
-          dialogNoVocals.hidden = true;
-          state.removeDropHandler(dropHandler);
-        }
-        else
-        {
-          trace('Failed to load vocal track (${path.file}.${path.ext})');
-
-          state.error('Failed to Load Vocals', 'Failed to load vocal track (${path.file}.${path.ext}) for variation (${state.selectedVariation})');
-
-          #if FILE_DROP_SUPPORTED
-          vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
-          #else
-          vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
-          #end
-        }
-      };
-
-      dropHandler.handler = onDropFile;
-
-      vocalsEntry.onClick = function(_event) {
-        Dialogs.openBinaryFile('Open $charName Vocals', [
-          {label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile) {
-            if (selectedFile != null && selectedFile.bytes != null)
-            {
-              trace('Selected file: ' + selectedFile.name);
-
-              if (state.loadVocalsFromBytes(selectedFile.bytes, charKey, instId, !hasClearedVocals))
-              {
-                hasClearedVocals = true;
-                // Tell the user the load was successful.
-                state.success('Loaded Vocals', 'Loaded vocals for $charName (${selectedFile.name}), variation ${state.selectedVariation}');
-
-                #if FILE_DROP_SUPPORTED
-                vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
-                #else
-                vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${selectedFile.name}';
-                #end
-
-                dialogNoVocals.hidden = true;
-              }
-              else
-              {
-                trace('Failed to load vocal track (${selectedFile.fullPath})');
-
-                state.error('Failed to Load Vocals', 'Failed to load vocal track (${selectedFile.name}) for variation (${state.selectedVariation})');
-
-                #if FILE_DROP_SUPPORTED
-                vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
-                #else
-                vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
-                #end
-              }
-            }
-        });
-      }
-
-      // onDropFile
-      #if FILE_DROP_SUPPORTED
-      addDropHandler(dropHandler);
-      #end
-      dialogContainer.addComponent(vocalsEntry);
-    }
-
-    var dialogContinue:Null<Button> = dialog.findComponent('dialogContinue', Button);
-    if (dialogContinue == null) throw 'Could not locate dialogContinue button in Upload Vocals dialog';
-    dialogContinue.onClick = function(_) {
-      // Dismiss
-      dialog.hideDialog(DialogButton.APPLY);
-    };
 
     return dialog;
   }
