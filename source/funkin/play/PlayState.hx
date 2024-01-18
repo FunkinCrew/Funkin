@@ -50,11 +50,11 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageRegistry;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
-import funkin.play.stage.StageData.StageDataParser;
 import funkin.ui.transition.LoadingState;
 import funkin.play.components.PopUpStuff;
 import funkin.ui.options.PreferencesMenu;
@@ -1353,7 +1353,8 @@ class PlayState extends MusicBeatSubState
    */
   function loadStage(id:String):Void
   {
-    currentStage = StageDataParser.fetchStage(id);
+    currentStage = StageRegistry.instance.fetchEntry(id);
+    currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
     if (currentStage != null)
     {

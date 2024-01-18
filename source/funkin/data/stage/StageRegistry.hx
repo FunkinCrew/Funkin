@@ -1,35 +1,35 @@
-package funkin.data.level;
+package funkin.data.stage;
 
-import funkin.ui.story.Level;
-import funkin.data.level.LevelData;
-import funkin.ui.story.ScriptedLevel;
+import funkin.data.stage.StageData;
+import funkin.play.stage.Stage;
+import funkin.play.stage.ScriptedStage;
 
-class LevelRegistry extends BaseRegistry<Level, LevelData>
+class StageRegistry extends BaseRegistry<Stage, StageData>
 {
   /**
-   * The current version string for the level data format.
+   * The current version string for the stage data format.
    * Handle breaking changes by incrementing this value
-   * and adding migration to the `migrateLevelData()` function.
+   * and adding migration to the `migrateStageData()` function.
    */
-  public static final LEVEL_DATA_VERSION:thx.semver.Version = "1.0.0";
+  public static final STAGE_DATA_VERSION:thx.semver.Version = "1.0.1";
 
-  public static final LEVEL_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
+  public static final STAGE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static final instance:LevelRegistry = new LevelRegistry();
+  public static final instance:StageRegistry = new StageRegistry();
 
   public function new()
   {
-    super('LEVEL', 'levels', LEVEL_DATA_VERSION_RULE);
+    super('STAGE', 'stages', STAGE_DATA_VERSION_RULE);
   }
 
   /**
    * Read, parse, and validate the JSON data and produce the corresponding data object.
    */
-  public function parseEntryData(id:String):Null<LevelData>
+  public function parseEntryData(id:String):Null<StageData>
   {
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
-    var parser = new json2object.JsonParser<LevelData>();
+    var parser = new json2object.JsonParser<StageData>();
     parser.ignoreUnknownVariables = false;
 
     switch (loadEntryFile(id))
@@ -55,9 +55,9 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
    * @param contents The JSON as a string.
    * @param fileName An optional file name for error reporting.
    */
-  public function parseEntryDataRaw(contents:String, ?fileName:String):Null<LevelData>
+  public function parseEntryDataRaw(contents:String, ?fileName:String):Null<StageData>
   {
-    var parser = new json2object.JsonParser<LevelData>();
+    var parser = new json2object.JsonParser<StageData>();
     parser.ignoreUnknownVariables = false;
     parser.fromJson(contents, fileName);
 
@@ -69,42 +69,35 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
     return parser.value;
   }
 
-  function createScriptedEntry(clsName:String):Level
+  function createScriptedEntry(clsName:String):Stage
   {
-    return ScriptedLevel.init(clsName, "unknown");
+    return ScriptedStage.init(clsName, "unknown");
   }
 
   function getScriptedClassNames():Array<String>
   {
-    return ScriptedLevel.listScriptClasses();
+    return ScriptedStage.listScriptClasses();
   }
 
   /**
-   * A list of all the story weeks from the base game, in order.
+   * A list of all the stages from the base game, in order.
    * TODO: Should this be hardcoded?
    */
-  public function listBaseGameLevelIds():Array<String>
+  public function listBaseGameStageIds():Array<String>
   {
     return [
-      "tutorial",
-      "week1",
-      "week2",
-      "week3",
-      "week4",
-      "week5",
-      "week6",
-      "week7",
-      "weekend1"
+      "mainStage", "spookyMansion", "phillyTrain", "limoRide", "mallXmas", "mallEvil", "school", "schoolEvil", "tankmanBattlefield", "phillyStreets",
+      "phillyBlazin",
     ];
   }
 
   /**
    * A list of all installed story weeks that are not from the base game.
    */
-  public function listModdedLevelIds():Array<String>
+  public function listModdedStageIds():Array<String>
   {
     return listEntryIds().filter(function(id:String):Bool {
-      return listBaseGameLevelIds().indexOf(id) == -1;
+      return listBaseGameStageIds().indexOf(id) == -1;
     });
   }
 }

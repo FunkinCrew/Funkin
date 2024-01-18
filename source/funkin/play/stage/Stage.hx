@@ -5,13 +5,16 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSort;
+import flixel.util.FlxColor;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventType;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
-import funkin.play.stage.StageData.StageDataCharacter;
-import funkin.play.stage.StageData.StageDataParser;
+import funkin.data.IRegistryEntry;
+import funkin.data.stage.StageData;
+import funkin.data.stage.StageData.StageDataCharacter;
+import funkin.data.stage.StageRegistry;
 import funkin.play.stage.StageProp;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
@@ -23,14 +26,25 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
  *
  * A Stage is comprised of one or more props, each of which is a FlxSprite.
  */
-class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
+class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
-  public final stageId:String;
-  public final stageName:String;
+  public final id:String;
 
-  final _data:StageData;
+  public final _data:StageData;
 
-  public var camZoom:Float = 1.0;
+  public var stageName(get, never):String;
+
+  function get_stageName():String
+  {
+    return _data?.name ?? 'Unknown';
+  }
+
+  public var camZoom(get, never):Float;
+
+  function get_camZoom():Float
+  {
+    return _data?.cameraZoom ?? 1.0;
+  }
 
   var namedProps:Map<String, StageProp> = new Map<String, StageProp>();
   var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
@@ -41,21 +55,18 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    * They're used to cache the data needed to build the stage,
    * then accessed and fleshed out when the stage needs to be built.
    *
-   * @param stageId
+   * @param id
    */
-  public function new(stageId:String)
+  public function new(id:String)
   {
     super();
 
-    this.stageId = stageId;
-    _data = StageDataParser.parseStageData(this.stageId);
+    this.id = id;
+    _data = _fetchData(id);
+
     if (_data == null)
     {
-      throw 'Could not find stage data for stageId: $stageId';
-    }
-    else
-    {
-      this.stageName = _data.name;
+      throw 'Could not find stage data for stage id: $id';
     }
   }
 
@@ -129,9 +140,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
    */
   function buildStage():Void
   {
-    trace('Building stage for display: ${this.stageId}');
-
-    this.camZoom = _data.cameraZoom;
+    trace('Building stage for display: ${this.id}');
 
     this.debugIconGroup = new FlxSpriteGroup();
 
@@ -139,6 +148,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
     {
       trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
 
+      var isSolidColor = dataProp.assetPath.startsWith('#');
       var isAnimated = dataProp.animations.length > 0;
 
       var propSprite:StageProp;
@@ -162,6 +172,22 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
             propSprite.frames = Paths.getSparrowAtlas(dataProp.assetPath);
         }
       }
+      else if (isSolidColor)
+      {
+        var width:Int = 1;
+        var height:Int = 1;
+        switch (dataProp.scale)
+        {
+          case Left(value):
+            width = Std.int(value);
+            height = Std.int(value);
+
+          case Right(values):
+            width = Std.int(values[0]);
+            height = Std.int(values[1]);
+        }
+        propSprite.makeSolidColor(width, height, FlxColor.fromString(dataProp.assetPath));
+      }
       else
       {
         // Initalize static sprite.
@@ -177,13 +203,16 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
         continue;
       }
 
-      switch (dataProp.scale)
+      if (!isSolidColor)
       {
-        case Left(value):
-          propSprite.scale.set(value);
+        switch (dataProp.scale)
+        {
+          case Left(value):
+            propSprite.scale.set(value);
 
-        case Right(values):
-          propSprite.scale.set(values[0], values[1]);
+          case Right(values):
+            propSprite.scale.set(values[0], values[1]);
+        }
       }
       propSprite.updateHitbox();
 
@@ -195,15 +224,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
       // If pixel, disable antialiasing.
       propSprite.antialiasing = !dataProp.isPixel;
 
-      switch (dataProp.scroll)
-      {
-        case Left(value):
-          propSprite.scrollFactor.x = value;
-          propSprite.scrollFactor.y = value;
-        case Right(values):
-          propSprite.scrollFactor.x = values[0];
-          propSprite.scrollFactor.y = values[1];
-      }
+      propSprite.scrollFactor.x = dataProp.scroll[0];
+      propSprite.scrollFactor.y = dataProp.scroll[1];
 
       propSprite.zIndex = dataProp.zIndex;
 
@@ -729,6 +751,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass
 
     if (group != null) group.remove(Sprite, Splice);
     return Sprite;
+  }
+
+  static function _fetchData(id:String):Null<StageData>
+  {
+    return StageRegistry.instance.parseEntryDataWithMigration(id, StageRegistry.instance.fetchEntryVersion(id));
   }
 
   public function onScriptEvent(event:ScriptEvent) {}
