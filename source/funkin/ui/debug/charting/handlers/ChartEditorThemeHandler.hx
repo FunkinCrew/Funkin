@@ -317,6 +317,12 @@ class ChartEditorThemeHandler
         ChartEditorState.GRID_SIZE
         - (2 * SELECTION_SQUARE_BORDER_WIDTH + 8)),
       32, 32);
+
+    state.selectionBoxSprite.scrollFactor.set(0, 0);
+    state.selectionBoxSprite.zIndex = 30;
+    state.add(state.selectionBoxSprite);
+
+    state.setSelectionBoxBounds();
   }
 
   static function updateNotePreview(state:ChartEditorState):Void
