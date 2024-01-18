@@ -13,6 +13,7 @@ import haxe.ui.notifications.NotificationType;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-chart.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 {
   var dropHandlers:Array<DialogDropTarget> = [];
