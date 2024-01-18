@@ -15,7 +15,7 @@ abstract SongEventSchema(SongEventSchemaRaw)
   }
 
   @:arrayAccess
-  public inline function getByName(name:String):SongEventSchemaField
+  public function getByName(name:String):SongEventSchemaField
   {
     for (field in this)
     {
@@ -40,6 +40,32 @@ abstract SongEventSchema(SongEventSchemaRaw)
   public inline function arrayWrite(k:Int, v:SongEventSchemaField):SongEventSchemaField
   {
     return this[k] = v;
+  }
+
+  public function stringifyFieldValue(name:String, value:Dynamic):String
+  {
+    var field:SongEventSchemaField = getByName(name);
+    if (field == null) return 'Unknown';
+
+    switch (field.type)
+    {
+      case SongEventFieldType.STRING:
+        return Std.string(value);
+      case SongEventFieldType.INTEGER:
+        return Std.string(value);
+      case SongEventFieldType.FLOAT:
+        return Std.string(value);
+      case SongEventFieldType.BOOL:
+        return Std.string(value);
+      case SongEventFieldType.ENUM:
+        for (key in field.keys.keys())
+        {
+          if (field.keys.get(key) == value) return key;
+        }
+        return Std.string(value);
+      default:
+        return 'Unknown';
+    }
   }
 }
 

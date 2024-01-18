@@ -24,6 +24,12 @@ import funkin.play.character.BaseCharacter;
 class GameOverSubState extends MusicBeatSubState
 {
   /**
+   * The currently active GameOverSubState.
+   * There should be only one GameOverSubState in existance at a time, we can use a singleton.
+   */
+  public static var instance:GameOverSubState = null;
+
+  /**
    * Which alternate animation on the character to use.
    * You can set this via script.
    * For example, playing a different animation when BF dies in Week 4
@@ -88,6 +94,13 @@ class GameOverSubState extends MusicBeatSubState
 
   override public function create()
   {
+    if (instance != null)
+    {
+      // TODO: Do something in this case? IDK.
+      trace('WARNING: GameOverSubState instance already exists. This should not happen.');
+    }
+    instance = this;
+
     super.create();
 
     //
@@ -283,10 +296,10 @@ class GameOverSubState extends MusicBeatSubState
    */
   function startDeathMusic(?startingVolume:Float = 1, force:Bool = false):Void
   {
-    var musicPath = Paths.music('gameOver' + musicSuffix);
+    var musicPath = Paths.music('gameplay/gameover/gameOver' + musicSuffix);
     if (isEnding)
     {
-      musicPath = Paths.music('gameOverEnd' + musicSuffix);
+      musicPath = Paths.music('gameplay/gameover/gameOverEnd' + musicSuffix);
     }
     if (!gameOverMusic.playing || force)
     {
@@ -306,7 +319,7 @@ class GameOverSubState extends MusicBeatSubState
   public static function playBlueBalledSFX()
   {
     blueballed = true;
-    FlxG.sound.play(Paths.sound('fnf_loss_sfx' + blueBallSuffix));
+    FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
   }
 
   var playingJeffQuote:Bool = false;
@@ -328,6 +341,11 @@ class GameOverSubState extends MusicBeatSubState
         gameOverMusic.fadeIn(4, 0.2, 1);
       }
     });
+  }
+
+  public override function toString():String
+  {
+    return "GameOverSubState";
   }
 }
 
