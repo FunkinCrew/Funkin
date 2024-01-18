@@ -20,11 +20,11 @@ import openfl.display.BitmapData;
 import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.event.SongEventRegistry;
+import funkin.data.stage.StageRegistry;
 import funkin.play.cutscene.dialogue.ConversationDataParser;
 import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
 import funkin.play.cutscene.dialogue.SpeakerDataParser;
 import funkin.data.song.SongRegistry;
-import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
@@ -217,8 +217,9 @@ class InitState extends FlxState
     ConversationDataParser.loadConversationCache();
     DialogueBoxDataParser.loadDialogueBoxCache();
     SpeakerDataParser.loadSpeakerCache();
-    StageDataParser.loadStageCache();
+    StageRegistry.instance.loadEntries();
     CharacterDataParser.loadCharacterCache();
+
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
 

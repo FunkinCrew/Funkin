@@ -8,6 +8,7 @@ import flixel.group.FlxGroup;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import funkin.graphics.FunkinSprite;
 import funkin.input.Controls;
 import funkin.ui.AtlasText;
 import funkin.ui.MenuList;
@@ -61,8 +62,8 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
 
     if (FlxG.gamepads.numActiveGamepads > 0)
     {
-      var devicesBg:FlxSprite = new FlxSprite();
-      devicesBg.makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
+      var devicesBg:FunkinSprite = new FunkinSprite();
+      devicesBg.makeSolidColor(FlxG.width, 100, 0xFFFAFD6D);
       add(devicesBg);
       deviceList = new TextMenuList(Horizontal, None);
       add(deviceList);

@@ -13,6 +13,7 @@ import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.graphics.shaders.TitleOutline;
@@ -118,7 +119,8 @@ class TitleState extends MusicBeatState
 
     persistentUpdate = true;
 
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    bg.screenCenter();
     add(bg);
 
     logoBl = new FlxSprite(-150, -100);

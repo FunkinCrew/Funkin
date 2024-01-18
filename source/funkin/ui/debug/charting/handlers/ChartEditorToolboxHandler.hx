@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
-import funkin.play.stage.StageData.StageDataParser;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import haxe.ui.components.HorizontalSlider;
@@ -16,8 +15,7 @@ import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.event.SongEvent;
 import funkin.play.song.SongSerializer;
-import funkin.play.stage.StageData;
-import funkin.play.stage.StageData.StageDataParser;
+import funkin.data.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.haxeui.components.CharacterPlayer;
