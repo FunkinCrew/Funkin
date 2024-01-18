@@ -792,7 +792,6 @@ typedef SaveScoreData =
 
 typedef SaveScoreTallyData =
 {
-  var killer:Int;
   var sick:Int;
   var good:Int;
   var bad:Int;
