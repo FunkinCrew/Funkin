@@ -132,6 +132,12 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     });
   }
 
+  public override function destroy()
+  {
+    stop();
+    super.destroy();
+  }
+
   /**
    * Remove all sounds from the group.
    */

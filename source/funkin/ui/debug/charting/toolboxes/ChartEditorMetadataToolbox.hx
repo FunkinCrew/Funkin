@@ -2,7 +2,8 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
+import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
@@ -13,6 +14,7 @@ import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
+import funkin.play.stage.Stage;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
@@ -116,13 +118,33 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
+    inputTimeSignature.onChange = function(event:UIEvent) {
+      var timeSignatureStr:String = event.data.text;
+      var timeSignature = timeSignatureStr.split('/');
+      if (timeSignature.length != 2) return;
+
+      var timeSignatureNum:Int = Std.parseInt(timeSignature[0]);
+      var timeSignatureDen:Int = Std.parseInt(timeSignature[1]);
+
+      var previousTimeSignatureNum:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum;
+      var previousTimeSignatureDen:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen;
+      if (timeSignatureNum == previousTimeSignatureNum && timeSignatureDen == previousTimeSignatureDen) return;
+
+      chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum = timeSignatureNum;
+      chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen = timeSignatureDen;
+
+      trace('Time signature changed to ${timeSignatureNum}/${timeSignatureDen}');
+
+      chartEditorState.updateTimeSignature();
+    };
+
     inputOffsetInst.onChange = function(event:UIEvent) {
       if (event.value == null) return;
 
       chartEditorState.currentInstrumentalOffset = event.value;
-      Conductor.instrumentalOffset = event.value;
+      Conductor.instance.instrumentalOffset = event.value;
       // Update song length.
-      chartEditorState.songLengthInMs = (chartEditorState.audioInstTrack?.length ?? 1000.0) + Conductor.instrumentalOffset;
+      chartEditorState.songLengthInMs = (chartEditorState.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
     };
 
     inputOffsetVocal.onChange = function(event:UIEvent) {
@@ -162,6 +184,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
   public override function refresh():Void
   {
+    super.refresh();
+
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
@@ -172,12 +196,16 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
     frameDifficulty.text = 'Difficulty: ${chartEditorState.selectedDifficulty.toTitleCase()}';
 
+    var currentTimeSignature = '${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum}/${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen}';
+    trace('Setting time signature to ${currentTimeSignature}');
+    inputTimeSignature.value = {id: currentTimeSignature, text: currentTimeSignature};
+
     var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
-    var stageData:Null<StageData> = StageDataParser.parseStageData(stageId);
+    var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stageData != null) ?
-        {id: stageId, text: stageData.name} :
+      inputStage.value = (stage != null) ?
+        {id: stage.id, text: stage.stageName} :
           {id: "mainStage", text: "Main Stage"};
     }
 

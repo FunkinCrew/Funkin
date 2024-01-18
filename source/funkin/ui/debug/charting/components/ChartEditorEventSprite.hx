@@ -1,6 +1,6 @@
 package funkin.ui.debug.charting.components;
 
-import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventRegistry;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
@@ -91,7 +91,7 @@ class ChartEditorEventSprite extends FlxSprite
     }
 
     // Push all the other events as frames.
-    for (eventName in SongEventParser.listEventIds())
+    for (eventName in SongEventRegistry.listEventIds())
     {
       var exists:Bool = Assets.exists(Paths.image('ui/chart-editor/events/$eventName'));
       if (!exists) continue; // No graphic for this event.
@@ -117,7 +117,7 @@ class ChartEditorEventSprite extends FlxSprite
 
   function buildAnimations():Void
   {
-    var eventNames:Array<String> = [DEFAULT_EVENT].concat(SongEventParser.listEventIds());
+    var eventNames:Array<String> = [DEFAULT_EVENT].concat(SongEventRegistry.listEventIds());
     for (eventName in eventNames)
     {
       this.animation.addByPrefix(eventName, '${eventName}0', 24, false);
@@ -131,8 +131,10 @@ class ChartEditorEventSprite extends FlxSprite
     return DEFAULT_EVENT;
   }
 
-  public function playAnimation(name:String):Void
+  public function playAnimation(?name:String):Void
   {
+    if (name == null) name = eventData?.event ?? DEFAULT_EVENT;
+
     var correctedName = correctAnimationName(name);
     this.animation.play(correctedName);
     refresh();
@@ -158,8 +160,6 @@ class ChartEditorEventSprite extends FlxSprite
     else
     {
       this.visible = true;
-      // Only play the animation if the event type has changed.
-      // if (this.eventData == null || this.eventData.event != value.event)
       playAnimation(value.event);
       this.eventData = value;
       // Update the position to match the note data.

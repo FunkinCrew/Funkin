@@ -47,6 +47,11 @@ class SustainTrail extends FlxSprite
    */
   public var missedNote:Bool = false;
 
+  /**
+   * Set to `true` after handling additional logic for missing notes.
+   */
+  public var handledMiss:Bool = false;
+
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
   /**
@@ -82,6 +87,9 @@ class SustainTrail extends FlxSprite
 
   public var isPixel:Bool;
 
+  var graphicWidth:Float = 0;
+  var graphicHeight:Float = 0;
+
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
    * @param NoteData
@@ -110,8 +118,8 @@ class SustainTrail extends FlxSprite
     zoom *= 0.7;
 
     // CALCULATE SIZE
-    width = graphic.width / 8 * zoom; // amount of notes * 2
-    height = sustainHeight(sustainLength, getScrollSpeed());
+    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
+    graphicHeight = sustainHeight(sustainLength, getScrollSpeed());
     // instead of scrollSpeed, PlayState.SONG.speed
 
     flipY = Preferences.downscroll;
@@ -148,10 +156,19 @@ class SustainTrail extends FlxSprite
 
     if (sustainLength == s) return s;
 
-    height = sustainHeight(s, getScrollSpeed());
+    graphicHeight = sustainHeight(s, getScrollSpeed());
     this.sustainLength = s;
     updateClipping();
+    updateHitbox();
     return this.sustainLength;
+  }
+
+  public override function updateHitbox():Void
+  {
+    width = graphicWidth;
+    height = graphicHeight;
+    offset.set(0, 0);
+    origin.set(width * 0.5, height * 0.5);
   }
 
   /**
@@ -161,7 +178,7 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping(songTime:Float = 0):Void
   {
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), getScrollSpeed()), 0, height);
+    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), getScrollSpeed()), 0, graphicHeight);
     if (clipHeight <= 0.1)
     {
       visible = false;
@@ -178,10 +195,10 @@ class SustainTrail extends FlxSprite
     // ===HOLD VERTICES==
     // Top left
     vertices[0 * 2] = 0.0; // Inline with left side
-    vertices[0 * 2 + 1] = flipY ? clipHeight : height - clipHeight;
+    vertices[0 * 2 + 1] = flipY ? clipHeight : graphicHeight - clipHeight;
 
     // Top right
-    vertices[1 * 2] = width;
+    vertices[1 * 2] = graphicWidth;
     vertices[1 * 2 + 1] = vertices[0 * 2 + 1]; // Inline with top left vertex
 
     // Bottom left
@@ -197,7 +214,7 @@ class SustainTrail extends FlxSprite
     }
 
     // Bottom right
-    vertices[3 * 2] = width;
+    vertices[3 * 2] = graphicWidth;
     vertices[3 * 2 + 1] = vertices[2 * 2 + 1]; // Inline with bottom left vertex
 
     // ===HOLD UVs===
@@ -233,7 +250,7 @@ class SustainTrail extends FlxSprite
 
     // Bottom left
     vertices[6 * 2] = vertices[2 * 2]; // Inline with left side
-    vertices[6 * 2 + 1] = flipY ? (graphic.height * (-bottomClip + endOffset) * zoom) : (height + graphic.height * (bottomClip - endOffset) * zoom);
+    vertices[6 * 2 + 1] = flipY ? (graphic.height * (-bottomClip + endOffset) * zoom) : (graphicHeight + graphic.height * (bottomClip - endOffset) * zoom);
 
     // Bottom right
     vertices[7 * 2] = vertices[3 * 2]; // Inline with right side
@@ -277,6 +294,10 @@ class SustainTrail extends FlxSprite
       getScreenPosition(_point, camera).subtractPoint(offset);
       camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
     }
+
+    #if FLX_DEBUG
+    if (FlxG.debugger.drawDebug) drawDebug();
+    #end
   }
 
   public override function kill():Void
@@ -305,6 +326,7 @@ class SustainTrail extends FlxSprite
 
     hitNote = false;
     missedNote = false;
+    handledMiss = false;
   }
 
   override public function destroy():Void

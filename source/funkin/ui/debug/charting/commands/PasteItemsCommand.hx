@@ -32,9 +32,9 @@ class PasteItemsCommand implements ChartEditorCommand
       return;
     }
 
-    var stepEndOfSong:Float = Conductor.getTimeInSteps(state.songLengthInMs);
+    var stepEndOfSong:Float = Conductor.instance.getTimeInSteps(state.songLengthInMs);
     var stepCutoff:Float = stepEndOfSong - 1.0;
-    var msCutoff:Float = Conductor.getStepTimeInMs(stepCutoff);
+    var msCutoff:Float = Conductor.instance.getStepTimeInMs(stepCutoff);
 
     addedNotes = SongDataUtils.offsetSongNoteData(currentClipboard.notes, Std.int(targetTimestamp));
     addedNotes = SongDataUtils.clampSongNoteData(addedNotes, 0.0, msCutoff);
@@ -69,6 +69,12 @@ class PasteItemsCommand implements ChartEditorCommand
     state.notePreviewDirty = true;
 
     state.sortChartData();
+  }
+
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (addedNotes.length > 0 || addedEvents.length > 0);
   }
 
   public function toString():String

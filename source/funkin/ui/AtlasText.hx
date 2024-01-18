@@ -274,4 +274,5 @@ enum abstract AtlasFont(String) from String to String
 {
   var DEFAULT = "default";
   var BOLD = "bold";
+  var FREEPLAY_CLEAR = "freeplay-clear";
 }
