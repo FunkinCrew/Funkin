@@ -5238,6 +5238,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     autoSave(true);
 
     stopWelcomeMusic();
+    stopAudioPlayback();
 
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
