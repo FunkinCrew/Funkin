@@ -105,6 +105,7 @@ import haxe.ui.components.Label;
 import haxe.ui.components.Button;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
+import haxe.ui.components.VerticalSlider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.Frame;
@@ -719,6 +720,34 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_hitsoundsEnabled():Bool
   {
     return hitsoundsEnabledPlayer || hitsoundsEnabledOpponent;
+  }
+
+  /**
+   * Sound multiplier for vocals and hitsounds on the player's side.
+   */
+  var soundMultiplierPlayer(default, set):Float = 1.0;
+
+  function set_soundMultiplierPlayer(value:Float):Float
+  {
+    soundMultiplierPlayer = value;
+    var vocalTargetVolume:Float = (menubarItemVolumeVocals.value ?? 100.0) / 100.0;
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.playerVolume = vocalTargetVolume * soundMultiplierPlayer;
+
+    return soundMultiplierPlayer;
+  }
+
+  /**
+   * Sound multiplier for vocals and hitsounds on the opponent's side.
+   */
+  var soundMultiplierOpponent(default, set):Float = 1.0;
+
+  function set_soundMultiplierOpponent(value:Float):Float
+  {
+    soundMultiplierOpponent = value;
+    var vocalTargetVolume:Float = (menubarItemVolumeVocals.value ?? 100.0) / 100.0;
+    if (audioVocalTrackGroup != null) audioVocalTrackGroup.opponentVolume = vocalTargetVolume * soundMultiplierOpponent;
+
+    return soundMultiplierOpponent;
   }
 
   // Auto-save
@@ -1751,6 +1780,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var buttonSelectEvent:Button;
 
   /**
+   * The slider above the grid that sets the volume of the player's sounds.
+   * Constructed manually and added to the layout so we can control its position.
+   */
+  var sliderVolumePlayer:Slider;
+
+  /**
+   * The slider above the grid that sets the volume of the opponent's sounds.
+   * Constructed manually and added to the layout so we can control its position.
+   */
+  var sliderVolumeOpponent:Slider;
+
+  /**
    * RENDER OBJECTS
    */
   // ==============================
@@ -2558,6 +2599,37 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         performCommand(new SetItemSelectionCommand([], currentSongChartEventData));
       }
     }
+
+    function setupSideSlider(x, y):VerticalSlider
+    {
+      var slider = new VerticalSlider();
+      slider.allowFocus = false;
+      slider.x = x;
+      slider.y = y;
+      slider.width = NOTE_SELECT_BUTTON_HEIGHT;
+      slider.height = GRID_SIZE * 4;
+      slider.pos = slider.max;
+      slider.tooltip = "Slide to set the volume of sounds on this side.";
+      slider.zIndex = 110;
+      slider.styleNames = "sideSlider";
+      add(slider);
+
+      return slider;
+    }
+
+    var sliderY = GRID_INITIAL_Y_POS + 34;
+    sliderVolumeOpponent = setupSideSlider(GRID_X_POS - 64, sliderY);
+    sliderVolumePlayer = setupSideSlider(buttonSelectEvent.x + buttonSelectEvent.width, sliderY);
+
+    sliderVolumePlayer.onChange = event -> {
+      var volume:Float = event.value.toFloat() / 100.0;
+      soundMultiplierPlayer = volume;
+    }
+
+    sliderVolumeOpponent.onChange = event -> {
+      var volume:Float = event.value.toFloat() / 100.0;
+      soundMultiplierOpponent = volume;
+    }
   }
 
   /**
@@ -2798,7 +2870,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemVolumeVocals.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
-      if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = volume;
+      if (audioVocalTrackGroup != null)
+      {
+        audioVocalTrackGroup.playerVolume = volume * soundMultiplierPlayer;
+        audioVocalTrackGroup.opponentVolume = volume * soundMultiplierOpponent;
+      }
       menubarLabelVolumeVocals.text = 'Voices - ${Std.int(event.value)}%';
     }
 
@@ -5663,7 +5739,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioInstTrack.volume = instTargetVolume;
       audioInstTrack.onComplete = null;
     }
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.volume = vocalTargetVolume;
+    if (audioVocalTrackGroup != null)
+    {
+      audioVocalTrackGroup.playerVolume = vocalTargetVolume * soundMultiplierPlayer;
+      audioVocalTrackGroup.opponentVolume = vocalTargetVolume * soundMultiplierOpponent;
+    }
   }
 
   function updateTimeSignature():Void
@@ -5865,9 +5945,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolume);
+          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolume * soundMultiplierPlayer);
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolume);
+          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolume * soundMultiplierOpponent);
       }
     }
   }
