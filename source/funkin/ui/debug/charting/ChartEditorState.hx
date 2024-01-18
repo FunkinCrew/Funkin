@@ -35,6 +35,7 @@ import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongDataUtils;
@@ -4731,48 +4732,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       difficultySelectDirty = false;
 
-      // Manage the Select Difficulty tree view.
-      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+      var difficultyToolbox:ChartEditorDifficultyToolbox = cast this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return;
 
-      var treeView:Null<TreeView> = difficultyToolbox.findComponent('difficultyToolboxTree');
-      if (treeView == null) return;
-
-      // Clear the tree view so we can rebuild it.
-      treeView.clearNodes();
-
-      // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
-      var treeSong:TreeViewNode = treeView.addNode({id: 'stv_song', text: 'S: $currentSongName'});
-      treeSong.expanded = true;
-
-      for (curVariation in availableVariations)
-      {
-        trace('DIFFICULTY TOOLBOX: Variation ${curVariation}');
-        var variationMetadata:Null<SongMetadata> = songMetadata.get(curVariation);
-        if (variationMetadata == null) continue;
-
-        var treeVariation:TreeViewNode = treeSong.addNode(
-          {
-            id: 'stv_variation_$curVariation',
-            text: 'V: ${curVariation.toTitleCase()}'
-          });
-        treeVariation.expanded = true;
-
-        var difficultyList:Array<String> = variationMetadata.playData.difficulties;
-
-        for (difficulty in difficultyList)
-        {
-          trace('DIFFICULTY TOOLBOX: Difficulty ${curVariation}_$difficulty');
-          var _treeDifficulty:TreeViewNode = treeVariation.addNode(
-            {
-              id: 'stv_difficulty_${curVariation}_$difficulty',
-              text: 'D: ${difficulty.toTitleCase()}'
-            });
-        }
-      }
-
-      treeView.onChange = onChangeTreeDifficulty;
-      refreshDifficultyTreeSelection(treeView);
+      difficultyToolbox.updateTree();
     }
   }
 
@@ -5517,7 +5480,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return event != null && currentEventSelection.indexOf(event) != -1;
   }
 
-  function createDifficulty(variation:String, difficulty:String, scrollSpeed:Float = 1.0)
+  function createDifficulty(variation:String, difficulty:String, scrollSpeed:Float = 1.0):Void
   {
     var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
     if (variationMetadata == null) return;
@@ -5535,6 +5498,42 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       resultChartData.scrollSpeed.set(difficulty, scrollSpeed);
       resultChartData.notes.set(difficulty, []);
     }
+
+    difficultySelectDirty = true; // Force the Difficulty toolbox to update.
+  }
+
+  function removeDifficulty(variation:String, difficulty:String):Void
+  {
+    var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
+    if (variationMetadata == null) return;
+
+    variationMetadata.playData.difficulties.remove(difficulty);
+
+    var resultChartData = songChartData.get(variation);
+    if (resultChartData != null)
+    {
+      resultChartData.scrollSpeed.remove(difficulty);
+      resultChartData.notes.remove(difficulty);
+    }
+
+    if (songMetadata.size() > 1)
+    {
+      if (variationMetadata.playData.difficulties.length == 0)
+      {
+        songMetadata.remove(variation);
+        songChartData.remove(variation);
+      }
+
+      if (variation == selectedVariation)
+      {
+        var firstVariation = songMetadata.keyValues()[0];
+        if (firstVariation != null) selectedVariation = firstVariation;
+        variationMetadata = songMetadata.get(selectedVariation);
+      }
+    }
+
+    if (selectedDifficulty == difficulty
+      || !variationMetadata.playData.difficulties.contains(selectedDifficulty)) selectedDifficulty = variationMetadata.playData.difficulties[0];
 
     difficultySelectDirty = true; // Force the Difficulty toolbox to update.
   }
@@ -5587,8 +5586,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
         updateTimeSignature();
 
-        refreshDifficultyTreeSelection();
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       }
       else
       {
@@ -5596,8 +5595,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var prevDifficulty = availableDifficulties[currentDifficultyIndex - 1];
         selectedDifficulty = prevDifficulty;
 
-        refreshDifficultyTreeSelection();
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       }
     }
     else
@@ -5615,8 +5614,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var nextDifficulty = availableDifficulties[0];
         selectedDifficulty = nextDifficulty;
 
-        refreshDifficultyTreeSelection();
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       }
       else
       {
@@ -5624,7 +5623,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var nextDifficulty = availableDifficulties[currentDifficultyIndex + 1];
         selectedDifficulty = nextDifficulty;
 
-        refreshDifficultyTreeSelection();
+        this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
     }
@@ -5759,92 +5758,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * HAXEUI FUNCTIONS
    */
   // ==================
-
-  /**
-   * Set the currently selected item in the Difficulty tree view to the node representing the current difficulty.
-   * @param treeView The tree view to update. If `null`, the tree view will be found.
-   */
-  function refreshDifficultyTreeSelection(?treeView:TreeView):Void
-  {
-    if (treeView == null)
-    {
-      // Manage the Select Difficulty tree view.
-      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-      if (difficultyToolbox == null) return;
-
-      treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
-      if (treeView == null) return;
-    }
-
-    var currentTreeDifficultyNode = getCurrentTreeDifficultyNode(treeView);
-    if (currentTreeDifficultyNode != null) treeView.selectedNode = currentTreeDifficultyNode;
-  }
-
-  /**
-   * Retrieve the node representing the current difficulty in the Difficulty tree view.
-   * @param treeView The tree view to search. If `null`, the tree view will be found.
-   * @return The node representing the current difficulty, or `null` if not found.
-   */
-  function getCurrentTreeDifficultyNode(?treeView:TreeView = null):Null<TreeViewNode>
-  {
-    if (treeView == null)
-    {
-      var difficultyToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-      if (difficultyToolbox == null) return null;
-
-      treeView = difficultyToolbox.findComponent('difficultyToolboxTree');
-      if (treeView == null) return null;
-    }
-
-    var result:TreeViewNode = treeView.findNodeByPath('stv_song/stv_variation_$selectedVariation/stv_difficulty_${selectedVariation}_$selectedDifficulty',
-      'id');
-    if (result == null) return null;
-
-    return result;
-  }
-
-  /**
-   * Called when selecting a tree element in the Difficulty toolbox.
-   * @param event The click event.
-   */
-  function onChangeTreeDifficulty(event:UIEvent):Void
-  {
-    // Get the newly selected node.
-    var treeView:TreeView = cast event.target;
-    var targetNode:TreeViewNode = treeView.selectedNode;
-
-    if (targetNode == null)
-    {
-      trace('No target node!');
-      // Reset the user's selection.
-      var currentTreeDifficultyNode = getCurrentTreeDifficultyNode(treeView);
-      if (currentTreeDifficultyNode != null) treeView.selectedNode = currentTreeDifficultyNode;
-      return;
-    }
-
-    switch (targetNode.data.id.split('_')[1])
-    {
-      case 'difficulty':
-        var variation:String = targetNode.data.id.split('_')[2];
-        var difficulty:String = targetNode.data.id.split('_')[3];
-
-        if (variation != null && difficulty != null)
-        {
-          trace('Changing difficulty to "$variation:$difficulty"');
-          selectedVariation = variation;
-          selectedDifficulty = difficulty;
-          this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-        }
-      // case 'song':
-      // case 'variation':
-      default:
-        // Reset the user's selection.
-        trace('Selected wrong node type, resetting selection.');
-        var currentTreeDifficultyNode = getCurrentTreeDifficultyNode(treeView);
-        if (currentTreeDifficultyNode != null) treeView.selectedNode = currentTreeDifficultyNode;
-        this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-    }
-  }
 
   /**
    * STATIC FUNCTIONS
