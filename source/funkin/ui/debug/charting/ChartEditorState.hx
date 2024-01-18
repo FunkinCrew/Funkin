@@ -1958,7 +1958,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buildGrid();
     buildMeasureTicks();
     buildNotePreview();
-    buildSelectionBox();
 
     buildAdditionalUI();
     populateOpenRecentMenu();
@@ -2287,17 +2286,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
   }
 
-  function buildSelectionBox():Void
-  {
-    if (selectionBoxSprite == null) throw 'ERROR: Tried to build selection box, but selectionBoxSprite is null! Check ChartEditorThemeHandler.updateTheme().';
-
-    selectionBoxSprite.scrollFactor.set(0, 0);
-    add(selectionBoxSprite);
-    selectionBoxSprite.zIndex = 30;
-
-    setSelectionBoxBounds();
-  }
-
   function setSelectionBoxBounds(bounds:FlxRect = null):Void
   {
     if (selectionBoxSprite == null)
@@ -2317,6 +2305,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       selectionBoxSprite.width = bounds.width;
       selectionBoxSprite.height = bounds.height;
     }
+  }
+
+  /**
+   * Automatically goes through and calls render on everything you added.
+   */
+  override public function draw():Void
+  {
+    if (selectionBoxStartPos != null)
+    {
+      trace('selectionBoxSprite: ${selectionBoxSprite.visible} ${selectionBoxSprite.exists} ${this.members.contains(selectionBoxSprite)}');
+    }
+
+    super.draw();
   }
 
   function calculateNotePreviewViewportBounds():FlxRect
