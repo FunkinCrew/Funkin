@@ -13,6 +13,7 @@ import funkin.play.song.Song.SongDifficulty;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import haxe.io.Path;
+import funkin.graphics.FunkinSprite;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.utils.AssetLibrary;
@@ -42,7 +43,7 @@ class LoadingState extends MusicBeatState
 
   override function create():Void
   {
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFcaff4d);
+    var bg:FlxSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
     add(bg);
 
     funkay = new FlxSprite();
@@ -53,7 +54,7 @@ class LoadingState extends MusicBeatState
     funkay.scrollFactor.set();
     funkay.screenCenter();
 
-    loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xFFff16d2);
+    loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(FlxG.width, 10, 0xFFff16d2);
     loadBar.screenCenter(X);
     add(loadBar);
 

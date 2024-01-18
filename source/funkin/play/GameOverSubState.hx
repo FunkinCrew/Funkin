@@ -7,6 +7,7 @@ import flixel.sound.FlxSound;
 import funkin.ui.story.StoryMenuState;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatSubState;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -94,7 +95,7 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Add a black background to the screen.
-    var bg = new FlxSprite().makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+    var bg = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     // We make this transparent so that we can see the stage underneath during debugging,
     // but it's normally opaque.
     bg.alpha = transparent ? 0.25 : 1.0;
