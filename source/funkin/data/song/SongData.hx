@@ -1,6 +1,7 @@
 package funkin.data.song;
 
 import funkin.data.event.SongEventRegistry;
+import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
@@ -702,6 +703,11 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     }
   }
 
+  public inline function getHandler():Null<SongEvent>
+  {
+    return SongEventRegistry.getEvent(this.event);
+  }
+
   public inline function getSchema():Null<SongEventSchema>
   {
     return SongEventRegistry.getEventSchema(this.event);
@@ -750,6 +756,39 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   public inline function getBoolArray(key:String):Array<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
+  }
+
+  public function buildTooltip():String
+  {
+    var eventHandler = getHandler();
+    var eventSchema = getSchema();
+
+    if (eventSchema == null) return 'Unknown Event: ${this.event}';
+
+    var result = '${eventHandler.getTitle()}';
+
+    var defaultKey = eventSchema.getFirstField()?.name;
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(defaultKey);
+
+    for (pair in valueStruct.keyValueIterator())
+    {
+      var key = pair.key;
+      var value = pair.value;
+
+      var title = eventSchema.getByName(key)?.title ?? 'UnknownField';
+
+      if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
+      var valueStr = eventSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
+
+      result += '\n- ${title}: ${valueStr}';
+    }
+
+    return result;
+  }
+
+  public function clone():SongEventData
+  {
+    return new SongEventData(this.time, this.event, this.value);
   }
 
   @:op(A == B)
