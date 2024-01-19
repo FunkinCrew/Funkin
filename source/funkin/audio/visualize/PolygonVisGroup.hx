@@ -8,8 +8,7 @@ class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
 {
   public var playerVis:PolygonSpectogram;
   public var opponentVis:PolygonSpectogram;
-
-  var instVis:PolygonSpectogram;
+  public var instVis:PolygonSpectogram;
 
   public function new()
   {
@@ -49,6 +48,43 @@ class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
     var vis:PolygonSpectogram = new PolygonSpectogram(visSnd);
     super.add(vis);
     instVis = vis;
+  }
+
+  public function clearPlayerVis():Void
+  {
+    if (playerVis != null)
+    {
+      remove(playerVis);
+      playerVis.destroy();
+      playerVis = null;
+    }
+  }
+
+  public function clearOpponentVis():Void
+  {
+    if (opponentVis != null)
+    {
+      remove(opponentVis);
+      opponentVis.destroy();
+      opponentVis = null;
+    }
+  }
+
+  public function clearInstVis():Void
+  {
+    if (instVis != null)
+    {
+      remove(instVis);
+      instVis.destroy();
+      instVis = null;
+    }
+  }
+
+  public function clearAllVis():Void
+  {
+    clearPlayerVis();
+    clearOpponentVis();
+    clearInstVis();
   }
 
   /**
