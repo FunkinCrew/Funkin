@@ -190,7 +190,7 @@ class ChartEditorAudioHandler
           state.audioVisGroup.playerVis.detail = 1;
           state.audioVisGroup.playerVis.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
 
-          state.audioVocalTrackGroup.playerVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
+          state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffset;
           return true;
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
@@ -202,7 +202,7 @@ class ChartEditorAudioHandler
           state.audioVisGroup.opponentVis.detail = 1;
           state.audioVisGroup.opponentVis.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
 
-          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
+          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffset;
 
           return true;
         case OTHER:

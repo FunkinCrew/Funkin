@@ -150,7 +150,12 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputOffsetVocal.onChange = function(event:UIEvent) {
       if (event.value == null) return;
 
-      chartEditorState.currentSongMetadata.offsets.setVocalOffset(chartEditorState.currentSongMetadata.playData.characters.player, event.value);
+      chartEditorState.currentVocalOffset = event.value;
+      if (chartEditorState.audioVocalTrackGroup != null)
+      {
+        chartEditorState.audioVocalTrackGroup.playerVoicesOffset = event.value;
+        chartEditorState.audioVocalTrackGroup.opponentVoicesOffset = event.value;
+      }
     };
     inputScrollSpeed.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.value != null && event.target.value > 0;
