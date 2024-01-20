@@ -63,6 +63,19 @@ class FunkinSound extends FlxSound
     }
   }
 
+  public function togglePlayback():FunkinSound
+  {
+    if (playing)
+    {
+      pause();
+    }
+    else
+    {
+      resume();
+    }
+    return this;
+  }
+
   public override function play(forceRestart:Bool = false, startTime:Float = 0, ?endTime:Float):FunkinSound
   {
     if (!exists) return this;

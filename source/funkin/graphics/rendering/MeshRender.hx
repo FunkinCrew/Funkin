@@ -12,22 +12,19 @@ class MeshRender extends FlxStrip
   public var vertex_count(default, null):Int = 0;
   public var index_count(default, null):Int = 0;
 
-  var tri_offset:Int = 0;
-
   public function new(x, y, ?col:FlxColor = FlxColor.WHITE)
   {
     super(x, y);
     makeGraphic(1, 1, col);
   }
 
-  public inline function start()
+  /**
+   * Add a vertex.
+   */
+  public inline function build_vertex(x:Float, y:Float, u:Float = 0, v:Float = 0):Int
   {
-    tri_offset = vertex_count;
-  }
-
-  public inline function add_vertex(x:Float, y:Float, u:Float = 0, v:Float = 0)
-  {
-    final pos = vertex_count << 1;
+    final index = vertex_count;
+    final pos = index << 1;
 
     vertices[pos] = x;
     vertices[pos + 1] = y;
@@ -36,42 +33,64 @@ class MeshRender extends FlxStrip
     uvtData[pos + 1] = v;
 
     vertex_count++;
+    return index;
   }
 
-  public function add_tri(a:Int, b:Int, c:Int)
+  /**
+   * Build a triangle from three vertex indexes.
+   * @param a
+   * @param b
+   * @param c
+   */
+  public function add_tri(a:Int, b:Int, c:Int):Void
   {
-    indices[index_count] = a + tri_offset;
-    indices[index_count + 1] = b + tri_offset;
-    indices[index_count + 2] = c + tri_offset;
+    indices[index_count] = a;
+    indices[index_count + 1] = b;
+    indices[index_count + 2] = c;
 
     index_count += 3;
   }
 
-  /**
-   *
-   * top left - a
-   *
-   * top right - b
-   *
-   * bottom left  - c
-   *
-   * bottom right - d
-   */
-  public function add_quad(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, dx:Float, dy:Float, au:Float = 0, av:Float = 0, bu:Float = 0,
-      bv:Float = 0, cu:Float = 0, cv:Float = 0, du:Float = 0, dv:Float = 0)
+  public function build_tri(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, au:Float = 0, av:Float = 0, bu:Float = 0, bv:Float = 0, cu:Float = 0,
+      cv:Float = 0):Void
   {
-    start();
-    // top left
-    add_vertex(bx, by, bu, bv);
-    // top right
-    add_vertex(ax, ay, au, av);
-    // bottom left
-    add_vertex(cx, cy, cu, cv);
-    // bottom right
-    add_vertex(dx, dy, du, dv);
+    add_tri(build_vertex(ax, ay, au, av), build_vertex(bx, by, bu, bv), build_vertex(cx, cy, cu, cv));
+  }
 
-    add_tri(0, 1, 2);
-    add_tri(0, 2, 3);
+  /**
+   * @param a top left vertex
+   * @param b top right vertex
+   * @param c bottom right vertex
+   * @param d bottom left vertex
+   */
+  public function add_quad(a:Int, b:Int, c:Int, d:Int):Void
+  {
+    add_tri(a, b, c);
+    add_tri(a, c, d);
+  }
+
+  /**
+   * Build a quad from four points.
+   *
+   * top right - a
+   * top left - b
+   * bottom right  - c
+   * bottom left - d
+   */
+  public function build_quad(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, dx:Float, dy:Float, au:Float = 0, av:Float = 0, bu:Float = 0,
+      bv:Float = 0, cu:Float = 0, cv:Float = 0, du:Float = 0, dv:Float = 0):Void
+  {
+    // top left
+    var b = build_vertex(bx, by, bu, bv);
+    // top right
+    var a = build_vertex(ax, ay, au, av);
+    // bottom left
+    var c = build_vertex(cx, cy, cu, cv);
+    // bottom right
+    var d = build_vertex(dx, dy, du, dv);
+
+    add_tri(a, b, c);
+    add_tri(a, c, d);
   }
 
   public function clear()

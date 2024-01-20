@@ -35,6 +35,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import haxe.ui.containers.Frame;
@@ -89,6 +90,8 @@ class ChartEditorToolboxHandler
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
           // TODO: Fix this.
           cast(toolbox, ChartEditorBaseToolbox).refresh();
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
           onShowToolboxPlayerPreview(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -124,8 +127,6 @@ class ChartEditorToolboxHandler
           onHideToolboxEventData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
           onHideToolboxPlaytestProperties(state, toolbox);
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
-          onHideToolboxMetadata(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
           onHideToolboxPlayerPreview(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -202,6 +203,8 @@ class ChartEditorToolboxHandler
         toolbox = buildToolboxDifficultyLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
         toolbox = buildToolboxMetadataLayout(state);
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
+        toolbox = buildToolboxOffsetsLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
         toolbox = buildToolboxPlayerPreviewLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -304,8 +307,6 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxNoteData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function onHideToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
-
   static function onHideToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
@@ -367,6 +368,15 @@ class ChartEditorToolboxHandler
   static function buildToolboxMetadataLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
     var toolbox:ChartEditorBaseToolbox = ChartEditorMetadataToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
+
+  static function buildToolboxOffsetsLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
+  {
+    var toolbox:ChartEditorBaseToolbox = ChartEditorOffsetsToolbox.build(state);
 
     if (toolbox == null) return null;
 

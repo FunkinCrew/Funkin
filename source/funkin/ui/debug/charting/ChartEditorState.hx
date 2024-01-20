@@ -159,6 +159,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
   public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
+  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('chart-editor/toolbox/offsets');
   public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/toolbox/difficulty');
   public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/player-preview');
   public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/opponent-preview');
@@ -1820,10 +1821,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var notePreviewViewportBitmap:Null<BitmapData> = null;
 
-  /**r
+  /**
    * The IMAGE used for the measure ticks. Updated by ChartEditorThemeHandler.
    */
   var measureTickBitmap:Null<BitmapData> = null;
+
+  /**
+   * The IMAGE used for the offset ticks. Updated by ChartEditorThemeHandler.
+   */
+  var offsetTickBitmap:Null<BitmapData> = null;
 
   /**
    * The tiled sprite used to display the grid.
@@ -2893,6 +2899,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
     menubarItemToggleToolboxMetadata.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
+    menubarItemToggleToolboxOffsets.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT, event.value);
     menubarItemToggleToolboxNotes.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
