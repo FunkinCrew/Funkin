@@ -23,6 +23,7 @@ import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.misc.VarTween;
+import funkin.audio.waveform.WaveformSprite;
 import haxe.ui.Toolkit;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
@@ -129,7 +130,6 @@ import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
 import funkin.audio.visualize.PolygonSpectogram;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import funkin.audio.visualize.PolygonVisGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
 import flixel.system.debug.log.LogStyle;
@@ -395,13 +395,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
         measureTicks.y = gridTiledSprite.y;
 
-        if (audioVisGroup != null && audioVisGroup.playerVis != null)
+        for (member in audioWaveforms.members)
         {
-          audioVisGroup.playerVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS - GRID_TOP_PAD);
-        }
-        if (audioVisGroup != null && audioVisGroup.opponentVis != null)
-        {
-          audioVisGroup.opponentVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS - GRID_TOP_PAD);
+          member.time = scrollPositionInMs / Constants.MS_PER_SEC;
+
+          // Doing this desyncs the waveforms from the grid.
+          // member.y = Math.max(this.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
         }
       }
     }
@@ -503,8 +502,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_playheadPositionInMs():Float
   {
-    if (audioVisGroup != null && audioVisGroup.playerVis != null)
-      audioVisGroup.playerVis.realtimeStartOffset = -Conductor.instance.getStepTimeInMs(playheadPositionInSteps);
     return Conductor.instance.getStepTimeInMs(playheadPositionInSteps);
   }
 
@@ -512,7 +509,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     playheadPositionInSteps = Conductor.instance.getTimeInSteps(value);
 
-    if (audioVisGroup != null && audioVisGroup.playerVis != null) audioVisGroup.playerVis.realtimeStartOffset = -value;
     return value;
   }
 
@@ -1134,11 +1130,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var audioVocalTrackGroup:Null<VoicesGroup> = null;
 
   /**
-   * The audio vis for the inst/vocals.
+   * The audio waveform visualization for the inst/vocals.
    * `null` until vocal track(s) are loaded.
-   * When switching characters, the elements of the PolygonVisGroup will be swapped to match the new character.
+   * When switching characters, the elements will be swapped to match the new character.
    */
-  var audioVisGroup:Null<PolygonVisGroup> = null;
+  var audioWaveforms:FlxTypedSpriteGroup<WaveformSprite> = new FlxTypedSpriteGroup<WaveformSprite>();
 
   /**
    * A map of the audio tracks for each character's vocals.
@@ -2302,8 +2298,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(healthIconBF);
     healthIconBF.zIndex = 30;
 
-    audioVisGroup = new PolygonVisGroup();
-    add(audioVisGroup);
+    add(audioWaveforms);
   }
 
   function buildMeasureTicks():Void
