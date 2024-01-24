@@ -23,10 +23,18 @@ class WaveformSprite extends MeshRender
    */
   var isWaveformDirty:Bool = true;
 
+  /**
+   * If true, force the waveform to redraw every frame.
+   * Useful if the waveform's clipRect is constantly changing.
+   */
+  public var forceUpdate:Bool = false;
+
   public var waveformData:WaveformData;
 
   function set_waveformData(value:WaveformData):WaveformData
   {
+    if (waveformData == value) return value;
+
     waveformData = value;
     isWaveformDirty = true;
     return waveformData;
@@ -39,6 +47,8 @@ class WaveformSprite extends MeshRender
 
   function set_waveformColor(value:FlxColor):FlxColor
   {
+    if (waveformColor == value) return value;
+
     waveformColor = value;
     // We don't need to dirty the waveform geometry, just rebuild the texture.
     rebuildGraphic();
@@ -49,6 +59,8 @@ class WaveformSprite extends MeshRender
 
   function set_orientation(value:WaveformOrientation):WaveformOrientation
   {
+    if (orientation == value) return value;
+
     orientation = value;
     isWaveformDirty = true;
     return orientation;
@@ -61,6 +73,8 @@ class WaveformSprite extends MeshRender
 
   function set_time(value:Float)
   {
+    if (time == value) return value;
+
     time = value;
     isWaveformDirty = true;
     return time;
@@ -74,6 +88,8 @@ class WaveformSprite extends MeshRender
 
   function set_duration(value:Float)
   {
+    if (duration == value) return value;
+
     duration = value;
     isWaveformDirty = true;
     return duration;
@@ -84,6 +100,8 @@ class WaveformSprite extends MeshRender
    */
   override function set_height(value:Float):Float
   {
+    if (height == value) return super.set_height(value);
+
     isWaveformDirty = true;
     return super.set_height(value);
   }
@@ -93,6 +111,8 @@ class WaveformSprite extends MeshRender
    */
   override function set_width(value:Float):Float
   {
+    if (width == value) return super.set_width(value);
+
     isWaveformDirty = true;
     return super.set_width(value);
   }
@@ -108,13 +128,15 @@ class WaveformSprite extends MeshRender
     this.orientation = orientation ?? DEFAULT_ORIENTATION;
     this.time = 0.0;
     this.duration = duration ?? DEFAULT_DURATION;
+
+    this.forceUpdate = false;
   }
 
   public override function update(elapsed:Float)
   {
     super.update(elapsed);
 
-    if (isWaveformDirty)
+    if (forceUpdate || isWaveformDirty)
     {
       // Recalculate the waveform vertices.
       drawWaveform();
