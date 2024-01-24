@@ -155,6 +155,19 @@ class WaveformSprite extends MeshRender
     var pixelsPerIndex:Float = (orientation == HORIZONTAL ? this.width : this.height) / (endIndex - startIndex);
     var indexesPerPixel:Float = 1 / pixelsPerIndex;
 
+    var topLeftVertexIndex:Int = -1;
+    var topRightVertexIndex:Int = -1;
+    var bottomLeftVertexIndex:Int = -1;
+    var bottomRightVertexIndex:Int = -1;
+
+    if (clipRect != null)
+    {
+      topLeftVertexIndex = this.build_vertex(clipRect.x, clipRect.y);
+      topRightVertexIndex = this.build_vertex(clipRect.x + clipRect.width, clipRect.y);
+      bottomLeftVertexIndex = this.build_vertex(clipRect.x, clipRect.y + clipRect.height);
+      bottomRightVertexIndex = this.build_vertex(clipRect.x + clipRect.width, clipRect.y + clipRect.height);
+    }
+
     if (pixelsPerIndex >= 1.0)
     {
       // Each index is at least one pixel wide, so we render each index.
@@ -164,15 +177,55 @@ class WaveformSprite extends MeshRender
       {
         var pixelPos:Int = Std.int((i - startIndex) * pixelsPerIndex);
 
+        var isOutsideClipRectHorizontal:Bool = (clipRect != null) && (pixelPos < clipRect.x || pixelPos > (clipRect.x + clipRect.width));
+        var isOutsideClipRectVertical:Bool = (clipRect != null) && (pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height));
+        var isOutsideClipRect:Bool = orientation == HORIZONTAL ? isOutsideClipRectHorizontal : isOutsideClipRectVertical;
+
+        // This index is outside the clipRect, so we can just skip rendering it. Fantastic!
+        if (isOutsideClipRect) continue;
+
         var vertexTopY:Int = Std.int(waveformCenterPos
           - (waveformData.channel(0).maxSampleMapped(i) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
         var vertexBottomY:Int = Std.int(waveformCenterPos
           + (-waveformData.channel(0).minSampleMapped(i) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
 
-        var vertexTopIndex:Int = (orientation == HORIZONTAL) ? this.build_vertex(pixelPos, vertexTopY) : this.build_vertex(vertexTopY, pixelPos);
-        var vertexBottomIndex:Int = (orientation == HORIZONTAL) ? this.build_vertex(pixelPos, vertexBottomY) : this.build_vertex(vertexBottomY, pixelPos);
+        var vertexTopIndex:Int = -1;
+        var vertexBottomIndex:Int = -1;
 
-        if (prevVertexTopIndex != -1 && prevVertexBottomIndex != -1)
+        if (clipRect != null)
+        {
+          if (orientation == HORIZONTAL)
+          {
+            vertexTopIndex = buildClippedVertex(pixelPos, vertexTopY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(pixelPos, vertexBottomY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
+              bottomRightVertexIndex);
+          }
+          else
+          {
+            vertexTopIndex = buildClippedVertex(vertexTopY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(vertexBottomY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
+              bottomRightVertexIndex);
+          }
+        }
+        else
+        {
+          if (orientation == HORIZONTAL)
+          {
+            vertexTopIndex = this.build_vertex(pixelPos, vertexTopY);
+            vertexBottomIndex = this.build_vertex(pixelPos, vertexBottomY);
+          }
+          else
+          {
+            vertexTopIndex = this.build_vertex(vertexTopY, pixelPos);
+            vertexBottomIndex = this.build_vertex(vertexBottomY, pixelPos);
+          }
+        }
+
+        // Don't render if we don't have a previous different set of vertices to create a quad from.
+        if (prevVertexTopIndex != -1
+          && prevVertexBottomIndex != -1
+          && prevVertexTopIndex != vertexTopIndex
+          && prevVertexBottomIndex != vertexBottomIndex)
         {
           switch (orientation) // the line of code that makes you gay
           {
@@ -198,14 +251,51 @@ class WaveformSprite extends MeshRender
         // Wrap Std.int around the whole range calculation, not just indexesPerPixel, otherwise you get weird issues with zooming.
         var rangeStart:Int = Std.int(i * indexesPerPixel + startIndex);
         var rangeEnd:Int = Std.int((i + 1) * indexesPerPixel + startIndex);
+        var pixelPos:Int = i;
+
+        var isOutsideClipRectHorizontal:Bool = (clipRect != null) && (pixelPos < clipRect.x || pixelPos > (clipRect.x + clipRect.width));
+        var isOutsideClipRectVertical:Bool = (clipRect != null) && (pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height));
+        var isOutsideClipRect:Bool = orientation == HORIZONTAL ? isOutsideClipRectHorizontal : isOutsideClipRectVertical;
+
+        // This index is outside the clipRect, so we can just skip rendering it. Fantastic!
+        if (isOutsideClipRect) continue;
 
         var vertexTopY:Int = Std.int(waveformCenterPos
           - (waveformData.channel(0).maxSampleRangeMapped(rangeStart, rangeEnd) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
         var vertexBottomY:Int = Std.int(waveformCenterPos
           + (-waveformData.channel(0).minSampleRangeMapped(rangeStart, rangeEnd) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
 
-        var vertexTopIndex:Int = (orientation == HORIZONTAL) ? this.build_vertex(i, vertexTopY) : this.build_vertex(vertexTopY, i);
-        var vertexBottomIndex:Int = (orientation == HORIZONTAL) ? this.build_vertex(i, vertexBottomY) : this.build_vertex(vertexBottomY, i);
+        var vertexTopIndex:Int = -1;
+        var vertexBottomIndex:Int = -1;
+
+        if (clipRect != null)
+        {
+          if (orientation == HORIZONTAL)
+          {
+            vertexTopIndex = buildClippedVertex(pixelPos, vertexTopY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(pixelPos, vertexBottomY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
+              bottomRightVertexIndex);
+          }
+          else
+          {
+            vertexTopIndex = buildClippedVertex(vertexTopY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(vertexBottomY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
+              bottomRightVertexIndex);
+          }
+        }
+        else
+        {
+          if (orientation == HORIZONTAL)
+          {
+            vertexTopIndex = this.build_vertex(pixelPos, vertexTopY);
+            vertexBottomIndex = this.build_vertex(pixelPos, vertexBottomY);
+          }
+          else
+          {
+            vertexTopIndex = this.build_vertex(vertexTopY, pixelPos);
+            vertexBottomIndex = this.build_vertex(vertexBottomY, pixelPos);
+          }
+        }
 
         if (prevVertexTopIndex != -1 && prevVertexBottomIndex != -1)
         {
@@ -221,11 +311,61 @@ class WaveformSprite extends MeshRender
         prevVertexBottomIndex = vertexBottomIndex;
       }
     }
+
+    trace('Rendering waveform of ${duration} seconds with ${this.vertex_count} vertices.');
+  }
+
+  function buildClippedVertex(x:Int, y:Int, topLeftVertexIndex:Int, topRightVertexIndex:Int, bottomLeftVertexIndex:Int, bottomRightVertexIndex:Int):Int
+  {
+    var shouldClipXLeft = x < clipRect.x;
+    var shouldClipXRight = x > (clipRect.x + clipRect.width);
+    var shouldClipYTop = y < clipRect.y;
+    var shouldClipYBottom = y > (clipRect.y + clipRect.height);
+
+    // If the vertex is fully outside the clipRect, use a pre-existing vertex.
+    // Else, if the vertex is outside the clipRect on one axis, create a new vertex constrained on that axis.
+    // Else, create a whole new vertex.
+    if (shouldClipXLeft && shouldClipYTop)
+    {
+      return topLeftVertexIndex;
+    }
+    else if (shouldClipXRight && shouldClipYTop)
+    {
+      return topRightVertexIndex;
+    }
+    else if (shouldClipXLeft && shouldClipYBottom)
+    {
+      return bottomLeftVertexIndex;
+    }
+    else if (shouldClipXRight && shouldClipYBottom)
+    {
+      return bottomRightVertexIndex;
+    }
+    else if (shouldClipXLeft)
+    {
+      return this.build_vertex(clipRect.x, y);
+    }
+    else if (shouldClipXRight)
+    {
+      return this.build_vertex(clipRect.x + clipRect.width, y);
+    }
+    else if (shouldClipYTop)
+    {
+      return this.build_vertex(x, clipRect.y);
+    }
+    else if (shouldClipYBottom)
+    {
+      return this.build_vertex(x, clipRect.y + clipRect.height);
+    }
+    else
+    {
+      return this.build_vertex(x, y);
+    }
   }
 
   public static function buildFromWaveformData(data:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
   {
-    return new WaveformSprite(data, orientation, duration);
+    return new WaveformSprite(data, orientation, color, duration);
   }
 
   public static function buildFromFunkinSound(sound:FunkinSound, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
