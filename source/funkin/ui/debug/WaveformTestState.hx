@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.audio.waveform.WaveformData;
+import funkin.audio.waveform.WaveformSprite;
 import funkin.audio.waveform.WaveformDataParser;
 import funkin.graphics.rendering.MeshRender;
 
@@ -15,128 +16,40 @@ class WaveformTestState extends MusicBeatState
   }
 
   var waveformData:WaveformData;
+  var waveformData2:WaveformData;
 
   var waveformAudio:FunkinSound;
 
-  var meshRender:MeshRender;
+  var waveformSprite:WaveformSprite;
 
+  // var waveformSprite2:WaveformSprite;
   var timeMarker:FlxSprite;
 
   public override function create():Void
   {
     super.create();
 
-    waveformData = WaveformDataParser.parseWaveformData(Paths.json("waveform/dadbattle-erect/dadbattle-erect.waveform"));
+    waveformAudio = FunkinSound.load(Paths.inst('bopeebo', '-erect'));
 
-    waveformAudio = FunkinSound.load(Paths.music('dadbattle-erect/dadbattle-erect'));
+    // waveformData = WaveformDataParser.parseWaveformData(Paths.json('waveform/dadbattle-erect/dadbattle-erect.waveform'));
+    waveformData = WaveformDataParser.interpretFlxSound(waveformAudio);
 
-    var lightBlue:FlxColor = FlxColor.fromString("#ADD8E6");
-    meshRender = new MeshRender(0, 0, lightBlue);
-    add(meshRender);
+    waveformSprite = WaveformSprite.buildFromWaveformData(waveformData, HORIZONTAL, FlxColor.fromString("#ADD8E6"), 5.0);
+    waveformSprite.width = FlxG.width;
+    waveformSprite.height = FlxG.height; // / 2;
+    add(waveformSprite);
+
+    // waveformSprite2 = WaveformSprite.buildFromWaveformData(waveformData2, HORIZONTAL, FlxColor.fromString("#FF0000"), 5.0);
+    // waveformSprite2.width = FlxG.width;
+    // waveformSprite2.height = FlxG.height / 2;
+    // waveformSprite2.y = FlxG.height / 2;
+    // add(waveformSprite2);
 
     timeMarker = new FlxSprite(0, FlxG.height * 1 / 6);
     timeMarker.makeGraphic(1, Std.int(FlxG.height * 2 / 3), FlxColor.RED);
     add(timeMarker);
 
-    drawWaveform(time, duration);
-  }
-
-  /**
-   * @param offsetX Horizontal offset to draw the waveform at, in samples.
-   */
-  function drawWaveform(timeSeconds:Float, duration:Float):Void
-  {
-    meshRender.clear();
-
-    var offsetX:Int = waveformData.secondsToIndex(timeSeconds);
-
-    var waveformHeight:Int = Std.int(FlxG.height * (2 / 3));
-    var waveformWidth:Int = FlxG.width;
-    var waveformCenterPos:Int = Std.int(FlxG.height / 2);
-
-    var oneSecondInIndices:Int = waveformData.secondsToIndex(1);
-
-    var startTime:Float = -1.0;
-    var endTime:Float = startTime + duration;
-
-    var startIndex:Int = Std.int(offsetX + (oneSecondInIndices * startTime));
-    var endIndex:Int = Std.int(offsetX + (oneSecondInIndices * (startTime + duration)));
-
-    var pixelsPerIndex:Float = waveformWidth / (endIndex - startIndex);
-    var indexesPerPixel:Float = (endIndex - startIndex) / waveformWidth;
-
-    if (pixelsPerIndex >= 1.0)
-    {
-      // Each index is at least one pixel wide, so we render each index.
-      var prevVertexTopIndex:Int = -1;
-      var prevVertexBottomIndex:Int = -1;
-      for (i in startIndex...endIndex)
-      {
-        var pixelPos:Int = Std.int((i - startIndex) * pixelsPerIndex);
-
-        var vertexTopY:Int = Std.int(waveformCenterPos - (waveformData.channel(0).maxSampleMapped(i) * waveformHeight / 2));
-        var vertexBottomY:Int = Std.int(waveformCenterPos + (-waveformData.channel(0).minSampleMapped(i) * waveformHeight / 2));
-
-        var vertexTopIndex:Int = meshRender.build_vertex(pixelPos, vertexTopY);
-        var vertexBottomIndex:Int = meshRender.build_vertex(pixelPos, vertexBottomY);
-
-        if (prevVertexTopIndex != -1 && prevVertexBottomIndex != -1)
-        {
-          meshRender.add_quad(prevVertexTopIndex, vertexTopIndex, vertexBottomIndex, prevVertexBottomIndex);
-        }
-        else
-        {
-          trace('Skipping quad at index ${i}');
-        }
-
-        prevVertexTopIndex = vertexTopIndex;
-        prevVertexBottomIndex = vertexBottomIndex;
-      }
-    }
-    else
-    {
-      // Indexes are less than one pixel wide, so for each pixel we render the maximum of the samples that fall within it.
-      var prevVertexTopIndex:Int = -1;
-      var prevVertexBottomIndex:Int = -1;
-      for (i in 0...waveformWidth)
-      {
-        // Wrap Std.int around the whole range calculation, not just indexesPerPixel, otherwise you get weird issues with zooming.
-        var rangeStart:Int = Std.int(i * indexesPerPixel + startIndex);
-        var rangeEnd:Int = Std.int((i + 1) * indexesPerPixel + startIndex);
-
-        var vertexTopY:Int = Std.int(waveformCenterPos - (waveformData.channel(0).maxSampleRangeMapped(rangeStart, rangeEnd) * waveformHeight / 2));
-        var vertexBottomY:Int = Std.int(waveformCenterPos + (-waveformData.channel(0).minSampleRangeMapped(rangeStart, rangeEnd) * waveformHeight / 2));
-
-        // trace('Drawing index ${rangeStart} at pixel ${i} with MAX ${vertexTopY} and MIN ${vertexBottomY}');
-
-        var vertexTopIndex:Int = meshRender.build_vertex(i, vertexTopY);
-        var vertexBottomIndex:Int = meshRender.build_vertex(i, vertexBottomY);
-
-        if (prevVertexTopIndex != -1 && prevVertexBottomIndex != -1)
-        {
-          meshRender.add_quad(prevVertexTopIndex, vertexTopIndex, vertexBottomIndex, prevVertexBottomIndex);
-        }
-        else
-        {
-          trace('Skipping quad at index ${i}');
-        }
-
-        prevVertexTopIndex = vertexTopIndex;
-        prevVertexBottomIndex = vertexBottomIndex;
-      }
-    }
-
-    trace('Drawing ${duration} seconds of waveform with ${meshRender.vertex_count} vertices');
-
-    var oneSecondInPixels:Float = waveformWidth / duration;
-
-    timeMarker.x = Std.int(oneSecondInPixels);
-
-    // For each sample in the waveform...
-    // Add a MAX vertex and a MIN vertex.
-    //   If previous MAX/MIN is empty, store.
-    //   If previous MAX/MIN is not empty, draw a quad using current and previous MAX/MIN. Then store current MAX/MIN.
-    // Continue until end of waveform.
+    // drawWaveform(time, duration);
   }
 
   public override function update(elapsed:Float):Void
@@ -155,44 +68,48 @@ class WaveformTestState extends MusicBeatState
       }
     }
 
+    if (FlxG.keys.justPressed.ENTER)
+    {
+      if (waveformSprite.orientation == HORIZONTAL)
+      {
+        waveformSprite.orientation = VERTICAL;
+        // waveformSprite2.orientation = VERTICAL;
+      }
+      else
+      {
+        waveformSprite.orientation = HORIZONTAL;
+        // waveformSprite2.orientation = HORIZONTAL;
+      }
+    }
+
     if (waveformAudio.isPlaying)
     {
-      var songTimeSeconds:Float = waveformAudio.time / 1000;
-      drawWaveform(songTimeSeconds, duration);
+      // waveformSprite takes a time in fractional seconds, not milliseconds.
+      var timeSeconds = waveformAudio.time / 1000;
+      waveformSprite.time = timeSeconds;
+      // waveformSprite2.time = timeSeconds;
     }
 
     if (FlxG.keys.justPressed.UP)
     {
-      trace('Zooming out');
-      duration += 1.0;
-      drawTheWaveform();
+      waveformSprite.duration += 1.0;
+      // waveformSprite2.duration += 1.0;
     }
     if (FlxG.keys.justPressed.DOWN)
     {
-      trace('Zooming in');
-      duration -= 1.0;
-      drawTheWaveform();
+      waveformSprite.duration -= 1.0;
+      // waveformSprite2.duration -= 1.0;
     }
     if (FlxG.keys.justPressed.LEFT)
     {
-      trace('Seeking back');
-      time -= 1.0;
-      drawTheWaveform();
+      waveformSprite.time -= 1.0;
+      // waveformSprite2.time -= 1.0;
     }
     if (FlxG.keys.justPressed.RIGHT)
     {
-      trace('Seeking forward');
-      time += 1.0;
-      drawTheWaveform();
+      waveformSprite.time += 1.0;
+      // waveformSprite2.time += 1.0;
     }
-  }
-
-  var time:Float = 0.0;
-  var duration:Float = 5.0;
-
-  function drawTheWaveform():Void
-  {
-    drawWaveform(time, duration);
   }
 
   public override function destroy():Void

@@ -5,6 +5,8 @@ import funkin.util.MathUtil;
 @:nullSafety
 class WaveformData
 {
+  static final DEFAULT_VERSION:Int = 2;
+
   /**
    * The version of the waveform data format.
    * @default `2` (-1 if not specified/invalid)
@@ -25,7 +27,7 @@ class WaveformData
    * Lower values can more accurately represent the waveform when zoomed in, but take more data.
    */
   @:alias('samples_per_pixel')
-  public var samplesPerPixel(default, null):Int = 256;
+  public var samplesPerPoint(default, null):Int = 256;
 
   /**
    * Number of bits to use for each sample value. Valid values are `8` and `16`.
@@ -33,9 +35,9 @@ class WaveformData
   public var bits(default, null):Int = 16;
 
   /**
-   * Number of output waveform data points.
+   * The length of the data array, in points.
    */
-  public var length(default, null):Int = 0; // Array size is (4 * length)
+  public var length(default, null):Int = 0;
 
   /**
    * Array of Int16 values representing the waveform.
@@ -46,7 +48,16 @@ class WaveformData
   @:jignored
   var channelData:Null<Array<WaveformDataChannel>> = null;
 
-  public function new() {}
+  public function new(?version:Int, channels:Int, sampleRate:Int, samplesPerPoint:Int, bits:Int, length:Int, data:Array<Int>)
+  {
+    this.version = version ?? DEFAULT_VERSION;
+    this.channels = channels;
+    this.sampleRate = sampleRate;
+    this.samplesPerPoint = samplesPerPoint;
+    this.bits = bits;
+    this.length = length;
+    this.data = data;
+  }
 
   function buildChannelData():Array<WaveformDataChannel>
   {
@@ -79,7 +90,7 @@ class WaveformData
    */
   public function maxSampleValue():Int
   {
-    if (_maxSampleValue != -1) return _maxSampleValue;
+    if (_maxSampleValue != 0) return _maxSampleValue;
     return _maxSampleValue = Std.int(Math.pow(2, bits));
   }
 
@@ -87,14 +98,14 @@ class WaveformData
    * Cache the value because `Math.pow` is expensive and the value gets used a lot.
    */
   @:jignored
-  var _maxSampleValue:Int = -1;
+  var _maxSampleValue:Int = 0;
 
   /**
    * @return The length of the waveform in samples.
    */
   public function lenSamples():Int
   {
-    return length * samplesPerPixel;
+    return length * samplesPerPoint;
   }
 
   /**
@@ -110,7 +121,7 @@ class WaveformData
    */
   public function secondsToIndex(seconds:Float):Int
   {
-    return Std.int(seconds * sampleRate / samplesPerPixel);
+    return Std.int(seconds * pointsPerSecond());
   }
 
   /**
@@ -118,7 +129,15 @@ class WaveformData
    */
   public function indexToSeconds(index:Int):Float
   {
-    return index * samplesPerPixel / sampleRate;
+    return index / pointsPerSecond();
+  }
+
+  /**
+   * The number of data points this waveform data provides per second of audio.
+   */
+  public inline function pointsPerSecond():Float
+  {
+    return sampleRate / samplesPerPoint;
   }
 
   /**
@@ -136,8 +155,50 @@ class WaveformData
   {
     return index / length;
   }
+
+  /**
+   * Resample the waveform data to create a new WaveformData object matching the desired `samplesPerPoint` value.
+   * This is useful for zooming in/out of the waveform in a performant manner.
+   *
+   * @param newSamplesPerPoint The new value for `samplesPerPoint`.
+   */
+  public function resample(newSamplesPerPoint:Int):WaveformData
+  {
+    var result = this.clone();
+
+    var ratio = newSamplesPerPoint / samplesPerPoint;
+    if (ratio == 1) return result;
+    if (ratio < 1) trace('[WARNING] Downsampling will result in a low precision.');
+
+    var inputSampleCount = this.lenSamples();
+    var outputSampleCount = Std.int(inputSampleCount * ratio);
+
+    var inputPointCount = this.length;
+    var outputPointCount = Std.int(inputPointCount / ratio);
+    var outputChannelCount = this.channels;
+
+    // TODO: Actually figure out the dumbass logic for this.
+
+    return result;
+  }
+
+  /**
+   * Create a new WaveformData whose parameters match the current object.
+   */
+  public function clone(?newData:Array<Int> = null):WaveformData
+  {
+    if (newData == null)
+    {
+      newData = this.data.clone();
+    }
+
+    var clone = new WaveformData(this.version, this.channels, this.sampleRate, this.samplesPerPoint, this.bits, newData.length, newData);
+
+    return clone;
+  }
 }
 
+@:nullSafety
 class WaveformDataChannel
 {
   var parent:WaveformData;
@@ -149,6 +210,9 @@ class WaveformDataChannel
     this.channelId = channelId;
   }
 
+  /**
+   * Retrieve a given minimum point at an index.
+   */
   public function minSample(i:Int)
   {
     var offset = (i * parent.channels + this.channelId) * 2;
@@ -165,7 +229,7 @@ class WaveformDataChannel
 
   /**
    * Minimum value within the range of samples.
-   * @param i
+   * NOTE: Inefficient for large ranges. Use `WaveformData.remap` instead.
    */
   public function minSampleRange(start:Int, end:Int)
   {
@@ -180,13 +244,15 @@ class WaveformDataChannel
 
   /**
    * Maximum value within the range of samples, mapped to a value between 0 and 1.
-   * @param i
    */
   public function minSampleRangeMapped(start:Int, end:Int)
   {
     return minSampleRange(start, end) / parent.maxSampleValue();
   }
 
+  /**
+   * Retrieve a given maximum point at an index.
+   */
   public function maxSample(i:Int)
   {
     var offset = (i * parent.channels + this.channelId) * 2 + 1;
@@ -203,7 +269,7 @@ class WaveformDataChannel
 
   /**
    * Maximum value within the range of samples.
-   * @param i
+   * NOTE: Inefficient for large ranges. Use `WaveformData.remap` instead.
    */
   public function maxSampleRange(start:Int, end:Int)
   {
@@ -218,17 +284,12 @@ class WaveformDataChannel
 
   /**
    * Maximum value within the range of samples, mapped to a value between 0 and 1.
-   * @param i
    */
   public function maxSampleRangeMapped(start:Int, end:Int)
   {
     return maxSampleRange(start, end) / parent.maxSampleValue();
   }
 
-  /**
-   * Maximum value within the range of samples, mapped to a value between 0 and 1.
-   * @param i
-   */
   public function setMinSample(i:Int, value:Int)
   {
     var offset = (i * parent.channels + this.channelId) * 2;
