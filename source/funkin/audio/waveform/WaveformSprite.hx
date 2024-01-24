@@ -14,6 +14,7 @@ class WaveformSprite extends MeshRender
   static final DEFAULT_Y:Float = 0.0;
   static final DEFAULT_WIDTH:Float = 100.0;
   static final DEFAULT_HEIGHT:Float = 100.0;
+  static final DEFAULT_DURATION:Float = 5.0;
 
   /**
    * Set this to true to tell the waveform to rebuild itself.
@@ -104,9 +105,9 @@ class WaveformSprite extends MeshRender
     this.height = DEFAULT_HEIGHT;
 
     this.waveformData = waveformData;
-    this.orientation = orientation;
+    this.orientation = orientation ?? DEFAULT_ORIENTATION;
     this.time = 0.0;
-    this.duration = duration;
+    this.duration = duration ?? DEFAULT_DURATION;
   }
 
   public override function update(elapsed:Float)
