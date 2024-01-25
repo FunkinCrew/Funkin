@@ -6,7 +6,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.util.macro.ClassMacro;
 import funkin.play.event.ScriptedSongEvent;
 
-@:forward(name, tittlte, type, keys, min, max, step, defaultValue, iterator)
+@:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
 abstract SongEventSchema(SongEventSchemaRaw)
 {
   public function new(?fields:Array<SongEventSchemaField>)
@@ -42,7 +42,7 @@ abstract SongEventSchema(SongEventSchemaRaw)
     return this[k] = v;
   }
 
-  public function stringifyFieldValue(name:String, value:Dynamic):String
+  public function stringifyFieldValue(name:String, value:Dynamic, addUnits:Bool = true):String
   {
     var field:SongEventSchemaField = getByName(name);
     if (field == null) return 'Unknown';
@@ -52,20 +52,33 @@ abstract SongEventSchema(SongEventSchemaRaw)
       case SongEventFieldType.STRING:
         return Std.string(value);
       case SongEventFieldType.INTEGER:
-        return Std.string(value);
+        var returnValue:String = Std.string(value);
+        if (addUnits) return addUnitsToString(returnValue, field);
+        return returnValue;
       case SongEventFieldType.FLOAT:
-        return Std.string(value);
+        var returnValue:String = Std.string(value);
+        if (addUnits) return addUnitsToString(returnValue, field);
+        return returnValue;
       case SongEventFieldType.BOOL:
         return Std.string(value);
       case SongEventFieldType.ENUM:
+        var valueString:String = Std.string(value);
         for (key in field.keys.keys())
         {
-          if (field.keys.get(key) == value) return key;
+          // Comparing these values as strings because comparing Dynamic variables is jank.
+          if (Std.string(field.keys.get(key)) == valueString) return key;
         }
-        return Std.string(value);
+        return valueString;
       default:
         return 'Unknown';
     }
+  }
+
+  function addUnitsToString(value:String, field:SongEventSchemaField)
+  {
+    if (field.units == null || field.units == '') return value;
+
+    return value + ' ${field.units}';
   }
 }
 
@@ -114,6 +127,12 @@ typedef SongEventSchemaField =
    * @default `0.1`
    */
   ?step:Float,
+
+  /**
+   * Used for INTEGER and FLOAT values.
+   * The units that the value is expressed in (pixels, percent, etc).
+   */
+  ?units:String,
 
   /**
    * An optional default value for the field.

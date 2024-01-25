@@ -216,6 +216,16 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       target.addComponent(input);
 
+      if (field.units != null && field.units != "")
+      {
+        var units:Label = new Label();
+        units.text = field.units;
+        units.verticalAlign = "center";
+        units.left = 85;
+        units.top = 4;
+        input.addComponent(units);
+      }
+
       // Update the value of the event data.
       input.onChange = function(event:UIEvent) {
         var value = event.target.value;
