@@ -223,6 +223,10 @@ class ChartEditorAudioHandler
     {
       state.audioVocalTrackGroup.clear();
     }
+    if (state.audioVisGroup != null)
+    {
+      state.audioVisGroup.clearAllVis();
+    }
   }
 
   /**
