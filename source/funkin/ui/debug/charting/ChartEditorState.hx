@@ -1396,6 +1396,46 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Convenience property to get the player charId for the current variation.
+   */
+  var currentPlayerChar(get, set):String;
+
+  function get_currentPlayerChar():String
+  {
+    if (currentSongMetadata.playData.characters.player == null)
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.playData.characters.player = Constants.DEFAULT_CHARACTER;
+    }
+    return currentSongMetadata.playData.characters.player;
+  }
+
+  function set_currentPlayerChar(value:String):String
+  {
+    return currentSongMetadata.playData.characters.player = value;
+  }
+
+  /**
+   * Convenience property to get the opponent charId for the current variation.
+   */
+  var currentOpponentChar(get, set):String;
+
+  function get_currentOpponentChar():String
+  {
+    if (currentSongMetadata.playData.characters.opponent == null)
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.playData.characters.opponent = Constants.DEFAULT_CHARACTER;
+    }
+    return currentSongMetadata.playData.characters.opponent;
+  }
+
+  function set_currentOpponentChar(value:String):String
+  {
+    return currentSongMetadata.playData.characters.opponent = value;
+  }
+
+  /**
    * Convenience property to get the song offset data for the current variation.
    */
   var currentSongOffsets(get, set):SongOffsets;
@@ -1427,6 +1467,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // TODO: Apply for alt instrumentals.
     currentSongOffsets.setInstrumentalOffset(value);
+    return value;
+  }
+
+  var currentVocalOffset(get, set):Float;
+
+  function get_currentVocalOffset():Float
+  {
+    // Currently there's only one vocal offset, so we just grab the player's offset since both should be the same.
+    // Should probably make it so we can set offsets for player + opponent individually, though.
+    return currentSongOffsets.getVocalOffset(currentPlayerChar);
+  }
+
+  function set_currentVocalOffset(value:Float):Float
+  {
+    // Currently there's only one vocal offset, so we just apply it to both characters.
+    currentSongOffsets.setVocalOffset(currentPlayerChar, value);
+    currentSongOffsets.setVocalOffset(currentOpponentChar, value);
     return value;
   }
 
