@@ -2,6 +2,8 @@ package funkin.audio;
 
 import funkin.audio.FunkinSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import funkin.audio.waveform.WaveformData;
+import funkin.audio.waveform.WaveformDataParser;
 
 class VoicesGroup extends SoundGroup
 {
@@ -102,6 +104,40 @@ class VoicesGroup extends SoundGroup
       voice.volume = volume;
     });
     return opponentVolume = volume;
+  }
+
+  public function buildPlayerVoiceWaveform():Null<WaveformData>
+  {
+    if (playerVoices.members.length == 0) return null;
+
+    return WaveformDataParser.interpretFlxSound(playerVoices.members[0]);
+  }
+
+  public function buildOpponentVoiceWaveform():Null<WaveformData>
+  {
+    if (opponentVoices.members.length == 0) return null;
+
+    return WaveformDataParser.interpretFlxSound(opponentVoices.members[0]);
+  }
+
+  /**
+   * The length of the player's vocal track, in milliseconds.
+   */
+  public function getPlayerVoiceLength():Float
+  {
+    if (playerVoices.members.length == 0) return 0.0;
+
+    return playerVoices.members[0].length;
+  }
+
+  /**
+   * The length of the opponent's vocal track, in milliseconds.
+   */
+  public function getOpponentVoiceLength():Float
+  {
+    if (opponentVoices.members.length == 0) return 0.0;
+
+    return opponentVoices.members[0].length;
   }
 
   public override function clear():Void

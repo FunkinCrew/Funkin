@@ -215,17 +215,17 @@ class WaveformSprite extends MeshRender
       {
         var pixelPos:Int = Std.int((i - startIndex) * pixelsPerIndex);
 
-        var isOutsideClipRect:Bool = (clipRect != null) && if (orientation == HORIZONTAL)
-        {
-          pixelPos < clipRect.x
-          || pixelPos > (clipRect.x + clipRect.width);
-        } else
-        {
-          pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height);
-        };
+        var isBeforeClipRect:Bool = (clipRect != null) && ((orientation == HORIZONTAL) ? pixelPos < clipRect.x : pixelPos < clipRect.y);
 
-        // This index is outside the clipRect, so we can just skip rendering it. Fantastic!
-        if (isOutsideClipRect) continue;
+        if (isBeforeClipRect) continue;
+
+        var isAfterClipRect:Bool = (clipRect != null)
+          && ((orientation == HORIZONTAL) ? pixelPos > (clipRect.x + clipRect.width) : pixelPos > (clipRect.y + clipRect.height));
+
+        if (isAfterClipRect)
+        {
+          break;
+        };
 
         var sampleMax:Float = Math.min(waveformData.channel(0).maxSampleMapped(i) * amplitude, 1.0);
         var sampleMin:Float = Math.max(waveformData.channel(0).minSampleMapped(i) * amplitude, -1.0);
@@ -299,16 +299,17 @@ class WaveformSprite extends MeshRender
       {
         var pixelPos:Int = i;
 
-        var isOutsideClipRect:Bool = (clipRect != null) && if (orientation == HORIZONTAL)
+        var isBeforeClipRect:Bool = (clipRect != null) && ((orientation == HORIZONTAL) ? pixelPos < clipRect.x : pixelPos < clipRect.y);
+
+        if (isBeforeClipRect) continue;
+
+        var isAfterClipRect:Bool = (clipRect != null)
+          && ((orientation == HORIZONTAL) ? pixelPos > (clipRect.x + clipRect.width) : pixelPos > (clipRect.y + clipRect.height));
+
+        if (isAfterClipRect)
         {
-          pixelPos < clipRect.x
-          || pixelPos > (clipRect.x + clipRect.width);
-        } else
-        {
-          pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height);
+          break;
         };
-        // This index is outside the clipRect, so we can just skip rendering it. Fantastic!
-        if (isOutsideClipRect) continue;
 
         // Wrap Std.int around the whole range calculation, not just indexesPerPixel, otherwise you get weird issues with zooming.
         var rangeStart:Int = Std.int(i * indexesPerPixel + startIndex);
@@ -369,8 +370,6 @@ class WaveformSprite extends MeshRender
         prevVertexBottomIndex = vertexBottomIndex;
       }
     }
-
-    trace('Rendering waveform of ${duration} seconds with ${this.vertex_count} vertices.');
   }
 
   function buildClippedVertex(x:Int, y:Int, topLeftVertexIndex:Int, topRightVertexIndex:Int, bottomLeftVertexIndex:Int, bottomRightVertexIndex:Int):Int
