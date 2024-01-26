@@ -14,7 +14,6 @@ class WaveformSprite extends MeshRender
   static final DEFAULT_Y:Float = 0.0;
   static final DEFAULT_WIDTH:Float = 100.0;
   static final DEFAULT_HEIGHT:Float = 100.0;
-  static final DEFAULT_DURATION:Float = 5.0;
 
   /**
    * Set this to true to tell the waveform to rebuild itself.
@@ -29,9 +28,9 @@ class WaveformSprite extends MeshRender
    */
   public var forceUpdate:Bool = false;
 
-  public var waveformData:WaveformData;
+  public var waveformData(default, set):Null<WaveformData>;
 
-  function set_waveformData(value:WaveformData):WaveformData
+  function set_waveformData(value:Null<WaveformData>):Null<WaveformData>
   {
     if (waveformData == value) return value;
 
@@ -117,7 +116,21 @@ class WaveformSprite extends MeshRender
     return super.set_width(value);
   }
 
-  public function new(waveformData:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
+  /**
+   * The minimum size, in pixels, that a waveform will display with.
+   * Useful for preventing the waveform from becoming too small to see.
+   *
+   * NOTE: This is technically doubled since it's applied above and below the center of the waveform.
+   */
+  public var minWaveformSize:Int = 1;
+
+  /**
+   * A multiplier on the size of the waveform.
+   * Still capped at the width and height set for the sprite.
+   */
+  public var amplitude:Float = 1.0;
+
+  public function new(?waveformData:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
   {
     super(DEFAULT_X, DEFAULT_Y, DEFAULT_COLOR);
     this.waveformColor = color ?? DEFAULT_COLOR;
@@ -164,6 +177,8 @@ class WaveformSprite extends MeshRender
 
     this.clear();
 
+    if (waveformData == null) return;
+
     // Center point of the waveform. When horizontal this is half the height, when vertical this is half the width.
     var waveformCenterPos:Int = orientation == HORIZONTAL ? Std.int(this.height / 2) : Std.int(this.width / 2);
 
@@ -200,17 +215,28 @@ class WaveformSprite extends MeshRender
       {
         var pixelPos:Int = Std.int((i - startIndex) * pixelsPerIndex);
 
-        var isOutsideClipRectHorizontal:Bool = (clipRect != null) && (pixelPos < clipRect.x || pixelPos > (clipRect.x + clipRect.width));
-        var isOutsideClipRectVertical:Bool = (clipRect != null) && (pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height));
-        var isOutsideClipRect:Bool = orientation == HORIZONTAL ? isOutsideClipRectHorizontal : isOutsideClipRectVertical;
+        var isOutsideClipRect:Bool = (clipRect != null) && if (orientation == HORIZONTAL)
+        {
+          pixelPos < clipRect.x
+          || pixelPos > (clipRect.x + clipRect.width);
+        } else
+        {
+          pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height);
+        };
 
         // This index is outside the clipRect, so we can just skip rendering it. Fantastic!
         if (isOutsideClipRect) continue;
 
-        var vertexTopY:Int = Std.int(waveformCenterPos
-          - (waveformData.channel(0).maxSampleMapped(i) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
-        var vertexBottomY:Int = Std.int(waveformCenterPos
-          + (-waveformData.channel(0).minSampleMapped(i) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
+        var sampleMax:Float = Math.min(waveformData.channel(0).maxSampleMapped(i) * amplitude, 1.0);
+        var sampleMin:Float = Math.max(waveformData.channel(0).minSampleMapped(i) * amplitude, -1.0);
+        var sampleMaxSize:Float = sampleMax * (orientation == HORIZONTAL ? this.height : this.width) / 2;
+        if (sampleMaxSize < minWaveformSize) sampleMaxSize = minWaveformSize;
+        var sampleMinSize:Float = sampleMin * (orientation == HORIZONTAL ? this.height : this.width) / 2;
+        if (sampleMinSize > -minWaveformSize) sampleMinSize = -minWaveformSize;
+        var vertexTopY:Int = Std.int(waveformCenterPos - sampleMaxSize);
+        var vertexBottomY:Int = Std.int(waveformCenterPos - sampleMinSize);
+
+        if (vertexBottomY - vertexTopY < minWaveformSize) vertexTopY = vertexBottomY - minWaveformSize;
 
         var vertexTopIndex:Int = -1;
         var vertexBottomIndex:Int = -1;
@@ -271,22 +297,31 @@ class WaveformSprite extends MeshRender
       var waveformLengthPixels:Int = orientation == HORIZONTAL ? Std.int(this.width) : Std.int(this.height);
       for (i in 0...waveformLengthPixels)
       {
-        // Wrap Std.int around the whole range calculation, not just indexesPerPixel, otherwise you get weird issues with zooming.
-        var rangeStart:Int = Std.int(i * indexesPerPixel + startIndex);
-        var rangeEnd:Int = Std.int((i + 1) * indexesPerPixel + startIndex);
         var pixelPos:Int = i;
 
-        var isOutsideClipRectHorizontal:Bool = (clipRect != null) && (pixelPos < clipRect.x || pixelPos > (clipRect.x + clipRect.width));
-        var isOutsideClipRectVertical:Bool = (clipRect != null) && (pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height));
-        var isOutsideClipRect:Bool = orientation == HORIZONTAL ? isOutsideClipRectHorizontal : isOutsideClipRectVertical;
-
+        var isOutsideClipRect:Bool = (clipRect != null) && if (orientation == HORIZONTAL)
+        {
+          pixelPos < clipRect.x
+          || pixelPos > (clipRect.x + clipRect.width);
+        } else
+        {
+          pixelPos < clipRect.y || pixelPos > (clipRect.y + clipRect.height);
+        };
         // This index is outside the clipRect, so we can just skip rendering it. Fantastic!
         if (isOutsideClipRect) continue;
 
-        var vertexTopY:Int = Std.int(waveformCenterPos
-          - (waveformData.channel(0).maxSampleRangeMapped(rangeStart, rangeEnd) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
-        var vertexBottomY:Int = Std.int(waveformCenterPos
-          + (-waveformData.channel(0).minSampleRangeMapped(rangeStart, rangeEnd) * (orientation == HORIZONTAL ? this.height : this.width) / 2));
+        // Wrap Std.int around the whole range calculation, not just indexesPerPixel, otherwise you get weird issues with zooming.
+        var rangeStart:Int = Std.int(i * indexesPerPixel + startIndex);
+        var rangeEnd:Int = Std.int((i + 1) * indexesPerPixel + startIndex);
+
+        var sampleMax:Float = Math.min(waveformData.channel(0).maxSampleRangeMapped(rangeStart, rangeEnd) * amplitude, 1.0);
+        var sampleMin:Float = Math.max(waveformData.channel(0).minSampleRangeMapped(rangeStart, rangeEnd) * amplitude, -1.0);
+        var sampleMaxSize:Float = sampleMax * (orientation == HORIZONTAL ? this.height : this.width) / 2;
+        if (sampleMaxSize < minWaveformSize) sampleMaxSize = minWaveformSize;
+        var sampleMinSize:Float = sampleMin * (orientation == HORIZONTAL ? this.height : this.width) / 2;
+        if (sampleMinSize > -minWaveformSize) sampleMinSize = -minWaveformSize;
+        var vertexTopY:Int = Std.int(waveformCenterPos - sampleMaxSize);
+        var vertexBottomY:Int = Std.int(waveformCenterPos - sampleMinSize);
 
         var vertexTopIndex:Int = -1;
         var vertexBottomIndex:Int = -1;

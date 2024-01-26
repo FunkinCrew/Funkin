@@ -33,19 +33,20 @@ class WaveformTestState extends MusicBeatState
     var testSprite = new FlxSprite(0, 0);
     testSprite.loadGraphic(Paths.image('funkay'));
     testSprite.updateHitbox();
-    testSprite.clipRect = new FlxRect(0, 0, FlxG.width * 9 / 16, FlxG.height);
+    testSprite.clipRect = new FlxRect(0, 0, FlxG.width, FlxG.height);
     add(testSprite);
 
     waveformAudio = FunkinSound.load(Paths.inst('bopeebo', '-erect'));
 
-    // waveformData = WaveformDataParser.parseWaveformData(Paths.json('waveform/dadbattle-erect/dadbattle-erect.waveform'));
     waveformData = WaveformDataParser.interpretFlxSound(waveformAudio);
 
-    waveformSprite = WaveformSprite.buildFromWaveformData(waveformData, HORIZONTAL, FlxColor.fromString("#ADD8E6"), 2.5);
-    waveformSprite.width = FlxG.width;
+    waveformSprite = WaveformSprite.buildFromWaveformData(waveformData, HORIZONTAL, FlxColor.fromString("#ADD8E6"));
+    waveformSprite.duration = 5.0 * 160;
+    waveformSprite.width = FlxG.width * 160;
     waveformSprite.height = FlxG.height; // / 2;
-    waveformSprite.clipRect = new FlxRect(0, 0, FlxG.width * 9 / 16, FlxG.height);
-    // waveformSprite.clipRect = new FlxRect(FlxG.width * 1 / 3, FlxG.height * 3 / 8, FlxG.width * 1 / 3, FlxG.height * 2 / 8);
+    waveformSprite.amplitude = 2.0;
+    waveformSprite.minWaveformSize = 25;
+    waveformSprite.clipRect = new FlxRect(0, 0, FlxG.width, FlxG.height);
     add(waveformSprite);
 
     // waveformSprite2 = WaveformSprite.buildFromWaveformData(waveformData2, HORIZONTAL, FlxColor.fromString("#FF0000"), 5.0);
