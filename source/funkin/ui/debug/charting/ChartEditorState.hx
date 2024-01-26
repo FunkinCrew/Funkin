@@ -2890,7 +2890,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
 
     menubarItemPlaybackSpeed.onChange = event -> {
-      var pitch:Float = (event.value * 2.0) / 100.0;
+      var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
       pitch = Math.floor(pitch / 0.25) * 0.25; // Round to nearest 0.25.
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
