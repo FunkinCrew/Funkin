@@ -145,6 +145,14 @@ class WaveformSprite extends MeshRender
     this.forceUpdate = false;
   }
 
+  /**
+   * Manually tell the waveform to rebuild itself, even if none of its properties have changed.
+   */
+  public function markDirty():Void
+  {
+    isWaveformDirty = true;
+  }
+
   public override function update(elapsed:Float)
   {
     super.update(elapsed);

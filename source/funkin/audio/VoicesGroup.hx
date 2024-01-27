@@ -106,6 +106,16 @@ class VoicesGroup extends SoundGroup
     return opponentVolume = volume;
   }
 
+  public function getPlayerVoice(index:Int = 0):Null<FunkinSound>
+  {
+    return playerVoices.members[index];
+  }
+
+  public function getOpponentVoice(index:Int = 0):Null<FunkinSound>
+  {
+    return opponentVoices.members[index];
+  }
+
   public function buildPlayerVoiceWaveform():Null<WaveformData>
   {
     if (playerVoices.members.length == 0) return null;

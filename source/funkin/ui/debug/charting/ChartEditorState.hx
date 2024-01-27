@@ -1438,19 +1438,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return value;
   }
 
-  var currentVocalOffset(get, set):Float;
+  var currentVocalOffsetPlayer(get, set):Float;
 
-  function get_currentVocalOffset():Float
+  function get_currentVocalOffsetPlayer():Float
   {
-    // Currently there's only one vocal offset, so we just grab the player's offset since both should be the same.
-    // Should probably make it so we can set offsets for player + opponent individually, though.
     return currentSongOffsets.getVocalOffset(currentPlayerChar);
   }
 
-  function set_currentVocalOffset(value:Float):Float
+  function set_currentVocalOffsetPlayer(value:Float):Float
   {
-    // Currently there's only one vocal offset, so we just apply it to both characters.
     currentSongOffsets.setVocalOffset(currentPlayerChar, value);
+    return value;
+  }
+
+  var currentVocalOffsetOpponent(get, set):Float;
+
+  function get_currentVocalOffsetOpponent():Float
+  {
+    return currentSongOffsets.getVocalOffset(currentOpponentChar);
+  }
+
+  function set_currentVocalOffsetOpponent(value:Float):Float
+  {
     currentSongOffsets.setVocalOffset(currentOpponentChar, value);
     return value;
   }

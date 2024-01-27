@@ -199,6 +199,24 @@ class CrashHandler
     throw "This is an example of an uncaught exception.";
   }
 
+  public static function induceNullObjectReference():Void
+  {
+    var obj:Dynamic = null;
+    var value = obj.test;
+  }
+
+  public static function induceNullObjectReference2():Void
+  {
+    var obj:Dynamic = null;
+    var value = obj.test();
+  }
+
+  public static function induceNullObjectReference3():Void
+  {
+    var obj:Dynamic = null;
+    var value = obj();
+  }
+
   static function renderMethod():String
   {
     return switch (FlxG.renderMethod)

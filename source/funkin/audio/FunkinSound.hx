@@ -7,6 +7,7 @@ import flash.utils.ByteArray;
 import flixel.sound.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxAssets.FlxSoundAsset;
+import funkin.util.tools.ICloneable;
 import openfl.Assets;
 #if (openfl >= "8.0.0")
 import openfl.utils.AssetType;
@@ -17,9 +18,16 @@ import openfl.utils.AssetType;
  * - Delayed playback via negative song position.
  */
 @:nullSafety
-class FunkinSound extends FlxSound
+class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
+
+  public var paused(get, never):Bool;
+
+  function get_paused():Bool
+  {
+    return this._paused;
+  }
 
   public var isPlaying(get, never):Bool;
 
@@ -151,6 +159,21 @@ class FunkinSound extends FlxSound
       super.resume();
     }
     return this;
+  }
+
+  public function clone():FunkinSound
+  {
+    var sound:FunkinSound = new FunkinSound();
+
+    // Clone the sound by creating one with the same data buffer.
+    // Reusing the `Sound` object directly causes issues with playback.
+    @:privateAccess
+    sound._sound = openfl.media.Sound.fromAudioBuffer(this._sound.__buffer);
+
+    // Call init to ensure the FlxSound is properly initialized.
+    sound.init(this.looped, this.autoDestroy, this.onComplete);
+
+    return sound;
   }
 
   /**
