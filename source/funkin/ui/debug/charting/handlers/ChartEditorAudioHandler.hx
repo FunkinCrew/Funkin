@@ -204,7 +204,7 @@ class ChartEditorAudioHandler
             trace('[WARN] Failed to parse waveform data for vocal track.');
           }
 
-          state.audioVocalTrackGroup.playerVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
+          state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffset;
           return true;
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
@@ -227,7 +227,7 @@ class ChartEditorAudioHandler
             trace('[WARN] Failed to parse waveform data for vocal track.');
           }
 
-          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentSongOffsets.getVocalOffset(charId);
+          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffset;
 
           return true;
         case OTHER:
@@ -247,6 +247,10 @@ class ChartEditorAudioHandler
     if (state.audioVocalTrackGroup != null)
     {
       state.audioVocalTrackGroup.clear();
+    }
+    if (state.audioVisGroup != null)
+    {
+      state.audioVisGroup.clearAllVis();
     }
   }
 

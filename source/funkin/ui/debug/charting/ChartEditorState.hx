@@ -107,7 +107,6 @@ import haxe.ui.components.Label;
 import haxe.ui.components.Button;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
-import haxe.ui.components.VerticalSlider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.Frame;
@@ -718,34 +717,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_hitsoundsEnabled():Bool
   {
     return hitsoundsEnabledPlayer || hitsoundsEnabledOpponent;
-  }
-
-  /**
-   * Sound multiplier for vocals and hitsounds on the player's side.
-   */
-  var soundMultiplierPlayer(default, set):Float = 1.0;
-
-  function set_soundMultiplierPlayer(value:Float):Float
-  {
-    soundMultiplierPlayer = value;
-    var vocalTargetVolume:Float = (menubarItemVolumeVocals.value ?? 100.0) / 100.0;
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.playerVolume = vocalTargetVolume * soundMultiplierPlayer;
-
-    return soundMultiplierPlayer;
-  }
-
-  /**
-   * Sound multiplier for vocals and hitsounds on the opponent's side.
-   */
-  var soundMultiplierOpponent(default, set):Float = 1.0;
-
-  function set_soundMultiplierOpponent(value:Float):Float
-  {
-    soundMultiplierOpponent = value;
-    var vocalTargetVolume:Float = (menubarItemVolumeVocals.value ?? 100.0) / 100.0;
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.opponentVolume = vocalTargetVolume * soundMultiplierOpponent;
-
-    return soundMultiplierOpponent;
   }
 
   // Auto-save
@@ -1393,6 +1364,46 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Convenience property to get the player charId for the current variation.
+   */
+  var currentPlayerChar(get, set):String;
+
+  function get_currentPlayerChar():String
+  {
+    if (currentSongMetadata.playData.characters.player == null)
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.playData.characters.player = Constants.DEFAULT_CHARACTER;
+    }
+    return currentSongMetadata.playData.characters.player;
+  }
+
+  function set_currentPlayerChar(value:String):String
+  {
+    return currentSongMetadata.playData.characters.player = value;
+  }
+
+  /**
+   * Convenience property to get the opponent charId for the current variation.
+   */
+  var currentOpponentChar(get, set):String;
+
+  function get_currentOpponentChar():String
+  {
+    if (currentSongMetadata.playData.characters.opponent == null)
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.playData.characters.opponent = Constants.DEFAULT_CHARACTER;
+    }
+    return currentSongMetadata.playData.characters.opponent;
+  }
+
+  function set_currentOpponentChar(value:String):String
+  {
+    return currentSongMetadata.playData.characters.opponent = value;
+  }
+
+  /**
    * Convenience property to get the song offset data for the current variation.
    */
   var currentSongOffsets(get, set):SongOffsets;
@@ -1424,6 +1435,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // TODO: Apply for alt instrumentals.
     currentSongOffsets.setInstrumentalOffset(value);
+    return value;
+  }
+
+  var currentVocalOffset(get, set):Float;
+
+  function get_currentVocalOffset():Float
+  {
+    // Currently there's only one vocal offset, so we just grab the player's offset since both should be the same.
+    // Should probably make it so we can set offsets for player + opponent individually, though.
+    return currentSongOffsets.getVocalOffset(currentPlayerChar);
+  }
+
+  function set_currentVocalOffset(value:Float):Float
+  {
+    // Currently there's only one vocal offset, so we just apply it to both characters.
+    currentSongOffsets.setVocalOffset(currentPlayerChar, value);
+    currentSongOffsets.setVocalOffset(currentOpponentChar, value);
     return value;
   }
 
@@ -1700,14 +1728,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeInstrumental:Slider;
 
   /**
-   * The `Audio -> Vocal Volume` label.
+   * The `Audio -> Player Volume` label.
    */
-  var menubarLabelVolumeVocals:Label;
+  var menubarLabelVolumeVocalsPlayer:Label;
 
   /**
-   * The `Audio -> Vocal Volume` slider.
+   * The `Audio -> Enemy Volume` label.
    */
-  var menubarItemVolumeVocals:Slider;
+  var menubarLabelVolumeVocalsOpponent:Label;
+
+  /**
+   * The `Audio -> Player Volume` slider.
+   */
+  var menubarItemVolumeVocalsPlayer:Slider;
+
+  /**
+   * The `Audio -> Enemy Volume` slider.
+   */
+  var menubarItemVolumeVocalsOpponent:Slider;
 
   /**
    * The `Audio -> Playback Speed` label.
@@ -2602,37 +2640,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         performCommand(new SetItemSelectionCommand([], currentSongChartEventData));
       }
     }
-
-    function setupSideSlider(x, y):VerticalSlider
-    {
-      var slider = new VerticalSlider();
-      slider.allowFocus = false;
-      slider.x = x;
-      slider.y = y;
-      slider.width = NOTE_SELECT_BUTTON_HEIGHT;
-      slider.height = GRID_SIZE * 4;
-      slider.pos = slider.max;
-      slider.tooltip = "Slide to set the volume of sounds on this side.";
-      slider.zIndex = 110;
-      slider.styleNames = "sideSlider";
-      add(slider);
-
-      return slider;
-    }
-
-    var sliderY = GRID_INITIAL_Y_POS + 34;
-    sliderVolumeOpponent = setupSideSlider(GRID_X_POS - 64, sliderY);
-    sliderVolumePlayer = setupSideSlider(buttonSelectEvent.x + buttonSelectEvent.width, sliderY);
-
-    sliderVolumePlayer.onChange = event -> {
-      var volume:Float = event.value.toFloat() / 100.0;
-      soundMultiplierPlayer = volume;
-    }
-
-    sliderVolumeOpponent.onChange = event -> {
-      var volume:Float = event.value.toFloat() / 100.0;
-      soundMultiplierOpponent = volume;
-    }
   }
 
   /**
@@ -2871,18 +2878,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
 
-    menubarItemVolumeVocals.onChange = event -> {
+    menubarItemVolumeVocalsPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
-      if (audioVocalTrackGroup != null)
-      {
-        audioVocalTrackGroup.playerVolume = volume * soundMultiplierPlayer;
-        audioVocalTrackGroup.opponentVolume = volume * soundMultiplierOpponent;
-      }
-      menubarLabelVolumeVocals.text = 'Voices - ${Std.int(event.value)}%';
-    }
+      if (audioVocalTrackGroup != null) audioVocalTrackGroup.playerVolume = volume;
+      menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
+    };
+
+    menubarItemVolumeVocalsOpponent.onChange = event -> {
+      var volume:Float = event.value.toFloat() / 100.0;
+      if (audioVocalTrackGroup != null) audioVocalTrackGroup.opponentVolume = volume;
+      menubarLabelVolumeVocalsOpponent.text = 'Enemy - ${Std.int(event.value)}%';
+    };
 
     menubarItemPlaybackSpeed.onChange = event -> {
-      var pitch:Float = (event.value * 2.0) / 100.0;
+      var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
       pitch = Math.floor(pitch / 0.25) * 0.25; // Round to nearest 0.25.
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
@@ -5736,7 +5745,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Reapply the volume.
     var instTargetVolume:Float = menubarItemVolumeInstrumental.value ?? 1.0;
-    var vocalTargetVolume:Float = menubarItemVolumeVocals.value ?? 1.0;
+    var vocalPlayerTargetVolume:Float = menubarItemVolumeVocalsPlayer.value ?? 1.0;
+    var vocalOpponentTargetVolume:Float = menubarItemVolumeVocalsOpponent.value ?? 1.0;
 
     if (audioInstTrack != null)
     {
@@ -5745,8 +5755,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     if (audioVocalTrackGroup != null)
     {
-      audioVocalTrackGroup.playerVolume = vocalTargetVolume * soundMultiplierPlayer;
-      audioVocalTrackGroup.opponentVolume = vocalTargetVolume * soundMultiplierOpponent;
+      audioVocalTrackGroup.playerVolume = vocalPlayerTargetVolume;
+      audioVocalTrackGroup.opponentVolume = vocalOpponentTargetVolume;
     }
   }
 
@@ -5863,9 +5873,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolume * soundMultiplierPlayer);
+          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolume);
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolume * soundMultiplierOpponent);
+          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolume);
       }
     }
   }
