@@ -373,7 +373,13 @@ class Conductor
    */
   public function getTimeWithDiff():Float
   {
-    return this.songPosition + (Std.int(Timer.stamp() * 1000) - prevTimestamp);
+    // trace(this.songPosition);
+
+    @:privateAccess
+    this.songPosition = FlxG.sound.music._channel.position;
+    // return this.songPosition + (Std.int(Timer.stamp() * 1000) - prevTimestamp);
+    // trace("\t--> " + this.songPosition);
+    return this.songPosition;
   }
 
   public function mapTimeChanges(songTimeChanges:Array<SongTimeChange>)

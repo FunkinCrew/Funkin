@@ -63,9 +63,9 @@ class LatencyState extends MusicBeatSubState
     FlxG.addChildBelowMouse(realStats);
 
     PreciseInputManager.instance.onInputPressed.add(function(event:PreciseInputEvent) {
+      generateBeatStuff(event);
       strumLine.pressKey(event.noteDirection);
       strumLine.playPress(event.noteDirection);
-      generateBeatStuff(event);
     });
 
     PreciseInputManager.instance.onInputReleased.add(function(event:PreciseInputEvent) {
@@ -79,14 +79,6 @@ class LatencyState extends MusicBeatSubState
 
     diffGrp = new FlxTypedGroup<FlxText>();
     add(diffGrp);
-
-    // var musSpec:PolygonSpectogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height, Math.floor(FlxG.height / 2));
-    // musSpec.x += 170;
-    // musSpec.scrollFactor.set();
-    // musSpec.waveAmplitude = 100;
-    // musSpec.realtimeVisLenght = 0.45;
-    // // musSpec.visType = FREQUENCIES;
-    // add(musSpec);
 
     for (beat in 0...Math.floor(FlxG.sound.music.length / (Conductor.instance.stepLengthMs * 2)))
     {
@@ -178,7 +170,7 @@ class LatencyState extends MusicBeatSubState
 
     Conductor.instance.update();
 
-    funnyStatsGraph.update(Conductor.instance.songPosition % 500);
+    funnyStatsGraph.update(swagSong.getTimeWithDiff() % 500);
     realStats.update(Conductor.instance.getTimeWithDiff() % 500);
 
     // Conductor.instance.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
@@ -266,7 +258,7 @@ class LatencyState extends MusicBeatSubState
     beatTrail.x = songPosVis.x;
 
     diffGrp.members[closestBeat].text = getDiff + "ms";
-    offsetsPerBeat[closestBeat] = Std.int(getDiff);
+    offsetsPerBeat[closestBeat] = Math.round(getDiff);
   }
 
   function songPosToX(pos:Float):Float
