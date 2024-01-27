@@ -235,6 +235,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
           difficulty.timeChanges = metadata.timeChanges;
           difficulty.looped = metadata.looped;
           difficulty.generatedBy = metadata.generatedBy;
+          difficulty.offsets = metadata?.offsets ?? new SongOffsets();
 
           difficulty.stage = metadata.playData.stage;
           difficulty.noteStyle = metadata.playData.noteStyle;
