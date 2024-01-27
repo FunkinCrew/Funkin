@@ -146,7 +146,7 @@ class FocusCameraSongEvent extends SongEvent
         defaultValue: 0,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
-        units: "px",
+        units: "px"
       },
       {
         name: "y",
@@ -154,7 +154,7 @@ class FocusCameraSongEvent extends SongEvent
         defaultValue: 0,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
-        units: "px",
+        units: "px"
       }
     ]);
   }

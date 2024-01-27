@@ -78,7 +78,12 @@ abstract SongEventSchema(SongEventSchemaRaw)
   {
     if (field.units == null || field.units == '') return value;
 
-    return value + ' ${field.units}';
+    var unit:String = field.units;
+
+    // These units look better when placed immediately next to the value, rather than after a space.
+    if (unit == 'x' || unit == '°') return value + '${unit}';
+
+    return value + ' ${unit}';
   }
 }
 
