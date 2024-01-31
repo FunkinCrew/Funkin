@@ -7,9 +7,9 @@ import funkin.ui.story.ScriptedLevel;
 class LevelRegistry extends BaseRegistry<Level, LevelData>
 {
   /**
-   * The current version string for the stage data format.
+   * The current version string for the level data format.
    * Handle breaking changes by incrementing this value
-   * and adding migration to the `migrateStageData()` function.
+   * and adding migration to the `migrateLevelData()` function.
    */
   public static final LEVEL_DATA_VERSION:thx.semver.Version = "1.0.0";
 

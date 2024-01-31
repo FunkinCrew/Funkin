@@ -50,11 +50,11 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageRegistry;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
-import funkin.play.stage.StageData.StageDataParser;
 import funkin.ui.transition.LoadingState;
 import funkin.play.components.PopUpStuff;
 import funkin.ui.options.PreferencesMenu;
@@ -1353,7 +1353,8 @@ class PlayState extends MusicBeatSubState
    */
   function loadStage(id:String):Void
   {
-    currentStage = StageDataParser.fetchStage(id);
+    currentStage = StageRegistry.instance.fetchEntry(id);
+    currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
     if (currentStage != null)
     {
@@ -1791,7 +1792,64 @@ class PlayState extends MusicBeatSubState
   {
     if (playerStrumline?.notes?.members == null || opponentStrumline?.notes?.members == null) return;
 
-    opponentStrumline.processNotes(null, dispatchEvent);
+    // Process notes on the opponent's side.
+    for (note in opponentStrumline.notes.members)
+    {
+      if (note == null) continue;
+
+      // TODO: Does this properly account for offsets?
+      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
+      var hitWindowCenter = note.strumTime;
+      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
+
+      if (Conductor.instance.songPosition > hitWindowEnd)
+      {
+        if (note.hasMissed) continue;
+
+        note.tooEarly = false;
+        note.mayHit = false;
+        note.hasMissed = true;
+
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
+      }
+      else if (Conductor.instance.songPosition > hitWindowCenter)
+      {
+        if (note.hasBeenHit) continue;
+
+        // Call an event to allow canceling the note hit.
+        // NOTE: This is what handles the character animations!
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
+        dispatchEvent(event);
+
+        // Calling event.cancelEvent() skips all the other logic! Neat!
+        if (event.eventCanceled) continue;
+
+        // Command the opponent to hit the note on time.
+        // NOTE: This is what handles the strumline and cleaning up the note itself!
+        opponentStrumline.hitNote(note);
+
+        if (note.holdNoteSprite != null)
+        {
+          opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
+        }
+      }
+      else if (Conductor.instance.songPosition > hitWindowStart)
+      {
+        if (note.hasBeenHit || note.hasMissed) continue;
+
+        note.tooEarly = false;
+        note.mayHit = true;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+      else
+      {
+        note.tooEarly = true;
+        note.mayHit = false;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+    }
 
     // Process hold notes on the opponent's side.
     for (holdNote in opponentStrumline.holdNotes.members)
@@ -1808,11 +1866,77 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      // TODO: Potential penalty for dropping a hold note?
-      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        // When the opponent drops a hold note.
+        holdNote.handledMiss = true;
+
+        // We dropped a hold note.
+        // Mute vocals and play miss animation, but don't penalize.
+        vocals.opponentVolume = 0;
+        currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
+      }
     }
 
-    playerStrumline.processNotes(onNoteMiss, dispatchEvent);
+    // Process notes on the player's side.
+    for (note in playerStrumline.notes.members)
+    {
+      if (note == null) continue;
+
+      if (note.hasBeenHit)
+      {
+        note.tooEarly = false;
+        note.mayHit = false;
+        note.hasMissed = false;
+        continue;
+      }
+
+      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
+      var hitWindowCenter = note.strumTime;
+      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
+
+      if (Conductor.instance.songPosition > hitWindowEnd)
+      {
+        note.tooEarly = false;
+        note.mayHit = false;
+        note.hasMissed = true;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
+      }
+      else if (Conductor.instance.songPosition > hitWindowStart)
+      {
+        note.tooEarly = false;
+        note.mayHit = true;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+      else
+      {
+        note.tooEarly = true;
+        note.mayHit = false;
+        note.hasMissed = false;
+        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
+      }
+
+      // This becomes true when the note leaves the hit window.
+      // It might still be on screen.
+      if (note.hasMissed && !note.handledMiss)
+      {
+        // Call an event to allow canceling the note miss.
+        // NOTE: This is what handles the character animations!
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, 0, true);
+        dispatchEvent(event);
+
+        // Calling event.cancelEvent() skips all the other logic! Neat!
+        if (event.eventCanceled) continue;
+
+        // Judge the miss.
+        // NOTE: This is what handles the scoring.
+        trace('Missed note! ${note.noteData}');
+        onNoteMiss(note);
+
+        note.handledMiss = true;
+      }
+    }
 
     // Process hold notes on the player's side.
     // This handles scoring so we don't need it on the opponent's side.
@@ -1828,8 +1952,15 @@ class PlayState extends MusicBeatSubState
         songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
       }
 
-      // TODO: Potential penalty for dropping a hold note?
-      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        // The player dropped a hold note.
+        holdNote.handledMiss = true;
+
+        // Mute vocals and play miss animation, but don't penalize.
+        vocals.playerVolume = 0;
+        currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+      }
     }
   }
 
@@ -1921,8 +2052,6 @@ class PlayState extends MusicBeatSubState
         trace('Hit note! ${targetNote.noteData}');
         goodNoteHit(targetNote, input);
 
-        targetNote.visible = false;
-        targetNote.kill();
         notesInDirection.remove(targetNote);
 
         // Play the strumline animation.
@@ -1954,14 +2083,7 @@ class PlayState extends MusicBeatSubState
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
 
-    Highscore.tallies.combo++;
-    Highscore.tallies.totalNotesHit++;
-
-    if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
-
     popUpScore(note, input);
-
-    playerStrumline.hitNote(note);
 
     if (note.isHoldNote && note.holdNoteSprite != null)
     {
@@ -1978,8 +2100,6 @@ class PlayState extends MusicBeatSubState
   function onNoteMiss(note:NoteSprite):Void
   {
     // a MISS is when you let a note scroll past you!!
-    Highscore.tallies.missed++;
-
     var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Highscore.tallies.combo, true);
     dispatchEvent(event);
     // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2027,8 +2147,11 @@ class PlayState extends MusicBeatSubState
     }
     vocals.playerVolume = 0;
 
+    Highscore.tallies.missed++;
+
     if (Highscore.tallies.combo != 0)
     {
+      // Break the combo.
       Highscore.tallies.combo = comboPopUps.displayCombo(0);
     }
 
@@ -2164,8 +2287,10 @@ class PlayState extends MusicBeatSubState
     vocals.playerVolume = 1;
 
     // Calculate the input latency (do this as late as possible).
-    var inputLatencyMs:Float = haxe.Int64.toInt(PreciseInputManager.getCurrentTimestamp() - input.timestamp) / 1000.0 / 1000.0;
-    trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
+    // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
+    var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
+    var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
+    // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
@@ -2174,29 +2299,51 @@ class PlayState extends MusicBeatSubState
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
 
+    if (daRating == 'miss')
+    {
+      // If daRating is 'miss', that means we made a mistake and should not continue.
+      trace('[WARNING] popUpScore judged a note as a miss!');
+      // TODO: Remove this.
+      comboPopUps.displayRating('miss');
+      return;
+    }
+
+    var isComboBreak = false;
     switch (daRating)
     {
-      case 'killer':
-        Highscore.tallies.killer += 1;
-        health += Constants.HEALTH_KILLER_BONUS;
       case 'sick':
         Highscore.tallies.sick += 1;
         health += Constants.HEALTH_SICK_BONUS;
+        isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
         health += Constants.HEALTH_GOOD_BONUS;
+        isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
         health += Constants.HEALTH_BAD_BONUS;
+        isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
         health += Constants.HEALTH_SHIT_BONUS;
-      case 'miss':
-        Highscore.tallies.missed += 1;
-        health -= Constants.HEALTH_MISS_PENALTY;
+        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 
-    if (daRating == "sick" || daRating == "killer")
+    if (isComboBreak)
+    {
+      // Break the combo, but don't increment tallies.misses.
+      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+    }
+    else
+    {
+      Highscore.tallies.combo++;
+      Highscore.tallies.totalNotesHit++;
+      if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
+    }
+
+    playerStrumline.hitNote(daNote, !isComboBreak);
+
+    if (daRating == "sick")
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
@@ -2332,7 +2479,6 @@ class PlayState extends MusicBeatSubState
           score: songScore,
           tallies:
             {
-              killer: Highscore.tallies.killer,
               sick: Highscore.tallies.sick,
               good: Highscore.tallies.good,
               bad: Highscore.tallies.bad,
@@ -2383,7 +2529,6 @@ class PlayState extends MusicBeatSubState
               tallies:
                 {
                   // TODO: Sum up the values for the whole level!
-                  killer: 0,
                   sick: 0,
                   good: 0,
                   bad: 0,

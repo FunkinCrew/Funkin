@@ -14,7 +14,7 @@ import thx.semver.Version;
 @:forward(volume, mute)
 abstract Save(RawSaveData)
 {
-  // Version 2.0.1 adds attributes to `optionsChartEditor`, that should return default values if they are null.
+  // Version 2.0.2 adds attributes to `optionsChartEditor`, that should return default values if they are null.
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.2";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
@@ -110,9 +110,7 @@ abstract Save(RawSaveData)
             metronomeVolume: 1.0,
             hitsoundsEnabledPlayer: true,
             hitsoundsEnabledOpponent: true,
-            instVolume: 1.0,
-            voicesVolume: 1.0,
-            playbackSpeed: 1.0,
+            themeMusic: true
           },
       };
   }
@@ -349,38 +347,21 @@ abstract Save(RawSaveData)
     return this.optionsChartEditor.hitsoundsEnabledOpponent;
   }
 
-  public var chartEditorInstVolume(get, set):Float;
+  public var chartEditorThemeMusic(get, set):Bool;
 
-  function get_chartEditorInstVolume():Float
+  function get_chartEditorThemeMusic():Bool
   {
-    if (this.optionsChartEditor.instVolume == null) this.optionsChartEditor.instVolume = 1.0;
+    if (this.optionsChartEditor.themeMusic == null) this.optionsChartEditor.themeMusic = true;
 
-    return this.optionsChartEditor.instVolume;
+    return this.optionsChartEditor.themeMusic;
   }
 
-  function set_chartEditorInstVolume(value:Float):Float
+  function set_chartEditorThemeMusic(value:Bool):Bool
   {
     // Set and apply.
-    this.optionsChartEditor.instVolume = value;
+    this.optionsChartEditor.themeMusic = value;
     flush();
-    return this.optionsChartEditor.instVolume;
-  }
-
-  public var chartEditorVoicesVolume(get, set):Float;
-
-  function get_chartEditorVoicesVolume():Float
-  {
-    if (this.optionsChartEditor.voicesVolume == null) this.optionsChartEditor.voicesVolume = 1.0;
-
-    return this.optionsChartEditor.voicesVolume;
-  }
-
-  function set_chartEditorVoicesVolume(value:Float):Float
-  {
-    // Set and apply.
-    this.optionsChartEditor.voicesVolume = value;
-    flush();
-    return this.optionsChartEditor.voicesVolume;
+    return this.optionsChartEditor.themeMusic;
   }
 
   public var chartEditorPlaybackSpeed(get, set):Float;
@@ -776,7 +757,6 @@ typedef SaveScoreData =
 
 typedef SaveScoreTallyData =
 {
-  var killer:Int;
   var sick:Int;
   var good:Int;
   var bad:Int;
@@ -1040,6 +1020,12 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?hitsoundsEnabledOpponent:Bool;
+
+  /**
+   * Theme music in the Chart Editor.
+   * @default `true`
+   */
+  var ?themeMusic:Bool;
 
   /**
    * Instrumental volume in the Chart Editor.

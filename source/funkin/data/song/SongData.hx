@@ -1,6 +1,7 @@
 package funkin.data.song;
 
 import funkin.data.event.SongEventRegistry;
+import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
@@ -38,10 +39,11 @@ class SongMetadata implements ICloneable<SongMetadata>
   public var looped:Bool;
 
   /**
-   * Instrumental and vocal offsets. Optional, defaults to 0.
+   * Instrumental and vocal offsets.
+   * Defaults to an empty SongOffsets object.
    */
   @:optional
-  public var offsets:SongOffsets;
+  public var offsets:Null<SongOffsets>;
 
   /**
    * Data relating to the song's gameplay.
@@ -93,7 +95,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     result.version = this.version;
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
-    result.offsets = this.offsets.clone();
+    result.offsets = this.offsets != null ? this.offsets.clone() : new SongOffsets(); // if no song offsets found (aka null), so just create new ones
     result.timeChanges = this.timeChanges.deepClone();
     result.looped = this.looped;
     result.playData = this.playData.clone();
@@ -701,6 +703,11 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     }
   }
 
+  public inline function getHandler():Null<SongEvent>
+  {
+    return SongEventRegistry.getEvent(this.event);
+  }
+
   public inline function getSchema():Null<SongEventSchema>
   {
     return SongEventRegistry.getEventSchema(this.event);
@@ -749,6 +756,39 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   public inline function getBoolArray(key:String):Array<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
+  }
+
+  public function buildTooltip():String
+  {
+    var eventHandler = getHandler();
+    var eventSchema = getSchema();
+
+    if (eventSchema == null) return 'Unknown Event: ${this.event}';
+
+    var result = '${eventHandler.getTitle()}';
+
+    var defaultKey = eventSchema.getFirstField()?.name;
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(defaultKey);
+
+    for (pair in valueStruct.keyValueIterator())
+    {
+      var key = pair.key;
+      var value = pair.value;
+
+      var title = eventSchema.getByName(key)?.title ?? 'UnknownField';
+
+      if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
+      var valueStr = eventSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
+
+      result += '\n- ${title}: ${valueStr}';
+    }
+
+    return result;
+  }
+
+  public function clone():SongEventData
+  {
+    return new SongEventData(this.time, this.event, this.value);
   }
 
   @:op(A == B)
@@ -826,7 +866,13 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   @:alias("l")
   @:default(0)
   @:optional
-  public var length:Float;
+  public var length(default, set):Float;
+
+  function set_length(value:Float):Float
+  {
+    _stepLength = null;
+    return length = value;
+  }
 
   /**
    * The kind of the note.
@@ -883,6 +929,11 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return _stepTime = Conductor.instance.getTimeInSteps(this.time);
   }
 
+  /**
+   * The length of the note, if applicable, in steps.
+   * Calculated from the length and the BPM.
+   * Cached for performance. Set to `null` to recalculate.
+   */
   @:jignored
   var _stepLength:Null<Float> = null;
 
@@ -907,9 +958,14 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     }
     else
     {
-      var lengthMs:Float = Conductor.instance.getStepTimeInMs(value) - this.time;
+      var endStep:Float = getStepTime() + value;
+      var endMs:Float = Conductor.instance.getStepTimeInMs(endStep);
+      var lengthMs:Float = endMs - this.time;
+
       this.length = lengthMs;
     }
+
+    // Recalculate the step length next time it's requested.
     _stepLength = null;
   }
 
@@ -980,6 +1036,10 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   @:op(A == B)
   public function op_equals(other:SongNoteData):Bool
   {
+    // Handle the case where one value is null.
+    if (this == null) return other == null;
+    if (other == null) return false;
+
     if (this.kind == '')
     {
       if (other.kind != '' && other.kind != 'normal') return false;
@@ -995,6 +1055,10 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   @:op(A != B)
   public function op_notEquals(other:SongNoteData):Bool
   {
+    // Handle the case where one value is null.
+    if (this == null) return other == null;
+    if (other == null) return false;
+
     if (this.kind == '')
     {
       if (other.kind != '' && other.kind != 'normal') return true;
@@ -1010,24 +1074,32 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   @:op(A > B)
   public function op_greaterThan(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time > other.time;
   }
 
   @:op(A < B)
   public function op_lessThan(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time < other.time;
   }
 
   @:op(A >= B)
   public function op_greaterThanOrEquals(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time >= other.time;
   }
 
   @:op(A <= B)
   public function op_lessThanOrEquals(other:SongNoteData):Bool
   {
+    if (other == null) return false;
+
     return this.time <= other.time;
   }
 

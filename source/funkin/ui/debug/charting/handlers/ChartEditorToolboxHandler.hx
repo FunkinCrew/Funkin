@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
-import funkin.play.stage.StageData.StageDataParser;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import haxe.ui.components.HorizontalSlider;
@@ -16,8 +15,7 @@ import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.event.SongEvent;
 import funkin.play.song.SongSerializer;
-import funkin.play.stage.StageData;
-import funkin.play.stage.StageData.StageDataParser;
+import funkin.data.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.haxeui.components.CharacterPlayer;
@@ -38,6 +36,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import haxe.ui.containers.Frame;
 import haxe.ui.containers.Grid;
 import haxe.ui.containers.TreeView;
@@ -86,7 +85,7 @@ class ChartEditorToolboxHandler
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
           onShowToolboxPlaytestProperties(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
-          onShowToolboxDifficulty(state, toolbox);
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
           // TODO: Fix this.
           cast(toolbox, ChartEditorBaseToolbox).refresh();
@@ -125,8 +124,6 @@ class ChartEditorToolboxHandler
           onHideToolboxEventData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
           onHideToolboxPlaytestProperties(state, toolbox);
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
-          onHideToolboxDifficulty(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
           onHideToolboxMetadata(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
@@ -311,8 +308,6 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function onHideToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
-
   static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function onHideToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
@@ -360,89 +355,13 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function buildToolboxDifficultyLayout(state:ChartEditorState):Null<CollapsibleDialog>
+  static function buildToolboxDifficultyLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
-    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    var toolbox:ChartEditorBaseToolbox = ChartEditorDifficultyToolbox.build(state);
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 125;
-    toolbox.y = 200;
-
-    toolbox.onDialogClosed = function(event:UIEvent) {
-      state.menubarItemToggleToolboxDifficulty.selected = false;
-    }
-
-    var difficultyToolboxAddVariation:Null<Button> = toolbox.findComponent('difficultyToolboxAddVariation', Button);
-    if (difficultyToolboxAddVariation == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxAddVariation component.';
-    var difficultyToolboxAddDifficulty:Null<Button> = toolbox.findComponent('difficultyToolboxAddDifficulty', Button);
-    if (difficultyToolboxAddDifficulty == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxAddDifficulty component.';
-    var difficultyToolboxSaveMetadata:Null<Button> = toolbox.findComponent('difficultyToolboxSaveMetadata', Button);
-    if (difficultyToolboxSaveMetadata == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveMetadata component.';
-    var difficultyToolboxSaveChart:Null<Button> = toolbox.findComponent('difficultyToolboxSaveChart', Button);
-    if (difficultyToolboxSaveChart == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveChart component.';
-    // var difficultyToolboxSaveAll:Null<Button> = toolbox.findComponent('difficultyToolboxSaveAll', Button);
-    // if (difficultyToolboxSaveAll == null) throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveAll component.';
-    var difficultyToolboxLoadMetadata:Null<Button> = toolbox.findComponent('difficultyToolboxLoadMetadata', Button);
-    if (difficultyToolboxLoadMetadata == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxLoadMetadata component.';
-    var difficultyToolboxLoadChart:Null<Button> = toolbox.findComponent('difficultyToolboxLoadChart', Button);
-    if (difficultyToolboxLoadChart == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxLoadChart component.';
-
-    difficultyToolboxAddVariation.onClick = function(_:UIEvent) {
-      state.openAddVariationDialog(true);
-    };
-
-    difficultyToolboxAddDifficulty.onClick = function(_:UIEvent) {
-      state.openAddDifficultyDialog(true);
-    };
-
-    difficultyToolboxSaveMetadata.onClick = function(_:UIEvent) {
-      var vari:String = state.selectedVariation != Constants.DEFAULT_VARIATION ? '-${state.selectedVariation}' : '';
-      FileUtil.writeFileReference('${state.currentSongId}$vari-metadata.json', state.currentSongMetadata.serialize());
-    };
-
-    difficultyToolboxSaveChart.onClick = function(_:UIEvent) {
-      var vari:String = state.selectedVariation != Constants.DEFAULT_VARIATION ? '-${state.selectedVariation}' : '';
-      FileUtil.writeFileReference('${state.currentSongId}$vari-chart.json', state.currentSongChartData.serialize());
-    };
-
-    difficultyToolboxLoadMetadata.onClick = function(_:UIEvent) {
-      // Replace metadata for current variation.
-      SongSerializer.importSongMetadataAsync(function(songMetadata) {
-        state.currentSongMetadata = songMetadata;
-      });
-    };
-
-    difficultyToolboxLoadChart.onClick = function(_:UIEvent) {
-      // Replace chart data for current variation.
-      SongSerializer.importSongChartDataAsync(function(songChartData) {
-        state.currentSongChartData = songChartData;
-        state.noteDisplayDirty = true;
-      });
-    };
-
-    state.difficultySelectDirty = true;
-
     return toolbox;
-  }
-
-  static function onShowToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void
-  {
-    // Update the selected difficulty when reopening the toolbox.
-    var treeView:Null<TreeView> = toolbox.findComponent('difficultyToolboxTree');
-    if (treeView == null) return;
-
-    var current = state.getCurrentTreeDifficultyNode(treeView);
-    if (current == null) return;
-    treeView.selectedNode = current;
-    trace('selected node: ${treeView.selectedNode}');
   }
 
   static function buildToolboxMetadataLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>

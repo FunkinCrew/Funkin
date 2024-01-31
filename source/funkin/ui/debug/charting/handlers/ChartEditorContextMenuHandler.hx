@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.handlers;
 
 import funkin.ui.debug.charting.contextmenus.ChartEditorDefaultContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorEventContextMenu;
+import funkin.ui.debug.charting.contextmenus.ChartEditorHoldNoteContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorNoteContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorSelectionContextMenu;
 import haxe.ui.containers.menus.Menu;
@@ -23,16 +24,33 @@ class ChartEditorContextMenuHandler
     displayMenu(state, new ChartEditorDefaultContextMenu(state, xPos, yPos));
   }
 
+  /**
+   * Opened when shift+right-clicking a selection of multiple items.
+   */
   public static function openSelectionContextMenu(state:ChartEditorState, xPos:Float, yPos:Float)
   {
     displayMenu(state, new ChartEditorSelectionContextMenu(state, xPos, yPos));
   }
 
+  /**
+   * Opened when shift+right-clicking a single note.
+   */
   public static function openNoteContextMenu(state:ChartEditorState, xPos:Float, yPos:Float, data:SongNoteData)
   {
     displayMenu(state, new ChartEditorNoteContextMenu(state, xPos, yPos, data));
   }
 
+  /**
+   * Opened when shift+right-clicking a single hold note.
+   */
+  public static function openHoldNoteContextMenu(state:ChartEditorState, xPos:Float, yPos:Float, data:SongNoteData)
+  {
+    displayMenu(state, new ChartEditorHoldNoteContextMenu(state, xPos, yPos, data));
+  }
+
+  /**
+   * Opened when shift+right-clicking a single event.
+   */
   public static function openEventContextMenu(state:ChartEditorState, xPos:Float, yPos:Float, data:SongEventData)
   {
     displayMenu(state, new ChartEditorEventContextMenu(state, xPos, yPos, data));

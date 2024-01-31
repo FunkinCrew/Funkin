@@ -59,6 +59,12 @@ class AddNotesCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Add to the history if we actually performed an action.
+    return (notes.length > 0);
+  }
+
   public function toString():String
   {
     if (notes.length == 1)

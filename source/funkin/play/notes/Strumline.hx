@@ -397,7 +397,7 @@ class Strumline extends FlxSpriteGroup
     // Update rendering of notes.
     for (note in notes.members)
     {
-      if (note == null || !note.alive || note.hasBeenHit) continue;
+      if (note == null || !note.alive) continue;
 
       var vwoosh:Bool = note.holdNoteSprite == null;
       // Set the note's position.
@@ -424,7 +424,7 @@ class Strumline extends FlxSpriteGroup
           playStatic(holdNote.noteDirection);
           holdNote.missedNote = true;
           holdNote.visible = true;
-          holdNote.alpha = 0.0;
+          holdNote.alpha = 0.0; // Completely hide the dropped hold note.
         }
       }
 
@@ -464,10 +464,6 @@ class Strumline extends FlxSpriteGroup
         holdNote.visible = true;
 
         var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Constants.PIXELS_PER_MS;
-
-        trace('yOffset: ' + yOffset);
-        trace('holdNote.fullSustainLength: ' + holdNote.fullSustainLength);
-        trace('holdNote.sustainLength: ' + holdNote.sustainLength);
 
         var vwoosh:Bool = false;
 
@@ -612,11 +608,24 @@ class Strumline extends FlxSpriteGroup
     this.noteData.insertionSort(compareNoteData.bind(FlxSort.ASCENDING));
   }
 
-  public function hitNote(note:NoteSprite):Void
+  /**
+   * @param note The note to hit.
+   * @param removeNote True to remove the note immediately, false to make it transparent and let it move offscreen.
+   */
+  public function hitNote(note:NoteSprite, removeNote:Bool = true):Void
   {
     playConfirm(note.direction);
     note.hasBeenHit = true;
-    killNote(note);
+
+    if (removeNote)
+    {
+      killNote(note);
+    }
+    else
+    {
+      note.alpha = 0.5;
+      note.desaturate();
+    }
 
     if (note.holdNoteSprite != null)
     {
