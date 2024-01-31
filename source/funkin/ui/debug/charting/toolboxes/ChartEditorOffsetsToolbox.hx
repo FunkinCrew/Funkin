@@ -39,9 +39,11 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
   var offsetStepperOpponent:NumberStepper;
   var offsetStepperInstrumental:NumberStepper;
 
-  static final BASE_SCALE:Int = 64;
+  static final BASE_SCALE:Float = 64.0;
+  static final MIN_SCALE:Float = 4.0;
+  static final WAVEFORM_ZOOM_MULT:Float = 1.5;
 
-  var waveformScale:Int = BASE_SCALE;
+  var waveformScale:Float = BASE_SCALE;
 
   var audioPreviewTracks:SoundGroup;
 
@@ -71,6 +73,36 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     this.x = 150;
     this.y = 250;
 
+    offsetPlayerVolume.onChange = (_) -> {
+      var targetVolume = offsetPlayerVolume.value * 2 / 100;
+      setTrackVolume(PLAYER, targetVolume);
+    };
+    offsetPlayerMute.onClick = (_) -> {
+      toggleMuteTrack(PLAYER);
+    };
+    offsetPlayerSolo.onClick = (_) -> {
+      soloTrack(PLAYER);
+    };
+    offsetOpponentVolume.onChange = (_) -> {
+      var targetVolume = offsetOpponentVolume.value * 2 / 100;
+      setTrackVolume(OPPONENT, targetVolume);
+    };
+    offsetOpponentMute.onClick = (_) -> {
+      toggleMuteTrack(OPPONENT);
+    };
+    offsetOpponentSolo.onClick = (_) -> {
+      soloTrack(OPPONENT);
+    };
+    offsetInstrumentalVolume.onChange = (_) -> {
+      var targetVolume = offsetInstrumentalVolume.value * 2 / 100;
+      setTrackVolume(INSTRUMENTAL, targetVolume);
+    };
+    offsetInstrumentalMute.onClick = (_) -> {
+      toggleMuteTrack(INSTRUMENTAL);
+    };
+    offsetInstrumentalSolo.onClick = (_) -> {
+      soloTrack(INSTRUMENTAL);
+    };
     offsetButtonZoomIn.onClick = (_) -> {
       zoomWaveformIn();
     };
@@ -300,7 +332,8 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
   {
     if (waveformScale > 1)
     {
-      waveformScale = Std.int(waveformScale / 2);
+      waveformScale = waveformScale / WAVEFORM_ZOOM_MULT;
+      if (waveformScale < MIN_SCALE) waveformScale = MIN_SCALE;
     }
     else
     {
@@ -314,11 +347,144 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
   public function zoomWaveformOut():Void
   {
-    waveformScale = Std.int(waveformScale * 2);
+    waveformScale = waveformScale * WAVEFORM_ZOOM_MULT;
+    if (waveformScale < MIN_SCALE) waveformScale = MIN_SCALE;
 
     trace('Zooming out, scale: ${waveformScale}');
 
     refresh();
+  }
+
+  public function setTrackVolume(target:Waveform, volume:Float):Void
+  {
+    switch (target)
+    {
+      case Waveform.INSTRUMENTAL:
+        var trackInst = audioPreviewTracks.members[0];
+        if (trackInst != null)
+        {
+          trackInst.volume = volume;
+        }
+      case Waveform.PLAYER:
+        var trackPlayer = audioPreviewTracks.members[1];
+        if (trackPlayer != null)
+        {
+          trackPlayer.volume = volume;
+        }
+      case Waveform.OPPONENT:
+        var trackOpponent = audioPreviewTracks.members[2];
+        if (trackOpponent != null)
+        {
+          trackOpponent.volume = volume;
+        }
+    }
+  }
+
+  public function muteTrack(target:Waveform):Void
+  {
+    switch (target)
+    {
+      case Waveform.INSTRUMENTAL:
+        var trackInst = audioPreviewTracks.members[0];
+        if (trackInst != null)
+        {
+          trackInst.muted = true;
+          offsetInstrumentalMute.text = trackInst.muted ? "Unmute" : "Mute";
+        }
+      case Waveform.PLAYER:
+        var trackPlayer = audioPreviewTracks.members[1];
+        if (trackPlayer != null)
+        {
+          trackPlayer.muted = true;
+          offsetPlayerMute.text = trackPlayer.muted ? "Unmute" : "Mute";
+        }
+      case Waveform.OPPONENT:
+        var trackOpponent = audioPreviewTracks.members[2];
+        if (trackOpponent != null)
+        {
+          trackOpponent.muted = true;
+          offsetOpponentMute.text = trackOpponent.muted ? "Unmute" : "Mute";
+        }
+    }
+  }
+
+  public function unmuteTrack(target:Waveform):Void
+  {
+    switch (target)
+    {
+      case Waveform.INSTRUMENTAL:
+        var trackInst = audioPreviewTracks.members[0];
+        if (trackInst != null)
+        {
+          trackInst.muted = false;
+          offsetInstrumentalMute.text = trackInst.muted ? "Unmute" : "Mute";
+        }
+      case Waveform.PLAYER:
+        var trackPlayer = audioPreviewTracks.members[1];
+        if (trackPlayer != null)
+        {
+          trackPlayer.muted = false;
+          offsetPlayerMute.text = trackPlayer.muted ? "Unmute" : "Mute";
+        }
+      case Waveform.OPPONENT:
+        var trackOpponent = audioPreviewTracks.members[2];
+        if (trackOpponent != null)
+        {
+          trackOpponent.muted = false;
+          offsetOpponentMute.text = trackOpponent.muted ? "Unmute" : "Mute";
+        }
+    }
+  }
+
+  public function toggleMuteTrack(target:Waveform):Void
+  {
+    switch (target)
+    {
+      case Waveform.INSTRUMENTAL:
+        var trackInst = audioPreviewTracks.members[0];
+        if (trackInst != null)
+        {
+          trackInst.muted = !trackInst.muted;
+          offsetInstrumentalMute.text = trackInst.muted ? "Unmute" : "Mute";
+        }
+      case Waveform.PLAYER:
+        var trackPlayer = audioPreviewTracks.members[1];
+        if (trackPlayer != null)
+        {
+          trackPlayer.muted = !trackPlayer.muted;
+          offsetPlayerMute.text = trackPlayer.muted ? "Unmute" : "Mute";
+        }
+      case Waveform.OPPONENT:
+        var trackOpponent = audioPreviewTracks.members[2];
+        if (trackOpponent != null)
+        {
+          trackOpponent.muted = !trackOpponent.muted;
+          offsetOpponentMute.text = trackOpponent.muted ? "Unmute" : "Mute";
+        }
+    }
+  }
+
+  /**
+   * Clicking the solo button will unmute the track and mute all other tracks.
+   * @param target
+   */
+  public function soloTrack(target:Waveform):Void
+  {
+    switch (target)
+    {
+      case Waveform.PLAYER:
+        muteTrack(Waveform.OPPONENT);
+        muteTrack(Waveform.INSTRUMENTAL);
+        unmuteTrack(Waveform.PLAYER);
+      case Waveform.OPPONENT:
+        muteTrack(Waveform.PLAYER);
+        muteTrack(Waveform.INSTRUMENTAL);
+        unmuteTrack(Waveform.OPPONENT);
+      case Waveform.INSTRUMENTAL:
+        muteTrack(Waveform.PLAYER);
+        muteTrack(Waveform.OPPONENT);
+        unmuteTrack(Waveform.INSTRUMENTAL);
+    }
   }
 
   public override function update(elapsed:Float)
@@ -380,14 +546,17 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     waveformPlayer.waveform.time = -chartEditorState.currentVocalOffsetPlayer / Constants.MS_PER_SEC; // Negative offsets make the song start early.
     waveformPlayer.waveform.width = waveformPlayer.waveform.waveformData.length / waveformScale * BASE_SCALE;
     if (waveformPlayer.waveform.width > maxWidth) maxWidth = Std.int(waveformPlayer.waveform.width);
+    waveformPlayer.waveform.height = 65;
 
     waveformOpponent.waveform.time = -chartEditorState.currentVocalOffsetOpponent / Constants.MS_PER_SEC;
     waveformOpponent.waveform.width = waveformOpponent.waveform.waveformData.length / waveformScale * BASE_SCALE;
     if (waveformOpponent.waveform.width > maxWidth) maxWidth = Std.int(waveformOpponent.waveform.width);
+    waveformOpponent.waveform.height = 65;
 
     waveformInstrumental.waveform.time = -chartEditorState.currentInstrumentalOffset / Constants.MS_PER_SEC;
     waveformInstrumental.waveform.width = waveformInstrumental.waveform.waveformData.length / waveformScale * BASE_SCALE;
     if (waveformInstrumental.waveform.width > maxWidth) maxWidth = Std.int(waveformInstrumental.waveform.width);
+    waveformInstrumental.waveform.height = 65;
 
     waveformPlayer.waveform.markDirty();
     waveformOpponent.waveform.markDirty();
