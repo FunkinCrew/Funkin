@@ -224,6 +224,8 @@ class Constants
 
   /**
    * Constant for the number of seconds in a minute.
+   *
+   * sex per min
    */
   public static final SECS_PER_MIN:Int = 60;
 

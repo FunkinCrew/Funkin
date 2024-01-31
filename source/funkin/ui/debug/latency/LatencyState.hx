@@ -246,10 +246,11 @@ class LatencyState extends MusicBeatSubState
     trace("input latency: " + inputLatencyMs + "ms");
     trace("cur timestamp: " + PreciseInputManager.getCurrentTimestamp() + "ns");
     trace("event timestamp: " + event.timestamp + "ns");
+    trace("songtime: " + Conductor.instance.getTimeWithDiff() + "ms");
 
     var closestBeat:Int = Math.round(Conductor.instance.getTimeWithDiff() / (Conductor.instance.stepLengthMs * 2)) % diffGrp.members.length;
     var getDiff:Float = Conductor.instance.getTimeWithDiff() - (closestBeat * (Conductor.instance.stepLengthMs * 2));
-    getDiff -= Conductor.instance.inputOffset;
+    // getDiff -= Conductor.instance.inputOffset;
     getDiff -= inputLatencyMs;
 
     // lil fix for end of song
