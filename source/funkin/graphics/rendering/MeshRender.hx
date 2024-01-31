@@ -97,6 +97,8 @@ class MeshRender extends FlxStrip
   {
     vertices.length = 0;
     indices.length = 0;
+    uvtData.length = 0;
+    colors.length = 0;
     vertex_count = 0;
     index_count = 0;
   }
