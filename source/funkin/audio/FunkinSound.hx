@@ -8,6 +8,7 @@ import flixel.sound.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.util.tools.ICloneable;
+import flixel.math.FlxMath;
 import openfl.Assets;
 #if (openfl >= "8.0.0")
 import openfl.utils.AssetType;
@@ -20,7 +21,28 @@ import openfl.utils.AssetType;
 @:nullSafety
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
+  static final MAX_VOLUME:Float = 2.0;
+
   static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
+
+  public var muted(default, set):Bool = false;
+
+  function set_muted(value:Bool):Bool
+  {
+    if (value == muted) return value;
+    muted = value;
+    updateTransform();
+    return value;
+  }
+
+  override function set_volume(value:Float):Float
+  {
+    // Uncap the volume.
+    fixMaxVolume();
+    _volume = FlxMath.bound(value, 0.0, MAX_VOLUME);
+    updateTransform();
+    return _volume;
+  }
 
   public var paused(get, never):Bool;
 
@@ -82,6 +104,17 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       resume();
     }
     return this;
+  }
+
+  function fixMaxVolume():Void
+  {
+    #if lime_openal
+    // This code is pretty fragile, it reaches through 5 layers of private access.
+    @:privateAccess
+    var handle = this?._channel?.__source?.__backend?.handle;
+    if (handle == null) return;
+    lime.media.openal.AL.sourcef(handle, lime.media.openal.AL.MAX_GAIN, MAX_VOLUME);
+    #end
   }
 
   public override function play(forceRestart:Bool = false, startTime:Float = 0, ?endTime:Float):FunkinSound
@@ -159,6 +192,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       super.resume();
     }
     return this;
+  }
+
+  /**
+   * Call after adjusting the volume to update the sound channel's settings.
+   */
+  @:allow(flixel.sound.FlxSoundGroup)
+  override function updateTransform():Void
+  {
+    _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
+      (group != null ? group.volume : 1) * _volume * _volumeAdjust;
+
+    if (_channel != null) _channel.soundTransform = _transform;
   }
 
   public function clone():FunkinSound
