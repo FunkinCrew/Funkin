@@ -113,7 +113,7 @@ class WaveformData
    */
   public function lenSeconds():Float
   {
-    return lenSamples() / sampleRate;
+    return inline lenSamples() / sampleRate;
   }
 
   /**
@@ -121,7 +121,7 @@ class WaveformData
    */
   public function secondsToIndex(seconds:Float):Int
   {
-    return Std.int(seconds * pointsPerSecond());
+    return Std.int(seconds * inline pointsPerSecond());
   }
 
   /**
@@ -129,7 +129,7 @@ class WaveformData
    */
   public function indexToSeconds(index:Int):Float
   {
-    return index / pointsPerSecond();
+    return index / inline pointsPerSecond();
   }
 
   /**
@@ -216,7 +216,7 @@ class WaveformDataChannel
   public function minSample(i:Int)
   {
     var offset = (i * parent.channels + this.channelId) * 2;
-    return parent.get(offset);
+    return inline parent.get(offset);
   }
 
   /**
@@ -224,7 +224,7 @@ class WaveformDataChannel
    */
   public function minSampleMapped(i:Int)
   {
-    return minSample(i) / parent.maxSampleValue();
+    return inline minSample(i) / inline parent.maxSampleValue();
   }
 
   /**
@@ -233,10 +233,10 @@ class WaveformDataChannel
    */
   public function minSampleRange(start:Int, end:Int)
   {
-    var min = parent.maxSampleValue();
+    var min = inline parent.maxSampleValue();
     for (i in start...end)
     {
-      var sample = minSample(i);
+      var sample = inline minSample(i);
       if (sample < min) min = sample;
     }
     return min;
@@ -247,7 +247,7 @@ class WaveformDataChannel
    */
   public function minSampleRangeMapped(start:Int, end:Int)
   {
-    return minSampleRange(start, end) / parent.maxSampleValue();
+    return inline minSampleRange(start, end) / inline parent.maxSampleValue();
   }
 
   /**
@@ -256,7 +256,7 @@ class WaveformDataChannel
   public function maxSample(i:Int)
   {
     var offset = (i * parent.channels + this.channelId) * 2 + 1;
-    return parent.get(offset);
+    return inline parent.get(offset);
   }
 
   /**
@@ -264,7 +264,7 @@ class WaveformDataChannel
    */
   public function maxSampleMapped(i:Int)
   {
-    return maxSample(i) / parent.maxSampleValue();
+    return inline maxSample(i) / inline parent.maxSampleValue();
   }
 
   /**
@@ -273,10 +273,10 @@ class WaveformDataChannel
    */
   public function maxSampleRange(start:Int, end:Int)
   {
-    var max = -parent.maxSampleValue();
+    var max = -(inline parent.maxSampleValue());
     for (i in start...end)
     {
-      var sample = maxSample(i);
+      var sample = inline maxSample(i);
       if (sample > max) max = sample;
     }
     return max;
@@ -287,18 +287,18 @@ class WaveformDataChannel
    */
   public function maxSampleRangeMapped(start:Int, end:Int)
   {
-    return maxSampleRange(start, end) / parent.maxSampleValue();
+    return inline maxSampleRange(start, end) / inline parent.maxSampleValue();
   }
 
   public function setMinSample(i:Int, value:Int)
   {
     var offset = (i * parent.channels + this.channelId) * 2;
-    parent.set(offset, value);
+    inline parent.set(offset, value);
   }
 
   public function setMaxSample(i:Int, value:Int)
   {
     var offset = (i * parent.channels + this.channelId) * 2 + 1;
-    parent.set(offset, value);
+    inline parent.set(offset, value);
   }
 }

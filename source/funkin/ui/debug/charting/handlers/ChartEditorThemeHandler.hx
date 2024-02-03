@@ -306,10 +306,11 @@ class ChartEditorThemeHandler
     // Draw the major ticks.
     var leftTickX:Float = 0;
     var middleTickX:Float = state.offsetTickBitmap.width / 2 - (majorTickWidth / 2);
-    var rightTickX:Float = state.offsetTickBitmap.width - majorTickWidth;
-    state.offsetTickBitmap.fillRect(new Rectangle(leftTickX, 0, majorTickWidth / 2, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(middleTickX, 0, majorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(rightTickX, 0, majorTickWidth / 2, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    var rightTickX:Float = state.offsetTickBitmap.width - (majorTickWidth / 2);
+    var majorTickLength:Float = state.offsetTickBitmap.height;
+    state.offsetTickBitmap.fillRect(new Rectangle(leftTickX, 0, majorTickWidth / 2, majorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(middleTickX, 0, majorTickWidth, majorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(rightTickX, 0, majorTickWidth / 2, majorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
 
     // Draw the minor ticks.
     var minorTick2X:Float = state.offsetTickBitmap.width * 1 / 10 - (minorTickWidth / 2);
@@ -320,14 +321,15 @@ class ChartEditorThemeHandler
     var minorTick8X:Float = state.offsetTickBitmap.width * 7 / 10 - (minorTickWidth / 2);
     var minorTick9X:Float = state.offsetTickBitmap.width * 8 / 10 - (minorTickWidth / 2);
     var minorTick10X:Float = state.offsetTickBitmap.width * 9 / 10 - (minorTickWidth / 2);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick2X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick3X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick4X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick5X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick7X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick8X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick9X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick10X, 0, minorTickWidth, state.offsetTickBitmap.height), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    var minorTickLength:Float = state.offsetTickBitmap.height * 1 / 3;
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick2X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick3X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick4X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick5X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick7X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick8X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick9X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    state.offsetTickBitmap.fillRect(new Rectangle(minorTick10X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
 
     // Draw the offset ticks.
     // var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT); // 1 grid squares wide.

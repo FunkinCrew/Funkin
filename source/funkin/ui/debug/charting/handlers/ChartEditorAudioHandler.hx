@@ -137,6 +137,8 @@ class ChartEditorAudioHandler
     result = playVocals(state, DAD, opponentId, instId);
     // if (!result) return false;
 
+    state.hardRefreshOffsetsToolbox();
+
     return true;
   }
 
@@ -244,10 +246,7 @@ class ChartEditorAudioHandler
 
   public static function stopExistingVocals(state:ChartEditorState):Void
   {
-    if (state.audioVocalTrackGroup != null)
-    {
-      state.audioVocalTrackGroup.clear();
-    }
+    state.audioVocalTrackGroup.clear();
     if (state.audioWaveforms != null)
     {
       state.audioWaveforms.clear();
