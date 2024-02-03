@@ -2,7 +2,7 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;

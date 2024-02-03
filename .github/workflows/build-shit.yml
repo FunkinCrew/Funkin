@@ -4,59 +4,33 @@ on:
   push:
 
 jobs:
-  check_date:
-    runs-on: [self-hosted, linux]
-    container: ubuntu:latest
-    name: Check latest commit
-    outputs:
-      should_run: ${{ steps.should_run.outputs.should_run }}
-    steps:
-      - name: ensure git cli is installed
-        run: apt update && apt install sudo git -y
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-          fetch-depth: 0
-          token: ${{ secrets.GH_RO_PAT }}
-      - name: check whether submodules exist
-        run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-
-          # debug output
-          echo gh=${{ github.sha }}
-          echo head=$(git rev-parse HEAD)
-          echo art=$(git -C art rev-parse HEAD)
-          echo assets=$(git -C assets rev-parse HEAD)
-
-          # checks if HEAD commit hash in submodules is diff from current repo, and therefore exists
-          test $(git rev-parse HEAD) != $(git -C art rev-parse HEAD)
-          test $(git rev-parse HEAD) != $(git -C assets rev-parse HEAD)
-      - id: should_run
-        continue-on-error: true
-        name: check latest commit is less than a day
-        if: ${{ github.event_name == 'schedule' }}
-        run: test -z $(git rev-list --after="24 hours" ${{ github.sha }}) && echo "::set-output name=should_run::false"
   create-nightly-html5:
-    needs: check_date
-    if: ${{ needs.check_date.outputs.should_run != 'false'}}
     runs-on: [self-hosted, linux]
-    container: ubuntu:latest
+    container: ubuntu:23.10
     steps:
       - name: prepare container
         run: |
           apt update
           apt install sudo git curl unzip -y
-          echo $GITHUB_WORKSPACE
           git config --global --add safe.directory $GITHUB_WORKSPACE
-      - uses: actions/checkout@v4
+      - name: get token from gh app
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: checkout repo
+        uses: funkincrew/ci-checkout@v6
         with:
           submodules: 'recursive'
-          fetch-depth: 0
-          token: ${{ secrets.GH_RO_PAT }}
+          token: ${{ steps.app_token.outputs.token }}
       - uses: ./.github/actions/setup-haxeshit
-      - name: Build game
+      - name: gather game dependencies
         run: |
           sudo apt-get install -y libx11-dev xorg-dev libgl-dev libxi-dev libxext-dev libasound2-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev
+      - name: build game
+        run: |
           haxelib run lime build html5 -release --times
           ls
       - uses: ./.github/actions/upload-itch
@@ -65,32 +39,34 @@ jobs:
           build-dir: export/release/html5/bin
           target: html5
   create-nightly-win:
-    needs: check_date
-    if: ${{ needs.check_date.outputs.should_run != 'false'}}
     runs-on: windows-latest
-    permissions:
-       contents: write
-       actions: write
     steps:
-      - uses: actions/checkout@v4
+      - name: get token from gh app
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: checkout repo
+        uses: funkincrew/ci-checkout@v6
         with:
           submodules: 'recursive'
-          fetch-depth: 0
-          token: ${{ secrets.GH_RO_PAT }}
+          token: ${{ steps.app_token.outputs.token }}
       - uses: ./.github/actions/setup-haxeshit
       - name: Make HXCPP cache dir
         run: |
           mkdir -p ${{ runner.temp }}\hxcpp_cache
       - name: Restore build cache
         id: cache-build-win
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .haxelib
             export
             ${{ runner.temp }}\hxcpp_cache
           key: ${{ runner.os }}-build-win-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
-      - name: Build game
+      - name: build game
         run: |
           haxelib run lime build windows -release -DNO_REDIRECT_ASSETS_FOLDER
           dir
@@ -101,20 +77,81 @@ jobs:
           butler-key: ${{ secrets.BUTLER_API_KEY }}
           build-dir: export/release/windows/bin
           target: win
+  create-nightly-mac:
+    runs-on: [self-hosted, macos]
+    steps:
+      - name: prepare container
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+      - name: get token from gh app
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: checkout repo
+        uses: funkincrew/ci-checkout@v6
+        with:
+          submodules: 'recursive'
+          token: ${{ steps.app_token.outputs.token }}
+      - uses: ./.github/actions/setup-haxeshit
+      - name: Make HXCPP cache dir
+        run: |
+          mkdir -p ${{ runner.temp }}/hxcpp_cache
+      - name: restore build cache
+        id: cache-build-win
+        uses: actions/cache@v4
+        with:
+          path: |
+            .haxelib
+            export
+            ${{ runner.temp }}/hxcpp_cache
+          key: ${{ runner.os }}-build-mac-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
+      - name: Build game
+        run: |
+          haxelib run lime build macos -release --times
+          ls
+        env:
+          HXCPP_COMPILE_CACHE: "${{ runner.temp }}/hxcpp_cache"
+      - uses: ./.github/actions/upload-itch
+        with:
+          butler-key: ${{ secrets.BUTLER_API_KEY}}
+          build-dir: export/release/macos/bin
+          target: macos
+          
 #  test-unit-win:
 #    needs: create-nightly-win
 #    runs-on: windows-latest
-#    permissions:
-#       contents: write
-#       actions: write
 #    steps:
-#      - uses: actions/checkout@v4
+#     - name: get token from gh app
+#       uses: actions/create-github-app-token@v1
+#        id: app_token
 #        with:
-#          submodules: 'recursive'
-#          fetch-depth: 0
-#          token: ${{ secrets.GH_RO_PAT }}
+#          app-id: ${{ vars.APP_ID }}
+#          private-key: ${{ secrets.APP_PEM }}
+#          owner: ${{ github.repository_owner }}
+#     - name: checkout repo
+#       uses: funkincrew/ci-checkout@v6
+#       with:
+#         submodules: 'recursive'
+#         token: ${{ steps.app_token.outputs.token }}
+#     - name: Make HXCPP cache dir
+#       run: |
+#         mkdir -p ${{ runner.temp }}\hxcpp_cache
+#     - name: Restore build cache
+#       id: cache-build-win
+#       uses: actions/cache@v4
+#       with:
+#         path: |
+#           .haxelib
+#           export
+#           ${{ runner.temp }}\hxcpp_cache
+#         key: ${{ runner.os }}-test-win-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
 #      - uses: ./.github/actions/setup-haxeshit
 #      - name: Run unit tests
 #        run: |
 #          cd ./tests/unit/
 #          ./start-win-native.bat
+#        env:
+#          HXCPP_COMPILE_CACHE: "${{ runner.temp }}\\hxcpp_cache"

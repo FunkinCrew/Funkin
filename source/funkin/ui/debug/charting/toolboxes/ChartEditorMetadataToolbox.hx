@@ -2,7 +2,8 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
+import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
@@ -13,6 +14,7 @@ import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
+import funkin.play.stage.Stage;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
@@ -148,7 +150,12 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputOffsetVocal.onChange = function(event:UIEvent) {
       if (event.value == null) return;
 
-      chartEditorState.currentSongMetadata.offsets.setVocalOffset(chartEditorState.currentSongMetadata.playData.characters.player, event.value);
+      chartEditorState.currentVocalOffset = event.value;
+      if (chartEditorState.audioVocalTrackGroup != null)
+      {
+        chartEditorState.audioVocalTrackGroup.playerVoicesOffset = event.value;
+        chartEditorState.audioVocalTrackGroup.opponentVoicesOffset = event.value;
+      }
     };
     inputScrollSpeed.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.value != null && event.target.value > 0;
@@ -189,6 +196,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
+    inputOffsetInst.value = chartEditorState.currentSongMetadata.offsets.getInstrumentalOffset();
+    inputOffsetVocal.value = chartEditorState.currentSongMetadata.offsets.getVocalOffset(chartEditorState.currentSongMetadata.playData.characters.player);
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
@@ -199,11 +208,11 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputTimeSignature.value = {id: currentTimeSignature, text: currentTimeSignature};
 
     var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
-    var stageData:Null<StageData> = StageDataParser.parseStageData(stageId);
+    var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stageData != null) ?
-        {id: stageId, text: stageData.name} :
+      inputStage.value = (stage != null) ?
+        {id: stage.id, text: stage.stageName} :
           {id: "mainStage", text: "Main Stage"};
     }
 

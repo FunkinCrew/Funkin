@@ -70,7 +70,7 @@ class Constants
   public static final URL_KICKSTARTER:String = 'https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/';
 
   /**
-   * GIT REPO DATA
+   * REPOSITORY DATA
    */
   // ==============================
 
@@ -85,6 +85,11 @@ class Constants
    */
   public static final GIT_HASH:String = funkin.util.macro.GitCommit.getGitCommitHash();
   #end
+
+  /**
+   * The current library versions, as provided by hmm.
+   */
+  public static final LIBRARY_VERSIONS:Array<String> = funkin.util.macro.HaxelibVersions.getLibraryVersions();
 
   /**
    * COLORS
@@ -357,6 +362,12 @@ class Constants
    * A fraction of this value is granted every frame.
    */
   public static final SCORE_HOLD_BONUS_PER_SECOND:Float = 250.0;
+
+  public static final JUDGEMENT_KILLER_COMBO_BREAK:Bool = false;
+  public static final JUDGEMENT_SICK_COMBO_BREAK:Bool = false;
+  public static final JUDGEMENT_GOOD_COMBO_BREAK:Bool = false;
+  public static final JUDGEMENT_BAD_COMBO_BREAK:Bool = true;
+  public static final JUDGEMENT_SHIT_COMBO_BREAK:Bool = true;
 
   /**
    * FILE EXTENSIONS

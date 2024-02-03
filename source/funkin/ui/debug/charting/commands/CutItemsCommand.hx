@@ -56,6 +56,12 @@ class CutItemsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // This command is undoable. Always add it to the history.
+    return (notes.length > 0 || events.length > 0);
+  }
+
   public function toString():String
   {
     var len:Int = notes.length + events.length;

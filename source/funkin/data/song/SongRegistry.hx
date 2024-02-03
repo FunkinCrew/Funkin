@@ -12,6 +12,7 @@ import funkin.util.VersionUtil;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
+@:nullSafety
 class SongRegistry extends BaseRegistry<Song, SongMetadata>
 {
   /**
@@ -31,7 +32,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
   public static final SONG_MUSIC_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
-  public static var DEFAULT_GENERATEDBY(get, null):String;
+  public static var DEFAULT_GENERATEDBY(get, never):String;
 
   static function get_DEFAULT_GENERATEDBY():String
   {
@@ -88,7 +89,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     {
       try
       {
-        var entry:Song = createEntry(entryId);
+        var entry:Null<Song> = createEntry(entryId);
         if (entry != null)
         {
           trace('  Loaded entry data: ${entry}');
@@ -126,7 +127,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
     var parser = new json2object.JsonParser<SongMetadata>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
 
     switch (loadEntryMetadataFile(id, variation))
     {
@@ -149,7 +150,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
     var parser = new json2object.JsonParser<SongMetadata>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -209,7 +210,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
     var parser = new json2object.JsonParser<SongMetadata_v2_1_0>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
 
     switch (loadEntryMetadataFile(id, variation))
     {
@@ -231,7 +232,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
     var parser = new json2object.JsonParser<SongMetadata_v2_0_0>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
 
     switch (loadEntryMetadataFile(id, variation))
     {
@@ -251,7 +252,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   function parseEntryMetadataRaw_v2_1_0(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
     var parser = new json2object.JsonParser<SongMetadata_v2_1_0>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -265,7 +266,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   function parseEntryMetadataRaw_v2_0_0(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
     var parser = new json2object.JsonParser<SongMetadata_v2_0_0>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -346,7 +347,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
     var parser = new json2object.JsonParser<SongChartData>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
 
     switch (loadEntryChartFile(id, variation))
     {
@@ -369,7 +370,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
     var parser = new json2object.JsonParser<SongChartData>();
-    parser.ignoreUnknownVariables = false;
+    parser.ignoreUnknownVariables = true;
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -455,7 +456,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryStr:Null<String> = loadEntryMetadataFile(id, variation)?.contents;
-    var entryVersion:thx.semver.Version = VersionUtil.getVersionFromJSON(entryStr);
+    var entryVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(entryStr);
     return entryVersion;
   }
 
@@ -463,7 +464,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryStr:Null<String> = loadEntryChartFile(id, variation)?.contents;
-    var entryVersion:thx.semver.Version = VersionUtil.getVersionFromJSON(entryStr);
+    var entryVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(entryStr);
     return entryVersion;
   }
 

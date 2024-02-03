@@ -38,6 +38,12 @@ class SwitchDifficultyCommand implements ChartEditorCommand
     state.notePreviewDirty = true;
   }
 
+  public function shouldAddToHistory(state:ChartEditorState):Bool
+  {
+    // Add to the history if we actually performed an action.
+    return (prevVariation != newVariation || prevDifficulty != newDifficulty);
+  }
+
   public function toString():String
   {
     return 'Switch Difficulty';
