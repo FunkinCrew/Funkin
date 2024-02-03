@@ -9,6 +9,11 @@ import funkin.play.event.ScriptedSongEvent;
 @:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
 abstract SongEventSchema(SongEventSchemaRaw)
 {
+  /**
+   * These units look better when placed immediately next to the value, rather than after a space.
+   */
+  static final NO_SPACE_UNITS:Array<String> = ['x', '°', '%'];
+
   public function new(?fields:Array<SongEventSchemaField>)
   {
     this = fields;
@@ -80,10 +85,7 @@ abstract SongEventSchema(SongEventSchemaRaw)
 
     var unit:String = field.units;
 
-    // These units look better when placed immediately next to the value, rather than after a space.
-    if (unit == 'x' || unit == '°' || unit == '%') return value + '${unit}';
-
-    return value + ' ${unit}';
+    return value + (NO_SPACE_UNITS.contains(unit) ? '' : ' ') + '${unit}';
   }
 }
 
