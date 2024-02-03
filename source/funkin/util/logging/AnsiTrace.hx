@@ -18,7 +18,7 @@ class AnsiTrace
     #end
   }
 
-  public static var colorSupported:Bool = (Sys.getEnv("TERM") == "xterm" || Sys.getEnv("ANSICON") != null);
+  public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM") == "xterm" || Sys.getEnv("ANSICON") != null) #else false #end;
 
   // ansi stuff
   public static inline var RED = "\x1b[31m";
