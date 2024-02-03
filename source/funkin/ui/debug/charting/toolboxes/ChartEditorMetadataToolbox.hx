@@ -150,7 +150,12 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputOffsetVocal.onChange = function(event:UIEvent) {
       if (event.value == null) return;
 
-      chartEditorState.currentSongMetadata.offsets.setVocalOffset(chartEditorState.currentSongMetadata.playData.characters.player, event.value);
+      chartEditorState.currentVocalOffset = event.value;
+      if (chartEditorState.audioVocalTrackGroup != null)
+      {
+        chartEditorState.audioVocalTrackGroup.playerVoicesOffset = event.value;
+        chartEditorState.audioVocalTrackGroup.opponentVoicesOffset = event.value;
+      }
     };
     inputScrollSpeed.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.value != null && event.target.value > 0;
@@ -191,6 +196,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
+    inputOffsetInst.value = chartEditorState.currentSongMetadata.offsets.getInstrumentalOffset();
+    inputOffsetVocal.value = chartEditorState.currentSongMetadata.offsets.getVocalOffset(chartEditorState.currentSongMetadata.playData.characters.player);
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
