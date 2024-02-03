@@ -3,9 +3,9 @@ description: "sets up haxe shit, using HMM!"
 runs:
   using: "composite"
   steps:
-    - uses: funkincrew/ci-haxe@v2
+    - uses: funkincrew/ci-haxe@v3
       with:
-        haxe-version: 4.3.1
+        haxe-version: 4.3.3
     - name: Config haxelib
       run: |
         haxelib config
@@ -19,7 +19,7 @@ runs:
       shell: bash
     - name: dependency install cache
       id: cache-hmm
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .haxelib
         key: ${{ runner.os }}-hmm-${{ hashFiles('**/hmm.json') }}
