@@ -690,6 +690,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var activeToolboxes:Map<String, CollapsibleDialog> = new Map<String, CollapsibleDialog>();
 
+  /**
+   * The camera component we're using for this state.
+   */
+  var uiCamera:FlxCamera;
+
   // Audio
 
   /**
@@ -2028,7 +2033,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     loadPreferences();
 
-    fixCamera();
+    uiCamera = new FlxCamera();
+    FlxG.cameras.reset(uiCamera);
 
     buildDefaultSongData();
 
@@ -5287,7 +5293,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Paths.setCurrentLevel('weekend1');
     }
 
-    subStateClosed.add(fixCamera);
+    subStateClosed.add(reviveUICamera);
     subStateClosed.add(resetConductorAfterTest);
 
     FlxTransitionableState.skipNextTransIn = false;
@@ -5311,6 +5317,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       FlxG.sound.music = audioInstTrack;
     }
     if (audioVocalTrackGroup != null) targetState.vocals = audioVocalTrackGroup;
+
+    // Kill and replace the UI camera so it doesn't get destroyed during the state transition.
+    uiCamera.kill();
+    FlxG.cameras.remove(uiCamera, false);
+    FlxG.cameras.reset(new FlxCamera());
 
     this.persistentUpdate = false;
     this.persistentDraw = false;
@@ -5401,13 +5412,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
-   * Fix a camera issue caused when closing the PlayState used when testing.
+   * Revive the UI camera and re-establish it as the main camera so UI elements depending on it don't explode.
    */
-  function fixCamera(_:FlxSubState = null):Void
+  function reviveUICamera(_:FlxSubState = null):Void
   {
-    FlxG.cameras.reset(new FlxCamera());
-    FlxG.camera.focusOn(new FlxPoint(FlxG.width / 2, FlxG.height / 2));
-    FlxG.camera.zoom = 1.0;
+    uiCamera.revive();
+    FlxG.cameras.reset(uiCamera);
 
     add(this.root);
   }
