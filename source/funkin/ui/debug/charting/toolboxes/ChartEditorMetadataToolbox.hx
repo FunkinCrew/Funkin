@@ -35,8 +35,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
   var inputBPM:NumberStepper;
-  var inputOffsetInst:NumberStepper;
-  var inputOffsetVocal:NumberStepper;
   var labelScrollSpeed:Label;
   var inputScrollSpeed:Slider;
   var frameVariation:Frame;
@@ -138,25 +136,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       chartEditorState.updateTimeSignature();
     };
 
-    inputOffsetInst.onChange = function(event:UIEvent) {
-      if (event.value == null) return;
-
-      chartEditorState.currentInstrumentalOffset = event.value;
-      Conductor.instance.instrumentalOffset = event.value;
-      // Update song length.
-      chartEditorState.songLengthInMs = (chartEditorState.audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
-    };
-
-    inputOffsetVocal.onChange = function(event:UIEvent) {
-      if (event.value == null) return;
-
-      chartEditorState.currentVocalOffset = event.value;
-      if (chartEditorState.audioVocalTrackGroup != null)
-      {
-        chartEditorState.audioVocalTrackGroup.playerVoicesOffset = event.value;
-        chartEditorState.audioVocalTrackGroup.opponentVoicesOffset = event.value;
-      }
-    };
     inputScrollSpeed.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.value != null && event.target.value > 0;
 
@@ -196,8 +175,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
-    inputOffsetInst.value = chartEditorState.currentSongMetadata.offsets.getInstrumentalOffset();
-    inputOffsetVocal.value = chartEditorState.currentSongMetadata.offsets.getVocalOffset(chartEditorState.currentSongMetadata.playData.characters.player);
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';

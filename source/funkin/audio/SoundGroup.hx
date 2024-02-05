@@ -16,6 +16,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   public var pitch(get, set):Float;
 
+  public var playing(get, never):Bool;
+
   public function new()
   {
     super();
@@ -163,6 +165,13 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     });
 
     return time;
+  }
+
+  function get_playing():Bool
+  {
+    if (getFirstAlive != null) return getFirstAlive().playing;
+    else
+      return false;
   }
 
   function get_volume():Float

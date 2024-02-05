@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.util.logging.CrashHandler;
 import haxe.ui.containers.HBox;
 import haxe.ui.containers.Grid;
@@ -23,6 +24,7 @@ import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.misc.VarTween;
+import funkin.audio.waveform.WaveformSprite;
 import haxe.ui.Toolkit;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
@@ -128,7 +130,6 @@ import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
 import funkin.audio.visualize.PolygonSpectogram;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import funkin.audio.visualize.PolygonVisGroup;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
 import flixel.system.debug.log.LogStyle;
@@ -158,6 +159,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
   public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
+  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('chart-editor/toolbox/offsets');
   public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/toolbox/difficulty');
   public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/player-preview');
   public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/opponent-preview');
@@ -393,13 +395,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
         measureTicks.y = gridTiledSprite.y;
 
-        if (audioVisGroup != null && audioVisGroup.playerVis != null)
+        for (member in audioWaveforms.members)
         {
-          audioVisGroup.playerVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS - GRID_TOP_PAD);
-        }
-        if (audioVisGroup != null && audioVisGroup.opponentVis != null)
-        {
-          audioVisGroup.opponentVis.y = Math.max(gridTiledSprite.y, GRID_INITIAL_Y_POS - GRID_TOP_PAD);
+          member.time = scrollPositionInMs / Constants.MS_PER_SEC;
+
+          // Doing this desyncs the waveforms from the grid.
+          // member.y = Math.max(this.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
         }
       }
     }
@@ -501,8 +502,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_playheadPositionInMs():Float
   {
-    if (audioVisGroup != null && audioVisGroup.playerVis != null)
-      audioVisGroup.playerVis.realtimeStartOffset = -Conductor.instance.getStepTimeInMs(playheadPositionInSteps);
     return Conductor.instance.getStepTimeInMs(playheadPositionInSteps);
   }
 
@@ -510,7 +509,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     playheadPositionInSteps = Conductor.instance.getTimeInSteps(value);
 
-    if (audioVisGroup != null && audioVisGroup.playerVis != null) audioVisGroup.playerVis.realtimeStartOffset = -value;
     return value;
   }
 
@@ -1106,14 +1104,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * `null` until vocal track(s) are loaded.
    * When switching characters, the elements of the VoicesGroup will be swapped to match the new character.
    */
-  var audioVocalTrackGroup:Null<VoicesGroup> = null;
+  var audioVocalTrackGroup:VoicesGroup = new VoicesGroup();
 
   /**
-   * The audio vis for the inst/vocals.
+   * The audio waveform visualization for the inst/vocals.
    * `null` until vocal track(s) are loaded.
-   * When switching characters, the elements of the PolygonVisGroup will be swapped to match the new character.
+   * When switching characters, the elements will be swapped to match the new character.
    */
-  var audioVisGroup:Null<PolygonVisGroup> = null;
+  var audioWaveforms:FlxTypedSpriteGroup<WaveformSprite> = new FlxTypedSpriteGroup<WaveformSprite>();
 
   /**
    * A map of the audio tracks for each character's vocals.
@@ -1446,19 +1444,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return value;
   }
 
-  var currentVocalOffset(get, set):Float;
+  var currentVocalOffsetPlayer(get, set):Float;
 
-  function get_currentVocalOffset():Float
+  function get_currentVocalOffsetPlayer():Float
   {
-    // Currently there's only one vocal offset, so we just grab the player's offset since both should be the same.
-    // Should probably make it so we can set offsets for player + opponent individually, though.
     return currentSongOffsets.getVocalOffset(currentPlayerChar);
   }
 
-  function set_currentVocalOffset(value:Float):Float
+  function set_currentVocalOffsetPlayer(value:Float):Float
   {
-    // Currently there's only one vocal offset, so we just apply it to both characters.
     currentSongOffsets.setVocalOffset(currentPlayerChar, value);
+    return value;
+  }
+
+  var currentVocalOffsetOpponent(get, set):Float;
+
+  function get_currentVocalOffsetOpponent():Float
+  {
+    return currentSongOffsets.getVocalOffset(currentOpponentChar);
+  }
+
+  function set_currentVocalOffsetOpponent(value:Float):Float
+  {
     currentSongOffsets.setVocalOffset(currentOpponentChar, value);
     return value;
   }
@@ -1863,10 +1870,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var notePreviewViewportBitmap:Null<BitmapData> = null;
 
-  /**r
+  /**
    * The IMAGE used for the measure ticks. Updated by ChartEditorThemeHandler.
    */
   var measureTickBitmap:Null<BitmapData> = null;
+
+  /**
+   * The IMAGE used for the offset ticks. Updated by ChartEditorThemeHandler.
+   */
+  var offsetTickBitmap:Null<BitmapData> = null;
 
   /**
    * The tiled sprite used to display the grid.
@@ -2252,8 +2264,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Initialize the song chart data.
     songChartData = new Map<String, SongChartData>();
-
-    audioVocalTrackGroup = new VoicesGroup();
   }
 
   /**
@@ -2340,8 +2350,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(healthIconBF);
     healthIconBF.zIndex = 30;
 
-    audioVisGroup = new PolygonVisGroup();
-    add(audioVisGroup);
+    add(audioWaveforms);
   }
 
   function buildMeasureTicks():Void
@@ -2885,13 +2894,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemVolumeVocalsPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
-      if (audioVocalTrackGroup != null) audioVocalTrackGroup.playerVolume = volume;
+      audioVocalTrackGroup.playerVolume = volume;
       menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
 
     menubarItemVolumeVocalsOpponent.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
-      if (audioVocalTrackGroup != null) audioVocalTrackGroup.opponentVolume = volume;
+      audioVocalTrackGroup.opponentVolume = volume;
       menubarLabelVolumeVocalsOpponent.text = 'Enemy - ${Std.int(event.value)}%';
     };
 
@@ -2900,7 +2909,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       pitch = Math.floor(pitch / 0.25) * 0.25; // Round to nearest 0.25.
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
-      if (audioVocalTrackGroup != null) audioVocalTrackGroup.pitch = pitch;
+      audioVocalTrackGroup.pitch = pitch;
       #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
@@ -2908,6 +2917,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
     menubarItemToggleToolboxMetadata.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
+    menubarItemToggleToolboxOffsets.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT, event.value);
     menubarItemToggleToolboxNotes.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
@@ -3210,7 +3220,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Conductor.instance.update(audioInstTrack.time);
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
-        if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
+        if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
           audioVocalTrackGroup.time = audioInstTrack.time;
         }
@@ -3228,7 +3238,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Conductor.instance.update(audioInstTrack.time);
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
-        if (audioVocalTrackGroup != null && Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
+        if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
           audioVocalTrackGroup.time = audioInstTrack.time;
         }
@@ -5316,7 +5326,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       FlxG.sound.music = audioInstTrack;
     }
-    if (audioVocalTrackGroup != null) targetState.vocals = audioVocalTrackGroup;
+    targetState.vocals = audioVocalTrackGroup;
 
     // Kill and replace the UI camera so it doesn't get destroyed during the state transition.
     uiCamera.kill();
@@ -5432,7 +5442,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (audioInstTrack != null)
     {
       audioInstTrack.play(false, audioInstTrack.time);
-      if (audioVocalTrackGroup != null) audioVocalTrackGroup.play(false, audioInstTrack.time);
+      audioVocalTrackGroup.play(false, audioInstTrack.time);
     }
 
     playbarPlay.text = '||'; // Pause
@@ -5670,7 +5680,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioInstTrack.time = scrollPositionInMs + playheadPositionInMs - Conductor.instance.instrumentalOffset;
       // Update the songPosition in the Conductor.
       Conductor.instance.update(audioInstTrack.time);
-      if (audioVocalTrackGroup != null) audioVocalTrackGroup.time = audioInstTrack.time;
+      audioVocalTrackGroup.time = audioInstTrack.time;
     }
 
     // We need to update the note sprites because we changed the scroll position.
@@ -5891,7 +5901,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function stopAudioPlayback():Void
   {
     if (audioInstTrack != null) audioInstTrack.pause();
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.pause();
+    audioVocalTrackGroup.pause();
 
     playbarPlay.text = '>';
   }
@@ -5926,7 +5936,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Keep the track at the end.
           audioInstTrack.time = audioInstTrack.length;
         }
-        if (audioVocalTrackGroup != null) audioVocalTrackGroup.pause();
+        audioVocalTrackGroup.pause();
       };
     }
     else
@@ -5940,12 +5950,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconsDirty = true;
   }
 
+  function hardRefreshOffsetsToolbox():Void
+  {
+    var offsetsToolbox:ChartEditorOffsetsToolbox = cast this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT);
+    if (offsetsToolbox != null)
+    {
+      offsetsToolbox.refreshAudioPreview();
+      offsetsToolbox.refresh();
+    }
+  }
+
   /**
    * Clear the voices group.
    */
   public function clearVocals():Void
   {
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.clear();
+    audioVocalTrackGroup.clear();
   }
 
   function isNoteSelected(note:Null<SongNoteData>):Bool
@@ -5970,7 +5990,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Stop the music.
     if (welcomeMusic != null) welcomeMusic.destroy();
     if (audioInstTrack != null) audioInstTrack.destroy();
-    if (audioVocalTrackGroup != null) audioVocalTrackGroup.destroy();
+    audioVocalTrackGroup.destroy();
   }
 
   function applyCanQuickSave():Void

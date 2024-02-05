@@ -243,6 +243,8 @@ class InitState extends FlxState
     FlxG.switchState(new FreeplayState());
     #elseif ANIMATE // -DANIMATE
     FlxG.switchState(new funkin.ui.debug.anim.FlxAnimateTest());
+    #elseif WAVEFORM // -DWAVEFORM
+    FlxG.switchState(new funkin.ui.debug.WaveformTestState());
     #elseif CHARTING // -DCHARTING
     FlxG.switchState(new funkin.ui.debug.charting.ChartEditorState());
     #elseif STAGEBUILD // -DSTAGEBUILD

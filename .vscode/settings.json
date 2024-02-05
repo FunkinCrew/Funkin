@@ -126,6 +126,11 @@
       "args": ["-debug", "-DLATENCY"]
     },
     {
+      "label": "Windows / Debug (Waveform Test)",
+      "target": "windows",
+      "args": ["-debug", "-DWAVEFORM"]
+    },
+    {
       "label": "HTML5 / Debug",
       "target": "html5",
       "args": ["-debug"]

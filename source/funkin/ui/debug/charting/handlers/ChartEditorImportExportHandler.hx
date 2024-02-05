@@ -132,11 +132,8 @@ class ChartEditorImportExportHandler
       state.audioInstTrack.stop();
       state.audioInstTrack = null;
     }
-    if (state.audioVocalTrackGroup != null)
-    {
-      state.audioVocalTrackGroup.stop();
-      state.audioVocalTrackGroup.clear();
-    }
+    state.audioVocalTrackGroup.stop();
+    state.audioVocalTrackGroup.clear();
   }
 
   /**
