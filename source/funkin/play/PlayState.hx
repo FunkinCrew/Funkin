@@ -88,6 +88,12 @@ typedef PlayStateParams =
    */
   ?targetCharacter:String,
   /**
+   * The instrumental to play with.
+   * Significant if the `targetSong` supports alternate instrumentals.
+   * @default `null`
+   */
+  ?targetInstrumental:String,
+  /**
    * Whether the song should start in Practice Mode.
    * @default `false`
    */
@@ -448,7 +454,7 @@ class PlayState extends MusicBeatSubState
   function get_currentChart():SongDifficulty
   {
     if (currentSong == null || currentDifficulty == null) return null;
-    return currentSong.getDifficulty(currentDifficulty);
+    return currentSong.getDifficulty(currentDifficulty, currentPlayerId);
   }
 
   /**
@@ -2650,13 +2656,16 @@ class PlayState extends MusicBeatSubState
     {
       // Stop the music.
       FlxG.sound.music.pause();
-      vocals.stop();
+      if (vocals != null) vocals.stop();
     }
     else
     {
       FlxG.sound.music.pause();
-      vocals.pause();
-      remove(vocals);
+      if (vocals != null)
+      {
+        vocals.pause();
+        remove(vocals);
+      }
     }
 
     // Remove reference to stage and remove sprites from it to save memory.

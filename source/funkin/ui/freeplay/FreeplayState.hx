@@ -54,6 +54,14 @@ import funkin.util.MathUtil;
 import lime.app.Future;
 import lime.utils.Assets;
 
+/**
+ * Parameters used to initialize the FreeplayState.
+ */
+typedef FreeplayStateParams =
+{
+  ?character:String;
+};
+
 class FreeplayState extends MusicBeatSubState
 {
   var songs:Array<Null<FreeplaySongData>> = [];
@@ -63,6 +71,9 @@ class FreeplayState extends MusicBeatSubState
 
   var curSelected:Int = 0;
   var currentDifficulty:String = Constants.DEFAULT_DIFFICULTY;
+
+  // Params
+  var currentCharacter:String;
 
   var fp:FreeplayScore;
   var txtCompletion:AtlasText;
@@ -99,12 +110,13 @@ class FreeplayState extends MusicBeatSubState
 
   var stickerSubState:StickerSubState;
 
-  //
   static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   static var rememberedSongId:Null<String> = null;
 
-  public function new(?stickers:StickerSubState = null)
+  public function new(?params:FreeplayParams, ?stickers:StickerSubState)
   {
+    currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
+
     if (stickers != null)
     {
       stickerSubState = stickers;
@@ -842,6 +854,13 @@ class FreeplayState extends MusicBeatSubState
     {
       dj.resetAFKTimer();
       changeDiff(1);
+    }
+
+    // TODO: DEBUG REMOVE THIS
+    if (FlxG.keys.justPressed.P)
+    {
+      currentCharacter = (currentCharacter == "bf") ? "pico" : "bf";
+      changeSelection(0);
     }
 
     if (controls.BACK && !typing.hasFocus)

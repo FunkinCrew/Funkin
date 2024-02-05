@@ -184,7 +184,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.characters = metadata.playData.characters;
 
-        difficulties.set(diffId, difficulty);
+        var variationSuffix = (metadata.variation != null
+          && metadata.variation != ''
+          && metadata.variation != Constants.DEFAULT_VARIATION) ? '-${metadata.variation}' : '';
+        difficulties.set('$diffId$variationSuffix', difficulty);
       }
     }
   }
@@ -224,7 +227,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         trace('Fabricated new difficulty for $diffId.');
         difficulty = new SongDifficulty(this, diffId, variation);
         var metadata = _metadata.get(variation);
-        difficulties.set(diffId, difficulty);
+        var variationSuffix = (variation != null && variation != '' && variation != Constants.DEFAULT_VARIATION) ? '-$variation' : '';
+        difficulties.set('$diffId$variationSuffix', difficulty);
 
         if (metadata != null)
         {
@@ -256,11 +260,14 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * @param diffId The difficulty ID, such as `easy` or `hard`.
    * @return The difficulty data.
    */
-  public inline function getDifficulty(?diffId:String):Null<SongDifficulty>
+  public inline function getDifficulty(?diffId:String, ?variation:String):Null<SongDifficulty>
   {
     if (diffId == null) diffId = listDifficulties()[0];
 
-    return difficulties.get(diffId);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+    var variationSuffix = (variation != null && variation != '' && variation != Constants.DEFAULT_VARIATION) ? '-$variation' : '';
+
+    return difficulties.get('$diffId$variationSuffix');
   }
 
   /**
@@ -272,12 +279,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     if (variationId == '') variationId = null;
 
-    var diffFiltered:Array<String> = difficulties.keys().array().filter(function(diffId:String):Bool {
-      if (variationId == null) return true;
+    // The difficulties array contains entries like 'normal', 'nightmare-erect', and 'normal-pico',
+    // so we have to map it to the actual difficulty names.
+    // We also filter out difficulties that don't match the variation or that don't exist.
+
+    var diffFiltered:Array<String> = difficulties.keys().array().map(function(diffId:String):Null<String> {
       var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
-      if (difficulty == null) return false;
-      return difficulty.variation == variationId;
-    });
+      if (difficulty == null) return null;
+      if (variationId != null && difficulty.variation != variationId) return null;
+      return difficulty.difficulty;
+    }).nonNull().unique();
 
     diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
 
@@ -286,8 +297,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function hasDifficulty(diffId:String, ?variationId:String):Bool
   {
-    if (variationId == '') variationId = null;
-    var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+    if (variationId == '') variationId = Constants.DEFAULT_VARIATION;
+    var variationSuffix:String = (variationId == Constants.DEFAULT_VARIATION) ? '' : '-$variationId';
+    var difficulty:Null<SongDifficulty> = difficulties.get('$diffId$variationSuffix');
     return variationId == null ? (difficulty != null) : (difficulty != null && difficulty.variation == variationId);
   }
 
