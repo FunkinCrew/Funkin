@@ -135,10 +135,10 @@ class FocusCameraSongEvent extends SongEvent
     return new SongEventSchema([
       {
         name: "char",
-        title: "Character",
+        title: "Target",
         defaultValue: 0,
         type: SongEventFieldType.ENUM,
-        keys: ["Position" => -1, "Boyfriend" => 0, "Dad" => 1, "Girlfriend" => 2]
+        keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
       },
       {
         name: "x",
@@ -146,6 +146,7 @@ class FocusCameraSongEvent extends SongEvent
         defaultValue: 0,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
+        units: "px"
       },
       {
         name: "y",
@@ -153,6 +154,7 @@ class FocusCameraSongEvent extends SongEvent
         defaultValue: 0,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
+        units: "px"
       }
     ]);
   }
