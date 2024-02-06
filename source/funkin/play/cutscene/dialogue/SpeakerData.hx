@@ -1,6 +1,7 @@
 package funkin.play.cutscene.dialogue;
 
 import funkin.data.animation.AnimationData;
+import funkin.util.SerializerUtil;
 
 /**
  * Data about a conversation.
@@ -37,6 +38,7 @@ class SpeakerData
 
   public static function fromString(i:String):SpeakerData
   {
+    // TODO: Replace this with json2object.
     if (i == null || i == '') return null;
     var data:
       {
@@ -48,7 +50,7 @@ class SpeakerData
         ?flipX:Bool,
         ?isPixel:Bool,
         ?scale:Float
-      } = tink.Json.parse(i);
+      } = SerializerUtil.fromJSON(i);
     return fromJson(data);
   }
 

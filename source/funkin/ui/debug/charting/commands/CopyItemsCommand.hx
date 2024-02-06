@@ -57,7 +57,7 @@ class CopyItemsCommand implements ChartEditorCommand
         state.txtCopyNotif.y = FlxG.mouse.y - 16;
         FlxTween.tween(state.txtCopyNotif, {y: state.txtCopyNotif.y - 32}, 0.5,
           {
-            type: FlxTween.ONESHOT,
+            type: FlxTweenType.ONESHOT,
             ease: FlxEase.quadOut,
             onComplete: function(_) {
               state.txtCopyNotif.visible = false;

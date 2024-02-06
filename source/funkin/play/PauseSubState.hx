@@ -234,11 +234,11 @@ class PauseSubState extends MusicBeatSubState
             if (PlayStatePlaylist.isStoryMode)
             {
               PlayStatePlaylist.reset();
-              openSubState(new funkin.ui.transition.StickerSubState(null, STORY));
+              openSubState(new funkin.ui.transition.StickerSubState(null, () -> new funkin.ui.story.StoryMenuState()));
             }
             else
             {
-              openSubState(new funkin.ui.transition.StickerSubState(null, FREEPLAY));
+              openSubState(new funkin.ui.transition.StickerSubState(null, () -> new funkin.ui.freeplay.FreeplayState()));
             }
 
           case 'Exit to Chart Editor':

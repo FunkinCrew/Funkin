@@ -108,7 +108,6 @@
 	<haxelib name="hxCodec" /> <!-- Video playback -->
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
-	<haxelib name="tink_json" /> <!-- JSON parsing (DEPRECATED) -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->
 
 	<haxelib name="hmm" /> <!-- Read library version data at compile time so it can be baked into logs -->
@@ -124,8 +123,8 @@
 	<!--
 		Hide deprecation warnings until they're fixed.
 		TODO: REMOVE THIS!!!!
+		<haxeflag name="-w" value="-WDeprecated" />
 	-->
-	<haxeflag name="-w" value="-WDeprecated" />
 
 	<!-- Haxe 4.3.0+: Enable pretty syntax errors and stuff. -->
 	<haxedef name="message.reporting" value="pretty" />

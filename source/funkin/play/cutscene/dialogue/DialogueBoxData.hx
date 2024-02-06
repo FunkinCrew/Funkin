@@ -38,6 +38,7 @@ class DialogueBoxData
 
   public static function fromString(i:String):DialogueBoxData
   {
+    // TODO: Replace this with json2object.
     if (i == null || i == '') return null;
     var data:
       {
@@ -51,7 +52,7 @@ class DialogueBoxData
         text:Dynamic,
         scale:Float,
         animations:Array<AnimationData>
-      } = tink.Json.parse(i);
+      } = SerializerUtil.fromJSON(i);
     return fromJson(data);
   }
 

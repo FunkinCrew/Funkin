@@ -690,9 +690,9 @@ class PlayState extends MusicBeatSubState
       {
         message = 'The was a critical error selecting a difficulty for this song. Click OK to return to the main menu.';
       }
-      else if (currentSong.getDifficulty(currentDifficulty) == null)
+      else if (currentChart == null)
       {
-        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty. Click OK to return to the main menu.';
+        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty playing as "$currentPlayerId". Click OK to return to the main menu.';
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
@@ -705,7 +705,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
-        FlxG.switchState(new MainMenuState());
+        FlxG.switchState(() -> new MainMenuState());
       }
       return false;
     }
@@ -834,7 +834,7 @@ class PlayState extends MusicBeatSubState
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
         if (!isSubState && event.gitaroo)
         {
-          FlxG.switchState(new GitarooPause(
+          FlxG.switchState(() -> new GitarooPause(
             {
               targetSong: currentSong,
               targetDifficulty: currentDifficulty,
@@ -2235,7 +2235,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Eject button
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
+    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
 
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
 
@@ -2253,7 +2253,7 @@ class PlayState extends MusicBeatSubState
     {
       disableKeys = true;
       persistentUpdate = false;
-      FlxG.switchState(new ChartEditorState(
+      FlxG.switchState(() -> new ChartEditorState(
         {
           targetSongId: currentSong.id,
         }));
@@ -2595,14 +2595,16 @@ class PlayState extends MusicBeatSubState
             // TODO: Do this in the loading state.
             targetSong.cacheCharts(true);
 
-            var nextPlayState:PlayState = new PlayState(
-              {
-                targetSong: targetSong,
-                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetCharacter: currentPlayerId,
-              });
-            nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-            LoadingState.loadAndSwitchState(nextPlayState);
+            LoadingState.loadAndSwitchState(() -> {
+              var nextPlayState:PlayState = new PlayState(
+                {
+                  targetSong: targetSong,
+                  targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+                  targetCharacter: currentPlayerId,
+                });
+              nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
+              return nextPlayState;
+            });
           });
         }
         else
@@ -2611,14 +2613,16 @@ class PlayState extends MusicBeatSubState
           // Load and cache the song's charts.
           // TODO: Do this in the loading state.
           targetSong.cacheCharts(true);
-          var nextPlayState:PlayState = new PlayState(
-            {
-              targetSong: targetSong,
-              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetCharacter: currentPlayerId,
-            });
-          nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-          LoadingState.loadAndSwitchState(nextPlayState);
+          LoadingState.loadAndSwitchState(() -> {
+            var nextPlayState:PlayState = new PlayState(
+              {
+                targetSong: targetSong,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+                targetCharacter: currentPlayerId,
+              });
+            nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
+            return nextPlayState;
+          });
         }
       }
     }

@@ -27,6 +27,7 @@ class ConversationData
 
   public static function fromString(i:String):ConversationData
   {
+    // TODO: Replace this with json2object.
     if (i == null || i == '') return null;
     var data:
       {
@@ -35,7 +36,7 @@ class ConversationData
         ?outro:Dynamic, // TODO: tink.Json doesn't like when these are typed
         ?music:Dynamic, // TODO: tink.Json doesn't like when these are typed
         dialogue:Array<Dynamic> // TODO: tink.Json doesn't like when these are typed
-      } = tink.Json.parse(i);
+      } = SerializerUtil.fromJSON(i);
     return fromJson(data);
   }
 
