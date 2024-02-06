@@ -184,9 +184,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.characters = metadata.playData.characters;
 
-        var variationSuffix = (metadata.variation != null
-          && metadata.variation != ''
-          && metadata.variation != Constants.DEFAULT_VARIATION) ? '-${metadata.variation}' : '';
+        var variationSuffix = (metadata.variation != Constants.DEFAULT_VARIATION) ? '-${metadata.variation}' : '';
         difficulties.set('$diffId$variationSuffix', difficulty);
       }
     }
@@ -221,13 +219,13 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     for (diffId in chartNotes.keys())
     {
       // Retrieve the cached difficulty data.
-      var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+      var variationSuffix = (variation != Constants.DEFAULT_VARIATION) ? '-$variation' : '';
+      var difficulty:Null<SongDifficulty> = difficulties.get('$diffId$variationSuffix');
       if (difficulty == null)
       {
         trace('Fabricated new difficulty for $diffId.');
         difficulty = new SongDifficulty(this, diffId, variation);
         var metadata = _metadata.get(variation);
-        var variationSuffix = (variation != null && variation != '' && variation != Constants.DEFAULT_VARIATION) ? '-$variation' : '';
         difficulties.set('$diffId$variationSuffix', difficulty);
 
         if (metadata != null)
@@ -258,26 +256,52 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   /**
    * Retrieve the metadata for a specific difficulty, including the chart if it is loaded.
    * @param diffId The difficulty ID, such as `easy` or `hard`.
+   * @param variation The variation ID to fetch the difficulty for. Or you can use `variations`.
+   * @param variations A list of variations to fetch the difficulty for. Looks for the first variation that exists.
    * @return The difficulty data.
    */
-  public inline function getDifficulty(?diffId:String, ?variation:String):Null<SongDifficulty>
+  public function getDifficulty(?diffId:String, ?variation:String, ?variations:Array<String>):Null<SongDifficulty>
   {
-    if (diffId == null) diffId = listDifficulties()[0];
-
+    if (diffId == null) diffId = listDifficulties(variation)[0];
     if (variation == null) variation = Constants.DEFAULT_VARIATION;
-    var variationSuffix = (variation != null && variation != '' && variation != Constants.DEFAULT_VARIATION) ? '-$variation' : '';
+    if (variations == null) variations = [variation];
 
-    return difficulties.get('$diffId$variationSuffix');
+    for (currentVariation in variations)
+    {
+      var variationSuffix = (currentVariation != Constants.DEFAULT_VARIATION) ? '-$currentVariation' : '';
+
+      if (difficulties.exists('$diffId$variationSuffix'))
+      {
+        return difficulties.get('$diffId$variationSuffix');
+      }
+    }
+
+    return null;
+  }
+
+  public function getFirstValidVariation(?diffId:String, ?possibleVariations:Array<String>):Null<String>
+  {
+    if (variations == null) possibleVariations = variations;
+    if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
+
+    for (variation in variations)
+    {
+      if (difficulties.exists('$diffId-$variation')) return variation;
+    }
+
+    return null;
   }
 
   /**
    * List all the difficulties in this song.
-   * @param variationId Optionally filter by variation.
+   * @param variationId Optionally filter by a single variation.
+   * @param variationIds Optionally filter by multiple variations.
    * @return The list of difficulties.
    */
-  public function listDifficulties(?variationId:String):Array<String>
+  public function listDifficulties(?variationId:String, ?variationIds:Array<String>):Array<String>
   {
-    if (variationId == '') variationId = null;
+    if (variationIds == null) variationIds = [];
+    if (variationId != null) variationIds.push(variationId);
 
     // The difficulties array contains entries like 'normal', 'nightmare-erect', and 'normal-pico',
     // so we have to map it to the actual difficulty names.
@@ -286,7 +310,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     var diffFiltered:Array<String> = difficulties.keys().array().map(function(diffId:String):Null<String> {
       var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
       if (difficulty == null) return null;
-      if (variationId != null && difficulty.variation != variationId) return null;
+      if (variationIds.length > 0 && !variationIds.contains(difficulty.variation)) return null;
       return difficulty.difficulty;
     }).nonNull().unique();
 
@@ -504,7 +528,8 @@ class SongDifficulty
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
     // Automatically resolve voices by removing suffixes.
-    // For example, if `Voices-bf-car.ogg` does not exist, check for `Voices-bf.ogg`.
+    // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
+    // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
 
     var playerId:String = characters.player;
     var voicePlayer:String = Paths.voices(this.song.id, '-$playerId$suffix');
@@ -516,6 +541,19 @@ class SongDifficulty
       // Try again.
       voicePlayer = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
     }
+    if (voicePlayer == null)
+    {
+      // Try again without $suffix.
+      playerId = characters.player;
+      voicePlayer = Paths.voices(this.song.id, '-${playerId}');
+      while (voicePlayer != null && !Assets.exists(voicePlayer))
+      {
+        // Remove the last suffix.
+        playerId = playerId.split('-').slice(0, -1).join('-');
+        // Try again.
+        voicePlayer = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+      }
+    }
 
     var opponentId:String = characters.opponent;
     var voiceOpponent:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
@@ -525,6 +563,19 @@ class SongDifficulty
       opponentId = opponentId.split('-').slice(0, -1).join('-');
       // Try again.
       voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+    }
+    if (voiceOpponent == null)
+    {
+      // Try again without $suffix.
+      opponentId = characters.opponent;
+      voiceOpponent = Paths.voices(this.song.id, '-${opponentId}');
+      while (voiceOpponent != null && !Assets.exists(voiceOpponent))
+      {
+        // Remove the last suffix.
+        opponentId = opponentId.split('-').slice(0, -1).join('-');
+        // Try again.
+        voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+      }
     }
 
     var result:Array<String> = [];

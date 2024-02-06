@@ -36,7 +36,7 @@ class StickerSubState extends MusicBeatSubState
    * This is a FUNCTION so we can pass it directly to `FlxG.switchState()`,
    * and we can add constructor parameters in the caller.
    */
-  var targetState:Void->FlxState;
+  var targetState:StickerSubState->FlxState;
 
   // what "folders" to potentially load from (as of writing only "keys" exist)
   var soundSelections:Array<String> = [];
@@ -44,14 +44,11 @@ class StickerSubState extends MusicBeatSubState
   var soundSelection:String = "";
   var sounds:Array<String> = [];
 
-  public function new(?oldStickers:Array<StickerSprite>, ?targetState:Void->FlxState):Void
+  public function new(?oldStickers:Array<StickerSprite>, ?targetState:StickerSubState->FlxState):Void
   {
     super();
 
-    if (targetState != null)
-    {
-      this.targetState = () -> new MainMenuState();
-    }
+    this.targetState = (targetState == null) ? ((sticker) -> new MainMenuState()) : targetState;
 
     // todo still
     // make sure that ONLY plays mp3/ogg files
@@ -248,7 +245,7 @@ class StickerSubState extends MusicBeatSubState
             dipshit.addChild(bitmap);
             FlxG.addChildBelowMouse(dipshit);
 
-            FlxG.switchState(targetState);
+            FlxG.switchState(() -> targetState(this));
           }
         });
       });

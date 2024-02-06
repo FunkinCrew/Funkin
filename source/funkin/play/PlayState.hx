@@ -83,10 +83,10 @@ typedef PlayStateParams =
    */
   ?targetDifficulty:String,
   /**
-   * The character to play as.
-   * @default `bf`, or the first character in the song's character list.
+   * The variation to play on.
+   * @default `Constants.DEFAULT_VARIATION` .
    */
-  ?targetCharacter:String,
+  ?targetVariation:String,
   /**
    * The instrumental to play with.
    * Significant if the `targetSong` supports alternate instrumentals.
@@ -153,9 +153,9 @@ class PlayState extends MusicBeatSubState
   public var currentDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   /**
-   * The player character being used for this level, as a character ID.
+   * The currently selected variation.
    */
-  public var currentPlayerId:String = 'bf';
+  public var currentVariation:String = Constants.DEFAULT_VARIATION;
 
   /**
    * The currently active Stage. This is the object containing all the props.
@@ -454,7 +454,7 @@ class PlayState extends MusicBeatSubState
   function get_currentChart():SongDifficulty
   {
     if (currentSong == null || currentDifficulty == null) return null;
-    return currentSong.getDifficulty(currentDifficulty, currentPlayerId);
+    return currentSong.getDifficulty(currentDifficulty, currentVariation);
   }
 
   /**
@@ -512,7 +512,7 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
-    if (params.targetCharacter != null) currentPlayerId = params.targetCharacter;
+    if (params.targetVariation != null) currentVariation = params.targetVariation;
     isPracticeMode = params.practiceMode ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
@@ -692,7 +692,7 @@ class PlayState extends MusicBeatSubState
       }
       else if (currentChart == null)
       {
-        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty playing as "$currentPlayerId". Click OK to return to the main menu.';
+        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
@@ -838,7 +838,7 @@ class PlayState extends MusicBeatSubState
             {
               targetSong: currentSong,
               targetDifficulty: currentDifficulty,
-              targetCharacter: currentPlayerId,
+              targetVariation: currentVariation,
             }));
         }
         else
@@ -1395,7 +1395,7 @@ class PlayState extends MusicBeatSubState
       trace('Song difficulty could not be loaded.');
     }
 
-    var currentCharacterData:SongCharacterData = currentChart.characters; // Switch the character we are playing as by manipulating currentPlayerId.
+    var currentCharacterData:SongCharacterData = currentChart.characters; // Switch the variation we are playing on by manipulating targetVariation.
 
     //
     // GIRLFRIEND
@@ -2600,7 +2600,7 @@ class PlayState extends MusicBeatSubState
                 {
                   targetSong: targetSong,
                   targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                  targetCharacter: currentPlayerId,
+                  targetVariation: currentVariation,
                 });
               nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
               return nextPlayState;
@@ -2618,7 +2618,7 @@ class PlayState extends MusicBeatSubState
               {
                 targetSong: targetSong,
                 targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetCharacter: currentPlayerId,
+                targetVariation: currentVariation,
               });
             nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
             return nextPlayState;

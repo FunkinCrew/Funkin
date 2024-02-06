@@ -915,6 +915,28 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return SongNoteData.buildDirectionName(this.data, strumlineSize);
   }
 
+  /**
+   * The strumline index of the note, if applicable.
+   * Strips the direction from the data.
+   *
+   * 0 = player, 1 = opponent, etc.
+   */
+  public function getStrumlineIndex(strumlineSize:Int = 4):Int
+  {
+    return Math.floor(this.data / strumlineSize);
+  }
+
+  /**
+   * Returns true if the note is one that Boyfriend should try to hit (i.e. it's on his side).
+   * TODO: The name of this function is a little misleading; what about mines?
+   * @param strumlineSize Defaults to 4.
+   * @return True if it's Boyfriend's note.
+   */
+  public function getMustHitNote(strumlineSize:Int = 4):Bool
+  {
+    return getStrumlineIndex(strumlineSize) == 0;
+  }
+
   @:jignored
   var _stepTime:Null<Float> = null;
 
@@ -1001,28 +1023,6 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       default:
         return 'Unknown';
     }
-  }
-
-  /**
-   * The strumline index of the note, if applicable.
-   * Strips the direction from the data.
-   *
-   * 0 = player, 1 = opponent, etc.
-   */
-  public inline function getStrumlineIndex(strumlineSize:Int = 4):Int
-  {
-    return Math.floor(this.data / strumlineSize);
-  }
-
-  /**
-   * Returns true if the note is one that Boyfriend should try to hit (i.e. it's on his side).
-   * TODO: The name of this function is a little misleading; what about mines?
-   * @param strumlineSize Defaults to 4.
-   * @return True if it's Boyfriend's note.
-   */
-  public inline function getMustHitNote(strumlineSize:Int = 4):Bool
-  {
-    return getStrumlineIndex(strumlineSize) == 0;
   }
 
   @:jignored

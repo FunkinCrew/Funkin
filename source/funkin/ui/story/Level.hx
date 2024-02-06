@@ -150,7 +150,8 @@ class Level implements IRegistryEntry<LevelData>
 
     if (firstSong != null)
     {
-      for (difficulty in firstSong.listDifficulties())
+      // Don't display alternate characters in Story Mode.
+      for (difficulty in firstSong.listDifficulties([Constants.DEFAULT_VARIATION, "erect"]))
       {
         difficulties.push(difficulty);
       }

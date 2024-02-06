@@ -148,11 +148,12 @@ class HealthIcon extends FlxSprite
   {
     if (characterId == 'bf-old')
     {
-      characterId = PlayState.instance.currentPlayerId;
+      PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
     }
     else
     {
       characterId = 'bf-old';
+      loadCharacter(characterId);
     }
   }
 
