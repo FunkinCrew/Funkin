@@ -235,7 +235,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
   {
     textDisplay = new FlxTypeText(0, 0, 300, '', 32);
     textDisplay.fieldWidth = boxData.text.width;
-    textDisplay.setFormat('Pixel Arial 11 Bold', boxData.text.size, FlxColor.fromString(boxData.text.color), LEFT, SHADOW,
+    textDisplay.setFormat(boxData.text.fontFamily, boxData.text.size, FlxColor.fromString(boxData.text.color), LEFT, SHADOW,
       FlxColor.fromString(boxData.text.shadowColor ?? '#00000000'), false);
     textDisplay.borderSize = boxData.text.shadowWidth ?? 2;
     textDisplay.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];

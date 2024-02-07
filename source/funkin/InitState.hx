@@ -21,9 +21,9 @@ import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
-import funkin.play.cutscene.dialogue.ConversationDataParser;
-import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
-import funkin.play.cutscene.dialogue.SpeakerDataParser;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
@@ -208,22 +208,30 @@ class InitState extends FlxState
     // GAME DATA PARSING
     //
 
+    trace('Parsing game data...');
+
+    var perf_gameDataParse_start = haxe.Timer.stamp();
+
     // NOTE: Registries and data parsers must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
     SongEventRegistry.loadEventCache();
-    ConversationDataParser.loadConversationCache();
-    DialogueBoxDataParser.loadDialogueBoxCache();
-    SpeakerDataParser.loadSpeakerCache();
+    ConversationRegistry.instance.loadEntries();
+    DialogueBoxRegistry.instance.loadEntries();
+    SpeakerRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
-    CharacterDataParser.loadCharacterCache();
+    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
 
     ModuleHandler.callOnCreate();
+
+    var perf_gameDataParse_end = haxe.Timer.stamp();
+
+    trace('Done parsing game data. Duration: ${perf_gameDataParse_end - perf_gameDataParse_start} seconds');
   }
 
   /**
@@ -241,6 +249,8 @@ class InitState extends FlxState
     startLevel(defineLevel(), defineDifficulty());
     #elseif FREEPLAY // -DFREEPLAY
     FlxG.switchState(new FreeplayState());
+    #elseif DIALOGUE // -DDIALOGUE
+    FlxG.switchState(new funkin.ui.debug.dialogue.ConversationDebugState());
     #elseif ANIMATE // -DANIMATE
     FlxG.switchState(new funkin.ui.debug.anim.FlxAnimateTest());
     #elseif WAVEFORM // -DWAVEFORM

@@ -273,11 +273,11 @@ class PolymodHandler
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
     SongEventRegistry.loadEventCache();
-    ConversationDataParser.loadConversationCache();
-    DialogueBoxDataParser.loadDialogueBoxCache();
-    SpeakerDataParser.loadSpeakerCache();
+    ConversationRegistry.instance.loadEntries();
+    DialogueBoxRegistry.instance.loadEntries();
+    SpeakerRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
-    CharacterDataParser.loadCharacterCache();
+    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     ModuleHandler.loadModuleCache();
   }
 }

@@ -13,7 +13,7 @@ import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.cutscene.dialogue.ConversationData.DialogueEntryData;
+import funkin.data.dialogue.ConversationData.DialogueEntryData;
 import flixel.addons.display.FlxPieDial;
 
 /**
