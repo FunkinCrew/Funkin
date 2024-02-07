@@ -120,19 +120,19 @@ class DataParse
     }
   }
 
-  public static function backdropData(json:Json, name:String):BackdropData
+  public static function backdropData(json:Json, name:String):funkin.data.dialogue.ConversationData.BackdropData
   {
     switch (json.value)
     {
       case JObject(fields):
-        var result:BackdropData = {};
+        var result:Dynamic = {};
         var backdropType:String = '';
 
         for (field in fields)
         {
           switch (field.name)
           {
-            case 'backdropType':
+            case 'type':
               backdropType = Tools.getValue(field.value);
           }
           Reflect.setField(result, field.name, Tools.getValue(field.value));
@@ -152,19 +152,19 @@ class DataParse
     }
   }
 
-  public static function outroData(json:Json, name:String):OutroData
+  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.ConversationData.OutroData>
   {
     switch (json.value)
     {
       case JObject(fields):
-        var result:OutroData = {};
+        var result:Dynamic = {};
         var outroType:String = '';
 
         for (field in fields)
         {
           switch (field.name)
           {
-            case 'outroType':
+            case 'type':
               outroType = Tools.getValue(field.value);
           }
           Reflect.setField(result, field.name, Tools.getValue(field.value));
@@ -179,6 +179,9 @@ class DataParse
           default:
             throw 'Expected Outro property $name to be specify a valid "type", but it was "${outroType}".';
         }
+        return null;
+      default:
+        throw 'Expected property $name to be an object, but it was ${json.value}.';
     }
   }
 

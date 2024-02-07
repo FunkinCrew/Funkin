@@ -1,8 +1,10 @@
 package funkin.play.cutscene.dialogue;
 
+import funkin.data.IRegistryEntry;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
+import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.sound.FlxSound;
@@ -13,27 +15,30 @@ import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.data.dialogue.ConversationData.DialogueEntryData;
 import flixel.addons.display.FlxPieDial;
+import funkin.data.dialogue.ConversationData;
+import funkin.data.dialogue.ConversationData.DialogueEntryData;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.SpeakerData;
+import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.dialogue.DialogueBoxData;
+import funkin.data.dialogue.DialogueBoxRegistry;
 
 /**
  * A high-level handler for dialogue.
  *
  * This shit is great for modders but it's pretty elaborate for how much it'll actually be used, lolol. -Eric
  */
-class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
+class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
   static final CONVERSATION_SKIP_TIMER:Float = 1.5;
 
   var skipHeldTimer:Float = 0.0;
 
   /**
-   * DATA
+   * The ID of the conversation.
    */
-  /**
-   * The ID of the associated dialogue.
-   */
-  public final conversationId:String;
+  public final id:String;
 
   /**
    * The current state of the conversation.
@@ -41,9 +46,9 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
   var state:ConversationState = ConversationState.Start;
 
   /**
-   * The data for the associated dialogue.
+   * Conversation data as parsed from the JSON file.
    */
-  var conversationData:ConversationData;
+  public final _data:ConversationData;
 
   /**
    * The current entry in the dialogue.
@@ -54,7 +59,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   function get_currentDialogueEntryCount():Int
   {
-    return conversationData.dialogue.length;
+    return _data.dialogue.length;
   }
 
   /**
@@ -73,10 +78,10 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   function get_currentDialogueEntryData():DialogueEntryData
   {
-    if (conversationData == null || conversationData.dialogue == null) return null;
-    if (currentDialogueEntry < 0 || currentDialogueEntry >= conversationData.dialogue.length) return null;
+    if (_data == null || _data.dialogue == null) return null;
+    if (currentDialogueEntry < 0 || currentDialogueEntry >= _data.dialogue.length) return null;
 
-    return conversationData.dialogue[currentDialogueEntry];
+    return _data.dialogue[currentDialogueEntry];
   }
 
   var currentDialogueLineString(get, never):String;
@@ -94,7 +99,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
   /**
    * GRAPHICS
    */
-  var backdrop:FlxSprite;
+  var backdrop:FunkinSprite;
 
   var currentSpeaker:Speaker;
 
@@ -102,14 +107,17 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   var skipTimer:FlxPieDial;
 
-  public function new(conversationId:String)
+  public function new(id:String)
   {
     super();
 
-    this.conversationId = conversationId;
-    this.conversationData = ConversationDataParser.parseConversationData(this.conversationId);
+    this.id = id;
+    this._data = _fetchData(id);
 
-    if (conversationData == null) throw 'Could not load conversation data for conversation ID "$conversationId"';
+    if (_data == null)
+    {
+      throw 'Could not parse conversation data for id: $id';
+    }
   }
 
   public function onCreate(event:ScriptEvent):Void
@@ -125,14 +133,14 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   function setupMusic():Void
   {
-    if (conversationData.music == null) return;
+    if (_data.music == null) return;
 
-    music = new FlxSound().loadEmbedded(Paths.music(conversationData.music.asset), true, true);
+    music = new FlxSound().loadEmbedded(Paths.music(_data.music.asset), true, true);
     music.volume = 0;
 
-    if (conversationData.music.fadeTime > 0.0)
+    if (_data.music.fadeTime > 0.0)
     {
-      FlxTween.tween(music, {volume: 1.0}, conversationData.music.fadeTime, {ease: FlxEase.linear});
+      FlxTween.tween(music, {volume: 1.0}, _data.music.fadeTime, {ease: FlxEase.linear});
     }
     else
     {
@@ -145,19 +153,20 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   function setupBackdrop():Void
   {
-    backdrop = new FlxSprite(0, 0);
+    backdrop = new FunkinSprite(0, 0);
 
-    if (conversationData.backdrop == null) return;
+    if (_data.backdrop == null) return;
 
     // Play intro
-    switch (conversationData?.backdrop.type)
+    switch (_data.backdrop)
     {
-      case SOLID:
-        backdrop.makeGraphic(Std.int(FlxG.width), Std.int(FlxG.height), FlxColor.fromString(conversationData.backdrop.data.color));
-        if (conversationData.backdrop.data.fadeTime > 0.0)
+      case SOLID(backdropData):
+        var targetColor:FlxColor = FlxColor.fromString(backdropData.color);
+        backdrop.makeSolidColor(Std.int(FlxG.width), Std.int(FlxG.height), targetColor);
+        if (backdropData.fadeTime > 0.0)
         {
           backdrop.alpha = 0.0;
-          FlxTween.tween(backdrop, {alpha: 1.0}, conversationData.backdrop.data.fadeTime, {ease: FlxEase.linear});
+          FlxTween.tween(backdrop, {alpha: 1.0}, backdropData.fadeTime, {ease: FlxEase.linear});
         }
         else
         {
@@ -190,9 +199,9 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
     var nextSpeakerId:String = currentDialogueEntryData.speaker;
 
     // Skip the next steps if the current speaker is already displayed.
-    if (currentSpeaker != null && nextSpeakerId == currentSpeaker.speakerId) return;
+    if (currentSpeaker != null && nextSpeakerId == currentSpeaker.id) return;
 
-    var nextSpeaker:Speaker = SpeakerDataParser.fetchSpeaker(nextSpeakerId);
+    var nextSpeaker:Speaker = SpeakerRegistry.instance.fetchEntry(nextSpeakerId);
 
     if (currentSpeaker != null)
     {
@@ -241,7 +250,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
     var nextDialogueBoxId:String = currentDialogueEntryData?.box;
 
     // Skip the next steps if the current speaker is already displayed.
-    if (currentDialogueBox != null && nextDialogueBoxId == currentDialogueBox.dialogueBoxId) return;
+    if (currentDialogueBox != null && nextDialogueBoxId == currentDialogueBox.id) return;
 
     if (currentDialogueBox != null)
     {
@@ -250,7 +259,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
       currentDialogueBox = null;
     }
 
-    var nextDialogueBox:DialogueBox = DialogueBoxDataParser.fetchDialogueBox(nextDialogueBoxId);
+    var nextDialogueBox:DialogueBox = DialogueBoxRegistry.instance.fetchEntry(nextDialogueBoxId);
 
     if (nextDialogueBox == null)
     {
@@ -378,20 +387,18 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   public function startOutro():Void
   {
-    switch (conversationData?.outro?.type)
+    switch (_data?.outro)
     {
-      case FADE:
-        var fadeTime:Float = conversationData?.outro.data.fadeTime ?? 1.0;
-
-        outroTween = FlxTween.tween(this, {alpha: 0.0}, fadeTime,
+      case FADE(outroData):
+        outroTween = FlxTween.tween(this, {alpha: 0.0}, outroData.fadeTime,
           {
             type: ONESHOT, // holy shit like the game no way
             startDelay: 0,
             onComplete: (_) -> endOutro(),
           });
 
-        FlxTween.tween(this.music, {volume: 0.0}, fadeTime);
-      case NONE:
+        FlxTween.tween(this.music, {volume: 0.0}, outroData.fadeTime);
+      case NONE(_):
         // Immediately clean up.
         endOutro();
       default:
@@ -400,7 +407,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
     }
   }
 
-  public var completeCallback:Void->Void;
+  public var completeCallback:() -> Void;
 
   public function endOutro():Void
   {
@@ -596,7 +603,12 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass
 
   public override function toString():String
   {
-    return 'Conversation($conversationId)';
+    return 'Conversation($id)';
+  }
+
+  static function _fetchData(id:String):Null<ConversationData>
+  {
+    return ConversationRegistry.instance.parseEntryDataWithMigration(id, ConversationRegistry.instance.fetchEntryVersion(id));
   }
 }
 

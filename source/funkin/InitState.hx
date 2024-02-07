@@ -208,30 +208,29 @@ class InitState extends FlxState
     // GAME DATA PARSING
     //
 
-    trace('Parsing game data...');
-
-    var perf_gameDataParse_start = haxe.Timer.stamp();
-
-    // NOTE: Registries and data parsers must be imported and not referenced with fully qualified names,
+    // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
+    trace('Parsing game data...');
+    var perfStart = haxe.Timer.stamp();
+    SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
-    SongEventRegistry.loadEventCache();
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+
+    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers.
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
-
     ModuleHandler.callOnCreate();
 
-    var perf_gameDataParse_end = haxe.Timer.stamp();
+    var perfEnd = haxe.Timer.stamp();
 
-    trace('Done parsing game data. Duration: ${perf_gameDataParse_end - perf_gameDataParse_start} seconds');
+    trace('Parsing game data took ${Math.floor((perfEnd - perfStart) * 1000)}ms.');
   }
 
   /**
