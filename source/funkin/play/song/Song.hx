@@ -319,12 +319,17 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return diffFiltered;
   }
 
-  public function hasDifficulty(diffId:String, ?variationId:String):Bool
+  public function hasDifficulty(diffId:String, ?variationId:String, ?variationIds:Array<String>):Bool
   {
-    if (variationId == '') variationId = Constants.DEFAULT_VARIATION;
-    var variationSuffix:String = (variationId == Constants.DEFAULT_VARIATION) ? '' : '-$variationId';
-    var difficulty:Null<SongDifficulty> = difficulties.get('$diffId$variationSuffix');
-    return variationId == null ? (difficulty != null) : (difficulty != null && difficulty.variation == variationId);
+    if (variationIds == null) variationIds = [];
+    if (variationId != null) variationIds.push(variationId);
+
+    for (targetVariation in variationIds)
+    {
+      var variationSuffix = (targetVariation != Constants.DEFAULT_VARIATION) ? '-$targetVariation' : '';
+      if (difficulties.exists('$diffId$variationSuffix')) return true;
+    }
+    return false;
   }
 
   /**
@@ -481,12 +486,14 @@ class SongDifficulty
     {
       if (instrumental != '' && characters.altInstrumentals.contains(instrumental))
       {
-        FlxG.sound.cache(Paths.inst(this.song.id, instrumental));
+        var instId = '-$instrumental';
+        FlxG.sound.cache(Paths.inst(this.song.id, instId));
       }
       else
       {
         // Fallback to default instrumental.
-        FlxG.sound.cache(Paths.inst(this.song.id, characters.instrumental));
+        var instId = (characters.instrumental ?? '') != '' ? '-${characters.instrumental}' : '';
+        FlxG.sound.cache(Paths.inst(this.song.id, instId));
       }
     }
     else

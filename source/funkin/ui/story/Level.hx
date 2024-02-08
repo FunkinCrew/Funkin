@@ -169,7 +169,7 @@ class Level implements IRegistryEntry<LevelData>
 
       for (difficulty in difficulties)
       {
-        if (!song.hasDifficulty(difficulty))
+        if (!song.hasDifficulty(difficulty, [Constants.DEFAULT_VARIATION, "erect"]))
         {
           difficulties.remove(difficulty);
         }
