@@ -128,16 +128,41 @@ class ChartEditorAudioHandler
 
   public static function switchToInstrumental(state:ChartEditorState, instId:String = '', playerId:String, opponentId:String):Bool
   {
+    var perfA = haxe.Timer.stamp();
+
     var result:Bool = playInstrumental(state, instId);
     if (!result) return false;
 
+    var perfB = haxe.Timer.stamp();
+
     stopExistingVocals(state);
+
+    var perfC = haxe.Timer.stamp();
+
     result = playVocals(state, BF, playerId, instId);
+
+    var perfD = haxe.Timer.stamp();
+
     // if (!result) return false;
     result = playVocals(state, DAD, opponentId, instId);
     // if (!result) return false;
 
+    var perfE = haxe.Timer.stamp();
+
     state.hardRefreshOffsetsToolbox();
+
+    var perfF = haxe.Timer.stamp();
+
+    state.hardRefreshFreeplayToolbox();
+
+    var perfG = haxe.Timer.stamp();
+
+    trace('Switched to instrumental in ${perfB - perfA} seconds.');
+    trace('Stopped existing vocals in ${perfC - perfB} seconds.');
+    trace('Played BF vocals in ${perfD - perfC} seconds.');
+    trace('Played DAD vocals in ${perfE - perfD} seconds.');
+    trace('Hard refreshed offsets toolbox in ${perfF - perfE} seconds.');
+    trace('Hard refreshed freeplay toolbox in ${perfG - perfF} seconds.');
 
     return true;
   }
@@ -149,7 +174,10 @@ class ChartEditorAudioHandler
   {
     if (instId == '') instId = 'default';
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
+    var perfA = haxe.Timer.stamp();
     var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
+    var perfB = haxe.Timer.stamp();
+    trace('Built instrumental track in ${perfB - perfA} seconds.');
     if (instTrack == null) return false;
 
     stopExistingInstrumental(state);
@@ -177,7 +205,10 @@ class ChartEditorAudioHandler
   {
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackId);
+    var perfStart = haxe.Timer.stamp();
     var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+    var perfEnd = haxe.Timer.stamp();
+    trace('Built vocal track in ${perfEnd - perfStart} seconds.');
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
@@ -188,7 +219,11 @@ class ChartEditorAudioHandler
         case BF:
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
 
-          var waveformData:Null<WaveformData> = WaveformDataParser.interpretFlxSound(vocalTrack);
+          var perfStart = haxe.Timer.stamp();
+          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+          var perfEnd = haxe.Timer.stamp();
+          trace('Interpreted waveform data in ${perfEnd - perfStart} seconds.');
+
           if (waveformData != null)
           {
             var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
@@ -211,7 +246,11 @@ class ChartEditorAudioHandler
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
 
-          var waveformData:Null<WaveformData> = WaveformDataParser.interpretFlxSound(vocalTrack);
+          var perfStart = haxe.Timer.stamp();
+          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+          var perfEnd = haxe.Timer.stamp();
+          trace('Interpreted waveform data in ${perfEnd - perfStart} seconds.');
+
           if (waveformData != null)
           {
             var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;

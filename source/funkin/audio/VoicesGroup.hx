@@ -116,18 +116,18 @@ class VoicesGroup extends SoundGroup
     return opponentVoices.members[index];
   }
 
-  public function buildPlayerVoiceWaveform():Null<WaveformData>
+  public function getPlayerVoiceWaveform():Null<WaveformData>
   {
     if (playerVoices.members.length == 0) return null;
 
-    return WaveformDataParser.interpretFlxSound(playerVoices.members[0]);
+    return playerVoices.members[0].waveformData;
   }
 
-  public function buildOpponentVoiceWaveform():Null<WaveformData>
+  public function getOpponentVoiceWaveform():Null<WaveformData>
   {
     if (opponentVoices.members.length == 0) return null;
 
-    return WaveformDataParser.interpretFlxSound(opponentVoices.members[0]);
+    return opponentVoices.members[0].waveformData;
   }
 
   /**

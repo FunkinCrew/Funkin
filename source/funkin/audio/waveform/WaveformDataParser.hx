@@ -29,12 +29,12 @@ class WaveformDataParser
       }
       else
       {
-        trace('[WAVEFORM] Method 2 worked.');
+        // trace('[WAVEFORM] Method 2 worked.');
       }
     }
     else
     {
-      trace('[WAVEFORM] Method 1 worked.');
+      // trace('[WAVEFORM] Method 1 worked.');
     }
 
     return interpretAudioBuffer(soundBuffer);
@@ -55,21 +55,23 @@ class WaveformDataParser
     var soundDataSampleCount:Int = Std.int(Math.ceil(soundDataRawLength / channels / (bitsPerSample == 16 ? 2 : 1)));
     var outputPointCount:Int = Std.int(Math.ceil(soundDataSampleCount / samplesPerPoint));
 
-    trace('Interpreting audio buffer:');
-    trace('  sampleRate: ${sampleRate}');
-    trace('  channels: ${channels}');
-    trace('  bitsPerSample: ${bitsPerSample}');
-    trace('  samplesPerPoint: ${samplesPerPoint}');
-    trace('  pointsPerSecond: ${pointsPerSecond}');
-    trace('  soundDataRawLength: ${soundDataRawLength}');
-    trace('  soundDataSampleCount: ${soundDataSampleCount}');
-    trace('  soundDataRawLength/4: ${soundDataRawLength / 4}');
-    trace('  outputPointCount: ${outputPointCount}');
+    // trace('Interpreting audio buffer:');
+    // trace('  sampleRate: ${sampleRate}');
+    // trace('  channels: ${channels}');
+    // trace('  bitsPerSample: ${bitsPerSample}');
+    // trace('  samplesPerPoint: ${samplesPerPoint}');
+    // trace('  pointsPerSecond: ${pointsPerSecond}');
+    // trace('  soundDataRawLength: ${soundDataRawLength}');
+    // trace('  soundDataSampleCount: ${soundDataSampleCount}');
+    // trace('  soundDataRawLength/4: ${soundDataRawLength / 4}');
+    // trace('  outputPointCount: ${outputPointCount}');
 
     var minSampleValue:Int = bitsPerSample == 16 ? INT16_MIN : INT8_MIN;
     var maxSampleValue:Int = bitsPerSample == 16 ? INT16_MAX : INT8_MAX;
 
     var outputData:Array<Int> = [];
+
+    var perfStart = haxe.Timer.stamp();
 
     for (pointIndex in 0...outputPointCount)
     {
@@ -105,6 +107,9 @@ class WaveformDataParser
 
     var outputDataLength:Int = Std.int(outputData.length / channels / 2);
     var result = new WaveformData(null, channels, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData);
+
+    var perfEnd = haxe.Timer.stamp();
+    trace('[WAVEFORM] Interpreted audio buffer in ${perfEnd - perfStart} seconds.');
 
     return result;
   }
