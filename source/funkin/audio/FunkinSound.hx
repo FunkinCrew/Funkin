@@ -8,6 +8,8 @@ import flixel.sound.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.util.tools.ICloneable;
+import funkin.audio.waveform.WaveformData;
+import funkin.audio.waveform.WaveformDataParser;
 import flixel.math.FlxMath;
 import openfl.Assets;
 #if (openfl >= "8.0.0")
@@ -56,6 +58,24 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   function get_isPlaying():Bool
   {
     return this.playing || this._shouldPlay;
+  }
+
+  /**
+   * Waveform data for this sound.
+   * This is lazily loaded, so it will be built the first time it is accessed.
+   */
+  public var waveformData(get, never):WaveformData;
+
+  var _waveformData:Null<WaveformData> = null;
+
+  function get_waveformData():WaveformData
+  {
+    if (_waveformData == null)
+    {
+      _waveformData = WaveformDataParser.interpretFlxSound(this);
+      if (_waveformData == null) throw 'Could not interpret waveform data!';
+    }
+    return _waveformData;
   }
 
   /**
@@ -217,6 +237,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     // Call init to ensure the FlxSound is properly initialized.
     sound.init(this.looped, this.autoDestroy, this.onComplete);
+
+    // Oh yeah, the waveform data is the same too!
+    @:privateAccess
+    sound._waveformData = this._waveformData;
 
     return sound;
   }

@@ -36,6 +36,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import haxe.ui.containers.Frame;
@@ -91,6 +92,8 @@ class ChartEditorToolboxHandler
           // TODO: Fix this.
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
           onShowToolboxPlayerPreview(state, toolbox);
@@ -205,6 +208,8 @@ class ChartEditorToolboxHandler
         toolbox = buildToolboxMetadataLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
         toolbox = buildToolboxOffsetsLayout(state);
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
+        toolbox = buildToolboxFreeplayLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
         toolbox = buildToolboxPlayerPreviewLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -377,6 +382,15 @@ class ChartEditorToolboxHandler
   static function buildToolboxOffsetsLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
     var toolbox:ChartEditorBaseToolbox = ChartEditorOffsetsToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
+
+  static function buildToolboxFreeplayLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
+  {
+    var toolbox:ChartEditorBaseToolbox = ChartEditorFreeplayToolbox.build(state);
 
     if (toolbox == null) return null;
 

@@ -183,6 +183,38 @@ class WaveformData
   }
 
   /**
+   * Create a new WaveformData whose data represents the two waveforms overlayed.
+   */
+  public function merge(that:WaveformData):WaveformData
+  {
+    var result = this.clone([]);
+
+    for (channelIndex in 0...this.channels)
+    {
+      var thisChannel = this.channel(channelIndex);
+      var thatChannel = that.channel(channelIndex);
+      var resultChannel = result.channel(channelIndex);
+
+      for (index in 0...this.length)
+      {
+        var thisMinSample = thisChannel.minSample(index);
+        var thatMinSample = thatChannel.minSample(index);
+
+        var thisMaxSample = thisChannel.maxSample(index);
+        var thatMaxSample = thatChannel.maxSample(index);
+
+        resultChannel.setMinSample(index, Std.int(Math.min(thisMinSample, thatMinSample)));
+        resultChannel.setMaxSample(index, Std.int(Math.max(thisMaxSample, thatMaxSample)));
+      }
+    }
+
+    @:privateAccess
+    result.length = this.length;
+
+    return result;
+  }
+
+  /**
    * Create a new WaveformData whose parameters match the current object.
    */
   public function clone(?newData:Array<Int> = null):WaveformData
