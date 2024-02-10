@@ -164,9 +164,9 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    if (FlxG.sound.music != null)
+    if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
     {
-      if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
     }
 
     // Add a null entry that represents the RANDOM option
