@@ -33,6 +33,8 @@ class Main extends Sprite
 
   public static function main():Void
   {
+    haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
+    funkin.util.logging.AnsiTrace.traceBF();
     Lib.current.addChild(new Main());
   }
 
