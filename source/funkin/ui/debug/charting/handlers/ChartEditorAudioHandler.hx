@@ -3,11 +3,14 @@ package funkin.ui.debug.charting.handlers;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.sound.FlxSound;
 import funkin.audio.VoicesGroup;
-import funkin.audio.visualize.PolygonVisGroup;
 import funkin.audio.FunkinSound;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
 import funkin.util.assets.SoundUtil;
+import funkin.audio.waveform.WaveformData;
+import funkin.audio.waveform.WaveformDataParser;
+import funkin.audio.waveform.WaveformSprite;
+import flixel.util.FlxColor;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import openfl.utils.Assets;
@@ -125,14 +128,41 @@ class ChartEditorAudioHandler
 
   public static function switchToInstrumental(state:ChartEditorState, instId:String = '', playerId:String, opponentId:String):Bool
   {
+    var perfA = haxe.Timer.stamp();
+
     var result:Bool = playInstrumental(state, instId);
     if (!result) return false;
 
+    var perfB = haxe.Timer.stamp();
+
     stopExistingVocals(state);
+
+    var perfC = haxe.Timer.stamp();
+
     result = playVocals(state, BF, playerId, instId);
+
+    var perfD = haxe.Timer.stamp();
+
     // if (!result) return false;
     result = playVocals(state, DAD, opponentId, instId);
     // if (!result) return false;
+
+    var perfE = haxe.Timer.stamp();
+
+    state.hardRefreshOffsetsToolbox();
+
+    var perfF = haxe.Timer.stamp();
+
+    state.hardRefreshFreeplayToolbox();
+
+    var perfG = haxe.Timer.stamp();
+
+    trace('Switched to instrumental in ${perfB - perfA} seconds.');
+    trace('Stopped existing vocals in ${perfC - perfB} seconds.');
+    trace('Played BF vocals in ${perfD - perfC} seconds.');
+    trace('Played DAD vocals in ${perfE - perfD} seconds.');
+    trace('Hard refreshed offsets toolbox in ${perfF - perfE} seconds.');
+    trace('Hard refreshed freeplay toolbox in ${perfG - perfF} seconds.');
 
     return true;
   }
@@ -144,7 +174,10 @@ class ChartEditorAudioHandler
   {
     if (instId == '') instId = 'default';
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
+    var perfA = haxe.Timer.stamp();
     var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
+    var perfB = haxe.Timer.stamp();
+    trace('Built instrumental track in ${perfB - perfA} seconds.');
     if (instTrack == null) return false;
 
     stopExistingInstrumental(state);
@@ -172,10 +205,12 @@ class ChartEditorAudioHandler
   {
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackId);
+    var perfStart = haxe.Timer.stamp();
     var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+    var perfEnd = haxe.Timer.stamp();
+    trace('Built vocal track in ${perfEnd - perfStart} seconds.');
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
-    if (state.audioVisGroup == null) state.audioVisGroup = new PolygonVisGroup();
 
     if (vocalTrack != null)
     {
@@ -183,26 +218,57 @@ class ChartEditorAudioHandler
       {
         case BF:
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
-          state.audioVisGroup.addPlayerVis(vocalTrack);
-          state.audioVisGroup.playerVis.x = 885;
-          state.audioVisGroup.playerVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
-          state.audioVisGroup.playerVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
-          state.audioVisGroup.playerVis.detail = 1;
-          state.audioVisGroup.playerVis.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
 
-          state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffset;
+          var perfStart = haxe.Timer.stamp();
+          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+          var perfEnd = haxe.Timer.stamp();
+          trace('Interpreted waveform data in ${perfEnd - perfStart} seconds.');
+
+          if (waveformData != null)
+          {
+            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
+            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+            waveformSprite.x = 840;
+            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
+            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
+            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
+            waveformSprite.time = 0;
+            waveformSprite.duration = duration;
+            state.audioWaveforms.add(waveformSprite);
+          }
+          else
+          {
+            trace('[WARN] Failed to parse waveform data for vocal track.');
+          }
+
+          state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
           return true;
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
-          state.audioVisGroup.addOpponentVis(vocalTrack);
-          state.audioVisGroup.opponentVis.x = 405;
 
-          state.audioVisGroup.opponentVis.realtimeVisLenght = Conductor.instance.getStepTimeInMs(16) * 0.00195;
-          state.audioVisGroup.opponentVis.daHeight = (ChartEditorState.GRID_SIZE) * 16;
-          state.audioVisGroup.opponentVis.detail = 1;
-          state.audioVisGroup.opponentVis.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
+          var perfStart = haxe.Timer.stamp();
+          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+          var perfEnd = haxe.Timer.stamp();
+          trace('Interpreted waveform data in ${perfEnd - perfStart} seconds.');
 
-          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffset;
+          if (waveformData != null)
+          {
+            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
+            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+            waveformSprite.x = 360;
+            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
+            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
+            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
+            waveformSprite.time = 0;
+            waveformSprite.duration = duration;
+            state.audioWaveforms.add(waveformSprite);
+          }
+          else
+          {
+            trace('[WARN] Failed to parse waveform data for vocal track.');
+          }
+
+          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
 
           return true;
         case OTHER:
@@ -219,13 +285,10 @@ class ChartEditorAudioHandler
 
   public static function stopExistingVocals(state:ChartEditorState):Void
   {
-    if (state.audioVocalTrackGroup != null)
+    state.audioVocalTrackGroup.clear();
+    if (state.audioWaveforms != null)
     {
-      state.audioVocalTrackGroup.clear();
-    }
-    if (state.audioVisGroup != null)
-    {
-      state.audioVisGroup.clearAllVis();
+      state.audioWaveforms.clear();
     }
   }
 

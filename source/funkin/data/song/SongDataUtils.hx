@@ -153,8 +153,8 @@ class SongDataUtils
   public static function buildNoteClipboard(notes:Array<SongNoteData>, ?timeOffset:Int = null):Array<SongNoteData>
   {
     if (notes.length == 0) return notes;
-    if (timeOffset == null) timeOffset = -Std.int(notes[0].time);
-    return offsetSongNoteData(sortNotes(notes), timeOffset);
+    if (timeOffset == null) timeOffset = Std.int(notes[0].time);
+    return offsetSongNoteData(sortNotes(notes), -timeOffset);
   }
 
   /**
@@ -165,8 +165,8 @@ class SongDataUtils
   public static function buildEventClipboard(events:Array<SongEventData>, ?timeOffset:Int = null):Array<SongEventData>
   {
     if (events.length == 0) return events;
-    if (timeOffset == null) timeOffset = -Std.int(events[0].time);
-    return offsetSongEventData(sortEvents(events), timeOffset);
+    if (timeOffset == null) timeOffset = Std.int(events[0].time);
+    return offsetSongEventData(sortEvents(events), -timeOffset);
   }
 
   /**

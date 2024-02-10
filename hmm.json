@@ -18,7 +18,7 @@
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "fd3aecdeb5635fa0428dffee204fc78fc26b5885",
+      "ref": "a523c3b56622f0640933944171efed46929e360e",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -54,7 +54,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "5b2d5b8e7e470cf637953e1369c80a1f42016a75",
+      "ref": "8a7846b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {

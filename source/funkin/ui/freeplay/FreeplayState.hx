@@ -64,8 +64,40 @@ typedef FreeplayStateParams =
 
 class FreeplayState extends MusicBeatSubState
 {
-  // Params, you can't change these without transitioning to a new FreeplayState.
+  //
+  // Params
+  //
+
+  /**
+   * The current character for this FreeplayState.
+   * You can't change this without transitioning to a new FreeplayState.
+   */
   final currentCharacter:String;
+
+  /**
+   * For the audio preview, the duration of the fade-in effect.
+   */
+  public static final FADE_IN_DURATION:Float = 0.5;
+
+  /**
+   * For the audio preview, the duration of the fade-out effect.
+   */
+  public static final FADE_OUT_DURATION:Float = 0.25;
+
+  /**
+   * For the audio preview, the volume at which the fade-in starts.
+   */
+  public static final FADE_IN_START_VOLUME:Float = 0.25;
+
+  /**
+   * For the audio preview, the volume at which the fade-in ends.
+   */
+  public static final FADE_IN_END_VOLUME:Float = 1.0;
+
+  /**
+   * For the audio preview, the volume at which the fade-out starts.
+   */
+  public static final FADE_OUT_END_VOLUME:Float = 0.0;
 
   var songs:Array<Null<FreeplaySongData>> = [];
 
