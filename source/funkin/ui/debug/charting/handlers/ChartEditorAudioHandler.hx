@@ -1,7 +1,7 @@
 package funkin.ui.debug.charting.handlers;
 
 import flixel.system.FlxAssets.FlxSoundAsset;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
 import funkin.play.character.BaseCharacter.CharacterType;

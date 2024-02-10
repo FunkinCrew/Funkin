@@ -247,21 +247,21 @@ class InitState extends FlxState
     #elseif LEVEL // -DLEVEL=week1 -DDIFFICULTY=hard
     startLevel(defineLevel(), defineDifficulty());
     #elseif FREEPLAY // -DFREEPLAY
-    FlxG.switchState(new FreeplayState());
+    FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
     #elseif DIALOGUE // -DDIALOGUE
-    FlxG.switchState(new funkin.ui.debug.dialogue.ConversationDebugState());
+    FlxG.switchState(() -> new funkin.ui.debug.dialogue.ConversationDebugState());
     #elseif ANIMATE // -DANIMATE
-    FlxG.switchState(new funkin.ui.debug.anim.FlxAnimateTest());
+    FlxG.switchState(() -> new funkin.ui.debug.anim.FlxAnimateTest());
     #elseif WAVEFORM // -DWAVEFORM
-    FlxG.switchState(new funkin.ui.debug.WaveformTestState());
+    FlxG.switchState(() -> new funkin.ui.debug.WaveformTestState());
     #elseif CHARTING // -DCHARTING
-    FlxG.switchState(new funkin.ui.debug.charting.ChartEditorState());
+    FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState());
     #elseif STAGEBUILD // -DSTAGEBUILD
-    FlxG.switchState(new funkin.ui.debug.stage.StageBuilderState());
+    FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
     #elseif ANIMDEBUG // -DANIMDEBUG
-    FlxG.switchState(new funkin.ui.debug.anim.DebugBoundingState());
+    FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     #elseif LATENCY // -DLATENCY
-    FlxG.switchState(new funkin.LatencyState());
+    FlxG.switchState(() -> new funkin.LatencyState());
     #else
     startGameNormally();
     #end
@@ -277,7 +277,7 @@ class InitState extends FlxState
 
     if (params.chart.shouldLoadChart)
     {
-      FlxG.switchState(new ChartEditorState(
+      FlxG.switchState(() -> new ChartEditorState(
         {
           fnfcTargetPath: params.chart.chartPath,
         }));
@@ -285,7 +285,7 @@ class InitState extends FlxState
     else
     {
       FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-      FlxG.switchState(new TitleState());
+      FlxG.switchState(() -> new TitleState());
     }
   }
 
@@ -308,7 +308,7 @@ class InitState extends FlxState
     // TODO: Do this in the loading state.
     songData.cacheCharts(true);
 
-    LoadingState.loadAndSwitchState(new funkin.play.PlayState(
+    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
       {
         targetSong: songData,
         targetDifficulty: difficultyId,
@@ -338,7 +338,7 @@ class InitState extends FlxState
 
     var targetSong:funkin.play.song.Song = SongRegistry.instance.fetchEntry(targetSongId);
 
-    LoadingState.loadAndSwitchState(new funkin.play.PlayState(
+    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
       {
         targetSong: targetSong,
         targetDifficulty: difficultyId,

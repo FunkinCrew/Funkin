@@ -103,7 +103,7 @@ class OptionsState extends MusicBeatState
   {
     currentPage.enabled = false;
     // TODO: Animate this transition?
-    FlxG.switchState(new MainMenuState());
+    FlxG.switchState(() -> new MainMenuState());
   }
 }
 

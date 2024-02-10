@@ -87,12 +87,12 @@ class DebugMenuSubState extends MusicBeatSubState
   {
     FlxTransitionableState.skipNextTransIn = true;
 
-    FlxG.switchState(new ChartEditorState());
+    FlxG.switchState(() -> new ChartEditorState());
   }
 
   function openAnimationEditor()
   {
-    FlxG.switchState(new funkin.ui.debug.anim.DebugBoundingState());
+    FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     trace('Animation Editor');
   }
 

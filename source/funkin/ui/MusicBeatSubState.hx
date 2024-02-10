@@ -59,7 +59,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
     else if (controls.VOLUME_DOWN) FlxG.sound.changeVolume(-0.1);
 
     // Emergency exit button.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
+    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
 
     // This can now be used in EVERY STATE YAY!
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
