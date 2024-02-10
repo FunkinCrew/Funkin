@@ -58,7 +58,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     // SCRIPTED ENTRIES
     //
     var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log('Registering ${scriptedEntryClassNames.length} scripted entries...');
+    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
 
     for (entryCls in scriptedEntryClassNames)
     {
@@ -84,7 +84,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
       return !entries.exists(entryId);
     });
-    log('Fetching data for ${unscriptedEntryIds.length} unscripted entries...');
+    log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
     for (entryId in unscriptedEntryIds)
     {
       try

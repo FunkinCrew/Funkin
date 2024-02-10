@@ -39,7 +39,7 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.dialogue.ConversationDataParser;
+import funkin.data.dialogue.ConversationRegistry;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.data.event.SongEventRegistry;
@@ -1662,7 +1662,7 @@ class PlayState extends MusicBeatSubState
   {
     isInCutscene = true;
 
-    currentConversation = ConversationDataParser.fetchConversation(conversationId);
+    currentConversation = ConversationRegistry.instance.fetchEntry(conversationId);
     if (currentConversation == null) return;
 
     currentConversation.completeCallback = onConversationComplete;
