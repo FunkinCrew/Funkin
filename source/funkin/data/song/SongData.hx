@@ -418,10 +418,10 @@ class SongPlayData implements ICloneable<SongPlayData>
 
   /**
    * The difficulty ratings for this song as displayed in Freeplay.
-   * Key is a difficulty ID or `default`.
+   * Key is a difficulty ID.
    */
   @:optional
-  @:default(['default' => 1])
+  @:default(['normal' => 0])
   public var ratings:Map<String, Int>;
 
   /**
