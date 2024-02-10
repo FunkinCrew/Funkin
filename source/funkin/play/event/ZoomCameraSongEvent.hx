@@ -8,8 +8,8 @@ import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
 import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventData.SongEventFieldType;
-import funkin.data.event.SongEventData.SongEventSchema;
+import funkin.data.event.SongEventSchema;
+import funkin.data.event.SongEventSchema.SongEventFieldType;
 
 /**
  * This class represents a handler for camera zoom events.
@@ -79,7 +79,8 @@ class ZoomCameraSongEvent extends SongEvent
           return;
         }
 
-        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.stepLengthMs * duration / 1000), {ease: easeFunction});
+        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.instance.stepLengthMs * duration / 1000),
+          {ease: easeFunction});
     }
   }
 
@@ -99,20 +100,22 @@ class ZoomCameraSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return [
+    return new SongEventSchema([
       {
         name: 'zoom',
         title: 'Zoom Level',
         defaultValue: 1.0,
         step: 0.1,
-        type: SongEventFieldType.FLOAT
+        type: SongEventFieldType.FLOAT,
+        units: 'x'
       },
       {
         name: 'duration',
-        title: 'Duration (in steps)',
+        title: 'Duration',
         defaultValue: 4.0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
+        units: 'steps'
       },
       {
         name: 'ease',
@@ -145,6 +148,6 @@ class ZoomCameraSongEvent extends SongEvent
           'Elastic In/Out' => 'elasticInOut',
         ]
       }
-    ];
+    ]);
   }
 }

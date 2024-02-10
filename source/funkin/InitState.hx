@@ -19,12 +19,12 @@ import funkin.play.PlayStatePlaylist;
 import openfl.display.BitmapData;
 import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.event.SongEventData.SongEventParser;
-import funkin.play.cutscene.dialogue.ConversationDataParser;
-import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
-import funkin.play.cutscene.dialogue.SpeakerDataParser;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.stage.StageRegistry;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.song.SongRegistry;
-import funkin.play.stage.StageData.StageDataParser;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
@@ -198,24 +198,39 @@ class InitState extends FlxState
     #end
 
     //
+    // FLIXEL PLUGINS
+    //
+    funkin.util.plugins.EvacuateDebugPlugin.initialize();
+    funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
+    funkin.util.plugins.WatchPlugin.initialize();
+
+    //
     // GAME DATA PARSING
     //
 
-    // NOTE: Registries and data parsers must be imported and not referenced with fully qualified names,
+    // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
+    trace('Parsing game data...');
+    var perfStart = haxe.Timer.stamp();
+    SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
-    SongEventParser.loadEventCache();
-    ConversationDataParser.loadConversationCache();
-    DialogueBoxDataParser.loadDialogueBoxCache();
-    SpeakerDataParser.loadSpeakerCache();
-    StageDataParser.loadStageCache();
-    CharacterDataParser.loadCharacterCache();
+    ConversationRegistry.instance.loadEntries();
+    DialogueBoxRegistry.instance.loadEntries();
+    SpeakerRegistry.instance.loadEntries();
+    StageRegistry.instance.loadEntries();
+
+    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers.
+    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
-
     ModuleHandler.callOnCreate();
+
+    var perfEnd = haxe.Timer.stamp();
+
+    trace('Parsing game data took ${Math.floor((perfEnd - perfStart) * 1000)}ms.');
   }
 
   /**
@@ -233,8 +248,12 @@ class InitState extends FlxState
     startLevel(defineLevel(), defineDifficulty());
     #elseif FREEPLAY // -DFREEPLAY
     FlxG.switchState(new FreeplayState());
+    #elseif DIALOGUE // -DDIALOGUE
+    FlxG.switchState(new funkin.ui.debug.dialogue.ConversationDebugState());
     #elseif ANIMATE // -DANIMATE
     FlxG.switchState(new funkin.ui.debug.anim.FlxAnimateTest());
+    #elseif WAVEFORM // -DWAVEFORM
+    FlxG.switchState(new funkin.ui.debug.WaveformTestState());
     #elseif CHARTING // -DCHARTING
     FlxG.switchState(new funkin.ui.debug.charting.ChartEditorState());
     #elseif STAGEBUILD // -DSTAGEBUILD

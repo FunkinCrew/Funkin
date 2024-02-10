@@ -158,8 +158,8 @@ class Scoring
 
     return switch (absTiming)
     {
-      case(_ < PBOT1_KILLER_THRESHOLD) => true:
-        'killer';
+      // case(_ < PBOT1_KILLER_THRESHOLD) => true:
+      //   'killer';
       case(_ < PBOT1_SICK_THRESHOLD) => true:
         'sick';
       case(_ < PBOT1_GOOD_THRESHOLD) => true:

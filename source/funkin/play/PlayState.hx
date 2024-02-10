@@ -47,9 +47,11 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.cutscene.dialogue.Conversation;
+import funkin.data.dialogue.ConversationRegistry;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
-import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventRegistry;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.NoteSprite;
@@ -59,11 +61,11 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageRegistry;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
-import funkin.play.stage.StageData.StageDataParser;
 import funkin.ui.transition.LoadingState;
 import funkin.play.components.PopUpStuff;
 import funkin.ui.options.PreferencesMenu;
@@ -571,15 +573,15 @@ class PlayState extends MusicBeatSubState
     }
 
     // Prepare the Conductor.
-    Conductor.forceBPM(null);
+    Conductor.instance.forceBPM(null);
 
     if (currentChart.offsets != null)
     {
-      Conductor.instrumentalOffset = currentChart.offsets.getInstrumentalOffset();
+      Conductor.instance.instrumentalOffset = currentChart.offsets.getInstrumentalOffset();
     }
 
-    Conductor.mapTimeChanges(currentChart.timeChanges);
-    Conductor.update((Conductor.beatLengthMs * -5) + startTimestamp);
+    Conductor.instance.mapTimeChanges(currentChart.timeChanges);
+    Conductor.instance.update((Conductor.instance.beatLengthMs * -5) + startTimestamp);
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
@@ -744,7 +746,7 @@ class PlayState extends MusicBeatSubState
 
       // Reset music properly.
 
-      FlxG.sound.music.time = Math.max(0, startTimestamp - Conductor.instrumentalOffset);
+      FlxG.sound.music.time = Math.max(0, startTimestamp - Conductor.instance.instrumentalOffset);
       FlxG.sound.music.pause();
 
       if (!overrideMusic)
@@ -795,22 +797,22 @@ class PlayState extends MusicBeatSubState
     {
       if (isInCountdown)
       {
-        Conductor.update(Conductor.songPosition + elapsed * 1000);
-        if (Conductor.songPosition >= (startTimestamp)) startSong();
+        Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000);
+        if (Conductor.instance.songPosition >= (startTimestamp)) startSong();
       }
     }
     else
     {
       if (Constants.EXT_SOUND == 'mp3')
       {
-        Conductor.formatOffset = Constants.MP3_DELAY_MS;
+        Conductor.instance.formatOffset = Constants.MP3_DELAY_MS;
       }
       else
       {
-        Conductor.formatOffset = 0.0;
+        Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.update(); // Normal conductor update.
+      Conductor.instance.update(); // Normal conductor update.
     }
 
     var androidPause:Bool = false;
@@ -932,7 +934,11 @@ class PlayState extends MusicBeatSubState
         }
         #end
 
-        var gameOverSubState = new GameOverSubState();
+        var gameOverSubState = new GameOverSubState(
+          {
+            isChartingMode: isChartingMode,
+            transparent: persistentDraw
+          });
         FlxTransitionableSubState.skipNextTransIn = true;
         FlxTransitionableSubState.skipNextTransOut = true;
         openSubState(gameOverSubState);
@@ -948,7 +954,7 @@ class PlayState extends MusicBeatSubState
     // TODO: Check that these work even when songPosition is less than 0.
     if (songEvents != null && songEvents.length > 0)
     {
-      var songEventsToActivate:Array<SongEventData> = SongEventParser.queryEvents(songEvents, Conductor.songPosition);
+      var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEvents(songEvents, Conductor.instance.songPosition);
 
       if (songEventsToActivate.length > 0)
       {
@@ -956,7 +962,7 @@ class PlayState extends MusicBeatSubState
         for (event in songEventsToActivate)
         {
           // If an event is trying to play, but it's over 5 seconds old, skip it.
-          if (event.time - Conductor.songPosition < -5000)
+          if (event.time - Conductor.instance.songPosition < -5000)
           {
             event.activated = true;
             continue;
@@ -967,7 +973,7 @@ class PlayState extends MusicBeatSubState
           // Calling event.cancelEvent() skips the event. Neat!
           if (!eventEvent.eventCanceled)
           {
-            SongEventParser.handleEvent(event);
+            SongEventRegistry.handleEvent(event);
           }
         }
       }
@@ -1058,7 +1064,7 @@ class PlayState extends MusicBeatSubState
       if (startTimer.finished)
       {
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
-          currentSongLengthMs - Conductor.songPosition);
+          currentSongLengthMs - Conductor.instance.songPosition);
       }
       else
       {
@@ -1082,12 +1088,12 @@ class PlayState extends MusicBeatSubState
   {
     if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
     {
-      if (Conductor.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
+      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
         + ' ('
         + storyDifficultyText
         + ')', iconRPC, true,
         currentSongLengthMs
-        - Conductor.songPosition);
+        - Conductor.instance.songPosition);
       else
         DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
     }
@@ -1160,17 +1166,17 @@ class PlayState extends MusicBeatSubState
 
     if (!startingSong
       && FlxG.sound.music != null
-      && (Math.abs(FlxG.sound.music.time - (Conductor.songPosition + Conductor.instrumentalOffset)) > 200
-        || Math.abs(vocals.checkSyncError(Conductor.songPosition + Conductor.instrumentalOffset)) > 200))
+      && (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 200
+        || Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 200))
     {
       trace("VOCALS NEED RESYNC");
-      if (vocals != null) trace(vocals.checkSyncError(Conductor.songPosition + Conductor.instrumentalOffset));
-      trace(FlxG.sound.music.time - (Conductor.songPosition + Conductor.instrumentalOffset));
+      if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
+      trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
       resyncVocals();
     }
 
-    if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.currentStep));
-    if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.currentStep));
+    if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.instance.currentStep));
+    if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.instance.currentStep));
 
     return true;
   }
@@ -1191,14 +1197,14 @@ class PlayState extends MusicBeatSubState
     }
 
     // Only zoom camera if we are zoomed by less than 35%.
-    if (FlxG.camera.zoom < (1.35 * defaultCameraZoom) && cameraZoomRate > 0 && Conductor.currentBeat % cameraZoomRate == 0)
+    if (FlxG.camera.zoom < (1.35 * defaultCameraZoom) && cameraZoomRate > 0 && Conductor.instance.currentBeat % cameraZoomRate == 0)
     {
       // Zoom camera in (1.5%)
       FlxG.camera.zoom += cameraZoomIntensity * defaultCameraZoom;
       // Hud zooms double (3%)
       camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
     }
-    // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.currentBeat} % ${cameraZoomRate} == ${Conductor.currentBeat % cameraZoomRate}}');
+    // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
 
     // That combo milestones that got spoiled that one time.
     // Comes with NEAT visual and audio effects.
@@ -1211,13 +1217,13 @@ class PlayState extends MusicBeatSubState
     // TODO: Re-enable combo text (how to do this without sections?).
     // if (currentSong != null)
     // {
-    //  shouldShowComboText = (Conductor.currentBeat % 8 == 7);
-    //  var daSection = .getSong()[Std.int(Conductor.currentBeat / 16)];
+    //  shouldShowComboText = (Conductor.instance.currentBeat % 8 == 7);
+    //  var daSection = .getSong()[Std.int(Conductor.instance.currentBeat / 16)];
     //  shouldShowComboText = shouldShowComboText && (daSection != null && daSection.mustHitSection);
     //  shouldShowComboText = shouldShowComboText && (Highscore.tallies.combo > 5);
     //
-    //  var daNextSection = .getSong()[Std.int(Conductor.currentBeat / 16) + 1];
-    //  var isEndOfSong = .getSong().length < Std.int(Conductor.currentBeat / 16);
+    //  var daNextSection = .getSong()[Std.int(Conductor.instance.currentBeat / 16) + 1];
+    //  var isEndOfSong = .getSong().length < Std.int(Conductor.instance.currentBeat / 16);
     //  shouldShowComboText = shouldShowComboText && (isEndOfSong || (daNextSection != null && !daNextSection.mustHitSection));
     // }
 
@@ -1230,7 +1236,7 @@ class PlayState extends MusicBeatSubState
 
       var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
 
-      new FlxTimer().start(((Conductor.beatLengthMs / 1000) * 1.25) - frameShit, function(tmr) {
+      new FlxTimer().start(((Conductor.instance.beatLengthMs / 1000) * 1.25) - frameShit, function(tmr) {
         animShit.forceFinish();
       });
     }
@@ -1267,10 +1273,10 @@ class PlayState extends MusicBeatSubState
     if (currentStage == null) return;
 
     // TODO: Add HEY! song events to Tutorial.
-    if (Conductor.currentBeat % 16 == 15
+    if (Conductor.instance.currentBeat % 16 == 15
       && currentStage.getDad().characterId == 'gf'
-      && Conductor.currentBeat > 16
-      && Conductor.currentBeat < 48)
+      && Conductor.instance.currentBeat > 16
+      && Conductor.instance.currentBeat < 48)
     {
       currentStage.getBoyfriend().playAnimation('hey', true);
       currentStage.getDad().playAnimation('cheer', true);
@@ -1359,7 +1365,8 @@ class PlayState extends MusicBeatSubState
    */
   function loadStage(id:String):Void
   {
-    currentStage = StageDataParser.fetchStage(id);
+    currentStage = StageRegistry.instance.fetchEntry(id);
+    currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
     if (currentStage != null)
     {
@@ -1581,7 +1588,7 @@ class PlayState extends MusicBeatSubState
       trace('Song difficulty could not be loaded.');
     }
 
-    // Conductor.forceBPM(currentChart.getStartingBPM());
+    // Conductor.instance.forceBPM(currentChart.getStartingBPM());
 
     if (!overrideMusic)
     {
@@ -1613,7 +1620,7 @@ class PlayState extends MusicBeatSubState
 
     // Reset song events.
     songEvents = currentChart.getEvents();
-    SongEventParser.resetEvents(songEvents);
+    SongEventRegistry.resetEvents(songEvents);
 
     // Reset the notes on each strumline.
     var playerNoteData:Array<SongNoteData> = [];
@@ -1667,7 +1674,7 @@ class PlayState extends MusicBeatSubState
   {
     isInCutscene = true;
 
-    currentConversation = ConversationDataParser.fetchConversation(conversationId);
+    currentConversation = ConversationRegistry.instance.fetchEntry(conversationId);
     if (currentConversation == null) return;
 
     currentConversation.completeCallback = onConversationComplete;
@@ -1712,7 +1719,7 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.onComplete = endSong;
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
-    FlxG.sound.music.time = startTimestamp - Conductor.instrumentalOffset;
+    FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
 
     trace('Playing vocals...');
     add(vocals);
@@ -1728,7 +1735,7 @@ class PlayState extends MusicBeatSubState
 
     if (startTimestamp > 0)
     {
-      // FlxG.sound.music.time = startTimestamp - Conductor.instrumentalOffset;
+      // FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
       handleSkippedNotes();
     }
   }
@@ -1802,11 +1809,12 @@ class PlayState extends MusicBeatSubState
     {
       if (note == null) continue;
 
+      // TODO: Does this properly account for offsets?
       var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
-      if (Conductor.songPosition > hitWindowEnd)
+      if (Conductor.instance.songPosition > hitWindowEnd)
       {
         if (note.hasMissed) continue;
 
@@ -1816,7 +1824,7 @@ class PlayState extends MusicBeatSubState
 
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
       }
-      else if (Conductor.songPosition > hitWindowCenter)
+      else if (Conductor.instance.songPosition > hitWindowCenter)
       {
         if (note.hasBeenHit) continue;
 
@@ -1837,7 +1845,7 @@ class PlayState extends MusicBeatSubState
           opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
         }
       }
-      else if (Conductor.songPosition > hitWindowStart)
+      else if (Conductor.instance.songPosition > hitWindowStart)
       {
         if (note.hasBeenHit || note.hasMissed) continue;
 
@@ -1870,27 +1878,43 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      // TODO: Potential penalty for dropping a hold note?
-      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        // When the opponent drops a hold note.
+        holdNote.handledMiss = true;
+
+        // We dropped a hold note.
+        // Mute vocals and play miss animation, but don't penalize.
+        vocals.opponentVolume = 0;
+        currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
+      }
     }
 
     // Process notes on the player's side.
     for (note in playerStrumline.notes.members)
     {
-      if (note == null || note.hasBeenHit) continue;
+      if (note == null) continue;
+
+      if (note.hasBeenHit)
+      {
+        note.tooEarly = false;
+        note.mayHit = false;
+        note.hasMissed = false;
+        continue;
+      }
 
       var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
-      if (Conductor.songPosition > hitWindowEnd)
+      if (Conductor.instance.songPosition > hitWindowEnd)
       {
         note.tooEarly = false;
         note.mayHit = false;
         note.hasMissed = true;
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
       }
-      else if (Conductor.songPosition > hitWindowStart)
+      else if (Conductor.instance.songPosition > hitWindowStart)
       {
         note.tooEarly = false;
         note.mayHit = true;
@@ -1940,8 +1964,15 @@ class PlayState extends MusicBeatSubState
         songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
       }
 
-      // TODO: Potential penalty for dropping a hold note?
-      // if (holdNote.missedNote && !holdNote.handledMiss) { holdNote.handledMiss = true; }
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        // The player dropped a hold note.
+        holdNote.handledMiss = true;
+
+        // Mute vocals and play miss animation, but don't penalize.
+        vocals.playerVolume = 0;
+        currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+      }
     }
   }
 
@@ -1957,7 +1988,7 @@ class PlayState extends MusicBeatSubState
       if (note == null || note.hasBeenHit) continue;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
-      if (Conductor.songPosition > hitWindowEnd)
+      if (Conductor.instance.songPosition > hitWindowEnd)
       {
         // We have passed this note.
         // Flag the note for deletion without actually penalizing the player.
@@ -2033,8 +2064,6 @@ class PlayState extends MusicBeatSubState
         trace('Hit note! ${targetNote.noteData}');
         goodNoteHit(targetNote, input);
 
-        targetNote.visible = false;
-        targetNote.kill();
         notesInDirection.remove(targetNote);
 
         // Play the strumline animation.
@@ -2066,14 +2095,7 @@ class PlayState extends MusicBeatSubState
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
 
-    Highscore.tallies.combo++;
-    Highscore.tallies.totalNotesHit++;
-
-    if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
-
     popUpScore(note, input);
-
-    playerStrumline.hitNote(note);
 
     if (note.isHoldNote && note.holdNoteSprite != null)
     {
@@ -2090,8 +2112,6 @@ class PlayState extends MusicBeatSubState
   function onNoteMiss(note:NoteSprite):Void
   {
     // a MISS is when you let a note scroll past you!!
-    Highscore.tallies.missed++;
-
     var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Highscore.tallies.combo, true);
     dispatchEvent(event);
     // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2121,7 +2141,7 @@ class PlayState extends MusicBeatSubState
         {
           inputSpitter.push(
             {
-              t: Std.int(Conductor.songPosition),
+              t: Std.int(Conductor.instance.songPosition),
               d: indices[i],
               l: 20
             });
@@ -2131,7 +2151,7 @@ class PlayState extends MusicBeatSubState
       {
         inputSpitter.push(
           {
-            t: Std.int(Conductor.songPosition),
+            t: Std.int(Conductor.instance.songPosition),
             d: -1,
             l: 20
           });
@@ -2139,8 +2159,11 @@ class PlayState extends MusicBeatSubState
     }
     vocals.playerVolume = 0;
 
+    Highscore.tallies.missed++;
+
     if (Highscore.tallies.combo != 0)
     {
+      // Break the combo.
       Highscore.tallies.combo = comboPopUps.displayCombo(0);
     }
 
@@ -2192,7 +2215,7 @@ class PlayState extends MusicBeatSubState
       {
         inputSpitter.push(
           {
-            t: Std.int(Conductor.songPosition),
+            t: Std.int(Conductor.instance.songPosition),
             d: indices[i],
             l: 20
           });
@@ -2276,39 +2299,63 @@ class PlayState extends MusicBeatSubState
     vocals.playerVolume = 1;
 
     // Calculate the input latency (do this as late as possible).
-    var inputLatencyMs:Float = haxe.Int64.toInt(PreciseInputManager.getCurrentTimestamp() - input.timestamp) / 1000.0 / 1000.0;
-    trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
+    // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
+    var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
+    var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
+    // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
-    var noteDiff:Int = Std.int(Conductor.songPosition - daNote.noteData.time - inputLatencyMs);
+    var noteDiff:Int = Std.int(Conductor.instance.songPosition - daNote.noteData.time - inputLatencyMs);
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
 
+    if (daRating == 'miss')
+    {
+      // If daRating is 'miss', that means we made a mistake and should not continue.
+      trace('[WARNING] popUpScore judged a note as a miss!');
+      // TODO: Remove this.
+      comboPopUps.displayRating('miss');
+      return;
+    }
+
+    var isComboBreak = false;
     switch (daRating)
     {
-      case 'killer':
-        Highscore.tallies.killer += 1;
-        health += Constants.HEALTH_KILLER_BONUS;
       case 'sick':
         Highscore.tallies.sick += 1;
         health += Constants.HEALTH_SICK_BONUS;
+        isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
         health += Constants.HEALTH_GOOD_BONUS;
+        isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
         health += Constants.HEALTH_BAD_BONUS;
+        isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
         health += Constants.HEALTH_SHIT_BONUS;
-      case 'miss':
-        Highscore.tallies.missed += 1;
-        health -= Constants.HEALTH_MISS_PENALTY;
+        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 
-    if (daRating == "sick" || daRating == "killer")
+    if (isComboBreak)
+    {
+      // Break the combo, but don't increment tallies.misses.
+      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+    }
+    else
+    {
+      Highscore.tallies.combo++;
+      Highscore.tallies.totalNotesHit++;
+      if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
+    }
+
+    playerStrumline.hitNote(daNote, !isComboBreak);
+
+    if (daRating == "sick")
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
@@ -2336,7 +2383,7 @@ class PlayState extends MusicBeatSubState
         {
           inputSpitter.push(
             {
-              t: Std.int(Conductor.songPosition),
+              t: Std.int(Conductor.instance.songPosition),
               d: indices[i],
               l: 20
             });
@@ -2346,7 +2393,7 @@ class PlayState extends MusicBeatSubState
       {
         inputSpitter.push(
           {
-            t: Std.int(Conductor.songPosition),
+            t: Std.int(Conductor.instance.songPosition),
             d: -1,
             l: 20
           });
@@ -2444,7 +2491,6 @@ class PlayState extends MusicBeatSubState
           score: songScore,
           tallies:
             {
-              killer: Highscore.tallies.killer,
               sick: Highscore.tallies.sick,
               good: Highscore.tallies.good,
               bad: Highscore.tallies.bad,
@@ -2495,7 +2541,6 @@ class PlayState extends MusicBeatSubState
               tallies:
                 {
                   // TODO: Sum up the values for the whole level!
-                  killer: 0,
                   sick: 0,
                   good: 0,
                   bad: 0,
@@ -2745,15 +2790,15 @@ class PlayState extends MusicBeatSubState
   {
     FlxG.sound.music.pause();
 
-    var targetTimeSteps:Float = Conductor.currentStepTime + (Conductor.timeSignatureNumerator * Constants.STEPS_PER_BEAT * sections);
-    var targetTimeMs:Float = Conductor.getStepTimeInMs(targetTimeSteps);
+    var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.timeSignatureNumerator * Constants.STEPS_PER_BEAT * sections);
+    var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
 
     FlxG.sound.music.time = targetTimeMs;
 
     handleSkippedNotes();
     // regenNoteData(FlxG.sound.music.time);
 
-    Conductor.update(FlxG.sound.music.time);
+    Conductor.instance.update(FlxG.sound.music.time);
 
     resyncVocals();
   }

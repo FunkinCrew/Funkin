@@ -1,6 +1,6 @@
 package funkin.ui.debug.charting.components;
 
-import funkin.data.event.SongEventData.SongEventParser;
+import funkin.data.event.SongEventRegistry;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
@@ -11,6 +11,9 @@ import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
 import funkin.data.song.SongData.SongEventData;
+import haxe.ui.tooltips.ToolTipRegionOptions;
+import funkin.util.HaxeUIUtil;
+import haxe.ui.tooltips.ToolTipManager;
 
 /**
  * A sprite that can be used to display a song event in a chart.
@@ -36,6 +39,13 @@ class ChartEditorEventSprite extends FlxSprite
 
   public var overrideStepTime(default, set):Null<Float> = null;
 
+  public var tooltip:ToolTipRegionOptions;
+
+  /**
+   * Whether this sprite is a "ghost" sprite used when hovering to place a new event.
+   */
+  public var isGhost:Bool = false;
+
   function set_overrideStepTime(value:Null<Float>):Null<Float>
   {
     if (overrideStepTime == value) return overrideStepTime;
@@ -45,12 +55,14 @@ class ChartEditorEventSprite extends FlxSprite
     return overrideStepTime;
   }
 
-  public function new(parent:ChartEditorState)
+  public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
     super();
 
     this.parentState = parent;
+    this.isGhost = isGhost;
 
+    this.tooltip = HaxeUIUtil.buildTooltip('N/A');
     this.frames = buildFrames();
 
     buildAnimations();
@@ -79,7 +91,7 @@ class ChartEditorEventSprite extends FlxSprite
     }
 
     // Push all the other events as frames.
-    for (eventName in SongEventParser.listEventIds())
+    for (eventName in SongEventRegistry.listEventIds())
     {
       var exists:Bool = Assets.exists(Paths.image('ui/chart-editor/events/$eventName'));
       if (!exists) continue; // No graphic for this event.
@@ -105,7 +117,7 @@ class ChartEditorEventSprite extends FlxSprite
 
   function buildAnimations():Void
   {
-    var eventNames:Array<String> = [DEFAULT_EVENT].concat(SongEventParser.listEventIds());
+    var eventNames:Array<String> = [DEFAULT_EVENT].concat(SongEventRegistry.listEventIds());
     for (eventName in eventNames)
     {
       this.animation.addByPrefix(eventName, '${eventName}0', 24, false);
@@ -119,8 +131,10 @@ class ChartEditorEventSprite extends FlxSprite
     return DEFAULT_EVENT;
   }
 
-  public function playAnimation(name:String):Void
+  public function playAnimation(?name:String):Void
   {
+    if (name == null) name = eventData?.event ?? DEFAULT_EVENT;
+
     var correctedName = correctAnimationName(name);
     this.animation.play(correctedName);
     refresh();
@@ -140,17 +154,18 @@ class ChartEditorEventSprite extends FlxSprite
       // Disown parent. MAKE SURE TO REVIVE BEFORE REUSING
       this.kill();
       this.visible = false;
+      updateTooltipPosition();
       return null;
     }
     else
     {
       this.visible = true;
-      // Only play the animation if the event type has changed.
-      // if (this.eventData == null || this.eventData.event != value.event)
       playAnimation(value.event);
       this.eventData = value;
       // Update the position to match the note data.
       updateEventPosition();
+      // Update the tooltip text.
+      this.tooltip.tipData = {text: this.eventData.buildTooltip()};
       return this.eventData;
     }
   }
@@ -168,6 +183,31 @@ class ChartEditorEventSprite extends FlxSprite
     {
       this.x += origin.x;
       this.y += origin.y;
+    }
+
+    this.updateTooltipPosition();
+  }
+
+  public function updateTooltipPosition():Void
+  {
+    // No tooltip for ghost sprites.
+    if (this.isGhost) return;
+
+    if (this.eventData == null)
+    {
+      // Disable the tooltip.
+      ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    }
+    else
+    {
+      // Update the position.
+      this.tooltip.left = this.x;
+      this.tooltip.top = this.y;
+      this.tooltip.width = this.width;
+      this.tooltip.height = this.height;
+
+      // Enable the tooltip.
+      ToolTipManager.instance.registerTooltipRegion(this.tooltip);
     }
   }
 

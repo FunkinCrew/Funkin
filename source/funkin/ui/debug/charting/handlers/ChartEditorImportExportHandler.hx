@@ -28,6 +28,8 @@ class ChartEditorImportExportHandler
    */
   public static function loadSongAsTemplate(state:ChartEditorState, songId:String):Void
   {
+    trace('===============START');
+
     var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
 
     if (song == null) return;
@@ -43,7 +45,8 @@ class ChartEditorImportExportHandler
       var variation = (metadata.variation == null || metadata.variation == '') ? Constants.DEFAULT_VARIATION : metadata.variation;
 
       // Clone to prevent modifying the original.
-      var metadataClone:SongMetadata = metadata.clone(variation);
+      var metadataClone:SongMetadata = metadata.clone();
+      metadataClone.variation = variation;
       if (metadataClone != null) songMetadata.set(variation, metadataClone);
 
       var chartData:Null<SongChartData> = SongRegistry.instance.parseEntryChartData(songId, metadata.variation);
@@ -97,11 +100,14 @@ class ChartEditorImportExportHandler
     state.isHaxeUIDialogOpen = false;
     state.currentWorkingFilePath = null; // New file, so no path.
     state.switchToCurrentInstrumental();
+
     state.postLoadInstrumental();
 
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
     state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
+
+    trace('===============END');
   }
 
   /**
@@ -114,9 +120,10 @@ class ChartEditorImportExportHandler
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
 
-    Conductor.forceBPM(null); // Disable the forced BPM.
-    Conductor.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
-    Conductor.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    Conductor.instance.forceBPM(null); // Disable the forced BPM.
+    Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
+    Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+    state.updateTimeSignature();
 
     state.notePreviewDirty = true;
     state.notePreviewViewportBoundsDirty = true;
@@ -130,11 +137,8 @@ class ChartEditorImportExportHandler
       state.audioInstTrack.stop();
       state.audioInstTrack = null;
     }
-    if (state.audioVocalTrackGroup != null)
-    {
-      state.audioVocalTrackGroup.stop();
-      state.audioVocalTrackGroup.clear();
-    }
+    state.audioVocalTrackGroup.stop();
+    state.audioVocalTrackGroup.clear();
   }
 
   /**
@@ -415,16 +419,34 @@ class ChartEditorImportExportHandler
         ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
-        FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
-        if (onSaveCb != null) onSaveCb(targetPath);
+        try
+        {
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          // On success.
+          if (onSaveCb != null) onSaveCb(targetPath);
+        }
+        catch (e)
+        {
+          // On failure.
+          if (onCancelCb != null) onCancelCb();
+        }
       }
       else
       {
         // Force write since we know what file the user wants to overwrite.
         trace('Force exporting to $targetPath...');
-        FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
-        state.saveDataDirty = false;
-        if (onSaveCb != null) onSaveCb(targetPath);
+        try
+        {
+          // On success.
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          state.saveDataDirty = false;
+          if (onSaveCb != null) onSaveCb(targetPath);
+        }
+        catch (e)
+        {
+          // On failure.
+          if (onCancelCb != null) onCancelCb();
+        }
       }
     }
     else

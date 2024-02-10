@@ -153,8 +153,8 @@ class SongDataUtils
   public static function buildNoteClipboard(notes:Array<SongNoteData>, ?timeOffset:Int = null):Array<SongNoteData>
   {
     if (notes.length == 0) return notes;
-    if (timeOffset == null) timeOffset = -Std.int(notes[0].time);
-    return offsetSongNoteData(sortNotes(notes), timeOffset);
+    if (timeOffset == null) timeOffset = Std.int(notes[0].time);
+    return offsetSongNoteData(sortNotes(notes), -timeOffset);
   }
 
   /**
@@ -165,8 +165,8 @@ class SongDataUtils
   public static function buildEventClipboard(events:Array<SongEventData>, ?timeOffset:Int = null):Array<SongEventData>
   {
     if (events.length == 0) return events;
-    if (timeOffset == null) timeOffset = -Std.int(events[0].time);
-    return offsetSongEventData(sortEvents(events), timeOffset);
+    if (timeOffset == null) timeOffset = Std.int(events[0].time);
+    return offsetSongEventData(sortEvents(events), -timeOffset);
   }
 
   /**
@@ -230,6 +230,7 @@ class SongDataUtils
     trace('Read ${notesString.length} characters from clipboard.');
 
     var parser = new json2object.JsonParser<SongClipboardItems>();
+    parser.ignoreUnknownVariables = false;
     parser.fromJson(notesString, 'clipboard');
     if (parser.errors.length > 0)
     {
@@ -272,7 +273,7 @@ class SongDataUtils
   }
 
   /**
-   * Filter a list of notes to only include notes whose data is within the given range.
+   * Filter a list of notes to only include notes whose data is within the given range, inclusive.
    */
   public static function getNotesInDataRange(notes:Array<SongNoteData>, start:Int, end:Int):Array<SongNoteData>
   {

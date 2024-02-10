@@ -120,6 +120,71 @@ class DataParse
     }
   }
 
+  public static function backdropData(json:Json, name:String):funkin.data.dialogue.ConversationData.BackdropData
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        var result:Dynamic = {};
+        var backdropType:String = '';
+
+        for (field in fields)
+        {
+          switch (field.name)
+          {
+            case 'type':
+              backdropType = Tools.getValue(field.value);
+          }
+          Reflect.setField(result, field.name, Tools.getValue(field.value));
+        }
+
+        switch (backdropType)
+        {
+          case 'solid':
+            return SOLID(result);
+          default:
+            throw 'Expected Backdrop property $name to be specify a valid "type", but it was "${backdropType}".';
+        }
+
+        return null;
+      default:
+        throw 'Expected property $name to be an object, but it was ${json.value}.';
+    }
+  }
+
+  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.ConversationData.OutroData>
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        var result:Dynamic = {};
+        var outroType:String = '';
+
+        for (field in fields)
+        {
+          switch (field.name)
+          {
+            case 'type':
+              outroType = Tools.getValue(field.value);
+          }
+          Reflect.setField(result, field.name, Tools.getValue(field.value));
+        }
+
+        switch (outroType)
+        {
+          case 'none':
+            return NONE(result);
+          case 'fade':
+            return FADE(result);
+          default:
+            throw 'Expected Outro property $name to be specify a valid "type", but it was "${outroType}".';
+        }
+        return null;
+      default:
+        throw 'Expected property $name to be an object, but it was ${json.value}.';
+    }
+  }
+
   /**
    * Parser which outputs a `Either<Float, LegacyScrollSpeeds>`.
    * Used by the FNF legacy JSON importer.
@@ -178,7 +243,31 @@ class DataParse
     switch (json.value)
     {
       case JObject(fields):
-        return cast Tools.getValue(json);
+        var result:LegacyNoteSection =
+          {
+            mustHitSection: false,
+            sectionNotes: [],
+          };
+        for (field in fields)
+        {
+          switch (field.name)
+          {
+            case 'sectionNotes':
+              result.sectionNotes = legacyNotes(field.value, field.name);
+
+            case 'mustHitSection':
+              result.mustHitSection = Tools.getValue(field.value);
+            case 'typeOfSection':
+              result.typeOfSection = Tools.getValue(field.value);
+            case 'lengthInSteps':
+              result.lengthInSteps = Tools.getValue(field.value);
+            case 'changeBPM':
+              result.changeBPM = Tools.getValue(field.value);
+            case 'bpm':
+              result.bpm = Tools.getValue(field.value);
+          }
+        }
+        return result;
       default:
         throw 'Expected property $name to be an object, but it was ${json.value}.';
     }
@@ -189,7 +278,12 @@ class DataParse
     switch (json.value)
     {
       case JObject(fields):
-        return cast Tools.getValue(json);
+        var result = {};
+        for (field in fields)
+        {
+          Reflect.setField(result, field.name, legacyNoteSectionArray(field.value, field.name));
+        }
+        return result;
       default:
         throw 'Expected property $name to be an object, but it was ${json.value}.';
     }
@@ -211,13 +305,13 @@ class DataParse
     switch (json.value)
     {
       case JArray(values):
-        // var time:Null<Float> = values[0] == null ? null : Tools.getValue(values[0]);
-        // var data:Null<Int> = values[1] == null ? null : Tools.getValue(values[1]);
-        // var length:Null<Float> = values[2] == null ? null : Tools.getValue(values[2]);
-        // var alt:Null<Bool> = values[3] == null ? null : Tools.getValue(values[3]);
+        var time:Null<Float> = values[0] == null ? null : Tools.getValue(values[0]);
+        var data:Null<Int> = values[1] == null ? null : Tools.getValue(values[1]);
+        var length:Null<Float> = values[2] == null ? null : Tools.getValue(values[2]);
+        var alt:Null<Bool> = values[3] == null ? null : Tools.getValue(values[3]);
 
-        // return new LegacyNote(time, data, length, alt);
-        return null;
+        return new LegacyNote(time, data, length, alt);
+      // return null;
       default:
         throw 'Expected property $name to be a note, but it was ${json.value}.';
     }

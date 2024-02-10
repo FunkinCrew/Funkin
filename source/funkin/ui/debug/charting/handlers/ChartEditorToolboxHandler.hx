@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
-import funkin.play.stage.StageData.StageDataParser;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import haxe.ui.components.HorizontalSlider;
@@ -9,20 +8,20 @@ import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventData;
+import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.event.SongEvent;
 import funkin.play.song.SongSerializer;
-import funkin.play.stage.StageData;
-import funkin.play.stage.StageData.StageDataParser;
+import funkin.data.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.util.FileUtil;
 import haxe.ui.components.Button;
+import haxe.ui.data.ArrayDataSource;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.HorizontalSlider;
@@ -36,12 +35,15 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import haxe.ui.containers.Frame;
 import haxe.ui.containers.Grid;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
 import haxe.ui.core.Component;
-import haxe.ui.data.ArrayDataSource;
 import haxe.ui.events.UIEvent;
 
 /**
@@ -79,14 +81,19 @@ class ChartEditorToolboxHandler
       {
         case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
           onShowToolboxNoteData(state, toolbox);
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
-          onShowToolboxEventData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:
+          // TODO: Fix this.
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
           onShowToolboxPlaytestProperties(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
-          onShowToolboxDifficulty(state, toolbox);
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
           // TODO: Fix this.
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
           onShowToolboxPlayerPreview(state, toolbox);
@@ -119,14 +126,10 @@ class ChartEditorToolboxHandler
       {
         case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
           onHideToolboxNoteData(state, toolbox);
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:
           onHideToolboxEventData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
           onHideToolboxPlaytestProperties(state, toolbox);
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
-          onHideToolboxDifficulty(state, toolbox);
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
-          onHideToolboxMetadata(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
           onHideToolboxPlayerPreview(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -195,7 +198,7 @@ class ChartEditorToolboxHandler
     {
       case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
         toolbox = buildToolboxNoteDataLayout(state);
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT:
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:
         toolbox = buildToolboxEventDataLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
         toolbox = buildToolboxPlaytestPropertiesLayout(state);
@@ -203,6 +206,10 @@ class ChartEditorToolboxHandler
         toolbox = buildToolboxDifficultyLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
         toolbox = buildToolboxMetadataLayout(state);
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
+        toolbox = buildToolboxOffsetsLayout(state);
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
+        toolbox = buildToolboxFreeplayLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
         toolbox = buildToolboxPlayerPreviewLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
@@ -283,19 +290,19 @@ class ChartEditorToolboxHandler
         toolboxNotesCustomKindLabel.hidden = false;
         toolboxNotesCustomKind.hidden = false;
 
-        state.selectedNoteKind = toolboxNotesCustomKind.text;
+        state.noteKindToPlace = toolboxNotesCustomKind.text;
       }
       else
       {
         toolboxNotesCustomKindLabel.hidden = true;
         toolboxNotesCustomKind.hidden = true;
 
-        state.selectedNoteKind = event.data.id;
+        state.noteKindToPlace = event.data.id;
       }
     }
 
     toolboxNotesCustomKind.onChange = function(event:UIEvent) {
-      state.selectedNoteKind = toolboxNotesCustomKind.text;
+      state.noteKindToPlace = toolboxNotesCustomKind.text;
     }
 
     return toolbox;
@@ -305,158 +312,11 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxNoteData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function buildToolboxEventDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
-  {
-    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENTDATA_LAYOUT);
-
-    if (toolbox == null) return null;
-
-    // Starting position.
-    toolbox.x = 100;
-    toolbox.y = 150;
-
-    toolbox.onDialogClosed = function(event:DialogEvent) {
-      state.menubarItemToggleToolboxEvents.selected = false;
-    }
-
-    var toolboxEventsEventKind:Null<DropDown> = toolbox.findComponent('toolboxEventsEventKind', DropDown);
-    if (toolboxEventsEventKind == null) throw 'ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Could not find toolboxEventsEventKind component.';
-    var toolboxEventsDataGrid:Null<Grid> = toolbox.findComponent('toolboxEventsDataGrid', Grid);
-    if (toolboxEventsDataGrid == null) throw 'ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Could not find toolboxEventsDataGrid component.';
-
-    toolboxEventsEventKind.dataSource = new ArrayDataSource();
-
-    var songEvents:Array<SongEvent> = SongEventParser.listEvents();
-
-    for (event in songEvents)
-    {
-      toolboxEventsEventKind.dataSource.add({text: event.getTitle(), value: event.id});
-    }
-
-    toolboxEventsEventKind.onChange = function(event:UIEvent) {
-      var eventType:String = event.data.value;
-
-      trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event type changed: $eventType');
-
-      state.selectedEventKind = eventType;
-
-      var schema:SongEventSchema = SongEventParser.getEventSchema(eventType);
-
-      if (schema == null)
-      {
-        trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Unknown event kind: $eventType');
-        return;
-      }
-
-      buildEventDataFormFromSchema(state, toolboxEventsDataGrid, schema);
-    }
-    toolboxEventsEventKind.value = state.selectedEventKind;
-
-    return toolbox;
-  }
-
-  static function onShowToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onHideToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
-  static function onHideToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
-
   static function onHideToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
-
-  static function buildEventDataFormFromSchema(state:ChartEditorState, target:Box, schema:SongEventSchema):Void
-  {
-    trace(schema);
-    // Clear the frame.
-    target.removeAllComponents();
-
-    state.selectedEventData = {};
-
-    for (field in schema)
-    {
-      if (field == null) continue;
-
-      // Add a label.
-      var label:Label = new Label();
-      label.text = field.title;
-      label.verticalAlign = "center";
-      target.addComponent(label);
-
-      var input:Component;
-      switch (field.type)
-      {
-        case INTEGER:
-          var numberStepper:NumberStepper = new NumberStepper();
-          numberStepper.id = field.name;
-          numberStepper.step = field.step ?? 1.0;
-          numberStepper.min = field.min ?? 0.0;
-          numberStepper.max = field.max ?? 10.0;
-          if (field.defaultValue != null) numberStepper.value = field.defaultValue;
-          input = numberStepper;
-        case FLOAT:
-          var numberStepper:NumberStepper = new NumberStepper();
-          numberStepper.id = field.name;
-          numberStepper.step = field.step ?? 0.1;
-          if (field.min != null) numberStepper.min = field.min;
-          if (field.max != null) numberStepper.max = field.max;
-          if (field.defaultValue != null) numberStepper.value = field.defaultValue;
-          input = numberStepper;
-        case BOOL:
-          var checkBox:CheckBox = new CheckBox();
-          checkBox.id = field.name;
-          if (field.defaultValue != null) checkBox.selected = field.defaultValue;
-          input = checkBox;
-        case ENUM:
-          var dropDown:DropDown = new DropDown();
-          dropDown.id = field.name;
-          dropDown.width = 200.0;
-          dropDown.dataSource = new ArrayDataSource();
-
-          if (field.keys == null) throw 'Field "${field.name}" is of Enum type but has no keys.';
-
-          // Add entries to the dropdown.
-
-          for (optionName in field.keys.keys())
-          {
-            var optionValue:Null<Dynamic> = field.keys.get(optionName);
-            trace('$optionName : $optionValue');
-            dropDown.dataSource.add({value: optionValue, text: optionName});
-          }
-
-          dropDown.value = field.defaultValue;
-
-          input = dropDown;
-        case STRING:
-          input = new TextField();
-          input.id = field.name;
-          if (field.defaultValue != null) input.text = field.defaultValue;
-        default:
-          // Unknown type. Display a label so we know what it is.
-          input = new Label();
-          input.id = field.name;
-          input.text = field.type;
-      }
-
-      target.addComponent(input);
-
-      input.onChange = function(event:UIEvent) {
-        var value = event.target.value;
-        if (field.type == ENUM)
-        {
-          value = event.target.value.value;
-        }
-        trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${value}');
-
-        if (value == null)
-        {
-          state.selectedEventData.remove(event.target.id);
-        }
-        else
-        {
-          state.selectedEventData.set(event.target.id, value);
-        }
-      }
-    }
-  }
 
   static function buildToolboxPlaytestPropertiesLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
@@ -488,95 +348,27 @@ class ChartEditorToolboxHandler
       state.playtestStartTime = checkboxStartTime.selected;
     };
 
+    var checkboxDebugger:Null<CheckBox> = toolbox.findComponent('playtestDebuggerCheckbox', CheckBox);
+
+    if (checkboxDebugger == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestDebuggerCheckbox component.';
+
+    state.enabledDebuggerPopup = checkboxDebugger.selected;
+
+    checkboxDebugger.onClick = _ -> {
+      state.enabledDebuggerPopup = checkboxDebugger.selected;
+    };
+
     return toolbox;
   }
 
-  static function buildToolboxDifficultyLayout(state:ChartEditorState):Null<CollapsibleDialog>
+  static function buildToolboxDifficultyLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
-    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    var toolbox:ChartEditorBaseToolbox = ChartEditorDifficultyToolbox.build(state);
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 125;
-    toolbox.y = 200;
-
-    toolbox.onDialogClosed = function(event:UIEvent) {
-      state.menubarItemToggleToolboxDifficulty.selected = false;
-    }
-
-    var difficultyToolboxAddVariation:Null<Button> = toolbox.findComponent('difficultyToolboxAddVariation', Button);
-    if (difficultyToolboxAddVariation == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxAddVariation component.';
-    var difficultyToolboxAddDifficulty:Null<Button> = toolbox.findComponent('difficultyToolboxAddDifficulty', Button);
-    if (difficultyToolboxAddDifficulty == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxAddDifficulty component.';
-    var difficultyToolboxSaveMetadata:Null<Button> = toolbox.findComponent('difficultyToolboxSaveMetadata', Button);
-    if (difficultyToolboxSaveMetadata == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveMetadata component.';
-    var difficultyToolboxSaveChart:Null<Button> = toolbox.findComponent('difficultyToolboxSaveChart', Button);
-    if (difficultyToolboxSaveChart == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveChart component.';
-    // var difficultyToolboxSaveAll:Null<Button> = toolbox.findComponent('difficultyToolboxSaveAll', Button);
-    // if (difficultyToolboxSaveAll == null) throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxSaveAll component.';
-    var difficultyToolboxLoadMetadata:Null<Button> = toolbox.findComponent('difficultyToolboxLoadMetadata', Button);
-    if (difficultyToolboxLoadMetadata == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxLoadMetadata component.';
-    var difficultyToolboxLoadChart:Null<Button> = toolbox.findComponent('difficultyToolboxLoadChart', Button);
-    if (difficultyToolboxLoadChart == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxDifficultyLayout() - Could not find difficultyToolboxLoadChart component.';
-
-    difficultyToolboxAddVariation.onClick = function(_:UIEvent) {
-      state.openAddVariationDialog(true);
-    };
-
-    difficultyToolboxAddDifficulty.onClick = function(_:UIEvent) {
-      state.openAddDifficultyDialog(true);
-    };
-
-    difficultyToolboxSaveMetadata.onClick = function(_:UIEvent) {
-      var vari:String = state.selectedVariation != Constants.DEFAULT_VARIATION ? '-${state.selectedVariation}' : '';
-      FileUtil.writeFileReference('${state.currentSongId}$vari-metadata.json', state.currentSongMetadata.serialize());
-    };
-
-    difficultyToolboxSaveChart.onClick = function(_:UIEvent) {
-      var vari:String = state.selectedVariation != Constants.DEFAULT_VARIATION ? '-${state.selectedVariation}' : '';
-      FileUtil.writeFileReference('${state.currentSongId}$vari-chart.json', state.currentSongChartData.serialize());
-    };
-
-    difficultyToolboxLoadMetadata.onClick = function(_:UIEvent) {
-      // Replace metadata for current variation.
-      SongSerializer.importSongMetadataAsync(function(songMetadata) {
-        state.currentSongMetadata = songMetadata;
-      });
-    };
-
-    difficultyToolboxLoadChart.onClick = function(_:UIEvent) {
-      // Replace chart data for current variation.
-      SongSerializer.importSongChartDataAsync(function(songChartData) {
-        state.currentSongChartData = songChartData;
-        state.noteDisplayDirty = true;
-      });
-    };
-
-    state.difficultySelectDirty = true;
-
     return toolbox;
   }
-
-  static function onShowToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void
-  {
-    // Update the selected difficulty when reopening the toolbox.
-    var treeView:Null<TreeView> = toolbox.findComponent('difficultyToolboxTree');
-    if (treeView == null) return;
-
-    var current = state.getCurrentTreeDifficultyNode(treeView);
-    if (current == null) return;
-    treeView.selectedNode = current;
-    trace('selected node: ${treeView.selectedNode}');
-  }
-
-  static function onHideToolboxDifficulty(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function buildToolboxMetadataLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
   {
@@ -587,7 +379,32 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function onHideToolboxMetadata(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function buildToolboxOffsetsLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
+  {
+    var toolbox:ChartEditorBaseToolbox = ChartEditorOffsetsToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
+
+  static function buildToolboxFreeplayLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
+  {
+    var toolbox:ChartEditorBaseToolbox = ChartEditorFreeplayToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
+
+  static function buildToolboxEventDataLayout(state:ChartEditorState):Null<ChartEditorBaseToolbox>
+  {
+    var toolbox:ChartEditorBaseToolbox = ChartEditorEventDataToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
 
   static function buildToolboxPlayerPreviewLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {

@@ -3,6 +3,7 @@ package funkin.util.logging;
 import openfl.Lib;
 import openfl.events.UncaughtErrorEvent;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.FlxG.FlxRenderMethod;
 
 /**
  * A custom crash handler that writes to a log file and displays a message box.
@@ -118,6 +119,18 @@ class CrashHandler
     var driverInfo = FlxG?.stage?.context3D?.driverInfo ?? 'N/A';
     fullContents += 'Driver info: ${driverInfo}\n';
     fullContents += 'Platform: ${Sys.systemName()}\n';
+    fullContents += 'Render method: ${renderMethod()}\n';
+
+    fullContents += '\n';
+
+    fullContents += '=====================\n';
+
+    fullContents += 'Haxelibs: \n';
+
+    for (lib in Constants.LIBRARY_VERSIONS)
+    {
+      fullContents += '- ${lib}\n';
+    }
 
     fullContents += '\n';
 
@@ -184,5 +197,33 @@ class CrashHandler
   public static function induceBasicCrash():Void
   {
     throw "This is an example of an uncaught exception.";
+  }
+
+  public static function induceNullObjectReference():Void
+  {
+    var obj:Dynamic = null;
+    var value = obj.test;
+  }
+
+  public static function induceNullObjectReference2():Void
+  {
+    var obj:Dynamic = null;
+    var value = obj.test();
+  }
+
+  public static function induceNullObjectReference3():Void
+  {
+    var obj:Dynamic = null;
+    var value = obj();
+  }
+
+  static function renderMethod():String
+  {
+    return switch (FlxG.renderMethod)
+    {
+      case FlxRenderMethod.DRAW_TILES: 'DRAW_TILES';
+      case FlxRenderMethod.BLITTING: 'BLITTING';
+      default: 'UNKNOWN';
+    }
   }
 }

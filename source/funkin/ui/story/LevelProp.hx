@@ -6,9 +6,26 @@ import funkin.data.level.LevelData;
 
 class LevelProp extends Bopper
 {
-  public function new(danceEvery:Int)
+  public var propData(default, set):Null<LevelPropData> = null;
+
+  function set_propData(value:LevelPropData):LevelPropData
   {
-    super(danceEvery);
+    // Only reset the prop if the asset path has changed.
+    if (propData == null || value.assetPath != this.propData.assetPath)
+    {
+      this.visible = (value != null);
+      this.propData = value;
+      danceEvery = this.propData.danceEvery;
+      applyData();
+    }
+
+    return this.propData;
+  }
+
+  public function new(propData:LevelPropData)
+  {
+    super(propData.danceEvery);
+    this.propData = propData;
   }
 
   public function playConfirm():Void
@@ -16,50 +33,51 @@ class LevelProp extends Bopper
     playAnimation('confirm', true, true);
   }
 
-  public static function build(propData:Null<LevelPropData>):Null<LevelProp>
+  function applyData():Void
   {
-    if (propData == null) return null;
-
     var isAnimated:Bool = propData.animations.length > 0;
-    var prop:LevelProp = new LevelProp(propData.danceEvery);
-
     if (isAnimated)
     {
       // Initalize sprite frames.
       // Sparrow atlas only LEL.
-      prop.frames = Paths.getSparrowAtlas(propData.assetPath);
+      this.frames = Paths.getSparrowAtlas(propData.assetPath);
     }
     else
     {
       // Initalize static sprite.
-      prop.loadGraphic(Paths.image(propData.assetPath));
+      this.loadGraphic(Paths.image(propData.assetPath));
 
       // Disables calls to update() for a performance boost.
-      prop.active = false;
+      this.active = false;
     }
 
-    if (prop.frames == null || prop.frames.numFrames == 0)
+    if (this.frames == null || this.frames.numFrames == 0)
     {
       trace('ERROR: Could not build texture for level prop (${propData.assetPath}).');
-      return null;
+      return;
     }
 
     var scale:Float = propData.scale * (propData.isPixel ? 6 : 1);
-    prop.scale.set(scale, scale);
-    prop.antialiasing = !propData.isPixel;
-    prop.alpha = propData.alpha;
-    prop.x = propData.offsets[0];
-    prop.y = propData.offsets[1];
+    this.scale.set(scale, scale);
+    this.antialiasing = !propData.isPixel;
+    this.alpha = propData.alpha;
+    this.x = propData.offsets[0];
+    this.y = propData.offsets[1];
 
-    FlxAnimationUtil.addAtlasAnimations(prop, propData.animations);
+    FlxAnimationUtil.addAtlasAnimations(this, propData.animations);
     for (propAnim in propData.animations)
     {
-      prop.setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
+      this.setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
     }
 
-    prop.dance();
-    prop.animation.paused = true;
+    this.dance();
+    this.animation.paused = true;
+  }
 
-    return prop;
+  public static function build(propData:Null<LevelPropData>):Null<LevelProp>
+  {
+    if (propData == null) return null;
+
+    return new LevelProp(propData);
   }
 }

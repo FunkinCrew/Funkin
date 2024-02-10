@@ -13,6 +13,7 @@ import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.graphics.shaders.TitleOutline;
@@ -118,7 +119,8 @@ class TitleState extends MusicBeatState
 
     persistentUpdate = true;
 
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    bg.screenCenter();
     add(bg);
 
     logoBl = new FlxSprite(-150, -100);
@@ -221,7 +223,7 @@ class TitleState extends MusicBeatState
       var freakyMenuMetadata:Null<SongMusicData> = SongRegistry.instance.parseMusicData('freakyMenu');
       if (freakyMenuMetadata != null)
       {
-        Conductor.mapTimeChanges(freakyMenuMetadata.timeChanges);
+        Conductor.instance.mapTimeChanges(freakyMenuMetadata.timeChanges);
       }
       FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
       FlxG.sound.music.fadeIn(4, 0, 0.7);
@@ -256,7 +258,7 @@ class TitleState extends MusicBeatState
     if (FlxG.keys.pressed.DOWN) FlxG.sound.music.pitch -= 0.5 * elapsed;
     #end
 
-    Conductor.update();
+    Conductor.instance.update();
 
     /* if (FlxG.onMobile)
           {
@@ -280,7 +282,7 @@ class TitleState extends MusicBeatState
       FlxTween.tween(FlxG.stage.window, {y: FlxG.stage.window.y + 100}, 0.7, {ease: FlxEase.quadInOut, type: PINGPONG});
     }
 
-    if (FlxG.sound.music != null) Conductor.update(FlxG.sound.music.time);
+    if (FlxG.sound.music != null) Conductor.instance.update(FlxG.sound.music.time);
     if (FlxG.keys.justPressed.F) FlxG.fullscreen = !FlxG.fullscreen;
 
     // do controls.PAUSE | controls.ACCEPT instead?
@@ -390,7 +392,7 @@ class TitleState extends MusicBeatState
     var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
     add(spec);
 
-    Conductor.forceBPM(190);
+    Conductor.instance.forceBPM(190);
     FlxG.camera.flash(FlxColor.WHITE, 1);
     FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
   }
@@ -442,13 +444,13 @@ class TitleState extends MusicBeatState
 
     if (!skippedIntro)
     {
-      // FlxG.log.add(Conductor.currentBeat);
+      // FlxG.log.add(Conductor.instance.currentBeat);
       // if the user is draggin the window some beats will
       // be missed so this is just to compensate
-      if (Conductor.currentBeat > lastBeat)
+      if (Conductor.instance.currentBeat > lastBeat)
       {
         // TODO: Why does it perform ALL the previous steps each beat?
-        for (i in lastBeat...Conductor.currentBeat)
+        for (i in lastBeat...Conductor.instance.currentBeat)
         {
           switch (i + 1)
           {
@@ -483,11 +485,11 @@ class TitleState extends MusicBeatState
           }
         }
       }
-      lastBeat = Conductor.currentBeat;
+      lastBeat = Conductor.instance.currentBeat;
     }
     if (skippedIntro)
     {
-      if (cheatActive && Conductor.currentBeat % 2 == 0) swagShader.update(0.125);
+      if (cheatActive && Conductor.instance.currentBeat % 2 == 0) swagShader.update(0.125);
 
       if (logoBl != null && logoBl.animation != null) logoBl.animation.play('bump', true);
 

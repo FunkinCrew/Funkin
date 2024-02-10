@@ -46,6 +46,9 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     this.entries = new Map<String, T>();
   }
 
+  /**
+   * TODO: Create a `loadEntriesAsync()` function.
+   */
   public function loadEntries():Void
   {
     clearEntries();
@@ -54,7 +57,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // SCRIPTED ENTRIES
     //
     var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log('Registering ${scriptedEntryClassNames.length} scripted entries...');
+    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
 
     for (entryCls in scriptedEntryClassNames)
     {
@@ -78,7 +81,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
       return !entries.exists(entryId);
     });
-    log('Fetching data for ${unscriptedEntryIds.length} unscripted entries...');
+    log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
     for (entryId in unscriptedEntryIds)
     {
       try

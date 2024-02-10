@@ -6,6 +6,8 @@ package funkin.ui.debug.charting.commands;
  *
  * To make a functionality compatible with the undo/redo history, create a new class
  * that implements ChartEditorCommand, then call `ChartEditorState.performCommand(new Command())`
+ *
+ * NOTE: Make the constructor very simple, as it may be called without executing by the command palette.
  */
 interface ChartEditorCommand
 {
@@ -21,6 +23,15 @@ interface ChartEditorCommand
    * @param state The ChartEditorState to undo the action on.
    */
   public function undo(state:ChartEditorState):Void;
+
+  /**
+   * Return whether or not this command should be appended to the in the undo/redo history.
+   * Generally this should be true, it should only be false if the command is minor and non-destructive,
+   * like copying to the clipboard.
+   *
+   * Called after `execute()` is performed.
+   */
+  public function shouldAddToHistory(state:ChartEditorState):Bool;
 
   /**
    * Get a short description of the action (for the UI).

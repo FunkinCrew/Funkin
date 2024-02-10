@@ -7,9 +7,9 @@ import funkin.ui.story.ScriptedLevel;
 class LevelRegistry extends BaseRegistry<Level, LevelData>
 {
   /**
-   * The current version string for the stage data format.
+   * The current version string for the level data format.
    * Handle breaking changes by incrementing this value
-   * and adding migration to the `migrateStageData()` function.
+   * and adding migration to the `migrateLevelData()` function.
    */
   public static final LEVEL_DATA_VERSION:thx.semver.Version = "1.0.0";
 
@@ -30,6 +30,7 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
     var parser = new json2object.JsonParser<LevelData>();
+    parser.ignoreUnknownVariables = false;
 
     switch (loadEntryFile(id))
     {
@@ -57,6 +58,7 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
   public function parseEntryDataRaw(contents:String, ?fileName:String):Null<LevelData>
   {
     var parser = new json2object.JsonParser<LevelData>();
+    parser.ignoreUnknownVariables = false;
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)

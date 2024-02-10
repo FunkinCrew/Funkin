@@ -5,15 +5,17 @@ import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxPoint;
 import funkin.play.character.BaseCharacter;
 import funkin.play.PlayState;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
 import funkin.play.stage.StageProp;
 import funkin.graphics.shaders.StrokeShader;
 import funkin.ui.haxeui.HaxeUISubState;
 import funkin.ui.debug.stage.StageEditorCommand;
 import funkin.util.SerializerUtil;
+import funkin.data.stage.StageRegistry;
 import funkin.util.MouseUtil;
 import haxe.ui.containers.ListView;
 import haxe.ui.core.Component;
+import funkin.graphics.FunkinSprite;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import openfl.events.Event;
@@ -354,7 +356,13 @@ class StageOffsetSubState extends HaxeUISubState
 
   function prepStageStuff():String
   {
-    var stageLol:StageData = StageDataParser.parseStageData(PlayState.instance.currentStageId);
+    var stageLol:StageData = StageRegistry.instance.fetchEntry(PlayState.instance.currentStageId)?._data;
+
+    if (stageLol == null)
+    {
+      FlxG.log.error("Stage not found in registry!");
+      return "";
+    }
 
     for (prop in stageLol.props)
     {
@@ -378,6 +386,6 @@ class StageOffsetSubState extends HaxeUISubState
     stageLol.characters.gf.position[0] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.x);
     stageLol.characters.gf.position[1] = Std.int(GF_FEET_SNIIIIIIIIIIIIIFFFF.y);
 
-    return SerializerUtil.toJSON(stageLol);
+    return stageLol.serialize();
   }
 }

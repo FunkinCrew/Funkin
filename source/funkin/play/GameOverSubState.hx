@@ -7,6 +7,7 @@ import flixel.sound.FlxSound;
 import funkin.ui.story.StoryMenuState;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatSubState;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -22,6 +23,12 @@ import funkin.play.character.BaseCharacter;
  */
 class GameOverSubState extends MusicBeatSubState
 {
+  /**
+   * The currently active GameOverSubState.
+   * There should be only one GameOverSubState in existance at a time, we can use a singleton.
+   */
+  public static var instance:GameOverSubState = null;
+
   /**
    * Which alternate animation on the character to use.
    * You can set this via script.
@@ -64,9 +71,16 @@ class GameOverSubState extends MusicBeatSubState
    */
   var isEnding:Bool = false;
 
-  public function new()
+  var isChartingMode:Bool = false;
+
+  var transparent:Bool;
+
+  public function new(params:GameOverParams)
   {
     super();
+
+    this.isChartingMode = params?.isChartingMode ?? false;
+    transparent = params.transparent;
   }
 
   /**
@@ -80,6 +94,13 @@ class GameOverSubState extends MusicBeatSubState
 
   override public function create()
   {
+    if (instance != null)
+    {
+      // TODO: Do something in this case? IDK.
+      trace('WARNING: GameOverSubState instance already exists. This should not happen.');
+    }
+    instance = this;
+
     super.create();
 
     //
@@ -87,10 +108,12 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Add a black background to the screen.
-    // We make this transparent so that we can see the stage underneath during debugging.
-    var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-    bg.alpha = 0.25;
+    var bg = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+    // We make this transparent so that we can see the stage underneath during debugging,
+    // but it's normally opaque.
+    bg.alpha = transparent ? 0.25 : 1.0;
     bg.scrollFactor.set();
+    bg.screenCenter();
     add(bg);
 
     // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
@@ -121,7 +144,7 @@ class GameOverSubState extends MusicBeatSubState
     gameOverMusic.stop();
 
     // The conductor now represents the BPM of the game over music.
-    Conductor.update(0);
+    Conductor.instance.update(0);
   }
 
   var hasStartedAnimation:Bool = false;
@@ -176,16 +199,27 @@ class GameOverSubState extends MusicBeatSubState
       // PlayState.seenCutscene = false; // old thing...
       gameOverMusic.stop();
 
-      if (PlayStatePlaylist.isStoryMode) FlxG.switchState(new StoryMenuState());
+      if (isChartingMode)
+      {
+        this.close();
+        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+        PlayState.instance.close(); // This only works because PlayState is a substate!
+      }
+      else if (PlayStatePlaylist.isStoryMode)
+      {
+        FlxG.switchState(new StoryMenuState());
+      }
       else
+      {
         FlxG.switchState(new FreeplayState());
+      }
     }
 
     if (gameOverMusic.playing)
     {
       // Match the conductor to the music.
       // This enables the stepHit and beatHit events.
-      Conductor.update(gameOverMusic.time);
+      Conductor.instance.update(gameOverMusic.time);
     }
     else
     {
@@ -201,6 +235,7 @@ class GameOverSubState extends MusicBeatSubState
             playJeffQuote();
             // Start music at lower volume
             startDeathMusic(0.2, false);
+            boyfriend.playAnimation('deathLoop' + animationSuffix);
           }
         default:
           // Start music at normal volume once the initial death animation finishes.
@@ -261,15 +296,16 @@ class GameOverSubState extends MusicBeatSubState
    */
   function startDeathMusic(?startingVolume:Float = 1, force:Bool = false):Void
   {
-    var musicPath = Paths.music('gameOver' + musicSuffix);
+    var musicPath = Paths.music('gameplay/gameover/gameOver' + musicSuffix);
     if (isEnding)
     {
-      musicPath = Paths.music('gameOverEnd' + musicSuffix);
+      musicPath = Paths.music('gameplay/gameover/gameOverEnd' + musicSuffix);
     }
     if (!gameOverMusic.playing || force)
     {
       gameOverMusic.loadEmbedded(musicPath);
       gameOverMusic.volume = startingVolume;
+      gameOverMusic.looped = !isEnding;
       gameOverMusic.play();
     }
   }
@@ -283,7 +319,7 @@ class GameOverSubState extends MusicBeatSubState
   public static function playBlueBalledSFX()
   {
     blueballed = true;
-    FlxG.sound.play(Paths.sound('fnf_loss_sfx' + blueBallSuffix));
+    FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
   }
 
   var playingJeffQuote:Bool = false;
@@ -306,4 +342,15 @@ class GameOverSubState extends MusicBeatSubState
       }
     });
   }
+
+  public override function toString():String
+  {
+    return "GameOverSubState";
+  }
+}
+
+typedef GameOverParams =
+{
+  var isChartingMode:Bool;
+  var transparent:Bool;
 }
