@@ -20,7 +20,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
    */
-  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.1";
+  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.2";
 
   public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = "2.2.x";
 
@@ -58,7 +58,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     // SCRIPTED ENTRIES
     //
     var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log('Registering ${scriptedEntryClassNames.length} scripted entries...');
+    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
 
     for (entryCls in scriptedEntryClassNames)
     {
@@ -84,7 +84,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
       return !entries.exists(entryId);
     });
-    log('Fetching data for ${unscriptedEntryIds.length} unscripted entries...');
+    log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
     for (entryId in unscriptedEntryIds)
     {
       try

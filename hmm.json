@@ -18,7 +18,7 @@
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "fd3aecdeb5635fa0428dffee204fc78fc26b5885",
+      "ref": "a523c3b56622f0640933944171efed46929e360e",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -54,7 +54,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "a551159",
+      "ref": "8a7846b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
@@ -149,18 +149,13 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "cb11a95d0159271eb3587428cf4b9602e46dc469",
+      "ref": "6cec79e4f322fbb262170594ed67ab72b4714810",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
       "name": "thx.semver",
       "type": "haxelib",
       "version": "0.2.2"
-    },
-    {
-      "name": "tink_json",
-      "type": "haxelib",
-      "version": "0.11.0"
     }
   ]
 }

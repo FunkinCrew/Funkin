@@ -418,10 +418,10 @@ class SongPlayData implements ICloneable<SongPlayData>
 
   /**
    * The difficulty ratings for this song as displayed in Freeplay.
-   * Key is a difficulty ID or `default`.
+   * Key is a difficulty ID.
    */
   @:optional
-  @:default(['default' => 1])
+  @:default(['normal' => 0])
   public var ratings:Map<String, Int>;
 
   /**
@@ -431,6 +431,24 @@ class SongPlayData implements ICloneable<SongPlayData>
   @:optional
   public var album:Null<String>;
 
+  /**
+   * The start time for the audio preview in Freeplay.
+   * Defaults to 0 seconds in.
+   * @since `2.2.2`
+   */
+  @:optional
+  @:default(0)
+  public var previewStart:Int;
+
+  /**
+   * The end time for the audio preview in Freeplay.
+   * Defaults to 15 seconds in.
+   * @since `2.2.2`
+   */
+  @:optional
+  @:default(15000)
+  public var previewEnd:Int;
+
   public function new()
   {
     ratings = new Map<String, Int>();
@@ -438,6 +456,7 @@ class SongPlayData implements ICloneable<SongPlayData>
 
   public function clone():SongPlayData
   {
+    // TODO: This sucks! If you forget to update this you get weird behavior.
     var result:SongPlayData = new SongPlayData();
     result.songVariations = this.songVariations.clone();
     result.difficulties = this.difficulties.clone();
@@ -446,6 +465,8 @@ class SongPlayData implements ICloneable<SongPlayData>
     result.noteStyle = this.noteStyle;
     result.ratings = this.ratings.clone();
     result.album = this.album;
+    result.previewStart = this.previewStart;
+    result.previewEnd = this.previewEnd;
 
     return result;
   }
@@ -777,7 +798,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
 
       var title = eventSchema.getByName(key)?.title ?? 'UnknownField';
 
-      if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
+      // if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
       var valueStr = eventSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
 
       result += '\n- ${title}: ${valueStr}';

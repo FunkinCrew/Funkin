@@ -111,6 +111,11 @@
       "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
     },
     {
+      "label": "Windows / Debug (Conversation Test)",
+      "target": "windows",
+      "args": ["-debug", "-DDIALOGUE"]
+    },
+    {
       "label": "Windows / Debug (Straight to Chart Editor)",
       "target": "windows",
       "args": ["-debug", "-DCHARTING"]
@@ -124,6 +129,11 @@
       "label": "Windows / Debug (Latency Test)",
       "target": "windows",
       "args": ["-debug", "-DLATENCY"]
+    },
+    {
+      "label": "Windows / Debug (Waveform Test)",
+      "target": "windows",
+      "args": ["-debug", "-DWAVEFORM"]
     },
     {
       "label": "HTML5 / Debug",
