@@ -24,6 +24,7 @@ import haxe.Timer;
 
 class LatencyState extends MusicBeatSubState
 {
+  var visualOffsetText:FlxText;
   var offsetText:FlxText;
   var noteGrp:Array<SongNoteData>;
   var strumLine:Strumline;
@@ -39,9 +40,6 @@ class LatencyState extends MusicBeatSubState
   var offsetsPerBeat:Array<Int> = [];
   var swagSong:HomemadeMusic;
 
-  var funnyStatsGraph:CoolStatsGraph;
-  var realStats:CoolStatsGraph;
-
   override function create()
   {
     super.create();
@@ -53,14 +51,6 @@ class LatencyState extends MusicBeatSubState
 
     FlxG.sound.music = swagSong;
     FlxG.sound.music.play();
-
-    funnyStatsGraph = new CoolStatsGraph(0, Std.int(FlxG.height / 3), Std.int(FlxG.width / 2), Std.int(FlxG.height / 3), FlxColor.PINK, "time");
-    funnyStatsGraph.curLabel.y += 32;
-    FlxG.addChildBelowMouse(funnyStatsGraph);
-
-    realStats = new CoolStatsGraph(0, Std.int(FlxG.height / 3), Std.int(FlxG.width / 2), Std.int(FlxG.height / 3), FlxColor.YELLOW, "REAL");
-    realStats.curLabel.y -= 32;
-    FlxG.addChildBelowMouse(realStats);
 
     PreciseInputManager.instance.onInputPressed.add(function(event:PreciseInputEvent) {
       generateBeatStuff(event);
@@ -112,18 +102,35 @@ class LatencyState extends MusicBeatSubState
 
     for (i in 0...8)
     {
-      var block = new FlxSprite(2, 50 * i).makeGraphic(48, 48);
-      block.alpha = 0;
+      var block = new FlxSprite(2, ((FlxG.height / 8) + 2) * i).makeGraphic(Std.int(FlxG.height / 8), Std.int((FlxG.height / 8) - 4));
+      block.alpha = 0.1;
       blocks.add(block);
     }
 
-    offsetText = new FlxText();
-    offsetText.size = 20;
-    offsetText.screenCenter();
-    add(offsetText);
+    var strumlineBG:FlxSprite = new FlxSprite();
+    add(strumlineBG);
 
     strumLine = new Strumline(NoteStyleRegistry.instance.fetchDefault(), true);
+    strumLine.screenCenter();
     add(strumLine);
+
+    strumlineBG.x = strumLine.x;
+    strumlineBG.makeGraphic(Std.int(strumLine.width), FlxG.height, 0xFFFFFFFF);
+    strumlineBG.alpha = 0.1;
+
+    visualOffsetText = new FlxText();
+    visualOffsetText.setFormat(Paths.font("vcr.ttf"), 20);
+    visualOffsetText.x = (FlxG.height / 8) + 10;
+    visualOffsetText.y = 10;
+    visualOffsetText.fieldWidth = strumLine.x - visualOffsetText.x - 10;
+    add(visualOffsetText);
+
+    offsetText = new FlxText();
+    offsetText.setFormat(Paths.font("vcr.ttf"), 20);
+    offsetText.x = strumLine.x + strumLine.width + 10;
+    offsetText.y = 10;
+    offsetText.fieldWidth = FlxG.width - offsetText.x - 10;
+    add(offsetText);
 
     regenNoteData();
   }
@@ -152,7 +159,7 @@ class LatencyState extends MusicBeatSubState
   override function beatHit():Bool
   {
     if (Conductor.instance.currentBeat % 8 == 0) blocks.forEach(blok -> {
-      blok.alpha = 0;
+      blok.alpha = 0.1;
     });
 
     blocks.members[Conductor.instance.currentBeat % 8].alpha = 1;
@@ -170,19 +177,16 @@ class LatencyState extends MusicBeatSubState
 
     Conductor.instance.update();
 
-    funnyStatsGraph.update(swagSong.getTimeWithDiff() % 500);
-    realStats.update(Conductor.instance.getTimeWithDiff() % 500);
-
     // Conductor.instance.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
     songPosVis.x = songPosToX(Conductor.instance.songPosition);
     songVisFollowAudio.x = songPosToX(Conductor.instance.songPosition - Conductor.instance.instrumentalOffset);
     songVisFollowVideo.x = songPosToX(Conductor.instance.songPosition - Conductor.instance.inputOffset);
 
-    offsetText.text = "INST Offset (CTRL+Left/Right to change): " + Conductor.instance.instrumentalOffset + "ms";
-    offsetText.text += "\nINPUT Offset (Left/Right to change): " + Conductor.instance.inputOffset + "ms";
-    offsetText.text += "\ncurrentStep: " + Conductor.instance.currentStep;
-    offsetText.text += "\ncurrentBeat: " + Conductor.instance.currentBeat;
+    visualOffsetText.text = "Visual Offset: " + Conductor.instance.instrumentalOffset + "ms";
+    visualOffsetText.text += "\nYou can press SPACE+Left/Right to change this value.";
+
+    offsetText.text = "INPUT Offset (Left/Right to change): " + Conductor.instance.inputOffset + "ms";
 
     var avgOffsetInput:Float = 0;
 
@@ -191,7 +195,7 @@ class LatencyState extends MusicBeatSubState
 
     avgOffsetInput /= offsetsPerBeat.length;
 
-    offsetText.text += "\naverage input offset needed: " + avgOffsetInput;
+    offsetText.text += "\nEstimated average input offset needed: " + avgOffsetInput;
 
     var multiply:Int = 10;
 
@@ -221,19 +225,6 @@ class LatencyState extends MusicBeatSubState
         Conductor.instance.inputOffset -= 1 * multiply;
       }
     }
-
-    // noteGrp.forEach(function(daNote:NoteSprite) {
-    //   daNote.y = (strumLine.y - ((Conductor.instance.songPosition - Conductor.instance.instrumentalOffset) - daNote.strumTime) * 0.45);
-    //   daNote.x = strumLine.x + 30;
-
-    //   if (daNote.y < strumLine.y) daNote.alpha = 0.5;
-
-    //   if (daNote.y < 0 - daNote.height)
-    //   {
-    //     daNote.alpha = 1;
-    //     // daNote.data.strumTime += Conductor.instance.beatLengthMs * 8;
-    //   }
-    // });
 
     super.update(elapsed);
   }
