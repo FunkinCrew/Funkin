@@ -2,7 +2,6 @@ package funkin.modding;
 
 import funkin.util.macro.ClassMacro;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.data.song.SongData;
 import funkin.data.stage.StageData;
 import polymod.Polymod;
@@ -13,10 +12,11 @@ import funkin.data.stage.StageRegistry;
 import funkin.util.FileUtil;
 import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.play.cutscene.dialogue.ConversationDataParser;
-import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
-import funkin.play.cutscene.dialogue.SpeakerDataParser;
 import funkin.data.song.SongRegistry;
 
 class PolymodHandler
@@ -208,8 +208,8 @@ class PolymodHandler
   {
     return {
       assetLibraryPaths: [
-        "default" => "preload", "shared" => "", "songs" => "songs", "tutorial" => "tutorial", "week1" => "week1", "week2" => "week2", "week3" => "week3",
-        "week4" => "week4", "week5" => "week5", "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
+        "default" => "preload", "shared" => "shared", "songs" => "songs", "tutorial" => "tutorial", "week1" => "week1",      "week2" => "week2",
+            "week3" => "week3",   "week4" => "week4", "week5" => "week5",       "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
       ],
       coreAssetRedirect: CORE_FOLDER,
     }
@@ -273,11 +273,11 @@ class PolymodHandler
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
     SongEventRegistry.loadEventCache();
-    ConversationDataParser.loadConversationCache();
-    DialogueBoxDataParser.loadDialogueBoxCache();
-    SpeakerDataParser.loadSpeakerCache();
+    ConversationRegistry.instance.loadEntries();
+    DialogueBoxRegistry.instance.loadEntries();
+    SpeakerRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
-    CharacterDataParser.loadCharacterCache();
+    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     ModuleHandler.loadModuleCache();
   }
 }

@@ -191,7 +191,6 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
         // Move the playhead if it would go out of view.
         var prevPlayheadRelativePos = playheadRelativePos;
         playheadRelativePos = FlxMath.bound(playheadRelativePos, 0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
-        trace('newPos: ${playheadRelativePos}');
         var diff = playheadRelativePos - prevPlayheadRelativePos;
 
         if (diff != 0)
@@ -271,18 +270,18 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
     // Build player waveform.
     // waveformPlayer.waveform.forceUpdate = true;
-    waveformPlayer.waveform.waveformData = WaveformDataParser.interpretFlxSound(playerVoice);
+    waveformPlayer.waveform.waveformData = playerVoice.waveformData;
     // Set the width and duration to render the full waveform, with the clipRect applied we only render a segment of it.
     waveformPlayer.waveform.duration = playerVoice.length / Constants.MS_PER_SEC;
 
     // Build opponent waveform.
     // waveformOpponent.waveform.forceUpdate = true;
-    waveformOpponent.waveform.waveformData = WaveformDataParser.interpretFlxSound(opponentVoice);
+    waveformOpponent.waveform.waveformData = opponentVoice.waveformData;
     waveformOpponent.waveform.duration = opponentVoice.length / Constants.MS_PER_SEC;
 
     // Build instrumental waveform.
     // waveformInstrumental.waveform.forceUpdate = true;
-    waveformInstrumental.waveform.waveformData = WaveformDataParser.interpretFlxSound(instTrack);
+    waveformInstrumental.waveform.waveformData = chartEditorState.audioInstTrack.waveformData;
     waveformInstrumental.waveform.duration = instTrack.length / Constants.MS_PER_SEC;
 
     addOffsetsToAudioPreview();
@@ -410,8 +409,6 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
         deltaPixels / waveformInstrumental.waveform.waveformData.pointsPerSecond() * Constants.MS_PER_SEC;
     };
 
-    trace('Moving waveform by ${deltaMousePosition} -> ${deltaPixels} -> ${deltaMilliseconds} milliseconds.');
-
     switch (dragWaveform)
     {
       case PLAYER:
@@ -537,8 +534,6 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
       waveformScale = waveformScale / WAVEFORM_ZOOM_MULT;
       if (waveformScale < MIN_SCALE) waveformScale = MIN_SCALE;
 
-      trace('Zooming in, scale: ${waveformScale}');
-
       // Update the playhead too!
       playheadAbsolutePos = playheadAbsolutePos * WAVEFORM_ZOOM_MULT;
 
@@ -559,8 +554,6 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
   {
     waveformScale = waveformScale * WAVEFORM_ZOOM_MULT;
     if (waveformScale < MIN_SCALE) waveformScale = MIN_SCALE;
-
-    trace('Zooming out, scale: ${waveformScale}');
 
     // Update the playhead too!
     playheadAbsolutePos = playheadAbsolutePos / WAVEFORM_ZOOM_MULT;
@@ -776,7 +769,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
         audioPreviewOpponentOffset = chartEditorState.currentVocalOffsetOpponent;
       }
     }
-
+    offsetLabelTime.text = formatTime(audioPreviewTracks.time / Constants.MS_PER_SEC);
     // Keep the playhead in view.
     // playheadRelativePos = FlxMath.bound(playheadRelativePos, waveformScrollview.hscrollPos + 1,
     //   Math.min(waveformScrollview.hscrollPos + waveformScrollview.width, waveformContainer.width));

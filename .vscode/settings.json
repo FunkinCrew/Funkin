@@ -111,6 +111,11 @@
       "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
     },
     {
+      "label": "Windows / Debug (Conversation Test)",
+      "target": "windows",
+      "args": ["-debug", "-DDIALOGUE"]
+    },
+    {
       "label": "Windows / Debug (Straight to Chart Editor)",
       "target": "windows",
       "args": ["-debug", "-DCHARTING"]

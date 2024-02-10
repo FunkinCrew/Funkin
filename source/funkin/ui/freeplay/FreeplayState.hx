@@ -56,6 +56,31 @@ import lime.utils.Assets;
 
 class FreeplayState extends MusicBeatSubState
 {
+  /**
+   * For the audio preview, the duration of the fade-in effect.
+   */
+  public static final FADE_IN_DURATION:Float = 0.5;
+
+  /**
+   * For the audio preview, the duration of the fade-out effect.
+   */
+  public static final FADE_OUT_DURATION:Float = 0.25;
+
+  /**
+   * For the audio preview, the volume at which the fade-in starts.
+   */
+  public static final FADE_IN_START_VOLUME:Float = 0.25;
+
+  /**
+   * For the audio preview, the volume at which the fade-in ends.
+   */
+  public static final FADE_IN_END_VOLUME:Float = 1.0;
+
+  /**
+   * For the audio preview, the volume at which the fade-out starts.
+   */
+  public static final FADE_OUT_END_VOLUME:Float = 0.0;
+
   var songs:Array<Null<FreeplaySongData>> = [];
 
   var diffIdsCurrent:Array<String> = [];
@@ -139,9 +164,9 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    if (FlxG.sound.music != null)
+    if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
     {
-      if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
     }
 
     // Add a null entry that represents the RANDOM option

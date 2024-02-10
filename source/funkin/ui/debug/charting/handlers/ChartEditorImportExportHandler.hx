@@ -28,6 +28,8 @@ class ChartEditorImportExportHandler
    */
   public static function loadSongAsTemplate(state:ChartEditorState, songId:String):Void
   {
+    trace('===============START');
+
     var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
 
     if (song == null) return;
@@ -98,11 +100,14 @@ class ChartEditorImportExportHandler
     state.isHaxeUIDialogOpen = false;
     state.currentWorkingFilePath = null; // New file, so no path.
     state.switchToCurrentInstrumental();
+
     state.postLoadInstrumental();
 
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
     state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
+
+    trace('===============END');
   }
 
   /**

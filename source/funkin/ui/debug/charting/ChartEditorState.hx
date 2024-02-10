@@ -1,47 +1,52 @@
 package funkin.ui.debug.charting;
 
-import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
-import funkin.util.logging.CrashHandler;
-import haxe.ui.containers.HBox;
-import haxe.ui.containers.Grid;
-import haxe.ui.containers.ScrollView;
-import haxe.ui.containers.menus.MenuBar;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
+import flixel.graphics.FlxGraphic;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
-import funkin.graphics.FunkinSprite;
 import flixel.input.keyboard.FlxKey;
+import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.graphics.FlxGraphic;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
+import flixel.system.debug.log.LogStyle;
 import flixel.system.FlxAssets.FlxSoundAsset;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.misc.VarTween;
-import funkin.audio.waveform.WaveformSprite;
-import haxe.ui.Toolkit;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VoicesGroup;
-import funkin.audio.FunkinSound;
+import funkin.audio.waveform.WaveformSprite;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
-import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
+import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageData;
+import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
@@ -52,22 +57,14 @@ import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayState;
 import funkin.play.song.Song;
-import funkin.data.song.SongData.SongChartData;
-import funkin.data.song.SongRegistry;
-import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongMetadata;
-import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongData.SongCharacterData;
-import funkin.data.song.SongDataUtils;
-import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.data.stage.StageData;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.ui.debug.charting.commands.CutItemsCommand;
+import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.CopyItemsCommand;
+import funkin.ui.debug.charting.commands.CutItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
@@ -85,17 +82,22 @@ import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
+import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
-import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorPlaybarHead;
 import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
 import funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
+import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
+import funkin.util.logging.CrashHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import haxe.DynamicAccess;
@@ -103,23 +105,26 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ui.backend.flixel.UIRuntimeState;
 import haxe.ui.backend.flixel.UIState;
-import haxe.ui.components.DropDown;
-import haxe.ui.components.Label;
 import haxe.ui.components.Button;
+import haxe.ui.components.DropDown;
+import haxe.ui.components.Image;
+import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
+import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.Frame;
-import haxe.ui.containers.Box;
+import haxe.ui.containers.Grid;
+import haxe.ui.containers.HBox;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
-import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
+import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
-import haxe.ui.components.Image;
-import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
@@ -127,12 +132,8 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
+import haxe.ui.Toolkit;
 import openfl.display.BitmapData;
-import funkin.audio.visualize.PolygonSpectogram;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.mouse.FlxMouseEvent;
-import flixel.text.FlxText;
-import flixel.system.debug.log.LogStyle;
 
 using Lambda;
 
@@ -154,18 +155,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ==============================
   // Layouts
-  public static final CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/notedata');
-
-  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
-  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
-  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
-  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('chart-editor/toolbox/offsets');
   public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/toolbox/difficulty');
+
   public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/player-preview');
   public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/opponent-preview');
+  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
+  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('chart-editor/toolbox/offsets');
+  public static final CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/notedata');
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
+  public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = Paths.ui('chart-editor/toolbox/freeplay');
+  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
 
   // Validation
-  public static final SUPPORTED_MUSIC_FORMATS:Array<String> = ['ogg'];
+  public static final SUPPORTED_MUSIC_FORMATS:Array<String> = #if sys ['ogg'] #else ['mp3'] #end;
 
   // Layout
 
@@ -1332,6 +1334,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_currentSongNoteStyle(value:String):String
   {
     return currentSongMetadata.playData.noteStyle = value;
+  }
+
+  var currentSongFreeplayPreviewStart(get, set):Int;
+
+  function get_currentSongFreeplayPreviewStart():Int
+  {
+    return currentSongMetadata.playData.previewStart;
+  }
+
+  function set_currentSongFreeplayPreviewStart(value:Int):Int
+  {
+    return currentSongMetadata.playData.previewStart = value;
+  }
+
+  var currentSongFreeplayPreviewEnd(get, set):Int;
+
+  function get_currentSongFreeplayPreviewEnd():Int
+  {
+    return currentSongMetadata.playData.previewEnd;
+  }
+
+  function set_currentSongFreeplayPreviewEnd(value:Int):Int
+  {
+    return currentSongMetadata.playData.previewEnd = value;
   }
 
   var currentSongStage(get, set):String;
@@ -2943,6 +2969,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemToggleToolboxOffsets.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT, event.value);
     menubarItemToggleToolboxNotes.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
+    menubarItemToggleToolboxFreeplay.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT, event.value);
     menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
     menubarItemToggleToolboxPlayerPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
     menubarItemToggleToolboxOpponentPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
@@ -5980,6 +6007,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       offsetsToolbox.refreshAudioPreview();
       offsetsToolbox.refresh();
+    }
+  }
+
+  function hardRefreshFreeplayToolbox():Void
+  {
+    var freeplayToolbox:ChartEditorFreeplayToolbox = cast this.getToolbox(CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT);
+    if (freeplayToolbox != null)
+    {
+      freeplayToolbox.refreshAudioPreview();
+      freeplayToolbox.refresh();
     }
   }
 
