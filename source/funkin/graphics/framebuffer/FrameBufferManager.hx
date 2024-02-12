@@ -53,6 +53,11 @@ class FrameBufferManager
    */
   public function copySpriteTo(name:String, sprite:FlxSprite, color:Null<FlxColor> = null):Void
   {
+    if (!frameBufferMap.exists(name))
+    {
+      FlxG.log.warn('frame buffer "$name" does not exist');
+      return;
+    }
     frameBufferMap[name].addSpriteCopy(new SpriteCopy(sprite, color));
   }
 
@@ -63,6 +68,11 @@ class FrameBufferManager
    */
   public function moveSpriteTo(name:String, sprite:FlxSprite):Void
   {
+    if (!frameBufferMap.exists(name))
+    {
+      FlxG.log.warn('frame buffer "$name" does not exist');
+      return;
+    }
     frameBufferMap[name].moveSprite(sprite);
   }
 
