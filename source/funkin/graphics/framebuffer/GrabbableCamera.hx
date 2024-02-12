@@ -87,7 +87,7 @@ class GrabbableCamera extends FlxCamera
     BitmapDataUtil.applyFilter(bgBitmap, filter);
   }
 
-  function squashTo(bitmap:BitmapData, applyFilters:Bool, isolate:Bool):Void
+  function squashTo(bitmap:BitmapData, applyFilters:Bool, isolate:Bool, clearScreen:Bool = false):Void
   {
     if (applyFilters && isolate)
     {
@@ -132,9 +132,12 @@ class GrabbableCamera extends FlxCamera
       bgBitmap.draw(bitmap);
     }
 
-    // clear graphics data
-    super.clearDrawStack();
-    canvas.graphics.clear();
+    if (clearScreen)
+    {
+      // clear graphics data
+      // super.clearDrawStack();
+      // canvas.graphics.clear();
+    }
 
     // render the background bitmap
     bgFrame.frame.set(0, 0, width, height);
