@@ -213,7 +213,7 @@
 	</section>
 
 	<!-- Run a script before and after building. -->
-	<postbuild haxe="source/Prebuild.hx"/> -->
+	<prebuild haxe="source/Prebuild.hx"/> -->
 	<postbuild haxe="source/Postbuild.hx"/> -->
 
 	<!-- Enable this on platforms which do not support dropping files onto the window. -->
