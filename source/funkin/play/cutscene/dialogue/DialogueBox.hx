@@ -1,6 +1,7 @@
 package funkin.play.cutscene.dialogue;
 
 import flixel.FlxSprite;
+import funkin.data.IRegistryEntry;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.text.FlxText;
@@ -9,18 +10,21 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import flixel.util.FlxColor;
+import funkin.data.dialogue.DialogueBoxData;
+import funkin.data.dialogue.DialogueBoxRegistry;
 
-class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
+class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<DialogueBoxData>
 {
-  public final dialogueBoxId:String;
+  public final id:String;
+
   public var dialogueBoxName(get, never):String;
 
   function get_dialogueBoxName():String
   {
-    return boxData?.name ?? 'UNKNOWN';
+    return _data.name ?? 'UNKNOWN';
   }
 
-  var boxData:DialogueBoxData;
+  public final _data:DialogueBoxData;
 
   /**
    * Offset the speaker's sprite by this much when playing each animation.
@@ -88,13 +92,16 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
     return this.speed;
   }
 
-  public function new(dialogueBoxId:String)
+  public function new(id:String)
   {
     super();
-    this.dialogueBoxId = dialogueBoxId;
-    this.boxData = DialogueBoxDataParser.parseDialogueBoxData(this.dialogueBoxId);
+    this.id = id;
+    this._data = _fetchData(id);
 
-    if (boxData == null) throw 'Could not load dialogue box data for box ID "$dialogueBoxId"';
+    if (_data == null)
+    {
+      throw 'Could not parse dialogue box data for id: $id';
+    }
   }
 
   public function onCreate(event:ScriptEvent):Void
@@ -115,18 +122,18 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
 
   function loadSpritesheet():Void
   {
-    trace('[DIALOGUE BOX] Loading spritesheet ${boxData.assetPath} for ${dialogueBoxId}');
+    trace('[DIALOGUE BOX] Loading spritesheet ${_data.assetPath} for ${id}');
 
-    var tex:FlxFramesCollection = Paths.getSparrowAtlas(boxData.assetPath);
+    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
     if (tex == null)
     {
-      trace('Could not load Sparrow sprite: ${boxData.assetPath}');
+      trace('Could not load Sparrow sprite: ${_data.assetPath}');
       return;
     }
 
     this.boxSprite.frames = tex;
 
-    if (boxData.isPixel)
+    if (_data.isPixel)
     {
       this.boxSprite.antialiasing = false;
     }
@@ -135,9 +142,10 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
       this.boxSprite.antialiasing = true;
     }
 
-    this.flipX = boxData.flipX;
-    this.globalOffsets = boxData.offsets;
-    this.setScale(boxData.scale);
+    this.flipX = _data.flipX;
+    this.flipY = _data.flipY;
+    this.globalOffsets = _data.offsets;
+    this.setScale(_data.scale);
   }
 
   public function setText(newText:String):Void
@@ -184,11 +192,11 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
 
   function loadAnimations():Void
   {
-    trace('[DIALOGUE BOX] Loading ${boxData.animations.length} animations for ${dialogueBoxId}');
+    trace('[DIALOGUE BOX] Loading ${_data.animations.length} animations for ${id}');
 
-    FlxAnimationUtil.addAtlasAnimations(this.boxSprite, boxData.animations);
+    FlxAnimationUtil.addAtlasAnimations(this.boxSprite, _data.animations);
 
-    for (anim in boxData.animations)
+    for (anim in _data.animations)
     {
       if (anim.offsets == null)
       {
@@ -201,7 +209,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
     }
 
     var animNames:Array<String> = this.boxSprite?.animation?.getNameList() ?? [];
-    trace('[DIALOGUE BOX] Successfully loaded ${animNames.length} animations for ${dialogueBoxId}');
+    trace('[DIALOGUE BOX] Successfully loaded ${animNames.length} animations for ${id}');
 
     boxSprite.animation.callback = this.onAnimationFrame;
     boxSprite.animation.finishCallback = this.onAnimationFinished;
@@ -234,16 +242,16 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
   function loadText():Void
   {
     textDisplay = new FlxTypeText(0, 0, 300, '', 32);
-    textDisplay.fieldWidth = boxData.text.width;
-    textDisplay.setFormat('Pixel Arial 11 Bold', boxData.text.size, FlxColor.fromString(boxData.text.color), LEFT, SHADOW,
-      FlxColor.fromString(boxData.text.shadowColor ?? '#00000000'), false);
-    textDisplay.borderSize = boxData.text.shadowWidth ?? 2;
+    textDisplay.fieldWidth = _data.text.width;
+    textDisplay.setFormat(_data.text.fontFamily, _data.text.size, FlxColor.fromString(_data.text.color), LEFT, SHADOW,
+      FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
+    textDisplay.borderSize = _data.text.shadowWidth ?? 2;
     textDisplay.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
 
     textDisplay.completeCallback = onTypingComplete;
 
-    textDisplay.x += boxData.text.offsets[0];
-    textDisplay.y += boxData.text.offsets[1];
+    textDisplay.x += _data.text.offsets[0];
+    textDisplay.y += _data.text.offsets[1];
 
     add(textDisplay);
   }
@@ -374,4 +382,14 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {}
+
+  public override function toString():String
+  {
+    return 'DialogueBox($id)';
+  }
+
+  static function _fetchData(id:String):Null<DialogueBoxData>
+  {
+    return DialogueBoxRegistry.instance.parseEntryDataWithMigration(id, DialogueBoxRegistry.instance.fetchEntryVersion(id));
+  }
 }

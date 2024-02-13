@@ -151,6 +151,10 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     };
 
+    inputDifficultyRating.onChange = function(event:UIEvent) {
+      chartEditorState.currentSongChartDifficultyRating = event.target.value;
+    };
+
     buttonCharacterOpponent.onClick = function(_) {
       chartEditorState.openCharacterDropdown(CharacterType.DAD, false);
     };
@@ -175,6 +179,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
+    inputDifficultyRating.value = chartEditorState.currentSongChartDifficultyRating;
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
