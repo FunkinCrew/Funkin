@@ -33,8 +33,10 @@ class Main extends Sprite
 
   public static function main():Void
   {
-    haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
-    funkin.util.logging.AnsiTrace.traceBF();
+    // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
+    CrashHandler.initialize();
+    CrashHandler.queryStatus();
+
     Lib.current.addChild(new Main());
   }
 
@@ -42,7 +44,12 @@ class Main extends Sprite
   {
     super();
 
-    // TODO: Replace this with loadEnabledMods().
+    // Initialize custom logging.
+    haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
+    funkin.util.logging.AnsiTrace.traceBF();
+
+    // Load mods to override assets.
+    // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
     funkin.modding.PolymodHandler.loadAllMods();
 
     if (stage != null)
@@ -81,10 +88,6 @@ class Main extends Sprite
      * you can use `FlxG.scaleMode`.
      * -Eric
      */
-
-    CrashHandler.initialize();
-
-    CrashHandler.queryStatus();
 
     initHaxeUI();
 
