@@ -16,7 +16,7 @@ import funkin.input.Controls;
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
-class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandler
+class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;

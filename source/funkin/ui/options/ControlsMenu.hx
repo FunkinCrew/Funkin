@@ -4,6 +4,7 @@ import funkin.util.InputUtil;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import funkin.graphics.FunkinCamera;
 import flixel.group.FlxGroup;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepadInputID;
@@ -47,7 +48,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
   {
     super();
 
-    menuCamera = new FlxCamera();
+    menuCamera = new FunkinCamera();
     FlxG.cameras.add(menuCamera, false);
     menuCamera.bgColor = 0x0;
     camera = menuCamera;

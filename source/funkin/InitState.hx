@@ -245,9 +245,9 @@ class InitState extends FlxState
     #elseif LEVEL // -DLEVEL=week1 -DDIFFICULTY=hard
     startLevel(defineLevel(), defineDifficulty());
     #elseif FREEPLAY // -DFREEPLAY
-    FlxG.switchState(new FreeplayState());
+    FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
     #elseif DIALOGUE // -DDIALOGUE
-    FlxG.switchState(new funkin.ui.debug.dialogue.ConversationDebugState());
+    FlxG.switchState(() -> new funkin.ui.debug.dialogue.ConversationDebugState());
     #elseif ANIMATE // -DANIMATE
     FlxG.switchState(() -> new funkin.ui.debug.anim.FlxAnimateTest());
     #elseif WAVEFORM // -DWAVEFORM

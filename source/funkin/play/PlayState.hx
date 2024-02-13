@@ -1,68 +1,79 @@
 package funkin.play;
 
-import funkin.ui.SwagCamera;
-import flixel.addons.transition.FlxTransitionableSubState;
-import funkin.ui.debug.charting.ChartEditorState;
-import haxe.Int64;
-import funkin.play.notes.notestyle.NoteStyle;
-import funkin.data.notestyle.NoteStyleData;
-import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.display.FlxPieDial;
-import flixel.addons.transition.Transition;
+import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.Transition;
+import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
-import funkin.play.components.ComboMilestone;
 import flixel.math.FlxPoint;
-import funkin.play.components.HealthIcon;
-import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
-import funkin.api.newgrounds.NGio;
 import flixel.util.FlxTimer;
+import funkin.api.newgrounds.NGio;
 import funkin.audio.VoicesGroup;
-import funkin.save.Save;
+import funkin.audio.VoicesGroup;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.notestyle.NoteStyleData;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageRegistry;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.components.ComboMilestone;
+import funkin.play.components.HealthIcon;
+import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.data.dialogue.ConversationRegistry;
+import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
-import funkin.data.event.SongEventRegistry;
-import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.NoteSplash;
+import funkin.play.notes.NoteSprite;
+import funkin.play.notes.NoteSprite;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
-import funkin.data.song.SongRegistry;
-import funkin.data.stage.StageRegistry;
-import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
-import funkin.ui.transition.LoadingState;
-import funkin.play.components.PopUpStuff;
-import funkin.ui.options.PreferencesMenu;
+import funkin.save.Save;
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.options.PreferencesMenu;
 import funkin.ui.story.StoryMenuState;
+import funkin.graphics.FunkinCamera;
+import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
-import funkin.util.SortUtil;
+import haxe.Int64;
 import lime.ui.Haptic;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
+import openfl.Lib;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -443,6 +454,17 @@ class PlayState extends MusicBeatSubState
     // Note: If there is a substate which requires the game to act unpaused,
     //       this should be changed to include something like `&& Std.isOfType()`
     return this.subState != null;
+  }
+
+  var isExitingViaPauseMenu(get, never):Bool;
+
+  function get_isExitingViaPauseMenu():Bool
+  {
+    if (this.subState == null) return false;
+    if (!Std.isOfType(this.subState, PauseSubState)) return false;
+
+    var pauseSubState:PauseSubState = cast this.subState;
+    return pauseSubState.exitingToMenu;
   }
 
   /**
@@ -885,7 +907,7 @@ class PlayState extends MusicBeatSubState
     // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.
-    if (!isInCutscene && !disableKeys && !_exiting)
+    if (!isInCutscene && !disableKeys)
     {
       // RESET = Quick Game Over Screen
       if (controls.RESET)
@@ -1282,7 +1304,7 @@ class PlayState extends MusicBeatSubState
    */
   function initCameras():Void
   {
-    camGame = new SwagCamera();
+    camGame = new FunkinCamera();
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
@@ -1739,7 +1761,7 @@ class PlayState extends MusicBeatSubState
    */
   function resyncVocals():Void
   {
-    if (_exiting || vocals == null) return;
+    if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!FlxG.sound.music.playing) return;
@@ -1965,7 +1987,7 @@ class PlayState extends MusicBeatSubState
 
         // Mute vocals and play miss animation, but don't penalize.
         vocals.playerVolume = 0;
-        currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+        if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
   }
@@ -2519,8 +2541,8 @@ class PlayState extends MusicBeatSubState
       {
         FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
 
-        transIn = FlxTransitionableState.defaultTransIn;
-        transOut = FlxTransitionableState.defaultTransOut;
+        // transIn = FlxTransitionableState.defaultTransIn;
+        // transOut = FlxTransitionableState.defaultTransOut;
 
         // TODO: Rework week unlock logic.
         // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
