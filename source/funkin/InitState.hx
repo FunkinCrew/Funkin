@@ -144,13 +144,12 @@ class InitState extends FlxState
 
     // Make errors and warnings less annoying.
     // TODO: Disable this so we know to fix warnings.
-    if (false)
-    {
-      LogStyle.ERROR.openConsole = false;
-      LogStyle.ERROR.errorSound = null;
-      LogStyle.WARNING.openConsole = false;
-      LogStyle.WARNING.errorSound = null;
-    }
+    #if FORCE_DEBUG_VERSION
+    LogStyle.ERROR.openConsole = false;
+    LogStyle.ERROR.errorSound = null;
+    LogStyle.WARNING.openConsole = false;
+    LogStyle.WARNING.errorSound = null;
+    #end
     #end
 
     //

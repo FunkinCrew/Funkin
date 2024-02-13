@@ -31,7 +31,7 @@ jobs:
           sudo apt-get install -y libx11-dev xorg-dev libgl-dev libxi-dev libxext-dev libasound2-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev
       - name: build game
         run: |
-          haxelib run lime build html5 -release --times
+          haxelib run lime build html5 -release --times -DGITHUB_BUILD
           ls
       - uses: ./.github/actions/upload-itch
         with:
@@ -68,7 +68,7 @@ jobs:
           key: ${{ runner.os }}-build-win-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
       - name: build game
         run: |
-          haxelib run lime build windows -release -DNO_REDIRECT_ASSETS_FOLDER
+          haxelib run lime build windows -release -DNO_REDIRECT_ASSETS_FOLDER -DGITHUB_BUILD
           dir
         env:
           HXCPP_COMPILE_CACHE: "${{ runner.temp }}\\hxcpp_cache"
@@ -110,7 +110,7 @@ jobs:
           key: ${{ runner.os }}-build-mac-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
       - name: Build game
         run: |
-          haxelib run lime build macos -release --times
+          haxelib run lime build macos -release --times -DGITHUB_BUILD
           ls
         env:
           HXCPP_COMPILE_CACHE: "${{ runner.temp }}/hxcpp_cache"
@@ -119,7 +119,7 @@ jobs:
           butler-key: ${{ secrets.BUTLER_API_KEY}}
           build-dir: export/release/macos/bin
           target: macos
-          
+
 #  test-unit-win:
 #    needs: create-nightly-win
 #    runs-on: windows-latest
