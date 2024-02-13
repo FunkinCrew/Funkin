@@ -644,7 +644,7 @@ class PlayState extends MusicBeatSubState
     rightWatermarkText.cameras = [camHUD];
 
     // Initialize some debug stuff.
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // Display the version number (and git commit hash) in the bottom right corner.
     this.rightWatermarkText.text = Constants.VERSION;
 
@@ -913,7 +913,7 @@ class PlayState extends MusicBeatSubState
 
         // Disable updates, preventing animations in the background from playing.
         persistentUpdate = false;
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         if (FlxG.keys.pressed.THREE)
         {
           // TODO: Change the key or delete this?
@@ -924,7 +924,7 @@ class PlayState extends MusicBeatSubState
         {
         #end
           persistentDraw = false;
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         }
         #end
 
@@ -1374,7 +1374,7 @@ class PlayState extends MusicBeatSubState
       // Add the stage to the scene.
       this.add(currentStage);
 
-      #if debug
+      #if (debug || FORCE_DEBUG_VERSION)
       FlxG.console.registerObject('stage', currentStage);
       #end
     }
@@ -1464,7 +1464,7 @@ class PlayState extends MusicBeatSubState
       {
         currentStage.addCharacter(girlfriend, GF);
 
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         FlxG.console.registerObject('gf', girlfriend);
         #end
       }
@@ -1473,7 +1473,7 @@ class PlayState extends MusicBeatSubState
       {
         currentStage.addCharacter(boyfriend, BF);
 
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         FlxG.console.registerObject('bf', boyfriend);
         #end
       }
@@ -1484,7 +1484,7 @@ class PlayState extends MusicBeatSubState
         // Camera starts at dad.
         cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
 
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         FlxG.console.registerObject('dad', dad);
         #end
       }
@@ -2259,7 +2259,7 @@ class PlayState extends MusicBeatSubState
         }));
     }
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // 1: End the song immediately.
     if (FlxG.keys.justPressed.ONE) endSong();
 
@@ -2273,7 +2273,7 @@ class PlayState extends MusicBeatSubState
     // 9: Toggle the old icon.
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // PAGEUP: Skip forward two sections.
     // SHIFT+PAGEUP: Skip forward twenty sections.
     if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
@@ -2781,7 +2781,7 @@ class PlayState extends MusicBeatSubState
     FlxG.camera.focusOn(cameraFollowPoint.getPosition());
   }
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   /**
    * Jumps forward or backward a number of sections in the song.
    * Accounts for BPM changes, does not prevent death from skipped notes.
