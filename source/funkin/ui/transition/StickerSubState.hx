@@ -116,10 +116,19 @@ class StickerSubState extends MusicBeatSubState
   {
     grpStickers.cameras = FlxG.cameras.list;
 
-    if (dipshit != null)
+    /*
+      if (dipshit != null)
+      {
+        FlxG.removeChild(dipshit);
+        dipshit = null;
+      }
+     */
+
+    if (grpStickers.members == null || grpStickers.members.length == 0)
     {
-      FlxG.removeChild(dipshit);
-      dipshit = null;
+      switchingState = false;
+      close();
+      return;
     }
 
     for (ind => sticker in grpStickers.members)
@@ -232,18 +241,23 @@ class StickerSubState extends MusicBeatSubState
           if (ind == grpStickers.members.length - 1)
           {
             switchingState = true;
+
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
 
-            dipshit = new Sprite();
-            var scrn:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
-            var mat:Matrix = new Matrix();
-            scrn.draw(grpStickers.cameras[0].canvas, mat);
+            // I think this grabs the screen and puts it under the stickers?
+            // Leaving this commented out rather than stripping it out because it's cool...
+            /*
+              dipshit = new Sprite();
+              var scrn:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
+              var mat:Matrix = new Matrix();
+              scrn.draw(grpStickers.cameras[0].canvas, mat);
 
-            var bitmap:Bitmap = new Bitmap(scrn);
+              var bitmap:Bitmap = new Bitmap(scrn);
 
-            dipshit.addChild(bitmap);
-            FlxG.addChildBelowMouse(dipshit);
+              dipshit.addChild(bitmap);
+              // FlxG.addChildBelowMouse(dipshit);
+             */
 
             FlxG.switchState(() -> targetState(this));
           }
