@@ -333,8 +333,12 @@ class Controls extends FlxActionSet
       throw 'Invalid name: $name';
     #end
 
-    return byName[name].inputs.map(function(input) return (input.device == KEYBOARD) ? input.inputID : null)
-      .filter(function(key) return key != null);
+    // TODO: Revert to `.map().filter()` once HashLink doesn't complain anymore.
+    var result:Array<FlxKey> = [];
+    for (input in byName[name].inputs) {
+      if (input.device == KEYBOARD) result.push(input.inputID);
+    }
+    return result;
   }
 
   public function getButtonsForAction(name:Action):Array<FlxGamepadInputID> {
@@ -343,8 +347,11 @@ class Controls extends FlxActionSet
       throw 'Invalid name: $name';
     #end
 
-    return byName[name].inputs.map(function(input) return (input.device == GAMEPAD) ? input.inputID : null)
-      .filter(function(key) return key != null);
+    var result:Array<FlxGamepadInputID> = [];
+    for (input in byName[name].inputs) {
+      if (input.device == GAMEPAD) result.push(input.inputID);
+    }
+    return result;
   }
 
   public function getDialogueName(action:FlxActionDigital):String

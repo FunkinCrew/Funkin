@@ -309,8 +309,8 @@ class ChartEditorAudioHandler
     snd.loadEmbedded(asset);
     snd.autoDestroy = true;
     FlxG.sound.list.add(snd);
+    snd.play(true);
     snd.volume = volume;
-    snd.play();
   }
 
   public static function wipeInstrumentalData(state:ChartEditorState):Void

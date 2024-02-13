@@ -94,12 +94,12 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return lightMap = value;
   }
 
-  public var numLights(default, set):Int = 0;
+  public var numLightsSwag(default, set):Int = 0; // swag heads, we have never been more back (needs different name purely for hashlink casting fix)
 
-  function set_numLights(value:Int):Int
+  function set_numLightsSwag(value:Int):Int
   {
     this.setInt('numLights', value);
-    return numLights = value;
+    return numLightsSwag = value;
   }
 
   public function new()

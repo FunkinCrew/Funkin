@@ -109,7 +109,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "fff39ba6fc64969cd51987ef7491d9345043dc5d",
+      "ref": "1359fe6ad52e91175dc636a516d460bd54ea22ed",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -163,8 +163,10 @@
     },
     {
       "name": "thx.semver",
-      "type": "haxelib",
-      "version": "0.2.2"
+      "type": "git",
+      "dir": null,
+      "ref": "cf8d213589a2c7ce4a59b0fdba9e8ff36bc029fa",
+      "url": "https://github.com/FunkinCrew/thx.semver"
     }
   ]
 }
