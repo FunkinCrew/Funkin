@@ -907,7 +907,7 @@ class PlayState extends MusicBeatSubState
     // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.
-    if (!isInCutscene && !disableKeys && !_exiting)
+    if (!isInCutscene && !disableKeys)
     {
       // RESET = Quick Game Over Screen
       if (controls.RESET)
@@ -1304,7 +1304,7 @@ class PlayState extends MusicBeatSubState
    */
   function initCameras():Void
   {
-    camGame = new FlxCamera();
+    camGame = new FunkinCamera();
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
@@ -1761,7 +1761,7 @@ class PlayState extends MusicBeatSubState
    */
   function resyncVocals():Void
   {
-    if (_exiting || vocals == null) return;
+    if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!FlxG.sound.music.playing) return;
@@ -2541,8 +2541,8 @@ class PlayState extends MusicBeatSubState
       {
         FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
 
-        transIn = FlxTransitionableState.defaultTransIn;
-        transOut = FlxTransitionableState.defaultTransOut;
+        // transIn = FlxTransitionableState.defaultTransIn;
+        // transOut = FlxTransitionableState.defaultTransOut;
 
         // TODO: Rework week unlock logic.
         // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
