@@ -4,20 +4,22 @@ import flixel.addons.display.FlxRuntimeShader;
 import funkin.Paths;
 import openfl.utils.Assets;
 import openfl.display.BitmapData;
+import openfl.display.ShaderInput;
 
 class BlendModesShader extends FlxRuntimeShader
 {
-  public var camera:BitmapData;
+  public var camera:ShaderInput<BitmapData>;
+  public var cameraData:BitmapData;
 
   public function new()
   {
     super(Assets.getText(Paths.frag('blendModes')));
   }
 
-  public function setCamera(camera:BitmapData):Void
+  public function setCamera(cameraData:BitmapData):Void
   {
-    this.camera = camera;
+    this.cameraData = cameraData;
 
-    this.setBitmapData('camera', camera);
+    this.setBitmapData('camera', this.cameraData);
   }
 }
