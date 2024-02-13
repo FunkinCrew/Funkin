@@ -187,6 +187,10 @@ class Level implements IRegistryEntry<LevelData>
 
     if (_data.props.length == 0) return props;
 
+    var hiddenProps:Array<LevelProp> = props.splice(_data.props.length - 1, props.length - 1);
+    for (hiddenProp in hiddenProps)
+      hiddenProp.visible = false;
+
     for (propIndex in 0..._data.props.length)
     {
       var propData = _data.props[propIndex];
@@ -198,6 +202,7 @@ class Level implements IRegistryEntry<LevelData>
       {
         existingProp.propData = propData;
         existingProp.x = propData.offsets[0] + FlxG.width * 0.25 * propIndex;
+        existingProp.visible = true;
       }
       else
       {
