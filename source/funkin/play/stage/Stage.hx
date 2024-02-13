@@ -747,13 +747,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
-  public function onUpdate(event:UpdateScriptEvent)
-  {
-    if (FlxG.keys.justPressed.F3)
-    {
-      debugIconGroup.visible = !debugIconGroup.visible;
-    }
-  }
+  public function onUpdate(event:UpdateScriptEvent) {}
 
   public override function kill()
   {

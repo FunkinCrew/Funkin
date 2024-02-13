@@ -1976,7 +1976,7 @@ class PlayState extends MusicBeatSubState
 
         // Mute vocals and play miss animation, but don't penalize.
         vocals.playerVolume = 0;
-        currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+        if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
   }
