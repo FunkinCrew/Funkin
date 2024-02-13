@@ -91,7 +91,8 @@
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
 	<assets path="assets/fonts" embed="true" />
-
+	<!-- If compiled via github actions, enable force debug -->
+	<set name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="lime" /> <!-- Game engine backend -->
 	<haxelib name="openfl" /> <!-- Game engine backend -->
@@ -118,15 +119,15 @@
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+	<haxedef name="FLX_NO_DEBUG" unless="debug || FORCE_DEBUG_VERSION" />
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
 	<!--
 		Hide deprecation warnings until they're fixed.
 		TODO: REMOVE THIS!!!!
+		<haxeflag name="-w" value="-WDeprecated" />
 	-->
-	<haxeflag name="-w" value="-WDeprecated" />
 
 	<!-- Haxe 4.3.0+: Enable pretty syntax errors and stuff. -->
 	<haxedef name="message.reporting" value="pretty" />
@@ -209,13 +210,6 @@
 			However, it also messes with breakpoints on some platforms.
 		-->
 		<haxedef name="openfl-enable-handle-error" />
-	</section>
-
-	<section>
-		<!-- TODO: Add a flag to Github Actions to turn this on or something. -->
-
-		<!-- Forces the version string to include the Git hash even on release builds (which are used for performance reasons). -->
-		<haxedef name="FORCE_DEBUG_VERSION" />
 	</section>
 
 	<!-- Run a script before and after building. -->

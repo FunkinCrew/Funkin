@@ -24,6 +24,24 @@ class ArrayTools
   }
 
   /**
+   * Returns a copy of the array with all `null` elements removed.
+   * @param array The array to remove `null` elements from.
+   * @return A copy of the array with all `null` elements removed.
+   */
+  public static function nonNull<T>(array:Array<Null<T>>):Array<T>
+  {
+    var result:Array<T> = [];
+    for (element in array)
+    {
+      if (element != null)
+      {
+        result.push(element);
+      }
+    }
+    return result;
+  }
+
+  /**
    * Return the first element of the array that satisfies the predicate, or null if none do.
    * @param input The array to search
    * @param predicate The predicate to call
