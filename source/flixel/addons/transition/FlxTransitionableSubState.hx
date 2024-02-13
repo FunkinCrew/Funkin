@@ -16,7 +16,7 @@ import flixel.addons.transition.FlxTransitionableState;
  * var in:TransitionData = new TransitionData(...); // add your data where "..." is
  * var out:TransitionData = new TransitionData(...);
  *
- * FlxG.switchState(new FooState(in,out));
+ * FlxG.switchState(() -> new FooState(in,out));
  * ```
  *
  * Method 2:
@@ -25,7 +25,7 @@ import flixel.addons.transition.FlxTransitionableState;
  * FlxTransitionableSubState.defaultTransIn = new TransitionData(...);
  * FlxTransitionableSubState.defaultTransOut = new TransitionData(...);
  *
- * FlxG.switchState(new FooState());
+ * FlxG.switchState(() -> new FooState());
  * ```
  */
 class FlxTransitionableSubState extends FlxSubState
