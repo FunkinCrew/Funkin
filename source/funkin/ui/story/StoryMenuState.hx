@@ -397,7 +397,7 @@ class StoryMenuState extends MusicBeatState
     {
       FlxG.sound.play(Paths.sound('cancelMenu'));
       exitingMenu = true;
-      FlxG.switchState(new MainMenuState());
+      FlxG.switchState(() -> new MainMenuState());
     }
   }
 
@@ -565,7 +565,7 @@ class StoryMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 
-      LoadingState.loadAndSwitchState(new PlayState(
+      LoadingState.loadAndSwitchState(() -> new PlayState(
         {
           targetSong: targetSong,
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,

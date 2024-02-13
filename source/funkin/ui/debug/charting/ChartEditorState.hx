@@ -5097,7 +5097,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
-    FlxG.switchState(new MainMenuState());
+    FlxG.switchState(() -> new MainMenuState());
 
     resetWindowTitle();
 
@@ -5363,8 +5363,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         targetSong: targetSong,
         targetDifficulty: selectedDifficulty,
-        // TODO: Add this.
-        // targetCharacter: targetCharacter,
+        targetVariation: selectedVariation,
         practiceMode: playtestPracticeMode,
         minimalMode: minimal,
         startTimestamp: startTimestamp,

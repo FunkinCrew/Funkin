@@ -72,28 +72,28 @@ class ChartEditorImportExportHandler
       {
         state.loadInstFromAsset(Paths.inst(songId, '-$variation'), variation);
       }
-    }
 
-    for (difficultyId in song.listDifficulties())
-    {
-      var diff:Null<SongDifficulty> = song.getDifficulty(difficultyId);
-      if (diff == null) continue;
+      for (difficultyId in song.listDifficulties(variation))
+      {
+        var diff:Null<SongDifficulty> = song.getDifficulty(difficultyId, variation);
+        if (diff == null) continue;
 
-      var instId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
-      var voiceList:Array<String> = diff.buildVoiceList(); // SongDifficulty accounts for variation already.
+        var instId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
+        var voiceList:Array<String> = diff.buildVoiceList(); // SongDifficulty accounts for variation already.
 
-      if (voiceList.length == 2)
-      {
-        state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
-        state.loadVocalsFromAsset(voiceList[1], diff.characters.opponent, instId);
-      }
-      else if (voiceList.length == 1)
-      {
-        state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
-      }
-      else
-      {
-        trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
+        if (voiceList.length == 2)
+        {
+          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
+          state.loadVocalsFromAsset(voiceList[1], diff.characters.opponent, instId);
+        }
+        else if (voiceList.length == 1)
+        {
+          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
+        }
+        else
+        {
+          trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
+        }
       }
     }
 
