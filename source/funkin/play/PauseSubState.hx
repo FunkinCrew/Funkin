@@ -169,7 +169,7 @@ class PauseSubState extends MusicBeatSubState
     var downP = controls.UI_DOWN_P;
     var accepted = controls.ACCEPT;
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // to pause the game and get screenshots easy, press H on pause menu!
     if (FlxG.keys.justPressed.H)
     {

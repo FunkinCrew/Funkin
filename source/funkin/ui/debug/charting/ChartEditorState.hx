@@ -1297,6 +1297,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return currentSongChartData.events = value;
   }
 
+  /**
+   * Convenience property to get the rating for this difficulty in the Freeplay menu.
+   */
+  var currentSongChartDifficultyRating(get, set):Int;
+
+  function get_currentSongChartDifficultyRating():Int
+  {
+    var result:Null<Int> = currentSongMetadata.playData.ratings.get(selectedDifficulty);
+    if (result == null)
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.playData.ratings.set(selectedDifficulty, 0);
+      return 0;
+    }
+    return result;
+  }
+
+  function set_currentSongChartDifficultyRating(value:Int):Int
+  {
+    currentSongMetadata.playData.ratings.set(selectedDifficulty, value);
+    return value;
+  }
+
   var currentSongNoteStyle(get, set):String;
 
   function get_currentSongNoteStyle():String
@@ -3161,7 +3184,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleTestKeybinds();
     handleHelpKeybinds();
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     handleQuickWatch();
     #end
 
