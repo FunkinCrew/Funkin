@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
+import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
 
 class PreferencesMenu extends Page
@@ -20,7 +21,7 @@ class PreferencesMenu extends Page
   {
     super();
 
-    menuCamera = new SwagCamera();
+    menuCamera = new FunkinCamera();
     FlxG.cameras.add(menuCamera, false);
     menuCamera.bgColor = 0x0;
     camera = menuCamera;

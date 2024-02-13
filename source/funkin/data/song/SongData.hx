@@ -418,10 +418,10 @@ class SongPlayData implements ICloneable<SongPlayData>
 
   /**
    * The difficulty ratings for this song as displayed in Freeplay.
-   * Key is a difficulty ID or `default`.
+   * Key is a difficulty ID.
    */
   @:optional
-  @:default(['default' => 1])
+  @:default(['normal' => 0])
   public var ratings:Map<String, Int>;
 
   /**
@@ -431,6 +431,24 @@ class SongPlayData implements ICloneable<SongPlayData>
   @:optional
   public var album:Null<String>;
 
+  /**
+   * The start time for the audio preview in Freeplay.
+   * Defaults to 0 seconds in.
+   * @since `2.2.2`
+   */
+  @:optional
+  @:default(0)
+  public var previewStart:Int;
+
+  /**
+   * The end time for the audio preview in Freeplay.
+   * Defaults to 15 seconds in.
+   * @since `2.2.2`
+   */
+  @:optional
+  @:default(15000)
+  public var previewEnd:Int;
+
   public function new()
   {
     ratings = new Map<String, Int>();
@@ -438,6 +456,7 @@ class SongPlayData implements ICloneable<SongPlayData>
 
   public function clone():SongPlayData
   {
+    // TODO: This sucks! If you forget to update this you get weird behavior.
     var result:SongPlayData = new SongPlayData();
     result.songVariations = this.songVariations.clone();
     result.difficulties = this.difficulties.clone();
@@ -446,6 +465,8 @@ class SongPlayData implements ICloneable<SongPlayData>
     result.noteStyle = this.noteStyle;
     result.ratings = this.ratings.clone();
     result.album = this.album;
+    result.previewStart = this.previewStart;
+    result.previewEnd = this.previewEnd;
 
     return result;
   }
@@ -777,7 +798,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
 
       var title = eventSchema.getByName(key)?.title ?? 'UnknownField';
 
-      if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
+      // if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
       var valueStr = eventSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
 
       result += '\n- ${title}: ${valueStr}';
@@ -915,6 +936,28 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return SongNoteData.buildDirectionName(this.data, strumlineSize);
   }
 
+  /**
+   * The strumline index of the note, if applicable.
+   * Strips the direction from the data.
+   *
+   * 0 = player, 1 = opponent, etc.
+   */
+  public function getStrumlineIndex(strumlineSize:Int = 4):Int
+  {
+    return Math.floor(this.data / strumlineSize);
+  }
+
+  /**
+   * Returns true if the note is one that Boyfriend should try to hit (i.e. it's on his side).
+   * TODO: The name of this function is a little misleading; what about mines?
+   * @param strumlineSize Defaults to 4.
+   * @return True if it's Boyfriend's note.
+   */
+  public function getMustHitNote(strumlineSize:Int = 4):Bool
+  {
+    return getStrumlineIndex(strumlineSize) == 0;
+  }
+
   @:jignored
   var _stepTime:Null<Float> = null;
 
@@ -1001,28 +1044,6 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       default:
         return 'Unknown';
     }
-  }
-
-  /**
-   * The strumline index of the note, if applicable.
-   * Strips the direction from the data.
-   *
-   * 0 = player, 1 = opponent, etc.
-   */
-  public inline function getStrumlineIndex(strumlineSize:Int = 4):Int
-  {
-    return Math.floor(this.data / strumlineSize);
-  }
-
-  /**
-   * Returns true if the note is one that Boyfriend should try to hit (i.e. it's on his side).
-   * TODO: The name of this function is a little misleading; what about mines?
-   * @param strumlineSize Defaults to 4.
-   * @return True if it's Boyfriend's note.
-   */
-  public inline function getMustHitNote(strumlineSize:Int = 4):Bool
-  {
-    return getStrumlineIndex(strumlineSize) == 0;
   }
 
   @:jignored

@@ -1,10 +1,17 @@
 package funkin.play.stage;
 
+import openfl.display.BlendMode;
+import funkin.graphics.framebuffer.FrameBufferManager;
+import flixel.util.FlxColor;
+import funkin.graphics.framebuffer.SpriteCopy;
+import funkin.graphics.FunkinCamera;
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSort;
+import openfl.display.BitmapData;
 import flixel.util.FlxColor;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -46,6 +53,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     return _data?.cameraZoom ?? 1.0;
   }
 
+  var frameBufferMan:FrameBufferManager;
+
+  /**
+   * The texture that has the mask information. Used for shader effects.
+   */
+  public var maskTexture:BitmapData;
+
   var namedProps:Map<String, StageProp> = new Map<String, StageProp>();
   var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
   var boppers:Array<Bopper> = new Array<Bopper>();
@@ -75,6 +89,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function onCreate(event:ScriptEvent):Void
   {
+    if (frameBufferMan != null) frameBufferMan.dispose();
+    frameBufferMan = new FrameBufferManager(FlxG.camera);
+    setupFrameBuffers();
+
     buildStage();
     this.refresh();
 
@@ -701,6 +719,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     {
       debugIconGroup = null;
     }
+
+    if (frameBufferMan != null)
+    {
+      frameBufferMan.dispose();
+    }
   }
 
   /**
@@ -724,13 +747,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
-  public function onUpdate(event:UpdateScriptEvent)
-  {
-    if (FlxG.keys.justPressed.F3)
-    {
-      debugIconGroup.visible = !debugIconGroup.visible;
-    }
-  }
+  public function onUpdate(event:UpdateScriptEvent) {}
 
   public override function kill()
   {
@@ -751,6 +768,53 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     if (group != null) group.remove(Sprite, Splice);
     return Sprite;
+  }
+
+  override function draw():Void
+  {
+    if (frameBufferMan != null)
+    {
+      frameBufferMan.lock();
+    }
+    super.draw();
+    if (frameBufferMan != null)
+    {
+      frameBufferMan.unlock();
+    }
+    frameBuffersUpdated();
+  }
+
+  /**
+   * Called when the frame buffer manager is ready.
+   * Create frame buffers inside this method.
+   */
+  function setupFrameBuffers():Void {}
+
+  /**
+   * Called when all the frame buffers are updated. If you need any
+   * frame buffers before `grabScreen()`, make sure you
+   * grab the screen inside this method since it immediately uses the
+   * frame buffers.
+   */
+  function frameBuffersUpdated():Void {}
+
+  /**
+   * Grabs the current screen and returns it as a bitmap data. You can sefely modify it.
+   * @param applyFilters if this is `true`, the filters set to the camera will be applied to the resulting bitmap
+   * @return the grabbed screen
+   */
+  function grabScreen(applyFilters:Bool):BitmapData
+  {
+    if (Std.isOfType(FlxG.camera, FunkinCamera))
+    {
+      final cam:FunkinCamera = cast FlxG.camera;
+      return cam.grabScreen(applyFilters);
+    }
+    else
+    {
+      FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
+      return null;
+    }
   }
 
   static function _fetchData(id:String):Null<StageData>

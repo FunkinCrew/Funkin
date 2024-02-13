@@ -8,10 +8,12 @@ import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.typeLimit.NextState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinCamera;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
@@ -94,7 +96,7 @@ class MainMenuState extends MusicBeatState
     });
 
     menuItems.enabled = true; // can move on intro
-    createMenuItem('storymode', 'mainmenu/storymode', function() startExitState(new StoryMenuState()));
+    createMenuItem('storymode', 'mainmenu/storymode', function() startExitState(() -> new StoryMenuState()));
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
@@ -110,7 +112,7 @@ class MainMenuState extends MusicBeatState
     #end
 
     createMenuItem('options', 'mainmenu/options', function() {
-      startExitState(new funkin.ui.options.OptionsState());
+      startExitState(() -> new funkin.ui.options.OptionsState());
     });
 
     // Reset position of menu items.
@@ -151,7 +153,7 @@ class MainMenuState extends MusicBeatState
 
   function resetCamStuff()
   {
-    FlxG.cameras.reset(new SwagCamera());
+    FlxG.cameras.reset(new FunkinCamera());
     FlxG.camera.follow(camFollow, null, 0.06);
   }
 
@@ -255,7 +257,7 @@ class MainMenuState extends MusicBeatState
     openSubState(prompt);
   }
 
-  function startExitState(state:FlxState)
+  function startExitState(state:NextState)
   {
     menuItems.enabled = false; // disable for exit
     var duration = 0.4;
@@ -313,7 +315,7 @@ class MainMenuState extends MusicBeatState
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
       FlxG.sound.play(Paths.sound('cancelMenu'));
-      FlxG.switchState(new TitleState());
+      FlxG.switchState(() -> new TitleState());
     }
   }
 }

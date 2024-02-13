@@ -46,26 +46,14 @@ class CopyItemsCommand implements ChartEditorCommand
 
   function performVisuals(state:ChartEditorState):Void
   {
+    var hasNotes:Bool = false;
+    var hasEvents:Bool = false;
+
+    // Wiggle copied notes.
     if (state.currentNoteSelection.length > 0)
     {
-      // Display the "Copied Notes" text.
-      if (state.txtCopyNotif != null)
-      {
-        state.txtCopyNotif.visible = true;
-        state.txtCopyNotif.text = "Copied " + state.currentNoteSelection.length + " notes to clipboard";
-        state.txtCopyNotif.x = FlxG.mouse.x - (state.txtCopyNotif.width / 2);
-        state.txtCopyNotif.y = FlxG.mouse.y - 16;
-        FlxTween.tween(state.txtCopyNotif, {y: state.txtCopyNotif.y - 32}, 0.5,
-          {
-            type: FlxTween.ONESHOT,
-            ease: FlxEase.quadOut,
-            onComplete: function(_) {
-              state.txtCopyNotif.visible = false;
-            }
-          });
-      }
+      hasNotes = true;
 
-      // Wiggle the notes.
       for (note in state.renderedNotes.members)
       {
         if (state.isNoteSelected(note.noteData))
@@ -91,8 +79,13 @@ class CopyItemsCommand implements ChartEditorCommand
             });
         }
       }
+    }
 
-      // Wiggle the events.
+    // Wiggle copied events.
+    if (state.currentEventSelection.length > 0)
+    {
+      hasEvents = true;
+
       for (event in state.renderedEvents.members)
       {
         if (state.isEventSelected(event.eventData))
@@ -118,6 +111,39 @@ class CopyItemsCommand implements ChartEditorCommand
             });
         }
       }
+    }
+
+    // Display the "Copied Notes" text.
+    if ((hasNotes || hasEvents) && state.txtCopyNotif != null)
+    {
+      var copiedString:String = '';
+      if (hasNotes)
+      {
+        var copiedNotes:Int = state.currentNoteSelection.length;
+        copiedString += '${copiedNotes} note';
+        if (copiedNotes > 1) copiedString += 's';
+
+        if (hasEvents) copiedString += ' and ';
+      }
+      if (hasEvents)
+      {
+        var copiedEvents:Int = state.currentEventSelection.length;
+        copiedString += '${state.currentEventSelection.length} event';
+        if (copiedEvents > 1) copiedString += 's';
+      }
+
+      state.txtCopyNotif.visible = true;
+      state.txtCopyNotif.text = 'Copied ${copiedString} to clipboard';
+      state.txtCopyNotif.x = FlxG.mouse.x - (state.txtCopyNotif.width / 2);
+      state.txtCopyNotif.y = FlxG.mouse.y - 16;
+      FlxTween.tween(state.txtCopyNotif, {y: state.txtCopyNotif.y - 32}, 0.5,
+        {
+          type: FlxTweenType.ONESHOT,
+          ease: FlxEase.quadOut,
+          onComplete: function(_) {
+            state.txtCopyNotif.visible = false;
+          }
+        });
     }
   }
 

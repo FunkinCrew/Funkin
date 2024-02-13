@@ -21,9 +21,9 @@ import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
-import funkin.play.cutscene.dialogue.ConversationDataParser;
-import funkin.play.cutscene.dialogue.DialogueBoxDataParser;
-import funkin.play.cutscene.dialogue.SpeakerDataParser;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
@@ -89,7 +89,7 @@ class InitState extends FlxState
     //
     // FLIXEL DEBUG SETUP
     //
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // Disable using ~ to open the console (we use that for the Editor menu)
     FlxG.debugger.toggleKeys = [F2];
 
@@ -141,16 +141,14 @@ class InitState extends FlxState
       FlxG.sound.music.pause();
       FlxG.sound.music.time += FlxG.elapsed * 1000;
     });
+    #end
 
     // Make errors and warnings less annoying.
-    // TODO: Disable this so we know to fix warnings.
-    if (false)
-    {
-      LogStyle.ERROR.openConsole = false;
-      LogStyle.ERROR.errorSound = null;
-      LogStyle.WARNING.openConsole = false;
-      LogStyle.WARNING.errorSound = null;
-    }
+    #if FORCE_DEBUG_VERSION
+    LogStyle.ERROR.openConsole = false;
+    LogStyle.ERROR.errorSound = null;
+    LogStyle.WARNING.openConsole = false;
+    LogStyle.WARNING.errorSound = null;
     #end
 
     //
@@ -208,22 +206,29 @@ class InitState extends FlxState
     // GAME DATA PARSING
     //
 
-    // NOTE: Registries and data parsers must be imported and not referenced with fully qualified names,
+    // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
+    trace('Parsing game data...');
+    var perfStart = haxe.Timer.stamp();
+    SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
-    SongEventRegistry.loadEventCache();
-    ConversationDataParser.loadConversationCache();
-    DialogueBoxDataParser.loadDialogueBoxCache();
-    SpeakerDataParser.loadSpeakerCache();
+    ConversationRegistry.instance.loadEntries();
+    DialogueBoxRegistry.instance.loadEntries();
+    SpeakerRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
-    CharacterDataParser.loadCharacterCache();
+
+    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers.
+    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
-
     ModuleHandler.callOnCreate();
+
+    var perfEnd = haxe.Timer.stamp();
+
+    trace('Parsing game data took ${Math.floor((perfEnd - perfStart) * 1000)}ms.');
   }
 
   /**
@@ -240,17 +245,21 @@ class InitState extends FlxState
     #elseif LEVEL // -DLEVEL=week1 -DDIFFICULTY=hard
     startLevel(defineLevel(), defineDifficulty());
     #elseif FREEPLAY // -DFREEPLAY
-    FlxG.switchState(new FreeplayState());
+    FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
+    #elseif DIALOGUE // -DDIALOGUE
+    FlxG.switchState(() -> new funkin.ui.debug.dialogue.ConversationDebugState());
     #elseif ANIMATE // -DANIMATE
-    FlxG.switchState(new funkin.ui.debug.anim.FlxAnimateTest());
+    FlxG.switchState(() -> new funkin.ui.debug.anim.FlxAnimateTest());
+    #elseif WAVEFORM // -DWAVEFORM
+    FlxG.switchState(() -> new funkin.ui.debug.WaveformTestState());
     #elseif CHARTING // -DCHARTING
-    FlxG.switchState(new funkin.ui.debug.charting.ChartEditorState());
+    FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState());
     #elseif STAGEBUILD // -DSTAGEBUILD
-    FlxG.switchState(new funkin.ui.debug.stage.StageBuilderState());
+    FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
     #elseif ANIMDEBUG // -DANIMDEBUG
-    FlxG.switchState(new funkin.ui.debug.anim.DebugBoundingState());
+    FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     #elseif LATENCY // -DLATENCY
-    FlxG.switchState(new funkin.LatencyState());
+    FlxG.switchState(() -> new funkin.LatencyState());
     #else
     startGameNormally();
     #end
@@ -266,7 +275,7 @@ class InitState extends FlxState
 
     if (params.chart.shouldLoadChart)
     {
-      FlxG.switchState(new ChartEditorState(
+      FlxG.switchState(() -> new ChartEditorState(
         {
           fnfcTargetPath: params.chart.chartPath,
         }));
@@ -274,7 +283,7 @@ class InitState extends FlxState
     else
     {
       FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-      FlxG.switchState(new TitleState());
+      FlxG.switchState(() -> new TitleState());
     }
   }
 
@@ -297,7 +306,7 @@ class InitState extends FlxState
     // TODO: Do this in the loading state.
     songData.cacheCharts(true);
 
-    LoadingState.loadAndSwitchState(new funkin.play.PlayState(
+    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
       {
         targetSong: songData,
         targetDifficulty: difficultyId,
@@ -327,7 +336,7 @@ class InitState extends FlxState
 
     var targetSong:funkin.play.song.Song = SongRegistry.instance.fetchEntry(targetSongId);
 
-    LoadingState.loadAndSwitchState(new funkin.play.PlayState(
+    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
       {
         targetSong: targetSong,
         targetDifficulty: difficultyId,

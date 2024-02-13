@@ -52,6 +52,7 @@
 		<library name="week7" preload="false" />
 		<library name="weekend1" preload="false" />
 	</section>
+	<library name="art" preload="false" />
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg" if="web" />
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3" unless="web" />
 	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg" if="web" />
@@ -82,14 +83,16 @@
 		If we can exclude the `mods` folder from the manifest, we can re-enable this line.
 		<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
 	-->
-	<assets path="art/readme.txt" rename="do NOT readme.txt" />
-	<assets path="CHANGELOG.md" rename="changelog.txt" />
+	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art"/>
+	<assets path="CHANGELOG.md" rename="changelog.txt" library="art"/>
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
 		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
 	<assets path="assets/fonts" embed="true" />
+	<!-- If compiled via github actions, enable force debug -->
+	<set name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="lime" /> <!-- Game engine backend -->
 	<haxelib name="openfl" /> <!-- Game engine backend -->
@@ -108,7 +111,6 @@
 	<haxelib name="hxCodec" /> <!-- Video playback -->
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
-	<haxelib name="tink_json" /> <!-- JSON parsing (DEPRECATED) -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->
 
 	<haxelib name="hmm" /> <!-- Read library version data at compile time so it can be baked into logs -->
@@ -117,15 +119,15 @@
 	<!--Disable the Flixel core focus lost screen-->
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
-	<haxedef name="FLX_NO_DEBUG" unless="debug" />
+	<haxedef name="FLX_NO_DEBUG" unless="debug || FORCE_DEBUG_VERSION" />
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 
 	<!--
 		Hide deprecation warnings until they're fixed.
 		TODO: REMOVE THIS!!!!
+		<haxeflag name="-w" value="-WDeprecated" />
 	-->
-	<haxeflag name="-w" value="-WDeprecated" />
 
 	<!-- Haxe 4.3.0+: Enable pretty syntax errors and stuff. -->
 	<haxedef name="message.reporting" value="pretty" />
@@ -210,15 +212,8 @@
 		<haxedef name="openfl-enable-handle-error" />
 	</section>
 
-	<section>
-		<!-- TODO: Add a flag to Github Actions to turn this on or something. -->
-
-		<!-- Forces the version string to include the Git hash even on release builds (which are used for performance reasons). -->
-		<haxedef name="FORCE_DEBUG_VERSION" />
-	</section>
-
 	<!-- Run a script before and after building. -->
-	<postbuild haxe="source/Prebuild.hx"/> -->
+	<prebuild haxe="source/Prebuild.hx"/> -->
 	<postbuild haxe="source/Postbuild.hx"/> -->
 
 	<!-- Enable this on platforms which do not support dropping files onto the window. -->

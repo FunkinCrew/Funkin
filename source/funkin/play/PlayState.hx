@@ -1,68 +1,79 @@
 package funkin.play;
 
-import funkin.ui.SwagCamera;
-import flixel.addons.transition.FlxTransitionableSubState;
-import funkin.ui.debug.charting.ChartEditorState;
-import haxe.Int64;
-import funkin.play.notes.notestyle.NoteStyle;
-import funkin.data.notestyle.NoteStyleData;
-import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.addons.display.FlxPieDial;
-import flixel.addons.transition.Transition;
+import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.Transition;
+import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
-import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
-import funkin.play.components.ComboMilestone;
 import flixel.math.FlxPoint;
-import funkin.play.components.HealthIcon;
-import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
-import funkin.api.newgrounds.NGio;
 import flixel.util.FlxTimer;
+import funkin.api.newgrounds.NGio;
 import funkin.audio.VoicesGroup;
-import funkin.save.Save;
+import funkin.audio.VoicesGroup;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.notestyle.NoteStyleData;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongData.SongCharacterData;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageRegistry;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.components.ComboMilestone;
+import funkin.play.components.HealthIcon;
+import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.dialogue.ConversationDataParser;
+import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
-import funkin.data.event.SongEventRegistry;
-import funkin.play.notes.NoteSprite;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.NoteSplash;
+import funkin.play.notes.NoteSprite;
+import funkin.play.notes.NoteSprite;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
-import funkin.data.song.SongRegistry;
-import funkin.data.stage.StageRegistry;
-import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongData.SongCharacterData;
 import funkin.play.stage.Stage;
-import funkin.ui.transition.LoadingState;
-import funkin.play.components.PopUpStuff;
-import funkin.ui.options.PreferencesMenu;
+import funkin.save.Save;
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.options.PreferencesMenu;
 import funkin.ui.story.StoryMenuState;
+import funkin.graphics.FunkinCamera;
+import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
-import funkin.util.SortUtil;
+import haxe.Int64;
 import lime.ui.Haptic;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
+import openfl.Lib;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -83,10 +94,16 @@ typedef PlayStateParams =
    */
   ?targetDifficulty:String,
   /**
-   * The character to play as.
-   * @default `bf`, or the first character in the song's character list.
+   * The variation to play on.
+   * @default `Constants.DEFAULT_VARIATION` .
    */
-  ?targetCharacter:String,
+  ?targetVariation:String,
+  /**
+   * The instrumental to play with.
+   * Significant if the `targetSong` supports alternate instrumentals.
+   * @default `null`
+   */
+  ?targetInstrumental:String,
   /**
    * Whether the song should start in Practice Mode.
    * @default `false`
@@ -147,9 +164,9 @@ class PlayState extends MusicBeatSubState
   public var currentDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   /**
-   * The player character being used for this level, as a character ID.
+   * The currently selected variation.
    */
-  public var currentPlayerId:String = 'bf';
+  public var currentVariation:String = Constants.DEFAULT_VARIATION;
 
   /**
    * The currently active Stage. This is the object containing all the props.
@@ -439,6 +456,17 @@ class PlayState extends MusicBeatSubState
     return this.subState != null;
   }
 
+  var isExitingViaPauseMenu(get, never):Bool;
+
+  function get_isExitingViaPauseMenu():Bool
+  {
+    if (this.subState == null) return false;
+    if (!Std.isOfType(this.subState, PauseSubState)) return false;
+
+    var pauseSubState:PauseSubState = cast this.subState;
+    return pauseSubState.exitingToMenu;
+  }
+
   /**
    * Data for the current difficulty for the current song.
    * Includes chart data, scroll speed, and other information.
@@ -448,7 +476,7 @@ class PlayState extends MusicBeatSubState
   function get_currentChart():SongDifficulty
   {
     if (currentSong == null || currentDifficulty == null) return null;
-    return currentSong.getDifficulty(currentDifficulty);
+    return currentSong.getDifficulty(currentDifficulty, currentVariation);
   }
 
   /**
@@ -506,7 +534,7 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
-    if (params.targetCharacter != null) currentPlayerId = params.targetCharacter;
+    if (params.targetVariation != null) currentVariation = params.targetVariation;
     isPracticeMode = params.practiceMode ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
@@ -638,7 +666,7 @@ class PlayState extends MusicBeatSubState
     rightWatermarkText.cameras = [camHUD];
 
     // Initialize some debug stuff.
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // Display the version number (and git commit hash) in the bottom right corner.
     this.rightWatermarkText.text = Constants.VERSION;
 
@@ -684,9 +712,9 @@ class PlayState extends MusicBeatSubState
       {
         message = 'The was a critical error selecting a difficulty for this song. Click OK to return to the main menu.';
       }
-      else if (currentSong.getDifficulty(currentDifficulty) == null)
+      else if (currentChart == null)
       {
-        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty. Click OK to return to the main menu.';
+        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
@@ -699,7 +727,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
-        FlxG.switchState(new MainMenuState());
+        FlxG.switchState(() -> new MainMenuState());
       }
       return false;
     }
@@ -828,11 +856,11 @@ class PlayState extends MusicBeatSubState
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
         if (!isSubState && event.gitaroo)
         {
-          FlxG.switchState(new GitarooPause(
+          FlxG.switchState(() -> new GitarooPause(
             {
               targetSong: currentSong,
               targetDifficulty: currentDifficulty,
-              targetCharacter: currentPlayerId,
+              targetVariation: currentVariation,
             }));
         }
         else
@@ -879,7 +907,7 @@ class PlayState extends MusicBeatSubState
     // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.
-    if (!isInCutscene && !disableKeys && !_exiting)
+    if (!isInCutscene && !disableKeys)
     {
       // RESET = Quick Game Over Screen
       if (controls.RESET)
@@ -907,7 +935,7 @@ class PlayState extends MusicBeatSubState
 
         // Disable updates, preventing animations in the background from playing.
         persistentUpdate = false;
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         if (FlxG.keys.pressed.THREE)
         {
           // TODO: Change the key or delete this?
@@ -918,7 +946,7 @@ class PlayState extends MusicBeatSubState
         {
         #end
           persistentDraw = false;
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         }
         #end
 
@@ -1276,7 +1304,7 @@ class PlayState extends MusicBeatSubState
    */
   function initCameras():Void
   {
-    camGame = new SwagCamera();
+    camGame = new FunkinCamera();
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
@@ -1368,7 +1396,7 @@ class PlayState extends MusicBeatSubState
       // Add the stage to the scene.
       this.add(currentStage);
 
-      #if debug
+      #if (debug || FORCE_DEBUG_VERSION)
       FlxG.console.registerObject('stage', currentStage);
       #end
     }
@@ -1389,7 +1417,7 @@ class PlayState extends MusicBeatSubState
       trace('Song difficulty could not be loaded.');
     }
 
-    var currentCharacterData:SongCharacterData = currentChart.characters; // Switch the character we are playing as by manipulating currentPlayerId.
+    var currentCharacterData:SongCharacterData = currentChart.characters; // Switch the variation we are playing on by manipulating targetVariation.
 
     //
     // GIRLFRIEND
@@ -1458,7 +1486,7 @@ class PlayState extends MusicBeatSubState
       {
         currentStage.addCharacter(girlfriend, GF);
 
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         FlxG.console.registerObject('gf', girlfriend);
         #end
       }
@@ -1467,7 +1495,7 @@ class PlayState extends MusicBeatSubState
       {
         currentStage.addCharacter(boyfriend, BF);
 
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         FlxG.console.registerObject('bf', boyfriend);
         #end
       }
@@ -1478,7 +1506,7 @@ class PlayState extends MusicBeatSubState
         // Camera starts at dad.
         cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
 
-        #if debug
+        #if (debug || FORCE_DEBUG_VERSION)
         FlxG.console.registerObject('dad', dad);
         #end
       }
@@ -1662,7 +1690,7 @@ class PlayState extends MusicBeatSubState
   {
     isInCutscene = true;
 
-    currentConversation = ConversationDataParser.fetchConversation(conversationId);
+    currentConversation = ConversationRegistry.instance.fetchEntry(conversationId);
     if (currentConversation == null) return;
 
     currentConversation.completeCallback = onConversationComplete;
@@ -1733,7 +1761,7 @@ class PlayState extends MusicBeatSubState
    */
   function resyncVocals():Void
   {
-    if (_exiting || vocals == null) return;
+    if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!FlxG.sound.music.playing) return;
@@ -1959,7 +1987,7 @@ class PlayState extends MusicBeatSubState
 
         // Mute vocals and play miss animation, but don't penalize.
         vocals.playerVolume = 0;
-        currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+        if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
   }
@@ -2229,7 +2257,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Eject button
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
+    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
 
     if (FlxG.keys.justPressed.F5) debug_refreshModules();
 
@@ -2247,13 +2275,13 @@ class PlayState extends MusicBeatSubState
     {
       disableKeys = true;
       persistentUpdate = false;
-      FlxG.switchState(new ChartEditorState(
+      FlxG.switchState(() -> new ChartEditorState(
         {
           targetSongId: currentSong.id,
         }));
     }
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // 1: End the song immediately.
     if (FlxG.keys.justPressed.ONE) endSong();
 
@@ -2267,7 +2295,7 @@ class PlayState extends MusicBeatSubState
     // 9: Toggle the old icon.
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // PAGEUP: Skip forward two sections.
     // SHIFT+PAGEUP: Skip forward twenty sections.
     if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
@@ -2513,8 +2541,8 @@ class PlayState extends MusicBeatSubState
       {
         FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
 
-        transIn = FlxTransitionableState.defaultTransIn;
-        transOut = FlxTransitionableState.defaultTransOut;
+        // transIn = FlxTransitionableState.defaultTransIn;
+        // transOut = FlxTransitionableState.defaultTransOut;
 
         // TODO: Rework week unlock logic.
         // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
@@ -2589,14 +2617,16 @@ class PlayState extends MusicBeatSubState
             // TODO: Do this in the loading state.
             targetSong.cacheCharts(true);
 
-            var nextPlayState:PlayState = new PlayState(
-              {
-                targetSong: targetSong,
-                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetCharacter: currentPlayerId,
-              });
-            nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-            LoadingState.loadAndSwitchState(nextPlayState);
+            LoadingState.loadAndSwitchState(() -> {
+              var nextPlayState:PlayState = new PlayState(
+                {
+                  targetSong: targetSong,
+                  targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+                  targetVariation: currentVariation,
+                });
+              nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
+              return nextPlayState;
+            });
           });
         }
         else
@@ -2605,14 +2635,16 @@ class PlayState extends MusicBeatSubState
           // Load and cache the song's charts.
           // TODO: Do this in the loading state.
           targetSong.cacheCharts(true);
-          var nextPlayState:PlayState = new PlayState(
-            {
-              targetSong: targetSong,
-              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetCharacter: currentPlayerId,
-            });
-          nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-          LoadingState.loadAndSwitchState(nextPlayState);
+          LoadingState.loadAndSwitchState(() -> {
+            var nextPlayState:PlayState = new PlayState(
+              {
+                targetSong: targetSong,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+                targetVariation: currentVariation,
+              });
+            nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
+            return nextPlayState;
+          });
         }
       }
     }
@@ -2650,13 +2682,16 @@ class PlayState extends MusicBeatSubState
     {
       // Stop the music.
       FlxG.sound.music.pause();
-      vocals.stop();
+      if (vocals != null) vocals.stop();
     }
     else
     {
       FlxG.sound.music.pause();
-      vocals.pause();
-      remove(vocals);
+      if (vocals != null)
+      {
+        vocals.pause();
+        remove(vocals);
+      }
     }
 
     // Remove reference to stage and remove sprites from it to save memory.
@@ -2768,7 +2803,7 @@ class PlayState extends MusicBeatSubState
     FlxG.camera.focusOn(cameraFollowPoint.getPosition());
   }
 
-  #if debug
+  #if (debug || FORCE_DEBUG_VERSION)
   /**
    * Jumps forward or backward a number of sections in the song.
    * Accounts for BPM changes, does not prevent death from skipped notes.

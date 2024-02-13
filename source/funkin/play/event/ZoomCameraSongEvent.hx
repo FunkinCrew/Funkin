@@ -106,14 +106,16 @@ class ZoomCameraSongEvent extends SongEvent
         title: 'Zoom Level',
         defaultValue: 1.0,
         step: 0.1,
-        type: SongEventFieldType.FLOAT
+        type: SongEventFieldType.FLOAT,
+        units: 'x'
       },
       {
         name: 'duration',
-        title: 'Duration (in steps)',
+        title: 'Duration',
         defaultValue: 4.0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
+        units: 'steps'
       },
       {
         name: 'ease',

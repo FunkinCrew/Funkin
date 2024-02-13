@@ -43,7 +43,7 @@ class CharacterDataParser
   {
     // Clear any stages that are cached if there were any.
     clearCharacterCache();
-    trace('Loading character cache...');
+    trace('[CHARACTER] Parsing all entries...');
 
     //
     // UNSCRIPTED CHARACTERS

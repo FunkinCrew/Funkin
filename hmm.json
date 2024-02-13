@@ -11,14 +11,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "07c6018008801972d12275690fc144fcc22e3de6",
+      "ref": "4d054bd10b05bb1309a0ba3427ffa5378e0b4b99",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "fd3aecdeb5635fa0428dffee204fc78fc26b5885",
+      "ref": "a523c3b56622f0640933944171efed46929e360e",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -54,7 +54,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "5b2d5b8e7e470cf637953e1369c80a1f42016a75",
+      "ref": "8a7846b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
@@ -88,8 +88,10 @@
     },
     {
       "name": "hxcpp-debug-server",
-      "type": "haxelib",
-      "version": "1.2.4"
+      "type": "git",
+      "dir": "hxcpp-debug-server",
+      "ref": "147294123f983e35f50a966741474438069a7a8f",
+      "url": "https://github.com/FunkinCrew/hxcpp-debugger"
     },
     {
       "name": "hxp",
@@ -149,18 +151,20 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "cb11a95d0159271eb3587428cf4b9602e46dc469",
+      "ref": "0b53e478bc375ec51b760b650201ac7a965d2ef4",
       "url": "https://github.com/larsiusprime/polymod"
+    },
+    {
+      "name": "thx.core",
+      "type": "git",
+      "dir": null,
+      "ref": "22605ff44f01971d599641790d6bae4869f7d9f4",
+      "url": "https://github.com/FunkinCrew/thx.core"
     },
     {
       "name": "thx.semver",
       "type": "haxelib",
       "version": "0.2.2"
-    },
-    {
-      "name": "tink_json",
-      "type": "haxelib",
-      "version": "0.11.0"
     }
   ]
 }

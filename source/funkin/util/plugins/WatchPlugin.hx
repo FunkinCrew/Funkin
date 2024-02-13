@@ -22,6 +22,17 @@ class WatchPlugin extends FlxBasic
   {
     super.update(elapsed);
 
+    var stateClassName = Type.getClassName(Type.getClass(FlxG.state));
+    FlxG.watch.addQuick("currentState", stateClassName);
+    var subStateClassNames = [];
+    var subState = FlxG.state.subState;
+    while (subState != null)
+    {
+      subStateClassNames.push(Type.getClassName(Type.getClass(subState)));
+      subState = subState.subState;
+    }
+    FlxG.watch.addQuick("currentSubStates", subStateClassNames.join(", "));
+
     FlxG.watch.addQuick("songPosition", Conductor.instance.songPosition);
     FlxG.watch.addQuick("songPositionNoOffset", Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
     FlxG.watch.addQuick("musicTime", FlxG.sound?.music?.time ?? 0.0);

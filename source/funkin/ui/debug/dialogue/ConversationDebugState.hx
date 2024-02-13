@@ -1,10 +1,19 @@
-package funkin.play.cutscene.dialogue;
+package funkin.ui.debug.dialogue;
 
 import flixel.FlxState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import flixel.util.FlxColor;
 import funkin.ui.MusicBeatState;
+import funkin.data.dialogue.ConversationData;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxData;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerData;
+import funkin.data.dialogue.SpeakerRegistry;
+import funkin.play.cutscene.dialogue.Conversation;
+import funkin.play.cutscene.dialogue.DialogueBox;
+import funkin.play.cutscene.dialogue.Speaker;
 
 /**
  * A state with displays a conversation with no background.
@@ -27,7 +36,7 @@ class ConversationDebugState extends MusicBeatState
 
   public override function create():Void
   {
-    conversation = ConversationDataParser.fetchConversation(conversationId);
+    conversation = ConversationRegistry.instance.fetchEntry(conversationId);
     conversation.completeCallback = onConversationComplete;
     add(conversation);
 
@@ -38,6 +47,12 @@ class ConversationDebugState extends MusicBeatState
   {
     remove(conversation);
     conversation = null;
+  }
+
+  public override function dispatchEvent(event:ScriptEvent):Void
+  {
+    // Dispatch event to conversation script.
+    ScriptEventDispatcher.callEvent(conversation, event);
   }
 
   public override function update(elapsed:Float):Void
