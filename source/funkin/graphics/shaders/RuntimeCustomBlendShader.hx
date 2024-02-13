@@ -6,20 +6,22 @@ import openfl.utils.Assets;
 
 class RuntimeCustomBlendShader extends RuntimePostEffectShader
 {
-  public var source(default, set):BitmapData;
+  // only different name purely for hashlink fix
+  public var sourceSwag(default, set):BitmapData;
 
-  function set_source(value:BitmapData):BitmapData
+  function set_sourceSwag(value:BitmapData):BitmapData
   {
-    this.setBitmapData("source", value);
-    return source = value;
+    this.setBitmapData("sourceSwag", value);
+    return sourceSwag = value;
   }
 
-  public var blend(default, set):BlendMode;
+  // name change make sure it's not the same variable name as whatever is in the shader file
+  public var blendSwag(default, set):BlendMode;
 
-  function set_blend(value:BlendMode):BlendMode
+  function set_blendSwag(value:BlendMode):BlendMode
   {
     this.setInt("blendMode", cast value);
-    return blend = value;
+    return blendSwag = value;
   }
 
   public function new()
