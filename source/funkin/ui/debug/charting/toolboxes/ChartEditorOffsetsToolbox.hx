@@ -276,8 +276,13 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
     // Build opponent waveform.
     // waveformOpponent.waveform.forceUpdate = true;
-    waveformOpponent.waveform.waveformData = opponentVoice.waveformData;
-    waveformOpponent.waveform.duration = opponentVoice.length / Constants.MS_PER_SEC;
+    // note: if song only has one set of vocals (Vocals.ogg/mp3) then this is null and crashes charting editor
+    // so we null check
+    if (opponentVoice != null)
+    {
+      waveformOpponent.waveform.waveformData = opponentVoice.waveformData;
+      waveformOpponent.waveform.duration = opponentVoice.length / Constants.MS_PER_SEC;
+    }
 
     // Build instrumental waveform.
     // waveformInstrumental.waveform.forceUpdate = true;
