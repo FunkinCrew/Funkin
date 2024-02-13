@@ -41,7 +41,8 @@ class PauseSubState extends MusicBeatSubState
 
   var practiceText:FlxText;
 
-  var exitingToMenu:Bool = false;
+  public var exitingToMenu:Bool = false;
+
   var bg:FlxSprite;
   var metaDataGrp:FlxTypedGroup<FlxSprite>;
 
@@ -171,7 +172,7 @@ class PauseSubState extends MusicBeatSubState
     var downP = controls.UI_DOWN_P;
     var accepted = controls.ACCEPT;
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // to pause the game and get screenshots easy, press H on pause menu!
     if (FlxG.keys.justPressed.H)
     {
@@ -237,11 +238,11 @@ class PauseSubState extends MusicBeatSubState
             if (PlayStatePlaylist.isStoryMode)
             {
               PlayStatePlaylist.reset();
-              openSubState(new funkin.ui.transition.StickerSubState(null, STORY));
+              openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState(sticker)));
             }
             else
             {
-              openSubState(new funkin.ui.transition.StickerSubState(null, FREEPLAY));
+              openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.freeplay.FreeplayState(null, sticker)));
             }
           case 'Adjust Input Offsets':
             openSubState(new LatencyState());

@@ -19,6 +19,7 @@ import funkin.ui.freeplay.FreeplayState;
 import openfl.geom.Matrix;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
+import flixel.FlxState;
 
 using Lambda;
 using StringTools;
@@ -30,7 +31,12 @@ class StickerSubState extends MusicBeatSubState
   // yes... a damn OpenFL sprite!!!
   public var dipshit:Sprite;
 
-  var nextState:NEXTSTATE = FREEPLAY;
+  /**
+   * The state to switch to after the stickers are done.
+   * This is a FUNCTION so we can pass it directly to `FlxG.switchState()`,
+   * and we can add constructor parameters in the caller.
+   */
+  var targetState:StickerSubState->FlxState;
 
   // what "folders" to potentially load from (as of writing only "keys" exist)
   var soundSelections:Array<String> = [];
@@ -38,9 +44,11 @@ class StickerSubState extends MusicBeatSubState
   var soundSelection:String = "";
   var sounds:Array<String> = [];
 
-  public function new(?oldStickers:Array<StickerSprite>, ?nextState:NEXTSTATE = FREEPLAY):Void
+  public function new(?oldStickers:Array<StickerSprite>, ?targetState:StickerSubState->FlxState):Void
   {
     super();
+
+    this.targetState = (targetState == null) ? ((sticker) -> new MainMenuState()) : targetState;
 
     // todo still
     // make sure that ONLY plays mp3/ogg files
@@ -84,10 +92,6 @@ class StickerSubState extends MusicBeatSubState
 
     trace(sounds);
 
-    // trace(assetsInList);
-
-    this.nextState = nextState;
-
     grpStickers = new FlxTypedGroup<StickerSprite>();
     add(grpStickers);
 
@@ -112,10 +116,19 @@ class StickerSubState extends MusicBeatSubState
   {
     grpStickers.cameras = FlxG.cameras.list;
 
-    if (dipshit != null)
+    /*
+      if (dipshit != null)
+      {
+        FlxG.removeChild(dipshit);
+        dipshit = null;
+      }
+     */
+
+    if (grpStickers.members == null || grpStickers.members.length == 0)
     {
-      FlxG.removeChild(dipshit);
-      dipshit = null;
+      switchingState = false;
+      close();
+      return;
     }
 
     for (ind => sticker in grpStickers.members)
@@ -228,33 +241,26 @@ class StickerSubState extends MusicBeatSubState
           if (ind == grpStickers.members.length - 1)
           {
             switchingState = true;
+
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
 
-            dipshit = new Sprite();
-            var scrn:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
-            var mat:Matrix = new Matrix();
-            scrn.draw(grpStickers.cameras[0].canvas, mat);
+            // I think this grabs the screen and puts it under the stickers?
+            // Leaving this commented out rather than stripping it out because it's cool...
+            /*
+              dipshit = new Sprite();
+              var scrn:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
+              var mat:Matrix = new Matrix();
+              scrn.draw(grpStickers.cameras[0].canvas, mat);
 
-            var bitmap:Bitmap = new Bitmap(scrn);
+              var bitmap:Bitmap = new Bitmap(scrn);
 
-            dipshit.addChild(bitmap);
-            FlxG.addChildBelowMouse(dipshit);
+              dipshit.addChild(bitmap);
+              // FlxG.addChildBelowMouse(dipshit);
+             */
 
-            switch (nextState)
-            {
-              case FREEPLAY:
-                FlxG.switchState(new FreeplayState(this));
-              case STORY:
-                FlxG.switchState(new StoryMenuState(this));
-              case MAIN_MENU:
-                FlxG.switchState(new MainMenuState());
-              default:
-                FlxG.switchState(new MainMenuState());
-            }
+            FlxG.switchState(() -> targetState(this));
           }
-
-          // sticky.angle *= FlxG.random.float(0, 0.05);
         });
       });
     }
@@ -367,11 +373,4 @@ typedef StickerShit =
   artist:String,
   stickers:Map<String, Array<String>>,
   stickerPacks:Map<String, Array<String>>
-}
-
-enum abstract NEXTSTATE(String)
-{
-  var MAIN_MENU = 'mainmenu';
-  var FREEPLAY = 'freeplay';
-  var STORY = 'story';
 }

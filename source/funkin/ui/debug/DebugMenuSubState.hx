@@ -90,7 +90,9 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openChartEditor()
   {
-    FlxG.switchState(new ChartEditorState());
+    FlxTransitionableState.skipNextTransIn = true;
+
+    FlxG.switchState(() -> new ChartEditorState());
   }
 
   function openInputOffsetTesting()
@@ -101,7 +103,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openAnimationEditor()
   {
-    FlxG.switchState(new funkin.ui.debug.anim.DebugBoundingState());
+    FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     trace('Animation Editor');
   }
 

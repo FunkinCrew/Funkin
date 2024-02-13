@@ -8,6 +8,7 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import funkin.graphics.FunkinCamera;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.mouse.FlxMouseEvent;
@@ -2094,7 +2095,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     loadPreferences();
 
-    uiCamera = new FlxCamera();
+    uiCamera = new FunkinCamera();
     FlxG.cameras.reset(uiCamera);
 
     buildDefaultSongData();
@@ -3183,7 +3184,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleTestKeybinds();
     handleHelpKeybinds();
 
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     handleQuickWatch();
     #end
 
@@ -5097,7 +5098,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
-    FlxG.switchState(new MainMenuState());
+    FlxG.switchState(() -> new MainMenuState());
 
     resetWindowTitle();
 
@@ -5363,8 +5364,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         targetSong: targetSong,
         targetDifficulty: selectedDifficulty,
-        // TODO: Add this.
-        // targetCharacter: targetCharacter,
+        targetVariation: selectedVariation,
         practiceMode: playtestPracticeMode,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
@@ -5381,7 +5381,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Kill and replace the UI camera so it doesn't get destroyed during the state transition.
     uiCamera.kill();
     FlxG.cameras.remove(uiCamera, false);
-    FlxG.cameras.reset(new FlxCamera());
+    FlxG.cameras.reset(new FunkinCamera());
 
     this.persistentUpdate = false;
     this.persistentDraw = false;

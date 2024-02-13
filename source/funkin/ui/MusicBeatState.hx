@@ -75,7 +75,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   function handleFunctionControls():Void
   {
     // Emergency exit button.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(new MainMenuState());
+    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
 
     // This can now be used in EVERY STATE YAY!
     if (FlxG.keys.justPressed.F5) debug_refreshModules();

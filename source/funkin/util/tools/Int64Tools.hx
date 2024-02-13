@@ -18,9 +18,9 @@ class Int64Tools
 
   public static function toFloat(i:Int64):Float
   {
-    var f:Float = Int64.getLow(i);
+    var f:Float = i.low;
     if (f < 0) f += MAX_32_PRECISION;
-    return (Int64.getHigh(i) * MAX_32_PRECISION + f);
+    return (i.high * MAX_32_PRECISION + f);
   }
 
   public static function isToIntSafe(i:Int64):Bool
