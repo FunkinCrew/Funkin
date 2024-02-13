@@ -38,7 +38,8 @@ class PauseSubState extends MusicBeatSubState
 
   var practiceText:FlxText;
 
-  var exitingToMenu:Bool = false;
+  public var exitingToMenu:Bool = false;
+
   var bg:FlxSprite;
   var metaDataGrp:FlxTypedGroup<FlxSprite>;
 

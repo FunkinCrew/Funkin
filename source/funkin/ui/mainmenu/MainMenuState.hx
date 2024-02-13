@@ -13,6 +13,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinCamera;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
@@ -152,7 +153,7 @@ class MainMenuState extends MusicBeatState
 
   function resetCamStuff()
   {
-    FlxG.cameras.reset(new SwagCamera());
+    FlxG.cameras.reset(new FunkinCamera());
     FlxG.camera.follow(camFollow, null, 0.06);
   }
 

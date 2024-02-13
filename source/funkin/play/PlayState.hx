@@ -66,7 +66,7 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.options.PreferencesMenu;
 import funkin.ui.story.StoryMenuState;
-import funkin.ui.SwagCamera;
+import funkin.graphics.FunkinCamera;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
@@ -420,7 +420,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The camera which contains, and controls visibility of, the stage and characters.
    */
-  public var camGame:SwagCamera;
+  public var camGame:FlxCamera;
 
   /**
    * The camera which contains, and controls visibility of, a video cutscene.
@@ -454,6 +454,17 @@ class PlayState extends MusicBeatSubState
     // Note: If there is a substate which requires the game to act unpaused,
     //       this should be changed to include something like `&& Std.isOfType()`
     return this.subState != null;
+  }
+
+  var isExitingViaPauseMenu(get, never):Bool;
+
+  function get_isExitingViaPauseMenu():Bool
+  {
+    if (this.subState == null) return false;
+    if (!Std.isOfType(this.subState, PauseSubState)) return false;
+
+    var pauseSubState:PauseSubState = cast this.subState;
+    return pauseSubState.exitingToMenu;
   }
 
   /**
@@ -1293,7 +1304,7 @@ class PlayState extends MusicBeatSubState
    */
   function initCameras():Void
   {
-    camGame = new SwagCamera();
+    camGame = new FlxCamera();
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.

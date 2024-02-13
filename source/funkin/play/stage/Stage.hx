@@ -4,7 +4,7 @@ import openfl.display.BlendMode;
 import funkin.graphics.framebuffer.FrameBufferManager;
 import flixel.util.FlxColor;
 import funkin.graphics.framebuffer.SpriteCopy;
-import funkin.graphics.framebuffer.GrabbableCamera;
+import funkin.graphics.FunkinCamera;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -805,9 +805,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   function grabScreen(applyFilters:Bool):BitmapData
   {
-    if (Std.isOfType(FlxG.camera, GrabbableCamera))
+    if (Std.isOfType(FlxG.camera, FunkinCamera))
     {
-      final cam:GrabbableCamera = cast FlxG.camera;
+      final cam:FunkinCamera = cast FlxG.camera;
       return cam.grabScreen(applyFilters);
     }
     else

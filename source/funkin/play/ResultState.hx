@@ -352,11 +352,11 @@ class ResultState extends MusicBeatSubState
     {
       if (params.storyMode)
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState(sticker)));
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
       }
       else
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.FreeplayState(null, sticker)));
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new FreeplayState(null, sticker)));
       }
     }
 

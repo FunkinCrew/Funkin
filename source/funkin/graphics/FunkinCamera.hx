@@ -1,4 +1,4 @@
-package funkin.graphics.framebuffer;
+package funkin.graphics;
 
 import flash.geom.ColorTransform;
 import flixel.FlxCamera;
@@ -8,6 +8,8 @@ import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxShader;
 import funkin.graphics.shaders.RuntimeCustomBlendShader;
+import funkin.graphics.framebuffer.BitmapDataUtil;
+import funkin.graphics.framebuffer.FixedBitmapData;
 import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -16,7 +18,11 @@ import openfl.filters.BitmapFilter;
 import openfl.filters.ShaderFilter;
 
 /**
- * A camera, but grabbable. Also supports several additional blend modes.
+ * A FlxCamera with additional powerful features:
+ * - Grab the camera screen as a `BitmapData` and use it as a texture
+ * - Support `sprite.blend = DARKEN/HARDLIGHT/LIGHTEN/OVERLAY` to apply visual effects using certain sprites
+ *   - NOTE: Several other blend modes work without FunkinCamera. Some still do not work.
+ * - NOTE: Framerate-independent camera tweening is fixed in Flixel 6.x. Rest in peace, SwagCamera.
  */
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
@@ -24,7 +30,7 @@ import openfl.filters.ShaderFilter;
 @:access(openfl.display3D.textures.TextureBase)
 @:access(flixel.graphics.FlxGraphic)
 @:access(flixel.graphics.frames.FlxFrame)
-class GrabbableCamera extends FlxCamera
+class FunkinCamera extends FlxCamera
 {
   final grabbed:Array<BitmapData> = [];
   final texturePool:Array<TextureBase> = [];
@@ -38,6 +44,8 @@ class GrabbableCamera extends FlxCamera
 
   var filtersApplied:Bool = false;
   var bgItemCount:Int = 0;
+
+  public var shouldDraw:Bool = true;
 
   public function new(x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
   {
@@ -135,8 +143,8 @@ class GrabbableCamera extends FlxCamera
     if (clearScreen)
     {
       // clear graphics data
-      // super.clearDrawStack();
-      // canvas.graphics.clear();
+      super.clearDrawStack();
+      canvas.graphics.clear();
     }
 
     // render the background bitmap
@@ -169,6 +177,8 @@ class GrabbableCamera extends FlxCamera
   override function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
       ?shader:FlxShader):Void
   {
+    if (!shouldDraw) return;
+
     if ( switch blend
       {
         case DARKEN | HARDLIGHT | LIGHTEN | OVERLAY: true;

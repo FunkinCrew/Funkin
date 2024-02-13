@@ -241,6 +241,7 @@ class StickerSubState extends MusicBeatSubState
           if (ind == grpStickers.members.length - 1)
           {
             switchingState = true;
+
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
 

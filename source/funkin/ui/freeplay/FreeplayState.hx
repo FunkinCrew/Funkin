@@ -14,6 +14,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
+import funkin.graphics.FunkinCamera;
 import flixel.math.FlxPoint;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
@@ -573,7 +574,7 @@ class FreeplayState extends MusicBeatSubState
 
     var swag:Alphabet = new Alphabet(1, 0, "swag");
 
-    var funnyCam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+    var funnyCam = new FunkinCamera(0, 0, FlxG.width, FlxG.height);
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam);
 
