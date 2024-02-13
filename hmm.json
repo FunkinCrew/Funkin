@@ -163,8 +163,10 @@
     },
     {
       "name": "thx.semver",
-      "type": "haxelib",
-      "version": "0.2.2"
+      "type": "git",
+      "dir": null,
+      "ref": "cf8d213589a2c7ce4a59b0fdba9e8ff36bc029fa",
+      "url": "https://github.com/FunkinCrew/thx.semver"
     }
   ]
 }

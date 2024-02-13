@@ -8,7 +8,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 #if html5
 import funkin.graphics.video.FlxVideo;
-#else
+#end
+#if hxCodec
 import hxcodec.flixel.FlxVideoSprite;
 #end
 
@@ -48,14 +49,20 @@ class VideoCutscene
 
     #if html5
     playVideoHTML5(filePath);
-    #else
+    #end
+
+    #if hxCodec
     playVideoNative(filePath);
     #end
   }
 
   public static function isPlaying():Bool
   {
+    #if (html5 || hxCodec)
     return vid != null;
+    #else
+    return false;
+    #end
   }
 
   #if html5
@@ -82,7 +89,9 @@ class VideoCutscene
       trace('ALERT: Video is null! Could not play cutscene!');
     }
   }
-  #else
+  #end
+
+  #if hxCodec
   static var vid:FlxVideoSprite;
 
   static function playVideoNative(filePath:String):Void
@@ -118,15 +127,20 @@ class VideoCutscene
     {
       PlayState.instance.remove(vid);
     }
-    #else
+    #end
+
+    #if hxCodec
     if (vid != null)
     {
       vid.stop();
       PlayState.instance.remove(vid);
     }
     #end
+
+    #if (html5 || hxCodec)
     vid.destroy();
     vid = null;
+    #end
 
     PlayState.instance.camCutscene.visible = true;
     PlayState.instance.camHUD.visible = true;
@@ -148,9 +162,3 @@ class VideoCutscene
       });
   }
 }
-
-/*
-  trace('Video playback failed (${e})');
-  vid = null;
-  finishCutscene(0.5);
- */

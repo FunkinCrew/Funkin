@@ -2,7 +2,8 @@ package funkin.ui.title;
 
 #if html5
 import funkin.graphics.video.FlxVideo;
-#else
+#end
+#if hxCodec
 import hxcodec.flixel.FlxVideoSprite;
 #end
 import funkin.ui.MusicBeatState;
@@ -25,7 +26,9 @@ class AttractState extends MusicBeatState
 
     #if html5
     playVideoHTML5(ATTRACT_VIDEO_PATH);
-    #else
+    #end
+
+    #if hxCodec
     playVideoNative(ATTRACT_VIDEO_PATH);
     #end
   }
@@ -50,7 +53,9 @@ class AttractState extends MusicBeatState
       trace('ALERT: Video is null! Could not play cutscene!');
     }
   }
-  #else
+  #end
+
+  #if hxCodec
   var vid:FlxVideoSprite;
 
   function playVideoNative(filePath:String):Void
@@ -95,15 +100,20 @@ class AttractState extends MusicBeatState
     {
       remove(vid);
     }
-    #else
+    #end
+
+    #if hxCodec
     if (vid != null)
     {
       vid.stop();
       remove(vid);
     }
     #end
+
+    #if (html5 || hxCodec)
     vid.destroy();
     vid = null;
+    #end
 
     FlxG.switchState(() -> new TitleState());
   }

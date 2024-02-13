@@ -192,7 +192,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function get_playing():Bool
   {
-    if (getFirstAlive != null) return getFirstAlive().playing;
+    if (getFirstAlive() != null) return getFirstAlive().playing;
     else
       return false;
   }
