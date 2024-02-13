@@ -219,7 +219,7 @@ class LatencyState extends MusicBeatSubState
       trace(FlxG.sound.music._channel.position);
      */
 
-    Conductor.instance.update(swagSong.position);
+    Conductor.instance.update(swagSong.time);
 
     // Conductor.instance.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
