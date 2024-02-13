@@ -45,6 +45,7 @@ import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.input.TurboActionHandler;
+import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.BaseCharacter.CharacterType;
