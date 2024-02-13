@@ -214,11 +214,15 @@ class Conductor
 
   /**
    * An offset set by the user to compensate for input lag.
+   * No matter if you're using a local conductor or not, this always loads
+   * to/from the save file
    */
   public var inputOffset(get, set):Int;
 
   /**
    * An offset set by the user to compensate for audio/visual lag
+   * No matter if you're using a local conductor or not, this always loads
+   * to/from the save file
    */
   public var audioVisualOffset(get, set):Int;
 

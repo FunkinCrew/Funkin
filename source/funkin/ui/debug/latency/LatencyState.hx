@@ -56,6 +56,7 @@ class LatencyState extends MusicBeatSubState
     super.create();
 
     localConductor = new Conductor();
+    conductorInUse = localConductor;
 
     stateCamera = new FlxCamera(0, 0, FlxG.width, FlxG.height);
     stateCamera.bgColor = FlxColor.BLACK;
@@ -239,9 +240,11 @@ class LatencyState extends MusicBeatSubState
     songVisFollowVideo.x = songPosToX(localConductor.songPosition - localConductor.inputOffset);
 
     visualOffsetText.text = "Visual Offset: " + localConductor.audioVisualOffset + "ms";
-    visualOffsetText.text += "\nYou can press SPACE+Left/Right to change this value.";
+    visualOffsetText.text += "\n\nYou can press SPACE+Left/Right to change this value.";
+    visualOffsetText.text += "\n\nYou can hold SHIFT to step 1ms at a time";
 
     offsetText.text = "INPUT Offset (Left/Right to change): " + localConductor.inputOffset + "ms";
+    offsetText.text += "\n\nYou can hold SHIFT to step 1ms at a time";
 
     var avgOffsetInput:Float = 0;
 
@@ -250,7 +253,7 @@ class LatencyState extends MusicBeatSubState
 
     avgOffsetInput /= offsetsPerBeat.length;
 
-    offsetText.text += "\nEstimated average input offset needed: " + avgOffsetInput;
+    offsetText.text += "\n\nEstimated average input offset needed: " + avgOffsetInput;
 
     var multiply:Int = 10;
 
@@ -303,6 +306,7 @@ class LatencyState extends MusicBeatSubState
     var getDiff:Float = localConductor.getTimeWithDiff(swagSong) - (closestBeat * (localConductor.stepLengthMs * 2));
     // getDiff -= localConductor.inputOffset;
     getDiff -= inputLatencyMs;
+    getDiff -= localConductor.audioVisualOffset;
 
     // lil fix for end of song
     if (closestBeat == 0 && getDiff >= localConductor.stepLengthMs * 2) getDiff -= swagSong.length;
