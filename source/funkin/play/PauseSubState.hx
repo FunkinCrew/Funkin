@@ -234,7 +234,7 @@ class PauseSubState extends MusicBeatSubState
             if (PlayStatePlaylist.isStoryMode)
             {
               PlayStatePlaylist.reset();
-              openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState()));
+              openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState(sticker)));
             }
             else
             {
