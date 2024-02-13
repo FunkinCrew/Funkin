@@ -21,6 +21,7 @@ import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongNoteData;
 import haxe.Timer;
+import flixel.FlxCamera;
 
 class LatencyState extends MusicBeatSubState
 {
@@ -38,30 +39,39 @@ class LatencyState extends MusicBeatSubState
   var beatTrail:FlxSprite;
   var diffGrp:FlxTypedGroup<FlxText>;
   var offsetsPerBeat:Array<Int> = [];
-  var swagSong:HomemadeMusic;
+  var swagSong:FlxSound;
+
+  var previousVolume:Float;
+
+  var stateCamera:FlxCamera;
 
   override function create()
   {
     super.create();
 
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+    stateCamera = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+    stateCamera.bgColor = FlxColor.BLACK;
+    FlxG.cameras.add(stateCamera);
 
-    swagSong = new HomemadeMusic();
+    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    add(bg);
+
+    if (FlxG.sound.music != null)
+    {
+      previousVolume = FlxG.sound.music.volume;
+      FlxG.sound.music.volume = 0; // only want to mute the volume, incase we are coming from pause menu
+    }
+    else
+      previousVolume = 1; // defaults to 1 if no music is playing 🤔 also fuck it, emoji in code comment
+
+    swagSong = new FlxSound();
     swagSong.loadEmbedded(Paths.sound('soundTest'), true);
+    swagSong.looped = true;
+    swagSong.play();
 
-    FlxG.sound.music = swagSong;
-    FlxG.sound.music.play();
+    PreciseInputManager.instance.onInputPressed.add(preciseInputPressed);
 
-    PreciseInputManager.instance.onInputPressed.add(function(event:PreciseInputEvent) {
-      generateBeatStuff(event);
-      strumLine.pressKey(event.noteDirection);
-      strumLine.playPress(event.noteDirection);
-    });
-
-    PreciseInputManager.instance.onInputReleased.add(function(event:PreciseInputEvent) {
-      strumLine.playStatic(event.noteDirection);
-      strumLine.releaseKey(event.noteDirection);
-    });
+    PreciseInputManager.instance.onInputReleased.add(preciseInputReleased);
 
     Conductor.instance.forceBPM(60);
 
@@ -70,7 +80,7 @@ class LatencyState extends MusicBeatSubState
     diffGrp = new FlxTypedGroup<FlxText>();
     add(diffGrp);
 
-    for (beat in 0...Math.floor(FlxG.sound.music.length / (Conductor.instance.stepLengthMs * 2)))
+    for (beat in 0...Math.floor(swagSong.length / (Conductor.instance.stepLengthMs * 2)))
     {
       var beatTick:FlxSprite = new FlxSprite(songPosToX(beat * (Conductor.instance.stepLengthMs * 2)), FlxG.height - 15);
       beatTick.makeGraphic(2, 15);
@@ -132,7 +142,41 @@ class LatencyState extends MusicBeatSubState
     offsetText.fieldWidth = FlxG.width - offsetText.x - 10;
     add(offsetText);
 
+    var helpText:FlxText = new FlxText();
+    helpText.setFormat(Paths.font("vcr.ttf"), 20);
+    helpText.text = "Press ESC to return to main menu";
+    helpText.x = FlxG.width - helpText.width;
+    helpText.y = FlxG.height - helpText.height - 2;
+    add(helpText);
+
     regenNoteData();
+  }
+
+  function preciseInputPressed(event:PreciseInputEvent)
+  {
+    generateBeatStuff(event);
+    strumLine.pressKey(event.noteDirection);
+    strumLine.playPress(event.noteDirection);
+  }
+
+  function preciseInputReleased(event:PreciseInputEvent)
+  {
+    strumLine.playStatic(event.noteDirection);
+    strumLine.releaseKey(event.noteDirection);
+  }
+
+  override public function close():Void
+  {
+    PreciseInputManager.instance.onInputPressed.remove(preciseInputPressed);
+
+    PreciseInputManager.instance.onInputReleased.remove(preciseInputReleased);
+
+    FlxG.sound.music.volume = previousVolume;
+    swagSong.stop();
+
+    FlxG.cameras.remove(stateCamera);
+
+    super.close();
   }
 
   function regenNoteData()
@@ -175,7 +219,7 @@ class LatencyState extends MusicBeatSubState
       trace(FlxG.sound.music._channel.position);
      */
 
-    Conductor.instance.update();
+    Conductor.instance.update(swagSong.position);
 
     // Conductor.instance.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
@@ -226,6 +270,11 @@ class LatencyState extends MusicBeatSubState
       }
     }
 
+    if (FlxG.keys.justPressed.ESCAPE)
+    {
+      close();
+    }
+
     super.update(elapsed);
   }
 
@@ -237,15 +286,15 @@ class LatencyState extends MusicBeatSubState
     trace("input latency: " + inputLatencyMs + "ms");
     trace("cur timestamp: " + PreciseInputManager.getCurrentTimestamp() + "ns");
     trace("event timestamp: " + event.timestamp + "ns");
-    trace("songtime: " + Conductor.instance.getTimeWithDiff() + "ms");
+    trace("songtime: " + Conductor.instance.getTimeWithDiff(swagSong) + "ms");
 
-    var closestBeat:Int = Math.round(Conductor.instance.getTimeWithDiff() / (Conductor.instance.stepLengthMs * 2)) % diffGrp.members.length;
-    var getDiff:Float = Conductor.instance.getTimeWithDiff() - (closestBeat * (Conductor.instance.stepLengthMs * 2));
+    var closestBeat:Int = Math.round(Conductor.instance.getTimeWithDiff(swagSong) / (Conductor.instance.stepLengthMs * 2)) % diffGrp.members.length;
+    var getDiff:Float = Conductor.instance.getTimeWithDiff(swagSong) - (closestBeat * (Conductor.instance.stepLengthMs * 2));
     // getDiff -= Conductor.instance.inputOffset;
     getDiff -= inputLatencyMs;
 
     // lil fix for end of song
-    if (closestBeat == 0 && getDiff >= Conductor.instance.stepLengthMs * 2) getDiff -= FlxG.sound.music.length;
+    if (closestBeat == 0 && getDiff >= Conductor.instance.stepLengthMs * 2) getDiff -= swagSong.length;
 
     beatTrail.x = songPosVis.x;
 
@@ -255,7 +304,7 @@ class LatencyState extends MusicBeatSubState
 
   function songPosToX(pos:Float):Float
   {
-    return FlxMath.remapToRange(pos, 0, FlxG.sound.music.length, 0, FlxG.width);
+    return FlxMath.remapToRange(pos, 0, swagSong.length, 0, FlxG.width);
   }
 }
 

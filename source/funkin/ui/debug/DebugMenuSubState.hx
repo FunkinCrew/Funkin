@@ -95,7 +95,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openInputOffsetTesting()
   {
-    FlxG.switchState(new funkin.ui.debug.latency.LatencyState());
+    openSubState(new funkin.ui.debug.latency.LatencyState());
     trace('Input Offset Testing');
   }
 

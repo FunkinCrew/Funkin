@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.debug.latency.LatencyState;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -18,14 +19,16 @@ class PauseSubState extends MusicBeatSubState
 {
   var grpMenuShit:FlxTypedGroup<Alphabet>;
 
+  // todo: maybe make these enums or somethin?
   final pauseOptionsBase:Array<String> = [
     'Resume',
     'Restart Song',
     'Change Difficulty',
     'Toggle Practice Mode',
+    'Adjust Input Offsets',
     'Exit to Menu'
   ];
-  final pauseOptionsCharting:Array<String> = ['Resume', 'Restart Song', 'Exit to Chart Editor'];
+  final pauseOptionsCharting:Array<String> = ['Resume', 'Restart Song', 'Adjust Input Offsets', 'Exit to Chart Editor'];
 
   final pauseOptionsDifficultyBase:Array<String> = ['BACK'];
 
@@ -240,7 +243,8 @@ class PauseSubState extends MusicBeatSubState
             {
               openSubState(new funkin.ui.transition.StickerSubState(null, FREEPLAY));
             }
-
+          case 'Adjust Input Offsets':
+            openSubState(new LatencyState());
           case 'Exit to Chart Editor':
             this.close();
             if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!

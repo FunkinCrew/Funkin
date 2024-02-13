@@ -8,6 +8,7 @@ import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 import funkin.save.Save;
 import haxe.Timer;
+import flixel.sound.FlxSound;
 
 /**
  * A core class which handles musical timing throughout the game,
@@ -290,6 +291,8 @@ class Conductor
       // Take into account instrumental and file format song offsets.
       songPos = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset) : 0.0;
     }
+    else
+      songPos += instrumentalOffset + formatOffset;
 
     var oldMeasure = this.currentMeasure;
     var oldBeat = this.currentBeat;
@@ -369,14 +372,16 @@ class Conductor
    * that can potentially get processed on exact milliseconds/timestmaps.
    * If you need song position, use `Conductor.instance.songPosition` instead
    * for use in update() related functions.
+   * @param soundToCheck Which FlxSound object to check, defaults to FlxG.sound.music if no input
    * @return Float
    */
-  public function getTimeWithDiff():Float
+  public function getTimeWithDiff(?soundToCheck:FlxSound):Float
   {
+    if (soundToCheck == null) soundToCheck = FlxG.sound.music;
     // trace(this.songPosition);
 
     @:privateAccess
-    this.songPosition = FlxG.sound.music._channel.position;
+    this.songPosition = soundToCheck._channel.position;
     // return this.songPosition + (Std.int(Timer.stamp() * 1000) - prevTimestamp);
     // trace("\t--> " + this.songPosition);
     return this.songPosition;
