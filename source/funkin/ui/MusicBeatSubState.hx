@@ -20,6 +20,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
 {
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;
+  public var conductorInUse:Conductor = Conductor.instance;
 
   public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)
   {
@@ -95,7 +96,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
    */
   public function stepHit():Bool
   {
-    var event:ScriptEvent = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
+    var event:ScriptEvent = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
 
@@ -111,7 +112,7 @@ class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandl
    */
   public function beatHit():Bool
   {
-    var event:ScriptEvent = new SongTimeScriptEvent(SONG_BEAT_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
+    var event:ScriptEvent = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
 

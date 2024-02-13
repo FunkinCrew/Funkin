@@ -284,7 +284,7 @@ class Conductor
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    */
-  public function update(?songPos:Float)
+  public function update(?songPos:Float, applyOffsets:Bool = true)
   {
     if (songPos == null)
     {
@@ -292,7 +292,7 @@ class Conductor
       songPos = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset) : 0.0;
     }
     else
-      songPos += instrumentalOffset + formatOffset;
+      songPos += applyOffsets ? instrumentalOffset + formatOffset : 0;
 
     var oldMeasure = this.currentMeasure;
     var oldBeat = this.currentBeat;
