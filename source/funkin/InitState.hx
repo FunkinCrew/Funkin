@@ -89,7 +89,7 @@ class InitState extends FlxState
     //
     // FLIXEL DEBUG SETUP
     //
-    #if debug
+    #if (debug || FORCE_DEBUG_VERSION)
     // Disable using ~ to open the console (we use that for the Editor menu)
     FlxG.debugger.toggleKeys = [F2];
 
@@ -141,15 +141,14 @@ class InitState extends FlxState
       FlxG.sound.music.pause();
       FlxG.sound.music.time += FlxG.elapsed * 1000;
     });
+    #end
 
     // Make errors and warnings less annoying.
-    // TODO: Disable this so we know to fix warnings.
     #if FORCE_DEBUG_VERSION
     LogStyle.ERROR.openConsole = false;
     LogStyle.ERROR.errorSound = null;
     LogStyle.WARNING.openConsole = false;
     LogStyle.WARNING.errorSound = null;
-    #end
     #end
 
     //
