@@ -9,10 +9,12 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
+import flixel.util.typeLimit.NextState;
 import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.graphics.shaders.TitleOutline;
@@ -118,7 +120,8 @@ class TitleState extends MusicBeatState
 
     persistentUpdate = true;
 
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    bg.screenCenter();
     add(bg);
 
     logoBl = new FlxSprite(-150, -100);
@@ -211,7 +214,7 @@ class TitleState extends MusicBeatState
    */
   function moveToAttract():Void
   {
-    FlxG.switchState(new AttractState());
+    FlxG.switchState(() -> new AttractState());
   }
 
   function playMenuMusic():Void
@@ -292,7 +295,7 @@ class TitleState extends MusicBeatState
       {
         if (touch.justPressed)
         {
-          FlxG.switchState(new FreeplayState());
+          FlxG.switchState(() -> new FreeplayState());
           pressedEnter = true;
         }
       }
@@ -311,7 +314,7 @@ class TitleState extends MusicBeatState
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
-      FlxG.switchState(new MainMenuState());
+      FlxG.switchState(() -> new MainMenuState());
     }
 
     if (pressedEnter && !transitioning && skippedIntro)
@@ -326,7 +329,7 @@ class TitleState extends MusicBeatState
       FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
 
-      var targetState:FlxState = new MainMenuState();
+      var targetState:NextState = () -> new MainMenuState();
 
       new FlxTimer().start(2, function(tmr:FlxTimer) {
         // These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory

@@ -108,10 +108,7 @@ abstract Save(RawSaveData)
             metronomeVolume: 1.0,
             hitsoundsEnabledPlayer: true,
             hitsoundsEnabledOpponent: true,
-            themeMusic: true,
-            instVolume: 1.0,
-            voicesVolume: 1.0,
-            playbackSpeed: 1.0,
+            themeMusic: true
           },
       };
   }
@@ -363,40 +360,6 @@ abstract Save(RawSaveData)
     this.optionsChartEditor.themeMusic = value;
     flush();
     return this.optionsChartEditor.themeMusic;
-  }
-
-  public var chartEditorInstVolume(get, set):Float;
-
-  function get_chartEditorInstVolume():Float
-  {
-    if (this.optionsChartEditor.instVolume == null) this.optionsChartEditor.instVolume = 1.0;
-
-    return this.optionsChartEditor.instVolume;
-  }
-
-  function set_chartEditorInstVolume(value:Float):Float
-  {
-    // Set and apply.
-    this.optionsChartEditor.instVolume = value;
-    flush();
-    return this.optionsChartEditor.instVolume;
-  }
-
-  public var chartEditorVoicesVolume(get, set):Float;
-
-  function get_chartEditorVoicesVolume():Float
-  {
-    if (this.optionsChartEditor.voicesVolume == null) this.optionsChartEditor.voicesVolume = 1.0;
-
-    return this.optionsChartEditor.voicesVolume;
-  }
-
-  function set_chartEditorVoicesVolume(value:Float):Float
-  {
-    // Set and apply.
-    this.optionsChartEditor.voicesVolume = value;
-    flush();
-    return this.optionsChartEditor.voicesVolume;
   }
 
   public var chartEditorPlaybackSpeed(get, set):Float;
@@ -792,7 +755,6 @@ typedef SaveScoreData =
 
 typedef SaveScoreTallyData =
 {
-  var killer:Int;
   var sick:Int;
   var good:Int;
   var bad:Int;

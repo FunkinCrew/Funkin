@@ -2,7 +2,7 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
-import funkin.play.stage.StageData;
+import funkin.data.stage.StageData;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
@@ -18,6 +18,7 @@ import haxe.ui.core.Component;
 import funkin.data.event.SongEventRegistry;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
+import haxe.ui.containers.HBox;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 import haxe.ui.data.ArrayDataSource;
@@ -214,7 +215,20 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           input.text = field.type;
       }
 
-      target.addComponent(input);
+      // Putting in a box so we can add a unit label easily if there is one.
+      var inputBox:HBox = new HBox();
+      inputBox.addComponent(input);
+
+      // Add a unit label if applicable.
+      if (field.units != null && field.units != "")
+      {
+        var units:Label = new Label();
+        units.text = field.units;
+        units.verticalAlign = "center";
+        inputBox.addComponent(units);
+      }
+
+      target.addComponent(inputBox);
 
       // Update the value of the event data.
       input.onChange = function(event:UIEvent) {

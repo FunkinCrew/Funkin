@@ -3,6 +3,7 @@ package funkin.audio;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 import funkin.audio.FunkinSound;
+import flixel.tweens.FlxTween;
 
 /**
  * A group of FunkinSounds that are all synced together.
@@ -14,7 +15,11 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   public var volume(get, set):Float;
 
+  public var muted(get, set):Bool;
+
   public var pitch(get, set):Float;
+
+  public var playing(get, never):Bool;
 
   public function new()
   {
@@ -123,6 +128,26 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   }
 
   /**
+   * Fade in all the sounds in the group.
+   */
+  public function fadeIn(duration:Float, ?from:Float = 0.0, ?to:Float = 1.0, ?onComplete:FlxTween->Void):Void
+  {
+    forEachAlive(function(sound:FunkinSound) {
+      sound.fadeIn(duration, from, to, onComplete);
+    });
+  }
+
+  /**
+   * Fade out all the sounds in the group.
+   */
+  public function fadeOut(duration:Float, ?to:Float = 0.0, ?onComplete:FlxTween->Void):Void
+  {
+    forEachAlive(function(sound:FunkinSound) {
+      sound.fadeOut(duration, to, onComplete);
+    });
+  }
+
+  /**
    * Stop all the sounds in the group.
    */
   public function stop()
@@ -130,6 +155,12 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     forEachAlive(function(sound:FunkinSound) {
       sound.stop();
     });
+  }
+
+  public override function destroy()
+  {
+    stop();
+    super.destroy();
   }
 
   /**
@@ -159,6 +190,13 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     return time;
   }
 
+  function get_playing():Bool
+  {
+    if (getFirstAlive != null) return getFirstAlive().playing;
+    else
+      return false;
+  }
+
   function get_volume():Float
   {
     if (getFirstAlive() != null) return getFirstAlive().volume;
@@ -174,6 +212,22 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     });
 
     return volume;
+  }
+
+  function get_muted():Bool
+  {
+    if (getFirstAlive() != null) return getFirstAlive().muted;
+    else
+      return false;
+  }
+
+  function set_muted(muted:Bool):Bool
+  {
+    forEachAlive(function(snd:FunkinSound) {
+      snd.muted = muted;
+    });
+
+    return muted;
   }
 
   function get_pitch():Float

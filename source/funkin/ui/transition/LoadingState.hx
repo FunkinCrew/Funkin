@@ -1,7 +1,6 @@
 package funkin.ui.transition;
 
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -13,6 +12,7 @@ import funkin.play.song.Song.SongDifficulty;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import haxe.io.Path;
+import funkin.graphics.FunkinSprite;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.utils.AssetLibrary;
@@ -20,12 +20,13 @@ import lime.utils.AssetManifest;
 import lime.utils.Assets as LimeAssets;
 import openfl.filters.ShaderFilter;
 import openfl.utils.Assets;
+import flixel.util.typeLimit.NextState;
 
 class LoadingState extends MusicBeatState
 {
   inline static var MIN_TIME = 1.0;
 
-  var target:FlxState;
+  var target:NextState;
   var stopMusic = false;
   var callbacks:MultiCallback;
   var danceLeft = false;
@@ -33,7 +34,7 @@ class LoadingState extends MusicBeatState
   var loadBar:FlxSprite;
   var funkay:FlxSprite;
 
-  function new(target:FlxState, stopMusic:Bool)
+  function new(target:NextState, stopMusic:Bool)
   {
     super();
     this.target = target;
@@ -42,7 +43,7 @@ class LoadingState extends MusicBeatState
 
   override function create():Void
   {
-    var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFcaff4d);
+    var bg:FlxSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
     add(bg);
 
     funkay = new FlxSprite();
@@ -53,7 +54,7 @@ class LoadingState extends MusicBeatState
     funkay.scrollFactor.set();
     funkay.screenCenter();
 
-    loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xFFff16d2);
+    loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(FlxG.width, 10, 0xFFff16d2);
     loadBar.screenCenter(X);
     add(loadBar);
 
@@ -171,12 +172,12 @@ class LoadingState extends MusicBeatState
     return Paths.inst(PlayState.instance.currentSong.id);
   }
 
-  inline static public function loadAndSwitchState(nextState:FlxState, shouldStopMusic = false):Void
+  inline static public function loadAndSwitchState(nextState:NextState, shouldStopMusic = false):Void
   {
     FlxG.switchState(getNextState(nextState, shouldStopMusic));
   }
 
-  static function getNextState(nextState:FlxState, shouldStopMusic = false):FlxState
+  static function getNextState(nextState:NextState, shouldStopMusic = false):NextState
   {
     Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
 
@@ -185,7 +186,7 @@ class LoadingState extends MusicBeatState
     //  && (!PlayState.currentSong.needsVoices || isSoundLoaded(getVocalPath()))
     //  && isLibraryLoaded('shared');
     //
-    if (true) return new LoadingState(nextState, shouldStopMusic);
+    if (true) return () -> new LoadingState(nextState, shouldStopMusic);
     #end
     if (shouldStopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
 
@@ -331,7 +332,7 @@ class MultiCallback
   public function getUnfired():Array<Void->Void>
     return unfired.array();
 
-  public static function coolSwitchState(state:FlxState, transitionTex:String = "shaderTransitionStuff/coolDots", time:Float = 2)
+  public static function coolSwitchState(state:NextState, transitionTex:String = "shaderTransitionStuff/coolDots", time:Float = 2)
   {
     var screenShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("shaderTransitionStuff/coolDots"));
     var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
@@ -342,9 +343,9 @@ class MultiCallback
         ease: FlxEase.quadInOut,
         onComplete: function(twn) {
           screenShit.destroy();
-          FlxG.switchState(new MainMenuState());
+          FlxG.switchState(state);
         }
       });
-    FlxG.camera.setFilters([new ShaderFilter(screenWipeShit)]);
+    FlxG.camera.filters = [new ShaderFilter(screenWipeShit)];
   }
 }

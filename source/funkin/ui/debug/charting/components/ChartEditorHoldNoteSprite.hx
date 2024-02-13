@@ -63,6 +63,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     fullSustainLength = sustainLength;
   }
 
+  #if FLX_DEBUG
   /**
    * Call this to override how debug bounding boxes are drawn for this sprite.
    */
@@ -79,6 +80,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     gfx.drawRect(rect.x, rect.y, rect.width, rect.height);
     endDrawDebug(camera);
   }
+  #end
 
   function setup():Void
   {

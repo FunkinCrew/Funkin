@@ -1,6 +1,7 @@
 package funkin.data.song;
 
 import funkin.data.event.SongEventRegistry;
+import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
@@ -38,10 +39,11 @@ class SongMetadata implements ICloneable<SongMetadata>
   public var looped:Bool;
 
   /**
-   * Instrumental and vocal offsets. Optional, defaults to 0.
+   * Instrumental and vocal offsets.
+   * Defaults to an empty SongOffsets object.
    */
   @:optional
-  public var offsets:SongOffsets;
+  public var offsets:Null<SongOffsets>;
 
   /**
    * Data relating to the song's gameplay.
@@ -416,10 +418,10 @@ class SongPlayData implements ICloneable<SongPlayData>
 
   /**
    * The difficulty ratings for this song as displayed in Freeplay.
-   * Key is a difficulty ID or `default`.
+   * Key is a difficulty ID.
    */
   @:optional
-  @:default(['default' => 1])
+  @:default(['normal' => 0])
   public var ratings:Map<String, Int>;
 
   /**
@@ -429,6 +431,24 @@ class SongPlayData implements ICloneable<SongPlayData>
   @:optional
   public var album:Null<String>;
 
+  /**
+   * The start time for the audio preview in Freeplay.
+   * Defaults to 0 seconds in.
+   * @since `2.2.2`
+   */
+  @:optional
+  @:default(0)
+  public var previewStart:Int;
+
+  /**
+   * The end time for the audio preview in Freeplay.
+   * Defaults to 15 seconds in.
+   * @since `2.2.2`
+   */
+  @:optional
+  @:default(15000)
+  public var previewEnd:Int;
+
   public function new()
   {
     ratings = new Map<String, Int>();
@@ -436,6 +456,7 @@ class SongPlayData implements ICloneable<SongPlayData>
 
   public function clone():SongPlayData
   {
+    // TODO: This sucks! If you forget to update this you get weird behavior.
     var result:SongPlayData = new SongPlayData();
     result.songVariations = this.songVariations.clone();
     result.difficulties = this.difficulties.clone();
@@ -444,6 +465,8 @@ class SongPlayData implements ICloneable<SongPlayData>
     result.noteStyle = this.noteStyle;
     result.ratings = this.ratings.clone();
     result.album = this.album;
+    result.previewStart = this.previewStart;
+    result.previewEnd = this.previewEnd;
 
     return result;
   }
@@ -701,6 +724,11 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     }
   }
 
+  public inline function getHandler():Null<SongEvent>
+  {
+    return SongEventRegistry.getEvent(this.event);
+  }
+
   public inline function getSchema():Null<SongEventSchema>
   {
     return SongEventRegistry.getEventSchema(this.event);
@@ -749,6 +777,39 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   public inline function getBoolArray(key:String):Array<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
+  }
+
+  public function buildTooltip():String
+  {
+    var eventHandler = getHandler();
+    var eventSchema = getSchema();
+
+    if (eventSchema == null) return 'Unknown Event: ${this.event}';
+
+    var result = '${eventHandler.getTitle()}';
+
+    var defaultKey = eventSchema.getFirstField()?.name;
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(defaultKey);
+
+    for (pair in valueStruct.keyValueIterator())
+    {
+      var key = pair.key;
+      var value = pair.value;
+
+      var title = eventSchema.getByName(key)?.title ?? 'UnknownField';
+
+      // if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
+      var valueStr = eventSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
+
+      result += '\n- ${title}: ${valueStr}';
+    }
+
+    return result;
+  }
+
+  public function clone():SongEventData
+  {
+    return new SongEventData(this.time, this.event, this.value);
   }
 
   @:op(A == B)
@@ -875,6 +936,28 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return SongNoteData.buildDirectionName(this.data, strumlineSize);
   }
 
+  /**
+   * The strumline index of the note, if applicable.
+   * Strips the direction from the data.
+   *
+   * 0 = player, 1 = opponent, etc.
+   */
+  public function getStrumlineIndex(strumlineSize:Int = 4):Int
+  {
+    return Math.floor(this.data / strumlineSize);
+  }
+
+  /**
+   * Returns true if the note is one that Boyfriend should try to hit (i.e. it's on his side).
+   * TODO: The name of this function is a little misleading; what about mines?
+   * @param strumlineSize Defaults to 4.
+   * @return True if it's Boyfriend's note.
+   */
+  public function getMustHitNote(strumlineSize:Int = 4):Bool
+  {
+    return getStrumlineIndex(strumlineSize) == 0;
+  }
+
   @:jignored
   var _stepTime:Null<Float> = null;
 
@@ -961,28 +1044,6 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       default:
         return 'Unknown';
     }
-  }
-
-  /**
-   * The strumline index of the note, if applicable.
-   * Strips the direction from the data.
-   *
-   * 0 = player, 1 = opponent, etc.
-   */
-  public inline function getStrumlineIndex(strumlineSize:Int = 4):Int
-  {
-    return Math.floor(this.data / strumlineSize);
-  }
-
-  /**
-   * Returns true if the note is one that Boyfriend should try to hit (i.e. it's on his side).
-   * TODO: The name of this function is a little misleading; what about mines?
-   * @param strumlineSize Defaults to 4.
-   * @return True if it's Boyfriend's note.
-   */
-  public inline function getMustHitNote(strumlineSize:Int = 4):Bool
-  {
-    return getStrumlineIndex(strumlineSize) == 0;
   }
 
   @:jignored

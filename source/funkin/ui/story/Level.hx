@@ -150,7 +150,8 @@ class Level implements IRegistryEntry<LevelData>
 
     if (firstSong != null)
     {
-      for (difficulty in firstSong.listDifficulties())
+      // Don't display alternate characters in Story Mode.
+      for (difficulty in firstSong.listDifficulties([Constants.DEFAULT_VARIATION, "erect"]))
       {
         difficulties.push(difficulty);
       }
@@ -168,7 +169,7 @@ class Level implements IRegistryEntry<LevelData>
 
       for (difficulty in difficulties)
       {
-        if (!song.hasDifficulty(difficulty))
+        if (!song.hasDifficulty(difficulty, [Constants.DEFAULT_VARIATION, "erect"]))
         {
           difficulties.remove(difficulty);
         }
@@ -180,9 +181,9 @@ class Level implements IRegistryEntry<LevelData>
     return difficulties;
   }
 
-  public function buildProps():Array<LevelProp>
+  public function buildProps(?existingProps:Array<LevelProp>):Array<LevelProp>
   {
-    var props:Array<LevelProp> = [];
+    var props:Array<LevelProp> = existingProps == null ? [] : [for (x in existingProps) x];
 
     if (_data.props.length == 0) return props;
 
@@ -190,11 +191,22 @@ class Level implements IRegistryEntry<LevelData>
     {
       var propData = _data.props[propIndex];
 
-      var propSprite:Null<LevelProp> = LevelProp.build(propData);
-      if (propSprite == null) continue;
+      // Attempt to reuse the `LevelProp` object.
+      // This prevents animations from resetting.
+      var existingProp:Null<LevelProp> = props[propIndex];
+      if (existingProp != null)
+      {
+        existingProp.propData = propData;
+        existingProp.x = propData.offsets[0] + FlxG.width * 0.25 * propIndex;
+      }
+      else
+      {
+        var propSprite:Null<LevelProp> = LevelProp.build(propData);
+        if (propSprite == null) continue;
 
-      propSprite.x += FlxG.width * 0.25 * propIndex;
-      props.push(propSprite);
+        propSprite.x = propData.offsets[0] + FlxG.width * 0.25 * propIndex;
+        props.push(propSprite);
+      }
     }
 
     return props;

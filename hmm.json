@@ -11,14 +11,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "a83738673e7edbf8acba3a1426af284dfe6719fe",
+      "ref": "25c84b29665329f7c6366342542a3978f29300ee",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "fd3aecdeb5635fa0428dffee204fc78fc26b5885",
+      "ref": "a523c3b56622f0640933944171efed46929e360e",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -37,7 +37,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "d7c5621be742e2c98d523dfe5af7528835eaff1e",
+      "ref": "9bacdd6ea39f5e3a33b0f5dfb7bc583fe76060d4",
       "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
@@ -54,14 +54,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "2561076c5abeee0a60f3a2a65a8ecb7832a6a62a",
+      "ref": "8a7846b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "9c8ab039524086f5a8c8f35b9fb14538b5bfba5d",
+      "ref": "e9f880522e27134b29df4067f82df7d7e5237b70",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -88,8 +88,10 @@
     },
     {
       "name": "hxcpp-debug-server",
-      "type": "haxelib",
-      "version": "1.2.4"
+      "type": "git",
+      "dir": "hxcpp-debug-server",
+      "ref": "147294123f983e35f50a966741474438069a7a8f",
+      "url": "https://github.com/FunkinCrew/hxcpp-debugger"
     },
     {
       "name": "hxp",
@@ -149,8 +151,15 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "a9963b3a982e5f66a2ba02421aabf4b926953fbc",
+      "ref": "0b53e478bc375ec51b760b650201ac7a965d2ef4",
       "url": "https://github.com/larsiusprime/polymod"
+    },
+    {
+      "name": "thx.core",
+      "type": "git",
+      "dir": null,
+      "ref": "22605ff44f01971d599641790d6bae4869f7d9f4",
+      "url": "https://github.com/FunkinCrew/thx.core"
     },
     {
       "name": "thx.semver",
@@ -158,11 +167,6 @@
       "dir": null,
       "ref": "cf8d213589a2c7ce4a59b0fdba9e8ff36bc029fa",
       "url": "https://github.com/FunkinCrew/thx.semver"
-    },
-    {
-      "name": "tink_json",
-      "type": "haxelib",
-      "version": "0.11.0"
     }
   ]
 }

@@ -115,6 +115,6 @@ class AttractState extends MusicBeatState
     vid = null;
     #end
 
-    FlxG.switchState(new TitleState());
+    FlxG.switchState(() -> new TitleState());
   }
 }

@@ -54,8 +54,51 @@ import funkin.util.MathUtil;
 import lime.app.Future;
 import lime.utils.Assets;
 
+/**
+ * Parameters used to initialize the FreeplayState.
+ */
+typedef FreeplayStateParams =
+{
+  ?character:String,
+};
+
 class FreeplayState extends MusicBeatSubState
 {
+  //
+  // Params
+  //
+
+  /**
+   * The current character for this FreeplayState.
+   * You can't change this without transitioning to a new FreeplayState.
+   */
+  final currentCharacter:String;
+
+  /**
+   * For the audio preview, the duration of the fade-in effect.
+   */
+  public static final FADE_IN_DURATION:Float = 0.5;
+
+  /**
+   * For the audio preview, the duration of the fade-out effect.
+   */
+  public static final FADE_OUT_DURATION:Float = 0.25;
+
+  /**
+   * For the audio preview, the volume at which the fade-in starts.
+   */
+  public static final FADE_IN_START_VOLUME:Float = 0.25;
+
+  /**
+   * For the audio preview, the volume at which the fade-in ends.
+   */
+  public static final FADE_IN_END_VOLUME:Float = 1.0;
+
+  /**
+   * For the audio preview, the volume at which the fade-out starts.
+   */
+  public static final FADE_OUT_END_VOLUME:Float = 0.0;
+
   var songs:Array<Null<FreeplaySongData>> = [];
 
   var diffIdsCurrent:Array<String> = [];
@@ -91,6 +134,8 @@ class FreeplayState extends MusicBeatSubState
   var ostName:FlxText;
   var difficultyStars:DifficultyStars;
 
+  var displayedVariations:Array<String>;
+
   var dj:DJBoyfriend;
 
   var letterSort:LetterSort;
@@ -99,12 +144,13 @@ class FreeplayState extends MusicBeatSubState
 
   var stickerSubState:StickerSubState;
 
-  //
   static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   static var rememberedSongId:Null<String> = null;
 
-  public function new(?stickers:StickerSubState = null)
+  public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
+    currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
+
     if (stickers != null)
     {
       stickerSubState = stickers;
@@ -139,13 +185,17 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    if (FlxG.sound.music != null)
+    if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
     {
-      if (!FlxG.sound.music.playing) FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
     }
 
     // Add a null entry that represents the RANDOM option
     songs.push(null);
+
+    // TODO: This makes custom variations disappear from Freeplay. Figure out a better solution later.
+    // Default character (BF) shows default and Erect variations. Pico shows only Pico variations.
+    displayedVariations = (currentCharacter == "bf") ? [Constants.DEFAULT_VARIATION, "erect"] : [currentCharacter];
 
     // programmatically adds the songs via LevelRegistry and SongRegistry
     for (levelId in LevelRegistry.instance.listBaseGameLevelIds())
@@ -154,9 +204,12 @@ class FreeplayState extends MusicBeatSubState
       {
         var song:Song = SongRegistry.instance.fetchEntry(songId);
 
-        songs.push(new FreeplaySongData(levelId, songId, song));
+        // Only display songs which actually have available charts for the current character.
+        var availableDifficultiesForSong = song.listDifficulties(displayedVariations);
+        if (availableDifficultiesForSong.length == 0) continue;
 
-        for (difficulty in song.listDifficulties())
+        songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
+        for (difficulty in availableDifficultiesForSong)
         {
           diffIdsTotal.pushUnique(difficulty);
         }
@@ -275,6 +328,8 @@ class FreeplayState extends MusicBeatSubState
         x: -dj.width * 1.6,
         speed: 0.5
       });
+    // TODO: Replace this.
+    if (currentCharacter == "pico") dj.visible = false;
     add(dj);
 
     var bgDad:FlxSprite = new FlxSprite(pinkBack.width * 0.75, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
@@ -844,6 +899,16 @@ class FreeplayState extends MusicBeatSubState
       changeDiff(1);
     }
 
+    // TODO: DEBUG REMOVE THIS
+    if (FlxG.keys.justPressed.P)
+    {
+      var newParams:FreeplayStateParams =
+        {
+          character: currentCharacter == "bf" ? "pico" : "bf",
+        };
+      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.freeplay.FreeplayState(newParams, sticker)));
+    }
+
     if (controls.BACK && !typing.hasFocus)
     {
       FlxTween.globalManager.clear();
@@ -895,7 +960,7 @@ class FreeplayState extends MusicBeatSubState
         }
         else
         {
-          FlxG.switchState(new MainMenuState());
+          FlxG.switchState(() -> new MainMenuState());
         }
       });
     }
@@ -995,7 +1060,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Set the difficulty star count on the right.
-    difficultyStars.difficulty = daSong.songRating;
+    difficultyStars.difficulty = daSong?.songRating ?? difficultyStars.difficulty; // yay haxe 4.3
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
@@ -1061,13 +1126,7 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetDifficulty:String = currentDifficulty;
-
-    // TODO: Implement Pico into the interface properly.
-    var targetCharacter:String = 'bf';
-    if (FlxG.keys.pressed.P)
-    {
-      targetCharacter = 'pico';
-    }
+    var targetVariation:String = targetSong.getFirstValidVariation(targetDifficulty);
 
     PlayStatePlaylist.campaignId = cap.songData.levelId;
 
@@ -1081,11 +1140,11 @@ class FreeplayState extends MusicBeatSubState
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       Paths.setCurrentLevel(cap.songData.levelId);
-      LoadingState.loadAndSwitchState(new PlayState(
+      LoadingState.loadAndSwitchState(() -> new PlayState(
         {
           targetSong: targetSong,
           targetDifficulty: targetDifficulty,
-          targetCharacter: targetCharacter,
+          targetVariation: targetVariation,
         }), true);
     });
   }
@@ -1250,31 +1309,33 @@ class FreeplaySongData
   public var songRating(default, null):Int = 0;
 
   public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
+  public var displayedVariations(default, null):Array<String> = [Constants.DEFAULT_VARIATION];
 
   function set_currentDifficulty(value:String):String
   {
     if (currentDifficulty == value) return value;
 
     currentDifficulty = value;
-    updateValues();
+    updateValues(displayedVariations);
     return value;
   }
 
-  public function new(levelId:String, songId:String, song:Song)
+  public function new(levelId:String, songId:String, song:Song, ?displayedVariations:Array<String>)
   {
     this.levelId = levelId;
     this.songId = songId;
     this.song = song;
+    if (displayedVariations != null) this.displayedVariations = displayedVariations;
 
-    updateValues();
+    updateValues(displayedVariations);
   }
 
-  function updateValues():Void
+  function updateValues(displayedVariations:Array<String>):Void
   {
-    this.songDifficulties = song.listDifficulties();
+    this.songDifficulties = song.listDifficulties(displayedVariations);
     if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
 
-    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty);
+    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, displayedVariations);
     if (songDifficulty == null) return;
     this.songName = songDifficulty.songName;
     this.songCharacter = songDifficulty.characters.opponent;

@@ -1,10 +1,10 @@
 package funkin.play.stage;
 
 import funkin.modding.events.ScriptEvent;
-import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IStateStageProp;
 
-class StageProp extends FlxSprite implements IStateStageProp
+class StageProp extends FunkinSprite implements IStateStageProp
 {
   /**
    * An internal name for this prop.
