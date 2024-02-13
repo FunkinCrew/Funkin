@@ -230,15 +230,15 @@ class LatencyState extends MusicBeatSubState
       trace(FlxG.sound.music._channel.position);
      */
 
-    localConductor.update(swagSong.time, false);
+    localConductor.update(swagSong.time, false, true);
 
     // localConductor.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
     songPosVis.x = songPosToX(localConductor.songPosition);
-    songVisFollowAudio.x = songPosToX(localConductor.songPosition - localConductor.instrumentalOffset);
+    songVisFollowAudio.x = songPosToX(localConductor.songPosition - localConductor.audioVisualOffset);
     songVisFollowVideo.x = songPosToX(localConductor.songPosition - localConductor.inputOffset);
 
-    visualOffsetText.text = "Visual Offset: " + localConductor.instrumentalOffset + "ms";
+    visualOffsetText.text = "Visual Offset: " + localConductor.audioVisualOffset + "ms";
     visualOffsetText.text += "\nYou can press SPACE+Left/Right to change this value.";
 
     offsetText.text = "INPUT Offset (Left/Right to change): " + localConductor.inputOffset + "ms";
@@ -260,12 +260,12 @@ class LatencyState extends MusicBeatSubState
     {
       if (FlxG.keys.justPressed.RIGHT)
       {
-        localConductor.instrumentalOffset += 1 * multiply;
+        localConductor.audioVisualOffset += 1 * multiply;
       }
 
       if (FlxG.keys.justPressed.LEFT)
       {
-        localConductor.instrumentalOffset -= 1 * multiply;
+        localConductor.audioVisualOffset -= 1 * multiply;
       }
     }
     else
@@ -294,10 +294,10 @@ class LatencyState extends MusicBeatSubState
     // localConductor.update(swagSong.getTimeWithDiff());
 
     var inputLatencyMs:Float = haxe.Int64.toInt(PreciseInputManager.getCurrentTimestamp() - event.timestamp) / 1000.0 / 1000.0;
-    trace("input latency: " + inputLatencyMs + "ms");
-    trace("cur timestamp: " + PreciseInputManager.getCurrentTimestamp() + "ns");
-    trace("event timestamp: " + event.timestamp + "ns");
-    trace("songtime: " + localConductor.getTimeWithDiff(swagSong) + "ms");
+    // trace("input latency: " + inputLatencyMs + "ms");
+    // trace("cur timestamp: " + PreciseInputManager.getCurrentTimestamp() + "ns");
+    // trace("event timestamp: " + event.timestamp + "ns");
+    // trace("songtime: " + localConductor.getTimeWithDiff(swagSong) + "ms");
 
     var closestBeat:Int = Math.round(localConductor.getTimeWithDiff(swagSong) / (localConductor.stepLengthMs * 2)) % diffGrp.members.length;
     var getDiff:Float = localConductor.getTimeWithDiff(swagSong) - (closestBeat * (localConductor.stepLengthMs * 2));

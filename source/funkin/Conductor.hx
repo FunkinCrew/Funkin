@@ -217,6 +217,11 @@ class Conductor
    */
   public var inputOffset(get, set):Int;
 
+  /**
+   * An offset set by the user to compensate for audio/visual lag
+   */
+  public var audioVisualOffset(get, set):Int;
+
   function get_inputOffset():Int
   {
     return Save.get().options.inputOffset;
@@ -227,6 +232,18 @@ class Conductor
     Save.get().options.inputOffset = value;
     Save.get().flush();
     return Save.get().options.inputOffset;
+  }
+
+  function get_audioVisualOffset():Int
+  {
+    return Save.get().options.audioVisualOffset;
+  }
+
+  function set_audioVisualOffset(value:Int):Int
+  {
+    Save.get().options.audioVisualOffset = value;
+    Save.get().flush();
+    return Save.get().options.audioVisualOffset;
   }
 
   /**
@@ -283,16 +300,17 @@ class Conductor
    *
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
+   * @param applyOffsets If it should apply the instrumentalOffset + formatOffset + audioVisualOffset
    */
-  public function update(?songPos:Float, applyOffsets:Bool = true)
+  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false)
   {
     if (songPos == null)
     {
       // Take into account instrumental and file format song offsets.
-      songPos = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset) : 0.0;
+      songPos = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset + audioVisualOffset) : 0.0;
     }
     else
-      songPos += applyOffsets ? instrumentalOffset + formatOffset : 0;
+      songPos += applyOffsets ? instrumentalOffset + formatOffset + audioVisualOffset : 0;
 
     var oldMeasure = this.currentMeasure;
     var oldBeat = this.currentBeat;
@@ -338,7 +356,7 @@ class Conductor
     }
 
     // Only fire the signal if we are THE Conductor.
-    if (this == Conductor.instance)
+    if (this == Conductor.instance || forceDispatch)
     {
       // FlxSignals are really cool.
       if (currentStep != oldStep)
@@ -428,7 +446,7 @@ class Conductor
     }
 
     // Update currentStepTime
-    this.update(Conductor.instance.songPosition);
+    this.update(this.songPosition, false);
   }
 
   /**
@@ -540,13 +558,18 @@ class Conductor
     }
   }
 
-  public static function watchQuick():Void
+  /**
+   * @param conductorToUse defaults to Conductor.instance if null
+   */
+  public static function watchQuick(?conductorToUse:Conductor):Void
   {
-    FlxG.watch.addQuick("songPosition", Conductor.instance.songPosition);
-    FlxG.watch.addQuick("bpm", Conductor.instance.bpm);
-    FlxG.watch.addQuick("currentMeasureTime", Conductor.instance.currentMeasureTime);
-    FlxG.watch.addQuick("currentBeatTime", Conductor.instance.currentBeatTime);
-    FlxG.watch.addQuick("currentStepTime", Conductor.instance.currentStepTime);
+    if (conductorToUse == null) conductorToUse = Conductor.instance;
+
+    FlxG.watch.addQuick("songPosition", conductorToUse.songPosition);
+    FlxG.watch.addQuick("bpm", conductorToUse.bpm);
+    FlxG.watch.addQuick("currentMeasureTime", conductorToUse.currentMeasureTime);
+    FlxG.watch.addQuick("currentBeatTime", conductorToUse.currentBeatTime);
+    FlxG.watch.addQuick("currentStepTime", conductorToUse.currentStepTime);
   }
 
   /**
