@@ -120,6 +120,71 @@ class DataParse
     }
   }
 
+  public static function backdropData(json:Json, name:String):funkin.data.dialogue.ConversationData.BackdropData
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        var result:Dynamic = {};
+        var backdropType:String = '';
+
+        for (field in fields)
+        {
+          switch (field.name)
+          {
+            case 'type':
+              backdropType = Tools.getValue(field.value);
+          }
+          Reflect.setField(result, field.name, Tools.getValue(field.value));
+        }
+
+        switch (backdropType)
+        {
+          case 'solid':
+            return SOLID(result);
+          default:
+            throw 'Expected Backdrop property $name to be specify a valid "type", but it was "${backdropType}".';
+        }
+
+        return null;
+      default:
+        throw 'Expected property $name to be an object, but it was ${json.value}.';
+    }
+  }
+
+  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.ConversationData.OutroData>
+  {
+    switch (json.value)
+    {
+      case JObject(fields):
+        var result:Dynamic = {};
+        var outroType:String = '';
+
+        for (field in fields)
+        {
+          switch (field.name)
+          {
+            case 'type':
+              outroType = Tools.getValue(field.value);
+          }
+          Reflect.setField(result, field.name, Tools.getValue(field.value));
+        }
+
+        switch (outroType)
+        {
+          case 'none':
+            return NONE(result);
+          case 'fade':
+            return FADE(result);
+          default:
+            throw 'Expected Outro property $name to be specify a valid "type", but it was "${outroType}".';
+        }
+        return null;
+      default:
+        throw 'Expected property $name to be an object, but it was ${json.value}.';
+    }
+  }
+
   /**
    * Parser which outputs a `Either<Float, LegacyScrollSpeeds>`.
    * Used by the FNF legacy JSON importer.

@@ -90,6 +90,7 @@ class GameOverSubState extends MusicBeatSubState
   {
     animationSuffix = "";
     musicSuffix = "";
+    blueBallSuffix = "";
   }
 
   override public function create()

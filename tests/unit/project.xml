@@ -27,7 +27,6 @@
 	<haxelib name="hxCodec" /> <!-- Video playback -->
 	<haxelib name="thx.semver" /> <!-- Semantic version handling -->
 	<haxelib name="json2object" /> <!-- JSON parsing -->
-	<haxelib name="tink_json" /> <!-- JSON parsing -->
 
 	<!-- Test dependencies -->
 	<haxelib name="munit" /> <!-- Unit test execution -->

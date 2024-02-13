@@ -1,27 +1,30 @@
 package funkin.play.cutscene.dialogue;
 
 import flixel.FlxSprite;
+import funkin.data.IRegistryEntry;
 import funkin.modding.events.ScriptEvent;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
+import funkin.data.dialogue.SpeakerData;
+import funkin.data.dialogue.SpeakerRegistry;
 
 /**
  * The character sprite which displays during dialogue.
  *
  * Most conversations have two speakers, with one being flipped.
  */
-class Speaker extends FlxSprite implements IDialogueScriptedClass
+class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRegistryEntry<SpeakerData>
 {
   /**
    * The internal ID for this speaker.
    */
-  public final speakerId:String;
+  public final id:String;
 
   /**
    * The full data for a speaker.
    */
-  var speakerData:SpeakerData;
+  public final _data:SpeakerData;
 
   /**
    * A readable name for this speaker.
@@ -30,7 +33,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
 
   function get_speakerName():String
   {
-    return speakerData.name;
+    return _data.name;
   }
 
   /**
@@ -75,14 +78,17 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
     return globalOffsets = value;
   }
 
-  public function new(speakerId:String)
+  public function new(id:String)
   {
     super();
 
-    this.speakerId = speakerId;
-    this.speakerData = SpeakerDataParser.parseSpeakerData(this.speakerId);
+    this.id = id;
+    this._data = _fetchData(id);
 
-    if (speakerData == null) throw 'Could not load speaker data for speaker ID "$speakerId"';
+    if (_data == null)
+    {
+      throw 'Could not parse speaker data for id: $id';
+    }
   }
 
   /**
@@ -102,18 +108,18 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
 
   function loadSpritesheet():Void
   {
-    trace('[SPEAKER] Loading spritesheet ${speakerData.assetPath} for ${speakerId}');
+    trace('[SPEAKER] Loading spritesheet ${_data.assetPath} for ${id}');
 
-    var tex:FlxFramesCollection = Paths.getSparrowAtlas(speakerData.assetPath);
+    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
     if (tex == null)
     {
-      trace('Could not load Sparrow sprite: ${speakerData.assetPath}');
+      trace('Could not load Sparrow sprite: ${_data.assetPath}');
       return;
     }
 
     this.frames = tex;
 
-    if (speakerData.isPixel)
+    if (_data.isPixel)
     {
       this.antialiasing = false;
     }
@@ -122,9 +128,10 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
       this.antialiasing = true;
     }
 
-    this.flipX = speakerData.flipX;
-    this.globalOffsets = speakerData.offsets;
-    this.setScale(speakerData.scale);
+    this.flipX = _data.flipX;
+    this.flipY = _data.flipY;
+    this.globalOffsets = _data.offsets;
+    this.setScale(_data.scale);
   }
 
   /**
@@ -141,11 +148,11 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
 
   function loadAnimations():Void
   {
-    trace('[SPEAKER] Loading ${speakerData.animations.length} animations for ${speakerId}');
+    trace('[SPEAKER] Loading ${_data.animations.length} animations for ${id}');
 
-    FlxAnimationUtil.addAtlasAnimations(this, speakerData.animations);
+    FlxAnimationUtil.addAtlasAnimations(this, _data.animations);
 
-    for (anim in speakerData.animations)
+    for (anim in _data.animations)
     {
       if (anim.offsets == null)
       {
@@ -158,7 +165,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
     }
 
     var animNames:Array<String> = this.animation.getNameList();
-    trace('[SPEAKER] Successfully loaded ${animNames.length} animations for ${speakerId}');
+    trace('[SPEAKER] Successfully loaded ${animNames.length} animations for ${id}');
   }
 
   /**
@@ -271,4 +278,14 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {}
+
+  public override function toString():String
+  {
+    return 'Speaker($id)';
+  }
+
+  static function _fetchData(id:String):Null<SpeakerData>
+  {
+    return SpeakerRegistry.instance.parseEntryDataWithMigration(id, SpeakerRegistry.instance.fetchEntryVersion(id));
+  }
 }
