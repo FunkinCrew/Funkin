@@ -38,7 +38,7 @@ class LatencyState extends MusicBeatSubState
 
   var beatTrail:FlxSprite;
   var diffGrp:FlxTypedGroup<FlxText>;
-  var offsetsPerBeat:Array<Int> = [];
+  var offsetsPerBeat:Array<Null<Int>> = [];
   var swagSong:FlxSound;
 
   var previousVolume:Float;
@@ -101,7 +101,7 @@ class LatencyState extends MusicBeatSubState
       offsetTxt.alpha = 0.5;
       diffGrp.add(offsetTxt);
 
-      offsetsPerBeat.push(0);
+      offsetsPerBeat.push(null);
     }
 
     songVisFollowAudio = new FlxSprite(0, FlxG.height - 20).makeGraphic(2, 20, FlxColor.YELLOW);
@@ -248,10 +248,15 @@ class LatencyState extends MusicBeatSubState
 
     var avgOffsetInput:Float = 0;
 
+    var loopInd:Int = 0;
     for (offsetThing in offsetsPerBeat)
+    {
+      if (offsetThing == null) continue;
       avgOffsetInput += offsetThing;
+      loopInd++;
+    }
 
-    avgOffsetInput /= offsetsPerBeat.length;
+    avgOffsetInput /= loopInd;
 
     offsetText.text += "\n\nEstimated average input offset needed: " + avgOffsetInput;
 
