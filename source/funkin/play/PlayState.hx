@@ -903,6 +903,7 @@ class PlayState extends MusicBeatSubState
     {
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
+    FlxG.watch.addQuick('health', health);
 
     // TODO: Add a song event for Handle GF dance speed.
 
@@ -1390,8 +1391,7 @@ class PlayState extends MusicBeatSubState
       var event:ScriptEvent = new ScriptEvent(CREATE, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
 
-      // Apply camera zoom level from stage data.
-      defaultCameraZoom = currentStage.camZoom;
+      resetCameraZoom();
 
       // Add the stage to the scene.
       this.add(currentStage);
@@ -1405,6 +1405,12 @@ class PlayState extends MusicBeatSubState
       // lolol
       lime.app.Application.current.window.alert('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
     }
+  }
+
+  public function resetCameraZoom():Void
+  {
+    // Apply camera zoom level from stage data.
+    defaultCameraZoom = currentStage.camZoom;
   }
 
   /**
@@ -1960,7 +1966,7 @@ class PlayState extends MusicBeatSubState
         // Judge the miss.
         // NOTE: This is what handles the scoring.
         trace('Missed note! ${note.noteData}');
-        onNoteMiss(note);
+        onNoteMiss(note, event.playSound, event.healthMulti);
 
         note.handledMiss = true;
       }
@@ -2111,7 +2117,7 @@ class PlayState extends MusicBeatSubState
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
 
-    popUpScore(note, input);
+    popUpScore(note, input, event.healthMulti);
 
     if (note.isHoldNote && note.holdNoteSprite != null)
     {
@@ -2125,15 +2131,11 @@ class PlayState extends MusicBeatSubState
    * Called when a note leaves the screen and is considered missed by the player.
    * @param note
    */
-  function onNoteMiss(note:NoteSprite):Void
+  function onNoteMiss(note:NoteSprite, playSound:Bool = false, healthLossMulti:Float = 1.0):Void
   {
-    // a MISS is when you let a note scroll past you!!
-    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Highscore.tallies.combo, true);
-    dispatchEvent(event);
-    // Calling event.cancelEvent() skips all the other logic! Neat!
-    if (event.eventCanceled) return;
+    // If we are here, we already CALLED the onNoteMiss script hook!
 
-    health -= Constants.HEALTH_MISS_PENALTY;
+    health -= Constants.HEALTH_MISS_PENALTY * healthLossMulti;
     songScore -= 10;
 
     if (!isPracticeMode)
@@ -2183,7 +2185,7 @@ class PlayState extends MusicBeatSubState
       Highscore.tallies.combo = comboPopUps.displayCombo(0);
     }
 
-    if (event.playSound)
+    if (playSound)
     {
       vocals.playerVolume = 0;
       FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
@@ -2310,7 +2312,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Handles health, score, and rating popups when a note is hit.
    */
-  function popUpScore(daNote:NoteSprite, input:PreciseInputEvent):Void
+  function popUpScore(daNote:NoteSprite, input:PreciseInputEvent, healthGainMulti:Float = 1.0):Void
   {
     vocals.playerVolume = 1;
 
@@ -2341,19 +2343,19 @@ class PlayState extends MusicBeatSubState
     {
       case 'sick':
         Highscore.tallies.sick += 1;
-        health += Constants.HEALTH_SICK_BONUS;
+        health += Constants.HEALTH_SICK_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
-        health += Constants.HEALTH_GOOD_BONUS;
+        health += Constants.HEALTH_GOOD_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
-        health += Constants.HEALTH_BAD_BONUS;
+        health += Constants.HEALTH_BAD_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
-        health += Constants.HEALTH_SHIT_BONUS;
+        health += Constants.HEALTH_SHIT_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 

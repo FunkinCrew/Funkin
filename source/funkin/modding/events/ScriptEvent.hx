@@ -106,12 +106,19 @@ class NoteScriptEvent extends ScriptEvent
    */
   public var playSound(default, default):Bool;
 
+  /**
+   * A multiplier to the health gained or lost from this note.
+   * This affects both hits and misses. Remember that max health is 2.00.
+   */
+  public var healthMulti:Float;
+
   public function new(type:ScriptEventType, note:NoteSprite, comboCount:Int = 0, cancelable:Bool = false):Void
   {
     super(type, cancelable);
     this.note = note;
     this.comboCount = comboCount;
     this.playSound = true;
+    this.healthMulti = 1.0;
   }
 
   public override function toString():String

@@ -4,16 +4,17 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.sound.FlxSound;
-import funkin.ui.story.StoryMenuState;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.MusicBeatSubState;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.character.BaseCharacter;
 import funkin.play.PlayState;
 import funkin.ui.freeplay.FreeplayState;
-import funkin.play.character.BaseCharacter;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.story.StoryMenuState;
+import openfl.utils.Assets;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -146,6 +147,12 @@ class GameOverSubState extends MusicBeatSubState
 
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
+  }
+
+  public function resetCameraZoom():Void
+  {
+    // Apply camera zoom level from stage data.
+    FlxG.camera.zoom = PlayState?.instance?.currentStage?.camZoom ?? 1.0;
   }
 
   var hasStartedAnimation:Bool = false;
@@ -295,7 +302,7 @@ class GameOverSubState extends MusicBeatSubState
    * Starts the death music at the appropriate volume.
    * @param startingVolume
    */
-  function startDeathMusic(?startingVolume:Float = 1, force:Bool = false):Void
+  public function startDeathMusic(?startingVolume:Float = 1, force:Bool = false):Void
   {
     var musicPath = Paths.music('gameplay/gameover/gameOver' + musicSuffix);
     if (isEnding)
@@ -320,7 +327,14 @@ class GameOverSubState extends MusicBeatSubState
   public static function playBlueBalledSFX()
   {
     blueballed = true;
-    FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
+    {
+      FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    }
+    else
+    {
+      FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    }
   }
 
   var playingJeffQuote:Bool = false;
