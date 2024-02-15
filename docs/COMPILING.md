@@ -7,7 +7,8 @@
     - If you accidentally cloned without the `assets` submodule (aka didn't follow the step above), you can run `git submodule update --init --recursive` to get the assets in a foolproof way.
 2. Install `hmm` (run `haxelib --global install hmm` and then `haxelib --global run hmm setup`)
 3. Install all haxelibs of the current branch by running `hmm install`
-4. Platform setup
+4. Setup lime: `haxelib run lime setup`
+5. Platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
@@ -15,5 +16,5 @@
     - Mac: [`lime setup mac` Documentation](https://lime.openfl.org/docs/advanced-setup/macos/)
     - Linux: [`lime setup linux` Documentation](https://lime.openfl.org/docs/advanced-setup/linux/)
     - HTML5: Compiles without any extra setup
-5. If you are targeting for native, you likely need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
-6. `lime test PLATFORM` !
+6. If you are targeting for native, you likely need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
+7. `lime test PLATFORM` !
