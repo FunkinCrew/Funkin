@@ -51,9 +51,20 @@ class LatencyState extends MusicBeatSubState
    */
   var localConductor:Conductor;
 
+  // stores values of what the previous persistent draw/update stuff was, example if opened
+  // from pause menu, we want to NOT draw persistently, but then resume drawing once closed
+  var prevPersistentDraw:Bool;
+  var prevPersistentUpdate:Bool;
+
   override function create()
   {
     super.create();
+
+    prevPersistentDraw = FlxG.state.persistentDraw;
+    prevPersistentUpdate = FlxG.state.persistentUpdate;
+
+    FlxG.state.persistentDraw = false;
+    FlxG.state.persistentUpdate = false;
 
     localConductor = new Conductor();
     conductorInUse = localConductor;
@@ -179,7 +190,6 @@ class LatencyState extends MusicBeatSubState
   override public function close():Void
   {
     PreciseInputManager.instance.onInputPressed.remove(preciseInputPressed);
-
     PreciseInputManager.instance.onInputReleased.remove(preciseInputReleased);
 
     FlxG.sound.music.volume = previousVolume;
@@ -188,6 +198,8 @@ class LatencyState extends MusicBeatSubState
 
     FlxG.cameras.remove(stateCamera);
 
+    FlxG.state.persistentDraw = prevPersistentDraw;
+    FlxG.state.persistentUpdate = prevPersistentUpdate;
     super.close();
   }
 
