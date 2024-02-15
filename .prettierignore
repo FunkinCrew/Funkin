@@ -1,0 +1,8 @@
+# Ignore artifacts
+export
+
+# Ignore all asset files (including FlxAnimate JSONs)
+assets
+
+# Don't ignore data files
+!assets/preload/data
