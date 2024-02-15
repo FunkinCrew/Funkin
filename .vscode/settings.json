@@ -93,57 +93,61 @@
     {
       "label": "Windows / Debug",
       "target": "windows",
-      "args": ["-debug"]
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "Windows / Debug (FlxAnimate Test)",
       "target": "windows",
-      "args": ["-debug", "-DANIMATE"]
+      "args": ["-debug", "-DANIMATE", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "Windows / Debug (Straight to Freeplay)",
       "target": "windows",
-      "args": ["-debug", "-DFREEPLAY"]
+      "args": ["-debug", "-DFREEPLAY", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "Windows / Debug (Straight to Play - Bopeebo Normal)",
       "target": "windows",
-      "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
+      "args": [
+        "-debug",
+        "-DSONG=bopeebo -DDIFFICULTY=normal",
+        "-DFORCE_DEBUG_VERSION"
+      ]
     },
     {
       "label": "Windows / Debug (Conversation Test)",
       "target": "windows",
-      "args": ["-debug", "-DDIALOGUE"]
+      "args": ["-debug", "-DDIALOGUE", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "Windows / Debug (Straight to Chart Editor)",
       "target": "windows",
-      "args": ["-debug", "-DCHARTING"]
+      "args": ["-debug", "-DCHARTING", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "Windows / Debug (Straight to Animation Editor)",
       "target": "windows",
-      "args": ["-debug", "-DANIMDEBUG"]
+      "args": ["-debug", "-DANIMDEBUG", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "Windows / Debug (Latency Test)",
       "target": "windows",
-      "args": ["-debug", "-DLATENCY"]
+      "args": ["-debug", "-DLATENCY", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "Windows / Debug (Waveform Test)",
       "target": "windows",
-      "args": ["-debug", "-DWAVEFORM"]
+      "args": ["-debug", "-DWAVEFORM", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "HTML5 / Debug",
       "target": "html5",
-      "args": ["-debug"]
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "HTML5 / Debug (Watch)",
       "target": "html5",
-      "args": ["-debug", "-watch"]
+      "args": ["-debug", "-watch", "-DFORCE_DEBUG_VERSION"]
     }
   ],
   "cmake.configureOnOpen": false,
