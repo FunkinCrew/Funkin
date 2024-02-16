@@ -186,7 +186,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override function onFocus():Void
   {
-    if (!_alreadyPaused && this._shouldPlay)
+    if (!_alreadyPaused)
     {
       resume();
     }
