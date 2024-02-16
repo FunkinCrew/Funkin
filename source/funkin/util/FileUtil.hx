@@ -20,6 +20,7 @@ class FileUtil
 {
   public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
   public static final FILE_FILTER_ZIP:FileFilter = new FileFilter("ZIP Archive (.zip)", "*.zip");
+  public static final FILE_FILTER_PNG:FileFilter = new FileFilter("PNG Image (.png)", "*.png");
 
   public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo =
     {
@@ -30,6 +31,11 @@ class FileUtil
     {
       extension: 'zip',
       label: 'ZIP Archive',
+    };
+  public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo =
+    {
+      extension: 'png',
+      label: 'PNG Image',
     };
 
   /**

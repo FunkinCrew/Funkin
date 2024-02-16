@@ -1,0 +1,269 @@
+package funkin.util.plugins;
+
+import flixel.FlxBasic;
+import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.FlxState;
+import flixel.graphics.FlxGraphic;
+import flixel.input.keyboard.FlxKey;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxSignal;
+import flixel.util.FlxTimer;
+import funkin.graphics.FunkinSprite;
+import funkin.input.Cursor;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.PNGEncoderOptions;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
+
+typedef ScreenshotPluginParams =
+{
+  hotkeys:Array<FlxKey>,
+  ?region:Rectangle,
+  shouldHideMouse:Bool,
+  flashColor:Null<FlxColor>,
+  fancyPreview:Bool,
+};
+
+/**
+ * What if `flixel.addons.plugin.screengrab.FlxScreenGrab` but it's better?
+ * TODO: Contribute this upstream.
+ */
+class ScreenshotPlugin extends FlxBasic
+{
+  public static final SCREENSHOT_FOLDER = 'screenshots';
+
+  var _hotkeys:Array<FlxKey>;
+
+  var _region:Null<Rectangle>;
+
+  var _shouldHideMouse:Bool;
+
+  var _flashColor:Null<FlxColor>;
+
+  var _fancyPreview:Bool;
+
+  /**
+   * A signal fired before the screenshot is taken.
+   */
+  public var onPreScreenshot(default, null):FlxTypedSignal<Void->Void>;
+
+  /**
+   * A signal fired after the screenshot is taken.
+   * @param bitmap The bitmap that was captured.
+   */
+  public var onPostScreenshot(default, null):FlxTypedSignal<Bitmap->Void>;
+
+  public function new(params:ScreenshotPluginParams)
+  {
+    super();
+
+    _hotkeys = params.hotkeys;
+    _region = params.region ?? null;
+    _shouldHideMouse = params.shouldHideMouse;
+    _flashColor = params.flashColor;
+    _fancyPreview = params.fancyPreview;
+
+    onPreScreenshot = new FlxTypedSignal<Void->Void>();
+    onPostScreenshot = new FlxTypedSignal<Bitmap->Void>();
+  }
+
+  public override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (FlxG.keys.anyJustReleased(_hotkeys))
+    {
+      capture();
+    }
+  }
+
+  /**
+   * Initialize the screenshot plugin.
+   */
+  public static function initialize():Void
+  {
+    FlxG.plugins.addPlugin(new ScreenshotPlugin(
+      {
+        flashColor: Preferences.flashingLights ? FlxColor.WHITE : null, // Was originally a black flash.
+
+        // TODO: Add a way to configure screenshots from the options menu.
+        hotkeys: [FlxKey.PRINTSCREEN],
+        shouldHideMouse: false,
+        fancyPreview: true, // TODO: Fancy preview is broken on substates.
+      }));
+  }
+
+  public function updatePreferences():Void
+  {
+    _flashColor = Preferences.flashingLights ? FlxColor.WHITE : null;
+  }
+
+  /**
+   * Defines the region of the screen that should be captured.
+   * You don't need to call this method if you want to capture the entire screen, that's the default behavior.
+   */
+  public function defineCaptureRegion(x:Int, y:Int, width:Int, height:Int):Void
+  {
+    _region = new Rectangle(x, y, width, height);
+  }
+
+  /**
+   * Capture the game screen as a bitmap.
+   */
+  public function capture():Void
+  {
+    onPreScreenshot.dispatch();
+
+    var captureRegion = _region != null ? _region : new Rectangle(0, 0, FlxG.stage.stageWidth, FlxG.stage.stageHeight);
+
+    var wasMouseHidden = false;
+    if (_shouldHideMouse && FlxG.mouse.visible)
+    {
+      wasMouseHidden = true;
+      Cursor.hide();
+    }
+
+    // The actual work.
+    // var bitmap = new Bitmap(new BitmapData(Math.floor(captureRegion.width), Math.floor(captureRegion.height), true, 0x00000000)); // Create a transparent empty bitmap.
+    // var drawMatrix = new Matrix(1, 0, 0, 1, -captureRegion.x, -captureRegion.y); // Modifying this will scale or skew the bitmap.
+    // bitmap.bitmapData.draw(FlxG.stage, drawMatrix);
+    var bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
+
+    if (wasMouseHidden)
+    {
+      Cursor.show();
+    }
+
+    // Save the bitmap to a file.
+    saveScreenshot(bitmap);
+
+    // Show some feedback.
+    showCaptureFeedback();
+    if (_fancyPreview)
+    {
+      showFancyPreview(bitmap);
+    }
+
+    onPostScreenshot.dispatch(bitmap);
+  }
+
+  final CAMERA_FLASH_DURATION = 0.25;
+
+  /**
+   * Visual (and audio?) feedback when a screenshot is taken.
+   */
+  function showCaptureFeedback():Void
+  {
+    if (_flashColor != null)
+    {
+      for (camera in FlxG.cameras.list)
+      {
+        camera.flash(_flashColor, CAMERA_FLASH_DURATION);
+      }
+    }
+  }
+
+  static final PREVIEW_INITIAL_DELAY = 0.25; // How long before the preview starts fading in.
+  static final PREVIEW_FADE_IN_DURATION = 0.3; // How long the preview takes to fade in.
+  static final PREVIEW_FADE_OUT_DELAY = 0.25; // How long the preview stays on screen.
+  static final PREVIEW_FADE_OUT_DURATION = 0.3; // How long the preview takes to fade out.
+
+  function showFancyPreview(bitmap:Bitmap):Void
+  {
+    // TODO: This function looks really nice but breaks substates.
+    var targetCamera = new FlxCamera();
+    targetCamera.bgColor.alpha = 0; // Show the scene behind the camera.
+    FlxG.cameras.add(targetCamera);
+
+    var flxGraphic = FlxGraphic.fromBitmapData(bitmap.bitmapData, false, "screenshot", false);
+
+    var preview = new FunkinSprite(0, 0);
+    preview.frames = flxGraphic.imageFrame;
+    preview.setGraphicSize(bitmap.width / 4, bitmap.height / 4);
+    preview.x = FlxG.width - preview.width - 10;
+    preview.y = FlxG.height - preview.height - 10;
+
+    preview.alpha = 0.0;
+    preview.cameras = [targetCamera];
+    getCurrentState().add(preview);
+
+    // Wait to fade in.
+    new FlxTimer().start(PREVIEW_INITIAL_DELAY, function(_) {
+      // Fade in.
+      FlxTween.tween(preview, {alpha: 1.0}, PREVIEW_FADE_IN_DURATION,
+        {
+          ease: FlxEase.elasticOut,
+          onComplete: function(_) {
+            // Wait to fade out.
+            new FlxTimer().start(PREVIEW_FADE_OUT_DELAY, function(_) {
+              // Fade out.
+              FlxTween.tween(preview, {alpha: 0.0}, PREVIEW_FADE_OUT_DURATION,
+                {
+                  ease: FlxEase.elasticIn,
+                  onComplete: function(_) {
+                    preview.kill();
+                  }
+                });
+            });
+          }
+        });
+    });
+  }
+
+  static function getCurrentState():FlxState
+  {
+    var state = FlxG.state;
+    while (state.subState != null)
+    {
+      state = state.subState;
+    }
+    return state;
+  }
+
+  static function getScreenshotPath():String
+  {
+    return '$SCREENSHOT_FOLDER/screenshot-${DateUtil.generateTimestamp()}.png';
+  }
+
+  static function makeScreenshotPath():Void
+  {
+    FileUtil.createDirIfNotExists(SCREENSHOT_FOLDER);
+  }
+
+  /**
+   * Convert a Bitmap to a PNG ByteArray to save to a file.
+   */
+  static function encodePNG(bitmap:Bitmap):ByteArray
+  {
+    return bitmap.bitmapData.encode(bitmap.bitmapData.rect, new PNGEncoderOptions());
+  }
+
+  /**
+   * Save the generated bitmap to a file.
+   * @param bitmap The bitmap to save.
+   */
+  static function saveScreenshot(bitmap:Bitmap)
+  {
+    makeScreenshotPath();
+    var targetPath:String = getScreenshotPath();
+
+    var pngData = encodePNG(bitmap);
+
+    if (pngData == null)
+    {
+      trace('[WARN] Failed to encode PNG data.');
+      return;
+    }
+    else
+    {
+      trace('Saving screenshot to: ' + targetPath);
+      // TODO: Make this work on browser.
+      FileUtil.writeBytesToPath(targetPath, pngData);
+    }
+  }
+}
