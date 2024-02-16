@@ -645,7 +645,6 @@ class FileUtil
     };
   }
 
-  #if sys
   public static function openFolder(pathFolder:String)
   {
     #if windows
@@ -662,7 +661,6 @@ class FileUtil
     // TODO: implement linux
     // some shit with xdg-open :thinking: emoji...
   }
-  #end
 
   static function convertTypeFilter(typeFilter:Array<FileFilter>):String
   {
