@@ -14,11 +14,13 @@ import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import openfl.display.Bitmap;
+import openfl.display.Sprite;
 import openfl.display.BitmapData;
 import openfl.display.PNGEncoderOptions;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
+import openfl.events.MouseEvent;
 
 typedef ScreenshotPluginParams =
 {
@@ -175,6 +177,27 @@ class ScreenshotPlugin extends FlxBasic
 
   function showFancyPreview(bitmap:Bitmap):Void
   {
+    // ermmm stealing this??
+    var wasMouseHidden = false;
+    if (!FlxG.mouse.visible)
+    {
+      wasMouseHidden = true;
+      Cursor.show();
+    }
+
+    // so that it doesnt change the alpha when tweening in/out
+    var changingAlpha:Bool = false;
+
+    // fuck it, cursed locally scoped functions, purely because im lazy
+    // (and so we can check changingAlpha, which is locally scoped.... because I'm lazy...)
+    var onHover = function(e:MouseEvent) {
+      if (!changingAlpha) e.target.alpha = 0.6;
+    };
+
+    var onHoverOut = function(e:MouseEvent) {
+      if (!changingAlpha) e.target.alpha = 1;
+    }
+
     var scale:Float = 0.25;
     var w:Int = Std.int(bitmap.bitmapData.width * scale);
     var h:Int = Std.int(bitmap.bitmapData.height * scale);
@@ -184,34 +207,60 @@ class ScreenshotPlugin extends FlxBasic
     matrix.scale(scale, scale);
     preview.draw(bitmap.bitmapData, matrix);
 
+    // used for movement + button stuff
+    var previewSprite = new Sprite();
+
+    previewSprite.buttonMode = true;
+    previewSprite.addEventListener(MouseEvent.MOUSE_DOWN, openScreenshotsFolder);
+    previewSprite.addEventListener(MouseEvent.MOUSE_OVER, onHover);
+    previewSprite.addEventListener(MouseEvent.MOUSE_OUT, onHoverOut);
+
+    FlxG.stage.addChild(previewSprite);
+
+    previewSprite.alpha = 0.0;
+    previewSprite.y -= 10;
+
     var previewBitmap = new Bitmap(preview);
-
-    FlxG.stage.addChild(previewBitmap);
-
-    previewBitmap.alpha = 0.0;
-    previewBitmap.y -= 10;
+    previewSprite.addChild(previewBitmap);
 
     // Wait to fade in.
     new FlxTimer().start(PREVIEW_INITIAL_DELAY, function(_) {
       // Fade in.
-      FlxTween.tween(previewBitmap, {alpha: 1.0, y: 0}, PREVIEW_FADE_IN_DURATION,
+      changingAlpha = true;
+      FlxTween.tween(previewSprite, {alpha: 1.0, y: 0}, PREVIEW_FADE_IN_DURATION,
         {
           ease: FlxEase.quartOut,
           onComplete: function(_) {
+            changingAlpha = false;
             // Wait to fade out.
             new FlxTimer().start(PREVIEW_FADE_OUT_DELAY, function(_) {
+              changingAlpha = true;
               // Fade out.
-              FlxTween.tween(previewBitmap, {alpha: 0.0, y: 10}, PREVIEW_FADE_OUT_DURATION,
+              FlxTween.tween(previewSprite, {alpha: 0.0, y: 10}, PREVIEW_FADE_OUT_DURATION,
                 {
                   ease: FlxEase.quartInOut,
                   onComplete: function(_) {
-                    FlxG.stage.removeChild(previewBitmap);
+                    if (wasMouseHidden)
+                    {
+                      Cursor.hide();
+                    }
+
+                    previewSprite.removeEventListener(MouseEvent.MOUSE_DOWN, openScreenshotsFolder);
+                    previewSprite.removeEventListener(MouseEvent.MOUSE_OVER, onHover);
+                    previewSprite.removeEventListener(MouseEvent.MOUSE_OUT, onHoverOut);
+
+                    FlxG.stage.removeChild(previewSprite);
                   }
                 });
             });
           }
         });
     });
+  }
+
+  function openScreenshotsFolder(e:MouseEvent):Void
+  {
+    FileUtil.openFolder(SCREENSHOT_FOLDER);
   }
 
   static function getCurrentState():FlxState
