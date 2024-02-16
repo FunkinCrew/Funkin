@@ -355,6 +355,11 @@ class PlayState extends MusicBeatSubState
   var startingSong:Bool = false;
 
   /**
+   * False if `FlxG.sound.music`
+   */
+  var musicPausedBySubState:Bool = false;
+
+  /**
    * False until `create()` has completed.
    */
   var initialized:Bool = false;
@@ -1042,6 +1047,7 @@ class PlayState extends MusicBeatSubState
       // Pause the music.
       if (FlxG.sound.music != null)
       {
+        musicPausedBySubState = FlxG.sound.music.playing;
         FlxG.sound.music.pause();
         if (vocals != null) vocals.pause();
       }
@@ -1049,7 +1055,6 @@ class PlayState extends MusicBeatSubState
       // Pause the countdown.
       Countdown.pauseCountdown();
     }
-    else {}
 
     super.openSubState(subState);
   }
@@ -1069,7 +1074,10 @@ class PlayState extends MusicBeatSubState
       if (event.eventCanceled) return;
 
       // Resume
-      FlxG.sound.music.play(FlxG.sound.music.time);
+      if (musicPausedBySubState)
+      {
+        FlxG.sound.music.play(FlxG.sound.music.time);
+      }
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
