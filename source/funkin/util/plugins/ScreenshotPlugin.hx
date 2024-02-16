@@ -92,9 +92,9 @@ class ScreenshotPlugin extends FlxBasic
         flashColor: Preferences.flashingLights ? FlxColor.WHITE : null, // Was originally a black flash.
 
         // TODO: Add a way to configure screenshots from the options menu.
-        hotkeys: [FlxKey.PRINTSCREEN],
+        hotkeys: [FlxKey.F3],
         shouldHideMouse: false,
-        fancyPreview: true, // TODO: Fancy preview is broken on substates.
+        fancyPreview: true,
       }));
   }
 
@@ -170,43 +170,42 @@ class ScreenshotPlugin extends FlxBasic
 
   static final PREVIEW_INITIAL_DELAY = 0.25; // How long before the preview starts fading in.
   static final PREVIEW_FADE_IN_DURATION = 0.3; // How long the preview takes to fade in.
-  static final PREVIEW_FADE_OUT_DELAY = 0.25; // How long the preview stays on screen.
+  static final PREVIEW_FADE_OUT_DELAY = 1.25; // How long the preview stays on screen.
   static final PREVIEW_FADE_OUT_DURATION = 0.3; // How long the preview takes to fade out.
 
   function showFancyPreview(bitmap:Bitmap):Void
   {
-    // TODO: This function looks really nice but breaks substates.
-    var targetCamera = new FlxCamera();
-    targetCamera.bgColor.alpha = 0; // Show the scene behind the camera.
-    FlxG.cameras.add(targetCamera);
+    var scale:Float = 0.25;
+    var w:Int = Std.int(bitmap.bitmapData.width * scale);
+    var h:Int = Std.int(bitmap.bitmapData.height * scale);
 
-    var flxGraphic = FlxGraphic.fromBitmapData(bitmap.bitmapData, false, "screenshot", false);
+    var preview:BitmapData = new BitmapData(w, h, true);
+    var matrix:openfl.geom.Matrix = new openfl.geom.Matrix();
+    matrix.scale(scale, scale);
+    preview.draw(bitmap.bitmapData, matrix);
 
-    var preview = new FunkinSprite(0, 0);
-    preview.frames = flxGraphic.imageFrame;
-    preview.setGraphicSize(bitmap.width / 4, bitmap.height / 4);
-    preview.x = FlxG.width - preview.width - 10;
-    preview.y = FlxG.height - preview.height - 10;
+    var previewBitmap = new Bitmap(preview);
 
-    preview.alpha = 0.0;
-    preview.cameras = [targetCamera];
-    getCurrentState().add(preview);
+    FlxG.stage.addChild(previewBitmap);
+
+    previewBitmap.alpha = 0.0;
+    previewBitmap.y -= 10;
 
     // Wait to fade in.
     new FlxTimer().start(PREVIEW_INITIAL_DELAY, function(_) {
       // Fade in.
-      FlxTween.tween(preview, {alpha: 1.0}, PREVIEW_FADE_IN_DURATION,
+      FlxTween.tween(previewBitmap, {alpha: 1.0, y: 0}, PREVIEW_FADE_IN_DURATION,
         {
-          ease: FlxEase.elasticOut,
+          ease: FlxEase.quartOut,
           onComplete: function(_) {
             // Wait to fade out.
             new FlxTimer().start(PREVIEW_FADE_OUT_DELAY, function(_) {
               // Fade out.
-              FlxTween.tween(preview, {alpha: 0.0}, PREVIEW_FADE_OUT_DURATION,
+              FlxTween.tween(previewBitmap, {alpha: 0.0, y: 10}, PREVIEW_FADE_OUT_DURATION,
                 {
-                  ease: FlxEase.elasticIn,
+                  ease: FlxEase.quartInOut,
                   onComplete: function(_) {
-                    preview.kill();
+                    FlxG.stage.removeChild(previewBitmap);
                   }
                 });
             });
