@@ -78,7 +78,7 @@ class ScreenshotPlugin extends FlxBasic
   {
     super.update(elapsed);
 
-    if (FlxG.keys.anyJustReleased(_hotkeys))
+    if (hasPressedScreenshot())
     {
       capture();
     }
@@ -98,6 +98,11 @@ class ScreenshotPlugin extends FlxBasic
         shouldHideMouse: false,
         fancyPreview: true,
       }));
+  }
+
+  public function hasPressedScreenshot():Bool
+  {
+    return PlayerSettings.player1.controls.SCREENSHOT;
   }
 
   public function updatePreferences():Void
