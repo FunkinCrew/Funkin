@@ -166,13 +166,11 @@ class ScreenshotPlugin extends FlxBasic
    */
   function showCaptureFeedback():Void
   {
-    if (_flashColor != null)
-    {
-      for (camera in FlxG.cameras.list)
-      {
-        camera.flash(_flashColor, CAMERA_FLASH_DURATION);
-      }
-    }
+    var flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
+    var flashSpr = new Sprite();
+    flashSpr.addChild(flashBitmap);
+    FlxG.stage.addChild(flashSpr);
+    FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.stage.removeChild(flashSpr)});
   }
 
   static final PREVIEW_INITIAL_DELAY = 0.25; // How long before the preview starts fading in.
