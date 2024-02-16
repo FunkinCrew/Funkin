@@ -55,6 +55,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
+    if (this.anim == null) return [];
     return this.anim.getFrameLabels();
     // return [""];
   }
@@ -152,22 +153,22 @@ class FlxAtlasSprite extends FlxAnimate
     frameLabel.add(callback);
   }
 
-  inline function goToFrameLabel(label:String):Void
+  function goToFrameLabel(label:String):Void
   {
     this.anim.goToFrameLabel(label);
   }
 
-  inline function getNextFrameLabel(label:String):String
+  function getNextFrameLabel(label:String):String
   {
     return listAnimations()[(getLabelIndex(label) + 1) % listAnimations().length];
   }
 
-  inline function getLabelIndex(label:String):Int
+  function getLabelIndex(label:String):Int
   {
     return listAnimations().indexOf(label);
   }
 
-  inline function goToFrameIndex(index:Int):Void
+  function goToFrameIndex(index:Int):Void
   {
     this.anim.curFrame = index;
   }
