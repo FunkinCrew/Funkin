@@ -123,6 +123,11 @@ typedef PlayStateParams =
    * and must be loaded externally.
    */
   ?overrideMusic:Bool,
+  /**
+   * The initial camera follow point.
+   * Used to persist the position of the `cameraFollowPosition` between levels.
+   */
+  ?cameraFollowPoint:FlxPoint,
 }
 
 /**
@@ -216,7 +221,7 @@ class PlayState extends MusicBeatSubState
    * The camera follow point from the last stage.
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
-  public var previousCameraFollowPoint:FlxSprite = null;
+  public var previousCameraFollowPoint:FlxPoint = null;
 
   /**
    * The current camera zoom level.
@@ -544,6 +549,7 @@ class PlayState extends MusicBeatSubState
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
     overrideMusic = params.overrideMusic ?? false;
+    previousCameraFollowPoint = params.cameraFollowPoint;
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
   }
@@ -2625,38 +2631,25 @@ class PlayState extends MusicBeatSubState
           FlxG.sound.play(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
-            // Load and cache the song's charts.
-            // TODO: Do this in the loading state.
-            targetSong.cacheCharts(true);
-
-            LoadingState.loadAndSwitchState(() -> {
-              var nextPlayState:PlayState = new PlayState(
-                {
-                  targetSong: targetSong,
-                  targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                  targetVariation: currentVariation,
-                });
-              nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-              return nextPlayState;
-            });
+            LoadingState.loadPlayState(
+              {
+                targetSong: targetSong,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+                targetVariation: currentVariation,
+                cameraFollowPoint: cameraFollowPoint.getPosition(),
+              });
           });
         }
         else
         {
           var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
-          // Load and cache the song's charts.
-          // TODO: Do this in the loading state.
-          targetSong.cacheCharts(true);
-          LoadingState.loadAndSwitchState(() -> {
-            var nextPlayState:PlayState = new PlayState(
-              {
-                targetSong: targetSong,
-                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetVariation: currentVariation,
-              });
-            nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-            return nextPlayState;
-          });
+          LoadingState.loadPlayState(
+            {
+              targetSong: targetSong,
+              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+              targetVariation: currentVariation,
+              cameraFollowPoint: cameraFollowPoint.getPosition(),
+            });
         }
       }
     }
