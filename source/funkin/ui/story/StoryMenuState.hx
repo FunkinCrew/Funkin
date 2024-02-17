@@ -632,10 +632,10 @@ class StoryMenuState extends MusicBeatState
 
   function updateProps():Void
   {
-    for (prop in currentLevel.buildProps(levelProps.members))
+    for (ind => prop in currentLevel.buildProps(levelProps.members))
     {
       prop.zIndex = 1000;
-      levelProps.add(prop);
+      if (levelProps.members[ind] != prop) levelProps.replace(levelProps.members[ind], prop) ?? levelProps.add(prop);
     }
 
     refresh();
