@@ -20,6 +20,7 @@ class FileUtil
 {
   public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
   public static final FILE_FILTER_ZIP:FileFilter = new FileFilter("ZIP Archive (.zip)", "*.zip");
+  public static final FILE_FILTER_PNG:FileFilter = new FileFilter("PNG Image (.png)", "*.png");
 
   public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo =
     {
@@ -30,6 +31,11 @@ class FileUtil
     {
       extension: 'zip',
       label: 'ZIP Archive',
+    };
+  public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo =
+    {
+      extension: 'png',
+      label: 'PNG Image',
     };
 
   /**
@@ -637,6 +643,23 @@ class FileUtil
       crc32: null,
       extraFields: null,
     };
+  }
+
+  public static function openFolder(pathFolder:String)
+  {
+    #if windows
+    Sys.command('explorer', [pathFolder]);
+    #elseif mac
+    // mac could be fuckie with where the log folder is relative to the game file...
+    // if this comment is still here... it means it has NOT been verified on mac yet!
+    //
+    // FileUtil.hx note: this was originally used to open the logs specifically!
+    // thats why the above comment is there!
+    Sys.command('open', [pathFolder]);
+    #end
+
+    // TODO: implement linux
+    // some shit with xdg-open :thinking: emoji...
   }
 
   static function convertTypeFilter(typeFilter:Array<FileFilter>):String
