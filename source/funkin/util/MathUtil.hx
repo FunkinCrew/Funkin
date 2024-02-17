@@ -6,6 +6,12 @@ package funkin.util;
 class MathUtil
 {
   /**
+   * Euler's constant and the base of the natural logarithm.
+   * Math.E is not a constant in Haxe, so we'll just define it ourselves.
+   */
+  public static final E:Float = 2.71828182845904523536;
+
+  /**
    * Perform linear interpolation between the base and the target, based on the current framerate.
    */
   public static function coolLerp(base:Float, target:Float, ratio:Float):Float
@@ -24,8 +30,44 @@ class MathUtil
    * @param value The value to get the logarithm of.
    * @return `log_base(value)`
    */
-  public static function logBase(base:Float, value:Float):Float
+  public static function logBase(base:Float, value:Float)
   {
     return Math.log(value) / Math.log(base);
+  }
+
+  /**
+   * @returns `2^x`
+   */
+  public static function exp2(x:Float)
+  {
+    return Math.pow(2, x);
+  }
+
+  /**
+   * Linearly interpolate between two values.
+   * @param base The starting value, when `progress <= 0`.
+   * @param target The ending value, when `progress >= 1`.
+   * @param progress Value used to interpolate between `base` and `target`.
+   */
+  public static function lerp(base:Float, target:Float, progress:Float)
+  {
+    return base + progress * (target - base);
+  }
+
+  /**
+   * Perform a framerate-independent linear interpolation between the base value and the target.
+   * @param current The current value.
+   * @param target The target value.
+   * @param elapsed The time elapsed since the last frame.
+   * @param duration The total duration of the interpolation. Nominal duration until remaining distance is less than `precision`.
+   * @param precision The target precision of the interpolation. Defaults to 1% of distance remaining.
+   * @see https://twitter.com/FreyaHolmer/status/1757918211679650262
+   */
+  public static function smoothLerp(current:Float, target:Float, elapsed:Float, duration:Float, precision:Float = 1 / 100):Float
+  {
+    // var halfLife:Float = -duration / logBase(2, precision);
+    // lerp(current, target, 1 - exp2(-elapsed / halfLife));
+
+    return lerp(current, target, 1 - Math.pow(precision, elapsed / duration));
   }
 }

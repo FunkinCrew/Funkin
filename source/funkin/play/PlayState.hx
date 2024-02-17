@@ -355,6 +355,11 @@ class PlayState extends MusicBeatSubState
   var startingSong:Bool = false;
 
   /**
+   * False if `FlxG.sound.music`
+   */
+  var musicPausedBySubState:Bool = false;
+
+  /**
    * False until `create()` has completed.
    */
   var initialized:Bool = false;
@@ -697,7 +702,7 @@ class PlayState extends MusicBeatSubState
   function assertChartExists():Bool
   {
     // Returns null if the song failed to load or doesn't have the selected difficulty.
-    if (currentSong == null || currentChart == null)
+    if (currentSong == null || currentChart == null || currentChart.notes == null)
     {
       // We have encountered a critical error. Prevent Flixel from trying to run any gameplay logic.
       criticalFailure = true;
@@ -715,6 +720,10 @@ class PlayState extends MusicBeatSubState
       else if (currentChart == null)
       {
         message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
+      }
+      else if (currentChart.notes == null)
+      {
+        message = 'The was a critical error retrieving note data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
@@ -1043,6 +1052,7 @@ class PlayState extends MusicBeatSubState
       // Pause the music.
       if (FlxG.sound.music != null)
       {
+        musicPausedBySubState = FlxG.sound.music.playing;
         FlxG.sound.music.pause();
         if (vocals != null) vocals.pause();
       }
@@ -1050,7 +1060,6 @@ class PlayState extends MusicBeatSubState
       // Pause the countdown.
       Countdown.pauseCountdown();
     }
-    else {}
 
     super.openSubState(subState);
   }
@@ -1070,7 +1079,10 @@ class PlayState extends MusicBeatSubState
       if (event.eventCanceled) return;
 
       // Resume
-      FlxG.sound.music.play(FlxG.sound.music.time);
+      if (musicPausedBySubState)
+      {
+        FlxG.sound.music.play(FlxG.sound.music.time);
+      }
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 

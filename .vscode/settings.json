@@ -96,14 +96,29 @@
       "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "HashLink / Debug",
+      "target": "hl",
+      "args": ["-debug"]
+    },
+    {
       "label": "Windows / Debug (FlxAnimate Test)",
       "target": "windows",
       "args": ["-debug", "-DANIMATE", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "HashLink / Debug (FlxAnimate Test)",
+      "target": "hl",
+      "args": ["-debug", "-DANIMATE"]
+    },
+    {
       "label": "Windows / Debug (Straight to Freeplay)",
       "target": "windows",
       "args": ["-debug", "-DFREEPLAY", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Freeplay)",
+      "target": "hl",
+      "args": ["-debug", "-DFREEPLAY"]
     },
     {
       "label": "Windows / Debug (Straight to Play - Bopeebo Normal)",
@@ -115,9 +130,19 @@
       ]
     },
     {
+      "label": "HashLink / Debug (Straight to Play - Bopeebo Normal)",
+      "target": "hl",
+      "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
+    },
+    {
       "label": "Windows / Debug (Conversation Test)",
       "target": "windows",
       "args": ["-debug", "-DDIALOGUE", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Conversation Test)",
+      "target": "hl",
+      "args": ["-debug", "-DDIALOGUE"]
     },
     {
       "label": "Windows / Debug (Straight to Chart Editor)",
@@ -125,9 +150,19 @@
       "args": ["-debug", "-DCHARTING", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "HashLink / Debug (Straight to Chart Editor)",
+      "target": "hl",
+      "args": ["-debug", "-DCHARTING"]
+    },
+    {
       "label": "Windows / Debug (Straight to Animation Editor)",
       "target": "windows",
       "args": ["-debug", "-DANIMDEBUG", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Animation Editor)",
+      "target": "hl",
+      "args": ["-debug", "-DANIMDEBUG"]
     },
     {
       "label": "Windows / Debug (Latency Test)",
@@ -135,9 +170,19 @@
       "args": ["-debug", "-DLATENCY", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "HashLink / Debug (Latency Test)",
+      "target": "hl",
+      "args": ["-debug", "-DLATENCY"]
+    },
+    {
       "label": "Windows / Debug (Waveform Test)",
       "target": "windows",
       "args": ["-debug", "-DWAVEFORM", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Waveform Test)",
+      "target": "hl",
+      "args": ["-debug", "-DWAVEFORM"]
     },
     {
       "label": "HTML5 / Debug",
