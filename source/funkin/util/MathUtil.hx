@@ -70,6 +70,6 @@ class MathUtil
     // var halfLife:Float = -duration / logBase(2, precision);
     // lerp(current, target, 1 - exp2(-elapsed / halfLife));
 
-    return lerp(current, target, 1 - Math.pow(p, elapsed / duration));
+    return lerp(current, target, 1 - Math.pow(precision, elapsed / duration));
   }
 }
