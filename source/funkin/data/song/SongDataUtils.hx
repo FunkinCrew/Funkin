@@ -210,14 +210,13 @@ class SongDataUtils
    */
   public static function writeItemsToClipboard(data:SongClipboardItems):Void
   {
-    var writer = new json2object.JsonWriter<SongClipboardItems>();
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<SongClipboardItems>(ignoreNullOptionals);
     var dataString:String = writer.write(data, '  ');
 
     ClipboardUtil.setClipboard(dataString);
 
     trace('Wrote ' + data.notes.length + ' notes and ' + data.events.length + ' events to clipboard.');
-
-    trace(dataString);
   }
 
   /**

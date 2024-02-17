@@ -162,8 +162,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/opponent-preview');
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
   public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('chart-editor/toolbox/offsets');
-  public static final CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/notedata');
-  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/eventdata');
+  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/note-data');
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/event-data');
   public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = Paths.ui('chart-editor/toolbox/freeplay');
   public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
 
@@ -538,9 +538,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // Tools Status
 
   /**
-   * The note kind to use for notes being placed in the chart. Defaults to `''`.
+   * The note kind to use for notes being placed in the chart. Defaults to `null`.
    */
-  var noteKindToPlace:String = '';
+  var noteKindToPlace:Null<String> = null;
 
   /**
    * The event type to use for events being placed in the chart. Defaults to `''`.
@@ -2458,11 +2458,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   override public function draw():Void
   {
-    if (selectionBoxStartPos != null)
-    {
-      trace('selectionBoxSprite: ${selectionBoxSprite.visible} ${selectionBoxSprite.exists} ${this.members.contains(selectionBoxSprite)}');
-    }
-
     super.draw();
   }
 
@@ -2968,7 +2963,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
     menubarItemToggleToolboxMetadata.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
     menubarItemToggleToolboxOffsets.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT, event.value);
-    menubarItemToggleToolboxNotes.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT, event.value);
+    menubarItemToggleToolboxNoteData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxFreeplay.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT, event.value);
     menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
@@ -5285,6 +5280,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleQuickWatch():Void
   {
     FlxG.watch.addQuick('musicTime', audioInstTrack?.time ?? 0.0);
+
+    FlxG.watch.addQuick('noteKindToPlace', noteKindToPlace);
+    FlxG.watch.addQuick('eventKindToPlace', eventKindToPlace);
 
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
     FlxG.watch.addQuick('playheadPosInPixels', playheadPositionInPixels);
