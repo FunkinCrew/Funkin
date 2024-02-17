@@ -590,7 +590,9 @@ class StoryMenuState extends MusicBeatState
         {
           // Both the previous and current level were simple backgrounds.
           // Fade between colors directly, rather than fading one background out and another in.
-          FlxTween.color(levelBackground, 0.4, previousColor, currentColor);
+          // cancels potential tween in progress, and tweens from there
+          FlxTween.cancelTweensOf(levelBackground);
+          FlxTween.color(levelBackground, 0.9, levelBackground.color, currentColor, {ease: FlxEase.quartOut});
         }
         else
         {
