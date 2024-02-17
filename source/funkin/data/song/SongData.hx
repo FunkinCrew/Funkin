@@ -110,7 +110,8 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public function serialize(pretty:Bool = true):String
   {
-    var writer = new json2object.JsonWriter<SongMetadata>();
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
     // I believe @:jignored should be iggnored by the writer?
     // var output = this.clone();
     // output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
@@ -597,7 +598,8 @@ class SongChartData implements ICloneable<SongChartData>
    */
   public function serialize(pretty:Bool = true):String
   {
-    var writer = new json2object.JsonWriter<SongChartData>();
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<SongChartData>(ignoreNullOptionals);
     return writer.write(this, pretty ? '  ' : null);
   }
 
