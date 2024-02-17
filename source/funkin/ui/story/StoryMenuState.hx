@@ -554,22 +554,15 @@ class StoryMenuState extends MusicBeatState
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
     PlayStatePlaylist.campaignDifficulty = currentDifficultyId;
 
-    if (targetSong != null)
-    {
-      // Load and cache the song's charts.
-      // TODO: Do this in the loading state.
-      targetSong.cacheCharts(true);
-    }
-
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 
-      LoadingState.loadAndSwitchState(() -> new PlayState(
+      LoadingState.loadPlayState(
         {
           targetSong: targetSong,
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-        }), true);
+        }, true);
     });
   }
 
