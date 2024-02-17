@@ -5,13 +5,11 @@ package funkin.util;
  */
 class MathUtil
 {
-  public static var E(get, never):Float;
-
-  static function get_E():Float
-  {
-    // Math.E is not a constant in Haxe, so we'll just define it ourselves.
-    return 2.71828182845904523536; // Approximation.
-  }
+  /**
+   * Euler's constant and the base of the natural logarithm.
+   * Math.E is not a constant in Haxe, so we'll just define it ourselves.
+   */
+  public static final E:Float = 2.71828182845904523536;
 
   /**
    * Perform linear interpolation between the base and the target, based on the current framerate.
