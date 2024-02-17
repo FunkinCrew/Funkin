@@ -108,6 +108,55 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  static final NOTE_KINDS:Map<String, String> = [
+    // Base
+    "" => "Default",
+    "~CUSTOM~" => "Custom",
+    // Weeks 1-7
+    "mom" => "Mom Sings (Week 5)",
+    "ugh" => "Ugh (Week 7)",
+    "hehPrettyGood" => "Heh, Pretty Good (Week 7)",
+    // Weekend 1
+    "weekend-1-lightcan" => "Light Can (2hot)",
+    "weekend-1-kickcan" => "Kick Can (2hot)",
+    "weekend-1-kneecan" => "Knee Can (2hot)",
+    "weekend-1-cockgun" => "Cock Gun (2hot)",
+    "weekend-1-firegun" => "Fire Gun (2hot)",
+    "weekend-1-punchlow" => "Punch Low (Blazin)",
+    "weekend-1-punchhigh" => "Punch High (Blazin)",
+    "weekend-1-punchlowblocked" => "Punch Low Blocked (Blazin)",
+    "weekend-1-punchhighblocked" => "Punch High Blocked (Blazin)",
+    "weekend-1-dodgelow" => "Dodge Low (Blazin)",
+    "weekend-1-blockhigh" => "Block High (Blazin)",
+    "weekend-1-fakeout" => "Fakeout (Blazin)",
+  ];
+
+  public static function populateDropdownWithNoteKinds(dropDown:DropDown, startingKindId:String):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var returnValue:DropDownEntry = lookupNoteKind('~CUSTOM');
+
+    for (noteKindId in NOTE_KINDS.keys())
+    {
+      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Default';
+
+      var value:DropDownEntry = {id: noteKindId, text: noteKind};
+      if (startingKindId == noteKindId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    return returnValue;
+  }
+
+  public static function lookupNoteKind(noteKindId:Null<String>):DropDownEntry
+  {
+    if (noteKindId == null) return lookupNoteKind('');
+    if (!NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
+    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Default'};
+  }
+
   /**
    * Populate a dropdown with a list of song variations.
    */
