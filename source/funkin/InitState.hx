@@ -309,15 +309,11 @@ class InitState extends FlxState
       return;
     }
 
-    // Load and cache the song's charts.
-    // TODO: Do this in the loading state.
-    songData.cacheCharts(true);
-
-    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
+    LoadingState.loadPlayState(
       {
         targetSong: songData,
         targetDifficulty: difficultyId,
-      }));
+      });
   }
 
   /**
@@ -343,11 +339,11 @@ class InitState extends FlxState
 
     var targetSong:funkin.play.song.Song = SongRegistry.instance.fetchEntry(targetSongId);
 
-    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
+    LoadingState.loadPlayState(
       {
         targetSong: targetSong,
         targetDifficulty: difficultyId,
-      }));
+      });
   }
 
   function defineSong():String

@@ -9,7 +9,6 @@ import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song.SongDifficulty;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import haxe.io.Path;
 import funkin.graphics.FunkinSprite;
@@ -27,17 +26,19 @@ class LoadingState extends MusicBeatState
   inline static var MIN_TIME = 1.0;
 
   var target:NextState;
-  var stopMusic = false;
+  var playParams:Null<PlayStateParams>;
+  var stopMusic:Bool = false;
   var callbacks:MultiCallback;
-  var danceLeft = false;
+  var danceLeft:Bool = false;
 
   var loadBar:FlxSprite;
   var funkay:FlxSprite;
 
-  function new(target:NextState, stopMusic:Bool)
+  function new(target:NextState, stopMusic:Bool, playParams:Null<PlayStateParams> = null)
   {
     super();
     this.target = target;
+    this.playParams = playParams;
     this.stopMusic = stopMusic;
   }
 
@@ -62,10 +63,18 @@ class LoadingState extends MusicBeatState
       callbacks = new MultiCallback(onLoad);
       var introComplete = callbacks.add('introComplete');
 
-      if (Std.isOfType(target, PlayState))
+      if (playParams != null)
       {
-        var targetPlayState:PlayState = cast target;
-        var targetChart:SongDifficulty = targetPlayState.currentChart;
+        // Load and cache the song's charts.
+        if (playParams.targetSong != null)
+        {
+          playParams.targetSong.cacheCharts(true);
+        }
+
+        // Preload the song for the play state.
+        var difficulty:String = playParams.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY;
+        var variation:String = playParams.targetVariation ?? Constants.DEFAULT_VARIATION;
+        var targetChart:SongDifficulty = playParams.targetSong?.getDifficulty(difficulty, variation);
         var instPath:String = Paths.inst(targetChart.song.id);
         var voicesPaths:Array<String> = targetChart.buildVoiceList();
 
@@ -172,25 +181,36 @@ class LoadingState extends MusicBeatState
     return Paths.inst(PlayState.instance.currentSong.id);
   }
 
-  inline static public function loadAndSwitchState(nextState:NextState, shouldStopMusic = false):Void
-  {
-    FlxG.switchState(getNextState(nextState, shouldStopMusic));
-  }
-
-  static function getNextState(nextState:NextState, shouldStopMusic = false):NextState
+  /**
+   * Starts the transition to a new `PlayState` to start a new song.
+   * First switches to the `LoadingState` if assets need to be loaded.
+   * @param params The parameters for the next `PlayState`.
+   * @param shouldStopMusic Whether to stop the current music while loading.
+   */
+  public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false):Void
   {
     Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
+    var playStateCtor:NextState = () -> new PlayState(params);
 
     #if NO_PRELOAD_ALL
-    // var loaded = isSoundLoaded(getSongPath())
-    //  && (!PlayState.currentSong.needsVoices || isSoundLoaded(getVocalPath()))
-    //  && isLibraryLoaded('shared');
-    //
-    if (true) return () -> new LoadingState(nextState, shouldStopMusic);
-    #end
-    if (shouldStopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
+    // Switch to loading state while we load assets (default on HTML5 target).
+    var loadStateCtor:NextState = () -> new LoadingState(playStateCtor, shouldStopMusic, params);
+    FlxG.switchState(loadStateCtor);
+    #else
+    // All assets preloaded, switch directly to play state (defualt on other targets).
+    if (shouldStopMusic && FlxG.sound.music != null)
+    {
+      FlxG.sound.music.stop();
+    }
 
-    return nextState;
+    // Load and cache the song's charts.
+    if (params?.targetSong != null)
+    {
+      params.targetSong.cacheCharts(true);
+    }
+
+    FlxG.switchState(playStateCtor);
+    #end
   }
 
   #if NO_PRELOAD_ALL
