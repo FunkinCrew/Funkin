@@ -128,6 +128,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
   function fixMaxVolume():Void
   {
+    return;
     #if lime_openal
     // This code is pretty fragile, it reaches through 5 layers of private access.
     @:privateAccess

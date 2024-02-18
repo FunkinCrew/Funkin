@@ -38,7 +38,7 @@ class SelectItemsCommand implements ChartEditorCommand
     {
       var eventSelected = this.events[0];
 
-      state.eventKindToPlace = eventSelected.event;
+      state.eventKindToPlace = eventSelected.eventKind;
 
       // This code is here to parse event data that's not built as a struct for some reason.
       // TODO: Clean this up or get rid of it.
@@ -46,7 +46,7 @@ class SelectItemsCommand implements ChartEditorCommand
       var defaultKey = null;
       if (eventSchema == null)
       {
-        trace('[WARNING] Event schema not found for event ${eventSelected.event}.');
+        trace('[WARNING] Event schema not found for event ${eventSelected.eventKind}.');
       }
       else
       {

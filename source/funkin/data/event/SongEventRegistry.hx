@@ -108,8 +108,8 @@ class SongEventRegistry
 
   public static function handleEvent(data:SongEventData):Void
   {
-    var eventType:String = data.event;
-    var eventHandler:SongEvent = eventCache.get(eventType);
+    var eventKind:String = data.eventKind;
+    var eventHandler:SongEvent = eventCache.get(eventKind);
 
     if (eventHandler != null)
     {
@@ -117,7 +117,7 @@ class SongEventRegistry
     }
     else
     {
-      trace('WARNING: No event handler for event with id: ${eventType}');
+      trace('WARNING: No event handler for event with kind: ${eventKind}');
     }
 
     data.activated = true;
