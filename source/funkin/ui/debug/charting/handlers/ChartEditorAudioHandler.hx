@@ -299,16 +299,14 @@ class ChartEditorAudioHandler
    */
   public static function playSound(_state:ChartEditorState, path:String, volume:Float = 1.0):Void
   {
-    var snd:FlxSound = FlxG.sound.list.recycle(FlxSound) ?? new FlxSound();
     var asset:Null<FlxSoundAsset> = FlxG.sound.cache(path);
     if (asset == null)
     {
       trace('WARN: Failed to play sound $path, asset not found.');
       return;
     }
-    snd.loadEmbedded(asset);
+    var snd:FunkinSound = FunkinSound.load(asset);
     snd.autoDestroy = true;
-    FlxG.sound.list.add(snd);
     snd.play(true);
     snd.volume = volume;
   }
