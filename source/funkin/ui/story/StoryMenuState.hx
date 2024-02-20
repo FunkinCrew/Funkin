@@ -433,7 +433,7 @@ class StoryMenuState extends MusicBeatState
     {
       var item:LevelTitle = levelTitles.members[index];
 
-      item.targetY = (index - currentIndex) * 120 + 480;
+      item.targetY = (index - currentIndex) * 125 + 480;
 
       if (index == currentIndex)
       {
