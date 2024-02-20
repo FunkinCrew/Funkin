@@ -56,6 +56,16 @@ class SetItemSelectionCommand implements ChartEditorCommand
       state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
     }
 
+    // IF we just selected one or more notes (and no events), then we should make the note data toolbox display the note data for the selected note.
+    if (this.events.length == 0 && this.notes.length >= 1)
+    {
+      var noteSelected = this.notes[0];
+
+      state.noteKindToPlace = noteSelected.kind;
+
+      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
+    }
+
     state.noteDisplayDirty = true;
   }
 

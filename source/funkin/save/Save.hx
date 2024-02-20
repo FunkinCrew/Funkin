@@ -115,6 +115,9 @@ abstract Save(RawSaveData)
       };
   }
 
+  /**
+   * NOTE: Modifications will not be saved without calling `Save.flush()`!
+   */
   public var options(get, never):SaveDataOptions;
 
   function get_options():SaveDataOptions
@@ -122,6 +125,9 @@ abstract Save(RawSaveData)
     return this.options;
   }
 
+  /**
+   * NOTE: Modifications will not be saved without calling `Save.flush()`!
+   */
   public var modOptions(get, never):Map<String, Dynamic>;
 
   function get_modOptions():Map<String, Dynamic>

@@ -123,6 +123,11 @@ typedef PlayStateParams =
    * and must be loaded externally.
    */
   ?overrideMusic:Bool,
+  /**
+   * The initial camera follow point.
+   * Used to persist the position of the `cameraFollowPosition` between levels.
+   */
+  ?cameraFollowPoint:FlxPoint,
 }
 
 /**
@@ -216,7 +221,7 @@ class PlayState extends MusicBeatSubState
    * The camera follow point from the last stage.
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
-  public var previousCameraFollowPoint:FlxSprite = null;
+  public var previousCameraFollowPoint:FlxPoint = null;
 
   /**
    * The current camera zoom level.
@@ -353,6 +358,11 @@ class PlayState extends MusicBeatSubState
    * False as long as the countdown has not finished yet.
    */
   var startingSong:Bool = false;
+
+  /**
+   * False if `FlxG.sound.music`
+   */
+  var musicPausedBySubState:Bool = false;
 
   /**
    * False until `create()` has completed.
@@ -539,6 +549,7 @@ class PlayState extends MusicBeatSubState
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
     overrideMusic = params.overrideMusic ?? false;
+    previousCameraFollowPoint = params.cameraFollowPoint;
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
   }
@@ -697,7 +708,7 @@ class PlayState extends MusicBeatSubState
   function assertChartExists():Bool
   {
     // Returns null if the song failed to load or doesn't have the selected difficulty.
-    if (currentSong == null || currentChart == null)
+    if (currentSong == null || currentChart == null || currentChart.notes == null)
     {
       // We have encountered a critical error. Prevent Flixel from trying to run any gameplay logic.
       criticalFailure = true;
@@ -715,6 +726,10 @@ class PlayState extends MusicBeatSubState
       else if (currentChart == null)
       {
         message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
+      }
+      else if (currentChart.notes == null)
+      {
+        message = 'The was a critical error retrieving note data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
@@ -1042,6 +1057,7 @@ class PlayState extends MusicBeatSubState
       // Pause the music.
       if (FlxG.sound.music != null)
       {
+        musicPausedBySubState = FlxG.sound.music.playing;
         FlxG.sound.music.pause();
         if (vocals != null) vocals.pause();
       }
@@ -1049,7 +1065,6 @@ class PlayState extends MusicBeatSubState
       // Pause the countdown.
       Countdown.pauseCountdown();
     }
-    else {}
 
     super.openSubState(subState);
   }
@@ -1069,7 +1084,10 @@ class PlayState extends MusicBeatSubState
       if (event.eventCanceled) return;
 
       // Resume
-      FlxG.sound.music.play(FlxG.sound.music.time);
+      if (musicPausedBySubState)
+      {
+        FlxG.sound.music.play(FlxG.sound.music.time);
+      }
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
@@ -2613,38 +2631,25 @@ class PlayState extends MusicBeatSubState
           FlxG.sound.play(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
-            // Load and cache the song's charts.
-            // TODO: Do this in the loading state.
-            targetSong.cacheCharts(true);
-
-            LoadingState.loadAndSwitchState(() -> {
-              var nextPlayState:PlayState = new PlayState(
-                {
-                  targetSong: targetSong,
-                  targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                  targetVariation: currentVariation,
-                });
-              nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-              return nextPlayState;
-            });
+            LoadingState.loadPlayState(
+              {
+                targetSong: targetSong,
+                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+                targetVariation: currentVariation,
+                cameraFollowPoint: cameraFollowPoint.getPosition(),
+              });
           });
         }
         else
         {
           var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
-          // Load and cache the song's charts.
-          // TODO: Do this in the loading state.
-          targetSong.cacheCharts(true);
-          LoadingState.loadAndSwitchState(() -> {
-            var nextPlayState:PlayState = new PlayState(
-              {
-                targetSong: targetSong,
-                targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetVariation: currentVariation,
-              });
-            nextPlayState.previousCameraFollowPoint = new FlxSprite(cameraFollowPoint.x, cameraFollowPoint.y);
-            return nextPlayState;
-          });
+          LoadingState.loadPlayState(
+            {
+              targetSong: targetSong,
+              targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+              targetVariation: currentVariation,
+              cameraFollowPoint: cameraFollowPoint.getPosition(),
+            });
         }
       }
     }

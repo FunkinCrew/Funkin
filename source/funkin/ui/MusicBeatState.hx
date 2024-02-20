@@ -59,19 +59,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     Conductor.stepHit.remove(this.stepHit);
   }
 
-  function handleControls():Void
-  {
-    var isHaxeUIFocused:Bool = haxe.ui.focus.FocusManager.instance?.focus != null;
-
-    if (!isHaxeUIFocused)
-    {
-      // Rebindable volume keys.
-      if (controls.VOLUME_MUTE) FlxG.sound.toggleMuted();
-      else if (controls.VOLUME_UP) FlxG.sound.changeVolume(0.1);
-      else if (controls.VOLUME_DOWN) FlxG.sound.changeVolume(-0.1);
-    }
-  }
-
   function handleFunctionControls():Void
   {
     // Emergency exit button.
@@ -84,8 +71,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-
-    handleControls();
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }

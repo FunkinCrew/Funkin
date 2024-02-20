@@ -898,18 +898,24 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   /**
    * The kind of the note.
    * This can allow the note to include information used for custom behavior.
-   * Defaults to blank or `Constants.DEFAULT_DIFFICULTY`.
+   * Defaults to `null` for no kind.
    */
   @:alias("k")
-  @:default("normal")
   @:optional
-  public var kind(get, default):String = '';
+  @:isVar
+  public var kind(get, set):Null<String> = null;
 
-  function get_kind():String
+  function get_kind():Null<String>
   {
-    if (this.kind == null || this.kind == '') return 'normal';
+    if (this.kind == null || this.kind == '') return null;
 
     return this.kind;
+  }
+
+  function set_kind(value:Null<String>):Null<String>
+  {
+    if (value == '') value = null;
+    return this.kind = value;
   }
 
   public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
@@ -1061,13 +1067,13 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     if (this == null) return other == null;
     if (other == null) return false;
 
-    if (this.kind == '')
+    if (this.kind == null || this.kind == '')
     {
-      if (other.kind != '' && other.kind != 'normal') return false;
+      if (other.kind != '' && this.kind != null) return false;
     }
     else
     {
-      if (other.kind == '' || other.kind != this.kind) return false;
+      if (other.kind == '' || this.kind == null) return false;
     }
 
     return this.time == other.time && this.data == other.data && this.length == other.length;
@@ -1082,11 +1088,11 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 
     if (this.kind == '')
     {
-      if (other.kind != '' && other.kind != 'normal') return true;
+      if (other.kind != '') return true;
     }
     else
     {
-      if (other.kind == '' || other.kind != this.kind) return true;
+      if (other.kind == '') return true;
     }
 
     return this.time != other.time || this.data != other.data || this.length != other.length;

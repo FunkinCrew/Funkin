@@ -20,7 +20,10 @@ class Preferences
 
   static function set_naughtyness(value:Bool):Bool
   {
-    return Save.get().options.naughtyness = value;
+    var save = Save.get();
+    save.options.naughtyness = value;
+    save.flush();
+    return value;
   }
 
   /**
@@ -36,7 +39,10 @@ class Preferences
 
   static function set_downscroll(value:Bool):Bool
   {
-    return Save.get().options.downscroll = value;
+    var save = Save.get();
+    save.options.downscroll = value;
+    save.flush();
+    return value;
   }
 
   /**
@@ -52,7 +58,10 @@ class Preferences
 
   static function set_flashingLights(value:Bool):Bool
   {
-    return Save.get().options.flashingLights = value;
+    var save = Save.get();
+    save.options.flashingLights = value;
+    save.flush();
+    return value;
   }
 
   /**
@@ -68,7 +77,10 @@ class Preferences
 
   static function set_zoomCamera(value:Bool):Bool
   {
-    return Save.get().options.zoomCamera = value;
+    var save = Save.get();
+    save.options.zoomCamera = value;
+    save.flush();
+    return value;
   }
 
   /**
@@ -89,7 +101,10 @@ class Preferences
       toggleDebugDisplay(value);
     }
 
-    return Save.get().options.debugDisplay = value;
+    var save = Save.get();
+    save.options.debugDisplay = value;
+    save.flush();
+    return value;
   }
 
   /**
@@ -107,7 +122,10 @@ class Preferences
   {
     if (value != Save.get().options.autoPause) FlxG.autoPause = value;
 
-    return Save.get().options.autoPause = value;
+    var save = Save.get();
+    save.options.autoPause = value;
+    save.flush();
+    return value;
   }
 
   public static function init():Void

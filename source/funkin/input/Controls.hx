@@ -63,12 +63,10 @@ class Controls extends FlxActionSet
   var _debug_menu = new FlxActionDigital(Action.DEBUG_MENU);
   var _debug_chart = new FlxActionDigital(Action.DEBUG_CHART);
   var _debug_stage = new FlxActionDigital(Action.DEBUG_STAGE);
+  var _screenshot = new FlxActionDigital(Action.SCREENSHOT);
   var _volume_up = new FlxActionDigital(Action.VOLUME_UP);
   var _volume_down = new FlxActionDigital(Action.VOLUME_DOWN);
   var _volume_mute = new FlxActionDigital(Action.VOLUME_MUTE);
-  #if CAN_CHEAT
-  var _cheat = new FlxActionDigital(Action.CHEAT);
-  #end
 
   var byName:Map<String, FlxActionDigital> = new Map<String, FlxActionDigital>();
 
@@ -235,6 +233,11 @@ class Controls extends FlxActionSet
   inline function get_DEBUG_STAGE()
     return _debug_stage.check();
 
+  public var SCREENSHOT(get, never):Bool;
+
+  inline function get_SCREENSHOT()
+    return _screenshot.check();
+
   public var VOLUME_UP(get, never):Bool;
 
   inline function get_VOLUME_UP()
@@ -254,13 +257,6 @@ class Controls extends FlxActionSet
 
   inline function get_RESET()
     return _reset.check();
-
-  #if CAN_CHEAT
-  public var CHEAT(get, never):Bool;
-
-  inline function get_CHEAT()
-    return _cheat.check();
-  #end
 
   public function new(name, scheme:KeyboardScheme = null)
   {
@@ -295,13 +291,14 @@ class Controls extends FlxActionSet
     add(_pause);
     add(_cutscene_advance);
     add(_cutscene_skip);
+    add(_debug_menu);
+    add(_debug_chart);
+    add(_debug_stage);
+    add(_screenshot);
     add(_volume_up);
     add(_volume_down);
     add(_volume_mute);
     add(_reset);
-    #if CAN_CHEAT
-    add(_cheat);
-    #end
 
     for (action in digitalActions)
       byName[action.name] = action;
@@ -391,12 +388,10 @@ class Controls extends FlxActionSet
       case DEBUG_MENU: _debug_menu;
       case DEBUG_CHART: _debug_chart;
       case DEBUG_STAGE: _debug_stage;
+      case SCREENSHOT: _screenshot;
       case VOLUME_UP: _volume_up;
       case VOLUME_DOWN: _volume_down;
       case VOLUME_MUTE: _volume_mute;
-      #if CAN_CHEAT
-      case CHEAT: _cheat;
-      #end
     }
   }
 
@@ -464,6 +459,8 @@ class Controls extends FlxActionSet
         func(_debug_chart, JUST_PRESSED);
       case DEBUG_STAGE:
         func(_debug_stage, JUST_PRESSED);
+      case SCREENSHOT:
+        func(_screenshot, JUST_PRESSED);
       case VOLUME_UP:
         func(_volume_up, JUST_PRESSED);
       case VOLUME_DOWN:
@@ -472,10 +469,6 @@ class Controls extends FlxActionSet
         func(_volume_mute, JUST_PRESSED);
       case RESET:
         func(_reset, JUST_PRESSED);
-      #if CAN_CHEAT
-      case CHEAT:
-        func(_cheat, JUST_PRESSED);
-      #end
     }
   }
 
@@ -666,6 +659,8 @@ class Controls extends FlxActionSet
     bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
     bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(scheme, Control.DEBUG_CHART));
     bindKeys(Control.DEBUG_STAGE, getDefaultKeybinds(scheme, Control.DEBUG_STAGE));
+    bindKeys(Control.RESET, getDefaultKeybinds(scheme, Control.RESET));
+    bindKeys(Control.SCREENSHOT, getDefaultKeybinds(scheme, Control.SCREENSHOT));
     bindKeys(Control.VOLUME_UP, getDefaultKeybinds(scheme, Control.VOLUME_UP));
     bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(scheme, Control.VOLUME_DOWN));
     bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(scheme, Control.VOLUME_MUTE));
@@ -693,6 +688,7 @@ class Controls extends FlxActionSet
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
           case Control.DEBUG_STAGE: return [];
+          case Control.SCREENSHOT: return [F3]; // TODO: Change this back to PrintScreen
           case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
           case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
           case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
@@ -716,6 +712,7 @@ class Controls extends FlxActionSet
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
           case Control.DEBUG_STAGE: return [];
+          case Control.SCREENSHOT: return [PRINTSCREEN];
           case Control.VOLUME_UP: return [PLUS];
           case Control.VOLUME_DOWN: return [MINUS];
           case Control.VOLUME_MUTE: return [ZERO];
@@ -739,6 +736,7 @@ class Controls extends FlxActionSet
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
           case Control.DEBUG_STAGE: return [];
+          case Control.SCREENSHOT: return [PRINTSCREEN];
           case Control.VOLUME_UP: return [NUMPADPLUS];
           case Control.VOLUME_DOWN: return [NUMPADMINUS];
           case Control.VOLUME_MUTE: return [NUMPADZERO];
@@ -845,6 +843,7 @@ class Controls extends FlxActionSet
       Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT),
       Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT),
       Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE),
+      // Control.SCREENSHOT => [],
       // Control.VOLUME_UP => [RIGHT_SHOULDER],
       // Control.VOLUME_DOWN => [LEFT_SHOULDER],
       // Control.VOLUME_MUTE => [RIGHT_TRIGGER],
@@ -852,8 +851,7 @@ class Controls extends FlxActionSet
       Control.CUTSCENE_SKIP => getDefaultGamepadBinds(Control.CUTSCENE_SKIP),
       // Control.DEBUG_MENU
       // Control.DEBUG_CHART
-      Control.RESET => getDefaultGamepadBinds(Control.RESET),
-      #if CAN_CHEAT, Control.CHEAT => getDefaultGamepadBinds(Control.CHEAT) #end
+      Control.RESET => getDefaultGamepadBinds(Control.RESET)
     ]);
   }
 
@@ -870,6 +868,7 @@ class Controls extends FlxActionSet
       case Control.NOTE_LEFT: return [DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT];
       case Control.NOTE_RIGHT: return [DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT];
       case Control.PAUSE: return [START];
+      case Control.SCREENSHOT: return [];
       case Control.VOLUME_UP: return [];
       case Control.VOLUME_DOWN: return [];
       case Control.VOLUME_MUTE: return [];
@@ -878,7 +877,6 @@ class Controls extends FlxActionSet
       case Control.DEBUG_MENU: return [];
       case Control.DEBUG_CHART: return [];
       case Control.RESET: return [RIGHT_SHOULDER];
-      #if CAN_CHEAT, Control.CHEAT: return [X]; #end
       default:
         // Fallthrough.
     }
@@ -1236,6 +1234,8 @@ enum Control
   // CUTSCENE
   CUTSCENE_ADVANCE;
   CUTSCENE_SKIP;
+  // SCREENSHOT
+  SCREENSHOT;
   // VOLUME
   VOLUME_UP;
   VOLUME_DOWN;
@@ -1244,9 +1244,6 @@ enum Control
   DEBUG_MENU;
   DEBUG_CHART;
   DEBUG_STAGE;
-  #if CAN_CHEAT
-  CHEAT;
-  #end
 }
 
 enum
@@ -1289,13 +1286,12 @@ abstract Action(String) to String from String
   var VOLUME_UP = "volume_up";
   var VOLUME_DOWN = "volume_down";
   var VOLUME_MUTE = "volume_mute";
+  // SCREENSHOT
+  var SCREENSHOT = "screenshot";
   // DEBUG
   var DEBUG_MENU = "debug_menu";
   var DEBUG_CHART = "debug_chart";
   var DEBUG_STAGE = "debug_stage";
-  #if CAN_CHEAT
-  var CHEAT = "cheat";
-  #end
 }
 
 enum Device

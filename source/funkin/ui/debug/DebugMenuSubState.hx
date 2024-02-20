@@ -9,6 +9,7 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.MusicBeatSubState;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.transition.FlxTransitionableState;
+import funkin.util.FileUtil;
 
 class DebugMenuSubState extends MusicBeatSubState
 {
@@ -121,16 +122,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if sys
   function openLogFolder()
   {
-    #if windows
-    Sys.command('explorer', [CrashHandler.LOG_FOLDER]);
-    #elseif mac
-    // mac could be fuckie with where the log folder is relative to the game file...
-    // if this comment is still here... it means it has NOT been verified on mac yet!
-    Sys.command('open', [CrashHandler.LOG_FOLDER]);
-    #end
-
-    // TODO: implement linux
-    // some shit with xdg-open :thinking: emoji...
+    FileUtil.openFolder(CrashHandler.LOG_FOLDER);
   }
   #end
 

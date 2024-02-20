@@ -50,11 +50,13 @@ class InitState extends FlxState
    */
   public override function create():Void
   {
+    // Setup a bunch of important Flixel stuff.
     setupShit();
 
-    // loadSaveData(); // Moved to Main.hx
     // Load player options from save data.
+    // Flixel has already loaded the save data, so we can just use it.
     Preferences.init();
+
     // Load controls from save data.
     PlayerSettings.init();
 
@@ -198,8 +200,13 @@ class InitState extends FlxState
     //
     // FLIXEL PLUGINS
     //
+    // Plugins provide a useful interface for globally active Flixel objects,
+    // that receive update events regardless of the current state.
+    // TODO: Move Module behavior to a Flixel plugin.
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
+    funkin.util.plugins.ScreenshotPlugin.initialize();
+    funkin.util.plugins.VolumePlugin.initialize();
     funkin.util.plugins.WatchPlugin.initialize();
 
     //
@@ -302,15 +309,11 @@ class InitState extends FlxState
       return;
     }
 
-    // Load and cache the song's charts.
-    // TODO: Do this in the loading state.
-    songData.cacheCharts(true);
-
-    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
+    LoadingState.loadPlayState(
       {
         targetSong: songData,
         targetDifficulty: difficultyId,
-      }));
+      });
   }
 
   /**
@@ -336,11 +339,11 @@ class InitState extends FlxState
 
     var targetSong:funkin.play.song.Song = SongRegistry.instance.fetchEntry(targetSongId);
 
-    LoadingState.loadAndSwitchState(() -> new funkin.play.PlayState(
+    LoadingState.loadPlayState(
       {
         targetSong: targetSong,
         targetDifficulty: difficultyId,
-      }));
+      });
   }
 
   function defineSong():String

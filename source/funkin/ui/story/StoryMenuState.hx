@@ -554,22 +554,15 @@ class StoryMenuState extends MusicBeatState
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
     PlayStatePlaylist.campaignDifficulty = currentDifficultyId;
 
-    if (targetSong != null)
-    {
-      // Load and cache the song's charts.
-      // TODO: Do this in the loading state.
-      targetSong.cacheCharts(true);
-    }
-
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 
-      LoadingState.loadAndSwitchState(() -> new PlayState(
+      LoadingState.loadPlayState(
         {
           targetSong: targetSong,
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-        }), true);
+        }, true);
     });
   }
 
@@ -597,7 +590,9 @@ class StoryMenuState extends MusicBeatState
         {
           // Both the previous and current level were simple backgrounds.
           // Fade between colors directly, rather than fading one background out and another in.
-          FlxTween.color(levelBackground, 0.4, previousColor, currentColor);
+          // cancels potential tween in progress, and tweens from there
+          FlxTween.cancelTweensOf(levelBackground);
+          FlxTween.color(levelBackground, 0.9, levelBackground.color, currentColor, {ease: FlxEase.quartOut});
         }
         else
         {
@@ -637,10 +632,10 @@ class StoryMenuState extends MusicBeatState
 
   function updateProps():Void
   {
-    for (prop in currentLevel.buildProps(levelProps.members))
+    for (ind => prop in currentLevel.buildProps(levelProps.members))
     {
       prop.zIndex = 1000;
-      levelProps.add(prop);
+      if (levelProps.members[ind] != prop) levelProps.replace(levelProps.members[ind], prop) ?? levelProps.add(prop);
     }
 
     refresh();
