@@ -108,7 +108,7 @@ class LatencyState extends MusicBeatSubState
       beatTick.alpha = 0.3;
       add(beatTick);
 
-      var offsetTxt:FlxText = new FlxText(songPosToX(beat * (localConductor.stepLengthMs * 2)), FlxG.height - 26, 0, "swag");
+      var offsetTxt:FlxText = new FlxText(songPosToX(beat * (localConductor.stepLengthMs * 2)), FlxG.height - 26, 0, "");
       offsetTxt.alpha = 0.5;
       diffGrp.add(offsetTxt);
 
@@ -168,7 +168,7 @@ class LatencyState extends MusicBeatSubState
     helpText.setFormat(Paths.font("vcr.ttf"), 20);
     helpText.text = "Press ESC to return to main menu";
     helpText.x = FlxG.width - helpText.width;
-    helpText.y = FlxG.height - helpText.height - 2;
+    helpText.y = FlxG.height - (helpText.height * 2) - 2;
     add(helpText);
 
     regenNoteData();
@@ -290,14 +290,22 @@ class LatencyState extends MusicBeatSubState
     }
     else
     {
-      if (FlxG.keys.justPressed.RIGHT)
+      if (FlxG.keys.anyJustPressed([LEFT, RIGHT]))
       {
-        localConductor.inputOffset += 1 * multiply;
-      }
+        if (FlxG.keys.justPressed.RIGHT)
+        {
+          localConductor.inputOffset += 1 * multiply;
+        }
 
-      if (FlxG.keys.justPressed.LEFT)
-      {
-        localConductor.inputOffset -= 1 * multiply;
+        if (FlxG.keys.justPressed.LEFT)
+        {
+          localConductor.inputOffset -= 1 * multiply;
+        }
+
+        // reset the average, so you don't need to wait a full loop to start getting averages
+        // also reset each text member
+        offsetsPerBeat = [];
+        diffGrp.forEach(memb -> memb.text = "");
       }
     }
 
