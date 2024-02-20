@@ -310,10 +310,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     this.songLengthInMs = value;
 
-    // Make sure playhead doesn't go outside the song.
-    if (playheadPositionInMs > songLengthInMs) playheadPositionInMs = songLengthInMs;
-
-    onSongLengthChanged();
+    updateGridHeight();
 
     return this.songLengthInMs;
   }
@@ -704,19 +701,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var metronomeVolume:Float = 1.0;
 
   /**
-   * The volume to play hitsounds at.
+   * The volume to play the player's hitsounds at.
    */
-  var hitsoundVolume:Float = 1.0;
+  var hitsoundVolumePlayer:Float = 1.0;
 
   /**
-   * Whether hitsounds are enabled for the player.
+   * The volume to play the opponent's hitsounds at.
    */
-  var hitsoundsEnabledPlayer:Bool = true;
-
-  /**
-   * Whether hitsounds are enabled for the opponent.
-   */
-  var hitsoundsEnabledOpponent:Bool = true;
+  var hitsoundVolumeOpponent:Float = 1.0;
 
   /**
    * Whether hitsounds are enabled for at least one character.
@@ -725,7 +717,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_hitsoundsEnabled():Bool
   {
-    return hitsoundsEnabledPlayer || hitsoundsEnabledOpponent;
+    return hitsoundVolumePlayer + hitsoundVolumeOpponent > 0;
   }
 
   // Auto-save
@@ -1758,29 +1750,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeMetronome:Slider;
 
   /**
-   * The `Audio -> Enable Player Hitsounds` menu checkbox.
-   */
-  var menubarItemPlayerHitsounds:MenuCheckBox;
-
-  /**
-   * The `Audio -> Enable Opponent Hitsounds` menu checkbox.
-   */
-  var menubarItemOpponentHitsounds:MenuCheckBox;
-
-  /**
    * The `Audio -> Play Theme Music` menu checkbox.
    */
   var menubarItemThemeMusic:MenuCheckBox;
 
   /**
-   * The `Audio -> Hitsound Volume` label.
+   * The `Audio -> Player Hitsound Volume` label.
    */
-  var menubarLabelVolumeHitsounds:Label;
+  var menubarLabelVolumeHitsoundPlayer:Label;
 
   /**
-   * The `Audio -> Hitsound Volume` slider.
+   * The `Audio -> Enemy Hitsound Volume` label.
    */
-  var menubarItemVolumeHitsounds:Slider;
+  var menubarLabelVolumeHitsoundOpponent:Label;
+
+  /**
+   * The `Audio -> Player Hitsound Volume` slider.
+   */
+  var menubarItemVolumeHitsoundPlayer:Slider;
+
+  /**
+   * The `Audio -> Enemy Hitsound Volume` slider.
+   */
+  var menubarItemVolumeHitsoundOpponent:Slider;
 
   /**
    * The `Audio -> Instrumental Volume` label.
@@ -2187,9 +2179,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playtestStartTime = save.chartEditorPlaytestStartTime;
     currentTheme = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
-    hitsoundVolume = save.chartEditorHitsoundVolume;
-    hitsoundsEnabledPlayer = save.chartEditorHitsoundsEnabledPlayer;
-    hitsoundsEnabledOpponent = save.chartEditorHitsoundsEnabledOpponent;
+    hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
+    hitsoundVolumePlayer = save.chartEditorHitsoundVolumeOpponent;
     this.welcomeMusic.active = save.chartEditorThemeMusic;
 
     // audioInstTrack.volume = save.chartEditorInstVolume;
@@ -2217,9 +2208,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorPlaytestStartTime = playtestStartTime;
     save.chartEditorTheme = currentTheme;
     save.chartEditorMetronomeVolume = metronomeVolume;
-    save.chartEditorHitsoundVolume = hitsoundVolume;
-    save.chartEditorHitsoundsEnabledPlayer = hitsoundsEnabledPlayer;
-    save.chartEditorHitsoundsEnabledOpponent = hitsoundsEnabledOpponent;
+    save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
+    save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
     save.chartEditorThemeMusic = this.welcomeMusic.active;
 
     // save.chartEditorInstVolume = audioInstTrack.volume;
@@ -2912,24 +2902,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
 
-    menubarItemPlayerHitsounds.onChange = event -> hitsoundsEnabledPlayer = event.value;
-    menubarItemPlayerHitsounds.selected = hitsoundsEnabledPlayer;
-
-    menubarItemOpponentHitsounds.onChange = event -> hitsoundsEnabledOpponent = event.value;
-    menubarItemOpponentHitsounds.selected = hitsoundsEnabledOpponent;
-
     menubarItemThemeMusic.onChange = event -> {
       this.welcomeMusic.active = event.value;
       fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     };
     menubarItemThemeMusic.selected = this.welcomeMusic.active;
 
-    menubarItemVolumeHitsound.onChange = event -> {
+    menubarItemVolumeHitsoundPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
-      hitsoundVolume = volume;
-      menubarLabelVolumeHitsound.text = 'Hitsound - ${Std.int(event.value)}%';
+      hitsoundVolumePlayer = volume;
+      menubarLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeHitsound.value = Std.int(hitsoundVolume * 100);
+    menubarItemVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
+
+    menubarItemVolumeHitsoundOpponent.onChange = event -> {
+      var volume:Float = event.value.toFloat() / 100.0;
+      hitsoundVolumeOpponent = volume;
+      menubarLabelVolumeHitsoundOpponent.text = 'Enemy - ${Std.int(event.value)}%';
+    };
+    menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
 
     menubarItemVolumeInstrumental.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -5511,8 +5502,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.switchToInstrumental(currentInstrumentalId, currentSongMetadata.playData.characters.player, currentSongMetadata.playData.characters.opponent);
   }
 
-  function onSongLengthChanged():Void
+  public function updateGridHeight():Void
   {
+    // Make sure playhead doesn't go outside the song after we update the grid height.
+    if (playheadPositionInMs > songLengthInMs) playheadPositionInMs = songLengthInMs;
+
     if (gridTiledSprite != null)
     {
       gridTiledSprite.height = songLengthInPixels;
@@ -5939,9 +5933,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolume);
+          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolume);
+          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
       }
     }
   }

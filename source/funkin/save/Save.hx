@@ -106,8 +106,8 @@ abstract Save(RawSaveData)
             playtestStartTime: false,
             downscroll: false,
             metronomeVolume: 1.0,
-            hitsoundsEnabledPlayer: true,
-            hitsoundsEnabledOpponent: true,
+            hitsoundVolumePlayer: 1.0,
+            hitsoundVolumeOpponent: 1.0,
             themeMusic: true
           },
       };
@@ -300,55 +300,38 @@ abstract Save(RawSaveData)
     return this.optionsChartEditor.metronomeVolume;
   }
 
-  public var chartEditorHitsoundVolume(get, set):Float;
+  public var chartEditorHitsoundVolumePlayer(get, set):Float;
 
-  function get_chartEditorHitsoundVolume():Float
+  function get_chartEditorHitsoundVolumePlayer():Float
   {
-    if (this.optionsChartEditor.hitsoundVolume == null) this.optionsChartEditor.hitsoundVolume = 1.0;
+    if (this.optionsChartEditor.hitsoundVolumePlayer == null) this.optionsChartEditor.hitsoundVolumePlayer = 1.0;
 
-    return this.optionsChartEditor.hitsoundVolume;
+    return this.optionsChartEditor.hitsoundVolumePlayer;
   }
 
-  function set_chartEditorHitsoundVolume(value:Float):Float
+  function set_chartEditorHitsoundVolumePlayer(value:Float):Float
   {
     // Set and apply.
-    this.optionsChartEditor.hitsoundVolume = value;
+    this.optionsChartEditor.hitsoundVolumePlayer = value;
     flush();
-    return this.optionsChartEditor.hitsoundVolume;
+    return this.optionsChartEditor.hitsoundVolumePlayer;
   }
 
-  public var chartEditorHitsoundsEnabledPlayer(get, set):Bool;
+  public var chartEditorHitsoundVolumeOpponent(get, set):Float;
 
-  function get_chartEditorHitsoundsEnabledPlayer():Bool
+  function get_chartEditorHitsoundVolumeOpponent():Float
   {
-    if (this.optionsChartEditor.hitsoundsEnabledPlayer == null) this.optionsChartEditor.hitsoundsEnabledPlayer = true;
+    if (this.optionsChartEditor.hitsoundVolumeOpponent == null) this.optionsChartEditor.hitsoundVolumeOpponent = 1.0;
 
-    return this.optionsChartEditor.hitsoundsEnabledPlayer;
+    return this.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
-  function set_chartEditorHitsoundsEnabledPlayer(value:Bool):Bool
+  function set_chartEditorHitsoundVolumeOpponent(value:Float):Float
   {
     // Set and apply.
-    this.optionsChartEditor.hitsoundsEnabledPlayer = value;
+    this.optionsChartEditor.hitsoundVolumeOpponent = value;
     flush();
-    return this.optionsChartEditor.hitsoundsEnabledPlayer;
-  }
-
-  public var chartEditorHitsoundsEnabledOpponent(get, set):Bool;
-
-  function get_chartEditorHitsoundsEnabledOpponent():Bool
-  {
-    if (this.optionsChartEditor.hitsoundsEnabledOpponent == null) this.optionsChartEditor.hitsoundsEnabledOpponent = true;
-
-    return this.optionsChartEditor.hitsoundsEnabledOpponent;
-  }
-
-  function set_chartEditorHitsoundsEnabledOpponent(value:Bool):Bool
-  {
-    // Set and apply.
-    this.optionsChartEditor.hitsoundsEnabledOpponent = value;
-    flush();
-    return this.optionsChartEditor.hitsoundsEnabledOpponent;
+    return this.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
   public var chartEditorThemeMusic(get, set):Bool;
@@ -990,28 +973,22 @@ typedef SaveDataChartEditorOptions =
   var ?metronomeVolume:Float;
 
   /**
-   * Hitsound volume in the Chart Editor.
+   * Hitsound volume (player) in the Chart Editor.
    * @default `1.0`
    */
-  var ?hitsoundVolume:Float;
+  var ?hitsoundVolumePlayer:Float;
+
+  /**
+   * Hitsound volume (opponent) in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?hitsoundVolumeOpponent:Float;
 
   /**
    * If true, playtest songs from the current position in the Chart Editor.
    * @default `false`
    */
   var ?playtestStartTime:Bool;
-
-  /**
-   * Player note hit sounds in the Chart Editor.
-   * @default `true`
-   */
-  var ?hitsoundsEnabledPlayer:Bool;
-
-  /**
-   * Opponent note hit sounds in the Chart Editor.
-   * @default `true`
-   */
-  var ?hitsoundsEnabledOpponent:Bool;
 
   /**
    * Theme music in the Chart Editor.
