@@ -125,6 +125,14 @@ class CrashHandler
 
     fullContents += '=====================\n';
 
+    fullContents += '\n';
+
+    fullContents += MemoryUtil.buildGCInfo();
+
+    fullContents += '\n\n';
+
+    fullContents += '=====================\n';
+
     fullContents += 'Haxelibs: \n';
 
     for (lib in Constants.LIBRARY_VERSIONS)
