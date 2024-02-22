@@ -185,9 +185,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         switch (dataProp.animType)
         {
           case 'packer':
-            propSprite.frames = Paths.getPackerAtlas(dataProp.assetPath);
+            propSprite.loadPacker(dataProp.assetPath);
           default: // 'sparrow'
-            propSprite.frames = Paths.getSparrowAtlas(dataProp.assetPath);
+            propSprite.loadSparrow(dataProp.assetPath);
         }
       }
       else if (isSolidColor)
@@ -209,7 +209,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       else
       {
         // Initalize static sprite.
-        propSprite.loadGraphic(Paths.image(dataProp.assetPath));
+        propSprite.loadTexture(Paths.image(dataProp.assetPath));
 
         // Disables calls to update() for a performance boost.
         propSprite.active = false;

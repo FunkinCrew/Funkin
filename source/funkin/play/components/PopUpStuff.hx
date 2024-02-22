@@ -3,6 +3,7 @@ package funkin.play.components;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
+import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
@@ -14,17 +15,18 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
   public function displayRating(daRating:String)
   {
+    var perfStart:Float = Sys.time();
+
     if (daRating == null) daRating = "good";
 
-    var rating:FlxSprite = new FlxSprite(0, 0);
-    rating.scrollFactor.set(0.2, 0.2);
-
-    rating.zIndex = 1000;
     var ratingPath:String = daRating;
 
     if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
-    rating.loadGraphic(Paths.image(ratingPath));
+    var rating:FunkinSprite = FunkinSprite.create(0, 0, Paths.image(ratingPath));
+    rating.scrollFactor.set(0.2, 0.2);
+
+    rating.zIndex = 1000;
     rating.x = FlxG.width * 0.50;
     rating.x -= FlxG.camera.scroll.x * 0.2;
     // make sure rating is visible lol!
@@ -61,10 +63,16 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
         },
         startDelay: Conductor.instance.beatLengthMs * 0.001
       });
+
+    var perfEnd:Float = Sys.time();
+
+    trace("displayRating took: " + (perfEnd - perfStart));
   }
 
   public function displayCombo(?combo:Int = 0):Int
   {
+    var perfStart:Float = Sys.time();
+
     if (combo == null) combo = 0;
 
     var pixelShitPart1:String = "";
@@ -75,7 +83,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       pixelShitPart1 = 'weeb/pixelUI/';
       pixelShitPart2 = '-pixel';
     }
-    var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
+    var comboSpr:FunkinSprite = FunkinSprite.create(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
     comboSpr.y = FlxG.camera.height * 0.4 + 80;
     comboSpr.x = FlxG.width * 0.50;
     comboSpr.x -= FlxG.camera.scroll.x * 0.2;
@@ -129,8 +137,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     var daLoop:Int = 1;
     for (i in seperatedScore)
     {
-      var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
-      numScore.y = comboSpr.y;
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
 
       if (PlayState.instance.currentStageId.startsWith('school'))
       {
@@ -162,6 +169,9 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
       daLoop++;
     }
+
+    var perfEnd:Float = Sys.time();
+    trace("displayCombo took: " + (perfEnd - perfStart));
 
     return combo;
   }

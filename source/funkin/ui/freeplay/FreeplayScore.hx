@@ -111,7 +111,7 @@ class ScoreNum extends FlxSprite
     for (i in 0...10)
     {
       var stringNum:String = numToString[i];
-      animation.addByPrefix(stringNum, stringNum, 24, false);
+      animation.addByPrefix(stringNum, '$stringNum DIGITAL', 24, false);
     }
 
     this.digit = initDigit;

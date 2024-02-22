@@ -44,11 +44,10 @@ class LoadingState extends MusicBeatState
 
   override function create():Void
   {
-    var bg:FlxSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
     add(bg);
 
-    funkay = new FlxSprite();
-    funkay.loadGraphic(Paths.image('funkay'));
+    funkay = FunkinSprite.create(Paths.image('funkay'));
     funkay.setGraphicSize(0, FlxG.height);
     funkay.updateHitbox();
     add(funkay);
@@ -208,6 +207,11 @@ class LoadingState extends MusicBeatState
     {
       params.targetSong.cacheCharts(true);
     }
+
+    // TODO: This is a hack! Redo this later when we have a proper asset caching system.
+    FunkinSprite.cacheTexture(Paths.image('combo'));
+    FunkinSprite.cacheTexture(Paths.image('healthBar'));
+    FunkinSprite.cacheTexture(Paths.image('menuDesat'));
 
     FlxG.switchState(playStateCtor);
     #end

@@ -10,12 +10,14 @@ import flixel.addons.transition.Transition;
 import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.FlxState;
+import funkin.graphics.FunkinSprite;
 import flixel.FlxSubState;
+import funkin.graphics.FunkinSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import funkin.graphics.FunkinSprite;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -213,7 +215,7 @@ class PlayState extends MusicBeatSubState
    * The current gameplay camera will always follow this object. Tween its position to move the camera smoothly.
    *
    * It needs to be an object in the scene for the camera to be configured to follow it.
-   * We optionally make this an FlxSprite so we can draw a debug graphic with it.
+   * We optionally make this a sprite so we can draw a debug graphic with it.
    */
   public var cameraFollowPoint:FlxObject;
 
@@ -400,7 +402,7 @@ class PlayState extends MusicBeatSubState
    * The background image used for the health bar.
    * Emma says the image is slightly skewed so I'm leaving it as an image instead of a `createGraphic`.
    */
-  public var healthBarBG:FlxSprite;
+  public var healthBarBG:FunkinSprite;
 
   /**
    * The health icon representing the player.
@@ -568,12 +570,15 @@ class PlayState extends MusicBeatSubState
 
     if (!assertChartExists()) return;
 
+    // TODO: Add something to toggle this on!
     if (false)
     {
       // Displays the camera follow point as a sprite for debug purposes.
-      cameraFollowPoint = new FlxSprite(0, 0).makeGraphic(8, 8, 0xFF00FF00);
+      var cameraFollowPoint = new FunkinSprite(0, 0);
+      cameraFollowPoint.makeSolidColor(8, 8, 0xFF00FF00);
       cameraFollowPoint.visible = false;
       cameraFollowPoint.zIndex = 1000000;
+      this.cameraFollowPoint = cameraFollowPoint;
     }
     else
     {
@@ -1349,7 +1354,7 @@ class PlayState extends MusicBeatSubState
   function initHealthBar():Void
   {
     var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    healthBarBG = new FlxSprite(0, healthBarYPos).loadGraphic(Paths.image('healthBar'));
+    healthBarBG = FunkinSprite.create(0, healthBarYPos, Paths.image('healthBar'));
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
     add(healthBarBG);
@@ -1383,7 +1388,7 @@ class PlayState extends MusicBeatSubState
   function initMinimalMode():Void
   {
     // Create the green background.
-    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+    var menuBG = FunkinSprite.create(Paths.image('menuDesat'));
     menuBG.color = 0xFF4CAF50;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
@@ -2623,10 +2628,10 @@ class PlayState extends MusicBeatSubState
         // TODO: Softcode this cutscene.
         if (currentSong.id == 'eggnog')
         {
-          var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-            -FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-          blackShit.scrollFactor.set();
-          add(blackShit);
+          var blackBG:FunkinSprite = new FunkinSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom);
+          blackBG.makeSolidColor(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+          blackBG.scrollFactor.set();
+          add(blackBG);
           camHUD.visible = false;
           isInCutscene = true;
 
