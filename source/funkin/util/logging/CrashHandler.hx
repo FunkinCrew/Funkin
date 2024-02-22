@@ -133,6 +133,16 @@ class CrashHandler
 
     fullContents += '=====================\n';
 
+    fullContents += '\n';
+
+    fullContents += 'Flixel Current State: ${Type.getClassName(Type.getClass(FlxG.state))}\n';
+
+    fullContents += '\n';
+
+    fullContents += '=====================\n';
+
+    fullContents += '\n';
+
     fullContents += 'Haxelibs: \n';
 
     for (lib in Constants.LIBRARY_VERSIONS)

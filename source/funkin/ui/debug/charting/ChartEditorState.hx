@@ -5258,14 +5258,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // F1 = Open Help
     if (FlxG.keys.justPressed.F1) this.openUserGuideDialog();
-
-    // DEBUG KEYBIND: Ctrl + Alt + Shift + L = Crash the game.
-    #if debug
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
-    {
-      throw "DEBUG: Crashing the chart editor!";
-    }
-    #end
   }
 
   function handleQuickWatch():Void
