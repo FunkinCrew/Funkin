@@ -46,6 +46,13 @@
       "version": "3.5.0"
     },
     {
+      "name": "funkVis",
+      "type": "git",
+      "dir": null,
+      "ref": "separateDSP",
+      "url": "https://github.com/FunkinCrew/funkVis"
+    },
+    {
       "name": "hamcrest",
       "type": "haxelib",
       "version": "3.0.0"

@@ -35,9 +35,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
       viz.frames = visFrms;
       add(viz);
 
-      var visStr = 'VIZ';
-      if (lol == 5) visStr = 'viz'; // lol makes it lowercase, accomodates for art that I dont wanna rename!
-
+      var visStr = 'viz';
       viz.animation.addByPrefix('VIZ', visStr + lol, 0);
       viz.animation.play('VIZ', false, false, -1);
     }
