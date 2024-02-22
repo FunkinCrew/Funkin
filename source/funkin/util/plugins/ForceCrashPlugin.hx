@@ -22,8 +22,8 @@ class ForceCrashPlugin extends FlxBasic
   {
     super.update(elapsed);
 
-    // Ctrl + Alt + Shift + L = Crash the game for debugging purposes
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    // Ctrl + Shift + L = Crash the game for debugging purposes
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.L)
     {
       // TODO: Make this message 87% funnier.
       throw "DEBUG: Crashing the game via debug keybind!";
