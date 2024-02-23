@@ -1,5 +1,6 @@
 package funkin.ui.debug;
 
+import funkin.util.MemoryUtil;
 import openfl.text.TextFormat;
 import openfl.system.System;
 import openfl.text.TextField;
@@ -35,7 +36,7 @@ class MemoryCounter extends TextField
   @:noCompletion
   #if !flash override #end function __enterFrame(deltaTime:Float):Void
   {
-    var mem:Float = Math.round(System.totalMemory / BYTES_PER_MEG / ROUND_TO) * ROUND_TO;
+    var mem:Float = Math.round(MemoryUtil.getMemoryUsed() / BYTES_PER_MEG / ROUND_TO) * ROUND_TO;
 
     if (mem > memPeak) memPeak = mem;
 
