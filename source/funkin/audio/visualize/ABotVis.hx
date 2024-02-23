@@ -28,15 +28,17 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     // these are the differences in X position, from left to right
     var positionX:Array<Float> = [0, 59, 56, 66, 54, 52, 51];
+    var positionY:Array<Float> = [0, -8, -3.5, -0.4, 0.5, 4.7, 7];
 
     for (lol in 1...8)
     {
       // pushes initial value
       volumes.push(0.0);
+      var sum = function(num:Float, total:Float) return total += num;
+      var posX:Float = positionX.slice(0, lol).fold(sum, 0);
+      var posY:Float = positionY.slice(0, lol).fold(sum, 0);
 
-      var posX:Float = positionX[lol - 1] + (positionX[lol - 2] ?? 0);
-
-      var viz:FlxSprite = new FlxSprite(posX, 0);
+      var viz:FlxSprite = new FlxSprite(posX, posY);
       viz.frames = visFrms;
       add(viz);
 
