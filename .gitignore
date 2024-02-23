@@ -1,5 +1,6 @@
 .DS_STORE
 .haxelib/
+.vs/
 APIStuff.hx
 dump/
 export/
