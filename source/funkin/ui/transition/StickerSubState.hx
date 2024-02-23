@@ -246,6 +246,10 @@ class StickerSubState extends MusicBeatSubState
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
 
+            // TODO: Rework this asset caching stuff
+            FunkinSprite.preparePurgeCache();
+            FunkinSprite.purgeCache();
+
             // I think this grabs the screen and puts it under the stickers?
             // Leaving this commented out rather than stripping it out because it's cool...
             /*

@@ -106,6 +106,9 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       FlxG.log.warn('Note texture is not cached: ${getNoteAssetPath()}');
     }
 
+    // Purge the note frames if the cached atlas is invalid.
+    if (noteFrames?.parent?.isDestroyed ?? false) noteFrames = null;
+
     if (noteFrames != null && !force) return noteFrames;
 
     noteFrames = Paths.getSparrowAtlas(getNoteAssetPath(), getNoteAssetLibrary());
@@ -114,8 +117,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       throw 'Could not load note frames for note style: $id';
     }
-
-    noteFrames.parent.persist = true;
 
     return noteFrames;
   }

@@ -2281,11 +2281,6 @@ class PlayState extends MusicBeatSubState
     if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
     #end
 
-    // Eject button
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
-
-    if (FlxG.keys.justPressed.F5) debug_refreshModules();
-
     // Open the stage editor overlaying the current state.
     if (controls.DEBUG_STAGE)
     {

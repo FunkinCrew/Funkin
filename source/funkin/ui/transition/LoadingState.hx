@@ -225,6 +225,10 @@ class LoadingState extends MusicBeatState
     FunkinSprite.cacheTexture(Paths.image('num7'));
     FunkinSprite.cacheTexture(Paths.image('num8'));
     FunkinSprite.cacheTexture(Paths.image('num9'));
+    FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
     FunkinSprite.cacheTexture(Paths.image('ready', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('set', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('go', 'shared'));
@@ -232,7 +236,14 @@ class LoadingState extends MusicBeatState
     FunkinSprite.cacheTexture(Paths.image('good', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('bad', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('shit', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: Remove
+    FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: remove this
+
+    // FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
+    // FunkinSprite.cacheAllCharacterTextures(player)
+    // FunkinSprite.cacheAllCharacterTextures(girlfriend)
+    // FunkinSprite.cacheAllCharacterTextures(opponent)
+    // FunkinSprite.cacheAllStageTextures(stage)
+
     FunkinSprite.purgeCache();
 
     FlxG.switchState(playStateCtor);
