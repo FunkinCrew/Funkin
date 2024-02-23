@@ -61,7 +61,16 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
     for (entryCls in scriptedEntryClassNames)
     {
-      var entry:T = createScriptedEntry(entryCls);
+      var entry:Null<T> = null;
+      try
+      {
+        entry = createScriptedEntry(entryCls);
+      }
+      catch (e:Dynamic)
+      {
+        log('Failed to create scripted entry (${entryCls})');
+        continue;
+      }
 
       if (entry != null)
       {
@@ -196,6 +205,11 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   public function parseEntryDataWithMigration(id:String, version:thx.semver.Version):Null<J>
   {
+    if (version == null)
+    {
+      throw '[${registryId}] Entry ${id} could not be JSON-parsed or does not have a parseable version.';
+    }
+
     // If a version rule is not specified, do not check against it.
     if (versionRule == null || VersionUtil.validateVersion(version, versionRule))
     {
