@@ -15,7 +15,9 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
   public function displayRating(daRating:String)
   {
+    #if sys
     var perfStart:Float = Sys.time();
+    #end
 
     if (daRating == null) daRating = "good";
 
@@ -64,14 +66,17 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
         startDelay: Conductor.instance.beatLengthMs * 0.001
       });
 
+    #if sys
     var perfEnd:Float = Sys.time();
-
     trace("displayRating took: " + (perfEnd - perfStart));
+    #end
   }
 
   public function displayCombo(?combo:Int = 0):Int
   {
+    #if sys
     var perfStart:Float = Sys.time();
+    #end
 
     if (combo == null) combo = 0;
 
@@ -170,8 +175,10 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       daLoop++;
     }
 
+    #if sys
     var perfEnd:Float = Sys.time();
     trace("displayCombo took: " + (perfEnd - perfStart));
+    #end
 
     return combo;
   }

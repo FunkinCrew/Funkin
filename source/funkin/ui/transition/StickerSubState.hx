@@ -3,6 +3,7 @@ package funkin.ui.transition;
 import flixel.FlxSprite;
 import haxe.Json;
 import lime.utils.Assets;
+import funkin.graphics.FunkinSprite;
 // import flxtyped group
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
@@ -301,14 +302,14 @@ class StickerSubState extends MusicBeatSubState
   }
 }
 
-class StickerSprite extends FlxSprite
+class StickerSprite extends FunkinSprite
 {
   public var timing:Float = 0;
 
   public function new(x:Float, y:Float, stickerSet:String, stickerName:String):Void
   {
     super(x, y);
-    loadGraphic(Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
+    loadTexture(Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
     updateHitbox();
     scrollFactor.set();
   }

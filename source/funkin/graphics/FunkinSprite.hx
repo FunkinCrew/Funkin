@@ -12,6 +12,18 @@ import flixel.graphics.FlxGraphic;
 class FunkinSprite extends FlxSprite
 {
   /**
+   * An internal list of all the textures cached with `cacheTexture`.
+   * This excludes any temporary textures like those from `FlxText` or `makeSolidColor`.
+   */
+  static var currentCachedTextures:Map<String, FlxGraphic> = [];
+
+  /**
+   * An internal list of textures that were cached in the previous state.
+   * We don't know whether we want to keep them cached or not.
+   */
+  static var previousCachedTextures:Map<String, FlxGraphic> = [];
+
+  /**
    * @param x Starting X position
    * @param y Starting Y position
    */
@@ -113,6 +125,19 @@ class FunkinSprite extends FlxSprite
 
   public static function cacheTexture(key:String):Void
   {
+    // We don't want to cache the same texture twice.
+    if (currentCachedTextures.exists(key)) return;
+
+    if (previousCachedTextures.exists(key))
+    {
+      // Move the graphic from the previous cache to the current cache.
+      var graphic = previousCachedTextures.get(key);
+      previousCachedTextures.remove(key);
+      currentCachedTextures.set(key, graphic);
+      return;
+    }
+
+    // Else, texture is currently uncached.
     var graphic = flixel.graphics.FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
@@ -121,6 +146,8 @@ class FunkinSprite extends FlxSprite
     else
     {
       trace('Successfully cached graphic: $key');
+      graphic.persist = true;
+      currentCachedTextures.set(key, graphic);
     }
   }
 
@@ -132,6 +159,40 @@ class FunkinSprite extends FlxSprite
   public static function cachePacker(key:String):Void
   {
     cacheTexture(Paths.image(key));
+  }
+
+  /**
+   * Call this, then `cacheTexture` to keep the textures we still need, then `purgeCache` to remove the textures that we won't be using anymore.
+   */
+  public static function preparePurgeCache():Void
+  {
+    previousCachedTextures = currentCachedTextures;
+    currentCachedTextures = [];
+  }
+
+  public static function purgeCache():Void
+  {
+    // Everything that is in previousCachedTextures but not in currentCachedTextures should be destroyed.
+    for (graphicKey in previousCachedTextures.keys())
+    {
+      var graphic = previousCachedTextures.get(graphicKey);
+      FlxG.bitmap.remove(graphic);
+      graphic.destroy();
+      previousCachedTextures.remove(graphicKey);
+    }
+  }
+
+  static function isGraphicCached(graphic:FlxGraphic):Bool
+  {
+    if (graphic == null) return false;
+    var result = FlxG.bitmap.get(graphic.key);
+    if (result == null) return false;
+    if (result != graphic)
+    {
+      FlxG.log.warn('Cached graphic does not match original: ${graphic.key}');
+      return false;
+    }
+    return true;
   }
 
   /**
