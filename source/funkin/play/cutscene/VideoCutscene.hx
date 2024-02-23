@@ -36,6 +36,8 @@ class VideoCutscene
       return;
     }
 
+    var rawFilePath = Paths.stripLibrary(filePath);
+
     // Trigger the cutscene. Don't play the song in the background.
     PlayState.instance.isInCutscene = true;
     PlayState.instance.camHUD.visible = false;
@@ -49,10 +51,10 @@ class VideoCutscene
 
     #if html5
     playVideoHTML5(filePath);
-    #end
-
-    #if hxCodec
-    playVideoNative(filePath);
+    #elseif hxCodec
+    playVideoNative(rawFilePath);
+    #else
+    throw "No video support for this platform!";
     #end
   }
 
@@ -110,6 +112,15 @@ class VideoCutscene
 
       PlayState.instance.refresh();
       vid.play(filePath, false);
+
+      // Resize videos bigger or smaller than the screen.
+      vid.bitmap.onTextureSetup.add(() -> {
+        vid.setGraphicSize(FlxG.width, FlxG.height);
+        vid.updateHitbox();
+        vid.x = 0;
+        vid.y = 0;
+        // vid.scale.set(0.5, 0.5);
+      });
     }
     else
     {

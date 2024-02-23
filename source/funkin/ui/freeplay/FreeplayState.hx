@@ -7,6 +7,7 @@ import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
 import flixel.FlxGame;
 import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
