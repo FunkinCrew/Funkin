@@ -26,12 +26,17 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas('aBotViz');
 
+    // these are the differences in X position, from left to right
+    var positionX:Array<Float> = [0, 59, 56, 66, 54, 52, 51];
+
     for (lol in 1...8)
     {
       // pushes initial value
       volumes.push(0.0);
 
-      var viz:FlxSprite = new FlxSprite(50 * lol, 0);
+      var posX:Float = positionX[lol - 1] + (positionX[lol - 2] ?? 0);
+
+      var viz:FlxSprite = new FlxSprite(posX, 0);
       viz.frames = visFrms;
       add(viz);
 
