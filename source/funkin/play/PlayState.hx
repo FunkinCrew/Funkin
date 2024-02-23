@@ -1741,8 +1741,6 @@ class PlayState extends MusicBeatSubState
    */
   function startSong():Void
   {
-    dispatchEvent(new ScriptEvent(SONG_START));
-
     startingSong = false;
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
@@ -1772,6 +1770,8 @@ class PlayState extends MusicBeatSubState
       // FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
       handleSkippedNotes();
     }
+
+    dispatchEvent(new ScriptEvent(SONG_START));
   }
 
   /**
