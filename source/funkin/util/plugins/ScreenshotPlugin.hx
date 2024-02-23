@@ -13,6 +13,7 @@ import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
+import funkin.audio.FunkinSound;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
 import openfl.display.BitmapData;
@@ -162,7 +163,7 @@ class ScreenshotPlugin extends FlxBasic
   final CAMERA_FLASH_DURATION = 0.25;
 
   /**
-   * Visual (and audio?) feedback when a screenshot is taken.
+   * Visual and audio feedback when a screenshot is taken.
    */
   function showCaptureFeedback():Void
   {
@@ -171,6 +172,9 @@ class ScreenshotPlugin extends FlxBasic
     flashSpr.addChild(flashBitmap);
     FlxG.stage.addChild(flashSpr);
     FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.stage.removeChild(flashSpr)});
+
+    // Play a sound (auto-play is true).
+    FunkinSound.load(Paths.sound('screenshot'), 1.0, false, true, true);
   }
 
   static final PREVIEW_INITIAL_DELAY = 0.25; // How long before the preview starts fading in.
