@@ -987,8 +987,21 @@ class PlayState extends MusicBeatSubState
       }
     }
 
+    processSongEvents();
+
+    // Handle keybinds.
+    processInputQueue();
+    if (!isInCutscene && !disableKeys) debugKeyShit();
+    if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
+
+    // Moving notes into position is now done by Strumline.update().
+    processNotes(elapsed);
+  }
+
+  function processSongEvents():Void
+  {
     // Query and activate song events.
-    // TODO: Check that these work even when songPosition is less than 0.
+    // TODO: Check that these work appropriately even when songPosition is less than 0, to play events during countdown.
     if (songEvents != null && songEvents.length > 0)
     {
       var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEvents(songEvents, Conductor.instance.songPosition);
@@ -998,8 +1011,9 @@ class PlayState extends MusicBeatSubState
         trace('Found ${songEventsToActivate.length} event(s) to activate.');
         for (event in songEventsToActivate)
         {
-          // If an event is trying to play, but it's over 5 seconds old, skip it.
-          if (event.time - Conductor.instance.songPosition < -5000)
+          // If an event is trying to play, but it's over 1 second old, skip it.
+          var eventAge:Float = Conductor.instance.songPosition - event.time;
+          if (eventAge > 1000)
           {
             event.activated = true;
             continue;
@@ -1015,14 +1029,6 @@ class PlayState extends MusicBeatSubState
         }
       }
     }
-
-    // Handle keybinds.
-    processInputQueue();
-    if (!isInCutscene && !disableKeys) debugKeyShit();
-    if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
-
-    // Moving notes into position is now done by Strumline.update().
-    processNotes(elapsed);
   }
 
   public override function dispatchEvent(event:ScriptEvent):Void
@@ -1761,7 +1767,7 @@ class PlayState extends MusicBeatSubState
       currentChart.playInst(1.0, false);
     }
 
-    FlxG.sound.music.onComplete = endSong;
+    FlxG.sound.music.onComplete = endSong.bind(false);
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
     FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
@@ -2041,6 +2047,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
+    // Respawns notes that were b
     playerStrumline.handleSkippedNotes();
     opponentStrumline.handleSkippedNotes();
   }
@@ -2303,7 +2310,7 @@ class PlayState extends MusicBeatSubState
 
     #if (debug || FORCE_DEBUG_VERSION)
     // 1: End the song immediately.
-    if (FlxG.keys.justPressed.ONE) endSong();
+    if (FlxG.keys.justPressed.ONE) endSong(true);
 
     // 2: Gain 10% health.
     if (FlxG.keys.justPressed.TWO) health += 0.1 * Constants.HEALTH_MAX;
@@ -2497,16 +2504,35 @@ class PlayState extends MusicBeatSubState
 
     if (skipHeldTimer >= 1.5)
     {
-      VideoCutscene.finishVideo();
+      skipVideoCutscene();
     }
   }
 
   /**
-   * End the song. Handle saving high scores and transitioning to the results screen.
+   * Handle logic for actually skipping a video cutscene after it has been held.
    */
-  function endSong():Void
+  function skipVideoCutscene():Void
   {
-    dispatchEvent(new ScriptEvent(SONG_END));
+    VideoCutscene.finishVideo();
+  }
+
+  /**
+   * End the song. Handle saving high scores and transitioning to the results screen.
+   *
+   * Broadcasts an `onSongEnd` event, which can be cancelled to prevent the song from ending (for a cutscene or something).
+   * Remember to call `endSong` again when the song should actually end!
+   * @param rightGoddamnNow If true, don't play the fancy animation where you zoom onto Girlfriend. Used after a cutscene.
+   */
+  public function endSong(rightGoddamnNow:Bool = false):Void
+  {
+    FlxG.sound.music.volume = 0;
+    vocals.volume = 0;
+    mayPauseGame = false;
+
+    // Check if any events want to prevent the song from ending.
+    var event = new ScriptEvent(SONG_END, true);
+    dispatchEvent(event);
+    if (event.eventCanceled) return;
 
     #if sys
     // spitter for ravy, teehee!!
@@ -2516,9 +2542,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     deathCounter = 0;
-    mayPauseGame = false;
-    FlxG.sound.music.volume = 0;
-    vocals.volume = 0;
+
     if (currentSong != null && currentSong.validScore)
     {
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
@@ -2605,7 +2629,14 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
-          moveToResultsScreen();
+          if (rightGoddamnNow)
+          {
+            moveToResultsScreen();
+          }
+          else
+          {
+            zoomIntoResultsScreen();
+          }
         }
       }
       else
@@ -2663,7 +2694,14 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
-        moveToResultsScreen();
+        if (rightGoddamnNow)
+        {
+          moveToResultsScreen();
+        }
+        else
+        {
+          zoomIntoResultsScreen();
+        }
       }
     }
   }
@@ -2717,9 +2755,9 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-   * Play the camera zoom animation and move to the results screen.
+   * Play the camera zoom animation and then move to the results screen once it's done.
    */
-  function moveToResultsScreen():Void
+  function zoomIntoResultsScreen():Void
   {
     trace('WENT TO RESULTS SCREEN!');
 
@@ -2773,20 +2811,28 @@ class PlayState extends MusicBeatSubState
         {
           ease: FlxEase.expoIn,
           onComplete: function(_) {
-            persistentUpdate = false;
-            vocals.stop();
-            camHUD.alpha = 1;
-            var res:ResultState = new ResultState(
-              {
-                storyMode: PlayStatePlaylist.isStoryMode,
-                title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-                tallies: Highscore.tallies,
-              });
-            res.camera = camHUD;
-            openSubState(res);
+            moveToResultsScreen();
           }
         });
     });
+  }
+
+  /**
+   * Move to the results screen right goddamn now.
+   */
+  function moveToResultsScreen():Void
+  {
+    persistentUpdate = false;
+    vocals.stop();
+    camHUD.alpha = 1;
+    var res:ResultState = new ResultState(
+      {
+        storyMode: PlayStatePlaylist.isStoryMode,
+        title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+        tallies: Highscore.tallies,
+      });
+    res.camera = camHUD;
+    openSubState(res);
   }
 
   /**
@@ -2818,14 +2864,18 @@ class PlayState extends MusicBeatSubState
    */
   function changeSection(sections:Int):Void
   {
-    FlxG.sound.music.pause();
+    // FlxG.sound.music.pause();
 
-    var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.timeSignatureNumerator * Constants.STEPS_PER_BEAT * sections);
+    var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.stepsPerMeasure * sections);
     var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
+
+    // Don't go back in time to before the song started.
+    targetTimeMs = Math.max(0, targetTimeMs);
 
     FlxG.sound.music.time = targetTimeMs;
 
     handleSkippedNotes();
+    SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
     // regenNoteData(FlxG.sound.music.time);
 
     Conductor.instance.update(FlxG.sound.music.time);

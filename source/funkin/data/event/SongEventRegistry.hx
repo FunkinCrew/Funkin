@@ -149,6 +149,29 @@ class SongEventRegistry
   }
 
   /**
+   * The currentTime has jumped far ahead or back.
+   * If we moved back in time, we need to reset all the events in that space.
+   * If we moved forward in time, we need to skip all the events in that space.
+   */
+  public static function handleSkippedEvents(events:Array<SongEventData>, currentTime:Float):Void
+  {
+    for (event in events)
+    {
+      // Deactivate future events.
+      if (event.time > currentTime)
+      {
+        event.activated = false;
+      }
+
+      // Skip past events.
+      if (event.time < currentTime)
+      {
+        event.activated = true;
+      }
+    }
+  }
+
+  /**
    * Reset activation of all the provided events.
    */
   public static function resetEvents(events:Array<SongEventData>):Void
