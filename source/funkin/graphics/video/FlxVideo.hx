@@ -40,6 +40,23 @@ class FlxVideo extends FlxBasic
     netStream.play(videoPath);
   }
 
+  public function pauseVideo():Void
+  {
+    if (netStream != null)
+    {
+      netStream.pause();
+    }
+  }
+
+  public function resumeVideo():Void
+  {
+    // Resume playing the video.
+    if (netStream != null)
+    {
+      netStream.resume();
+    }
+  }
+
   public function restartVideo():Void
   {
     // Seek to the beginning of the video.

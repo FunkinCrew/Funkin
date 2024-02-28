@@ -82,6 +82,7 @@ class PauseSubState extends MusicBeatSubState
   var background:FunkinSprite;
   var metadata:FlxTypedSpriteGroup<FlxText>;
   var metadataPractice:FlxText;
+  var metadataDeaths:FlxText;
   var menuEntryText:FlxTypedSpriteGroup<AtlasText>;
 
   // Audio
@@ -172,9 +173,8 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    var metadataDeaths:FlxText = new FlxText(20, 15 + 64, FlxG.width - 40, '0 Blue Balls');
+    metadataDeaths = new FlxText(20, 15 + 64, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
-    metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
@@ -183,6 +183,8 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
+
+    updateMetadataText();
   }
 
   function regenerateMenu(?targetMode:PauseMode):Void
@@ -250,9 +252,26 @@ class PauseSubState extends MusicBeatSubState
       currentMenuEntries.remove(entry);
     }
 
-    metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
+    updateMetadataText();
 
     changeSelection();
+  }
+
+  function updateMetadataText():Void
+  {
+    metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
+
+    switch (this.currentMode)
+    {
+      case Standard | Difficulty:
+        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+      case Charting:
+        metadataDeaths.text = 'Chart Editor Preview';
+      case Conversation:
+        metadataDeaths.text = 'Dialogue Paused';
+      case Cutscene:
+        metadataDeaths.text = 'Video Paused';
+    }
   }
 
   function transitionIn():Void
@@ -339,6 +358,9 @@ class PauseSubState extends MusicBeatSubState
   // ===============
   static function resume(state:PauseSubState):Void
   {
+    // Resume a paused video if it exists.
+    VideoCutscene.resumeVideo();
+
     state.close();
   }
 

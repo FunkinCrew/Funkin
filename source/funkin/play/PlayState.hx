@@ -2480,6 +2480,8 @@ class PlayState extends MusicBeatSubState
       // This is a video cutscene.
       if (controls.PAUSE && !justUnpaused)
       {
+        VideoCutscene.pauseVideo();
+
         var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
 
         persistentUpdate = false;

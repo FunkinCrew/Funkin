@@ -112,6 +112,7 @@ class VideoCutscene
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
+      vid.autoPause = false;
 
       vid.cameras = [PlayState.instance.camCutscene];
 
@@ -136,7 +137,7 @@ class VideoCutscene
   }
   #end
 
-  public static function restartVideo():Void
+  public static function restartVideo(resume:Bool = true):Void
   {
     #if html5
     if (vid != null)
@@ -150,6 +151,45 @@ class VideoCutscene
     {
       // Seek to the start of the video.
       vid.bitmap.time = 0;
+      if (resume)
+      {
+        // Resume the video if it was paused.
+        vid.resume();
+      }
+    }
+    #end
+  }
+
+  public static function pauseVideo():Void
+  {
+    #if html5
+    if (vid != null)
+    {
+      vid.pauseVideo();
+    }
+    #end
+
+    #if hxCodec
+    if (vid != null)
+    {
+      vid.pause();
+    }
+    #end
+  }
+
+  public static function resumeVideo():Void
+  {
+    #if html5
+    if (vid != null)
+    {
+      vid.resumeVideo();
+    }
+    #end
+
+    #if hxCodec
+    if (vid != null)
+    {
+      vid.resume();
     }
     #end
   }
