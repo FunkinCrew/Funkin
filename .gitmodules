@@ -1,10 +1,6 @@
 [submodule "assets"]
 	path = assets
-	url = https://github.com/FunkinCrew/Funkin-history-rewrite-assets
-	branch = master
-	update = merge
+	url = https://github.com/FunkinCrew/Funkin-Assets-secret
 [submodule "art"]
 	path = art
-	url = https://github.com/FunkinCrew/Funkin-history-rewrite-art
-	branch = master
-	update = merge
+	url = https://github.com/FunkinCrew/Funkin-Art-secret
