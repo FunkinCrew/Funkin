@@ -19,8 +19,14 @@ import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.StickerSubState;
 
+/**
+ * Parameters for initializing the PauseSubState.
+ */
 typedef PauseSubStateParams =
 {
+  /**
+   * Which mode to start in. Dictates what entries are displayed.
+   */
   ?mode:PauseMode,
 };
 
@@ -29,6 +35,13 @@ typedef PauseSubStateParams =
  */
 class PauseSubState extends MusicBeatSubState
 {
+  // ===============
+  // Constants
+  // ===============
+
+  /**
+   * Pause menu entries for when the game is paused during a song.
+   */
   static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
     {text: 'Restart Song', callback: restartPlayState},
@@ -37,17 +50,26 @@ class PauseSubState extends MusicBeatSubState
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
+  /**
+   * Pause menu entries for when the game is paused in the Chart Editor preview.
+   */
   static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
     {text: 'Restart Song', callback: restartPlayState},
     {text: 'Return to Chart Editor', callback: quitToChartEditor},
   ];
 
+  /**
+   * Pause menu entries for when the user selects "Change Difficulty".
+   */
   static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [
     {text: 'Back', callback: switchMode.bind(_, Standard)}
     // Other entries are added dynamically.
   ];
 
+  /**
+   * Pause menu entries for when the game is paused during a video cutscene.
+   */
   static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
     {text: 'Restart Cutscene', callback: restartVideoCutscene},
@@ -55,6 +77,9 @@ class PauseSubState extends MusicBeatSubState
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
+  /**
+   * Pause menu entries for when the game is paused during a conversation.
+   */
   static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
     {text: 'Restart Dialogue', callback: restartConversation},
@@ -62,31 +87,91 @@ class PauseSubState extends MusicBeatSubState
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
-  static final MUSIC_FADE_IN_TIME:Float = 50;
-  static final MUSIC_FINAL_VOLUME:Float = 0.5;
-
-  public static var musicSuffix:String = '';
-
-  // Status
-  var currentMenuEntries:Array<PauseMenuEntry>;
-  var currentEntry:Int = 0;
-  var currentMode:PauseMode;
+  /**
+   * Duration for the music to fade in when the pause menu is opened.
+   */
+  static final MUSIC_FADE_IN_TIME:Float = 5;
 
   /**
-   * Disallow input until the transition in is complete!
-   * This prevents the pause menu from immediately closing.
+   * The final volume for the music when the pause menu is opened.
+   */
+  static final MUSIC_FINAL_VOLUME:Float = 0.75;
+
+  /**
+   * Defines which pause music to use.
+   */
+  public static var musicSuffix:String = '';
+
+  /**
+   * Reset the pause configuration to the default.
+   */
+  public static function reset():Void
+  {
+    musicSuffix = '';
+  }
+
+  // ===============
+  // Status Variables
+  // ===============
+
+  /**
+   * Disallow input until transitions are complete!
+   * This prevents the pause menu from immediately closing when opened, among other things.
    */
   public var allowInput:Bool = false;
 
-  // Graphics
+  /**
+   * The entries currently displayed in the pause menu.
+   */
+  var currentMenuEntries:Array<PauseMenuEntry>;
+
+  /**
+   * The index of `currentMenuEntries` that is currently selected.
+   */
+  var currentEntry:Int = 0;
+
+  /**
+   * The mode that the pause menu is currently in.
+   */
+  var currentMode:PauseMode;
+
+  // ===============
+  // Graphics Variables
+  // ===============
+
+  /**
+   * The semi-transparent black background that appears when the game is paused.
+   */
   var background:FunkinSprite;
+
+  /**
+   * The metadata displayed in the top right.
+   */
   var metadata:FlxTypedSpriteGroup<FlxText>;
+
+  /**
+   * A text object that displays the current practice mode status.
+   */
   var metadataPractice:FlxText;
+
+  /**
+   * A text object that displays the current death count.
+   */
   var metadataDeaths:FlxText;
+
+  /**
+   * The actual text objects for the menu entries.
+   */
   var menuEntryText:FlxTypedSpriteGroup<AtlasText>;
 
-  // Audio
+  // ===============
+  // Audio Variables
+  // ===============
   var pauseMusic:FunkinSound;
+
+  // ===============
+  // Constructor
+  // ===============
 
   public function new(?params:PauseSubStateParams)
   {
@@ -94,6 +179,13 @@ class PauseSubState extends MusicBeatSubState
     this.currentMode = params?.mode ?? Standard;
   }
 
+  // ===============
+  // Lifecycle Functions
+  // ===============
+
+  /**
+   * Called when the state is first loaded.
+   */
   public override function create():Void
   {
     super.create();
@@ -104,15 +196,15 @@ class PauseSubState extends MusicBeatSubState
 
     buildMetadata();
 
-    menuEntryText = new FlxTypedSpriteGroup<AtlasText>();
-    menuEntryText.scrollFactor.set(0, 0);
-    add(menuEntryText);
-
     regenerateMenu();
 
     transitionIn();
   }
 
+  /**
+   * Called every frame.
+   * @param elapsed The time elapsed since the last frame, in seconds.
+   */
   public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
@@ -120,21 +212,40 @@ class PauseSubState extends MusicBeatSubState
     handleInputs();
   }
 
+  /**
+   * Called when the state is closed.
+   */
   public override function destroy():Void
   {
     super.destroy();
     pauseMusic.stop();
   }
 
+  // ===============
+  // Initialization Functions
+  // ===============
+
+  /**
+   * Play the pause music.
+   */
   function startPauseMusic():Void
   {
-    pauseMusic = FunkinSound.load(Paths.music('breakfast$musicSuffix'), true, true);
+    var pauseMusicPath:String = Paths.music('breakfast$musicSuffix');
+    pauseMusic = FunkinSound.load(pauseMusicPath, true, true);
+
+    if (pauseMusic == null)
+    {
+      FlxG.log.warn('Could not play pause music: ${pauseMusicPath} does not exist!');
+    }
 
     // Start playing at a random point in the song.
     pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
     pauseMusic.fadeIn(MUSIC_FADE_IN_TIME, 0, MUSIC_FINAL_VOLUME);
   }
 
+  /**
+   * Render the semi-transparent black background.
+   */
   function buildBackground():Void
   {
     // Using state.bgColor causes bugs!
@@ -187,93 +298,9 @@ class PauseSubState extends MusicBeatSubState
     updateMetadataText();
   }
 
-  function regenerateMenu(?targetMode:PauseMode):Void
-  {
-    var previousMode:PauseMode = this.currentMode;
-    this.currentMode = targetMode ?? this.currentMode;
-    this.currentEntry = 0;
-
-    menuEntryText.clear();
-
-    // Choose the correct menu entries.
-    switch (this.currentMode)
-    {
-      case PauseMode.Standard:
-        currentMenuEntries = PAUSE_MENU_ENTRIES_STANDARD.clone();
-      case PauseMode.Charting:
-        currentMenuEntries = PAUSE_MENU_ENTRIES_CHARTING.clone();
-      case PauseMode.Difficulty:
-        // Prepend the difficulties.
-        var entries:Array<PauseMenuEntry> = [];
-        if (PlayState.instance.currentChart != null)
-        {
-          var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation);
-          trace('DIFFICULTIES: ${difficultiesInVariation}');
-          for (difficulty in difficultiesInVariation)
-          {
-            entries.push({text: difficulty.toTitleCase(), callback: (state) -> changeDifficulty(state, difficulty)});
-          }
-        }
-
-        // Add the back button.
-        currentMenuEntries = entries.concat(PAUSE_MENU_ENTRIES_DIFFICULTY.clone());
-      case PauseMode.Conversation:
-        currentMenuEntries = PAUSE_MENU_ENTRIES_CONVERSATION.clone();
-      case PauseMode.Cutscene:
-        currentMenuEntries = PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE.clone();
-    }
-
-    // Render out the entries depending on the mode.
-    var entryIndex:Int = 0;
-    var toRemove = [];
-    for (entry in currentMenuEntries)
-    {
-      if (entry == null || (entry.filter != null && !entry.filter()))
-      {
-        // Remove entries that should be hidden.
-        toRemove.push(entry);
-      }
-      else
-      {
-        // Handle visible entries.
-        var yPos:Float = 70 * entryIndex + 30;
-        var text:AtlasText = new AtlasText(0, yPos, entry.text, AtlasFont.BOLD);
-        text.scrollFactor.set(0, 0);
-        text.alpha = 0;
-        menuEntryText.add(text);
-
-        entry.sprite = text;
-
-        entryIndex++;
-      }
-    }
-    for (entry in toRemove)
-    {
-      currentMenuEntries.remove(entry);
-    }
-
-    updateMetadataText();
-
-    changeSelection();
-  }
-
-  function updateMetadataText():Void
-  {
-    metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
-
-    switch (this.currentMode)
-    {
-      case Standard | Difficulty:
-        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
-      case Charting:
-        metadataDeaths.text = 'Chart Editor Preview';
-      case Conversation:
-        metadataDeaths.text = 'Dialogue Paused';
-      case Cutscene:
-        metadataDeaths.text = 'Video Paused';
-    }
-  }
-
+  /**
+   * Perform additional animations to transition the pause menu in when it is first displayed.
+   */
   function transitionIn():Void
   {
     FlxTween.tween(background, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
@@ -291,6 +318,13 @@ class PauseSubState extends MusicBeatSubState
     });
   }
 
+  // ===============
+  // Input Handling
+  // ===============
+
+  /**
+   * Process user inputs every frame.
+   */
   function handleInputs():Void
   {
     if (!allowInput) return;
@@ -326,6 +360,10 @@ class PauseSubState extends MusicBeatSubState
     #end
   }
 
+  /**
+   * Move the current selection up or down.
+   * @param change The amount to change the selection by, with sign indicating direction.
+   */
   function changeSelection(change:Int = 0):Void
   {
     FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -354,8 +392,147 @@ class PauseSubState extends MusicBeatSubState
   }
 
   // ===============
+  // Menu Functions
+  // ===============
+
+  /**
+   * Clear the current menu entries and regenerate them based on the current mode.
+   * @param targetMode Optionally specify a mode to switch to before regenerating the menu.
+   */
+  function regenerateMenu(?targetMode:PauseMode):Void
+  {
+    // If targetMode is null, keep the current mode.
+    if (targetMode == null) targetMode = this.currentMode;
+
+    var previousMode:PauseMode = this.currentMode;
+    this.currentMode = targetMode;
+
+    resetSelection();
+    chooseMenuEntries();
+    clearAndAddMenuEntries();
+    updateMetadataText();
+    changeSelection();
+  }
+
+  /**
+   * Reset the current selection to the first entry.
+   */
+  function resetSelection():Void
+  {
+    this.currentEntry = 0;
+  }
+
+  /**
+   * Select which menu entries to display based on the current mode.
+   */
+  function chooseMenuEntries():Void
+  {
+    // Choose the correct menu entries.
+    // NOTE: We clone the arrays to prevent modifications to the arrays from affecting the original.
+    switch (this.currentMode)
+    {
+      case PauseMode.Standard:
+        currentMenuEntries = PAUSE_MENU_ENTRIES_STANDARD.clone();
+      case PauseMode.Charting:
+        currentMenuEntries = PAUSE_MENU_ENTRIES_CHARTING.clone();
+      case PauseMode.Difficulty:
+        // Prepend the difficulties.
+        var entries:Array<PauseMenuEntry> = [];
+        if (PlayState.instance.currentChart != null)
+        {
+          var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation);
+          trace('DIFFICULTIES: ${difficultiesInVariation}');
+          for (difficulty in difficultiesInVariation)
+          {
+            entries.push({text: difficulty.toTitleCase(), callback: (state) -> changeDifficulty(state, difficulty)});
+          }
+        }
+
+        // Add the back button.
+        currentMenuEntries = entries.concat(PAUSE_MENU_ENTRIES_DIFFICULTY.clone());
+      case PauseMode.Conversation:
+        currentMenuEntries = PAUSE_MENU_ENTRIES_CONVERSATION.clone();
+      case PauseMode.Cutscene:
+        currentMenuEntries = PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE.clone();
+    }
+  }
+
+  /**
+   * Clear the `menuEntryText` group and render the current menu entries to it.
+   * We first create the `menuEntryText` group if it doesn't already exist.
+   */
+  function clearAndAddMenuEntries():Void
+  {
+    if (menuEntryText == null)
+    {
+      menuEntryText = new FlxTypedSpriteGroup<AtlasText>();
+      menuEntryText.scrollFactor.set(0, 0);
+      add(menuEntryText);
+    }
+    menuEntryText.clear();
+
+    // Render out the entries depending on the mode.
+    var entryIndex:Int = 0;
+    var toRemove = [];
+    for (entry in currentMenuEntries)
+    {
+      if (entry == null || (entry.filter != null && !entry.filter()))
+      {
+        // Remove entries that should be hidden.
+        toRemove.push(entry);
+      }
+      else
+      {
+        // Handle visible entries.
+        var yPos:Float = 70 * entryIndex + 30;
+        var text:AtlasText = new AtlasText(0, yPos, entry.text, AtlasFont.BOLD);
+        text.scrollFactor.set(0, 0);
+        text.alpha = 0;
+        menuEntryText.add(text);
+
+        entry.sprite = text;
+
+        entryIndex++;
+      }
+    }
+    for (entry in toRemove)
+    {
+      currentMenuEntries.remove(entry);
+    }
+  }
+
+  // ===============
+  // Metadata Functions
+  // ===============
+
+  /**
+   * Update the values for the metadata text in the top right.
+   */
+  function updateMetadataText():Void
+  {
+    metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
+
+    switch (this.currentMode)
+    {
+      case Standard | Difficulty:
+        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+      case Charting:
+        metadataDeaths.text = 'Chart Editor Preview';
+      case Conversation:
+        metadataDeaths.text = 'Dialogue Paused';
+      case Cutscene:
+        metadataDeaths.text = 'Video Paused';
+    }
+  }
+
+  // ===============
   // Menu Callbacks
   // ===============
+
+  /**
+   * Close the pause menu and resume the game.
+   * @param state The current PauseSubState.
+   */
   static function resume(state:PauseSubState):Void
   {
     // Resume a paused video if it exists.
@@ -364,11 +541,22 @@ class PauseSubState extends MusicBeatSubState
     state.close();
   }
 
+  /**
+   * Switch the pause menu to the indicated mode.
+   * Create a callback from this using `.bind(_, targetMode)`.
+   * @param state The current PauseSubState.
+   * @param targetMode The mode to switch to.
+   */
   static function switchMode(state:PauseSubState, targetMode:PauseMode):Void
   {
     state.regenerateMenu(targetMode);
   }
 
+  /**
+   * Switch the game's difficulty to the indicated difficulty, then resume the game.
+   * @param state The current PauseSubState.
+   * @param difficulty The difficulty to switch to.
+   */
   static function changeDifficulty(state:PauseSubState, difficulty:String):Void
   {
     PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
@@ -384,12 +572,20 @@ class PauseSubState extends MusicBeatSubState
     state.close();
   }
 
+  /**
+   * Restart the current level, then resume the game.
+   * @param state The current PauseSubState.
+   */
   static function restartPlayState(state:PauseSubState):Void
   {
     PlayState.instance.needsReset = true;
     state.close();
   }
 
+  /**
+   * Force the game into practice mode, then update the pause menu.
+   * @param state The current PauseSubState.
+   */
   static function enablePracticeMode(state:PauseSubState):Void
   {
     if (PlayState.instance == null) return;
@@ -398,18 +594,30 @@ class PauseSubState extends MusicBeatSubState
     state.regenerateMenu();
   }
 
+  /**
+   * Restart the paused video cutscene, then resume the game.
+   * @param state The current PauseSubState.
+   */
   static function restartVideoCutscene(state:PauseSubState):Void
   {
     VideoCutscene.restartVideo();
     state.close();
   }
 
+  /**
+   * Skip the paused video cutscene, then resume the game.
+   * @param state The current PauseSubState.
+   */
   static function skipVideoCutscene(state:PauseSubState):Void
   {
     VideoCutscene.finishVideo();
     state.close();
   }
 
+  /**
+   * Restart the paused conversation, then resume the game.
+   * @param state The current PauseSubState.
+   */
   static function restartConversation(state:PauseSubState):Void
   {
     if (PlayState.instance?.currentConversation == null) return;
@@ -418,6 +626,10 @@ class PauseSubState extends MusicBeatSubState
     state.close();
   }
 
+  /**
+   * Skip the paused conversation, then resume the game.
+   * @param state The current PauseSubState.
+   */
   static function skipConversation(state:PauseSubState):Void
   {
     if (PlayState.instance?.currentConversation == null) return;
@@ -426,6 +638,10 @@ class PauseSubState extends MusicBeatSubState
     state.close();
   }
 
+  /**
+   * Quit the game and return to the main menu.
+   * @param state The current PauseSubState.
+   */
   static function quitToMenu(state:PauseSubState):Void
   {
     state.allowInput = false;
@@ -446,19 +662,15 @@ class PauseSubState extends MusicBeatSubState
     }
   }
 
+  /**
+   * Quit the game and return to the chart editor.
+   * @param state The current PauseSubState.
+   */
   static function quitToChartEditor(state:PauseSubState):Void
   {
     state.close();
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
     PlayState.instance.close(); // This only works because PlayState is a substate!
-  }
-
-  /**
-   * Reset the pause configuration to the default.
-   */
-  public static function reset():Void
-  {
-    musicSuffix = '';
   }
 }
 
@@ -493,15 +705,31 @@ enum PauseMode
   Cutscene;
 }
 
+/**
+ * Represents a single entry in the pause menu.
+ */
 typedef PauseMenuEntry =
 {
+  /**
+   * The text to display for this entry.
+   * TODO: Implement localization.
+   */
   var text:String;
-  var callback:PauseSubState->Void;
 
-  var ?sprite:AtlasText;
+  /**
+   * The callback to execute when the user selects this entry.
+   */
+  var callback:PauseSubState->Void;
 
   /**
    * If this returns true, the entry will be displayed. If it returns false, the entry will be hidden.
    */
   var ?filter:Void->Bool;
+
+  // Instance-specific properties
+
+  /**
+   * The text object currently displaying this entry.
+   */
+  var ?sprite:AtlasText;
 };

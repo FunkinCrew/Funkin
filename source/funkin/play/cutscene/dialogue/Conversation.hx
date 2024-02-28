@@ -145,6 +145,22 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     music.play();
   }
 
+  public function pauseMusic():Void
+  {
+    if (music != null)
+    {
+      music.pause();
+    }
+  }
+
+  public function resumeMusic():Void
+  {
+    if (music != null)
+    {
+      music.resume();
+    }
+  }
+
   function setupBackdrop():Void
   {
     if (backdrop != null)

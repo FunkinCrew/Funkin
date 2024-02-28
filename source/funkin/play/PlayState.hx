@@ -1099,6 +1099,11 @@ class PlayState extends MusicBeatSubState
         FlxG.sound.music.play();
       }
 
+      if (currentConversation != null)
+      {
+        currentConversation.resumeMusic();
+      }
+
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
       // Resume the countdown.
@@ -2462,10 +2467,12 @@ class PlayState extends MusicBeatSubState
       // Pause/unpause may conflict with advancing the conversation!
       if (controls.CUTSCENE_ADVANCE && !justUnpaused)
       {
-        currentConversation?.advanceConversation();
+        currentConversation.advanceConversation();
       }
       else if (controls.PAUSE && !justUnpaused)
       {
+        currentConversation.pauseMusic();
+
         var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
 
         persistentUpdate = false;
@@ -2740,6 +2747,7 @@ class PlayState extends MusicBeatSubState
     }
 
     GameOverSubState.reset();
+    PauseSubState.reset();
 
     // Clear the static reference to this state.
     instance = null;
