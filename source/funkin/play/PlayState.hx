@@ -220,6 +220,12 @@ class PlayState extends MusicBeatSubState
   public var cameraFollowPoint:FlxObject;
 
   /**
+   * An FlxTween that tweens the camera to the follow point.
+   * Only used when tweening the camera manually, rather than tweening via follow.
+   */
+  public var cameraFollowTween:FlxTween;
+
+  /**
    * The camera follow point from the last stage.
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
@@ -2847,13 +2853,49 @@ class PlayState extends MusicBeatSubState
   /**
    * Resets the camera's zoom level and focus point.
    */
-  public function resetCamera():Void
+  public function resetCamera(?resetZoom:Bool = true, ?cancelFollowTween:Bool = true):Void
   {
+    // Cancel the follow tween if it's active.
+    if (cancelFollowTween && cameraFollowTween != null)
+    {
+      cameraFollowTween.cancel();
+    }
+
     FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
     FlxG.camera.targetOffset.set();
-    FlxG.camera.zoom = defaultCameraZoom;
+
+    if (resetZoom)
+    {
+      FlxG.camera.zoom = defaultCameraZoom;
+    }
+
     // Snap the camera to the follow point immediately.
     FlxG.camera.focusOn(cameraFollowPoint.getPosition());
+  }
+
+  /**
+   * Disables camera following and tweens the camera to the follow point manually.
+   */
+  public function tweenCamera(?duration:Float, ?ease:Null<Float->Float>):Void
+  {
+    // Cancel the current tween if it's active.
+    if (cameraFollowTween != null)
+    {
+      cameraFollowTween.cancel();
+    }
+
+    // Disable camera following for the duration of the tween.
+    FlxG.camera.target = null;
+
+    // Follow tween! Caching it so we can cancel it later if needed.
+    var followPos:FlxPoint = cameraFollowPoint.getPosition() - FlxPoint.weak(FlxG.camera.width * 0.5, FlxG.camera.height * 0.5);
+    cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, duration,
+      {
+        ease: ease,
+        onComplete: function(_) {
+          resetCamera(false, false); // Re-enable camera following when the tween is complete.
+        }
+      });
   }
 
   #if (debug || FORCE_DEBUG_VERSION)
