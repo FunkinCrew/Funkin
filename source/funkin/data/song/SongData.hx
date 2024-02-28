@@ -110,7 +110,8 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public function serialize(pretty:Bool = true):String
   {
-    var writer = new json2object.JsonWriter<SongMetadata>();
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
     // I believe @:jignored should be iggnored by the writer?
     // var output = this.clone();
     // output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
@@ -597,7 +598,8 @@ class SongChartData implements ICloneable<SongChartData>
    */
   public function serialize(pretty:Bool = true):String
   {
-    var writer = new json2object.JsonWriter<SongChartData>();
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<SongChartData>(ignoreNullOptionals);
     return writer.write(this, pretty ? '  ' : null);
   }
 
@@ -648,7 +650,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * Custom events can be added by scripts with the `ScriptedSongEvent` class.
    */
   @:alias("e")
-  public var event:String;
+  public var eventKind:String;
 
   /**
    * The data for the event.
@@ -668,10 +670,10 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   @:jignored
   public var activated:Bool = false;
 
-  public function new(time:Float, event:String, value:Dynamic = null)
+  public function new(time:Float, eventKind:String, value:Dynamic = null)
   {
     this.time = time;
-    this.event = event;
+    this.eventKind = eventKind;
     this.value = value;
   }
 
@@ -687,19 +689,19 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   public function clone():SongEventDataRaw
   {
-    return new SongEventDataRaw(this.time, this.event, this.value);
+    return new SongEventDataRaw(this.time, this.eventKind, this.value);
   }
 }
 
 /**
  * Wrap SongEventData in an abstract so we can overload operators.
  */
-@:forward(time, event, value, activated, getStepTime, clone)
+@:forward(time, eventKind, value, activated, getStepTime, clone)
 abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
 {
-  public function new(time:Float, event:String, value:Dynamic = null)
+  public function new(time:Float, eventKind:String, value:Dynamic = null)
   {
-    this = new SongEventDataRaw(time, event, value);
+    this = new SongEventDataRaw(time, eventKind, value);
   }
 
   public inline function valueAsStruct(?defaultKey:String = "key"):Dynamic
@@ -726,12 +728,12 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
 
   public inline function getHandler():Null<SongEvent>
   {
-    return SongEventRegistry.getEvent(this.event);
+    return SongEventRegistry.getEvent(this.eventKind);
   }
 
   public inline function getSchema():Null<SongEventSchema>
   {
-    return SongEventRegistry.getEventSchema(this.event);
+    return SongEventRegistry.getEventSchema(this.eventKind);
   }
 
   public inline function getDynamic(key:String):Null<Dynamic>
@@ -784,7 +786,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     var eventHandler = getHandler();
     var eventSchema = getSchema();
 
-    if (eventSchema == null) return 'Unknown Event: ${this.event}';
+    if (eventSchema == null) return 'Unknown Event: ${this.eventKind}';
 
     var result = '${eventHandler.getTitle()}';
 
@@ -809,19 +811,19 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
 
   public function clone():SongEventData
   {
-    return new SongEventData(this.time, this.event, this.value);
+    return new SongEventData(this.time, this.eventKind, this.value);
   }
 
   @:op(A == B)
   public function op_equals(other:SongEventData):Bool
   {
-    return this.time == other.time && this.event == other.event && this.value == other.value;
+    return this.time == other.time && this.eventKind == other.eventKind && this.value == other.value;
   }
 
   @:op(A != B)
   public function op_notEquals(other:SongEventData):Bool
   {
-    return this.time != other.time || this.event != other.event || this.value != other.value;
+    return this.time != other.time || this.eventKind != other.eventKind || this.value != other.value;
   }
 
   @:op(A > B)
@@ -853,7 +855,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
    */
   public function toString():String
   {
-    return 'SongEventData(${this.time}ms, ${this.event}: ${this.value})';
+    return 'SongEventData(${this.time}ms, ${this.eventKind}: ${this.value})';
   }
 }
 
@@ -1021,6 +1023,12 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   public function clone():SongNoteDataRaw
   {
     return new SongNoteDataRaw(this.time, this.data, this.length, this.kind);
+  }
+
+  public function toString():String
+  {
+    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
+      + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 }
 

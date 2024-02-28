@@ -47,7 +47,7 @@ class SongDataUtils
   public static function offsetSongEventData(events:Array<SongEventData>, offset:Float):Array<SongEventData>
   {
     return events.map(function(event:SongEventData):SongEventData {
-      return new SongEventData(event.time + offset, event.event, event.value);
+      return new SongEventData(event.time + offset, event.eventKind, event.value);
     });
   }
 

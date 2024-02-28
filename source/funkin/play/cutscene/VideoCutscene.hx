@@ -19,13 +19,22 @@ import hxcodec.flixel.FlxVideoSprite;
 class VideoCutscene
 {
   static var blackScreen:FlxSprite;
+  static var cutsceneType:CutsceneType;
+
+  #if html5
+  static var vid:FlxVideo;
+  #end
+  #if hxCodec
+  static var vid:FlxVideoSprite;
+  #end
 
   /**
    * Play a video cutscene.
    * TODO: Currently this is hardcoded to start the countdown after the video is done.
    * @param path The path to the video file. Use Paths.file(path) to get the correct path.
+   * @param cutseneType The type of cutscene to play, determines what the game does after. Defaults to `CutsceneType.STARTING`.
    */
-  public static function play(filePath:String):Void
+  public static function play(filePath:String, ?cutsceneType:CutsceneType = STARTING):Void
   {
     if (PlayState.instance == null) return;
 
@@ -35,6 +44,8 @@ class VideoCutscene
       lime.app.Application.current.window.alert('Video file does not exist: ${filePath}', 'Error playing video');
       return;
     }
+
+    var rawFilePath = Paths.stripLibrary(filePath);
 
     // Trigger the cutscene. Don't play the song in the background.
     PlayState.instance.isInCutscene = true;
@@ -47,12 +58,14 @@ class VideoCutscene
     blackScreen.cameras = [PlayState.instance.camCutscene];
     PlayState.instance.add(blackScreen);
 
+    VideoCutscene.cutsceneType = cutsceneType;
+
     #if html5
     playVideoHTML5(filePath);
-    #end
-
-    #if hxCodec
-    playVideoNative(filePath);
+    #elseif hxCodec
+    playVideoNative(rawFilePath);
+    #else
+    throw "No video support for this platform!";
     #end
   }
 
@@ -66,8 +79,6 @@ class VideoCutscene
   }
 
   #if html5
-  static var vid:FlxVideo;
-
   static function playVideoHTML5(filePath:String):Void
   {
     // Video displays OVER the FlxState.
@@ -92,8 +103,6 @@ class VideoCutscene
   #end
 
   #if hxCodec
-  static var vid:FlxVideoSprite;
-
   static function playVideoNative(filePath:String):Void
   {
     // Video displays OVER the FlxState.
@@ -110,6 +119,15 @@ class VideoCutscene
 
       PlayState.instance.refresh();
       vid.play(filePath, false);
+
+      // Resize videos bigger or smaller than the screen.
+      vid.bitmap.onTextureSetup.add(() -> {
+        vid.setGraphicSize(FlxG.width, FlxG.height);
+        vid.updateHitbox();
+        vid.x = 0;
+        vid.y = 0;
+        // vid.scale.set(0.5, 0.5);
+      });
     }
     else
     {
@@ -136,9 +154,16 @@ class VideoCutscene
     #end
   }
 
+  /**
+   * Finish the active video cutscene. Done when the video is finished or when the player skips the cutscene.
+   * @param transitionTime The duration of the transition to the next state. Defaults to 0.5 seconds (this time is always used when cancelling the video).
+   * @param finishCutscene The callback to call when the transition is finished.
+   */
   public static function finishVideo(?transitionTime:Float = 0.5):Void
   {
     trace('ALERT: Finish video cutscene called!');
+
+    var cutsceneType:CutsceneType = VideoCutscene.cutsceneType;
 
     #if html5
     if (vid != null)
@@ -175,8 +200,32 @@ class VideoCutscene
       {
         ease: FlxEase.quadInOut,
         onComplete: function(twn:FlxTween) {
-          PlayState.instance.startCountdown();
+          onCutsceneFinish(cutsceneType);
         }
       });
   }
+
+  /**
+   * The default callback used when a cutscene is finished.
+   * You can specify your own callback when calling `VideoCutscene#play()`.
+   */
+  static function onCutsceneFinish(cutsceneType:CutsceneType):Void
+  {
+    switch (cutsceneType)
+    {
+      case CutsceneType.STARTING:
+        PlayState.instance.startCountdown();
+      case CutsceneType.ENDING:
+        PlayState.instance.endSong(true); // true = right goddamn now
+      case CutsceneType.MIDSONG:
+        throw "Not implemented!";
+    }
+  }
+}
+
+enum CutsceneType
+{
+  STARTING; // The default cutscene type. Starts the countdown after the video is done.
+  MIDSONG; // TODO: Implement this!
+  ENDING; // Ends the song after the video is done.
 }

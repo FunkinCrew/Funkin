@@ -7,6 +7,7 @@ import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
 import flixel.FlxGame;
 import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -226,17 +227,17 @@ class FreeplayState extends MusicBeatSubState
     trace(FlxG.camera.initialZoom);
     trace(FlxCamera.defaultZoom);
 
-    var pinkBack:FlxSprite = new FlxSprite().loadGraphic(Paths.image('freeplay/pinkBack'));
+    var pinkBack:FunkinSprite = FunkinSprite.create(Paths.image('freeplay/pinkBack'));
     pinkBack.color = 0xFFffd4e9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
 
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
 
-    var orangeBackShit:FlxSprite = new FlxSprite(84, 440).makeGraphic(Std.int(pinkBack.width), 75, 0xFFfeda00);
+    var orangeBackShit:FunkinSprite = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFfeda00);
     add(orangeBackShit);
 
-    var alsoOrangeLOL:FlxSprite = new FlxSprite(0, orangeBackShit.y).makeGraphic(100, Std.int(orangeBackShit.height), 0xFFffd400);
+    var alsoOrangeLOL:FunkinSprite = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFffd400);
     add(alsoOrangeLOL);
 
     exitMovers.set([pinkBack, orangeBackShit, alsoOrangeLOL],
@@ -462,7 +463,7 @@ class FreeplayState extends MusicBeatSubState
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(860, 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
-    fnfHighscoreSpr.animation.addByPrefix("highscore", "highscore", 24, false);
+    fnfHighscoreSpr.animation.addByPrefix("highscore", "highscore small instance 1", 24, false);
     fnfHighscoreSpr.visible = false;
     fnfHighscoreSpr.setGraphicSize(0, Std.int(fnfHighscoreSpr.height * 1));
     fnfHighscoreSpr.updateHitbox();

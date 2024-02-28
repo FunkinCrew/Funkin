@@ -90,7 +90,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         // Edit the event data of any selected events.
         for (event in chartEditorState.currentEventSelection)
         {
-          event.event = chartEditorState.eventKindToPlace;
+          event.eventKind = chartEditorState.eventKindToPlace;
           event.value = chartEditorState.eventDataToPlace;
         }
         chartEditorState.saveDataDirty = true;
@@ -255,7 +255,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         {
           for (event in chartEditorState.currentEventSelection)
           {
-            event.event = chartEditorState.eventKindToPlace;
+            event.eventKind = chartEditorState.eventKindToPlace;
             event.value = chartEditorState.eventDataToPlace;
           }
           chartEditorState.saveDataDirty = true;

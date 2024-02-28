@@ -156,8 +156,6 @@ class DJBoyfriend extends FlxAtlasSprite
 
   function setupAnimations():Void
   {
-    // frames = FlxAnimationUtil.combineFramesCollections(Paths.getSparrowAtlas('freeplay/bfFreeplay'), Paths.getSparrowAtlas('freeplay/bf-freeplay-afk'));
-
     // animation.addByPrefix('intro', "boyfriend dj intro", 24, false);
     addOffset('boyfriend dj intro', 8, 3);
 

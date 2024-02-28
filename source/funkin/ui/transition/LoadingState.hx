@@ -3,6 +3,7 @@ package funkin.ui.transition;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.graphics.shaders.ScreenWipeShader;
@@ -44,11 +45,10 @@ class LoadingState extends MusicBeatState
 
   override function create():Void
   {
-    var bg:FlxSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
     add(bg);
 
-    funkay = new FlxSprite();
-    funkay.loadGraphic(Paths.image('funkay'));
+    funkay = FunkinSprite.create(Paths.image('funkay'));
     funkay.setGraphicSize(0, FlxG.height);
     funkay.updateHitbox();
     add(funkay);
@@ -209,6 +209,43 @@ class LoadingState extends MusicBeatState
       params.targetSong.cacheCharts(true);
     }
 
+    // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
+    FunkinSprite.preparePurgeCache();
+    FunkinSprite.cacheTexture(Paths.image('combo'));
+    FunkinSprite.cacheTexture(Paths.image('healthBar'));
+    FunkinSprite.cacheTexture(Paths.image('menuDesat'));
+    FunkinSprite.cacheTexture(Paths.image('combo'));
+    FunkinSprite.cacheTexture(Paths.image('num0'));
+    FunkinSprite.cacheTexture(Paths.image('num1'));
+    FunkinSprite.cacheTexture(Paths.image('num2'));
+    FunkinSprite.cacheTexture(Paths.image('num3'));
+    FunkinSprite.cacheTexture(Paths.image('num4'));
+    FunkinSprite.cacheTexture(Paths.image('num5'));
+    FunkinSprite.cacheTexture(Paths.image('num6'));
+    FunkinSprite.cacheTexture(Paths.image('num7'));
+    FunkinSprite.cacheTexture(Paths.image('num8'));
+    FunkinSprite.cacheTexture(Paths.image('num9'));
+    FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
+    FunkinSprite.cacheTexture(Paths.image('ready', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('set', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('go', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('sick', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('good', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('bad', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('shit', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: remove this
+
+    // FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
+    // FunkinSprite.cacheAllCharacterTextures(player)
+    // FunkinSprite.cacheAllCharacterTextures(girlfriend)
+    // FunkinSprite.cacheAllCharacterTextures(opponent)
+    // FunkinSprite.cacheAllStageTextures(stage)
+
+    FunkinSprite.purgeCache();
+
     FlxG.switchState(playStateCtor);
     #end
   }
@@ -354,7 +391,7 @@ class MultiCallback
 
   public static function coolSwitchState(state:NextState, transitionTex:String = "shaderTransitionStuff/coolDots", time:Float = 2)
   {
-    var screenShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("shaderTransitionStuff/coolDots"));
+    var screenShit:FunkinSprite = FunkinSprite.create(Paths.image("shaderTransitionStuff/coolDots"));
     var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
 
     screenWipeShit.funnyShit.input = screenShit.pixels;

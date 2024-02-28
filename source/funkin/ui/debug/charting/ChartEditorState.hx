@@ -3408,7 +3408,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Update the event sprite's position.
           eventSprite.updateEventPosition(renderedEvents);
           // Update the sprite's graphic. TODO: Is this inefficient?
-          eventSprite.playAnimation(eventSprite.eventData.event);
+          eventSprite.playAnimation(eventSprite.eventData.eventKind);
         }
         else
         {
@@ -4669,9 +4669,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
             var eventData:SongEventData = gridGhostEvent.eventData != null ? gridGhostEvent.eventData : new SongEventData(cursorMs, eventKindToPlace, null);
 
-            if (eventKindToPlace != eventData.event)
+            if (eventKindToPlace != eventData.eventKind)
             {
-              eventData.event = eventKindToPlace;
+              eventData.eventKind = eventKindToPlace;
             }
             eventData.time = cursorSnappedMs;
 

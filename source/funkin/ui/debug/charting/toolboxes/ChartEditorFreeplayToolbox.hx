@@ -289,10 +289,10 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     // Build player waveform.
     // waveformMusic.waveform.forceUpdate = true;
     var perfStart = haxe.Timer.stamp();
-    var waveformData1 = playerVoice.waveformData;
-    var waveformData2 = opponentVoice?.waveformData ?? playerVoice.waveformData; // this null check is for songs that only have 1 vocals file!
+    var waveformData1 = playerVoice?.waveformData;
+    var waveformData2 = opponentVoice?.waveformData ?? playerVoice?.waveformData; // this null check is for songs that only have 1 vocals file!
     var waveformData3 = chartEditorState.audioInstTrack.waveformData;
-    var waveformData = waveformData1.merge(waveformData2).merge(waveformData3);
+    var waveformData = waveformData3.merge(waveformData1).merge(waveformData2);
     trace('Waveform data merging took: ${haxe.Timer.stamp() - perfStart} seconds');
 
     waveformMusic.waveform.waveformData = waveformData;

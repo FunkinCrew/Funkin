@@ -108,7 +108,7 @@
 	<haxelib name="flixel-text-input" /> <!-- Improved text field rendering for HaxeUI -->
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
-	<haxelib name="hxCodec" if="desktop release" /> <!-- Video playback -->
+	<haxelib name="hxCodec" if="desktop" /> <!-- Video playback -->
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->

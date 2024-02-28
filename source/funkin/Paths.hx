@@ -16,6 +16,20 @@ class Paths
     currentLevel = name.toLowerCase();
   }
 
+  public static function stripLibrary(path:String):String
+  {
+    var parts = path.split(':');
+    if (parts.length < 2) return path;
+    return parts[1];
+  }
+
+  public static function getLibrary(path:String):String
+  {
+    var parts = path.split(':');
+    if (parts.length < 2) return "preload";
+    return parts[0];
+  }
+
   static function getPath(file:String, type:AssetType, library:Null<String>)
   {
     if (library != null) return getLibraryPath(file, library);
