@@ -3,6 +3,7 @@ package funkin.play;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.ModuleHandler;
 import funkin.modding.events.ScriptEvent;
@@ -214,7 +215,7 @@ class Countdown
 
     if (spritePath == null) return;
 
-    var countdownSprite:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image(spritePath));
+    var countdownSprite:FunkinSprite = FunkinSprite.create(Paths.image(spritePath));
     countdownSprite.scrollFactor.set(0, 0);
 
     if (isPixelStyle) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE));

@@ -133,7 +133,7 @@ class ChartEditorEventSprite extends FlxSprite
 
   public function playAnimation(?name:String):Void
   {
-    if (name == null) name = eventData?.event ?? DEFAULT_EVENT;
+    if (name == null) name = eventData?.eventKind ?? DEFAULT_EVENT;
 
     var correctedName = correctAnimationName(name);
     this.animation.play(correctedName);
@@ -160,7 +160,7 @@ class ChartEditorEventSprite extends FlxSprite
     else
     {
       this.visible = true;
-      playAnimation(value.event);
+      playAnimation(value.eventKind);
       this.eventData = value;
       // Update the position to match the note data.
       updateEventPosition();

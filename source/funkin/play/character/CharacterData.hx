@@ -305,9 +305,15 @@ class CharacterDataParser
         icon = "darnell";
       case "senpai-angry":
         icon = "senpai";
+      case "tankman" | "tankman-atlas":
+        icon = "tankmen";
     }
 
-    return Paths.image("freeplay/icons/" + icon + "pixel");
+    var path = Paths.image("freeplay/icons/" + icon + "pixel");
+    if (Assets.exists(path)) return path;
+
+    // TODO: Hardcode some additional behavior or a fallback.
+    return null;
   }
 
   /**

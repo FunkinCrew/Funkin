@@ -147,6 +147,8 @@ class ChartEditorDropdowns
       dropDown.dataSource.add(value);
     }
 
+    dropDown.dataSource.sort('id', ASCENDING);
+
     return returnValue;
   }
 

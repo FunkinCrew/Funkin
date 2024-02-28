@@ -146,12 +146,11 @@ class InitState extends FlxState
     #end
 
     // Make errors and warnings less annoying.
-    #if FORCE_DEBUG_VERSION
+    // Forcing this always since I have never been happy to have the debugger to pop up
     LogStyle.ERROR.openConsole = false;
     LogStyle.ERROR.errorSound = null;
     LogStyle.WARNING.openConsole = false;
     LogStyle.WARNING.errorSound = null;
-    #end
 
     //
     // FLIXEL TRANSITIONS

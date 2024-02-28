@@ -4,6 +4,7 @@ import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -96,8 +97,7 @@ class ResultState extends MusicBeatSubState
       bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
     };
 
-    var gf:FlxSprite = new FlxSprite(500, 300);
-    gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
+    var gf:FlxSprite = FunkinSprite.createSparrow(500, 300, 'resultScreen/resultGirlfriendGOOD');
     gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
     gf.visible = false;
     gf.animation.finishCallback = _ -> {
@@ -105,8 +105,7 @@ class ResultState extends MusicBeatSubState
     };
     add(gf);
 
-    var boyfriend:FlxSprite = new FlxSprite(640, -200);
-    boyfriend.frames = Paths.getSparrowAtlas('resultScreen/resultBoyfriendGOOD');
+    var boyfriend:FlxSprite = FunkinSprite.createSparrow(640, -200, 'resultScreen/resultBoyfriendGOOD');
     boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
     boyfriend.visible = false;
     boyfriend.animation.finishCallback = function(_) {
@@ -115,8 +114,7 @@ class ResultState extends MusicBeatSubState
 
     add(boyfriend);
 
-    var soundSystem:FlxSprite = new FlxSprite(-15, -180);
-    soundSystem.frames = Paths.getSparrowAtlas("resultScreen/soundSystem");
+    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15, -180, 'resultScreen/soundSystem');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
     new FlxTimer().start(0.4, _ -> {
@@ -162,20 +160,17 @@ class ResultState extends MusicBeatSubState
     FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
     add(blackTopBar);
 
-    var resultsAnim:FlxSprite = new FlxSprite(-200, -10);
-    resultsAnim.frames = Paths.getSparrowAtlas("resultScreen/results");
+    var resultsAnim:FunkinSprite = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
     resultsAnim.animation.addByPrefix("result", "results", 24, false);
     resultsAnim.animation.play("result");
     add(resultsAnim);
 
-    var ratingsPopin:FlxSprite = new FlxSprite(-150, 120);
-    ratingsPopin.frames = Paths.getSparrowAtlas("resultScreen/ratingsPopin");
+    var ratingsPopin:FunkinSprite = FunkinSprite.createSparrow(-150, 120, "resultScreen/ratingsPopin");
     ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
     ratingsPopin.visible = false;
     add(ratingsPopin);
 
-    var scorePopin:FlxSprite = new FlxSprite(-180, 520);
-    scorePopin.frames = Paths.getSparrowAtlas("resultScreen/scorePopin");
+    var scorePopin:FunkinSprite = FunkinSprite.createSparrow(-180, 520, "resultScreen/scorePopin");
     scorePopin.animation.addByPrefix("score", "tally score", 24, false);
     scorePopin.visible = false;
     add(scorePopin);

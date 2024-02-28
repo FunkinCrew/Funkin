@@ -23,7 +23,7 @@ import openfl.utils.AssetType;
 @:nullSafety
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
-  static final MAX_VOLUME:Float = 2.0;
+  static final MAX_VOLUME:Float = 1.0;
 
   static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
@@ -40,7 +40,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   override function set_volume(value:Float):Float
   {
     // Uncap the volume.
-    fixMaxVolume();
     _volume = FlxMath.bound(value, 0.0, MAX_VOLUME);
     updateTransform();
     return _volume;
@@ -124,17 +123,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       resume();
     }
     return this;
-  }
-
-  function fixMaxVolume():Void
-  {
-    #if lime_openal
-    // This code is pretty fragile, it reaches through 5 layers of private access.
-    @:privateAccess
-    var handle = this?._channel?.__source?.__backend?.handle;
-    if (handle == null) return;
-    lime.media.openal.AL.sourcef(handle, lime.media.openal.AL.MAX_GAIN, MAX_VOLUME);
-    #end
   }
 
   public override function play(forceRestart:Bool = false, startTime:Float = 0, ?endTime:Float):FunkinSound
