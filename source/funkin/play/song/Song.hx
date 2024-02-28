@@ -614,9 +614,9 @@ class SongDifficulty
     }
 
     // Add player vocals.
-    if (voiceList[0] != null) result.addPlayerVoice(FunkinSound.load(Assets.getSound(voiceList[0])));
+    if (voiceList[0] != null) result.addPlayerVoice(FunkinSound.load(voiceList[0]));
     // Add opponent vocals.
-    if (voiceList[1] != null) result.addOpponentVoice(FunkinSound.load(Assets.getSound(voiceList[1])));
+    if (voiceList[1] != null) result.addOpponentVoice(FunkinSound.load(voiceList[1]));
 
     // Add additional vocals.
     if (voiceList.length > 2)

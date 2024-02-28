@@ -118,6 +118,24 @@ class VideoCutscene
   }
   #end
 
+  public static function restartVideo():Void
+  {
+    #if html5
+    if (vid != null)
+    {
+      vid.restartVideo();
+    }
+    #end
+
+    #if hxCodec
+    if (vid != null)
+    {
+      // Seek to the start of the video.
+      vid.bitmap.time = 0;
+    }
+    #end
+  }
+
   public static function finishVideo(?transitionTime:Float = 0.5):Void
   {
     trace('ALERT: Finish video cutscene called!');

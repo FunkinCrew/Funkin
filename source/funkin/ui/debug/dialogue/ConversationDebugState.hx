@@ -62,15 +62,6 @@ class ConversationDebugState extends MusicBeatState
     if (conversation != null)
     {
       if (controls.CUTSCENE_ADVANCE) conversation.advanceConversation();
-
-      if (controls.CUTSCENE_SKIP)
-      {
-        conversation.trySkipConversation(elapsed);
-      }
-      else
-      {
-        conversation.trySkipConversation(-1);
-      }
     }
   }
 }

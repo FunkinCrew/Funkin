@@ -25,6 +25,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   static final MAX_VOLUME:Float = 2.0;
 
+  /**
+   * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
+   */
   static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
   public var muted(default, set):Bool = false;
@@ -264,6 +267,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     var sound:FunkinSound = cache.recycle(construct);
 
+    // Load the sound.
+    // Sets `exists = true` as a side effect.
     sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
 
     if (embeddedSound is String)

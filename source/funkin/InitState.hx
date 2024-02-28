@@ -203,6 +203,9 @@ class InitState extends FlxState
     // Plugins provide a useful interface for globally active Flixel objects,
     // that receive update events regardless of the current state.
     // TODO: Move scripted Module behavior to a Flixel plugin.
+    #if debug
+    funkin.util.plugins.MemoryGCPlugin.initialize();
+    #end
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();

@@ -31,10 +31,6 @@ import funkin.data.dialogue.DialogueBoxRegistry;
  */
 class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
-  static final CONVERSATION_SKIP_TIMER:Float = 1.5;
-
-  var skipHeldTimer:Float = 0.0;
-
   /**
    * The ID of the conversation.
    */
@@ -105,8 +101,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   var currentDialogueBox:DialogueBox;
 
-  var skipTimer:FlxPieDial;
-
   public function new(id:String)
   {
     super();
@@ -124,8 +118,8 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   {
     // Reset the progress in the dialogue.
     currentDialogueEntry = 0;
+    currentDialogueLine = 0;
     this.state = ConversationState.Start;
-    this.alpha = 1.0;
 
     // Start the dialogue.
     dispatchEvent(new DialogueScriptEvent(DIALOGUE_START, this, false));
@@ -153,6 +147,12 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   function setupBackdrop():Void
   {
+    if (backdrop != null)
+    {
+      backdrop.destroy();
+      backdrop = null;
+    }
+
     backdrop = new FunkinSprite(0, 0);
 
     if (_data.backdrop == null) return;
@@ -181,12 +181,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     refresh();
   }
 
-  function setupSkipTimer():Void
-  {
-    add(skipTimer = new FlxPieDial(16, 16, 32, FlxColor.WHITE, 36, CIRCLE, true, 24));
-    skipTimer.amount = 0;
-  }
-
   public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
@@ -201,14 +195,14 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     // Skip the next steps if the current speaker is already displayed.
     if (currentSpeaker != null && nextSpeakerId == currentSpeaker.id) return;
 
-    var nextSpeaker:Speaker = SpeakerRegistry.instance.fetchEntry(nextSpeakerId);
-
     if (currentSpeaker != null)
     {
       remove(currentSpeaker);
       currentSpeaker.kill(); // Kill, don't destroy! We want to revive it later.
       currentSpeaker = null;
     }
+
+    var nextSpeaker:Speaker = SpeakerRegistry.instance.fetchEntry(nextSpeakerId);
 
     if (nextSpeaker == null)
     {
@@ -222,6 +216,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       }
       return;
     }
+    if (!nextSpeaker.alive) nextSpeaker.revive();
 
     ScriptEventDispatcher.callEvent(nextSpeaker, new ScriptEvent(CREATE, true));
 
@@ -266,6 +261,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       trace('Dialogue box could not be retrieved.');
       return;
     }
+    if (!nextDialogueBox.alive) nextDialogueBox.revive();
 
     ScriptEventDispatcher.callEvent(nextDialogueBox, new ScriptEvent(CREATE, true));
 
@@ -347,29 +343,21 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     currentDialogueEntry = 0;
     this.state = ConversationState.Start;
 
-    advanceConversation();
-  }
+    if (outroTween != null) outroTween.cancel(); // Canc
+    outroTween = null;
 
-  public function trySkipConversation(elapsed:Float):Void
-  {
-    if (skipTimer == null || skipTimer.animation == null) return;
+    this.alpha = 0.0;
+    if (this.music != null) this.music.stop();
+    this.music = null;
 
-    if (elapsed < 0)
-    {
-      skipHeldTimer = 0.0;
-    }
-    else
-    {
-      skipHeldTimer += elapsed;
-    }
+    if (currentSpeaker != null) currentSpeaker.kill();
+    currentSpeaker = null;
+    if (currentDialogueBox != null) currentDialogueBox.kill();
+    currentDialogueBox = null;
+    if (backdrop != null) backdrop.kill();
+    backdrop = null;
 
-    skipTimer.visible = skipHeldTimer >= 0.05;
-    skipTimer.amount = Math.min(skipHeldTimer / CONVERSATION_SKIP_TIMER, 1.0);
-
-    if (skipHeldTimer >= CONVERSATION_SKIP_TIMER)
-    {
-      skipConversation();
-    }
+    startConversation();
   }
 
   /**
@@ -425,7 +413,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     // Fade in the music and backdrop.
     setupMusic();
     setupBackdrop();
-    setupSkipTimer();
 
     // Advance the conversation.
     state = ConversationState.Opening;
@@ -554,12 +541,16 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     if (this.music != null) this.music.stop();
     this.music = null;
 
-    this.skipTimer = null;
     if (currentSpeaker != null) currentSpeaker.kill();
+    remove(currentSpeaker);
     currentSpeaker = null;
+
     if (currentDialogueBox != null) currentDialogueBox.kill();
+    remove(currentDialogueBox);
     currentDialogueBox = null;
+
     if (backdrop != null) backdrop.kill();
+    remove(backdrop);
     backdrop = null;
 
     this.clear();
