@@ -36,11 +36,24 @@ class ConversationDebugState extends MusicBeatState
 
   public override function create():Void
   {
-    conversation = ConversationRegistry.instance.fetchEntry(conversationId);
-    conversation.completeCallback = onConversationComplete;
-    add(conversation);
+    super.create();
+    startConversation();
+  }
 
-    ScriptEventDispatcher.callEvent(conversation, new ScriptEvent(CREATE, false));
+  function startConversation():Void
+  {
+    if (conversation != null) return;
+
+    conversation = ConversationRegistry.instance.fetchEntry(conversationId);
+    if (conversation == null) return;
+    if (!conversation.alive) conversation.revive();
+
+    conversation.zIndex = 1000;
+    add(conversation);
+    refresh();
+
+    var event:ScriptEvent = new ScriptEvent(CREATE, false);
+    ScriptEventDispatcher.callEvent(conversation, event);
   }
 
   function onConversationComplete():Void
@@ -61,7 +74,18 @@ class ConversationDebugState extends MusicBeatState
 
     if (conversation != null)
     {
-      if (controls.CUTSCENE_ADVANCE) conversation.advanceConversation();
+      if (controls.CUTSCENE_ADVANCE)
+      {
+        conversation.advanceConversation();
+      }
+      else if (controls.PAUSE)
+      {
+        conversation.kill();
+        remove(conversation);
+        conversation = null;
+
+        FlxG.switchState(() -> new ConversationDebugState());
+      }
     }
   }
 }

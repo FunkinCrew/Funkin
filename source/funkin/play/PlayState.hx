@@ -770,8 +770,7 @@ class PlayState extends MusicBeatSubState
       inputSpitter = [];
 
       // Reset music properly.
-
-      FlxG.sound.music.time = Math.max(0, startTimestamp - Conductor.instance.instrumentalOffset);
+      FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
       FlxG.sound.music.pause();
 
       if (!overrideMusic)
@@ -1054,7 +1053,10 @@ class PlayState extends MusicBeatSubState
       if (FlxG.sound.music != null)
       {
         musicPausedBySubState = FlxG.sound.music.playing;
-        FlxG.sound.music.pause();
+        if (musicPausedBySubState)
+        {
+          FlxG.sound.music.pause();
+        }
         if (vocals != null) vocals.pause();
       }
 
@@ -1082,7 +1084,7 @@ class PlayState extends MusicBeatSubState
       // Resume
       if (musicPausedBySubState)
       {
-        FlxG.sound.music.play(FlxG.sound.music.time);
+        FlxG.sound.music.play();
       }
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
@@ -1284,12 +1286,6 @@ class PlayState extends MusicBeatSubState
 
   public override function destroy():Void
   {
-    if (currentConversation != null)
-    {
-      remove(currentConversation);
-      currentConversation.kill();
-    }
-
     performCleanup();
 
     super.destroy();
@@ -1708,6 +1704,7 @@ class PlayState extends MusicBeatSubState
 
     currentConversation = ConversationRegistry.instance.fetchEntry(conversationId);
     if (currentConversation == null) return;
+    if (!currentConversation.alive) currentConversation.revive();
 
     currentConversation.completeCallback = onConversationComplete;
     currentConversation.cameras = [camCutscene];
@@ -1725,8 +1722,13 @@ class PlayState extends MusicBeatSubState
   function onConversationComplete():Void
   {
     isInCutscene = false;
-    remove(currentConversation);
-    currentConversation = null;
+
+    if (currentConversation != null)
+    {
+      currentConversation.kill();
+      remove(currentConversation);
+      currentConversation = null;
+    }
 
     if (startingSong && !isInCountdown)
     {
@@ -1751,12 +1753,14 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.onComplete = endSong;
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
-    FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+    FlxG.sound.music.play(true, startTimestamp - Conductor.instance.instrumentalOffset);
+
+    // I am going insane.
+    FlxG.sound.music.volume = 1.0;
+    FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
     add(vocals);
-
-    FlxG.sound.music.play(FlxG.sound.music.time);
     vocals.play();
     resyncVocals();
 
@@ -2657,6 +2661,12 @@ class PlayState extends MusicBeatSubState
    */
   function performCleanup():Void
   {
+    if (currentConversation != null)
+    {
+      remove(currentConversation);
+      currentConversation.kill();
+    }
+
     if (currentChart != null)
     {
       // TODO: Uncache the song.

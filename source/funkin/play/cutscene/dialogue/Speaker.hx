@@ -119,6 +119,9 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   {
     super.revive();
 
+    this.visible = true;
+    this.alpha = 1.0;
+
     loadSpritesheet();
     loadAnimations();
   }

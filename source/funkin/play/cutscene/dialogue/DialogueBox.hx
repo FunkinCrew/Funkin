@@ -4,7 +4,7 @@ import flixel.FlxSprite;
 import funkin.data.IRegistryEntry;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxFramesCollection;
-import flixel.text.FlxText;
+import funkin.graphics.FunkinSprite;
 import flixel.addons.text.FlxTypeText;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.events.ScriptEvent;
@@ -126,8 +126,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
       this.boxSprite = null;
     }
 
-    this.boxSprite = new FlxSprite(0, 0);
-    add(this.boxSprite);
+    this.boxSprite = new FunkinSprite(0, 0);
 
     trace('[DIALOGUE BOX] Loading spritesheet ${_data.assetPath} for ${id}');
 
@@ -153,6 +152,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     this.flipY = _data.flipY;
     this.globalOffsets = _data.offsets;
     this.setScale(_data.scale);
+
+    add(this.boxSprite);
   }
 
   public function setText(newText:String):Void
@@ -220,6 +221,9 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   public override function revive():Void
   {
     super.revive();
+
+    this.visible = true;
+    this.alpha = 1.0;
   }
 
   function loadAnimations():Void

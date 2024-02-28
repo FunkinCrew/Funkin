@@ -150,6 +150,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     if (backdrop != null)
     {
       backdrop.destroy();
+      remove(backdrop);
       backdrop = null;
     }
 
@@ -193,7 +194,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     var nextSpeakerId:String = currentDialogueEntryData.speaker;
 
     // Skip the next steps if the current speaker is already displayed.
-    if (currentSpeaker != null && nextSpeakerId == currentSpeaker.id) return;
+    if ((currentSpeaker != null && currentSpeaker.alive) && nextSpeakerId == currentSpeaker.id) return;
 
     if (currentSpeaker != null)
     {
@@ -244,8 +245,8 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   {
     var nextDialogueBoxId:String = currentDialogueEntryData?.box;
 
-    // Skip the next steps if the current speaker is already displayed.
-    if (currentDialogueBox != null && nextDialogueBoxId == currentDialogueBox.id) return;
+    // Skip the next steps if the current dialogue box is already displayed.
+    if ((currentDialogueBox != null && currentDialogueBox.alive) && nextDialogueBoxId == currentDialogueBox.id) return;
 
     if (currentDialogueBox != null)
     {
@@ -343,18 +344,25 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     currentDialogueEntry = 0;
     this.state = ConversationState.Start;
 
-    if (outroTween != null) outroTween.cancel(); // Canc
+    if (outroTween != null)
+    {
+      outroTween.cancel();
+    }
     outroTween = null;
 
-    this.alpha = 0.0;
     if (this.music != null) this.music.stop();
     this.music = null;
 
     if (currentSpeaker != null) currentSpeaker.kill();
+    remove(currentSpeaker);
     currentSpeaker = null;
+
     if (currentDialogueBox != null) currentDialogueBox.kill();
+    remove(currentDialogueBox);
     currentDialogueBox = null;
-    if (backdrop != null) backdrop.kill();
+
+    if (backdrop != null) backdrop.destroy();
+    remove(backdrop);
     backdrop = null;
 
     startConversation();
@@ -371,7 +379,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     dispatchEvent(new DialogueScriptEvent(DIALOGUE_SKIP, this, true));
   }
 
-  static var outroTween:FlxTween;
+  var outroTween:FlxTween;
 
   public function startOutro():Void
   {
@@ -399,7 +407,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   public function endOutro():Void
   {
-    outroTween = null;
     ScriptEventDispatcher.callEvent(this, new ScriptEvent(DESTROY, false));
   }
 
@@ -534,10 +541,12 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   {
     propagateEvent(event);
 
-    if (outroTween != null) outroTween.cancel(); // Canc
+    if (outroTween != null)
+    {
+      outroTween.cancel();
+    }
     outroTween = null;
 
-    this.alpha = 0.0;
     if (this.music != null) this.music.stop();
     this.music = null;
 
@@ -549,7 +558,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     remove(currentDialogueBox);
     currentDialogueBox = null;
 
-    if (backdrop != null) backdrop.kill();
+    if (backdrop != null) backdrop.destroy();
     remove(backdrop);
     backdrop = null;
 
@@ -569,14 +578,25 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
    */
   function propagateEvent(event:ScriptEvent):Void
   {
-    if (this.currentDialogueBox != null)
+    if (this.currentDialogueBox != null && this.currentDialogueBox.exists)
     {
       ScriptEventDispatcher.callEvent(this.currentDialogueBox, event);
     }
-    if (this.currentSpeaker != null)
+    if (this.currentSpeaker != null && this.currentSpeaker.exists)
     {
       ScriptEventDispatcher.callEvent(this.currentSpeaker, event);
     }
+  }
+
+  /**
+   * Calls `kill()` on the group's members and then on the group itself.
+   * You can revive this group later via `revive()` after this.
+   */
+  public override function revive():Void
+  {
+    super.revive();
+    this.alpha = 1;
+    this.visible = true;
   }
 
   /**
@@ -590,6 +610,12 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     exists = false;
     _skipTransformChildren = false;
     if (group != null) group.kill();
+
+    if (outroTween != null)
+    {
+      outroTween.cancel();
+      outroTween = null;
+    }
   }
 
   public override function toString():String
