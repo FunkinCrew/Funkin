@@ -6,6 +6,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import openfl.utils.Assets;
+import funkin.graphics.FunkinSprite;
 import funkin.util.MathUtil;
 
 /**
@@ -26,7 +27,7 @@ import funkin.util.MathUtil;
  * @author MasterEric
  */
 @:nullSafety
-class HealthIcon extends FlxSprite
+class HealthIcon extends FunkinSprite
 {
   /**
    * The character this icon is representing.
@@ -408,7 +409,7 @@ class HealthIcon extends FlxSprite
 
     if (!isLegacyStyle)
     {
-      frames = Paths.getSparrowAtlas('icons/icon-$charId');
+      loadSparrow('icons/icon-$charId');
 
       loadAnimationNew();
     }

@@ -39,7 +39,7 @@ jobs:
           build-dir: export/release/html5/bin
           target: html5
   create-nightly-win:
-    runs-on: windows-latest
+    runs-on: [self-hosted, windows]
     steps:
       - name: get token from gh app
         uses: actions/create-github-app-token@v1

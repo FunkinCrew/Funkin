@@ -4,16 +4,18 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.sound.FlxSound;
-import funkin.ui.story.StoryMenuState;
+import funkin.audio.FunkinSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.MusicBeatSubState;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.character.BaseCharacter;
 import funkin.play.PlayState;
 import funkin.ui.freeplay.FreeplayState;
-import funkin.play.character.BaseCharacter;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.story.StoryMenuState;
+import openfl.utils.Assets;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -63,13 +65,18 @@ class GameOverSubState extends MusicBeatSubState
   /**
    * The music playing in the background of the state.
    */
-  var gameOverMusic:FlxSound = new FlxSound();
+  var gameOverMusic:Null<FunkinSound> = null;
 
   /**
    * Whether the player has confirmed and prepared to restart the level.
    * This means the animation and transition have already started.
    */
   var isEnding:Bool = false;
+
+  /**
+   * Whether the death music is on its first loop.
+   */
+  var isStarting:Bool = true;
 
   var isChartingMode:Bool = false;
 
@@ -140,12 +147,14 @@ class GameOverSubState extends MusicBeatSubState
     // Set up the audio
     //
 
-    // Prepare the game over music.
-    FlxG.sound.list.add(gameOverMusic);
-    gameOverMusic.stop();
-
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
+  }
+
+  public function resetCameraZoom():Void
+  {
+    // Apply camera zoom level from stage data.
+    FlxG.camera.zoom = PlayState?.instance?.currentStage?.camZoom ?? 1.0;
   }
 
   var hasStartedAnimation:Bool = false;
@@ -216,7 +225,7 @@ class GameOverSubState extends MusicBeatSubState
       }
     }
 
-    if (gameOverMusic.playing)
+    if (gameOverMusic != null && gameOverMusic.playing)
     {
       // Match the conductor to the music.
       // This enables the stepHit and beatHit events.
@@ -292,22 +301,69 @@ class GameOverSubState extends MusicBeatSubState
   }
 
   /**
+   * Rather than hardcoding stuff, we look for the presence of a music file
+   * with the given suffix, and strip it down until we find one that's valid.
+   */
+  function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<String>
+  {
+    var basePath = 'gameplay/gameover/gameOver';
+    if (starting) basePath += 'Start';
+    else if (ending) basePath += 'End';
+
+    var musicPath = Paths.music(basePath + suffix);
+    while (!Assets.exists(musicPath) && suffix.length > 0)
+    {
+      suffix = suffix.split('-').slice(0, -1).join('-');
+      musicPath = Paths.music(basePath + suffix);
+    }
+    if (!Assets.exists(musicPath)) return null;
+    trace('Resolved music path: ' + musicPath);
+    return musicPath;
+  }
+
+  /**
    * Starts the death music at the appropriate volume.
    * @param startingVolume
    */
-  function startDeathMusic(?startingVolume:Float = 1, force:Bool = false):Void
+  public function startDeathMusic(startingVolume:Float = 1, force:Bool = false):Void
   {
-    var musicPath = Paths.music('gameplay/gameover/gameOver' + musicSuffix);
-    if (isEnding)
+    var musicPath = resolveMusicPath(musicSuffix, isStarting, isEnding);
+    var onComplete = null;
+    if (isStarting)
     {
-      musicPath = Paths.music('gameplay/gameover/gameOverEnd' + musicSuffix);
+      if (musicPath == null)
+      {
+        isStarting = false;
+        musicPath = resolveMusicPath(musicSuffix, isStarting, isEnding);
+      }
+      else
+      {
+        isStarting = false;
+        onComplete = function() {
+          // We need to force to ensure that the non-starting music plays.
+          startDeathMusic(1.0, true);
+        };
+      }
     }
-    if (!gameOverMusic.playing || force)
+
+    if (musicPath == null)
     {
-      gameOverMusic.loadEmbedded(musicPath);
+      trace('Could not find game over music!');
+      return;
+    }
+    else if (gameOverMusic == null || !gameOverMusic.playing || force)
+    {
+      if (gameOverMusic != null) gameOverMusic.stop();
+      gameOverMusic = FunkinSound.load(musicPath);
       gameOverMusic.volume = startingVolume;
-      gameOverMusic.looped = !isEnding;
+      gameOverMusic.looped = !(isEnding || isStarting);
+      gameOverMusic.onComplete = onComplete;
       gameOverMusic.play();
+    }
+    else
+    {
+      @:privateAccess
+      trace('Music already playing! ${gameOverMusic?._label}');
     }
   }
 
@@ -320,7 +376,14 @@ class GameOverSubState extends MusicBeatSubState
   public static function playBlueBalledSFX()
   {
     blueballed = true;
-    FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
+    {
+      FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    }
+    else
+    {
+      FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    }
   }
 
   var playingJeffQuote:Bool = false;
@@ -342,6 +405,14 @@ class GameOverSubState extends MusicBeatSubState
         gameOverMusic.fadeIn(4, 0.2, 1);
       }
     });
+  }
+
+  public override function destroy()
+  {
+    super.destroy();
+    if (gameOverMusic != null) gameOverMusic.stop();
+    gameOverMusic = null;
+    instance = null;
   }
 
   public override function toString():String

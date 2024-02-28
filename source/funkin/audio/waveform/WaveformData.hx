@@ -187,6 +187,8 @@ class WaveformData
    */
   public function merge(that:WaveformData):WaveformData
   {
+    if (that == null) return this.clone();
+
     var result = this.clone([]);
 
     for (channelIndex in 0...this.channels)

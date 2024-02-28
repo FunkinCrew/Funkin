@@ -4,9 +4,10 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
 
-class NoteSprite extends FlxSprite
+class NoteSprite extends FunkinSprite
 {
   static final DIRECTION_COLORS:Array<String> = ['purple', 'blue', 'green', 'red'];
 

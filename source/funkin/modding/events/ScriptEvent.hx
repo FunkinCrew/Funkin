@@ -106,12 +106,19 @@ class NoteScriptEvent extends ScriptEvent
    */
   public var playSound(default, default):Bool;
 
+  /**
+   * A multiplier to the health gained or lost from this note.
+   * This affects both hits and misses. Remember that max health is 2.00.
+   */
+  public var healthMulti:Float;
+
   public function new(type:ScriptEventType, note:NoteSprite, comboCount:Int = 0, cancelable:Bool = false):Void
   {
     super(type, cancelable);
     this.note = note;
     this.comboCount = comboCount;
     this.playSound = true;
+    this.healthMulti = 1.0;
   }
 
   public override function toString():String
@@ -182,17 +189,17 @@ class SongEventScriptEvent extends ScriptEvent
    * The note associated with this event.
    * You cannot replace it, but you can edit it.
    */
-  public var event(default, null):funkin.data.song.SongData.SongEventData;
+  public var eventData(default, null):funkin.data.song.SongData.SongEventData;
 
-  public function new(event:funkin.data.song.SongData.SongEventData):Void
+  public function new(eventData:funkin.data.song.SongData.SongEventData):Void
   {
     super(SONG_EVENT, true);
-    this.event = event;
+    this.eventData = eventData;
   }
 
   public override function toString():String
   {
-    return 'SongEventScriptEvent(event=' + event + ')';
+    return 'SongEventScriptEvent(event=' + eventData + ')';
   }
 }
 

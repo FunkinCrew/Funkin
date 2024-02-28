@@ -31,11 +31,11 @@ class SetItemSelectionCommand implements ChartEditorCommand
     state.currentEventSelection = events;
 
     // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
-    if (this.notes.length == 0 && this.events.length >= 1)
+    if (this.notes.length == 0 && this.events.length == 1)
     {
       var eventSelected = this.events[0];
 
-      state.eventKindToPlace = eventSelected.event;
+      state.eventKindToPlace = eventSelected.eventKind;
 
       // This code is here to parse event data that's not built as a struct for some reason.
       // TODO: Clean this up or get rid of it.
@@ -43,7 +43,7 @@ class SetItemSelectionCommand implements ChartEditorCommand
       var defaultKey = null;
       if (eventSchema == null)
       {
-        trace('[WARNING] Event schema not found for event ${eventSelected.event}.');
+        trace('[WARNING] Event schema not found for event ${eventSelected.eventKind}.');
       }
       else
       {
@@ -57,7 +57,7 @@ class SetItemSelectionCommand implements ChartEditorCommand
     }
 
     // IF we just selected one or more notes (and no events), then we should make the note data toolbox display the note data for the selected note.
-    if (this.events.length == 0 && this.notes.length >= 1)
+    if (this.events.length == 0 && this.notes.length == 1)
     {
       var noteSelected = this.notes[0];
 

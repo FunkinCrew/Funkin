@@ -13,6 +13,7 @@ import flixel.util.FlxColor;
 import funkin.play.PlayState;
 import funkin.data.song.SongRegistry;
 import funkin.ui.Alphabet;
+import funkin.graphics.FunkinSprite;
 
 class PauseSubState extends MusicBeatSubState
 {
@@ -72,7 +73,7 @@ class PauseSubState extends MusicBeatSubState
 
     FlxG.sound.list.add(pauseMusic);
 
-    bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    bg = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
     bg.alpha = 0;
     bg.scrollFactor.set();
     add(bg);
