@@ -303,14 +303,14 @@ class PauseSubState extends MusicBeatSubState
    */
   function transitionIn():Void
   {
-    FlxTween.tween(background, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+    FlxTween.tween(background, {alpha: 0.6}, 0.8, {ease: FlxEase.quartOut});
 
     // Animate each element a little bit downwards.
     var delay:Float = 0.1;
     for (child in metadata.members)
     {
-      FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: delay});
-      delay += 0.05;
+      FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
+      delay += 0.1;
     }
 
     new FlxTimer().start(0.2, (_) -> {
@@ -387,7 +387,8 @@ class PauseSubState extends MusicBeatSubState
       var targetX = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 20 + 90;
       var targetY = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 120 + (FlxG.height * 0.48);
       trace(targetY);
-      FlxTween.tween(text, {x: targetX, y: targetY}, 0.16, {ease: FlxEase.linear});
+      FlxTween.globalManager.cancelTweensOf(text);
+      FlxTween.tween(text, {x: targetX, y: targetY}, 0.33, {ease: FlxEase.quartOut});
     }
   }
 
