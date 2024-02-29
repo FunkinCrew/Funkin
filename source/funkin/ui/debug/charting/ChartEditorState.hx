@@ -2838,12 +2838,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBarItemInputStyleNone.onClick = function(event:UIEvent) {
       currentLiveInputStyle = None;
     };
+    menuBarItemInputStyleNone.selected = currentLiveInputStyle == None;
     menuBarItemInputStyleNumberKeys.onClick = function(event:UIEvent) {
       currentLiveInputStyle = NumberKeys;
     };
+    menuBarItemInputStyleNumberKeys.selected = currentLiveInputStyle == NumberKeys;
     menuBarItemInputStyleWASD.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = WASD;
+      currentLiveInputStyle = WASDKeys;
     };
+    menuBarItemInputStyleWASD.selected = currentLiveInputStyle == WASDKeys;
 
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
@@ -2942,7 +2945,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemPlaybackSpeed.onChange = event -> {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
-      pitch = Math.floor(pitch / 0.25) * 0.25; // Round to nearest 0.25.
+      pitch = Math.floor(pitch / 0.05) * 0.05; // Round to nearest 5%
+      pitch = Math.max(0.05, Math.min(2.0, pitch)); // Clamp to 5% to 200%
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       audioVocalTrackGroup.pitch = pitch;
@@ -4933,7 +4937,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Place notes at the playhead.
     switch (currentLiveInputStyle)
     {
-      case ChartEditorLiveInputStyle.WASD:
+      case ChartEditorLiveInputStyle.WASDKeys:
         if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(4);
         if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(5);
         if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(6);
@@ -5235,6 +5239,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         incrementDifficulty(1);
       }
       // Would bind Ctrl+A and Ctrl+D here, but they are already bound to Select All and Select None.
+    }
+    else
+    {
+      trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
     }
   }
 
@@ -6125,7 +6133,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 }
 
 /**
- * Available input modes for the chart editor state.
+ * Available input modes for the chart editor state. Numbers/arrows/WASD available for other keybinds.
  */
 enum ChartEditorLiveInputStyle
 {
@@ -6140,9 +6148,9 @@ enum ChartEditorLiveInputStyle
   NumberKeys;
 
   /**
-   * WASD to place notes on opponent's side, arrow keys to place notes on player's side.
+   * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
    */
-  WASD;
+  WASDKeys;
 }
 
 typedef ChartEditorParams =
