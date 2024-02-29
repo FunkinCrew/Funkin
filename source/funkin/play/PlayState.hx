@@ -631,8 +631,9 @@ class PlayState extends MusicBeatSubState
 
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff();
-    comboPopUps.cameras = [camHUD];
+    comboPopUps.zIndex = 900;
     add(comboPopUps);
+    comboPopUps.cameras = [camHUD];
 
     #if discord_rpc
     // Initialize Discord Rich Presence.
@@ -1282,6 +1283,7 @@ class PlayState extends MusicBeatSubState
     {
       var animShit:ComboMilestone = new ComboMilestone(-100, 300, Highscore.tallies.combo);
       animShit.scrollFactor.set(0.6, 0.6);
+      animShit.zIndex = 1100;
       animShit.cameras = [camHUD];
       add(animShit);
 
@@ -1362,18 +1364,21 @@ class PlayState extends MusicBeatSubState
     healthBarBG = FunkinSprite.create(0, healthBarYPos, Paths.image('healthBar'));
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
+    healthBarBG.zIndex = 800;
     add(healthBarBG);
 
     healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
       'healthLerp', 0, 2);
     healthBar.scrollFactor.set();
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
+    healthBar.zIndex = 801;
     add(healthBar);
 
     // The score text below the health bar.
     scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
+    scoreText.zIndex = 802;
     add(scoreText);
 
     // Move the health bar to the HUD camera.
@@ -1487,6 +1492,7 @@ class PlayState extends MusicBeatSubState
     iconP2 = new HealthIcon('dad', 1);
     iconP2.y = healthBar.y - (iconP2.height / 2);
     dad.initHealthIcon(true); // Apply the character ID here
+    iconP2.zIndex = 850;
     add(iconP2);
     iconP2.cameras = [camHUD];
 
@@ -1506,6 +1512,7 @@ class PlayState extends MusicBeatSubState
     iconP1 = new HealthIcon('bf', 0);
     iconP1.y = healthBar.y - (iconP1.height / 2);
     boyfriend.initHealthIcon(false); // Apply the character ID here
+    iconP1.zIndex = 850;
     add(iconP1);
     iconP1.cameras = [camHUD];
 
@@ -1573,13 +1580,13 @@ class PlayState extends MusicBeatSubState
     playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
     playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
-    playerStrumline.zIndex = 200;
+    playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
     opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
     opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
-    opponentStrumline.zIndex = 100;
+    opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
 
     if (!PlayStatePlaylist.isStoryMode)
