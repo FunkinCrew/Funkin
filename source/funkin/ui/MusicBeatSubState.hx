@@ -51,6 +51,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   override function update(elapsed:Float):Void
   {
+    // 3.59% CPU Usage (100% is FlxTypedGroup#update() and most of that is updating each member.)
     super.update(elapsed);
 
     // Emergency exit button.
@@ -61,8 +62,11 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     // Display Conductor info in the watch window.
     FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
+
+    // 0.09% CPU Usage?
     Conductor.watchQuick();
 
+    // 4.31% CPU Usage
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
