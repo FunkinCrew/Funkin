@@ -1143,6 +1143,12 @@ class FreeplayState extends MusicBeatSubState
           targetSong: targetSong,
           targetDifficulty: targetDifficulty,
           targetVariation: targetVariation,
+          // TODO: Make this an option!
+          // startTimestamp: 0.0,
+          // TODO: Make this an option!
+          // playbackRate: 0.5,
+          practiceMode: false,
+          minimalMode: false,
         }, true);
     });
   }

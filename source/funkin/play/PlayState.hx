@@ -97,7 +97,7 @@ typedef PlayStateParams =
   ?targetDifficulty:String,
   /**
    * The variation to play on.
-   * @default `Constants.DEFAULT_VARIATION` .
+   * @default `Constants.DEFAULT_VARIATION`
    */
   ?targetVariation:String,
   /**
@@ -118,8 +118,14 @@ typedef PlayStateParams =
   ?minimalMode:Bool,
   /**
    * If specified, the game will jump to the specified timestamp after the countdown ends.
+   * @default `0.0`
    */
   ?startTimestamp:Float,
+  /**
+   * If specified, the game will play the song with the given speed.
+   * @default `1.0` for 100% speed.
+   */
+  ?playbackRate:Float,
   /**
    * If specified, the game will not load the instrumental or vocal tracks,
    * and must be loaded externally.
@@ -209,6 +215,12 @@ class PlayState extends MusicBeatSubState
    * Used for chart playtesting or practice.
    */
   public var startTimestamp:Float = 0.0;
+
+  /**
+   * Play back the song at this speed.
+   * @default `1.0` for normal speed.
+   */
+  public var playbackRate:Float = 1.0;
 
   /**
    * An empty FlxObject contained in the scene.
@@ -550,6 +562,7 @@ class PlayState extends MusicBeatSubState
     isPracticeMode = params.practiceMode ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
+    playbackRate = params.playbackRate ?? 1.0;
     overrideMusic = params.overrideMusic ?? false;
     previousCameraFollowPoint = params.cameraFollowPoint;
 
@@ -777,6 +790,7 @@ class PlayState extends MusicBeatSubState
 
       // Reset music properly.
       FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+      FlxG.sound.music.pitch = playbackRate;
       FlxG.sound.music.pause();
 
       if (!overrideMusic)
@@ -1783,14 +1797,16 @@ class PlayState extends MusicBeatSubState
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
     FlxG.sound.music.play(true, startTimestamp - Conductor.instance.instrumentalOffset);
+    FlxG.sound.music.pitch = playbackRate;
 
     // I am going insane.
     FlxG.sound.music.volume = 1.0;
-    FlxG.sound.music.fadeTween.cancel();
+    if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
     add(vocals);
     vocals.play();
+    vocals.pitch = playbackRate;
     resyncVocals();
 
     #if discord_rpc
