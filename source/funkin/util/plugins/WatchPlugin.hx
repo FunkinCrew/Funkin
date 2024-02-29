@@ -35,7 +35,10 @@ class WatchPlugin extends FlxBasic
 
     FlxG.watch.addQuick("songPosition", Conductor.instance.songPosition);
     FlxG.watch.addQuick("songPositionNoOffset", Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+
+    FlxG.watch.addQuick("musicLength", FlxG.sound?.music?.length ?? 0.0);
     FlxG.watch.addQuick("musicTime", FlxG.sound?.music?.time ?? 0.0);
+
     FlxG.watch.addQuick("bpm", Conductor.instance.bpm);
     FlxG.watch.addQuick("currentMeasureTime", Conductor.instance.currentMeasureTime);
     FlxG.watch.addQuick("currentBeatTime", Conductor.instance.currentBeatTime);

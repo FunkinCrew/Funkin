@@ -894,12 +894,6 @@ typedef SaveControlsData =
   var ?CUTSCENE_ADVANCE:Array<Int>;
 
   /**
-   * Keybind for skipping a cutscene.
-   * @default `Escape`
-   */
-  var ?CUTSCENE_SKIP:Array<Int>;
-
-  /**
    * Keybind for increasing volume.
    * @default `Plus`
    */

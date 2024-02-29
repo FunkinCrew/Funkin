@@ -317,6 +317,11 @@ class PlayState extends MusicBeatSubState
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
   /**
+   * If we just unpaused the game, we shouldn't be able to pause again for one frame.
+   */
+  var justUnpaused:Bool = false;
+
+  /**
    * PRIVATE INSTANCE VARIABLES
    * Private instance variables should be used for information that must be reset or dereferenced
    * every time the state is reset, but should not be accessed externally.
@@ -445,11 +450,6 @@ class PlayState extends MusicBeatSubState
   var comboPopUps:PopUpStuff;
 
   /**
-   * The circular sprite that appears while the user is holding down the Skip Cutscene button.
-   */
-  var skipTimer:FlxPieDial;
-
-  /**
    * PROPERTIES
    */
   /**
@@ -476,7 +476,7 @@ class PlayState extends MusicBeatSubState
     if (!Std.isOfType(this.subState, PauseSubState)) return false;
 
     var pauseSubState:PauseSubState = cast this.subState;
-    return pauseSubState.exitingToMenu;
+    return !pauseSubState.allowInput;
   }
 
   /**
@@ -635,14 +635,6 @@ class PlayState extends MusicBeatSubState
     add(comboPopUps);
     comboPopUps.cameras = [camHUD];
 
-    // The little dial that shows up when you hold the Skip Cutscene key.
-    skipTimer = new FlxPieDial(16, 16, 32, FlxColor.WHITE, 36, CIRCLE, true, 24);
-    skipTimer.amount = 0;
-    skipTimer.zIndex = 1000;
-    add(skipTimer);
-    // Renders only in video cutscene mode.
-    skipTimer.cameras = [camCutscene];
-
     #if discord_rpc
     // Initialize Discord Rich Presence.
     initDiscord();
@@ -758,6 +750,8 @@ class PlayState extends MusicBeatSubState
 
   public override function update(elapsed:Float):Void
   {
+    // TOTAL: 9.42% CPU Time when profiled in VS 2019.
+
     if (criticalFailure) return;
 
     super.update(elapsed);
@@ -782,8 +776,7 @@ class PlayState extends MusicBeatSubState
       inputSpitter = [];
 
       // Reset music properly.
-
-      FlxG.sound.music.time = Math.max(0, startTimestamp - Conductor.instance.instrumentalOffset);
+      FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
       FlxG.sound.music.pause();
 
       if (!overrideMusic)
@@ -859,7 +852,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame)
+    if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
@@ -894,12 +887,12 @@ class PlayState extends MusicBeatSubState
             boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
           }
 
-          var pauseSubState:FlxSubState = new PauseSubState(isChartingMode);
+          var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
 
           FlxTransitionableSubState.skipNextTransIn = true;
           FlxTransitionableSubState.skipNextTransOut = true;
-          openSubState(pauseSubState);
           pauseSubState.camera = camHUD;
+          openSubState(pauseSubState);
           // boyfriendPos.put(); // TODO: Why is this here?
         }
 
@@ -997,6 +990,8 @@ class PlayState extends MusicBeatSubState
 
     // Moving notes into position is now done by Strumline.update().
     processNotes(elapsed);
+
+    justUnpaused = false;
   }
 
   function processSongEvents():Void
@@ -1071,7 +1066,10 @@ class PlayState extends MusicBeatSubState
       if (FlxG.sound.music != null)
       {
         musicPausedBySubState = FlxG.sound.music.playing;
-        FlxG.sound.music.pause();
+        if (musicPausedBySubState)
+        {
+          FlxG.sound.music.pause();
+        }
         if (vocals != null) vocals.pause();
       }
 
@@ -1099,7 +1097,12 @@ class PlayState extends MusicBeatSubState
       // Resume
       if (musicPausedBySubState)
       {
-        FlxG.sound.music.play(FlxG.sound.music.time);
+        FlxG.sound.music.play();
+      }
+
+      if (currentConversation != null)
+      {
+        currentConversation.resumeMusic();
       }
 
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
@@ -1118,6 +1121,8 @@ class PlayState extends MusicBeatSubState
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
       }
       #end
+
+      justUnpaused = true;
     }
     else if (Std.isOfType(subState, Transition))
     {
@@ -1300,12 +1305,6 @@ class PlayState extends MusicBeatSubState
 
   public override function destroy():Void
   {
-    if (currentConversation != null)
-    {
-      remove(currentConversation);
-      currentConversation.kill();
-    }
-
     performCleanup();
 
     super.destroy();
@@ -1734,6 +1733,7 @@ class PlayState extends MusicBeatSubState
 
     currentConversation = ConversationRegistry.instance.fetchEntry(conversationId);
     if (currentConversation == null) return;
+    if (!currentConversation.alive) currentConversation.revive();
 
     currentConversation.completeCallback = onConversationComplete;
     currentConversation.cameras = [camCutscene];
@@ -1751,8 +1751,13 @@ class PlayState extends MusicBeatSubState
   function onConversationComplete():Void
   {
     isInCutscene = false;
-    remove(currentConversation);
-    currentConversation = null;
+
+    if (currentConversation != null)
+    {
+      currentConversation.kill();
+      remove(currentConversation);
+      currentConversation = null;
+    }
 
     if (startingSong && !isInCountdown)
     {
@@ -1777,12 +1782,14 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.onComplete = endSong.bind(false);
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
-    FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+    FlxG.sound.music.play(true, startTimestamp - Conductor.instance.instrumentalOffset);
+
+    // I am going insane.
+    FlxG.sound.music.volume = 1.0;
+    FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
     add(vocals);
-
-    FlxG.sound.music.play(FlxG.sound.music.time);
     vocals.play();
     resyncVocals();
 
@@ -2460,58 +2467,43 @@ class PlayState extends MusicBeatSubState
    */
   function handleCutsceneKeys(elapsed:Float):Void
   {
+    if (isGamePaused) return;
+
     if (currentConversation != null)
     {
-      if (controls.CUTSCENE_ADVANCE) currentConversation?.advanceConversation();
-
-      if (controls.CUTSCENE_SKIP)
+      // Pause/unpause may conflict with advancing the conversation!
+      if (controls.CUTSCENE_ADVANCE && !justUnpaused)
       {
-        currentConversation?.trySkipConversation(elapsed);
+        currentConversation.advanceConversation();
       }
-      else
+      else if (controls.PAUSE && !justUnpaused)
       {
-        currentConversation?.trySkipConversation(-1);
+        currentConversation.pauseMusic();
+
+        var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
+
+        persistentUpdate = false;
+        FlxTransitionableSubState.skipNextTransIn = true;
+        FlxTransitionableSubState.skipNextTransOut = true;
+        pauseSubState.camera = camCutscene;
+        openSubState(pauseSubState);
       }
     }
     else if (VideoCutscene.isPlaying())
     {
       // This is a video cutscene.
-
-      if (controls.CUTSCENE_SKIP)
+      if (controls.PAUSE && !justUnpaused)
       {
-        trySkipVideoCutscene(elapsed);
+        VideoCutscene.pauseVideo();
+
+        var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
+
+        persistentUpdate = false;
+        FlxTransitionableSubState.skipNextTransIn = true;
+        FlxTransitionableSubState.skipNextTransOut = true;
+        pauseSubState.camera = camCutscene;
+        openSubState(pauseSubState);
       }
-      else
-      {
-        trySkipVideoCutscene(-1);
-      }
-    }
-  }
-
-  /**
-   * Handle logic for the skip timer.
-   * If the skip button is being held, pass the amount of time elapsed since last game update.
-   * If the skip button has been released, pass a negative number.
-   */
-  function trySkipVideoCutscene(elapsed:Float):Void
-  {
-    if (skipTimer == null || skipTimer.animation == null) return;
-
-    if (elapsed < 0)
-    {
-      skipHeldTimer = 0.0;
-    }
-    else
-    {
-      skipHeldTimer += elapsed;
-    }
-
-    skipTimer.visible = skipHeldTimer >= 0.05;
-    skipTimer.amount = Math.min(skipHeldTimer / 1.5, 1.0);
-
-    if (skipHeldTimer >= 1.5)
-    {
-      skipVideoCutscene();
     }
   }
 
@@ -2725,6 +2717,12 @@ class PlayState extends MusicBeatSubState
    */
   function performCleanup():Void
   {
+    if (currentConversation != null)
+    {
+      remove(currentConversation);
+      currentConversation.kill();
+    }
+
     if (currentChart != null)
     {
       // TODO: Uncache the song.
@@ -2741,7 +2739,7 @@ class PlayState extends MusicBeatSubState
       FlxG.sound.music.pause();
       if (vocals != null)
       {
-        vocals.pause();
+        vocals.destroy();
         remove(vocals);
       }
     }
@@ -2756,6 +2754,7 @@ class PlayState extends MusicBeatSubState
     }
 
     GameOverSubState.reset();
+    PauseSubState.reset();
 
     // Clear the static reference to this state.
     instance = null;

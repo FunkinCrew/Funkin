@@ -25,6 +25,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   static final MAX_VOLUME:Float = 1.0;
 
+  /**
+   * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
+   */
   static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
   public var muted(default, set):Bool = false;
@@ -174,9 +177,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override function onFocus():Void
   {
-    if (!_alreadyPaused && this._shouldPlay)
+    if (!_alreadyPaused)
     {
       resume();
+    }
+    else
+    {
+      trace('Not resuming audio on focus!');
     }
   }
 
@@ -185,6 +192,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override function onFocusLost():Void
   {
+    trace('Focus lost, pausing audio!');
     _alreadyPaused = _paused;
     pause();
   }
@@ -252,6 +260,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     var sound:FunkinSound = cache.recycle(construct);
 
+    // Load the sound.
+    // Sets `exists = true` as a side effect.
     sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
 
     if (embeddedSound is String)
