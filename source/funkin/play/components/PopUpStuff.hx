@@ -5,6 +5,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
+import flixel.util.FlxDirection;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {
@@ -30,14 +31,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     rating.zIndex = 1000;
     rating.x = FlxG.width * 0.50;
-    rating.x -= FlxG.camera.scroll.x * 0.2;
-    // make sure rating is visible lol!
-    //		if (rating.x < FlxG.camera.scroll.x)
-    //			rating.x = FlxG.camera.scroll.x;
-    //		else if (rating.x > FlxG.camera.scroll.x + FlxG.camera.width - rating.width)
-    //			rating.x = FlxG.camera.scroll.x + FlxG.camera.width - rating.width;
-
-    // FlxG.camera.scroll.y +
+    // rating.x -= FlxG.camera.scroll.x * 0.2;
     rating.y = FlxG.camera.height * 0.4 - 60;
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
@@ -91,13 +85,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     var comboSpr:FunkinSprite = FunkinSprite.create(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
     comboSpr.y = FlxG.camera.height * 0.4 + 80;
     comboSpr.x = FlxG.width * 0.50;
-    comboSpr.x -= FlxG.camera.scroll.x * 0.2;
-    // make sure combo is visible lol!
-    // 194 fits 4 combo digits
-    // if (comboSpr.x < FlxG.camera.scroll.x + 194)
-    // 	comboSpr.x = FlxG.camera.scroll.x + 194;
-    // else if (comboSpr.x > FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width)
-    // 	comboSpr.x = FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width;
+    // comboSpr.x -= FlxG.camera.scroll.x * 0.2;
 
     comboSpr.acceleration.y = 600;
     comboSpr.velocity.y -= 150;
