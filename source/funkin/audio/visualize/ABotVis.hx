@@ -50,7 +50,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
       var visStr = 'viz';
       viz.animation.addByPrefix('VIZ', visStr + lol, 0);
-      viz.animation.play('VIZ', false, false, -1);
+      viz.animation.play('VIZ', false, false, 2);
     }
   }
 
@@ -82,6 +82,16 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
       return;
     }
 
+    // drawFFT();
+
+    super.draw();
+  }
+
+  /**
+   * TJW funkVis based visualizer! updateFFT() is the old nasty shit that dont worky!
+   */
+  function drawFFT():Void
+  {
     var levels = analyzer.getLevels(false);
 
     for (i in 0...min(group.members.length, levels.length))
@@ -95,8 +105,6 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
       group.members[i].animation.curAnim.curFrame = animFrame;
     }
-
-    super.draw();
   }
 
   // function updateFFT(elapsed:Float)
