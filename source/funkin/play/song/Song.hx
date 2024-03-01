@@ -502,11 +502,11 @@ class SongDifficulty
     }
   }
 
-  public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void
+  public function playInst(volume:Float = 1.0, looped:Bool = false):Void
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
-    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped);
+    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true);
 
     // Workaround for a bug where FlxG.sound.music.update() was being called twice.
     FlxG.sound.list.remove(FlxG.sound.music);
@@ -614,9 +614,9 @@ class SongDifficulty
     }
 
     // Add player vocals.
-    if (voiceList[0] != null) result.addPlayerVoice(FunkinSound.load(Assets.getSound(voiceList[0])));
+    if (voiceList[0] != null) result.addPlayerVoice(FunkinSound.load(voiceList[0]));
     // Add opponent vocals.
-    if (voiceList[1] != null) result.addOpponentVoice(FunkinSound.load(Assets.getSound(voiceList[1])));
+    if (voiceList[1] != null) result.addOpponentVoice(FunkinSound.load(voiceList[1]));
 
     // Add additional vocals.
     if (voiceList.length > 2)

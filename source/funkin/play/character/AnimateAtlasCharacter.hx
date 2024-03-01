@@ -191,7 +191,11 @@ class AnimateAtlasCharacter extends BaseCharacter
     _skipTransformChildren = true;
     super.kill();
     _skipTransformChildren = false;
-    this.mainSprite.kill();
+    if (this.mainSprite != null)
+    {
+      this.mainSprite.kill();
+      this.mainSprite = null;
+    }
   }
 
   /**

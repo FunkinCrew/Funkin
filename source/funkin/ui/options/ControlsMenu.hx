@@ -27,7 +27,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
   static var controlGroups:Array<Array<Control>> = [
     [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
     [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
-    [CUTSCENE_ADVANCE, CUTSCENE_SKIP],
+    [CUTSCENE_ADVANCE],
     [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
     [DEBUG_MENU, DEBUG_CHART]
   ];
