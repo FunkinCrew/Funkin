@@ -927,7 +927,7 @@ class PlayState extends MusicBeatSubState
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
 
-    if (currentStage != null)
+    if (currentStage != null && currentStage.getBoyfriend() != null)
     {
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
@@ -1498,17 +1498,17 @@ class PlayState extends MusicBeatSubState
     if (dad != null)
     {
       dad.characterType = CharacterType.DAD;
-    }
 
-    //
-    // OPPONENT HEALTH ICON
-    //
-    iconP2 = new HealthIcon('dad', 1);
-    iconP2.y = healthBar.y - (iconP2.height / 2);
-    dad.initHealthIcon(true); // Apply the character ID here
-    iconP2.zIndex = 850;
-    add(iconP2);
-    iconP2.cameras = [camHUD];
+      //
+      // OPPONENT HEALTH ICON
+      //
+      iconP2 = new HealthIcon('dad', 1);
+      iconP2.y = healthBar.y - (iconP2.height / 2);
+      dad.initHealthIcon(true); // Apply the character ID here
+      iconP2.zIndex = 850;
+      add(iconP2);
+      iconP2.cameras = [camHUD];
+    }
 
     //
     // BOYFRIEND
@@ -1518,17 +1518,17 @@ class PlayState extends MusicBeatSubState
     if (boyfriend != null)
     {
       boyfriend.characterType = CharacterType.BF;
-    }
 
-    //
-    // PLAYER HEALTH ICON
-    //
-    iconP1 = new HealthIcon('bf', 0);
-    iconP1.y = healthBar.y - (iconP1.height / 2);
-    boyfriend.initHealthIcon(false); // Apply the character ID here
-    iconP1.zIndex = 850;
-    add(iconP1);
-    iconP1.cameras = [camHUD];
+      //
+      // PLAYER HEALTH ICON
+      //
+      iconP1 = new HealthIcon('bf', 0);
+      iconP1.y = healthBar.y - (iconP1.height / 2);
+      boyfriend.initHealthIcon(false); // Apply the character ID here
+      iconP1.zIndex = 850;
+      add(iconP1);
+      iconP1.cameras = [camHUD];
+    }
 
     //
     // ADD CHARACTERS TO SCENE
@@ -2016,7 +2016,7 @@ class PlayState extends MusicBeatSubState
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, 0, true);
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, -Constants.HEALTH_MISS_PENALTY, 0, true);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2025,7 +2025,7 @@ class PlayState extends MusicBeatSubState
         // Judge the miss.
         // NOTE: This is what handles the scoring.
         trace('Missed note! ${note.noteData}');
-        onNoteMiss(note, event.playSound, event.healthMulti);
+        onNoteMiss(note, event.playSound, event.healthChange);
 
         note.handledMiss = true;
       }
@@ -2171,13 +2171,41 @@ class PlayState extends MusicBeatSubState
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
   {
-    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, Highscore.tallies.combo + 1, true);
+    // Calculate the input latency (do this as late as possible).
+    // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
+    var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
+    var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
+    // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
+
+    // Get the offset and compensate for input latency.
+    // Round inward (trim remainder) for consistency.
+    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
+
+    var score = Scoring.scoreNote(noteDiff, PBOT1);
+    var daRating = Scoring.judgeNote(noteDiff, PBOT1);
+
+    var healthChange = 0.0;
+    switch (daRating)
+    {
+      case 'sick':
+        healthChange = Constants.HEALTH_SICK_BONUS;
+      case 'good':
+        healthChange = Constants.HEALTH_GOOD_BONUS;
+      case 'bad':
+        healthChange = Constants.HEALTH_BAD_BONUS;
+      case 'shit':
+        healthChange = Constants.HEALTH_SHIT_BONUS;
+    }
+
+    // Send the note hit event.
+    var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, Highscore.tallies.combo + 1);
     dispatchEvent(event);
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
 
-    popUpScore(note, input, event.healthMulti);
+    // Display the combo meter and add the calculation to the score.
+    popUpScore(note, event.score, event.judgement, event.healthChange);
 
     if (note.isHoldNote && note.holdNoteSprite != null)
     {
@@ -2191,11 +2219,11 @@ class PlayState extends MusicBeatSubState
    * Called when a note leaves the screen and is considered missed by the player.
    * @param note
    */
-  function onNoteMiss(note:NoteSprite, playSound:Bool = false, healthLossMulti:Float = 1.0):Void
+  function onNoteMiss(note:NoteSprite, playSound:Bool = false, healthChange:Float):Void
   {
     // If we are here, we already CALLED the onNoteMiss script hook!
 
-    health -= Constants.HEALTH_MISS_PENALTY * healthLossMulti;
+    health += healthChange;
     songScore -= 10;
 
     if (!isPracticeMode)
@@ -2367,22 +2395,9 @@ class PlayState extends MusicBeatSubState
   /**
    * Handles health, score, and rating popups when a note is hit.
    */
-  function popUpScore(daNote:NoteSprite, input:PreciseInputEvent, healthGainMulti:Float = 1.0):Void
+  function popUpScore(daNote:NoteSprite, score:Int, daRating:String, healthChange:Float):Void
   {
     vocals.playerVolume = 1;
-
-    // Calculate the input latency (do this as late as possible).
-    // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
-    var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
-    var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
-    // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
-
-    // Get the offset and compensate for input latency.
-    // Round inward (trim remainder) for consistency.
-    var noteDiff:Int = Std.int(Conductor.instance.songPosition - daNote.noteData.time - inputLatencyMs);
-
-    var score = Scoring.scoreNote(noteDiff, PBOT1);
-    var daRating = Scoring.judgeNote(noteDiff, PBOT1);
 
     if (daRating == 'miss')
     {
@@ -2398,21 +2413,19 @@ class PlayState extends MusicBeatSubState
     {
       case 'sick':
         Highscore.tallies.sick += 1;
-        health += Constants.HEALTH_SICK_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
-        health += Constants.HEALTH_GOOD_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
-        health += Constants.HEALTH_BAD_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
-        health += Constants.HEALTH_SHIT_BONUS * healthGainMulti;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
+
+    health += healthChange;
 
     if (isComboBreak)
     {

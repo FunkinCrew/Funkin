@@ -32,18 +32,21 @@ class StageData
       bf:
         {
           zIndex: 0,
+          scale: 1,
           position: [0, 0],
           cameraOffsets: [-100, -100]
         },
       dad:
         {
           zIndex: 0,
+          scale: 1,
           position: [0, 0],
           cameraOffsets: [100, -100]
         },
       gf:
         {
           zIndex: 0,
+          scale: 1,
           position: [0, 0],
           cameraOffsets: [0, 0]
         }
@@ -114,6 +117,7 @@ typedef StageDataProp =
   @:jcustomparse(funkin.data.DataParse.eitherFloatOrFloats)
   @:jcustomwrite(funkin.data.DataWrite.eitherFloatOrFloats)
   @:optional
+  @:default(Left(1.0))
   var scale:haxe.ds.Either<Float, Array<Float>>;
 
   /**
@@ -189,6 +193,13 @@ typedef StageDataCharacter =
   @:optional
   @:default([0, 0])
   var position:Array<Float>;
+
+  /**
+   * The scale to render the character at.
+   */
+  @:optional
+  @:default(1)
+  var scale:Float;
 
   /**
    * The camera offsets to apply when focusing on the character on this stage.

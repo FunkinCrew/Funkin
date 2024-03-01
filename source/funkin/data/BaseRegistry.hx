@@ -240,6 +240,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   function createEntry(id:String):Null<T>
   {
+    // We enforce that T is Constructible to ensure this is valid.
     return new T(id);
   }
 
