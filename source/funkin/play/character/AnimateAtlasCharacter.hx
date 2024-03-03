@@ -46,7 +46,8 @@ class AnimateAtlasCharacter extends BaseCharacter
   var _skipTransformChildren:Bool = false;
 
   var animations:Map<String, AnimateAtlasAnimation> = new Map<String, AnimateAtlasAnimation>();
-  var currentAnimation:String;
+  var currentAnimName:Null<String> = null;
+  var animFinished:Bool = false;
 
   public function new(id:String)
   {
@@ -88,20 +89,35 @@ class AnimateAtlasCharacter extends BaseCharacter
     if ((!canPlayOtherAnims && !ignoreOther)) return;
 
     var correctName = correctAnimationName(name);
-    if (correctName == null) return;
+    if (correctName == null)
+    {
+      trace('Could not find Atlas animation: ' + name);
+      return;
+    }
 
     var animData = getAnimationData(correctName);
-    currentAnimation = correctName;
+    currentAnimName = correctName;
     var prefix:String = animData.prefix;
     if (prefix == null) prefix = correctName;
     var loop:Bool = animData.looped;
 
     this.mainSprite.playAnimation(prefix, restart, ignoreOther, loop);
+
+    animFinished = false;
   }
 
   public override function hasAnimation(name:String):Bool
   {
     return getAnimationData(name) != null;
+  }
+
+  /**
+   * Returns true if the animation has finished playing.
+   * Never true if animation is configured to loop.
+   */
+  public override function isAnimationFinished():Bool
+  {
+    return animFinished;
   }
 
   function loadAtlasSprite():FlxAtlasSprite
@@ -128,6 +144,8 @@ class AnimateAtlasCharacter extends BaseCharacter
     {
       // Make the game hold on the last frame.
       this.mainSprite.cleanupAnimation(prefix);
+      // currentAnimName = null;
+      animFinished = true;
 
       // Fallback to idle!
       // playAnimation('idle', true, false);
@@ -178,7 +196,8 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   public override function getCurrentAnimation():String
   {
-    return this.mainSprite.getCurrentAnimation();
+    // return this.mainSprite.getCurrentAnimation();
+    return currentAnimName;
   }
 
   function getAnimationData(name:String = null):AnimateAtlasAnimation

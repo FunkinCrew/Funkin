@@ -116,7 +116,9 @@ class FlxAtlasSprite extends FlxAnimate
     }
 
     anim.callback = function(_, frame:Int) {
-      if (frame == (anim.getFrameLabel(id).duration - 1) + anim.getFrameLabel(id).index)
+      var offset = loop ? 0 : -1;
+
+      if (frame == (anim.getFrameLabel(id).duration + offset) + anim.getFrameLabel(id).index)
       {
         if (loop)
         {
@@ -183,7 +185,7 @@ class FlxAtlasSprite extends FlxAnimate
   public function cleanupAnimation(_:String):Void
   {
     canPlayOtherAnims = true;
-    this.currentAnimation = null;
+    // this.currentAnimation = null;
     this.anim.pause();
   }
 }
