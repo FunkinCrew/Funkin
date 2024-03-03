@@ -30,6 +30,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
+import funkin.util.tools.TimerTools;
 import funkin.ui.transition.LoadingState;
 #if discord_rpc
 import Discord.DiscordClient;
@@ -219,7 +220,7 @@ class InitState extends FlxState
     // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
     trace('Parsing game data...');
-    var perfStart = haxe.Timer.stamp();
+    var perfStart:Float = TimerTools.start();
     SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
@@ -236,9 +237,7 @@ class InitState extends FlxState
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
 
-    var perfEnd = haxe.Timer.stamp();
-
-    trace('Parsing game data took ${Math.floor((perfEnd - perfStart) * 1000)}ms.');
+    trace('Parsing game data took: ${TimerTools.ms(perfStart)}');
   }
 
   /**
