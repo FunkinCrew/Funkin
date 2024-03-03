@@ -3,21 +3,46 @@ description: "sets up haxe shit, using HMM!"
 runs:
   using: "composite"
   steps:
-    - uses: funkincrew/ci-haxe@v3
+    - name: Install Haxe lol
+      uses: funkincrew/ci-haxe@v3.1.0
       with:
         haxe-version: 4.3.3
     - name: Config haxelib
       run: |
-        haxelib config
+        haxelib --never install haxelib 4.1.0 --global
+        haxelib --never deleterepo || true
+        haxelib --never newrepo
+        echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
+        haxelib --never git haxelib https://github.com/HaxeFoundation/haxelib.git master
       shell: bash
-    - name: Installing Haxe lol
+    - name: Gather debug info
       run: |
-        haxe -version
-        haxelib git haxelib https://github.com/HaxeFoundation/haxelib.git master
-        haxelib version
+        cat << EOF >> "$GITHUB_STEP_SUMMARY"
+        ## haxe
+        - version: \`$(haxe -version)\`
+        - exe: \`$(which haxe)\`
+        ## haxelib
+        - version: \`$(haxelib version)\`
+        - exe: \`$(which haxelib)\`
+        - path: \`$HAXEPATH\`
+        ### local
+        - config: \`$(haxelib config)\`
+        - path: \`$(haxelib path haxelib || true)\`
+        ### global
+        - config: \`$(haxelib config --global)\`
+        - path: \`$(haxelib path haxelib --global || true)\`
+        ### system
+        - version: \`$(haxelib --system version)\`
+        - local: \`$(haxelib --system config)\`
+        - global: \`$(haxelib --system config --global)\`
+        EOF
+      shell: bash
+    - name: Install hmm
+      # hmm only supports global installs
+      run: |
         haxelib --global install hmm
       shell: bash
-    - name: dependency install cache
+    - name: Restore cached dependencies
       id: cache-hmm
       uses: actions/cache@v4
       with:

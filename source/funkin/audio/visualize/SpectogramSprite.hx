@@ -10,7 +10,6 @@ import flixel.util.FlxColor;
 import funkin.audio.visualize.PolygonSpectogram.VISTYPE;
 import funkin.audio.visualize.VisShit.CurAudioInfo;
 import funkin.audio.visualize.dsp.FFT;
-import haxe.Timer;
 import lime.system.ThreadPool;
 import lime.utils.Int16Array;
 
