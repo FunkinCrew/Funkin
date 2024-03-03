@@ -140,7 +140,9 @@ class ChartEditorDropdowns
     "weekend-1-darnelluppercut" => "Darnell Uppercut (Blazin')",
     "weekend-1-idle" => "Idle (Blazin')",
     "weekend-1-fakeout" => "Fakeout (Blazin')",
-    "weekend-1-reversefakeout" => "Reverse Fakeout (Blazin')",
+    "weekend-1-taunt" => "Taunt (If Fakeout) (Blazin')",
+    "weekend-1-tauntforce" => "Taunt (Forced) (Blazin')",
+    "weekend-1-reversefakeout" => "Fakeout (Reverse) (Blazin')",
   ];
 
   public static function populateDropdownWithNoteKinds(dropDown:DropDown, startingKindId:String):DropDownEntry
