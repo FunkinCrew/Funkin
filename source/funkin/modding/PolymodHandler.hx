@@ -61,7 +61,7 @@ class PolymodHandler
     createModRoot();
 
     trace("Initializing Polymod (using configured mods)...");
-    loadModsById(Save.get().enabledModIds);
+    loadModsById(Save.instance.enabledModIds);
   }
 
   /**
@@ -236,7 +236,7 @@ class PolymodHandler
 
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modIds = Save.get().enabledModIds;
+    var modIds = Save.instance.enabledModIds;
     var modMetadata = getAllMods();
     var enabledMods = [];
     for (item in modMetadata)

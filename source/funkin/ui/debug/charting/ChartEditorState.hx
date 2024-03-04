@@ -920,12 +920,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.get().chartEditorHasBackup;
+    return Save.instance.chartEditorHasBackup;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
   {
-    return Save.get().chartEditorHasBackup = value;
+    return Save.instance.chartEditorHasBackup = value;
   }
 
   /**
@@ -2163,7 +2163,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function loadPreferences():Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     if (previousWorkingFilePaths[0] == null)
     {
@@ -2191,7 +2191,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function writePreferences(hasBackup:Bool):Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     // Can't use filter() because of null safety checking!
     var filteredWorkingFilePaths:Array<String> = [];

@@ -283,6 +283,12 @@ class PlayState extends MusicBeatSubState
   public var isPracticeMode:Bool = false;
 
   /**
+   * Whether the player has dropped below zero health,
+   * and we are just waiting for an animation to play out before transitioning.
+   */
+  public var isPlayerDying:Bool = false;
+
+  /**
    * In Minimal Mode, the stage and characters are not loaded and a standard background is used.
    */
   public var isMinimalMode:Bool = false;
@@ -785,6 +791,7 @@ class PlayState extends MusicBeatSubState
       persistentDraw = true;
 
       startingSong = true;
+      isPlayerDying = false;
 
       inputSpitter = [];
 
@@ -953,7 +960,7 @@ class PlayState extends MusicBeatSubState
       }
       #end
 
-      if (health <= Constants.HEALTH_MIN && !isPracticeMode)
+      if (health <= Constants.HEALTH_MIN && !isPracticeMode && !isPlayerDying)
       {
         vocals.pause();
         FlxG.sound.music.pause();
@@ -979,19 +986,29 @@ class PlayState extends MusicBeatSubState
         }
         #end
 
-        var gameOverSubState = new GameOverSubState(
-          {
-            isChartingMode: isChartingMode,
-            transparent: persistentDraw
+        isPlayerDying = true;
+
+        var deathPreTransitionDelay = currentStage?.getBoyfriend()?.getDeathPreTransitionDelay() ?? 0.0;
+        if (deathPreTransitionDelay > 0)
+        {
+          new FlxTimer().start(deathPreTransitionDelay, function(_) {
+            moveToGameOver();
           });
-        FlxTransitionableSubState.skipNextTransIn = true;
-        FlxTransitionableSubState.skipNextTransOut = true;
-        openSubState(gameOverSubState);
+        }
+        else
+        {
+          // Transition immediately.
+          moveToGameOver();
+        }
 
         #if discord_rpc
         // Game Over doesn't get his own variable because it's only used here
         DiscordClient.changePresence('Game Over - ' + detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
         #end
+      }
+      else if (isPlayerDying)
+      {
+        // Wait up.
       }
     }
 
@@ -1006,6 +1023,18 @@ class PlayState extends MusicBeatSubState
     processNotes(elapsed);
 
     justUnpaused = false;
+  }
+
+  function moveToGameOver():Void
+  {
+    var gameOverSubState = new GameOverSubState(
+      {
+        isChartingMode: isChartingMode,
+        transparent: persistentDraw
+      });
+    FlxTransitionableSubState.skipNextTransIn = true;
+    FlxTransitionableSubState.skipNextTransOut = true;
+    openSubState(gameOverSubState);
   }
 
   function processSongEvents():Void
@@ -2592,9 +2621,9 @@ class PlayState extends MusicBeatSubState
           accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
         };
 
-      if (Save.get().isSongHighScore(currentSong.id, currentDifficulty, data))
+      if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
       {
-        Save.get().setSongScore(currentSong.id, currentDifficulty, data);
+        Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
         #if newgrounds
         NGio.postScore(score, currentSong.id);
         #end
@@ -2642,9 +2671,9 @@ class PlayState extends MusicBeatSubState
               accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
             };
 
-          if (Save.get().isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
+          if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
-            Save.get().setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
+            Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end

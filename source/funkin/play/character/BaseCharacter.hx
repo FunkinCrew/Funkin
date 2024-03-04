@@ -198,6 +198,11 @@ class BaseCharacter extends Bopper
     return _data.death?.cameraZoom ?? 1.0;
   }
 
+  public function getDeathPreTransitionDelay():Float
+  {
+    return _data.death?.preTransitionDelay ?? 0.0;
+  }
+
   /**
    * Gets the value of flipX from the character data.
    * `!getFlipX()` is the direction Boyfriend should face.

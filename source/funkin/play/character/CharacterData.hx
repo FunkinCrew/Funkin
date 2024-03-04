@@ -751,4 +751,10 @@ typedef DeathData =
    * @default 1.0
    */
   var ?cameraZoom:Float;
+
+  /**
+   * Impose a delay between when the character reaches `0` health and when the death animation plays.
+   * @default 0.0
+   */
+  var ?preTransitionDelay:Float;
 }
