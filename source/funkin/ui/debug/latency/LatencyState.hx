@@ -130,7 +130,7 @@ class LatencyState extends MusicBeatSubState
 
     for (i in 0...32)
     {
-      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), Conductor.instance.beatLengthMs * i);
+      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       noteGrp.add(note);
     }
 
