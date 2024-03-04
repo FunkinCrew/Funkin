@@ -1830,7 +1830,8 @@ class PlayState extends MusicBeatSubState
 
     // I am going insane.
     FlxG.sound.music.volume = 1.0;
-    if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
+
+    FlxG.sound.music.fadeTween?.cancel();
 
     trace('Playing vocals...');
     add(vocals);

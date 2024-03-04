@@ -6,3 +6,4 @@ dump/
 export/
 RECOVER_*.fla
 shitAudio/
+.build_time

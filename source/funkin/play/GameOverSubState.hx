@@ -349,8 +349,8 @@ class GameOverSubState extends MusicBeatSubState
       }
       else
       {
-        isStarting = false;
         onComplete = function() {
+          isStarting = false;
           // We need to force to ensure that the non-starting music plays.
           startDeathMusic(1.0, true);
         };
