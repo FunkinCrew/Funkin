@@ -172,8 +172,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
   public override function pause():FunkinSound
   {
-    super.pause();
-    this._shouldPlay = false;
+    if (_shouldPlay)
+    {
+      // This sound will eventually play, but is still at a negative timestamp.
+      // Manually set the paused flag to ensure proper focus/unfocus behavior.
+      _shouldPlay = false;
+      _paused = true;
+      active = false;
+    }
+    else
+    {
+      super.pause();
+    }
     return this;
   }
 
@@ -211,7 +221,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (this._time < 0)
     {
-      this._shouldPlay = true;
+      // Sound with negative timestamp, restart the timer.
+      _shouldPlay = true;
+      _paused = false;
+      active = true;
     }
     else
     {
