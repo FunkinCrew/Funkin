@@ -82,6 +82,8 @@ class FlxAtlasSprite extends FlxAnimate
    * @param id A string ID of the animation to play.
    * @param restart Whether to restart the animation if it is already playing.
    * @param ignoreOther Whether to ignore all other animation inputs, until this one is done playing
+   * @param loop Whether to loop the animation
+   * NOTE: `loop` and `ignoreOther` are not compatible with each other!
    */
   public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, ?loop:Bool = false):Void
   {
@@ -114,11 +116,18 @@ class FlxAtlasSprite extends FlxAnimate
     }
 
     anim.callback = function(_, frame:Int) {
-      if (frame == (anim.getFrameLabel(id).duration - 1) + anim.getFrameLabel(id).index)
+      var offset = loop ? 0 : -1;
+
+      if (frame == (anim.getFrameLabel(id).duration + offset) + anim.getFrameLabel(id).index)
       {
-        if (loop) playAnimation(id, true, false, true);
+        if (loop)
+        {
+          playAnimation(id, true, false, true);
+        }
         else
+        {
           onAnimationFinish.dispatch(id);
+        }
       }
     };
 
@@ -176,7 +185,7 @@ class FlxAtlasSprite extends FlxAnimate
   public function cleanupAnimation(_:String):Void
   {
     canPlayOtherAnims = true;
-    this.currentAnimation = null;
-    this.anim.stop();
+    // this.currentAnimation = null;
+    this.anim.pause();
   }
 }

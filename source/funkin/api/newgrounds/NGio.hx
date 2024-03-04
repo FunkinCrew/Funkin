@@ -86,10 +86,10 @@ class NGio
     #end
 
     var onSessionFail:Error->Void = null;
-    if (sessionId == null && Save.get().ngSessionId != null)
+    if (sessionId == null && Save.instance.ngSessionId != null)
     {
       trace("using stored session id");
-      sessionId = Save.get().ngSessionId;
+      sessionId = Save.instance.ngSessionId;
       onSessionFail = function(error) savedSessionFailed = true;
     }
     #end
@@ -159,8 +159,8 @@ class NGio
   static function onNGLogin():Void
   {
     trace('logged in! user:${NG.core.user.name}');
-    Save.get().ngSessionId = NG.core.sessionId;
-    Save.get().flush();
+    Save.instance.ngSessionId = NG.core.sessionId;
+    Save.instance.flush();
     // Load medals then call onNGMedalFetch()
     NG.core.requestMedals(onNGMedalFetch);
 
@@ -174,8 +174,8 @@ class NGio
   {
     NG.core.logOut();
 
-    Save.get().ngSessionId = null;
-    Save.get().flush();
+    Save.instance.ngSessionId = null;
+    Save.instance.flush();
   }
 
   // --- MEDALS

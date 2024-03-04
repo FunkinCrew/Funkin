@@ -920,12 +920,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.get().chartEditorHasBackup;
+    return Save.instance.chartEditorHasBackup;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
   {
-    return Save.get().chartEditorHasBackup = value;
+    return Save.instance.chartEditorHasBackup = value;
   }
 
   /**
@@ -2163,7 +2163,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function loadPreferences():Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     if (previousWorkingFilePaths[0] == null)
     {
@@ -2191,7 +2191,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function writePreferences(hasBackup:Bool):Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     // Can't use filter() because of null safety checking!
     var filteredWorkingFilePaths:Array<String> = [];
@@ -5308,6 +5308,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
+    var playbackRate:Float = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+
     var targetSong:Song;
     try
     {
@@ -5357,6 +5361,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         practiceMode: playtestPracticeMode,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
+        playbackRate: playbackRate,
         overrideMusic: true,
       });
 
