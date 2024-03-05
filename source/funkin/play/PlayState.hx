@@ -2618,9 +2618,9 @@ class PlayState extends MusicBeatSubState
               combo: Highscore.tallies.combo,
               maxCombo: Highscore.tallies.maxCombo,
               totalNotesHit: Highscore.tallies.totalNotesHit,
-              totalNotes: currentChart.notes.length,
+              totalNotes: Highscore.tallies.totalNotes,
             },
-          accuracy: Highscore.tallies.totalNotesHit / currentChart.notes.length,
+          accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
         };
 
       // adds current song data into the tallies for the level (story levels)
@@ -2673,7 +2673,7 @@ class PlayState extends MusicBeatSubState
                   totalNotesHit: 0,
                   totalNotes: 0,
                 },
-              accuracy: Highscore.tallies.totalNotesHit / currentChart.notes.length,
+              accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
             };
 
           if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
