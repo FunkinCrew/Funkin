@@ -186,6 +186,10 @@ class ResultState extends MusicBeatSubState
     var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
     add(ratingGrp);
 
+    /**
+     * NOTE: We display how many notes were HIT, not how many notes there were in total.
+     *
+     */
     var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, params.tallies.totalNotesHit);
     ratingGrp.add(totalHit);
 

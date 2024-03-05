@@ -1732,7 +1732,6 @@ class PlayState extends MusicBeatSubState
       if (strumTime < startTime) continue; // Skip notes that are before the start time.
 
       var noteData:Int = songNote.getDirection();
-
       var playerNote:Bool = true;
 
       if (noteData > 3) playerNote = false;
@@ -1741,6 +1740,8 @@ class PlayState extends MusicBeatSubState
       {
         case 0:
           playerNoteData.push(songNote);
+          // increment totalNotes for total possible notes able to be hit by the player
+          Highscore.tallies.totalNotes++;
         case 1:
           opponentNoteData.push(songNote);
       }
@@ -2457,6 +2458,8 @@ class PlayState extends MusicBeatSubState
 
     health += healthChange;
 
+    FlxG.watch.addQuick("COMBO: ", Highscore.tallies.combo);
+
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
@@ -2617,9 +2620,9 @@ class PlayState extends MusicBeatSubState
               combo: Highscore.tallies.combo,
               maxCombo: Highscore.tallies.maxCombo,
               totalNotesHit: Highscore.tallies.totalNotesHit,
-              totalNotes: Highscore.tallies.totalNotes,
+              totalNotes: currentChart.notes.length,
             },
-          accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+          accuracy: Highscore.tallies.totalNotesHit / currentChart.notes.length,
         };
 
       if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
@@ -2669,7 +2672,7 @@ class PlayState extends MusicBeatSubState
                   totalNotesHit: 0,
                   totalNotes: 0,
                 },
-              accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+              accuracy: Highscore.tallies.totalNotesHit / currentChart.notes.length,
             };
 
           if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))

@@ -106,6 +106,8 @@ class SongMetadata implements ICloneable<SongMetadata>
 
   /**
    * Serialize this SongMetadata into a JSON string.
+   * @param pretty Whether the JSON should be big ol string (false),
+   * or formatted with tabs (true)
    * @return The JSON string.
    */
   public function serialize(pretty:Bool = true):String

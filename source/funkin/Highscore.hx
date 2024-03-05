@@ -1,10 +1,16 @@
 package funkin;
 
+import flixel.FlxG;
+
 /**
  * A core class which handles tracking score and combo for the current song.
  */
 class Highscore
 {
+  /**
+   * Keeps track of notes hit for the current song / week,
+   * and how accurate you were with each note (bad, missed, shit, etc.)
+   */
   public static var tallies:Tallies = new Tallies();
 }
 
@@ -51,7 +57,7 @@ typedef RawTallies =
   var totalNotesHit:Int;
 
   /**
-   * How many notes PASSED BY AND/OR HIT!!!
+   * How many notes in the current chart
    */
   var totalNotes:Int;
 }
