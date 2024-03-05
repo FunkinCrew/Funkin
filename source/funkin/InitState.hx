@@ -32,6 +32,7 @@ import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.tools.TimerTools;
 import funkin.ui.transition.LoadingState;
+import funkin.util.TrackerUtil;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -67,7 +68,7 @@ class InitState extends FlxState
   /**
    * Setup a bunch of important Flixel stuff.
    */
-  function setupShit()
+  function setupShit():Void
   {
     //
     // GAME SETUP
@@ -95,7 +96,7 @@ class InitState extends FlxState
     #if (debug || FORCE_DEBUG_VERSION)
     // Disable using ~ to open the console (we use that for the Editor menu)
     FlxG.debugger.toggleKeys = [F2];
-
+    TrackerUtil.initTrackers();
     // Adds an additional Close Debugger button.
     // This big obnoxious white button is for MOBILE, so that you can press it
     // easily with your finger when debug bullshit pops up during testing lol!

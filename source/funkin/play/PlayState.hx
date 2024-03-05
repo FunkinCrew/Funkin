@@ -1732,7 +1732,6 @@ class PlayState extends MusicBeatSubState
       if (strumTime < startTime) continue; // Skip notes that are before the start time.
 
       var noteData:Int = songNote.getDirection();
-
       var playerNote:Bool = true;
 
       if (noteData > 3) playerNote = false;
@@ -1741,6 +1740,8 @@ class PlayState extends MusicBeatSubState
       {
         case 0:
           playerNoteData.push(songNote);
+          // increment totalNotes for total possible notes able to be hit by the player
+          Highscore.tallies.totalNotes++;
         case 1:
           opponentNoteData.push(songNote);
       }
@@ -2622,6 +2623,9 @@ class PlayState extends MusicBeatSubState
           accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
         };
 
+      // adds current song data into the tallies for the level (story levels)
+      Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
+
       if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
       {
         Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
@@ -2895,11 +2899,14 @@ class PlayState extends MusicBeatSubState
     persistentUpdate = false;
     vocals.stop();
     camHUD.alpha = 1;
+
+    var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
+
     var res:ResultState = new ResultState(
       {
         storyMode: PlayStatePlaylist.isStoryMode,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-        tallies: Highscore.tallies,
+        tallies: talliesToUse,
       });
     res.camera = camHUD;
     openSubState(res);

@@ -23,10 +23,10 @@
     },
     {
       "props": {
-        "allowSingleArgParens": false,
-        "allowReturn": false,
-        "allowFunction": false,
-        "allowCurlyBody": false
+        "allowSingleArgParens": true,
+        "allowReturn": true,
+        "allowFunction": true,
+        "allowCurlyBody": true
       },
       "type": "ArrowFunction"
     },
@@ -80,7 +80,7 @@
       "props": {
         "ignoreExtern": true,
         "format": "^[A-Z][A-Z0-9]*(_[A-Z0-9_]+)*$",
-        "tokens": []
+        "tokens": ["INLINE", "NOTINLINE"]
       },
       "type": "ConstantName"
     },
@@ -178,13 +178,7 @@
         "fieldType": "BOTH",
         "requireReturn": true,
         "ignoreOverride": true,
-        "tokens": [
-          "ABSTRACT_DEF",
-          "CLASS_DEF",
-          "ENUM_DEF",
-          "INTERFACE_DEF",
-          "TYPEDEF_DEF"
-        ],
+        "tokens": ["ABSTRACT_DEF", "CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF"],
         "modifier": "PUBLIC",
         "excludeNames": ["new", "toString"]
       },
@@ -197,10 +191,6 @@
         "severity": "IGNORE"
       },
       "type": "FileLength"
-    },
-    {
-      "props": {},
-      "type": "Final"
     },
     {
       "props": {
@@ -375,7 +365,7 @@
     },
     {
       "props": {
-        "max": 1
+        "max": 4
       },
       "type": "NestedIfDepth"
     },
@@ -387,7 +377,7 @@
     },
     {
       "props": {
-        "option": "nullDefault"
+        "option": "questionMark"
       },
       "type": "NullableParameter"
     },
@@ -396,7 +386,6 @@
         "oldFunctionTypePolicy": "none",
         "unaryOpPolicy": "none",
         "intervalOpPolicy": "none",
-
         "newFunctionTypePolicy": "around",
         "ternaryOpPolicy": "around",
         "boolOpPolicy": "around",
@@ -589,19 +578,7 @@
     },
     {
       "props": {
-        "ignoreEnumAbstractValues": true
-      },
-      "type": "Type"
-    },
-    {
-      "props": {
-        "tokens": [
-          "ABSTRACT_DEF",
-          "CLASS_DEF",
-          "ENUM_DEF",
-          "INTERFACE_DEF",
-          "TYPEDEF_DEF"
-        ]
+        "tokens": ["CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF", "TYPEDEF_DEF"]
       },
       "type": "TypeDocComment"
     },
@@ -629,12 +606,6 @@
         "severity": "WARNING"
       },
       "type": "UnusedLocalVar"
-    },
-    {
-      "props": {
-        "severity": "IGNORE"
-      },
-      "type": "VariableInitialisation"
     },
     {
       "props": {
