@@ -23,10 +23,10 @@
     },
     {
       "props": {
-        "allowSingleArgParens": false,
-        "allowReturn": false,
-        "allowFunction": false,
-        "allowCurlyBody": false
+        "allowSingleArgParens": true,
+        "allowReturn": true,
+        "allowFunction": true,
+        "allowCurlyBody": true
       },
       "type": "ArrowFunction"
     },
@@ -63,10 +63,6 @@
         "thresholdIdentical": 60
       },
       "type": "CodeSimilarity"
-    },
-    {
-      "props": {},
-      "type": "CommentedOutCode"
     },
     {
       "props": {
@@ -354,13 +350,6 @@
     },
     {
       "props": {
-        "allowSingleLineStatement": true,
-        "tokens": ["FOR", "IF", "ELSE_IF", "WHILE", "DO_WHILE"]
-      },
-      "type": "NeedBraces"
-    },
-    {
-      "props": {
         "max": 3,
         "severity": "IGNORE"
       },
@@ -557,13 +546,6 @@
         "noSpaceAroundUnop": true
       },
       "type": "Spacing"
-    },
-    {
-      "props": {
-        "policy": "onlySingle",
-        "allowException": true
-      },
-      "type": "StringLiteral"
     },
     {
       "props": {
