@@ -6,7 +6,6 @@
     "tabWidth": 2,
     "indentCaseLabels": true
   },
-
   "lineEnds": {
     "anonFunctionCurly": {
       "emptyCurly": "break",
