@@ -1,24 +1,25 @@
 package funkin.modding;
 
-import funkin.util.macro.ClassMacro;
-import funkin.modding.module.ModuleHandler;
-import funkin.data.song.SongData;
-import funkin.data.stage.StageData;
-import polymod.Polymod;
-import polymod.backends.PolymodAssets.PolymodAssetType;
-import polymod.format.ParseRules.TextFileFormat;
-import funkin.data.event.SongEventRegistry;
-import funkin.data.stage.StageRegistry;
-import funkin.util.FileUtil;
-import funkin.data.level.LevelRegistry;
-import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.level.LevelRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageRegistry;
+import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
-import funkin.data.song.SongRegistry;
+import funkin.util.FileUtil;
+import funkin.util.macro.ClassMacro;
+import polymod.backends.PolymodAssets.PolymodAssetType;
+import polymod.format.ParseRules.TextFileFormat;
+import polymod.Polymod;
 
+/**
+ * A class for interacting with Polymod, the atomic modding framework for Haxe.
+ */
 class PolymodHandler
 {
   /**
@@ -27,16 +28,33 @@ class PolymodHandler
    * Bug fixes increment the patch version, new features increment the minor version.
    * Changes that break old mods increment the major version.
    */
-  static final API_VERSION:String = "0.1.0";
+  static final API_VERSION:String = '0.1.0';
 
   /**
    * Where relative to the executable that mods are located.
    */
-  static final MOD_FOLDER:String = #if (REDIRECT_ASSETS_FOLDER && macos) "../../../../../../../example_mods" #elseif REDIRECT_ASSETS_FOLDER "../../../../example_mods" #else "mods" #end;
+  static final MOD_FOLDER:String =
+    #if (REDIRECT_ASSETS_FOLDER && macos)
+    '../../../../../../../example_mods'
+    #elseif REDIRECT_ASSETS_FOLDER
+    '../../../../example_mods'
+    #else
+    'mods'
+    #end;
 
-  static final CORE_FOLDER:Null<String> = #if (REDIRECT_ASSETS_FOLDER && macos) "../../../../../../../assets" #elseif REDIRECT_ASSETS_FOLDER "../../../../assets" #else null #end;
+  static final CORE_FOLDER:Null<String> =
+    #if (REDIRECT_ASSETS_FOLDER && macos)
+    '../../../../../../../assets'
+    #elseif REDIRECT_ASSETS_FOLDER
+    '../../../../assets'
+    #else
+    null
+    #end;
 
-  public static function createModRoot()
+  /**
+   * If the mods folder doesn't exist, create it.
+   */
+  public static function createModRoot():Void
   {
     FileUtil.createDirIfNotExists(MOD_FOLDER);
   }
@@ -44,40 +62,44 @@ class PolymodHandler
   /**
    * Loads the game with ALL mods enabled with Polymod.
    */
-  public static function loadAllMods()
+  public static function loadAllMods():Void
   {
     // Create the mod root if it doesn't exist.
     createModRoot();
-    trace("Initializing Polymod (using all mods)...");
+    trace('Initializing Polymod (using all mods)...');
     loadModsById(getAllModIds());
   }
 
   /**
    * Loads the game with configured mods enabled with Polymod.
    */
-  public static function loadEnabledMods()
+  public static function loadEnabledMods():Void
   {
     // Create the mod root if it doesn't exist.
     createModRoot();
 
-    trace("Initializing Polymod (using configured mods)...");
+    trace('Initializing Polymod (using configured mods)...');
     loadModsById(Save.instance.enabledModIds);
   }
 
   /**
    * Loads the game without any mods enabled with Polymod.
    */
-  public static function loadNoMods()
+  public static function loadNoMods():Void
   {
     // Create the mod root if it doesn't exist.
     createModRoot();
 
     // We still need to configure the debug print calls etc.
-    trace("Initializing Polymod (using no mods)...");
+    trace('Initializing Polymod (using no mods)...');
     loadModsById([]);
   }
 
-  public static function loadModsById(ids:Array<String>)
+  /**
+   * Load all the mods with the given ids.
+   * @param ids The ORDERED list of mod ids to load.
+   */
+  public static function loadModsById(ids:Array<String>):Void
   {
     if (ids.length == 0)
     {
@@ -90,7 +112,7 @@ class PolymodHandler
 
     buildImports();
 
-    var loadedModList = polymod.Polymod.init(
+    var loadedModList:Array<ModMetadata> = polymod.Polymod.init(
       {
         // Root directory for all mods.
         modRoot: MOD_FOLDER,
@@ -142,30 +164,40 @@ class PolymodHandler
     }
 
     #if debug
-    var fileList = Polymod.listModFiles(PolymodAssetType.IMAGE);
+    var fileList:Array<String> = Polymod.listModFiles(PolymodAssetType.IMAGE);
     trace('Installed mods have replaced ${fileList.length} images.');
     for (item in fileList)
+    {
       trace('  * $item');
+    }
 
     fileList = Polymod.listModFiles(PolymodAssetType.TEXT);
     trace('Installed mods have added/replaced ${fileList.length} text files.');
     for (item in fileList)
+    {
       trace('  * $item');
+    }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_MUSIC);
     trace('Installed mods have replaced ${fileList.length} music files.');
     for (item in fileList)
+    {
       trace('  * $item');
+    }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_SOUND);
     trace('Installed mods have replaced ${fileList.length} sound files.');
     for (item in fileList)
+    {
       trace('  * $item');
+    }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_GENERIC);
     trace('Installed mods have replaced ${fileList.length} generic audio files.');
     for (item in fileList)
+    {
       trace('  * $item');
+    }
     #end
   }
 
@@ -183,21 +215,21 @@ class PolymodHandler
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
       if (cls == null) continue;
-      var className = Type.getClassName(cls);
+      var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
   }
 
   static function buildParseRules():polymod.format.ParseRules
   {
-    var output = polymod.format.ParseRules.getDefault();
+    var output:polymod.format.ParseRules = polymod.format.ParseRules.getDefault();
     // Ensure TXT files have merge support.
-    output.addType("txt", TextFileFormat.LINES);
+    output.addType('txt', TextFileFormat.LINES);
     // Ensure script files have merge support.
-    output.addType("hscript", TextFileFormat.PLAINTEXT);
-    output.addType("hxs", TextFileFormat.PLAINTEXT);
-    output.addType("hxc", TextFileFormat.PLAINTEXT);
-    output.addType("hx", TextFileFormat.PLAINTEXT);
+    output.addType('hscript', TextFileFormat.PLAINTEXT);
+    output.addType('hxs', TextFileFormat.PLAINTEXT);
+    output.addType('hxc', TextFileFormat.PLAINTEXT);
+    output.addType('hx', TextFileFormat.PLAINTEXT);
 
     // You can specify the format of a specific file, with file extension.
     // output.addFile("data/introText.txt", TextFileFormat.LINES)
@@ -208,17 +240,21 @@ class PolymodHandler
   {
     return {
       assetLibraryPaths: [
-        "default" => "preload", "shared" => "shared", "songs" => "songs", "tutorial" => "tutorial", "week1" => "week1",      "week2" => "week2",
-            "week3" => "week3",   "week4" => "week4", "week5" => "week5",       "week6" => "week6", "week7" => "week7", "weekend1" => "weekend1",
+        'default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'tutorial' => 'tutorial', 'week1' => 'week1',      'week2' => 'week2',
+            'week3' => 'week3',   'week4' => 'week4', 'week5' => 'week5',       'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1',
       ],
       coreAssetRedirect: CORE_FOLDER,
     }
   }
 
+  /**
+   * Retrieve a list of metadata for ALL installed mods, including disabled mods.
+   * @return An array of mod metadata
+   */
   public static function getAllMods():Array<ModMetadata>
   {
     trace('Scanning the mods folder...');
-    var modMetadata = Polymod.scan(
+    var modMetadata:Array<ModMetadata> = Polymod.scan(
       {
         modRoot: MOD_FOLDER,
         apiVersionRule: API_VERSION,
@@ -228,17 +264,25 @@ class PolymodHandler
     return modMetadata;
   }
 
+  /**
+   * Retrieve a list of ALL mod IDs, including disabled mods.
+   * @return An array of mod IDs
+   */
   public static function getAllModIds():Array<String>
   {
-    var modIds = [for (i in getAllMods()) i.id];
+    var modIds:Array<String> = [for (i in getAllMods()) i.id];
     return modIds;
   }
 
+  /**
+   * Retrieve a list of metadata for all enabled mods.
+   * @return An array of mod metadata
+   */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modIds = Save.instance.enabledModIds;
-    var modMetadata = getAllMods();
-    var enabledMods = [];
+    var modIds:Array<String> = Save.instance.enabledModIds;
+    var modMetadata:Array<ModMetadata> = getAllMods();
+    var enabledMods:Array<ModMetadata> = [];
     for (item in modMetadata)
     {
       if (modIds.indexOf(item.id) != -1)
@@ -249,7 +293,11 @@ class PolymodHandler
     return enabledMods;
   }
 
-  public static function forceReloadAssets()
+  /**
+   * Clear and reload from disk all data assets.
+   * Useful for "hot reloading" for fast iteration!
+   */
+  public static function forceReloadAssets():Void
   {
     // Forcibly clear scripts so that scripts can be edited.
     ModuleHandler.clearModuleCache();
