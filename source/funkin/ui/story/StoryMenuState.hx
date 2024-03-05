@@ -520,7 +520,7 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  function selectLevel()
+  function selectLevel():Void
   {
     if (!currentLevel.isUnlocked())
     {
@@ -554,6 +554,8 @@ class StoryMenuState extends MusicBeatState
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
     PlayStatePlaylist.campaignDifficulty = currentDifficultyId;
+
+    Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       FlxTransitionableState.skipNextTransIn = false;

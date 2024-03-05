@@ -90,6 +90,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   var _label:String = "unknown";
 
+  /**
+   * Whether we received a focus lost event.
+   */
+  var _lostFocus:Bool = false;
+
   public function new()
   {
     super();
@@ -167,8 +172,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
   public override function pause():FunkinSound
   {
-    super.pause();
-    this._shouldPlay = false;
+    if (_shouldPlay)
+    {
+      // This sound will eventually play, but is still at a negative timestamp.
+      // Manually set the paused flag to ensure proper focus/unfocus behavior.
+      _shouldPlay = false;
+      _paused = true;
+      active = false;
+    }
+    else
+    {
+      super.pause();
+    }
     return this;
   }
 
@@ -177,7 +192,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override function onFocus():Void
   {
-    if (!_alreadyPaused)
+    // Flixel can sometimes toss spurious `onFocus` events, e.g. if the Flixel debugger is toggled
+    // on and off. We only want to resume the sound if we actually lost focus, and if we weren't
+    // already paused before we lost focus.
+    if (_lostFocus && !_alreadyPaused)
     {
       resume();
     }
@@ -185,6 +203,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     {
       trace('Not resuming audio on focus!');
     }
+    _lostFocus = false;
   }
 
   /**
@@ -193,6 +212,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   override function onFocusLost():Void
   {
     trace('Focus lost, pausing audio!');
+    _lostFocus = true;
     _alreadyPaused = _paused;
     pause();
   }
@@ -201,7 +221,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (this._time < 0)
     {
-      this._shouldPlay = true;
+      // Sound with negative timestamp, restart the timer.
+      _shouldPlay = true;
+      _paused = false;
+      active = true;
     }
     else
     {
