@@ -123,7 +123,7 @@ class FocusCameraSongEvent extends SongEvent
         trace('Unknown camera focus: ' + data);
     }
 
-    if (useTween) // always ends up false??
+    if (useTween)
     {
       var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
 

@@ -237,6 +237,11 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         {
           value = event.target.value.value;
         }
+        else if (field.type == BOOL)
+        {
+          var chk:CheckBox = cast event.target;
+          value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
+        }
 
         trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${value}');
 
