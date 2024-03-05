@@ -1,7 +1,5 @@
 package funkin;
 
-import flixel.FlxG;
-
 /**
  * A core class which handles tracking score and combo for the current song.
  */
@@ -19,18 +17,27 @@ class Highscore
    */
   public static var talliesLevel:Tallies = new Tallies();
 
-  public static function combineTallies(tally1:Tallies, tally2:Tallies):Tallies
+  /**
+   * Produces a new Tallies object which represents the sum of two existing Tallies
+   * @param newTally The first tally
+   * @param baseTally The second tally
+   * @return The combined tally
+   */
+  public static function combineTallies(newTally:Tallies, baseTally:Tallies):Tallies
   {
     var combinedTally:Tallies = new Tallies();
-    combinedTally.combo = tally1.combo + tally2.combo;
-    combinedTally.missed = tally1.missed + tally2.missed;
-    combinedTally.shit = tally1.shit + tally2.shit;
-    combinedTally.bad = tally1.bad + tally2.bad;
-    combinedTally.good = tally1.good + tally2.good;
-    combinedTally.sick = tally1.sick + tally2.sick;
-    combinedTally.totalNotes = tally1.totalNotes + tally2.totalNotes;
-    combinedTally.totalNotesHit = tally1.totalNotesHit + tally2.totalNotesHit;
-    combinedTally.maxCombo = tally1.maxCombo + tally2.maxCombo;
+    combinedTally.missed = newTally.missed + baseTally.missed;
+    combinedTally.shit = newTally.shit + baseTally.shit;
+    combinedTally.bad = newTally.bad + baseTally.bad;
+    combinedTally.good = newTally.good + baseTally.good;
+    combinedTally.sick = newTally.sick + baseTally.sick;
+    combinedTally.totalNotes = newTally.totalNotes + baseTally.totalNotes;
+    combinedTally.totalNotesHit = newTally.totalNotesHit + baseTally.totalNotesHit;
+
+    // Current combo = use most recent.
+    combinedTally.combo = newTally.combo;
+    // Max combo = use maximum value.
+    combinedTally.maxCombo = Std.int(Math.max(newTally.maxCombo, baseTally.maxCombo));
 
     return combinedTally;
   }
@@ -57,6 +64,9 @@ abstract Tallies(RawTallies)
   }
 }
 
+/**
+ * A structure object containing the data for highscore tallies.
+ */
 typedef RawTallies =
 {
   var combo:Int;
