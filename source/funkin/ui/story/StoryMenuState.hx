@@ -519,7 +519,7 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  function selectLevel()
+  function selectLevel():Void
   {
     if (!currentLevel.isUnlocked())
     {
@@ -553,6 +553,8 @@ class StoryMenuState extends MusicBeatState
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
     PlayStatePlaylist.campaignDifficulty = currentDifficultyId;
+
+    Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       FlxTransitionableState.skipNextTransIn = false;
@@ -649,7 +651,7 @@ class StoryMenuState extends MusicBeatState
     tracklistText.screenCenter(X);
     tracklistText.x -= FlxG.width * 0.35;
 
-    var levelScore:Null<SaveScoreData> = Save.get().getLevelScore(currentLevelId, currentDifficultyId);
+    var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;
     // levelScore.accuracy
   }

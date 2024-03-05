@@ -659,7 +659,6 @@ class Strumline extends FlxSpriteGroup
 
     if (noteSprite != null)
     {
-      noteSprite.strumTime = note.time;
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
 
