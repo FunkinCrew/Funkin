@@ -141,9 +141,9 @@ class StoryMenuState extends MusicBeatState
 
     persistentUpdate = persistentDraw = true;
 
-    updateData();
-
     rememberSelection();
+
+    updateData();
 
     // Explicitly define the background color.
     this.bgColor = FlxColor.BLACK;
@@ -403,7 +403,8 @@ class StoryMenuState extends MusicBeatState
 
   function hasModdedLevels():Bool
   {
-    return LevelRegistry.instance.listModdedLevelIds().length > 0;
+    return false;
+    // return LevelRegistry.instance.listModdedLevelIds().length > 0;
   }
 
   /**

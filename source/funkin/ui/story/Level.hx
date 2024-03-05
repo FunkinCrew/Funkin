@@ -201,8 +201,15 @@ class Level implements IRegistryEntry<LevelData>
       if (existingProp != null)
       {
         existingProp.propData = propData;
-        existingProp.x = propData.offsets[0] + FlxG.width * 0.25 * propIndex;
-        existingProp.visible = true;
+        if (existingProp.propData == null)
+        {
+          existingProp.visible = false;
+        }
+        else
+        {
+          existingProp.visible = true;
+          existingProp.x = propData.offsets[0] + FlxG.width * 0.25 * propIndex;
+        }
       }
       else
       {
