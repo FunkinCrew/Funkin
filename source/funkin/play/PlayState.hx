@@ -2791,14 +2791,19 @@ class PlayState extends MusicBeatSubState
       // TODO: Uncache the song.
     }
 
-    if (!overrideMusic)
+    if (overrideMusic)
     {
-      // Stop the music.
+      // Stop the music. Do NOT destroy it, something still references it!
       FlxG.sound.music.pause();
-      if (vocals != null) vocals.stop();
+      if (vocals != null)
+      {
+        vocals.pause();
+        remove(vocals);
+      }
     }
     else
     {
+      // Stop and destroy the music.
       FlxG.sound.music.pause();
       if (vocals != null)
       {
