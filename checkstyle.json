@@ -65,6 +65,10 @@
       "type": "CodeSimilarity"
     },
     {
+      "props": {},
+      "type": "CommentedOutCode"
+    },
+    {
       "props": {
         "policy": "aligned",
         "allowSingleline": true,
@@ -76,7 +80,7 @@
       "props": {
         "ignoreExtern": true,
         "format": "^[A-Z][A-Z0-9]*(_[A-Z0-9_]+)*$",
-        "tokens": ["INLINE"]
+        "tokens": ["INLINE", "NOTINLINE"]
       },
       "type": "ConstantName"
     },
@@ -340,6 +344,13 @@
     },
     {
       "props": {
+        "allowSingleLineStatement": true,
+        "tokens": ["FOR", "IF", "ELSE_IF", "WHILE", "DO_WHILE"]
+      },
+      "type": "NeedBraces"
+    },
+    {
+      "props": {
         "max": 3,
         "severity": "IGNORE"
       },
@@ -375,7 +386,6 @@
         "oldFunctionTypePolicy": "none",
         "unaryOpPolicy": "none",
         "intervalOpPolicy": "none",
-
         "newFunctionTypePolicy": "around",
         "ternaryOpPolicy": "around",
         "boolOpPolicy": "around",
@@ -539,6 +549,13 @@
     },
     {
       "props": {
+        "policy": "onlySingle",
+        "allowException": true
+      },
+      "type": "StringLiteral"
+    },
+    {
+      "props": {
         "format": "^\\s*(TODO|FIXME|HACK|XXX|BUG)"
       },
       "type": "TODOComment"
@@ -558,12 +575,6 @@
     {
       "props": {},
       "type": "TrailingWhitespace"
-    },
-    {
-      "props": {
-        "ignoreEnumAbstractValues": true
-      },
-      "type": "Type"
     },
     {
       "props": {
@@ -595,12 +606,6 @@
         "severity": "WARNING"
       },
       "type": "UnusedLocalVar"
-    },
-    {
-      "props": {
-        "severity": "IGNORE"
-      },
-      "type": "VariableInitialisation"
     },
     {
       "props": {
