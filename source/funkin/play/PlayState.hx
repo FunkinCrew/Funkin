@@ -2458,8 +2458,6 @@ class PlayState extends MusicBeatSubState
 
     health += healthChange;
 
-    FlxG.watch.addQuick("COMBO: ", Highscore.tallies.combo);
-
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
@@ -2624,6 +2622,9 @@ class PlayState extends MusicBeatSubState
             },
           accuracy: Highscore.tallies.totalNotesHit / currentChart.notes.length,
         };
+
+      // adds current song data into the tallies for the level (story levels)
+      Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
       if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
       {
@@ -2893,11 +2894,14 @@ class PlayState extends MusicBeatSubState
     persistentUpdate = false;
     vocals.stop();
     camHUD.alpha = 1;
+
+    var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
+
     var res:ResultState = new ResultState(
       {
         storyMode: PlayStatePlaylist.isStoryMode,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-        tallies: Highscore.tallies,
+        tallies: talliesToUse,
       });
     res.camera = camHUD;
     openSubState(res);

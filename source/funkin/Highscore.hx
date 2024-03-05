@@ -8,10 +8,32 @@ import flixel.FlxG;
 class Highscore
 {
   /**
-   * Keeps track of notes hit for the current song / week,
+   * Keeps track of notes hit for the current song
    * and how accurate you were with each note (bad, missed, shit, etc.)
    */
   public static var tallies:Tallies = new Tallies();
+
+  /**
+   * Keeps track of notes hit for the current WEEK / level
+   * for use with storymode, or likely any other "playlist" esque option
+   */
+  public static var talliesLevel:Tallies = new Tallies();
+
+  public static function combineTallies(tally1:Tallies, tally2:Tallies):Tallies
+  {
+    var combinedTally:Tallies = new Tallies();
+    combinedTally.combo = tally1.combo + tally2.combo;
+    combinedTally.missed = tally1.missed + tally2.missed;
+    combinedTally.shit = tally1.shit + tally2.shit;
+    combinedTally.bad = tally1.bad + tally2.bad;
+    combinedTally.good = tally1.good + tally2.good;
+    combinedTally.sick = tally1.sick + tally2.sick;
+    combinedTally.totalNotes = tally1.totalNotes + tally2.totalNotes;
+    combinedTally.totalNotesHit = tally1.totalNotesHit + tally2.totalNotesHit;
+    combinedTally.maxCombo = tally1.maxCombo + tally2.maxCombo;
+
+    return combinedTally;
+  }
 }
 
 @:forward
