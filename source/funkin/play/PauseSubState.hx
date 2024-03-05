@@ -386,7 +386,6 @@ class PauseSubState extends MusicBeatSubState
       // Set the position.
       var targetX = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 20 + 90;
       var targetY = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 120 + (FlxG.height * 0.48);
-      trace(targetY);
       FlxTween.globalManager.cancelTweensOf(text);
       FlxTween.tween(text, {x: targetX, y: targetY}, 0.33, {ease: FlxEase.quartOut});
     }

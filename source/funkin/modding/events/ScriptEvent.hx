@@ -107,23 +107,48 @@ class NoteScriptEvent extends ScriptEvent
   public var playSound(default, default):Bool;
 
   /**
-   * A multiplier to the health gained or lost from this note.
+   * The health gained or lost from this note.
    * This affects both hits and misses. Remember that max health is 2.00.
    */
-  public var healthMulti:Float;
+  public var healthChange:Float;
 
-  public function new(type:ScriptEventType, note:NoteSprite, comboCount:Int = 0, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, note:NoteSprite, healthChange:Float, comboCount:Int = 0, cancelable:Bool = false):Void
   {
     super(type, cancelable);
     this.note = note;
     this.comboCount = comboCount;
     this.playSound = true;
-    this.healthMulti = 1.0;
+    this.healthChange = healthChange;
   }
 
   public override function toString():String
   {
     return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ', comboCount=' + comboCount + ')';
+  }
+}
+
+class HitNoteScriptEvent extends NoteScriptEvent
+{
+  /**
+   * The judgement the player received for hitting the note.
+   */
+  public var judgement:String;
+
+  /**
+   * The score the player received for hitting the note.
+   */
+  public var score:Int;
+
+  public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, comboCount:Int = 0):Void
+  {
+    super(NOTE_HIT, note, healthChange, comboCount, true);
+    this.score = score;
+    this.judgement = judgement;
+  }
+
+  public override function toString():String
+  {
+    return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ')';
   }
 }
 
