@@ -9,7 +9,7 @@ class DynamicAccessTools
    * @param input The `Dynamic` to clone.
    * @return A clone of the input `Dynamic`.
    */
-  public static function clone(input:DynamicAccess<T>):DynamicAccess<T>
+  public static function clone<T>(input:DynamicAccess<T>):DynamicAccess<T>
   {
     return Reflect.copy(input);
   }
