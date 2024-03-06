@@ -38,6 +38,10 @@ class Strumline extends FlxSpriteGroup
     return FlxG.height / 0.45;
   }
 
+  /**
+   * Whether this strumline is controlled by the player's inputs.
+   * False means it's controlled by the opponent or Bot Play.
+   */
   public var isPlayer:Bool;
 
   /**
