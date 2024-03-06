@@ -1627,7 +1627,9 @@ class PlayState extends MusicBeatSubState
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
 
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode);
+    playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     opponentStrumline = new Strumline(noteStyle, false);
+    opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     add(playerStrumline);
     add(opponentStrumline);
 
@@ -1761,6 +1763,13 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.applyNoteData(playerNoteData);
     opponentStrumline.applyNoteData(opponentNoteData);
+  }
+
+  function onStrumlineNoteIncoming(noteSprite:NoteSprite):Void
+  {
+    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_INCOMING, noteSprite, 0, false);
+
+    dispatchEvent(event);
   }
 
   /**
@@ -1971,7 +1980,7 @@ class PlayState extends MusicBeatSubState
 
         // Call an event to allow canceling the note hit.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
+        var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', 0);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!

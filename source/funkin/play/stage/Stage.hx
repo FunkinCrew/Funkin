@@ -870,7 +870,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onCountdownEnd(event:CountdownScriptEvent) {}
 
-  public function onNoteHit(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent) {}
+
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
 

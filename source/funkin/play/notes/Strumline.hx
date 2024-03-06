@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.group.FlxSpriteGroup;
@@ -52,6 +53,8 @@ class Strumline extends FlxSpriteGroup
   public var notes:FlxTypedSpriteGroup<NoteSprite>;
 
   public var holdNotes:FlxTypedSpriteGroup<SustainTrail>;
+
+  public var onNoteIncoming:FlxTypedSignal<NoteSprite->Void>;
 
   var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
@@ -109,6 +112,8 @@ class Strumline extends FlxSpriteGroup
     this.add(this.noteSplashes);
 
     this.refresh();
+
+    this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
 
     for (i in 0...KEY_COUNT)
     {
@@ -315,6 +320,8 @@ class Strumline extends FlxSpriteGroup
       }
 
       nextNoteIndex = noteIndex + 1; // Increment the nextNoteIndex rather than splicing the array, because splicing is slow.
+
+      onNoteIncoming.dispatch(noteSprite);
     }
 
     // Update rendering of notes.
