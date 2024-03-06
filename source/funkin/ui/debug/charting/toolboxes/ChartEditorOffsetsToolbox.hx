@@ -284,7 +284,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     // Build instrumental waveform.
     // waveformInstrumental.waveform.forceUpdate = true;
     waveformInstrumental.waveform.waveformData = chartEditorState.audioInstTrack.waveformData;
-    waveformInstrumental.waveform.duration = (instTrack?.lenth ?? 1000.0) / Constants.MS_PER_SEC;
+    waveformInstrumental.waveform.duration = (instTrack?.length ?? 1000.0) / Constants.MS_PER_SEC;
 
     addOffsetsToAudioPreview();
   }
