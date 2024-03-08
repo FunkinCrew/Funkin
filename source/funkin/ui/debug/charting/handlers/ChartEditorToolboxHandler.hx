@@ -299,6 +299,15 @@ class ChartEditorToolboxHandler
       state.playtestStartTime = checkboxStartTime.selected;
     };
 
+    var checkboxBotPlay:Null<CheckBox> = toolbox.findComponent('playtestBotPlayCheckbox', CheckBox);
+    if (checkboxBotPlay == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestBotPlayCheckbox component.';
+
+    checkboxBotPlay.selected = state.playtestBotPlayMode;
+
+    checkboxBotPlay.onClick = _ -> {
+      state.playtestBotPlayMode = checkboxBotPlay.selected;
+    };
+
     var checkboxDebugger:Null<CheckBox> = toolbox.findComponent('playtestDebuggerCheckbox', CheckBox);
 
     if (checkboxDebugger == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestDebuggerCheckbox component.';

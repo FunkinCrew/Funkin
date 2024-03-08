@@ -12,6 +12,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.PlayState;
+import funkin.util.MathUtil;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
@@ -82,6 +83,9 @@ class GameOverSubState extends MusicBeatSubState
 
   var transparent:Bool;
 
+  final CAMERA_ZOOM_DURATION:Float = 0.5;
+  var targetCameraZoom:Float = 1.0;
+
   public function new(params:GameOverParams)
   {
     super();
@@ -142,6 +146,7 @@ class GameOverSubState extends MusicBeatSubState
 
     FlxG.camera.target = null;
     FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.01);
+    targetCameraZoom = PlayState?.instance?.currentStage?.camZoom * boyfriend.getDeathCameraZoom();
 
     //
     // Set up the audio
@@ -176,6 +181,9 @@ class GameOverSubState extends MusicBeatSubState
         playBlueBalledSFX();
       }
     }
+
+    // Smoothly lerp the camera
+    FlxG.camera.zoom = MathUtil.smoothLerp(FlxG.camera.zoom, targetCameraZoom, elapsed, CAMERA_ZOOM_DURATION);
 
     //
     // Handle user inputs.
@@ -286,6 +294,9 @@ class GameOverSubState extends MusicBeatSubState
           remove(boyfriend);
           PlayState.instance.currentStage.addCharacter(boyfriend, BF);
 
+          // Snap reset the camera which may have changed because of the player character data.
+          resetCameraZoom();
+
           // Close the substate.
           close();
         });
@@ -338,8 +349,8 @@ class GameOverSubState extends MusicBeatSubState
       }
       else
       {
-        isStarting = false;
         onComplete = function() {
+          isStarting = false;
           // We need to force to ensure that the non-starting music plays.
           startDeathMusic(1.0, true);
         };

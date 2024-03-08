@@ -30,7 +30,9 @@ import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
+import funkin.util.tools.TimerTools;
 import funkin.ui.transition.LoadingState;
+import funkin.util.TrackerUtil;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -66,7 +68,7 @@ class InitState extends FlxState
   /**
    * Setup a bunch of important Flixel stuff.
    */
-  function setupShit()
+  function setupShit():Void
   {
     //
     // GAME SETUP
@@ -94,7 +96,7 @@ class InitState extends FlxState
     #if (debug || FORCE_DEBUG_VERSION)
     // Disable using ~ to open the console (we use that for the Editor menu)
     FlxG.debugger.toggleKeys = [F2];
-
+    TrackerUtil.initTrackers();
     // Adds an additional Close Debugger button.
     // This big obnoxious white button is for MOBILE, so that you can press it
     // easily with your finger when debug bullshit pops up during testing lol!
@@ -219,7 +221,7 @@ class InitState extends FlxState
     // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
     trace('Parsing game data...');
-    var perfStart = haxe.Timer.stamp();
+    var perfStart:Float = TimerTools.start();
     SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
@@ -236,9 +238,7 @@ class InitState extends FlxState
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
 
-    var perfEnd = haxe.Timer.stamp();
-
-    trace('Parsing game data took ${Math.floor((perfEnd - perfStart) * 1000)}ms.');
+    trace('Parsing game data took: ${TimerTools.ms(perfStart)}');
   }
 
   /**

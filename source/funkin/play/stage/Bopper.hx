@@ -236,25 +236,25 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
 
-    trace('[BOPPER] Animation "$name" does not exist!');
+    FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
 
     // Attempt to strip a `-alt` suffix, if it exists.
     if (name.lastIndexOf('-') != -1)
     {
       var correctName = name.substring(0, name.lastIndexOf('-'));
-      trace('[BOPPER] Attempting to fallback to "$correctName"');
+      FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
       return correctAnimationName(correctName);
     }
     else
     {
       if (name != 'idle')
       {
-        trace('[BOPPER] Attempting to fallback to "idle"');
+        FlxG.log.warn('Bopper tried to play animation "$name" that does not exist, fallback to idle...');
         return correctAnimationName('idle');
       }
       else
       {
-        trace('[BOPPER] Failing animation playback.');
+        FlxG.log.error('Bopper tried to play animation "idle" that does not exist! This is bad!');
         return null;
       }
     }
@@ -353,7 +353,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public function onGameOver(event:ScriptEvent) {}
 
-  public function onNoteHit(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent) {}
+
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
 

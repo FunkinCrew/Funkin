@@ -60,7 +60,7 @@ class BaseCharacter extends Bopper
 
   @:allow(funkin.ui.debug.anim.DebugBoundingState)
   final _data:CharacterData;
-  final singTimeSec:Float;
+  final singTimeSteps:Float;
 
   /**
    * The offset between the corner of the sprite and the origin of the sprite (at the character's feet).
@@ -180,7 +180,7 @@ class BaseCharacter extends Bopper
     {
       this.characterName = _data.name;
       this.name = _data.name;
-      this.singTimeSec = _data.singTime;
+      this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
     }
@@ -191,6 +191,16 @@ class BaseCharacter extends Bopper
   public function getDeathCameraOffsets():Array<Float>
   {
     return _data.death?.cameraOffsets ?? [0.0, 0.0];
+  }
+
+  public function getDeathCameraZoom():Float
+  {
+    return _data.death?.cameraZoom ?? 1.0;
+  }
+
+  public function getDeathPreTransitionDelay():Float
+  {
+    return _data.death?.preTransitionDelay ?? 0.0;
   }
 
   /**
@@ -367,9 +377,9 @@ class BaseCharacter extends Bopper
       // This lets you add frames to the end of the sing animation to ease back into the idle!
 
       holdTimer += event.elapsed;
-      var singTimeSec:Float = singTimeSec * (Conductor.instance.beatLengthMs * 0.001); // x beats, to ms.
+      var singTimeSec:Float = singTimeSteps * (Conductor.instance.stepLengthMs / Constants.MS_PER_SEC); // x beats, to ms.
 
-      if (getCurrentAnimation().endsWith('miss')) singTimeSec *= 2; // makes it feel more awkward when you miss
+      if (getCurrentAnimation().endsWith('miss')) singTimeSec *= 2; // makes it feel more awkward when you miss???
 
       // Without this check here, the player character would only play the `sing` animation
       // for one beat, as opposed to holding it as long as the player is holding the button.
@@ -378,7 +388,7 @@ class BaseCharacter extends Bopper
       FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
       if (holdTimer > singTimeSec && shouldStopSinging)
       {
-        // trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
+        trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
         holdTimer = 0;
         dance(true);
       }
@@ -475,7 +485,7 @@ class BaseCharacter extends Bopper
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteHit(event:NoteScriptEvent)
+  public override function onNoteHit(event:HitNoteScriptEvent)
   {
     super.onNoteHit(event);
 

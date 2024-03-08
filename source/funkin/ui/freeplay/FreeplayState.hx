@@ -1001,7 +1001,7 @@ class FreeplayState extends MusicBeatSubState
     var daSong = songs[curSelected];
     if (daSong != null)
     {
-      var songScore:SaveScoreData = Save.get().getSongScore(songs[curSelected].songId, currentDifficulty);
+      var songScore:SaveScoreData = Save.instance.getSongScore(songs[curSelected].songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
       rememberedDifficulty = currentDifficulty;
@@ -1143,6 +1143,12 @@ class FreeplayState extends MusicBeatSubState
           targetSong: targetSong,
           targetDifficulty: targetDifficulty,
           targetVariation: targetVariation,
+          practiceMode: false,
+          minimalMode: false,
+          // TODO: Make these an option! It's currently only accessible via chart editor.
+          // startTimestamp: 0.0,
+          // playbackRate: 0.5,
+          // botPlayMode: true,
         }, true);
     });
   }
@@ -1183,7 +1189,7 @@ class FreeplayState extends MusicBeatSubState
     var daSongCapsule = grpCapsules.members[curSelected];
     if (daSongCapsule.songData != null)
     {
-      var songScore:SaveScoreData = Save.get().getSongScore(daSongCapsule.songData.songId, currentDifficulty);
+      var songScore:SaveScoreData = Save.instance.getSongScore(daSongCapsule.songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
       diffIdsCurrent = daSongCapsule.songData.songDifficulties;

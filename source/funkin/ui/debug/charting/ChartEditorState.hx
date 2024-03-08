@@ -593,6 +593,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playtestPracticeMode:Bool = false;
 
   /**
+   * If true, playtesting a chart will make the computer do it for you!
+   */
+  var playtestBotPlayMode:Bool = false;
+
+  /**
    * Enables or disables the "debugger" popup that appears when you run into a flixel error.
    */
   var enabledDebuggerPopup:Bool = true;
@@ -920,12 +925,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.get().chartEditorHasBackup;
+    return Save.instance.chartEditorHasBackup;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
   {
-    return Save.get().chartEditorHasBackup = value;
+    return Save.instance.chartEditorHasBackup = value;
   }
 
   /**
@@ -2163,7 +2168,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function loadPreferences():Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     if (previousWorkingFilePaths[0] == null)
     {
@@ -2191,7 +2196,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function writePreferences(hasBackup:Bool):Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     // Can't use filter() because of null safety checking!
     var filteredWorkingFilePaths:Array<String> = [];
@@ -4525,14 +4530,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 {
                   // Create an event and place it in the chart.
                   // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.clone());
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, Reflect.copy(eventDataToPlace));
 
                   performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
                 }
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace.clone());
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, Reflect.copy(noteKindToPlace));
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -5308,6 +5313,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
+    var playbackRate:Float = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+
     var targetSong:Song;
     try
     {
@@ -5355,8 +5364,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         targetDifficulty: selectedDifficulty,
         targetVariation: selectedVariation,
         practiceMode: playtestPracticeMode,
+        botPlayMode: playtestBotPlayMode,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
+        playbackRate: playbackRate,
         overrideMusic: true,
       });
 
@@ -5923,7 +5934,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
-      var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, tempNote, 1, true);
+      var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', 0);
       dispatchEvent(event);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!

@@ -110,6 +110,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       getBoyfriend().resetCharacter(true);
       // Reapply the camera offsets.
       var charData = _data.characters.bf;
+      getBoyfriend().scale.set(charData.scale, charData.scale);
       getBoyfriend().cameraFocusPoint.x += charData.cameraOffsets[0];
       getBoyfriend().cameraFocusPoint.y += charData.cameraOffsets[1];
     }
@@ -122,6 +123,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       getGirlfriend().resetCharacter(true);
       // Reapply the camera offsets.
       var charData = _data.characters.gf;
+      getGirlfriend().scale.set(charData.scale, charData.scale);
       getGirlfriend().cameraFocusPoint.x += charData.cameraOffsets[0];
       getGirlfriend().cameraFocusPoint.y += charData.cameraOffsets[1];
     }
@@ -130,6 +132,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       getDad().resetCharacter(true);
       // Reapply the camera offsets.
       var charData = _data.characters.dad;
+      getDad().scale.set(charData.scale, charData.scale);
       getDad().cameraFocusPoint.x += charData.cameraOffsets[0];
       getDad().cameraFocusPoint.y += charData.cameraOffsets[1];
     }
@@ -226,7 +229,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         switch (dataProp.scale)
         {
           case Left(value):
-            propSprite.scale.set(value);
+            propSprite.scale.set(value, value);
 
           case Right(values):
             propSprite.scale.set(values[0], values[1]);
@@ -435,6 +438,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         character.originalPosition.y = character.y + character.animOffsets[1];
       }
 
+      character.scale.set(charData.scale, charData.scale);
       character.cameraFocusPoint.x += charData.cameraOffsets[0];
       character.cameraFocusPoint.y += charData.cameraOffsets[1];
 
@@ -637,7 +641,30 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function dispatchToCharacters(event:ScriptEvent):Void
   {
-    for (characterId in characters.keys())
+    var charList = this.characters.keys().array();
+
+    // Dad, then BF, then GF, in that order.
+
+    if (charList.contains('dad'))
+    {
+      dispatchToCharacter('dad', event);
+      charList.remove('dad');
+    }
+
+    if (charList.contains('bf'))
+    {
+      dispatchToCharacter('bf', event);
+      charList.remove('bf');
+    }
+
+    if (charList.contains('gf'))
+    {
+      dispatchToCharacter('gf', event);
+      charList.remove('gf');
+    }
+
+    // Then the rest of the characters, if any.
+    for (characterId in charList)
     {
       dispatchToCharacter(characterId, event);
     }
@@ -843,7 +870,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onCountdownEnd(event:CountdownScriptEvent) {}
 
-  public function onNoteHit(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent) {}
+
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
 

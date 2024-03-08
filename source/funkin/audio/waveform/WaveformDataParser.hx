@@ -1,5 +1,7 @@
 package funkin.audio.waveform;
 
+import funkin.util.tools.TimerTools;
+
 class WaveformDataParser
 {
   static final INT16_MAX:Int = 32767;
@@ -71,7 +73,7 @@ class WaveformDataParser
 
     var outputData:Array<Int> = [];
 
-    var perfStart = haxe.Timer.stamp();
+    var perfStart:Float = TimerTools.start();
 
     for (pointIndex in 0...outputPointCount)
     {
@@ -108,8 +110,7 @@ class WaveformDataParser
     var outputDataLength:Int = Std.int(outputData.length / channels / 2);
     var result = new WaveformData(null, channels, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData);
 
-    var perfEnd = haxe.Timer.stamp();
-    trace('[WAVEFORM] Interpreted audio buffer in ${perfEnd - perfStart} seconds.');
+    trace('[WAVEFORM] Interpreted audio buffer in ${TimerTools.seconds(perfStart)}.');
 
     return result;
   }

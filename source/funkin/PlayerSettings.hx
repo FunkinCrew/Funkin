@@ -84,9 +84,9 @@ class PlayerSettings
   function addKeyboard():Void
   {
     var useDefault = true;
-    if (Save.get().hasControls(id, Keys))
+    if (Save.instance.hasControls(id, Keys))
     {
-      var keyControlData = Save.get().getControls(id, Keys);
+      var keyControlData = Save.instance.getControls(id, Keys);
       trace("keyControlData: " + haxe.Json.stringify(keyControlData));
       useDefault = false;
       controls.fromSaveData(keyControlData, Keys);
@@ -112,9 +112,9 @@ class PlayerSettings
   function addGamepad(gamepad:FlxGamepad)
   {
     var useDefault = true;
-    if (Save.get().hasControls(id, Gamepad(gamepad.id)))
+    if (Save.instance.hasControls(id, Gamepad(gamepad.id)))
     {
-      var padControlData = Save.get().getControls(id, Gamepad(gamepad.id));
+      var padControlData = Save.instance.getControls(id, Gamepad(gamepad.id));
       trace("padControlData: " + haxe.Json.stringify(padControlData));
       useDefault = false;
       controls.addGamepadWithSaveData(gamepad.id, padControlData);
@@ -141,7 +141,7 @@ class PlayerSettings
     if (keyData != null)
     {
       trace("saving key data: " + haxe.Json.stringify(keyData));
-      Save.get().setControls(id, Keys, keyData);
+      Save.instance.setControls(id, Keys, keyData);
     }
 
     if (controls.gamepadsAdded.length > 0)
@@ -150,7 +150,7 @@ class PlayerSettings
       if (padData != null)
       {
         trace("saving pad data: " + haxe.Json.stringify(padData));
-        Save.get().setControls(id, Gamepad(controls.gamepadsAdded[0]), padData);
+        Save.instance.setControls(id, Gamepad(controls.gamepadsAdded[0]), padData);
       }
     }
   }
