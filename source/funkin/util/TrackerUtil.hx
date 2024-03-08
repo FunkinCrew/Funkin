@@ -17,7 +17,9 @@ class TrackerUtil
    */
   public static function initTrackers():Void
   {
+    #if FLX_DEBUG
     Tracker.addProfile(new TrackerProfile(Highscore, ["tallies"]));
     FlxG.console.registerClass(Highscore);
+    #end
   }
 }

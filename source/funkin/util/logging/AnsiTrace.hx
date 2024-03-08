@@ -52,7 +52,12 @@ class AnsiTrace
   public static function traceBF()
   {
     #if sys
-    if (colorSupported) Sys.println(ansiBF.join("\n"));
+    if (colorSupported)
+    {
+      for (line in ansiBF)
+        Sys.stdout().writeString(line + "\n");
+      Sys.stdout().flush();
+    }
     #end
   }
 
