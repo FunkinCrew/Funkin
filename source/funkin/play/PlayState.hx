@@ -1032,7 +1032,7 @@ class PlayState extends MusicBeatSubState
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
     // Moving notes into position is now done by Strumline.update().
-    processNotes(elapsed);
+    if (!isInCutscene) processNotes(elapsed);
 
     justUnpaused = false;
   }
