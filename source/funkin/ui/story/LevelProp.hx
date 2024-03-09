@@ -45,6 +45,9 @@ class LevelProp extends Bopper
       this.visible = true;
     }
 
+    // Reset animation state.
+    this.shouldAlternate = null;
+
     var isAnimated:Bool = propData.animations.length > 0;
     if (isAnimated)
     {
