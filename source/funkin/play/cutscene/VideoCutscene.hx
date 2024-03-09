@@ -61,7 +61,7 @@ class VideoCutscene
     VideoCutscene.cutsceneType = cutsceneType;
 
     #if html5
-    playVideoHTML5(filePath);
+    playVideoHTML5(rawFilePath);
     #elseif hxCodec
     playVideoNative(rawFilePath);
     #else
