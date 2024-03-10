@@ -69,9 +69,10 @@ class ZoomCameraSongEvent extends SongEvent
     switch (ease)
     {
       case 'INSTANT':
-        // Set the zoom. Use defaultCameraZoom to prevent breaking camera bops.
-        PlayState.instance.defaultCameraZoom = zoom * FlxCamera.defaultZoom;
+        PlayState.instance.tweenCameraZoom(zoom, 0);
       default:
+        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
         if (easeFunction == null)
         {
@@ -79,8 +80,7 @@ class ZoomCameraSongEvent extends SongEvent
           return;
         }
 
-        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.instance.stepLengthMs * duration / 1000),
-          {ease: easeFunction});
+        PlayState.instance.tweenCameraZoom(zoom, durSeconds, easeFunction);
     }
   }
 

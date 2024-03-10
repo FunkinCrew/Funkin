@@ -119,6 +119,8 @@ class GameOverSubState extends MusicBeatSubState
     // Set up the visuals
     //
 
+    var playState = PlayState.instance;
+
     // Add a black background to the screen.
     var bg = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     // We make this transparent so that we can see the stage underneath during debugging,
@@ -130,13 +132,16 @@ class GameOverSubState extends MusicBeatSubState
 
     // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
     // We can then play the character's `firstDeath` animation.
-    boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
+    boyfriend = playState.currentStage.getBoyfriend(true);
     boyfriend.isDead = true;
     add(boyfriend);
     boyfriend.resetCharacter();
 
+    // Cancel camera tweening if it's currently active.
+    playState.cancelAllCameraTweens();
+
     // Assign a camera follow point to the boyfriend's position.
-    cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
+    cameraFollowPoint = new FlxObject(playState.cameraFollowPoint.x, playState.cameraFollowPoint.y, 1, 1);
     cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
     cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
     var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();

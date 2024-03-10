@@ -125,16 +125,22 @@ class FocusCameraSongEvent extends SongEvent
 
     if (useTween)
     {
-      var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-
-      var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
-      if (easeFunction == null)
+      switch (ease)
       {
-        trace('Invalid ease function: $ease');
-        return;
-      }
+        case 'INSTANT':
+          PlayState.instance.tweenCameraToFollowPoint(0);
+        default:
+          var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
 
-      PlayState.instance.tweenCamera(durSeconds, easeFunction);
+          var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
+          if (easeFunction == null)
+          {
+            trace('Invalid ease function: $ease');
+            return;
+          }
+
+          PlayState.instance.tweenCameraToFollowPoint(durSeconds, easeFunction);
+      }
     }
   }
 

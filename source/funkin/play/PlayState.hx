@@ -243,6 +243,11 @@ class PlayState extends MusicBeatSubState
   public var cameraFollowTween:FlxTween;
 
   /**
+   * An FlxTween that zooms the camera to the desired amount.
+   */
+  public var cameraZoomTween:FlxTween;
+
+  /**
    * The camera follow point from the last stage.
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
@@ -402,9 +407,11 @@ class PlayState extends MusicBeatSubState
   var startingSong:Bool = false;
 
   /**
-   * False if `FlxG.sound.music`
+   * Track if we currently have the music paused for a Pause substate, so we can unpause it when we return.
    */
   var musicPausedBySubState:Bool = false;
+
+  var cameraFollowTweenPausedBySubState:Bool = false; // Idea FOR LATER: Store paused tweens in an array, so we know which ones to unpause when leaving the Pause substate.
 
   /**
    * False until `create()` has completed.
@@ -1126,12 +1133,22 @@ class PlayState extends MusicBeatSubState
       // Pause the music.
       if (FlxG.sound.music != null)
       {
-        musicPausedBySubState = FlxG.sound.music.playing;
-        if (musicPausedBySubState)
+        if (FlxG.sound.music.playing)
         {
           FlxG.sound.music.pause();
+          musicPausedBySubState = true;
         }
+
+        // Pause vocals.
+        // Not tracking that we've done this via a bool because vocal re-syncing involves pausing the vocals anyway.
         if (vocals != null) vocals.pause();
+      }
+
+      // Pause camera tweening.
+      if (cameraFollowTween != null && cameraFollowTween.active)
+      {
+        cameraFollowTween.active = false;
+        cameraFollowTweenPausedBySubState = true;
       }
 
       // Pause the countdown.
@@ -1155,10 +1172,18 @@ class PlayState extends MusicBeatSubState
 
       if (event.eventCanceled) return;
 
-      // Resume
+      // Resume music if we paused it.
       if (musicPausedBySubState)
       {
         FlxG.sound.music.play();
+        musicPausedBySubState = false;
+      }
+
+      // Resume camera tweening if we paused it.
+      if (cameraFollowTweenPausedBySubState)
+      {
+        cameraFollowTween.active = true;
+        cameraFollowTweenPausedBySubState = false;
       }
 
       if (currentConversation != null)
@@ -1166,6 +1191,7 @@ class PlayState extends MusicBeatSubState
         currentConversation.resumeMusic();
       }
 
+      // Re-sync vocals.
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
       // Resume the countdown.
@@ -2852,6 +2878,9 @@ class PlayState extends MusicBeatSubState
    */
   function performCleanup():Void
   {
+    // If the camera is being tweened, stop it.
+    cancelAllCameraTweens();
+
     if (currentConversation != null)
     {
       remove(currentConversation);
@@ -2909,6 +2938,9 @@ class PlayState extends MusicBeatSubState
 
     // Stop camera zooming on beat.
     cameraZoomRate = 0;
+
+    // Cancel camera tweening if it's active.
+    cancelAllCameraTweens();
 
     // If the opponent is GF, zoom in on the opponent.
     // Else, if there is no GF, zoom in on BF.
@@ -2996,12 +3028,12 @@ class PlayState extends MusicBeatSubState
   /**
    * Resets the camera's zoom level and focus point.
    */
-  public function resetCamera(?resetZoom:Bool = true, ?cancelFollowTween:Bool = true):Void
+  public function resetCamera(?resetZoom:Bool = true, ?cancelTweens:Bool = true):Void
   {
-    // Cancel the follow tween if it's active.
-    if (cancelFollowTween && cameraFollowTween != null)
+    // Cancel camera tweens if any are active.
+    if (cancelTweens)
     {
-      cameraFollowTween.cancel();
+      cancelAllCameraTweens();
     }
 
     FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
@@ -3019,26 +3051,78 @@ class PlayState extends MusicBeatSubState
   /**
    * Disables camera following and tweens the camera to the follow point manually.
    */
-  public function tweenCamera(?duration:Float, ?ease:Null<Float->Float>):Void
+  public function tweenCameraToFollowPoint(?duration:Float, ?ease:Null<Float->Float>):Void
   {
     // Cancel the current tween if it's active.
+    cancelCameraFollowTween();
+
+    if (duration == 0)
+    {
+      // Instant movement. Just reset the camera to force it to the follow point.
+      resetCamera(false, false);
+    }
+    else
+    {
+      // Disable camera following for the duration of the tween.
+      FlxG.camera.target = null;
+
+      // Follow tween! Caching it so we can cancel/pause it later if needed.
+      var followPos:FlxPoint = cameraFollowPoint.getPosition() - FlxPoint.weak(FlxG.camera.width * 0.5, FlxG.camera.height * 0.5);
+      cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, duration,
+        {
+          ease: ease,
+          onComplete: function(_) {
+            resetCamera(false, false); // Re-enable camera following when the tween is complete.
+          }
+        });
+    }
+  }
+
+  public function cancelCameraFollowTween()
+  {
     if (cameraFollowTween != null)
     {
       cameraFollowTween.cancel();
     }
+  }
 
-    // Disable camera following for the duration of the tween.
-    FlxG.camera.target = null;
+  /**
+   * Tweens the camera zoom to the desired amount. Tweens defaultCameraZoom to avoid breaking camera bops.
+   */
+  public function tweenCameraZoom(?zoom:Float, ?duration:Float, ?ease:Null<Float->Float>):Void
+  {
+    // Cancel the current tween if it's active.
+    cancelCameraZoomTween();
 
-    // Follow tween! Caching it so we can cancel it later if needed.
-    var followPos:FlxPoint = cameraFollowPoint.getPosition() - FlxPoint.weak(FlxG.camera.width * 0.5, FlxG.camera.height * 0.5);
-    cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, duration,
-      {
-        ease: ease,
-        onComplete: function(_) {
-          resetCamera(false, false); // Re-enable camera following when the tween is complete.
-        }
-      });
+    var targetZoom = zoom * FlxCamera.defaultZoom;
+
+    if (duration == 0)
+    {
+      // Instant zoom. No tween needed.
+      defaultCameraZoom = targetZoom;
+    }
+    else
+    {
+      // Zoom tween! Caching it so we can cancel/pause it later if needed.
+      cameraZoomTween = FlxTween.tween(this, {defaultCameraZoom: targetZoom}, duration, {ease: ease});
+    }
+  }
+
+  public function cancelCameraZoomTween()
+  {
+    if (cameraZoomTween != null)
+    {
+      cameraZoomTween.cancel();
+    }
+  }
+
+  /**
+   * Cancel all active camera tweens simultaneously.
+   */
+  public function cancelAllCameraTweens()
+  {
+    cancelCameraFollowTween();
+    cancelCameraZoomTween();
   }
 
   #if (debug || FORCE_DEBUG_VERSION)
