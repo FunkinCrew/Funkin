@@ -2,6 +2,7 @@ package funkin.ui.haxeui.components;
 
 import funkin.modding.events.ScriptEvent.GhostMissNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.NoteScriptEvent;
+import funkin.modding.events.ScriptEvent.HitNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import haxe.ui.core.IDataComponent;
@@ -216,12 +217,17 @@ class CharacterPlayer extends Box
     if (character != null) character.onStepHit(event);
   }
 
+  public function onNoteIncoming(event:NoteScriptEvent)
+  {
+    if (character != null) character.onNoteIncoming(event);
+  }
+
   /**
    * Called when a note is hit in the song
    * Used to play character animations.
    * @param event The event.
    */
-  public function onNoteHit(event:NoteScriptEvent):Void
+  public function onNoteHit(event:HitNoteScriptEvent):Void
   {
     if (character != null) character.onNoteHit(event);
   }

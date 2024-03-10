@@ -112,6 +112,11 @@ typedef PlayStateParams =
    */
   ?practiceMode:Bool,
   /**
+   * Whether the song should start in Bot Play Mode.
+   * @default `false`
+   */
+  ?botPlayMode:Bool,
+  /**
    * Whether the song should be in minimal mode.
    * @default `false`
    */
@@ -281,6 +286,12 @@ class PlayState extends MusicBeatSubState
    * If true, player will not lose gain or lose score from notes.
    */
   public var isPracticeMode:Bool = false;
+
+  /**
+   * Whether the game is currently in Bot Play Mode.
+   * If true, player will not lose gain or lose score from notes.
+   */
+  public var isBotPlayMode:Bool = false;
 
   /**
    * Whether the player has dropped below zero health,
@@ -566,6 +577,7 @@ class PlayState extends MusicBeatSubState
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
     isPracticeMode = params.practiceMode ?? false;
+    isBotPlayMode = params.botPlayMode ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
     playbackRate = params.playbackRate ?? 1.0;
@@ -1020,7 +1032,7 @@ class PlayState extends MusicBeatSubState
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
     // Moving notes into position is now done by Strumline.update().
-    processNotes(elapsed);
+    if (!isInCutscene) processNotes(elapsed);
 
     justUnpaused = false;
   }
@@ -1614,8 +1626,10 @@ class PlayState extends MusicBeatSubState
     var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
 
-    playerStrumline = new Strumline(noteStyle, true);
+    playerStrumline = new Strumline(noteStyle, !isBotPlayMode);
+    playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     opponentStrumline = new Strumline(noteStyle, false);
+    opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     add(playerStrumline);
     add(opponentStrumline);
 
@@ -1751,6 +1765,13 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.applyNoteData(opponentNoteData);
   }
 
+  function onStrumlineNoteIncoming(noteSprite:NoteSprite):Void
+  {
+    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_INCOMING, noteSprite, 0, false);
+
+    dispatchEvent(event);
+  }
+
   /**
    * Prepares to start the countdown.
    * Ends any running cutscenes, creates the strumlines, and starts the countdown.
@@ -1876,7 +1897,14 @@ class PlayState extends MusicBeatSubState
   function updateScoreText():Void
   {
     // TODO: Add functionality for modules to update the score text.
-    scoreText.text = 'Score:' + songScore;
+    if (isBotPlayMode)
+    {
+      scoreText.text = 'Bot Play Enabled';
+    }
+    else
+    {
+      scoreText.text = 'Score:' + songScore;
+    }
   }
 
   /**
@@ -1884,7 +1912,14 @@ class PlayState extends MusicBeatSubState
    */
   function updateHealthBar():Void
   {
-    healthLerp = FlxMath.lerp(healthLerp, health, 0.15);
+    if (isBotPlayMode)
+    {
+      healthLerp = Constants.HEALTH_MAX;
+    }
+    else
+    {
+      healthLerp = FlxMath.lerp(healthLerp, health, 0.15);
+    }
   }
 
   /**
@@ -1928,13 +1963,16 @@ class PlayState extends MusicBeatSubState
 
       if (Conductor.instance.songPosition > hitWindowEnd)
       {
-        if (note.hasMissed) continue;
+        if (note.hasMissed || note.hasBeenHit) continue;
 
         note.tooEarly = false;
         note.mayHit = false;
         note.hasMissed = true;
 
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
+        if (note.holdNoteSprite != null)
+        {
+          note.holdNoteSprite.missedNote = true;
+        }
       }
       else if (Conductor.instance.songPosition > hitWindowCenter)
       {
@@ -1942,7 +1980,7 @@ class PlayState extends MusicBeatSubState
 
         // Call an event to allow canceling the note hit.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
+        var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', 0);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2021,10 +2059,38 @@ class PlayState extends MusicBeatSubState
 
       if (Conductor.instance.songPosition > hitWindowEnd)
       {
+        if (note.hasMissed || note.hasBeenHit) continue;
         note.tooEarly = false;
         note.mayHit = false;
         note.hasMissed = true;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
+        if (note.holdNoteSprite != null)
+        {
+          note.holdNoteSprite.missedNote = true;
+        }
+      }
+      else if (isBotPlayMode && Conductor.instance.songPosition > hitWindowCenter)
+      {
+        if (note.hasBeenHit) continue;
+
+        // We call onHitNote to play the proper animations,
+        // but not goodNoteHit! This means zero score and zero notes hit for the results screen!
+
+        // Call an event to allow canceling the note hit.
+        // NOTE: This is what handles the character animations!
+        var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', 0);
+        dispatchEvent(event);
+
+        // Calling event.cancelEvent() skips all the other logic! Neat!
+        if (event.eventCanceled) continue;
+
+        // Command the bot to hit the note on time.
+        // NOTE: This is what handles the strumline and cleaning up the note itself!
+        playerStrumline.hitNote(note);
+
+        if (note.holdNoteSprite != null)
+        {
+          playerStrumline.playNoteHoldCover(note.holdNoteSprite);
+        }
       }
       else if (Conductor.instance.songPosition > hitWindowStart)
       {
@@ -2069,7 +2135,7 @@ class PlayState extends MusicBeatSubState
       if (holdNote == null || !holdNote.alive) continue;
 
       // While the hold note is being hit, and there is length on the hold note...
-      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      if (!isBotPlayMode && holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Grant the player health.
         health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;

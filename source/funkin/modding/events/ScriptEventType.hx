@@ -64,6 +64,13 @@ enum abstract ScriptEventType(String) from String to String
   var SONG_STEP_HIT = 'STEP_HIT';
 
   /**
+   * Called when a note comes on screen and starts approaching the strumline.
+   *
+   * This event is not cancelable.
+   */
+  var NOTE_INCOMING = 'NOTE_INCOMING';
+
+  /**
    * Called when a character hits a note.
    * Important information such as judgement/timing, note data, player/opponent, etc. are all provided.
    *

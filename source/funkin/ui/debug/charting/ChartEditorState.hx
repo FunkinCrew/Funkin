@@ -593,6 +593,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playtestPracticeMode:Bool = false;
 
   /**
+   * If true, playtesting a chart will make the computer do it for you!
+   */
+  var playtestBotPlayMode:Bool = false;
+
+  /**
    * Enables or disables the "debugger" popup that appears when you run into a flixel error.
    */
   var enabledDebuggerPopup:Bool = true;
@@ -5359,6 +5364,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         targetDifficulty: selectedDifficulty,
         targetVariation: selectedVariation,
         practiceMode: playtestPracticeMode,
+        botPlayMode: playtestBotPlayMode,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
         playbackRate: playbackRate,
@@ -5928,7 +5934,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
-      var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, tempNote, 1, true);
+      var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', 0);
       dispatchEvent(event);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!
