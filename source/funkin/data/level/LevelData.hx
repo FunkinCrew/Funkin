@@ -17,7 +17,7 @@ typedef LevelData =
   var version:String;
 
   /**
-   * The title of the week, as seen in the top corner.
+   * The title of the level, as seen in the top corner.
    */
   var name:String;
 
@@ -27,21 +27,35 @@ typedef LevelData =
   @:jcustomparse(funkin.data.DataParse.stringNotEmpty)
   var titleAsset:String;
 
+  /**
+   * The props to display over the colored background.
+   * In the base game this is usually Boyfriend and the opponent.
+   */
   @:default([])
   var props:Array<LevelPropData>;
-  @:default(["bopeebo"])
+
+  /**
+   * The list of song IDs included in this level.
+   */
+  @:default(['bopeebo'])
   var songs:Array<String>;
-  @:default("#F9CF51")
+
+  /**
+   * The background for the level behind the props.
+   */
+  @:default('#F9CF51')
   @:optional
   var background:String;
 }
 
+/**
+ * Data for a single prop for a story mode level.
+ */
 typedef LevelPropData =
 {
   /**
    * The image to use for the prop. May optionally be a sprite sheet.
    */
-  // @:jcustomparse(funkin.data.DataParse.stringNotEmpty)
   var assetPath:String;
 
   /**

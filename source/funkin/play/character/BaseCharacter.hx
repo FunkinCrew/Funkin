@@ -485,7 +485,7 @@ class BaseCharacter extends Bopper
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteHit(event:NoteScriptEvent)
+  public override function onNoteHit(event:HitNoteScriptEvent)
   {
     super.onNoteHit(event);
 

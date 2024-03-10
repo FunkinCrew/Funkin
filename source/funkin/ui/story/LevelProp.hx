@@ -11,11 +11,11 @@ class LevelProp extends Bopper
   function set_propData(value:LevelPropData):LevelPropData
   {
     // Only reset the prop if the asset path has changed.
-    if (propData == null || value.assetPath != this.propData.assetPath)
+    if (propData == null || value?.assetPath != propData?.assetPath)
     {
       this.visible = (value != null);
       this.propData = value;
-      danceEvery = this.propData.danceEvery;
+      danceEvery = this.propData?.danceEvery ?? 0;
       applyData();
     }
 
@@ -35,6 +35,19 @@ class LevelProp extends Bopper
 
   function applyData():Void
   {
+    if (propData == null)
+    {
+      this.visible = false;
+      return;
+    }
+    else
+    {
+      this.visible = true;
+    }
+
+    // Reset animation state.
+    this.shouldAlternate = null;
+
     var isAnimated:Bool = propData.animations.length > 0;
     if (isAnimated)
     {
