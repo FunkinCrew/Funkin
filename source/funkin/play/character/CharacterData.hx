@@ -378,12 +378,12 @@ class CharacterDataParser
   }
 
   /**
-   * The default time the character should sing for, in beats.
+   * The default time the character should sing for, in steps.
    * Values that are too low will cause the character to stop singing between notes.
-   * Originally, this value was set to 1, but it was changed to 2 because that became
-   * too low after some other code changes.
+   * Values that are too high will cause the character to hold their singing pose for too long after they're done.
+   * @default `8 steps`
    */
-  static final DEFAULT_SINGTIME:Float = 2.0;
+  static final DEFAULT_SINGTIME:Float = 8.0;
 
   static final DEFAULT_DANCEEVERY:Int = 1;
   static final DEFAULT_FLIPX:Bool = false;
