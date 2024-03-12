@@ -77,7 +77,7 @@ jobs:
           key: ${{ runner.os }}-build-win-${{ github.ref_name }}
       - name: Build game
         run: |
-          haxelib run lime build windows -v -release -DNO_REDIRECT_ASSETS_FOLDER -DGITHUB_BUILD
+          haxelib run lime build windows -v -release -DGITHUB_BUILD
         env:
           HXCPP_COMPILE_CACHE: "${{ runner.temp }}\\hxcpp_cache"
       - name: Upload build artifacts
