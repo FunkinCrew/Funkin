@@ -227,7 +227,7 @@ class FreeplayState extends MusicBeatSubState
     trace(FlxG.camera.initialZoom);
     trace(FlxCamera.defaultZoom);
 
-    var pinkBack:FunkinSprite = FunkinSprite.create(Paths.image('freeplay/pinkBack'));
+    var pinkBack:FunkinSprite = FunkinSprite.create('freeplay/pinkBack');
     pinkBack.color = 0xFFffd4e9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
 

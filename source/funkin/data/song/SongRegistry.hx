@@ -68,6 +68,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
       {
         log('Successfully created scripted entry (${entryCls} = ${entry.id})');
         entries.set(entry.id, entry);
+        scriptedEntryIds.set(entry.id, entryCls);
       }
       else
       {

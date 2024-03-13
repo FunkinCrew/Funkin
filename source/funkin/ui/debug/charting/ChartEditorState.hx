@@ -602,6 +602,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var enabledDebuggerPopup:Bool = true;
 
+  /**
+   * Whether song scripts should be enabled during playtesting.
+   * You should probably check the box if the song has custom mechanics.
+   */
+  var playtestSongScripts:Bool = true;
+
   // Visuals
 
   /**
@@ -1396,7 +1402,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_currentSongId():String
   {
-    return currentSongName.toLowerKebabCase().replace('.', '').replace(' ', '-');
+    return currentSongName.toLowerKebabCase().replace(' ', '-').sanitize();
   }
 
   var currentSongArtist(get, set):String;
@@ -5320,7 +5326,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var targetSong:Song;
     try
     {
-      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
+      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, playtestSongScripts, false);
     }
     catch (e)
     {
@@ -5348,7 +5354,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Paths.setCurrentLevel('week6');
       case 'tankmanBattlefield':
         Paths.setCurrentLevel('week7');
-      case 'phillyStreets' | 'phillyBlazin':
+      case 'phillyStreets' | 'phillyBlazin' | 'phillyBlazin2':
         Paths.setCurrentLevel('weekend1');
     }
 
