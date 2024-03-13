@@ -4,7 +4,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxSignal;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.FlxTimer;
 import funkin.audio.FlxStreamSound;
 

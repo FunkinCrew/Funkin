@@ -91,8 +91,11 @@
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
 	<assets path="assets/fonts" embed="true" />
-	<!-- If compiled via github actions, enable force debug -->
-	<set name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD"/>
+
+	<!-- If compiled via github actions, show debug version number. -->
+	<define name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD" />
+	<define name="NO_REDIRECT_ASSETS_FOLDER" if="GITHUB_BUILD" />
+
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="lime" /> <!-- Game engine backend -->
 	<haxelib name="openfl" /> <!-- Game engine backend -->
@@ -216,9 +219,9 @@
 	<postbuild haxe="source/Postbuild.hx"/> -->
 
 	<!-- Enable this on platforms which do not support dropping files onto the window. -->
-	<set name="FILE_DROP_UNSUPPORTED" if="mac" />
+	<haxedef name="FILE_DROP_UNSUPPORTED" if="mac" />
 	<section unless="FILE_DROP_UNSUPPORTED">
-		<set name="FILE_DROP_SUPPORTED" />
+		<haxedef name="FILE_DROP_SUPPORTED" />
 	</section>
 
 	<!-- Options for Polymod -->

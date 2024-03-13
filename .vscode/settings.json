@@ -181,6 +181,16 @@
       "args": ["-debug", "-DWAVEFORM", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "Windows / Release",
+      "target": "windows",
+      "args": ["-release"]
+    },
+    {
+      "label": "Windows / Release (GitHub Actions)",
+      "target": "windows",
+      "args": ["-release", "-DGITHUB_BUILD"]
+    },
+    {
       "label": "HashLink / Debug (Waveform Test)",
       "target": "hl",
       "args": ["-debug", "-DWAVEFORM"]
