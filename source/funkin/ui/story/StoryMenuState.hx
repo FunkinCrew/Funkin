@@ -16,6 +16,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.data.level.LevelRegistry;
+import funkin.audio.FunkinSound;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
@@ -234,17 +235,7 @@ class StoryMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    if (FlxG.sound.music == null || !FlxG.sound.music.playing)
-    {
-      var freakyMenuMetadata:Null<SongMusicData> = SongRegistry.instance.parseMusicData('freakyMenu');
-      if (freakyMenuMetadata != null)
-      {
-        Conductor.instance.mapTimeChanges(freakyMenuMetadata.timeChanges);
-      }
-
-      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
-      FlxG.sound.music.fadeIn(4, 0, 0.7);
-    }
+    FunkinSound.playMusic('freakyMenu');
   }
 
   function updateData():Void

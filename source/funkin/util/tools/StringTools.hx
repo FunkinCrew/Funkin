@@ -28,6 +28,36 @@ class StringTools
   }
 
   /**
+   * Strip a given prefix from a string.
+   * @param value The string to strip.
+   * @param prefix The prefix to strip. If the prefix isn't found, the original string is returned.
+   * @return The stripped string.
+   */
+  public static function stripPrefix(value:String, prefix:String):String
+  {
+    if (value.startsWith(prefix))
+    {
+      return value.substr(prefix.length);
+    }
+    return value;
+  }
+
+  /**
+   * Strip a given suffix from a string.
+   * @param value The string to strip.
+   * @param suffix The suffix to strip. If the suffix isn't found, the original string is returned.
+   * @return The stripped string.
+   */
+  public static function stripSuffix(value:String, suffix:String):String
+  {
+    if (value.endsWith(suffix))
+    {
+      return value.substr(0, value.length - suffix.length);
+    }
+    return value;
+  }
+
+  /**
    * Converts a string to lower kebab case. For example, "Hello World" becomes "hello-world".
    *
    * @param value The string to convert.

@@ -7,7 +7,7 @@ import funkin.audio.FunkinSound;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
 import funkin.util.assets.SoundUtil;
-import funkin.util.tools.TimerTools;
+import funkin.util.TimerUtil;
 import funkin.audio.waveform.WaveformData;
 import funkin.audio.waveform.WaveformDataParser;
 import funkin.audio.waveform.WaveformSprite;
@@ -129,41 +129,41 @@ class ChartEditorAudioHandler
 
   public static function switchToInstrumental(state:ChartEditorState, instId:String = '', playerId:String, opponentId:String):Bool
   {
-    var perfA:Float = TimerTools.start();
+    var perfA:Float = TimerUtil.start();
 
     var result:Bool = playInstrumental(state, instId);
     if (!result) return false;
 
-    var perfB:Float = TimerTools.start();
+    var perfB:Float = TimerUtil.start();
 
     stopExistingVocals(state);
 
-    var perfC:Float = TimerTools.start();
+    var perfC:Float = TimerUtil.start();
 
     result = playVocals(state, BF, playerId, instId);
 
-    var perfD:Float = TimerTools.start();
+    var perfD:Float = TimerUtil.start();
 
     // if (!result) return false;
     result = playVocals(state, DAD, opponentId, instId);
     // if (!result) return false;
 
-    var perfE:Float = TimerTools.start();
+    var perfE:Float = TimerUtil.start();
 
     state.hardRefreshOffsetsToolbox();
 
-    var perfF:Float = TimerTools.start();
+    var perfF:Float = TimerUtil.start();
 
     state.hardRefreshFreeplayToolbox();
 
-    var perfG:Float = TimerTools.start();
+    var perfG:Float = TimerUtil.start();
 
-    trace('Switched to instrumental in ${TimerTools.seconds(perfA, perfB)}.');
-    trace('Stopped existing vocals in ${TimerTools.seconds(perfB, perfC)}.');
-    trace('Played BF vocals in ${TimerTools.seconds(perfC, perfD)}.');
-    trace('Played DAD vocals in ${TimerTools.seconds(perfD, perfE)}.');
-    trace('Hard refreshed offsets toolbox in ${TimerTools.seconds(perfE, perfF)}.');
-    trace('Hard refreshed freeplay toolbox in ${TimerTools.seconds(perfF, perfG)}.');
+    trace('Switched to instrumental in ${TimerUtil.seconds(perfA, perfB)}.');
+    trace('Stopped existing vocals in ${TimerUtil.seconds(perfB, perfC)}.');
+    trace('Played BF vocals in ${TimerUtil.seconds(perfC, perfD)}.');
+    trace('Played DAD vocals in ${TimerUtil.seconds(perfD, perfE)}.');
+    trace('Hard refreshed offsets toolbox in ${TimerUtil.seconds(perfE, perfF)}.');
+    trace('Hard refreshed freeplay toolbox in ${TimerUtil.seconds(perfF, perfG)}.');
 
     return true;
   }
@@ -175,9 +175,9 @@ class ChartEditorAudioHandler
   {
     if (instId == '') instId = 'default';
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
-    var perfStart:Float = TimerTools.start();
+    var perfStart:Float = TimerUtil.start();
     var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
-    trace('Built instrumental track in ${TimerTools.seconds(perfStart)} seconds.');
+    trace('Built instrumental track in ${TimerUtil.seconds(perfStart)} seconds.');
     if (instTrack == null) return false;
 
     stopExistingInstrumental(state);
@@ -205,9 +205,9 @@ class ChartEditorAudioHandler
   {
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackId);
-    var perfStart:Float = TimerTools.start();
+    var perfStart:Float = TimerUtil.start();
     var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
-    trace('Built vocal track in ${TimerTools.seconds(perfStart)}.');
+    trace('Built vocal track in ${TimerUtil.seconds(perfStart)}.');
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
@@ -218,9 +218,9 @@ class ChartEditorAudioHandler
         case BF:
           state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
 
-          var perfStart:Float = TimerTools.start();
+          var perfStart:Float = TimerUtil.start();
           var waveformData:Null<WaveformData> = vocalTrack.waveformData;
-          trace('Interpreted waveform data in ${TimerTools.seconds(perfStart)}.');
+          trace('Interpreted waveform data in ${TimerUtil.seconds(perfStart)}.');
 
           if (waveformData != null)
           {
@@ -244,9 +244,9 @@ class ChartEditorAudioHandler
         case DAD:
           state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
 
-          var perfStart:Float = TimerTools.start();
+          var perfStart:Float = TimerUtil.start();
           var waveformData:Null<WaveformData> = vocalTrack.waveformData;
-          trace('Interpreted waveform data in ${TimerTools.seconds(perfStart)}.');
+          trace('Interpreted waveform data in ${TimerUtil.seconds(perfStart)}.');
 
           if (waveformData != null)
           {
