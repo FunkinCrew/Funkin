@@ -808,7 +808,8 @@ class ChartEditorDialogHandler
         }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
         #if FILE_DROP_SUPPORTED
-        addDropHandler(songVariationMetadataEntry, onDropFileMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel));
+        state.addDropHandler({component: songVariationMetadataEntry, handler: onDropFileMetadataVariation.bind(variation)
+          .bind(songVariationMetadataEntryLabel)});
         #end
         chartContainerB.addComponent(songVariationMetadataEntry);
 
@@ -832,7 +833,11 @@ class ChartEditorDialogHandler
         }
         songVariationChartDataEntry.onClick = onClickChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel);
         #if FILE_DROP_SUPPORTED
-        addDropHandler(songVariationChartDataEntry, onDropFileChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel));
+        state.addDropHandler(
+          {
+            component: songVariationChartDataEntry,
+            handler: onDropFileChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel)
+          });
         #end
         chartContainerB.addComponent(songVariationChartDataEntry);
       }
