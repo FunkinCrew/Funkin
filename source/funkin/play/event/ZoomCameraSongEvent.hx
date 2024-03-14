@@ -58,7 +58,7 @@ class ZoomCameraSongEvent extends SongEvent
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
     // Does nothing if we are minimal mode.
-    if (PlayState.instance.minimalMode) return;
+    if (PlayState.instance.isMinimalMode) return;
 
     var zoom:Null<Float> = data.getFloat('zoom');
     if (zoom == null) zoom = 1.0;
