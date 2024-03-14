@@ -215,7 +215,7 @@ class Countdown
 
     if (spritePath == null) return;
 
-    var countdownSprite:FunkinSprite = FunkinSprite.create(Paths.image(spritePath));
+    var countdownSprite:FunkinSprite = FunkinSprite.create(spritePath);
     countdownSprite.scrollFactor.set(0, 0);
 
     if (isPixelStyle) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE));

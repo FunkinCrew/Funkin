@@ -318,6 +318,17 @@ class ChartEditorToolboxHandler
       state.enabledDebuggerPopup = checkboxDebugger.selected;
     };
 
+    var checkboxSongScripts:Null<CheckBox> = toolbox.findComponent('playtestSongScriptsCheckbox', CheckBox);
+
+    if (checkboxSongScripts == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestSongScriptsCheckbox component.';
+
+    state.playtestSongScripts = checkboxSongScripts.selected;
+
+    checkboxSongScripts.onClick = _ -> {
+      state.playtestSongScripts = checkboxSongScripts.selected;
+    };
+
     return toolbox;
   }
 
