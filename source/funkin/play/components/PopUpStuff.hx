@@ -6,7 +6,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxDirection;
 import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
-import funkin.util.tools.TimerTools;
+import funkin.util.TimerUtil;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {
@@ -17,7 +17,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
   public function displayRating(daRating:String)
   {
-    var perfStart:Float = TimerTools.start();
+    var perfStart:Float = TimerUtil.start();
 
     if (daRating == null) daRating = "good";
 
@@ -25,7 +25,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
-    var rating:FunkinSprite = FunkinSprite.create(0, 0, Paths.image(ratingPath));
+    var rating:FunkinSprite = FunkinSprite.create(0, 0, ratingPath);
     rating.scrollFactor.set(0.2, 0.2);
 
     rating.zIndex = 1000;
@@ -59,12 +59,12 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
         startDelay: Conductor.instance.beatLengthMs * 0.001
       });
 
-    trace('displayRating took: ${TimerTools.seconds(perfStart)}');
+    trace('displayRating took: ${TimerUtil.seconds(perfStart)}');
   }
 
   public function displayCombo(?combo:Int = 0):Int
   {
-    var perfStart:Float = TimerTools.start();
+    var perfStart:Float = TimerUtil.start();
 
     if (combo == null) combo = 0;
 
@@ -76,7 +76,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       pixelShitPart1 = 'weeb/pixelUI/';
       pixelShitPart2 = '-pixel';
     }
-    var comboSpr:FunkinSprite = FunkinSprite.create(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
+    var comboSpr:FunkinSprite = FunkinSprite.create(pixelShitPart1 + 'combo' + pixelShitPart2);
     comboSpr.y = FlxG.camera.height * 0.4 + 80;
     comboSpr.x = FlxG.width * 0.50;
     // comboSpr.x -= FlxG.camera.scroll.x * 0.2;
@@ -124,7 +124,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     var daLoop:Int = 1;
     for (i in seperatedScore)
     {
-      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2);
 
       if (PlayState.instance.currentStageId.startsWith('school'))
       {
@@ -157,7 +157,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       daLoop++;
     }
 
-    trace('displayCombo took: ${TimerTools.seconds(perfStart)}');
+    trace('displayCombo took: ${TimerUtil.seconds(perfStart)}');
 
     return combo;
   }
