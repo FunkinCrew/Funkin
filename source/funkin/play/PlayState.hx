@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.audio.FunkinSound;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
@@ -2711,7 +2712,7 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+        FunkinSound.playMusic('freakyMenu');
 
         // transIn = FlxTransitionableState.defaultTransIn;
         // transOut = FlxTransitionableState.defaultTransOut;

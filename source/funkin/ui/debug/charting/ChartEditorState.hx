@@ -5334,9 +5334,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
-    LogStyle.WARNING.openConsole = enabledDebuggerPopup;
-    LogStyle.ERROR.openConsole = enabledDebuggerPopup;
-
     // TODO: Rework asset system so we can remove this.
     switch (currentSongStage)
     {

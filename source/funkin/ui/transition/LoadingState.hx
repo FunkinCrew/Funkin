@@ -238,11 +238,38 @@ class LoadingState extends MusicBeatState
     FunkinSprite.cacheTexture(Paths.image('shit', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: remove this
 
+    // List all image assets in the level's library.
+    // This is crude and I want to remove it when we have a proper asset caching system.
+    // TODO: Get rid of this junk!
+    var library = openfl.utils.Assets.getLibrary(PlayStatePlaylist.campaignId);
+    var assets = library.list(lime.utils.AssetType.IMAGE);
+    trace('Got ${assets.length} assets: ${assets}');
+
+    // TODO: assets includes non-images! This is a bug with Polymod
+    for (asset in assets)
+    {
+      // Exclude items of the wrong type.
+      var path = '${PlayStatePlaylist.campaignId}:${asset}';
+      // TODO DUMB HACK DUMB HACK why doesn't filtering by AssetType.IMAGE above work
+      // I will fix this properly later I swear -eric
+      if (!path.endsWith('.png')) continue;
+
+      FunkinSprite.cacheTexture(path);
+
+      // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
+      // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
+      if (path.endsWith('spritemap1.png'))
+      {
+        openfl.Assets.getBitmapData(path, true);
+      }
+    }
+
     // FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
     // FunkinSprite.cacheAllCharacterTextures(player)
     // FunkinSprite.cacheAllCharacterTextures(girlfriend)
     // FunkinSprite.cacheAllCharacterTextures(opponent)
     // FunkinSprite.cacheAllStageTextures(stage)
+    // FunkinSprite.cacheAllSongTextures(stage)
 
     FunkinSprite.purgeCache();
 

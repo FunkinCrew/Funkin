@@ -12,8 +12,10 @@ import flixel.util.typeLimit.NextState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
+import funkin.data.song.SongData.SongMusicData;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
+import funkin.audio.FunkinSound;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
@@ -51,7 +53,7 @@ class MainMenuState extends MusicBeatState
 
     if (!(FlxG?.sound?.music?.playing ?? false))
     {
-      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+      playMenuMusic();
     }
 
     persistentUpdate = persistentDraw = true;
@@ -149,6 +151,11 @@ class MainMenuState extends MusicBeatState
     // this.rightWatermarkText.text = "blablabla test";
 
     // NG.core.calls.event.logEvent('swag').send();
+  }
+
+  function playMenuMusic():Void
+  {
+    FunkinSound.playMusic('freakyMenu');
   }
 
   function resetCamStuff()
