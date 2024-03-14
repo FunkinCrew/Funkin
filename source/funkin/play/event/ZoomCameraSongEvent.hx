@@ -55,7 +55,10 @@ class ZoomCameraSongEvent extends SongEvent
   public override function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
-    if (PlayState.instance == null) return;
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+
+    // Does nothing if we are minimal mode.
+    if (PlayState.instance.isMinimalMode) return;
 
     var zoom:Null<Float> = data.getFloat('zoom');
     if (zoom == null) zoom = 1.0;
