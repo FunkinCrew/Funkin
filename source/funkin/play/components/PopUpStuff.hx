@@ -25,7 +25,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
-    var rating:FunkinSprite = FunkinSprite.create(0, 0, Paths.image(ratingPath));
+    var rating:FunkinSprite = FunkinSprite.create(0, 0, ratingPath);
     rating.scrollFactor.set(0.2, 0.2);
 
     rating.zIndex = 1000;
@@ -76,7 +76,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       pixelShitPart1 = 'weeb/pixelUI/';
       pixelShitPart2 = '-pixel';
     }
-    var comboSpr:FunkinSprite = FunkinSprite.create(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
+    var comboSpr:FunkinSprite = FunkinSprite.create(pixelShitPart1 + 'combo' + pixelShitPart2);
     comboSpr.y = FlxG.camera.height * 0.4 + 80;
     comboSpr.x = FlxG.width * 0.50;
     // comboSpr.x -= FlxG.camera.scroll.x * 0.2;
@@ -124,7 +124,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     var daLoop:Int = 1;
     for (i in seperatedScore)
     {
-      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2);
 
       if (PlayState.instance.currentStageId.startsWith('school'))
       {

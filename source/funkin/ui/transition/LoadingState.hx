@@ -48,7 +48,7 @@ class LoadingState extends MusicBeatState
     var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
     add(bg);
 
-    funkay = FunkinSprite.create(Paths.image('funkay'));
+    funkay = FunkinSprite.create('funkay');
     funkay.setGraphicSize(0, FlxG.height);
     funkay.updateHitbox();
     add(funkay);
@@ -416,9 +416,15 @@ class MultiCallback
   public function getUnfired():Array<Void->Void>
     return unfired.array();
 
+  /**
+   * Perform an FlxG.switchState with a nice transition
+   * @param state
+   * @param transitionTex
+   * @param time
+   */
   public static function coolSwitchState(state:NextState, transitionTex:String = "shaderTransitionStuff/coolDots", time:Float = 2)
   {
-    var screenShit:FunkinSprite = FunkinSprite.create(Paths.image("shaderTransitionStuff/coolDots"));
+    var screenShit:FunkinSprite = FunkinSprite.create('shaderTransitionStuff/coolDots');
     var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
 
     screenWipeShit.funnyShit.input = screenShit.pixels;
