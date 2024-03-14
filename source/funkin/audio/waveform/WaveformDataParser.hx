@@ -1,6 +1,6 @@
 package funkin.audio.waveform;
 
-import funkin.util.tools.TimerTools;
+import funkin.util.TimerUtil;
 
 class WaveformDataParser
 {
@@ -73,7 +73,7 @@ class WaveformDataParser
 
     var outputData:Array<Int> = [];
 
-    var perfStart:Float = TimerTools.start();
+    var perfStart:Float = TimerUtil.start();
 
     for (pointIndex in 0...outputPointCount)
     {
@@ -110,7 +110,7 @@ class WaveformDataParser
     var outputDataLength:Int = Std.int(outputData.length / channels / 2);
     var result = new WaveformData(null, channels, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData);
 
-    trace('[WAVEFORM] Interpreted audio buffer in ${TimerTools.seconds(perfStart)}.');
+    trace('[WAVEFORM] Interpreted audio buffer in ${TimerUtil.seconds(perfStart)}.');
 
     return result;
   }

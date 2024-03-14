@@ -212,7 +212,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       else
       {
         // Initalize static sprite.
-        propSprite.loadTexture(Paths.image(dataProp.assetPath));
+        propSprite.loadTexture(dataProp.assetPath);
 
         // Disables calls to update() for a performance boost.
         propSprite.active = false;
