@@ -441,6 +441,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return {fileName: entryFilePath, contents: rawJson};
   }
 
+  function hasMusicDataFile(id:String, ?variation:String):Bool
+  {
+    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
+    var entryFilePath:String = Paths.file('music/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.json');
+    return openfl.Assets.exists(entryFilePath);
+  }
+
   function loadEntryChartFile(id:String, ?variation:String):Null<BaseRegistry.JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;

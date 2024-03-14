@@ -8,6 +8,8 @@ import flixel.sound.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.util.tools.ICloneable;
+import funkin.data.song.SongData.SongMusicData;
+import funkin.data.song.SongRegistry;
 import funkin.audio.waveform.WaveformData;
 import funkin.audio.waveform.WaveformDataParser;
 import flixel.math.FlxMath;
@@ -28,7 +30,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   /**
    * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
    */
-  static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
+  static var pool(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
   public var muted(default, set):Bool = false;
 
@@ -265,23 +267,55 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
-   * Creates a new `FunkinSound` object.
+   * Creates a new `FunkinSound` object and loads it as the current music track.
    *
-   * @param   embeddedSound   The embedded sound resource you want to play.  To stream, use the optional URL parameter instead.
-   * @param   volume          How loud to play it (0 to 1).
-   * @param   looped          Whether to loop this sound.
-   * @param   group           The group to add this sound to.
-   * @param   autoDestroy     Whether to destroy this sound when it finishes playing.
+   * @param key The key of the music you want to play. Music should be at `music/<key>/<key>.ogg`.
+   * @param overrideExisting Whether to override music if it is already playing.
+   * @param mapTimeChanges Whether to check for `SongMusicData` to update the Conductor with.
+   *   Data should be at `music/<key>/<key>-metadata.json`.
+   */
+  public static function playMusic(key:String, overrideExisting:Bool = false, mapTimeChanges:Bool = true):Void
+  {
+    if (!overrideExisting && FlxG.sound.music?.playing) return;
+
+    if (mapTimeChanges)
+    {
+      var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicData(key);
+      // Will fall back and return null if the metadata doesn't exist or can't be parsed.
+      if (songMusicData != null)
+      {
+        Conductor.instance.mapTimeChanges(songMusicData.timeChanges);
+      }
+      else
+      {
+        FlxG.log.warn('Tried and failed to find music metadata for $key');
+      }
+    }
+
+    FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'));
+
+    // Prevent repeat update() and onFocus() calls.
+    FlxG.sound.list.remove(FlxG.sound.music);
+  }
+
+  /**
+   * Creates a new `FunkinSound` object synchronously.
+   *
+   * @param embeddedSound   The embedded sound resource you want to play.  To stream, use the optional URL parameter instead.
+   * @param volume          How loud to play it (0 to 1).
+   * @param looped          Whether to loop this sound.
+   * @param group           The group to add this sound to.
+   * @param autoDestroy     Whether to destroy this sound when it finishes playing.
    *                          Leave this value set to `false` if you want to re-use this `FunkinSound` instance.
-   * @param   autoPlay        Whether to play the sound immediately or wait for a `play()` call.
-   * @param   onComplete      Called when the sound finished playing.
-   * @param   onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
-   * @return  A `FunkinSound` object.
+   * @param autoPlay        Whether to play the sound immediately or wait for a `play()` call.
+   * @param onComplete      Called when the sound finished playing.
+   * @param onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
+   * @return A `FunkinSound` object.
    */
   public static function load(embeddedSound:FlxSoundAsset, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = false,
       ?onComplete:Void->Void, ?onLoad:Void->Void):FunkinSound
   {
-    var sound:FunkinSound = cache.recycle(construct);
+    var sound:FunkinSound = pool.recycle(construct);
 
     // Load the sound.
     // Sets `exists = true` as a side effect.
@@ -297,8 +331,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     sound.persist = true;
     if (autoPlay) sound.play();
 
-    // Call OnlLoad() because the sound already loaded
+    // Call onLoad() because the sound already loaded
     if (onLoad != null && sound._sound != null) onLoad();
+
+    FlxG.sound.list.remove(FlxG.sound.music);
 
     return sound;
   }
@@ -307,7 +343,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     var sound:FunkinSound = new FunkinSound();
 
-    cache.add(sound);
+    pool.add(sound);
     FlxG.sound.list.add(sound);
 
     return sound;

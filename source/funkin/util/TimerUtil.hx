@@ -1,9 +1,9 @@
-package funkin.util.tools;
+package funkin.util;
 
 import funkin.util.tools.FloatTools;
 import haxe.Timer;
 
-class TimerTools
+class TimerUtil
 {
   public static function start():Float
   {

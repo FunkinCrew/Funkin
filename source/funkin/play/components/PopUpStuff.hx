@@ -6,7 +6,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxDirection;
 import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
-import funkin.util.tools.TimerTools;
+import funkin.util.TimerUtil;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {
@@ -17,7 +17,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
   public function displayRating(daRating:String)
   {
-    var perfStart:Float = TimerTools.start();
+    var perfStart:Float = TimerUtil.start();
 
     if (daRating == null) daRating = "good";
 
@@ -59,12 +59,12 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
         startDelay: Conductor.instance.beatLengthMs * 0.001
       });
 
-    trace('displayRating took: ${TimerTools.seconds(perfStart)}');
+    trace('displayRating took: ${TimerUtil.seconds(perfStart)}');
   }
 
   public function displayCombo(?combo:Int = 0):Int
   {
-    var perfStart:Float = TimerTools.start();
+    var perfStart:Float = TimerUtil.start();
 
     if (combo == null) combo = 0;
 
@@ -157,7 +157,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       daLoop++;
     }
 
-    trace('displayCombo took: ${TimerTools.seconds(perfStart)}');
+    trace('displayCombo took: ${TimerUtil.seconds(perfStart)}');
 
     return combo;
   }
