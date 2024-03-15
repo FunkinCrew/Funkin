@@ -412,7 +412,10 @@ class PlayState extends MusicBeatSubState
    */
   var musicPausedBySubState:Bool = false;
 
-  var cameraFollowTweenPausedBySubState:Bool = false; // Idea FOR LATER: Store paused tweens in an array, so we know which ones to unpause when leaving the Pause substate.
+  /**
+   * Track any camera tweens we've paused for a Pause substate, so we can unpause them when we return.
+   */
+  var cameraTweensPausedBySubState:List<FlxTween> = new List<FlxTween>();
 
   /**
    * False until `create()` has completed.
@@ -1145,11 +1148,17 @@ class PlayState extends MusicBeatSubState
         if (vocals != null) vocals.pause();
       }
 
-      // Pause camera tweening.
+      // Pause camera tweening, and keep track of which tweens we pause.
       if (cameraFollowTween != null && cameraFollowTween.active)
       {
         cameraFollowTween.active = false;
-        cameraFollowTweenPausedBySubState = true;
+        cameraTweensPausedBySubState.add(cameraFollowTween);
+      }
+
+      if (cameraZoomTween != null && cameraZoomTween.active)
+      {
+        cameraZoomTween.active = false;
+        cameraTweensPausedBySubState.add(cameraZoomTween);
       }
 
       // Pause the countdown.
@@ -1180,12 +1189,12 @@ class PlayState extends MusicBeatSubState
         musicPausedBySubState = false;
       }
 
-      // Resume camera tweening if we paused it.
-      if (cameraFollowTweenPausedBySubState)
+      // Resume camera tweens if we paused any.
+      for (camTween in cameraTweensPausedBySubState)
       {
-        cameraFollowTween.active = true;
-        cameraFollowTweenPausedBySubState = false;
+        camTween.active = true;
       }
+      cameraTweensPausedBySubState.clear();
 
       if (currentConversation != null)
       {
