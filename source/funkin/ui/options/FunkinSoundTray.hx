@@ -38,6 +38,15 @@ class FunkinSoundTray extends FlxSoundTray
     y = -height;
     visible = false;
 
+    // makes an alpha'd version of all the bars (bar_10.png)
+    var backingBar:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/bars_10")));
+    backingBar.x = 10;
+    backingBar.y = 5;
+    backingBar.scaleX = graphicScale;
+    backingBar.scaleY = graphicScale;
+    addChild(backingBar);
+    backingBar.alpha = 0.4;
+
     // clear the bars array entirely, it was initialized
     // in the super class
     _bars = [];
@@ -76,7 +85,7 @@ class FunkinSoundTray extends FlxSoundTray
     }
     else if (y > -height)
     {
-      lerpYPos = -height;
+      lerpYPos = -height - 10;
 
       if (y <= -height)
       {
@@ -104,7 +113,7 @@ class FunkinSoundTray extends FlxSoundTray
   override public function show(up:Bool = false):Void
   {
     _timer = 1;
-    lerpYPos = 0;
+    lerpYPos = 10;
     visible = true;
     active = true;
     var globalVolume:Int = Math.round(FlxG.sound.volume * 10);
