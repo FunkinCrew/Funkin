@@ -72,8 +72,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
-    {text: 'Restart Cutscene', callback: restartVideoCutscene},
     {text: 'Skip Cutscene', callback: skipVideoCutscene},
+    {text: 'Restart Cutscene', callback: restartVideoCutscene},
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
