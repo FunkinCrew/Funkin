@@ -241,10 +241,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   @:allow(flixel.sound.FlxSoundGroup)
   override function updateTransform():Void
   {
-    _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
-      (group != null ? group.volume : 1) * _volume * _volumeAdjust;
+    if (_transform != null)
+    {
+      _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
+        (group != null ? group.volume : 1) * _volume * _volumeAdjust;
+    }
 
-    if (_channel != null) _channel.soundTransform = _transform;
+    if (_channel != null)
+    {
+      _channel.soundTransform = _transform;
+    }
   }
 
   public function clone():FunkinSound
@@ -270,11 +276,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * Creates a new `FunkinSound` object and loads it as the current music track.
    *
    * @param key The key of the music you want to play. Music should be at `music/<key>/<key>.ogg`.
+   * @param startingVolume The volume you want the music to start at.
    * @param overrideExisting Whether to override music if it is already playing.
    * @param mapTimeChanges Whether to check for `SongMusicData` to update the Conductor with.
    *   Data should be at `music/<key>/<key>-metadata.json`.
    */
-  public static function playMusic(key:String, overrideExisting:Bool = false, mapTimeChanges:Bool = true):Void
+  public static function playMusic(key:String, startingVolume:Float = 1.0, overrideExisting:Bool = false, mapTimeChanges:Bool = true):Void
   {
     if (!overrideExisting && FlxG.sound.music?.playing) return;
 
@@ -292,7 +299,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
 
-    FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'));
+    FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'), startingVolume);
 
     // Prevent repeat update() and onFocus() calls.
     FlxG.sound.list.remove(FlxG.sound.music);
