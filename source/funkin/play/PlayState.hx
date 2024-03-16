@@ -1499,7 +1499,7 @@ class PlayState extends MusicBeatSubState
   public function resetCameraZoom():Void
   {
     // Apply camera zoom level from stage data.
-    defaultCameraZoom = currentStage.camZoom;
+    defaultCameraZoom = currentStage?.camZoom ?? 1.0;
   }
 
   /**
@@ -2712,7 +2712,12 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FunkinSound.playMusic('freakyMenu');
+        FunkinSound.playMusic('freakyMenu',
+          {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: false
+          });
 
         // transIn = FlxTransitionableState.defaultTransIn;
         // transOut = FlxTransitionableState.defaultTransOut;
@@ -2993,7 +2998,10 @@ class PlayState extends MusicBeatSubState
    */
   public function resetCamera():Void
   {
-    FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
+    // Apply camera zoom level from stage data.
+    defaultCameraZoom = currentStage?.camZoom ?? 1.0;
+
+    FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
     FlxG.camera.targetOffset.set();
     FlxG.camera.zoom = defaultCameraZoom;
     // Snap the camera to the follow point immediately.

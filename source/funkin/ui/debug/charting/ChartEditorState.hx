@@ -6,18 +6,15 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
-import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import funkin.graphics.FunkinCamera;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
+import funkin.play.PlayStatePlaylist;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
-import flixel.system.debug.log.LogStyle;
-import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -27,26 +24,19 @@ import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.visualize.PolygonSpectogram;
-import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VoicesGroup;
 import funkin.audio.waveform.WaveformSprite;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
-import funkin.data.song.SongData.SongCharacterData;
-import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
-import funkin.data.song.SongData.SongMetadata;
-import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongDataUtils;
-import funkin.data.song.SongDataUtils;
-import funkin.data.song.SongRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageData;
+import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.input.TurboKeyHandler;
@@ -61,8 +51,6 @@ import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
-import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.CopyItemsCommand;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
@@ -96,6 +84,7 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.LoadingState;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.logging.CrashHandler;
@@ -120,7 +109,6 @@ import haxe.ui.containers.Grid;
 import haxe.ui.containers.HBox;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
-import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.ScrollView;
@@ -130,7 +118,6 @@ import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
-import haxe.ui.events.UIEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.Toolkit;
@@ -5330,30 +5317,31 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     catch (e)
     {
-      this.error("Could Not Playtest", 'Got an error trying to playtest the song.\n${e}');
+      this.error('Could Not Playtest', 'Got an error trying to playtest the song.\n${e}');
       return;
     }
 
-    // TODO: Rework asset system so we can remove this.
+    // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
       case 'mainStage':
-        Paths.setCurrentLevel('week1');
+        PlayStatePlaylist.campaignId = 'week1';
       case 'spookyMansion':
-        Paths.setCurrentLevel('week2');
+        PlayStatePlaylist.campaignId = 'week2';
       case 'phillyTrain':
-        Paths.setCurrentLevel('week3');
+        PlayStatePlaylist.campaignId = 'week3';
       case 'limoRide':
-        Paths.setCurrentLevel('week4');
+        PlayStatePlaylist.campaignId = 'week4';
       case 'mallXmas' | 'mallEvil':
-        Paths.setCurrentLevel('week5');
+        PlayStatePlaylist.campaignId = 'week5';
       case 'school' | 'schoolEvil':
-        Paths.setCurrentLevel('week6');
+        PlayStatePlaylist.campaignId = 'week6';
       case 'tankmanBattlefield':
-        Paths.setCurrentLevel('week7');
+        PlayStatePlaylist.campaignId = 'week7';
       case 'phillyStreets' | 'phillyBlazin' | 'phillyBlazin2':
-        Paths.setCurrentLevel('weekend1');
+        PlayStatePlaylist.campaignId = 'weekend1';
     }
+    Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
 
     subStateClosed.add(reviveUICamera);
     subStateClosed.add(resetConductorAfterTest);
@@ -5361,7 +5349,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     FlxTransitionableState.skipNextTransIn = false;
     FlxTransitionableState.skipNextTransOut = false;
 
-    var targetState = new PlayState(
+    var targetStateParams =
       {
         targetSong: targetSong,
         targetDifficulty: selectedDifficulty,
@@ -5372,14 +5360,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         startTimestamp: startTimestamp,
         playbackRate: playbackRate,
         overrideMusic: true,
-      });
+      };
 
     // Override music.
     if (audioInstTrack != null)
     {
       FlxG.sound.music = audioInstTrack;
     }
-    targetState.vocals = audioVocalTrackGroup;
 
     // Kill and replace the UI camera so it doesn't get destroyed during the state transition.
     uiCamera.kill();
@@ -5389,7 +5376,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.persistentUpdate = false;
     this.persistentDraw = false;
     stopWelcomeMusic();
-    openSubState(targetState);
+
+    LoadingState.loadPlayState(targetStateParams, false, true, function(targetState) {
+      targetState.vocals = audioVocalTrackGroup;
+    });
   }
 
   /**

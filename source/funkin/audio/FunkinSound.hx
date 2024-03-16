@@ -276,16 +276,27 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * Creates a new `FunkinSound` object and loads it as the current music track.
    *
    * @param key The key of the music you want to play. Music should be at `music/<key>/<key>.ogg`.
-   * @param startingVolume The volume you want the music to start at.
-   * @param overrideExisting Whether to override music if it is already playing.
-   * @param mapTimeChanges Whether to check for `SongMusicData` to update the Conductor with.
+   * @param params A set of additional optional parameters.
    *   Data should be at `music/<key>/<key>-metadata.json`.
    */
-  public static function playMusic(key:String, startingVolume:Float = 1.0, overrideExisting:Bool = false, mapTimeChanges:Bool = true):Void
+  public static function playMusic(key:String, params:FunkinSoundPlayMusicParams):Void
   {
-    if (!overrideExisting && FlxG.sound.music?.playing) return;
+    if (!(params.overrideExisting ?? false) && FlxG.sound.music?.playing) return;
 
-    if (mapTimeChanges)
+    if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
+    {
+      if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
+      {
+        var existingSound:FunkinSound = cast FlxG.sound.music;
+        // Stop here if we would play a matching music track.
+        if (existingSound._label == Paths.music('$key/$key'))
+        {
+          return;
+        }
+      }
+    }
+
+    if (params?.mapTimeChanges ?? true)
     {
       var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicData(key);
       // Will fall back and return null if the metadata doesn't exist or can't be parsed.
@@ -299,7 +310,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
 
-    FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'), startingVolume);
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.stop();
+      FlxG.sound.music.kill();
+    }
+
+    FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, true, false, true);
 
     // Prevent repeat update() and onFocus() calls.
     FlxG.sound.list.remove(FlxG.sound.music);
@@ -333,10 +350,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       sound._label = embeddedSound;
     }
 
+    if (autoPlay) sound.play();
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
     sound.persist = true;
-    if (autoPlay) sound.play();
 
     // Call onLoad() because the sound already loaded
     if (onLoad != null && sound._sound != null) onLoad();
@@ -355,4 +372,34 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     return sound;
   }
+}
+
+/**
+ * Additional parameters for `FunkinSound.playMusic()`
+ */
+typedef FunkinSoundPlayMusicParams =
+{
+  /**
+   * The volume you want the music to start at.
+   * @default `1.0`
+   */
+  var ?startingVolume:Float;
+
+  /**
+   * Whether to override music if a different track is already playing.
+   * @default `false`
+   */
+  var ?overrideExisting:Bool;
+
+  /**
+   * Whether to override music if the same track is already playing.
+   * @default `false`
+   */
+  var ?restartTrack:Bool;
+
+  /**
+   * Whether to check for `SongMusicData` to update the Conductor with.
+   * @default `true`
+   */
+  var ?mapTimeChanges:Bool;
 }

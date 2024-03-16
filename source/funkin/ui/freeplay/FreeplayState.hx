@@ -179,7 +179,7 @@ class FreeplayState extends MusicBeatSubState
 
     #if discord_rpc
     // Updating Discord Rich Presence
-    DiscordClient.changePresence("In the Menus", null);
+    DiscordClient.changePresence('In the Menus', null);
     #end
 
     var isDebug:Bool = false;
@@ -188,14 +188,19 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    FunkinSound.playMusic('freakyMenu');
+    FunkinSound.playMusic('freakyMenu',
+      {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: false
+      });
 
     // Add a null entry that represents the RANDOM option
     songs.push(null);
 
     // TODO: This makes custom variations disappear from Freeplay. Figure out a better solution later.
     // Default character (BF) shows default and Erect variations. Pico shows only Pico variations.
-    displayedVariations = (currentCharacter == "bf") ? [Constants.DEFAULT_VARIATION, "erect"] : [currentCharacter];
+    displayedVariations = (currentCharacter == 'bf') ? [Constants.DEFAULT_VARIATION, 'erect'] : [currentCharacter];
 
     // programmatically adds the songs via LevelRegistry and SongRegistry
     for (levelId in LevelRegistry.instance.listBaseGameLevelIds())
@@ -205,7 +210,7 @@ class FreeplayState extends MusicBeatSubState
         var song:Song = SongRegistry.instance.fetchEntry(songId);
 
         // Only display songs which actually have available charts for the current character.
-        var availableDifficultiesForSong = song.listDifficulties(displayedVariations);
+        var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations);
         if (availableDifficultiesForSong.length == 0) continue;
 
         songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
@@ -1226,7 +1231,12 @@ class FreeplayState extends MusicBeatSubState
         // TODO: Stream the instrumental of the selected song?
         if (prevSelected == 0)
         {
-          FunkinSound.playMusic('freakyMenu');
+          FunkinSound.playMusic('freakyMenu',
+            {
+              startingVolume: 0.0,
+              overrideExisting: true,
+              restartTrack: false
+            });
           FlxG.sound.music.fadeIn(2, 0, 0.8);
         }
       }
