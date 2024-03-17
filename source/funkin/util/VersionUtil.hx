@@ -15,6 +15,9 @@ class VersionUtil
   /**
    * Checks that a given verison number satisisfies a given version rule.
    * Version rule can be complex, e.g. "1.0.x" or ">=1.0.0,<1.1.0", or anything NPM supports.
+   * @param version The semantic version to validate.
+   * @param versionRule The version rule to validate against.
+   * @return `true` if the version satisfies the rule, `false` otherwise.
    */
   public static function validateVersion(version:thx.semver.Version, versionRule:thx.semver.VersionRule):Bool
   {
@@ -32,6 +35,9 @@ class VersionUtil
   /**
    * Checks that a given verison number satisisfies a given version rule.
    * Version rule can be complex, e.g. "1.0.x" or ">=1.0.0,<1.1.0", or anything NPM supports.
+   * @param version The semantic version to validate.
+   * @param versionRule The version rule to validate against.
+   * @return `true` if the version satisfies the rule, `false` otherwise.
    */
   public static function validateVersionStr(version:String, versionRule:String):Bool
   {
@@ -56,7 +62,7 @@ class VersionUtil
   public static function getVersionFromJSON(input:Null<String>):Null<thx.semver.Version>
   {
     if (input == null) return null;
-    var parsed = SerializerUtil.fromJSON(input);
+    var parsed:Dynamic = SerializerUtil.fromJSON(input);
     if (parsed == null) return null;
     if (parsed.version == null) return null;
     var versionStr:String = parsed.version; // Dynamic -> String cast
@@ -64,6 +70,11 @@ class VersionUtil
     return version;
   }
 
+  /**
+   * Get and parse the semantic version from a JSON string.
+   * @param input The JSON string to parse.
+   * @return The semantic version, or null if it could not be parsed.
+   */
   public static function parseVersion(input:Dynamic):Null<thx.semver.Version>
   {
     if (input == null) return null;

@@ -3,7 +3,6 @@ package funkin;
 import flash.Lib;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
-import flash.display.BlendMode;
 import flash.display.Sprite;
 import flixel.system.FlxBasePreloader;
 import openfl.display.Sprite;
@@ -12,7 +11,8 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import flixel.system.FlxAssets;
 
-@:bitmap("art/preloaderArt.png") class LogoImage extends BitmapData {}
+@:bitmap('art/preloaderArt.png')
+class LogoImage extends BitmapData {}
 
 class Preloader extends FlxBasePreloader
 {

@@ -20,7 +20,7 @@ class Preferences
 
   static function set_naughtyness(value:Bool):Bool
   {
-    var save = Save.instance;
+    var save:Save = Save.instance;
     save.options.naughtyness = value;
     save.flush();
     return value;
@@ -39,7 +39,7 @@ class Preferences
 
   static function set_downscroll(value:Bool):Bool
   {
-    var save = Save.instance;
+    var save:Save = Save.instance;
     save.options.downscroll = value;
     save.flush();
     return value;
@@ -58,7 +58,7 @@ class Preferences
 
   static function set_flashingLights(value:Bool):Bool
   {
-    var save = Save.instance;
+    var save:Save = Save.instance;
     save.options.flashingLights = value;
     save.flush();
     return value;
@@ -77,7 +77,7 @@ class Preferences
 
   static function set_zoomCamera(value:Bool):Bool
   {
-    var save = Save.instance;
+    var save:Save = Save.instance;
     save.options.zoomCamera = value;
     save.flush();
     return value;
@@ -122,15 +122,20 @@ class Preferences
   {
     if (value != Save.instance.options.autoPause) FlxG.autoPause = value;
 
-    var save = Save.instance;
+    var save:Save = Save.instance;
     save.options.autoPause = value;
     save.flush();
     return value;
   }
 
+  /**
+   * Loads the user's preferences from the save data and apply them.
+   */
   public static function init():Void
   {
+    // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
+    // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
   }
 
