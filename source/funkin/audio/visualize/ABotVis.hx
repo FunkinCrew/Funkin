@@ -57,8 +57,9 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function initAnalyzer()
   {
     @:privateAccess
-    analyzer = new SpectralAnalyzer(7, new AudioClip(cast snd._channel.__source), 0.06, 30);
-    analyzer.fftN = 2048;
+    analyzer = new SpectralAnalyzer(7, new AudioClip(cast snd._channel.__source), 0.01, 30);
+    analyzer.maxDb = -35;
+    // analyzer.fftN = 2048;
   }
 
   var visTimer:Float = -1;
@@ -70,8 +71,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     // updateFFT(elapsed);
 
-    if (analyzer != null) drawFFT();
-
+    //
     super.update(elapsed);
   }
 
@@ -82,6 +82,8 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   override function draw()
   {
+    if (analyzer != null) drawFFT();
+
     super.draw();
   }
 
