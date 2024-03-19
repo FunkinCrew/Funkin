@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.math.FlxVector;
 import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
 import funkin.audio.visualize.PolygonSpectogram.VISTYPE;

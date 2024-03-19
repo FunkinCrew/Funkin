@@ -602,6 +602,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var enabledDebuggerPopup:Bool = true;
 
+  /**
+   * Whether song scripts should be enabled during playtesting.
+   * You should probably check the box if the song has custom mechanics.
+   */
+  var playtestSongScripts:Bool = true;
+
   // Visuals
 
   /**
@@ -1396,7 +1402,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_currentSongId():String
   {
-    return currentSongName.toLowerKebabCase().replace('.', '').replace(' ', '-');
+    return currentSongName.toLowerKebabCase().replace(' ', '-').sanitize();
   }
 
   var currentSongArtist(get, set):String;
@@ -4530,14 +4536,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 {
                   // Create an event and place it in the chart.
                   // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, Reflect.copy(eventDataToPlace));
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
 
                   performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
                 }
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, Reflect.copy(noteKindToPlace));
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace);
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -5320,16 +5326,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var targetSong:Song;
     try
     {
-      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
+      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, playtestSongScripts, false);
     }
     catch (e)
     {
       this.error("Could Not Playtest", 'Got an error trying to playtest the song.\n${e}');
       return;
     }
-
-    LogStyle.WARNING.openConsole = enabledDebuggerPopup;
-    LogStyle.ERROR.openConsole = enabledDebuggerPopup;
 
     // TODO: Rework asset system so we can remove this.
     switch (currentSongStage)
@@ -5348,7 +5351,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Paths.setCurrentLevel('week6');
       case 'tankmanBattlefield':
         Paths.setCurrentLevel('week7');
-      case 'phillyStreets' | 'phillyBlazin':
+      case 'phillyStreets' | 'phillyBlazin' | 'phillyBlazin2':
         Paths.setCurrentLevel('weekend1');
     }
 

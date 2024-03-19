@@ -1,21 +1,19 @@
 package funkin.ui.freeplay;
 
-import flash.text.TextField;
+import openfl.text.TextField;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
 import flixel.FlxGame;
 import flixel.FlxSprite;
-import funkin.graphics.FunkinSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
-import funkin.graphics.FunkinCamera;
 import flixel.math.FlxPoint;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
@@ -24,9 +22,12 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 import funkin.data.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.AngleMask;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.PureColor;
@@ -187,10 +188,7 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
-    {
-      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
-    }
+    FunkinSound.playMusic('freakyMenu');
 
     // Add a null entry that represents the RANDOM option
     songs.push(null);
@@ -227,7 +225,7 @@ class FreeplayState extends MusicBeatSubState
     trace(FlxG.camera.initialZoom);
     trace(FlxCamera.defaultZoom);
 
-    var pinkBack:FunkinSprite = FunkinSprite.create(Paths.image('freeplay/pinkBack'));
+    var pinkBack:FunkinSprite = FunkinSprite.create('freeplay/pinkBack');
     pinkBack.color = 0xFFffd4e9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
 
@@ -590,7 +588,7 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  public function generateSongList(?filterStuff:SongFilter, force:Bool = false)
+  public function generateSongList(?filterStuff:SongFilter, force:Bool = false):Void
   {
     curSelected = 1;
 
@@ -693,7 +691,7 @@ class FreeplayState extends MusicBeatSubState
 
   var busy:Bool = false; // Set to true once the user has pressed enter to select a song.
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -983,7 +981,7 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function changeDiff(change:Int = 0)
+  function changeDiff(change:Int = 0):Void
   {
     touchTimer = 0;
 
@@ -1173,7 +1171,7 @@ class FreeplayState extends MusicBeatSubState
     difficultyStars.difficulty = daSong?.songRating ?? 0;
   }
 
-  function changeSelection(change:Int = 0)
+  function changeSelection(change:Int = 0):Void
   {
     // NGio.logEvent('Fresh');
     FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -1228,7 +1226,7 @@ class FreeplayState extends MusicBeatSubState
         // TODO: Stream the instrumental of the selected song?
         if (prevSelected == 0)
         {
-          FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+          FunkinSound.playMusic('freakyMenu');
           FlxG.sound.music.fadeIn(2, 0, 0.8);
         }
       }
@@ -1259,7 +1257,7 @@ class DifficultySelector extends FlxSprite
     flipX = flipped;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     if (flipX && controls.UI_RIGHT_P) moveShitDown();
     if (!flipX && controls.UI_LEFT_P) moveShitDown();
@@ -1267,7 +1265,7 @@ class DifficultySelector extends FlxSprite
     super.update(elapsed);
   }
 
-  function moveShitDown()
+  function moveShitDown():Void
   {
     offset.y -= 5;
 
