@@ -57,6 +57,9 @@ class FocusCameraSongEvent extends SongEvent
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
+    // Does nothing if we are minimal mode.
+    if (PlayState.instance.isMinimalMode) return;
+
     var posX:Null<Float> = data.getFloat('x');
     if (posX == null) posX = 0.0;
     var posY:Null<Float> = data.getFloat('y');

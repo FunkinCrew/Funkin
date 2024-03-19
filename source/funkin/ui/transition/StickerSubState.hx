@@ -313,7 +313,7 @@ class StickerSprite extends FunkinSprite
   public function new(x:Float, y:Float, stickerSet:String, stickerName:String):Void
   {
     super(x, y);
-    loadTexture(Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
+    loadTexture('transitionSwag/' + stickerSet + '/' + stickerName);
     updateHitbox();
     scrollFactor.set();
   }

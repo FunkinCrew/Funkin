@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.audio.FunkinSound;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
@@ -1416,7 +1417,7 @@ class PlayState extends MusicBeatSubState
   function initHealthBar():Void
   {
     var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    healthBarBG = FunkinSprite.create(0, healthBarYPos, Paths.image('healthBar'));
+    healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
     healthBarBG.zIndex = 800;
@@ -1453,7 +1454,7 @@ class PlayState extends MusicBeatSubState
   function initMinimalMode():Void
   {
     // Create the green background.
-    var menuBG = FunkinSprite.create(Paths.image('menuDesat'));
+    var menuBG = FunkinSprite.create('menuDesat');
     menuBG.color = 0xFF4CAF50;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
@@ -2710,7 +2711,7 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+        FunkinSound.playMusic('freakyMenu');
 
         // transIn = FlxTransitionableState.defaultTransIn;
         // transOut = FlxTransitionableState.defaultTransOut;
