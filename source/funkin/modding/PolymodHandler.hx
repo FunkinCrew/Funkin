@@ -8,6 +8,7 @@ import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
+import funkin.data.freeplay.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
@@ -324,6 +325,7 @@ class PolymodHandler
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
+    AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     ModuleHandler.loadModuleCache();
