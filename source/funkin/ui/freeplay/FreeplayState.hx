@@ -465,7 +465,7 @@ class FreeplayState extends MusicBeatSubState
 
       albumRoll.playIntro();
 
-      new FlxTimer().start(1, function(_) {
+      new FlxTimer().start(0.75, function(_) {
         albumRoll.showTitle();
       });
 
@@ -859,16 +859,6 @@ class FreeplayState extends MusicBeatSubState
     {
       dj.resetAFKTimer();
       changeDiff(1);
-    }
-
-    // TODO: DEBUG REMOVE THIS
-    if (FlxG.keys.justPressed.P)
-    {
-      var newParams:FreeplayStateParams =
-        {
-          character: currentCharacter == 'bf' ? 'pico' : 'bf',
-        };
-      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.freeplay.FreeplayState(newParams, sticker)));
     }
 
     if (controls.BACK && !typing.hasFocus)

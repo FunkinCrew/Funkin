@@ -21,7 +21,6 @@ class FlxAtlasSprite extends FlxAnimate
       ShowPivot: #if debug false #else false #end,
       Antialiasing: true,
       ScrollFactor: null,
-      OverrideGraphics: [],
       // Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
     };
 

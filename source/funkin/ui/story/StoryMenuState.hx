@@ -1,37 +1,33 @@
 package funkin.ui.story;
 
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.save.Save;
-import funkin.save.Save.SaveScoreData;
-import openfl.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinSprite;
-import funkin.ui.MusicBeatState;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import funkin.data.level.LevelRegistry;
 import funkin.audio.FunkinSound;
+import funkin.data.level.LevelRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.song.Song;
-import funkin.data.song.SongData.SongMusicData;
-import funkin.data.song.SongRegistry;
-import funkin.util.MathUtil;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
+import funkin.util.MathUtil;
+import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
 {
-  static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString("#F9CF51");
+  static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString('#F9CF51');
   static final BACKGROUND_HEIGHT:Int = 400;
 
   var currentDifficultyId:String = 'normal';
@@ -166,25 +162,25 @@ class StoryMenuState extends MusicBeatState
     updateProps();
 
     tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
-    tracklistText.setFormat("VCR OSD Mono", 32);
+    tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
-    tracklistText.color = 0xFFe55777;
+    tracklistText.color = 0xFFE55777;
     add(tracklistText);
 
     scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
-    scoreText.setFormat("VCR OSD Mono", 32);
+    scoreText.setFormat('VCR OSD Mono', 32);
     scoreText.zIndex = 1000;
     add(scoreText);
 
     modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
-    modeText.setFormat("VCR OSD Mono", 32);
+    modeText.setFormat('VCR OSD Mono', 32);
     modeText.screenCenter(X);
     modeText.visible = hasModdedLevels();
     modeText.zIndex = 1000;
     add(modeText);
 
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
-    levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+    levelTitleText.setFormat('VCR OSD Mono', 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
     levelTitleText.zIndex = 1000;
     add(levelTitleText);
@@ -217,7 +213,7 @@ class StoryMenuState extends MusicBeatState
 
     #if discord_rpc
     // Updating Discord Rich Presence
-    DiscordClient.changePresence("In the Menus", null);
+    DiscordClient.changePresence('In the Menus', null);
     #end
   }
 
@@ -307,7 +303,7 @@ class StoryMenuState extends MusicBeatState
     changeDifficulty(0);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     Conductor.instance.update();
 
@@ -552,10 +548,13 @@ class StoryMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 
+      var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
+
       LoadingState.loadPlayState(
         {
           targetSong: targetSong,
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+          targetVariation: targetVariation
         }, true);
     });
   }

@@ -1,12 +1,15 @@
 package funkin.ui.freeplay;
 
-import flixel.graphics.FlxGraphic;
+import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
 import funkin.data.freeplay.AlbumRegistry;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
+import openfl.utils.Assets;
 
 /**
  * The graphic for the album roll in the FreeplayState.
@@ -31,9 +34,11 @@ class AlbumRoll extends FlxSpriteGroup
     return value;
   }
 
-  var albumArt:FlxAtlasSprite;
+  var albumArt:FunkinSprite;
   var albumTitle:FunkinSprite;
   var difficultyStars:DifficultyStars;
+
+  var _exitMovers:Null<FreeplayState.ExitMoverData>;
 
   var albumData:Album;
 
@@ -42,7 +47,7 @@ class AlbumRoll extends FlxSpriteGroup
     super();
 
     albumTitle = new FunkinSprite(947, 491);
-    albumTitle.visible = false;
+    albumTitle.visible = true;
     albumTitle.zIndex = 200;
     add(albumTitle);
 
@@ -69,28 +74,32 @@ class AlbumRoll extends FlxSpriteGroup
       return;
     };
 
-    var albumArtGraphics:Array<FlxGraphic> = [null, albumData.getAlbumArtGraphic()];
-
     if (albumArt != null)
     {
+      FlxTween.cancelTweensOf(albumArt);
       albumArt.visible = false;
-      albumArt.anim.stop();
       albumArt.destroy();
       remove(albumArt);
     }
 
-    // I wasn't able to get replacing to work properly on an existing object,
-    // so I just throw the old one in the trash and make a new one.
-    albumArt = new FlxAtlasSprite(640, 360, Paths.animateAtlas('freeplay/albumRoll'),
-      {
-        OverrideGraphics: albumArtGraphics,
-      });
+    // Paths.animateAtlas('freeplay/albumRoll'),
+    albumArt = FunkinSprite.create(1500, 360, albumData.getAlbumArtAssetKey());
+    albumArt.setGraphicSize(262, 262); // Magic number for size IG
     albumArt.zIndex = 100;
 
     playIntro();
     add(albumArt);
 
-    albumTitle.loadGraphic(Paths.image(albumData.getAlbumTitleAssetKey()));
+    applyExitMovers();
+
+    if (Assets.exists(Paths.image(albumData.getAlbumTitleAssetKey())))
+    {
+      albumTitle.loadGraphic(Paths.image(albumData.getAlbumTitleAssetKey()));
+    }
+    else
+    {
+      albumTitle.visible = false;
+    }
 
     refresh();
   }
@@ -104,8 +113,19 @@ class AlbumRoll extends FlxSpriteGroup
    * Apply exit movers for the album roll.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(exitMovers:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData):Void
   {
+    if (exitMovers == null)
+    {
+      exitMovers = _exitMovers;
+    }
+    else
+    {
+      _exitMovers = exitMovers;
+    }
+
+    if (exitMovers == null) return;
+
     exitMovers.set([albumArt],
       {
         x: FlxG.width,
@@ -141,10 +161,12 @@ class AlbumRoll extends FlxSpriteGroup
   public function playIntro():Void
   {
     albumArt.visible = true;
-    albumArt.anim.play('');
-    albumArt.anim.onComplete = function() {
-      albumArt.anim.pause();
-    };
+    FlxTween.tween(albumArt, {x: 950, y: 320, angle: -340}, 0.5, {ease: FlxEase.quintOut});
+
+    albumTitle.visible = false;
+    new FlxTimer().start(0.75, function(_) {
+      showTitle();
+    });
   }
 
   public function setDifficultyStars(?difficulty:Int):Void
@@ -154,9 +176,6 @@ class AlbumRoll extends FlxSpriteGroup
     difficultyStars.difficulty = difficulty;
   }
 
-  /**
-   * Make the album title graphic visible.
-   */
   public function showTitle():Void
   {
     albumTitle.visible = true;

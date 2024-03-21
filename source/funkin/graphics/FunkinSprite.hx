@@ -3,6 +3,7 @@ package funkin.graphics;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
+import flixel.tweens.FlxTween;
 
 /**
  * An FlxSprite with additional functionality.
@@ -217,7 +218,7 @@ class FunkinSprite extends FlxSprite
   }
 
   /**
-   * Ensure scale is applied when cloning a sprite.
+   * Ensure scale is applied when cloning a sprite.R
    * The default `clone()` method acts kinda weird TBH.
    * @return A clone of this sprite.
    */
@@ -229,5 +230,14 @@ class FunkinSprite extends FlxSprite
     result.updateHitbox();
 
     return result;
+  }
+
+  public override function destroy():Void
+  {
+    frames = null;
+    // Cancel all tweens so they don't continue to run on a destroyed sprite.
+    // This prevents crashes.
+    FlxTween.cancelTweensOf(this);
+    super.destroy();
   }
 }
