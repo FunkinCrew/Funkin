@@ -62,19 +62,26 @@ class ZoomCameraSongEvent extends SongEvent
 
     var zoom:Null<Float> = data.getFloat('zoom');
     if (zoom == null) zoom = 1.0;
+
     var duration:Null<Float> = data.getFloat('duration');
     if (duration == null) duration = 4.0;
 
+    var mode:Null<String> = data.getString('mode');
+    if (mode == null) mode = 'additive';
+
     var ease:Null<String> = data.getString('ease');
     if (ease == null) ease = 'linear';
+
+    var directMode:Bool = mode == 'direct';
 
     // If it's a string, check the value.
     switch (ease)
     {
       case 'INSTANT':
-        // Set the zoom. Use defaultCameraZoom to prevent breaking camera bops.
-        PlayState.instance.defaultCameraZoom = zoom * FlxCamera.defaultZoom;
+        PlayState.instance.tweenCameraZoom(zoom, 0, directMode);
       default:
+        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
         if (easeFunction == null)
         {
@@ -82,8 +89,7 @@ class ZoomCameraSongEvent extends SongEvent
           return;
         }
 
-        FlxTween.tween(PlayState.instance, {defaultCameraZoom: zoom * FlxCamera.defaultZoom}, (Conductor.instance.stepLengthMs * duration / 1000),
-          {ease: easeFunction});
+        PlayState.instance.tweenCameraZoom(zoom, durSeconds, directMode, easeFunction);
     }
   }
 
@@ -96,8 +102,9 @@ class ZoomCameraSongEvent extends SongEvent
    * ```
    * {
    *   'zoom': FLOAT, // Target zoom level.
-   *   'duration': FLOAT, // Optional duration in steps
-   *   'ease': ENUM, // Optional easing function
+   *   'duration': FLOAT, // Optional duration in steps.
+   *   'mode': ENUM, // Whether to set additive zoom or direct zoom.
+   *   'ease': ENUM, // Optional easing function.
    * }
    * @return SongEventSchema
    */
@@ -119,6 +126,13 @@ class ZoomCameraSongEvent extends SongEvent
         step: 0.5,
         type: SongEventFieldType.FLOAT,
         units: 'steps'
+      },
+      {
+        name: 'mode',
+        title: 'Mode',
+        defaultValue: 'additive',
+        type: SongEventFieldType.ENUM,
+        keys: ['Additive' => 'additive', 'Direct' => 'direct']
       },
       {
         name: 'ease',
