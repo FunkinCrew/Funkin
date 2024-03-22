@@ -193,6 +193,11 @@ class BaseCharacter extends Bopper
     return _data.death?.cameraOffsets ?? [0.0, 0.0];
   }
 
+  public function getBaseScale():Float
+  {
+    return _data.scale;
+  }
+
   public function getDeathCameraZoom():Float
   {
     return _data.death?.cameraZoom ?? 1.0;
@@ -260,8 +265,8 @@ class BaseCharacter extends Bopper
   }
 
   /**
-   * Set the sprite scale to the appropriate value.
-   * @param scale
+   * Set the character's sprite scale to the appropriate value.
+   * @param scale The desired scale.
    */
   public function setScale(scale:Null<Float>):Void
   {
