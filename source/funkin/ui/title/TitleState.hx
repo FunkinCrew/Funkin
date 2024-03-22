@@ -223,6 +223,7 @@ class TitleState extends MusicBeatState
     var shouldFadeIn = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
     FunkinSound.playMusic('freakyMenu', false, true);
+    FlxG.sound.music.volume = 0;
     // Fade from 0.0 to 0.7 over 4 seconds
     if (shouldFadeIn) FlxG.sound.music.fadeIn(4, 0, 0.7);
   }
