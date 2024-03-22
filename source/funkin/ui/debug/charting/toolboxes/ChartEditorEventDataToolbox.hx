@@ -237,6 +237,11 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         {
           value = event.target.value.value;
         }
+        else if (field.type == BOOL)
+        {
+          var chk:CheckBox = cast event.target;
+          value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
+        }
 
         trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${value}');
 
@@ -253,14 +258,15 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         // Edit the event data of any existing events.
         if (!_initializing && chartEditorState.currentEventSelection.length > 0)
         {
-          for (event in chartEditorState.currentEventSelection)
+          for (songEvent in chartEditorState.currentEventSelection)
           {
-            event.eventKind = chartEditorState.eventKindToPlace;
-            event.value = chartEditorState.eventDataToPlace;
+            songEvent.eventKind = chartEditorState.eventKindToPlace;
+            songEvent.value = Reflect.copy(chartEditorState.eventDataToPlace);
           }
           chartEditorState.saveDataDirty = true;
           chartEditorState.noteDisplayDirty = true;
           chartEditorState.notePreviewDirty = true;
+          chartEditorState.noteTooltipsDirty = true;
         }
       }
     }

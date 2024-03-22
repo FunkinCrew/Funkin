@@ -164,8 +164,7 @@ class ChartEditorEventSprite extends FlxSprite
       this.eventData = value;
       // Update the position to match the note data.
       updateEventPosition();
-      // Update the tooltip text.
-      this.tooltip.tipData = {text: this.eventData.buildTooltip()};
+      updateTooltipText();
       return this.eventData;
     }
   }
@@ -186,6 +185,13 @@ class ChartEditorEventSprite extends FlxSprite
     }
 
     this.updateTooltipPosition();
+  }
+
+  public function updateTooltipText():Void
+  {
+    if (this.eventData == null) return;
+    if (this.isGhost) return;
+    this.tooltip.tipData = {text: this.eventData.buildTooltip()};
   }
 
   public function updateTooltipPosition():Void
