@@ -1550,6 +1550,7 @@ class PlayState extends MusicBeatSubState
 
   public function resetCameraZoom():Void
   {
+    if (PlayState.instance.isMinimalMode) return;
     // Apply camera zoom level from stage data.
     defaultCameraZoom = currentStage.camZoom;
     currentCameraZoom = defaultCameraZoom;
