@@ -214,6 +214,26 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * List the album IDs for each variation of the song.
+   * @return A map of variation IDs to album IDs.
+   */
+  public function listAlbums():Map<String, String>
+  {
+    var result:Map<String, String> = new Map<String, String>();
+
+    for (difficultyId in difficulties.keys())
+    {
+      var meta:Null<SongDifficulty> = difficulties.get(difficultyId);
+      if (meta != null && meta.album != null)
+      {
+        result.set(difficultyId, meta.album);
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Populate the difficulty data from the provided metadata.
    * Does not load chart data (that is triggered later when we want to play the song).
    */
