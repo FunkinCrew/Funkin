@@ -100,8 +100,15 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
+    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
 
-    addChild(new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen));
+    // FlxG.game._customSoundTray wants just the class, it calls new from
+    // create() in there, which gets called when it's added to stage
+    // which is why it needs to be added before addChild(game) here
+    @:privateAccess
+    game._customSoundTray = funkin.ui.options.FunkinSoundTray;
+
+    addChild(game);
 
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
