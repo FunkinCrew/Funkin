@@ -158,6 +158,11 @@ class Constants
   public static final DEFAULT_VARIATION:String = 'default';
 
   /**
+   * Standardized variations for charts
+   */
+  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
+
+  /**
    * The default intensity for camera zooms.
    */
   public static final DEFAULT_ZOOM_INTENSITY:Float = 0.015;

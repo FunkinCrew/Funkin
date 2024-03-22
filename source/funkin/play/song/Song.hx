@@ -374,12 +374,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function getFirstValidVariation(?diffId:String, ?possibleVariations:Array<String>):Null<String>
   {
-    if (variations == null) possibleVariations = variations;
+    if (possibleVariations == null)
+    {
+      possibleVariations = variations;
+      possibleVariations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
+    }
     if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
 
-    for (variation in variations)
+    for (variationId in possibleVariations)
     {
-      if (difficulties.exists('$diffId-$variation')) return variation;
+      if (difficulties.exists('$diffId-$variationId')) return variationId;
     }
 
     return null;
