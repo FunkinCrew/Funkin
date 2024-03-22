@@ -4949,7 +4949,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
-    // playbarBPM.text = 'BPM: ${(Conductor.currentTimeChange?.bpm ?? 0.0)}';
+    playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}';
   }
 
   function handlePlayhead():Void
