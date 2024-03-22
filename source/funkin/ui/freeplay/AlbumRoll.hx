@@ -161,7 +161,7 @@ class AlbumRoll extends FlxSpriteGroup
   public function playIntro():Void
   {
     albumArt.visible = true;
-    FlxTween.tween(albumArt, {x: 950, y: 320, angle: -340}, 0.5, {ease: FlxEase.quintOut});
+    FlxTween.tween(albumArt, {x: 950, y: 320, angle: -340}, 0.5, {ease: FlxEase.elasticOut});
 
     albumTitle.visible = false;
     new FlxTimer().start(0.75, function(_) {
