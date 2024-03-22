@@ -878,6 +878,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var noteDisplayDirty:Bool = true;
 
+  var noteTooltipsDirty:Bool = true;
+
   /**
    * Whether the selected charactesr have been modified and the health icons need to be updated.
    */
@@ -1541,6 +1543,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Make sure view is updated when the variation changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
 
     switchToCurrentInstrumental();
@@ -1562,6 +1565,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Make sure view is updated when the difficulty changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
 
     // Make sure the difficulty we selected is in the list of difficulties.
@@ -3663,7 +3667,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.width = eventSprite.width;
           selectionSquare.height = eventSprite.height;
         }
+
+        // Additional cleanup on notes.
+        if (noteTooltipsDirty) eventSprite.updateTooltipText();
       }
+
+      noteTooltipsDirty = false;
 
       // Sort the notes DESCENDING. This keeps the sustain behind the associated note.
       renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()

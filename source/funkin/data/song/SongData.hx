@@ -706,7 +706,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     this = new SongEventDataRaw(time, eventKind, value);
   }
 
-  public inline function valueAsStruct(?defaultKey:String = "key"):Dynamic
+  public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
     if (this.value == null) return {};
     if (Std.isOfType(this.value, Array))

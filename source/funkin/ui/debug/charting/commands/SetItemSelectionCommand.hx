@@ -51,7 +51,12 @@ class SetItemSelectionCommand implements ChartEditorCommand
       }
       var eventData = eventSelected.valueAsStruct(defaultKey);
 
-      state.eventDataToPlace = eventData;
+      var eventDataClone = Reflect.copy(eventData);
+
+      if (eventDataClone != null)
+      {
+        state.eventDataToPlace = eventDataClone;
+      }
 
       state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
     }
