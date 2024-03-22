@@ -87,7 +87,7 @@ class AlbumRoll extends FlxSpriteGroup
     albumArt.setGraphicSize(262, 262); // Magic number for size IG
     albumArt.zIndex = 100;
 
-    playIntro();
+    // playIntro();
     add(albumArt);
 
     applyExitMovers();
