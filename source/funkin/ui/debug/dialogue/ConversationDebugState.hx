@@ -11,6 +11,7 @@ import funkin.data.dialogue.DialogueBoxData;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerData;
 import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.freeplay.AlbumRegistry;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.play.cutscene.dialogue.Speaker;
