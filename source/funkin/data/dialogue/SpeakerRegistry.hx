@@ -15,7 +15,14 @@ class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData>
 
   public static final SPEAKER_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static final instance:SpeakerRegistry = new SpeakerRegistry();
+  public static var instance(get, never):SpeakerRegistry;
+  static var _instance:Null<SpeakerRegistry> = null;
+
+  static function get_instance():SpeakerRegistry
+  {
+    if (_instance == null) _instance = new SpeakerRegistry();
+    return _instance;
+  }
 
   public function new()
   {
