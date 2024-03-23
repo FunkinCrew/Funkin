@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 #if html5
 import funkin.graphics.video.FlxVideo;
@@ -217,6 +218,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.visible = false;
+      blackScreen.visible = false;
     }
     #end
 
@@ -224,6 +226,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.visible = false;
+      blackScreen.visible = false;
     }
     #end
   }
@@ -234,6 +237,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.visible = true;
+      blackScreen.visible = false;
     }
     #end
 
@@ -241,6 +245,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.visible = true;
+      blackScreen.visible = false;
     }
     #end
   }
