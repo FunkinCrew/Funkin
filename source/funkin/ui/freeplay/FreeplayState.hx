@@ -174,7 +174,11 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    FunkinSound.playMusic('freakyMenu');
+    FunkinSound.playMusic('freakyMenu',
+      {
+        overrideExisting: true,
+        restartTrack: false
+      });
 
     // Add a null entry that represents the RANDOM option
     songs.push(null);
@@ -867,7 +871,7 @@ class FreeplayState extends MusicBeatSubState
       FlxTimer.globalManager.clear();
       dj.onIntroDone.removeAll();
 
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
       var longestTimer:Float = 0;
 
@@ -1051,7 +1055,7 @@ class FreeplayState extends MusicBeatSubState
       trace('No songs available!');
       busy = false;
       letterSort.inputEnabled = true;
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       return;
     }
 
@@ -1084,7 +1088,7 @@ class FreeplayState extends MusicBeatSubState
     PlayStatePlaylist.campaignId = cap.songData.levelId;
 
     // Visual and audio effects.
-    FlxG.sound.play(Paths.sound('confirmMenu'));
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
     dj.confirm();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
@@ -1126,7 +1130,7 @@ class FreeplayState extends MusicBeatSubState
 
   function changeSelection(change:Int = 0):Void
   {
-    FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
     // FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
     var prevSelected:Int = curSelected;
@@ -1178,7 +1182,12 @@ class FreeplayState extends MusicBeatSubState
         // TODO: Stream the instrumental of the selected song?
         if (prevSelected == 0)
         {
-          FunkinSound.playMusic('freakyMenu');
+          FunkinSound.playMusic('freakyMenu',
+            {
+              startingVolume: 0.0,
+              overrideExisting: true,
+              restartTrack: false
+            });
           FlxG.sound.music.fadeIn(2, 0, 0.8);
         }
       }

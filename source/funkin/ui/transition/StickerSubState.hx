@@ -18,6 +18,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import openfl.display.BitmapData;
 import funkin.ui.freeplay.FreeplayState;
 import openfl.geom.Matrix;
+import funkin.audio.FunkinSound;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 import flixel.FlxState;
@@ -137,7 +138,7 @@ class StickerSubState extends MusicBeatSubState
       new FlxTimer().start(sticker.timing, _ -> {
         sticker.visible = false;
         var daSound:String = FlxG.random.getObject(sounds);
-        FlxG.sound.play(Paths.sound(daSound));
+        FunkinSound.playOnce(Paths.sound(daSound));
 
         if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
@@ -227,7 +228,7 @@ class StickerSubState extends MusicBeatSubState
 
         sticker.visible = true;
         var daSound:String = FlxG.random.getObject(sounds);
-        FlxG.sound.play(Paths.sound(daSound));
+        FunkinSound.playOnce(Paths.sound(daSound));
 
         var frameTimer:Int = FlxG.random.int(0, 2);
 

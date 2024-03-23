@@ -19,6 +19,7 @@ class MathUtil
    *
    * @return The interpolated value.
    */
+  @:deprecated('Use smoothLerp instead')
   public static function coolLerp(base:Float, target:Float, ratio:Float):Float
   {
     return base + cameraLerp(ratio) * (target - base);

@@ -242,13 +242,6 @@ class LatencyState extends MusicBeatSubState
       }
     }
 
-    /* if (FlxG.keys.justPressed.SPACE)
-      {
-        FlxG.sound.music.stop();
-
-        FlxG.resetState();
-    }*/
-
     noteGrp.forEach(function(daNote:NoteSprite) {
       daNote.y = (strumLine.y - ((Conductor.instance.songPosition - Conductor.instance.instrumentalOffset) - daNote.noteData.time) * 0.45);
       daNote.x = strumLine.x + 30;
