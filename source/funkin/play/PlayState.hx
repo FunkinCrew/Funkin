@@ -2,11 +2,7 @@ package funkin.play;
 
 import funkin.audio.FunkinSound;
 import flixel.addons.display.FlxPieDial;
-import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.FlxTransitionableSubState;
-import flixel.addons.transition.FlxTransitionableSubState;
 import flixel.addons.transition.Transition;
 import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
@@ -948,8 +944,8 @@ class PlayState extends MusicBeatSubState
 
           var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
 
-          FlxTransitionableSubState.skipNextTransIn = true;
-          FlxTransitionableSubState.skipNextTransOut = true;
+          FlxTransitionableState.skipNextTransIn = true;
+          FlxTransitionableState.skipNextTransOut = true;
           pauseSubState.camera = camHUD;
           openSubState(pauseSubState);
           // boyfriendPos.put(); // TODO: Why is this here?
@@ -1072,8 +1068,8 @@ class PlayState extends MusicBeatSubState
         isChartingMode: isChartingMode,
         transparent: persistentDraw
       });
-    FlxTransitionableSubState.skipNextTransIn = true;
-    FlxTransitionableSubState.skipNextTransOut = true;
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxTransitionableState.skipNextTransOut = true;
     openSubState(gameOverSubState);
   }
 
@@ -2668,8 +2664,8 @@ class PlayState extends MusicBeatSubState
         var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
 
         persistentUpdate = false;
-        FlxTransitionableSubState.skipNextTransIn = true;
-        FlxTransitionableSubState.skipNextTransOut = true;
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
         pauseSubState.camera = camCutscene;
         openSubState(pauseSubState);
       }
@@ -2684,8 +2680,8 @@ class PlayState extends MusicBeatSubState
         var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
 
         persistentUpdate = false;
-        FlxTransitionableSubState.skipNextTransIn = true;
-        FlxTransitionableSubState.skipNextTransOut = true;
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
         pauseSubState.camera = camCutscene;
         openSubState(pauseSubState);
       }

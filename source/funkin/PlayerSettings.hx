@@ -13,6 +13,7 @@ import flixel.util.FlxSignal;
  */
 class PlayerSettings
 {
+  // TODO: Finish implementation of second player.
   public static var numPlayers(default, null) = 0;
   public static var numAvatars(default, null) = 0;
   public static var player1(default, null):PlayerSettings;
@@ -21,12 +22,21 @@ class PlayerSettings
   public static var onAvatarAdd(default, null) = new FlxTypedSignal<PlayerSettings->Void>();
   public static var onAvatarRemove(default, null) = new FlxTypedSignal<PlayerSettings->Void>();
 
+  /**
+   * The player number associated with this settings object.
+   */
   public var id(default, null):Int;
 
+  /**
+   * The controls handler for this player.
+   */
   public var controls(default, null):Controls;
 
   /**
    * Return the PlayerSettings for the given player number, or `null` if that player isn't active.
+   *
+   * @param id The player number this represents.
+   * @return The PlayerSettings for the given player number, or `null` if that player isn't active.
    */
   public static function get(id:Int):Null<PlayerSettings>
   {
@@ -38,6 +48,9 @@ class PlayerSettings
     };
   }
 
+  /**
+   * Initialize the PlayerSettings singletons for each player.
+   */
   public static function init():Void
   {
     if (player1 == null)
@@ -56,22 +69,30 @@ class PlayerSettings
     }
   }
 
-  public static function reset()
+  /**
+   * Forcibly destroy the PlayerSettings singletons for each player.
+   */
+  public static function reset():Void
   {
     player1 = null;
     player2 = null;
     numPlayers = 0;
   }
 
-  static function onGamepadAdded(gamepad:FlxGamepad)
+  /**
+   * Callback invoked when a gamepad is added.
+   * @param gamepad The gamepad that was added.
+   */
+  static function onGamepadAdded(gamepad:FlxGamepad):Void
   {
+    // TODO: Make this detect and handle multiple players
     player1.addGamepad(gamepad);
   }
 
   /**
    * @param id The player number this represents. This was refactored to START AT `1`.
    */
-  private function new(id:Int)
+  function new(id:Int)
   {
     trace('loading player settings for id: $id');
 
@@ -83,11 +104,11 @@ class PlayerSettings
 
   function addKeyboard():Void
   {
-    var useDefault = true;
+    var useDefault:Bool = true;
     if (Save.instance.hasControls(id, Keys))
     {
       var keyControlData = Save.instance.getControls(id, Keys);
-      trace("keyControlData: " + haxe.Json.stringify(keyControlData));
+      trace('Loading keyboard control scheme from user save');
       useDefault = false;
       controls.fromSaveData(keyControlData, Keys);
     }
@@ -98,7 +119,7 @@ class PlayerSettings
 
     if (useDefault)
     {
-      trace("Loading default keyboard control scheme");
+      trace('Loading default keyboard control scheme');
       controls.setKeyboardScheme(Solo);
     }
 
@@ -109,13 +130,13 @@ class PlayerSettings
    * Called after an FlxGamepad has been detected.
    * @param gamepad The gamepad that was detected.
    */
-  function addGamepad(gamepad:FlxGamepad)
+  function addGamepad(gamepad:FlxGamepad):Void
   {
     var useDefault = true;
     if (Save.instance.hasControls(id, Gamepad(gamepad.id)))
     {
       var padControlData = Save.instance.getControls(id, Gamepad(gamepad.id));
-      trace("padControlData: " + haxe.Json.stringify(padControlData));
+      trace('Loading gamepad control scheme from user save');
       useDefault = false;
       controls.addGamepadWithSaveData(gamepad.id, padControlData);
     }
@@ -126,7 +147,7 @@ class PlayerSettings
 
     if (useDefault)
     {
-      trace("Loading gamepad control scheme");
+      trace('Loading default gamepad control scheme');
       controls.addDefaultGamepad(gamepad.id);
     }
     PreciseInputManager.instance.initializeButtons(controls, gamepad);
@@ -135,12 +156,12 @@ class PlayerSettings
   /**
    * Save this player's controls to the game's persistent save.
    */
-  public function saveControls()
+  public function saveControls():Void
   {
     var keyData = controls.createSaveData(Keys);
     if (keyData != null)
     {
-      trace("saving key data: " + haxe.Json.stringify(keyData));
+      trace('Saving keyboard control scheme to user save');
       Save.instance.setControls(id, Keys, keyData);
     }
 
@@ -149,7 +170,7 @@ class PlayerSettings
       var padData = controls.createSaveData(Gamepad(controls.gamepadsAdded[0]));
       if (padData != null)
       {
-        trace("saving pad data: " + haxe.Json.stringify(padData));
+        trace('Saving gamepad control scheme to user save');
         Save.instance.setControls(id, Gamepad(controls.gamepadsAdded[0]), padData);
       }
     }
