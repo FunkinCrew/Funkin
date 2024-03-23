@@ -1,6 +1,6 @@
-package funkin.data.level;
+package funkin.data.story.level;
 
-import funkin.data.level.LevelRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.ui.story.Level;
 import massive.munit.Assert;
 import massive.munit.async.AsyncFactory;
@@ -8,7 +8,7 @@ import massive.munit.util.Timer;
 
 @:nullSafety
 @:access(funkin.ui.story.Level)
-@:access(funkin.data.level.LevelRegistry)
+@:access(funkin.data.story.level.LevelRegistry)
 class LevelRegistryTest extends FunkinTest
 {
   public function new()
