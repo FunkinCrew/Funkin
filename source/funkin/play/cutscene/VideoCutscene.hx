@@ -29,6 +29,31 @@ class VideoCutscene
   #end
 
   /**
+   * Called when the video is started.
+   */
+  public static final onVideoStarted:FlxSignal = new FlxSignal();
+
+  /**
+   * Called if the video is paused.
+   */
+  public static final onVideoPaused:FlxSignal = new FlxSignal();
+
+  /**
+   * Called if the video is resumed.
+   */
+  public static final onVideoResumed:FlxSignal = new FlxSignal();
+
+  /**
+   * Called if the video is restarted. onVideoStarted is not called.
+   */
+  public static final onVideoRestarted:FlxSignal = new FlxSignal();
+
+  /**
+   * Called when the video is ended or skipped.
+   */
+  public static final onVideoEnded:FlxSignal = new FlxSignal();
+
+  /**
    * Play a video cutscene.
    * TODO: Currently this is hardcoded to start the countdown after the video is done.
    * @param path The path to the video file. Use Paths.file(path) to get the correct path.
@@ -94,6 +119,8 @@ class VideoCutscene
       PlayState.instance.add(vid);
 
       PlayState.instance.refresh();
+
+      onVideoStarted.dispatch();
     }
     else
     {
@@ -129,6 +156,8 @@ class VideoCutscene
         vid.y = 0;
         // vid.scale.set(0.5, 0.5);
       });
+
+      onVideoStarted.dispatch();
     }
     else
     {
@@ -143,6 +172,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.restartVideo();
+      onVideoRestarted.dispatch();
     }
     #end
 
@@ -156,6 +186,8 @@ class VideoCutscene
         // Resume the video if it was paused.
         vid.resume();
       }
+
+      onVideoRestarted.dispatch();
     }
     #end
   }
@@ -166,6 +198,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.pauseVideo();
+      onVideoPaused.dispatch();
     }
     #end
 
@@ -173,6 +206,41 @@ class VideoCutscene
     if (vid != null)
     {
       vid.pause();
+      onVideoPaused.dispatch();
+    }
+    #end
+  }
+
+  public static function hideVideo():Void
+  {
+    #if html5
+    if (vid != null)
+    {
+      vid.visible = false;
+    }
+    #end
+
+    #if hxCodec
+    if (vid != null)
+    {
+      vid.visible = false;
+    }
+    #end
+  }
+
+  public static function showVideo():Void
+  {
+    #if html5
+    if (vid != null)
+    {
+      vid.visible = true;
+    }
+    #end
+
+    #if hxCodec
+    if (vid != null)
+    {
+      vid.visible = true;
     }
     #end
   }
@@ -183,6 +251,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.resumeVideo();
+      onVideoResumed.dispatch();
     }
     #end
 
@@ -190,6 +259,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.resume();
+      onVideoResumed.dispatch();
     }
     #end
   }
@@ -240,6 +310,7 @@ class VideoCutscene
       {
         ease: FlxEase.quadInOut,
         onComplete: function(twn:FlxTween) {
+          onVideoEnded.dispatch();
           onCutsceneFinish(cutsceneType);
         }
       });
