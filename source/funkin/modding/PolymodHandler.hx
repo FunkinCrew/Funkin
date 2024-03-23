@@ -1,14 +1,14 @@
 package funkin.modding;
 
-import funkin.data.dialogue.ConversationRegistry;
-import funkin.data.dialogue.DialogueBoxRegistry;
-import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.dialogue.conversation.ConversationRegistry;
+import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
+import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.event.SongEventRegistry;
-import funkin.data.level.LevelRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
-import funkin.data.freeplay.AlbumRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;

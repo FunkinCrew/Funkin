@@ -1,5 +1,6 @@
 package funkin.ui.options;
 
+import funkin.ui.debug.latency.LatencyState;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
@@ -182,6 +183,9 @@ class OptionsMenu extends Page
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() switchPage(Preferences));
     createItem("CONTROLS", function() switchPage(Controls));
+    createItem("INPUT OFFSETS", function() {
+      FlxG.state.openSubState(new LatencyState());
+    });
 
     #if newgrounds
     if (NGio.isLoggedIn) createItem("LOGOUT", selectLogout);

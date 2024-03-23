@@ -18,7 +18,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.data.level.LevelRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;

@@ -21,7 +21,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;
 
-  public var conductorInUse(get, default):Conductor;
+  public var conductorInUse(get, set):Conductor;
 
   var _conductorInUse:Null<Conductor>;
 
@@ -29,6 +29,11 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     if (_conductorInUse == null) return Conductor.instance;
     return _conductorInUse;
+  }
+
+  function set_conductorInUse(value:Conductor):Conductor
+  {
+    return _conductorInUse = value;
   }
 
   public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)

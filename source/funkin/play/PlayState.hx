@@ -24,7 +24,7 @@ import flixel.util.FlxTimer;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.VoicesGroup;
 import funkin.audio.VoicesGroup;
-import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -2011,10 +2011,10 @@ class PlayState extends MusicBeatSubState
     {
       if (note == null) continue;
 
-      // TODO: Does this properly account for offsets?
-      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
+      // TODO: Are offsets being accounted for in the correct direction?
+      var hitWindowStart = note.strumTime + Conductor.instance.inputOffset - Constants.HIT_WINDOW_MS;
+      var hitWindowCenter = note.strumTime + Conductor.instance.inputOffset;
+      var hitWindowEnd = note.strumTime + Conductor.instance.inputOffset + Constants.HIT_WINDOW_MS;
 
       if (Conductor.instance.songPosition > hitWindowEnd)
       {

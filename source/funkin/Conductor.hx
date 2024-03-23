@@ -233,26 +233,26 @@ class Conductor
 
   function get_inputOffset():Int
   {
-    return Save.get().options.inputOffset;
+    return Save.instance.options.inputOffset;
   }
 
   function set_inputOffset(value:Int):Int
   {
-    Save.get().options.inputOffset = value;
-    Save.get().flush();
-    return Save.get().options.inputOffset;
+    Save.instance.options.inputOffset = value;
+    Save.instance.flush();
+    return Save.instance.options.inputOffset;
   }
 
   function get_audioVisualOffset():Int
   {
-    return Save.get().options.audioVisualOffset;
+    return Save.instance.options.audioVisualOffset;
   }
 
   function set_audioVisualOffset(value:Int):Int
   {
-    Save.get().options.audioVisualOffset = value;
-    Save.get().flush();
-    return Save.get().options.audioVisualOffset;
+    Save.instance.options.audioVisualOffset = value;
+    Save.instance.flush();
+    return Save.instance.options.audioVisualOffset;
   }
 
   /**

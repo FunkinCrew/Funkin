@@ -50,7 +50,20 @@ class Strumline extends FlxSpriteGroup
    * Usually you want to keep this as is, but if you are using a Strumline and
    * playing a sound that has it's own conductor, set this (LatencyState for example)
    */
-  public var conductorInUse:Conductor = Conductor.instance;
+  public var conductorInUse(get, set):Conductor;
+
+  var _conductorInUse:Null<Conductor>;
+
+  function get_conductorInUse():Conductor
+  {
+    if (_conductorInUse == null) return Conductor.instance;
+    return _conductorInUse;
+  }
+
+  function set_conductorInUse(value:Conductor):Conductor
+  {
+    return _conductorInUse = value;
+  }
 
   /**
    * The notes currently being rendered on the strumline.
@@ -159,103 +172,9 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
-   * Process the notes in this strumline.
-   * @param onNoteMiss
-   * @param dispatchEvent TODO: better way to do this? Maybe passing in current dispatchEvent function from current state?
+   * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `NoteSprite` objects.
    */
-  public function processNotes(?onNoteMiss:NoteSprite->Void, ?dispatchEvent:ScriptEvent->Void)
-  {
-    for (note in notes.members)
-    {
-      if (note == null || (isPlayer && note.hasBeenHit)) continue;
-
-      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
-
-      if (conductorInUse.songPosition > hitWindowEnd)
-      {
-        if (!isPlayer && note.hasMissed) continue;
-
-        note.tooEarly = false;
-        note.mayHit = false;
-        note.hasMissed = true;
-
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
-      }
-      else if (conductorInUse.songPosition > hitWindowCenter)
-      {
-        // only run this on opponent strumlines!
-        if (!isPlayer) continue;
-
-        // Call an event to allow canceling the note hit.
-        // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, note, 0, true);
-        if (dispatchEvent != null) dispatchEvent(event);
-
-        // Calling event.cancelEvent() skips all other logic! Neat!
-        if (event.eventCanceled) continue;
-
-        // Command the opponent to hit the note on time.
-        // NOTE: This is what handles the strumline and cleaning up the note itself!
-
-        hitNote(note);
-
-        if (note.holdNoteSprite != null)
-        {
-          playNoteHoldCover(note.holdNoteSprite);
-        }
-      }
-      else if (conductorInUse.songPosition > hitWindowStart)
-      {
-        if (!isPlayer && (note.hasBeenHit || note.hasMissed)) continue;
-
-        note.tooEarly = false;
-        note.mayHit = true;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-      else
-      {
-        note.tooEarly = true;
-        note.mayHit = false;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-
-      if (note.hasMissed && !note.handledMiss)
-      {
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, 0, true);
-
-        if (dispatchEvent != null) dispatchEvent(event);
-
-        if (event.eventCanceled) continue;
-
-        if (onNoteMiss != null) onNoteMiss(note);
-
-        note.handledMiss = true;
-      }
-    }
-  }
-
-  var frameMax:Int;
-  var animFinishedEver:Bool;
-
-  /**
-   * Get a list of notes within + or - the given strumtime.
-   * @param strumTime The current time.
-   * @param hitWindow The hit window to check.
-   */
-  public function getNotesInRange(strumTime:Float, hitWindow:Float):Array<NoteSprite>
-  {
-    var hitWindowStart:Float = strumTime - hitWindow;
-    var hitWindowEnd:Float = strumTime + hitWindow;
-
-    return notes.members.filter(function(note:NoteSprite) {
-      return note != null && note.alive && !note.hasBeenHit && note.strumTime >= hitWindowStart && note.strumTime <= hitWindowEnd;
-    });
-  }
-
   public function getNotesMayHit():Array<NoteSprite>
   {
     return notes.members.filter(function(note:NoteSprite) {
@@ -263,23 +182,14 @@ class Strumline extends FlxSpriteGroup
     });
   }
 
+  /**
+   * Return hold notes that are within `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `SustainTrail` objects.
+   */
   public function getHoldNotesHitOrMissed():Array<SustainTrail>
   {
     return holdNotes.members.filter(function(holdNote:SustainTrail) {
       return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
-    });
-  }
-
-  public function getHoldNotesInRange(strumTime:Float, hitWindow:Float):Array<SustainTrail>
-  {
-    var hitWindowStart:Float = strumTime - hitWindow;
-    var hitWindowEnd:Float = strumTime + hitWindow;
-
-    return holdNotes.members.filter(function(note:SustainTrail) {
-      return note != null
-        && note.alive
-        && note.strumTime >= hitWindowStart
-        && (note.strumTime + note.fullSustainLength) <= hitWindowEnd;
     });
   }
 
@@ -381,6 +291,9 @@ class Strumline extends FlxSpriteGroup
   function updateNotes():Void
   {
     if (noteData.length == 0) return;
+
+    // Ensure note data gets reset if the song happens to loop.
+    if (conductorInUse.currentStep == 0) nextNoteIndex = 0;
 
     var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
     var hitWindowStart:Float = conductorInUse.songPosition - Constants.HIT_WINDOW_MS;

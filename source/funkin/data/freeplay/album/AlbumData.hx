@@ -1,4 +1,4 @@
-package funkin.data.freeplay;
+package funkin.data.freeplay.album;
 
 /**
  * A type definition for the data for an album of songs.

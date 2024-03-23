@@ -6,7 +6,7 @@ import flixel.util.FlxSort;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
-import funkin.data.freeplay.AlbumRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
 import openfl.utils.Assets;

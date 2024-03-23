@@ -1,7 +1,7 @@
-package funkin.data.level;
+package funkin.data.story.level;
 
 import funkin.ui.story.Level;
-import funkin.data.level.LevelData;
+import funkin.data.story.level.LevelData;
 import funkin.ui.story.ScriptedLevel;
 
 class LevelRegistry extends BaseRegistry<Level, LevelData>

@@ -16,13 +16,13 @@ import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.modding.events.ScriptEventDispatcher;
 import flixel.addons.display.FlxPieDial;
-import funkin.data.dialogue.ConversationData;
-import funkin.data.dialogue.ConversationData.DialogueEntryData;
-import funkin.data.dialogue.ConversationRegistry;
-import funkin.data.dialogue.SpeakerData;
-import funkin.data.dialogue.SpeakerRegistry;
-import funkin.data.dialogue.DialogueBoxData;
-import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.conversation.ConversationData;
+import funkin.data.dialogue.conversation.ConversationData.DialogueEntryData;
+import funkin.data.dialogue.conversation.ConversationRegistry;
+import funkin.data.dialogue.speaker.SpeakerData;
+import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.dialoguebox.DialogueBoxData;
+import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 
 /**
  * A high-level handler for dialogue.

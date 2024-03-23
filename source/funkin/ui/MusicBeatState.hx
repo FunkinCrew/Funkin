@@ -27,7 +27,21 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;
-  public var conductorInUse:Conductor = Conductor.instance;
+
+  public var conductorInUse(get, set):Conductor;
+
+  var _conductorInUse:Null<Conductor>;
+
+  function get_conductorInUse():Conductor
+  {
+    if (_conductorInUse == null) return Conductor.instance;
+    return _conductorInUse;
+  }
+
+  function set_conductorInUse(value:Conductor):Conductor
+  {
+    return _conductorInUse = value;
+  }
 
   public function new()
   {

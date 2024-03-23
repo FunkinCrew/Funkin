@@ -1,35 +1,35 @@
-package funkin.data.dialogue;
+package funkin.data.dialogue.conversation;
 
-import funkin.play.cutscene.dialogue.DialogueBox;
-import funkin.data.dialogue.DialogueBoxData;
-import funkin.play.cutscene.dialogue.ScriptedDialogueBox;
+import funkin.play.cutscene.dialogue.Conversation;
+import funkin.data.dialogue.conversation.ConversationData;
+import funkin.play.cutscene.dialogue.ScriptedConversation;
 
-class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData>
+class ConversationRegistry extends BaseRegistry<Conversation, ConversationData>
 {
   /**
    * The current version string for the dialogue box data format.
    * Handle breaking changes by incrementing this value
-   * and adding migration to the `migrateDialogueBoxData()` function.
+   * and adding migration to the `migrateConversationData()` function.
    */
-  public static final DIALOGUEBOX_DATA_VERSION:thx.semver.Version = "1.1.0";
+  public static final CONVERSATION_DATA_VERSION:thx.semver.Version = "1.0.0";
 
-  public static final DIALOGUEBOX_DATA_VERSION_RULE:thx.semver.VersionRule = "1.1.x";
+  public static final CONVERSATION_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static final instance:DialogueBoxRegistry = new DialogueBoxRegistry();
+  public static final instance:ConversationRegistry = new ConversationRegistry();
 
   public function new()
   {
-    super('DIALOGUEBOX', 'dialogue/boxes', DIALOGUEBOX_DATA_VERSION_RULE);
+    super('CONVERSATION', 'dialogue/conversations', CONVERSATION_DATA_VERSION_RULE);
   }
 
   /**
    * Read, parse, and validate the JSON data and produce the corresponding data object.
    */
-  public function parseEntryData(id:String):Null<DialogueBoxData>
+  public function parseEntryData(id:String):Null<ConversationData>
   {
     // JsonParser does not take type parameters,
     // otherwise this function would be in BaseRegistry.
-    var parser = new json2object.JsonParser<DialogueBoxData>();
+    var parser = new json2object.JsonParser<ConversationData>();
     parser.ignoreUnknownVariables = false;
 
     switch (loadEntryFile(id))
@@ -55,9 +55,9 @@ class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData>
    * @param contents The JSON as a string.
    * @param fileName An optional file name for error reporting.
    */
-  public function parseEntryDataRaw(contents:String, ?fileName:String):Null<DialogueBoxData>
+  public function parseEntryDataRaw(contents:String, ?fileName:String):Null<ConversationData>
   {
-    var parser = new json2object.JsonParser<DialogueBoxData>();
+    var parser = new json2object.JsonParser<ConversationData>();
     parser.ignoreUnknownVariables = false;
     parser.fromJson(contents, fileName);
 
@@ -69,13 +69,13 @@ class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData>
     return parser.value;
   }
 
-  function createScriptedEntry(clsName:String):DialogueBox
+  function createScriptedEntry(clsName:String):Conversation
   {
-    return ScriptedDialogueBox.init(clsName, "unknown");
+    return ScriptedConversation.init(clsName, "unknown");
   }
 
   function getScriptedClassNames():Array<String>
   {
-    return ScriptedDialogueBox.listScriptClasses();
+    return ScriptedConversation.listScriptClasses();
   }
 }

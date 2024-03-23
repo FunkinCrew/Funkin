@@ -11,7 +11,7 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
    */
-  public static final STAGE_DATA_VERSION:thx.semver.Version = "1.0.1";
+  public static final STAGE_DATA_VERSION:thx.semver.Version = "1.0.0";
 
   public static final STAGE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
