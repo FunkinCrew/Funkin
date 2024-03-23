@@ -1,6 +1,6 @@
 package funkin.ui;
 
-import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
@@ -20,7 +20,16 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;
-  public var conductorInUse:Conductor = Conductor.instance;
+
+  public var conductorInUse(get, default):Conductor;
+
+  var _conductorInUse:Null<Conductor>;
+
+  function get_conductorInUse():Conductor
+  {
+    if (_conductorInUse == null) return Conductor.instance;
+    return _conductorInUse;
+  }
 
   public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)
   {

@@ -1,6 +1,5 @@
 package funkin.play.song;
 
-import flixel.sound.FlxSound;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
 import funkin.data.IRegistryEntry;
@@ -13,9 +12,8 @@ import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongData.SongTimeFormat;
 import funkin.data.song.SongRegistry;
-import funkin.data.song.SongRegistry;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import funkin.modding.IScriptedClass;
 import funkin.util.SortUtil;
 import openfl.utils.Assets;
 
@@ -31,14 +29,44 @@ import openfl.utils.Assets;
 @:nullSafety
 class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMetadata>
 {
-  public static final DEFAULT_SONGNAME:String = "Unknown";
-  public static final DEFAULT_ARTIST:String = "Unknown";
+  /**
+   * The default value for the song's name
+   */
+  public static final DEFAULT_SONGNAME:String = 'Unknown';
+
+  /**
+   * The default value for the song's artist
+   */
+  public static final DEFAULT_ARTIST:String = 'Unknown';
+
+  /**
+   * The default value for the song's time format
+   */
   public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;
+
+  /**
+   * The default value for the song's divisions
+   */
   public static final DEFAULT_DIVISIONS:Null<Int> = null;
+
+  /**
+   * The default value for whether the song loops.
+   */
   public static final DEFAULT_LOOPED:Bool = false;
-  public static final DEFAULT_STAGE:String = "mainStage";
+
+  /**
+   * The default value for the song's playable stage.
+   */
+  public static final DEFAULT_STAGE:String = 'mainStage';
+
+  /**
+   * The default value for the song's scroll speed.
+   */
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 
+  /**
+   * The internal ID of the song.
+   */
   public final id:String;
 
   /**
@@ -53,6 +81,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   final _metadata:Map<String, SongMetadata>;
   final difficulties:Map<String, SongDifficulty>;
 
+  /**
+   * The list of variations a song has.
+   */
   public var variations(get, never):Array<String>;
 
   function get_variations():Array<String>
@@ -65,6 +96,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public var validScore:Bool = true;
 
+  /**
+   * The readable name of the song.
+   */
   public var songName(get, never):String;
 
   function get_songName():String
@@ -74,6 +108,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return DEFAULT_SONGNAME;
   }
 
+  /**
+   * The artist of the song.
+   */
   public var songArtist(get, never):String;
 
   function get_songArtist():String
@@ -101,7 +138,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       for (vari in _data.playData.songVariations)
       {
-        var variMeta = fetchVariationMetadata(id, vari);
+        var variMeta:Null<SongMetadata> = fetchVariationMetadata(id, vari);
         if (variMeta != null) _metadata.set(variMeta.variation, variMeta);
       }
     }
@@ -115,30 +152,85 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     populateDifficulties();
   }
 
-  @:allow(funkin.play.song.Song)
+  /**
+   * Build a song from existing metadata rather than loading it from the `assets` folder.
+   * Used by the Chart Editor.
+   *
+   * @param songId The ID of the song.
+   * @param metadata The metadata of the song.
+   * @param variations The list of variations this song has.
+   * @param charts The chart data for each variation.
+   * @param includeScript Whether to initialize the scripted class tied to the song, if it exists.
+   * @param validScore Whether the song is elegible for highscores.
+   * @return The constructed song object.
+   */
   public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
-      validScore:Bool = false):Song
+      includeScript:Bool = true, validScore:Bool = false):Song
   {
-    var result:Song = new Song(songId);
+    @:privateAccess
+    var result:Null<Song>;
+
+    if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
+    {
+      var songClassName:String = SongRegistry.instance.getScriptedEntryClassName(songId);
+
+      @:privateAccess
+      result = SongRegistry.instance.createScriptedEntry(songClassName);
+    }
+    else
+    {
+      @:privateAccess
+      result = SongRegistry.instance.createEntry(songId);
+    }
+
+    if (result == null) throw 'ERROR: Could not build Song instance ($songId), is the attached script bad?';
 
     result._metadata.clear();
     for (meta in metadata)
+    {
       result._metadata.set(meta.variation, meta);
+    }
 
     result.difficulties.clear();
     result.populateDifficulties();
 
     for (variation => chartData in charts)
+    {
       result.applyChartData(chartData, variation);
+    }
 
     result.validScore = validScore;
 
     return result;
   }
 
+  /**
+   * Retrieve a list of the raw metadata for the song.
+   * @return The metadata JSON objects for the song's variations.
+   */
   public function getRawMetadata():Array<SongMetadata>
   {
     return _metadata.values();
+  }
+
+  /**
+   * List the album IDs for each variation of the song.
+   * @return A map of variation IDs to album IDs.
+   */
+  public function listAlbums():Map<String, String>
+  {
+    var result:Map<String, String> = new Map<String, String>();
+
+    for (difficultyId in difficulties.keys())
+    {
+      var meta:Null<SongDifficulty> = difficulties.get(difficultyId);
+      if (meta != null && meta.album != null)
+      {
+        result.set(difficultyId, meta.album);
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -192,6 +284,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   /**
    * Parse and cache the chart for all difficulties of this song.
+   * @param force Whether to forcibly clear the list of charts first.
    */
   public function cacheCharts(force:Bool = false):Void
   {
@@ -294,11 +387,14 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   /**
    * List all the difficulties in this song.
+   *
    * @param variationId Optionally filter by a single variation.
    * @param variationIds Optionally filter by multiple variations.
+   * @param showHidden Include charts which are not accessible to the player.
+   *
    * @return The list of difficulties.
    */
-  public function listDifficulties(?variationId:String, ?variationIds:Array<String>):Array<String>
+  public function listDifficulties(?variationId:String, ?variationIds:Array<String>, showHidden:Bool = false):Array<String>
   {
     if (variationIds == null) variationIds = [];
     if (variationId != null) variationIds.push(variationId);
@@ -313,6 +409,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       if (variationIds.length > 0 && !variationIds.contains(difficulty.variation)) return null;
       return difficulty.difficulty;
     }).nonNull().unique();
+
+    diffFiltered = diffFiltered.filter(function(diffId:String):Bool {
+      if (showHidden) return true;
+      for (targetVariation in variationIds)
+      {
+        if (isDifficultyVisible(diffId, targetVariation)) return true;
+      }
+      return false;
+    });
 
     diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
 
@@ -330,6 +435,13 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       if (difficulties.exists('$diffId$variationSuffix')) return true;
     }
     return false;
+  }
+
+  public function isDifficultyVisible(diffId:String, variationId:String):Bool
+  {
+    var variation = _metadata.get(variationId);
+    if (variation == null) return false;
+    return variation.playData.difficulties.contains(diffId);
   }
 
   /**
@@ -364,7 +476,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function onSongRetry(event:ScriptEvent):Void {};
 
-  public function onNoteHit(event:NoteScriptEvent):Void {};
+  public function onNoteIncoming(event:NoteScriptEvent) {}
+
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent):Void {};
 
@@ -502,11 +616,11 @@ class SongDifficulty
     }
   }
 
-  public inline function playInst(volume:Float = 1.0, looped:Bool = false):Void
+  public function playInst(volume:Float = 1.0, looped:Bool = false):Void
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
-    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped);
+    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true);
 
     // Workaround for a bug where FlxG.sound.music.update() was being called twice.
     FlxG.sound.list.remove(FlxG.sound.music);
@@ -614,9 +728,9 @@ class SongDifficulty
     }
 
     // Add player vocals.
-    if (voiceList[0] != null) result.addPlayerVoice(FunkinSound.load(Assets.getSound(voiceList[0])));
+    if (voiceList[0] != null) result.addPlayerVoice(FunkinSound.load(voiceList[0]));
     // Add opponent vocals.
-    if (voiceList[1] != null) result.addOpponentVoice(FunkinSound.load(Assets.getSound(voiceList[1])));
+    if (voiceList[1] != null) result.addOpponentVoice(FunkinSound.load(voiceList[1]));
 
     // Add additional vocals.
     if (voiceList.length > 2)

@@ -4,7 +4,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxSignal;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.system.FlxSound;
+import flixel.sound.FlxSound;
 import flixel.util.FlxTimer;
 import funkin.audio.FlxStreamSound;
 
@@ -156,8 +156,6 @@ class DJBoyfriend extends FlxAtlasSprite
 
   function setupAnimations():Void
   {
-    // frames = FlxAnimationUtil.combineFramesCollections(Paths.getSparrowAtlas('freeplay/bfFreeplay'), Paths.getSparrowAtlas('freeplay/bf-freeplay-afk'));
-
     // animation.addByPrefix('intro', "boyfriend dj intro", 24, false);
     addOffset('boyfriend dj intro', 8, 3);
 

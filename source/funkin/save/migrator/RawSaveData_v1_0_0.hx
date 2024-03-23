@@ -35,7 +35,6 @@ typedef SaveControlsData_v1_0_0 =
   var ?ACCEPT:Array<Int>;
   var ?BACK:Array<Int>;
   var ?CUTSCENE_ADVANCE:Array<Int>;
-  var ?CUTSCENE_SKIP:Array<Int>;
   var ?NOTE_DOWN:Array<Int>;
   var ?NOTE_LEFT:Array<Int>;
   var ?NOTE_RIGHT:Array<Int>;

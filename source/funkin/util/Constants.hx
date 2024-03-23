@@ -175,17 +175,22 @@ class Constants
   /**
    * The default name for songs.
    */
-  public static final DEFAULT_SONGNAME:String = "Unknown";
+  public static final DEFAULT_SONGNAME:String = 'Unknown';
 
   /**
    * The default artist for songs.
    */
-  public static final DEFAULT_ARTIST:String = "Unknown";
+  public static final DEFAULT_ARTIST:String = 'Unknown';
 
   /**
    * The default note style for songs.
    */
-  public static final DEFAULT_NOTE_STYLE:String = "funkin";
+  public static final DEFAULT_NOTE_STYLE:String = 'funkin';
+
+  /**
+   * The default album for songs in Freeplay.
+   */
+  public static final DEFAULT_ALBUM_ID:String = 'volume1';
 
   /**
    * The default timing format for songs.

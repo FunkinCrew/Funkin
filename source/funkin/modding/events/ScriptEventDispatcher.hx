@@ -71,17 +71,29 @@ class ScriptEventDispatcher
       }
     }
 
-    if (Std.isOfType(target, IPlayStateScriptedClass))
+    if (Std.isOfType(target, INoteScriptedClass))
     {
-      var t:IPlayStateScriptedClass = cast(target, IPlayStateScriptedClass);
+      var t:INoteScriptedClass = cast(target, INoteScriptedClass);
       switch (event.type)
       {
+        case NOTE_INCOMING:
+          t.onNoteIncoming(cast event);
+          return;
         case NOTE_HIT:
           t.onNoteHit(cast event);
           return;
         case NOTE_MISS:
           t.onNoteMiss(cast event);
           return;
+        default: // Continue;
+      }
+    }
+
+    if (Std.isOfType(target, IPlayStateScriptedClass))
+    {
+      var t:IPlayStateScriptedClass = cast(target, IPlayStateScriptedClass);
+      switch (event.type)
+      {
         case NOTE_GHOST_MISS:
           t.onNoteGhostMiss(cast event);
           return;

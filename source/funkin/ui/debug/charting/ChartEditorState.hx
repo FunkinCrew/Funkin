@@ -310,10 +310,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     this.songLengthInMs = value;
 
-    // Make sure playhead doesn't go outside the song.
-    if (playheadPositionInMs > songLengthInMs) playheadPositionInMs = songLengthInMs;
-
-    onSongLengthChanged();
+    updateGridHeight();
 
     return this.songLengthInMs;
   }
@@ -596,9 +593,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playtestPracticeMode:Bool = false;
 
   /**
+   * If true, playtesting a chart will make the computer do it for you!
+   */
+  var playtestBotPlayMode:Bool = false;
+
+  /**
    * Enables or disables the "debugger" popup that appears when you run into a flixel error.
    */
   var enabledDebuggerPopup:Bool = true;
+
+  /**
+   * Whether song scripts should be enabled during playtesting.
+   * You should probably check the box if the song has custom mechanics.
+   */
+  var playtestSongScripts:Bool = true;
 
   // Visuals
 
@@ -704,19 +712,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var metronomeVolume:Float = 1.0;
 
   /**
-   * The volume to play hitsounds at.
+   * The volume to play the player's hitsounds at.
    */
-  var hitsoundVolume:Float = 1.0;
+  var hitsoundVolumePlayer:Float = 1.0;
 
   /**
-   * Whether hitsounds are enabled for the player.
+   * The volume to play the opponent's hitsounds at.
    */
-  var hitsoundsEnabledPlayer:Bool = true;
-
-  /**
-   * Whether hitsounds are enabled for the opponent.
-   */
-  var hitsoundsEnabledOpponent:Bool = true;
+  var hitsoundVolumeOpponent:Float = 1.0;
 
   /**
    * Whether hitsounds are enabled for at least one character.
@@ -725,7 +728,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_hitsoundsEnabled():Bool
   {
-    return hitsoundsEnabledPlayer || hitsoundsEnabledOpponent;
+    return hitsoundVolumePlayer + hitsoundVolumeOpponent > 0;
   }
 
   // Auto-save
@@ -875,6 +878,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var noteDisplayDirty:Bool = true;
 
+  var noteTooltipsDirty:Bool = true;
+
   /**
    * Whether the selected charactesr have been modified and the health icons need to be updated.
    */
@@ -928,12 +933,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.get().chartEditorHasBackup;
+    return Save.instance.chartEditorHasBackup;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
   {
-    return Save.get().chartEditorHasBackup = value;
+    return Save.instance.chartEditorHasBackup = value;
   }
 
   /**
@@ -1399,7 +1404,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_currentSongId():String
   {
-    return currentSongName.toLowerKebabCase().replace('.', '').replace(' ', '-');
+    return currentSongName.toLowerKebabCase().replace(' ', '-').sanitize();
   }
 
   var currentSongArtist(get, set):String;
@@ -1538,6 +1543,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Make sure view is updated when the variation changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
 
     switchToCurrentInstrumental();
@@ -1559,6 +1565,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Make sure view is updated when the difficulty changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
 
     // Make sure the difficulty we selected is in the list of difficulties.
@@ -1758,29 +1765,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeMetronome:Slider;
 
   /**
-   * The `Audio -> Enable Player Hitsounds` menu checkbox.
-   */
-  var menubarItemPlayerHitsounds:MenuCheckBox;
-
-  /**
-   * The `Audio -> Enable Opponent Hitsounds` menu checkbox.
-   */
-  var menubarItemOpponentHitsounds:MenuCheckBox;
-
-  /**
    * The `Audio -> Play Theme Music` menu checkbox.
    */
   var menubarItemThemeMusic:MenuCheckBox;
 
   /**
-   * The `Audio -> Hitsound Volume` label.
+   * The `Audio -> Player Hitsound Volume` label.
    */
-  var menubarLabelVolumeHitsounds:Label;
+  var menubarLabelVolumeHitsoundPlayer:Label;
 
   /**
-   * The `Audio -> Hitsound Volume` slider.
+   * The `Audio -> Enemy Hitsound Volume` label.
    */
-  var menubarItemVolumeHitsounds:Slider;
+  var menubarLabelVolumeHitsoundOpponent:Label;
+
+  /**
+   * The `Audio -> Player Hitsound Volume` slider.
+   */
+  var menubarItemVolumeHitsoundPlayer:Slider;
+
+  /**
+   * The `Audio -> Enemy Hitsound Volume` slider.
+   */
+  var menubarItemVolumeHitsoundOpponent:Slider;
 
   /**
    * The `Audio -> Instrumental Volume` label.
@@ -2171,7 +2178,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function loadPreferences():Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     if (previousWorkingFilePaths[0] == null)
     {
@@ -2187,9 +2194,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playtestStartTime = save.chartEditorPlaytestStartTime;
     currentTheme = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
-    hitsoundVolume = save.chartEditorHitsoundVolume;
-    hitsoundsEnabledPlayer = save.chartEditorHitsoundsEnabledPlayer;
-    hitsoundsEnabledOpponent = save.chartEditorHitsoundsEnabledOpponent;
+    hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
+    hitsoundVolumePlayer = save.chartEditorHitsoundVolumeOpponent;
     this.welcomeMusic.active = save.chartEditorThemeMusic;
 
     // audioInstTrack.volume = save.chartEditorInstVolume;
@@ -2200,7 +2206,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function writePreferences(hasBackup:Bool):Void
   {
-    var save:Save = Save.get();
+    var save:Save = Save.instance;
 
     // Can't use filter() because of null safety checking!
     var filteredWorkingFilePaths:Array<String> = [];
@@ -2217,9 +2223,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorPlaytestStartTime = playtestStartTime;
     save.chartEditorTheme = currentTheme;
     save.chartEditorMetronomeVolume = metronomeVolume;
-    save.chartEditorHitsoundVolume = hitsoundVolume;
-    save.chartEditorHitsoundsEnabledPlayer = hitsoundsEnabledPlayer;
-    save.chartEditorHitsoundsEnabledOpponent = hitsoundsEnabledOpponent;
+    save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
+    save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
     save.chartEditorThemeMusic = this.welcomeMusic.active;
 
     // save.chartEditorInstVolume = audioInstTrack.volume;
@@ -2848,12 +2853,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBarItemInputStyleNone.onClick = function(event:UIEvent) {
       currentLiveInputStyle = None;
     };
+    menuBarItemInputStyleNone.selected = currentLiveInputStyle == None;
     menuBarItemInputStyleNumberKeys.onClick = function(event:UIEvent) {
       currentLiveInputStyle = NumberKeys;
     };
+    menuBarItemInputStyleNumberKeys.selected = currentLiveInputStyle == NumberKeys;
     menuBarItemInputStyleWASD.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = WASD;
+      currentLiveInputStyle = WASDKeys;
     };
+    menuBarItemInputStyleWASD.selected = currentLiveInputStyle == WASDKeys;
 
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
@@ -2912,24 +2920,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
 
-    menubarItemPlayerHitsounds.onChange = event -> hitsoundsEnabledPlayer = event.value;
-    menubarItemPlayerHitsounds.selected = hitsoundsEnabledPlayer;
-
-    menubarItemOpponentHitsounds.onChange = event -> hitsoundsEnabledOpponent = event.value;
-    menubarItemOpponentHitsounds.selected = hitsoundsEnabledOpponent;
-
     menubarItemThemeMusic.onChange = event -> {
       this.welcomeMusic.active = event.value;
       fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     };
     menubarItemThemeMusic.selected = this.welcomeMusic.active;
 
-    menubarItemVolumeHitsound.onChange = event -> {
+    menubarItemVolumeHitsoundPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
-      hitsoundVolume = volume;
-      menubarLabelVolumeHitsound.text = 'Hitsound - ${Std.int(event.value)}%';
+      hitsoundVolumePlayer = volume;
+      menubarLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
-    menubarItemVolumeHitsound.value = Std.int(hitsoundVolume * 100);
+    menubarItemVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
+
+    menubarItemVolumeHitsoundOpponent.onChange = event -> {
+      var volume:Float = event.value.toFloat() / 100.0;
+      hitsoundVolumeOpponent = volume;
+      menubarLabelVolumeHitsoundOpponent.text = 'Enemy - ${Std.int(event.value)}%';
+    };
+    menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
 
     menubarItemVolumeInstrumental.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -2951,7 +2960,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemPlaybackSpeed.onChange = event -> {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
-      pitch = Math.floor(pitch / 0.25) * 0.25; // Round to nearest 0.25.
+      pitch = Math.floor(pitch / 0.05) * 0.05; // Round to nearest 5%
+      pitch = Math.max(0.05, Math.min(2.0, pitch)); // Clamp to 5% to 200%
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       audioVocalTrackGroup.pitch = pitch;
@@ -3417,7 +3427,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Update the event sprite's position.
           eventSprite.updateEventPosition(renderedEvents);
           // Update the sprite's graphic. TODO: Is this inefficient?
-          eventSprite.playAnimation(eventSprite.eventData.event);
+          eventSprite.playAnimation(eventSprite.eventData.eventKind);
         }
         else
         {
@@ -3657,7 +3667,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.width = eventSprite.width;
           selectionSquare.height = eventSprite.height;
         }
+
+        // Additional cleanup on notes.
+        if (noteTooltipsDirty) eventSprite.updateTooltipText();
       }
+
+      noteTooltipsDirty = false;
 
       // Sort the notes DESCENDING. This keeps the sustain behind the associated note.
       renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
@@ -4530,14 +4545,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 {
                   // Create an event and place it in the chart.
                   // TODO: Figure out configuring event data.
-                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.clone());
+                  var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
 
                   performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
                 }
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace.clone());
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace);
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -4678,9 +4693,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
             var eventData:SongEventData = gridGhostEvent.eventData != null ? gridGhostEvent.eventData : new SongEventData(cursorMs, eventKindToPlace, null);
 
-            if (eventKindToPlace != eventData.event)
+            if (eventKindToPlace != eventData.eventKind)
             {
-              eventData.event = eventKindToPlace;
+              eventData.eventKind = eventKindToPlace;
             }
             eventData.time = cursorSnappedMs;
 
@@ -4942,7 +4957,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Place notes at the playhead.
     switch (currentLiveInputStyle)
     {
-      case ChartEditorLiveInputStyle.WASD:
+      case ChartEditorLiveInputStyle.WASDKeys:
         if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(4);
         if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(5);
         if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(6);
@@ -5245,6 +5260,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       // Would bind Ctrl+A and Ctrl+D here, but they are already bound to Select All and Select None.
     }
+    else
+    {
+      trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
+    }
   }
 
   /**
@@ -5267,14 +5286,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // F1 = Open Help
     if (FlxG.keys.justPressed.F1) this.openUserGuideDialog();
-
-    // DEBUG KEYBIND: Ctrl + Alt + Shift + L = Crash the game.
-    #if debug
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
-    {
-      throw "DEBUG: Crashing the chart editor!";
-    }
-    #end
   }
 
   function handleQuickWatch():Void
@@ -5317,19 +5328,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
+    var playbackRate:Float = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+
     var targetSong:Song;
     try
     {
-      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, false);
+      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, playtestSongScripts, false);
     }
     catch (e)
     {
       this.error("Could Not Playtest", 'Got an error trying to playtest the song.\n${e}');
       return;
     }
-
-    LogStyle.WARNING.openConsole = enabledDebuggerPopup;
-    LogStyle.ERROR.openConsole = enabledDebuggerPopup;
 
     // TODO: Rework asset system so we can remove this.
     switch (currentSongStage)
@@ -5348,7 +5360,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         Paths.setCurrentLevel('week6');
       case 'tankmanBattlefield':
         Paths.setCurrentLevel('week7');
-      case 'phillyStreets' | 'phillyBlazin':
+      case 'phillyStreets' | 'phillyBlazin' | 'phillyBlazin2':
         Paths.setCurrentLevel('weekend1');
     }
 
@@ -5364,8 +5376,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         targetDifficulty: selectedDifficulty,
         targetVariation: selectedVariation,
         practiceMode: playtestPracticeMode,
+        botPlayMode: playtestBotPlayMode,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
+        playbackRate: playbackRate,
         overrideMusic: true,
       });
 
@@ -5511,8 +5525,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.switchToInstrumental(currentInstrumentalId, currentSongMetadata.playData.characters.player, currentSongMetadata.playData.characters.opponent);
   }
 
-  function onSongLengthChanged():Void
+  public function updateGridHeight():Void
   {
+    // Make sure playhead doesn't go outside the song after we update the grid height.
+    if (playheadPositionInMs > songLengthInMs) playheadPositionInMs = songLengthInMs;
+
     if (gridTiledSprite != null)
     {
       gridTiledSprite.height = songLengthInPixels;
@@ -5929,7 +5946,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
-      var event:NoteScriptEvent = new NoteScriptEvent(NOTE_HIT, tempNote, 1, true);
+      var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', 0);
       dispatchEvent(event);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -5939,9 +5956,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundsEnabledPlayer) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolume);
+          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
         case 1: // Opponent
-          if (hitsoundsEnabledOpponent) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolume);
+          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
       }
     }
   }
@@ -6139,7 +6156,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 }
 
 /**
- * Available input modes for the chart editor state.
+ * Available input modes for the chart editor state. Numbers/arrows/WASD available for other keybinds.
  */
 enum ChartEditorLiveInputStyle
 {
@@ -6154,9 +6171,9 @@ enum ChartEditorLiveInputStyle
   NumberKeys;
 
   /**
-   * WASD to place notes on opponent's side, arrow keys to place notes on player's side.
+   * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
    */
-  WASD;
+  WASDKeys;
 }
 
 typedef ChartEditorParams =

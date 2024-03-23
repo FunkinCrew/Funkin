@@ -117,18 +117,32 @@ class ChartEditorDropdowns
     "ugh" => "Ugh (Week 7)",
     "hehPrettyGood" => "Heh, Pretty Good (Week 7)",
     // Weekend 1
-    "weekend-1-lightcan" => "Light Can (2hot)",
-    "weekend-1-kickcan" => "Kick Can (2hot)",
-    "weekend-1-kneecan" => "Knee Can (2hot)",
-    "weekend-1-cockgun" => "Cock Gun (2hot)",
-    "weekend-1-firegun" => "Fire Gun (2hot)",
-    "weekend-1-punchlow" => "Punch Low (Blazin)",
-    "weekend-1-punchhigh" => "Punch High (Blazin)",
-    "weekend-1-punchlowblocked" => "Punch Low Blocked (Blazin)",
-    "weekend-1-punchhighblocked" => "Punch High Blocked (Blazin)",
-    "weekend-1-dodgelow" => "Dodge Low (Blazin)",
-    "weekend-1-blockhigh" => "Block High (Blazin)",
-    "weekend-1-fakeout" => "Fakeout (Blazin)",
+    "weekend-1-punchhigh" => "Punch High (Blazin')",
+    "weekend-1-punchhighdodged" => "Punch High (Dodge) (Blazin')",
+    "weekend-1-punchhighblocked" => "Punch High (Block) (Blazin')",
+    "weekend-1-punchhighspin" => "Punch High (Spin) (Blazin')",
+    "weekend-1-punchlow" => "Punch Low (Blazin')",
+    "weekend-1-punchlowdodged" => "Punch Low (Dodge) (Blazin')",
+    "weekend-1-punchlowblocked" => "Punch Low (Block) (Blazin')",
+    "weekend-1-punchlowspin" => "Punch High (Spin) (Blazin')",
+    "weekend-1-picouppercutprep" => "Pico Uppercut (Prep) (Blazin')",
+    "weekend-1-picouppercut" => "Pico Uppercut (Blazin')",
+    "weekend-1-blockhigh" => "Block High (Blazin')",
+    "weekend-1-blocklow" => "Block Low (Blazin')",
+    "weekend-1-blockspin" => "Block High (Spin) (Blazin')",
+    "weekend-1-dodgehigh" => "Dodge High (Blazin')",
+    "weekend-1-dodgelow" => "Dodge Low (Blazin')",
+    "weekend-1-dodgespin" => "Dodge High (Spin) (Blazin')",
+    "weekend-1-hithigh" => "Hit High (Blazin')",
+    "weekend-1-hitlow" => "Hit Low (Blazin')",
+    "weekend-1-hitspin" => "Hit High (Spin) (Blazin')",
+    "weekend-1-darnelluppercutprep" => "Darnell Uppercut (Prep) (Blazin')",
+    "weekend-1-darnelluppercut" => "Darnell Uppercut (Blazin')",
+    "weekend-1-idle" => "Idle (Blazin')",
+    "weekend-1-fakeout" => "Fakeout (Blazin')",
+    "weekend-1-taunt" => "Taunt (If Fakeout) (Blazin')",
+    "weekend-1-tauntforce" => "Taunt (Forced) (Blazin')",
+    "weekend-1-reversefakeout" => "Fakeout (Reverse) (Blazin')",
   ];
 
   public static function populateDropdownWithNoteKinds(dropDown:DropDown, startingKindId:String):DropDownEntry
@@ -146,6 +160,8 @@ class ChartEditorDropdowns
 
       dropDown.dataSource.add(value);
     }
+
+    dropDown.dataSource.sort('id', ASCENDING);
 
     return returnValue;
   }

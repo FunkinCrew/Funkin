@@ -4,6 +4,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.animation.AnimationData;
 import funkin.data.IRegistryEntry;
+import funkin.graphics.FunkinSprite;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -100,6 +101,14 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   function buildNoteFrames(force:Bool = false):FlxAtlasFrames
   {
+    if (!FunkinSprite.isTextureCached(Paths.image(getNoteAssetPath())))
+    {
+      FlxG.log.warn('Note texture is not cached: ${getNoteAssetPath()}');
+    }
+
+    // Purge the note frames if the cached atlas is invalid.
+    if (noteFrames?.parent?.isDestroyed ?? false) noteFrames = null;
+
     if (noteFrames != null && !force) return noteFrames;
 
     noteFrames = Paths.getSparrowAtlas(getNoteAssetPath(), getNoteAssetLibrary());
@@ -108,8 +117,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       throw 'Could not load note frames for note style: $id';
     }
-
-    noteFrames.parent.persist = true;
 
     return noteFrames;
   }

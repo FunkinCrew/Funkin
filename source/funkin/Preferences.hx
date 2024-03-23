@@ -15,12 +15,12 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
-    return Save.get().options.naughtyness;
+    return Save.instance.options.naughtyness;
   }
 
   static function set_naughtyness(value:Bool):Bool
   {
-    var save = Save.get();
+    var save:Save = Save.instance;
     save.options.naughtyness = value;
     save.flush();
     return value;
@@ -34,12 +34,12 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save.get().options.downscroll;
+    return Save.instance.options.downscroll;
   }
 
   static function set_downscroll(value:Bool):Bool
   {
-    var save = Save.get();
+    var save:Save = Save.instance;
     save.options.downscroll = value;
     save.flush();
     return value;
@@ -53,12 +53,12 @@ class Preferences
 
   static function get_flashingLights():Bool
   {
-    return Save.get().options.flashingLights;
+    return Save.instance.options.flashingLights;
   }
 
   static function set_flashingLights(value:Bool):Bool
   {
-    var save = Save.get();
+    var save:Save = Save.instance;
     save.options.flashingLights = value;
     save.flush();
     return value;
@@ -72,12 +72,12 @@ class Preferences
 
   static function get_zoomCamera():Bool
   {
-    return Save.get().options.zoomCamera;
+    return Save.instance.options.zoomCamera;
   }
 
   static function set_zoomCamera(value:Bool):Bool
   {
-    var save = Save.get();
+    var save:Save = Save.instance;
     save.options.zoomCamera = value;
     save.flush();
     return value;
@@ -91,17 +91,17 @@ class Preferences
 
   static function get_debugDisplay():Bool
   {
-    return Save.get().options.debugDisplay;
+    return Save.instance.options.debugDisplay;
   }
 
   static function set_debugDisplay(value:Bool):Bool
   {
-    if (value != Save.get().options.debugDisplay)
+    if (value != Save.instance.options.debugDisplay)
     {
       toggleDebugDisplay(value);
     }
 
-    var save = Save.get();
+    var save = Save.instance;
     save.options.debugDisplay = value;
     save.flush();
     return value;
@@ -115,22 +115,27 @@ class Preferences
 
   static function get_autoPause():Bool
   {
-    return Save.get().options.autoPause;
+    return Save.instance.options.autoPause;
   }
 
   static function set_autoPause(value:Bool):Bool
   {
-    if (value != Save.get().options.autoPause) FlxG.autoPause = value;
+    if (value != Save.instance.options.autoPause) FlxG.autoPause = value;
 
-    var save = Save.get();
+    var save:Save = Save.instance;
     save.options.autoPause = value;
     save.flush();
     return value;
   }
 
+  /**
+   * Loads the user's preferences from the save data and apply them.
+   */
   public static function init():Void
   {
+    // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
+    // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
   }
 

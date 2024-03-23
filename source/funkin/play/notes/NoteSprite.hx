@@ -4,9 +4,10 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
 
-class NoteSprite extends FlxSprite
+class NoteSprite extends FunkinSprite
 {
   static final DIRECTION_COLORS:Array<String> = ['purple', 'blue', 'green', 'red'];
 
@@ -15,26 +16,53 @@ class NoteSprite extends FlxSprite
   var hsvShader:HSVShader;
 
   /**
-   * The time at which the note should be hit, in milliseconds.
+   * The strum time at which the note should be hit, in milliseconds.
    */
-  public var strumTime(default, set):Float;
+  public var strumTime(get, set):Float;
+
+  function get_strumTime():Float
+  {
+    return this.noteData?.time ?? 0.0;
+  }
 
   function set_strumTime(value:Float):Float
   {
-    this.strumTime = value;
-    return this.strumTime;
+    if (this.noteData == null) return value;
+    return this.noteData.time = value;
+  }
+
+  /**
+   * The length for which the note should be held, in milliseconds.
+   * Defaults to 0 for single notes.
+   */
+  public var length(get, set):Float;
+
+  function get_length():Float
+  {
+    return this.noteData?.length ?? 0.0;
+  }
+
+  function set_length(value:Float):Float
+  {
+    if (this.noteData == null) return value;
+    return this.noteData.length = value;
   }
 
   /**
    * An extra attribute for the note.
    * For example, whether the note is an "alt" note, or whether it has custom behavior on hit.
    */
-  public var kind(default, set):String;
+  public var kind(get, set):Null<String>;
+
+  function get_kind():Null<String>
+  {
+    return this.noteData?.kind;
+  }
 
   function set_kind(value:String):String
   {
-    this.kind = value;
-    return this.kind;
+    if (this.noteData == null) return value;
+    return this.noteData.kind = value;
   }
 
   /**
@@ -99,15 +127,12 @@ class NoteSprite extends FlxSprite
    */
   public var handledMiss:Bool;
 
-  public function new(noteStyle:NoteStyle, strumTime:Float = 0, direction:Int = 0)
+  public function new(noteStyle:NoteStyle, direction:Int = 0)
   {
     super(0, -9999);
-    this.strumTime = strumTime;
     this.direction = direction;
 
     this.hsvShader = new HSVShader();
-
-    if (this.strumTime < 0) this.strumTime = 0;
 
     setupNoteGraphic(noteStyle);
 

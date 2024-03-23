@@ -22,8 +22,8 @@
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
 	<classpath name="source" />
-	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web" />
+	<assets path="assets/preload" rename="assets" exclude="*.ogg|*.wav" if="web" />
+	<assets path="assets/preload" rename="assets" exclude="*.mp3|*.wav" unless="web" />
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL" />
 	<section if="PRELOAD_ALL">
@@ -53,28 +53,28 @@
 		<library name="weekend1" preload="false" />
 	</section>
 	<library name="art" preload="false" />
-	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/shared" library="shared" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week1" library="week1" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week1" library="week1" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week2" library="week2" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week2" library="week2" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week3" library="week3" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week3" library="week3" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week4" library="week4" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week4" library="week4" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week5" library="week5" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week5" library="week5" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week6" library="week6" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week6" library="week6" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/week7" library="week7" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/week7" library="week7" exclude="*.fla|*.mp3" unless="web" />
-	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.ogg" if="web" />
-	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/week1" library="week1" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/week1" library="week1" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/week2" library="week2" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/week2" library="week2" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/week3" library="week3" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/week3" library="week3" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/week4" library="week4" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/week4" library="week4" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/week5" library="week5" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/week5" library="week5" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/week6" library="week6" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/week6" library="week6" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/week7" library="week7" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/week7" library="week7" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.ogg|*.wav" if="web" />
+	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.mp3|*.wav" unless="web" />
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 	<!--
 		AUTOMATICALLY MOVING EXAMPLE MODS INTO THE BUILD CAUSES ISSUES
@@ -91,8 +91,11 @@
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
 	<assets path="assets/fonts" embed="true" />
-	<!-- If compiled via github actions, enable force debug -->
-	<set name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD"/>
+
+	<!-- If compiled via github actions, show debug version number. -->
+	<define name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD" />
+	<define name="NO_REDIRECT_ASSETS_FOLDER" if="GITHUB_BUILD" />
+
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="lime" /> <!-- Game engine backend -->
 	<haxelib name="openfl" /> <!-- Game engine backend -->
@@ -108,7 +111,7 @@
 	<haxelib name="flixel-text-input" /> <!-- Improved text field rendering for HaxeUI -->
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
-	<haxelib name="hxCodec" if="desktop release" /> <!-- Video playback -->
+	<haxelib name="hxCodec" if="desktop" /> <!-- Video playback -->
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->
@@ -194,7 +197,7 @@
 	<!-- Uncomment this to wipe your input settings. -->
 	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
 
-	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5">
+	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5 || GITHUB_BUILD">
 		<!--
 			Use the parent assets folder rather than the exported one
 			No more will we accidentally undo our changes!
@@ -216,9 +219,9 @@
 	<postbuild haxe="source/Postbuild.hx"/> -->
 
 	<!-- Enable this on platforms which do not support dropping files onto the window. -->
-	<set name="FILE_DROP_UNSUPPORTED" if="mac" />
+	<haxedef name="FILE_DROP_UNSUPPORTED" if="mac" />
 	<section unless="FILE_DROP_UNSUPPORTED">
-		<set name="FILE_DROP_SUPPORTED" />
+		<haxedef name="FILE_DROP_SUPPORTED" />
 	</section>
 
 	<!-- Options for Polymod -->

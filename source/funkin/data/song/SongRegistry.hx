@@ -68,6 +68,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
       {
         log('Successfully created scripted entry (${entryCls} = ${entry.id})');
         entries.set(entry.id, entry);
+        scriptedEntryIds.set(entry.id, entryCls);
       }
       else
       {
@@ -439,6 +440,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
     return {fileName: entryFilePath, contents: rawJson};
+  }
+
+  function hasMusicDataFile(id:String, ?variation:String):Bool
+  {
+    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
+    var entryFilePath:String = Paths.file('music/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.json');
+    return openfl.Assets.exists(entryFilePath);
   }
 
   function loadEntryChartFile(id:String, ?variation:String):Null<BaseRegistry.JsonFile>

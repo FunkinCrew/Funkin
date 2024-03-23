@@ -12,7 +12,6 @@ import flixel.math.FlxRect;
 import flixel.FlxSprite;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
-import funkin.ui.options.PreferencesMenu;
 import funkin.util.macro.MacroUtil;
 import funkin.util.WindowUtil;
 import funkin.play.PlayStatePlaylist;
@@ -24,13 +23,15 @@ import funkin.data.stage.StageRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.freeplay.AlbumRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
-import funkin.ui.transition.LoadingState;
+import funkin.util.TimerUtil;
+import funkin.util.TrackerUtil;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -66,7 +67,7 @@ class InitState extends FlxState
   /**
    * Setup a bunch of important Flixel stuff.
    */
-  function setupShit()
+  function setupShit():Void
   {
     //
     // GAME SETUP
@@ -88,70 +89,7 @@ class InitState extends FlxState
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
 
-    //
-    // FLIXEL DEBUG SETUP
-    //
-    #if (debug || FORCE_DEBUG_VERSION)
-    // Disable using ~ to open the console (we use that for the Editor menu)
-    FlxG.debugger.toggleKeys = [F2];
-
-    // Adds an additional Close Debugger button.
-    // This big obnoxious white button is for MOBILE, so that you can press it
-    // easily with your finger when debug bullshit pops up during testing lol!
-    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
-      FlxG.debugger.visible = false;
-    });
-
-    // Adds a red button to the debugger.
-    // This pauses the game AND the music! This ensures the Conductor stops.
-    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFFCC2233), function() {
-      if (FlxG.vcr.paused)
-      {
-        FlxG.vcr.resume();
-
-        for (snd in FlxG.sound.list)
-        {
-          snd.resume();
-        }
-
-        FlxG.sound.music.resume();
-      }
-      else
-      {
-        FlxG.vcr.pause();
-
-        for (snd in FlxG.sound.list)
-        {
-          snd.pause();
-        }
-
-        FlxG.sound.music.pause();
-      }
-    });
-
-    // Adds a blue button to the debugger.
-    // This skips forward in the song.
-    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function() {
-      FlxG.game.debugger.vcr.onStep();
-
-      for (snd in FlxG.sound.list)
-      {
-        snd.pause();
-        snd.time += FlxG.elapsed * 1000;
-      }
-
-      FlxG.sound.music.pause();
-      FlxG.sound.music.time += FlxG.elapsed * 1000;
-    });
-    #end
-
-    // Make errors and warnings less annoying.
-    #if FORCE_DEBUG_VERSION
-    LogStyle.ERROR.openConsole = false;
-    LogStyle.ERROR.errorSound = null;
-    LogStyle.WARNING.openConsole = false;
-    LogStyle.WARNING.errorSound = null;
-    #end
+    setupFlixelDebug();
 
     //
     // FLIXEL TRANSITIONS
@@ -202,8 +140,12 @@ class InitState extends FlxState
     //
     // Plugins provide a useful interface for globally active Flixel objects,
     // that receive update events regardless of the current state.
-    // TODO: Move Module behavior to a Flixel plugin.
+    // TODO: Move scripted Module behavior to a Flixel plugin.
+    #if debug
+    funkin.util.plugins.MemoryGCPlugin.initialize();
+    #end
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
+    funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
     funkin.util.plugins.ScreenshotPlugin.initialize();
     funkin.util.plugins.VolumePlugin.initialize();
@@ -216,7 +158,7 @@ class InitState extends FlxState
     // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
     trace('Parsing game data...');
-    var perfStart = haxe.Timer.stamp();
+    var perfStart:Float = TimerUtil.start();
     SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
@@ -224,18 +166,18 @@ class InitState extends FlxState
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
+    AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
-    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers.
-    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
+    // Move it to use a BaseRegistry.
+    CharacterDataParser.loadCharacterCache();
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
 
-    var perfEnd = haxe.Timer.stamp();
-
-    trace('Parsing game data took ${Math.floor((perfEnd - perfStart) * 1000)}ms.');
+    trace('Parsing game data took: ${TimerUtil.ms(perfStart)}');
   }
 
   /**
@@ -247,25 +189,35 @@ class InitState extends FlxState
    */
   function startGame():Void
   {
-    #if SONG // -DSONG=bopeebo
+    #if SONG
+    // -DSONG=bopeebo
     startSong(defineSong(), defineDifficulty());
-    #elseif LEVEL // -DLEVEL=week1 -DDIFFICULTY=hard
+    #elseif LEVEL
+    // -DLEVEL=week1 -DDIFFICULTY=hard
     startLevel(defineLevel(), defineDifficulty());
-    #elseif FREEPLAY // -DFREEPLAY
+    #elseif FREEPLAY
+    // -DFREEPLAY
     FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
-    #elseif DIALOGUE // -DDIALOGUE
+    #elseif DIALOGUE
+    // -DDIALOGUE
     FlxG.switchState(() -> new funkin.ui.debug.dialogue.ConversationDebugState());
-    #elseif ANIMATE // -DANIMATE
+    #elseif ANIMATE
+    // -DANIMATE
     FlxG.switchState(() -> new funkin.ui.debug.anim.FlxAnimateTest());
-    #elseif WAVEFORM // -DWAVEFORM
+    #elseif WAVEFORM
+    // -DWAVEFORM
     FlxG.switchState(() -> new funkin.ui.debug.WaveformTestState());
-    #elseif CHARTING // -DCHARTING
+    #elseif CHARTING
+    // -DCHARTING
     FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState());
-    #elseif STAGEBUILD // -DSTAGEBUILD
+    #elseif STAGEBUILD
+    // -DSTAGEBUILD
     FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
-    #elseif ANIMDEBUG // -DANIMDEBUG
+    #elseif ANIMDEBUG
+    // -DANIMDEBUG
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
-    #elseif LATENCY // -DLATENCY
+    #elseif LATENCY
+    // -DLATENCY
     FlxG.switchState(() -> new funkin.LatencyState());
     #else
     startGameNormally();
@@ -344,6 +296,80 @@ class InitState extends FlxState
         targetSong: targetSong,
         targetDifficulty: difficultyId,
       });
+  }
+
+  function setupFlixelDebug():Void
+  {
+    //
+    // FLIXEL DEBUG SETUP
+    //
+    #if (debug || FORCE_DEBUG_VERSION)
+    // Make errors and warnings less annoying.
+    // Forcing this always since I have never been happy to have the debugger to pop up
+    LogStyle.ERROR.openConsole = false;
+    LogStyle.ERROR.errorSound = null;
+    LogStyle.WARNING.openConsole = false;
+    LogStyle.WARNING.errorSound = null;
+
+    // Disable using ~ to open the console (we use that for the Editor menu)
+    FlxG.debugger.toggleKeys = [F2];
+    TrackerUtil.initTrackers();
+    // Adds an additional Close Debugger button.
+    // This big obnoxious white button is for MOBILE, so that you can press it
+    // easily with your finger when debug bullshit pops up during testing lol!
+    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
+      FlxG.debugger.visible = false;
+
+      // Make errors and warnings less annoying.
+      // Forcing this always since I have never been happy to have the debugger to pop up
+      LogStyle.ERROR.openConsole = false;
+      LogStyle.ERROR.errorSound = null;
+      LogStyle.WARNING.openConsole = false;
+      LogStyle.WARNING.errorSound = null;
+    });
+
+    // Adds a red button to the debugger.
+    // This pauses the game AND the music! This ensures the Conductor stops.
+    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFFCC2233), function() {
+      if (FlxG.vcr.paused)
+      {
+        FlxG.vcr.resume();
+
+        for (snd in FlxG.sound.list)
+        {
+          snd.resume();
+        }
+
+        FlxG.sound.music.resume();
+      }
+      else
+      {
+        FlxG.vcr.pause();
+
+        for (snd in FlxG.sound.list)
+        {
+          snd.pause();
+        }
+
+        FlxG.sound.music.pause();
+      }
+    });
+
+    // Adds a blue button to the debugger.
+    // This skips forward in the song.
+    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function() {
+      FlxG.game.debugger.vcr.onStep();
+
+      for (snd in FlxG.sound.list)
+      {
+        snd.pause();
+        snd.time += FlxG.elapsed * 1000;
+      }
+
+      FlxG.sound.music.pause();
+      FlxG.sound.music.time += FlxG.elapsed * 1000;
+    });
+    #end
   }
 
   function defineSong():String

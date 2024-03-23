@@ -11,8 +11,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import thx.semver.Version;
 
 @:nullSafety
-@:forward(volume, mute)
-abstract Save(RawSaveData)
+class Save
 {
   // Version 2.0.2 adds attributes to `optionsChartEditor`, that should return default values if they are null.
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.2";
@@ -25,6 +24,20 @@ abstract Save(RawSaveData)
   static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
   static final SAVE_NAME_LEGACY:String = 'funkin';
 
+  public static var instance(get, never):Save;
+  static var _instance:Null<Save> = null;
+
+  static function get_instance():Save
+  {
+    if (_instance == null)
+    {
+      _instance = new Save(FlxG.save.data);
+    }
+    return _instance;
+  }
+
+  var data:RawSaveData;
+
   public static function load():Void
   {
     trace("[SAVE] Loading save...");
@@ -33,86 +46,87 @@ abstract Save(RawSaveData)
     loadFromSlot(1);
   }
 
-  public static function get():Save
-  {
-    return FlxG.save.data;
-  }
-
   /**
    * Constructing a new Save will load the default values.
    */
-  public function new()
+  public function new(data:RawSaveData)
   {
-    this =
-      {
-        version: Save.SAVE_DATA_VERSION,
+    this.data = data;
 
-        volume: 1.0,
-        mute: false,
+    if (this.data == null) data = Save.getDefault();
+  }
 
-        api:
-          {
-            newgrounds:
-              {
-                sessionId: null,
-              }
-          },
-        scores:
-          {
-            // No saved scores.
-            levels: [],
-            songs: [],
-          },
-        options:
-          {
-            // Reasonable defaults.
-            naughtyness: true,
-            downscroll: false,
-            flashingLights: true,
-            zoomCamera: true,
-            debugDisplay: false,
-            autoPause: true,
-            inputOffset: 0,
-            audioVisualOffset: 0,
+  public static function getDefault():RawSaveData
+  {
+    return {
+      version: Save.SAVE_DATA_VERSION,
 
-            controls:
-              {
-                // Leave controls blank so defaults are loaded.
-                p1:
-                  {
-                    keyboard: {},
-                    gamepad: {},
-                  },
-                p2:
-                  {
-                    keyboard: {},
-                    gamepad: {},
-                  },
-              },
-          },
+      volume: 1.0,
+      mute: false,
 
-        mods:
-          {
-            // No mods enabled.
-            enabledMods: [],
-            modOptions: [],
-          },
+      api:
+        {
+          newgrounds:
+            {
+              sessionId: null,
+            }
+        },
+      scores:
+        {
+          // No saved scores.
+          levels: [],
+          songs: [],
+        },
+      options:
+        {
+          // Reasonable defaults.
+          naughtyness: true,
+          downscroll: false,
+          flashingLights: true,
+          zoomCamera: true,
+          debugDisplay: false,
+          autoPause: true,
+          inputOffset: 0,
+          audioVisualOffset: 0,
 
-        optionsChartEditor:
-          {
-            // Reasonable defaults.
-            previousFiles: [],
-            noteQuant: 3,
-            chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
-            theme: ChartEditorTheme.Light,
-            playtestStartTime: false,
-            downscroll: false,
-            metronomeVolume: 1.0,
-            hitsoundsEnabledPlayer: true,
-            hitsoundsEnabledOpponent: true,
-            themeMusic: true
-          },
-      };
+          controls:
+            {
+              // Leave controls blank so defaults are loaded.
+              p1:
+                {
+                  keyboard: {},
+                  gamepad: {},
+                },
+              p2:
+                {
+                  keyboard: {},
+                  gamepad: {},
+                },
+            },
+        },
+
+      mods:
+        {
+          // No mods enabled.
+          enabledMods: [],
+          modOptions: [],
+        },
+
+      optionsChartEditor:
+        {
+          // Reasonable defaults.
+          previousFiles: [],
+          noteQuant: 3,
+          chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
+          theme: ChartEditorTheme.Light,
+          playtestStartTime: false,
+          downscroll: false,
+          metronomeVolume: 1.0,
+          hitsoundVolumePlayer: 1.0,
+          hitsoundVolumeOpponent: 1.0,
+          themeMusic: true
+        },
+    };
   }
 
   /**
@@ -122,7 +136,7 @@ abstract Save(RawSaveData)
 
   function get_options():SaveDataOptions
   {
-    return this.options;
+    return data.options;
   }
 
   /**
@@ -132,7 +146,7 @@ abstract Save(RawSaveData)
 
   function get_modOptions():Map<String, Dynamic>
   {
-    return this.mods.modOptions;
+    return data.mods.modOptions;
   }
 
   /**
@@ -142,249 +156,232 @@ abstract Save(RawSaveData)
 
   function get_ngSessionId():Null<String>
   {
-    return this.api.newgrounds.sessionId;
+    return data.api.newgrounds.sessionId;
   }
 
   function set_ngSessionId(value:Null<String>):Null<String>
   {
-    this.api.newgrounds.sessionId = value;
+    data.api.newgrounds.sessionId = value;
     flush();
-    return this.api.newgrounds.sessionId;
+    return data.api.newgrounds.sessionId;
   }
 
   public var enabledModIds(get, set):Array<String>;
 
   function get_enabledModIds():Array<String>
   {
-    return this.mods.enabledMods;
+    return data.mods.enabledMods;
   }
 
   function set_enabledModIds(value:Array<String>):Array<String>
   {
-    this.mods.enabledMods = value;
+    data.mods.enabledMods = value;
     flush();
-    return this.mods.enabledMods;
+    return data.mods.enabledMods;
   }
 
   public var chartEditorPreviousFiles(get, set):Array<String>;
 
   function get_chartEditorPreviousFiles():Array<String>
   {
-    if (this.optionsChartEditor.previousFiles == null) this.optionsChartEditor.previousFiles = [];
+    if (data.optionsChartEditor.previousFiles == null) data.optionsChartEditor.previousFiles = [];
 
-    return this.optionsChartEditor.previousFiles;
+    return data.optionsChartEditor.previousFiles;
   }
 
   function set_chartEditorPreviousFiles(value:Array<String>):Array<String>
   {
     // Set and apply.
-    this.optionsChartEditor.previousFiles = value;
+    data.optionsChartEditor.previousFiles = value;
     flush();
-    return this.optionsChartEditor.previousFiles;
+    return data.optionsChartEditor.previousFiles;
   }
 
   public var chartEditorHasBackup(get, set):Bool;
 
   function get_chartEditorHasBackup():Bool
   {
-    if (this.optionsChartEditor.hasBackup == null) this.optionsChartEditor.hasBackup = false;
+    if (data.optionsChartEditor.hasBackup == null) data.optionsChartEditor.hasBackup = false;
 
-    return this.optionsChartEditor.hasBackup;
+    return data.optionsChartEditor.hasBackup;
   }
 
   function set_chartEditorHasBackup(value:Bool):Bool
   {
     // Set and apply.
-    this.optionsChartEditor.hasBackup = value;
+    data.optionsChartEditor.hasBackup = value;
     flush();
-    return this.optionsChartEditor.hasBackup;
+    return data.optionsChartEditor.hasBackup;
   }
 
   public var chartEditorNoteQuant(get, set):Int;
 
   function get_chartEditorNoteQuant():Int
   {
-    if (this.optionsChartEditor.noteQuant == null) this.optionsChartEditor.noteQuant = 3;
+    if (data.optionsChartEditor.noteQuant == null) data.optionsChartEditor.noteQuant = 3;
 
-    return this.optionsChartEditor.noteQuant;
+    return data.optionsChartEditor.noteQuant;
   }
 
   function set_chartEditorNoteQuant(value:Int):Int
   {
     // Set and apply.
-    this.optionsChartEditor.noteQuant = value;
+    data.optionsChartEditor.noteQuant = value;
     flush();
-    return this.optionsChartEditor.noteQuant;
+    return data.optionsChartEditor.noteQuant;
   }
 
   public var chartEditorLiveInputStyle(get, set):ChartEditorLiveInputStyle;
 
   function get_chartEditorLiveInputStyle():ChartEditorLiveInputStyle
   {
-    if (this.optionsChartEditor.chartEditorLiveInputStyle == null) this.optionsChartEditor.chartEditorLiveInputStyle = ChartEditorLiveInputStyle.None;
+    if (data.optionsChartEditor.chartEditorLiveInputStyle == null) data.optionsChartEditor.chartEditorLiveInputStyle = ChartEditorLiveInputStyle.None;
 
-    return this.optionsChartEditor.chartEditorLiveInputStyle;
+    return data.optionsChartEditor.chartEditorLiveInputStyle;
   }
 
   function set_chartEditorLiveInputStyle(value:ChartEditorLiveInputStyle):ChartEditorLiveInputStyle
   {
     // Set and apply.
-    this.optionsChartEditor.chartEditorLiveInputStyle = value;
+    data.optionsChartEditor.chartEditorLiveInputStyle = value;
     flush();
-    return this.optionsChartEditor.chartEditorLiveInputStyle;
+    return data.optionsChartEditor.chartEditorLiveInputStyle;
   }
 
   public var chartEditorDownscroll(get, set):Bool;
 
   function get_chartEditorDownscroll():Bool
   {
-    if (this.optionsChartEditor.downscroll == null) this.optionsChartEditor.downscroll = false;
+    if (data.optionsChartEditor.downscroll == null) data.optionsChartEditor.downscroll = false;
 
-    return this.optionsChartEditor.downscroll;
+    return data.optionsChartEditor.downscroll;
   }
 
   function set_chartEditorDownscroll(value:Bool):Bool
   {
     // Set and apply.
-    this.optionsChartEditor.downscroll = value;
+    data.optionsChartEditor.downscroll = value;
     flush();
-    return this.optionsChartEditor.downscroll;
+    return data.optionsChartEditor.downscroll;
   }
 
   public var chartEditorPlaytestStartTime(get, set):Bool;
 
   function get_chartEditorPlaytestStartTime():Bool
   {
-    if (this.optionsChartEditor.playtestStartTime == null) this.optionsChartEditor.playtestStartTime = false;
+    if (data.optionsChartEditor.playtestStartTime == null) data.optionsChartEditor.playtestStartTime = false;
 
-    return this.optionsChartEditor.playtestStartTime;
+    return data.optionsChartEditor.playtestStartTime;
   }
 
   function set_chartEditorPlaytestStartTime(value:Bool):Bool
   {
     // Set and apply.
-    this.optionsChartEditor.playtestStartTime = value;
+    data.optionsChartEditor.playtestStartTime = value;
     flush();
-    return this.optionsChartEditor.playtestStartTime;
+    return data.optionsChartEditor.playtestStartTime;
   }
 
   public var chartEditorTheme(get, set):ChartEditorTheme;
 
   function get_chartEditorTheme():ChartEditorTheme
   {
-    if (this.optionsChartEditor.theme == null) this.optionsChartEditor.theme = ChartEditorTheme.Light;
+    if (data.optionsChartEditor.theme == null) data.optionsChartEditor.theme = ChartEditorTheme.Light;
 
-    return this.optionsChartEditor.theme;
+    return data.optionsChartEditor.theme;
   }
 
   function set_chartEditorTheme(value:ChartEditorTheme):ChartEditorTheme
   {
     // Set and apply.
-    this.optionsChartEditor.theme = value;
+    data.optionsChartEditor.theme = value;
     flush();
-    return this.optionsChartEditor.theme;
+    return data.optionsChartEditor.theme;
   }
 
   public var chartEditorMetronomeVolume(get, set):Float;
 
   function get_chartEditorMetronomeVolume():Float
   {
-    if (this.optionsChartEditor.metronomeVolume == null) this.optionsChartEditor.metronomeVolume = 1.0;
+    if (data.optionsChartEditor.metronomeVolume == null) data.optionsChartEditor.metronomeVolume = 1.0;
 
-    return this.optionsChartEditor.metronomeVolume;
+    return data.optionsChartEditor.metronomeVolume;
   }
 
   function set_chartEditorMetronomeVolume(value:Float):Float
   {
     // Set and apply.
-    this.optionsChartEditor.metronomeVolume = value;
+    data.optionsChartEditor.metronomeVolume = value;
     flush();
-    return this.optionsChartEditor.metronomeVolume;
+    return data.optionsChartEditor.metronomeVolume;
   }
 
-  public var chartEditorHitsoundVolume(get, set):Float;
+  public var chartEditorHitsoundVolumePlayer(get, set):Float;
 
-  function get_chartEditorHitsoundVolume():Float
+  function get_chartEditorHitsoundVolumePlayer():Float
   {
-    if (this.optionsChartEditor.hitsoundVolume == null) this.optionsChartEditor.hitsoundVolume = 1.0;
+    if (data.optionsChartEditor.hitsoundVolumePlayer == null) data.optionsChartEditor.hitsoundVolumePlayer = 1.0;
 
-    return this.optionsChartEditor.hitsoundVolume;
+    return data.optionsChartEditor.hitsoundVolumePlayer;
   }
 
-  function set_chartEditorHitsoundVolume(value:Float):Float
+  function set_chartEditorHitsoundVolumePlayer(value:Float):Float
   {
     // Set and apply.
-    this.optionsChartEditor.hitsoundVolume = value;
+    data.optionsChartEditor.hitsoundVolumePlayer = value;
     flush();
-    return this.optionsChartEditor.hitsoundVolume;
+    return data.optionsChartEditor.hitsoundVolumePlayer;
   }
 
-  public var chartEditorHitsoundsEnabledPlayer(get, set):Bool;
+  public var chartEditorHitsoundVolumeOpponent(get, set):Float;
 
-  function get_chartEditorHitsoundsEnabledPlayer():Bool
+  function get_chartEditorHitsoundVolumeOpponent():Float
   {
-    if (this.optionsChartEditor.hitsoundsEnabledPlayer == null) this.optionsChartEditor.hitsoundsEnabledPlayer = true;
+    if (data.optionsChartEditor.hitsoundVolumeOpponent == null) data.optionsChartEditor.hitsoundVolumeOpponent = 1.0;
 
-    return this.optionsChartEditor.hitsoundsEnabledPlayer;
+    return data.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
-  function set_chartEditorHitsoundsEnabledPlayer(value:Bool):Bool
+  function set_chartEditorHitsoundVolumeOpponent(value:Float):Float
   {
     // Set and apply.
-    this.optionsChartEditor.hitsoundsEnabledPlayer = value;
+    data.optionsChartEditor.hitsoundVolumeOpponent = value;
     flush();
-    return this.optionsChartEditor.hitsoundsEnabledPlayer;
-  }
-
-  public var chartEditorHitsoundsEnabledOpponent(get, set):Bool;
-
-  function get_chartEditorHitsoundsEnabledOpponent():Bool
-  {
-    if (this.optionsChartEditor.hitsoundsEnabledOpponent == null) this.optionsChartEditor.hitsoundsEnabledOpponent = true;
-
-    return this.optionsChartEditor.hitsoundsEnabledOpponent;
-  }
-
-  function set_chartEditorHitsoundsEnabledOpponent(value:Bool):Bool
-  {
-    // Set and apply.
-    this.optionsChartEditor.hitsoundsEnabledOpponent = value;
-    flush();
-    return this.optionsChartEditor.hitsoundsEnabledOpponent;
+    return data.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
   public var chartEditorThemeMusic(get, set):Bool;
 
   function get_chartEditorThemeMusic():Bool
   {
-    if (this.optionsChartEditor.themeMusic == null) this.optionsChartEditor.themeMusic = true;
+    if (data.optionsChartEditor.themeMusic == null) data.optionsChartEditor.themeMusic = true;
 
-    return this.optionsChartEditor.themeMusic;
+    return data.optionsChartEditor.themeMusic;
   }
 
   function set_chartEditorThemeMusic(value:Bool):Bool
   {
     // Set and apply.
-    this.optionsChartEditor.themeMusic = value;
+    data.optionsChartEditor.themeMusic = value;
     flush();
-    return this.optionsChartEditor.themeMusic;
+    return data.optionsChartEditor.themeMusic;
   }
 
   public var chartEditorPlaybackSpeed(get, set):Float;
 
   function get_chartEditorPlaybackSpeed():Float
   {
-    if (this.optionsChartEditor.playbackSpeed == null) this.optionsChartEditor.playbackSpeed = 1.0;
+    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 1.0;
 
-    return this.optionsChartEditor.playbackSpeed;
+    return data.optionsChartEditor.playbackSpeed;
   }
 
   function set_chartEditorPlaybackSpeed(value:Float):Float
   {
     // Set and apply.
-    this.optionsChartEditor.playbackSpeed = value;
+    data.optionsChartEditor.playbackSpeed = value;
     flush();
-    return this.optionsChartEditor.playbackSpeed;
+    return data.optionsChartEditor.playbackSpeed;
   }
 
   /**
@@ -396,11 +393,11 @@ abstract Save(RawSaveData)
    */
   public function getLevelScore(levelId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
   {
-    var level = this.scores.levels.get(levelId);
+    var level = data.scores.levels.get(levelId);
     if (level == null)
     {
       level = [];
-      this.scores.levels.set(levelId, level);
+      data.scores.levels.set(levelId, level);
     }
 
     return level.get(difficultyId);
@@ -411,11 +408,11 @@ abstract Save(RawSaveData)
    */
   public function setLevelScore(levelId:String, difficultyId:String, score:SaveScoreData):Void
   {
-    var level = this.scores.levels.get(levelId);
+    var level = data.scores.levels.get(levelId);
     if (level == null)
     {
       level = [];
-      this.scores.levels.set(levelId, level);
+      data.scores.levels.set(levelId, level);
     }
     level.set(difficultyId, score);
 
@@ -424,11 +421,11 @@ abstract Save(RawSaveData)
 
   public function isLevelHighScore(levelId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
   {
-    var level = this.scores.levels.get(levelId);
+    var level = data.scores.levels.get(levelId);
     if (level == null)
     {
       level = [];
-      this.scores.levels.set(levelId, level);
+      data.scores.levels.set(levelId, level);
     }
 
     var currentScore = level.get(difficultyId);
@@ -467,11 +464,11 @@ abstract Save(RawSaveData)
    */
   public function getSongScore(songId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
   {
-    var song = this.scores.songs.get(songId);
+    var song = data.scores.songs.get(songId);
     if (song == null)
     {
       song = [];
-      this.scores.songs.set(songId, song);
+      data.scores.songs.set(songId, song);
     }
     return song.get(difficultyId);
   }
@@ -481,11 +478,11 @@ abstract Save(RawSaveData)
    */
   public function setSongScore(songId:String, difficultyId:String, score:SaveScoreData):Void
   {
-    var song = this.scores.songs.get(songId);
+    var song = data.scores.songs.get(songId);
     if (song == null)
     {
       song = [];
-      this.scores.songs.set(songId, song);
+      data.scores.songs.set(songId, song);
     }
     song.set(difficultyId, score);
 
@@ -501,11 +498,11 @@ abstract Save(RawSaveData)
    */
   public function isSongHighScore(songId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
   {
-    var song = this.scores.songs.get(songId);
+    var song = data.scores.songs.get(songId);
     if (song == null)
     {
       song = [];
-      this.scores.songs.set(songId, song);
+      data.scores.songs.set(songId, song);
     }
 
     var currentScore = song.get(difficultyId);
@@ -546,9 +543,9 @@ abstract Save(RawSaveData)
     switch (inputType)
     {
       case Keys:
-        return (playerId == 0) ? this.options.controls.p1.keyboard : this.options.controls.p2.keyboard;
+        return (playerId == 0) ? data.options.controls.p1.keyboard : data.options.controls.p2.keyboard;
       case Gamepad(_):
-        return (playerId == 0) ? this.options.controls.p1.gamepad : this.options.controls.p2.gamepad;
+        return (playerId == 0) ? data.options.controls.p1.gamepad : data.options.controls.p2.gamepad;
     }
   }
 
@@ -566,20 +563,20 @@ abstract Save(RawSaveData)
       case Keys:
         if (playerId == 0)
         {
-          this.options.controls.p1.keyboard = controls;
+          data.options.controls.p1.keyboard = controls;
         }
         else
         {
-          this.options.controls.p2.keyboard = controls;
+          data.options.controls.p2.keyboard = controls;
         }
       case Gamepad(_):
         if (playerId == 0)
         {
-          this.options.controls.p1.gamepad = controls;
+          data.options.controls.p1.gamepad = controls;
         }
         else
         {
-          this.options.controls.p2.gamepad = controls;
+          data.options.controls.p2.gamepad = controls;
         }
     }
 
@@ -598,6 +595,36 @@ abstract Save(RawSaveData)
         trace('Unknown character ID: ' + characterId);
         return true;
     }
+  }
+
+  /**
+   * The user's current volume setting.
+   */
+  public var volume(get, set):Float;
+
+  function get_volume():Float
+  {
+    return data.volume;
+  }
+
+  function set_volume(value:Float):Float
+  {
+    return data.volume = value;
+  }
+
+  /**
+   * Whether the user's volume is currently muted.
+   */
+  public var mute(get, set):Bool;
+
+  function get_mute():Bool
+  {
+    return data.mute;
+  }
+
+  function set_mute(value:Bool):Bool
+  {
+    return data.mute = value;
   }
 
   /**
@@ -625,17 +652,22 @@ abstract Save(RawSaveData)
       if (legacySaveData != null)
       {
         trace('[SAVE] Found legacy save data, converting...');
-        FlxG.save.mergeData(SaveDataMigrator.migrateFromLegacy(legacySaveData));
+        var gameSave = SaveDataMigrator.migrate(legacySaveData);
+        @:privateAccess
+        FlxG.save.mergeData(gameSave.data);
+      }
+      else
+      {
+        trace('[SAVE] No legacy save data found.');
       }
     }
     else
     {
       trace('[SAVE] Loaded save data.');
-      FlxG.save.mergeData(SaveDataMigrator.migrate(FlxG.save.data));
+      @:privateAccess
+      var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
+      FlxG.save.mergeData(gameSave.data);
     }
-
-    trace('[SAVE] Done loading save data.');
-    trace(FlxG.save.data);
   }
 
   static function fetchLegacySaveData():Null<RawSaveData_v1_0_0>
@@ -925,12 +957,6 @@ typedef SaveControlsData =
   var ?CUTSCENE_ADVANCE:Array<Int>;
 
   /**
-   * Keybind for skipping a cutscene.
-   * @default `Escape`
-   */
-  var ?CUTSCENE_SKIP:Array<Int>;
-
-  /**
    * Keybind for increasing volume.
    * @default `Plus`
    */
@@ -1004,28 +1030,22 @@ typedef SaveDataChartEditorOptions =
   var ?metronomeVolume:Float;
 
   /**
-   * Hitsound volume in the Chart Editor.
+   * Hitsound volume (player) in the Chart Editor.
    * @default `1.0`
    */
-  var ?hitsoundVolume:Float;
+  var ?hitsoundVolumePlayer:Float;
+
+  /**
+   * Hitsound volume (opponent) in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?hitsoundVolumeOpponent:Float;
 
   /**
    * If true, playtest songs from the current position in the Chart Editor.
    * @default `false`
    */
   var ?playtestStartTime:Bool;
-
-  /**
-   * Player note hit sounds in the Chart Editor.
-   * @default `true`
-   */
-  var ?hitsoundsEnabledPlayer:Bool;
-
-  /**
-   * Opponent note hit sounds in the Chart Editor.
-   * @default `true`
-   */
-  var ?hitsoundsEnabledOpponent:Bool;
 
   /**
    * Theme music in the Chart Editor.

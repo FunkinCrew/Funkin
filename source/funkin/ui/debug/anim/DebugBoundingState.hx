@@ -40,6 +40,7 @@ import openfl.utils.ByteArray;
 import funkin.input.Cursor;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.util.SortUtil;
+import haxe.ui.core.Screen;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -75,21 +76,19 @@ class DebugBoundingState extends FlxState
 
   var uiStuff:Component;
 
+  var haxeUIFocused(get, default):Bool = false;
+
+  function get_haxeUIFocused():Bool
+  {
+    // get the screen position, according to the HUD camera, temp default to FlxG.camera juuust in case?
+    var hudMousePos:FlxPoint = FlxG.mouse.getScreenPosition(hudCam ?? FlxG.camera);
+    return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y);
+  }
+
   override function create()
   {
     Paths.setCurrentLevel('week1');
 
-    var str = Paths.xml('ui/animation-editor/offset-editor-view');
-    uiStuff = RuntimeComponentBuilder.fromAsset(str);
-
-    // uiStuff.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
-    var dropdown:DropDown = cast uiStuff.findComponent("swapper");
-    dropdown.onChange = function(e:UIEvent) {
-      trace(e.type);
-      curView = cast e.data.curView;
-      trace(e.data);
-      // trace(e.data);
-    };
     // lv.
     // lv.onChange = function(e:UIEvent)
     // {
@@ -106,22 +105,39 @@ class DebugBoundingState extends FlxState
     hudCam = new FlxCamera();
     hudCam.bgColor.alpha = 0;
 
-    FlxG.cameras.add(hudCam, false);
-
     bg = FlxGridOverlay.create(10, 10);
     // bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.GREEN);
 
     bg.scrollFactor.set();
     add(bg);
 
-    initSpritesheetView();
-    initOffsetView();
+    // we are setting this as the default draw camera only temporarily, to trick haxeui
+    FlxG.cameras.add(hudCam);
 
-    Cursor.show();
+    var str = Paths.xml('ui/animation-editor/offset-editor-view');
+    uiStuff = RuntimeComponentBuilder.fromAsset(str);
+
+    // uiStuff.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
+    var dropdown:DropDown = cast uiStuff.findComponent("swapper");
+    dropdown.onChange = function(e:UIEvent) {
+      trace(e.type);
+      curView = cast e.data.curView;
+      trace(e.data);
+      // trace(e.data);
+    };
 
     uiStuff.cameras = [hudCam];
 
     add(uiStuff);
+
+    // sets the default camera back to FlxG.camera, since we set it to hudCamera for haxeui stuf
+    FlxG.cameras.setDefaultDrawTarget(FlxG.camera, true);
+    FlxG.cameras.setDefaultDrawTarget(hudCam, false);
+
+    initSpritesheetView();
+    initOffsetView();
+
+    Cursor.show();
 
     super.create();
   }
@@ -359,7 +375,7 @@ class DebugBoundingState extends FlxState
         offsetView.visible = true;
         offsetView.active = true;
         offsetControls();
-        mouseOffsetMovement();
+        if (!haxeUIFocused) mouseOffsetMovement();
     }
 
     if (FlxG.keys.justPressed.H) hudCam.visible = !hudCam.visible;
@@ -367,7 +383,7 @@ class DebugBoundingState extends FlxState
     if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
 
     MouseUtil.mouseCamDrag();
-    MouseUtil.mouseWheelZoom();
+    if (!haxeUIFocused) MouseUtil.mouseWheelZoom();
 
     // bg.scale.x = FlxG.camera.zoom;
     // bg.scale.y = FlxG.camera.zoom;

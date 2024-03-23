@@ -1,36 +1,33 @@
 package funkin.ui.story;
 
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.save.Save;
-import funkin.save.Save.SaveScoreData;
-import openfl.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinSprite;
-import funkin.ui.MusicBeatState;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 import funkin.data.level.LevelRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.song.Song;
-import funkin.data.song.SongData.SongMusicData;
-import funkin.data.song.SongRegistry;
-import funkin.util.MathUtil;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
+import funkin.util.MathUtil;
+import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
 {
-  static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString("#F9CF51");
+  static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString('#F9CF51');
   static final BACKGROUND_HEIGHT:Int = 400;
 
   var currentDifficultyId:String = 'normal';
@@ -141,9 +138,9 @@ class StoryMenuState extends MusicBeatState
 
     persistentUpdate = persistentDraw = true;
 
-    updateData();
-
     rememberSelection();
+
+    updateData();
 
     // Explicitly define the background color.
     this.bgColor = FlxColor.BLACK;
@@ -165,25 +162,25 @@ class StoryMenuState extends MusicBeatState
     updateProps();
 
     tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
-    tracklistText.setFormat("VCR OSD Mono", 32);
+    tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
-    tracklistText.color = 0xFFe55777;
+    tracklistText.color = 0xFFE55777;
     add(tracklistText);
 
     scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
-    scoreText.setFormat("VCR OSD Mono", 32);
+    scoreText.setFormat('VCR OSD Mono', 32);
     scoreText.zIndex = 1000;
     add(scoreText);
 
     modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
-    modeText.setFormat("VCR OSD Mono", 32);
+    modeText.setFormat('VCR OSD Mono', 32);
     modeText.screenCenter(X);
     modeText.visible = hasModdedLevels();
     modeText.zIndex = 1000;
     add(modeText);
 
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
-    levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+    levelTitleText.setFormat('VCR OSD Mono', 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
     levelTitleText.zIndex = 1000;
     add(levelTitleText);
@@ -216,7 +213,7 @@ class StoryMenuState extends MusicBeatState
 
     #if discord_rpc
     // Updating Discord Rich Presence
-    DiscordClient.changePresence("In the Menus", null);
+    DiscordClient.changePresence('In the Menus', null);
     #end
   }
 
@@ -234,17 +231,7 @@ class StoryMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    if (FlxG.sound.music == null || !FlxG.sound.music.playing)
-    {
-      var freakyMenuMetadata:Null<SongMusicData> = SongRegistry.instance.parseMusicData('freakyMenu');
-      if (freakyMenuMetadata != null)
-      {
-        Conductor.instance.mapTimeChanges(freakyMenuMetadata.timeChanges);
-      }
-
-      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
-      FlxG.sound.music.fadeIn(4, 0, 0.7);
-    }
+    FunkinSound.playMusic('freakyMenu');
   }
 
   function updateData():Void
@@ -316,11 +303,11 @@ class StoryMenuState extends MusicBeatState
     changeDifficulty(0);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     Conductor.instance.update();
 
-    highScoreLerp = Std.int(MathUtil.coolLerp(highScoreLerp, highScore, 0.5));
+    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.5));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
@@ -403,7 +390,8 @@ class StoryMenuState extends MusicBeatState
 
   function hasModdedLevels():Bool
   {
-    return LevelRegistry.instance.listModdedLevelIds().length > 0;
+    return false;
+    // return LevelRegistry.instance.listModdedLevelIds().length > 0;
   }
 
   /**
@@ -433,7 +421,7 @@ class StoryMenuState extends MusicBeatState
     {
       var item:LevelTitle = levelTitles.members[index];
 
-      item.targetY = (index - currentIndex) * 120 + 480;
+      item.targetY = (index - currentIndex) * 125 + 480;
 
       if (index == currentIndex)
       {
@@ -519,7 +507,7 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  function selectLevel()
+  function selectLevel():Void
   {
     if (!currentLevel.isUnlocked())
     {
@@ -554,14 +542,19 @@ class StoryMenuState extends MusicBeatState
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
     PlayStatePlaylist.campaignDifficulty = currentDifficultyId;
 
+    Highscore.talliesLevel = new funkin.Highscore.Tallies();
+
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
+
+      var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
 
       LoadingState.loadPlayState(
         {
           targetSong: targetSong,
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+          targetVariation: targetVariation
         }, true);
     });
   }
@@ -649,7 +642,7 @@ class StoryMenuState extends MusicBeatState
     tracklistText.screenCenter(X);
     tracklistText.x -= FlxG.width * 0.35;
 
-    var levelScore:Null<SaveScoreData> = Save.get().getLevelScore(currentLevelId, currentDifficultyId);
+    var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;
     // levelScore.accuracy
   }

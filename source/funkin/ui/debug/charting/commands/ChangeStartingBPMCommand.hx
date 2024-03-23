@@ -40,6 +40,8 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
     state.scrollPositionInPixels = 0;
 
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+    state.updateGridHeight();
   }
 
   public function undo(state:ChartEditorState):Void
@@ -62,6 +64,8 @@ class ChangeStartingBPMCommand implements ChartEditorCommand
     state.scrollPositionInPixels = 0;
 
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+    state.updateGridHeight();
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool

@@ -1,20 +1,14 @@
 package funkin.ui.freeplay;
 
-import flash.text.TextField;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
-import flixel.FlxGame;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
-import flixel.math.FlxMath;
-import funkin.graphics.FunkinCamera;
 import flixel.math.FlxPoint;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
@@ -23,36 +17,26 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 import funkin.data.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.AngleMask;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.PureColor;
 import funkin.graphics.shaders.StrokeShader;
 import funkin.input.Controls;
-import funkin.input.Controls.Control;
-import funkin.play.components.HealthIcon;
-import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
-import funkin.ui.freeplay.BGScrollingText;
-import funkin.ui.freeplay.DifficultyStars;
-import funkin.ui.freeplay.DJBoyfriend;
-import funkin.ui.freeplay.FreeplayScore;
-import funkin.ui.freeplay.LetterSort;
-import funkin.ui.freeplay.SongMenuItem;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
-import funkin.util.MathUtil;
-import lime.app.Future;
 import lime.utils.Assets;
 
 /**
@@ -63,6 +47,9 @@ typedef FreeplayStateParams =
   ?character:String,
 };
 
+/**
+ * The state for the freeplay menu, allowing the player to select any song to play.
+ */
 class FreeplayState extends MusicBeatSubState
 {
   //
@@ -118,30 +105,31 @@ class FreeplayState extends MusicBeatSubState
   var grpDifficulties:FlxTypedSpriteGroup<DifficultySprite>;
 
   var coolColors:Array<Int> = [
-    0xff9271fd,
-    0xff9271fd,
-    0xff223344,
+    0xFF9271FD,
+    0xFF9271FD,
+    0xFF223344,
     0xFF941653,
-    0xFFfc96d7,
-    0xFFa0d1ff,
-    0xffff78bf,
-    0xfff6b604
+    0xFFFC96D7,
+    0xFFA0D1FF,
+    0xFFFF78BF,
+    0xFFF6B604
   ];
 
   var grpSongs:FlxTypedGroup<Alphabet>;
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
   var curCapsule:SongMenuItem;
   var curPlaying:Bool = false;
-  var ostName:FlxText;
-  var difficultyStars:DifficultyStars;
 
   var displayedVariations:Array<String>;
 
   var dj:DJBoyfriend;
 
+  var ostName:FlxText;
+  var albumRoll:AlbumRoll;
+
   var letterSort:LetterSort;
   var typing:FlxInputText;
-  var exitMovers:Map<Array<FlxSprite>, MoveData> = new Map();
+  var exitMovers:ExitMoverData = new Map();
 
   var stickerSubState:StickerSubState;
 
@@ -177,7 +165,7 @@ class FreeplayState extends MusicBeatSubState
 
     #if discord_rpc
     // Updating Discord Rich Presence
-    DiscordClient.changePresence("In the Menus", null);
+    DiscordClient.changePresence('In the Menus', null);
     #end
 
     var isDebug:Bool = false;
@@ -186,17 +174,14 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
-    {
-      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
-    }
+    FunkinSound.playMusic('freakyMenu');
 
     // Add a null entry that represents the RANDOM option
     songs.push(null);
 
     // TODO: This makes custom variations disappear from Freeplay. Figure out a better solution later.
     // Default character (BF) shows default and Erect variations. Pico shows only Pico variations.
-    displayedVariations = (currentCharacter == "bf") ? [Constants.DEFAULT_VARIATION, "erect"] : [currentCharacter];
+    displayedVariations = (currentCharacter == 'bf') ? [Constants.DEFAULT_VARIATION, 'erect'] : [currentCharacter];
 
     // programmatically adds the songs via LevelRegistry and SongRegistry
     for (levelId in LevelRegistry.instance.listBaseGameLevelIds())
@@ -206,7 +191,7 @@ class FreeplayState extends MusicBeatSubState
         var song:Song = SongRegistry.instance.fetchEntry(songId);
 
         // Only display songs which actually have available charts for the current character.
-        var availableDifficultiesForSong = song.listDifficulties(displayedVariations);
+        var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations);
         if (availableDifficultiesForSong.length == 0) continue;
 
         songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
@@ -226,17 +211,17 @@ class FreeplayState extends MusicBeatSubState
     trace(FlxG.camera.initialZoom);
     trace(FlxCamera.defaultZoom);
 
-    var pinkBack:FlxSprite = new FlxSprite().loadGraphic(Paths.image('freeplay/pinkBack'));
-    pinkBack.color = 0xFFffd4e9; // sets it to pink!
+    var pinkBack:FunkinSprite = FunkinSprite.create('freeplay/pinkBack');
+    pinkBack.color = 0xFFFFD4E9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
 
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
 
-    var orangeBackShit:FlxSprite = new FlxSprite(84, 440).makeGraphic(Std.int(pinkBack.width), 75, 0xFFfeda00);
+    var orangeBackShit:FunkinSprite = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
     add(orangeBackShit);
 
-    var alsoOrangeLOL:FlxSprite = new FlxSprite(0, orangeBackShit.y).makeGraphic(100, Std.int(orangeBackShit.height), 0xFFffd400);
+    var alsoOrangeLOL:FunkinSprite = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
     add(alsoOrangeLOL);
 
     exitMovers.set([pinkBack, orangeBackShit, alsoOrangeLOL],
@@ -255,10 +240,10 @@ class FreeplayState extends MusicBeatSubState
     add(grpTxtScrolls);
     grpTxtScrolls.visible = false;
 
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(BGScrollingText, ["x", "y", "speed", "size"]));
+    FlxG.debugger.addTrackerProfile(new TrackerProfile(BGScrollingText, ['x', 'y', 'speed', 'size']));
 
-    var moreWays:BGScrollingText = new BGScrollingText(0, 160, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width, true, 43);
-    moreWays.funnyColor = 0xFFfff383;
+    var moreWays:BGScrollingText = new BGScrollingText(0, 160, 'HOT BLOODED IN MORE WAYS THAN ONE', FlxG.width, true, 43);
+    moreWays.funnyColor = 0xFFFFF383;
     moreWays.speed = 6.8;
     grpTxtScrolls.add(moreWays);
 
@@ -268,8 +253,8 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4,
       });
 
-    var funnyScroll:BGScrollingText = new BGScrollingText(0, 220, "BOYFRIEND", FlxG.width / 2, false, 60);
-    funnyScroll.funnyColor = 0xFFff9963;
+    var funnyScroll:BGScrollingText = new BGScrollingText(0, 220, 'BOYFRIEND', FlxG.width / 2, false, 60);
+    funnyScroll.funnyColor = 0xFFFF9963;
     funnyScroll.speed = -3.8;
     grpTxtScrolls.add(funnyScroll);
 
@@ -281,7 +266,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
-    var txtNuts:BGScrollingText = new BGScrollingText(0, 285, "PROTECT YO NUTS", FlxG.width / 2, true, 43);
+    var txtNuts:BGScrollingText = new BGScrollingText(0, 285, 'PROTECT YO NUTS', FlxG.width / 2, true, 43);
     txtNuts.speed = 3.5;
     grpTxtScrolls.add(txtNuts);
     exitMovers.set([txtNuts],
@@ -290,8 +275,8 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4,
       });
 
-    var funnyScroll2:BGScrollingText = new BGScrollingText(0, 335, "BOYFRIEND", FlxG.width / 2, false, 60);
-    funnyScroll2.funnyColor = 0xFFff9963;
+    var funnyScroll2:BGScrollingText = new BGScrollingText(0, 335, 'BOYFRIEND', FlxG.width / 2, false, 60);
+    funnyScroll2.funnyColor = 0xFFFF9963;
     funnyScroll2.speed = -3.8;
     grpTxtScrolls.add(funnyScroll2);
 
@@ -301,8 +286,8 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.5,
       });
 
-    var moreWays2:BGScrollingText = new BGScrollingText(0, 397, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width, true, 43);
-    moreWays2.funnyColor = 0xFFfff383;
+    var moreWays2:BGScrollingText = new BGScrollingText(0, 397, 'HOT BLOODED IN MORE WAYS THAN ONE', FlxG.width, true, 43);
+    moreWays2.funnyColor = 0xFFFFF383;
     moreWays2.speed = 6.8;
     grpTxtScrolls.add(moreWays2);
 
@@ -312,8 +297,8 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4
       });
 
-    var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y + 10, "BOYFRIEND", FlxG.width / 2, 60);
-    funnyScroll3.funnyColor = 0xFFfea400;
+    var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y + 10, 'BOYFRIEND', FlxG.width / 2, 60);
+    funnyScroll3.funnyColor = 0xFFFEA400;
     funnyScroll3.speed = -3.8;
     grpTxtScrolls.add(funnyScroll3);
 
@@ -329,8 +314,10 @@ class FreeplayState extends MusicBeatSubState
         x: -dj.width * 1.6,
         speed: 0.5
       });
+
     // TODO: Replace this.
-    if (currentCharacter == "pico") dj.visible = false;
+    if (currentCharacter == 'pico') dj.visible = false;
+
     add(dj);
 
     var bgDad:FlxSprite = new FlxSprite(pinkBack.width * 0.75, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
@@ -388,62 +375,23 @@ class FreeplayState extends MusicBeatSubState
       if (diffSprite.difficultyId == currentDifficulty) diffSprite.visible = true;
     }
 
-    // NOTE: This is an AtlasSprite because we use an animation to bring it into view.
-    // TODO: Add the ability to select the album graphic.
-    var albumArt:FlxAtlasSprite = new FlxAtlasSprite(640, 360, Paths.animateAtlas("freeplay/albumRoll"));
-    albumArt.visible = false;
-    add(albumArt);
+    albumRoll = new AlbumRoll();
+    albumRoll.albumId = 'volume1';
+    add(albumRoll);
 
-    exitMovers.set([albumArt],
-      {
-        x: FlxG.width,
-        speed: 0.4,
-        wait: 0
-      });
-
-    var albumTitle:FlxSprite = new FlxSprite(947, 491).loadGraphic(Paths.image('freeplay/albumTitle-fnfvol1'));
-    var albumArtist:FlxSprite = new FlxSprite(1010, 607).loadGraphic(Paths.image('freeplay/albumArtist-kawaisprite'));
-    difficultyStars = new DifficultyStars(140, 39);
-
-    difficultyStars.stars.visible = false;
-    albumTitle.visible = false;
-    albumArtist.visible = false;
-
-    exitMovers.set([albumTitle],
-      {
-        x: FlxG.width,
-        speed: 0.2,
-        wait: 0.1
-      });
-
-    exitMovers.set([albumArtist],
-      {
-        x: FlxG.width * 1.1,
-        speed: 0.2,
-        wait: 0.2
-      });
-    exitMovers.set([difficultyStars],
-      {
-        x: FlxG.width * 1.2,
-        speed: 0.2,
-        wait: 0.3
-      });
-
-    add(albumTitle);
-    add(albumArtist);
-    add(difficultyStars);
+    albumRoll.applyExitMovers(exitMovers);
 
     var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
     overhangStuff.y -= overhangStuff.height;
     add(overhangStuff);
     FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
 
-    var fnfFreeplay:FlxText = new FlxText(8, 8, 0, "FREEPLAY", 48);
-    fnfFreeplay.font = "VCR OSD Mono";
+    var fnfFreeplay:FlxText = new FlxText(8, 8, 0, 'FREEPLAY', 48);
+    fnfFreeplay.font = 'VCR OSD Mono';
     fnfFreeplay.visible = false;
 
-    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, "OFFICIAL OST", 48);
-    ostName.font = "VCR OSD Mono";
+    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
+    ostName.font = 'VCR OSD Mono';
     ostName.alignment = RIGHT;
     ostName.visible = false;
 
@@ -455,21 +403,21 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
-    var sillyStroke = new StrokeShader(0xFFFFFFFF, 2, 2);
+    var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
     add(fnfFreeplay);
     add(ostName);
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(860, 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
-    fnfHighscoreSpr.animation.addByPrefix("highscore", "highscore", 24, false);
+    fnfHighscoreSpr.animation.addByPrefix('highscore', 'highscore small instance 1', 24, false);
     fnfHighscoreSpr.visible = false;
     fnfHighscoreSpr.setGraphicSize(0, Std.int(fnfHighscoreSpr.height * 1));
     fnfHighscoreSpr.updateHitbox();
     add(fnfHighscoreSpr);
 
     new FlxTimer().start(FlxG.random.float(12, 50), function(tmr) {
-      fnfHighscoreSpr.animation.play("highscore");
+      fnfHighscoreSpr.animation.play('highscore');
       tmr.time = FlxG.random.float(20, 60);
     }, 0);
 
@@ -480,7 +428,7 @@ class FreeplayState extends MusicBeatSubState
     var clearBoxSprite:FlxSprite = new FlxSprite(1165, 65).loadGraphic(Paths.image('freeplay/clearBox'));
     add(clearBoxSprite);
 
-    txtCompletion = new AtlasText(1185, 87, "69", AtlasFont.FREEPLAY_CLEAR);
+    txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
     txtCompletion.visible = false;
     add(txtCompletion);
 
@@ -497,9 +445,9 @@ class FreeplayState extends MusicBeatSubState
     letterSort.changeSelectionCallback = (str) -> {
       switch (str)
       {
-        case "fav":
+        case 'fav':
           generateSongList({filterType: FAVORITE}, true);
-        case "ALL":
+        case 'ALL':
           generateSongList(null, true);
         default:
           generateSongList({filterType: REGEXP, filterData: str}, true);
@@ -515,25 +463,20 @@ class FreeplayState extends MusicBeatSubState
     dj.onIntroDone.add(function() {
       // when boyfriend hits dat shiii
 
-      albumArt.visible = true;
-      albumArt.anim.play("");
-      albumArt.anim.onComplete = function() {
-        albumArt.anim.pause();
-      };
+      albumRoll.playIntro();
 
-      new FlxTimer().start(1, function(_) {
-        albumTitle.visible = true;
+      new FlxTimer().start(0.75, function(_) {
+        albumRoll.showTitle();
       });
 
       new FlxTimer().start(35 / 24, function(_) {
-        albumArtist.visible = true;
-        difficultyStars.stars.visible = true;
+        albumRoll.showStars();
       });
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
-      var diffSelLeft = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
-      var diffSelRight = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
+      var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
+      var diffSelRight:DifficultySelector = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
 
       add(diffSelLeft);
       add(diffSelRight);
@@ -563,7 +506,7 @@ class FreeplayState extends MusicBeatSubState
         });
       });
 
-      pinkBack.color = 0xFFffd863;
+      pinkBack.color = 0xFFFFD863;
       bgDad.visible = true;
       orangeBackShit.visible = true;
       alsoOrangeLOL.visible = true;
@@ -572,9 +515,9 @@ class FreeplayState extends MusicBeatSubState
 
     generateSongList(null, false);
 
-    var swag:Alphabet = new Alphabet(1, 0, "swag");
+    // var swag:Alphabet = new Alphabet(1, 0, 'swag');
 
-    var funnyCam = new FunkinCamera(0, 0, FlxG.width, FlxG.height);
+    var funnyCam:FunkinCamera = new FunkinCamera(0, 0, FlxG.width, FlxG.height);
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam);
 
@@ -589,12 +532,20 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  public function generateSongList(?filterStuff:SongFilter, force:Bool = false)
+  /**
+   * Given the current filter, rebuild the current song list.
+   *
+   * @param filterStuff A filter to apply to the song list (regex, startswith, all, favorite)
+   * @param force
+   */
+  public function generateSongList(?filterStuff:SongFilter, force:Bool = false):Void
   {
     curSelected = 1;
 
     for (cap in grpCapsules.members)
+    {
       cap.kill();
+    }
 
     var tempSongs:Array<FreeplaySongData> = songs;
 
@@ -605,7 +556,7 @@ class FreeplayState extends MusicBeatSubState
         case REGEXP:
           // filterStuff.filterData has a string with the first letter of the sorting range, and the second one
           // this creates a filter to return all the songs that start with a letter between those two
-          var filterRegexp = new EReg("^[" + filterStuff.filterData + "].*", "i");
+          var filterRegexp:EReg = new EReg('^[' + filterStuff.filterData + '].*', 'i');
           tempSongs = tempSongs.filter(str -> {
             if (str == null) return true; // Random
             return filterRegexp.match(str.songName);
@@ -661,14 +612,19 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
       funnyMenu.hsvShader = hsvShader;
 
-      if (i < 8) funnyMenu.initJumpIn(Math.min(i, 4), force);
+      if (i < 8)
+      {
+        funnyMenu.initJumpIn(Math.min(i, 4), force);
+      }
       else
+      {
         funnyMenu.forcePosition();
+      }
 
       grpCapsules.add(funnyMenu);
     }
 
-    FlxG.console.registerFunction("changeSelection", changeSelection);
+    FlxG.console.registerFunction('changeSelection', changeSelection);
 
     rememberSelection();
 
@@ -692,7 +648,7 @@ class FreeplayState extends MusicBeatSubState
 
   var busy:Bool = false; // Set to true once the user has pressed enter to select a song.
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -700,7 +656,7 @@ class FreeplayState extends MusicBeatSubState
     {
       if (songs[curSelected] != null)
       {
-        var realShit = curSelected;
+        var realShit:Int = curSelected;
         songs[curSelected].isFav = !songs[curSelected].isFav;
         if (songs[curSelected].isFav)
         {
@@ -709,7 +665,7 @@ class FreeplayState extends MusicBeatSubState
               ease: FlxEase.elasticOut,
               onComplete: _ -> {
                 grpCapsules.members[realShit].favIcon.visible = true;
-                grpCapsules.members[realShit].favIcon.animation.play("fav");
+                grpCapsules.members[realShit].favIcon.animation.play('fav');
               }
             });
         }
@@ -773,9 +729,9 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var upP = controls.UI_UP_P;
-    var downP = controls.UI_DOWN_P;
-    var accepted = controls.ACCEPT;
+    var upP:Bool = controls.UI_UP_P;
+    var downP:Bool = controls.UI_DOWN_P;
+    var accepted:Bool = controls.ACCEPT;
 
     if (FlxG.onMobile)
     {
@@ -787,14 +743,14 @@ class FreeplayState extends MusicBeatSubState
         }
         if (touch.pressed)
         {
-          var dx = initTouchPos.x - touch.screenX;
-          var dy = initTouchPos.y - touch.screenY;
+          var dx:Float = initTouchPos.x - touch.screenX;
+          var dy:Float = initTouchPos.y - touch.screenY;
 
-          var angle = Math.atan2(dy, dx);
-          var length = Math.sqrt(dx * dx + dy * dy);
+          var angle:Float = Math.atan2(dy, dx);
+          var length:Float = Math.sqrt(dx * dx + dy * dy);
 
-          FlxG.watch.addQuick("LENGTH", length);
-          FlxG.watch.addQuick("ANGLE", Math.round(FlxAngle.asDegrees(angle)));
+          FlxG.watch.addQuick('LENGTH', length);
+          FlxG.watch.addQuick('ANGLE', Math.round(FlxAngle.asDegrees(angle)));
         }
       }
 
@@ -859,9 +815,14 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
 
-          if (controls.UI_UP) changeSelection(-1);
+          if (controls.UI_UP)
+          {
+            changeSelection(-1);
+          }
           else
+          {
             changeSelection(1);
+          }
         }
       }
       else if (spamTimer >= 0.9) spamming = true;
@@ -898,16 +859,6 @@ class FreeplayState extends MusicBeatSubState
     {
       dj.resetAFKTimer();
       changeDiff(1);
-    }
-
-    // TODO: DEBUG REMOVE THIS
-    if (FlxG.keys.justPressed.P)
-    {
-      var newParams:FreeplayStateParams =
-        {
-          character: currentCharacter == "bf" ? "pico" : "bf",
-        };
-      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.freeplay.FreeplayState(newParams, sticker)));
     }
 
     if (controls.BACK && !typing.hasFocus)
@@ -975,18 +926,18 @@ class FreeplayState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
-    var daSong = songs[curSelected];
+    var daSong:Null<FreeplaySongData> = songs[curSelected];
     if (daSong != null)
     {
       clearDaCache(daSong.songName);
     }
   }
 
-  function changeDiff(change:Int = 0)
+  function changeDiff(change:Int = 0):Void
   {
     touchTimer = 0;
 
-    var currentDifficultyIndex = diffIdsCurrent.indexOf(currentDifficulty);
+    var currentDifficultyIndex:Int = diffIdsCurrent.indexOf(currentDifficulty);
 
     if (currentDifficultyIndex == -1) currentDifficultyIndex = diffIdsCurrent.indexOf(Constants.DEFAULT_DIFFICULTY);
 
@@ -997,10 +948,10 @@ class FreeplayState extends MusicBeatSubState
 
     currentDifficulty = diffIdsCurrent[currentDifficultyIndex];
 
-    var daSong = songs[curSelected];
+    var daSong:Null<FreeplaySongData> = songs[curSelected];
     if (daSong != null)
     {
-      var songScore:SaveScoreData = Save.get().getSongScore(songs[curSelected].songId, currentDifficulty);
+      var songScore:SaveScoreData = Save.instance.getSongScore(songs[curSelected].songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
       rememberedDifficulty = currentDifficulty;
@@ -1061,11 +1012,12 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Set the difficulty star count on the right.
-    difficultyStars.difficulty = daSong?.songRating ?? difficultyStars.difficulty; // yay haxe 4.3
+    albumRoll.setDifficultyStars(daSong?.songRating);
+    albumRoll.albumId = daSong?.albumId ?? Constants.DEFAULT_ALBUM_ID;
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
-  function clearDaCache(actualSongTho:String)
+  function clearDaCache(actualSongTho:String):Void
   {
     for (song in songs)
     {
@@ -1080,7 +1032,7 @@ class FreeplayState extends MusicBeatSubState
 
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
   {
-    trace("RANDOM SELECTED");
+    trace('RANDOM SELECTED');
 
     busy = true;
     letterSort.inputEnabled = false;
@@ -1096,7 +1048,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (availableSongCapsules.length == 0)
     {
-      trace("No songs available!");
+      trace('No songs available!');
       busy = false;
       letterSort.inputEnabled = true;
       FlxG.sound.play(Paths.sound('cancelMenu'));
@@ -1142,6 +1094,12 @@ class FreeplayState extends MusicBeatSubState
           targetSong: targetSong,
           targetDifficulty: targetDifficulty,
           targetVariation: targetVariation,
+          practiceMode: false,
+          minimalMode: false,
+          // TODO: Make these an option! It's currently only accessible via chart editor.
+          // startTimestamp: 0.0,
+          // playbackRate: 0.5,
+          // botPlayMode: true,
         }, true);
     });
   }
@@ -1162,27 +1120,26 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Set the difficulty star count on the right.
-    var daSong = songs[curSelected];
-    difficultyStars.difficulty = daSong?.songRating ?? 0;
+    var daSong:Null<FreeplaySongData> = songs[curSelected];
+    albumRoll.setDifficultyStars(daSong?.songRating ?? 0);
   }
 
-  function changeSelection(change:Int = 0)
+  function changeSelection(change:Int = 0):Void
   {
-    // NGio.logEvent('Fresh');
     FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
     // FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
-    var prevSelected = curSelected;
+    var prevSelected:Int = curSelected;
 
     curSelected += change;
 
     if (curSelected < 0) curSelected = grpCapsules.countLiving() - 1;
     if (curSelected >= grpCapsules.countLiving()) curSelected = 0;
 
-    var daSongCapsule = grpCapsules.members[curSelected];
+    var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
     if (daSongCapsule.songData != null)
     {
-      var songScore:SaveScoreData = Save.get().getSongScore(daSongCapsule.songData.songId, currentDifficulty);
+      var songScore:SaveScoreData = Save.instance.getSongScore(daSongCapsule.songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
       diffIdsCurrent = daSongCapsule.songData.songDifficulties;
@@ -1221,7 +1178,7 @@ class FreeplayState extends MusicBeatSubState
         // TODO: Stream the instrumental of the selected song?
         if (prevSelected == 0)
         {
-          FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'));
+          FunkinSound.playMusic('freakyMenu');
           FlxG.sound.music.fadeIn(2, 0, 0.8);
         }
       }
@@ -1230,6 +1187,9 @@ class FreeplayState extends MusicBeatSubState
   }
 }
 
+/**
+ * The difficulty selector arrows to the left and right of the difficulty.
+ */
 class DifficultySelector extends FlxSprite
 {
   var controls:Controls;
@@ -1242,7 +1202,7 @@ class DifficultySelector extends FlxSprite
     this.controls = controls;
 
     frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
-    animation.addByPrefix('shine', "arrow pointer loop", 24);
+    animation.addByPrefix('shine', 'arrow pointer loop', 24);
     animation.play('shine');
 
     whiteShader = new PureColor(FlxColor.WHITE);
@@ -1252,7 +1212,7 @@ class DifficultySelector extends FlxSprite
     flipX = flipped;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     if (flipX && controls.UI_RIGHT_P) moveShitDown();
     if (!flipX && controls.UI_LEFT_P) moveShitDown();
@@ -1260,7 +1220,7 @@ class DifficultySelector extends FlxSprite
     super.update(elapsed);
   }
 
-  function moveShitDown()
+  function moveShitDown():Void
   {
     offset.y -= 5;
 
@@ -1276,34 +1236,62 @@ class DifficultySelector extends FlxSprite
   }
 }
 
+/**
+ * Structure for the current song filter.
+ */
 typedef SongFilter =
 {
   var filterType:FilterType;
   var ?filterData:Dynamic;
 }
 
+/**
+ * Possible types to use for the song filter.
+ */
 enum abstract FilterType(String)
 {
-  var STARTSWITH;
-  var REGEXP;
-  var FAVORITE;
-  var ALL;
+  /**
+   * Filter to songs which start with a string
+   */
+  public var STARTSWITH;
+
+  /**
+   * Filter to songs which match a regular expression
+   */
+  public var REGEXP;
+
+  /**
+   * Filter to songs which are favorited
+   */
+  public var FAVORITE;
+
+  /**
+   * Filter to all songs
+   */
+  public var ALL;
 }
 
+/**
+ * Data about a specific song in the freeplay menu.
+ */
 class FreeplaySongData
 {
+  /**
+   * Whether or not the song has been favorited.
+   */
   public var isFav:Bool = false;
 
   var song:Song;
 
-  public var levelId(default, null):String = "";
-  public var songId(default, null):String = "";
+  public var levelId(default, null):String = '';
+  public var songId(default, null):String = '';
 
   public var songDifficulties(default, null):Array<String> = [];
 
-  public var songName(default, null):String = "";
-  public var songCharacter(default, null):String = "";
+  public var songName(default, null):String = '';
+  public var songCharacter(default, null):String = '';
   public var songRating(default, null):Int = 0;
+  public var albumId(default, null):String = '';
 
   public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
   public var displayedVariations(default, null):Array<String> = [Constants.DEFAULT_VARIATION];
@@ -1327,19 +1315,28 @@ class FreeplaySongData
     updateValues(displayedVariations);
   }
 
-  function updateValues(displayedVariations:Array<String>):Void
+  function updateValues(variations:Array<String>):Void
   {
-    this.songDifficulties = song.listDifficulties(displayedVariations);
+    this.songDifficulties = song.listDifficulties(variations);
     if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
 
-    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, displayedVariations);
+    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, variations);
     if (songDifficulty == null) return;
     this.songName = songDifficulty.songName;
     this.songCharacter = songDifficulty.characters.opponent;
     this.songRating = songDifficulty.difficultyRating;
+    this.albumId = songDifficulty.album;
   }
 }
 
+/**
+ * The map storing information about the exit movers.
+ */
+typedef ExitMoverData = Map<Array<FlxSprite>, MoveData>;
+
+/**
+ * The data for an exit mover.
+ */
 typedef MoveData =
 {
   var ?x:Float;
@@ -1348,8 +1345,14 @@ typedef MoveData =
   var ?wait:Float;
 }
 
+/**
+ * The sprite for the difficulty
+ */
 class DifficultySprite extends FlxSprite
 {
+  /**
+   * The difficulty id which this sprite represents.
+   */
   public var difficultyId:String;
 
   public function new(diffId:String)

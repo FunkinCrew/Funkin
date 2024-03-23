@@ -58,8 +58,14 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     var measureNumberInViewport = Math.floor(viewTopPosition / ChartEditorState.GRID_SIZE / Conductor.instance.stepsPerMeasure) + 1;
     var measureNumberPosition = measureNumberInViewport * ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure;
 
-    measureNumber.text = '${measureNumberInViewport + 1}';
     measureNumber.y = measureNumberPosition + this.y;
+
+    // Show the measure number only if it isn't beneath the end of the note grid.
+    // Using measureNumber + 1 because the cut-off bar at the bottom is technically a bar, but it looks bad if a measure number shows up there.
+    if ((measureNumberInViewport + 1) < chartEditorState.songLengthInSteps / Conductor.instance.stepsPerMeasure)
+      measureNumber.text = '${measureNumberInViewport + 1}';
+    else
+      measureNumber.text = '';
 
     // trace(measureNumber.text + ' at ' + measureNumber.y);
   }

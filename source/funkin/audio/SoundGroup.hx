@@ -80,8 +80,9 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
     // We have to play, then pause the sound to set the time,
     // else the sound will restart immediately when played.
-    result.play(true, 0.0);
-    result.pause();
+    // TODO: Past me experienced that issue but present me didn't? Investigate.
+    // result.play(true, 0.0);
+    // result.pause();
     result.time = this.time;
 
     result.onComplete = function() {

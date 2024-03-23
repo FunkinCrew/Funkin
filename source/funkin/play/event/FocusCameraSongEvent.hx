@@ -1,5 +1,6 @@
 package funkin.play.event;
 
+import flixel.tweens.FlxEase;
 // Data from the chart
 import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
@@ -57,6 +58,9 @@ class FocusCameraSongEvent extends SongEvent
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
+    // Does nothing if we are minimal mode.
+    if (PlayState.instance.isMinimalMode) return;
+
     var posX:Null<Float> = data.getFloat('x');
     if (posX == null) posX = 0.0;
     var posY:Null<Float> = data.getFloat('y');
@@ -65,6 +69,13 @@ class FocusCameraSongEvent extends SongEvent
     var char:Null<Int> = data.getInt('char');
 
     if (char == null) char = cast data.value;
+
+    var useTween:Null<Bool> = data.getBool('useTween');
+    if (useTween == null) useTween = false;
+    var duration:Null<Float> = data.getFloat('duration');
+    if (duration == null) duration = 4.0;
+    var ease:Null<String> = data.getString('ease');
+    if (ease == null) ease = 'linear';
 
     switch (char)
     {
@@ -114,6 +125,26 @@ class FocusCameraSongEvent extends SongEvent
       default:
         trace('Unknown camera focus: ' + data);
     }
+
+    if (useTween)
+    {
+      switch (ease)
+      {
+        case 'INSTANT':
+          PlayState.instance.tweenCameraToFollowPoint(0);
+        default:
+          var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+
+          var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
+          if (easeFunction == null)
+          {
+            trace('Invalid ease function: $ease');
+            return;
+          }
+
+          PlayState.instance.tweenCameraToFollowPoint(durSeconds, easeFunction);
+      }
+    }
   }
 
   public override function getTitle():String
@@ -155,6 +186,51 @@ class FocusCameraSongEvent extends SongEvent
         step: 10.0,
         type: SongEventFieldType.FLOAT,
         units: "px"
+      },
+      {
+        name: 'useTween',
+        title: 'Use Tween',
+        type: SongEventFieldType.BOOL,
+        defaultValue: false
+      },
+      {
+        name: 'duration',
+        title: 'Duration',
+        defaultValue: 4.0,
+        step: 0.5,
+        type: SongEventFieldType.FLOAT,
+        units: 'steps'
+      },
+      {
+        name: 'ease',
+        title: 'Easing Type',
+        defaultValue: 'linear',
+        type: SongEventFieldType.ENUM,
+        keys: [
+          'Linear' => 'linear',
+          'Instant' => 'INSTANT',
+          'Quad In' => 'quadIn',
+          'Quad Out' => 'quadOut',
+          'Quad In/Out' => 'quadInOut',
+          'Cube In' => 'cubeIn',
+          'Cube Out' => 'cubeOut',
+          'Cube In/Out' => 'cubeInOut',
+          'Quart In' => 'quartIn',
+          'Quart Out' => 'quartOut',
+          'Quart In/Out' => 'quartInOut',
+          'Quint In' => 'quintIn',
+          'Quint Out' => 'quintOut',
+          'Quint In/Out' => 'quintInOut',
+          'Smooth Step In' => 'smoothStepIn',
+          'Smooth Step Out' => 'smoothStepOut',
+          'Smooth Step In/Out' => 'smoothStepInOut',
+          'Sine In' => 'sineIn',
+          'Sine Out' => 'sineOut',
+          'Sine In/Out' => 'sineInOut',
+          'Elastic In' => 'elasticIn',
+          'Elastic Out' => 'elasticOut',
+          'Elastic In/Out' => 'elasticInOut',
+        ]
       }
     ]);
   }

@@ -18,6 +18,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.graphics.shaders.TitleOutline;
+import funkin.audio.FunkinSound;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.AtlasText;
 import openfl.Assets;
@@ -219,16 +220,12 @@ class TitleState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    if (FlxG.sound.music == null || !FlxG.sound.music.playing)
-    {
-      var freakyMenuMetadata:Null<SongMusicData> = SongRegistry.instance.parseMusicData('freakyMenu');
-      if (freakyMenuMetadata != null)
-      {
-        Conductor.instance.mapTimeChanges(freakyMenuMetadata.timeChanges);
-      }
-      FlxG.sound.playMusic(Paths.music('freakyMenu/freakyMenu'), 0);
-      FlxG.sound.music.fadeIn(4, 0, 0.7);
-    }
+    var shouldFadeIn = (FlxG.sound.music == null);
+    // Load music. Includes logic to handle BPM changes.
+    FunkinSound.playMusic('freakyMenu', false, true);
+    FlxG.sound.music.volume = 0;
+    // Fade from 0.0 to 0.7 over 4 seconds
+    if (shouldFadeIn) FlxG.sound.music.fadeIn(4, 0, 0.7);
   }
 
   function getIntroTextShit():Array<Array<String>>
@@ -456,9 +453,9 @@ class TitleState extends MusicBeatState
           switch (i + 1)
           {
             case 1:
-              createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8r']);
+              createCoolText(['The', 'Funkin Crew Inc']);
             case 3:
-              addMoreText('present');
+              addMoreText('presents');
             case 4:
               deleteCoolText();
             case 5:

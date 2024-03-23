@@ -46,7 +46,8 @@ class AnimateAtlasCharacter extends BaseCharacter
   var _skipTransformChildren:Bool = false;
 
   var animations:Map<String, AnimateAtlasAnimation> = new Map<String, AnimateAtlasAnimation>();
-  var currentAnimation:String;
+  var currentAnimName:Null<String> = null;
+  var animFinished:Bool = false;
 
   public function new(id:String)
   {
@@ -77,6 +78,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 
     var atlasSprite:FlxAtlasSprite = loadAtlasSprite();
     setSprite(atlasSprite);
+
     loadAnimations();
 
     super.onCreate(event);
@@ -86,10 +88,36 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     if ((!canPlayOtherAnims && !ignoreOther)) return;
 
-    currentAnimation = name;
-    var prefix:String = getAnimationData(name).prefix;
-    if (prefix == null) prefix = name;
-    this.mainSprite.playAnimation(prefix, restart, ignoreOther);
+    var correctName = correctAnimationName(name);
+    if (correctName == null)
+    {
+      trace('Could not find Atlas animation: ' + name);
+      return;
+    }
+
+    var animData = getAnimationData(correctName);
+    currentAnimName = correctName;
+    var prefix:String = animData.prefix;
+    if (prefix == null) prefix = correctName;
+    var loop:Bool = animData.looped;
+
+    this.mainSprite.playAnimation(prefix, restart, ignoreOther, loop);
+
+    animFinished = false;
+  }
+
+  public override function hasAnimation(name:String):Bool
+  {
+    return getAnimationData(name) != null;
+  }
+
+  /**
+   * Returns true if the animation has finished playing.
+   * Never true if animation is configured to loop.
+   */
+  public override function isAnimationFinished():Bool
+  {
+    return animFinished;
   }
 
   function loadAtlasSprite():FlxAtlasSprite
@@ -114,7 +142,13 @@ class AnimateAtlasCharacter extends BaseCharacter
     }
     else
     {
+      // Make the game hold on the last frame.
       this.mainSprite.cleanupAnimation(prefix);
+      // currentAnimName = null;
+      animFinished = true;
+
+      // Fallback to idle!
+      // playAnimation('idle', true, false);
     }
   }
 
@@ -140,19 +174,30 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   function loadAnimations():Void
   {
-    trace('[ATLASCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    trace('[ATLASCHAR] Attempting to load ${_data.animations.length} animations for ${characterId}');
 
     var animData:Array<AnimateAtlasAnimation> = cast _data.animations;
 
     for (anim in animData)
     {
+      // Validate the animation before adding.
+      var prefix = anim.prefix;
+      if (!this.mainSprite.hasAnimation(prefix))
+      {
+        FlxG.log.warn('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPath}');
+        continue;
+      }
       animations.set(anim.name, anim);
+      trace('[ATLASCHAR] - Successfully loaded animation ${anim.name} to ${characterId}');
     }
+
+    trace('[ATLASCHAR] Loaded ${animations.size()} animations for ${characterId}');
   }
 
   public override function getCurrentAnimation():String
   {
-    return this.mainSprite.getCurrentAnimation();
+    // return this.mainSprite.getCurrentAnimation();
+    return currentAnimName;
   }
 
   function getAnimationData(name:String = null):AnimateAtlasAnimation
@@ -191,7 +236,11 @@ class AnimateAtlasCharacter extends BaseCharacter
     _skipTransformChildren = true;
     super.kill();
     _skipTransformChildren = false;
-    this.mainSprite.kill();
+    if (this.mainSprite != null)
+    {
+      this.mainSprite.kill();
+      this.mainSprite = null;
+    }
   }
 
   /**

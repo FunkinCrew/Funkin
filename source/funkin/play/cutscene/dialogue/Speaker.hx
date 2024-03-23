@@ -106,6 +106,26 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     loadAnimations();
   }
 
+  /**
+   * Calls `kill()` on the group's members and then on the group itself.
+   * You can revive this group later via `revive()` after this.
+   */
+  public override function kill():Void
+  {
+    super.kill();
+  }
+
+  public override function revive():Void
+  {
+    super.revive();
+
+    this.visible = true;
+    this.alpha = 1.0;
+
+    loadSpritesheet();
+    loadAnimations();
+  }
+
   function loadSpritesheet():Void
   {
     trace('[SPEAKER] Loading spritesheet ${_data.assetPath} for ${id}');
@@ -198,25 +218,25 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
 
-    trace('[BOPPER] Animation "$name" does not exist!');
+    FlxG.log.notice('Speaker tried to play animation "$name" that does not exist, stripping suffixes...');
 
     // Attempt to strip a `-alt` suffix, if it exists.
     if (name.lastIndexOf('-') != -1)
     {
       var correctName = name.substring(0, name.lastIndexOf('-'));
-      trace('[BOPPER] Attempting to fallback to "$correctName"');
+      FlxG.log.notice('Speaker tried to play animation "$name" that does not exist, stripping suffixes...');
       return correctAnimationName(correctName);
     }
     else
     {
       if (name != 'idle')
       {
-        trace('[BOPPER] Attempting to fallback to "idle"');
+        FlxG.log.warn('Speaker tried to play animation "$name" that does not exist, fallback to idle...');
         return correctAnimationName('idle');
       }
       else
       {
-        trace('[BOPPER] Failing animation playback.');
+        FlxG.log.error('Speaker tried to play animation "idle" that does not exist! This is bad!');
         return null;
       }
     }

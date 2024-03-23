@@ -11,7 +11,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "4d054bd10b05bb1309a0ba3427ffa5378e0b4b99",
+      "ref": "5823c46b4e7410372d58b99f8d5c52fc18b3cb3d",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -54,14 +54,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "8a7846b",
+      "ref": "0212d8fdfcafeb5f0d5a41e1ddba8ff21d0e183b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "e9f880522e27134b29df4067f82df7d7e5237b70",
+      "ref": "63a906a6148958dbfde8c7b48d90b0693767fd95",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -73,8 +73,8 @@
       "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "c8c47e706ad82a423783006ed901b6d93c89a421",
-      "url": "https://github.com/polybiusproxy/hxCodec"
+      "ref": "387e1665d6feb5762358134f168e6ebfe46acec8",
+      "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
       "name": "hxcpp",
@@ -146,7 +146,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "d5a3b8995f64d20b95f844454e8c3b38c3d3a9fa",
+      "ref": "8553b800965f225bb14c7ab8f04bfa9cdec362ac",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

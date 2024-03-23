@@ -8,71 +8,80 @@ jobs:
     runs-on: [self-hosted, linux]
     container: ubuntu:23.10
     steps:
-      - name: prepare container
+      - name: Install tools missing in container
         run: |
           apt update
-          apt install sudo git curl unzip -y
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-      - name: get token from gh app
+          apt install -y sudo git curl unzip
+      - name: Fix git config on posix runner
+        run: |
+          git config --global --add safe.directory ${{ github.workspace }}
+      - name: Get checkout token
         uses: actions/create-github-app-token@v1
         id: app_token
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
-      - name: checkout repo
+      - name: Checkout repo
         uses: funkincrew/ci-checkout@v6
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
-      - uses: ./.github/actions/setup-haxeshit
-      - name: gather game dependencies
+      - name: Install Haxe, dependencies
+        uses: ./.github/actions/setup-haxeshit
+      - name: Install native dependencies
         run: |
-          sudo apt-get install -y libx11-dev xorg-dev libgl-dev libxi-dev libxext-dev libasound2-dev libxinerama-dev libxrandr-dev libgl1-mesa-dev
-      - name: build game
+          apt install -y \
+            libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev \
+            libgl-dev libgl1-mesa-dev \
+            libasound2-dev
+      - name: Build game
         run: |
           haxelib run lime build html5 -release --times -DGITHUB_BUILD
-          ls
-      - uses: ./.github/actions/upload-itch
+      - name: Upload build artifacts
+        uses: ./.github/actions/upload-itch
         with:
           butler-key: ${{ secrets.BUTLER_API_KEY}}
           build-dir: export/release/html5/bin
           target: html5
   create-nightly-win:
-    runs-on: windows-latest
+    runs-on: [self-hosted, windows]
+    defaults:
+      run:
+        shell: bash
     steps:
-      - name: get token from gh app
+      - name: Get checkout token
         uses: actions/create-github-app-token@v1
         id: app_token
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
-      - name: checkout repo
+      - name: Checkout repo
         uses: funkincrew/ci-checkout@v6
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
-      - uses: ./.github/actions/setup-haxeshit
-      - name: Make HXCPP cache dir
+      - name: Install Haxe, dependencies
+        uses: ./.github/actions/setup-haxeshit
+      - name: Setup build cache
         run: |
-          mkdir -p ${{ runner.temp }}\hxcpp_cache
+          mkdir -p ${{ runner.temp }}/hxcpp_cache
       - name: Restore build cache
         id: cache-build-win
         uses: actions/cache@v4
         with:
           path: |
-            .haxelib
             export
-            ${{ runner.temp }}\hxcpp_cache
-          key: ${{ runner.os }}-build-win-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
-      - name: build game
+            ${{ runner.temp }}/hxcpp_cache
+          key: ${{ runner.os }}-build-win-${{ github.ref_name }}
+      - name: Build game
         run: |
-          haxelib run lime build windows -release -DNO_REDIRECT_ASSETS_FOLDER -DGITHUB_BUILD
-          dir
+          haxelib run lime build windows -v -release -DGITHUB_BUILD
         env:
           HXCPP_COMPILE_CACHE: "${{ runner.temp }}\\hxcpp_cache"
-      - uses: ./.github/actions/upload-itch
+      - name: Upload build artifacts
+        uses: ./.github/actions/upload-itch
         with:
           butler-key: ${{ secrets.BUTLER_API_KEY }}
           build-dir: export/release/windows/bin
@@ -80,78 +89,42 @@ jobs:
   create-nightly-mac:
     runs-on: [self-hosted, macos]
     steps:
-      - name: prepare container
+      - name: Fix git config on posix runner
         run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-      - name: get token from gh app
+          git config --global --add safe.directory ${{ github.workspace }}
+      - name: Get checkout token
         uses: actions/create-github-app-token@v1
         id: app_token
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
-      - name: checkout repo
+      - name: Checkout repo
         uses: funkincrew/ci-checkout@v6
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
-      - uses: ./.github/actions/setup-haxeshit
-      - name: Make HXCPP cache dir
+      - name: Install Haxe, dependencies
+        uses: ./.github/actions/setup-haxeshit
+      - name: Setup build cache
         run: |
           mkdir -p ${{ runner.temp }}/hxcpp_cache
-      - name: restore build cache
+      - name: Restore build cache
         id: cache-build-win
         uses: actions/cache@v4
         with:
           path: |
-            .haxelib
             export
             ${{ runner.temp }}/hxcpp_cache
-          key: ${{ runner.os }}-build-mac-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
+          key: ${{ runner.os }}-build-mac-${{ github.ref_name }}
       - name: Build game
         run: |
           haxelib run lime build macos -release --times -DGITHUB_BUILD
-          ls
         env:
           HXCPP_COMPILE_CACHE: "${{ runner.temp }}/hxcpp_cache"
-      - uses: ./.github/actions/upload-itch
+      - name: Upload build artifacts
+        uses: ./.github/actions/upload-itch
         with:
           butler-key: ${{ secrets.BUTLER_API_KEY}}
           build-dir: export/release/macos/bin
           target: macos
-
-#  test-unit-win:
-#    needs: create-nightly-win
-#    runs-on: windows-latest
-#    steps:
-#     - name: get token from gh app
-#       uses: actions/create-github-app-token@v1
-#        id: app_token
-#        with:
-#          app-id: ${{ vars.APP_ID }}
-#          private-key: ${{ secrets.APP_PEM }}
-#          owner: ${{ github.repository_owner }}
-#     - name: checkout repo
-#       uses: funkincrew/ci-checkout@v6
-#       with:
-#         submodules: 'recursive'
-#         token: ${{ steps.app_token.outputs.token }}
-#     - name: Make HXCPP cache dir
-#       run: |
-#         mkdir -p ${{ runner.temp }}\hxcpp_cache
-#     - name: Restore build cache
-#       id: cache-build-win
-#       uses: actions/cache@v4
-#       with:
-#         path: |
-#           .haxelib
-#           export
-#           ${{ runner.temp }}\hxcpp_cache
-#         key: ${{ runner.os }}-test-win-${{ github.ref_name }}-${{ hashFiles('**/hmm.json') }}
-#      - uses: ./.github/actions/setup-haxeshit
-#      - name: Run unit tests
-#        run: |
-#          cd ./tests/unit/
-#          ./start-win-native.bat
-#        env:
-#          HXCPP_COMPILE_CACHE: "${{ runner.temp }}\\hxcpp_cache"

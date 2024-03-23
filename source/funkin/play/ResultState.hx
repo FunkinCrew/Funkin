@@ -2,26 +2,25 @@ package funkin.play;
 
 import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.FlxBasic;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
+import funkin.graphics.FunkinSprite;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
-import flxanimate.FlxAnimate.Settings;
 
+/**
+ * The state for the results screen after a song or week is finished.
+ */
 class ResultState extends MusicBeatSubState
 {
   final params:ResultsStateParams;
@@ -30,8 +29,8 @@ class ResultState extends MusicBeatSubState
   var songName:FlxBitmapText;
   var difficulty:FlxSprite;
 
-  var maskShaderSongName = new LeftMaskShader();
-  var maskShaderDifficulty = new LeftMaskShader();
+  var maskShaderSongName:LeftMaskShader = new LeftMaskShader();
+  var maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
 
   public function new(params:ResultsStateParams)
   {
@@ -49,22 +48,22 @@ class ResultState extends MusicBeatSubState
     else
       resultsVariation = NORMAL;
 
-    var loops = resultsVariation != SHIT;
+    var loops:Bool = resultsVariation != SHIT;
 
     FlxG.sound.playMusic(Paths.music("results" + resultsVariation), 1, loops);
 
     // TEMP-ish, just used to sorta "cache" the 3000x3000 image!
-    var cacheBullShit = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
+    var cacheBullShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
     add(cacheBullShit);
 
-    var dumb = new FlxSprite().loadGraphic(Paths.image("resultScreen/scorePopin"));
+    var dumb:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/scorePopin"));
     add(dumb);
 
     var bg:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFECC5C, 0xFFFDC05C], 90);
     bg.scrollFactor.set();
     add(bg);
 
-    var bgFlash:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFffeb69, 0xFFffe66a], 90);
+    var bgFlash:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFEB69, 0xFFFFE66A], 90);
     bgFlash.scrollFactor.set();
     bgFlash.visible = false;
     add(bgFlash);
@@ -96,8 +95,7 @@ class ResultState extends MusicBeatSubState
       bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
     };
 
-    var gf:FlxSprite = new FlxSprite(500, 300);
-    gf.frames = Paths.getSparrowAtlas('resultScreen/resultGirlfriendGOOD');
+    var gf:FlxSprite = FunkinSprite.createSparrow(500, 300, 'resultScreen/resultGirlfriendGOOD');
     gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
     gf.visible = false;
     gf.animation.finishCallback = _ -> {
@@ -105,8 +103,7 @@ class ResultState extends MusicBeatSubState
     };
     add(gf);
 
-    var boyfriend:FlxSprite = new FlxSprite(640, -200);
-    boyfriend.frames = Paths.getSparrowAtlas('resultScreen/resultBoyfriendGOOD');
+    var boyfriend:FlxSprite = FunkinSprite.createSparrow(640, -200, 'resultScreen/resultBoyfriendGOOD');
     boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
     boyfriend.visible = false;
     boyfriend.animation.finishCallback = function(_) {
@@ -115,8 +112,7 @@ class ResultState extends MusicBeatSubState
 
     add(boyfriend);
 
-    var soundSystem:FlxSprite = new FlxSprite(-15, -180);
-    soundSystem.frames = Paths.getSparrowAtlas("resultScreen/soundSystem");
+    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15, -180, 'resultScreen/soundSystem');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
     new FlxTimer().start(0.4, _ -> {
@@ -162,20 +158,17 @@ class ResultState extends MusicBeatSubState
     FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
     add(blackTopBar);
 
-    var resultsAnim:FlxSprite = new FlxSprite(-200, -10);
-    resultsAnim.frames = Paths.getSparrowAtlas("resultScreen/results");
+    var resultsAnim:FunkinSprite = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
     resultsAnim.animation.addByPrefix("result", "results", 24, false);
     resultsAnim.animation.play("result");
     add(resultsAnim);
 
-    var ratingsPopin:FlxSprite = new FlxSprite(-150, 120);
-    ratingsPopin.frames = Paths.getSparrowAtlas("resultScreen/ratingsPopin");
+    var ratingsPopin:FunkinSprite = FunkinSprite.createSparrow(-150, 120, "resultScreen/ratingsPopin");
     ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
     ratingsPopin.visible = false;
     add(ratingsPopin);
 
-    var scorePopin:FlxSprite = new FlxSprite(-180, 520);
-    scorePopin.frames = Paths.getSparrowAtlas("resultScreen/scorePopin");
+    var scorePopin:FunkinSprite = FunkinSprite.createSparrow(-180, 520, "resultScreen/scorePopin");
     scorePopin.animation.addByPrefix("score", "tally score", 24, false);
     scorePopin.visible = false;
     add(scorePopin);
@@ -193,6 +186,10 @@ class ResultState extends MusicBeatSubState
     var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
     add(ratingGrp);
 
+    /**
+     * NOTE: We display how many notes were HIT, not how many notes there were in total.
+     *
+     */
     var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, params.tallies.totalNotesHit);
     ratingGrp.add(totalHit);
 
@@ -207,7 +204,7 @@ class ResultState extends MusicBeatSubState
     var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, params.tallies.good, 0xFF89C9E5);
     ratingGrp.add(tallyGood);
 
-    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, params.tallies.bad, 0xffE6CF8A);
+    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, params.tallies.bad, 0xFFE6CF8A);
     ratingGrp.add(tallyBad);
 
     var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, params.tallies.shit, 0xFFE68C8A);
@@ -279,13 +276,13 @@ class ResultState extends MusicBeatSubState
     super.create();
   }
 
-  function timerThenSongName()
+  function timerThenSongName():Void
   {
     movingSongStuff = false;
 
     difficulty.x = 555;
 
-    var diffYTween = 122;
+    var diffYTween:Float = 122;
 
     difficulty.y = -difficulty.height;
     FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
@@ -315,7 +312,7 @@ class ResultState extends MusicBeatSubState
     // maskShaderSongName.frameUV = songName.frame.uv;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     // maskShaderSongName.swagSprX = songName.x;
     maskShaderDifficulty.swagSprX = difficulty.x;
@@ -350,6 +347,10 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE)
     {
+      FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8);
+      FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1, {onComplete: _ -> {
+        FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
+      }});
       if (params.storyMode)
       {
         openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));

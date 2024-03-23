@@ -109,9 +109,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     {
       getBoyfriend().resetCharacter(true);
       // Reapply the camera offsets.
-      var charData = _data.characters.bf;
-      getBoyfriend().cameraFocusPoint.x += charData.cameraOffsets[0];
-      getBoyfriend().cameraFocusPoint.y += charData.cameraOffsets[1];
+      var stageCharData:StageDataCharacter = _data.characters.bf;
+      var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
+      getBoyfriend().setScale(finalScale);
+      getBoyfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+      getBoyfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
     else
     {
@@ -121,17 +123,21 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     {
       getGirlfriend().resetCharacter(true);
       // Reapply the camera offsets.
-      var charData = _data.characters.gf;
-      getGirlfriend().cameraFocusPoint.x += charData.cameraOffsets[0];
-      getGirlfriend().cameraFocusPoint.y += charData.cameraOffsets[1];
+      var stageCharData:StageDataCharacter = _data.characters.gf;
+      var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
+      getGirlfriend().setScale(finalScale);
+      getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+      getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
     if (getDad() != null)
     {
       getDad().resetCharacter(true);
       // Reapply the camera offsets.
-      var charData = _data.characters.dad;
-      getDad().cameraFocusPoint.x += charData.cameraOffsets[0];
-      getDad().cameraFocusPoint.y += charData.cameraOffsets[1];
+      var stageCharData:StageDataCharacter = _data.characters.dad;
+      var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
+      getDad().setScale(finalScale);
+      getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+      getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
 
     // Reset positions of named props.
@@ -185,9 +191,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         switch (dataProp.animType)
         {
           case 'packer':
-            propSprite.frames = Paths.getPackerAtlas(dataProp.assetPath);
+            propSprite.loadPacker(dataProp.assetPath);
           default: // 'sparrow'
-            propSprite.frames = Paths.getSparrowAtlas(dataProp.assetPath);
+            propSprite.loadSparrow(dataProp.assetPath);
         }
       }
       else if (isSolidColor)
@@ -209,7 +215,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       else
       {
         // Initalize static sprite.
-        propSprite.loadGraphic(Paths.image(dataProp.assetPath));
+        propSprite.loadTexture(dataProp.assetPath);
 
         // Disables calls to update() for a performance boost.
         propSprite.active = false;
@@ -226,7 +232,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         switch (dataProp.scale)
         {
           case Left(value):
-            propSprite.scale.set(value);
+            propSprite.scale.set(value, value);
 
           case Right(values):
             propSprite.scale.set(values[0], values[1]);
@@ -390,22 +396,25 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     #end
 
     // Apply position and z-index.
-    var charData:StageDataCharacter = null;
+    var stageCharData:StageDataCharacter = null;
     switch (charType)
     {
       case BF:
         this.characters.set('bf', character);
-        charData = _data.characters.bf;
+        stageCharData = _data.characters.bf;
         character.flipX = !character.getDataFlipX();
+        character.name = 'bf';
         character.initHealthIcon(false);
       case GF:
         this.characters.set('gf', character);
-        charData = _data.characters.gf;
+        stageCharData = _data.characters.gf;
         character.flipX = character.getDataFlipX();
+        character.name = 'gf';
       case DAD:
         this.characters.set('dad', character);
-        charData = _data.characters.dad;
+        stageCharData = _data.characters.dad;
         character.flipX = character.getDataFlipX();
+        character.name = 'dad';
         character.initHealthIcon(true);
       default:
         this.characters.set(character.characterId, character);
@@ -415,15 +424,15 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     // This ensures positioning is based on the idle animation.
     character.resetCharacter(true);
 
-    if (charData != null)
+    if (stageCharData != null)
     {
-      character.zIndex = charData.zIndex;
+      character.zIndex = stageCharData.zIndex;
 
       // Start with the per-stage character position.
       // Subtracting the origin ensures characters are positioned relative to their feet.
       // Subtracting the global offset allows positioning on a per-character basis.
-      character.x = charData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
-      character.y = charData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+      character.x = stageCharData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
+      character.y = stageCharData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
 
       @:privateAccess(funkin.play.stage.Bopper)
       {
@@ -432,15 +441,17 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         character.originalPosition.y = character.y + character.animOffsets[1];
       }
 
-      character.cameraFocusPoint.x += charData.cameraOffsets[0];
-      character.cameraFocusPoint.y += charData.cameraOffsets[1];
+      var finalScale = character.getBaseScale() * stageCharData.scale;
+      character.setScale(finalScale); // Don't use scale.set for characters!
+      character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+      character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
 
       #if debug
       // Draw the debug icon at the character's feet.
       if (charType == BF || charType == DAD)
       {
-        debugIcon.x = charData.position[0];
-        debugIcon.y = charData.position[1];
+        debugIcon.x = stageCharData.position[0];
+        debugIcon.y = stageCharData.position[1];
         debugIcon2.x = character.x;
         debugIcon2.y = character.y;
       }
@@ -634,7 +645,30 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function dispatchToCharacters(event:ScriptEvent):Void
   {
-    for (characterId in characters.keys())
+    var charList = this.characters.keys().array();
+
+    // Dad, then BF, then GF, in that order.
+
+    if (charList.contains('dad'))
+    {
+      dispatchToCharacter('dad', event);
+      charList.remove('dad');
+    }
+
+    if (charList.contains('bf'))
+    {
+      dispatchToCharacter('bf', event);
+      charList.remove('bf');
+    }
+
+    if (charList.contains('gf'))
+    {
+      dispatchToCharacter('gf', event);
+      charList.remove('gf');
+    }
+
+    // Then the rest of the characters, if any.
+    for (characterId in charList)
     {
       dispatchToCharacter(characterId, event);
     }
@@ -840,7 +874,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onCountdownEnd(event:CountdownScriptEvent) {}
 
-  public function onNoteHit(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent) {}
+
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
 
