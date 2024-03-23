@@ -2089,8 +2089,7 @@ class PlayState extends MusicBeatSubState
         holdNote.handledMiss = true;
 
         // We dropped a hold note.
-        // Mute vocals and play miss animation, but don't penalize.
-        vocals.opponentVolume = 0;
+        // Play miss animation, but don't penalize.
         currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
