@@ -79,7 +79,7 @@ class MathUtil
    * @param precision The target precision of the interpolation. Defaults to 1% of distance remaining.
    * @see https://twitter.com/FreyaHolmer/status/1757918211679650262
    *
-   * @return The interpolated value.
+   * @return A value between the current value and the target value.
    */
   public static function smoothLerp(current:Float, target:Float, elapsed:Float, duration:Float, precision:Float = 1 / 100):Float
   {
@@ -87,6 +87,14 @@ class MathUtil
     // var halfLife:Float = -duration / logBase(2, precision);
     // lerp(current, target, 1 - exp2(-elapsed / halfLife));
 
-    return lerp(current, target, 1 - Math.pow(precision, elapsed / duration));
+    if (current == target) return target;
+
+    var result:Float = lerp(current, target, 1 - Math.pow(precision, elapsed / duration));
+
+    // TODO: Is there a better way to ensure a lerp which actually reaches the target?
+    // Research a framerate-independent PID lerp.
+    if (Math.abs(result - target) < (precision * target)) result = target;
+
+    return result;
   }
 }

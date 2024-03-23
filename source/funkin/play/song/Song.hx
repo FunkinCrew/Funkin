@@ -214,6 +214,26 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * List the album IDs for each variation of the song.
+   * @return A map of variation IDs to album IDs.
+   */
+  public function listAlbums():Map<String, String>
+  {
+    var result:Map<String, String> = new Map<String, String>();
+
+    for (difficultyId in difficulties.keys())
+    {
+      var meta:Null<SongDifficulty> = difficulties.get(difficultyId);
+      if (meta != null && meta.album != null)
+      {
+        result.set(difficultyId, meta.album);
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Populate the difficulty data from the provided metadata.
    * Does not load chart data (that is triggered later when we want to play the song).
    */
@@ -367,11 +387,14 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   /**
    * List all the difficulties in this song.
+   *
    * @param variationId Optionally filter by a single variation.
    * @param variationIds Optionally filter by multiple variations.
+   * @param showHidden Include charts which are not accessible to the player.
+   *
    * @return The list of difficulties.
    */
-  public function listDifficulties(?variationId:String, ?variationIds:Array<String>):Array<String>
+  public function listDifficulties(?variationId:String, ?variationIds:Array<String>, showHidden:Bool = false):Array<String>
   {
     if (variationIds == null) variationIds = [];
     if (variationId != null) variationIds.push(variationId);
@@ -386,6 +409,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       if (variationIds.length > 0 && !variationIds.contains(difficulty.variation)) return null;
       return difficulty.difficulty;
     }).nonNull().unique();
+
+    diffFiltered = diffFiltered.filter(function(diffId:String):Bool {
+      if (showHidden) return true;
+      for (targetVariation in variationIds)
+      {
+        if (isDifficultyVisible(diffId, targetVariation)) return true;
+      }
+      return false;
+    });
 
     diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
 
@@ -403,6 +435,13 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       if (difficulties.exists('$diffId$variationSuffix')) return true;
     }
     return false;
+  }
+
+  public function isDifficultyVisible(diffId:String, variationId:String):Bool
+  {
+    var variation = _metadata.get(variationId);
+    if (variation == null) return false;
+    return variation.playData.difficulties.contains(diffId);
   }
 
   /**

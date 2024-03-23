@@ -85,7 +85,7 @@
   },
   "projectManager.git.baseFolders": ["./"],
 
-  "haxecheckstyle.sourceFolders": ["src", "Source"],
+  "haxecheckstyle.sourceFolders": ["src", "source"],
   "haxecheckstyle.externalSourceRoots": [],
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,

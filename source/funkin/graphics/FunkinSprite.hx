@@ -3,6 +3,10 @@ package funkin.graphics;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
+import flixel.tweens.FlxTween;
+import openfl.display3D.textures.TextureBase;
+import funkin.graphics.framebuffer.FixedBitmapData;
+import openfl.display.BitmapData;
 
 /**
  * An FlxSprite with additional functionality.
@@ -41,7 +45,7 @@ class FunkinSprite extends FlxSprite
    */
   public static function create(x:Float = 0.0, y:Float = 0.0, key:String):FunkinSprite
   {
-    var sprite = new FunkinSprite(x, y);
+    var sprite:FunkinSprite = new FunkinSprite(x, y);
     sprite.loadTexture(key);
     return sprite;
   }
@@ -55,7 +59,7 @@ class FunkinSprite extends FlxSprite
    */
   public static function createSparrow(x:Float = 0.0, y:Float = 0.0, key:String):FunkinSprite
   {
-    var sprite = new FunkinSprite(x, y);
+    var sprite:FunkinSprite = new FunkinSprite(x, y);
     sprite.loadSparrow(key);
     return sprite;
   }
@@ -69,7 +73,7 @@ class FunkinSprite extends FlxSprite
    */
   public static function createPacker(x:Float = 0.0, y:Float = 0.0, key:String):FunkinSprite
   {
-    var sprite = new FunkinSprite(x, y);
+    var sprite:FunkinSprite = new FunkinSprite(x, y);
     sprite.loadPacker(key);
     return sprite;
   }
@@ -87,6 +91,30 @@ class FunkinSprite extends FlxSprite
     loadGraphic(graphicKey);
 
     return this;
+  }
+
+  /**
+   * Apply an OpenFL `BitmapData` to this sprite.
+   * @param input The OpenFL `BitmapData` to apply
+   * @return This sprite, for chaining
+   */
+  public function loadBitmapData(input:BitmapData):FunkinSprite
+  {
+    loadGraphic(input);
+
+    return this;
+  }
+
+  /**
+   * Apply an OpenFL `TextureBase` to this sprite.
+   * @param input The OpenFL `TextureBase` to apply
+   * @return This sprite, for chaining
+   */
+  public function loadTextureBase(input:TextureBase):FunkinSprite
+  {
+    var inputBitmap:FixedBitmapData = FixedBitmapData.fromTexture(input);
+
+    return loadBitmapData(inputBitmap);
   }
 
   /**
@@ -119,11 +147,20 @@ class FunkinSprite extends FlxSprite
     return this;
   }
 
+  /**
+   * Determine whether the texture with the given key is cached.
+   * @param key The key of the texture to check.
+   * @return Whether the texture is cached.
+   */
   public static function isTextureCached(key:String):Bool
   {
     return FlxG.bitmap.get(key) != null;
   }
 
+  /**
+   * Ensure the texture with the given key is cached.
+   * @param key The key of the texture to cache.
+   */
   public static function cacheTexture(key:String):Void
   {
     // We don't want to cache the same texture twice.
@@ -139,7 +176,7 @@ class FunkinSprite extends FlxSprite
     }
 
     // Else, texture is currently uncached.
-    var graphic = flixel.graphics.FlxGraphic.fromAssetKey(key, false, null, true);
+    var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
       FlxG.log.warn('Failed to cache graphic: $key');
@@ -217,7 +254,7 @@ class FunkinSprite extends FlxSprite
   }
 
   /**
-   * Ensure scale is applied when cloning a sprite.
+   * Ensure scale is applied when cloning a sprite.R
    * The default `clone()` method acts kinda weird TBH.
    * @return A clone of this sprite.
    */
@@ -229,5 +266,14 @@ class FunkinSprite extends FlxSprite
     result.updateHitbox();
 
     return result;
+  }
+
+  public override function destroy():Void
+  {
+    frames = null;
+    // Cancel all tweens so they don't continue to run on a destroyed sprite.
+    // This prevents crashes.
+    FlxTween.cancelTweensOf(this);
+    super.destroy();
   }
 }

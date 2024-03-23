@@ -1,11 +1,8 @@
 package funkin.audio;
 
-#if flash11
-import flash.media.Sound;
-import flash.utils.ByteArray;
-#end
 import flixel.sound.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.util.tools.ICloneable;
 import funkin.data.song.SongData.SongMusicData;
@@ -26,6 +23,25 @@ import openfl.utils.AssetType;
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   static final MAX_VOLUME:Float = 1.0;
+
+  /**
+   * An FlxSignal which is dispatched when the volume changes.
+   */
+  public static var onVolumeChanged(get, never):FlxTypedSignal<Float->Void>;
+
+  static var _onVolumeChanged:Null<FlxTypedSignal<Float->Void>> = null;
+
+  static function get_onVolumeChanged():FlxTypedSignal<Float->Void>
+  {
+    if (_onVolumeChanged == null)
+    {
+      _onVolumeChanged = new FlxTypedSignal<Float->Void>();
+      FlxG.sound.volumeHandler = function(volume:Float) {
+        _onVolumeChanged.dispatch(volume);
+      }
+    }
+    return _onVolumeChanged;
+  }
 
   /**
    * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!

@@ -22,7 +22,11 @@ class ReloadAssetsDebugPlugin extends FlxBasic
   {
     super.update(elapsed);
 
+    #if html5
+    if (FlxG.keys.justPressed.FIVE && FlxG.keys.pressed.SHIFT)
+    #else
     if (FlxG.keys.justPressed.F5)
+    #end
     {
       funkin.modding.PolymodHandler.forceReloadAssets();
 
