@@ -290,10 +290,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param key The key of the music you want to play. Music should be at `music/<key>/<key>.ogg`.
    * @param params A set of additional optional parameters.
    *   Data should be at `music/<key>/<key>-metadata.json`.
+   * @return Whether the music was started. `false` if music was already playing or could not be started
    */
-  public static function playMusic(key:String, params:FunkinSoundPlayMusicParams):Void
+  public static function playMusic(key:String, params:FunkinSoundPlayMusicParams):Bool
   {
-    if (!(params.overrideExisting ?? false) && (FlxG.sound.music?.exists ?? false) && FlxG.sound.music.playing) return;
+    if (!(params.overrideExisting ?? false) && (FlxG.sound.music?.exists ?? false) && FlxG.sound.music.playing) return false;
 
     if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
     {
@@ -303,7 +304,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         // Stop here if we would play a matching music track.
         if (existingSound._label == Paths.music('$key/$key'))
         {
-          return;
+          return false;
         }
       }
     }
@@ -328,11 +329,20 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       FlxG.sound.music.kill();
     }
 
-    var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, true, false, true);
-    if (music != null) FlxG.sound.music = music;
+    var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
+    if (music != null)
+    {
+      FlxG.sound.music = music;
 
-    // Prevent repeat update() and onFocus() calls.
-    FlxG.sound.list.remove(FlxG.sound.music);
+      // Prevent repeat update() and onFocus() calls.
+      FlxG.sound.list.remove(FlxG.sound.music);
+
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   /**
@@ -450,6 +460,12 @@ typedef FunkinSoundPlayMusicParams =
    * @default `false`
    */
   var ?restartTrack:Bool;
+
+  /**
+   * Whether the music should loop or play once.
+   * @default `true`
+   */
+  var ?loop:Bool;
 
   /**
    * Whether to check for `SongMusicData` to update the Conductor with.

@@ -71,8 +71,6 @@ class LatencyState extends MusicBeatSubState
       // trace("EVENT LISTENER: " + key);
     });
 
-    // FlxG.sound.playMusic(Paths.sound('soundTest'));
-
     // funnyStatsGraph.hi
 
     Conductor.instance.forceBPM(60);

@@ -1131,7 +1131,6 @@ class FreeplayState extends MusicBeatSubState
   function changeSelection(change:Int = 0):Void
   {
     FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-    // FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
     var prevSelected:Int = curSelected;
 
@@ -1174,20 +1173,25 @@ class FreeplayState extends MusicBeatSubState
     {
       if (curSelected == 0)
       {
-        FlxG.sound.playMusic(Paths.music('freeplay/freeplayRandom'), 0);
+        FunkinSound.playMusic('freeplayRandom',
+          {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: true
+          });
         FlxG.sound.music.fadeIn(2, 0, 0.8);
       }
       else
       {
         // TODO: Stream the instrumental of the selected song?
-        if (prevSelected == 0)
+        var didReplace:Bool = FunkinSound.playMusic('freakyMenu',
+          {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: false
+          });
+        if (didReplace)
         {
-          FunkinSound.playMusic('freakyMenu',
-            {
-              startingVolume: 0.0,
-              overrideExisting: true,
-              restartTrack: false
-            });
           FlxG.sound.music.fadeIn(2, 0, 0.8);
         }
       }
