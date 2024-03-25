@@ -1353,7 +1353,10 @@ class PlayState extends MusicBeatSubState
     }
 
     // Only zoom camera if we are zoomed by less than 35%.
-    if (FlxG.camera.zoom < (1.35 * defaultCameraZoom) && cameraZoomRate > 0 && Conductor.instance.currentBeat % cameraZoomRate == 0)
+    if (Preferences.zoomCamera
+      && FlxG.camera.zoom < (1.35 * defaultCameraZoom)
+      && cameraZoomRate > 0
+      && Conductor.instance.currentBeat % cameraZoomRate == 0)
     {
       // Zoom camera in (1.5%)
       currentCameraZoom += cameraZoomIntensity * defaultCameraZoom;
