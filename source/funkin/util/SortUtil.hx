@@ -27,29 +27,53 @@ class SortUtil
   /**
    * You can use this function in FlxTypedGroup.sort() to sort FlxObjects by their z-index values.
    * The value defaults to 0, but by assigning it you can easily rearrange objects as desired.
+   *
+   * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   * @param a The first FlxObject to compare.
+   * @param b The second FlxObject to compare.
+   * @return 1 if `a` has a higher z-index, -1 if `b` has a higher z-index.
    */
-  public static inline function byZIndex(Order:Int, Obj1:FlxBasic, Obj2:FlxBasic):Int
+  public static inline function byZIndex(order:Int, a:FlxBasic, b:FlxBasic):Int
   {
-    if (Obj1 == null || Obj2 == null) return 0;
-    return FlxSort.byValues(Order, Obj1.zIndex, Obj2.zIndex);
+    if (a == null || b == null) return 0;
+    return FlxSort.byValues(order, a.zIndex, b.zIndex);
   }
 
   /**
    * Given two Notes, returns 1 or -1 based on whether `a` or `b` has an earlier strumtime.
    *
    * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   * @param a The first Note to compare.
+   * @param b The second Note to compare.
+   * @return 1 if `a` has an earlier strumtime, -1 if `b` has an earlier strumtime.
    */
-  public static inline function byStrumtime(order:Int, a:NoteSprite, b:NoteSprite)
+  public static inline function byStrumtime(order:Int, a:NoteSprite, b:NoteSprite):Int
   {
     return noteDataByTime(order, a.noteData, b.noteData);
   }
 
-  public static inline function noteDataByTime(order:Int, a:SongNoteData, b:SongNoteData)
+  /**
+   * Given two Note Data objects, returns 1 or -1 based on whether `a` or `b` has an earlier time.
+   *
+   * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   * @param a The first Event to compare.
+   * @param b The second Event to compare.
+   * @return 1 if `a` has an earlier time, -1 if `b` has an earlier time.
+   */
+  public static inline function noteDataByTime(order:Int, a:SongNoteData, b:SongNoteData):Int
   {
     return FlxSort.byValues(order, a.time, b.time);
   }
 
-  public static inline function eventDataByTime(order:Int, a:SongEventData, b:SongEventData)
+  /**
+   * Given two Event Data objects, returns 1 or -1 based on whether `a` or `b` has an earlier time.
+   *
+   * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   * @param a The first Event to compare.
+   * @param b The second Event to compare.
+   * @return 1 if `a` has an earlier time, -1 if `b` has an earlier time.
+   */
+  public static inline function eventDataByTime(order:Int, a:SongEventData, b:SongEventData):Int
   {
     return FlxSort.byValues(order, a.time, b.time);
   }
@@ -58,8 +82,11 @@ class SortUtil
    * Given two FlxFrames, sort their names alphabetically.
    *
    * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   * @param a The first Frame to compare.
+   * @param b The second Frame to compare.
+   * @return 1 if `a` has an earlier time, -1 if `b` has an earlier time.
    */
-  public static inline function byFrameName(a:FlxFrame, b:FlxFrame)
+  public static inline function byFrameName(a:FlxFrame, b:FlxFrame):Int
   {
     return alphabetically(a.name, b.name);
   }
@@ -68,6 +95,7 @@ class SortUtil
    * Sort predicate for sorting strings alphabetically.
    * @param a The first string to compare.
    * @param b The second string to compare.
+   * @return 1 if `a` comes before `b`, -1 if `b` comes before `a`, 0 if they are equal
    */
   public static function alphabetically(a:String, b:String):Int
   {
@@ -81,9 +109,11 @@ class SortUtil
   /**
    * Sort predicate which sorts two strings alphabetically, but prioritizes a specific string first.
    * Example usage: `array.sort(defaultThenAlphabetical.bind('test'))` will sort the array so that the string 'test' is first.
+   *
+   * @param defaultValue The value to prioritize.
    * @param a The first string to compare.
    * @param b The second string to compare.
-   * @param defaultValue The value to prioritize.
+   * @return 1 if `a` comes before `b`, -1 if `b` comes before `a`, 0 if they are equal
    */
   public static function defaultThenAlphabetically(defaultValue:String, a:String, b:String):Int
   {
@@ -96,9 +126,11 @@ class SortUtil
   /**
    * Sort predicate which sorts two strings alphabetically, but prioritizes a specific string first.
    * Example usage: `array.sort(defaultsThenAlphabetical.bind(['test']))` will sort the array so that the string 'test' is first.
+   *
+   * @param defaultValues The values to prioritize.
    * @param a The first string to compare.
    * @param b The second string to compare.
-   * @param defaultValues The values to prioritize.
+   * @return 1 if `a` comes before `b`, -1 if `b` comes before `a`, 0 if they are equal
    */
   public static function defaultsThenAlphabetically(defaultValues:Array<String>, a:String, b:String):Int
   {
