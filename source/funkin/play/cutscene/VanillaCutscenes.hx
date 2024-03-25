@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import funkin.audio.FunkinSound;
 import flixel.util.FlxTimer;
 
 /**
@@ -40,7 +41,7 @@ class VanillaCutscenes
       FlxG.camera.zoom = 2.5;
 
       // Play the Sound effect.
-      FlxG.sound.play(Paths.sound('Lights_Turn_On'), function() {
+      FunkinSound.playOnce(Paths.sound('Lights_Turn_On'), function() {
         // Fade in the HUD.
         trace('SFX done...');
         PlayState.instance.camHUD.visible = true;

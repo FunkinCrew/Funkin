@@ -12,7 +12,6 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.util.MouseUtil;
@@ -179,7 +178,7 @@ class DebugBoundingState extends FlxState
       var objShit = js.html.URL.createObjectURL(swagList.item(0));
       trace(objShit);
 
-      var funnysound = new FlxSound().loadStream('https://cdn.discordapp.com/attachments/767500676166451231/817821618251759666/Flutter.mp3', false, false,
+      var funnysound = new FunkinSound().loadStream('https://cdn.discordapp.com/attachments/767500676166451231/817821618251759666/Flutter.mp3', false, false,
         null, function() {
           trace('LOADED SHIT??');
       });

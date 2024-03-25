@@ -1,20 +1,15 @@
 package funkin.play;
 
-import funkin.audio.FunkinSound;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.Transition;
 import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxState;
-import funkin.graphics.FunkinSprite;
 import flixel.FlxSubState;
-import funkin.graphics.FunkinSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import funkin.graphics.FunkinSprite;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -22,18 +17,19 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.api.newgrounds.NGio;
-import funkin.audio.VoicesGroup;
+import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleData;
-import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
+import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
@@ -44,14 +40,11 @@ import funkin.play.components.ComboMilestone;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
-import funkin.play.notes.NoteSprite;
-import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
@@ -65,7 +58,6 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.options.PreferencesMenu;
 import funkin.ui.story.StoryMenuState;
-import funkin.graphics.FunkinCamera;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
@@ -1293,16 +1285,35 @@ class PlayState extends MusicBeatSubState
       currentStage = null;
     }
 
-    // Stop the instrumental.
-    if (FlxG.sound.music != null)
+    if (!overrideMusic)
     {
-      FlxG.sound.music.stop();
-    }
+      // Stop the instrumental.
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.destroy();
+        FlxG.sound.music = null;
+      }
 
-    // Stop the vocals.
-    if (vocals != null && vocals.exists)
+      // Stop the vocals.
+      if (vocals != null && vocals.exists)
+      {
+        vocals.destroy();
+        vocals = null;
+      }
+    }
+    else
     {
-      vocals.stop();
+      // Stop the instrumental.
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.stop();
+      }
+
+      // Stop the vocals.
+      if (vocals != null && vocals.exists)
+      {
+        vocals.stop();
+      }
     }
 
     super.debug_refreshModules();
@@ -1902,6 +1913,12 @@ class PlayState extends MusicBeatSubState
       currentChart.playInst(1.0, false);
     }
 
+    if (FlxG.sound.music == null)
+    {
+      FlxG.log.error('PlayState failed to initialize instrumental!');
+      return;
+    }
+
     FlxG.sound.music.onComplete = endSong.bind(false);
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
@@ -2430,7 +2447,7 @@ class PlayState extends MusicBeatSubState
     if (playSound)
     {
       vocals.playerVolume = 0;
-      FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
     }
   }
 
@@ -2485,7 +2502,7 @@ class PlayState extends MusicBeatSubState
     if (event.playSound)
     {
       vocals.playerVolume = 0;
-      FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }
 
@@ -2768,7 +2785,11 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FunkinSound.playMusic('freakyMenu');
+        FunkinSound.playMusic('freakyMenu',
+          {
+            overrideExisting: true,
+            restartTrack: false
+          });
 
         // transIn = FlxTransitionableState.defaultTransIn;
         // transOut = FlxTransitionableState.defaultTransOut;
@@ -2846,7 +2867,7 @@ class PlayState extends MusicBeatSubState
           camHUD.visible = false;
           isInCutscene = true;
 
-          FlxG.sound.play(Paths.sound('Lights_Shut_off'), function() {
+          FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
             LoadingState.loadPlayState(

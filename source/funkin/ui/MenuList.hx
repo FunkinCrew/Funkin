@@ -5,6 +5,7 @@ import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
+import funkin.audio.FunkinSound;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
@@ -93,7 +94,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     if (newIndex != selectedIndex)
     {
-      FlxG.sound.play(Paths.sound('scrollMenu'));
+      FunkinSound.playOnce(Paths.sound('scrollMenu'));
       selectItem(newIndex);
     }
 
@@ -163,7 +164,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     else
     {
       busy = true;
-      FlxG.sound.play(Paths.sound('confirmMenu'));
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
       FlxFlicker.flicker(selected, 1, 0.06, true, false, function(_) {
         busy = false;
         selected.callback();
