@@ -16,7 +16,7 @@ class MemoryUtil
   public static function buildGCInfo():String
   {
     #if cpp
-    var result = "HXCPP-Immix:";
+    var result:String = 'HXCPP-Immix:';
     result += '\n- Memory Used: ${cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_USAGE)} bytes';
     result += '\n- Memory Reserved: ${cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_RESERVED)} bytes';
     result += '\n- Memory Current Pool: ${cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_CURRENT)} bytes';
@@ -35,10 +35,10 @@ class MemoryUtil
     result += '\n- HXCPP C++11: ${#if HXCPP_CPP11 'Enabled' #else 'Disabled' #end}';
     result += '\n- Source Annotation: ${#if annotate_source 'Enabled' #else 'Disabled' #end}';
     #elseif js
-    var result = "JS-MNS:";
+    var result:String = 'JS-MNS:';
     result += '\n- Memory Used: ${getMemoryUsed()} bytes';
     #else
-    var result = "Unknown GC";
+    var result:String = 'Unknown GC';
     #end
 
     return result;
@@ -66,7 +66,7 @@ class MemoryUtil
     #if cpp
     cpp.vm.Gc.enable(true);
     #else
-    throw "Not implemented!";
+    throw 'Not implemented!';
     #end
   }
 
@@ -78,7 +78,7 @@ class MemoryUtil
     #if cpp
     cpp.vm.Gc.enable(false);
     #else
-    throw "Not implemented!";
+    throw 'Not implemented!';
     #end
   }
 
@@ -92,7 +92,7 @@ class MemoryUtil
     #if cpp
     cpp.vm.Gc.run(major);
     #else
-    throw "Not implemented!";
+    throw 'Not implemented!';
     #end
   }
 
@@ -107,7 +107,7 @@ class MemoryUtil
     #if cpp
     cpp.vm.Gc.compact();
     #else
-    throw "Not implemented!";
+    throw 'Not implemented!';
     #end
   }
 }

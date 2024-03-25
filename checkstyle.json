@@ -79,7 +79,7 @@
     {
       "props": {
         "ignoreExtern": true,
-        "format": "^[A-Z][A-Z0-9]*(_[A-Z0-9_]+)*$",
+        "format": "^[a-z][A-Z][A-Z0-9]*(_[A-Z0-9_]+)*$",
         "tokens": ["INLINE", "NOTINLINE"]
       },
       "type": "ConstantName"

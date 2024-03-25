@@ -52,6 +52,11 @@ class ZoomCameraSongEvent extends SongEvent
     super('ZoomCamera');
   }
 
+  static final DEFAULT_ZOOM:Float = 1.0;
+  static final DEFAULT_DURATION:Float = 4.0;
+  static final DEFAULT_MODE:String = 'direct';
+  static final DEFAULT_EASE:String = 'linear';
+
   public override function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
@@ -60,25 +65,20 @@ class ZoomCameraSongEvent extends SongEvent
     // Does nothing if we are minimal mode.
     if (PlayState.instance.isMinimalMode) return;
 
-    var zoom:Null<Float> = data.getFloat('zoom');
-    if (zoom == null) zoom = 1.0;
+    var zoom:Float = data.getFloat('zoom') ?? DEFAULT_ZOOM;
 
-    var duration:Null<Float> = data.getFloat('duration');
-    if (duration == null) duration = 4.0;
+    var duration:Float = data.getFloat('duration') ?? DEFAULT_DURATION;
 
-    var mode:Null<String> = data.getString('mode');
-    if (mode == null) mode = 'additive';
+    var mode:String = data.getString('mode') ?? DEFAULT_MODE;
+    var isDirectMode:Bool = mode == 'direct';
 
-    var ease:Null<String> = data.getString('ease');
-    if (ease == null) ease = 'linear';
-
-    var directMode:Bool = mode == 'direct';
+    var ease:String = data.getString('ease') ?? DEFAULT_EASE;
 
     // If it's a string, check the value.
     switch (ease)
     {
       case 'INSTANT':
-        PlayState.instance.tweenCameraZoom(zoom, 0, directMode);
+        PlayState.instance.tweenCameraZoom(zoom, 0, isDirectMode);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
 
@@ -89,7 +89,7 @@ class ZoomCameraSongEvent extends SongEvent
           return;
         }
 
-        PlayState.instance.tweenCameraZoom(zoom, durSeconds, directMode, easeFunction);
+        PlayState.instance.tweenCameraZoom(zoom, durSeconds, isDirectMode, easeFunction);
     }
   }
 
@@ -130,7 +130,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'mode',
         title: 'Mode',
-        defaultValue: 'additive',
+        defaultValue: 'direct',
         type: SongEventFieldType.ENUM,
         keys: ['Additive' => 'additive', 'Direct' => 'direct']
       },

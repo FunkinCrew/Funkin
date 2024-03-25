@@ -1,28 +1,28 @@
 package funkin.play.cutscene.dialogue;
 
-import funkin.data.IRegistryEntry;
+import flixel.addons.display.FlxPieDial;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
-import flixel.util.FlxColor;
-import funkin.graphics.FunkinSprite;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
-import flixel.sound.FlxSound;
-import funkin.util.SortUtil;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import flixel.util.FlxSort;
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.IScriptedClass.IEventHandler;
-import funkin.play.cutscene.dialogue.DialogueBox;
-import funkin.modding.IScriptedClass.IDialogueScriptedClass;
-import funkin.modding.events.ScriptEventDispatcher;
-import flixel.addons.display.FlxPieDial;
+import funkin.audio.FunkinSound;
 import funkin.data.dialogue.ConversationData;
 import funkin.data.dialogue.ConversationData.DialogueEntryData;
 import funkin.data.dialogue.ConversationRegistry;
-import funkin.data.dialogue.SpeakerData;
-import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.dialogue.DialogueBoxData;
 import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerData;
+import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.IRegistryEntry;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.IScriptedClass.IDialogueScriptedClass;
+import funkin.modding.IScriptedClass.IEventHandler;
+import funkin.play.cutscene.dialogue.DialogueBox;
+import funkin.util.SortUtil;
 
 /**
  * A high-level handler for dialogue.
@@ -90,7 +90,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   /**
    * AUDIO
    */
-  var music:FlxSound;
+  var music:FunkinSound;
 
   /**
    * GRAPHICS
@@ -129,8 +129,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   {
     if (_data.music == null) return;
 
-    music = new FlxSound().loadEmbedded(Paths.music(_data.music.asset), true, true);
-    music.volume = 0;
+    music = FunkinSound.load(Paths.music(_data.music.asset), 0.0, true, true, true);
 
     if (_data.music.fadeTime > 0.0)
     {
@@ -140,9 +139,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     {
       music.volume = 1.0;
     }
-
-    FlxG.sound.list.add(music);
-    music.play();
   }
 
   public function pauseMusic():Void

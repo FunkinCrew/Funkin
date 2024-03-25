@@ -231,7 +231,11 @@ class StoryMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu');
+    FunkinSound.playMusic('freakyMenu',
+      {
+        overrideExisting: true,
+        restartTrack: false
+      });
   }
 
   function updateData():Void
@@ -382,7 +386,7 @@ class StoryMenuState extends MusicBeatState
 
     if (controls.BACK && !exitingMenu && !selectedLevel)
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exitingMenu = true;
       FlxG.switchState(() -> new MainMenuState());
     }
@@ -515,7 +519,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (!currentLevel.isUnlocked())
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       return;
     }
 
@@ -523,7 +527,7 @@ class StoryMenuState extends MusicBeatState
 
     selectedLevel = true;
 
-    FlxG.sound.play(Paths.sound('confirmMenu'));
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
 
     currentLevelTitle.isFlashing = true;
 
