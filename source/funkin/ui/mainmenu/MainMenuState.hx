@@ -117,6 +117,10 @@ class MainMenuState extends MusicBeatState
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
 
+    createMenuItem('options', 'mainmenu/options', function() {
+      startExitState(() -> new funkin.ui.credits.CreditsState());
+    });
+
     // Reset position of menu items.
     var spacing = 160;
     var top = (FlxG.height - (spacing * (menuItems.length - 1))) / 2;
@@ -125,6 +129,9 @@ class MainMenuState extends MusicBeatState
       var menuItem = menuItems.members[i];
       menuItem.x = FlxG.width / 2;
       menuItem.y = top + spacing * i;
+      menuItem.scrollFactor.x = 0.0;
+      // This one affects how much the menu items move when you scroll between them.
+      menuItem.scrollFactor.y = 0.4;
     }
 
     resetCamStuff();
