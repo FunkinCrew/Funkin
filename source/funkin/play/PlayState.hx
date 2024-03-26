@@ -2941,7 +2941,10 @@ class PlayState extends MusicBeatSubState
     if (overrideMusic)
     {
       // Stop the music. Do NOT destroy it, something still references it!
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.pause();
+      }
       if (vocals != null)
       {
         vocals.pause();
@@ -2951,7 +2954,10 @@ class PlayState extends MusicBeatSubState
     else
     {
       // Stop and destroy the music.
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.pause();
+      }
       if (vocals != null)
       {
         vocals.destroy();
