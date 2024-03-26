@@ -109,7 +109,7 @@ class ResultState extends MusicBeatSubState
     add(gf);
 
     var boyfriend:FlxSprite = FunkinSprite.createSparrow(640, -200, 'resultScreen/resultBoyfriendGOOD');
-    boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
+    boyfriend.animation.addByPrefix("fall", "Boyfriend Good Anim0", 24, false);
     boyfriend.visible = false;
     boyfriend.animation.finishCallback = function(_) {
       boyfriend.animation.play('fall', true, false, 14);
@@ -164,7 +164,7 @@ class ResultState extends MusicBeatSubState
     add(blackTopBar);
 
     var resultsAnim:FunkinSprite = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
-    resultsAnim.animation.addByPrefix("result", "results", 24, false);
+    resultsAnim.animation.addByPrefix("result", "results instance 1", 24, false);
     resultsAnim.animation.play("result");
     add(resultsAnim);
 
