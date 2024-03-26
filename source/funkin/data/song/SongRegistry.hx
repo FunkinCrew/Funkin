@@ -40,10 +40,17 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   }
 
   /**
-   * TODO: What if there was a Singleton macro which created static functions
-   * that redirected to the instance?
+   * TODO: What if there was a Singleton macro which automatically created the property for us?
    */
-  public static final instance:SongRegistry = new SongRegistry();
+  public static var instance(get, never):SongRegistry;
+
+  static var _instance:Null<SongRegistry> = null;
+
+  static function get_instance():SongRegistry
+  {
+    if (_instance == null) _instance = new SongRegistry();
+    return _instance;
+  }
 
   public function new()
   {

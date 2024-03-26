@@ -8,6 +8,7 @@ import funkin.util.tools.ICloneable;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
 import funkin.audio.waveform.WaveformData;
+import openfl.media.SoundMixer;
 import funkin.audio.waveform.WaveformDataParser;
 import flixel.math.FlxMath;
 import openfl.Assets;
@@ -18,6 +19,7 @@ import openfl.utils.AssetType;
 /**
  * A FlxSound which adds additional functionality:
  * - Delayed playback via negative song position.
+ * - Easy functions for immediate playback and recycling.
  */
 @:nullSafety
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
@@ -286,15 +288,28 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * Creates a new `FunkinSound` object and loads it as the current music track.
    *
    * @param key The key of the music you want to play. Music should be at `music/<key>/<key>.ogg`.
-   * @param overrideExisting Whether to override music if it is already playing.
-   * @param mapTimeChanges Whether to check for `SongMusicData` to update the Conductor with.
+   * @param params A set of additional optional parameters.
    *   Data should be at `music/<key>/<key>-metadata.json`.
+   * @return Whether the music was started. `false` if music was already playing or could not be started
    */
-  public static function playMusic(key:String, overrideExisting:Bool = false, mapTimeChanges:Bool = true):Void
+  public static function playMusic(key:String, params:FunkinSoundPlayMusicParams):Bool
   {
-    if (!overrideExisting && FlxG.sound.music?.playing) return;
+    if (!(params.overrideExisting ?? false) && (FlxG.sound.music?.exists ?? false) && FlxG.sound.music.playing) return false;
 
-    if (mapTimeChanges)
+    if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
+    {
+      if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
+      {
+        var existingSound:FunkinSound = cast FlxG.sound.music;
+        // Stop here if we would play a matching music track.
+        if (existingSound._label == Paths.music('$key/$key'))
+        {
+          return false;
+        }
+      }
+    }
+
+    if (params?.mapTimeChanges ?? true)
     {
       var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicData(key);
       // Will fall back and return null if the metadata doesn't exist or can't be parsed.
@@ -308,10 +323,26 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
 
-    FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'));
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.stop();
+      FlxG.sound.music.kill();
+    }
 
-    // Prevent repeat update() and onFocus() calls.
-    FlxG.sound.list.remove(FlxG.sound.music);
+    var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
+    if (music != null)
+    {
+      FlxG.sound.music = music;
+
+      // Prevent repeat update() and onFocus() calls.
+      FlxG.sound.list.remove(FlxG.sound.music);
+
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   /**
@@ -326,11 +357,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param autoPlay        Whether to play the sound immediately or wait for a `play()` call.
    * @param onComplete      Called when the sound finished playing.
    * @param onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
-   * @return A `FunkinSound` object.
+   * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
   public static function load(embeddedSound:FlxSoundAsset, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = false,
-      ?onComplete:Void->Void, ?onLoad:Void->Void):FunkinSound
+      ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
+    @:privateAccess
+    if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+    {
+      FlxG.log.error('FunkinSound could not play sound, channels exhausted! Found ${SoundMixer.__soundChannels.length} active sound channels.');
+      return null;
+    }
+
     var sound:FunkinSound = pool.recycle(construct);
 
     // Load the sound.
@@ -340,6 +378,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (embeddedSound is String)
     {
       sound._label = embeddedSound;
+    }
+    else
+    {
+      sound._label = 'unknown';
     }
 
     sound.volume = volume;
@@ -355,6 +397,36 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     return sound;
   }
 
+  public override function destroy():Void
+  {
+    // trace('[FunkinSound] Destroying sound "${this._label}"');
+    super.destroy();
+  }
+
+  /**
+   * Play a sound effect once, then destroy it.
+   * @param key
+   * @param volume
+   * @return static function construct():FunkinSound
+   */
+  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Void
+  {
+    var result = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
+  }
+
+  /**
+   * Stop all sounds in the pool and allow them to be recycled.
+   */
+  public static function stopAllAudio(musicToo:Bool = false):Void
+  {
+    for (sound in pool)
+    {
+      if (sound == null) continue;
+      if (!musicToo && sound == FlxG.sound.music) continue;
+      sound.destroy();
+    }
+  }
+
   static function construct():FunkinSound
   {
     var sound:FunkinSound = new FunkinSound();
@@ -364,4 +436,40 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     return sound;
   }
+}
+
+/**
+ * Additional parameters for `FunkinSound.playMusic()`
+ */
+typedef FunkinSoundPlayMusicParams =
+{
+  /**
+   * The volume you want the music to start at.
+   * @default `1.0`
+   */
+  var ?startingVolume:Float;
+
+  /**
+   * Whether to override music if a different track is already playing.
+   * @default `false`
+   */
+  var ?overrideExisting:Bool;
+
+  /**
+   * Whether to override music if the same track is already playing.
+   * @default `false`
+   */
+  var ?restartTrack:Bool;
+
+  /**
+   * Whether the music should loop or play once.
+   * @default `true`
+   */
+  var ?loop:Bool;
+
+  /**
+   * Whether to check for `SongMusicData` to update the Conductor with.
+   * @default `true`
+   */
+  var ?mapTimeChanges:Bool;
 }

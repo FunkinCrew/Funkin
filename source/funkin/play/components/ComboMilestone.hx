@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 
 class ComboMilestone extends FlxTypedSpriteGroup<FlxSprite>
 {
@@ -78,7 +79,7 @@ class ComboMilestone extends FlxTypedSpriteGroup<FlxSprite>
 
   function setupCombo(daCombo:Int)
   {
-    FlxG.sound.play(Paths.sound('comboSound'));
+    FunkinSound.playOnce(Paths.sound('comboSound'));
 
     wasComboSetup = true;
     var loopNum:Int = 0;

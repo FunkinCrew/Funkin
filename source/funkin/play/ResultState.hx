@@ -13,6 +13,7 @@ import flixel.text.FlxBitmapText;
 import flixel.tweens.FlxEase;
 import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
+import funkin.audio.FunkinSound;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
 import funkin.graphics.shaders.LeftMaskShader;
@@ -48,9 +49,13 @@ class ResultState extends MusicBeatSubState
     else
       resultsVariation = NORMAL;
 
-    var loops:Bool = resultsVariation != SHIT;
-
-    FlxG.sound.playMusic(Paths.music("results" + resultsVariation), 1, loops);
+    FunkinSound.playMusic('results$resultsVariation',
+      {
+        startingVolume: 1.0,
+        overrideExisting: true,
+        restartTrack: true,
+        loop: resultsVariation != SHIT
+      });
 
     // TEMP-ish, just used to sorta "cache" the 3000x3000 image!
     var cacheBullShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
@@ -104,7 +109,7 @@ class ResultState extends MusicBeatSubState
     add(gf);
 
     var boyfriend:FlxSprite = FunkinSprite.createSparrow(640, -200, 'resultScreen/resultBoyfriendGOOD');
-    boyfriend.animation.addByPrefix("fall", "Boyfriend Good", 24, false);
+    boyfriend.animation.addByPrefix("fall", "Boyfriend Good Anim0", 24, false);
     boyfriend.visible = false;
     boyfriend.animation.finishCallback = function(_) {
       boyfriend.animation.play('fall', true, false, 14);
@@ -159,7 +164,7 @@ class ResultState extends MusicBeatSubState
     add(blackTopBar);
 
     var resultsAnim:FunkinSprite = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
-    resultsAnim.animation.addByPrefix("result", "results", 24, false);
+    resultsAnim.animation.addByPrefix("result", "results instance 1", 24, false);
     resultsAnim.animation.play("result");
     add(resultsAnim);
 
@@ -348,9 +353,12 @@ class ResultState extends MusicBeatSubState
     if (controls.PAUSE)
     {
       FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8);
-      FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1, {onComplete: _ -> {
-        FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
-      }});
+      FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
+        {
+          onComplete: _ -> {
+            FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
+          }
+        });
       if (params.storyMode)
       {
         openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));

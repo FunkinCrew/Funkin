@@ -3,7 +3,6 @@ package funkin.play;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.sound.FlxSound;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -418,7 +417,7 @@ class GameOverSubState extends MusicBeatSubState
     blueballed = true;
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
     {
-      FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
     }
     else
     {
@@ -438,7 +437,7 @@ class GameOverSubState extends MusicBeatSubState
 
     if (!Preferences.naughtyness) randomCensor = [1, 3, 8, 13, 17, 21];
 
-    FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), 1, false, null, true, function() {
+    FunkinSound.playOnce(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), function() {
       // Once the quote ends, fade in the game over music.
       if (!isEnding && gameOverMusic != null)
       {

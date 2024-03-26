@@ -26,7 +26,11 @@ class GitarooPause extends MusicBeatState
 
   override function create():Void
   {
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.destroy();
+      FlxG.sound.music = null;
+    }
 
     var bg:FunkinSprite = FunkinSprite.create('pauseAlt/pauseBG');
     add(bg);

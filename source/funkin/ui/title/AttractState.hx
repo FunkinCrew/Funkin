@@ -22,7 +22,11 @@ class AttractState extends MusicBeatState
   public override function create():Void
   {
     // Pause existing music.
-    FlxG.sound.music.stop();
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.destroy();
+      FlxG.sound.music = null;
+    }
 
     #if html5
     playVideoHTML5(ATTRACT_VIDEO_PATH);

@@ -7,6 +7,7 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import funkin.audio.FunkinSound;
 import flixel.util.FlxSort;
 import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
@@ -151,6 +152,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
     else
     {
+      FunkinSound.stopAllAudio();
+
       onComplete();
     }
   }

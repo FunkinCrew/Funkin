@@ -15,7 +15,6 @@ import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.sound.FlxSound;
 import flixel.system.debug.log.LogStyle;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.text.FlxText;
@@ -1091,7 +1090,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The chill audio track that plays in the chart editor.
    * Plays when the main music is NOT being played.
    */
-  var welcomeMusic:FlxSound = new FlxSound();
+  var welcomeMusic:FunkinSound = new FunkinSound();
 
   /**
    * The audio track for the instrumental.
@@ -3888,8 +3887,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleCursor():Void
   {
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FlxG.sound.play(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
+    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
+    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
@@ -4949,7 +4948,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
-    // playbarBPM.text = 'BPM: ${(Conductor.currentTimeChange?.bpm ?? 0.0)}';
+    playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}';
   }
 
   function handlePlayhead():Void
