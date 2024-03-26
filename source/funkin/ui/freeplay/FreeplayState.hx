@@ -1017,7 +1017,14 @@ class FreeplayState extends MusicBeatSubState
 
     // Set the difficulty star count on the right.
     albumRoll.setDifficultyStars(daSong?.songRating);
-    albumRoll.albumId = daSong?.albumId ?? Constants.DEFAULT_ALBUM_ID;
+
+    // Set the album graphic and play the animation if relevant.
+    var newAlbumId:String = daSong?.albumId ?? Constants.DEFAULT_ALBUM_ID;
+    if (albumRoll.albumId != newAlbumId)
+    {
+      albumRoll.albumId = newAlbumId;
+      albumRoll.playIntro();
+    }
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)

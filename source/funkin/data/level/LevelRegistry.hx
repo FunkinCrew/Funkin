@@ -15,7 +15,14 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
 
   public static final LEVEL_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static final instance:LevelRegistry = new LevelRegistry();
+  public static var instance(get, never):LevelRegistry;
+  static var _instance:Null<LevelRegistry> = null;
+
+  static function get_instance():LevelRegistry
+  {
+    if (_instance == null) _instance = new LevelRegistry();
+    return _instance;
+  }
 
   public function new()
   {
