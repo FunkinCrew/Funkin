@@ -13,8 +13,9 @@ jobs:
           apt update
           apt install -y sudo git curl unzip
       - name: Fix git config on posix runner
+        # this can't be {{ github.workspace }} because that's not docker-aware
         run: |
-          git config --global --add safe.directory ${{ github.workspace }}
+          git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Get checkout token
         uses: actions/create-github-app-token@v1
         id: app_token
@@ -90,8 +91,9 @@ jobs:
     runs-on: [self-hosted, macos]
     steps:
       - name: Fix git config on posix runner
+        # this can't be {{ github.workspace }} because that's not docker-aware
         run: |
-          git config --global --add safe.directory ${{ github.workspace }}
+          git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Get checkout token
         uses: actions/create-github-app-token@v1
         id: app_token
