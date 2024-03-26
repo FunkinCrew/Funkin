@@ -50,6 +50,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   static var pool(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
+  /**
+   * Calculate the current time of the sound.
+   * NOTE: You need to `add()` the sound to the scene for `update()` to increment the time.
+   */
+  //
   public var muted(default, set):Bool = false;
 
   function set_muted(value:Bool):Bool
@@ -391,8 +396,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     // Call onLoad() because the sound already loaded
     if (onLoad != null && sound._sound != null) onLoad();
-
-    FlxG.sound.list.remove(FlxG.sound.music);
 
     return sound;
   }
