@@ -267,18 +267,6 @@ class Conductor
     set_instance(new Conductor());
   }
 
-  /**
-   * Add values of the current main Conductor instance to the `FlxG.watch`.
-   */
-  public static function watchQuick():Void
-  {
-    FlxG.watch.addQuick("songPosition", Conductor.instance.songPosition);
-    FlxG.watch.addQuick("bpm", Conductor.instance.bpm);
-    FlxG.watch.addQuick("currentMeasureTime", Conductor.instance.currentMeasureTime);
-    FlxG.watch.addQuick("currentBeatTime", Conductor.instance.currentBeatTime);
-    FlxG.watch.addQuick("currentStepTime", Conductor.instance.currentStepTime);
-  }
-
   static function dispatchMeasureHit():Void
   {
     Conductor.measureHit.dispatch();
@@ -610,13 +598,5 @@ class Conductor
     FlxG.watch.addQuick('currentMeasureTime', target.currentMeasureTime);
     FlxG.watch.addQuick('currentBeatTime', target.currentBeatTime);
     FlxG.watch.addQuick('currentStepTime', target.currentStepTime);
-  }
-
-  /**
-   * Reset the Conductor, replacing the current instance with a fresh one.
-   */
-  public static function reset():Void
-  {
-    _instance = new Conductor();
   }
 }
