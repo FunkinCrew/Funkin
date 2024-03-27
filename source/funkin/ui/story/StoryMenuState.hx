@@ -438,6 +438,8 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+
     updateText();
     updateBackground(previousLevelId);
     updateProps();
@@ -481,6 +483,7 @@ class StoryMenuState extends MusicBeatState
     if (hasChanged)
     {
       buildDifficultySprite();
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }

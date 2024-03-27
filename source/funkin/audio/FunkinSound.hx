@@ -1,17 +1,18 @@
 package funkin.audio;
 
-import flixel.sound.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxSignal.FlxTypedSignal;
+import flixel.math.FlxMath;
+import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
-import funkin.util.tools.ICloneable;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxSignal.FlxTypedSignal;
+import funkin.audio.waveform.WaveformData;
+import funkin.audio.waveform.WaveformDataParser;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
-import funkin.audio.waveform.WaveformData;
-import openfl.media.SoundMixer;
-import funkin.audio.waveform.WaveformDataParser;
-import flixel.math.FlxMath;
+import funkin.util.tools.ICloneable;
 import openfl.Assets;
+import openfl.media.SoundMixer;
 #if (openfl >= "8.0.0")
 import openfl.utils.AssetType;
 #end
@@ -325,6 +326,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (FlxG.sound.music != null)
     {
+      FlxG.sound.music.fadeTween?.cancel();
       FlxG.sound.music.stop();
       FlxG.sound.music.kill();
     }
@@ -401,6 +403,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     // trace('[FunkinSound] Destroying sound "${this._label}"');
     super.destroy();
+    FlxTween.cancelTweensOf(this);
+    this._label = 'unknown';
   }
 
   /**
