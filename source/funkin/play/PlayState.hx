@@ -1925,14 +1925,14 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.play(true, startTimestamp - Conductor.instance.instrumentalOffset);
     FlxG.sound.music.pitch = playbackRate;
 
-    // I am going insane.
+    // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;
-
     FlxG.sound.music.fadeTween?.cancel();
 
     trace('Playing vocals...');
     add(vocals);
     vocals.play();
+    vocals.volume = 1.0;
     vocals.pitch = playbackRate;
     resyncVocals();
 
@@ -2927,6 +2927,9 @@ class PlayState extends MusicBeatSubState
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
 
+    // Dispatch the destroy event.
+    dispatchEvent(new ScriptEvent(DESTROY, false));
+
     if (currentConversation != null)
     {
       remove(currentConversation);
@@ -2970,7 +2973,6 @@ class PlayState extends MusicBeatSubState
     {
       remove(currentStage);
       currentStage.kill();
-      dispatchEvent(new ScriptEvent(DESTROY, false));
       currentStage = null;
     }
 
