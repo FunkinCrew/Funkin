@@ -1,37 +1,33 @@
 package funkin.ui.story;
 
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.save.Save;
-import funkin.save.Save.SaveScoreData;
-import openfl.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinSprite;
-import funkin.ui.MusicBeatState;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import funkin.data.level.LevelRegistry;
 import funkin.audio.FunkinSound;
+import funkin.data.level.LevelRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.song.Song;
-import funkin.data.song.SongData.SongMusicData;
-import funkin.data.song.SongRegistry;
-import funkin.util.MathUtil;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
+import funkin.util.MathUtil;
+import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
 {
-  static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString("#F9CF51");
+  static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString('#F9CF51');
   static final BACKGROUND_HEIGHT:Int = 400;
 
   var currentDifficultyId:String = 'normal';
@@ -166,25 +162,25 @@ class StoryMenuState extends MusicBeatState
     updateProps();
 
     tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
-    tracklistText.setFormat("VCR OSD Mono", 32);
+    tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
-    tracklistText.color = 0xFFe55777;
+    tracklistText.color = 0xFFE55777;
     add(tracklistText);
 
     scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
-    scoreText.setFormat("VCR OSD Mono", 32);
+    scoreText.setFormat('VCR OSD Mono', 32);
     scoreText.zIndex = 1000;
     add(scoreText);
 
     modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
-    modeText.setFormat("VCR OSD Mono", 32);
+    modeText.setFormat('VCR OSD Mono', 32);
     modeText.screenCenter(X);
     modeText.visible = hasModdedLevels();
     modeText.zIndex = 1000;
     add(modeText);
 
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
-    levelTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+    levelTitleText.setFormat('VCR OSD Mono', 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
     levelTitleText.zIndex = 1000;
     add(levelTitleText);
@@ -217,7 +213,7 @@ class StoryMenuState extends MusicBeatState
 
     #if discord_rpc
     // Updating Discord Rich Presence
-    DiscordClient.changePresence("In the Menus", null);
+    DiscordClient.changePresence('In the Menus', null);
     #end
   }
 
@@ -237,7 +233,6 @@ class StoryMenuState extends MusicBeatState
   {
     FunkinSound.playMusic('freakyMenu',
       {
-        startingVolume: 0.0,
         overrideExisting: true,
         restartTrack: false
       });
@@ -312,11 +307,11 @@ class StoryMenuState extends MusicBeatState
     changeDifficulty(0);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     Conductor.instance.update();
 
-    highScoreLerp = Std.int(MathUtil.coolLerp(highScoreLerp, highScore, 0.5));
+    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.5));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
@@ -391,7 +386,7 @@ class StoryMenuState extends MusicBeatState
 
     if (controls.BACK && !exitingMenu && !selectedLevel)
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exitingMenu = true;
       FlxG.switchState(() -> new MainMenuState());
     }
@@ -443,6 +438,8 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+
     updateText();
     updateBackground(previousLevelId);
     updateProps();
@@ -455,7 +452,11 @@ class StoryMenuState extends MusicBeatState
    */
   function changeDifficulty(change:Int = 0):Void
   {
-    var difficultyList:Array<String> = currentLevel.getDifficulties();
+    // "For now, NO erect in story mode" -Dave
+
+    var difficultyList:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST;
+    // Use this line to displays all difficulties
+    // var difficultyList:Array<String> = currentLevel.getDifficulties();
     var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
     currentIndex += change;
@@ -482,6 +483,7 @@ class StoryMenuState extends MusicBeatState
     if (hasChanged)
     {
       buildDifficultySprite();
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
@@ -520,7 +522,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (!currentLevel.isUnlocked())
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       return;
     }
 
@@ -528,7 +530,7 @@ class StoryMenuState extends MusicBeatState
 
     selectedLevel = true;
 
-    FlxG.sound.play(Paths.sound('confirmMenu'));
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
 
     currentLevelTitle.isFlashing = true;
 
@@ -557,10 +559,13 @@ class StoryMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 
+      var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
+
       LoadingState.loadPlayState(
         {
           targetSong: targetSong,
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+          targetVariation: targetVariation
         }, true);
     });
   }

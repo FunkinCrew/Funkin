@@ -1,6 +1,6 @@
 package funkin.ui.mainmenu;
 
-import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -103,8 +103,8 @@ class MainMenuState extends MusicBeatState
       persistentDraw = true;
       persistentUpdate = false;
       // Freeplay has its own custom transition
-      FlxTransitionableSubState.skipNextTransIn = true;
-      FlxTransitionableSubState.skipNextTransOut = true;
+      FlxTransitionableState.skipNextTransIn = true;
+      FlxTransitionableState.skipNextTransOut = true;
       openSubState(new FreeplayState());
     });
 
@@ -157,7 +157,6 @@ class MainMenuState extends MusicBeatState
   {
     FunkinSound.playMusic('freakyMenu',
       {
-        startingVolume: 0.0,
         overrideExisting: true,
         restartTrack: false
       });
@@ -326,7 +325,7 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       FlxG.switchState(() -> new TitleState());
     }
   }

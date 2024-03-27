@@ -12,7 +12,6 @@ import flixel.math.FlxRect;
 import flixel.FlxSprite;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
-import funkin.ui.options.PreferencesMenu;
 import funkin.util.macro.MacroUtil;
 import funkin.util.WindowUtil;
 import funkin.play.PlayStatePlaylist;
@@ -24,6 +23,7 @@ import funkin.data.stage.StageRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.freeplay.AlbumRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
@@ -31,7 +31,6 @@ import funkin.ui.title.TitleState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
-import funkin.ui.transition.LoadingState;
 import funkin.util.TrackerUtil;
 #if discord_rpc
 import Discord.DiscordClient;
@@ -167,10 +166,12 @@ class InitState extends FlxState
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
+    AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
-    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers.
-    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
+    // Move it to use a BaseRegistry.
+    CharacterDataParser.loadCharacterCache();
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
@@ -188,25 +189,35 @@ class InitState extends FlxState
    */
   function startGame():Void
   {
-    #if SONG // -DSONG=bopeebo
+    #if SONG
+    // -DSONG=bopeebo
     startSong(defineSong(), defineDifficulty());
-    #elseif LEVEL // -DLEVEL=week1 -DDIFFICULTY=hard
+    #elseif LEVEL
+    // -DLEVEL=week1 -DDIFFICULTY=hard
     startLevel(defineLevel(), defineDifficulty());
-    #elseif FREEPLAY // -DFREEPLAY
+    #elseif FREEPLAY
+    // -DFREEPLAY
     FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
-    #elseif DIALOGUE // -DDIALOGUE
+    #elseif DIALOGUE
+    // -DDIALOGUE
     FlxG.switchState(() -> new funkin.ui.debug.dialogue.ConversationDebugState());
-    #elseif ANIMATE // -DANIMATE
+    #elseif ANIMATE
+    // -DANIMATE
     FlxG.switchState(() -> new funkin.ui.debug.anim.FlxAnimateTest());
-    #elseif WAVEFORM // -DWAVEFORM
+    #elseif WAVEFORM
+    // -DWAVEFORM
     FlxG.switchState(() -> new funkin.ui.debug.WaveformTestState());
-    #elseif CHARTING // -DCHARTING
+    #elseif CHARTING
+    // -DCHARTING
     FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState());
-    #elseif STAGEBUILD // -DSTAGEBUILD
+    #elseif STAGEBUILD
+    // -DSTAGEBUILD
     FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
-    #elseif ANIMDEBUG // -DANIMDEBUG
+    #elseif ANIMDEBUG
+    // -DANIMDEBUG
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
-    #elseif LATENCY // -DLATENCY
+    #elseif LATENCY
+    // -DLATENCY
     FlxG.switchState(() -> new funkin.LatencyState());
     #else
     startGameNormally();

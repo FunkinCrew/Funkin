@@ -15,7 +15,14 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
 
   public static final STAGE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static final instance:StageRegistry = new StageRegistry();
+  public static var instance(get, never):StageRegistry;
+  static var _instance:Null<StageRegistry> = null;
+
+  static function get_instance():StageRegistry
+  {
+    if (_instance == null) _instance = new StageRegistry();
+    return _instance;
+  }
 
   public function new()
   {

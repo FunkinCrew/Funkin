@@ -16,9 +16,9 @@ class PlatformUtil
     #if mac
     return true;
     #elseif html5
-    return js.Browser.window.navigator.platform.startsWith("Mac")
-      || js.Browser.window.navigator.platform.startsWith("iPad")
-      || js.Browser.window.navigator.platform.startsWith("iPhone");
+    return js.Browser.window.navigator.platform.startsWith('Mac')
+      || js.Browser.window.navigator.platform.startsWith('iPad')
+      || js.Browser.window.navigator.platform.startsWith('iPhone');
     #else
     return false;
     #end
@@ -27,7 +27,7 @@ class PlatformUtil
   /**
    * Detects and returns the current host platform.
    * Always returns `HTML5` on web, regardless of the computer running that browser.
-   * Returns `null` if the platform could not be detected.
+   * @return The host platform, or `null` if the platform could not be detected.
    */
   public static function detectHostPlatform():Null<HostPlatform>
   {

@@ -32,11 +32,11 @@ class FixedBitmapData extends BitmapData
   public static function fromTexture(texture:TextureBase):FixedBitmapData
   {
     if (texture == null) return null;
-    final bitmapData = new FixedBitmapData(texture.__width, texture.__height, true, 0);
-    bitmapData.readable = false;
+    final bitmapData:FixedBitmapData = new FixedBitmapData(texture.__width, texture.__height, true, 0);
+    // bitmapData.readable = false;
     bitmapData.__texture = texture;
     bitmapData.__textureContext = texture.__textureContext;
-    bitmapData.image = null;
+    // bitmapData.image = null;
     return bitmapData;
   }
 }

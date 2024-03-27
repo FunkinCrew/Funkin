@@ -85,7 +85,7 @@
   },
   "projectManager.git.baseFolders": ["./"],
 
-  "haxecheckstyle.sourceFolders": ["src", "Source"],
+  "haxecheckstyle.sourceFolders": ["src", "source"],
   "haxecheckstyle.externalSourceRoots": [],
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
@@ -204,6 +204,21 @@
       "label": "HTML5 / Debug (Watch)",
       "target": "html5",
       "args": ["-debug", "-watch", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "macOS / Debug",
+      "target": "mac",
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "macOS / Release",
+      "target": "mac",
+      "args": ["-release"]
+    },
+    {
+      "label": "macOS / Release (GitHub Actions)",
+      "target": "mac",
+      "args": ["-release", "-DGITHUB_BUILD"]
     }
   ],
   "cmake.configureOnOpen": false,

@@ -5,6 +5,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import funkin.util.MathUtil;
+import funkin.audio.FunkinSound;
 
 /**
  * Loosley based on FlxTypeText lolol
@@ -200,7 +201,7 @@ class Alphabet extends FlxSpriteGroup
         if (FlxG.random.bool(40))
         {
           var daSound:String = "GF_";
-          FlxG.sound.play(Paths.soundRandom(daSound, 1, 4));
+          FunkinSound.playOnce(Paths.soundRandom(daSound, 1, 4));
         }
 
         add(letter);

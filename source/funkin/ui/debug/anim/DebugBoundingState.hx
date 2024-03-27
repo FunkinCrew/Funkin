@@ -1,32 +1,35 @@
 package funkin.ui.debug.anim;
 
-import funkin.util.SerializerUtil;
-import funkin.play.character.CharacterData;
-import flixel.FlxCamera;
-import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIDropDownMenu;
+import flixel.FlxCamera;
+import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import funkin.util.MouseUtil;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.character.SparrowCharacter;
-import haxe.ui.RuntimeComponentBuilder;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.util.MouseUtil;
+import funkin.util.SerializerUtil;
+import funkin.util.SortUtil;
 import haxe.ui.components.DropDown;
 import haxe.ui.core.Component;
+import haxe.ui.core.Screen;
 import haxe.ui.events.ItemEvent;
 import haxe.ui.events.UIEvent;
-import funkin.ui.mainmenu.MainMenuState;
+import haxe.ui.RuntimeComponentBuilder;
 import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
 import openfl.events.Event;
@@ -34,13 +37,8 @@ import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
 import openfl.net.FileReference;
 import openfl.net.URLLoader;
-import funkin.ui.mainmenu.MainMenuState;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
-import funkin.input.Cursor;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.util.SortUtil;
-import haxe.ui.core.Screen;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -179,7 +177,7 @@ class DebugBoundingState extends FlxState
       var objShit = js.html.URL.createObjectURL(swagList.item(0));
       trace(objShit);
 
-      var funnysound = new FlxSound().loadStream('https://cdn.discordapp.com/attachments/767500676166451231/817821618251759666/Flutter.mp3', false, false,
+      var funnysound = new FunkinSound().loadStream('https://cdn.discordapp.com/attachments/767500676166451231/817821618251759666/Flutter.mp3', false, false,
         null, function() {
           trace('LOADED SHIT??');
       });

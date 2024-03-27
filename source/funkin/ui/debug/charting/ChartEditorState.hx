@@ -9,12 +9,13 @@ import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
-import funkin.play.PlayStatePlaylist;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
+import flixel.system.debug.log.LogStyle;
+import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -47,6 +48,7 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
@@ -865,6 +867,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var noteDisplayDirty:Bool = true;
 
+  var noteTooltipsDirty:Bool = true;
+
   /**
    * Whether the selected charactesr have been modified and the health icons need to be updated.
    */
@@ -1076,7 +1080,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The chill audio track that plays in the chart editor.
    * Plays when the main music is NOT being played.
    */
-  var welcomeMusic:FlxSound = new FlxSound();
+  var welcomeMusic:FunkinSound = new FunkinSound();
 
   /**
    * The audio track for the instrumental.
@@ -1528,6 +1532,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Make sure view is updated when the variation changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
 
     switchToCurrentInstrumental();
@@ -1549,6 +1554,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Make sure view is updated when the difficulty changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
 
     // Make sure the difficulty we selected is in the list of difficulties.
@@ -3650,7 +3656,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.width = eventSprite.width;
           selectionSquare.height = eventSprite.height;
         }
+
+        // Additional cleanup on notes.
+        if (noteTooltipsDirty) eventSprite.updateTooltipText();
       }
+
+      noteTooltipsDirty = false;
 
       // Sort the notes DESCENDING. This keeps the sustain behind the associated note.
       renderedNotes.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
@@ -3866,8 +3877,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleCursor():Void
   {
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FlxG.sound.play(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased) FlxG.sound.play(Paths.sound("chartingSounds/ClickUp"));
+    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
+    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
@@ -4927,7 +4938,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
-    // playbarBPM.text = 'BPM: ${(Conductor.currentTimeChange?.bpm ?? 0.0)}';
+    playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}';
   }
 
   function handlePlayhead():Void

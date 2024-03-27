@@ -15,7 +15,14 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 
   public static final NOTE_STYLE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static final instance:NoteStyleRegistry = new NoteStyleRegistry();
+  public static var instance(get, never):NoteStyleRegistry;
+  static var _instance:Null<NoteStyleRegistry> = null;
+
+  static function get_instance():NoteStyleRegistry
+  {
+    if (_instance == null) _instance = new NoteStyleRegistry();
+    return _instance;
+  }
 
   public function new()
   {

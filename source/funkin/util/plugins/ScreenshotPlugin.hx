@@ -174,7 +174,7 @@ class ScreenshotPlugin extends FlxBasic
     FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.stage.removeChild(flashSpr)});
 
     // Play a sound (auto-play is true).
-    FunkinSound.load(Paths.sound('screenshot'), 1.0, false, true, true);
+    FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
   }
 
   static final PREVIEW_INITIAL_DELAY = 0.25; // How long before the preview starts fading in.
