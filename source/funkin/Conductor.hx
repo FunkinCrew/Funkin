@@ -3,7 +3,6 @@ package funkin;
 import funkin.util.Constants;
 import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
-import funkin.play.song.Song.SongDifficulty;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 
@@ -36,7 +35,7 @@ class Conductor
    * You can also do stuff like store a reference to the Conductor and pass it around or temporarily replace it,
    * or have a second Conductor running at the same time, or other weird stuff like that if you need to.
    */
-  public static var instance(get, set):Conductor;
+  public static var instance(get, never):Conductor;
 
   static var _instance:Null<Conductor> = null;
 
@@ -156,6 +155,9 @@ class Conductor
     return beatLengthMs / timeSignatureNumerator;
   }
 
+  /**
+   * The numerator for the current time signature (the `3` in `3/4`).
+   */
   public var timeSignatureNumerator(get, never):Int;
 
   function get_timeSignatureNumerator():Int
@@ -165,6 +167,9 @@ class Conductor
     return currentTimeChange.timeSignatureNum;
   }
 
+  /**
+   * The denominator for the current time signature (the `4` in `3/4`).
+   */
   public var timeSignatureDenominator(get, never):Int;
 
   function get_timeSignatureDenominator():Int
@@ -341,7 +346,7 @@ class Conductor
    * you should have a metadata file for it instead.
    * We should probably deprecate this in the future.
    */
-  public function forceBPM(?bpm:Float = null)
+  public function forceBPM(?bpm:Float):Void
   {
     if (bpm != null)
     {
@@ -349,7 +354,7 @@ class Conductor
     }
     else
     {
-      // trace('[CONDUCTOR] Resetting BPM to default');
+      trace('[CONDUCTOR] Resetting BPM to default');
     }
 
     this.bpmOverride = bpm;
@@ -362,7 +367,7 @@ class Conductor
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the `FlxG.sound.music` position.
    */
-  public function update(?songPos:Float)
+  public function update(?songPos:Float):Void
   {
     if (songPos == null)
     {
@@ -370,9 +375,9 @@ class Conductor
       songPos = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset) : 0.0;
     }
 
-    var oldMeasure = this.currentMeasure;
-    var oldBeat = this.currentBeat;
-    var oldStep = this.currentStep;
+    var oldMeasure:Float = this.currentMeasure;
+    var oldBeat:Float = this.currentBeat;
+    var oldStep:Float = this.currentStep;
 
     // Set the song position we are at (for purposes of calculating note positions, etc).
     this.songPosition = songPos;
@@ -431,42 +436,42 @@ class Conductor
   }
 
   /**
-   * Apply the time changes from a SongMetadata file.
-   * @param songTimeChanges The time changes to apply.
+   * Apply the `SongTimeChange` data from the song metadata to this Conductor.
+   * @param songTimeChanges The SongTimeChanges.
    */
-  public function mapTimeChanges(songTimeChanges:Array<SongTimeChange>)
+  public function mapTimeChanges(songTimeChanges:Array<SongTimeChange>):Void
   {
     timeChanges = [];
 
     // Sort in place just in case it's out of order.
     SongDataUtils.sortTimeChanges(songTimeChanges);
 
-    for (currentTimeChange in songTimeChanges)
+    for (songTimeChange in songTimeChanges)
     {
       // TODO: Maybe handle this different?
       // Do we care about BPM at negative timestamps?
       // Without any custom handling, `currentStepTime` becomes non-zero at `songPosition = 0`.
-      if (currentTimeChange.timeStamp < 0.0) currentTimeChange.timeStamp = 0.0;
+      if (songTimeChange.timeStamp < 0.0) songTimeChange.timeStamp = 0.0;
 
-      if (currentTimeChange.timeStamp <= 0.0)
+      if (songTimeChange.timeStamp <= 0.0)
       {
-        currentTimeChange.beatTime = 0.0;
+        songTimeChange.beatTime = 0.0;
       }
       else
       {
         // Calculate the beat time of this timestamp.
-        currentTimeChange.beatTime = 0.0;
+        songTimeChange.beatTime = 0.0;
 
-        if (currentTimeChange.timeStamp > 0.0 && timeChanges.length > 0)
+        if (songTimeChange.timeStamp > 0.0 && timeChanges.length > 0)
         {
           var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
-          currentTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
-            + ((currentTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC),
+          songTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
+            + ((songTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC),
             4);
         }
       }
 
-      timeChanges.push(currentTimeChange);
+      timeChanges.push(songTimeChange);
     }
 
     if (timeChanges.length > 0)
@@ -479,8 +484,9 @@ class Conductor
   }
 
   /**
-   * @param ms A timestamp in milliseconds.
-   * @return The corresponding time in steps.
+   * Given a time in milliseconds, return a time in steps.
+   * @param ms The time in milliseconds.
+   * @return The time in steps.
    */
   public function getTimeInSteps(ms:Float):Float
   {
@@ -510,15 +516,16 @@ class Conductor
 
       var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
       var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / lastStepLengthMs;
-      resultStep += resultFractionalStep; // Math.floor();
+      resultStep += resultFractionalStep;
 
       return resultStep;
     }
   }
 
   /**
-   * @param stepTime A timestamp in steps.
-   * @return The corresponding time in milliseconds.
+   * Given a time in steps and fractional steps, return a time in milliseconds.
+   * @param stepTime The time in steps.
+   * @return The time in milliseconds.
    */
   public function getStepTimeInMs(stepTime:Float):Float
   {
@@ -554,8 +561,9 @@ class Conductor
   }
 
   /**
-   * @param beatTime A timestamp in fractional beats.
-   * @return The corresponding time in milliseconds.
+   * Given a time in beats and fractional beats, return a time in milliseconds.
+   * @param beatTime The time in beats.
+   * @return The time in milliseconds.
    */
   public function getBeatTimeInMs(beatTime:Float):Float
   {
@@ -588,5 +596,27 @@ class Conductor
 
       return resultMs;
     }
+  }
+
+  /**
+   * Add variables of the current Conductor instance to the Flixel debugger.
+   */
+  public static function watchQuick(?target:Conductor):Void
+  {
+    if (target == null) target = Conductor.instance;
+
+    FlxG.watch.addQuick('songPosition', target.songPosition);
+    FlxG.watch.addQuick('bpm', target.bpm);
+    FlxG.watch.addQuick('currentMeasureTime', target.currentMeasureTime);
+    FlxG.watch.addQuick('currentBeatTime', target.currentBeatTime);
+    FlxG.watch.addQuick('currentStepTime', target.currentStepTime);
+  }
+
+  /**
+   * Reset the Conductor, replacing the current instance with a fresh one.
+   */
+  public static function reset():Void
+  {
+    _instance = new Conductor();
   }
 }

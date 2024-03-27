@@ -160,7 +160,9 @@ class VoicesGroup extends SoundGroup
   public override function destroy():Void
   {
     playerVoices.destroy();
+    playerVoices = null;
     opponentVoices.destroy();
+    opponentVoices = null;
     super.destroy();
   }
 }

@@ -13,12 +13,25 @@ class MathUtil
 
   /**
    * Perform linear interpolation between the base and the target, based on the current framerate.
+   * @param base The starting value, when `progress <= 0`.
+   * @param target The ending value, when `progress >= 1`.
+   * @param ratio Value used to interpolate between `base` and `target`.
+   *
+   * @return The interpolated value.
    */
+  @:deprecated('Use smoothLerp instead')
   public static function coolLerp(base:Float, target:Float, ratio:Float):Float
   {
     return base + cameraLerp(ratio) * (target - base);
   }
 
+  /**
+   * Perform linear interpolation based on the current framerate.
+   * @param lerp Value used to interpolate between `base` and `target`.
+   *
+   * @return The interpolated value.
+   */
+  @:deprecated('Use smoothLerp instead')
   public static function cameraLerp(lerp:Float):Float
   {
     return lerp * (FlxG.elapsed / (1 / 60));
@@ -30,26 +43,30 @@ class MathUtil
    * @param value The value to get the logarithm of.
    * @return `log_base(value)`
    */
-  public static function logBase(base:Float, value:Float)
+  public static function logBase(base:Float, value:Float):Float
   {
     return Math.log(value) / Math.log(base);
   }
 
   /**
-   * @returns `2^x`
+   * Get the base-2 logarithm of a value.
+   * @param x value
+   * @return `2^x`
    */
-  public static function exp2(x:Float)
+  public static function exp2(x:Float):Float
   {
     return Math.pow(2, x);
   }
 
   /**
    * Linearly interpolate between two values.
+   *
    * @param base The starting value, when `progress <= 0`.
    * @param target The ending value, when `progress >= 1`.
    * @param progress Value used to interpolate between `base` and `target`.
+   * @return The interpolated value.
    */
-  public static function lerp(base:Float, target:Float, progress:Float)
+  public static function lerp(base:Float, target:Float, progress:Float):Float
   {
     return base + progress * (target - base);
   }
@@ -67,6 +84,7 @@ class MathUtil
    */
   public static function smoothLerp(current:Float, target:Float, elapsed:Float, duration:Float, precision:Float = 1 / 100):Float
   {
+    // An alternative algorithm which uses a separate half-life value:
     // var halfLife:Float = -duration / logBase(2, precision);
     // lerp(current, target, 1 - exp2(-elapsed / halfLife));
 

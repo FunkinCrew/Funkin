@@ -11,9 +11,11 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
 import openfl.media.Video;
-import funkin.util.CLIUtil;
 import openfl.net.NetStream;
 
+/**
+ * The main class which initializes HaxeFlixel and starts the game in its initial state.
+ */
 class Main extends Sprite
 {
   var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
@@ -76,26 +78,27 @@ class Main extends Sprite
   var netStream:NetStream;
   var overlay:Sprite;
 
+  /**
+   * A frame counter displayed at the top left.
+   */
   public static var fpsCounter:FPS;
+
+  /**
+   * A RAM counter displayed at the top left.
+   */
   public static var memoryCounter:MemoryCounter;
 
   function setupGame():Void
   {
-    /**
-     * The `zoom` argument of FlxGame was removed in the dev branch of Flixel,
-     * since it was considered confusing and unintuitive.
-     * If you want to change how the game scales when you resize the window,
-     * you can use `FlxG.scaleMode`.
-     * -Eric
-     */
-
     initHaxeUI();
 
+    // addChild gets called by the user settings code.
     fpsCounter = new FPS(10, 3, 0xFFFFFF);
-    // addChild(fpsCounter); // Handled by Preferences.init
+
     #if !html5
+    // addChild gets called by the user settings code.
+    // TODO: disabled on HTML5 (todo: find another method that works?)
     memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
-    // addChild(memoryCounter);
     #end
 
     // George recommends binding the save before FlxGame is created.
@@ -112,6 +115,8 @@ class Main extends Sprite
 
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
+    #else
+    trace('hxcpp_debug_server is disabled! This build does not support debugging.');
     #end
   }
 

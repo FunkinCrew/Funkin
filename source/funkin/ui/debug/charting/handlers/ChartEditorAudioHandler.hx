@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
 import flixel.system.FlxAssets.FlxSoundAsset;
-import flixel.sound.FlxSound;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -302,7 +301,8 @@ class ChartEditorAudioHandler
       trace('WARN: Failed to play sound $path, asset not found.');
       return;
     }
-    var snd:FunkinSound = FunkinSound.load(asset);
+    var snd:Null<FunkinSound> = FunkinSound.load(asset);
+    if (snd == null) return;
     snd.autoDestroy = true;
     snd.play(true);
     snd.volume = volume;

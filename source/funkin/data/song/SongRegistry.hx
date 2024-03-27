@@ -40,10 +40,17 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   }
 
   /**
-   * TODO: What if there was a Singleton macro which created static functions
-   * that redirected to the instance?
+   * TODO: What if there was a Singleton macro which automatically created the property for us?
    */
-  public static final instance:SongRegistry = new SongRegistry();
+  public static var instance(get, never):SongRegistry;
+
+  static var _instance:Null<SongRegistry> = null;
+
+  static function get_instance():SongRegistry
+  {
+    if (_instance == null) _instance = new SongRegistry();
+    return _instance;
+  }
 
   public function new()
   {
@@ -424,7 +431,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-    if (!openfl.Assets.exists(entryFilePath)) return null;
+    if (!openfl.Assets.exists(entryFilePath))
+    {
+      trace('  [WARN] Could not locate file $entryFilePath');
+      return null;
+    }
     var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();

@@ -4,8 +4,8 @@ import flixel.FlxSprite;
 import flixel.util.FlxSignal;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.sound.FlxSound;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 import funkin.audio.FlxStreamSound;
 
 class DJBoyfriend extends FlxAtlasSprite
@@ -178,7 +178,7 @@ class DJBoyfriend extends FlxAtlasSprite
     if (cartoonSnd == null)
     {
       // tv is OFF, but getting turned on
-      FlxG.sound.play(Paths.sound('tv_on'));
+      FunkinSound.playOnce(Paths.sound('tv_on'));
 
       cartoonSnd = new FlxStreamSound();
       FlxG.sound.defaultSoundGroup.add(cartoonSnd);
@@ -187,7 +187,7 @@ class DJBoyfriend extends FlxAtlasSprite
     {
       // plays it smidge after the click
       new FlxTimer().start(0.1, function(_) {
-        FlxG.sound.play(Paths.sound('channel_switch'));
+        FunkinSound.playOnce(Paths.sound('channel_switch'));
       });
     }
     // cartoonSnd.loadEmbedded(Paths.sound("cartoons/peck"));

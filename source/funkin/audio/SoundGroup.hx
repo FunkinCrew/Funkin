@@ -1,7 +1,6 @@
 package funkin.audio;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.sound.FlxSound;
 import funkin.audio.FunkinSound;
 import flixel.tweens.FlxTween;
 
@@ -153,9 +152,12 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function stop()
   {
-    forEachAlive(function(sound:FunkinSound) {
-      sound.stop();
-    });
+    if (members != null)
+    {
+      forEachAlive(function(sound:FunkinSound) {
+        sound.stop();
+      });
+    }
   }
 
   public override function destroy()
