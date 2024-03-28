@@ -431,7 +431,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-    if (!openfl.Assets.exists(entryFilePath)) return null;
+    if (!openfl.Assets.exists(entryFilePath))
+    {
+      trace('  [WARN] Could not locate file $entryFilePath');
+      return null;
+    }
     var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
