@@ -79,12 +79,8 @@ class ZoomCameraSongEvent extends SongEvent
     {
       case 'INSTANT':
         PlayState.instance.tweenCameraZoom(zoom, 0, isDirectMode);
-      case 'classic':
-        var classicDur = 1.0; // This is probably a fixed duration given how old zoom works. Need to sus it out.
-        PlayState.instance.tweenCameraZoom(zoom, 1.0; true); // Need to create an ease function to recreate classic lerp-style zooming.
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
         if (easeFunction == null)
         {
@@ -145,6 +141,9 @@ class ZoomCameraSongEvent extends SongEvent
         keys: [
           'Linear' => 'linear',
           'Instant' => 'INSTANT',
+          'Sine In' => 'sineIn',
+          'Sine Out' => 'sineOut',
+          'Sine In/Out' => 'sineInOut',
           'Quad In' => 'quadIn',
           'Quad Out' => 'quadOut',
           'Quad In/Out' => 'quadInOut',
@@ -157,16 +156,15 @@ class ZoomCameraSongEvent extends SongEvent
           'Quint In' => 'quintIn',
           'Quint Out' => 'quintOut',
           'Quint In/Out' => 'quintInOut',
+          'Expo In' => 'expoIn',
+          'Expo Out' => 'expoOut',
+          'Expo In/Out' => 'expoInOut',
           'Smooth Step In' => 'smoothStepIn',
           'Smooth Step Out' => 'smoothStepOut',
           'Smooth Step In/Out' => 'smoothStepInOut',
-          'Sine In' => 'sineIn',
-          'Sine Out' => 'sineOut',
-          'Sine In/Out' => 'sineInOut',
           'Elastic In' => 'elasticIn',
           'Elastic Out' => 'elasticOut',
-          'Elastic In/Out' => 'elasticInOut',
-          'Classic' => 'classic'
+          'Elastic In/Out' => 'elasticInOut'
         ]
       }
     ]);

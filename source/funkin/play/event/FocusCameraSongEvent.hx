@@ -70,83 +70,76 @@ class FocusCameraSongEvent extends SongEvent
 
     if (char == null) char = cast data.value;
 
-    var useTween:Null<Bool> = data.getBool('useTween');
-    if (useTween == null) useTween = false;
     var duration:Null<Float> = data.getFloat('duration');
     if (duration == null) duration = 4.0;
     var ease:Null<String> = data.getString('ease');
-    if (ease == null) ease = 'linear';
+    if (ease == null) ease = 'CLASSIC';
+
+    var currentStage = PlayState.instance.currentStage;
+
+    // Get target position based on char.
+    var targetX:Float = posX;
+    var targetY:Float = posY;
 
     switch (char)
     {
-      case -1: // Position
+      case -1: // Position ("focus" on origin)
         trace('Focusing camera on static position.');
-        var xTarget:Float = posX;
-        var yTarget:Float = posY;
 
-        PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
-      case 0: // Boyfriend
-        // Focus the camera on the player.
-        if (PlayState.instance.currentStage.getBoyfriend() == null)
+      case 0: // Boyfriend (focus on player)
+        if (currentStage.getBoyfriend() == null)
         {
           trace('No BF to focus on.');
           return;
         }
         trace('Focusing camera on player.');
-        var xTarget:Float = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x + posX;
-        var yTarget:Float = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y + posY;
+        var bfPoint = currentStage.getBoyfriend().cameraFocusPoint;
+        targetX += bfPoint.x;
+        targetY += bfPoint.y;
 
-        PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
-      case 1: // Dad
-        // Focus the camera on the dad.
-        if (PlayState.instance.currentStage.getDad() == null)
+      case 1: // Dad (focus on opponent)
+        if (currentStage.getDad() == null)
         {
           trace('No dad to focus on.');
           return;
         }
-        trace('Focusing camera on dad.');
-        trace(PlayState.instance.currentStage.getDad());
-        var xTarget:Float = PlayState.instance.currentStage.getDad().cameraFocusPoint.x + posX;
-        var yTarget:Float = PlayState.instance.currentStage.getDad().cameraFocusPoint.y + posY;
+        trace('Focusing camera on opponent.');
+        var dadPoint = currentStage.getDad().cameraFocusPoint;
+        targetX += dadPoint.x;
+        targetY += dadPoint.y;
 
-        PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
-      case 2: // Girlfriend
-        // Focus the camera on the girlfriend.
-        if (PlayState.instance.currentStage.getGirlfriend() == null)
+      case 2: // Girlfriend (focus on girlfriend)
+        if (currentStage.getGirlfriend() == null)
         {
           trace('No GF to focus on.');
           return;
         }
         trace('Focusing camera on girlfriend.');
-        var xTarget:Float = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x + posX;
-        var yTarget:Float = PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y + posY;
+        var gfPoint = currentStage.getGirlfriend().cameraFocusPoint;
+        targetX += gfPoint.x;
+        targetY += gfPoint.y;
 
-        PlayState.instance.cameraFollowPoint.setPosition(xTarget, yTarget);
       default:
         trace('Unknown camera focus: ' + data);
     }
 
-    if (useTween)
+    // Apply tween based on ease.
+    switch (ease)
     {
-      switch (ease)
-      {
-        case 'INSTANT':
-          PlayState.instance.tweenCameraToFollowPoint(0);
-        case 'classic':
-          var classicDur = 1.0; // This is probably a fixed duration given how old zoom works. Need to sus it out.
-          PlayState.instance.tweenCameratoFollowPoint(classicDur); // Need to create an ease function to recreate classic follow-style movement.
-        default:
-          var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-
-          var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
-          if (easeFunction == null)
-          {
-            trace('Invalid ease function: $ease');
-            return;
-          }
-
-          PlayState.instance.tweenCameraToFollowPoint(durSeconds, easeFunction);
-      }
+      case 'CLASSIC': // Old-school. No ease. Just set follow point.
+        PlayState.instance.cancelCameraFollowTween();
+        PlayState.instance.cameraFollowPoint.setPosition(targetX, targetY);
+      case 'INSTANT': // Instant ease. Duration is automatically 0.
+        PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
+      default:
+        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
+        if (easeFunction == null)
+        {
+          trace('Invalid ease function: $ease');
+          return;
+        }
+        PlayState.instance.tweenCameraToPosition(targetX, targetY, durSeconds, easeFunction);
     }
   }
 
@@ -191,12 +184,6 @@ class FocusCameraSongEvent extends SongEvent
         units: "px"
       },
       {
-        name: 'useTween',
-        title: 'Use Tween',
-        type: SongEventFieldType.BOOL,
-        defaultValue: false
-      },
-      {
         name: 'duration',
         title: 'Duration',
         defaultValue: 4.0,
@@ -211,7 +198,9 @@ class FocusCameraSongEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Instant' => 'INSTANT',
+          'Sine In' => 'sineIn',
+          'Sine Out' => 'sineOut',
+          'Sine In/Out' => 'sineInOut',
           'Quad In' => 'quadIn',
           'Quad Out' => 'quadOut',
           'Quad In/Out' => 'quadInOut',
@@ -224,16 +213,17 @@ class FocusCameraSongEvent extends SongEvent
           'Quint In' => 'quintIn',
           'Quint Out' => 'quintOut',
           'Quint In/Out' => 'quintInOut',
+          'Expo In' => 'expoIn',
+          'Expo Out' => 'expoOut',
+          'Expo In/Out' => 'expoInOut',
           'Smooth Step In' => 'smoothStepIn',
           'Smooth Step Out' => 'smoothStepOut',
           'Smooth Step In/Out' => 'smoothStepInOut',
-          'Sine In' => 'sineIn',
-          'Sine Out' => 'sineOut',
-          'Sine In/Out' => 'sineInOut',
           'Elastic In' => 'elasticIn',
           'Elastic Out' => 'elasticOut',
           'Elastic In/Out' => 'elasticInOut',
-          'Classic' => 'classic'
+          'Instant (Ignores duration)' => 'INSTANT',
+          'Classic (Ignores duration)' => 'CLASSIC'
         ]
       }
     ]);

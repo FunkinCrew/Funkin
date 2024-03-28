@@ -3105,6 +3105,15 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * Sets the camera follow point's position and tweens the camera there.
+   */
+  public function tweenCameraToPosition(?x:Float, ?y:Float, ?duration:Float, ?ease:Null<Float->Float>):Void
+  {
+    cameraFollowPoint.setPosition(x, y);
+    tweenCameraToFollowPoint(duration, ease);
+  }
+
+  /**
    * Disables camera following and tweens the camera to the follow point manually.
    */
   public function tweenCameraToFollowPoint(?duration:Float, ?ease:Null<Float->Float>):Void
