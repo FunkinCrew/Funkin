@@ -152,9 +152,12 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function stop()
   {
-    forEachAlive(function(sound:FunkinSound) {
-      sound.stop();
-    });
+    if (members != null)
+    {
+      forEachAlive(function(sound:FunkinSound) {
+        sound.stop();
+      });
+    }
   }
 
   public override function destroy()
