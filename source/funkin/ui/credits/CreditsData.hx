@@ -5,7 +5,7 @@ package funkin.ui.credits;
  */
 typedef CreditsData =
 {
-  var roles:Array<CreditsDataRole>;
+  var entries:Array<CreditsDataRole>;
 }
 
 /**
@@ -13,8 +13,16 @@ typedef CreditsData =
  */
 typedef CreditsDataRole =
 {
-  var roleName:String;
-  var members:Array<CreditsDataMember>;
+  @:optional
+  var header:String;
+
+  @:optional
+  @:default([])
+  var body:Array<CreditsDataMember>;
+
+  @:optional
+  @:default(false)
+  var appendBackers:Bool;
 }
 
 /**
@@ -22,5 +30,5 @@ typedef CreditsDataRole =
  */
 typedef CreditsDataMember =
 {
-  var fullName:String;
+  var line:String;
 }

@@ -116,15 +116,28 @@ class CreditsState extends MusicBeatState
   {
     var y = 0;
 
-    for (role in CreditsDataHandler.CREDITS_DATA.roles)
+    for (entry in CreditsDataHandler.CREDITS_DATA.entries)
     {
-      creditsGroup.add(buildCreditsLine(role.roleName, y, true, CreditsSide.Center));
-      y += CREDITS_HEADER_FONT_SIZE;
-
-      for (member in role.members)
+      if (entry.header != null)
       {
-        creditsGroup.add(buildCreditsLine(member.fullName, y, false, CreditsSide.Center));
+        creditsGroup.add(buildCreditsLine(entry.header, y, true, CreditsSide.Center));
+        y += CREDITS_HEADER_FONT_SIZE;
+      }
+
+      for (line in entry?.body ?? [])
+      {
+        creditsGroup.add(buildCreditsLine(line.line, y, false, CreditsSide.Center));
         y += CREDITS_FONT_SIZE;
+      }
+
+      if (entry.appendBackers)
+      {
+        var backers = CreditsDataHandler.fetchBackerEntries();
+        for (backer in backers)
+        {
+          creditsGroup.add(buildCreditsLine(backer, y, false, CreditsSide.Center));
+          y += CREDITS_FONT_SIZE;
+        }
       }
 
       // Padding between each role.

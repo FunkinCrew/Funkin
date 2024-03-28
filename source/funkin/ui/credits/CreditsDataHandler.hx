@@ -24,14 +24,14 @@ class CreditsDataHandler
       return;
     }
 
-    var roleCount = data.roles.length;
-    var memberCount = 0;
-    for (role in data.roles)
+    var entryCount = data.entries.length;
+    var lineCount = 0;
+    for (entry in data.entries)
     {
-      memberCount += role.members.length;
+      lineCount += entry?.body?.length ?? 0;
     }
 
-    trace('CreditsData($roleCount roles with $memberCount members)');
+    trace('CreditsData($entryCount entries containing $lineCount lines)');
   }
 
   /**
@@ -43,15 +43,19 @@ class CreditsDataHandler
   public static inline function getFallback():CreditsData
   {
     return {
-      roles: [
+      entries: [
         {
-          roleName: 'Founders',
-          members: [
-            {fullName: 'ninjamuffin99'},
-            {fullName: 'PhantomArcade'},
-            {fullName: 'KawaiSprite'},
-            {fullName: 'evilsk8r'},
+          header: 'Founders',
+          body: [
+            {line: 'ninjamuffin99'},
+            {line: 'PhantomArcade'},
+            {line: 'KawaiSprite'},
+            {line: 'evilsk8r'},
           ]
+        },
+        {
+          header: 'Kickstarter Backers',
+          appendBackers: true
         }
       ]
     };
