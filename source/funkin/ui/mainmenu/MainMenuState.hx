@@ -51,10 +51,7 @@ class MainMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    if (!(FlxG?.sound?.music?.playing ?? false))
-    {
-      playMenuMusic();
-    }
+    playMenuMusic();
 
     persistentUpdate = persistentDraw = true;
 
@@ -109,15 +106,18 @@ class MainMenuState extends MusicBeatState
     });
 
     #if CAN_OPEN_LINKS
+    // In order to prevent popup blockers from triggering,
+    // we need to open the link as an immediate result of a keypress event,
+    // so we can't wait for the flicker animation to complete.
     var hasPopupBlocker = #if web true #else false #end;
-    createMenuItem('donate', 'mainmenu/donate', selectDonate, hasPopupBlocker);
+    createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
     #end
 
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
 
-    createMenuItem('options', 'mainmenu/options', function() {
+    createMenuItem('credits', 'mainmenu/credits', function() {
       startExitState(() -> new funkin.ui.credits.CreditsState());
     });
 
@@ -218,6 +218,11 @@ class MainMenuState extends MusicBeatState
   function selectDonate()
   {
     WindowUtil.openURL(Constants.URL_ITCH);
+  }
+
+  function selectMerch()
+  {
+    WindowUtil.openURL(Constants.URL_MERCH);
   }
   #end
 
