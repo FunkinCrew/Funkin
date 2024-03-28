@@ -1,6 +1,7 @@
 package funkin.ui.freeplay;
 
 import funkin.data.freeplay.AlbumData;
+import funkin.data.animation.AnimationData;
 import funkin.data.freeplay.AlbumRegistry;
 import funkin.data.IRegistryEntry;
 import flixel.graphics.FlxGraphic;
@@ -73,6 +74,16 @@ class Album implements IRegistryEntry<AlbumData>
   public function getAlbumTitleAssetKey():String
   {
     return _data.albumTitleAsset;
+  }
+
+  public function hasAlbumTitleAnimations()
+  {
+    return _data.albumTitleAnimations.length > 0;
+  }
+
+  public function getAlbumTitleAnimations():Array<AnimationData>
+  {
+    return _data.albumTitleAnimations;
   }
 
   public function toString():String

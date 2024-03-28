@@ -1,5 +1,7 @@
 package funkin.data.freeplay;
 
+import funkin.data.animation.AnimationData;
+
 /**
  * A type definition for the data for an album of songs.
  * It includes things like what graphics to display in Freeplay.
@@ -33,4 +35,11 @@ typedef AlbumData =
    * The album title will be displayed below the album art in Freeplay.
    */
   public var albumTitleAsset:String;
+
+  /**
+   * An optional array of animations for the album title.
+   */
+  @:optional
+  @:default([])
+  public var albumTitleAnimations:Array<AnimationData>;
 }

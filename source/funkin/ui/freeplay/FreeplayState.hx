@@ -380,7 +380,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     albumRoll = new AlbumRoll();
-    albumRoll.albumId = 'volume1';
+    albumRoll.albumId = null;
     add(albumRoll);
 
     albumRoll.applyExitMovers(exitMovers);
@@ -881,6 +881,8 @@ class FreeplayState extends MusicBeatSubState
 
         for (spr in grpSpr)
         {
+          if (spr == null) continue;
+
           var funnyMoveShit:MoveData = moveData;
 
           if (moveData.x == null) funnyMoveShit.x = spr.x;
@@ -1019,7 +1021,7 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.setDifficultyStars(daSong?.songRating);
 
     // Set the album graphic and play the animation if relevant.
-    var newAlbumId:String = daSong?.albumId ?? Constants.DEFAULT_ALBUM_ID;
+    var newAlbumId:String = daSong?.albumId;
     if (albumRoll.albumId != newAlbumId)
     {
       albumRoll.albumId = newAlbumId;
@@ -1162,6 +1164,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0.0;
       rememberedSongId = null;
       rememberedDifficulty = null;
+      albumRoll.albumId = null;
     }
 
     for (index => capsule in grpCapsules.members)
@@ -1311,7 +1314,7 @@ class FreeplaySongData
   public var songName(default, null):String = '';
   public var songCharacter(default, null):String = '';
   public var songRating(default, null):Int = 0;
-  public var albumId(default, null):String = '';
+  public var albumId(default, null):Null<String> = null;
 
   public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
   public var displayedVariations(default, null):Array<String> = [Constants.DEFAULT_VARIATION];
@@ -1345,7 +1348,15 @@ class FreeplaySongData
     this.songName = songDifficulty.songName;
     this.songCharacter = songDifficulty.characters.opponent;
     this.songRating = songDifficulty.difficultyRating;
-    this.albumId = songDifficulty.album;
+    if (songDifficulty.album == null)
+    {
+      FlxG.log.warn('No album for: ${songDifficulty.songName}');
+      this.albumId = Constants.DEFAULT_ALBUM_ID;
+    }
+    else
+    {
+      this.albumId = songDifficulty.album;
+    }
   }
 }
 
