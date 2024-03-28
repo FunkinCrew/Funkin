@@ -2441,7 +2441,8 @@ class PlayState extends MusicBeatSubState
     if (Highscore.tallies.combo != 0)
     {
       // Break the combo.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
 
     if (playSound)
@@ -2607,18 +2608,18 @@ class PlayState extends MusicBeatSubState
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
     else
     {
       Highscore.tallies.combo++;
-      Highscore.tallies.totalNotesHit++;
       if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
     }
 
     playerStrumline.hitNote(daNote, !isComboBreak);
 
-    if (daRating == "sick")
+    if (daRating == 'sick')
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
