@@ -49,7 +49,6 @@ class DJBoyfriend extends FlxAtlasSprite
     };
 
     setupAnimations();
-    trace(listAnimations());
 
     FlxG.debugger.track(this);
     FlxG.console.registerObject("dj", this);
