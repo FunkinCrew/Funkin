@@ -2568,32 +2568,38 @@ class PlayState extends MusicBeatSubState
    */
   function popUpScore(daNote:NoteSprite, score:Int, daRating:String, healthChange:Float):Void
   {
-    vocals.playerVolume = 1;
-
     if (daRating == 'miss')
     {
       // If daRating is 'miss', that means we made a mistake and should not continue.
-      trace('[WARNING] popUpScore judged a note as a miss!');
+      FlxG.log.warn('popUpScore judged a note as a miss!');
       // TODO: Remove this.
       comboPopUps.displayRating('miss');
       return;
     }
+
+    vocals.playerVolume = 1;
 
     var isComboBreak = false;
     switch (daRating)
     {
       case 'sick':
         Highscore.tallies.sick += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
+      default:
+        FlxG.log.error('Wuh? Buh? Guh? Note hit judgement was $daRating!');
     }
 
     health += healthChange;
