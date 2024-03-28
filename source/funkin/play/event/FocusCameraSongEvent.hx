@@ -132,6 +132,9 @@ class FocusCameraSongEvent extends SongEvent
       {
         case 'INSTANT':
           PlayState.instance.tweenCameraToFollowPoint(0);
+        case 'classic':
+          var classicDur = 1.0; // This is probably a fixed duration given how old zoom works. Need to sus it out.
+          PlayState.instance.tweenCameratoFollowPoint(classicDur); // Need to create an ease function to recreate classic follow-style movement.
         default:
           var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
 
@@ -230,6 +233,7 @@ class FocusCameraSongEvent extends SongEvent
           'Elastic In' => 'elasticIn',
           'Elastic Out' => 'elasticOut',
           'Elastic In/Out' => 'elasticInOut',
+          'Classic' => 'classic'
         ]
       }
     ]);

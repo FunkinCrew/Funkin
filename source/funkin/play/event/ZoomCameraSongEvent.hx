@@ -79,6 +79,9 @@ class ZoomCameraSongEvent extends SongEvent
     {
       case 'INSTANT':
         PlayState.instance.tweenCameraZoom(zoom, 0, isDirectMode);
+      case 'classic':
+        var classicDur = 1.0; // This is probably a fixed duration given how old zoom works. Need to sus it out.
+        PlayState.instance.tweenCameraZoom(zoom, 1.0; true); // Need to create an ease function to recreate classic lerp-style zooming.
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
 
@@ -132,7 +135,7 @@ class ZoomCameraSongEvent extends SongEvent
         title: 'Mode',
         defaultValue: 'direct',
         type: SongEventFieldType.ENUM,
-        keys: ['Additive' => 'additive', 'Direct' => 'direct']
+        keys: ['Stage' => 'stage', 'Direct' => 'direct']
       },
       {
         name: 'ease',
@@ -163,6 +166,7 @@ class ZoomCameraSongEvent extends SongEvent
           'Elastic In' => 'elasticIn',
           'Elastic Out' => 'elasticOut',
           'Elastic In/Out' => 'elasticInOut',
+          'Classic' => 'classic'
         ]
       }
     ]);

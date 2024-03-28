@@ -245,20 +245,26 @@ class PlayState extends MusicBeatSubState
   /**
    * The current camera zoom level without any modifiers applied.
    */
-  public var currentCameraZoom:Float = FlxCamera.defaultZoom * 1.05;
+  public var currentCameraZoom:Float = FlxCamera.defaultZoom;
 
   /**
-   * currentCameraZoom is increased every beat, and lerped back to this value every frame, creating a smooth 'zoom-in' effect.
-   * Defaults to 1.05, but may be larger or smaller depending on the current stage.
-   * Tweened via the `ZoomCamera` song event in direct mode.
+   * Multiplier for currentCameraZoom for camera bops.
+   * Lerped back to 1.0x every frame.
    */
-  public var defaultCameraZoom:Float = FlxCamera.defaultZoom * 1.05;
+  public var cameraBopMultiplier:Float = 1.0;
 
   /**
-   * Camera zoom applied on top of currentCameraZoom.
-   * Tweened via the `ZoomCamera` song event in additive mode.
+   * Default camera zoom for the current stage.
+   * If we aren't in a stage, just use the default zoom (1.05x).
    */
-  public var additiveCameraZoom:Float = 0;
+  public var stageZoom(get, never):Float;
+
+  function get_stageZoom():Float
+  {
+    if (currentStage != null) return currentStage.camZoom;
+    else
+      return FlxCamera.defaultZoom * 1.05;
+  }
 
   /**
    * The current HUD camera zoom level.
@@ -268,16 +274,18 @@ class PlayState extends MusicBeatSubState
   public var defaultHUDCameraZoom:Float = FlxCamera.defaultZoom * 1.0;
 
   /**
-   * Intensity of the gameplay camera zoom.
-   * @default `1.5%`
+   * Camera bop intensity multiplier.
+   * Applied to cameraBopMultiplier on camera bops (usually every beat).
+   * @default `101.5%`
    */
-  public var cameraZoomIntensity:Float = Constants.DEFAULT_ZOOM_INTENSITY;
+  public var cameraBopIntensity:Float = Constants.DEFAULT_BOP_INTENSITY;
 
   /**
    * Intensity of the HUD camera zoom.
+   * Need to make this a multiplier later. Just shoving in 0.015 for now so it doesn't break.
    * @default `3.0%`
    */
-  public var hudCameraZoomIntensity:Float = Constants.DEFAULT_ZOOM_INTENSITY * 2.0;
+  public var hudCameraZoomIntensity:Float = 0.015 * 2.0;
 
   /**
    * How many beats (quarter notes) between camera zooms.
@@ -857,8 +865,8 @@ class PlayState extends MusicBeatSubState
       regenNoteData();
 
       // Reset camera zooming
-      cameraZoomIntensity = Constants.DEFAULT_ZOOM_INTENSITY;
-      hudCameraZoomIntensity = Constants.DEFAULT_ZOOM_INTENSITY * 2.0;
+      cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+      hudCameraZoomIntensity = 0.015 * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
       health = Constants.HEALTH_STARTING;
@@ -953,11 +961,12 @@ class PlayState extends MusicBeatSubState
     if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
-    // Lerp the camera zoom towards the target level.
+    // Apply camera zoom + multipliers.
     if (subState == null)
     {
-      currentCameraZoom = FlxMath.lerp(defaultCameraZoom, currentCameraZoom, 0.95);
-      FlxG.camera.zoom = currentCameraZoom + additiveCameraZoom;
+      cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
+      var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
+      FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
 
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
@@ -1363,15 +1372,15 @@ class PlayState extends MusicBeatSubState
       // activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
     }
 
-    // Only zoom camera if we are zoomed by less than 35%.
+    // Only bop camera if zoom level is below 135%
     if (Preferences.zoomCamera
-      && FlxG.camera.zoom < (1.35 * defaultCameraZoom)
+      && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
       && cameraZoomRate > 0
       && Conductor.instance.currentBeat % cameraZoomRate == 0)
     {
-      // Zoom camera in (1.5%)
-      currentCameraZoom += cameraZoomIntensity * defaultCameraZoom;
-      // Hud zooms double (3%)
+      // Set zoom multiplier for camera bop.
+      cameraBopMultiplier = cameraBopIntensity;
+      // HUD camera zoom still uses old system. To change. (+3%)
       camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
     }
     // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
@@ -1562,12 +1571,11 @@ class PlayState extends MusicBeatSubState
   {
     if (PlayState.instance.isMinimalMode) return;
     // Apply camera zoom level from stage data.
-    defaultCameraZoom = currentStage.camZoom;
-    currentCameraZoom = defaultCameraZoom;
+    currentCameraZoom = stageZoom;
     FlxG.camera.zoom = currentCameraZoom;
 
-    // Reset additive zoom.
-    additiveCameraZoom = 0;
+    // Reset bop multiplier.
+    cameraBopMultiplier = 1.0;
   }
 
   /**
@@ -3141,38 +3149,24 @@ class PlayState extends MusicBeatSubState
   /**
    * Tweens the camera zoom to the desired amount.
    */
-  public function tweenCameraZoom(?zoom:Float, ?duration:Float, ?directMode:Bool, ?ease:Null<Float->Float>):Void
+  public function tweenCameraZoom(?zoom:Float, ?duration:Float, ?direct:Bool, ?ease:Null<Float->Float>):Void
   {
     // Cancel the current tween if it's active.
     cancelCameraZoomTween();
 
-    var targetZoom = zoom * FlxCamera.defaultZoom;
+    // Direct mode: Set zoom directly.
+    // Stage mode: Set zoom as a multiplier of the current stage's default zoom.
+    var targetZoom = zoom * (direct ? FlxCamera.defaultZoom : stageZoom);
 
-    if (directMode) // Direct mode: Tween defaultCameraZoom for basic "smooth" zooms.
+    if (duration == 0)
     {
-      if (duration == 0)
-      {
-        // Instant zoom. No tween needed.
-        defaultCameraZoom = targetZoom;
-      }
-      else
-      {
-        // Zoom tween! Caching it so we can cancel/pause it later if needed.
-        cameraZoomTween = FlxTween.tween(this, {defaultCameraZoom: targetZoom}, duration, {ease: ease});
-      }
+      // Instant zoom. No tween needed.
+      currentCameraZoom = targetZoom;
     }
-    else // Additive mode: Tween additiveCameraZoom for ease-based zooms.
+    else
     {
-      if (duration == 0)
-      {
-        // Instant zoom. No tween needed.
-        additiveCameraZoom = targetZoom;
-      }
-      else
-      {
-        // Zoom tween! Caching it so we can cancel/pause it later if needed.
-        cameraZoomTween = FlxTween.tween(this, {additiveCameraZoom: targetZoom}, duration, {ease: ease});
-      }
+      // Zoom tween! Caching it so we can cancel/pause it later if needed.
+      cameraZoomTween = FlxTween.tween(this, {currentCameraZoom: targetZoom}, duration, {ease: ease});
     }
   }
 
