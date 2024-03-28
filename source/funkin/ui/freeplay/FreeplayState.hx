@@ -688,14 +688,6 @@ class FreeplayState extends MusicBeatSubState
 
     if (FlxG.keys.justPressed.T) typing.hasFocus = true;
 
-    if (FlxG.sound.music != null)
-    {
-      if (FlxG.sound.music.volume < 0.7)
-      {
-        FlxG.sound.music.volume += 0.5 * elapsed;
-      }
-    }
-
     lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
     lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
 
@@ -733,9 +725,9 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var upP:Bool = controls.UI_UP_P;
-    var downP:Bool = controls.UI_DOWN_P;
-    var accepted:Bool = controls.ACCEPT;
+    var upP:Bool = controls.UI_UP_P && !FlxG.keys.pressed.CONTROL;
+    var downP:Bool = controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL;
+    var accepted:Bool = controls.ACCEPT && !FlxG.keys.pressed.CONTROL;
 
     if (FlxG.onMobile)
     {
@@ -809,10 +801,8 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (controls.UI_UP || controls.UI_DOWN)
+    if (!FlxG.keys.pressed.CONTROL && (controls.UI_UP || controls.UI_DOWN))
     {
-      spamTimer += elapsed;
-
       if (spamming)
       {
         if (spamTimer >= 0.07)
@@ -829,23 +819,29 @@ class FreeplayState extends MusicBeatSubState
           }
         }
       }
-      else if (spamTimer >= 0.9) spamming = true;
+      else if (spamTimer >= 0.9)
+      {
+        spamming = true;
+      }
+      else if (spamTimer <= 0)
+      {
+        if (controls.UI_UP)
+        {
+          changeSelection(-1);
+        }
+        else
+        {
+          changeSelection(1);
+        }
+      }
+
+      spamTimer += elapsed;
+      dj.resetAFKTimer();
     }
     else
     {
       spamming = false;
       spamTimer = 0;
-    }
-
-    if (upP)
-    {
-      dj.resetAFKTimer();
-      changeSelection(-1);
-    }
-    if (downP)
-    {
-      dj.resetAFKTimer();
-      changeSelection(1);
     }
 
     if (FlxG.mouse.wheel != 0)
@@ -854,12 +850,12 @@ class FreeplayState extends MusicBeatSubState
       changeSelection(-Math.round(FlxG.mouse.wheel / 4));
     }
 
-    if (controls.UI_LEFT_P)
+    if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
     {
       dj.resetAFKTimer();
       changeDiff(-1);
     }
-    if (controls.UI_RIGHT_P)
+    if (controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL)
     {
       dj.resetAFKTimer();
       changeDiff(1);
@@ -1234,8 +1230,8 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
-    if (flipX && controls.UI_RIGHT_P) moveShitDown();
-    if (!flipX && controls.UI_LEFT_P) moveShitDown();
+    if (flipX && controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
 
     super.update(elapsed);
   }
