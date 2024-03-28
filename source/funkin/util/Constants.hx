@@ -60,6 +60,11 @@ class Constants
   // ==============================
 
   /**
+   * Link to buy merch for the game.
+   */
+  public static final URL_MERCH:String = 'https://needlejuicerecords.com/pages/friday-night-funkin';
+
+  /**
    * Link to download the game on Itch.io.
    */
   public static final URL_ITCH:String = 'https://ninja-muffin24.itch.io/funkin/purchase';
