@@ -337,7 +337,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       FlxG.sound.music.kill();
     }
 
-    FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, true, false, true);
+    // Apparently HaxeFlixel isn't null safe.
+    @:nullSafety(Off)
+    {
+      FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, true, false, true);
+    }
 
     var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
     if (music != null)
