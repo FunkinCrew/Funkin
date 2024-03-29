@@ -76,10 +76,17 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     trace('Creating Animate Atlas character: ' + this.characterId);
 
-    var atlasSprite:FlxAtlasSprite = loadAtlasSprite();
-    setSprite(atlasSprite);
+    try
+    {
+      var atlasSprite:FlxAtlasSprite = loadAtlasSprite();
+      setSprite(atlasSprite);
 
-    loadAnimations();
+      loadAnimations();
+    }
+    catch (e)
+    {
+      throw "Exception thrown while building FlxAtlasSprite: " + e;
+    }
 
     super.onCreate(event);
   }

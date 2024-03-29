@@ -222,9 +222,14 @@ class TitleState extends MusicBeatState
   {
     var shouldFadeIn = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
-    FunkinSound.playMusic('freakyMenu', false, true);
+    FunkinSound.playMusic('freakyMenu',
+      {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: true
+      });
     // Fade from 0.0 to 0.7 over 4 seconds
-    if (shouldFadeIn) FlxG.sound.music.fadeIn(4, 0, 0.7);
+    if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 0.7);
   }
 
   function getIntroTextShit():Array<Array<String>>
@@ -322,7 +327,7 @@ class TitleState extends MusicBeatState
       if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
-      FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+      FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
 
       var targetState:NextState = () -> new MainMenuState();
@@ -337,7 +342,7 @@ class TitleState extends MusicBeatState
         // ngSpr??
         FlxG.switchState(targetState);
       });
-      // FlxG.sound.play(Paths.music('titleShoot'), 0.7);
+      // FunkinSound.playOnce(Paths.music('titleShoot'), 0.7);
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
 
@@ -384,14 +389,12 @@ class TitleState extends MusicBeatState
   {
     cheatActive = true;
 
-    FlxG.sound.playMusic(Paths.music('tutorialTitle'), 1);
-
     var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
     add(spec);
 
     Conductor.instance.forceBPM(190);
     FlxG.camera.flash(FlxColor.WHITE, 1);
-    FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+    FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
   }
 
   function createCoolText(textArray:Array<String>)
@@ -452,9 +455,9 @@ class TitleState extends MusicBeatState
           switch (i + 1)
           {
             case 1:
-              createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8r']);
+              createCoolText(['The', 'Funkin Crew Inc']);
             case 3:
-              addMoreText('present');
+              addMoreText('presents');
             case 4:
               deleteCoolText();
             case 5:

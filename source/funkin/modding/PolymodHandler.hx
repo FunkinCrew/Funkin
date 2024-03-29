@@ -8,6 +8,7 @@ import funkin.data.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
+import funkin.data.freeplay.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
@@ -208,7 +209,6 @@ class PolymodHandler
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
-    Polymod.addImportAlias('flixel.system.FlxSound', flixel.sound.FlxSound);
 
     // Add blacklisting for prohibited classes and packages.
     // `polymod.*`
@@ -324,6 +324,7 @@ class PolymodHandler
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
+    AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     ModuleHandler.loadModuleCache();

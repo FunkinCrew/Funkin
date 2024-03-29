@@ -139,7 +139,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       for (vari in _data.playData.songVariations)
       {
         var variMeta:Null<SongMetadata> = fetchVariationMetadata(id, vari);
-        if (variMeta != null) _metadata.set(variMeta.variation, variMeta);
+        if (variMeta != null)
+        {
+          _metadata.set(variMeta.variation, variMeta);
+          trace('  Loaded variation: $vari');
+        }
+        else
+        {
+          FlxG.log.warn('[SONG] Failed to load variation metadata (${id}:${vari}), is the path correct?');
+          trace('  FAILED to load variation: $vari');
+        }
       }
     }
 
@@ -211,6 +220,26 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   public function getRawMetadata():Array<SongMetadata>
   {
     return _metadata.values();
+  }
+
+  /**
+   * List the album IDs for each variation of the song.
+   * @return A map of variation IDs to album IDs.
+   */
+  public function listAlbums():Map<String, String>
+  {
+    var result:Map<String, String> = new Map<String, String>();
+
+    for (difficultyId in difficulties.keys())
+    {
+      var meta:Null<SongDifficulty> = difficulties.get(difficultyId);
+      if (meta != null && meta.album != null)
+      {
+        result.set(difficultyId, meta.album);
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -354,12 +383,17 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function getFirstValidVariation(?diffId:String, ?possibleVariations:Array<String>):Null<String>
   {
-    if (variations == null) possibleVariations = variations;
+    if (possibleVariations == null)
+    {
+      possibleVariations = variations;
+      possibleVariations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
+    }
     if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
 
-    for (variation in variations)
+    for (variationId in possibleVariations)
     {
-      if (difficulties.exists('$diffId-$variation')) return variation;
+      var variationSuffix = (variationId != Constants.DEFAULT_VARIATION) ? '-$variationId' : '';
+      if (difficulties.exists('$diffId$variationSuffix')) return variationId;
     }
 
     return null;

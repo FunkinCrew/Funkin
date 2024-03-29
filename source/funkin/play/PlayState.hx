@@ -1,24 +1,15 @@
 package funkin.play;
 
-import funkin.audio.FunkinSound;
-import flixel.addons.display.FlxPieDial;
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.FlxTransitionableSubState;
-import flixel.addons.transition.FlxTransitionableSubState;
-import flixel.addons.transition.Transition;
 import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxState;
-import funkin.graphics.FunkinSprite;
 import flixel.FlxSubState;
-import funkin.graphics.FunkinSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import funkin.graphics.FunkinSprite;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -26,18 +17,19 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.api.newgrounds.NGio;
-import funkin.audio.VoicesGroup;
+import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleData;
-import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
+import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
@@ -48,14 +40,11 @@ import funkin.play.components.ComboMilestone;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
-import funkin.play.notes.NoteSprite;
-import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
@@ -69,7 +58,6 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.options.PreferencesMenu;
 import funkin.ui.story.StoryMenuState;
-import funkin.graphics.FunkinCamera;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
@@ -238,19 +226,39 @@ class PlayState extends MusicBeatSubState
   public var cameraFollowPoint:FlxObject;
 
   /**
+   * An FlxTween that tweens the camera to the follow point.
+   * Only used when tweening the camera manually, rather than tweening via follow.
+   */
+  public var cameraFollowTween:FlxTween;
+
+  /**
+   * An FlxTween that zooms the camera to the desired amount.
+   */
+  public var cameraZoomTween:FlxTween;
+
+  /**
    * The camera follow point from the last stage.
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
   public var previousCameraFollowPoint:FlxPoint = null;
 
   /**
-   * The current camera zoom level.
-   *
-   * The camera zoom is increased every beat, and lerped back to this value every frame, creating a smooth 'zoom-in' effect.
-   * Defaults to 1.05 but may be larger or smaller depending on the current stage,
-   * and may be changed by the `ZoomCamera` song event.
+   * The current camera zoom level without any modifiers applied.
+   */
+  public var currentCameraZoom:Float = FlxCamera.defaultZoom * 1.05;
+
+  /**
+   * currentCameraZoom is increased every beat, and lerped back to this value every frame, creating a smooth 'zoom-in' effect.
+   * Defaults to 1.05, but may be larger or smaller depending on the current stage.
+   * Tweened via the `ZoomCamera` song event in direct mode.
    */
   public var defaultCameraZoom:Float = FlxCamera.defaultZoom * 1.05;
+
+  /**
+   * Camera zoom applied on top of currentCameraZoom.
+   * Tweened via the `ZoomCamera` song event in additive mode.
+   */
+  public var additiveCameraZoom:Float = 0;
 
   /**
    * The current HUD camera zoom level.
@@ -397,9 +405,14 @@ class PlayState extends MusicBeatSubState
   var startingSong:Bool = false;
 
   /**
-   * False if `FlxG.sound.music`
+   * Track if we currently have the music paused for a Pause substate, so we can unpause it when we return.
    */
   var musicPausedBySubState:Bool = false;
+
+  /**
+   * Track any camera tweens we've paused for a Pause substate, so we can unpause them when we return.
+   */
+  var cameraTweensPausedBySubState:List<FlxTween> = new List<FlxTween>();
 
   /**
    * False until `create()` has completed.
@@ -923,8 +936,8 @@ class PlayState extends MusicBeatSubState
 
           var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
 
-          FlxTransitionableSubState.skipNextTransIn = true;
-          FlxTransitionableSubState.skipNextTransOut = true;
+          FlxTransitionableState.skipNextTransIn = true;
+          FlxTransitionableState.skipNextTransOut = true;
           pauseSubState.camera = camHUD;
           openSubState(pauseSubState);
           // boyfriendPos.put(); // TODO: Why is this here?
@@ -943,7 +956,9 @@ class PlayState extends MusicBeatSubState
     // Lerp the camera zoom towards the target level.
     if (subState == null)
     {
-      FlxG.camera.zoom = FlxMath.lerp(defaultCameraZoom, FlxG.camera.zoom, 0.95);
+      currentCameraZoom = FlxMath.lerp(defaultCameraZoom, currentCameraZoom, 0.95);
+      FlxG.camera.zoom = currentCameraZoom + additiveCameraZoom;
+
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
 
@@ -1045,8 +1060,8 @@ class PlayState extends MusicBeatSubState
         isChartingMode: isChartingMode,
         transparent: persistentDraw
       });
-    FlxTransitionableSubState.skipNextTransIn = true;
-    FlxTransitionableSubState.skipNextTransOut = true;
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxTransitionableState.skipNextTransOut = true;
     openSubState(gameOverSubState);
   }
 
@@ -1121,12 +1136,28 @@ class PlayState extends MusicBeatSubState
       // Pause the music.
       if (FlxG.sound.music != null)
       {
-        musicPausedBySubState = FlxG.sound.music.playing;
-        if (musicPausedBySubState)
+        if (FlxG.sound.music.playing)
         {
           FlxG.sound.music.pause();
+          musicPausedBySubState = true;
         }
+
+        // Pause vocals.
+        // Not tracking that we've done this via a bool because vocal re-syncing involves pausing the vocals anyway.
         if (vocals != null) vocals.pause();
+      }
+
+      // Pause camera tweening, and keep track of which tweens we pause.
+      if (cameraFollowTween != null && cameraFollowTween.active)
+      {
+        cameraFollowTween.active = false;
+        cameraTweensPausedBySubState.add(cameraFollowTween);
+      }
+
+      if (cameraZoomTween != null && cameraZoomTween.active)
+      {
+        cameraZoomTween.active = false;
+        cameraTweensPausedBySubState.add(cameraZoomTween);
       }
 
       // Pause the countdown.
@@ -1150,17 +1181,26 @@ class PlayState extends MusicBeatSubState
 
       if (event.eventCanceled) return;
 
-      // Resume
+      // Resume music if we paused it.
       if (musicPausedBySubState)
       {
         FlxG.sound.music.play();
+        musicPausedBySubState = false;
       }
+
+      // Resume camera tweens if we paused any.
+      for (camTween in cameraTweensPausedBySubState)
+      {
+        camTween.active = true;
+      }
+      cameraTweensPausedBySubState.clear();
 
       if (currentConversation != null)
       {
         currentConversation.resumeMusic();
       }
 
+      // Re-sync vocals.
       if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
 
       // Resume the countdown.
@@ -1245,16 +1285,35 @@ class PlayState extends MusicBeatSubState
       currentStage = null;
     }
 
-    // Stop the instrumental.
-    if (FlxG.sound.music != null)
+    if (!overrideMusic)
     {
-      FlxG.sound.music.stop();
-    }
+      // Stop the instrumental.
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.destroy();
+        FlxG.sound.music = null;
+      }
 
-    // Stop the vocals.
-    if (vocals != null && vocals.exists)
+      // Stop the vocals.
+      if (vocals != null && vocals.exists)
+      {
+        vocals.destroy();
+        vocals = null;
+      }
+    }
+    else
     {
-      vocals.stop();
+      // Stop the instrumental.
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.stop();
+      }
+
+      // Stop the vocals.
+      if (vocals != null && vocals.exists)
+      {
+        vocals.stop();
+      }
     }
 
     super.debug_refreshModules();
@@ -1305,10 +1364,13 @@ class PlayState extends MusicBeatSubState
     }
 
     // Only zoom camera if we are zoomed by less than 35%.
-    if (FlxG.camera.zoom < (1.35 * defaultCameraZoom) && cameraZoomRate > 0 && Conductor.instance.currentBeat % cameraZoomRate == 0)
+    if (Preferences.zoomCamera
+      && FlxG.camera.zoom < (1.35 * defaultCameraZoom)
+      && cameraZoomRate > 0
+      && Conductor.instance.currentBeat % cameraZoomRate == 0)
     {
       // Zoom camera in (1.5%)
-      FlxG.camera.zoom += cameraZoomIntensity * defaultCameraZoom;
+      currentCameraZoom += cameraZoomIntensity * defaultCameraZoom;
       // Hud zooms double (3%)
       camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
     }
@@ -1498,8 +1560,14 @@ class PlayState extends MusicBeatSubState
 
   public function resetCameraZoom():Void
   {
+    if (PlayState.instance.isMinimalMode) return;
     // Apply camera zoom level from stage data.
     defaultCameraZoom = currentStage.camZoom;
+    currentCameraZoom = defaultCameraZoom;
+    FlxG.camera.zoom = currentCameraZoom;
+
+    // Reset additive zoom.
+    additiveCameraZoom = 0;
   }
 
   /**
@@ -1843,19 +1911,26 @@ class PlayState extends MusicBeatSubState
       currentChart.playInst(1.0, false);
     }
 
+    if (FlxG.sound.music == null)
+    {
+      FlxG.log.error('PlayState failed to initialize instrumental!');
+      return;
+    }
+
     FlxG.sound.music.onComplete = endSong.bind(false);
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
     FlxG.sound.music.play(true, startTimestamp - Conductor.instance.instrumentalOffset);
     FlxG.sound.music.pitch = playbackRate;
 
-    // I am going insane.
+    // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;
     if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
     add(vocals);
     vocals.play();
+    vocals.volume = 1.0;
     vocals.pitch = playbackRate;
     resyncVocals();
 
@@ -2034,8 +2109,7 @@ class PlayState extends MusicBeatSubState
         holdNote.handledMiss = true;
 
         // We dropped a hold note.
-        // Mute vocals and play miss animation, but don't penalize.
-        vocals.opponentVolume = 0;
+        // Play miss animation, but don't penalize.
         currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
@@ -2373,7 +2447,7 @@ class PlayState extends MusicBeatSubState
     if (playSound)
     {
       vocals.playerVolume = 0;
-      FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
     }
   }
 
@@ -2428,7 +2502,7 @@ class PlayState extends MusicBeatSubState
     if (event.playSound)
     {
       vocals.playerVolume = 0;
-      FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }
 
@@ -2609,8 +2683,8 @@ class PlayState extends MusicBeatSubState
         var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
 
         persistentUpdate = false;
-        FlxTransitionableSubState.skipNextTransIn = true;
-        FlxTransitionableSubState.skipNextTransOut = true;
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
         pauseSubState.camera = camCutscene;
         openSubState(pauseSubState);
       }
@@ -2625,8 +2699,8 @@ class PlayState extends MusicBeatSubState
         var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
 
         persistentUpdate = false;
-        FlxTransitionableSubState.skipNextTransIn = true;
-        FlxTransitionableSubState.skipNextTransOut = true;
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
         pauseSubState.camera = camCutscene;
         openSubState(pauseSubState);
       }
@@ -2711,7 +2785,11 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FunkinSound.playMusic('freakyMenu');
+        FunkinSound.playMusic('freakyMenu',
+          {
+            overrideExisting: true,
+            restartTrack: false
+          });
 
         // transIn = FlxTransitionableState.defaultTransIn;
         // transOut = FlxTransitionableState.defaultTransOut;
@@ -2789,7 +2867,7 @@ class PlayState extends MusicBeatSubState
           camHUD.visible = false;
           isInCutscene = true;
 
-          FlxG.sound.play(Paths.sound('Lights_Shut_off'), function() {
+          FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
             LoadingState.loadPlayState(
@@ -2846,6 +2924,12 @@ class PlayState extends MusicBeatSubState
    */
   function performCleanup():Void
   {
+    // If the camera is being tweened, stop it.
+    cancelAllCameraTweens();
+
+    // Dispatch the destroy event.
+    dispatchEvent(new ScriptEvent(DESTROY, false));
+
     if (currentConversation != null)
     {
       remove(currentConversation);
@@ -2860,7 +2944,7 @@ class PlayState extends MusicBeatSubState
     if (overrideMusic)
     {
       // Stop the music. Do NOT destroy it, something still references it!
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null) FlxG.sound.music.pause();
       if (vocals != null)
       {
         vocals.pause();
@@ -2870,7 +2954,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       // Stop and destroy the music.
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null) FlxG.sound.music.pause();
       if (vocals != null)
       {
         vocals.destroy();
@@ -2883,7 +2967,6 @@ class PlayState extends MusicBeatSubState
     {
       remove(currentStage);
       currentStage.kill();
-      dispatchEvent(new ScriptEvent(DESTROY, false));
       currentStage = null;
     }
 
@@ -2903,6 +2986,9 @@ class PlayState extends MusicBeatSubState
 
     // Stop camera zooming on beat.
     cameraZoomRate = 0;
+
+    // Cancel camera tweening if it's active.
+    cancelAllCameraTweens();
 
     // If the opponent is GF, zoom in on the opponent.
     // Else, if there is no GF, zoom in on BF.
@@ -2990,13 +3076,117 @@ class PlayState extends MusicBeatSubState
   /**
    * Resets the camera's zoom level and focus point.
    */
-  public function resetCamera():Void
+  public function resetCamera(?resetZoom:Bool = true, ?cancelTweens:Bool = true):Void
   {
+    // Cancel camera tweens if any are active.
+    if (cancelTweens)
+    {
+      cancelAllCameraTweens();
+    }
+
     FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
     FlxG.camera.targetOffset.set();
-    FlxG.camera.zoom = defaultCameraZoom;
+
+    if (resetZoom)
+    {
+      resetCameraZoom();
+    }
+
     // Snap the camera to the follow point immediately.
     FlxG.camera.focusOn(cameraFollowPoint.getPosition());
+  }
+
+  /**
+   * Disables camera following and tweens the camera to the follow point manually.
+   */
+  public function tweenCameraToFollowPoint(?duration:Float, ?ease:Null<Float->Float>):Void
+  {
+    // Cancel the current tween if it's active.
+    cancelCameraFollowTween();
+
+    if (duration == 0)
+    {
+      // Instant movement. Just reset the camera to force it to the follow point.
+      resetCamera(false, false);
+    }
+    else
+    {
+      // Disable camera following for the duration of the tween.
+      FlxG.camera.target = null;
+
+      // Follow tween! Caching it so we can cancel/pause it later if needed.
+      var followPos:FlxPoint = cameraFollowPoint.getPosition() - FlxPoint.weak(FlxG.camera.width * 0.5, FlxG.camera.height * 0.5);
+      cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, duration,
+        {
+          ease: ease,
+          onComplete: function(_) {
+            resetCamera(false, false); // Re-enable camera following when the tween is complete.
+          }
+        });
+    }
+  }
+
+  public function cancelCameraFollowTween()
+  {
+    if (cameraFollowTween != null)
+    {
+      cameraFollowTween.cancel();
+    }
+  }
+
+  /**
+   * Tweens the camera zoom to the desired amount.
+   */
+  public function tweenCameraZoom(?zoom:Float, ?duration:Float, ?directMode:Bool, ?ease:Null<Float->Float>):Void
+  {
+    // Cancel the current tween if it's active.
+    cancelCameraZoomTween();
+
+    var targetZoom = zoom * FlxCamera.defaultZoom;
+
+    if (directMode) // Direct mode: Tween defaultCameraZoom for basic "smooth" zooms.
+    {
+      if (duration == 0)
+      {
+        // Instant zoom. No tween needed.
+        defaultCameraZoom = targetZoom;
+      }
+      else
+      {
+        // Zoom tween! Caching it so we can cancel/pause it later if needed.
+        cameraZoomTween = FlxTween.tween(this, {defaultCameraZoom: targetZoom}, duration, {ease: ease});
+      }
+    }
+    else // Additive mode: Tween additiveCameraZoom for ease-based zooms.
+    {
+      if (duration == 0)
+      {
+        // Instant zoom. No tween needed.
+        additiveCameraZoom = targetZoom;
+      }
+      else
+      {
+        // Zoom tween! Caching it so we can cancel/pause it later if needed.
+        cameraZoomTween = FlxTween.tween(this, {additiveCameraZoom: targetZoom}, duration, {ease: ease});
+      }
+    }
+  }
+
+  public function cancelCameraZoomTween()
+  {
+    if (cameraZoomTween != null)
+    {
+      cameraZoomTween.cancel();
+    }
+  }
+
+  /**
+   * Cancel all active camera tweens simultaneously.
+   */
+  public function cancelAllCameraTweens()
+  {
+    cancelCameraFollowTween();
+    cancelCameraZoomTween();
   }
 
   #if (debug || FORCE_DEBUG_VERSION)

@@ -3,7 +3,9 @@ package funkin.graphics.adobeanimate;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flxanimate.FlxAnimate;
 import flxanimate.FlxAnimate.Settings;
-import flixel.math.FlxPoint;
+import flxanimate.frames.FlxAnimateFrames;
+import openfl.display.BitmapData;
+import openfl.utils.Assets;
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
@@ -31,7 +33,7 @@ class FlxAtlasSprite extends FlxAnimate
 
   var canPlayOtherAnims:Bool = true;
 
-  public function new(x:Float, y:Float, path:String, ?settings:Settings)
+  public function new(x:Float, y:Float, ?path:String, ?settings:Settings)
   {
     if (settings == null) settings = SETTINGS;
 
@@ -75,6 +77,23 @@ class FlxAtlasSprite extends FlxAnimate
   public function getCurrentAnimation():String
   {
     return this.currentAnimation;
+  }
+
+  /**
+   * `anim.finished` always returns false on looping animations,
+   * but this function will return true if we are on the last frame of the looping animation.
+   */
+  public function isLoopFinished():Bool
+  {
+    if (this.anim == null) return false;
+    if (!this.anim.isPlaying) return false;
+
+    // Reverse animation finished.
+    if (this.anim.reversed && this.anim.curFrame == 0) return true;
+    // Forward animation finished.
+    if (!this.anim.reversed && this.anim.curFrame >= (this.anim.length - 1)) return true;
+
+    return false;
   }
 
   /**
