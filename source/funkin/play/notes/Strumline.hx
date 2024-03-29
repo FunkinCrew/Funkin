@@ -827,7 +827,7 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new SustainTrail(0, 100, noteStyle);
+      result = new SustainTrail(0, 0, noteStyle);
       this.holdNotes.add(result);
     }
 
