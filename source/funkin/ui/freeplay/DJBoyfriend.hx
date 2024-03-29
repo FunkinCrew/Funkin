@@ -27,8 +27,8 @@ class DJBoyfriend extends FlxAtlasSprite
 
   var gotSpooked:Bool = false;
 
-  static final SPOOK_PERIOD:Float = 10.0;
-  static final TV_PERIOD:Float = 10.0;
+  static final SPOOK_PERIOD:Float = 120.0;
+  static final TV_PERIOD:Float = 180.0;
 
   // Time since dad last SPOOKED you.
   var timeSinceSpook:Float = 0;
@@ -43,7 +43,14 @@ class DJBoyfriend extends FlxAtlasSprite
       switch (name)
       {
         case "Boyfriend DJ watchin tv OG":
-          if (number == 85) runTvLogic();
+          if (number == 80)
+          {
+            FunkinSound.playOnce(Paths.sound('remote_click'));
+          }
+          if (number == 85)
+          {
+            runTvLogic();
+          }
         default:
       }
     };
@@ -219,19 +226,17 @@ class DJBoyfriend extends FlxAtlasSprite
     if (cartoonSnd == null)
     {
       // tv is OFF, but getting turned on
-      // Eric got FUCKING TROLLED there is no `tv_on` or `channel_switch` sound!
-      // FunkinSound.playOnce(Paths.sound('tv_on'), 1.0, function() {
-      // });
-      loadCartoon();
+      FunkinSound.playOnce(Paths.sound('tv_on'), 1.0, function() {
+        loadCartoon();
+      });
     }
     else
     {
       // plays it smidge after the click
-      // new FlxTimer().start(0.1, function(_) {
-      //   // FunkinSound.playOnce(Paths.sound('channel_switch'));
-      // });
-      cartoonSnd.destroy();
-      loadCartoon();
+      FunkinSound.playOnce(Paths.sound('channel_switch'), 1.0, function() {
+        cartoonSnd.destroy();
+        loadCartoon();
+      });
     }
 
     // loadCartoon();
