@@ -9,6 +9,7 @@ import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import funkin.util.MathUtil;
 import funkVis.dsp.SpectralAnalyzer;
+import funkVis.audioclip.frontends.LimeAudioClip;
 
 using Lambda;
 
@@ -57,7 +58,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function initAnalyzer()
   {
     @:privateAccess
-    analyzer = new SpectralAnalyzer(7, new AudioClip(cast snd._channel.__source), 0.01, 30);
+    analyzer = new SpectralAnalyzer(7, new LimeAudioClip(cast snd._channel.__source), 0.01, 30);
     analyzer.maxDb = -35;
     // analyzer.fftN = 2048;
   }
