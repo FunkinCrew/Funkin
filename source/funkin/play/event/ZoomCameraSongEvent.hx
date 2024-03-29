@@ -101,9 +101,9 @@ class ZoomCameraSongEvent extends SongEvent
    * ```
    * {
    *   'zoom': FLOAT, // Target zoom level.
-   *   'duration': FLOAT, // Optional duration in steps.
-   *   'mode': ENUM, // Whether to set additive zoom or direct zoom.
-   *   'ease': ENUM, // Optional easing function.
+   *   'duration': FLOAT, // Duration in steps.
+   *   'mode': ENUM, // Whether zoom is relative to the stage or absolute zoom.
+   *   'ease': ENUM, // Easing function.
    * }
    * @return SongEventSchema
    */
@@ -129,9 +129,9 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'mode',
         title: 'Mode',
-        defaultValue: 'direct',
+        defaultValue: 'stage',
         type: SongEventFieldType.ENUM,
-        keys: ['Stage' => 'stage', 'Direct' => 'direct']
+        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
       },
       {
         name: 'ease',
