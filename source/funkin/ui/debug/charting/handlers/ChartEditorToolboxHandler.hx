@@ -38,6 +38,7 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
+import funkin.ui.debug.charting.toolboxes.ChartEditorNoteDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import haxe.ui.containers.Frame;
 import haxe.ui.containers.Grid;
@@ -79,17 +80,16 @@ class ChartEditorToolboxHandler
 
       switch (id)
       {
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
-          onShowToolboxNoteData(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:
+          cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:
-          // TODO: Fix this.
+          // TODO: Make these better.
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
           onShowToolboxPlaytestProperties(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
-          // TODO: Fix this.
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
@@ -124,10 +124,6 @@ class ChartEditorToolboxHandler
 
       switch (id)
       {
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
-          onHideToolboxNoteData(state, toolbox);
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:
-          onHideToolboxEventData(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:
           onHideToolboxPlaytestProperties(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
@@ -196,7 +192,7 @@ class ChartEditorToolboxHandler
     var toolbox:Null<CollapsibleDialog> = null;
     switch (id)
     {
-      case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT:
+      case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:
         toolbox = buildToolboxNoteDataLayout(state);
       case ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:
         toolbox = buildToolboxEventDataLayout(state);
@@ -262,57 +258,12 @@ class ChartEditorToolboxHandler
 
   static function buildToolboxNoteDataLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
-    var toolbox:CollapsibleDialog = cast RuntimeComponentBuilder.fromAsset(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTEDATA_LAYOUT);
+    var toolbox:ChartEditorBaseToolbox = ChartEditorNoteDataToolbox.build(state);
 
     if (toolbox == null) return null;
 
-    // Starting position.
-    toolbox.x = 75;
-    toolbox.y = 100;
-
-    toolbox.onDialogClosed = function(event:DialogEvent) {
-      state.menubarItemToggleToolboxNotes.selected = false;
-    }
-
-    var toolboxNotesNoteKind:Null<DropDown> = toolbox.findComponent('toolboxNotesNoteKind', DropDown);
-    if (toolboxNotesNoteKind == null) throw 'ChartEditorToolboxHandler.buildToolboxNoteDataLayout() - Could not find toolboxNotesNoteKind component.';
-    var toolboxNotesCustomKindLabel:Null<Label> = toolbox.findComponent('toolboxNotesCustomKindLabel', Label);
-    if (toolboxNotesCustomKindLabel == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxNoteDataLayout() - Could not find toolboxNotesCustomKindLabel component.';
-    var toolboxNotesCustomKind:Null<TextField> = toolbox.findComponent('toolboxNotesCustomKind', TextField);
-    if (toolboxNotesCustomKind == null) throw 'ChartEditorToolboxHandler.buildToolboxNoteDataLayout() - Could not find toolboxNotesCustomKind component.';
-
-    toolboxNotesNoteKind.onChange = function(event:UIEvent) {
-      var isCustom:Bool = (event.data.id == '~CUSTOM~');
-
-      if (isCustom)
-      {
-        toolboxNotesCustomKindLabel.hidden = false;
-        toolboxNotesCustomKind.hidden = false;
-
-        state.noteKindToPlace = toolboxNotesCustomKind.text;
-      }
-      else
-      {
-        toolboxNotesCustomKindLabel.hidden = true;
-        toolboxNotesCustomKind.hidden = true;
-
-        state.noteKindToPlace = event.data.id;
-      }
-    }
-
-    toolboxNotesCustomKind.onChange = function(event:UIEvent) {
-      state.noteKindToPlace = toolboxNotesCustomKind.text;
-    }
-
     return toolbox;
   }
-
-  static function onShowToolboxNoteData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
-
-  static function onHideToolboxNoteData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
-
-  static function onHideToolboxEventData(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
   static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 
@@ -348,6 +299,15 @@ class ChartEditorToolboxHandler
       state.playtestStartTime = checkboxStartTime.selected;
     };
 
+    var checkboxBotPlay:Null<CheckBox> = toolbox.findComponent('playtestBotPlayCheckbox', CheckBox);
+    if (checkboxBotPlay == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestBotPlayCheckbox component.';
+
+    checkboxBotPlay.selected = state.playtestBotPlayMode;
+
+    checkboxBotPlay.onClick = _ -> {
+      state.playtestBotPlayMode = checkboxBotPlay.selected;
+    };
+
     var checkboxDebugger:Null<CheckBox> = toolbox.findComponent('playtestDebuggerCheckbox', CheckBox);
 
     if (checkboxDebugger == null) throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestDebuggerCheckbox component.';
@@ -356,6 +316,17 @@ class ChartEditorToolboxHandler
 
     checkboxDebugger.onClick = _ -> {
       state.enabledDebuggerPopup = checkboxDebugger.selected;
+    };
+
+    var checkboxSongScripts:Null<CheckBox> = toolbox.findComponent('playtestSongScriptsCheckbox', CheckBox);
+
+    if (checkboxSongScripts == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestSongScriptsCheckbox component.';
+
+    state.playtestSongScripts = checkboxSongScripts.selected;
+
+    checkboxSongScripts.onClick = _ -> {
+      state.playtestSongScripts = checkboxSongScripts.selected;
     };
 
     return toolbox;

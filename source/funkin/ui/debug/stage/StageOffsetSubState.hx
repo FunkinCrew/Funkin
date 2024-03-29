@@ -49,8 +49,11 @@ class StageOffsetSubState extends HaxeUISubState
   {
     super.create();
 
+    var playState = PlayState.instance;
+
     FlxG.mouse.visible = true;
-    PlayState.instance.pauseMusic();
+    playState.pauseMusic();
+    playState.cancelAllCameraTweens();
     FlxG.camera.target = null;
 
     setupUIListeners();
@@ -63,8 +66,8 @@ class StageOffsetSubState extends HaxeUISubState
 
     // add(uiStuff);
 
-    PlayState.instance.persistentUpdate = true;
-    component.cameras = [PlayState.instance.camHUD];
+    playState.persistentUpdate = true;
+    component.cameras = [playState.camHUD];
     // uiStuff.cameras = [PlayState.instance.camHUD];
     // btn.cameras = [PlayState.instance.camHUD];
 
@@ -72,7 +75,7 @@ class StageOffsetSubState extends HaxeUISubState
 
     var layerList:ListView = findComponent("prop-layers");
 
-    for (thing in PlayState.instance.currentStage)
+    for (thing in playState.currentStage)
     {
       var prop:StageProp = cast thing;
       if (prop != null && prop.name != null)

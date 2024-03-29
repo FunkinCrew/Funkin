@@ -3,17 +3,19 @@ package funkin.play;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.sound.FlxSound;
-import funkin.ui.story.StoryMenuState;
+import funkin.audio.FunkinSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.MusicBeatSubState;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.PlayState;
-import funkin.ui.freeplay.FreeplayState;
 import funkin.play.character.BaseCharacter;
+import funkin.play.PlayState;
+import funkin.util.MathUtil;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.story.StoryMenuState;
+import openfl.utils.Assets;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -63,7 +65,7 @@ class GameOverSubState extends MusicBeatSubState
   /**
    * The music playing in the background of the state.
    */
-  var gameOverMusic:FlxSound = new FlxSound();
+  var gameOverMusic:Null<FunkinSound> = null;
 
   /**
    * Whether the player has confirmed and prepared to restart the level.
@@ -71,9 +73,17 @@ class GameOverSubState extends MusicBeatSubState
    */
   var isEnding:Bool = false;
 
+  /**
+   * Whether the death music is on its first loop.
+   */
+  var isStarting:Bool = true;
+
   var isChartingMode:Bool = false;
 
   var transparent:Bool;
+
+  final CAMERA_ZOOM_DURATION:Float = 0.5;
+  var targetCameraZoom:Float = 1.0;
 
   public function new(params:GameOverParams)
   {
@@ -86,14 +96,14 @@ class GameOverSubState extends MusicBeatSubState
   /**
    * Reset the game over configuration to the default.
    */
-  public static function reset()
+  public static function reset():Void
   {
-    animationSuffix = "";
-    musicSuffix = "";
-    blueBallSuffix = "";
+    animationSuffix = '';
+    musicSuffix = '';
+    blueBallSuffix = '';
   }
 
-  override public function create()
+  override public function create():Void
   {
     if (instance != null)
     {
@@ -108,6 +118,8 @@ class GameOverSubState extends MusicBeatSubState
     // Set up the visuals
     //
 
+    var playState = PlayState.instance;
+
     // Add a black background to the screen.
     var bg = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     // We make this transparent so that we can see the stage underneath during debugging,
@@ -119,54 +131,72 @@ class GameOverSubState extends MusicBeatSubState
 
     // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
     // We can then play the character's `firstDeath` animation.
-    boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
-    boyfriend.isDead = true;
-    add(boyfriend);
-    boyfriend.resetCharacter();
+    if (PlayState.instance.isMinimalMode) {}
+    else
+    {
+      boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
+      boyfriend.isDead = true;
+      add(boyfriend);
+      boyfriend.resetCharacter();
 
-    // Assign a camera follow point to the boyfriend's position.
-    cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
-    cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
-    cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
-    var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
-    cameraFollowPoint.x += offsets[0];
-    cameraFollowPoint.y += offsets[1];
-    add(cameraFollowPoint);
+      // Assign a camera follow point to the boyfriend's position.
+      cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
+      cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
+      cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
+      var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
+      cameraFollowPoint.x += offsets[0];
+      cameraFollowPoint.y += offsets[1];
+      add(cameraFollowPoint);
 
-    FlxG.camera.target = null;
-    FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.01);
+      FlxG.camera.target = null;
+      FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.01);
+      targetCameraZoom = PlayState?.instance?.currentStage?.camZoom * boyfriend.getDeathCameraZoom();
+    }
 
     //
     // Set up the audio
     //
 
-    // Prepare the game over music.
-    FlxG.sound.list.add(gameOverMusic);
-    gameOverMusic.stop();
-
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
   }
 
+  public function resetCameraZoom():Void
+  {
+    // Apply camera zoom level from stage data.
+    FlxG.camera.zoom = PlayState?.instance?.currentStage?.camZoom ?? 1.0;
+  }
+
   var hasStartedAnimation:Bool = false;
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     if (!hasStartedAnimation)
     {
       hasStartedAnimation = true;
 
-      if (boyfriend.hasAnimation('fakeoutDeath') && FlxG.random.bool((1 / 4096) * 100))
+      if (PlayState.instance.isMinimalMode)
       {
-        boyfriend.playAnimation('fakeoutDeath', true, false);
-      }
-      else
-      {
-        boyfriend.playAnimation('firstDeath', true, false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
         // Play the "blue balled" sound. May play a variant if one has been assigned.
         playBlueBalledSFX();
       }
+      else
+      {
+        if (boyfriend.hasAnimation('fakeoutDeath') && FlxG.random.bool((1 / 4096) * 100))
+        {
+          boyfriend.playAnimation('fakeoutDeath', true, false);
+        }
+        else
+        {
+          boyfriend.playAnimation('firstDeath', true, false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
+          // Play the "blue balled" sound. May play a variant if one has been assigned.
+          playBlueBalledSFX();
+        }
+      }
     }
+
+    // Smoothly lerp the camera
+    FlxG.camera.zoom = MathUtil.smoothLerp(FlxG.camera.zoom, targetCameraZoom, elapsed, CAMERA_ZOOM_DURATION);
 
     //
     // Handle user inputs.
@@ -216,7 +246,7 @@ class GameOverSubState extends MusicBeatSubState
       }
     }
 
-    if (gameOverMusic.playing)
+    if (gameOverMusic != null && gameOverMusic.playing)
     {
       // Match the conductor to the music.
       // This enables the stepHit and beatHit events.
@@ -224,27 +254,34 @@ class GameOverSubState extends MusicBeatSubState
     }
     else
     {
-      // Music hasn't started yet.
-      switch (PlayStatePlaylist.campaignId)
+      if (PlayState.instance.isMinimalMode)
       {
-        // TODO: Make the behavior for playing Jeff's voicelines generic or un-hardcoded.
-        // This will simplify the class and make it easier for mods to add death quotes.
-        case "week7":
-          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !playingJeffQuote)
-          {
-            playingJeffQuote = true;
-            playJeffQuote();
-            // Start music at lower volume
-            startDeathMusic(0.2, false);
-            boyfriend.playAnimation('deathLoop' + animationSuffix);
-          }
-        default:
-          // Start music at normal volume once the initial death animation finishes.
-          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
-          {
-            startDeathMusic(1.0, false);
-            boyfriend.playAnimation('deathLoop' + animationSuffix);
-          }
+        // startDeathMusic(1.0, false);
+      }
+      else
+      {
+        // Music hasn't started yet.
+        switch (PlayStatePlaylist.campaignId)
+        {
+          // TODO: Make the behavior for playing Jeff's voicelines generic or un-hardcoded.
+          // This will simplify the class and make it easier for mods to add death quotes.
+          case 'week7':
+            if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !playingJeffQuote)
+            {
+              playingJeffQuote = true;
+              playJeffQuote();
+              // Start music at lower volume
+              startDeathMusic(0.2, false);
+              boyfriend.playAnimation('deathLoop' + animationSuffix);
+            }
+          default:
+            // Start music at normal volume once the initial death animation finishes.
+            if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
+            {
+              startDeathMusic(1.0, false);
+              boyfriend.playAnimation('deathLoop' + animationSuffix);
+            }
+        }
       }
     }
 
@@ -262,7 +299,11 @@ class GameOverSubState extends MusicBeatSubState
       isEnding = true;
       startDeathMusic(1.0, true); // isEnding changes this function's behavior.
 
-      boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
+      if (PlayState.instance.isMinimalMode) {}
+      else
+      {
+        boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
+      }
 
       // After the animation finishes...
       new FlxTimer().start(0.7, function(tmr:FlxTimer) {
@@ -272,10 +313,17 @@ class GameOverSubState extends MusicBeatSubState
           FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           PlayState.instance.needsReset = true;
 
-          // Readd Boyfriend to the stage.
-          boyfriend.isDead = false;
-          remove(boyfriend);
-          PlayState.instance.currentStage.addCharacter(boyfriend, BF);
+          if (PlayState.instance.isMinimalMode) {}
+          else
+          {
+            // Readd Boyfriend to the stage.
+            boyfriend.isDead = false;
+            remove(boyfriend);
+            PlayState.instance.currentStage.addCharacter(boyfriend, BF);
+          }
+
+          // Snap reset the camera which may have changed because of the player character data.
+          resetCameraZoom();
 
           // Close the substate.
           close();
@@ -292,22 +340,69 @@ class GameOverSubState extends MusicBeatSubState
   }
 
   /**
+   * Rather than hardcoding stuff, we look for the presence of a music file
+   * with the given suffix, and strip it down until we find one that's valid.
+   */
+  function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<String>
+  {
+    var basePath = 'gameplay/gameover/gameOver';
+    if (starting) basePath += 'Start';
+    else if (ending) basePath += 'End';
+
+    var musicPath = Paths.music(basePath + suffix);
+    while (!Assets.exists(musicPath) && suffix.length > 0)
+    {
+      suffix = suffix.split('-').slice(0, -1).join('-');
+      musicPath = Paths.music(basePath + suffix);
+    }
+    if (!Assets.exists(musicPath)) return null;
+    trace('Resolved music path: ' + musicPath);
+    return musicPath;
+  }
+
+  /**
    * Starts the death music at the appropriate volume.
    * @param startingVolume
    */
-  function startDeathMusic(?startingVolume:Float = 1, force:Bool = false):Void
+  public function startDeathMusic(startingVolume:Float = 1, force:Bool = false):Void
   {
-    var musicPath = Paths.music('gameplay/gameover/gameOver' + musicSuffix);
-    if (isEnding)
+    var musicPath = resolveMusicPath(musicSuffix, isStarting, isEnding);
+    var onComplete = null;
+    if (isStarting)
     {
-      musicPath = Paths.music('gameplay/gameover/gameOverEnd' + musicSuffix);
+      if (musicPath == null)
+      {
+        isStarting = false;
+        musicPath = resolveMusicPath(musicSuffix, isStarting, isEnding);
+      }
+      else
+      {
+        onComplete = function() {
+          isStarting = false;
+          // We need to force to ensure that the non-starting music plays.
+          startDeathMusic(1.0, true);
+        };
+      }
     }
-    if (!gameOverMusic.playing || force)
+
+    if (musicPath == null)
     {
-      gameOverMusic.loadEmbedded(musicPath);
+      trace('Could not find game over music!');
+      return;
+    }
+    else if (gameOverMusic == null || !gameOverMusic.playing || force)
+    {
+      if (gameOverMusic != null) gameOverMusic.stop();
+      gameOverMusic = FunkinSound.load(musicPath);
       gameOverMusic.volume = startingVolume;
-      gameOverMusic.looped = !isEnding;
+      gameOverMusic.looped = !(isEnding || isStarting);
+      gameOverMusic.onComplete = onComplete;
       gameOverMusic.play();
+    }
+    else
+    {
+      @:privateAccess
+      trace('Music already playing! ${gameOverMusic?._label}');
     }
   }
 
@@ -320,7 +415,14 @@ class GameOverSubState extends MusicBeatSubState
   public static function playBlueBalledSFX()
   {
     blueballed = true;
-    FlxG.sound.play(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
+    {
+      FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    }
+    else
+    {
+      FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+    }
   }
 
   var playingJeffQuote:Bool = false;
@@ -335,13 +437,21 @@ class GameOverSubState extends MusicBeatSubState
 
     if (!Preferences.naughtyness) randomCensor = [1, 3, 8, 13, 17, 21];
 
-    FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), 1, false, null, true, function() {
+    FunkinSound.playOnce(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), function() {
       // Once the quote ends, fade in the game over music.
       if (!isEnding && gameOverMusic != null)
       {
         gameOverMusic.fadeIn(4, 0.2, 1);
       }
     });
+  }
+
+  public override function destroy()
+  {
+    super.destroy();
+    if (gameOverMusic != null) gameOverMusic.stop();
+    gameOverMusic = null;
+    instance = null;
   }
 
   public override function toString():String

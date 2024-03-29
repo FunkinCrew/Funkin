@@ -167,10 +167,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   function update_shouldAlternate():Void
   {
-    if (hasAnimation('danceLeft'))
-    {
-      this.shouldAlternate = true;
-    }
+    this.shouldAlternate = hasAnimation('danceLeft');
   }
 
   /**
@@ -228,33 +225,42 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   /**
    * Ensure that a given animation exists before playing it.
-   * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
-   * @param name
+   * Will gracefully check for name, then name with stripped suffixes, then fail to play.
+   * @param name The animation name to attempt to correct.
+   * @param fallback Instead of failing to play, try to play this animation instead.
    */
-  function correctAnimationName(name:String):String
+  function correctAnimationName(name:String, ?fallback:String):String
   {
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
 
-    trace('[BOPPER] Animation "$name" does not exist!');
+    FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
 
     // Attempt to strip a `-alt` suffix, if it exists.
     if (name.lastIndexOf('-') != -1)
     {
       var correctName = name.substring(0, name.lastIndexOf('-'));
-      trace('[BOPPER] Attempting to fallback to "$correctName"');
+      FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
       return correctAnimationName(correctName);
     }
     else
     {
-      if (name != 'idle')
+      if (fallback != null)
       {
-        trace('[BOPPER] Attempting to fallback to "idle"');
-        return correctAnimationName('idle');
+        if (fallback == name)
+        {
+          FlxG.log.error('Bopper tried to play animation "$name" that does not exist! This is bad!');
+          return null;
+        }
+        else
+        {
+          FlxG.log.warn('Bopper tried to play animation "$name" that does not exist, fallback to idle...');
+          return correctAnimationName('idle');
+        }
       }
       else
       {
-        trace('[BOPPER] Failing animation playback.');
+        FlxG.log.error('Bopper tried to play animation "$name" that does not exist! This is bad!');
         return null;
       }
     }
@@ -353,7 +359,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public function onGameOver(event:ScriptEvent) {}
 
-  public function onNoteHit(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent) {}
+
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
 

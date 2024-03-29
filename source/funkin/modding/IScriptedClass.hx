@@ -56,7 +56,20 @@ interface IStateStageProp extends IScriptedClass
  */
 interface INoteScriptedClass extends IScriptedClass
 {
-  public function onNoteHit(event:NoteScriptEvent):Void;
+  /**
+   * Called when a note enters the field of view and approaches the strumline.
+   */
+  public function onNoteIncoming(event:NoteScriptEvent):Void;
+
+  /**
+   * Called when EITHER player hits a note.
+   * Query the note attached to the event to determine if it was hit by the player or CPU.
+   */
+  public function onNoteHit(event:HitNoteScriptEvent):Void;
+
+  /**
+   * Called when EITHER player (usually the player) misses a note.
+   */
   public function onNoteMiss(event:NoteScriptEvent):Void;
 }
 
@@ -73,7 +86,7 @@ interface INoteScriptedClass extends IScriptedClass
 /**
  * Defines a set of callbacks available to scripted classes that involve the lifecycle of the Play State.
  */
-interface IPlayStateScriptedClass extends IScriptedClass
+interface IPlayStateScriptedClass extends INoteScriptedClass
 {
   /**
    * Called when the game is paused.
@@ -112,17 +125,6 @@ interface IPlayStateScriptedClass extends IScriptedClass
    * Called when the player restarts the song, either via pause menu or restarting after a game over.
    */
   public function onSongRetry(event:ScriptEvent):Void;
-
-  /**
-   * Called when EITHER player hits a note.
-   * Query the note attached to the event to determine if it was hit by the player or CPU.
-   */
-  public function onNoteHit(event:NoteScriptEvent):Void;
-
-  /**
-   * Called when EITHER player (usually the player) misses a note.
-   */
-  public function onNoteMiss(event:NoteScriptEvent):Void;
 
   /**
    * Called when the player presses a key when no note is on the strumline.

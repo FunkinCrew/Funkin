@@ -4,8 +4,9 @@ import flixel.FlxSprite;
 import flixel.util.FlxSignal;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.system.FlxSound;
+import funkin.audio.FunkinSound;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 import funkin.audio.FlxStreamSound;
 
 class DJBoyfriend extends FlxAtlasSprite
@@ -26,8 +27,8 @@ class DJBoyfriend extends FlxAtlasSprite
 
   var gotSpooked:Bool = false;
 
-  static final SPOOK_PERIOD:Float = 120.0;
-  static final TV_PERIOD:Float = 180.0;
+  static final SPOOK_PERIOD:Float = 10.0;
+  static final TV_PERIOD:Float = 10.0;
 
   // Time since dad last SPOOKED you.
   var timeSinceSpook:Float = 0;
@@ -48,7 +49,6 @@ class DJBoyfriend extends FlxAtlasSprite
     };
 
     setupAnimations();
-    trace(listAnimations());
 
     FlxG.debugger.track(this);
     FlxG.console.registerObject("dj", this);
@@ -87,19 +87,20 @@ class DJBoyfriend extends FlxAtlasSprite
         timeSinceSpook = 0;
       case Idle:
         // We are in this state the majority of the time.
-        if (getCurrentAnimation() != 'Boyfriend DJ' || anim.finished)
+        if (getCurrentAnimation() != 'Boyfriend DJ')
         {
-          if (timeSinceSpook > SPOOK_PERIOD && !gotSpooked)
+          playFlashAnimation('Boyfriend DJ', true);
+        }
+
+        if (getCurrentAnimation() == 'Boyfriend DJ' && this.isLoopFinished())
+        {
+          if (timeSinceSpook >= SPOOK_PERIOD && !gotSpooked)
           {
             currentState = Spook;
           }
-          else if (timeSinceSpook > TV_PERIOD)
+          else if (timeSinceSpook >= TV_PERIOD)
           {
             currentState = TV;
-          }
-          else
-          {
-            playFlashAnimation('Boyfriend DJ', false);
           }
         }
         timeSinceSpook += elapsed;
@@ -111,6 +112,7 @@ class DJBoyfriend extends FlxAtlasSprite
         {
           onSpook.dispatch();
           playFlashAnimation('bf dj afk', false);
+          gotSpooked = true;
         }
         timeSinceSpook = 0;
       case TV:
@@ -118,6 +120,34 @@ class DJBoyfriend extends FlxAtlasSprite
         timeSinceSpook = 0;
       default:
         // I shit myself.
+    }
+
+    if (FlxG.keys.pressed.CONTROL)
+    {
+      if (FlxG.keys.justPressed.LEFT)
+      {
+        this.offsetX -= FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+      }
+
+      if (FlxG.keys.justPressed.RIGHT)
+      {
+        this.offsetX += FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+      }
+
+      if (FlxG.keys.justPressed.UP)
+      {
+        this.offsetY -= FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+      }
+
+      if (FlxG.keys.justPressed.DOWN)
+      {
+        this.offsetY += FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
+      }
+
+      if (FlxG.keys.justPressed.SPACE)
+      {
+        currentState = (currentState == Idle ? TV : Idle);
+      }
     }
   }
 
@@ -139,11 +169,15 @@ class DJBoyfriend extends FlxAtlasSprite
 
       case "Boyfriend DJ watchin tv OG":
         var frame:Int = FlxG.random.bool(33) ? 112 : 166;
-        if (FlxG.random.bool(10))
+
+        // BF switches channels when the video ends, or at a 10% chance each time his idle loops.
+        if (FlxG.random.bool(5))
         {
           frame = 60;
           // boyfriend switches channel code?
+          // runTvLogic();
         }
+        trace('Replay idle: ${frame}');
         anim.play("Boyfriend DJ watchin tv OG", true, false, frame);
         // trace('Finished confirm');
     }
@@ -152,26 +186,31 @@ class DJBoyfriend extends FlxAtlasSprite
   public function resetAFKTimer():Void
   {
     timeSinceSpook = 0;
+    gotSpooked = false;
   }
+
+  var offsetX:Float = 0.0;
+  var offsetY:Float = 0.0;
 
   function setupAnimations():Void
   {
-    // frames = FlxAnimationUtil.combineFramesCollections(Paths.getSparrowAtlas('freeplay/bfFreeplay'), Paths.getSparrowAtlas('freeplay/bf-freeplay-afk'));
+    // Intro
+    addOffset('boyfriend dj intro', 8.0 - 1.3, 3.0 - 0.4);
 
-    // animation.addByPrefix('intro', "boyfriend dj intro", 24, false);
-    addOffset('boyfriend dj intro', 8, 3);
-
-    // animation.addByPrefix('idle', "Boyfriend DJ0", 24, false);
+    // Idle
     addOffset('Boyfriend DJ', 0, 0);
 
-    // animation.addByPrefix('confirm', "Boyfriend DJ confirm", 24, false);
+    // Confirm
     addOffset('Boyfriend DJ confirm', 0, 0);
 
-    // animation.addByPrefix('spook', "bf dj afk0", 24, false);
-    addOffset('bf dj afk', 0, 0);
+    // AFK: Spook
+    addOffset('bf dj afk', 649.5, 58.5);
+
+    // AFK: TV
+    addOffset('Boyfriend DJ watchin tv OG', 0, 0);
   }
 
-  var cartoonSnd:FlxStreamSound;
+  var cartoonSnd:Null<FunkinSound> = null;
 
   public var playingCartoon:Bool = false;
 
@@ -180,39 +219,47 @@ class DJBoyfriend extends FlxAtlasSprite
     if (cartoonSnd == null)
     {
       // tv is OFF, but getting turned on
-      FlxG.sound.play(Paths.sound('tv_on'));
-
-      cartoonSnd = new FlxStreamSound();
-      FlxG.sound.defaultSoundGroup.add(cartoonSnd);
+      // Eric got FUCKING TROLLED there is no `tv_on` or `channel_switch` sound!
+      // FunkinSound.playOnce(Paths.sound('tv_on'), 1.0, function() {
+      // });
+      loadCartoon();
     }
     else
     {
       // plays it smidge after the click
-      new FlxTimer().start(0.1, function(_) {
-        FlxG.sound.play(Paths.sound('channel_switch'));
-      });
+      // new FlxTimer().start(0.1, function(_) {
+      //   // FunkinSound.playOnce(Paths.sound('channel_switch'));
+      // });
+      cartoonSnd.destroy();
+      loadCartoon();
     }
-    // cartoonSnd.loadEmbedded(Paths.sound("cartoons/peck"));
-    // cartoonSnd.play();
 
-    loadCartoon();
+    // loadCartoon();
   }
 
   function loadCartoon()
   {
-    cartoonSnd.loadEmbedded(Paths.sound(getRandomFlashToon()), false, false, function() {
+    cartoonSnd = FunkinSound.load(Paths.sound(getRandomFlashToon()), 1.0, false, true, true, function() {
       anim.play("Boyfriend DJ watchin tv OG", true, false, 60);
     });
-    cartoonSnd.play(true, FlxG.random.float(0, cartoonSnd.length));
+
+    // Fade out music to 40% volume over 1 second.
+    // This helps make the TV a bit more audible.
+    FlxG.sound.music.fadeOut(1.0, 0.4);
+
+    // Play the cartoon at a random time between the start and 5 seconds from the end.
+    cartoonSnd.time = FlxG.random.float(0, Math.max(cartoonSnd.length - (5 * Constants.MS_PER_SEC), 0.0));
   }
 
-  var cartoonList:Array<String> = openfl.utils.Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
+  final cartoonList:Array<String> = openfl.utils.Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
 
   function getRandomFlashToon():String
   {
     var randomFile = FlxG.random.getObject(cartoonList);
 
+    // Strip folder prefix
     randomFile = randomFile.replace("assets/sounds/", "");
+    // Strip file extension
     randomFile = randomFile.substring(0, randomFile.length - 4);
 
     return randomFile;
@@ -246,10 +293,31 @@ class DJBoyfriend extends FlxAtlasSprite
     var daOffset = animOffsets.get(AnimName);
     if (animOffsets.exists(AnimName))
     {
-      offset.set(daOffset[0], daOffset[1]);
+      var xValue = daOffset[0];
+      var yValue = daOffset[1];
+      if (AnimName == "Boyfriend DJ watchin tv OG")
+      {
+        xValue += offsetX;
+        yValue += offsetY;
+      }
+
+      offset.set(xValue, yValue);
     }
     else
+    {
       offset.set(0, 0);
+    }
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+
+    if (cartoonSnd != null)
+    {
+      cartoonSnd.destroy();
+      cartoonSnd = null;
+    }
   }
 }
 

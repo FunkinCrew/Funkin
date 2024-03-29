@@ -1,17 +1,18 @@
 package funkin.audio;
 
-#if flash11
-import flash.media.Sound;
-import flash.utils.ByteArray;
-#end
-import flixel.sound.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxMath;
+import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
-import funkin.util.tools.ICloneable;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.waveform.WaveformData;
 import funkin.audio.waveform.WaveformDataParser;
-import flixel.math.FlxMath;
+import funkin.data.song.SongData.SongMusicData;
+import funkin.data.song.SongRegistry;
+import funkin.util.tools.ICloneable;
 import openfl.Assets;
+import openfl.media.SoundMixer;
 #if (openfl >= "8.0.0")
 import openfl.utils.AssetType;
 #end
@@ -19,14 +20,42 @@ import openfl.utils.AssetType;
 /**
  * A FlxSound which adds additional functionality:
  * - Delayed playback via negative song position.
+ * - Easy functions for immediate playback and recycling.
  */
 @:nullSafety
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
-  static final MAX_VOLUME:Float = 2.0;
+  static final MAX_VOLUME:Float = 1.0;
 
-  static var cache(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
+  /**
+   * An FlxSignal which is dispatched when the volume changes.
+   */
+  public static var onVolumeChanged(get, never):FlxTypedSignal<Float->Void>;
 
+  static var _onVolumeChanged:Null<FlxTypedSignal<Float->Void>> = null;
+
+  static function get_onVolumeChanged():FlxTypedSignal<Float->Void>
+  {
+    if (_onVolumeChanged == null)
+    {
+      _onVolumeChanged = new FlxTypedSignal<Float->Void>();
+      FlxG.sound.volumeHandler = function(volume:Float) {
+        _onVolumeChanged.dispatch(volume);
+      }
+    }
+    return _onVolumeChanged;
+  }
+
+  /**
+   * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
+   */
+  static var pool(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
+
+  /**
+   * Calculate the current time of the sound.
+   * NOTE: You need to `add()` the sound to the scene for `update()` to increment the time.
+   */
+  //
   public var muted(default, set):Bool = false;
 
   function set_muted(value:Bool):Bool
@@ -40,7 +69,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   override function set_volume(value:Float):Float
   {
     // Uncap the volume.
-    fixMaxVolume();
     _volume = FlxMath.bound(value, 0.0, MAX_VOLUME);
     updateTransform();
     return _volume;
@@ -88,6 +116,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   var _label:String = "unknown";
 
+  /**
+   * Whether we received a focus lost event.
+   */
+  var _lostFocus:Bool = false;
+
   public function new()
   {
     super();
@@ -124,17 +157,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       resume();
     }
     return this;
-  }
-
-  function fixMaxVolume():Void
-  {
-    #if lime_openal
-    // This code is pretty fragile, it reaches through 5 layers of private access.
-    @:privateAccess
-    var handle = this?._channel?.__source?.__backend?.handle;
-    if (handle == null) return;
-    lime.media.openal.AL.sourcef(handle, lime.media.openal.AL.MAX_GAIN, MAX_VOLUME);
-    #end
   }
 
   public override function play(forceRestart:Bool = false, startTime:Float = 0, ?endTime:Float):FunkinSound
@@ -176,8 +198,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
   public override function pause():FunkinSound
   {
-    super.pause();
-    this._shouldPlay = false;
+    if (_shouldPlay)
+    {
+      // This sound will eventually play, but is still at a negative timestamp.
+      // Manually set the paused flag to ensure proper focus/unfocus behavior.
+      _shouldPlay = false;
+      _paused = true;
+      active = false;
+    }
+    else
+    {
+      super.pause();
+    }
     return this;
   }
 
@@ -186,10 +218,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override function onFocus():Void
   {
-    if (!_alreadyPaused && this._shouldPlay)
+    // Flixel can sometimes toss spurious `onFocus` events, e.g. if the Flixel debugger is toggled
+    // on and off. We only want to resume the sound if we actually lost focus, and if we weren't
+    // already paused before we lost focus.
+    if (_lostFocus && !_alreadyPaused)
     {
       resume();
     }
+    else
+    {
+      trace('Not resuming audio on focus!');
+    }
+    _lostFocus = false;
   }
 
   /**
@@ -197,6 +237,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override function onFocusLost():Void
   {
+    trace('Focus lost, pausing audio!');
+    _lostFocus = true;
     _alreadyPaused = _paused;
     pause();
   }
@@ -205,7 +247,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (this._time < 0)
     {
-      this._shouldPlay = true;
+      // Sound with negative timestamp, restart the timer.
+      _shouldPlay = true;
+      _paused = false;
+      active = true;
     }
     else
     {
@@ -246,29 +291,104 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
-   * Creates a new `FunkinSound` object.
+   * Creates a new `FunkinSound` object and loads it as the current music track.
    *
-   * @param   embeddedSound   The embedded sound resource you want to play.  To stream, use the optional URL parameter instead.
-   * @param   volume          How loud to play it (0 to 1).
-   * @param   looped          Whether to loop this sound.
-   * @param   group           The group to add this sound to.
-   * @param   autoDestroy     Whether to destroy this sound when it finishes playing.
+   * @param key The key of the music you want to play. Music should be at `music/<key>/<key>.ogg`.
+   * @param params A set of additional optional parameters.
+   *   Data should be at `music/<key>/<key>-metadata.json`.
+   * @return Whether the music was started. `false` if music was already playing or could not be started
+   */
+  public static function playMusic(key:String, params:FunkinSoundPlayMusicParams):Bool
+  {
+    if (!(params.overrideExisting ?? false) && (FlxG.sound.music?.exists ?? false) && FlxG.sound.music.playing) return false;
+
+    if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
+    {
+      if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
+      {
+        var existingSound:FunkinSound = cast FlxG.sound.music;
+        // Stop here if we would play a matching music track.
+        if (existingSound._label == Paths.music('$key/$key'))
+        {
+          return false;
+        }
+      }
+    }
+
+    if (params?.mapTimeChanges ?? true)
+    {
+      var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicData(key);
+      // Will fall back and return null if the metadata doesn't exist or can't be parsed.
+      if (songMusicData != null)
+      {
+        Conductor.instance.mapTimeChanges(songMusicData.timeChanges);
+      }
+      else
+      {
+        FlxG.log.warn('Tried and failed to find music metadata for $key');
+      }
+    }
+
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.fadeTween?.cancel();
+      FlxG.sound.music.stop();
+      FlxG.sound.music.kill();
+    }
+
+    var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
+    if (music != null)
+    {
+      FlxG.sound.music = music;
+
+      // Prevent repeat update() and onFocus() calls.
+      FlxG.sound.list.remove(FlxG.sound.music);
+
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /**
+   * Creates a new `FunkinSound` object synchronously.
+   *
+   * @param embeddedSound   The embedded sound resource you want to play.  To stream, use the optional URL parameter instead.
+   * @param volume          How loud to play it (0 to 1).
+   * @param looped          Whether to loop this sound.
+   * @param group           The group to add this sound to.
+   * @param autoDestroy     Whether to destroy this sound when it finishes playing.
    *                          Leave this value set to `false` if you want to re-use this `FunkinSound` instance.
-   * @param   autoPlay        Whether to play the sound immediately or wait for a `play()` call.
-   * @param   onComplete      Called when the sound finished playing.
-   * @param   onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
-   * @return  A `FunkinSound` object.
+   * @param autoPlay        Whether to play the sound immediately or wait for a `play()` call.
+   * @param onComplete      Called when the sound finished playing.
+   * @param onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
+   * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
   public static function load(embeddedSound:FlxSoundAsset, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = false,
-      ?onComplete:Void->Void, ?onLoad:Void->Void):FunkinSound
+      ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
-    var sound:FunkinSound = cache.recycle(construct);
+    @:privateAccess
+    if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+    {
+      FlxG.log.error('FunkinSound could not play sound, channels exhausted! Found ${SoundMixer.__soundChannels.length} active sound channels.');
+      return null;
+    }
 
+    var sound:FunkinSound = pool.recycle(construct);
+
+    // Load the sound.
+    // Sets `exists = true` as a side effect.
     sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
 
     if (embeddedSound is String)
     {
       sound._label = embeddedSound;
+    }
+    else
+    {
+      sound._label = 'unknown';
     }
 
     sound.volume = volume;
@@ -276,19 +396,87 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     sound.persist = true;
     if (autoPlay) sound.play();
 
-    // Call OnlLoad() because the sound already loaded
+    // Call onLoad() because the sound already loaded
     if (onLoad != null && sound._sound != null) onLoad();
 
     return sound;
+  }
+
+  public override function destroy():Void
+  {
+    // trace('[FunkinSound] Destroying sound "${this._label}"');
+    super.destroy();
+    FlxTween.cancelTweensOf(this);
+    this._label = 'unknown';
+  }
+
+  /**
+   * Play a sound effect once, then destroy it.
+   * @param key
+   * @param volume
+   * @return static function construct():FunkinSound
+   */
+  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Void
+  {
+    var result = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
+  }
+
+  /**
+   * Stop all sounds in the pool and allow them to be recycled.
+   */
+  public static function stopAllAudio(musicToo:Bool = false):Void
+  {
+    for (sound in pool)
+    {
+      if (sound == null) continue;
+      if (!musicToo && sound == FlxG.sound.music) continue;
+      sound.destroy();
+    }
   }
 
   static function construct():FunkinSound
   {
     var sound:FunkinSound = new FunkinSound();
 
-    cache.add(sound);
+    pool.add(sound);
     FlxG.sound.list.add(sound);
 
     return sound;
   }
+}
+
+/**
+ * Additional parameters for `FunkinSound.playMusic()`
+ */
+typedef FunkinSoundPlayMusicParams =
+{
+  /**
+   * The volume you want the music to start at.
+   * @default `1.0`
+   */
+  var ?startingVolume:Float;
+
+  /**
+   * Whether to override music if a different track is already playing.
+   * @default `false`
+   */
+  var ?overrideExisting:Bool;
+
+  /**
+   * Whether to override music if the same track is already playing.
+   * @default `false`
+   */
+  var ?restartTrack:Bool;
+
+  /**
+   * Whether the music should loop or play once.
+   * @default `true`
+   */
+  var ?loop:Bool;
+
+  /**
+   * Whether to check for `SongMusicData` to update the Conductor with.
+   * @default `true`
+   */
+  var ?mapTimeChanges:Bool;
 }

@@ -19,21 +19,21 @@ class SaveDataMigrator
     {
       trace('[SAVE] No version found in save data! Returning blank data.');
       trace(inputData);
-      return new Save();
+      return new Save(Save.getDefault());
     }
     else
     {
       if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
-        // Simply cast the structured data.
-        var save:Save = inputData;
+        // Simply import the structured data.
+        var save:Save = new Save(inputData);
         return save;
       }
       else
       {
         trace('[SAVE] Invalid save data version! Returning blank data.');
         trace(inputData);
-        return new Save();
+        return new Save(Save.getDefault());
       }
     }
   }
@@ -45,7 +45,7 @@ class SaveDataMigrator
   {
     var inputSaveData:RawSaveData_v1_0_0 = cast inputData;
 
-    var result:Save = new Save();
+    var result:Save = new Save(Save.getDefault());
 
     result.volume = inputSaveData.volume;
     result.mute = inputSaveData.mute;
@@ -272,7 +272,6 @@ class SaveDataMigrator
         ACCEPT: controlsData?.keys?.ACCEPT ?? null,
         BACK: controlsData?.keys?.BACK ?? null,
         CUTSCENE_ADVANCE: controlsData?.keys?.CUTSCENE_ADVANCE ?? null,
-        CUTSCENE_SKIP: controlsData?.keys?.CUTSCENE_SKIP ?? null,
         NOTE_DOWN: controlsData?.keys?.NOTE_DOWN ?? null,
         NOTE_LEFT: controlsData?.keys?.NOTE_LEFT ?? null,
         NOTE_RIGHT: controlsData?.keys?.NOTE_RIGHT ?? null,
@@ -293,7 +292,6 @@ class SaveDataMigrator
         ACCEPT: controlsData?.pad?.ACCEPT ?? null,
         BACK: controlsData?.pad?.BACK ?? null,
         CUTSCENE_ADVANCE: controlsData?.pad?.CUTSCENE_ADVANCE ?? null,
-        CUTSCENE_SKIP: controlsData?.pad?.CUTSCENE_SKIP ?? null,
         NOTE_DOWN: controlsData?.pad?.NOTE_DOWN ?? null,
         NOTE_LEFT: controlsData?.pad?.NOTE_LEFT ?? null,
         NOTE_RIGHT: controlsData?.pad?.NOTE_RIGHT ?? null,

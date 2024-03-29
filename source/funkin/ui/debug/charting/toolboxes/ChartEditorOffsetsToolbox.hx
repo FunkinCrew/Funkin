@@ -270,24 +270,21 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
     // Build player waveform.
     // waveformPlayer.waveform.forceUpdate = true;
-    waveformPlayer.waveform.waveformData = playerVoice.waveformData;
+    waveformPlayer.waveform.waveformData = playerVoice?.waveformData;
     // Set the width and duration to render the full waveform, with the clipRect applied we only render a segment of it.
-    waveformPlayer.waveform.duration = playerVoice.length / Constants.MS_PER_SEC;
+    waveformPlayer.waveform.duration = (playerVoice?.length ?? 1000.0) / Constants.MS_PER_SEC;
 
     // Build opponent waveform.
     // waveformOpponent.waveform.forceUpdate = true;
     // note: if song only has one set of vocals (Vocals.ogg/mp3) then this is null and crashes charting editor
     // so we null check
-    if (opponentVoice != null)
-    {
-      waveformOpponent.waveform.waveformData = opponentVoice.waveformData;
-      waveformOpponent.waveform.duration = opponentVoice.length / Constants.MS_PER_SEC;
-    }
+    waveformOpponent.waveform.waveformData = opponentVoice?.waveformData;
+    waveformOpponent.waveform.duration = (opponentVoice?.length ?? 1000.0) / Constants.MS_PER_SEC;
 
     // Build instrumental waveform.
     // waveformInstrumental.waveform.forceUpdate = true;
     waveformInstrumental.waveform.waveformData = chartEditorState.audioInstTrack.waveformData;
-    waveformInstrumental.waveform.duration = instTrack.length / Constants.MS_PER_SEC;
+    waveformInstrumental.waveform.duration = (instTrack?.length ?? 1000.0) / Constants.MS_PER_SEC;
 
     addOffsetsToAudioPreview();
   }

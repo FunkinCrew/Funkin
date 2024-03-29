@@ -305,9 +305,15 @@ class CharacterDataParser
         icon = "darnell";
       case "senpai-angry":
         icon = "senpai";
+      case "tankman" | "tankman-atlas":
+        icon = "tankmen";
     }
 
-    return Paths.image("freeplay/icons/" + icon + "pixel");
+    var path = Paths.image("freeplay/icons/" + icon + "pixel");
+    if (Assets.exists(path)) return path;
+
+    // TODO: Hardcode some additional behavior or a fallback.
+    return null;
   }
 
   /**
@@ -372,12 +378,12 @@ class CharacterDataParser
   }
 
   /**
-   * The default time the character should sing for, in beats.
+   * The default time the character should sing for, in steps.
    * Values that are too low will cause the character to stop singing between notes.
-   * Originally, this value was set to 1, but it was changed to 2 because that became
-   * too low after some other code changes.
+   * Values that are too high will cause the character to hold their singing pose for too long after they're done.
+   * @default `8 steps`
    */
-  static final DEFAULT_SINGTIME:Float = 2.0;
+  static final DEFAULT_SINGTIME:Float = 8.0;
 
   static final DEFAULT_DANCEEVERY:Int = 1;
   static final DEFAULT_FLIPX:Bool = false;
@@ -738,4 +744,17 @@ typedef DeathData =
    * @default [0, 0]
    */
   var ?cameraOffsets:Array<Float>;
+
+  /**
+   * The amount to zoom the camera by while focusing on this character as they die.
+   * Value is a multiplier of the default camera zoom for the stage.
+   * @default 1.0
+   */
+  var ?cameraZoom:Float;
+
+  /**
+   * Impose a delay between when the character reaches `0` health and when the death animation plays.
+   * @default 0.0
+   */
+  var ?preTransitionDelay:Float;
 }

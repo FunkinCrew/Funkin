@@ -43,7 +43,7 @@ class Scoring
       case WEEK7: scoreNoteWEEK7(msTiming);
       case PBOT1: scoreNotePBOT1(msTiming);
       default:
-        trace('ERROR: Unknown scoring system: ' + scoringSystem);
+        FlxG.log.error('Unknown scoring system: ${scoringSystem}');
         0;
     }
   }
@@ -62,7 +62,7 @@ class Scoring
       case WEEK7: judgeNoteWEEK7(msTiming);
       case PBOT1: judgeNotePBOT1(msTiming);
       default:
-        trace('ERROR: Unknown scoring system: ' + scoringSystem);
+        FlxG.log.error('Unknown scoring system: ${scoringSystem}');
         'miss';
     }
   }
@@ -145,7 +145,9 @@ class Scoring
       case(_ < PBOT1_PERFECT_THRESHOLD) => true:
         PBOT1_MAX_SCORE;
       default:
+        // Fancy equation.
         var factor:Float = 1.0 - (1.0 / (1.0 + Math.exp(-PBOT1_SCORING_SLOPE * (absTiming - PBOT1_SCORING_OFFSET))));
+
         var score:Int = Std.int(PBOT1_MAX_SCORE * factor + PBOT1_MIN_SCORE);
 
         score;
@@ -169,6 +171,7 @@ class Scoring
       case(_ < PBOT1_SHIT_THRESHOLD) => true:
         'shit';
       default:
+        FlxG.log.warn('Missed note: Bad timing ($absTiming < $PBOT1_SHIT_THRESHOLD)');
         'miss';
     }
   }
@@ -257,6 +260,7 @@ class Scoring
       case(_ < LEGACY_HIT_WINDOW * LEGACY_SHIT_THRESHOLD) => true:
         'shit';
       default:
+        FlxG.log.warn('Missed note: Bad timing ($absTiming < $LEGACY_SHIT_THRESHOLD)');
         'miss';
     }
   }
@@ -336,6 +340,7 @@ class Scoring
     }
     else
     {
+      FlxG.log.warn('Missed note: Bad timing ($absTiming < $WEEK7_HIT_WINDOW)');
       return 'miss';
     }
   }

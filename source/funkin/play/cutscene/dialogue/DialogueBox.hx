@@ -4,10 +4,11 @@ import flixel.FlxSprite;
 import funkin.data.IRegistryEntry;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxFramesCollection;
-import flixel.text.FlxText;
+import funkin.graphics.FunkinSprite;
 import flixel.addons.text.FlxTypeText;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.events.ScriptEvent;
+import funkin.audio.FunkinSound;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import flixel.util.FlxColor;
 import funkin.data.dialogue.DialogueBoxData;
@@ -111,9 +112,6 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     this.y = 0;
     this.alpha = 1;
 
-    this.boxSprite = new FlxSprite(0, 0);
-    add(this.boxSprite);
-
     loadSpritesheet();
     loadAnimations();
 
@@ -122,6 +120,14 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
   function loadSpritesheet():Void
   {
+    if (this.boxSprite != null)
+    {
+      remove(this.boxSprite);
+      this.boxSprite = null;
+    }
+
+    this.boxSprite = new FunkinSprite(0, 0);
+
     trace('[DIALOGUE BOX] Loading spritesheet ${_data.assetPath} for ${id}');
 
     var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
@@ -146,6 +152,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     this.flipY = _data.flipY;
     this.globalOffsets = _data.offsets;
     this.setScale(_data.scale);
+
+    add(this.boxSprite);
   }
 
   public function setText(newText:String):Void
@@ -188,6 +196,34 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     this.boxSprite.scale.x = scale;
     this.boxSprite.scale.y = scale;
     this.boxSprite.updateHitbox();
+  }
+
+  /**
+   * Calls `kill()` on the group's members and then on the group itself.
+   * You can revive this group later via `revive()` after this.
+   */
+  public override function kill():Void
+  {
+    super.kill();
+    if (this.boxSprite != null)
+    {
+      this.boxSprite.kill();
+      this.boxSprite = null;
+    }
+    if (this.textDisplay != null)
+    {
+      this.textDisplay.kill();
+      this.textDisplay = null;
+    }
+    this.clear();
+  }
+
+  public override function revive():Void
+  {
+    super.revive();
+
+    this.visible = true;
+    this.alpha = 1.0;
   }
 
   function loadAnimations():Void
@@ -246,7 +282,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     textDisplay.setFormat(_data.text.fontFamily, _data.text.size, FlxColor.fromString(_data.text.color), LEFT, SHADOW,
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
     textDisplay.borderSize = _data.text.shadowWidth ?? 2;
-    textDisplay.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
+    // TODO: Add an option to configure this.
+    textDisplay.sounds = [FunkinSound.load(Paths.sound('pixelText'), 0.6)];
 
     textDisplay.completeCallback = onTypingComplete;
 

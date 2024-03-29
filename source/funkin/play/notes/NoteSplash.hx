@@ -35,6 +35,7 @@ class NoteSplash extends FlxSprite
    */
   function setup():Void
   {
+    if (frameCollection?.parent?.isDestroyed ?? false) frameCollection = null;
     if (frameCollection == null) preloadFrames();
 
     this.frames = frameCollection;
@@ -74,6 +75,8 @@ class NoteSplash extends FlxSprite
       case NoteDirection.RIGHT:
         this.playAnimation('splash${variant}Right');
     }
+
+    if (animation.curAnim == null) return;
 
     // Vary the speed of the animation a bit.
     animation.curAnim.frameRate = FRAMERATE_DEFAULT + FlxG.random.int(-FRAMERATE_VARIANCE, FRAMERATE_VARIANCE);

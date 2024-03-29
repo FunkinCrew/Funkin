@@ -3,6 +3,7 @@ package funkin.ui.transition;
 import flixel.FlxSprite;
 import haxe.Json;
 import lime.utils.Assets;
+import funkin.graphics.FunkinSprite;
 // import flxtyped group
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
@@ -17,6 +18,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import openfl.display.BitmapData;
 import funkin.ui.freeplay.FreeplayState;
 import openfl.geom.Matrix;
+import funkin.audio.FunkinSound;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
 import flixel.FlxState;
@@ -136,7 +138,7 @@ class StickerSubState extends MusicBeatSubState
       new FlxTimer().start(sticker.timing, _ -> {
         sticker.visible = false;
         var daSound:String = FlxG.random.getObject(sounds);
-        FlxG.sound.play(Paths.sound(daSound));
+        FunkinSound.playOnce(Paths.sound(daSound));
 
         if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
@@ -226,7 +228,7 @@ class StickerSubState extends MusicBeatSubState
 
         sticker.visible = true;
         var daSound:String = FlxG.random.getObject(sounds);
-        FlxG.sound.play(Paths.sound(daSound));
+        FunkinSound.playOnce(Paths.sound(daSound));
 
         var frameTimer:Int = FlxG.random.int(0, 2);
 
@@ -244,6 +246,10 @@ class StickerSubState extends MusicBeatSubState
 
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
+
+            // TODO: Rework this asset caching stuff
+            FunkinSprite.preparePurgeCache();
+            FunkinSprite.purgeCache();
 
             // I think this grabs the screen and puts it under the stickers?
             // Leaving this commented out rather than stripping it out because it's cool...
@@ -301,14 +307,14 @@ class StickerSubState extends MusicBeatSubState
   }
 }
 
-class StickerSprite extends FlxSprite
+class StickerSprite extends FunkinSprite
 {
   public var timing:Float = 0;
 
   public function new(x:Float, y:Float, stickerSet:String, stickerName:String):Void
   {
     super(x, y);
-    loadGraphic(Paths.image('transitionSwag/' + stickerSet + '/' + stickerName));
+    loadTexture('transitionSwag/' + stickerSet + '/' + stickerName);
     updateHitbox();
     scrollFactor.set();
   }

@@ -7,7 +7,7 @@ class HaxelibVersions
   public static macro function getLibraryVersions():haxe.macro.Expr.ExprOf<Array<String>>
   {
     #if !display
-    return macro $v{formatHmmData(readHmmData())};
+    return macro $v{formatHmmData()};
     #else
     // `#if display` is used for code completion. In this case returning an
     // empty string is good enough; We don't want to call functions on every hint.
@@ -17,42 +17,31 @@ class HaxelibVersions
   }
 
   #if (macro)
-  static function readHmmData():hmm.HmmConfig
-  {
-    return hmm.HmmConfig.HmmConfigs.readHmmJsonOrThrow();
-  }
-
-  static function formatHmmData(hmmData:hmm.HmmConfig):Array<String>
+  @SuppressWarnings('checkstyle:Dynamic')
+  static function formatHmmData():Array<String>
   {
     var result:Array<String> = [];
 
-    for (library in hmmData.dependencies)
+    var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent('hmm.json'));
+    var dependencies:Array<Dynamic> = cast hmmData.dependencies;
+    for (library in dependencies)
     {
-      switch (library)
+      switch (library.type)
       {
-        case Haxelib(name, version):
-          result.push('${name} haxelib(${o(version)})');
-        case Git(name, url, ref, dir):
-          result.push('${name} git(${url}/${o(dir, '')}:${o(ref)})');
-        case Mercurial(name, url, ref, dir):
-          result.push('${name} mercurial(${url}/${o(dir, '')}:${o(ref)})');
-        case Dev(name, path):
-          result.push('${name} dev(${path})');
+        case 'haxelib':
+          result.push('${library.name} haxelib(${library.version ?? 'None'})');
+        case 'git':
+          result.push('${library.name} git(${library.url}/${library.dir ?? ''}:${library.ref ?? 'None'}');
+        case 'mercurial':
+          result.push('${library.name} mercurial(${library.url}/${library.dir ?? ''}:${library.ref ?? 'None'})');
+        case 'dev':
+          result.push('${library.name} dev(${library.path})');
+        case ty:
+          throw 'Unhandled hmm library type ${ty}';
       }
     }
 
     return result;
-  }
-
-  static function o(option:haxe.ds.Option<String>, defaultValue:String = 'None'):String
-  {
-    switch (option)
-    {
-      case Some(value):
-        return value;
-      case None:
-        return defaultValue;
-    }
   }
 
   static function readLibraryCurrentVersion(libraryName:String):String

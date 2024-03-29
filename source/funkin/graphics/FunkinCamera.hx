@@ -192,8 +192,8 @@ class FunkinCamera extends FlxCamera
       // get the isolated bitmap
       final isolated = grabScreen(false, true);
       // apply fullscreen blend
-      customBlendShader.blend = blend;
-      customBlendShader.source = isolated;
+      customBlendShader.blendSwag = blend;
+      customBlendShader.sourceSwag = isolated;
       customBlendShader.updateViewInfo(FlxG.width, FlxG.height, this);
       applyFilter(customBlendFilter);
     }

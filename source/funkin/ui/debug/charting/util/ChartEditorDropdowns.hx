@@ -108,6 +108,71 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  static final NOTE_KINDS:Map<String, String> = [
+    // Base
+    "" => "Default",
+    "~CUSTOM~" => "Custom",
+    // Weeks 1-7
+    "mom" => "Mom Sings (Week 5)",
+    "ugh" => "Ugh (Week 7)",
+    "hehPrettyGood" => "Heh, Pretty Good (Week 7)",
+    // Weekend 1
+    "weekend-1-punchhigh" => "Punch High (Blazin')",
+    "weekend-1-punchhighdodged" => "Punch High (Dodge) (Blazin')",
+    "weekend-1-punchhighblocked" => "Punch High (Block) (Blazin')",
+    "weekend-1-punchhighspin" => "Punch High (Spin) (Blazin')",
+    "weekend-1-punchlow" => "Punch Low (Blazin')",
+    "weekend-1-punchlowdodged" => "Punch Low (Dodge) (Blazin')",
+    "weekend-1-punchlowblocked" => "Punch Low (Block) (Blazin')",
+    "weekend-1-punchlowspin" => "Punch High (Spin) (Blazin')",
+    "weekend-1-picouppercutprep" => "Pico Uppercut (Prep) (Blazin')",
+    "weekend-1-picouppercut" => "Pico Uppercut (Blazin')",
+    "weekend-1-blockhigh" => "Block High (Blazin')",
+    "weekend-1-blocklow" => "Block Low (Blazin')",
+    "weekend-1-blockspin" => "Block High (Spin) (Blazin')",
+    "weekend-1-dodgehigh" => "Dodge High (Blazin')",
+    "weekend-1-dodgelow" => "Dodge Low (Blazin')",
+    "weekend-1-dodgespin" => "Dodge High (Spin) (Blazin')",
+    "weekend-1-hithigh" => "Hit High (Blazin')",
+    "weekend-1-hitlow" => "Hit Low (Blazin')",
+    "weekend-1-hitspin" => "Hit High (Spin) (Blazin')",
+    "weekend-1-darnelluppercutprep" => "Darnell Uppercut (Prep) (Blazin')",
+    "weekend-1-darnelluppercut" => "Darnell Uppercut (Blazin')",
+    "weekend-1-idle" => "Idle (Blazin')",
+    "weekend-1-fakeout" => "Fakeout (Blazin')",
+    "weekend-1-taunt" => "Taunt (If Fakeout) (Blazin')",
+    "weekend-1-tauntforce" => "Taunt (Forced) (Blazin')",
+    "weekend-1-reversefakeout" => "Fakeout (Reverse) (Blazin')",
+  ];
+
+  public static function populateDropdownWithNoteKinds(dropDown:DropDown, startingKindId:String):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var returnValue:DropDownEntry = lookupNoteKind('~CUSTOM');
+
+    for (noteKindId in NOTE_KINDS.keys())
+    {
+      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Default';
+
+      var value:DropDownEntry = {id: noteKindId, text: noteKind};
+      if (startingKindId == noteKindId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('id', ASCENDING);
+
+    return returnValue;
+  }
+
+  public static function lookupNoteKind(noteKindId:Null<String>):DropDownEntry
+  {
+    if (noteKindId == null) return lookupNoteKind('');
+    if (!NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
+    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Default'};
+  }
+
   /**
    * Populate a dropdown with a list of song variations.
    */

@@ -1,7 +1,10 @@
 .DS_STORE
 .haxelib/
+.vs/
 APIStuff.hx
 dump/
 export/
 RECOVER_*.fla
 shitAudio/
+.build_time
+.swp

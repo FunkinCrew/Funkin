@@ -3,13 +3,13 @@ package funkin.ui.transition;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song.SongDifficulty;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import haxe.io.Path;
 import funkin.graphics.FunkinSprite;
@@ -27,27 +27,28 @@ class LoadingState extends MusicBeatState
   inline static var MIN_TIME = 1.0;
 
   var target:NextState;
-  var stopMusic = false;
+  var playParams:Null<PlayStateParams>;
+  var stopMusic:Bool = false;
   var callbacks:MultiCallback;
-  var danceLeft = false;
+  var danceLeft:Bool = false;
 
   var loadBar:FlxSprite;
   var funkay:FlxSprite;
 
-  function new(target:NextState, stopMusic:Bool)
+  function new(target:NextState, stopMusic:Bool, playParams:Null<PlayStateParams> = null)
   {
     super();
     this.target = target;
+    this.playParams = playParams;
     this.stopMusic = stopMusic;
   }
 
   override function create():Void
   {
-    var bg:FlxSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, 0xFFcaff4d);
     add(bg);
 
-    funkay = new FlxSprite();
-    funkay.loadGraphic(Paths.image('funkay'));
+    funkay = FunkinSprite.create('funkay');
     funkay.setGraphicSize(0, FlxG.height);
     funkay.updateHitbox();
     add(funkay);
@@ -62,10 +63,18 @@ class LoadingState extends MusicBeatState
       callbacks = new MultiCallback(onLoad);
       var introComplete = callbacks.add('introComplete');
 
-      if (Std.isOfType(target, PlayState))
+      if (playParams != null)
       {
-        var targetPlayState:PlayState = cast target;
-        var targetChart:SongDifficulty = targetPlayState.currentChart;
+        // Load and cache the song's charts.
+        if (playParams.targetSong != null)
+        {
+          playParams.targetSong.cacheCharts(true);
+        }
+
+        // Preload the song for the play state.
+        var difficulty:String = playParams.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY;
+        var variation:String = playParams.targetVariation ?? Constants.DEFAULT_VARIATION;
+        var targetChart:SongDifficulty = playParams.targetSong?.getDifficulty(difficulty, variation);
         var instPath:String = Paths.inst(targetChart.song.id);
         var voicesPaths:Array<String> = targetChart.buildVoiceList();
 
@@ -162,7 +171,12 @@ class LoadingState extends MusicBeatState
 
   function onLoad():Void
   {
-    if (stopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
+    // Stop the instrumental.
+    if (stopMusic && FlxG.sound.music != null)
+    {
+      FlxG.sound.music.destroy();
+      FlxG.sound.music = null;
+    }
 
     FlxG.switchState(target);
   }
@@ -172,25 +186,101 @@ class LoadingState extends MusicBeatState
     return Paths.inst(PlayState.instance.currentSong.id);
   }
 
-  inline static public function loadAndSwitchState(nextState:NextState, shouldStopMusic = false):Void
-  {
-    FlxG.switchState(getNextState(nextState, shouldStopMusic));
-  }
-
-  static function getNextState(nextState:NextState, shouldStopMusic = false):NextState
+  /**
+   * Starts the transition to a new `PlayState` to start a new song.
+   * First switches to the `LoadingState` if assets need to be loaded.
+   * @param params The parameters for the next `PlayState`.
+   * @param shouldStopMusic Whether to stop the current music while loading.
+   */
+  public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false):Void
   {
     Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
+    var playStateCtor:NextState = () -> new PlayState(params);
 
     #if NO_PRELOAD_ALL
-    // var loaded = isSoundLoaded(getSongPath())
-    //  && (!PlayState.currentSong.needsVoices || isSoundLoaded(getVocalPath()))
-    //  && isLibraryLoaded('shared');
-    //
-    if (true) return () -> new LoadingState(nextState, shouldStopMusic);
-    #end
-    if (shouldStopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
+    // Switch to loading state while we load assets (default on HTML5 target).
+    var loadStateCtor:NextState = () -> new LoadingState(playStateCtor, shouldStopMusic, params);
+    FlxG.switchState(loadStateCtor);
+    #else
+    // All assets preloaded, switch directly to play state (defualt on other targets).
+    if (shouldStopMusic && FlxG.sound.music != null)
+    {
+      FlxG.sound.music.destroy();
+      FlxG.sound.music = null;
+    }
 
-    return nextState;
+    // Load and cache the song's charts.
+    if (params?.targetSong != null)
+    {
+      params.targetSong.cacheCharts(true);
+    }
+
+    // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
+    FunkinSprite.preparePurgeCache();
+    FunkinSprite.cacheTexture(Paths.image('combo'));
+    FunkinSprite.cacheTexture(Paths.image('healthBar'));
+    FunkinSprite.cacheTexture(Paths.image('menuDesat'));
+    FunkinSprite.cacheTexture(Paths.image('combo'));
+    FunkinSprite.cacheTexture(Paths.image('num0'));
+    FunkinSprite.cacheTexture(Paths.image('num1'));
+    FunkinSprite.cacheTexture(Paths.image('num2'));
+    FunkinSprite.cacheTexture(Paths.image('num3'));
+    FunkinSprite.cacheTexture(Paths.image('num4'));
+    FunkinSprite.cacheTexture(Paths.image('num5'));
+    FunkinSprite.cacheTexture(Paths.image('num6'));
+    FunkinSprite.cacheTexture(Paths.image('num7'));
+    FunkinSprite.cacheTexture(Paths.image('num8'));
+    FunkinSprite.cacheTexture(Paths.image('num9'));
+    FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
+    FunkinSprite.cacheTexture(Paths.image('ready', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('set', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('go', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('sick', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('good', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('bad', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('shit', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: remove this
+
+    // List all image assets in the level's library.
+    // This is crude and I want to remove it when we have a proper asset caching system.
+    // TODO: Get rid of this junk!
+    var library = openfl.utils.Assets.getLibrary(PlayStatePlaylist.campaignId);
+    var assets = library.list(lime.utils.AssetType.IMAGE);
+    trace('Got ${assets.length} assets: ${assets}');
+
+    // TODO: assets includes non-images! This is a bug with Polymod
+    for (asset in assets)
+    {
+      // Exclude items of the wrong type.
+      var path = '${PlayStatePlaylist.campaignId}:${asset}';
+      // TODO DUMB HACK DUMB HACK why doesn't filtering by AssetType.IMAGE above work
+      // I will fix this properly later I swear -eric
+      if (!path.endsWith('.png')) continue;
+
+      FunkinSprite.cacheTexture(path);
+
+      // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
+      // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
+      if (path.endsWith('spritemap1.png'))
+      {
+        openfl.Assets.getBitmapData(path, true);
+      }
+    }
+
+    // FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
+    // FunkinSprite.cacheAllCharacterTextures(player)
+    // FunkinSprite.cacheAllCharacterTextures(girlfriend)
+    // FunkinSprite.cacheAllCharacterTextures(opponent)
+    // FunkinSprite.cacheAllStageTextures(stage)
+    // FunkinSprite.cacheAllSongTextures(stage)
+
+    FunkinSprite.purgeCache();
+
+    FlxG.switchState(playStateCtor);
+    #end
   }
 
   #if NO_PRELOAD_ALL
@@ -332,9 +422,15 @@ class MultiCallback
   public function getUnfired():Array<Void->Void>
     return unfired.array();
 
+  /**
+   * Perform an FlxG.switchState with a nice transition
+   * @param state
+   * @param transitionTex
+   * @param time
+   */
   public static function coolSwitchState(state:NextState, transitionTex:String = "shaderTransitionStuff/coolDots", time:Float = 2)
   {
-    var screenShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("shaderTransitionStuff/coolDots"));
+    var screenShit:FunkinSprite = FunkinSprite.create('shaderTransitionStuff/coolDots');
     var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
 
     screenWipeShit.funnyShit.input = screenShit.pixels;

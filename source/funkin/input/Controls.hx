@@ -30,29 +30,42 @@ class Controls extends FlxActionSet
    * A list of actions that a player would invoke via some input device.
    * Uses FlxActions to funnel various inputs to a single action.
    */
-  var _ui_up = new FunkinAction(Action.UI_UP, Action.UI_UP_P, Action.UI_UP_R);
-  var _ui_left = new FunkinAction(Action.UI_LEFT, Action.UI_LEFT_P, Action.UI_LEFT_R);
-  var _ui_right = new FunkinAction(Action.UI_RIGHT, Action.UI_RIGHT_P, Action.UI_RIGHT_R);
-  var _ui_down = new FunkinAction(Action.UI_DOWN, Action.UI_DOWN_P, Action.UI_DOWN_R);
-  var _note_up = new FunkinAction(Action.NOTE_UP, Action.NOTE_UP_P, Action.NOTE_UP_R);
-  var _note_left = new FunkinAction(Action.NOTE_LEFT, Action.NOTE_LEFT_P, Action.NOTE_LEFT_R);
-  var _note_right = new FunkinAction(Action.NOTE_RIGHT, Action.NOTE_RIGHT_P, Action.NOTE_RIGHT_R);
-  var _note_down = new FunkinAction(Action.NOTE_DOWN, Action.NOTE_DOWN_P, Action.NOTE_DOWN_R);
-  var _accept = new FunkinAction(Action.ACCEPT);
-  var _back = new FunkinAction(Action.BACK);
-  var _pause = new FunkinAction(Action.PAUSE);
-  var _reset = new FunkinAction(Action.RESET);
-  var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
-  var _cutscene_skip = new FunkinAction(Action.CUTSCENE_SKIP);
-  var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
-  var _debug_chart = new FunkinAction(Action.DEBUG_CHART);
-  var _debug_stage = new FunkinAction(Action.DEBUG_STAGE);
-  var _volume_up = new FunkinAction(Action.VOLUME_UP);
-  var _volume_down = new FunkinAction(Action.VOLUME_DOWN);
-  var _volume_mute = new FunkinAction(Action.VOLUME_MUTE);
-  #if CAN_CHEAT
-  var _cheat = new FunkinAction(Action.CHEAT);
-  #end
+  var _ui_up = new FlxActionDigital(Action.UI_UP);
+  var _ui_left = new FlxActionDigital(Action.UI_LEFT);
+  var _ui_right = new FlxActionDigital(Action.UI_RIGHT);
+  var _ui_down = new FlxActionDigital(Action.UI_DOWN);
+  var _ui_upP = new FlxActionDigital(Action.UI_UP_P);
+  var _ui_leftP = new FlxActionDigital(Action.UI_LEFT_P);
+  var _ui_rightP = new FlxActionDigital(Action.UI_RIGHT_P);
+  var _ui_downP = new FlxActionDigital(Action.UI_DOWN_P);
+  var _ui_upR = new FlxActionDigital(Action.UI_UP_R);
+  var _ui_leftR = new FlxActionDigital(Action.UI_LEFT_R);
+  var _ui_rightR = new FlxActionDigital(Action.UI_RIGHT_R);
+  var _ui_downR = new FlxActionDigital(Action.UI_DOWN_R);
+  var _note_up = new FlxActionDigital(Action.NOTE_UP);
+  var _note_left = new FlxActionDigital(Action.NOTE_LEFT);
+  var _note_right = new FlxActionDigital(Action.NOTE_RIGHT);
+  var _note_down = new FlxActionDigital(Action.NOTE_DOWN);
+  var _note_upP = new FlxActionDigital(Action.NOTE_UP_P);
+  var _note_leftP = new FlxActionDigital(Action.NOTE_LEFT_P);
+  var _note_rightP = new FlxActionDigital(Action.NOTE_RIGHT_P);
+  var _note_downP = new FlxActionDigital(Action.NOTE_DOWN_P);
+  var _note_upR = new FlxActionDigital(Action.NOTE_UP_R);
+  var _note_leftR = new FlxActionDigital(Action.NOTE_LEFT_R);
+  var _note_rightR = new FlxActionDigital(Action.NOTE_RIGHT_R);
+  var _note_downR = new FlxActionDigital(Action.NOTE_DOWN_R);
+  var _accept = new FlxActionDigital(Action.ACCEPT);
+  var _back = new FlxActionDigital(Action.BACK);
+  var _pause = new FlxActionDigital(Action.PAUSE);
+  var _reset = new FlxActionDigital(Action.RESET);
+  var _screenshot = new FlxActionDigital(Action.SCREENSHOT);
+  var _cutscene_advance = new FlxActionDigital(Action.CUTSCENE_ADVANCE);
+  var _debug_menu = new FlxActionDigital(Action.DEBUG_MENU);
+  var _debug_chart = new FlxActionDigital(Action.DEBUG_CHART);
+  var _debug_stage = new FlxActionDigital(Action.DEBUG_STAGE);
+  var _volume_up = new FlxActionDigital(Action.VOLUME_UP);
+  var _volume_down = new FlxActionDigital(Action.VOLUME_DOWN);
+  var _volume_mute = new FlxActionDigital(Action.VOLUME_MUTE);
 
   var byName:Map<String, FunkinAction> = new Map<String, FunkinAction>();
 
@@ -214,15 +227,20 @@ class Controls extends FlxActionSet
   inline function get_PAUSE()
     return _pause.check();
 
+  public var RESET(get, never):Bool;
+
+  inline function get_RESET()
+    return _reset.check();
+
+  public var SCREENSHOT(get, never):Bool;
+
+  inline function get_SCREENSHOT()
+    return _screenshot.check();
+
   public var CUTSCENE_ADVANCE(get, never):Bool;
 
   inline function get_CUTSCENE_ADVANCE()
     return _cutscene_advance.check();
-
-  public var CUTSCENE_SKIP(get, never):Bool;
-
-  inline function get_CUTSCENE_SKIP()
-    return _cutscene_skip.check();
 
   public var DEBUG_MENU(get, never):Bool;
 
@@ -254,18 +272,6 @@ class Controls extends FlxActionSet
   inline function get_VOLUME_MUTE()
     return _volume_mute.check();
 
-  public var RESET(get, never):Bool;
-
-  inline function get_RESET()
-    return _reset.check();
-
-  #if CAN_CHEAT
-  public var CHEAT(get, never):Bool;
-
-  inline function get_CHEAT()
-    return _cheat.check();
-  #end
-
   public function new(name, scheme:KeyboardScheme = null)
   {
     super(name);
@@ -281,15 +287,15 @@ class Controls extends FlxActionSet
     add(_accept);
     add(_back);
     add(_pause);
+    add(_reset);
+    add(_screenshot);
     add(_cutscene_advance);
-    add(_cutscene_skip);
+    add(_debug_menu);
+    add(_debug_chart);
+    add(_debug_stage);
     add(_volume_up);
     add(_volume_down);
     add(_volume_mute);
-    add(_reset);
-    #if CAN_CHEAT
-    add(_cheat);
-    #end
 
     for (action in digitalActions) {
       if (Std.isOfType(action, FunkinAction)) {
@@ -332,8 +338,12 @@ class Controls extends FlxActionSet
       throw 'Invalid name: $name';
     #end
 
-    return byName[name].inputs.map(function(input) return (input.device == KEYBOARD) ? input.inputID : null)
-      .filter(function(key) return key != null);
+    // TODO: Revert to `.map().filter()` once HashLink doesn't complain anymore.
+    var result:Array<FlxKey> = [];
+    for (input in byName[name].inputs) {
+      if (input.device == KEYBOARD) result.push(input.inputID);
+    }
+    return result;
   }
 
   public function getButtonsForAction(name:Action):Array<FlxGamepadInputID> {
@@ -342,8 +352,11 @@ class Controls extends FlxActionSet
       throw 'Invalid name: $name';
     #end
 
-    return byName[name].inputs.map(function(input) return (input.device == GAMEPAD) ? input.inputID : null)
-      .filter(function(key) return key != null);
+    var result:Array<FlxGamepadInputID> = [];
+    for (input in byName[name].inputs) {
+      if (input.device == GAMEPAD) result.push(input.inputID);
+    }
+    return result;
   }
 
   public function getDialogueName(action:FlxActionDigital):String
@@ -378,17 +391,14 @@ class Controls extends FlxActionSet
       case BACK: _back;
       case PAUSE: _pause;
       case RESET: _reset;
+      case SCREENSHOT: _screenshot;
       case CUTSCENE_ADVANCE: _cutscene_advance;
-      case CUTSCENE_SKIP: _cutscene_skip;
       case DEBUG_MENU: _debug_menu;
       case DEBUG_CHART: _debug_chart;
       case DEBUG_STAGE: _debug_stage;
       case VOLUME_UP: _volume_up;
       case VOLUME_DOWN: _volume_down;
       case VOLUME_MUTE: _volume_mute;
-      #if CAN_CHEAT
-      case CHEAT: _cheat;
-      #end
     }
   }
 
@@ -446,10 +456,12 @@ class Controls extends FlxActionSet
         func(_back, JUST_PRESSED);
       case PAUSE:
         func(_pause, JUST_PRESSED);
+      case RESET:
+        func(_reset, JUST_PRESSED);
+      case SCREENSHOT:
+        func(_screenshot, JUST_PRESSED);
       case CUTSCENE_ADVANCE:
         func(_cutscene_advance, JUST_PRESSED);
-      case CUTSCENE_SKIP:
-        func(_cutscene_skip, PRESSED);
       case DEBUG_MENU:
         func(_debug_menu, JUST_PRESSED);
       case DEBUG_CHART:
@@ -462,12 +474,6 @@ class Controls extends FlxActionSet
         func(_volume_down, JUST_PRESSED);
       case VOLUME_MUTE:
         func(_volume_mute, JUST_PRESSED);
-      case RESET:
-        func(_reset, JUST_PRESSED);
-      #if CAN_CHEAT
-      case CHEAT:
-        func(_cheat, JUST_PRESSED);
-      #end
     }
   }
 
@@ -653,8 +659,9 @@ class Controls extends FlxActionSet
     bindKeys(Control.ACCEPT, getDefaultKeybinds(scheme, Control.ACCEPT));
     bindKeys(Control.BACK, getDefaultKeybinds(scheme, Control.BACK));
     bindKeys(Control.PAUSE, getDefaultKeybinds(scheme, Control.PAUSE));
+    bindKeys(Control.RESET, getDefaultKeybinds(scheme, Control.RESET));
+    bindKeys(Control.SCREENSHOT, getDefaultKeybinds(scheme, Control.SCREENSHOT));
     bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
-    bindKeys(Control.CUTSCENE_SKIP, getDefaultKeybinds(scheme, Control.CUTSCENE_SKIP));
     bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
     bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(scheme, Control.DEBUG_CHART));
     bindKeys(Control.DEBUG_STAGE, getDefaultKeybinds(scheme, Control.DEBUG_STAGE));
@@ -680,15 +687,15 @@ class Controls extends FlxActionSet
           case Control.ACCEPT: return [Z, SPACE, ENTER];
           case Control.BACK: return [X, BACKSPACE, ESCAPE];
           case Control.PAUSE: return [P, ENTER, ESCAPE];
+          case Control.RESET: return [R];
+          case Control.SCREENSHOT: return [F3]; // TODO: Change this back to PrintScreen
           case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
-          case Control.CUTSCENE_SKIP: return [P, ESCAPE];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
           case Control.DEBUG_STAGE: return [];
           case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
           case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
           case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
-          case Control.RESET: return [R];
         }
       case Duo(true):
         switch (control) {
@@ -703,15 +710,15 @@ class Controls extends FlxActionSet
           case Control.ACCEPT: return [G, Z];
           case Control.BACK: return [H, X];
           case Control.PAUSE: return [ONE];
+          case Control.RESET: return [R];
+          case Control.SCREENSHOT: return [PRINTSCREEN];
           case Control.CUTSCENE_ADVANCE: return [G, Z];
-          case Control.CUTSCENE_SKIP: return [ONE];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
           case Control.DEBUG_STAGE: return [];
           case Control.VOLUME_UP: return [PLUS];
           case Control.VOLUME_DOWN: return [MINUS];
           case Control.VOLUME_MUTE: return [ZERO];
-          case Control.RESET: return [R];
         }
       case Duo(false):
         switch (control) {
@@ -726,15 +733,15 @@ class Controls extends FlxActionSet
           case Control.ACCEPT: return [ENTER];
           case Control.BACK: return [ESCAPE];
           case Control.PAUSE: return [ONE];
+          case Control.RESET: return [R];
+          case Control.SCREENSHOT: return [PRINTSCREEN];
           case Control.CUTSCENE_ADVANCE: return [ENTER];
-          case Control.CUTSCENE_SKIP: return [ONE];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
           case Control.DEBUG_STAGE: return [];
           case Control.VOLUME_UP: return [NUMPADPLUS];
           case Control.VOLUME_DOWN: return [NUMPADMINUS];
           case Control.VOLUME_MUTE: return [NUMPADZERO];
-          case Control.RESET: return [R];
         }
       default:
         // Fallthrough.
@@ -837,15 +844,14 @@ class Controls extends FlxActionSet
       Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT),
       Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT),
       Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE),
+      Control.RESET => getDefaultGamepadBinds(Control.RESET),
+      // Control.SCREENSHOT => [],
       // Control.VOLUME_UP => [RIGHT_SHOULDER],
       // Control.VOLUME_DOWN => [LEFT_SHOULDER],
       // Control.VOLUME_MUTE => [RIGHT_TRIGGER],
       Control.CUTSCENE_ADVANCE => getDefaultGamepadBinds(Control.CUTSCENE_ADVANCE),
-      Control.CUTSCENE_SKIP => getDefaultGamepadBinds(Control.CUTSCENE_SKIP),
       // Control.DEBUG_MENU
       // Control.DEBUG_CHART
-      Control.RESET => getDefaultGamepadBinds(Control.RESET),
-      #if CAN_CHEAT, Control.CHEAT => getDefaultGamepadBinds(Control.CHEAT) #end
     ]);
   }
 
@@ -862,15 +868,14 @@ class Controls extends FlxActionSet
       case Control.NOTE_LEFT: return [DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT];
       case Control.NOTE_RIGHT: return [DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT];
       case Control.PAUSE: return [START];
+      case Control.RESET: return [RIGHT_SHOULDER];
+      case Control.SCREENSHOT: return [];
       case Control.VOLUME_UP: return [];
       case Control.VOLUME_DOWN: return [];
       case Control.VOLUME_MUTE: return [];
       case Control.CUTSCENE_ADVANCE: return [A];
-      case Control.CUTSCENE_SKIP: return [START];
       case Control.DEBUG_MENU: return [];
       case Control.DEBUG_CHART: return [];
-      case Control.RESET: return [RIGHT_SHOULDER];
-      #if CAN_CHEAT, Control.CHEAT: return [X]; #end
       default:
         // Fallthrough.
     }
@@ -1389,12 +1394,13 @@ enum Control
   UI_RIGHT;
   UI_DOWN;
   RESET;
+  SCREENSHOT;
   ACCEPT;
   BACK;
   PAUSE;
   // CUTSCENE
   CUTSCENE_ADVANCE;
-  CUTSCENE_SKIP;
+  // SCREENSHOT
   // VOLUME
   VOLUME_UP;
   VOLUME_DOWN;
@@ -1403,9 +1409,6 @@ enum Control
   DEBUG_MENU;
   DEBUG_CHART;
   DEBUG_STAGE;
-  #if CAN_CHEAT
-  CHEAT;
-  #end
 }
 
 enum abstract Action(String) to String from String
@@ -1440,9 +1443,10 @@ enum abstract Action(String) to String from String
   var BACK = "back";
   var PAUSE = "pause";
   var RESET = "reset";
+  // SCREENSHOT
+  var SCREENSHOT = "screenshot";
   // CUTSCENE
   var CUTSCENE_ADVANCE = "cutscene_advance";
-  var CUTSCENE_SKIP = "cutscene_skip";
   // VOLUME
   var VOLUME_UP = "volume_up";
   var VOLUME_DOWN = "volume_down";
@@ -1451,9 +1455,6 @@ enum abstract Action(String) to String from String
   var DEBUG_MENU = "debug_menu";
   var DEBUG_CHART = "debug_chart";
   var DEBUG_STAGE = "debug_stage";
-  #if CAN_CHEAT
-  var CHEAT = "cheat";
-  #end
 }
 
 enum Device

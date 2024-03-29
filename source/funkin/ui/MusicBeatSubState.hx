@@ -1,6 +1,6 @@
 package funkin.ui;
 
-import flixel.addons.transition.FlxTransitionableSubState;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
@@ -51,12 +51,8 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   override function update(elapsed:Float):Void
   {
+    // 3.59% CPU Usage (100% is FlxTypedGroup#update() and most of that is updating each member.)
     super.update(elapsed);
-
-    // Rebindable volume keys.
-    if (controls.VOLUME_MUTE) FlxG.sound.toggleMuted();
-    else if (controls.VOLUME_UP) FlxG.sound.changeVolume(0.1);
-    else if (controls.VOLUME_DOWN) FlxG.sound.changeVolume(-0.1);
 
     // Emergency exit button.
     if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
@@ -66,8 +62,11 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     // Display Conductor info in the watch window.
     FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
+
+    // 0.09% CPU Usage?
     Conductor.watchQuick();
 
+    // 4.31% CPU Usage
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 

@@ -71,6 +71,7 @@
 
   "haxe.displayPort": "auto",
   "haxe.enableCompilationServer": false,
+  "haxe.enableServerView": true,
   "haxe.displayServer": {
     "arguments": ["-v"]
   },
@@ -84,7 +85,7 @@
   },
   "projectManager.git.baseFolders": ["./"],
 
-  "haxecheckstyle.sourceFolders": ["src", "Source"],
+  "haxecheckstyle.sourceFolders": ["src", "source"],
   "haxecheckstyle.externalSourceRoots": [],
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
@@ -93,57 +94,131 @@
     {
       "label": "Windows / Debug",
       "target": "windows",
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug",
+      "target": "hl",
       "args": ["-debug"]
     },
     {
       "label": "Windows / Debug (FlxAnimate Test)",
       "target": "windows",
+      "args": ["-debug", "-DANIMATE", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (FlxAnimate Test)",
+      "target": "hl",
       "args": ["-debug", "-DANIMATE"]
     },
     {
       "label": "Windows / Debug (Straight to Freeplay)",
       "target": "windows",
+      "args": ["-debug", "-DFREEPLAY", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Freeplay)",
+      "target": "hl",
       "args": ["-debug", "-DFREEPLAY"]
     },
     {
       "label": "Windows / Debug (Straight to Play - Bopeebo Normal)",
       "target": "windows",
+      "args": [
+        "-debug",
+        "-DSONG=bopeebo -DDIFFICULTY=normal",
+        "-DFORCE_DEBUG_VERSION"
+      ]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Play - Bopeebo Normal)",
+      "target": "hl",
       "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
     },
     {
       "label": "Windows / Debug (Conversation Test)",
       "target": "windows",
+      "args": ["-debug", "-DDIALOGUE", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Conversation Test)",
+      "target": "hl",
       "args": ["-debug", "-DDIALOGUE"]
     },
     {
       "label": "Windows / Debug (Straight to Chart Editor)",
       "target": "windows",
+      "args": ["-debug", "-DCHARTING", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Chart Editor)",
+      "target": "hl",
       "args": ["-debug", "-DCHARTING"]
     },
     {
       "label": "Windows / Debug (Straight to Animation Editor)",
       "target": "windows",
+      "args": ["-debug", "-DANIMDEBUG", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Animation Editor)",
+      "target": "hl",
       "args": ["-debug", "-DANIMDEBUG"]
     },
     {
       "label": "Windows / Debug (Latency Test)",
       "target": "windows",
+      "args": ["-debug", "-DLATENCY", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "HashLink / Debug (Latency Test)",
+      "target": "hl",
       "args": ["-debug", "-DLATENCY"]
     },
     {
       "label": "Windows / Debug (Waveform Test)",
       "target": "windows",
+      "args": ["-debug", "-DWAVEFORM", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "Windows / Release",
+      "target": "windows",
+      "args": ["-release"]
+    },
+    {
+      "label": "Windows / Release (GitHub Actions)",
+      "target": "windows",
+      "args": ["-release", "-DGITHUB_BUILD"]
+    },
+    {
+      "label": "HashLink / Debug (Waveform Test)",
+      "target": "hl",
       "args": ["-debug", "-DWAVEFORM"]
     },
     {
       "label": "HTML5 / Debug",
       "target": "html5",
-      "args": ["-debug"]
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "HTML5 / Debug (Watch)",
       "target": "html5",
-      "args": ["-debug", "-watch"]
+      "args": ["-debug", "-watch", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "macOS / Debug",
+      "target": "mac",
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
+      "label": "macOS / Release",
+      "target": "mac",
+      "args": ["-release"]
+    },
+    {
+      "label": "macOS / Release (GitHub Actions)",
+      "target": "mac",
+      "args": ["-release", "-DGITHUB_BUILD"]
     }
   ],
   "cmake.configureOnOpen": false,

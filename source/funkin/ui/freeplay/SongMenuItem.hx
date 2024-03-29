@@ -65,25 +65,26 @@ class SongMenuItem extends FlxSpriteGroup
     var rank:String = FlxG.random.getObject(ranks);
 
     ranking = new FlxSprite(capsule.width * 0.84, 30);
-    ranking.loadGraphic(Paths.image("freeplay/ranks/" + rank));
+    ranking.loadGraphic(Paths.image('freeplay/ranks/' + rank));
     ranking.scale.x = ranking.scale.y = realScaled;
-    ranking.alpha = 0.75;
+    // ranking.alpha = 0.75;
+    ranking.visible = false;
     ranking.origin.set(capsule.origin.x - ranking.x, capsule.origin.y - ranking.y);
     add(ranking);
     grpHide.add(ranking);
 
     switch (rank)
     {
-      case "perfect":
+      case 'perfect':
         ranking.x -= 10;
     }
 
     grayscaleShader = new Grayscale(1);
 
-    diffRatingSprite = new FlxSprite(145, 90).loadGraphic(Paths.image("freeplay/diffRatings/diff00"));
+    diffRatingSprite = new FlxSprite(145, 90).loadGraphic(Paths.image('freeplay/diffRatings/diff00'));
     diffRatingSprite.shader = grayscaleShader;
-    diffRatingSprite.visible = false;
-    add(diffRatingSprite);
+    // TODO: Readd once ratings are fully implemented
+    // add(diffRatingSprite);
     diffRatingSprite.origin.set(capsule.origin.x - diffRatingSprite.x, capsule.origin.y - diffRatingSprite.y);
     grpHide.add(diffRatingSprite);
 
@@ -104,7 +105,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     favIcon = new FlxSprite(400, 40);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
-    favIcon.animation.addByPrefix('fav', "favorite heart", 24, false);
+    favIcon.animation.addByPrefix('fav', 'favorite heart', 24, false);
     favIcon.animation.play('fav');
     favIcon.setGraphicSize(50, 50);
     favIcon.visible = false;
@@ -114,10 +115,11 @@ class SongMenuItem extends FlxSpriteGroup
     setVisibleGrp(false);
   }
 
-  function updateDifficultyRating(newRating:Int)
+  function updateDifficultyRating(newRating:Int):Void
   {
     var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
     diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
+    diffRatingSprite.visible = false;
   }
 
   function set_hsvShader(value:HSVShader):HSVShader
@@ -129,7 +131,7 @@ class SongMenuItem extends FlxSpriteGroup
     return value;
   }
 
-  function textAppear()
+  function textAppear():Void
   {
     songText.scale.x = 1.7;
     songText.scale.y = 0.2;
@@ -144,7 +146,7 @@ class SongMenuItem extends FlxSpriteGroup
     });
   }
 
-  function setVisibleGrp(value:Bool)
+  function setVisibleGrp(value:Bool):Void
   {
     for (spr in grpHide.members)
     {
@@ -156,7 +158,7 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>)
+  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>):Void
   {
     if (x != null) this.x = x;
     if (y != null) this.y = y;
@@ -176,28 +178,26 @@ class SongMenuItem extends FlxSpriteGroup
    * @param char The character ID used by this song.
    *             If the character has no freeplay icon, a warning will be thrown and nothing will display.
    */
-  public function setCharacter(char:String)
+  public function setCharacter(char:String):Void
   {
     var charPath:String = "freeplay/icons/";
-
-    trace(char);
 
     // TODO: Put this in the character metadata where it belongs.
     // TODO: Also, can use CharacterDataParser.getCharPixelIconAsset()
     switch (char)
     {
-      case "monster-christmas":
-        charPath += "monsterpixel";
-      case "mom-car":
-        charPath += "mommypixel";
-      case "dad":
-        charPath += "daddypixel";
-      case "darnell-blazin":
-        charPath += "darnellpixel";
-      case "senpai-angry":
-        charPath += "senpaipixel";
+      case 'monster-christmas':
+        charPath += 'monsterpixel';
+      case 'mom-car':
+        charPath += 'mommypixel';
+      case 'dad':
+        charPath += 'daddypixel';
+      case 'darnell-blazin':
+        charPath += 'darnellpixel';
+      case 'senpai-angry':
+        charPath += 'senpaipixel';
       default:
-        charPath += char + "pixel";
+        charPath += '${char}pixel';
     }
 
     if (!openfl.utils.Assets.exists(Paths.image(charPath)))
@@ -211,7 +211,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     switch (char)
     {
-      case "parents-christmas":
+      case 'parents-christmas':
         pixelIcon.origin.x = 140;
       default:
         pixelIcon.origin.x = 100;
@@ -262,7 +262,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   var grpHide:FlxGroup;
 
-  public function forcePosition()
+  public function forcePosition():Void
   {
     visible = true;
     capsule.alpha = 1;
@@ -287,7 +287,7 @@ class SongMenuItem extends FlxSpriteGroup
     setVisibleGrp(true);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     if (doJumpIn)
     {

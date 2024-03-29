@@ -1,21 +1,22 @@
 package funkin.ui.debug.charting.toolboxes;
 
+import flixel.addons.display.FlxTiledSprite;
+import flixel.math.FlxMath;
 import funkin.audio.SoundGroup;
+import funkin.audio.waveform.WaveformDataParser;
+import funkin.ui.debug.charting.commands.SetFreeplayPreviewCommand;
+import funkin.ui.haxeui.components.WaveformPlayer;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.util.TimerUtil;
+import haxe.ui.backend.flixel.components.SpriteWrapper;
 import haxe.ui.components.Button;
 import haxe.ui.components.HorizontalSlider;
 import haxe.ui.components.Label;
-import flixel.addons.display.FlxTiledSprite;
-import flixel.math.FlxMath;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
-import haxe.ui.backend.flixel.components.SpriteWrapper;
-import funkin.ui.debug.charting.commands.SetFreeplayPreviewCommand;
-import funkin.ui.haxeui.components.WaveformPlayer;
-import funkin.audio.waveform.WaveformDataParser;
 import haxe.ui.containers.VBox;
 import haxe.ui.containers.Absolute;
 import haxe.ui.containers.ScrollView;
-import funkin.ui.freeplay.FreeplayState;
 import haxe.ui.containers.Frame;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
@@ -288,12 +289,12 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     // Build player waveform.
     // waveformMusic.waveform.forceUpdate = true;
-    var perfStart = haxe.Timer.stamp();
-    var waveformData1 = playerVoice.waveformData;
-    var waveformData2 = opponentVoice?.waveformData ?? playerVoice.waveformData; // this null check is for songs that only have 1 vocals file!
+    var perfStart:Float = TimerUtil.start();
+    var waveformData1 = playerVoice?.waveformData;
+    var waveformData2 = opponentVoice?.waveformData ?? playerVoice?.waveformData; // this null check is for songs that only have 1 vocals file!
     var waveformData3 = chartEditorState.audioInstTrack.waveformData;
-    var waveformData = waveformData1.merge(waveformData2).merge(waveformData3);
-    trace('Waveform data merging took: ${haxe.Timer.stamp() - perfStart} seconds');
+    var waveformData = waveformData3.merge(waveformData1).merge(waveformData2);
+    trace('Waveform data merging took: ${TimerUtil.seconds(perfStart)}');
 
     waveformMusic.waveform.waveformData = waveformData;
     // Set the width and duration to render the full waveform, with the clipRect applied we only render a segment of it.

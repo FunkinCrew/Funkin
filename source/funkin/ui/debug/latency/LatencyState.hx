@@ -71,8 +71,6 @@ class LatencyState extends MusicBeatSubState
       // trace("EVENT LISTENER: " + key);
     });
 
-    // FlxG.sound.playMusic(Paths.sound('soundTest'));
-
     // funnyStatsGraph.hi
 
     Conductor.instance.forceBPM(60);
@@ -130,7 +128,7 @@ class LatencyState extends MusicBeatSubState
 
     for (i in 0...32)
     {
-      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), Conductor.instance.beatLengthMs * i);
+      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       noteGrp.add(note);
     }
 
@@ -241,13 +239,6 @@ class LatencyState extends MusicBeatSubState
         Conductor.instance.inputOffset -= 1.0 * multiply;
       }
     }
-
-    /* if (FlxG.keys.justPressed.SPACE)
-      {
-        FlxG.sound.music.stop();
-
-        FlxG.resetState();
-    }*/
 
     noteGrp.forEach(function(daNote:NoteSprite) {
       daNote.y = (strumLine.y - ((Conductor.instance.songPosition - Conductor.instance.instrumentalOffset) - daNote.noteData.time) * 0.45);

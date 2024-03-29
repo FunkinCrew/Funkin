@@ -24,7 +24,7 @@ class WindowUtil
   {
     #if CAN_OPEN_LINKS
     #if linux
-    Sys.command('/usr/bin/xdg-open', [targetUrl, "&"]);
+    Sys.command('/usr/bin/xdg-open', [targetUrl, '&']);
     #else
     // This should work on Windows and HTML5.
     FlxG.openURL(targetUrl);
@@ -42,7 +42,7 @@ class WindowUtil
   {
     #if CAN_OPEN_LINKS
     #if windows
-    Sys.command('explorer', [targetPath.replace("/", "\\")]);
+    Sys.command('explorer', [targetPath.replace('/', '\\')]);
     #elseif mac
     Sys.command('open', [targetPath]);
     #elseif linux
@@ -61,9 +61,9 @@ class WindowUtil
   {
     #if CAN_OPEN_LINKS
     #if windows
-    Sys.command('explorer', ["/select," + targetPath.replace("/", "\\")]);
+    Sys.command('explorer', ['/select,' + targetPath.replace('/', '\\')]);
     #elseif mac
-    Sys.command('open', ["-R", targetPath]);
+    Sys.command('open', ['-R', targetPath]);
     #elseif linux
     // TODO: unsure of the linux equivalent to opening a folder and then "selecting" a file.
     Sys.command('open', [targetPath]);
@@ -82,7 +82,7 @@ class WindowUtil
    * Wires up FlxSignals that happen based on window activity.
    * For example, we can run a callback when the window is closed.
    */
-  public static function initWindowEvents()
+  public static function initWindowEvents():Void
   {
     // onUpdate is called every frame just before rendering.
 
@@ -95,7 +95,7 @@ class WindowUtil
   /**
    * Turns off that annoying "Report to Microsoft" dialog that pops up when the game crashes.
    */
-  public static function disableCrashHandler()
+  public static function disableCrashHandler():Void
   {
     #if (cpp && windows)
     untyped __cpp__('SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);');
