@@ -171,7 +171,12 @@ class LoadingState extends MusicBeatState
 
   function onLoad():Void
   {
-    if (stopMusic && FlxG.sound.music != null) FlxG.sound.music.stop();
+    // Stop the instrumental.
+    if (stopMusic && FlxG.sound.music != null)
+    {
+      FlxG.sound.music.destroy();
+      FlxG.sound.music = null;
+    }
 
     FlxG.switchState(target);
   }
@@ -200,7 +205,8 @@ class LoadingState extends MusicBeatState
     // All assets preloaded, switch directly to play state (defualt on other targets).
     if (shouldStopMusic && FlxG.sound.music != null)
     {
-      FlxG.sound.music.stop();
+      FlxG.sound.music.destroy();
+      FlxG.sound.music = null;
     }
 
     // Load and cache the song's charts.

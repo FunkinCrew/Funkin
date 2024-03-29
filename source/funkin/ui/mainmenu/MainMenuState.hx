@@ -155,7 +155,11 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu');
+    FunkinSound.playMusic('freakyMenu',
+      {
+        overrideExisting: true,
+        restartTrack: false
+      });
   }
 
   function resetCamStuff()
@@ -321,7 +325,7 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       FlxG.switchState(() -> new TitleState());
     }
   }

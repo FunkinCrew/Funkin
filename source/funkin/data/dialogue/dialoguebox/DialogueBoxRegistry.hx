@@ -15,7 +15,14 @@ class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData>
 
   public static final DIALOGUEBOX_DATA_VERSION_RULE:thx.semver.VersionRule = "1.1.x";
 
-  public static final instance:DialogueBoxRegistry = new DialogueBoxRegistry();
+  public static var instance(get, never):DialogueBoxRegistry;
+  static var _instance:Null<DialogueBoxRegistry> = null;
+
+  static function get_instance():DialogueBoxRegistry
+  {
+    if (_instance == null) _instance = new DialogueBoxRegistry();
+    return _instance;
+  }
 
   public function new()
   {

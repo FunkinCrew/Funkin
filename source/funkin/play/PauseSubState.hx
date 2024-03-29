@@ -369,7 +369,7 @@ class PauseSubState extends MusicBeatSubState
    */
   function changeSelection(change:Int = 0):Void
   {
-    FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     currentEntry += change;
 

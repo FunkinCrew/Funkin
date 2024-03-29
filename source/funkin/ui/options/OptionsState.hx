@@ -6,9 +6,11 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
+import funkin.audio.FunkinSound;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.util.WindowUtil;
+import funkin.audio.FunkinSound;
 import funkin.input.Controls;
 
 class OptionsState extends MusicBeatState
@@ -144,7 +146,7 @@ class Page extends FlxGroup
   {
     if (canExit && controls.BACK)
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
     }
   }

@@ -96,7 +96,28 @@ class LatencyState extends MusicBeatSubState
 
     localConductor.forceBPM(60);
 
-    noteGrp = [];
+    FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key -> {
+      trace(key.charCode);
+
+      if (key.charCode == 120) generateBeatStuff();
+
+      trace("\tEVENT PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
+      // trace(FlxG.sound.music.prevTimestamp);
+      trace(FlxG.sound.music.time);
+      trace("\tFR FR PRESS: \t" + swagSong.getTimeWithDiff());
+
+      // trace("\tREDDIT: \t" + swagSong.frfrTime + " " + Timer.stamp());
+      @:privateAccess
+      trace("\tREDDIT: \t" + FlxG.sound.music._channel.position + " " + Timer.stamp());
+      // trace("EVENT LISTENER: " + key);
+    });
+
+    // funnyStatsGraph.hi
+
+    Conductor.instance.forceBPM(60);
+
+    noteGrp = new FlxTypedGroup<NoteSprite>();
+    add(noteGrp);
 
     diffGrp = new FlxTypedGroup<FlxText>();
     add(diffGrp);
@@ -313,6 +334,18 @@ class LatencyState extends MusicBeatSubState
     {
       close();
     }
+    noteGrp.forEach(function(daNote:NoteSprite) {
+      daNote.y = (strumLine.y - ((Conductor.instance.songPosition - Conductor.instance.instrumentalOffset) - daNote.noteData.time) * 0.45);
+      daNote.x = strumLine.x + 30;
+
+      if (daNote.y < strumLine.y) daNote.alpha = 0.5;
+
+      if (daNote.y < 0 - daNote.height)
+      {
+        daNote.alpha = 1;
+        // daNote.data.strumTime += Conductor.instance.beatLengthMs * 8;
+      }
+    });
 
     super.update(elapsed);
   }

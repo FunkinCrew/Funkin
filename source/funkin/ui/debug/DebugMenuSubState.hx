@@ -4,6 +4,7 @@ import flixel.math.FlxPoint;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import funkin.ui.MusicBeatSubState;
+import funkin.audio.FunkinSound;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.MusicBeatSubState;
@@ -76,7 +77,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
     if (controls.BACK)
     {
-      FlxG.sound.play(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exitDebugMenu();
     }
   }

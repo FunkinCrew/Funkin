@@ -38,7 +38,15 @@ class Conductor
    * You can also do stuff like store a reference to the Conductor and pass it around or temporarily replace it,
    * or have a second Conductor running at the same time, or other weird stuff like that if you need to.
    */
-  public static var instance:Conductor = new Conductor();
+  public static var instance(get, never):Conductor;
+
+  static var _instance:Null<Conductor> = null;
+
+  static function get_instance():Conductor
+  {
+    if (_instance == null) _instance = new Conductor();
+    return _instance;
+  }
 
   /**
    * Signal fired when the current Conductor instance advances to a new measure.
@@ -597,6 +605,6 @@ class Conductor
    */
   public static function reset():Void
   {
-    Conductor.instance = new Conductor();
+    _instance = new Conductor();
   }
 }

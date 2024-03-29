@@ -37,8 +37,6 @@ class StageBuilderState extends MusicBeatState
 
     FlxG.mouse.visible = true;
 
-    // var alsoSnd:FlxSound = new FlxSound();
-
     // snd = new Sound();
 
     // var swagBytes:ByteArray = new ByteArray(8192);
