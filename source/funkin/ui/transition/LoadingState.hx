@@ -210,7 +210,8 @@ class LoadingState extends MusicBeatState
     }
 
     // Load and cache the song's charts.
-    if (params?.targetSong != null)
+    // Don't do this if we already provided the music and charts.
+    if (params?.targetSong != null && !params.overrideMusic)
     {
       params.targetSong.cacheCharts(true);
     }
