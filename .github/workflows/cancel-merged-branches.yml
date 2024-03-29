@@ -22,7 +22,7 @@ jobs:
               repo: context.repo.repo,
               workflow_id: "build-shit.yml",
               status: "queued",
-              branch: "${{ github.ref_name }}"
+              branch: "${{ github.event.sender.name }}"
             });
             let runs = branch_workflows.data.workflow_runs;
             runs.forEach((run) => {
@@ -32,3 +32,4 @@ jobs:
                 run_id: run.id
               });
             });
+            console.log(runs);
