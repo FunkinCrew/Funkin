@@ -414,10 +414,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     return sound;
   }
 
+  @:nullSafety(Off)
   public override function destroy():Void
   {
     // trace('[FunkinSound] Destroying sound "${this._label}"');
     super.destroy();
+    if (fadeTween != null)
+    {
+      fadeTween.cancel();
+      fadeTween = null;
+    }
     FlxTween.cancelTweensOf(this);
     this._label = 'unknown';
   }

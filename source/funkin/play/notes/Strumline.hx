@@ -295,6 +295,11 @@ class Strumline extends FlxSpriteGroup
   {
     if (noteData.length == 0) return;
 
+    // Ensure note data gets reset if the song happens to loop.
+    // NOTE: I had to remove this line because it was causing notes visible during the countdown to be placed multiple times.
+    // I don't remember what bug I was trying to fix by adding this.
+    // if (conductorInUse.currentStep == 0) nextNoteIndex = 0;
+
     var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
     var hitWindowStart:Float = Conductor.instance.songPosition - Constants.HIT_WINDOW_MS;
     var renderWindowStart:Float = Conductor.instance.songPosition + RENDER_DISTANCE_MS;
@@ -822,7 +827,7 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new SustainTrail(0, 100, noteStyle);
+      result = new SustainTrail(0, 0, noteStyle);
       this.holdNotes.add(result);
     }
 

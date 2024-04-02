@@ -255,11 +255,11 @@ class GameOverSubState extends MusicBeatSubState
       }
       else if (PlayStatePlaylist.isStoryMode)
       {
-        FlxG.switchState(() -> new StoryMenuState());
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
       }
       else
       {
-        FlxG.switchState(() -> new FreeplayState());
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(sticker)));
       }
     }
 

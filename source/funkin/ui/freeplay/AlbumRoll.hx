@@ -7,6 +7,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import funkin.data.freeplay.AlbumRegistry;
+import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
 import openfl.utils.Assets;
@@ -21,9 +22,9 @@ class AlbumRoll extends FlxSpriteGroup
    * The ID of the album to display.
    * Modify this value to automatically update the album art and title.
    */
-  public var albumId(default, set):String;
+  public var albumId(default, set):Null<String>;
 
-  function set_albumId(value:String):String
+  function set_albumId(value:Null<String>):Null<String>
   {
     if (this.albumId != value)
     {
@@ -65,6 +66,17 @@ class AlbumRoll extends FlxSpriteGroup
    */
   function updateAlbum():Void
   {
+    if (albumId == null)
+    {
+      albumArt.visible = false;
+      albumTitle.visible = false;
+      if (titleTimer != null)
+      {
+        titleTimer.cancel();
+        titleTimer = null;
+      }
+    }
+
     albumData = AlbumRegistry.instance.fetchEntry(albumId);
 
     if (albumData == null)
@@ -94,7 +106,15 @@ class AlbumRoll extends FlxSpriteGroup
 
     if (Assets.exists(Paths.image(albumData.getAlbumTitleAssetKey())))
     {
-      albumTitle.loadGraphic(Paths.image(albumData.getAlbumTitleAssetKey()));
+      if (albumData.hasAlbumTitleAnimations())
+      {
+        albumTitle.loadSparrow(albumData.getAlbumTitleAssetKey());
+        FlxAnimationUtil.addAtlasAnimations(albumTitle, albumData.getAlbumTitleAnimations());
+      }
+      else
+      {
+        albumTitle.loadGraphic(Paths.image(albumData.getAlbumTitleAssetKey()));
+      }
     }
     else
     {
@@ -155,6 +175,8 @@ class AlbumRoll extends FlxSpriteGroup
       });
   }
 
+  var titleTimer:Null<FlxTimer> = null;
+
   /**
    * Play the intro animation on the album art.
    */
@@ -164,7 +186,14 @@ class AlbumRoll extends FlxSpriteGroup
     FlxTween.tween(albumArt, {x: 950, y: 320, angle: -340}, 0.5, {ease: FlxEase.elasticOut});
 
     albumTitle.visible = false;
-    new FlxTimer().start(0.75, function(_) {
+
+    if (titleTimer != null)
+    {
+      titleTimer.cancel();
+      titleTimer = null;
+    }
+
+    titleTimer = new FlxTimer().start(0.75, function(_) {
       showTitle();
     });
   }
@@ -179,6 +208,8 @@ class AlbumRoll extends FlxSpriteGroup
   public function showTitle():Void
   {
     albumTitle.visible = true;
+    albumTitle.animation.play('active');
+    albumTitle.animation.finishCallback = (_) -> albumTitle.animation.play('idle');
   }
 
   /**

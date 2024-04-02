@@ -427,7 +427,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return ScriptedSong.listScriptClasses();
   }
 
-  function loadEntryMetadataFile(id:String, ?variation:String):Null<BaseRegistry.JsonFile>
+  function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
@@ -442,7 +442,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return {fileName: entryFilePath, contents: rawJson};
   }
 
-  function loadMusicDataFile(id:String, ?variation:String):Null<BaseRegistry.JsonFile>
+  function loadMusicDataFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.file('music/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.json');
@@ -460,7 +460,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return openfl.Assets.exists(entryFilePath);
   }
 
-  function loadEntryChartFile(id:String, ?variation:String):Null<BaseRegistry.JsonFile>
+  function loadEntryChartFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
