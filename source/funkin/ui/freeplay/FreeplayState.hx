@@ -1236,6 +1236,12 @@ class FreeplayState extends MusicBeatSubState
           });
         if (didReplace)
         {
+          FunkinSound.playMusic('freakyMenu',
+            {
+              startingVolume: 0.0,
+              overrideExisting: true,
+              restartTrack: false
+            });
           FlxG.sound.music.fadeIn(2, 0, 0.8);
         }
       }

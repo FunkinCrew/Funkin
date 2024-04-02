@@ -1566,7 +1566,7 @@ class PlayState extends MusicBeatSubState
   {
     if (PlayState.instance.isMinimalMode) return;
     // Apply camera zoom level from stage data.
-    defaultCameraZoom = currentStage.camZoom;
+    defaultCameraZoom = currentStage?.camZoom ?? 1.0;
     currentCameraZoom = defaultCameraZoom;
     FlxG.camera.zoom = currentCameraZoom;
 

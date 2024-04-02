@@ -220,7 +220,7 @@ class TitleState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    var shouldFadeIn = (FlxG.sound.music == null);
+    var shouldFadeIn:Bool = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
     FunkinSound.playMusic('freakyMenu',
       {
@@ -229,7 +229,7 @@ class TitleState extends MusicBeatState
         restartTrack: true
       });
     // Fade from 0.0 to 0.7 over 4 seconds
-    if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 0.7);
+    if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
   }
 
   function getIntroTextShit():Array<Array<String>>

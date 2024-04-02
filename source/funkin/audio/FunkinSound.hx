@@ -265,10 +265,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   @:allow(flixel.sound.FlxSoundGroup)
   override function updateTransform():Void
   {
-    _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
-      (group != null ? group.volume : 1) * _volume * _volumeAdjust;
+    if (_transform != null)
+    {
+      _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
+        (group != null ? group.volume : 1) * _volume * _volumeAdjust;
+    }
 
-    if (_channel != null) _channel.soundTransform = _transform;
+    if (_channel != null)
+    {
+      _channel.soundTransform = _transform;
+    }
   }
 
   public function clone():FunkinSound
@@ -336,6 +342,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       FlxG.sound.music.kill();
     }
 
+    // Apparently HaxeFlixel isn't null safe.
+    @:nullSafety(Off)
+    {
+      FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, true, false, true);
+    }
+
     var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
     if (music != null)
     {
@@ -391,10 +403,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       sound._label = 'unknown';
     }
 
+    if (autoPlay) sound.play();
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
     sound.persist = true;
-    if (autoPlay) sound.play();
 
     // Call onLoad() because the sound already loaded
     if (onLoad != null && sound._sound != null) onLoad();

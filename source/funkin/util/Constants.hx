@@ -525,4 +525,10 @@ class Constants
    * The vertical offset of the strumline from the top edge of the screen.
    */
   public static final STRUMLINE_Y_OFFSET:Float = 24;
+
+  /**
+   * The rate at which the camera lerps to its target.
+   * 0.04 = 4% of distance per frame.
+   */
+  public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
 }

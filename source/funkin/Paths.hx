@@ -9,7 +9,7 @@ import openfl.utils.Assets as OpenFlAssets;
  */
 class Paths
 {
-  static var currentLevel:String;
+  static var currentLevel:Null<String> = null;
 
   public static function setCurrentLevel(name:String):Void
   {

@@ -3,18 +3,18 @@ package funkin.play;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import funkin.audio.FunkinSound;
+import flixel.input.touch.FlxTouch;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
-import funkin.play.PlayState;
-import funkin.util.MathUtil;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
+import funkin.util.MathUtil;
 import openfl.utils.Assets;
 
 /**
@@ -23,13 +23,14 @@ import openfl.utils.Assets;
  *
  * The newest implementation uses a substate, which prevents having to reload the song and stage each reset.
  */
+@:nullSafety
 class GameOverSubState extends MusicBeatSubState
 {
   /**
    * The currently active GameOverSubState.
    * There should be only one GameOverSubState in existance at a time, we can use a singleton.
    */
-  public static var instance:GameOverSubState = null;
+  public static var instance:Null<GameOverSubState> = null;
 
   /**
    * Which alternate animation on the character to use.
@@ -37,7 +38,7 @@ class GameOverSubState extends MusicBeatSubState
    * For example, playing a different animation when BF dies in Week 4
    * or Pico dies in Weekend 1.
    */
-  public static var animationSuffix:String = "";
+  public static var animationSuffix:String = '';
 
   /**
    * Which alternate game over music to use.
@@ -45,17 +46,19 @@ class GameOverSubState extends MusicBeatSubState
    * For example, the bf-pixel script sets this to `-pixel`
    * and the pico-playable script sets this to `Pico`.
    */
-  public static var musicSuffix:String = "";
+  public static var musicSuffix:String = '';
 
   /**
    * Which alternate "blue ball" sound effect to use.
    */
-  public static var blueBallSuffix:String = "";
+  public static var blueBallSuffix:String = '';
+
+  static var blueballed:Bool = false;
 
   /**
    * The boyfriend character.
    */
-  var boyfriend:BaseCharacter;
+  var boyfriend:Null<BaseCharacter> = null;
 
   /**
    * The invisible object in the scene which the camera focuses on.
@@ -82,7 +85,8 @@ class GameOverSubState extends MusicBeatSubState
 
   var transparent:Bool;
 
-  final CAMERA_ZOOM_DURATION:Float = 0.5;
+  static final CAMERA_ZOOM_DURATION:Float = 0.5;
+
   var targetCameraZoom:Float = 1.0;
 
   public function new(params:GameOverParams)
@@ -91,6 +95,8 @@ class GameOverSubState extends MusicBeatSubState
 
     this.isChartingMode = params?.isChartingMode ?? false;
     transparent = params.transparent;
+
+    cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
   }
 
   /**
@@ -101,14 +107,15 @@ class GameOverSubState extends MusicBeatSubState
     animationSuffix = '';
     musicSuffix = '';
     blueBallSuffix = '';
+    blueballed = false;
   }
 
-  override public function create():Void
+  public override function create():Void
   {
     if (instance != null)
     {
       // TODO: Do something in this case? IDK.
-      trace('WARNING: GameOverSubState instance already exists. This should not happen.');
+      FlxG.log.warn('WARNING: GameOverSubState instance already exists. This should not happen.');
     }
     instance = this;
 
@@ -121,7 +128,7 @@ class GameOverSubState extends MusicBeatSubState
     var playState = PlayState.instance;
 
     // Add a black background to the screen.
-    var bg = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     // We make this transparent so that we can see the stage underneath during debugging,
     // but it's normally opaque.
     bg.alpha = transparent ? 0.25 : 1.0;
@@ -138,20 +145,9 @@ class GameOverSubState extends MusicBeatSubState
       boyfriend.isDead = true;
       add(boyfriend);
       boyfriend.resetCharacter();
-
-      // Assign a camera follow point to the boyfriend's position.
-      cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
-      cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
-      cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
-      var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
-      cameraFollowPoint.x += offsets[0];
-      cameraFollowPoint.y += offsets[1];
-      add(cameraFollowPoint);
-
-      FlxG.camera.target = null;
-      FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.01);
-      targetCameraZoom = PlayState?.instance?.currentStage?.camZoom * boyfriend.getDeathCameraZoom();
     }
+
+    setCameraTarget();
 
     //
     // Set up the audio
@@ -161,6 +157,27 @@ class GameOverSubState extends MusicBeatSubState
     Conductor.instance.update(0);
   }
 
+  @:nullSafety(Off)
+  function setCameraTarget():Void
+  {
+    // Assign a camera follow point to the boyfriend's position.
+    cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
+    cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
+    cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
+    var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
+    cameraFollowPoint.x += offsets[0];
+    cameraFollowPoint.y += offsets[1];
+    add(cameraFollowPoint);
+
+    FlxG.camera.target = null;
+    FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE / 2);
+    targetCameraZoom = (PlayState?.instance?.currentStage?.camZoom ?? 1.0) * boyfriend.getDeathCameraZoom();
+  }
+
+  /**
+   * Forcibly reset the camera zoom level to that of the current stage.
+   * This prevents camera zoom events from adversely affecting the game over state.
+   */
   public function resetCameraZoom():Void
   {
     // Apply camera zoom level from stage data.
@@ -175,7 +192,7 @@ class GameOverSubState extends MusicBeatSubState
     {
       hasStartedAnimation = true;
 
-      if (PlayState.instance.isMinimalMode)
+      if (boyfriend == null || PlayState.instance.isMinimalMode)
       {
         // Play the "blue balled" sound. May play a variant if one has been assigned.
         playBlueBalledSFX();
@@ -205,10 +222,10 @@ class GameOverSubState extends MusicBeatSubState
     // MOBILE ONLY: Restart the level when tapping Boyfriend.
     if (FlxG.onMobile)
     {
-      var touch = FlxG.touches.getFirst();
+      var touch:FlxTouch = FlxG.touches.getFirst();
       if (touch != null)
       {
-        if (touch.overlaps(boyfriend))
+        if (boyfriend == null || touch.overlaps(boyfriend))
         {
           confirmDeath();
         }
@@ -228,7 +245,7 @@ class GameOverSubState extends MusicBeatSubState
       blueballed = false;
       PlayState.instance.deathCounter = 0;
       // PlayState.seenCutscene = false; // old thing...
-      gameOverMusic.stop();
+      if (gameOverMusic != null) gameOverMusic.stop();
 
       if (isChartingMode)
       {
@@ -252,7 +269,7 @@ class GameOverSubState extends MusicBeatSubState
       // This enables the stepHit and beatHit events.
       Conductor.instance.update(gameOverMusic.time);
     }
-    else
+    else if (boyfriend != null)
     {
       if (PlayState.instance.isMinimalMode)
       {
@@ -299,7 +316,7 @@ class GameOverSubState extends MusicBeatSubState
       isEnding = true;
       startDeathMusic(1.0, true); // isEnding changes this function's behavior.
 
-      if (PlayState.instance.isMinimalMode) {}
+      if (PlayState.instance.isMinimalMode || boyfriend == null) {}
       else
       {
         boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
@@ -313,7 +330,7 @@ class GameOverSubState extends MusicBeatSubState
           FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           PlayState.instance.needsReset = true;
 
-          if (PlayState.instance.isMinimalMode) {}
+          if (PlayState.instance.isMinimalMode || boyfriend == null) {}
           else
           {
             // Readd Boyfriend to the stage.
@@ -332,7 +349,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  public override function dispatchEvent(event:ScriptEvent)
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 
@@ -345,11 +362,11 @@ class GameOverSubState extends MusicBeatSubState
    */
   function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<String>
   {
-    var basePath = 'gameplay/gameover/gameOver';
-    if (starting) basePath += 'Start';
-    else if (ending) basePath += 'End';
+    var basePath:String = 'gameplay/gameover/gameOver';
+    if (ending) basePath += 'End';
+    else if (starting) basePath += 'Start';
 
-    var musicPath = Paths.music(basePath + suffix);
+    var musicPath:String = Paths.music(basePath + suffix);
     while (!Assets.exists(musicPath) && suffix.length > 0)
     {
       suffix = suffix.split('-').slice(0, -1).join('-');
@@ -362,23 +379,26 @@ class GameOverSubState extends MusicBeatSubState
 
   /**
    * Starts the death music at the appropriate volume.
-   * @param startingVolume
+   * @param startingVolume The initial volume for the music.
+   * @param force Whether or not to force the music to restart.
    */
   public function startDeathMusic(startingVolume:Float = 1, force:Bool = false):Void
   {
-    var musicPath = resolveMusicPath(musicSuffix, isStarting, isEnding);
-    var onComplete = null;
+    var musicPath:Null<String> = resolveMusicPath(musicSuffix, isStarting, isEnding);
+    var onComplete:() -> Void = () -> {};
+
     if (isStarting)
     {
       if (musicPath == null)
       {
+        // Looked for starting music and didn't find it. Use middle music instead.
         isStarting = false;
         musicPath = resolveMusicPath(musicSuffix, isStarting, isEnding);
       }
       else
       {
         onComplete = function() {
-          isStarting = false;
+          isStarting = true;
           // We need to force to ensure that the non-starting music plays.
           startDeathMusic(1.0, true);
         };
@@ -387,13 +407,16 @@ class GameOverSubState extends MusicBeatSubState
 
     if (musicPath == null)
     {
-      trace('Could not find game over music!');
+      FlxG.log.warn('[GAMEOVER] Could not find game over music at path ($musicPath)!');
       return;
     }
     else if (gameOverMusic == null || !gameOverMusic.playing || force)
     {
       if (gameOverMusic != null) gameOverMusic.stop();
+
       gameOverMusic = FunkinSound.load(musicPath);
+      if (gameOverMusic == null) return;
+
       gameOverMusic.volume = startingVolume;
       gameOverMusic.looped = !(isEnding || isStarting);
       gameOverMusic.onComplete = onComplete;
@@ -406,13 +429,11 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  static var blueballed:Bool = false;
-
   /**
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
    */
-  public static function playBlueBalledSFX()
+  public static function playBlueBalledSFX():Void
   {
     blueballed = true;
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
@@ -431,7 +452,7 @@ class GameOverSubState extends MusicBeatSubState
    * Week 7-specific hardcoded behavior, to play a custom death quote.
    * TODO: Make this a module somehow.
    */
-  function playJeffQuote()
+  function playJeffQuote():Void
   {
     var randomCensor:Array<Int> = [];
 
@@ -446,20 +467,27 @@ class GameOverSubState extends MusicBeatSubState
     });
   }
 
-  public override function destroy()
+  public override function destroy():Void
   {
     super.destroy();
-    if (gameOverMusic != null) gameOverMusic.stop();
-    gameOverMusic = null;
+    if (gameOverMusic != null)
+    {
+      gameOverMusic.stop();
+      gameOverMusic = null;
+    }
+    blueballed = false;
     instance = null;
   }
 
   public override function toString():String
   {
-    return "GameOverSubState";
+    return 'GameOverSubState';
   }
 }
 
+/**
+ * Parameters used to instantiate a GameOverSubState.
+ */
 typedef GameOverParams =
 {
   var isChartingMode:Bool;
