@@ -2799,18 +2799,6 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FunkinSound.playMusic('freakyMenu',
-          {
-            overrideExisting: true,
-            restartTrack: false
-          });
-
-        // transIn = FlxTransitionableState.defaultTransIn;
-        // transOut = FlxTransitionableState.defaultTransOut;
-
-        // TODO: Rework week unlock logic.
-        // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
         if (currentSong.validScore)
         {
           NGio.unlockMedal(60961);
@@ -3237,7 +3225,10 @@ class PlayState extends MusicBeatSubState
     // Don't go back in time to before the song started.
     targetTimeMs = Math.max(0, targetTimeMs);
 
-    if (FlxG.sound.music != null) FlxG.sound.music.time = targetTimeMs;
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.time = targetTimeMs;
+    }
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);

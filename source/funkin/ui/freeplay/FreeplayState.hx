@@ -145,7 +145,7 @@ class FreeplayState extends MusicBeatSubState
       stickerSubState = stickers;
     }
 
-    super();
+    super(FlxColor.TRANSPARENT);
   }
 
   override function create():Void
@@ -928,7 +928,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (Type.getClass(FlxG.state) == MainMenuState)
       {
-        FlxG.state.persistentUpdate = true;
+        FlxG.state.persistentUpdate = false;
         FlxG.state.persistentDraw = true;
       }
 
@@ -1238,6 +1238,21 @@ class FreeplayState extends MusicBeatSubState
       }
       grpCapsules.members[curSelected].selected = true;
     }
+  }
+
+  /**
+   * Build an instance of `FreeplayState` that is above the `MainMenuState`.
+   * @return The MainMenuState with the FreeplayState as a substate.
+   */
+  public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
+  {
+    var result = new MainMenuState();
+    result.persistentUpdate = false;
+    result.persistentDraw = true;
+
+    result.openSubState(new FreeplayState(params, stickers));
+
+    return result;
   }
 }
 

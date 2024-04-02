@@ -53,7 +53,8 @@ class MainMenuState extends MusicBeatState
 
     playMenuMusic();
 
-    persistentUpdate = persistentDraw = true;
+    persistentUpdate = false;
+    persistentDraw = true;
 
     var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
     bg.scrollFactor.x = 0;
@@ -323,8 +324,6 @@ class MainMenuState extends MusicBeatState
     // Open the debug menu, defaults to ` / ~
     if (controls.DEBUG_MENU)
     {
-      this.persistentUpdate = false;
-      this.persistentDraw = false;
       FlxG.state.openSubState(new DebugMenuSubState());
     }
 

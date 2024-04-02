@@ -384,7 +384,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new FreeplayState(null, sticker)));
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
       }
     }
 
