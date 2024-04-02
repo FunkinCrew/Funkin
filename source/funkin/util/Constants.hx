@@ -187,6 +187,12 @@ class Constants
   public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
 
   /**
+   * List of all difficulties used by the base game.
+   * Includes Erect and Nightmare.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
+
+  /**
    * Default player character for charts.
    */
   public static final DEFAULT_CHARACTER:String = 'bf';
