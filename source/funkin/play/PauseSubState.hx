@@ -231,7 +231,7 @@ class PauseSubState extends MusicBeatSubState
    */
   function startPauseMusic():Void
   {
-    var pauseMusicPath:String = Paths.music('breakfast$musicSuffix');
+    var pauseMusicPath:String = Paths.music('breakfast$musicSuffix/breakfast$musicSuffix');
     pauseMusic = FunkinSound.load(pauseMusicPath, true, true);
 
     if (pauseMusic == null)
@@ -567,6 +567,8 @@ class PauseSubState extends MusicBeatSubState
     PlayStatePlaylist.campaignScore = 0;
     PlayStatePlaylist.campaignDifficulty = difficulty;
     PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
+
+    FreeplayState.rememberedDifficulty = difficulty;
 
     PlayState.instance.needsReset = true;
 

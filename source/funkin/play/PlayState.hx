@@ -728,6 +728,10 @@ class PlayState extends MusicBeatSubState
     #end
 
     initialized = true;
+
+    // This step ensures z-indexes are applied properly,
+    // and it's important to call it last so all elements get affected.
+    refresh();
   }
 
   public override function draw():Void
@@ -1720,8 +1724,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.fadeInArrows();
       opponentStrumline.fadeInArrows();
     }
-
-    this.refresh();
   }
 
   /**
@@ -2441,7 +2443,8 @@ class PlayState extends MusicBeatSubState
     if (Highscore.tallies.combo != 0)
     {
       // Break the combo.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
 
     if (playSound)
@@ -2568,32 +2571,38 @@ class PlayState extends MusicBeatSubState
    */
   function popUpScore(daNote:NoteSprite, score:Int, daRating:String, healthChange:Float):Void
   {
-    vocals.playerVolume = 1;
-
     if (daRating == 'miss')
     {
       // If daRating is 'miss', that means we made a mistake and should not continue.
-      trace('[WARNING] popUpScore judged a note as a miss!');
+      FlxG.log.warn('popUpScore judged a note as a miss!');
       // TODO: Remove this.
       comboPopUps.displayRating('miss');
       return;
     }
+
+    vocals.playerVolume = 1;
 
     var isComboBreak = false;
     switch (daRating)
     {
       case 'sick':
         Highscore.tallies.sick += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
+      default:
+        FlxG.log.error('Wuh? Buh? Guh? Note hit judgement was $daRating!');
     }
 
     health += healthChange;
@@ -2601,18 +2610,18 @@ class PlayState extends MusicBeatSubState
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
     else
     {
       Highscore.tallies.combo++;
-      Highscore.tallies.totalNotesHit++;
       if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
     }
 
     playerStrumline.hitNote(daNote, !isComboBreak);
 
-    if (daRating == "sick")
+    if (daRating == 'sick')
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
@@ -2724,7 +2733,7 @@ class PlayState extends MusicBeatSubState
    */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
-    FlxG.sound.music.volume = 0;
+    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;
 
@@ -2741,6 +2750,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     deathCounter = 0;
+
+    var isNewHighscore = false;
 
     if (currentSong != null && currentSong.validScore)
     {
@@ -2772,11 +2783,14 @@ class PlayState extends MusicBeatSubState
         #if newgrounds
         NGio.postScore(score, currentSong.id);
         #end
+        isNewHighscore = true;
       }
     }
 
     if (PlayStatePlaylist.isStoryMode)
     {
+      isNewHighscore = false;
+
       PlayStatePlaylist.campaignScore += songScore;
 
       // Pop the next song ID from the list.
@@ -2814,6 +2828,7 @@ class PlayState extends MusicBeatSubState
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end
+            isNewHighscore = true;
           }
         }
 
@@ -2825,11 +2840,11 @@ class PlayState extends MusicBeatSubState
         {
           if (rightGoddamnNow)
           {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
           else
           {
-            zoomIntoResultsScreen();
+            zoomIntoResultsScreen(isNewHighscore);
           }
         }
       }
@@ -2890,11 +2905,11 @@ class PlayState extends MusicBeatSubState
       {
         if (rightGoddamnNow)
         {
-          moveToResultsScreen();
+          moveToResultsScreen(isNewHighscore);
         }
         else
         {
-          zoomIntoResultsScreen();
+          zoomIntoResultsScreen(isNewHighscore);
         }
       }
     }
@@ -2968,7 +2983,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Play the camera zoom animation and then move to the results screen once it's done.
    */
-  function zoomIntoResultsScreen():Void
+  function zoomIntoResultsScreen(isNewHighscore:Bool):Void
   {
     trace('WENT TO RESULTS SCREEN!');
 
@@ -3025,7 +3040,7 @@ class PlayState extends MusicBeatSubState
         {
           ease: FlxEase.expoIn,
           onComplete: function(_) {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
         });
     });
@@ -3034,7 +3049,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Move to the results screen right goddamn now.
    */
-  function moveToResultsScreen():Void
+  function moveToResultsScreen(isNewHighscore:Bool):Void
   {
     persistentUpdate = false;
     vocals.stop();
@@ -3046,7 +3061,24 @@ class PlayState extends MusicBeatSubState
       {
         storyMode: PlayStatePlaylist.isStoryMode,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-        tallies: talliesToUse,
+        scoreData:
+          {
+            score: songScore,
+            tallies:
+              {
+                sick: Highscore.tallies.sick,
+                good: Highscore.tallies.good,
+                bad: Highscore.tallies.bad,
+                shit: Highscore.tallies.shit,
+                missed: Highscore.tallies.missed,
+                combo: Highscore.tallies.combo,
+                maxCombo: Highscore.tallies.maxCombo,
+                totalNotesHit: Highscore.tallies.totalNotesHit,
+                totalNotes: Highscore.tallies.totalNotes,
+              },
+            accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+          },
+        isNewHighscore: isNewHighscore
       });
     res.camera = camHUD;
     openSubState(res);

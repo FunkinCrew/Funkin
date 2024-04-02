@@ -133,8 +133,8 @@ class FreeplayState extends MusicBeatSubState
 
   var stickerSubState:StickerSubState;
 
-  static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
-  static var rememberedSongId:Null<String> = null;
+  public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
+  public static var rememberedSongId:Null<String> = null;
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
@@ -536,21 +536,18 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
+  var currentFilter:SongFilter = null;
+  var currentFilteredSongs:Array<FreeplaySongData> = [];
+
   /**
    * Given the current filter, rebuild the current song list.
    *
    * @param filterStuff A filter to apply to the song list (regex, startswith, all, favorite)
    * @param force
+   * @param onlyIfChanged Only apply the filter if the song list has changed
    */
-  public function generateSongList(?filterStuff:SongFilter, force:Bool = false):Void
+  public function generateSongList(filterStuff:Null<SongFilter>, force:Bool = false, onlyIfChanged:Bool = true):Void
   {
-    curSelected = 1;
-
-    for (cap in grpCapsules.members)
-    {
-      cap.kill();
-    }
-
     var tempSongs:Array<FreeplaySongData> = songs;
 
     if (filterStuff != null)
@@ -581,6 +578,35 @@ class FreeplayState extends MusicBeatSubState
           // return all on default
       }
     }
+
+    // Filter further by current selected difficulty.
+    if (currentDifficulty != null)
+    {
+      tempSongs = tempSongs.filter(song -> {
+        if (song == null) return true; // Random
+        return song.songDifficulties.contains(currentDifficulty);
+      });
+    }
+
+    if (onlyIfChanged)
+    {
+      // == performs equality by reference
+      if (tempSongs.isEqualUnordered(currentFilteredSongs)) return;
+    }
+
+    // Only now do we know that the filter is actually changing.
+
+    rememberedSongId = grpCapsules.members[curSelected]?.songData?.songId;
+
+    for (cap in grpCapsules.members)
+    {
+      cap.kill();
+    }
+
+    currentFilter = filterStuff;
+
+    currentFilteredSongs = tempSongs;
+    curSelected = 0;
 
     var hsvShader:HSVShader = new HSVShader();
 
@@ -658,11 +684,12 @@ class FreeplayState extends MusicBeatSubState
 
     if (FlxG.keys.justPressed.F)
     {
-      if (songs[curSelected] != null)
+      var targetSong = grpCapsules.members[curSelected]?.songData;
+      if (targetSong != null)
       {
         var realShit:Int = curSelected;
-        songs[curSelected].isFav = !songs[curSelected].isFav;
-        if (songs[curSelected].isFav)
+        targetSong.isFav = !targetSong.isFav;
+        if (targetSong.isFav)
         {
           FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4,
             {
@@ -854,11 +881,13 @@ class FreeplayState extends MusicBeatSubState
     {
       dj.resetAFKTimer();
       changeDiff(-1);
+      generateSongList(currentFilter, true);
     }
     if (controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL)
     {
       dj.resetAFKTimer();
       changeDiff(1);
+      generateSongList(currentFilter, true);
     }
 
     if (controls.BACK && !typing.hasFocus)
@@ -926,7 +955,7 @@ class FreeplayState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
-    var daSong:Null<FreeplaySongData> = songs[curSelected];
+    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected]?.songData;
     if (daSong != null)
     {
       clearDaCache(daSong.songName);
@@ -948,10 +977,10 @@ class FreeplayState extends MusicBeatSubState
 
     currentDifficulty = diffIdsCurrent[currentDifficultyIndex];
 
-    var daSong:Null<FreeplaySongData> = songs[curSelected];
+    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].songData;
     if (daSong != null)
     {
-      var songScore:SaveScoreData = Save.instance.getSongScore(songs[curSelected].songId, currentDifficulty);
+      var songScore:SaveScoreData = Save.instance.getSongScore(grpCapsules.members[curSelected].songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore?.accuracy ?? 0.0;
       rememberedDifficulty = currentDifficulty;
@@ -1103,6 +1132,12 @@ class FreeplayState extends MusicBeatSubState
           targetVariation: targetVariation,
           practiceMode: false,
           minimalMode: false,
+
+          #if (debug || FORCE_DEBUG_VERSION)
+          botPlayMode: FlxG.keys.pressed.SHIFT,
+          #else
+          botPlayMode: false,
+          #end
           // TODO: Make these an option! It's currently only accessible via chart editor.
           // startTimestamp: 0.0,
           // playbackRate: 0.5,
@@ -1115,10 +1150,12 @@ class FreeplayState extends MusicBeatSubState
   {
     if (rememberedSongId != null)
     {
-      curSelected = songs.findIndex(function(song) {
+      curSelected = currentFilteredSongs.findIndex(function(song) {
         if (song == null) return false;
         return song.songId == rememberedSongId;
       });
+
+      if (curSelected == -1) curSelected = 0;
     }
 
     if (rememberedDifficulty != null)
@@ -1127,7 +1164,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Set the difficulty star count on the right.
-    var daSong:Null<FreeplaySongData> = songs[curSelected];
+    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected]?.songData;
     albumRoll.setDifficultyStars(daSong?.songRating ?? 0);
   }
 
@@ -1156,6 +1193,7 @@ class FreeplayState extends MusicBeatSubState
     {
       intendedScore = 0;
       intendedCompletion = 0.0;
+      diffIdsCurrent = diffIdsTotal;
       rememberedSongId = null;
       rememberedDifficulty = null;
     }
