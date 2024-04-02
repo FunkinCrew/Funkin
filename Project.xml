@@ -183,6 +183,7 @@
 	<haxedef name="haxeui_focus_out_on_click" />
 	<!-- Required to use haxe.ui.backend.flixel.UIState with build macros. -->
 	<haxedef name="haxeui_dont_impose_base_class" />
+	<haxedef name="HARDCODED_CREDITS" />
 
 	<!-- Skip the Intro -->
 	<section if="debug">
