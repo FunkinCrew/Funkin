@@ -61,6 +61,11 @@ class Constants
   // ==============================
 
   /**
+   * Link to buy merch for the game.
+   */
+  public static final URL_MERCH:String = 'https://needlejuicerecords.com/pages/friday-night-funkin';
+
+  /**
    * Preloader sitelock.
    * Matching is done by `FlxStringUtil.getDomain`, so any URL on the domain will work.
    * The first link in this list is the one users will be redirected to if they try to access the game from a different URL.
@@ -180,6 +185,12 @@ class Constants
    * Assumes no Erect mode, etc.
    */
   public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
+
+  /**
+   * List of all difficulties used by the base game.
+   * Includes Erect and Nightmare.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
 
   /**
    * Default player character for charts.

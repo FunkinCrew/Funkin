@@ -290,18 +290,6 @@ class TitleState extends MusicBeatState
     // do controls.PAUSE | controls.ACCEPT instead?
     var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
-    if (FlxG.onMobile)
-    {
-      for (touch in FlxG.touches.list)
-      {
-        if (touch.justPressed)
-        {
-          FlxG.switchState(() -> new FreeplayState());
-          pressedEnter = true;
-        }
-      }
-    }
-
     var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
     if (gamepad != null)
