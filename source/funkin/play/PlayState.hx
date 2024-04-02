@@ -728,6 +728,10 @@ class PlayState extends MusicBeatSubState
     #end
 
     initialized = true;
+
+    // This step ensures z-indexes are applied properly,
+    // and it's important to call it last so all elements get affected.
+    refresh();
   }
 
   public override function draw():Void
@@ -1720,8 +1724,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.fadeInArrows();
       opponentStrumline.fadeInArrows();
     }
-
-    this.refresh();
   }
 
   /**
