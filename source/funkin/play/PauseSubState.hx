@@ -567,6 +567,8 @@ class PauseSubState extends MusicBeatSubState
     PlayStatePlaylist.campaignDifficulty = difficulty;
     PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
 
+    FreeplayState.rememberedDifficulty = difficulty;
+
     PlayState.instance.needsReset = true;
 
     state.close();
