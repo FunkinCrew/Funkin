@@ -20,7 +20,12 @@ class CreditsDataHandler
     if (data == null)
     {
       trace('CreditsData(NULL)');
+      return;
+    }
 
+    if (data.entries == null || data.entries.length == 0)
+    {
+      trace('CreditsData(EMPTY)');
       return;
     }
 
