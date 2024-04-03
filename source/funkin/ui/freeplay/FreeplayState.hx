@@ -962,7 +962,7 @@ class FreeplayState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
-    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected]?.songData;
+    var daSong:Null<FreeplaySongData> = currentFilteredSongs[curSelected];
     if (daSong != null)
     {
       clearDaCache(daSong.songName);
