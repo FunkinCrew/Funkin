@@ -171,7 +171,7 @@ class LatencyState extends MusicBeatSubState
       trace(FlxG.sound.music._channel.position);
      */
 
-    localConductor.update(swagSong.time, false);
+    // localConductor.update(swagSong.time, false);
 
     if (FlxG.keys.justPressed.S)
     {
