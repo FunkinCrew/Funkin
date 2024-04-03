@@ -8,7 +8,12 @@ import funkin.modding.IScriptedClass;
  */
 class ScriptEventDispatcher
 {
-  public static function callEvent(target:IScriptedClass, event:ScriptEvent):Void
+  /**
+   * Invoke the given event hook on the given scripted class.
+   * @param target The target class to call script hooks on.
+   * @param event The event, which determines the script hook to call and provides parameters for it.
+   */
+  public static function callEvent(target:Null<IScriptedClass>, event:ScriptEvent):Void
   {
     if (target == null || event == null) return;
 
