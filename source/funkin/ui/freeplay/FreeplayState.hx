@@ -425,7 +425,7 @@ class FreeplayState extends MusicBeatSubState
       tmr.time = FlxG.random.float(20, 60);
     }, 0);
 
-    fp = new FreeplayScore(460, 60, 100);
+    fp = new FreeplayScore(460, 60, 7, 100);
     fp.visible = false;
     add(fp);
 

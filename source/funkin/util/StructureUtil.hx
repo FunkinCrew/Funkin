@@ -1,5 +1,6 @@
 package funkin.util;
 
+import funkin.util.tools.MapTools;
 import haxe.DynamicAccess;
 
 /**
@@ -26,6 +27,18 @@ class StructureUtil
     return result;
   }
 
+  public static function toMap(a:Dynamic):haxe.ds.Map<String, Dynamic>
+  {
+    var result:haxe.ds.Map<String, Dynamic> = [];
+
+    for (field in Reflect.fields(a))
+    {
+      result.set(field, Reflect.field(a, field));
+    }
+
+    return result;
+  }
+
   /**
    * Merge two structures, with the second overwriting the first.
    * Performs a DEEP clone, where child structures are also merged recursively.
@@ -38,6 +51,17 @@ class StructureUtil
     if (a == null) return b;
     if (b == null) return null;
     if (!Reflect.isObject(a) || !Reflect.isObject(b)) return b;
+    if (Std.isOfType(b, haxe.ds.StringMap))
+    {
+      if (Std.isOfType(a, haxe.ds.StringMap))
+      {
+        return MapTools.merge(a, b);
+      }
+      else
+      {
+        return StructureUtil.toMap(a).merge(b);
+      }
+    }
 
     var result:DynamicAccess<Dynamic> = Reflect.copy(a);
 

@@ -11,6 +11,7 @@ import flixel.math.FlxPoint;
 import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
+import funkin.ui.freeplay.FreeplayScore;
 import flixel.tweens.FlxEase;
 import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
@@ -188,7 +189,7 @@ class ResultState extends MusicBeatSubState
     scorePopin.visible = false;
     add(scorePopin);
 
-    var highscoreNew:FlxSprite = new FlxSprite(280, 580);
+    var highscoreNew:FlxSprite = new FlxSprite(310, 570);
     highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
     highscoreNew.animation.addByPrefix("new", "NEW HIGHSCORE", 24);
     highscoreNew.visible = false;
@@ -228,9 +229,8 @@ class ResultState extends MusicBeatSubState
     var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.scoreData.tallies.missed, 0xFFC68AE6);
     ratingGrp.add(tallyMissed);
 
-    var score:TallyCounter = new TallyCounter(825, 630, params.scoreData.score, RIGHT);
-    score.scale.set(2, 2);
-    ratingGrp.add(score);
+    var score:FreeplayScore = new FreeplayScore(825, 630, 10, params.scoreData.score);
+    add(score);
 
     for (ind => rating in ratingGrp.members)
     {
@@ -249,7 +249,7 @@ class ResultState extends MusicBeatSubState
         scorePopin.animation.play("score");
         scorePopin.visible = true;
 
-        if (params.isNewHighscore)
+        if (params.isNewHighscore || true)
         {
           highscoreNew.visible = true;
           highscoreNew.animation.play("new");

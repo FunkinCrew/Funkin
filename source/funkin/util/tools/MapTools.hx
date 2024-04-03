@@ -33,6 +33,18 @@ class MapTools
     return map.copy();
   }
 
+  public static function merge<K, T>(a:Map<K, T>, b:Map<K, T>):Map<K, T>
+  {
+    var result = a.copy();
+
+    for (pair in b.keyValueIterator())
+    {
+      result.set(pair.key, pair.value);
+    }
+
+    return result;
+  }
+
   /**
    * Create a new array with clones of all elements of the given array, to prevent modifying the original.
    */
