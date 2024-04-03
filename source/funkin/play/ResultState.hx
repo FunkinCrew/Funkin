@@ -229,7 +229,8 @@ class ResultState extends MusicBeatSubState
     var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.scoreData.tallies.missed, 0xFFC68AE6);
     ratingGrp.add(tallyMissed);
 
-    var score:FreeplayScore = new FreeplayScore(825, 630, 10, params.scoreData.score);
+    var score:ResultScore = new ResultScore(35, 305, 10, params.scoreData.score);
+    score.visible = false;
     add(score);
 
     for (ind => rating in ratingGrp.members)
@@ -247,9 +248,13 @@ class ResultState extends MusicBeatSubState
 
       ratingsPopin.animation.finishCallback = anim -> {
         scorePopin.animation.play("score");
+        scorePopin.animation.finishCallback = anim -> {
+          score.visible = true;
+          score.animateNumbers();
+        };
         scorePopin.visible = true;
 
-        if (params.isNewHighscore || true)
+        if (params.isNewHighscore)
         {
           highscoreNew.visible = true;
           highscoreNew.animation.play("new");
