@@ -222,7 +222,7 @@ class LoadingState extends MusicBeatSubState
 
     #if NO_PRELOAD_ALL
     // Switch to loading state while we load assets (default on HTML5 target).
-    var loadStateCtor:NextState = function() {
+    var loadStateCtor = function() {
       var result = new LoadingState(playStateCtor, shouldStopMusic, params);
       @:privateAccess
       result.asSubState = asSubState;
@@ -230,7 +230,7 @@ class LoadingState extends MusicBeatSubState
     }
     if (asSubState)
     {
-      FlxG.state.openSubState(loadStateCtor);
+      FlxG.state.openSubState(cast loadStateCtor());
     }
     else
     {
