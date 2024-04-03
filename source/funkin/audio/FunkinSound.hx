@@ -321,6 +321,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
 
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.fadeTween?.cancel();
+      FlxG.sound.music.stop();
+      FlxG.sound.music.kill();
+    }
+
     if (params?.mapTimeChanges ?? true)
     {
       var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicData(key);
@@ -333,19 +340,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       {
         FlxG.log.warn('Tried and failed to find music metadata for $key');
       }
-    }
-
-    if (FlxG.sound.music != null)
-    {
-      FlxG.sound.music.fadeTween?.cancel();
-      FlxG.sound.music.stop();
-      FlxG.sound.music.kill();
-    }
-
-    // Apparently HaxeFlixel isn't null safe.
-    @:nullSafety(Off)
-    {
-      FlxG.sound.music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, true, false, true);
     }
 
     var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
