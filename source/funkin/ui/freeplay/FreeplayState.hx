@@ -134,7 +134,7 @@ class FreeplayState extends MusicBeatSubState
   var stickerSubState:StickerSubState;
 
   public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
-  public static var rememberedSongId:Null<String> = null;
+  public static var rememberedSongId:Null<String> = 'tutorial';
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
@@ -596,7 +596,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Only now do we know that the filter is actually changing.
 
-    rememberedSongId = grpCapsules.members[curSelected]?.songData?.songId;
+    rememberedSongId = grpCapsules.members[curSelected]?.songData?.songId ?? rememberedSongId;
 
     for (cap in grpCapsules.members)
     {
@@ -939,6 +939,11 @@ class FreeplayState extends MusicBeatSubState
         FlxTransitionableState.skipNextTransOut = true;
         if (Type.getClass(FlxG.state) == MainMenuState)
         {
+          FunkinSound.playMusic('freakyMenu',
+            {
+              overrideExisting: true,
+              restartTrack: false
+            });
           close();
         }
         else
