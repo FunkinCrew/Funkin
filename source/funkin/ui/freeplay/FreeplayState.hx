@@ -195,7 +195,7 @@ class FreeplayState extends MusicBeatSubState
         var song:Song = SongRegistry.instance.fetchEntry(songId);
 
         // Only display songs which actually have available charts for the current character.
-        var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations);
+        var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
         if (availableDifficultiesForSong.length == 0) continue;
 
         songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
@@ -425,7 +425,7 @@ class FreeplayState extends MusicBeatSubState
       tmr.time = FlxG.random.float(20, 60);
     }, 0);
 
-    fp = new FreeplayScore(460, 60, 100);
+    fp = new FreeplayScore(460, 60, 7, 100);
     fp.visible = false;
     add(fp);
 
@@ -1400,7 +1400,7 @@ class FreeplaySongData
 
   function updateValues(variations:Array<String>):Void
   {
-    this.songDifficulties = song.listDifficulties(variations);
+    this.songDifficulties = song.listDifficulties(variations, false, false);
     if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
 
     var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, variations);

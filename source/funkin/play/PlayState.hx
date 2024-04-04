@@ -2224,8 +2224,8 @@ class PlayState extends MusicBeatSubState
         holdNote.handledMiss = true;
 
         // Mute vocals and play miss animation, but don't penalize.
-        vocals.playerVolume = 0;
-        if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+        // vocals.playerVolume = 0;
+        // if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
   }
@@ -2576,7 +2576,7 @@ class PlayState extends MusicBeatSubState
       // If daRating is 'miss', that means we made a mistake and should not continue.
       FlxG.log.warn('popUpScore judged a note as a miss!');
       // TODO: Remove this.
-      comboPopUps.displayRating('miss');
+      // comboPopUps.displayRating('miss');
       return;
     }
 
@@ -2857,7 +2857,7 @@ class PlayState extends MusicBeatSubState
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
 
-        FlxG.sound.music.stop();
+        if (FlxG.sound.music != null) FlxG.sound.music.stop();
         vocals.stop();
 
         // TODO: Softcode this cutscene.

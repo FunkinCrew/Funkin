@@ -370,8 +370,6 @@ class Strumline extends FlxSpriteGroup
         // Hold note is offscreen, kill it.
         holdNote.visible = false;
         holdNote.kill(); // Do not destroy! Recycling is faster.
-
-        // The cover will see this and clean itself up.
       }
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
@@ -385,9 +383,15 @@ class Strumline extends FlxSpriteGroup
           playStatic(holdNote.noteDirection);
         }
 
-        if (holdNote.cover != null)
+        if (holdNote.cover != null && isPlayer)
         {
           holdNote.cover.playEnd();
+        }
+        else if (holdNote.cover != null)
+        {
+          // *lightning* *zap* *crackle*
+          holdNote.cover.visible = false;
+          holdNote.cover.kill();
         }
 
         holdNote.visible = false;
@@ -409,6 +413,13 @@ class Strumline extends FlxSpriteGroup
         else
         {
           holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2;
+        }
+
+        // Clean up the cover.
+        if (holdNote.cover != null)
+        {
+          holdNote.cover.visible = false;
+          holdNote.cover.kill();
         }
       }
       else if (Conductor.instance.songPosition > holdNote.strumTime && holdNote.hitNote)

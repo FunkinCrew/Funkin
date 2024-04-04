@@ -441,7 +441,7 @@ class PauseSubState extends MusicBeatSubState
         var entries:Array<PauseMenuEntry> = [];
         if (PlayState.instance.currentChart != null)
         {
-          var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation);
+          var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation, true);
           trace('DIFFICULTIES: ${difficultiesInVariation}');
           for (difficulty in difficultiesInVariation)
           {
