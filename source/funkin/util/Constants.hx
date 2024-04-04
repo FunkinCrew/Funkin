@@ -357,7 +357,7 @@ class Constants
    *     The progress bare is automatically rescaled to match.
    */
   #if debug
-  public static final PRELOADER_MIN_STAGE_TIME:Float = 1.0;
+  public static final PRELOADER_MIN_STAGE_TIME:Float = 0.0;
   #else
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
   #end
