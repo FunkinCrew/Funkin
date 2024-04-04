@@ -46,6 +46,24 @@ class MapTools
   }
 
   /**
+   * Create a new map which is a combination of the two given maps.
+   * @param a The base map.
+   * @param b The other map. The values from this take precedence.
+   * @return The combined map.
+   */
+  public static function merge<K, T>(a:Map<K, T>, b:Map<K, T>):Map<K, T>
+  {
+    var result = a.copy();
+
+    for (pair in b.keyValueIterator())
+    {
+      result.set(pair.key, pair.value);
+    }
+
+    return result;
+  }
+
+  /**
    * Create a new array with clones of all elements of the given array, to prevent modifying the original.
    */
   public static function deepClone<K, T, U:ICloneable<T>>(map:Map<K, U>):Map<K, T>

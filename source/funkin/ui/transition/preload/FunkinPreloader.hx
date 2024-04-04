@@ -1,5 +1,10 @@
 package funkin.ui.transition.preload;
 
+import openfl.filters.GlowFilter;
+import openfl.display.SpreadMethod;
+import openfl.display.GradientType;
+import openfl.geom.Matrix;
+import openfl.filters.BlurFilter;
 import openfl.events.MouseEvent;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
@@ -46,7 +51,7 @@ class FunkinPreloader extends FlxBasePreloader
    */
   static final BAR_PADDING:Float = 20;
 
-  static final BAR_HEIGHT:Int = 20;
+  static final BAR_HEIGHT:Int = 12;
 
   /**
    * Logo takes this long (in seconds) to fade in.
@@ -108,9 +113,18 @@ class FunkinPreloader extends FlxBasePreloader
   #if TOUCH_HERE_TO_PLAY
   var touchHereToPlay:Bitmap;
   #end
+  var progressBarPieces:Array<Sprite>;
   var progressBar:Bitmap;
   var progressLeftText:TextField;
   var progressRightText:TextField;
+
+  var dspText:TextField;
+  var enhancedText:TextField;
+  var stereoText:TextField;
+
+  var vfdShader:VFDOverlay;
+  var box:Sprite;
+  var progressLines:Sprite;
 
   public function new()
   {
@@ -146,7 +160,7 @@ class FunkinPreloader extends FlxBasePreloader
       bmp.x = (this._width - bmp.width) / 2;
       bmp.y = (this._height - bmp.height) / 2;
     });
-    addChild(logo);
+    // addChild(logo);
 
     #if TOUCH_HERE_TO_PLAY
     touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap) {
@@ -160,16 +174,48 @@ class FunkinPreloader extends FlxBasePreloader
     addChild(touchHereToPlay);
     #end
 
+    var amountOfPieces:Int = 16;
+    progressBarPieces = [];
+    var maxBarWidth = this._width - BAR_PADDING * 2;
+    var pieceWidth = maxBarWidth / amountOfPieces;
+    var pieceGap:Int = 8;
+
+    progressLines = new openfl.display.Sprite();
+    progressLines.graphics.lineStyle(2, Constants.COLOR_PRELOADER_BAR);
+    progressLines.graphics.drawRect(-2, 480, this._width + 4, 30);
+    addChild(progressLines);
+
+    var progressBarPiece = new Sprite();
+    progressBarPiece.graphics.beginFill(Constants.COLOR_PRELOADER_BAR);
+    progressBarPiece.graphics.drawRoundRect(0, 0, pieceWidth - pieceGap, BAR_HEIGHT, 4, 4);
+    progressBarPiece.graphics.endFill();
+
+    for (i in 0...amountOfPieces)
+    {
+      var piece = new Sprite();
+      piece.graphics.beginFill(Constants.COLOR_PRELOADER_BAR);
+      piece.graphics.drawRoundRect(0, 0, pieceWidth - pieceGap, BAR_HEIGHT, 4, 4);
+      piece.graphics.endFill();
+
+      piece.x = i * (piece.width + pieceGap);
+      piece.y = this._height - BAR_PADDING - BAR_HEIGHT - 200;
+      addChild(piece);
+      progressBarPieces.push(piece);
+    }
+
     // Create the progress bar.
-    progressBar = new Bitmap(new BitmapData(1, BAR_HEIGHT, true, Constants.COLOR_PRELOADER_BAR));
-    progressBar.x = BAR_PADDING;
-    progressBar.y = this._height - BAR_PADDING - BAR_HEIGHT;
-    addChild(progressBar);
+    // progressBar = new Bitmap(new BitmapData(1, BAR_HEIGHT, true, Constants.COLOR_PRELOADER_BAR));
+    // progressBar.x = BAR_PADDING;
+    // progressBar.y = this._height - BAR_PADDING - BAR_HEIGHT;
+    // addChild(progressBar);
 
     // Create the progress message.
     progressLeftText = new TextField();
+    dspText = new TextField();
+    enhancedText = new TextField();
+    stereoText = new TextField();
 
-    var progressLeftTextFormat = new TextFormat("VCR OSD Mono", 16, Constants.COLOR_PRELOADER_BAR, true);
+    var progressLeftTextFormat = new TextFormat("DS-Digital", 32, Constants.COLOR_PRELOADER_BAR, true);
     progressLeftTextFormat.align = TextFormatAlign.LEFT;
     progressLeftText.defaultTextFormat = progressLeftTextFormat;
 
@@ -177,13 +223,14 @@ class FunkinPreloader extends FlxBasePreloader
     progressLeftText.width = this._width - BAR_PADDING * 2;
     progressLeftText.text = 'Downloading assets...';
     progressLeftText.x = BAR_PADDING;
-    progressLeftText.y = this._height - BAR_PADDING - BAR_HEIGHT - 16 - 4;
+    progressLeftText.y = this._height - BAR_PADDING - BAR_HEIGHT - 290;
+    // progressLeftText.shader = new VFDOverlay();
     addChild(progressLeftText);
 
     // Create the progress %.
     progressRightText = new TextField();
 
-    var progressRightTextFormat = new TextFormat("VCR OSD Mono", 16, Constants.COLOR_PRELOADER_BAR, true);
+    var progressRightTextFormat = new TextFormat("DS-Digital", 16, Constants.COLOR_PRELOADER_BAR, true);
     progressRightTextFormat.align = TextFormatAlign.RIGHT;
     progressRightText.defaultTextFormat = progressRightTextFormat;
 
@@ -193,6 +240,60 @@ class FunkinPreloader extends FlxBasePreloader
     progressRightText.x = BAR_PADDING;
     progressRightText.y = this._height - BAR_PADDING - BAR_HEIGHT - 16 - 4;
     addChild(progressRightText);
+
+    box = new Sprite();
+    box.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 1);
+    box.graphics.drawRoundRect(0, 0, 64, 20, 5, 5);
+    box.graphics.drawRoundRect(70, 0, 58, 20, 5, 5);
+    box.graphics.endFill();
+    box.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 0.1);
+    box.graphics.drawRoundRect(0, 0, 128, 20, 5, 5);
+    box.graphics.endFill();
+    box.x = 880;
+    box.y = 440;
+    addChild(box);
+
+    dspText.selectable = false;
+    dspText.textColor = 0x000000;
+    dspText.width = this._width;
+    dspText.height = 20;
+    dspText.text = 'DSP';
+    dspText.x = 10;
+    dspText.y = -5;
+    box.addChild(dspText);
+
+    enhancedText.selectable = false;
+    enhancedText.textColor = Constants.COLOR_PRELOADER_BAR;
+    enhancedText.width = this._width;
+    enhancedText.height = 100;
+    enhancedText.text = 'ENHANCED';
+    enhancedText.x = -100;
+    enhancedText.y = 0;
+    box.addChild(enhancedText);
+
+    stereoText.selectable = false;
+    stereoText.textColor = Constants.COLOR_PRELOADER_BAR;
+    stereoText.width = this._width;
+    stereoText.height = 100;
+    stereoText.text = 'STEREO';
+    stereoText.x = 0;
+    stereoText.y = -40;
+    box.addChild(stereoText);
+
+    // var dummyMatrix:openfl.geom.Matrix = new Matrix();
+    // dummyMatrix.createGradientBox(this._width, this._height * 0.1, 90 * Math.PI / 180);
+
+    // var gradient:Sprite = new Sprite();
+    // gradient.graphics.beginGradientFill(GradientType.LINEAR, [0xFFFFFF, 0x000000], [1, 1], [0, 255], dummyMatrix, SpreadMethod.REFLECT);
+    // gradient.graphics.drawRect(0, 0, this._width, this._height);
+    // gradient.graphics.endFill();
+    // addChild(gradient);
+
+    var vfdBitmap:Bitmap = new Bitmap(new BitmapData(this._width, this._height, true, 0xFFFFFFFF));
+    addChild(vfdBitmap);
+
+    vfdShader = new VFDOverlay();
+    vfdBitmap.shader = vfdShader;
   }
 
   var lastElapsed:Float = 0.0;
@@ -200,6 +301,8 @@ class FunkinPreloader extends FlxBasePreloader
   override function update(percent:Float):Void
   {
     var elapsed:Float = (Date.now().getTime() - this._startTime) / 1000.0;
+
+    vfdShader.update(elapsed * 100);
     // trace('Time since last frame: ' + (lastElapsed - elapsed));
 
     downloadingAssetsPercent = percent;
@@ -748,12 +851,19 @@ class FunkinPreloader extends FlxBasePreloader
     else
     {
       renderLogoFadeIn(elapsed);
+
+      // Render progress bar
+      var maxWidth = this._width - BAR_PADDING * 2;
+      var barWidth = maxWidth * percent;
+      var piecesToRender:Int = Std.int(percent * progressBarPieces.length);
+
+      for (i => piece in progressBarPieces)
+      {
+        piece.alpha = i <= piecesToRender ? 0.9 : 0.1;
+      }
     }
 
-    // Render progress bar
-    var maxWidth = this._width - BAR_PADDING * 2;
-    var barWidth = maxWidth * percent;
-    progressBar.width = barWidth;
+    // progressBar.width = barWidth;
 
     // Cycle ellipsis count to show loading
     var ellipsisCount:Int = Std.int(elapsed / ELLIPSIS_TIME) % 3 + 1;
@@ -766,29 +876,29 @@ class FunkinPreloader extends FlxBasePreloader
     {
       // case FunkinPreloaderState.NotStarted:
       default:
-        updateProgressLeftText('Loading (0/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Loading \n0/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.DownloadingAssets:
-        updateProgressLeftText('Downloading assets (1/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Downloading assets \n1/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.PreloadingPlayAssets:
-        updateProgressLeftText('Preloading assets (2/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Preloading assets \n2/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.InitializingScripts:
-        updateProgressLeftText('Initializing scripts (3/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Initializing scripts \n3/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.CachingGraphics:
-        updateProgressLeftText('Caching graphics (4/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Caching graphics \n4/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.CachingAudio:
-        updateProgressLeftText('Caching audio (5/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Caching audio \n5/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.CachingData:
-        updateProgressLeftText('Caching data (6/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Caching data \n6/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.ParsingSpritesheets:
-        updateProgressLeftText('Parsing spritesheets (7/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Parsing spritesheets \n7/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.ParsingStages:
-        updateProgressLeftText('Parsing stages (8/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Parsing stages \n8/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.ParsingCharacters:
-        updateProgressLeftText('Parsing characters (9/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Parsing characters \n9/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.ParsingSongs:
-        updateProgressLeftText('Parsing songs (10/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Parsing songs \n10/$TOTAL_STEPS $ellipsis');
       case FunkinPreloaderState.Complete:
-        updateProgressLeftText('Finishing up ($TOTAL_STEPS/$TOTAL_STEPS)$ellipsis');
+        updateProgressLeftText('Finishing up \n$TOTAL_STEPS/$TOTAL_STEPS $ellipsis');
       #if TOUCH_HERE_TO_PLAY
       case FunkinPreloaderState.TouchHereToPlay:
         updateProgressLeftText(null);
@@ -815,10 +925,21 @@ class FunkinPreloader extends FlxBasePreloader
       else if (progressLeftText.text != text)
       {
         // We have to keep updating the text format, because the font can take a frame or two to load.
-        var progressLeftTextFormat = new TextFormat("VCR OSD Mono", 16, Constants.COLOR_PRELOADER_BAR, true);
+        var progressLeftTextFormat = new TextFormat("DS-Digital", 32, Constants.COLOR_PRELOADER_BAR, true);
         progressLeftTextFormat.align = TextFormatAlign.LEFT;
         progressLeftText.defaultTextFormat = progressLeftTextFormat;
         progressLeftText.text = text;
+
+        dspText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
+        dspText.text = 'DSP\t\t\t\t\tFNF'; // fukin dum....
+        dspText.textColor = 0x000000;
+
+        enhancedText.defaultTextFormat = new TextFormat("Inconsolata Black", 16, Constants.COLOR_PRELOADER_BAR, false);
+        enhancedText.text = 'ENHANCED';
+        enhancedText.textColor = Constants.COLOR_PRELOADER_BAR;
+
+        stereoText.defaultTextFormat = new TextFormat("Inconsolata Bold", 36, Constants.COLOR_PRELOADER_BAR, false);
+        stereoText.text = 'NATURAL STEREO';
       }
     }
   }
@@ -845,9 +966,17 @@ class FunkinPreloader extends FlxBasePreloader
     logo.y = (this._height - logo.height) / 2;
 
     // Fade out progress bar too.
-    progressBar.alpha = logo.alpha;
+    // progressBar.alpha = logo.alpha;
     progressLeftText.alpha = logo.alpha;
     progressRightText.alpha = logo.alpha;
+    box.alpha = logo.alpha;
+    dspText.alpha = logo.alpha;
+    enhancedText.alpha = logo.alpha;
+    stereoText.alpha = logo.alpha;
+    progressLines.alpha = logo.alpha;
+
+    for (piece in progressBarPieces)
+      piece.alpha = logo.alpha;
 
     return elapsedFinished;
   }
@@ -901,8 +1030,8 @@ class FunkinPreloader extends FlxBasePreloader
   {
     // Ensure the graphics are properly destroyed and GC'd.
     removeChild(logo);
-    removeChild(progressBar);
-    logo = progressBar = null;
+    // removeChild(progressBar);
+    logo = null;
     super.destroy();
   }
 

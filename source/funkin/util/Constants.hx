@@ -140,7 +140,7 @@ class Constants
   /**
    * Color for the preloader progress bar
    */
-  public static final COLOR_PRELOADER_BAR:FlxColor = 0xFF00FF00;
+  public static final COLOR_PRELOADER_BAR:FlxColor = 0xFFA4FF11;
 
   /**
    * Color for the preloader site lock background
@@ -357,7 +357,7 @@ class Constants
    *     The progress bare is automatically rescaled to match.
    */
   #if debug
-  public static final PRELOADER_MIN_STAGE_TIME:Float = 1.0;
+  public static final PRELOADER_MIN_STAGE_TIME:Float = 0.0;
   #else
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
   #end
