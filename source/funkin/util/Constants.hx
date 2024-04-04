@@ -140,7 +140,7 @@ class Constants
   /**
    * Color for the preloader progress bar
    */
-  public static final COLOR_PRELOADER_BAR:FlxColor = 0xFF00FF00;
+  public static final COLOR_PRELOADER_BAR:FlxColor = 0xFFA4FF11;
 
   /**
    * Color for the preloader site lock background
