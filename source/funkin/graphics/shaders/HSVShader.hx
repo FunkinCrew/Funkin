@@ -20,7 +20,7 @@ class HSVShader extends FlxRuntimeShader
 
   function set_hue(value:Float):Float
   {
-    this.setFloat('hue', value);
+    this.setFloat('_hue', value);
     this.hue = value;
 
     return this.hue;
@@ -28,7 +28,7 @@ class HSVShader extends FlxRuntimeShader
 
   function set_saturation(value:Float):Float
   {
-    this.setFloat('sat', value);
+    this.setFloat('_sat', value);
     this.saturation = value;
 
     return this.saturation;
@@ -36,7 +36,7 @@ class HSVShader extends FlxRuntimeShader
 
   function set_value(value:Float):Float
   {
-    this.setFloat('val', value);
+    this.setFloat('_val', value);
     this.value = value;
 
     return this.value;
