@@ -128,7 +128,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   public function new()
   {
-    super(Constants.PRELOADER_MIN_STAGE_TIME, Constants.SITE_LOCK);
+    super(Constants.PRELOADER_MIN_STAGE_TIME);
 
     // We can't even call trace() yet, until Flixel loads.
     trace('Initializing custom preloader...');
