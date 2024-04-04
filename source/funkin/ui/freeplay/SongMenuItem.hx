@@ -83,10 +83,10 @@ class SongMenuItem extends FlxSpriteGroup
 
     diffRatingSprite = new FlxSprite(145, 90).loadGraphic(Paths.image('freeplay/diffRatings/diff00'));
     diffRatingSprite.shader = grayscaleShader;
+    diffRatingSprite.origin.set(capsule.origin.x - diffRatingSprite.x, capsule.origin.y - diffRatingSprite.y);
     // TODO: Readd once ratings are fully implemented
     // add(diffRatingSprite);
-    diffRatingSprite.origin.set(capsule.origin.x - diffRatingSprite.x, capsule.origin.y - diffRatingSprite.y);
-    grpHide.add(diffRatingSprite);
+    // grpHide.add(diffRatingSprite);
 
     songText = new CapsuleText(capsule.width * 0.26, 45, 'Random', Std.int(40 * realScaled));
     add(songText);
