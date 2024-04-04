@@ -392,6 +392,22 @@ class Save
    */
   public function getLevelScore(levelId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
   {
+    if (data.scores?.levels == null)
+    {
+      if (data.scores == null)
+      {
+        data.scores =
+          {
+            songs: [],
+            levels: []
+          };
+      }
+      else
+      {
+        data.scores.levels = [];
+      }
+    }
+
     var level = data.scores.levels.get(levelId);
     if (level == null)
     {
