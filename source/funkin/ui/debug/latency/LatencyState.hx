@@ -27,7 +27,7 @@ class LatencyState extends MusicBeatSubState
 {
   var visualOffsetText:FlxText;
   var offsetText:FlxText;
-  var noteGrp:Array<SongNoteData>;
+  var noteGrp:Array<SongNoteData> = [];
   var strumLine:Strumline;
 
   var blocks:FlxTypedGroup<FlxSprite>;
@@ -39,7 +39,7 @@ class LatencyState extends MusicBeatSubState
   var beatTrail:FlxSprite;
   var diffGrp:FlxTypedGroup<FlxText>;
   var offsetsPerBeat:Array<Null<Int>> = [];
-  var swagSong:FlxSound;
+  var swagSong:HomemadeMusic;
 
   var previousVolume:Float;
 
@@ -84,7 +84,7 @@ class LatencyState extends MusicBeatSubState
     else
       previousVolume = 1; // defaults to 1 if no music is playing 🤔 also fuck it, emoji in code comment
 
-    swagSong = new FlxSound();
+    swagSong = new HomemadeMusic();
     swagSong.loadEmbedded(Paths.sound('soundTest'), true);
     swagSong.looped = true;
     swagSong.play();
@@ -99,7 +99,7 @@ class LatencyState extends MusicBeatSubState
     FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, key -> {
       trace(key.charCode);
 
-      if (key.charCode == 120) generateBeatStuff();
+      // if (key.charCode == 120) generateBeatStuff();
 
       trace("\tEVENT PRESS: \t" + FlxG.sound.music.time + " " + Timer.stamp());
       // trace(FlxG.sound.music.prevTimestamp);
@@ -115,9 +115,6 @@ class LatencyState extends MusicBeatSubState
     // funnyStatsGraph.hi
 
     Conductor.instance.forceBPM(60);
-
-    noteGrp = new FlxTypedGroup<NoteSprite>();
-    add(noteGrp);
 
     diffGrp = new FlxTypedGroup<FlxText>();
     add(diffGrp);
@@ -264,7 +261,7 @@ class LatencyState extends MusicBeatSubState
       trace(FlxG.sound.music._channel.position);
      */
 
-    localConductor.update(swagSong.time, false, true);
+    localConductor.update(swagSong.time, false);
 
     // localConductor.songPosition += (Timer.stamp() * 1000) - FlxG.sound.music.prevTimestamp;
 
@@ -334,18 +331,6 @@ class LatencyState extends MusicBeatSubState
     {
       close();
     }
-    noteGrp.forEach(function(daNote:NoteSprite) {
-      daNote.y = (strumLine.y - ((Conductor.instance.songPosition - Conductor.instance.instrumentalOffset) - daNote.noteData.time) * 0.45);
-      daNote.x = strumLine.x + 30;
-
-      if (daNote.y < strumLine.y) daNote.alpha = 0.5;
-
-      if (daNote.y < 0 - daNote.height)
-      {
-        daNote.alpha = 1;
-        // daNote.data.strumTime += Conductor.instance.beatLengthMs * 8;
-      }
-    });
 
     super.update(elapsed);
   }
