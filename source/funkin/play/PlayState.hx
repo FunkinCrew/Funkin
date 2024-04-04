@@ -728,6 +728,10 @@ class PlayState extends MusicBeatSubState
     #end
 
     initialized = true;
+
+    // This step ensures z-indexes are applied properly,
+    // and it's important to call it last so all elements get affected.
+    refresh();
   }
 
   public override function draw():Void
@@ -1562,7 +1566,7 @@ class PlayState extends MusicBeatSubState
   {
     if (PlayState.instance.isMinimalMode) return;
     // Apply camera zoom level from stage data.
-    defaultCameraZoom = currentStage.camZoom;
+    defaultCameraZoom = currentStage?.camZoom ?? 1.0;
     currentCameraZoom = defaultCameraZoom;
     FlxG.camera.zoom = currentCameraZoom;
 
@@ -1720,8 +1724,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.fadeInArrows();
       opponentStrumline.fadeInArrows();
     }
-
-    this.refresh();
   }
 
   /**
@@ -2731,7 +2733,7 @@ class PlayState extends MusicBeatSubState
    */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
-    FlxG.sound.music.volume = 0;
+    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;
 
@@ -2748,6 +2750,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     deathCounter = 0;
+
+    var isNewHighscore = false;
 
     if (currentSong != null && currentSong.validScore)
     {
@@ -2779,11 +2783,14 @@ class PlayState extends MusicBeatSubState
         #if newgrounds
         NGio.postScore(score, currentSong.id);
         #end
+        isNewHighscore = true;
       }
     }
 
     if (PlayStatePlaylist.isStoryMode)
     {
+      isNewHighscore = false;
+
       PlayStatePlaylist.campaignScore += songScore;
 
       // Pop the next song ID from the list.
@@ -2792,18 +2799,6 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FunkinSound.playMusic('freakyMenu',
-          {
-            overrideExisting: true,
-            restartTrack: false
-          });
-
-        // transIn = FlxTransitionableState.defaultTransIn;
-        // transOut = FlxTransitionableState.defaultTransOut;
-
-        // TODO: Rework week unlock logic.
-        // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
         if (currentSong.validScore)
         {
           NGio.unlockMedal(60961);
@@ -2833,6 +2828,7 @@ class PlayState extends MusicBeatSubState
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end
+            isNewHighscore = true;
           }
         }
 
@@ -2844,11 +2840,11 @@ class PlayState extends MusicBeatSubState
         {
           if (rightGoddamnNow)
           {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
           else
           {
-            zoomIntoResultsScreen();
+            zoomIntoResultsScreen(isNewHighscore);
           }
         }
       }
@@ -2909,11 +2905,11 @@ class PlayState extends MusicBeatSubState
       {
         if (rightGoddamnNow)
         {
-          moveToResultsScreen();
+          moveToResultsScreen(isNewHighscore);
         }
         else
         {
-          zoomIntoResultsScreen();
+          zoomIntoResultsScreen(isNewHighscore);
         }
       }
     }
@@ -2987,7 +2983,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Play the camera zoom animation and then move to the results screen once it's done.
    */
-  function zoomIntoResultsScreen():Void
+  function zoomIntoResultsScreen(isNewHighscore:Bool):Void
   {
     trace('WENT TO RESULTS SCREEN!');
 
@@ -3044,7 +3040,7 @@ class PlayState extends MusicBeatSubState
         {
           ease: FlxEase.expoIn,
           onComplete: function(_) {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
         });
     });
@@ -3053,7 +3049,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Move to the results screen right goddamn now.
    */
-  function moveToResultsScreen():Void
+  function moveToResultsScreen(isNewHighscore:Bool):Void
   {
     persistentUpdate = false;
     vocals.stop();
@@ -3065,7 +3061,24 @@ class PlayState extends MusicBeatSubState
       {
         storyMode: PlayStatePlaylist.isStoryMode,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-        tallies: talliesToUse,
+        scoreData:
+          {
+            score: songScore,
+            tallies:
+              {
+                sick: Highscore.tallies.sick,
+                good: Highscore.tallies.good,
+                bad: Highscore.tallies.bad,
+                shit: Highscore.tallies.shit,
+                missed: Highscore.tallies.missed,
+                combo: Highscore.tallies.combo,
+                maxCombo: Highscore.tallies.maxCombo,
+                totalNotesHit: Highscore.tallies.totalNotesHit,
+                totalNotes: Highscore.tallies.totalNotes,
+              },
+            accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+          },
+        isNewHighscore: isNewHighscore
       });
     res.camera = camHUD;
     openSubState(res);
@@ -3212,7 +3225,10 @@ class PlayState extends MusicBeatSubState
     // Don't go back in time to before the song started.
     targetTimeMs = Math.max(0, targetTimeMs);
 
-    FlxG.sound.music.time = targetTimeMs;
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.time = targetTimeMs;
+    }
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);

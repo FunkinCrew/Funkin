@@ -85,7 +85,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     comboSpr.velocity.y -= 150;
     comboSpr.velocity.x += FlxG.random.int(1, 10);
 
-    add(comboSpr);
+    // add(comboSpr);
 
     if (PlayState.instance.currentStageId.startsWith('school'))
     {

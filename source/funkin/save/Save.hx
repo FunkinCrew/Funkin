@@ -9,12 +9,13 @@ import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import thx.semver.Version;
+import funkin.util.SerializerUtil;
 
 @:nullSafety
 class Save
 {
   // Version 2.0.2 adds attributes to `optionsChartEditor`, that should return default values if they are null.
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.2";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.3";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -391,6 +392,22 @@ class Save
    */
   public function getLevelScore(levelId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
   {
+    if (data.scores?.levels == null)
+    {
+      if (data.scores == null)
+      {
+        data.scores =
+          {
+            songs: [],
+            levels: []
+          };
+      }
+      else
+      {
+        data.scores.levels = [];
+      }
+    }
+
     var level = data.scores.levels.get(levelId);
     if (level == null)
     {
@@ -641,6 +658,9 @@ class Save
   {
     trace("[SAVE] Loading save from slot " + slot + "...");
 
+    // Prevent crashes if the save data is corrupted.
+    SerializerUtil.initSerializer();
+
     FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
 
     if (FlxG.save.isEmpty())
@@ -650,9 +670,9 @@ class Save
       if (legacySaveData != null)
       {
         trace('[SAVE] Found legacy save data, converting...');
-        var gameSave = SaveDataMigrator.migrate(legacySaveData);
+        var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
         @:privateAccess
-        FlxG.save.mergeData(gameSave.data);
+        FlxG.save.mergeData(gameSave.data, true);
       }
       else
       {
@@ -664,7 +684,7 @@ class Save
       trace('[SAVE] Loaded save data.');
       @:privateAccess
       var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
-      FlxG.save.mergeData(gameSave.data);
+      FlxG.save.mergeData(gameSave.data, true);
     }
   }
 

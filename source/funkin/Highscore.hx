@@ -59,6 +59,7 @@ abstract Tallies(RawTallies)
         totalNotes: 0,
         totalNotesHit: 0,
         maxCombo: 0,
+        score: 0,
         isNewHighscore: false
       }
   }
@@ -81,6 +82,9 @@ typedef RawTallies =
   var good:Int;
   var sick:Int;
   var maxCombo:Int;
+
+  var score:Int;
+
   var isNewHighscore:Bool;
 
   /**

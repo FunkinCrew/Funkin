@@ -265,10 +265,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   @:allow(flixel.sound.FlxSoundGroup)
   override function updateTransform():Void
   {
-    _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
-      (group != null ? group.volume : 1) * _volume * _volumeAdjust;
+    if (_transform != null)
+    {
+      _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
+        (group != null ? group.volume : 1) * _volume * _volumeAdjust;
+    }
 
-    if (_channel != null) _channel.soundTransform = _transform;
+    if (_channel != null)
+    {
+      _channel.soundTransform = _transform;
+    }
   }
 
   public function clone():FunkinSound
@@ -315,6 +321,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
 
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.fadeTween?.cancel();
+      FlxG.sound.music.stop();
+      FlxG.sound.music.kill();
+    }
+
     if (params?.mapTimeChanges ?? true)
     {
       var songMusicData:Null<SongMusicData> = SongRegistry.instance.parseMusicData(key);
@@ -327,13 +340,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       {
         FlxG.log.warn('Tried and failed to find music metadata for $key');
       }
-    }
-
-    if (FlxG.sound.music != null)
-    {
-      FlxG.sound.music.fadeTween?.cancel();
-      FlxG.sound.music.stop();
-      FlxG.sound.music.kill();
     }
 
     var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
@@ -391,10 +397,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       sound._label = 'unknown';
     }
 
+    if (autoPlay) sound.play();
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
     sound.persist = true;
-    if (autoPlay) sound.play();
 
     // Call onLoad() because the sound already loaded
     if (onLoad != null && sound._sound != null) onLoad();
@@ -402,10 +408,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     return sound;
   }
 
+  @:nullSafety(Off)
   public override function destroy():Void
   {
     // trace('[FunkinSound] Destroying sound "${this._label}"');
     super.destroy();
+    if (fadeTween != null)
+    {
+      fadeTween.cancel();
+      fadeTween = null;
+    }
     FlxTween.cancelTweensOf(this);
     this._label = 'unknown';
   }

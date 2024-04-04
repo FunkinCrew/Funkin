@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.util.MathUtil;
 import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxSprite;
@@ -16,6 +17,8 @@ import flixel.tweens.FlxTween;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
 
@@ -42,12 +45,15 @@ class ResultState extends MusicBeatSubState
 
   override function create():Void
   {
-    if (params.tallies.sick == params.tallies.totalNotesHit
-      && params.tallies.maxCombo == params.tallies.totalNotesHit) resultsVariation = PERFECT;
-    else if (params.tallies.missed + params.tallies.bad + params.tallies.shit >= params.tallies.totalNotes * 0.50)
-      resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
-    else
-      resultsVariation = NORMAL;
+    /*
+      if (params.scoreData.sick == params.scoreData.totalNotesHit
+        && params.scoreData.maxCombo == params.scoreData.totalNotesHit) resultsVariation = PERFECT;
+      else if (params.scoreData.missed + params.scoreData.bad + params.scoreData.shit >= params.scoreData.totalNotes * 0.50)
+        resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
+      else
+        resultsVariation = NORMAL;
+     */
+    resultsVariation = NORMAL;
 
     FunkinSound.playMusic('results$resultsVariation',
       {
@@ -130,12 +136,16 @@ class ResultState extends MusicBeatSubState
 
     var diffSpr:String = switch (PlayState.instance.currentDifficulty)
     {
-      case 'EASY':
+      case 'easy':
         'difEasy';
-      case 'NORMAL':
+      case 'normal':
         'difNormal';
-      case 'HARD':
+      case 'hard':
         'difHard';
+      case 'erect':
+        'difErect';
+      case 'nightmare':
+        'difNightmare';
       case _:
         'difNormal';
     }
@@ -195,28 +205,32 @@ class ResultState extends MusicBeatSubState
      * NOTE: We display how many notes were HIT, not how many notes there were in total.
      *
      */
-    var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, params.tallies.totalNotesHit);
+    var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, params.scoreData.tallies.totalNotesHit);
     ratingGrp.add(totalHit);
 
-    var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.tallies.maxCombo);
+    var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.scoreData.tallies.maxCombo);
     ratingGrp.add(maxCombo);
 
     hStuf += 2;
     var extraYOffset:Float = 5;
-    var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, params.tallies.sick, 0xFF89E59E);
+    var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, params.scoreData.tallies.sick, 0xFF89E59E);
     ratingGrp.add(tallySick);
 
-    var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, params.tallies.good, 0xFF89C9E5);
+    var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, params.scoreData.tallies.good, 0xFF89C9E5);
     ratingGrp.add(tallyGood);
 
-    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, params.tallies.bad, 0xFFE6CF8A);
+    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, params.scoreData.tallies.bad, 0xFFE6CF8A);
     ratingGrp.add(tallyBad);
 
-    var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, params.tallies.shit, 0xFFE68C8A);
+    var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, params.scoreData.tallies.shit, 0xFFE68C8A);
     ratingGrp.add(tallyShit);
 
-    var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.tallies.missed, 0xFFC68AE6);
+    var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.scoreData.tallies.missed, 0xFFC68AE6);
     ratingGrp.add(tallyMissed);
+
+    var score:TallyCounter = new TallyCounter(825, 630, params.scoreData.score, RIGHT);
+    score.scale.set(2, 2);
+    ratingGrp.add(score);
 
     for (ind => rating in ratingGrp.members)
     {
@@ -235,9 +249,16 @@ class ResultState extends MusicBeatSubState
         scorePopin.animation.play("score");
         scorePopin.visible = true;
 
-        highscoreNew.visible = true;
-        highscoreNew.animation.play("new");
-        FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
+        if (params.isNewHighscore)
+        {
+          highscoreNew.visible = true;
+          highscoreNew.animation.play("new");
+          FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
+        }
+        else
+        {
+          highscoreNew.visible = false;
+        }
       };
 
       switch (resultsVariation)
@@ -275,8 +296,6 @@ class ResultState extends MusicBeatSubState
         default:
       }
     });
-
-    if (params.tallies.isNewHighscore) trace("ITS A NEW HIGHSCORE!!!");
 
     super.create();
   }
@@ -365,7 +384,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new FreeplayState(null, sticker)));
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
       }
     }
 
@@ -394,7 +413,12 @@ typedef ResultsStateParams =
   var title:String;
 
   /**
+   * Whether the displayed score is a new highscore
+   */
+  var isNewHighscore:Bool;
+
+  /**
    * The score, accuracy, and judgements.
    */
-  var tallies:Highscore.Tallies;
+  var scoreData:SaveScoreData;
 };

@@ -17,7 +17,7 @@ import funkin.ui.MusicBeatState;
  */
 class AttractState extends MusicBeatState
 {
-  static final ATTRACT_VIDEO_PATH:String = Paths.videos('kickstarterTrailer');
+  static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('kickstarterTrailer', 'shared'));
 
   public override function create():Void
   {
@@ -29,10 +29,12 @@ class AttractState extends MusicBeatState
     }
 
     #if html5
+    trace('Playing web video ${ATTRACT_VIDEO_PATH}');
     playVideoHTML5(ATTRACT_VIDEO_PATH);
     #end
 
     #if hxCodec
+    trace('Playing native video ${ATTRACT_VIDEO_PATH}');
     playVideoNative(ATTRACT_VIDEO_PATH);
     #end
   }
