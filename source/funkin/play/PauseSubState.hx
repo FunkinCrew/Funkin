@@ -14,6 +14,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
+import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
@@ -75,8 +76,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
-    {text: 'Restart Cutscene', callback: restartVideoCutscene},
     {text: 'Skip Cutscene', callback: skipVideoCutscene},
+    {text: 'Restart Cutscene', callback: restartVideoCutscene},
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
@@ -233,7 +234,7 @@ class PauseSubState extends MusicBeatSubState
    */
   function startPauseMusic():Void
   {
-    var pauseMusicPath:String = Paths.music('breakfast$musicSuffix');
+    var pauseMusicPath:String = Paths.music('breakfast$musicSuffix/breakfast$musicSuffix');
     pauseMusic = FunkinSound.load(pauseMusicPath, true, true);
 
     if (pauseMusic == null)
@@ -443,7 +444,7 @@ class PauseSubState extends MusicBeatSubState
         var entries:Array<PauseMenuEntry> = [];
         if (PlayState.instance.currentChart != null)
         {
-          var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation);
+          var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation, true);
           trace('DIFFICULTIES: ${difficultiesInVariation}');
           for (difficulty in difficultiesInVariation)
           {
@@ -570,6 +571,8 @@ class PauseSubState extends MusicBeatSubState
     PlayStatePlaylist.campaignDifficulty = difficulty;
     PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
 
+    FreeplayState.rememberedDifficulty = difficulty;
+
     PlayState.instance.needsReset = true;
 
     state.close();
@@ -661,7 +664,7 @@ class PauseSubState extends MusicBeatSubState
     }
     else
     {
-      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.freeplay.FreeplayState(null, sticker)));
+      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
     }
   }
 

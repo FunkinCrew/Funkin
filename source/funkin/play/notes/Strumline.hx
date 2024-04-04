@@ -293,7 +293,9 @@ class Strumline extends FlxSpriteGroup
     if (noteData.length == 0) return;
 
     // Ensure note data gets reset if the song happens to loop.
-    if (conductorInUse.currentStep == 0) nextNoteIndex = 0;
+    // NOTE: I had to remove this line because it was causing notes visible during the countdown to be placed multiple times.
+    // I don't remember what bug I was trying to fix by adding this.
+    // if (conductorInUse.currentStep == 0) nextNoteIndex = 0;
 
     var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
     var hitWindowStart:Float = conductorInUse.songPosition - Constants.HIT_WINDOW_MS;
@@ -365,8 +367,6 @@ class Strumline extends FlxSpriteGroup
         // Hold note is offscreen, kill it.
         holdNote.visible = false;
         holdNote.kill(); // Do not destroy! Recycling is faster.
-
-        // The cover will see this and clean itself up.
       }
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
@@ -380,9 +380,15 @@ class Strumline extends FlxSpriteGroup
           playStatic(holdNote.noteDirection);
         }
 
-        if (holdNote.cover != null)
+        if (holdNote.cover != null && isPlayer)
         {
           holdNote.cover.playEnd();
+        }
+        else if (holdNote.cover != null)
+        {
+          // *lightning* *zap* *crackle*
+          holdNote.cover.visible = false;
+          holdNote.cover.kill();
         }
 
         holdNote.visible = false;
@@ -404,6 +410,13 @@ class Strumline extends FlxSpriteGroup
         else
         {
           holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2;
+        }
+
+        // Clean up the cover.
+        if (holdNote.cover != null)
+        {
+          holdNote.cover.visible = false;
+          holdNote.cover.kill();
         }
       }
       else if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote)
@@ -822,7 +835,7 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new SustainTrail(0, 100, noteStyle);
+      result = new SustainTrail(0, 0, noteStyle);
       this.holdNotes.add(result);
     }
 

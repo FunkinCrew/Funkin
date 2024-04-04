@@ -61,6 +61,11 @@ class Constants
   // ==============================
 
   /**
+   * Link to buy merch for the game.
+   */
+  public static final URL_MERCH:String = 'https://needlejuicerecords.com/pages/friday-night-funkin';
+
+  /**
    * Preloader sitelock.
    * Matching is done by `FlxStringUtil.getDomain`, so any URL on the domain will work.
    * The first link in this list is the one users will be redirected to if they try to access the game from a different URL.
@@ -135,7 +140,7 @@ class Constants
   /**
    * Color for the preloader progress bar
    */
-  public static final COLOR_PRELOADER_BAR:FlxColor = 0xFF00FF00;
+  public static final COLOR_PRELOADER_BAR:FlxColor = 0xFFA4FF11;
 
   /**
    * Color for the preloader site lock background
@@ -180,6 +185,12 @@ class Constants
    * Assumes no Erect mode, etc.
    */
   public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
+
+  /**
+   * List of all difficulties used by the base game.
+   * Includes Erect and Nightmare.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
 
   /**
    * Default player character for charts.
@@ -348,7 +359,7 @@ class Constants
    *     The progress bare is automatically rescaled to match.
    */
   #if debug
-  public static final PRELOADER_MIN_STAGE_TIME:Float = 1.0;
+  public static final PRELOADER_MIN_STAGE_TIME:Float = 0.0;
   #else
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
   #end
@@ -516,4 +527,10 @@ class Constants
    * The vertical offset of the strumline from the top edge of the screen.
    */
   public static final STRUMLINE_Y_OFFSET:Float = 24;
+
+  /**
+   * The rate at which the camera lerps to its target.
+   * 0.04 = 4% of distance per frame.
+   */
+  public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
 }
