@@ -102,6 +102,17 @@ class StructureUtil
       }
     }
     if (!Reflect.isObject(a) || !Reflect.isObject(b)) return b;
+    if (Std.isOfType(b, haxe.ds.StringMap))
+    {
+      if (Std.isOfType(a, haxe.ds.StringMap))
+      {
+        return MapTools.merge(a, b);
+      }
+      else
+      {
+        return StructureUtil.toMap(a).merge(b);
+      }
+    }
 
     var result:DynamicAccess<Dynamic> = Reflect.copy(a);
 

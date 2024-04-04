@@ -1,9 +1,9 @@
-package funkin.ui.freeplay;
+package funkin.play;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
-class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
+class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 {
   public var scoreShit(default, set):Int = 0;
 
@@ -35,11 +35,19 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
     while (loopNum > 0)
     {
-      group.members[loopNum].digit = 0;
+      group.members[loopNum].digit = 10;
       loopNum--;
     }
 
     return val;
+  }
+
+  public function animateNumbers():Void
+  {
+    for (i in group.members)
+    {
+      i.playAnim();
+    }
   }
 
   public function new(x:Float, y:Float, digitCount:Int, scoreShit:Int = 100)
@@ -48,7 +56,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
     for (i in 0...digitCount)
     {
-      add(new ScoreNum(x + (45 * i), y, 0));
+      add(new ScoreNum(x + (65 * i), y));
     }
 
     this.scoreShit = scoreShit;
@@ -62,11 +70,11 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
 class ScoreNum extends FlxSprite
 {
-  public var digit(default, set):Int = 0;
+  public var digit(default, set):Int = 10;
 
   function set_digit(val):Int
   {
-    if (animation.curAnim != null && animation.curAnim.name != numToString[val])
+    if (val >= 0 && animation.curAnim != null && animation.curAnim.name != numToString[val])
     {
       animation.play(numToString[val], true, false, 0);
       updateHitbox();
@@ -74,7 +82,7 @@ class ScoreNum extends FlxSprite
       switch (val)
       {
         case 1:
-          offset.x -= 15;
+        // offset.x -= 15;
         case 5:
         // set offsets
         // offset.x += 0;
@@ -91,22 +99,29 @@ class ScoreNum extends FlxSprite
       }
     }
 
-    return val;
+    return digit = val;
+  }
+
+  public function playAnim():Void
+  {
+    animation.play(numToString[digit], true, false, 0);
   }
 
   public var baseY:Float = 0;
   public var baseX:Float = 0;
 
-  var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+  var numToString:Array<String> = [
+    "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "DISABLED"
+  ];
 
-  public function new(x:Float, y:Float, ?initDigit:Int = 0)
+  public function new(x:Float, y:Float)
   {
     super(x, y);
 
     baseY = y;
     baseX = x;
 
-    frames = Paths.getSparrowAtlas('digital_numbers');
+    frames = Paths.getSparrowAtlas('resultScreen/score-digital-numbers');
 
     for (i in 0...10)
     {
@@ -114,11 +129,12 @@ class ScoreNum extends FlxSprite
       animation.addByPrefix(stringNum, '$stringNum DIGITAL', 24, false);
     }
 
-    this.digit = initDigit;
+    animation.addByPrefix('DISABLED', 'DISABLED', 24, false);
+
+    this.digit = 10;
 
     animation.play(numToString[digit], true);
 
-    setGraphicSize(Std.int(width * 0.4));
     updateHitbox();
   }
 }
