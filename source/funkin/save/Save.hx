@@ -9,6 +9,7 @@ import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import thx.semver.Version;
+import funkin.util.SerializerUtil;
 
 @:nullSafety
 class Save
@@ -391,6 +392,22 @@ class Save
    */
   public function getLevelScore(levelId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
   {
+    if (data.scores?.levels == null)
+    {
+      if (data.scores == null)
+      {
+        data.scores =
+          {
+            songs: [],
+            levels: []
+          };
+      }
+      else
+      {
+        data.scores.levels = [];
+      }
+    }
+
     var level = data.scores.levels.get(levelId);
     if (level == null)
     {
@@ -640,6 +657,9 @@ class Save
   static function loadFromSlot(slot:Int):Void
   {
     trace("[SAVE] Loading save from slot " + slot + "...");
+
+    // Prevent crashes if the save data is corrupted.
+    SerializerUtil.initSerializer();
 
     FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
 
