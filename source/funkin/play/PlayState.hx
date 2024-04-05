@@ -866,7 +866,7 @@ class PlayState extends MusicBeatSubState
 
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
-      hudCameraZoomIntensity = 0.015 * 2.0;
+      hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
       health = Constants.HEALTH_STARTING;
@@ -976,6 +976,7 @@ class PlayState extends MusicBeatSubState
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
     FlxG.watch.addQuick('health', health);
+    FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
     // TODO: Add a song event for Handle GF dance speed.
 
