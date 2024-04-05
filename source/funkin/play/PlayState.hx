@@ -966,7 +966,7 @@ class PlayState extends MusicBeatSubState
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
     // Apply camera zoom + multipliers.
-    if (subState == null)
+    if (subState == null && cameraZoomRate > 0.0 && !isInCutscene)
     {
       cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
       var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
