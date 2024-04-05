@@ -469,14 +469,6 @@ class FreeplayState extends MusicBeatSubState
 
       albumRoll.playIntro();
 
-      new FlxTimer().start(0.75, function(_) {
-        albumRoll.showTitle();
-      });
-
-      new FlxTimer().start(35 / 24, function(_) {
-        albumRoll.showStars();
-      });
-
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
       var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
@@ -1055,7 +1047,7 @@ class FreeplayState extends MusicBeatSubState
     if (albumRoll.albumId != newAlbumId)
     {
       albumRoll.albumId = newAlbumId;
-      albumRoll.playIntro();
+      albumRoll.skipIntro();
     }
   }
 
