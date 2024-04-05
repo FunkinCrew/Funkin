@@ -99,12 +99,19 @@ class CreditsDataHandler
 
   static function fetchCreditsData():funkin.data.JsonFile
   {
+    #if !macro
     var rawJson:String = openfl.Assets.getText(CREDITS_DATA_PATH).trim();
 
     return {
       fileName: CREDITS_DATA_PATH,
       contents: rawJson
     };
+    #else
+    return {
+      fileName: CREDITS_DATA_PATH,
+      contents: null
+    };
+    #end
   }
 
   static function parseCreditsData(file:JsonFile):Null<CreditsData>

@@ -37,7 +37,6 @@ class AlbumRoll extends FlxSpriteGroup
 
   var albumArt:FunkinSprite;
   var albumTitle:FunkinSprite;
-  var difficultyStars:DifficultyStars;
 
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
 
@@ -52,9 +51,6 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.zIndex = 200;
     add(albumTitle);
 
-    difficultyStars = new DifficultyStars(140, 39);
-
-    difficultyStars.stars.visible = true;
     albumTitle.visible = false;
     // albumArtist.visible = false;
 
@@ -158,21 +154,6 @@ class AlbumRoll extends FlxSpriteGroup
         speed: 0.2,
         wait: 0.1
       });
-
-    /*
-      exitMovers.set([albumArtist],
-        {
-          x: FlxG.width * 1.1,
-          speed: 0.2,
-          wait: 0.2
-        });
-     */
-    exitMovers.set([difficultyStars],
-      {
-        x: FlxG.width * 1.2,
-        speed: 0.2,
-        wait: 0.3
-      });
   }
 
   var titleTimer:Null<FlxTimer> = null;
@@ -198,26 +179,10 @@ class AlbumRoll extends FlxSpriteGroup
     });
   }
 
-  public function setDifficultyStars(?difficulty:Int):Void
-  {
-    if (difficulty == null) return;
-
-    difficultyStars.difficulty = difficulty;
-  }
-
   public function showTitle():Void
   {
     albumTitle.visible = true;
     albumTitle.animation.play('active');
     albumTitle.animation.finishCallback = (_) -> albumTitle.animation.play('idle');
-  }
-
-  /**
-   * Make the album stars visible.
-   */
-  public function showStars():Void
-  {
-    // albumArtist.visible = false;
-    difficultyStars.stars.visible = false;
   }
 }
