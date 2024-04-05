@@ -311,7 +311,7 @@ class VideoCutscene
           blackScreen = null;
         }
       });
-    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.defaultCameraZoom}, transitionTime,
+    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime,
       {
         ease: FlxEase.quadInOut,
         onComplete: function(twn:FlxTween) {
