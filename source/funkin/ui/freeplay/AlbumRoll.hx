@@ -132,13 +132,6 @@ class AlbumRoll extends FlxSpriteGroup
         speed: 0.4,
         wait: 0
       });
-
-    // exitMovers.set([difficultyStars],
-    //   {
-    //     x: FlxG.width * 1.2,
-    //     speed: 0.2,
-    //     wait: 0.3
-    //   });
   }
 
   var titleTimer:Null<FlxTimer> = null;
