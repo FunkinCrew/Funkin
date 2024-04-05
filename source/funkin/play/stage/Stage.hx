@@ -223,7 +223,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       if (propSprite.frames == null || propSprite.frames.numFrames == 0)
       {
-        trace('    ERROR: Could not build texture for prop.');
+        @:privateAccess
+        trace('    ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
         continue;
       }
 

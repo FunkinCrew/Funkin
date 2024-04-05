@@ -3,6 +3,10 @@ on:
   workflow_dispatch:
   push:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   create-nightly-html5:
     runs-on: [self-hosted, linux]

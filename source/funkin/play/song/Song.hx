@@ -404,11 +404,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    *
    * @param variationId Optionally filter by a single variation.
    * @param variationIds Optionally filter by multiple variations.
+   * @param showLocked Include charts which are not unlocked
    * @param showHidden Include charts which are not accessible to the player.
    *
    * @return The list of difficulties.
    */
-  public function listDifficulties(?variationId:String, ?variationIds:Array<String>, showHidden:Bool = false):Array<String>
+  public function listDifficulties(?variationId:String, ?variationIds:Array<String>, showLocked:Bool = false, showHidden:Bool = false):Array<String>
   {
     if (variationIds == null) variationIds = [];
     if (variationId != null) variationIds.push(variationId);
