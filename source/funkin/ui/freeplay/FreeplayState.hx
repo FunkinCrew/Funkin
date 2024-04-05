@@ -470,7 +470,7 @@ class FreeplayState extends MusicBeatSubState
       albumRoll.playIntro();
 
       new FlxTimer().start(0.75, function(_) {
-        albumRoll.showTitle();
+        // albumRoll.showTitle();
       });
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
