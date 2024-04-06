@@ -2786,7 +2786,7 @@ class PlayState extends MusicBeatSubState
       // adds current song data into the tallies for the level (story levels)
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
-      if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
+      if (!isPracticeMode && Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
       {
         Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
         #if newgrounds
