@@ -3072,18 +3072,18 @@ class PlayState extends MusicBeatSubState
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
         scoreData:
           {
-            score: songScore,
+            score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
             tallies:
               {
-                sick: Highscore.tallies.sick,
-                good: Highscore.tallies.good,
-                bad: Highscore.tallies.bad,
-                shit: Highscore.tallies.shit,
-                missed: Highscore.tallies.missed,
-                combo: Highscore.tallies.combo,
-                maxCombo: Highscore.tallies.maxCombo,
-                totalNotesHit: Highscore.tallies.totalNotesHit,
-                totalNotes: Highscore.tallies.totalNotes,
+                sick: talliesToUse.sick,
+                good: talliesToUse.good,
+                bad: talliesToUse.bad,
+                shit: talliesToUse.shit,
+                missed: talliesToUse.missed,
+                combo: talliesToUse.combo,
+                maxCombo: talliesToUse.maxCombo,
+                totalNotesHit: talliesToUse.totalNotesHit,
+                totalNotes: talliesToUse.totalNotes,
               },
             accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
           },
