@@ -97,6 +97,11 @@
       "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "Linux / Debug",
+      "target": "linux",
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
       "label": "HashLink / Debug",
       "target": "hl",
       "args": ["-debug"]
