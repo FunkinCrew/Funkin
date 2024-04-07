@@ -834,9 +834,12 @@ class PlayState extends MusicBeatSubState
       inputSpitter = [];
 
       // Reset music properly.
-      FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
-      FlxG.sound.music.pitch = playbackRate;
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+        FlxG.sound.music.pitch = playbackRate;
+        FlxG.sound.music.pause();
+      }
 
       if (!overrideMusic)
       {
@@ -852,7 +855,7 @@ class PlayState extends MusicBeatSubState
       vocals.pause();
       vocals.time = 0;
 
-      FlxG.sound.music.volume = 1;
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
