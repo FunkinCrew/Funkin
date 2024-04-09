@@ -174,6 +174,7 @@ class MainMenuState extends MusicBeatState
   {
     FlxG.cameras.reset(new FunkinCamera());
     FlxG.camera.follow(camFollow, null, 0.06);
+    FlxG.camera.snapToTarget();
   }
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
