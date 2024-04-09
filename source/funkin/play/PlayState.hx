@@ -498,7 +498,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
    */
-  var comboPopUps:PopUpStuff;
+  public var comboPopUps:PopUpStuff;
 
   /**
    * PROPERTIES
