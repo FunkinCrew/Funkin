@@ -281,7 +281,6 @@ class LoadingState extends MusicBeatSubState
   {
     // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
     FunkinSprite.preparePurgeCache();
-    FunkinSprite.cacheTexture(Paths.image('combo'));
     FunkinSprite.cacheTexture(Paths.image('healthBar'));
     FunkinSprite.cacheTexture(Paths.image('menuDesat'));
     FunkinSprite.cacheTexture(Paths.image('combo'));
