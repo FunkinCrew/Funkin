@@ -693,7 +693,7 @@ class Save
     trace("[SAVE] Checking for legacy save data...");
     var legacySave:FlxSave = new FlxSave();
     legacySave.bind(SAVE_NAME_LEGACY, SAVE_PATH_LEGACY);
-    if (legacySave?.data == null)
+    if (legacySave.isEmpty())
     {
       trace("[SAVE] No legacy save data found.");
       return null;

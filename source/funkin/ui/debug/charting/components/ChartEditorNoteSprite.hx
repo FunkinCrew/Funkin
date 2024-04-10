@@ -117,12 +117,6 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       noteFrameCollection.pushFrame(frame);
     }
-    var frameCollectionNormal2:FlxAtlasFrames = Paths.getSparrowAtlas('NoteHoldNormal');
-
-    for (frame in frameCollectionNormal2.frames)
-    {
-      noteFrameCollection.pushFrame(frame);
-    }
 
     // Pixel notes
     var graphicPixel = FlxG.bitmap.add(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), false, null);
