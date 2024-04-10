@@ -513,7 +513,7 @@ class FreeplayState extends MusicBeatSubState
 
     // var swag:Alphabet = new Alphabet(1, 0, 'swag');
 
-    var funnyCam:FunkinCamera = new FunkinCamera(0, 0, FlxG.width, FlxG.height);
+    var funnyCam:FunkinCamera = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam);
 

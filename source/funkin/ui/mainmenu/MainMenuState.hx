@@ -172,7 +172,7 @@ class MainMenuState extends MusicBeatState
 
   function resetCamStuff()
   {
-    FlxG.cameras.reset(new FunkinCamera());
+    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
     FlxG.camera.follow(camFollow, null, 0.06);
     FlxG.camera.snapToTarget();
   }
