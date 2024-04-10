@@ -136,6 +136,11 @@
       ]
     },
     {
+      "label": "Windows / Debug (Straight to Play - 2hot)",
+      "target": "windows",
+      "args": ["-debug", "-DSONG=2hot", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
       "label": "HashLink / Debug (Straight to Play - Bopeebo Normal)",
       "target": "hl",
       "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
