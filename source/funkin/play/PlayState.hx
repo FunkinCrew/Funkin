@@ -890,7 +890,8 @@ class PlayState extends MusicBeatSubState
     {
       if (isInCountdown)
       {
-        Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000);
+        // Do NOT apply offsets at this point, because they already got applied the previous frame!
+        Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
         if (Conductor.instance.songPosition >= (startTimestamp)) startSong();
       }
     }
