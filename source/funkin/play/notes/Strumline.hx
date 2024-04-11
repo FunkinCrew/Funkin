@@ -285,7 +285,8 @@ class Strumline extends FlxSpriteGroup
     var vwoosh:Float = 1.0;
     var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
-    return Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
+    return
+      Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
   }
 
   function updateNotes():Void
