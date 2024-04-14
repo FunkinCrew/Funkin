@@ -1,5 +1,6 @@
 package funkin.ui.mainmenu;
 
+import funkin.graphics.FunkinSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
@@ -51,14 +52,13 @@ class MainMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    if (!(FlxG?.sound?.music?.playing ?? false))
-    {
-      playMenuMusic();
-    }
+    playMenuMusic();
 
-    persistentUpdate = persistentDraw = true;
+    persistentUpdate = false;
+    persistentDraw = true;
 
-    var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
+    var bg = FunkinSprite.create('menuDesat');
+    bg.color = 0xFFFDE871;
     bg.scrollFactor.x = 0;
     bg.scrollFactor.y = 0.17;
     bg.setGraphicSize(Std.int(bg.width * 1.2));
@@ -109,12 +109,19 @@ class MainMenuState extends MusicBeatState
     });
 
     #if CAN_OPEN_LINKS
+    // In order to prevent popup blockers from triggering,
+    // we need to open the link as an immediate result of a keypress event,
+    // so we can't wait for the flicker animation to complete.
     var hasPopupBlocker = #if web true #else false #end;
-    createMenuItem('donate', 'mainmenu/donate', selectDonate, hasPopupBlocker);
+    createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
     #end
 
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
+    });
+
+    createMenuItem('credits', 'mainmenu/credits', function() {
+      startExitState(() -> new funkin.ui.credits.CreditsState());
     });
 
     // Reset position of menu items.
@@ -125,6 +132,9 @@ class MainMenuState extends MusicBeatState
       var menuItem = menuItems.members[i];
       menuItem.x = FlxG.width / 2;
       menuItem.y = top + spacing * i;
+      menuItem.scrollFactor.x = 0.0;
+      // This one affects how much the menu items move when you scroll between them.
+      menuItem.scrollFactor.y = 0.4;
     }
 
     resetCamStuff();
@@ -166,6 +176,7 @@ class MainMenuState extends MusicBeatState
   {
     FlxG.cameras.reset(new FunkinCamera());
     FlxG.camera.follow(camFollow, null, 0.06);
+    FlxG.camera.snapToTarget();
   }
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
@@ -211,6 +222,11 @@ class MainMenuState extends MusicBeatState
   function selectDonate()
   {
     WindowUtil.openURL(Constants.URL_ITCH);
+  }
+
+  function selectMerch()
+  {
+    WindowUtil.openURL(Constants.URL_MERCH);
   }
   #end
 
@@ -311,8 +327,6 @@ class MainMenuState extends MusicBeatState
     // Open the debug menu, defaults to ` / ~
     if (controls.DEBUG_MENU)
     {
-      this.persistentUpdate = false;
-      this.persistentDraw = false;
       FlxG.state.openSubState(new DebugMenuSubState());
     }
 

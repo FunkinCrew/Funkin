@@ -1,5 +1,6 @@
 package funkin.ui.freeplay;
 
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
@@ -7,6 +8,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import funkin.data.freeplay.AlbumRegistry;
+import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
 import openfl.utils.Assets;
@@ -21,9 +23,9 @@ class AlbumRoll extends FlxSpriteGroup
    * The ID of the album to display.
    * Modify this value to automatically update the album art and title.
    */
-  public var albumId(default, set):String;
+  public var albumId(default, set):Null<String>;
 
-  function set_albumId(value:String):String
+  function set_albumId(value:Null<String>):Null<String>
   {
     if (this.albumId != value)
     {
@@ -34,30 +36,47 @@ class AlbumRoll extends FlxSpriteGroup
     return value;
   }
 
-  var albumArt:FunkinSprite;
-  var albumTitle:FunkinSprite;
-  var difficultyStars:DifficultyStars;
+  var newAlbumArt:FlxAtlasSprite;
 
+  // var difficultyStars:DifficultyStars;
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
 
   var albumData:Album;
+
+  final animNames:Map<String, String> = [
+    "volume1-active" => "ENTRANCE",
+    "volume2-active" => "ENTRANCE VOL2",
+    "volume3-active" => "ENTRANCE VOL3",
+    "volume1-trans" => "VOL1 TRANS",
+    "volume2-trans" => "VOL2 TRANS",
+    "volume3-trans" => "VOL3 TRANS",
+    "volume1-idle" => "VOL1 STILL",
+    "volume2-idle" => "VOL2 STILL",
+    "volume3-idle" => "VOL3 STILL",
+  ];
 
   public function new()
   {
     super();
 
-    albumTitle = new FunkinSprite(947, 491);
-    albumTitle.visible = true;
-    albumTitle.zIndex = 200;
-    add(albumTitle);
+    newAlbumArt = new FlxAtlasSprite(0, 0, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
+    newAlbumArt.visible = false;
+    newAlbumArt.onAnimationFinish.add(onAlbumFinish);
 
-    difficultyStars = new DifficultyStars(140, 39);
+    add(newAlbumArt);
 
-    difficultyStars.stars.visible = true;
-    albumTitle.visible = false;
-    // albumArtist.visible = false;
+    // difficultyStars = new DifficultyStars(140, 39);
+    // difficultyStars.stars.visible = false;
+    // add(difficultyStars);
+  }
 
-    // var albumArtist:FlxSprite = new FlxSprite(1010, 607).loadGraphic(Paths.image('freeplay/albumArtist-kawaisprite'));
+  function onAlbumFinish(animName:String):Void
+  {
+    // Play the idle animation for the current album.
+    newAlbumArt.playAnimation(animNames.get('$albumId-idle'), false, false, true);
+
+    // End on the last frame and don't continue until playAnimation is called again.
+    // newAlbumArt.anim.pause();
   }
 
   /**
@@ -65,6 +84,12 @@ class AlbumRoll extends FlxSpriteGroup
    */
   function updateAlbum():Void
   {
+    if (albumId == null)
+    {
+      // difficultyStars.stars.visible = false;
+      return;
+    }
+
     albumData = AlbumRegistry.instance.fetchEntry(albumId);
 
     if (albumData == null)
@@ -74,32 +99,7 @@ class AlbumRoll extends FlxSpriteGroup
       return;
     };
 
-    if (albumArt != null)
-    {
-      FlxTween.cancelTweensOf(albumArt);
-      albumArt.visible = false;
-      albumArt.destroy();
-      remove(albumArt);
-    }
-
-    // Paths.animateAtlas('freeplay/albumRoll'),
-    albumArt = FunkinSprite.create(1500, 360, albumData.getAlbumArtAssetKey());
-    albumArt.setGraphicSize(262, 262); // Magic number for size IG
-    albumArt.zIndex = 100;
-
-    // playIntro();
-    add(albumArt);
-
     applyExitMovers();
-
-    if (Assets.exists(Paths.image(albumData.getAlbumTitleAssetKey())))
-    {
-      albumTitle.loadGraphic(Paths.image(albumData.getAlbumTitleAssetKey()));
-    }
-    else
-    {
-      albumTitle.visible = false;
-    }
 
     refresh();
   }
@@ -126,67 +126,46 @@ class AlbumRoll extends FlxSpriteGroup
 
     if (exitMovers == null) return;
 
-    exitMovers.set([albumArt],
+    exitMovers.set([newAlbumArt],
       {
         x: FlxG.width,
         speed: 0.4,
         wait: 0
       });
-    exitMovers.set([albumTitle],
-      {
-        x: FlxG.width,
-        speed: 0.2,
-        wait: 0.1
-      });
-
-    /*
-      exitMovers.set([albumArtist],
-        {
-          x: FlxG.width * 1.1,
-          speed: 0.2,
-          wait: 0.2
-        });
-     */
-    exitMovers.set([difficultyStars],
-      {
-        x: FlxG.width * 1.2,
-        speed: 0.2,
-        wait: 0.3
-      });
   }
+
+  var titleTimer:Null<FlxTimer> = null;
 
   /**
    * Play the intro animation on the album art.
    */
   public function playIntro():Void
   {
-    albumArt.visible = true;
-    FlxTween.tween(albumArt, {x: 950, y: 320, angle: -340}, 0.5, {ease: FlxEase.elasticOut});
+    newAlbumArt.visible = true;
+    newAlbumArt.playAnimation(animNames.get('$albumId-active'), false, false, false);
 
-    albumTitle.visible = false;
+    // difficultyStars.stars.visible = false;
     new FlxTimer().start(0.75, function(_) {
-      showTitle();
+      // showTitle();
+      // showStars();
     });
   }
 
-  public function setDifficultyStars(?difficulty:Int):Void
+  public function skipIntro():Void
   {
-    if (difficulty == null) return;
-
-    difficultyStars.difficulty = difficulty;
+    newAlbumArt.playAnimation(animNames.get('$albumId-trans'), false, false, false);
   }
 
-  public function showTitle():Void
-  {
-    albumTitle.visible = true;
-  }
-
-  /**
-   * Make the album stars visible.
-   */
-  public function showStars():Void
-  {
-    // albumArtist.visible = false;
-    difficultyStars.stars.visible = false;
-  }
+  // public function setDifficultyStars(?difficulty:Int):Void
+  // {
+  //   if (difficulty == null) return;
+  //   difficultyStars.difficulty = difficulty;
+  // }
+  // /**
+  //  * Make the album stars visible.
+  //  */
+  // public function showStars():Void
+  // {
+  //   difficultyStars.stars.visible = false; // true;
+  // }
 }

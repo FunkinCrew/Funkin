@@ -22,9 +22,11 @@ import openfl.filters.ShaderFilter;
 import openfl.utils.Assets;
 import flixel.util.typeLimit.NextState;
 
-class LoadingState extends MusicBeatState
+class LoadingState extends MusicBeatSubState
 {
   inline static var MIN_TIME = 1.0;
+
+  var asSubState:Bool = false;
 
   var target:NextState;
   var playParams:Null<PlayStateParams>;
@@ -178,7 +180,16 @@ class LoadingState extends MusicBeatState
       FlxG.sound.music = null;
     }
 
-    FlxG.switchState(target);
+    if (asSubState)
+    {
+      this.close();
+      // We will assume the target is a valid substate.
+      FlxG.state.openSubState(cast target);
+    }
+    else
+    {
+      FlxG.switchState(target);
+    }
   }
 
   static function getSongPath():String
@@ -190,17 +201,41 @@ class LoadingState extends MusicBeatState
    * Starts the transition to a new `PlayState` to start a new song.
    * First switches to the `LoadingState` if assets need to be loaded.
    * @param params The parameters for the next `PlayState`.
+   * @param asSubState Whether to open as a substate rather than switching to the `PlayState`.
    * @param shouldStopMusic Whether to stop the current music while loading.
    */
-  public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false):Void
+  public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false, asSubState = false, ?onConstruct:PlayState->Void):Void
   {
     Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
-    var playStateCtor:NextState = () -> new PlayState(params);
+    var playStateCtor:() -> PlayState = function() {
+      return new PlayState(params);
+    };
+
+    if (onConstruct != null)
+    {
+      playStateCtor = function() {
+        var result = new PlayState(params);
+        onConstruct(result);
+        return result;
+      };
+    }
 
     #if NO_PRELOAD_ALL
     // Switch to loading state while we load assets (default on HTML5 target).
-    var loadStateCtor:NextState = () -> new LoadingState(playStateCtor, shouldStopMusic, params);
-    FlxG.switchState(loadStateCtor);
+    var loadStateCtor = function() {
+      var result = new LoadingState(playStateCtor, shouldStopMusic, params);
+      @:privateAccess
+      result.asSubState = asSubState;
+      return result;
+    }
+    if (asSubState)
+    {
+      FlxG.state.openSubState(cast loadStateCtor());
+    }
+    else
+    {
+      FlxG.switchState(loadStateCtor);
+    }
     #else
     // All assets preloaded, switch directly to play state (defualt on other targets).
     if (shouldStopMusic && FlxG.sound.music != null)
@@ -210,14 +245,42 @@ class LoadingState extends MusicBeatState
     }
 
     // Load and cache the song's charts.
-    if (params?.targetSong != null)
+    // Don't do this if we already provided the music and charts.
+    if (params?.targetSong != null && !params.overrideMusic)
     {
       params.targetSong.cacheCharts(true);
     }
 
+    var shouldPreloadLevelAssets:Bool = !(params?.minimalMode ?? false);
+
+    if (shouldPreloadLevelAssets) preloadLevelAssets();
+
+    if (asSubState)
+    {
+      FlxG.state.openSubState(cast playStateCtor());
+    }
+    else
+    {
+      FlxG.switchState(playStateCtor);
+    }
+    #end
+  }
+
+  #if NO_PRELOAD_ALL
+  static function isSoundLoaded(path:String):Bool
+  {
+    return Assets.cache.hasSound(path);
+  }
+
+  static function isLibraryLoaded(library:String):Bool
+  {
+    return Assets.getLibrary(library) != null;
+  }
+  #else
+  static function preloadLevelAssets():Void
+  {
     // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
     FunkinSprite.preparePurgeCache();
-    FunkinSprite.cacheTexture(Paths.image('combo'));
     FunkinSprite.cacheTexture(Paths.image('healthBar'));
     FunkinSprite.cacheTexture(Paths.image('menuDesat'));
     FunkinSprite.cacheTexture(Paths.image('combo'));
@@ -247,7 +310,10 @@ class LoadingState extends MusicBeatState
     // List all image assets in the level's library.
     // This is crude and I want to remove it when we have a proper asset caching system.
     // TODO: Get rid of this junk!
-    var library = openfl.utils.Assets.getLibrary(PlayStatePlaylist.campaignId);
+    var library = PlayStatePlaylist.campaignId != null ? openfl.utils.Assets.getLibrary(PlayStatePlaylist.campaignId) : null;
+
+    if (library == null) return; // We don't need to do anymore precaching.
+
     var assets = library.list(lime.utils.AssetType.IMAGE);
     trace('Got ${assets.length} assets: ${assets}');
 
@@ -278,20 +344,6 @@ class LoadingState extends MusicBeatState
     // FunkinSprite.cacheAllSongTextures(stage)
 
     FunkinSprite.purgeCache();
-
-    FlxG.switchState(playStateCtor);
-    #end
-  }
-
-  #if NO_PRELOAD_ALL
-  static function isSoundLoaded(path:String):Bool
-  {
-    return Assets.cache.hasSound(path);
-  }
-
-  static function isLibraryLoaded(library:String):Bool
-  {
-    return Assets.getLibrary(library) != null;
   }
   #end
 

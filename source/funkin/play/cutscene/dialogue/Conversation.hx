@@ -23,6 +23,7 @@ import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.util.SortUtil;
+import funkin.util.EaseUtil;
 
 /**
  * A high-level handler for dialogue.
@@ -179,7 +180,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
         if (backdropData.fadeTime > 0.0)
         {
           backdrop.alpha = 0.0;
-          FlxTween.tween(backdrop, {alpha: 1.0}, backdropData.fadeTime, {ease: FlxEase.linear});
+          FlxTween.tween(backdrop, {alpha: 1.0}, backdropData.fadeTime, {ease: EaseUtil.stepped(10)});
         }
         else
         {
@@ -403,6 +404,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
             type: ONESHOT, // holy shit like the game no way
             startDelay: 0,
             onComplete: (_) -> endOutro(),
+            ease: EaseUtil.stepped(8)
           });
 
         FlxTween.tween(this.music, {volume: 0.0}, outroData.fadeTime);

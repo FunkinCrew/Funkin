@@ -20,7 +20,7 @@ class HSVShader extends FlxRuntimeShader
 
   function set_hue(value:Float):Float
   {
-    this.setFloat('hue', value);
+    this.setFloat('_hue', value);
     this.hue = value;
 
     return this.hue;

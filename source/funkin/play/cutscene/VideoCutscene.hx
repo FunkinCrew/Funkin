@@ -67,8 +67,13 @@ class VideoCutscene
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
-      lime.app.Application.current.window.alert('Video file does not exist: ${filePath}', 'Error playing video');
-      return;
+      // lime.app.Application.current.window.alert('Video file does not exist: ${filePath}', 'Error playing video');
+      // return;
+
+      // TODO: After moving videos to their own library,
+      // this function ALWAYS FAILS on web, but the video still plays.
+      // I think that's due to a weird quirk with how OpenFL libraries work.
+      trace('Video file does not exist: ${filePath}');
     }
 
     var rawFilePath = Paths.stripLibrary(filePath);
@@ -311,7 +316,7 @@ class VideoCutscene
           blackScreen = null;
         }
       });
-    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.defaultCameraZoom}, transitionTime,
+    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime,
       {
         ease: FlxEase.quadInOut,
         onComplete: function(twn:FlxTween) {

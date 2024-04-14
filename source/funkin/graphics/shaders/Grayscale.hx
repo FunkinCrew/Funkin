@@ -17,6 +17,6 @@ class Grayscale extends FlxRuntimeShader
   public function setAmount(value:Float):Void
   {
     amount = value;
-    this.setFloat("amount", amount);
+    this.setFloat("_amount", amount);
   }
 }
