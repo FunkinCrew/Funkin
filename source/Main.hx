@@ -113,6 +113,8 @@ class Main extends Sprite
 
     addChild(game);
 
+    addChild(fpsCounter);
+
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
     #else
