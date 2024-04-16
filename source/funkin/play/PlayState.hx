@@ -2388,13 +2388,6 @@ class PlayState extends MusicBeatSubState
 
     // Display the combo meter and add the calculation to the score.
     popUpScore(note, event.score, event.judgement, event.healthChange);
-
-    if (note.isHoldNote && note.holdNoteSprite != null)
-    {
-      playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-    }
-
-    vocals.playerVolume = 1;
   }
 
   /**
@@ -2676,6 +2669,13 @@ class PlayState extends MusicBeatSubState
     }
     comboPopUps.displayRating(daRating);
     if (Highscore.tallies.combo >= 10 || Highscore.tallies.combo == 0) comboPopUps.displayCombo(Highscore.tallies.combo);
+
+    if (daNote.isHoldNote && daNote.holdNoteSprite != null)
+    {
+      playerStrumline.playNoteHoldCover(daNote.holdNoteSprite);
+    }
+
+    vocals.playerVolume = 1;
   }
 
   /**
@@ -2786,7 +2786,7 @@ class PlayState extends MusicBeatSubState
       // adds current song data into the tallies for the level (story levels)
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
-      if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
+      if (!isPracticeMode && !isBotPlayMode && Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
       {
         Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
         #if newgrounds
@@ -3072,18 +3072,18 @@ class PlayState extends MusicBeatSubState
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
         scoreData:
           {
-            score: songScore,
+            score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
             tallies:
               {
-                sick: Highscore.tallies.sick,
-                good: Highscore.tallies.good,
-                bad: Highscore.tallies.bad,
-                shit: Highscore.tallies.shit,
-                missed: Highscore.tallies.missed,
-                combo: Highscore.tallies.combo,
-                maxCombo: Highscore.tallies.maxCombo,
-                totalNotesHit: Highscore.tallies.totalNotesHit,
-                totalNotes: Highscore.tallies.totalNotes,
+                sick: talliesToUse.sick,
+                good: talliesToUse.good,
+                bad: talliesToUse.bad,
+                shit: talliesToUse.shit,
+                missed: talliesToUse.missed,
+                combo: talliesToUse.combo,
+                maxCombo: talliesToUse.maxCombo,
+                totalNotesHit: talliesToUse.totalNotesHit,
+                totalNotes: talliesToUse.totalNotes,
               },
             accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
           },

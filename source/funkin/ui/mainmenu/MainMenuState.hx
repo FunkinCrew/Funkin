@@ -1,5 +1,6 @@
 package funkin.ui.mainmenu;
 
+import funkin.graphics.FunkinSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
@@ -56,7 +57,12 @@ class MainMenuState extends MusicBeatState
     persistentUpdate = false;
     persistentDraw = true;
 
-    var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
+    var bg = FunkinSprite.create('menuDesat');
+
+    bg.color = 0xFFFDE871;
+    // This line accounts for the fact that the base color of menuDesat is #EFEFEF.
+    flixel.util.FlxColorTransformUtil.setOffsets(bg.colorTransform, 30, 27, 13, 0.0);
+
     bg.scrollFactor.x = 0;
     bg.scrollFactor.y = 0.17;
     bg.setGraphicSize(Std.int(bg.width * 1.2));
