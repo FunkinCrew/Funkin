@@ -54,7 +54,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       // don't put the last seperator
       if (i == 4) continue;
 
-      var sep:FlxSprite = new FlxSprite((i * 80) + 55, 20).loadGraphic(Paths.image("freeplay/seperator"));
+      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image("freeplay/seperator"));
       // sep.animation.play("seperator");
       sep.color = letter.color.getDarkened(darkness);
       add(sep);
@@ -70,7 +70,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     changeSelection(0);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -81,7 +81,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
-  public function changeSelection(diff:Int = 0)
+  public function changeSelection(diff:Int = 0):Void
   {
     var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float) {
       new FlxTimer().start(frameNum / 24, function(_) {
@@ -172,20 +172,33 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     }
 
     curSelection += diff;
-    if (curSelection < 0) curSelection = letters[0].arr.length - 1;
-    if (curSelection >= letters[0].arr.length) curSelection = 0;
+    if (curSelection < 0) curSelection = letters[0].regexLetters.length - 1;
+    if (curSelection >= letters[0].regexLetters.length) curSelection = 0;
 
     for (letter in letters)
       letter.changeLetter(diff, curSelection);
 
-    if (changeSelectionCallback != null) changeSelectionCallback(letters[2].arr[letters[2].curLetter]); // bullshit and long lol!
+    if (changeSelectionCallback != null) changeSelectionCallback(letters[2].regexLetters[letters[2].curLetter]); // bullshit and long lol!
   }
 }
 
 class FreeplayLetter extends FlxAtlasSprite
 {
-  public var arr:Array<String> = [];
+  /**
+   * A preformatted array of letter strings, for use when doing regex
+   * ex: ['A-B', 'C-D', 'E-H', 'I-L' ...]
+   */
+  public var regexLetters:Array<String> = [];
 
+  /**
+   * A preformatted array of the letters, for use when accessing symbol animation info
+   * ex: ['AB', 'CD', 'EH', 'IL' ...]
+   */
+  public var animLetters:Array<String> = [];
+
+  /**
+   * The current letter in the regexLetters array this FreeplayLetter is on
+   */
   public var curLetter:Int = 0;
 
   public var ogY:Float = 0;
@@ -193,46 +206,43 @@ class FreeplayLetter extends FlxAtlasSprite
   public function new(x:Float, y:Float, ?letterInd:Int)
   {
     super(x, y, Paths.animateAtlas("freeplay/sortedLetters"));
-    // frames = Paths.getSparrowAtlas("freeplay/letterStuff");
-    // this.anim.play("AB");
-    // trace(this.anim.symbolDictionary);
 
-    var alphabet:String = "AB-CD-EH-I L-MN-OR-s-t-UZ";
-    arr = alphabet.split("-");
-    arr.insert(0, "ALL");
-    arr.insert(0, "fav");
-    arr.insert(0, "#");
+    // this is used for the regex
+    // /^[OR].*/gi doesn't work for showing the song Pico, so now it's
+    // /^[O-R].*/gi ant it works for displaying Pico
+    // https://regex101.com/r/bWFPfS/1
+    // we split by underscores, simply for nice lil convinience
+    var alphabet:String = 'A-B_C-D_E-H_I-L_M-N_O-R_S_T_U-Z';
+    regexLetters = alphabet.split('_');
+    regexLetters.insert(0, 'ALL');
+    regexLetters.insert(0, 'fav');
+    regexLetters.insert(0, '#');
 
-    // trace(arr);
-
-    // for (str in arr)
-    // {
-    //   animation.addByPrefix(str, str + " "); // string followed by a space! intentional!
-    // }
-
-    // animation.addByPrefix("arrow", "mini arrow");
-    // animation.addByPrefix("seperator", "seperator");
+    // the symbols from flash don't have dashes, so we clean this up for use with animations
+    // (we don't need to re-export, rule of thumb is to accomodate files named in flash from dave
+    //    until we get him programming classes (and since i cant find the .fla file....))
+    animLetters = regexLetters.map(animLetter -> animLetter.replace('-', ''));
 
     if (letterInd != null)
     {
-      this.anim.play(arr[letterInd] + " move");
+      this.anim.play(animLetters[letterInd] + " move");
       this.anim.pause();
       curLetter = letterInd;
     }
   }
 
-  public function changeLetter(diff:Int = 0, ?curSelection:Int)
+  public function changeLetter(diff:Int = 0, ?curSelection:Int):Void
   {
     curLetter += diff;
 
-    if (curLetter < 0) curLetter = arr.length - 1;
-    if (curLetter >= arr.length) curLetter = 0;
+    if (curLetter < 0) curLetter = regexLetters.length - 1;
+    if (curLetter >= regexLetters.length) curLetter = 0;
 
-    var animName:String = arr[curLetter] + " move";
+    var animName:String = animLetters[curLetter] + " move";
 
-    switch (arr[curLetter])
+    switch (animLetters[curLetter])
     {
-      case "I L":
+      case "IL":
         animName = "IL move";
       case "s":
         animName = "S move";

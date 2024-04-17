@@ -553,12 +553,18 @@ class FreeplayState extends MusicBeatSubState
         case REGEXP:
           // filterStuff.filterData has a string with the first letter of the sorting range, and the second one
           // this creates a filter to return all the songs that start with a letter between those two
+
+          // if filterData looks like "A-C", the regex should look something like this: ^[A-C].*
+          // to get every song that starts between A and C
           var filterRegexp:EReg = new EReg('^[' + filterStuff.filterData + '].*', 'i');
           tempSongs = tempSongs.filter(str -> {
             if (str == null) return true; // Random
             return filterRegexp.match(str.songName);
           });
+
         case STARTSWITH:
+          // extra note: this is essentially a "search"
+
           tempSongs = tempSongs.filter(str -> {
             if (str == null) return true; // Random
             return str.songName.toLowerCase().startsWith(filterStuff.filterData);
