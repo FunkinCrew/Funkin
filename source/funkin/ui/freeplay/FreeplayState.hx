@@ -638,14 +638,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
       funnyMenu.hsvShader = hsvShader;
 
-      if (i < 8)
-      {
-        funnyMenu.initJumpIn(Math.min(i, 4), force);
-      }
-      else
-      {
-        funnyMenu.forcePosition();
-      }
+      funnyMenu.forcePosition();
 
       grpCapsules.add(funnyMenu);
     }

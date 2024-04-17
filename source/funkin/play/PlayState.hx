@@ -2388,13 +2388,6 @@ class PlayState extends MusicBeatSubState
 
     // Display the combo meter and add the calculation to the score.
     popUpScore(note, event.score, event.judgement, event.healthChange);
-
-    if (note.isHoldNote && note.holdNoteSprite != null)
-    {
-      playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-    }
-
-    vocals.playerVolume = 1;
   }
 
   /**
@@ -2676,6 +2669,13 @@ class PlayState extends MusicBeatSubState
     }
     comboPopUps.displayRating(daRating);
     if (Highscore.tallies.combo >= 10 || Highscore.tallies.combo == 0) comboPopUps.displayCombo(Highscore.tallies.combo);
+
+    if (daNote.isHoldNote && daNote.holdNoteSprite != null)
+    {
+      playerStrumline.playNoteHoldCover(daNote.holdNoteSprite);
+    }
+
+    vocals.playerVolume = 1;
   }
 
   /**
