@@ -20,6 +20,8 @@ class RemoveEventsCommand implements ChartEditorCommand
 
   public function execute(state:ChartEditorState):Void
   {
+    if (events.length == 0) return;
+
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
     state.currentEventSelection = [];
 
@@ -34,6 +36,8 @@ class RemoveEventsCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
+    if (events.length == 0) return;
+
     for (event in events)
     {
       state.currentSongChartEventData.push(event);

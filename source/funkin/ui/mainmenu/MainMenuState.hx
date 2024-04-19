@@ -1,5 +1,6 @@
 package funkin.ui.mainmenu;
 
+import funkin.graphics.FunkinSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
@@ -67,7 +68,7 @@ class MainMenuState extends MusicBeatState
     camFollow = new FlxObject(0, 0, 1, 1);
     add(camFollow);
 
-    magenta = new FlxSprite(Paths.image('menuDesat'));
+    magenta = new FlxSprite(Paths.image('menuBGMagenta'));
     magenta.scrollFactor.x = bg.scrollFactor.x;
     magenta.scrollFactor.y = bg.scrollFactor.y;
     magenta.setGraphicSize(Std.int(bg.width));
@@ -75,7 +76,6 @@ class MainMenuState extends MusicBeatState
     magenta.x = bg.x;
     magenta.y = bg.y;
     magenta.visible = false;
-    magenta.color = 0xFFfd719b;
 
     // TODO: Why doesn't this line compile I'm going fucking feral
 

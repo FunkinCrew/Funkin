@@ -97,6 +97,11 @@
       "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "Linux / Debug",
+      "target": "linux",
+      "args": ["-debug", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
       "label": "HashLink / Debug",
       "target": "hl",
       "args": ["-debug"]
@@ -129,6 +134,11 @@
         "-DSONG=bopeebo -DDIFFICULTY=normal",
         "-DFORCE_DEBUG_VERSION"
       ]
+    },
+    {
+      "label": "Windows / Debug (Straight to Play - 2hot)",
+      "target": "windows",
+      "args": ["-debug", "-DSONG=2hot", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "HashLink / Debug (Straight to Play - Bopeebo Normal)",
