@@ -8,6 +8,7 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxMath;
@@ -40,6 +41,8 @@ import funkin.data.stage.StageData;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
+import funkin.input.TurboActionHandler;
+import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -73,6 +76,7 @@ import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
+import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
@@ -401,8 +405,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     renderedSelectionSquares.setPosition(gridTiledSprite?.x ?? 0.0, gridTiledSprite?.y ?? 0.0);
     // Offset the selection box start position, if we are dragging.
     if (selectionBoxStartPos != null) selectionBoxStartPos.y -= diff;
-    // Update the note preview viewport box.
+
+    // Update the note preview.
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
+    refreshNotePreviewPlayheadPosition();
+
     // Update the measure tick display.
     if (measureTicks != null) measureTicks.y = gridTiledSprite?.y ?? 0.0;
     return this.scrollPositionInPixels;
@@ -462,6 +469,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Move the playhead sprite to the correct position.
     gridPlayhead.y = this.playheadPositionInPixels + GRID_INITIAL_Y_POS;
+
+    updatePlayheadGhostHoldNotes();
+    refreshNotePreviewPlayheadPosition();
 
     return this.playheadPositionInPixels;
   }
@@ -769,6 +779,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return currentPlaceNoteData = value;
   }
 
+  /**
+   * The SongNoteData which is currently being placed, for each column.
+   * `null` if the user isn't currently placing a note.
+   * As the user moves down, we will update this note's sustain length, and finalize the note when they release.
+   */
+  var currentLiveInputPlaceNoteData:Array<SongNoteData> = [];
+
   // Note Movement
 
   /**
@@ -798,6 +815,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Play a sound when this value changes.
    */
   var dragLengthCurrent:Float = 0;
+
+  /**
+   * The current length of the hold note we are placing with the playhead, in steps.
+   * Play a sound when this value changes.
+   */
+  var playheadDragLengthCurrent:Array<Float> = [];
 
   /**
    * Flip-flop to alternate between two stretching sounds.
@@ -1070,6 +1093,66 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Variable used to track how long the user has been holding the page-down keybind.
    */
   var pageDownKeyHandler:TurboKeyHandler = TurboKeyHandler.build(FlxKey.PAGEDOWN);
+
+  /**
+   * Variable used to track how long the user has been holding up on the dpad.
+   */
+  var dpadUpGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.DPAD_UP);
+
+  /**
+   * Variable used to track how long the user has been holding down on the dpad.
+   */
+  var dpadDownGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.DPAD_DOWN);
+
+  /**
+   * Variable used to track how long the user has been holding left on the dpad.
+   */
+  var dpadLeftGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.DPAD_LEFT);
+
+  /**
+   * Variable used to track how long the user has been holding right on the dpad.
+   */
+  var dpadRightGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.DPAD_RIGHT);
+
+  /**
+   * Variable used to track how long the user has been holding up on the left stick.
+   */
+  var leftStickUpGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.LEFT_STICK_DIGITAL_UP);
+
+  /**
+   * Variable used to track how long the user has been holding down on the left stick.
+   */
+  var leftStickDownGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.LEFT_STICK_DIGITAL_DOWN);
+
+  /**
+   * Variable used to track how long the user has been holding left on the left stick.
+   */
+  var leftStickLeftGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.LEFT_STICK_DIGITAL_LEFT);
+
+  /**
+   * Variable used to track how long the user has been holding right on the left stick.
+   */
+  var leftStickRightGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.LEFT_STICK_DIGITAL_RIGHT);
+
+  /**
+   * Variable used to track how long the user has been holding up on the right stick.
+   */
+  var rightStickUpGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.RIGHT_STICK_DIGITAL_UP);
+
+  /**
+   * Variable used to track how long the user has been holding down on the right stick.
+   */
+  var rightStickDownGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.RIGHT_STICK_DIGITAL_DOWN);
+
+  /**
+   * Variable used to track how long the user has been holding left on the right stick.
+   */
+  var rightStickLeftGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.RIGHT_STICK_DIGITAL_LEFT);
+
+  /**
+   * Variable used to track how long the user has been holding right on the right stick.
+   */
+  var rightStickRightGamepadHandler:TurboButtonHandler = TurboButtonHandler.build(FlxGamepadInputID.RIGHT_STICK_DIGITAL_RIGHT);
 
   /**
    * AUDIO AND SOUND DATA
@@ -1949,9 +2032,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var gridGhostNote:Null<ChartEditorNoteSprite> = null;
 
   /**
-   * A sprite used to indicate the note that will be placed on click.
+   * A sprite used to indicate the hold note that will be placed on click.
    */
   var gridGhostHoldNote:Null<ChartEditorHoldNoteSprite> = null;
+
+  /**
+   * A sprite used to indicate the hold note that will be placed on button release.
+   */
+  var gridPlayheadGhostHoldNotes:Array<ChartEditorHoldNoteSprite> = [];
 
   /**
    * A sprite used to indicate the event that will be placed on click.
@@ -1969,6 +2057,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * We move this up and down and resize it to represent the visible area.
    */
   var notePreviewViewport:Null<FlxSliceSprite> = null;
+
+  /**
+   * The thin sprite used for representing the playhead on the note preview.
+   * We move this up and down to represent the current position.
+   */
+  var notePreviewPlayhead:Null<FlxSprite> = null;
 
   /**
    * The rectangular sprite used for rendering the selection box.
@@ -2349,7 +2443,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     gridGhostHoldNote = new ChartEditorHoldNoteSprite(this);
     gridGhostHoldNote.alpha = 0.6;
-    gridGhostHoldNote.noteData = new SongNoteData(0, 0, 0, "");
+    gridGhostHoldNote.noteData = null;
     gridGhostHoldNote.visible = false;
     add(gridGhostHoldNote);
     gridGhostHoldNote.zIndex = 11;
@@ -2422,6 +2516,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewViewport.scrollFactor.set(0, 0);
     add(notePreviewViewport);
     notePreviewViewport.zIndex = 30;
+
+    notePreviewPlayhead = new FlxSprite().makeGraphic(2, 2, 0xFFFF0000);
+    notePreviewPlayhead.scrollFactor.set(0, 0);
+    notePreviewPlayhead.scale.set(notePreview.width / 2, 0.5); // Setting width does nothing.
+    notePreviewPlayhead.updateHitbox();
+    notePreviewPlayhead.x = notePreview.x;
+    notePreviewPlayhead.y = notePreview.y;
+    add(notePreviewPlayhead);
+    notePreviewPlayhead.zIndex = 31;
 
     setNotePreviewViewportBounds(calculateNotePreviewViewportBounds());
   }
@@ -2517,6 +2620,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       notePreviewViewport.width = bounds.width;
       notePreviewViewport.height = bounds.height;
     }
+  }
+
+  function refreshNotePreviewPlayheadPosition():Void
+  {
+    if (notePreviewPlayhead == null) return;
+
+    notePreviewPlayhead.y = notePreview.y + (notePreview.height * ((scrollPositionInPixels + playheadPositionInPixels) / songLengthInPixels));
   }
 
   /**
@@ -3015,6 +3125,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function setupTurboKeyHandlers():Void
   {
+    // Keyboard shortcuts
     add(undoKeyHandler);
     add(redoKeyHandler);
     add(upKeyHandler);
@@ -3023,6 +3134,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(sKeyHandler);
     add(pageUpKeyHandler);
     add(pageDownKeyHandler);
+
+    // Gamepad inputs
+    add(dpadUpGamepadHandler);
+    add(dpadDownGamepadHandler);
+    add(dpadLeftGamepadHandler);
+    add(dpadRightGamepadHandler);
+    add(leftStickUpGamepadHandler);
+    add(leftStickDownGamepadHandler);
+    add(leftStickLeftGamepadHandler);
+    add(leftStickRightGamepadHandler);
+    add(rightStickUpGamepadHandler);
+    add(rightStickDownGamepadHandler);
+    add(rightStickLeftGamepadHandler);
+    add(rightStickRightGamepadHandler);
   }
 
   /**
@@ -3709,32 +3834,56 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Up Arrow = Scroll Up
     if (upKeyHandler.activated && currentLiveInputStyle == None)
     {
-      scrollAmount = -GRID_SIZE * 0.25 * 25.0;
+      scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
     }
     // Down Arrow = Scroll Down
     if (downKeyHandler.activated && currentLiveInputStyle == None)
     {
-      scrollAmount = GRID_SIZE * 0.25 * 25.0;
+      scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
     }
 
     // W = Scroll Up (doesn't work with Ctrl+Scroll)
     if (wKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
     {
-      scrollAmount = -GRID_SIZE * 0.25 * 25.0;
+      scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
     }
     // S = Scroll Down (doesn't work with Ctrl+Scroll)
     if (sKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
     {
-      scrollAmount = GRID_SIZE * 0.25 * 25.0;
+      scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
     }
 
-    // PAGE UP = Jump up to nearest measure
-    if (pageUpKeyHandler.activated)
+    // GAMEPAD LEFT STICK UP = Scroll Up by 1 note snap
+    if (leftStickUpGamepadHandler.activated)
     {
+      scrollAmount = -GRID_SIZE * noteSnapRatio;
+      shouldPause = true;
+    }
+    // GAMEPAD LEFT STICK DOWN = Scroll Down by 1 note snap
+    if (leftStickDownGamepadHandler.activated)
+    {
+      scrollAmount = GRID_SIZE * noteSnapRatio;
+      shouldPause = true;
+    }
+
+    // GAMEPAD RIGHT STICK UP = Scroll Up by 1 note snap (playhead only)
+    if (rightStickUpGamepadHandler.activated)
+    {
+      playheadAmount = -GRID_SIZE * noteSnapRatio;
+      shouldPause = true;
+    }
+    // GAMEPAD RIGHT STICK DOWN = Scroll Down by 1 note snap (playhead only)
+    if (rightStickDownGamepadHandler.activated)
+    {
+      playheadAmount = GRID_SIZE * noteSnapRatio;
+      shouldPause = true;
+    }
+
+    var funcJumpUp = (playheadOnly:Bool) -> {
       var measureHeight:Float = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
       var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
       var targetScrollPosition:Float = Math.floor(playheadPos / measureHeight) * measureHeight;
@@ -3744,20 +3893,37 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         targetScrollPosition -= GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.instance.beatsPerMeasure;
       }
-      scrollAmount = targetScrollPosition - playheadPos;
 
+      if (playheadOnly)
+      {
+        playheadAmount = targetScrollPosition - playheadPos;
+      }
+      else
+      {
+        scrollAmount = targetScrollPosition - playheadPos;
+      }
+    }
+
+    // PAGE UP = Jump up to nearest measure
+    // GAMEPAD LEFT STICK LEFT = Jump up to nearest measure
+    if (pageUpKeyHandler.activated || leftStickLeftGamepadHandler.activated)
+    {
+      funcJumpUp(false);
+      shouldPause = true;
+    }
+    if (rightStickLeftGamepadHandler.activated)
+    {
+      funcJumpUp(true);
       shouldPause = true;
     }
     if (playbarButtonPressed == 'playbarBack')
     {
       playbarButtonPressed = '';
-      scrollAmount = -GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
+      funcJumpUp(false);
       shouldPause = true;
     }
 
-    // PAGE DOWN = Jump down to nearest measure
-    if (pageDownKeyHandler.activated)
-    {
+    var funcJumpDown = (playheadOnly:Bool) -> {
       var measureHeight:Float = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
       var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
       var targetScrollPosition:Float = Math.ceil(playheadPos / measureHeight) * measureHeight;
@@ -3767,26 +3933,46 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         targetScrollPosition += GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.instance.beatsPerMeasure;
       }
-      scrollAmount = targetScrollPosition - playheadPos;
 
+      if (playheadOnly)
+      {
+        playheadAmount = targetScrollPosition - playheadPos;
+      }
+      else
+      {
+        scrollAmount = targetScrollPosition - playheadPos;
+      }
+    }
+
+    // PAGE DOWN = Jump down to nearest measure
+    // GAMEPAD LEFT STICK RIGHT = Jump down to nearest measure
+    if (pageDownKeyHandler.activated || leftStickRightGamepadHandler.activated)
+    {
+      funcJumpDown(false);
+      shouldPause = true;
+    }
+    if (rightStickRightGamepadHandler.activated)
+    {
+      funcJumpDown(true);
       shouldPause = true;
     }
     if (playbarButtonPressed == 'playbarForward')
     {
       playbarButtonPressed = '';
-      scrollAmount = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
+      funcJumpDown(false);
       shouldPause = true;
     }
 
     // SHIFT + Scroll = Scroll Fast
-    if (FlxG.keys.pressed.SHIFT)
+    // GAMEPAD LEFT STICK CLICK + Scroll = Scroll Fast
+    if (FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_STICK_CLICK ?? false))
     {
       scrollAmount *= 2;
     }
     // CONTROL + Scroll = Scroll Precise
     if (FlxG.keys.pressed.CONTROL)
     {
-      scrollAmount /= 10;
+      scrollAmount /= 4;
     }
 
     // Alt + Drag = Scroll but move the playhead the same amount.
@@ -4380,9 +4566,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
 
             gridGhostHoldNote.visible = true;
-            gridGhostHoldNote.noteData = currentPlaceNoteData;
-            gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
-
+            gridGhostHoldNote.noteData = gridGhostNote.noteData;
+            gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
             gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
 
             gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
@@ -4943,37 +5128,57 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function handlePlayhead():Void
   {
-    // Place notes at the playhead.
+    // Place notes at the playhead with the keyboard.
     switch (currentLiveInputStyle)
     {
       case ChartEditorLiveInputStyle.WASDKeys:
         if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(4);
+        if (FlxG.keys.justReleased.A) finishPlaceNoteAtPlayhead(4);
         if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(5);
+        if (FlxG.keys.justReleased.S) finishPlaceNoteAtPlayhead(5);
         if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(6);
+        if (FlxG.keys.justReleased.W) finishPlaceNoteAtPlayhead(6);
         if (FlxG.keys.justPressed.D) placeNoteAtPlayhead(7);
+        if (FlxG.keys.justReleased.D) finishPlaceNoteAtPlayhead(7);
 
         if (FlxG.keys.justPressed.LEFT) placeNoteAtPlayhead(0);
+        if (FlxG.keys.justReleased.LEFT) finishPlaceNoteAtPlayhead(0);
         if (FlxG.keys.justPressed.DOWN) placeNoteAtPlayhead(1);
+        if (FlxG.keys.justReleased.DOWN) finishPlaceNoteAtPlayhead(1);
         if (FlxG.keys.justPressed.UP) placeNoteAtPlayhead(2);
+        if (FlxG.keys.justReleased.UP) finishPlaceNoteAtPlayhead(2);
         if (FlxG.keys.justPressed.RIGHT) placeNoteAtPlayhead(3);
+        if (FlxG.keys.justReleased.RIGHT) finishPlaceNoteAtPlayhead(3);
       case ChartEditorLiveInputStyle.NumberKeys:
         // Flipped because Dad is on the left but represents data 0-3.
         if (FlxG.keys.justPressed.ONE) placeNoteAtPlayhead(4);
+        if (FlxG.keys.justReleased.ONE) finishPlaceNoteAtPlayhead(4);
         if (FlxG.keys.justPressed.TWO) placeNoteAtPlayhead(5);
+        if (FlxG.keys.justReleased.TWO) finishPlaceNoteAtPlayhead(5);
         if (FlxG.keys.justPressed.THREE) placeNoteAtPlayhead(6);
+        if (FlxG.keys.justReleased.THREE) finishPlaceNoteAtPlayhead(6);
         if (FlxG.keys.justPressed.FOUR) placeNoteAtPlayhead(7);
+        if (FlxG.keys.justReleased.FOUR) finishPlaceNoteAtPlayhead(7);
 
         if (FlxG.keys.justPressed.FIVE) placeNoteAtPlayhead(0);
+        if (FlxG.keys.justReleased.FIVE) finishPlaceNoteAtPlayhead(0);
         if (FlxG.keys.justPressed.SIX) placeNoteAtPlayhead(1);
         if (FlxG.keys.justPressed.SEVEN) placeNoteAtPlayhead(2);
+        if (FlxG.keys.justReleased.SEVEN) finishPlaceNoteAtPlayhead(2);
         if (FlxG.keys.justPressed.EIGHT) placeNoteAtPlayhead(3);
+        if (FlxG.keys.justReleased.EIGHT) finishPlaceNoteAtPlayhead(3);
       case ChartEditorLiveInputStyle.None:
         // Do nothing.
     }
+
+    updatePlayheadGhostHoldNotes();
   }
 
   function placeNoteAtPlayhead(column:Int):Void
   {
+    // SHIFT + press or LEFT_SHOULDER + press to remove notes instead of placing them.
+    var removeNoteInstead:Bool = FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_SHOULDER ?? false);
+
     var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
     var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
     var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
@@ -4984,14 +5189,136 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       playheadPosSnappedMs + Conductor.instance.stepLengthMs * noteSnapRatio);
     notesAtPos = SongDataUtils.getNotesWithData(notesAtPos, [column]);
 
-    if (notesAtPos.length == 0)
+    if (notesAtPos.length == 0 && !removeNoteInstead)
     {
+      trace('Placing note. ${column}');
       var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace);
       performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+      currentLiveInputPlaceNoteData[column] = newNoteData;
+    }
+    else if (removeNoteInstead)
+    {
+      trace('Removing existing note at position. ${column}');
+      performCommand(new RemoveNotesCommand(notesAtPos));
     }
     else
     {
-      trace('Already a note there.');
+      trace('Already a note there. ${column}');
+    }
+  }
+
+  function updatePlayheadGhostHoldNotes():Void
+  {
+    // Ensure all the ghost hold notes exist.
+    while (gridPlayheadGhostHoldNotes.length < (STRUMLINE_SIZE * 2))
+    {
+      var ghost = new ChartEditorHoldNoteSprite(this);
+      ghost.alpha = 0.6;
+      ghost.noteData = null;
+      ghost.visible = false;
+      ghost.zIndex = 11;
+      add(ghost); // Don't add to `renderedHoldNotes` because then it will get killed every frame.
+
+      gridPlayheadGhostHoldNotes.push(ghost);
+      refresh();
+    }
+
+    // Update playhead ghost hold notes.
+    for (column in 0...gridPlayheadGhostHoldNotes.length)
+    {
+      var targetNoteData = currentLiveInputPlaceNoteData[column];
+      var ghostHold = gridPlayheadGhostHoldNotes[column];
+
+      if (targetNoteData == null && ghostHold.noteData != null)
+      {
+        // Remove the ghost hold note.
+        ghostHold.noteData = null;
+      }
+
+      if (targetNoteData != null && ghostHold.noteData == null)
+      {
+        // Readd the new ghost hold note.
+        ghostHold.noteData = targetNoteData.clone();
+        ghostHold.noteDirection = ghostHold.noteData.getDirection();
+        ghostHold.visible = true;
+        ghostHold.alpha = 0.6;
+        ghostHold.setHeightDirectly(0);
+        ghostHold.updateHoldNotePosition(renderedHoldNotes);
+      }
+
+      if (ghostHold.noteData == null)
+      {
+        ghostHold.visible = false;
+        ghostHold.setHeightDirectly(0);
+        playheadDragLengthCurrent[column] = 0;
+        continue;
+      }
+
+      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
+      var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
+      var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
+      var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
+
+      var newNoteLength:Float = playheadPosSnappedMs - ghostHold.noteData.time;
+      trace('newNoteLength: ${newNoteLength}');
+
+      if (newNoteLength > 0)
+      {
+        ghostHold.noteData.length = newNoteLength;
+        var targetNoteLengthSteps:Float = ghostHold.noteData.getStepLength(true);
+        var targetNoteLengthStepsInt:Int = Std.int(Math.floor(targetNoteLengthSteps));
+        var targetNoteLengthPixels:Float = targetNoteLengthSteps * GRID_SIZE;
+
+        if (playheadDragLengthCurrent[column] != targetNoteLengthStepsInt)
+        {
+          stretchySounds = !stretchySounds;
+          this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
+          playheadDragLengthCurrent[column] = targetNoteLengthStepsInt;
+        }
+        ghostHold.visible = true;
+        ghostHold.alpha = 0.6;
+        ghostHold.setHeightDirectly(targetNoteLengthPixels, true);
+        ghostHold.updateHoldNotePosition(renderedHoldNotes);
+        trace('lerpLength: ${ghostHold.fullSustainLength}');
+        trace('position: ${ghostHold.x}, ${ghostHold.y}');
+      }
+      else
+      {
+        ghostHold.visible = false;
+        ghostHold.setHeightDirectly(0);
+        playheadDragLengthCurrent[column] = 0;
+        continue;
+      }
+    }
+  }
+
+  function finishPlaceNoteAtPlayhead(column:Int):Void
+  {
+    if (currentLiveInputPlaceNoteData[column] == null) return;
+
+    var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
+    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
+    var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
+    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
+
+    var newNoteLength:Float = playheadPosSnappedMs - currentLiveInputPlaceNoteData[column].time;
+    trace('finishPlace newNoteLength: ${newNoteLength}');
+
+    if (newNoteLength < Conductor.instance.stepLengthMs)
+    {
+      // Don't extend the note if it's too short.
+      trace('Not extending note. ${column}');
+      currentLiveInputPlaceNoteData[column] = null;
+      gridPlayheadGhostHoldNotes[column].noteData = null;
+    }
+    else
+    {
+      // Extend the note to the playhead position.
+      trace('Extending note. ${column}');
+      this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+      performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
+      currentLiveInputPlaceNoteData[column] = null;
+      gridPlayheadGhostHoldNotes[column].noteData = null;
     }
   }
 
