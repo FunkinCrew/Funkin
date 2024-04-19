@@ -80,34 +80,34 @@ class ResultState extends MusicBeatSubState
     bgFlash.visible = false;
     add(bgFlash);
 
-    var bfGfExcellent:FlxAtlasSprite = new FlxAtlasSprite(380, -170, Paths.animateAtlas("resultScreen/resultsBoyfriendExcellent", "shared"));
-    bfGfExcellent.visible = false;
-    add(bfGfExcellent);
+    // var bfGfExcellent:FlxAtlasSprite = new FlxAtlasSprite(380, -170, Paths.animateAtlas("resultScreen/resultsBoyfriendExcellent", "shared"));
+    // bfGfExcellent.visible = false;
+    // add(bfGfExcellent);
+    //
+    // var bfPerfect:FlxAtlasSprite = new FlxAtlasSprite(370, -180, Paths.animateAtlas("resultScreen/resultsBoyfriendPerfect", "shared"));
+    // bfPerfect.visible = false;
+    // add(bfPerfect);
+    //
+    // var bfSHIT:FlxAtlasSprite = new FlxAtlasSprite(0, 20, Paths.animateAtlas("resultScreen/resultsBoyfriendSHIT", "shared"));
+    // bfSHIT.visible = false;
+    // add(bfSHIT);
+    //
+    // bfGfExcellent.anim.onComplete = () -> {
+    // bfGfExcellent.anim.curFrame = 28;
+    // bfGfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    // };
+    //
+    // bfPerfect.anim.onComplete = () -> {
+    //  bfPerfect.anim.curFrame = 136;
+    //  bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    // };
+    //
+    // bfSHIT.anim.onComplete = () -> {
+    //  bfSHIT.anim.curFrame = 150;
+    //  bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
+    // };
 
-    var bfPerfect:FlxAtlasSprite = new FlxAtlasSprite(370, -180, Paths.animateAtlas("resultScreen/resultsBoyfriendPerfect", "shared"));
-    bfPerfect.visible = false;
-    add(bfPerfect);
-
-    var bfSHIT:FlxAtlasSprite = new FlxAtlasSprite(0, 20, Paths.animateAtlas("resultScreen/resultsBoyfriendSHIT", "shared"));
-    bfSHIT.visible = false;
-    add(bfSHIT);
-
-    bfGfExcellent.anim.onComplete = () -> {
-      bfGfExcellent.anim.curFrame = 28;
-      bfGfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
-    };
-
-    bfPerfect.anim.onComplete = () -> {
-      bfPerfect.anim.curFrame = 136;
-      bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
-    };
-
-    bfSHIT.anim.onComplete = () -> {
-      bfSHIT.anim.curFrame = 150;
-      bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
-    };
-
-    var gf:FlxSprite = FunkinSprite.createSparrow(500, 300, 'resultScreen/resultGirlfriendGOOD');
+    var gf:FlxSprite = FunkinSprite.createSparrow(625, 325, 'resultScreen/resultGirlfriendGOOD');
     gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
     gf.visible = false;
     gf.animation.finishCallback = _ -> {
@@ -268,9 +268,9 @@ class ResultState extends MusicBeatSubState
 
       switch (resultsVariation)
       {
-        case SHIT:
-          bfSHIT.visible = true;
-          bfSHIT.playAnimation("");
+        // case SHIT:
+        // bfSHIT.visible = true;
+        // bfSHIT.playAnimation("");
 
         case NORMAL:
           boyfriend.animation.play('fall');
@@ -292,9 +292,9 @@ class ResultState extends MusicBeatSubState
             gf.animation.play('clap', true);
             gf.visible = true;
           });
-        case PERFECT:
-          bfPerfect.visible = true;
-          bfPerfect.playAnimation("");
+        // case PERFECT:
+        //          bfPerfect.visible = true;
+        //          bfPerfect.playAnimation("");
 
         // bfGfExcellent.visible = true;
         // bfGfExcellent.playAnimation("");

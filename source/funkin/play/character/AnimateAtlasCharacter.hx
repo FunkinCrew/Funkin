@@ -192,6 +192,7 @@ class AnimateAtlasCharacter extends BaseCharacter
       if (!this.mainSprite.hasAnimation(prefix))
       {
         FlxG.log.warn('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPath}');
+        trace('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPath}');
         continue;
       }
       animations.set(anim.name, anim);

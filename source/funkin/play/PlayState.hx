@@ -834,9 +834,12 @@ class PlayState extends MusicBeatSubState
       inputSpitter = [];
 
       // Reset music properly.
-      FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
-      FlxG.sound.music.pitch = playbackRate;
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+        FlxG.sound.music.pitch = playbackRate;
+        FlxG.sound.music.pause();
+      }
 
       if (!overrideMusic)
       {
@@ -852,7 +855,7 @@ class PlayState extends MusicBeatSubState
       vocals.pause();
       vocals.time = 0;
 
-      FlxG.sound.music.volume = 1;
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
@@ -1467,7 +1470,7 @@ class PlayState extends MusicBeatSubState
    */
   function initCameras():Void
   {
-    camGame = new FunkinCamera();
+    camGame = new FunkinCamera('playStateCamGame');
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
@@ -1548,10 +1551,11 @@ class PlayState extends MusicBeatSubState
   function loadStage(id:String):Void
   {
     currentStage = StageRegistry.instance.fetchEntry(id);
-    currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
     if (currentStage != null)
     {
+      currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
+
       // Actually create and position the sprites.
       var event:ScriptEvent = new ScriptEvent(CREATE, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
