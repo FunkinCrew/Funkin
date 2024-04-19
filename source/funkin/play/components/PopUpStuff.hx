@@ -10,6 +10,8 @@ import funkin.util.TimerUtil;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {
+  public var offsets:Array<Int> = [0, 0];
+
   override public function new()
   {
     super();
@@ -29,9 +31,9 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     rating.scrollFactor.set(0.2, 0.2);
 
     rating.zIndex = 1000;
-    rating.x = FlxG.width * 0.50;
+    rating.x = (FlxG.width * 0.474) + offsets[0];
     // rating.x -= FlxG.camera.scroll.x * 0.2;
-    rating.y = FlxG.camera.height * 0.4 - 60;
+    rating.y = (FlxG.camera.height * 0.45 - 60) + offsets[1];
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
@@ -40,15 +42,18 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (PlayState.instance.currentStageId.startsWith('school'))
     {
-      rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
+      rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.65));
       rating.antialiasing = false;
     }
     else
     {
-      rating.setGraphicSize(Std.int(rating.width * 0.7));
+      rating.setGraphicSize(Std.int(rating.width * 0.65));
       rating.antialiasing = true;
     }
     rating.updateHitbox();
+
+    rating.x -= rating.width / 2;
+    rating.y -= rating.height / 2;
 
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
@@ -77,8 +82,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       pixelShitPart2 = '-pixel';
     }
     var comboSpr:FunkinSprite = FunkinSprite.create(pixelShitPart1 + 'combo' + pixelShitPart2);
-    comboSpr.y = FlxG.camera.height * 0.4 + 80;
-    comboSpr.x = FlxG.width * 0.50;
+    comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1];
+    comboSpr.x = (FlxG.width * 0.507) + offsets[0];
     // comboSpr.x -= FlxG.camera.scroll.x * 0.2;
 
     comboSpr.acceleration.y = 600;
@@ -133,14 +138,14 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
       }
       else
       {
-        numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+        numScore.setGraphicSize(Std.int(numScore.width * 0.45));
         numScore.antialiasing = true;
       }
       numScore.updateHitbox();
 
-      numScore.x = comboSpr.x - (43 * daLoop); //- 90;
-      numScore.acceleration.y = FlxG.random.int(200, 300);
-      numScore.velocity.y -= FlxG.random.int(140, 160);
+      numScore.x = comboSpr.x - (36 * daLoop) - 65; //- 90;
+      numScore.acceleration.y = FlxG.random.int(250, 300);
+      numScore.velocity.y -= FlxG.random.int(130, 150);
       numScore.velocity.x = FlxG.random.float(-5, 5);
 
       add(numScore);
