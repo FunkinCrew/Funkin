@@ -150,7 +150,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   /**
    * Stop all the sounds in the group.
    */
-  public function stop()
+  public function stop():Void
   {
     if (members != null)
     {
@@ -160,7 +160,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     }
   }
 
-  public override function destroy()
+  public override function destroy():Void
   {
     stop();
     super.destroy();
@@ -178,9 +178,14 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function get_time():Float
   {
-    if (getFirstAlive() != null) return getFirstAlive().time;
+    if (getFirstAlive() != null)
+    {
+      return getFirstAlive().time;
+    }
     else
+    {
       return 0;
+    }
   }
 
   function set_time(time:Float):Float
@@ -195,16 +200,26 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function get_playing():Bool
   {
-    if (getFirstAlive() != null) return getFirstAlive().playing;
+    if (getFirstAlive() != null)
+    {
+      return getFirstAlive().playing;
+    }
     else
+    {
       return false;
+    }
   }
 
   function get_volume():Float
   {
-    if (getFirstAlive() != null) return getFirstAlive().volume;
+    if (getFirstAlive() != null)
+    {
+      return getFirstAlive().volume;
+    }
     else
+    {
       return 1;
+    }
   }
 
   // in PlayState, adjust the code so that it only mutes the player1 vocal tracks?

@@ -5,6 +5,7 @@ package funkin.ui.debug.charting;
 using funkin.ui.debug.charting.handlers.ChartEditorAudioHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorContextMenuHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorDialogHandler;
+using funkin.ui.debug.charting.handlers.ChartEditorGamepadHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorNotificationHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;

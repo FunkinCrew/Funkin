@@ -45,6 +45,7 @@
 		<library name="week6" preload="true" />
 		<library name="week7" preload="true" />
 		<library name="weekend1" preload="true" />
+		<library name="videos" preload="true" />
 	</section>
 	<section if="NO_PRELOAD_ALL">
 		<library name="songs" preload="false" />
@@ -58,10 +59,13 @@
 		<library name="week6" preload="false" />
 		<library name="week7" preload="false" />
 		<library name="weekend1" preload="false" />
+		<library name="videos" preload="false" />
 	</section>
 	<library name="art" preload="false" />
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg|*.wav" if="web" />
 	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3|*.wav" unless="web" />
+	<!-- Videos go in their own library because web never needs to preload them, they can just be streamed. -->
+	<assets path="assets/videos" library="videos" />
 	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg|*.wav" if="web" />
 	<assets path="assets/shared" library="shared" exclude="*.fla|*.mp3|*.wav" unless="web" />
 	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg|*.wav" if="web" />
@@ -119,7 +123,9 @@
 	<haxelib name="flixel-text-input" /> <!-- Improved text field rendering for HaxeUI -->
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
-	<haxelib name="hxCodec" if="desktop" /> <!-- Video playback -->
+	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
+	<haxelib name="funkVis"/>
+
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->
@@ -183,6 +189,7 @@
 	<haxedef name="haxeui_focus_out_on_click" />
 	<!-- Required to use haxe.ui.backend.flixel.UIState with build macros. -->
 	<haxedef name="haxeui_dont_impose_base_class" />
+	<haxedef name="HARDCODED_CREDITS" />
 
 	<!-- Skip the Intro -->
 	<section if="debug">

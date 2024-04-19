@@ -498,7 +498,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
    */
-  var comboPopUps:PopUpStuff;
+  public var comboPopUps:PopUpStuff;
 
   /**
    * PROPERTIES
@@ -736,6 +736,10 @@ class PlayState extends MusicBeatSubState
     #end
 
     initialized = true;
+
+    // This step ensures z-indexes are applied properly,
+    // and it's important to call it last so all elements get affected.
+    refresh();
   }
 
   public override function draw():Void
@@ -830,9 +834,12 @@ class PlayState extends MusicBeatSubState
       inputSpitter = [];
 
       // Reset music properly.
-      FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
-      FlxG.sound.music.pitch = playbackRate;
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+        FlxG.sound.music.pitch = playbackRate;
+        FlxG.sound.music.pause();
+      }
 
       if (!overrideMusic)
       {
@@ -848,7 +855,7 @@ class PlayState extends MusicBeatSubState
       vocals.pause();
       vocals.time = 0;
 
-      FlxG.sound.music.volume = 1;
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
@@ -866,7 +873,7 @@ class PlayState extends MusicBeatSubState
 
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
-      hudCameraZoomIntensity = 0.015 * 2.0;
+      hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
       health = Constants.HEALTH_STARTING;
@@ -962,7 +969,7 @@ class PlayState extends MusicBeatSubState
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
     // Apply camera zoom + multipliers.
-    if (subState == null)
+    if (subState == null && cameraZoomRate > 0.0 && !isInCutscene)
     {
       cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
       var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
@@ -976,6 +983,7 @@ class PlayState extends MusicBeatSubState
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
     FlxG.watch.addQuick('health', health);
+    FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
     // TODO: Add a song event for Handle GF dance speed.
 
@@ -1462,7 +1470,7 @@ class PlayState extends MusicBeatSubState
    */
   function initCameras():Void
   {
-    camGame = new FunkinCamera();
+    camGame = new FunkinCamera('playStateCamGame');
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
@@ -1543,10 +1551,11 @@ class PlayState extends MusicBeatSubState
   function loadStage(id:String):Void
   {
     currentStage = StageRegistry.instance.fetchEntry(id);
-    currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
     if (currentStage != null)
     {
+      currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
+
       // Actually create and position the sprites.
       var event:ScriptEvent = new ScriptEvent(CREATE, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
@@ -1728,8 +1737,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.fadeInArrows();
       opponentStrumline.fadeInArrows();
     }
-
-    this.refresh();
   }
 
   /**
@@ -1912,8 +1919,6 @@ class PlayState extends MusicBeatSubState
    */
   function startSong():Void
   {
-    dispatchEvent(new ScriptEvent(SONG_START));
-
     startingSong = false;
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
@@ -1935,7 +1940,7 @@ class PlayState extends MusicBeatSubState
 
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;
-    FlxG.sound.music.fadeTween?.cancel();
+    if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
     add(vocals);
@@ -1954,6 +1959,8 @@ class PlayState extends MusicBeatSubState
       // FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
       handleSkippedNotes();
     }
+
+    dispatchEvent(new ScriptEvent(SONG_START));
   }
 
   /**
@@ -2230,8 +2237,8 @@ class PlayState extends MusicBeatSubState
         holdNote.handledMiss = true;
 
         // Mute vocals and play miss animation, but don't penalize.
-        vocals.playerVolume = 0;
-        if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+        // vocals.playerVolume = 0;
+        // if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
   }
@@ -2385,13 +2392,6 @@ class PlayState extends MusicBeatSubState
 
     // Display the combo meter and add the calculation to the score.
     popUpScore(note, event.score, event.judgement, event.healthChange);
-
-    if (note.isHoldNote && note.holdNoteSprite != null)
-    {
-      playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-    }
-
-    vocals.playerVolume = 1;
   }
 
   /**
@@ -2449,7 +2449,8 @@ class PlayState extends MusicBeatSubState
     if (Highscore.tallies.combo != 0)
     {
       // Break the combo.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
 
     if (playSound)
@@ -2576,32 +2577,38 @@ class PlayState extends MusicBeatSubState
    */
   function popUpScore(daNote:NoteSprite, score:Int, daRating:String, healthChange:Float):Void
   {
-    vocals.playerVolume = 1;
-
     if (daRating == 'miss')
     {
       // If daRating is 'miss', that means we made a mistake and should not continue.
-      trace('[WARNING] popUpScore judged a note as a miss!');
+      FlxG.log.warn('popUpScore judged a note as a miss!');
       // TODO: Remove this.
-      comboPopUps.displayRating('miss');
+      // comboPopUps.displayRating('miss');
       return;
     }
+
+    vocals.playerVolume = 1;
 
     var isComboBreak = false;
     switch (daRating)
     {
       case 'sick':
         Highscore.tallies.sick += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
+      default:
+        FlxG.log.error('Wuh? Buh? Guh? Note hit judgement was $daRating!');
     }
 
     health += healthChange;
@@ -2609,18 +2616,18 @@ class PlayState extends MusicBeatSubState
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
     else
     {
       Highscore.tallies.combo++;
-      Highscore.tallies.totalNotesHit++;
       if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
     }
 
     playerStrumline.hitNote(daNote, !isComboBreak);
 
-    if (daRating == "sick")
+    if (daRating == 'sick')
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
@@ -2666,6 +2673,13 @@ class PlayState extends MusicBeatSubState
     }
     comboPopUps.displayRating(daRating);
     if (Highscore.tallies.combo >= 10 || Highscore.tallies.combo == 0) comboPopUps.displayCombo(Highscore.tallies.combo);
+
+    if (daNote.isHoldNote && daNote.holdNoteSprite != null)
+    {
+      playerStrumline.playNoteHoldCover(daNote.holdNoteSprite);
+    }
+
+    vocals.playerVolume = 1;
   }
 
   /**
@@ -2732,7 +2746,7 @@ class PlayState extends MusicBeatSubState
    */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
-    FlxG.sound.music.volume = 0;
+    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;
 
@@ -2749,6 +2763,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     deathCounter = 0;
+
+    var isNewHighscore = false;
 
     if (currentSong != null && currentSong.validScore)
     {
@@ -2774,17 +2790,20 @@ class PlayState extends MusicBeatSubState
       // adds current song data into the tallies for the level (story levels)
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
-      if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
+      if (!isPracticeMode && !isBotPlayMode && Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
       {
         Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
         #if newgrounds
         NGio.postScore(score, currentSong.id);
         #end
+        isNewHighscore = true;
       }
     }
 
     if (PlayStatePlaylist.isStoryMode)
     {
+      isNewHighscore = false;
+
       PlayStatePlaylist.campaignScore += songScore;
 
       // Pop the next song ID from the list.
@@ -2793,18 +2812,6 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FunkinSound.playMusic('freakyMenu',
-          {
-            overrideExisting: true,
-            restartTrack: false
-          });
-
-        // transIn = FlxTransitionableState.defaultTransIn;
-        // transOut = FlxTransitionableState.defaultTransOut;
-
-        // TODO: Rework week unlock logic.
-        // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
         if (currentSong.validScore)
         {
           NGio.unlockMedal(60961);
@@ -2834,6 +2841,7 @@ class PlayState extends MusicBeatSubState
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end
+            isNewHighscore = true;
           }
         }
 
@@ -2845,11 +2853,11 @@ class PlayState extends MusicBeatSubState
         {
           if (rightGoddamnNow)
           {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
           else
           {
-            zoomIntoResultsScreen();
+            zoomIntoResultsScreen(isNewHighscore);
           }
         }
       }
@@ -2862,7 +2870,7 @@ class PlayState extends MusicBeatSubState
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
 
-        FlxG.sound.music.stop();
+        if (FlxG.sound.music != null) FlxG.sound.music.stop();
         vocals.stop();
 
         // TODO: Softcode this cutscene.
@@ -2910,11 +2918,11 @@ class PlayState extends MusicBeatSubState
       {
         if (rightGoddamnNow)
         {
-          moveToResultsScreen();
+          moveToResultsScreen(isNewHighscore);
         }
         else
         {
-          zoomIntoResultsScreen();
+          zoomIntoResultsScreen(isNewHighscore);
         }
       }
     }
@@ -2988,7 +2996,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Play the camera zoom animation and then move to the results screen once it's done.
    */
-  function zoomIntoResultsScreen():Void
+  function zoomIntoResultsScreen(isNewHighscore:Bool):Void
   {
     trace('WENT TO RESULTS SCREEN!');
 
@@ -3045,7 +3053,7 @@ class PlayState extends MusicBeatSubState
         {
           ease: FlxEase.expoIn,
           onComplete: function(_) {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
         });
     });
@@ -3054,7 +3062,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Move to the results screen right goddamn now.
    */
-  function moveToResultsScreen():Void
+  function moveToResultsScreen(isNewHighscore:Bool):Void
   {
     persistentUpdate = false;
     vocals.stop();
@@ -3066,7 +3074,24 @@ class PlayState extends MusicBeatSubState
       {
         storyMode: PlayStatePlaylist.isStoryMode,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-        tallies: talliesToUse,
+        scoreData:
+          {
+            score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
+            tallies:
+              {
+                sick: talliesToUse.sick,
+                good: talliesToUse.good,
+                bad: talliesToUse.bad,
+                shit: talliesToUse.shit,
+                missed: talliesToUse.missed,
+                combo: talliesToUse.combo,
+                maxCombo: talliesToUse.maxCombo,
+                totalNotesHit: talliesToUse.totalNotesHit,
+                totalNotes: talliesToUse.totalNotes,
+              },
+            accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+          },
+        isNewHighscore: isNewHighscore
       });
     res.camera = camHUD;
     openSubState(res);
@@ -3208,7 +3233,10 @@ class PlayState extends MusicBeatSubState
     // Don't go back in time to before the song started.
     targetTimeMs = Math.max(0, targetTimeMs);
 
-    FlxG.sound.music.time = targetTimeMs;
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.time = targetTimeMs;
+    }
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);

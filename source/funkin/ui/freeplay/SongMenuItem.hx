@@ -46,7 +46,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var hsvShader(default, set):HSVShader;
 
-  var diffRatingSprite:FlxSprite;
+  // var diffRatingSprite:FlxSprite;
 
   public function new(x:Float, y:Float)
   {
@@ -65,13 +65,13 @@ class SongMenuItem extends FlxSpriteGroup
     var rank:String = FlxG.random.getObject(ranks);
 
     ranking = new FlxSprite(capsule.width * 0.84, 30);
-    ranking.loadGraphic(Paths.image('freeplay/ranks/' + rank));
-    ranking.scale.x = ranking.scale.y = realScaled;
+    // ranking.loadGraphic(Paths.image('freeplay/ranks/' + rank));
+    // ranking.scale.x = ranking.scale.y = realScaled;
     // ranking.alpha = 0.75;
-    ranking.visible = false;
-    ranking.origin.set(capsule.origin.x - ranking.x, capsule.origin.y - ranking.y);
-    add(ranking);
-    grpHide.add(ranking);
+    // ranking.visible = false;
+    // ranking.origin.set(capsule.origin.x - ranking.x, capsule.origin.y - ranking.y);
+    // add(ranking);
+    // grpHide.add(ranking);
 
     switch (rank)
     {
@@ -81,12 +81,12 @@ class SongMenuItem extends FlxSpriteGroup
 
     grayscaleShader = new Grayscale(1);
 
-    diffRatingSprite = new FlxSprite(145, 90).loadGraphic(Paths.image('freeplay/diffRatings/diff00'));
-    diffRatingSprite.shader = grayscaleShader;
+    // diffRatingSprite = new FlxSprite(145, 90).loadGraphic(Paths.image('freeplay/diffRatings/diff00'));
+    // diffRatingSprite.shader = grayscaleShader;
+    // diffRatingSprite.origin.set(capsule.origin.x - diffRatingSprite.x, capsule.origin.y - diffRatingSprite.y);
     // TODO: Readd once ratings are fully implemented
     // add(diffRatingSprite);
-    diffRatingSprite.origin.set(capsule.origin.x - diffRatingSprite.x, capsule.origin.y - diffRatingSprite.y);
-    grpHide.add(diffRatingSprite);
+    // grpHide.add(diffRatingSprite);
 
     songText = new CapsuleText(capsule.width * 0.26, 45, 'Random', Std.int(40 * realScaled));
     add(songText);
@@ -118,8 +118,8 @@ class SongMenuItem extends FlxSpriteGroup
   function updateDifficultyRating(newRating:Int):Void
   {
     var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
-    diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
-    diffRatingSprite.visible = false;
+    // diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
+    // diffRatingSprite.visible = false;
   }
 
   function set_hsvShader(value:HSVShader):HSVShader

@@ -171,10 +171,7 @@ class LatencyState extends MusicBeatSubState
       trace(FlxG.sound.music._channel.position);
      */
 
-    #if FLX_DEBUG
-    funnyStatsGraph.update(FlxG.sound.music.time % 500);
-    realStats.update(swagSong.getTimeWithDiff() % 500);
-    #end
+    // localConductor.update(swagSong.time, false);
 
     if (FlxG.keys.justPressed.S)
     {
