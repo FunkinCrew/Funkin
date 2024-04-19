@@ -247,10 +247,6 @@ class StickerSubState extends MusicBeatSubState
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
 
-            // TODO: Rework this asset caching stuff
-            FunkinSprite.preparePurgeCache();
-            FunkinSprite.purgeCache();
-
             // I think this grabs the screen and puts it under the stickers?
             // Leaving this commented out rather than stripping it out because it's cool...
             /*
@@ -265,7 +261,15 @@ class StickerSubState extends MusicBeatSubState
               // FlxG.addChildBelowMouse(dipshit);
              */
 
-            FlxG.switchState(() -> targetState(this));
+            FlxG.switchState(() -> {
+              // TODO: Rework this asset caching stuff
+              // NOTE: This has to come AFTER the state switch,
+              // otherwise the game tries to render destroyed sprites!
+              FunkinSprite.preparePurgeCache();
+              FunkinSprite.purgeCache();
+
+              return targetState(this);
+            });
           }
         });
       });

@@ -171,6 +171,11 @@
       "args": ["-debug", "-DANIMDEBUG", "-DFORCE_DEBUG_VERSION"]
     },
     {
+      "label": "Windows / Debug (Debug hxCodec)",
+      "target": "windows",
+      "args": ["-debug", "-DHXC_LIBVLC_LOGGING", "-DFORCE_DEBUG_VERSION"]
+    },
+    {
       "label": "HashLink / Debug (Straight to Animation Editor)",
       "target": "hl",
       "args": ["-debug", "-DANIMDEBUG"]

@@ -30,44 +30,44 @@ class Controls extends FlxActionSet
    * A list of actions that a player would invoke via some input device.
    * Uses FlxActions to funnel various inputs to a single action.
    */
-  var _ui_up = new FlxActionDigital(Action.UI_UP);
-  var _ui_left = new FlxActionDigital(Action.UI_LEFT);
-  var _ui_right = new FlxActionDigital(Action.UI_RIGHT);
-  var _ui_down = new FlxActionDigital(Action.UI_DOWN);
-  var _ui_upP = new FlxActionDigital(Action.UI_UP_P);
-  var _ui_leftP = new FlxActionDigital(Action.UI_LEFT_P);
-  var _ui_rightP = new FlxActionDigital(Action.UI_RIGHT_P);
-  var _ui_downP = new FlxActionDigital(Action.UI_DOWN_P);
-  var _ui_upR = new FlxActionDigital(Action.UI_UP_R);
-  var _ui_leftR = new FlxActionDigital(Action.UI_LEFT_R);
-  var _ui_rightR = new FlxActionDigital(Action.UI_RIGHT_R);
-  var _ui_downR = new FlxActionDigital(Action.UI_DOWN_R);
-  var _note_up = new FlxActionDigital(Action.NOTE_UP);
-  var _note_left = new FlxActionDigital(Action.NOTE_LEFT);
-  var _note_right = new FlxActionDigital(Action.NOTE_RIGHT);
-  var _note_down = new FlxActionDigital(Action.NOTE_DOWN);
-  var _note_upP = new FlxActionDigital(Action.NOTE_UP_P);
-  var _note_leftP = new FlxActionDigital(Action.NOTE_LEFT_P);
-  var _note_rightP = new FlxActionDigital(Action.NOTE_RIGHT_P);
-  var _note_downP = new FlxActionDigital(Action.NOTE_DOWN_P);
-  var _note_upR = new FlxActionDigital(Action.NOTE_UP_R);
-  var _note_leftR = new FlxActionDigital(Action.NOTE_LEFT_R);
-  var _note_rightR = new FlxActionDigital(Action.NOTE_RIGHT_R);
-  var _note_downR = new FlxActionDigital(Action.NOTE_DOWN_R);
-  var _accept = new FlxActionDigital(Action.ACCEPT);
-  var _back = new FlxActionDigital(Action.BACK);
-  var _pause = new FlxActionDigital(Action.PAUSE);
-  var _reset = new FlxActionDigital(Action.RESET);
-  var _screenshot = new FlxActionDigital(Action.SCREENSHOT);
-  var _cutscene_advance = new FlxActionDigital(Action.CUTSCENE_ADVANCE);
-  var _debug_menu = new FlxActionDigital(Action.DEBUG_MENU);
-  var _debug_chart = new FlxActionDigital(Action.DEBUG_CHART);
-  var _debug_stage = new FlxActionDigital(Action.DEBUG_STAGE);
-  var _volume_up = new FlxActionDigital(Action.VOLUME_UP);
-  var _volume_down = new FlxActionDigital(Action.VOLUME_DOWN);
-  var _volume_mute = new FlxActionDigital(Action.VOLUME_MUTE);
+  var _ui_up = new FunkinAction(Action.UI_UP);
+  var _ui_left = new FunkinAction(Action.UI_LEFT);
+  var _ui_right = new FunkinAction(Action.UI_RIGHT);
+  var _ui_down = new FunkinAction(Action.UI_DOWN);
+  var _ui_upP = new FunkinAction(Action.UI_UP_P);
+  var _ui_leftP = new FunkinAction(Action.UI_LEFT_P);
+  var _ui_rightP = new FunkinAction(Action.UI_RIGHT_P);
+  var _ui_downP = new FunkinAction(Action.UI_DOWN_P);
+  var _ui_upR = new FunkinAction(Action.UI_UP_R);
+  var _ui_leftR = new FunkinAction(Action.UI_LEFT_R);
+  var _ui_rightR = new FunkinAction(Action.UI_RIGHT_R);
+  var _ui_downR = new FunkinAction(Action.UI_DOWN_R);
+  var _note_up = new FunkinAction(Action.NOTE_UP);
+  var _note_left = new FunkinAction(Action.NOTE_LEFT);
+  var _note_right = new FunkinAction(Action.NOTE_RIGHT);
+  var _note_down = new FunkinAction(Action.NOTE_DOWN);
+  var _note_upP = new FunkinAction(Action.NOTE_UP_P);
+  var _note_leftP = new FunkinAction(Action.NOTE_LEFT_P);
+  var _note_rightP = new FunkinAction(Action.NOTE_RIGHT_P);
+  var _note_downP = new FunkinAction(Action.NOTE_DOWN_P);
+  var _note_upR = new FunkinAction(Action.NOTE_UP_R);
+  var _note_leftR = new FunkinAction(Action.NOTE_LEFT_R);
+  var _note_rightR = new FunkinAction(Action.NOTE_RIGHT_R);
+  var _note_downR = new FunkinAction(Action.NOTE_DOWN_R);
+  var _accept = new FunkinAction(Action.ACCEPT);
+  var _back = new FunkinAction(Action.BACK);
+  var _pause = new FunkinAction(Action.PAUSE);
+  var _reset = new FunkinAction(Action.RESET);
+  var _screenshot = new FunkinAction(Action.SCREENSHOT);
+  var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
+  var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
+  var _debug_chart = new FunkinAction(Action.DEBUG_CHART);
+  var _debug_stage = new FunkinAction(Action.DEBUG_STAGE);
+  var _volume_up = new FunkinAction(Action.VOLUME_UP);
+  var _volume_down = new FunkinAction(Action.VOLUME_DOWN);
+  var _volume_mute = new FunkinAction(Action.VOLUME_MUTE);
 
-  var byName:Map<String, FlxActionDigital> = new Map<String, FlxActionDigital>();
+  var byName:Map<String, FunkinAction> = new Map<String, FunkinAction>();
 
   public var gamepadsAdded:Array<Int> = [];
   public var keyboardScheme = KeyboardScheme.None;
@@ -75,122 +75,142 @@ class Controls extends FlxActionSet
   public var UI_UP(get, never):Bool;
 
   inline function get_UI_UP()
-    return _ui_up.check();
+    return _ui_up.checkPressed();
 
   public var UI_LEFT(get, never):Bool;
 
   inline function get_UI_LEFT()
-    return _ui_left.check();
+    return _ui_left.checkPressed();
 
   public var UI_RIGHT(get, never):Bool;
 
   inline function get_UI_RIGHT()
-    return _ui_right.check();
+    return _ui_right.checkPressed();
 
   public var UI_DOWN(get, never):Bool;
 
   inline function get_UI_DOWN()
-    return _ui_down.check();
+    return _ui_down.checkPressed();
 
   public var UI_UP_P(get, never):Bool;
 
   inline function get_UI_UP_P()
-    return _ui_upP.check();
+    return _ui_up.checkJustPressed();
 
   public var UI_LEFT_P(get, never):Bool;
 
   inline function get_UI_LEFT_P()
-    return _ui_leftP.check();
+    return _ui_left.checkJustPressed();
 
   public var UI_RIGHT_P(get, never):Bool;
 
   inline function get_UI_RIGHT_P()
-    return _ui_rightP.check();
+    return _ui_right.checkJustPressed();
 
   public var UI_DOWN_P(get, never):Bool;
 
   inline function get_UI_DOWN_P()
-    return _ui_downP.check();
+    return _ui_down.checkJustPressed();
 
   public var UI_UP_R(get, never):Bool;
 
   inline function get_UI_UP_R()
-    return _ui_upR.check();
+    return _ui_up.checkJustReleased();
 
   public var UI_LEFT_R(get, never):Bool;
 
   inline function get_UI_LEFT_R()
-    return _ui_leftR.check();
+    return _ui_left.checkJustReleased();
 
   public var UI_RIGHT_R(get, never):Bool;
 
   inline function get_UI_RIGHT_R()
-    return _ui_rightR.check();
+    return _ui_right.checkJustReleased();
 
   public var UI_DOWN_R(get, never):Bool;
 
   inline function get_UI_DOWN_R()
-    return _ui_downR.check();
+    return _ui_down.checkJustReleased();
+
+  public var UI_UP_GAMEPAD(get, never):Bool;
+
+  inline function get_UI_UP_GAMEPAD()
+    return _ui_up.checkPressedGamepad();
+
+  public var UI_LEFT_GAMEPAD(get, never):Bool;
+
+  inline function get_UI_LEFT_GAMEPAD()
+    return _ui_left.checkPressedGamepad();
+
+  public var UI_RIGHT_GAMEPAD(get, never):Bool;
+
+  inline function get_UI_RIGHT_GAMEPAD()
+    return _ui_right.checkPressedGamepad();
+
+  public var UI_DOWN_GAMEPAD(get, never):Bool;
+
+  inline function get_UI_DOWN_GAMEPAD()
+    return _ui_down.checkPressedGamepad();
 
   public var NOTE_UP(get, never):Bool;
 
   inline function get_NOTE_UP()
-    return _note_up.check();
+    return _note_up.checkPressed();
 
   public var NOTE_LEFT(get, never):Bool;
 
   inline function get_NOTE_LEFT()
-    return _note_left.check();
+    return _note_left.checkPressed();
 
   public var NOTE_RIGHT(get, never):Bool;
 
   inline function get_NOTE_RIGHT()
-    return _note_right.check();
+    return _note_right.checkPressed();
 
   public var NOTE_DOWN(get, never):Bool;
 
   inline function get_NOTE_DOWN()
-    return _note_down.check();
+    return _note_down.checkPressed();
 
   public var NOTE_UP_P(get, never):Bool;
 
   inline function get_NOTE_UP_P()
-    return _note_upP.check();
+    return _note_up.checkJustPressed();
 
   public var NOTE_LEFT_P(get, never):Bool;
 
   inline function get_NOTE_LEFT_P()
-    return _note_leftP.check();
+    return _note_left.checkJustPressed();
 
   public var NOTE_RIGHT_P(get, never):Bool;
 
   inline function get_NOTE_RIGHT_P()
-    return _note_rightP.check();
+    return _note_right.checkJustPressed();
 
   public var NOTE_DOWN_P(get, never):Bool;
 
   inline function get_NOTE_DOWN_P()
-    return _note_downP.check();
+    return _note_down.checkJustPressed();
 
   public var NOTE_UP_R(get, never):Bool;
 
   inline function get_NOTE_UP_R()
-    return _note_upR.check();
+    return _note_up.checkJustReleased();
 
   public var NOTE_LEFT_R(get, never):Bool;
 
   inline function get_NOTE_LEFT_R()
-    return _note_leftR.check();
+    return _note_left.checkJustReleased();
 
   public var NOTE_RIGHT_R(get, never):Bool;
 
   inline function get_NOTE_RIGHT_R()
-    return _note_rightR.check();
+    return _note_right.checkJustReleased();
 
   public var NOTE_DOWN_R(get, never):Bool;
 
   inline function get_NOTE_DOWN_R()
-    return _note_downR.check();
+    return _note_down.checkJustReleased();
 
   public var ACCEPT(get, never):Bool;
 
@@ -260,26 +280,10 @@ class Controls extends FlxActionSet
     add(_ui_left);
     add(_ui_right);
     add(_ui_down);
-    add(_ui_upP);
-    add(_ui_leftP);
-    add(_ui_rightP);
-    add(_ui_downP);
-    add(_ui_upR);
-    add(_ui_leftR);
-    add(_ui_rightR);
-    add(_ui_downR);
     add(_note_up);
     add(_note_left);
     add(_note_right);
     add(_note_down);
-    add(_note_upP);
-    add(_note_leftP);
-    add(_note_rightP);
-    add(_note_downP);
-    add(_note_upR);
-    add(_note_leftR);
-    add(_note_rightR);
-    add(_note_downR);
     add(_accept);
     add(_back);
     add(_pause);
@@ -293,8 +297,16 @@ class Controls extends FlxActionSet
     add(_volume_down);
     add(_volume_mute);
 
-    for (action in digitalActions)
-      byName[action.name] = action;
+    for (action in digitalActions) {
+      if (Std.isOfType(action, FunkinAction)) {
+        var funkinAction:FunkinAction = cast action;
+        byName[funkinAction.name] = funkinAction;
+        if (funkinAction.namePressed != null)
+          byName[funkinAction.namePressed] = funkinAction;
+        if (funkinAction.nameReleased != null)
+          byName[funkinAction.nameReleased] = funkinAction;
+      }
+    }
 
     if (scheme == null)
       scheme = None;
@@ -307,14 +319,17 @@ class Controls extends FlxActionSet
     super.update();
   }
 
-  // inline
-  public function checkByName(name:Action):Bool
+  public function check(name:Action, trigger:FlxInputState = JUST_PRESSED, gamepadOnly:Bool = false):Bool
   {
     #if debug
     if (!byName.exists(name))
       throw 'Invalid name: $name';
     #end
-    return byName[name].check();
+    var action = byName[name];
+    if (gamepadOnly)
+      return action.checkFiltered(trigger, GAMEPAD);
+    else
+      return action.checkFiltered(trigger);
   }
 
   public function getKeysForAction(name:Action):Array<FlxKey> {
@@ -405,36 +420,36 @@ class Controls extends FlxActionSet
     {
       case UI_UP:
         func(_ui_up, PRESSED);
-        func(_ui_upP, JUST_PRESSED);
-        func(_ui_upR, JUST_RELEASED);
+        func(_ui_up, JUST_PRESSED);
+        func(_ui_up, JUST_RELEASED);
       case UI_LEFT:
         func(_ui_left, PRESSED);
-        func(_ui_leftP, JUST_PRESSED);
-        func(_ui_leftR, JUST_RELEASED);
+        func(_ui_left, JUST_PRESSED);
+        func(_ui_left, JUST_RELEASED);
       case UI_RIGHT:
         func(_ui_right, PRESSED);
-        func(_ui_rightP, JUST_PRESSED);
-        func(_ui_rightR, JUST_RELEASED);
+        func(_ui_right, JUST_PRESSED);
+        func(_ui_right, JUST_RELEASED);
       case UI_DOWN:
         func(_ui_down, PRESSED);
-        func(_ui_downP, JUST_PRESSED);
-        func(_ui_downR, JUST_RELEASED);
+        func(_ui_down, JUST_PRESSED);
+        func(_ui_down, JUST_RELEASED);
       case NOTE_UP:
         func(_note_up, PRESSED);
-        func(_note_upP, JUST_PRESSED);
-        func(_note_upR, JUST_RELEASED);
+        func(_note_up, JUST_PRESSED);
+        func(_note_up, JUST_RELEASED);
       case NOTE_LEFT:
         func(_note_left, PRESSED);
-        func(_note_leftP, JUST_PRESSED);
-        func(_note_leftR, JUST_RELEASED);
+        func(_note_left, JUST_PRESSED);
+        func(_note_left, JUST_RELEASED);
       case NOTE_RIGHT:
         func(_note_right, PRESSED);
-        func(_note_rightP, JUST_PRESSED);
-        func(_note_rightR, JUST_RELEASED);
+        func(_note_right, JUST_PRESSED);
+        func(_note_right, JUST_RELEASED);
       case NOTE_DOWN:
         func(_note_down, PRESSED);
-        func(_note_downP, JUST_PRESSED);
-        func(_note_downR, JUST_RELEASED);
+        func(_note_down, JUST_PRESSED);
+        func(_note_down, JUST_RELEASED);
       case ACCEPT:
         func(_accept, JUST_PRESSED);
       case BACK:
@@ -1042,6 +1057,173 @@ typedef Swipes =
   ?curTouchPos:FlxPoint
 };
 
+/**
+ * An FlxActionDigital with additional functionality, including:
+ * - Combining `pressed` and `released` inputs into one action.
+ * - Filtering by input method (`KEYBOARD`, `MOUSE`, `GAMEPAD`, etc).
+ */
+class FunkinAction extends FlxActionDigital {
+  public var namePressed(default, null):Null<String>;
+  public var nameReleased(default, null):Null<String>;
+
+  var cache:Map<String, {timestamp:Int, value:Bool}> = [];
+
+  public function new(?name:String = "", ?namePressed:String, ?nameReleased:String)
+  {
+    super(name);
+
+    this.namePressed = namePressed;
+    this.nameReleased = nameReleased;
+  }
+
+  /**
+   * Input checks default to whether the input was just pressed, on any input device.
+   */
+  public override function check():Bool {
+    return checkFiltered(JUST_PRESSED);
+  }
+
+  /**
+   * Check whether the input is currently being held.
+   */
+  public function checkPressed():Bool {
+    return checkFiltered(PRESSED);
+  }
+
+  /**
+   * Check whether the input is currently being held, and was not held last frame.
+   */
+  public function checkJustPressed():Bool {
+    return checkFiltered(JUST_PRESSED);
+  }
+
+  /**
+   * Check whether the input is not currently being held.
+   */
+  public function checkReleased():Bool {
+    return checkFiltered(RELEASED);
+  }
+
+  /**
+   * Check whether the input is not currently being held, and was held last frame.
+   */
+  public function checkJustReleased():Bool {
+    return checkFiltered(JUST_RELEASED);
+  }
+
+  /**
+   * Check whether the input is currently being held by a gamepad device.
+   */
+  public function checkPressedGamepad():Bool {
+    return checkFiltered(PRESSED, GAMEPAD);
+  }
+
+  /**
+   * Check whether the input is currently being held by a gamepad device, and was not held last frame.
+   */
+  public function checkJustPressedGamepad():Bool {
+    return checkFiltered(JUST_PRESSED, GAMEPAD);
+  }
+
+  /**
+   * Check whether the input is not currently being held by a gamepad device.
+   */
+  public function checkReleasedGamepad():Bool {
+    return checkFiltered(RELEASED, GAMEPAD);
+  }
+
+  /**
+   * Check whether the input is not currently being held by a gamepad device, and was held last frame.
+   */
+  public function checkJustReleasedGamepad():Bool {
+    return checkFiltered(JUST_RELEASED, GAMEPAD);
+  }
+
+  public function checkMultiFiltered(?filterTriggers:Array<FlxInputState>, ?filterDevices:Array<FlxInputDevice>):Bool {
+    if (filterTriggers == null) {
+      filterTriggers = [PRESSED, JUST_PRESSED];
+    }
+    if (filterDevices == null) {
+      filterDevices = [];
+    }
+
+    // Perform checkFiltered for each combination.
+    for (i in filterTriggers) {
+      if (filterDevices.length == 0) {
+        if (checkFiltered(i)) {
+          return true;
+        }
+      } else {
+        for (j in filterDevices) {
+          if (checkFiltered(i, j)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Performs the functionality of `FlxActionDigital.check()`, but with optional filters.
+   * @param action The action to check for.
+   * @param filterTrigger Optionally filter by trigger condition (`JUST_PRESSED`, `PRESSED`, `JUST_RELEASED`, `RELEASED`).
+   * @param filterDevice Optionally filter by device (`KEYBOARD`, `MOUSE`, `GAMEPAD`, `OTHER`).
+   */
+  public function checkFiltered(?filterTrigger:FlxInputState, ?filterDevice:FlxInputDevice):Bool {
+    // The normal
+
+    // Make sure we only update the inputs once per frame.
+    var key = '${filterTrigger}:${filterDevice}';
+    var cacheEntry = cache.get(key);
+
+    if (cacheEntry != null && cacheEntry.timestamp == FlxG.game.ticks) {
+      return cacheEntry.value;
+    }
+    // Use a for loop instead so we can remove inputs while iterating.
+
+    // We don't return early because we need to call check() on ALL inputs.
+    var result = false;
+		var len = inputs != null ? inputs.length : 0;
+		for (i in 0...len)
+		{
+			var j = len - i - 1;
+			var input = inputs[j];
+
+      // Filter out dead inputs.
+			if (input.destroyed)
+			{
+				inputs.splice(j, 1);
+				continue;
+			}
+
+      // Update the input.
+      input.update();
+
+      // Check whether the input is the right trigger.
+      if (filterTrigger != null && input.trigger != filterTrigger) {
+        continue;
+      }
+
+      // Check whether the input is the right device.
+      if (filterDevice != null && input.device != filterDevice) {
+        continue;
+      }
+
+      // Check whether the input has triggered.
+			if (input.check(this))
+			{
+				result = true;
+			}
+		}
+
+    // We need to cache this result.
+    cache.set(key, {timestamp: FlxG.game.ticks, value: result});
+
+    return result;
+  }
+}
+
 class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 {
   var touchMap:Map<Int, Swipes> = new Map();
@@ -1229,8 +1411,7 @@ enum Control
   DEBUG_STAGE;
 }
 
-enum
-abstract Action(String) to String from String
+enum abstract Action(String) to String from String
 {
   // NOTE
   var NOTE_UP = "note_up";

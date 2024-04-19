@@ -48,7 +48,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
   {
     super();
 
-    menuCamera = new FunkinCamera();
+    menuCamera = new FunkinCamera('controlsMenu');
     FlxG.cameras.add(menuCamera, false);
     menuCamera.bgColor = 0x0;
     camera = menuCamera;
