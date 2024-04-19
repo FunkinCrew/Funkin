@@ -21,7 +21,7 @@ class PreferencesMenu extends Page
   {
     super();
 
-    menuCamera = new FunkinCamera();
+    menuCamera = new FunkinCamera('prefMenu');
     FlxG.cameras.add(menuCamera, false);
     menuCamera.bgColor = 0x0;
     camera = menuCamera;

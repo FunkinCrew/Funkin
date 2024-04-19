@@ -2185,7 +2185,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     loadPreferences();
 
-    uiCamera = new FunkinCamera();
+    uiCamera = new FunkinCamera('chartEditorUI');
     FlxG.cameras.reset(uiCamera);
 
     buildDefaultSongData();
@@ -5709,7 +5709,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Kill and replace the UI camera so it doesn't get destroyed during the state transition.
     uiCamera.kill();
     FlxG.cameras.remove(uiCamera, false);
-    FlxG.cameras.reset(new FunkinCamera());
+    FlxG.cameras.reset(new FunkinCamera('chartEditorUI2'));
 
     this.persistentUpdate = false;
     this.persistentDraw = false;
