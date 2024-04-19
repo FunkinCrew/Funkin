@@ -57,10 +57,6 @@ class CreditsDataHandler
             {line: 'KawaiSprite'},
             {line: 'evilsk8r'},
           ]
-        },
-        {
-          header: 'Kickstarter Backers',
-          appendBackers: true
         }
       ]
     };
@@ -68,11 +64,11 @@ class CreditsDataHandler
 
   public static function fetchBackerEntries():Array<String>
   {
-    // TODO: Replace this with a web request.
+    // TODO: Implement a web request.
     // We can't just grab the current Kickstarter data and include it in builds,
     // because we don't want to deadname people who haven't logged into the portal yet.
     // It can be async and paginated for performance!
-    return ['See the list of backers at $BACKER_PUBLIC_URL.'];
+    return [];
   }
 
   #if HARDCODED_CREDITS
@@ -99,12 +95,19 @@ class CreditsDataHandler
 
   static function fetchCreditsData():funkin.data.JsonFile
   {
+    #if !macro
     var rawJson:String = openfl.Assets.getText(CREDITS_DATA_PATH).trim();
 
     return {
       fileName: CREDITS_DATA_PATH,
       contents: rawJson
     };
+    #else
+    return {
+      fileName: CREDITS_DATA_PATH,
+      contents: null
+    };
+    #end
   }
 
   static function parseCreditsData(file:JsonFile):Null<CreditsData>

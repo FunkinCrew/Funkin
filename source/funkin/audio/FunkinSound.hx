@@ -223,11 +223,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // already paused before we lost focus.
     if (_lostFocus && !_alreadyPaused)
     {
+      trace('Resuming audio (${this._label}) on focus!');
       resume();
     }
     else
     {
-      trace('Not resuming audio on focus!');
+      trace('Not resuming audio (${this._label}) on focus!');
     }
     _lostFocus = false;
   }
@@ -401,6 +402,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
     sound.persist = true;
+
+    // Make sure to add the sound to the list.
+    // If it's already in, it won't get re-added.
+    // If it's not in the list (it gets removed by FunkinSound.playMusic()),
+    // it will get re-added (then if this was called by playMusic(), removed again)
+    FlxG.sound.list.add(sound);
 
     // Call onLoad() because the sound already loaded
     if (onLoad != null && sound._sound != null) onLoad();

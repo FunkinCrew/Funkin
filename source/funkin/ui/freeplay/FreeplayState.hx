@@ -469,6 +469,10 @@ class FreeplayState extends MusicBeatSubState
 
       albumRoll.playIntro();
 
+      new FlxTimer().start(0.75, function(_) {
+        // albumRoll.showTitle();
+      });
+
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
       var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
@@ -634,14 +638,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
       funnyMenu.hsvShader = hsvShader;
 
-      if (i < 8)
-      {
-        funnyMenu.initJumpIn(Math.min(i, 4), force);
-      }
-      else
-      {
-        funnyMenu.forcePosition();
-      }
+      funnyMenu.forcePosition();
 
       grpCapsules.add(funnyMenu);
     }
@@ -1039,9 +1036,6 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    // Set the difficulty star count on the right.
-    albumRoll.setDifficultyStars(daSong?.songRating);
-
     // Set the album graphic and play the animation if relevant.
     var newAlbumId:String = daSong?.albumId;
     if (albumRoll.albumId != newAlbumId)
@@ -1161,10 +1155,6 @@ class FreeplayState extends MusicBeatSubState
     {
       currentDifficulty = rememberedDifficulty;
     }
-
-    // Set the difficulty star count on the right.
-    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected]?.songData;
-    albumRoll.setDifficultyStars(daSong?.songRating ?? 0);
   }
 
   function changeSelection(change:Int = 0):Void
