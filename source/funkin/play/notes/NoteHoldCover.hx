@@ -77,13 +77,6 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
   public override function update(elapsed):Void
   {
     super.update(elapsed);
-    if ((!holdNote.alive || holdNote.missedNote) && !glow.animation.curAnim.name.startsWith('holdCoverEnd'))
-    {
-      // If alive is false, the hold note was held to completion.
-      // If missedNote is true, the hold note was "dropped".
-
-      playEnd();
-    }
   }
 
   public function playStart():Void

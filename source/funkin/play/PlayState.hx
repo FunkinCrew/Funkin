@@ -245,20 +245,26 @@ class PlayState extends MusicBeatSubState
   /**
    * The current camera zoom level without any modifiers applied.
    */
-  public var currentCameraZoom:Float = FlxCamera.defaultZoom * 1.05;
+  public var currentCameraZoom:Float = FlxCamera.defaultZoom;
 
   /**
-   * currentCameraZoom is increased every beat, and lerped back to this value every frame, creating a smooth 'zoom-in' effect.
-   * Defaults to 1.05, but may be larger or smaller depending on the current stage.
-   * Tweened via the `ZoomCamera` song event in direct mode.
+   * Multiplier for currentCameraZoom for camera bops.
+   * Lerped back to 1.0x every frame.
    */
-  public var defaultCameraZoom:Float = FlxCamera.defaultZoom * 1.05;
+  public var cameraBopMultiplier:Float = 1.0;
 
   /**
-   * Camera zoom applied on top of currentCameraZoom.
-   * Tweened via the `ZoomCamera` song event in additive mode.
+   * Default camera zoom for the current stage.
+   * If we aren't in a stage, just use the default zoom (1.05x).
    */
-  public var additiveCameraZoom:Float = 0;
+  public var stageZoom(get, never):Float;
+
+  function get_stageZoom():Float
+  {
+    if (currentStage != null) return currentStage.camZoom;
+    else
+      return FlxCamera.defaultZoom * 1.05;
+  }
 
   /**
    * The current HUD camera zoom level.
@@ -268,16 +274,18 @@ class PlayState extends MusicBeatSubState
   public var defaultHUDCameraZoom:Float = FlxCamera.defaultZoom * 1.0;
 
   /**
-   * Intensity of the gameplay camera zoom.
-   * @default `1.5%`
+   * Camera bop intensity multiplier.
+   * Applied to cameraBopMultiplier on camera bops (usually every beat).
+   * @default `101.5%`
    */
-  public var cameraZoomIntensity:Float = Constants.DEFAULT_ZOOM_INTENSITY;
+  public var cameraBopIntensity:Float = Constants.DEFAULT_BOP_INTENSITY;
 
   /**
    * Intensity of the HUD camera zoom.
+   * Need to make this a multiplier later. Just shoving in 0.015 for now so it doesn't break.
    * @default `3.0%`
    */
-  public var hudCameraZoomIntensity:Float = Constants.DEFAULT_ZOOM_INTENSITY * 2.0;
+  public var hudCameraZoomIntensity:Float = 0.015 * 2.0;
 
   /**
    * How many beats (quarter notes) between camera zooms.
@@ -728,6 +736,10 @@ class PlayState extends MusicBeatSubState
     #end
 
     initialized = true;
+
+    // This step ensures z-indexes are applied properly,
+    // and it's important to call it last so all elements get affected.
+    refresh();
   }
 
   public override function draw():Void
@@ -822,9 +834,12 @@ class PlayState extends MusicBeatSubState
       inputSpitter = [];
 
       // Reset music properly.
-      FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
-      FlxG.sound.music.pitch = playbackRate;
-      FlxG.sound.music.pause();
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+        FlxG.sound.music.pitch = playbackRate;
+        FlxG.sound.music.pause();
+      }
 
       if (!overrideMusic)
       {
@@ -840,7 +855,7 @@ class PlayState extends MusicBeatSubState
       vocals.pause();
       vocals.time = 0;
 
-      FlxG.sound.music.volume = 1;
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
@@ -857,8 +872,8 @@ class PlayState extends MusicBeatSubState
       regenNoteData();
 
       // Reset camera zooming
-      cameraZoomIntensity = Constants.DEFAULT_ZOOM_INTENSITY;
-      hudCameraZoomIntensity = Constants.DEFAULT_ZOOM_INTENSITY * 2.0;
+      cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+      hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
       health = Constants.HEALTH_STARTING;
@@ -953,11 +968,12 @@ class PlayState extends MusicBeatSubState
     if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
-    // Lerp the camera zoom towards the target level.
-    if (subState == null)
+    // Apply camera zoom + multipliers.
+    if (subState == null && cameraZoomRate > 0.0 && !isInCutscene)
     {
-      currentCameraZoom = FlxMath.lerp(defaultCameraZoom, currentCameraZoom, 0.95);
-      FlxG.camera.zoom = currentCameraZoom + additiveCameraZoom;
+      cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
+      var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
+      FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
 
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
@@ -967,6 +983,7 @@ class PlayState extends MusicBeatSubState
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
     FlxG.watch.addQuick('health', health);
+    FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
     // TODO: Add a song event for Handle GF dance speed.
 
@@ -1363,15 +1380,15 @@ class PlayState extends MusicBeatSubState
       // activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
     }
 
-    // Only zoom camera if we are zoomed by less than 35%.
+    // Only bop camera if zoom level is below 135%
     if (Preferences.zoomCamera
-      && FlxG.camera.zoom < (1.35 * defaultCameraZoom)
+      && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
       && cameraZoomRate > 0
       && Conductor.instance.currentBeat % cameraZoomRate == 0)
     {
-      // Zoom camera in (1.5%)
-      currentCameraZoom += cameraZoomIntensity * defaultCameraZoom;
-      // Hud zooms double (3%)
+      // Set zoom multiplier for camera bop.
+      cameraBopMultiplier = cameraBopIntensity;
+      // HUD camera zoom still uses old system. To change. (+3%)
       camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
     }
     // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
@@ -1534,10 +1551,11 @@ class PlayState extends MusicBeatSubState
   function loadStage(id:String):Void
   {
     currentStage = StageRegistry.instance.fetchEntry(id);
-    currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
     if (currentStage != null)
     {
+      currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
+
       // Actually create and position the sprites.
       var event:ScriptEvent = new ScriptEvent(CREATE, false);
       ScriptEventDispatcher.callEvent(currentStage, event);
@@ -1562,12 +1580,11 @@ class PlayState extends MusicBeatSubState
   {
     if (PlayState.instance.isMinimalMode) return;
     // Apply camera zoom level from stage data.
-    defaultCameraZoom = currentStage.camZoom;
-    currentCameraZoom = defaultCameraZoom;
+    currentCameraZoom = stageZoom;
     FlxG.camera.zoom = currentCameraZoom;
 
-    // Reset additive zoom.
-    additiveCameraZoom = 0;
+    // Reset bop multiplier.
+    cameraBopMultiplier = 1.0;
   }
 
   /**
@@ -1720,8 +1737,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.fadeInArrows();
       opponentStrumline.fadeInArrows();
     }
-
-    this.refresh();
   }
 
   /**
@@ -2222,8 +2237,8 @@ class PlayState extends MusicBeatSubState
         holdNote.handledMiss = true;
 
         // Mute vocals and play miss animation, but don't penalize.
-        vocals.playerVolume = 0;
-        if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+        // vocals.playerVolume = 0;
+        // if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
       }
     }
   }
@@ -2377,13 +2392,6 @@ class PlayState extends MusicBeatSubState
 
     // Display the combo meter and add the calculation to the score.
     popUpScore(note, event.score, event.judgement, event.healthChange);
-
-    if (note.isHoldNote && note.holdNoteSprite != null)
-    {
-      playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-    }
-
-    vocals.playerVolume = 1;
   }
 
   /**
@@ -2441,7 +2449,8 @@ class PlayState extends MusicBeatSubState
     if (Highscore.tallies.combo != 0)
     {
       // Break the combo.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
 
     if (playSound)
@@ -2568,32 +2577,38 @@ class PlayState extends MusicBeatSubState
    */
   function popUpScore(daNote:NoteSprite, score:Int, daRating:String, healthChange:Float):Void
   {
-    vocals.playerVolume = 1;
-
     if (daRating == 'miss')
     {
       // If daRating is 'miss', that means we made a mistake and should not continue.
-      trace('[WARNING] popUpScore judged a note as a miss!');
+      FlxG.log.warn('popUpScore judged a note as a miss!');
       // TODO: Remove this.
-      comboPopUps.displayRating('miss');
+      // comboPopUps.displayRating('miss');
       return;
     }
+
+    vocals.playerVolume = 1;
 
     var isComboBreak = false;
     switch (daRating)
     {
       case 'sick':
         Highscore.tallies.sick += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SICK_COMBO_BREAK;
       case 'good':
         Highscore.tallies.good += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_GOOD_COMBO_BREAK;
       case 'bad':
         Highscore.tallies.bad += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
         Highscore.tallies.shit += 1;
+        Highscore.tallies.totalNotesHit++;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
+      default:
+        FlxG.log.error('Wuh? Buh? Guh? Note hit judgement was $daRating!');
     }
 
     health += healthChange;
@@ -2601,18 +2616,18 @@ class PlayState extends MusicBeatSubState
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
-      Highscore.tallies.combo = comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      Highscore.tallies.combo = 0;
     }
     else
     {
       Highscore.tallies.combo++;
-      Highscore.tallies.totalNotesHit++;
       if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
     }
 
     playerStrumline.hitNote(daNote, !isComboBreak);
 
-    if (daRating == "sick")
+    if (daRating == 'sick')
     {
       playerStrumline.playNoteSplash(daNote.noteData.getDirection());
     }
@@ -2658,6 +2673,13 @@ class PlayState extends MusicBeatSubState
     }
     comboPopUps.displayRating(daRating);
     if (Highscore.tallies.combo >= 10 || Highscore.tallies.combo == 0) comboPopUps.displayCombo(Highscore.tallies.combo);
+
+    if (daNote.isHoldNote && daNote.holdNoteSprite != null)
+    {
+      playerStrumline.playNoteHoldCover(daNote.holdNoteSprite);
+    }
+
+    vocals.playerVolume = 1;
   }
 
   /**
@@ -2724,7 +2746,7 @@ class PlayState extends MusicBeatSubState
    */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
-    FlxG.sound.music.volume = 0;
+    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;
 
@@ -2741,6 +2763,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     deathCounter = 0;
+
+    var isNewHighscore = false;
 
     if (currentSong != null && currentSong.validScore)
     {
@@ -2766,17 +2790,20 @@ class PlayState extends MusicBeatSubState
       // adds current song data into the tallies for the level (story levels)
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
-      if (Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
+      if (!isPracticeMode && !isBotPlayMode && Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
       {
         Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
         #if newgrounds
         NGio.postScore(score, currentSong.id);
         #end
+        isNewHighscore = true;
       }
     }
 
     if (PlayStatePlaylist.isStoryMode)
     {
+      isNewHighscore = false;
+
       PlayStatePlaylist.campaignScore += songScore;
 
       // Pop the next song ID from the list.
@@ -2785,18 +2812,6 @@ class PlayState extends MusicBeatSubState
 
       if (targetSongId == null)
       {
-        FunkinSound.playMusic('freakyMenu',
-          {
-            overrideExisting: true,
-            restartTrack: false
-          });
-
-        // transIn = FlxTransitionableState.defaultTransIn;
-        // transOut = FlxTransitionableState.defaultTransOut;
-
-        // TODO: Rework week unlock logic.
-        // StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
         if (currentSong.validScore)
         {
           NGio.unlockMedal(60961);
@@ -2826,6 +2841,7 @@ class PlayState extends MusicBeatSubState
             #if newgrounds
             NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
             #end
+            isNewHighscore = true;
           }
         }
 
@@ -2837,11 +2853,11 @@ class PlayState extends MusicBeatSubState
         {
           if (rightGoddamnNow)
           {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
           else
           {
-            zoomIntoResultsScreen();
+            zoomIntoResultsScreen(isNewHighscore);
           }
         }
       }
@@ -2854,7 +2870,7 @@ class PlayState extends MusicBeatSubState
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
 
-        FlxG.sound.music.stop();
+        if (FlxG.sound.music != null) FlxG.sound.music.stop();
         vocals.stop();
 
         // TODO: Softcode this cutscene.
@@ -2902,11 +2918,11 @@ class PlayState extends MusicBeatSubState
       {
         if (rightGoddamnNow)
         {
-          moveToResultsScreen();
+          moveToResultsScreen(isNewHighscore);
         }
         else
         {
-          zoomIntoResultsScreen();
+          zoomIntoResultsScreen(isNewHighscore);
         }
       }
     }
@@ -2980,7 +2996,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Play the camera zoom animation and then move to the results screen once it's done.
    */
-  function zoomIntoResultsScreen():Void
+  function zoomIntoResultsScreen(isNewHighscore:Bool):Void
   {
     trace('WENT TO RESULTS SCREEN!');
 
@@ -3037,7 +3053,7 @@ class PlayState extends MusicBeatSubState
         {
           ease: FlxEase.expoIn,
           onComplete: function(_) {
-            moveToResultsScreen();
+            moveToResultsScreen(isNewHighscore);
           }
         });
     });
@@ -3046,7 +3062,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Move to the results screen right goddamn now.
    */
-  function moveToResultsScreen():Void
+  function moveToResultsScreen(isNewHighscore:Bool):Void
   {
     persistentUpdate = false;
     vocals.stop();
@@ -3058,7 +3074,24 @@ class PlayState extends MusicBeatSubState
       {
         storyMode: PlayStatePlaylist.isStoryMode,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
-        tallies: talliesToUse,
+        scoreData:
+          {
+            score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
+            tallies:
+              {
+                sick: talliesToUse.sick,
+                good: talliesToUse.good,
+                bad: talliesToUse.bad,
+                shit: talliesToUse.shit,
+                missed: talliesToUse.missed,
+                combo: talliesToUse.combo,
+                maxCombo: talliesToUse.maxCombo,
+                totalNotesHit: talliesToUse.totalNotesHit,
+                totalNotes: talliesToUse.totalNotes,
+              },
+            accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+          },
+        isNewHighscore: isNewHighscore
       });
     res.camera = camHUD;
     openSubState(res);
@@ -3094,6 +3127,15 @@ class PlayState extends MusicBeatSubState
 
     // Snap the camera to the follow point immediately.
     FlxG.camera.focusOn(cameraFollowPoint.getPosition());
+  }
+
+  /**
+   * Sets the camera follow point's position and tweens the camera there.
+   */
+  public function tweenCameraToPosition(?x:Float, ?y:Float, ?duration:Float, ?ease:Null<Float->Float>):Void
+  {
+    cameraFollowPoint.setPosition(x, y);
+    tweenCameraToFollowPoint(duration, ease);
   }
 
   /**
@@ -3137,38 +3179,24 @@ class PlayState extends MusicBeatSubState
   /**
    * Tweens the camera zoom to the desired amount.
    */
-  public function tweenCameraZoom(?zoom:Float, ?duration:Float, ?directMode:Bool, ?ease:Null<Float->Float>):Void
+  public function tweenCameraZoom(?zoom:Float, ?duration:Float, ?direct:Bool, ?ease:Null<Float->Float>):Void
   {
     // Cancel the current tween if it's active.
     cancelCameraZoomTween();
 
-    var targetZoom = zoom * FlxCamera.defaultZoom;
+    // Direct mode: Set zoom directly.
+    // Stage mode: Set zoom as a multiplier of the current stage's default zoom.
+    var targetZoom = zoom * (direct ? FlxCamera.defaultZoom : stageZoom);
 
-    if (directMode) // Direct mode: Tween defaultCameraZoom for basic "smooth" zooms.
+    if (duration == 0)
     {
-      if (duration == 0)
-      {
-        // Instant zoom. No tween needed.
-        defaultCameraZoom = targetZoom;
-      }
-      else
-      {
-        // Zoom tween! Caching it so we can cancel/pause it later if needed.
-        cameraZoomTween = FlxTween.tween(this, {defaultCameraZoom: targetZoom}, duration, {ease: ease});
-      }
+      // Instant zoom. No tween needed.
+      currentCameraZoom = targetZoom;
     }
-    else // Additive mode: Tween additiveCameraZoom for ease-based zooms.
+    else
     {
-      if (duration == 0)
-      {
-        // Instant zoom. No tween needed.
-        additiveCameraZoom = targetZoom;
-      }
-      else
-      {
-        // Zoom tween! Caching it so we can cancel/pause it later if needed.
-        cameraZoomTween = FlxTween.tween(this, {additiveCameraZoom: targetZoom}, duration, {ease: ease});
-      }
+      // Zoom tween! Caching it so we can cancel/pause it later if needed.
+      cameraZoomTween = FlxTween.tween(this, {currentCameraZoom: targetZoom}, duration, {ease: ease});
     }
   }
 
@@ -3205,7 +3233,10 @@ class PlayState extends MusicBeatSubState
     // Don't go back in time to before the song started.
     targetTimeMs = Math.max(0, targetTimeMs);
 
-    FlxG.sound.music.time = targetTimeMs;
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.time = targetTimeMs;
+    }
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);

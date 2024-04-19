@@ -9,7 +9,7 @@ import openfl.utils.Assets as OpenFlAssets;
  */
 class Paths
 {
-  static var currentLevel:String;
+  static var currentLevel:Null<String> = null;
 
   public static function setCurrentLevel(name:String):Void
   {
@@ -113,7 +113,7 @@ class Paths
 
   public static function videos(key:String, ?library:String):String
   {
-    return getPath('videos/$key.${Constants.EXT_VIDEO}', BINARY, library);
+    return getPath('videos/$key.${Constants.EXT_VIDEO}', BINARY, library ?? 'videos');
   }
 
   public static function voices(song:String, ?suffix:String = ''):String

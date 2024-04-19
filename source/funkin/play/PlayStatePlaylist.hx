@@ -5,12 +5,13 @@ package funkin.play;
  *
  * TODO: Add getters/setters for all these properties to validate them.
  */
+@:nullSafety
 class PlayStatePlaylist
 {
   /**
    * Whether the game is currently in Story Mode. If false, we are in Free Play Mode.
    */
-  public static var isStoryMode(default, default):Bool = false;
+  public static var isStoryMode:Bool = false;
 
   /**
    * The loist of upcoming songs to be played.
@@ -31,8 +32,9 @@ class PlayStatePlaylist
 
   /**
    * The internal ID of the current playlist, for example `week4` or `weekend-1`.
+   * @default `null`, used when no playlist is loaded
    */
-  public static var campaignId:String = 'unknown';
+  public static var campaignId:Null<String> = null;
 
   public static var campaignDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
@@ -45,7 +47,7 @@ class PlayStatePlaylist
     playlistSongIds = [];
     campaignScore = 0;
     campaignTitle = 'UNKNOWN';
-    campaignId = 'unknown';
+    campaignId = null;
     campaignDifficulty = Constants.DEFAULT_DIFFICULTY;
   }
 }

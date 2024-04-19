@@ -73,7 +73,7 @@ class ChartEditorImportExportHandler
         state.loadInstFromAsset(Paths.inst(songId, '-$variation'), variation);
       }
 
-      for (difficultyId in song.listDifficulties(variation))
+      for (difficultyId in song.listDifficulties(variation, true, true))
       {
         var diff:Null<SongDifficulty> = song.getDifficulty(difficultyId, variation);
         if (diff == null) continue;
