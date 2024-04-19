@@ -11,7 +11,11 @@ import funkin.audio.waveform.WaveformDataParser;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
 import funkin.util.tools.ICloneable;
+import funkin.util.flixel.sound.FlxPartialSound;
+import funkin.Paths.PathsFunction;
 import openfl.Assets;
+import lime.app.Future;
+import lime.app.Promise;
 import openfl.media.SoundMixer;
 #if (openfl >= "8.0.0")
 import openfl.utils.AssetType;
@@ -342,20 +346,52 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         FlxG.log.warn('Tried and failed to find music metadata for $key');
       }
     }
-
-    var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
-    if (music != null)
+    var pathsFunction = params.pathsFunction ?? MUSIC;
+    var pathToUse = switch (pathsFunction)
     {
-      FlxG.sound.music = music;
+      case MUSIC: Paths.music('$key/$key');
+      case INST: Paths.inst('$key');
+      default: Paths.music('$key/$key');
+    }
 
-      // Prevent repeat update() and onFocus() calls.
-      FlxG.sound.list.remove(FlxG.sound.music);
+    var shouldLoadPartial = params.partialParams?.loadPartial ?? false;
 
-      return true;
+    if (shouldLoadPartial)
+    {
+      var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0, params.partialParams?.end ?? 1, params?.startingVolume ?? 1.0,
+        params.loop ?? true, false, true);
+
+      if (music != null)
+      {
+        music.onComplete(function(partialMusic:Null<FunkinSound>) {
+          @:nullSafety(Off)
+          FlxG.sound.music = partialMusic;
+          FlxG.sound.list.remove(FlxG.sound.music);
+        });
+
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
     else
     {
-      return false;
+      var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
+      if (music != null)
+      {
+        FlxG.sound.music = music;
+
+        // Prevent repeat update() and onFocus() calls.
+        FlxG.sound.list.remove(FlxG.sound.music);
+
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
   }
 
@@ -413,6 +449,36 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (onLoad != null && sound._sound != null) onLoad();
 
     return sound;
+  }
+
+  /**
+   * Will load a section of a sound file, useful for Freeplay where we don't want to load all the bytes of a song
+   * @param path The path to the sound file
+   * @param start The start time of the sound file
+   * @param end The end time of the sound file
+   * @param volume Volume to start at
+   * @param looped Whether the sound file should loop
+   * @param autoDestroy Whether the sound file should be destroyed after it finishes playing
+   * @param autoPlay Whether the sound file should play immediately
+   * @return A FunkinSound object
+   */
+  public static function loadPartial(path:String, start:Float = 0, end:Float = 1, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false,
+      autoPlay:Bool = true, ?onComplete:Void->Void, ?onLoad:Void->Void):Future<Null<FunkinSound>>
+  {
+    var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
+
+    // split the path and get only after first :
+    // we are bypassing the openfl/lime asset library fuss
+    path = Paths.stripLibrary(path);
+
+    var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
+
+    soundRequest.onComplete(function(partialSound) {
+      var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, onComplete, onLoad);
+      promise.complete(snd);
+    });
+
+    return promise.future;
   }
 
   @:nullSafety(Off)
@@ -498,4 +564,19 @@ typedef FunkinSoundPlayMusicParams =
    * @default `true`
    */
   var ?mapTimeChanges:Bool;
+
+  /**
+   * Which Paths function to use to load a song
+   * @default `MUSIC`
+   */
+  var ?pathsFunction:PathsFunction;
+
+  var ?partialParams:PartialSoundParams;
+}
+
+typedef PartialSoundParams =
+{
+  var loadPartial:Bool;
+  var start:Float;
+  var end:Float;
 }

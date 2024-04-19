@@ -126,6 +126,7 @@
 	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
 	<haxelib name="funkin.vis"/>
 
+	<haxelib name="FlxPartialSound" /> <!-- Loading partial sound data -->
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->
