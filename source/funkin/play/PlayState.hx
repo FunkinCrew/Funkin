@@ -1919,8 +1919,6 @@ class PlayState extends MusicBeatSubState
    */
   function startSong():Void
   {
-    dispatchEvent(new ScriptEvent(SONG_START));
-
     startingSong = false;
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
@@ -1942,7 +1940,7 @@ class PlayState extends MusicBeatSubState
 
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;
-    FlxG.sound.music.fadeTween?.cancel();
+    if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
     add(vocals);
@@ -1961,6 +1959,8 @@ class PlayState extends MusicBeatSubState
       // FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
       handleSkippedNotes();
     }
+
+    dispatchEvent(new ScriptEvent(SONG_START));
   }
 
   /**
