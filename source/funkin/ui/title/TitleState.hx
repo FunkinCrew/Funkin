@@ -188,6 +188,7 @@ class TitleState extends MusicBeatState
       ngSpr.animation.add('idle', [0, 1], 4);
       ngSpr.animation.play('idle');
       ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.55));
+      ngSpr.y += 25;
     }
     else
     {
