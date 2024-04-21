@@ -328,6 +328,31 @@ class MainMenuState extends MusicBeatState
       FlxG.state.openSubState(new DebugMenuSubState());
     }
 
+    #if (debug || FORCE_DEBUG_VERSION)
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
+    {
+      // Give the user a score of 1 point on Weekend 1 story mode.
+      // This makes the level count as cleared and displays the songs in Freeplay.
+      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
+        {
+          score: 1,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            },
+          accuracy: 0,
+        });
+    }
+    #end
+
     if (FlxG.sound.music.volume < 0.8)
     {
       FlxG.sound.music.volume += 0.5 * elapsed;
