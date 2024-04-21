@@ -39,7 +39,6 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i);
       letter.x += 50;
       letter.y += 50;
-      letter.ogY = y;
       // letter.visible = false;
       add(letter);
 
@@ -83,6 +82,26 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
   public function changeSelection(diff:Int = 0):Void
   {
+    doLetterChangeAnims(diff);
+
+    var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
+
+    // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
+    var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
+    arrowToMove.offset.x = 3 * multiPosOrNeg;
+
+    new FlxTimer().start(2 / 24, function(_) {
+      arrowToMove.offset.x = 0;
+    });
+  }
+
+  /**
+   * Buncho timers and stuff to move the letters and seperators
+   * Seperated out so we can call it again on letters with songs within them
+   * @param diff
+   */
+  function doLetterChangeAnims(diff:Int):Void
+  {
     var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float) {
       new FlxTimer().start(frameNum / 24, function(_) {
         spr.offset.x = offsetNum;
@@ -91,84 +110,39 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     var positions:Array<Float> = [-10, -22, 2, 0];
 
-    if (diff < 0)
+    // if we're moving left, we want to move the positions the same amount, but negative direciton
+    var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
+
+    for (sep in grpSeperators)
     {
-      for (sep in grpSeperators)
-      {
-        ezTimer(0, sep, positions[0]);
-        ezTimer(1, sep, positions[1]);
-        ezTimer(2, sep, positions[2]);
-        ezTimer(3, sep, positions[3]);
-      }
-
-      for (index => letter in letters)
-      {
-        letter.offset.x = positions[0];
-
-        new FlxTimer().start(1 / 24, function(_) {
-          letter.offset.x = positions[1];
-          if (index == 0) letter.visible = false;
-        });
-
-        new FlxTimer().start(2 / 24, function(_) {
-          letter.offset.x = positions[2];
-          if (index == 0.) letter.visible = true;
-        });
-
-        if (index == 2)
-        {
-          ezTimer(3, letter, 0);
-          // letter.offset.x = 0;
-          continue;
-        }
-
-        ezTimer(3, letter, positions[3]);
-      }
-
-      leftArrow.offset.x = 3;
-      new FlxTimer().start(2 / 24, function(_) {
-        leftArrow.offset.x = 0;
-      });
+      ezTimer(0, sep, positions[0] * multiPosOrNeg);
+      ezTimer(1, sep, positions[1] * multiPosOrNeg);
+      ezTimer(2, sep, positions[2] * multiPosOrNeg);
+      ezTimer(3, sep, positions[3] * multiPosOrNeg);
     }
-    else if (diff > 0)
+
+    for (index => letter in letters)
     {
-      for (sep in grpSeperators)
-      {
-        ezTimer(0, sep, -positions[0]);
-        ezTimer(1, sep, -positions[1]);
-        ezTimer(2, sep, -positions[2]);
-        ezTimer(3, sep, -positions[3]);
-      }
-      // same timing and functions and shit as the left one... except to the right!!
+      letter.offset.x = positions[0] * multiPosOrNeg;
 
-      for (index => letter in letters)
-      {
-        letter.offset.x = -positions[0];
-
-        new FlxTimer().start(1 / 24, function(_) {
-          letter.offset.x = -positions[1];
-          if (index == 0) letter.visible = false;
-        });
-
-        new FlxTimer().start(2 / 24, function(_) {
-          letter.offset.x = -positions[2];
-          if (index == 0) letter.visible = true;
-        });
-
-        if (index == 2)
-        {
-          ezTimer(3, letter, 0);
-          // letter.offset.x = 0;
-          continue;
-        }
-
-        ezTimer(3, letter, -positions[3]);
-      }
-
-      rightArrow.offset.x = -3;
-      new FlxTimer().start(2 / 24, function(_) {
-        rightArrow.offset.x = 0;
+      new FlxTimer().start(1 / 24, function(_) {
+        letter.offset.x = positions[1] * multiPosOrNeg;
+        if (index == 0) letter.visible = false;
       });
+
+      new FlxTimer().start(2 / 24, function(_) {
+        letter.offset.x = positions[2] * multiPosOrNeg;
+        if (index == 0.) letter.visible = true;
+      });
+
+      if (index == 2)
+      {
+        ezTimer(3, letter, 0);
+        // letter.offset.x = 0;
+        continue;
+      }
+
+      ezTimer(3, letter, positions[3] * multiPosOrNeg);
     }
 
     curSelection += diff;
@@ -182,6 +156,9 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
   }
 }
 
+/**
+ * The actual FlxAtlasSprite for the letters, with their animation code stuff and regex stuff
+ */
 class FreeplayLetter extends FlxAtlasSprite
 {
   /**
@@ -200,8 +177,6 @@ class FreeplayLetter extends FlxAtlasSprite
    * The current letter in the regexLetters array this FreeplayLetter is on
    */
   public var curLetter:Int = 0;
-
-  public var ogY:Float = 0;
 
   public function new(x:Float, y:Float, ?letterInd:Int)
   {
@@ -231,6 +206,11 @@ class FreeplayLetter extends FlxAtlasSprite
     }
   }
 
+  /**
+   * Changes the letter graphic/anim, used in the LetterSort class above
+   * @param diff -1 or 1, to go left or right in the animation array
+   * @param curSelection what the current letter selection is, to play the bouncing anim if it matches the current letter
+   */
   public function changeLetter(diff:Int = 0, ?curSelection:Int):Void
   {
     curLetter += diff;
@@ -238,7 +218,7 @@ class FreeplayLetter extends FlxAtlasSprite
     if (curLetter < 0) curLetter = regexLetters.length - 1;
     if (curLetter >= regexLetters.length) curLetter = 0;
 
-    var animName:String = animLetters[curLetter] + " move";
+    var animName:String = animLetters[curLetter] + ' move';
 
     switch (animLetters[curLetter])
     {
