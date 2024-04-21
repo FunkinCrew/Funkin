@@ -8,3 +8,8 @@ RECOVER_*.fla
 shitAudio/
 .build_time
 .swp
+
+# Exclude JS stuff
+node_modules/
+package.json
+package-lock.json

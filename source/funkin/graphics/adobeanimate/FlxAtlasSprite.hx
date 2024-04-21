@@ -37,6 +37,11 @@ class FlxAtlasSprite extends FlxAnimate
   {
     if (settings == null) settings = SETTINGS;
 
+    if (path == null)
+    {
+      throw 'Null path specified for FlxAtlasSprite!';
+    }
+
     super(x, y, path, settings);
 
     if (this.anim.curInstance == null)
