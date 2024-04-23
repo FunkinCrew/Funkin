@@ -64,6 +64,9 @@ class ResultState extends MusicBeatSubState
         loop: resultsVariation != SHIT
       });
 
+    // Reset the camera zoom on the results screen.
+    FlxG.camera.zoom = 1.0;
+
     // TEMP-ish, just used to sorta "cache" the 3000x3000 image!
     var cacheBullShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
     add(cacheBullShit);
