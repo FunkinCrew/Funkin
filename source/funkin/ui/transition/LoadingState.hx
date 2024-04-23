@@ -332,6 +332,7 @@ class LoadingState extends MusicBeatSubState
       // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
       if (path.endsWith('spritemap1.png'))
       {
+        trace('Preloading FlxAnimate asset: ${path}');
         openfl.Assets.getBitmapData(path, true);
       }
     }

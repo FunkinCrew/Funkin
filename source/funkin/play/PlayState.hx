@@ -813,6 +813,7 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
+    var list = FlxG.sound.list;
     updateHealthBar();
     updateScoreText();
 
@@ -969,7 +970,7 @@ class PlayState extends MusicBeatSubState
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
     // Apply camera zoom + multipliers.
-    if (subState == null && cameraZoomRate > 0.0 && !isInCutscene)
+    if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
     {
       cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
       var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
@@ -1869,6 +1870,8 @@ class PlayState extends MusicBeatSubState
 
     isInCutscene = false;
     camCutscene.visible = false;
+
+    // TODO: Maybe tween in the camera after any cutscenes.
     camHUD.visible = true;
   }
 

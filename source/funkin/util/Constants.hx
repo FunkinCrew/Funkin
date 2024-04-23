@@ -218,7 +218,7 @@ class Constants
   public static final DEFAULT_VARIATION:String = 'default';
 
   /**
-   * Standard variations used by the game.
+   * Standardized variations for charts
    */
   public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
 
