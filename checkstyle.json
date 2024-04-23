@@ -550,7 +550,8 @@
     {
       "props": {
         "policy": "onlySingle",
-        "allowException": true
+        "allowException": true,
+        "severity": "IGNORE"
       },
       "type": "StringLiteral"
     },
