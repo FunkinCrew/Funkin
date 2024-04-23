@@ -344,6 +344,17 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
+        // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
+        if (controls.UI_RIGHT_P)
+        {
+          changeDifficulty(1);
+        }
+
+        if (controls.UI_LEFT_P)
+        {
+          changeDifficulty(-1);
+        }
+
         if (controls.UI_RIGHT)
         {
           rightDifficultyArrow.animation.play('press');
@@ -360,16 +371,6 @@ class StoryMenuState extends MusicBeatState
         else
         {
           leftDifficultyArrow.animation.play('idle');
-        }
-
-        if (controls.UI_RIGHT_P)
-        {
-          changeDifficulty(1);
-        }
-
-        if (controls.UI_LEFT_P)
-        {
-          changeDifficulty(-1);
         }
 
         if (FlxG.keys.justPressed.TAB && modeText.visible)

@@ -47,9 +47,13 @@ class FunkinCamera extends FlxCamera
 
   public var shouldDraw:Bool = true;
 
-  public function new(x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
+  // Used to identify the camera during debugging.
+  final id:String = 'unknown';
+
+  public function new(id:String = 'unknown', x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
   {
     super(x, y, width, height, zoom);
+    this.id = id;
     bgTexture = pickTexture(width, height);
     bgBitmap = FixedBitmapData.fromTexture(bgTexture);
     bgFrame = new FlxFrame(new FlxGraphic('', null));

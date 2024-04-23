@@ -113,6 +113,8 @@ class Main extends Sprite
 
     addChild(game);
 
+    addChild(fpsCounter);
+
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
     #else
@@ -128,6 +130,8 @@ class Main extends Sprite
     Toolkit.init();
     Toolkit.theme = 'dark'; // don't be cringe
     Toolkit.autoScale = false;
+    // Don't focus on UI elements when they first appear.
+    haxe.ui.focus.FocusManager.instance.autoFocus = false;
     funkin.input.Cursor.registerHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
   }
