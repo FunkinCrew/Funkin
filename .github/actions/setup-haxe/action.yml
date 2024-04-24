@@ -75,7 +75,9 @@ runs:
     name: Install dependencies
     shell: bash
     run: |
+      git config --global url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf https://github.com/
       haxelib --global run hmm install -q
+      git config --global --unset url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf
 
   # by default use a shared hxcpp cache
   - if: ${{ inputs.hxcpp-cache == 'true' }}
