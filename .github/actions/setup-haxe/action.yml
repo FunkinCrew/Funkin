@@ -73,6 +73,7 @@ runs:
     name: Install dependencies
     shell: bash
     run: |
+      git config --list --show-origin --show-scope
       haxelib --debug --global run hmm install
       echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
 

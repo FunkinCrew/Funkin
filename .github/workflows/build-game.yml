@@ -103,6 +103,7 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
+        git config --list --show-origin --show-scope
         haxelib --global run hmm install
 
     - if: ${{ matrix.target != 'html5' }}
