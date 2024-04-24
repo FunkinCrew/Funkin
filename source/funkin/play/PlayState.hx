@@ -2529,6 +2529,7 @@ class PlayState extends MusicBeatSubState
     if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
     #end
 
+    #if CHART_EDITOR_SUPPORTED
     // Open the stage editor overlaying the current state.
     if (controls.DEBUG_STAGE)
     {
@@ -2548,6 +2549,7 @@ class PlayState extends MusicBeatSubState
           targetSongId: currentSong.id,
         }));
     }
+    #end
 
     #if (debug || FORCE_DEBUG_VERSION)
     // 1: End the song immediately.
