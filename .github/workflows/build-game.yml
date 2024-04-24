@@ -102,6 +102,7 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
+        git config --global url.https://${{ steps.app_token.outputs.token }}@github.com/.insteadOf https://github.com/
         haxelib --debug git funkVis https://github.com/FunkinCrew/funkVis backend-rework
         haxelib --global run hmm install -q
 
