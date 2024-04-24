@@ -23,9 +23,8 @@ jobs:
 
     steps:
     - name: Make git happy
-      if: ${{ matrix.target == 'macos' }}
       run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git config --global --replace-all safe.directory $GITHUB_WORKSPACE
 
     - name: Get checkout token
       uses: actions/create-github-app-token@v1
@@ -40,9 +39,12 @@ jobs:
       with:
         submodules: 'recursive'
         token: ${{ steps.app_token.outputs.token }}
+        persist-credentials: false
 
     - name: Setup build environment
       uses: ./.github/actions/setup-haxe
+      with:
+        gh-token: ${{ steps.app_token.outputs.token }}
 
     - name: Build game
       if: ${{ matrix.target == 'windows' }}
@@ -87,6 +89,7 @@ jobs:
       with:
         submodules: 'recursive'
         token: ${{ steps.app_token.outputs.token }}
+        persist-credentials: false
 
     - name: Config haxelib
       run: |
@@ -103,7 +106,8 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
-        haxelib --global run hmm install
+        git config --global 'url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf' https://github.com/
+        haxelib --global run hmm install -q
 
     - if: ${{ matrix.target != 'html5' }}
       name: Restore hxcpp cache

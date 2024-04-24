@@ -17,6 +17,8 @@ inputs:
   targets:
     description: 'Targets we plan to compile to. Installs native dependencies needed.'
     required: true
+  gh-token:
+    description: 'GitHub secret for private repos as dependencies'
 
 runs:
   using: "composite"
@@ -70,10 +72,17 @@ runs:
       key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
 
   - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+    name: Prep git for dependency install
+    uses: gacts/run-and-post-run@v1
+    with:
+      run: git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
+      post: git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf'
+
+  - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
     name: Install dependencies
     shell: bash
     run: |
-      haxelib --debug --global run hmm install
+      haxelib --global run hmm install -q
       echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
 
   # by default use a shared hxcpp cache
