@@ -17,6 +17,8 @@ inputs:
   targets:
     description: 'Targets we plan to compile to. Installs native dependencies needed.'
     required: true
+  gh-token:
+    description: 'GitHub secret for private repos as dependencies'
 
 runs:
   using: "composite"
@@ -73,8 +75,19 @@ runs:
     name: Install dependencies
     shell: bash
     run: |
+      key="credential.https://github.com"
       git config --list --show-origin --show-scope
+      if [ ! -z "${{ inputs.gh-token }}" ]; then
+        git config --global "credential.helper" 'cache --timeout=3600'
+        git config --global "$key.username" "git"
+        git config --global "$key.password" "${{ inputs.gh-token }}"
+      fi
       haxelib --debug --global run hmm install
+      if [ ! -z "${{ inputs.gh-token }}" ]; then
+        git config --global --unset "credential.helper"
+        git config --global --unset "$key.username"
+        git config --global --unset "$key.password"
+      fi
       echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
 
   # by default use a shared hxcpp cache

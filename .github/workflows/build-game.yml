@@ -42,6 +42,8 @@ jobs:
 
     - name: Setup build environment
       uses: ./.github/actions/setup-haxe
+      with:
+        gh-token: ${{ steps.app_token.outputs.token }}
 
     - name: Build game
       if: ${{ matrix.target == 'windows' }}
@@ -102,9 +104,15 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
-        git config --global url.https://${{ steps.app_token.outputs.token }}@github.com/.insteadOf https://github.com/
+        key="credential.https://github.com"
+        git config --global "credential.helper" 'cache --timeout=3600'
+        git config --global "$key.username" "git"
+        git config --global "$key.password" "${{ steps.app_token.outputs.token }}"
         haxelib --debug git funkVis https://github.com/FunkinCrew/funkVis backend-rework
         haxelib --global run hmm install -q
+        git config --global --unset "credential.helper"
+        git config --global --unset "$key.username"
+        git config --global --unset "$key.password"
 
     - if: ${{ matrix.target != 'html5' }}
       name: Restore hxcpp cache
