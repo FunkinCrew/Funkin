@@ -78,7 +78,7 @@ runs:
       key="credential.https://github.com"
       git config --list --show-origin --show-scope
       if [ ! -z "${{ inputs.gh-token }}" ]; then
-        git config --global "credential.helper" 'cache --timeout=3600'
+        git config --global "credential.helper" "store --file=/tmp/git-credentials"
         git config --global "$key.username" "git"
         git config --global "$key.password" "${{ inputs.gh-token }}"
       fi

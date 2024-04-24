@@ -105,7 +105,7 @@ jobs:
       name: Install dependencies
       run: |
         key="credential.https://github.com"
-        git config --global "credential.helper" 'cache --timeout=3600'
+        git config --global "credential.helper" "store --file=/tmp/git-credentials"
         git config --global "$key.username" "git"
         git config --global "$key.password" "${{ steps.app_token.outputs.token }}"
         haxelib --debug git funkVis https://github.com/FunkinCrew/funkVis backend-rework
