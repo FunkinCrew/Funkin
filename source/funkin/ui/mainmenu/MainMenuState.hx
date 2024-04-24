@@ -323,10 +323,12 @@ class MainMenuState extends MusicBeatState
     }
 
     // Open the debug menu, defaults to ` / ~
+    #if CHART_EDITOR_SUPPORTED
     if (controls.DEBUG_MENU)
     {
       FlxG.state.openSubState(new DebugMenuSubState());
     }
+    #end
 
     #if (debug || FORCE_DEBUG_VERSION)
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
