@@ -42,7 +42,7 @@ class MainMenuState extends MusicBeatState
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
-  override function create()
+  override function create():Void
   {
     #if discord_rpc
     // Updating Discord Rich Presence
@@ -170,7 +170,7 @@ class MainMenuState extends MusicBeatState
       });
   }
 
-  function resetCamStuff()
+  function resetCamStuff():Void
   {
     FlxG.cameras.reset(new FunkinCamera('mainMenu'));
     FlxG.camera.follow(camFollow, null, 0.06);
@@ -192,14 +192,14 @@ class MainMenuState extends MusicBeatState
     menuItems.addItem(name, item);
   }
 
-  override function closeSubState()
+  override function closeSubState():Void
   {
     magenta.visible = false;
 
     super.closeSubState();
   }
 
-  override function finishTransIn()
+  override function finishTransIn():Void
   {
     super.finishTransIn();
 
@@ -271,7 +271,7 @@ class MainMenuState extends MusicBeatState
   }
   #end
 
-  public function openPrompt(prompt:Prompt, onClose:Void->Void)
+  public function openPrompt(prompt:Prompt, onClose:Void->Void):Void
   {
     menuItems.enabled = false;
     prompt.closeCallback = function() {
@@ -282,7 +282,7 @@ class MainMenuState extends MusicBeatState
     openSubState(prompt);
   }
 
-  function startExitState(state:NextState)
+  function startExitState(state:NextState):Void
   {
     menuItems.enabled = false; // disable for exit
     var duration = 0.4;
@@ -300,7 +300,7 @@ class MainMenuState extends MusicBeatState
     new FlxTimer().start(duration, function(_) FlxG.switchState(state));
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
