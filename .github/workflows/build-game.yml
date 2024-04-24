@@ -102,11 +102,8 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
-        conf_key="http.https://github.com/.extraheader"
-        conf_val=$(git config --get "$conf_key" | cut -d " " -f 2-)
-        git config --system "$conf_key" "$conf_val"
+        haxelib --debug git funkVis https://github.com/FunkinCrew/funkVis backend-rework
         haxelib --global run hmm install -q
-        git config --system --unset-all "$conf_key"
 
     - if: ${{ matrix.target != 'html5' }}
       name: Restore hxcpp cache
