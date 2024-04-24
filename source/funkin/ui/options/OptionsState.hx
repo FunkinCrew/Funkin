@@ -8,6 +8,7 @@ import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
+import funkin.graphics.shaders.HSVShader;
 import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
@@ -18,12 +19,18 @@ class OptionsState extends MusicBeatState
   var currentName:PageName = Options;
   var currentPage(get, never):Page;
 
-  inline function get_currentPage()
+  inline function get_currentPage():Page
     return pages[currentName];
 
-  override function create()
+  override function create():Void
   {
-    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
+    var hsv = new HSVShader();
+    hsv.hue = -0.6;
+    hsv.saturation = 0.9;
+    hsv.value = 3.6;
+    menuBG.shader = hsv;
+    FlxG.debugger.track(hsv);
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
