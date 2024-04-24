@@ -102,9 +102,9 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
-        git config --list --show-origin --show-scope
-        cat .git/config
+        git config --global --replace-all $(git config --get-regexp http\.https\:\/\/github\.com\/\.extraheader)
         haxelib --global run hmm install
+        git config --global --unset-all http\.https\:\/\/github\.com\/\.extraheader
 
     - if: ${{ matrix.target != 'html5' }}
       name: Restore hxcpp cache
