@@ -106,7 +106,6 @@ jobs:
       name: Install dependencies
       run: |
         git config --global url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf https://github.com/
-        haxelib --debug git funkVis https://github.com/FunkinCrew/funkVis backend-rework
         haxelib --global run hmm install -q
 
     - if: ${{ matrix.target != 'html5' }}
