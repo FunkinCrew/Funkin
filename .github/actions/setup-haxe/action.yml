@@ -72,13 +72,17 @@ runs:
       key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
 
   - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+    name: Prep git for dependency install
+    uses: gacts/run-and-post-run@v1
+    with:
+      run: git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
+      post: git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf'
+
+  - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
     name: Install dependencies
     shell: bash
     run: |
-      git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' || true
-      git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
       haxelib --global run hmm install -q
-      git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf'
       echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
 
   # by default use a shared hxcpp cache

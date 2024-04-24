@@ -71,8 +71,6 @@ RUN <<EOF
 cat <<EOC >> /etc/gitconfig
 [safe]
   directory = *
-[credential]
-  helper = cache
 EOC
 
 ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> /etc/ssh/ssh_known_hosts

@@ -3,7 +3,7 @@ name: Cancel queued workflows on PR merge
 on:
   pull_request:
     types:
-      - closed
+    - closed
 
 jobs:
 

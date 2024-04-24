@@ -39,6 +39,7 @@ jobs:
       with:
         submodules: 'recursive'
         token: ${{ steps.app_token.outputs.token }}
+        persist-credentials: false
 
     - name: Setup build environment
       uses: ./.github/actions/setup-haxe
