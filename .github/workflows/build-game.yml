@@ -24,9 +24,7 @@ jobs:
     steps:
     - name: Make git happy
       run: |
-        git config --global --unset http\.https\:\/\/github\.com\/\.extraheader
-        git config --global --unset safe.directory
-        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git config --global --replace-all safe.directory $GITHUB_WORKSPACE
 
     - name: Get checkout token
       uses: actions/create-github-app-token@v1
@@ -105,6 +103,7 @@ jobs:
       name: Install dependencies
       run: |
         git config --list --show-origin --show-scope
+        cat .git/config
         haxelib --global run hmm install
 
     - if: ${{ matrix.target != 'html5' }}
