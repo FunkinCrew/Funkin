@@ -102,11 +102,11 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
-        conf_key="http\.https\:\/\/github\.com\/\.extraheader"
-        conf_val=$(git config --get-regexp $conf_key | cut -d " " -f 2-)
-        git config --global $conf_key "$conf_val"
+        conf_key="http.https://github.com/.extraheader"
+        conf_val=$(git config --get "$conf_key" | cut -d " " -f 2-)
+        git config --global "$conf_key" "$conf_val"
         haxelib --global run hmm install
-        git config --global --unset-all $conf_key
+        git config --global --unset-all "$conf_key"
 
     - if: ${{ matrix.target != 'html5' }}
       name: Restore hxcpp cache
