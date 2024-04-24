@@ -77,7 +77,7 @@ class LoadingState extends MusicBeatSubState
         var difficulty:String = playParams.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY;
         var variation:String = playParams.targetVariation ?? Constants.DEFAULT_VARIATION;
         var targetChart:SongDifficulty = playParams.targetSong?.getDifficulty(difficulty, variation);
-        var instPath:String = Paths.inst(targetChart.song.id);
+        var instPath:String = targetChart.getInstPath(playParams.targetInstrumental);
         var voicesPaths:Array<String> = targetChart.buildVoiceList();
 
         checkLoadSong(instPath);

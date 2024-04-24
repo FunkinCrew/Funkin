@@ -609,26 +609,31 @@ class SongDifficulty
     return cast events;
   }
 
-  public function cacheInst(instrumental = ''):Void
+  public function getInstPath(instrumental = ''):String
   {
     if (characters != null)
     {
       if (instrumental != '' && characters.altInstrumentals.contains(instrumental))
       {
         var instId = '-$instrumental';
-        FlxG.sound.cache(Paths.inst(this.song.id, instId));
+        return Paths.inst(this.song.id, instId);
       }
       else
       {
         // Fallback to default instrumental.
         var instId = (characters.instrumental ?? '') != '' ? '-${characters.instrumental}' : '';
-        FlxG.sound.cache(Paths.inst(this.song.id, instId));
+        return Paths.inst(this.song.id, instId);
       }
     }
     else
     {
-      FlxG.sound.cache(Paths.inst(this.song.id));
+      return Paths.inst(this.song.id);
     }
+  }
+
+  public function cacheInst(instrumental = ''):Void
+  {
+    FlxG.sound.cache(getInstPath(instrumental));
   }
 
   public function playInst(volume:Float = 1.0, looped:Bool = false):Void
