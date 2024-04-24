@@ -185,7 +185,7 @@ class CreditsState extends MusicBeatState
     }
     else if (controls.PAUSE)
     {
-      scrollPaused = !scrollPaused;
+      // scrollPaused = !scrollPaused;
     }
   }
 
@@ -196,7 +196,7 @@ class CreditsState extends MusicBeatState
 
   function exit():Void
   {
-    FlxG.switchState(new funkin.ui.mainmenu.MainMenuState());
+    FlxG.switchState(funkin.ui.mainmenu.MainMenuState.new);
   }
 
   public override function destroy():Void
