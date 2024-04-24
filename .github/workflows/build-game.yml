@@ -105,7 +105,10 @@ jobs:
         conf_key="http.https://github.com/.extraheader"
         conf_val=$(git config --get "$conf_key" | cut -d " " -f 2-)
         git config --global "$conf_key" "$conf_val"
-        haxelib --global run hmm install
+        echo "$conf_val"
+        alias git='git --verbose'
+        haxelib --debug --global run hmm install
+        unalias git
         git config --global --unset-all "$conf_key"
 
     - if: ${{ matrix.target != 'html5' }}
