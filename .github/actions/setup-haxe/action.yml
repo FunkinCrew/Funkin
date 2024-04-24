@@ -75,20 +75,7 @@ runs:
     name: Install dependencies
     shell: bash
     run: |
-      key="credential.https://github.com"
-      git config --list --show-origin --show-scope
-      if [ ! -z "${{ inputs.gh-token }}" ]; then
-        git config --global "credential.helper" "store --file=/tmp/git-credentials"
-        git config --global "$key.username" "git"
-        git config --global "$key.password" "${{ inputs.gh-token }}"
-      fi
-      haxelib --debug --global run hmm install
-      if [ ! -z "${{ inputs.gh-token }}" ]; then
-        git config --global --unset "credential.helper"
-        git config --global --unset "$key.username"
-        git config --global --unset "$key.password"
-      fi
-      echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
+      haxelib --global run hmm install -q
 
   # by default use a shared hxcpp cache
   - if: ${{ inputs.hxcpp-cache == 'true' }}

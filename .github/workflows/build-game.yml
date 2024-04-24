@@ -104,15 +104,8 @@ jobs:
     - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
-        key="credential.https://github.com"
-        git config --global "credential.helper" "store --file=/tmp/git-credentials"
-        git config --global "$key.username" "git"
-        git config --global "$key.password" "${{ steps.app_token.outputs.token }}"
         haxelib --debug git funkVis https://github.com/FunkinCrew/funkVis backend-rework
         haxelib --global run hmm install -q
-        git config --global --unset "credential.helper"
-        git config --global --unset "$key.username"
-        git config --global --unset "$key.password"
 
     - if: ${{ matrix.target != 'html5' }}
       name: Restore hxcpp cache
