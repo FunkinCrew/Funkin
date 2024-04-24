@@ -23,8 +23,9 @@ jobs:
 
     steps:
     - name: Make git happy
-      if: ${{ matrix.target == 'macos' }}
       run: |
+        git config --global --unset http\.https\:\/\/github\.com\/\.extraheader
+        git config --global --unset safe.directory
         git config --global --add safe.directory $GITHUB_WORKSPACE
 
     - name: Get checkout token
