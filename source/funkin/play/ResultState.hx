@@ -164,6 +164,8 @@ class ResultState extends MusicBeatSubState
     songName.angle = -4.4;
     add(songName);
 
+    songName.x = FlxG.width;
+
     var angleRad = songName.angle * Math.PI / 180;
     speedOfTween.x = -1.0 * Math.cos(angleRad);
     speedOfTween.y = -1.0 * Math.sin(angleRad);
@@ -321,12 +323,18 @@ class ResultState extends MusicBeatSubState
     var diffYTween:Float = 122;
 
     difficulty.y = -difficulty.height;
-    FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
+    FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.8});
 
-    songName.y = diffYTween - 35;
+    songName.y = -songName.height;
+    FlxTween.tween(songName, {y: diffYTween - 35}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
     songName.x = (difficulty.x + difficulty.width) + 20;
 
     new FlxTimer().start(3, _ -> {
+      var tempSpeed = FlxPoint.get(speedOfTween.x, speedOfTween.y);
+
+      speedOfTween.set(0, 0);
+      FlxTween.tween(speedOfTween, {x: tempSpeed.x, y: tempSpeed.y}, 0.7, {ease: FlxEase.quadIn});
+
       movingSongStuff = true;
     });
   }
