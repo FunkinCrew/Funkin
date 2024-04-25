@@ -161,8 +161,12 @@ class ResultState extends MusicBeatSubState
     songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
     songName.text = params.title;
     songName.letterSpacing = -15;
-    songName.angle = -4.1;
+    songName.angle = -4.4;
     add(songName);
+
+    var angleRad = songName.angle * Math.PI / 180;
+    speedOfTween.x = -1.0 * Math.cos(angleRad);
+    speedOfTween.y = -1.0 * Math.sin(angleRad);
 
     timerThenSongName();
 
@@ -319,7 +323,7 @@ class ResultState extends MusicBeatSubState
     difficulty.y = -difficulty.height;
     FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.quartOut, startDelay: 0.8});
 
-    songName.y = diffYTween - 30;
+    songName.y = diffYTween - 35;
     songName.x = (difficulty.x + difficulty.width) + 20;
 
     new FlxTimer().start(3, _ -> {
@@ -328,7 +332,7 @@ class ResultState extends MusicBeatSubState
   }
 
   var movingSongStuff:Bool = false;
-  var speedOfTween:FlxPoint = FlxPoint.get(-1, 0.1);
+  var speedOfTween:FlxPoint = FlxPoint.get(-1, 1);
 
   override function draw():Void
   {
@@ -368,14 +372,6 @@ class ResultState extends MusicBeatSubState
     {
       speedOfTween.x -= 0.1;
     }
-
-    if (FlxG.keys.justPressed.UP) speedOfTween.y -= 0.1;
-
-    if (FlxG.keys.justPressed.DOWN) speedOfTween.y += 0.1;
-
-    if (FlxG.keys.justPressed.PERIOD) songName.angle += 0.1;
-
-    if (FlxG.keys.justPressed.COMMA) songName.angle -= 0.1;
 
     if (controls.PAUSE)
     {
