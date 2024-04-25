@@ -8,7 +8,6 @@ import flixel.group.FlxSpriteGroup;
 
 /**
  * The state used to display the credits scroll.
- * AAA studios often fail to credit properly, and we're better than them!
  */
 class CreditsState extends MusicBeatState
 {
@@ -34,14 +33,14 @@ class CreditsState extends MusicBeatState
    * To use a font from the `assets` folder, use `Paths.font(...)`.
    * Choose something that will render Unicode properly.
    */
-  static final CREDITS_FONT = 'Arial';
+  static final CREDITS_FONT = 'Consolas';
 
   /**
    * The size of the font.
    */
-  static final CREDITS_FONT_SIZE = 48;
+  static final CREDITS_FONT_SIZE = 24;
 
-  static final CREDITS_HEADER_FONT_SIZE = 72;
+  static final CREDITS_HEADER_FONT_SIZE = 32;
 
   /**
    * The color of the text itself.
@@ -56,7 +55,7 @@ class CreditsState extends MusicBeatState
   /**
    * The speed the credits scroll at, in pixels per second.
    */
-  static final CREDITS_SCROLL_BASE_SPEED = 25.0;
+  static final CREDITS_SCROLL_BASE_SPEED = 100.0;
 
   /**
    * The speed the credits scroll at while the button is held, in pixels per second.
@@ -87,9 +86,10 @@ class CreditsState extends MusicBeatState
     bg.updateHitbox();
     bg.x = 0;
     bg.y = 0;
+    bg.alpha = 0.1;
     bg.visible = true;
     bg.color = 0xFFB57EDC; // Lavender
-    add(bg);
+    // add(bg);
 
     // TODO: Once we need to display Kickstarter backers,
     // make this use a recycled pool so we don't kill peformance.
@@ -109,25 +109,28 @@ class CreditsState extends MusicBeatState
         restartTrack: true,
         loop: true
       });
-    FlxG.sound.music.fadeIn(2, 0, 0.8);
+    FlxG.sound.music.fadeIn(6, 0, 0.8);
   }
 
   function buildCreditsGroup():Void
   {
-    var y = 0;
+    var y:Float = 0;
 
     for (entry in CreditsDataHandler.CREDITS_DATA.entries)
     {
       if (entry.header != null)
       {
-        creditsGroup.add(buildCreditsLine(entry.header, y, true, CreditsSide.Center));
-        y += CREDITS_HEADER_FONT_SIZE;
+        var header = buildCreditsLine(entry.header, y, true, CreditsSide.Left);
+        header.bold = true;
+        creditsGroup.add(header);
+        y += CREDITS_HEADER_FONT_SIZE + (header.textField.numLines * CREDITS_HEADER_FONT_SIZE);
       }
 
       for (line in entry?.body ?? [])
       {
-        creditsGroup.add(buildCreditsLine(line.line, y, false, CreditsSide.Center));
-        y += CREDITS_FONT_SIZE;
+        var entry = buildCreditsLine(line.line, y, false, CreditsSide.Left);
+        creditsGroup.add(entry);
+        y += CREDITS_FONT_SIZE * entry.textField.numLines;
       }
 
       if (entry.appendBackers)
@@ -135,13 +138,13 @@ class CreditsState extends MusicBeatState
         var backers = CreditsDataHandler.fetchBackerEntries();
         for (backer in backers)
         {
-          creditsGroup.add(buildCreditsLine(backer, y, false, CreditsSide.Center));
+          creditsGroup.add(buildCreditsLine(backer, y, false, CreditsSide.Left));
           y += CREDITS_FONT_SIZE;
         }
       }
 
       // Padding between each role.
-      y += CREDITS_FONT_SIZE * 2;
+      y += CREDITS_FONT_SIZE * 2.5;
     }
   }
 
@@ -155,7 +158,7 @@ class CreditsState extends MusicBeatState
     var size = header ? CREDITS_HEADER_FONT_SIZE : CREDITS_FONT_SIZE;
 
     var creditsLine:FlxText = new FlxText(xPos, yPos, width, text);
-    creditsLine.setFormat(CREDITS_FONT, size, CREDITS_FONT_COLOR, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, CREDITS_FONT_STROKE_COLOR, true);
+    creditsLine.setFormat(CREDITS_FONT, size, CREDITS_FONT_COLOR, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, CREDITS_FONT_STROKE_COLOR, true);
 
     return creditsLine;
   }
