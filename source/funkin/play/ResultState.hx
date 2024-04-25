@@ -164,8 +164,6 @@ class ResultState extends MusicBeatSubState
     songName.angle = -4.4;
     add(songName);
 
-    songName.x = FlxG.width;
-
     var angleRad = songName.angle * Math.PI / 180;
     speedOfTween.x = -1.0 * Math.cos(angleRad);
     speedOfTween.y = -1.0 * Math.sin(angleRad);
