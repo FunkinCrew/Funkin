@@ -166,7 +166,7 @@ class LatencyState extends MusicBeatSubState
 
     var helpText:FlxText = new FlxText();
     helpText.setFormat(Paths.font("vcr.ttf"), 20);
-    helpText.text = "Press ESC to return to main menu";
+    helpText.text = "Press BACK to return to main menu";
     helpText.x = FlxG.width - helpText.width;
     helpText.y = FlxG.height - (helpText.height * 2) - 2;
     add(helpText);
@@ -309,7 +309,7 @@ class LatencyState extends MusicBeatSubState
       }
     }
 
-    if (FlxG.keys.justPressed.ESCAPE)
+    if (controls.BACK)
     {
       close();
     }
