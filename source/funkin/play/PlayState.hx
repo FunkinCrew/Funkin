@@ -3020,23 +3020,30 @@ class PlayState extends MusicBeatSubState
     if (targetBF)
     {
       FlxG.camera.follow(currentStage.getBoyfriend(), null, 0.05);
-      FlxG.camera.targetOffset.y -= 350;
-      FlxG.camera.targetOffset.x += 20;
     }
     else if (targetDad)
     {
       FlxG.camera.follow(currentStage.getDad(), null, 0.05);
-      FlxG.camera.targetOffset.y -= 350;
-      FlxG.camera.targetOffset.x += 20;
     }
     else
     {
       FlxG.camera.follow(currentStage.getGirlfriend(), null, 0.05);
-      FlxG.camera.targetOffset.y -= 350;
-      FlxG.camera.targetOffset.x += 20;
     }
 
-    FlxTween.tween(camHUD, {alpha: 0}, 0.6);
+    // TODO: Make target offset configurable.
+    // In the meantime, we have to replace the zoom animation with a fade out.
+    FlxG.camera.targetOffset.y -= 350;
+    FlxG.camera.targetOffset.x += 20;
+
+    // Replace zoom animation with a fade out for now.
+    camGame.fade(FlxColor.BLACK, 0.6);
+
+    FlxTween.tween(camHUD, {alpha: 0}, 0.6,
+      {
+        onComplete: function(_) {
+          moveToResultsScreen(isNewHighscore);
+        }
+      });
 
     // Zoom in on Girlfriend (or BF if no GF)
     new FlxTimer().start(0.8, function(_) {
@@ -3054,13 +3061,13 @@ class PlayState extends MusicBeatSubState
       }
 
       // Zoom over to the Results screen.
-      FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1,
-        {
-          ease: FlxEase.expoIn,
-          onComplete: function(_) {
-            moveToResultsScreen(isNewHighscore);
-          }
-        });
+      // TODO: Re-enable this.
+      /*
+        FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1,
+          {
+            ease: FlxEase.expoIn,
+          });
+       */
     });
   }
 
@@ -3247,7 +3254,7 @@ class PlayState extends MusicBeatSubState
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
     // regenNoteData(FlxG.sound.music.time);
 
-    Conductor.instance.update(FlxG.sound.music.time);
+    Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 
     resyncVocals();
   }
