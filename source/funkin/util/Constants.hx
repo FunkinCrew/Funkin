@@ -218,14 +218,15 @@ class Constants
   public static final DEFAULT_VARIATION:String = 'default';
 
   /**
-   * Standard variations used by the game.
+   * Standardized variations for charts
    */
   public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
 
   /**
-   * The default intensity for camera zooms.
+   * The default intensity multiplier for camera bops.
+   * Prolly needs to be tuned bc it's a multiplier now.
    */
-  public static final DEFAULT_ZOOM_INTENSITY:Float = 0.015;
+  public static final DEFAULT_BOP_INTENSITY:Float = 1.015;
 
   /**
    * The default rate for camera zooms (in beats per zoom).

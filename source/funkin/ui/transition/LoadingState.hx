@@ -77,7 +77,7 @@ class LoadingState extends MusicBeatSubState
         var difficulty:String = playParams.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY;
         var variation:String = playParams.targetVariation ?? Constants.DEFAULT_VARIATION;
         var targetChart:SongDifficulty = playParams.targetSong?.getDifficulty(difficulty, variation);
-        var instPath:String = Paths.inst(targetChart.song.id);
+        var instPath:String = targetChart.getInstPath(playParams.targetInstrumental);
         var voicesPaths:Array<String> = targetChart.buildVoiceList();
 
         checkLoadSong(instPath);
@@ -281,7 +281,6 @@ class LoadingState extends MusicBeatSubState
   {
     // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
     FunkinSprite.preparePurgeCache();
-    FunkinSprite.cacheTexture(Paths.image('combo'));
     FunkinSprite.cacheTexture(Paths.image('healthBar'));
     FunkinSprite.cacheTexture(Paths.image('menuDesat'));
     FunkinSprite.cacheTexture(Paths.image('combo'));
@@ -333,6 +332,7 @@ class LoadingState extends MusicBeatSubState
       // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
       if (path.endsWith('spritemap1.png'))
       {
+        trace('Preloading FlxAnimate asset: ${path}');
         openfl.Assets.getBitmapData(path, true);
       }
     }

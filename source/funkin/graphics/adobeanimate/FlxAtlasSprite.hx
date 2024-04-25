@@ -37,6 +37,11 @@ class FlxAtlasSprite extends FlxAnimate
   {
     if (settings == null) settings = SETTINGS;
 
+    if (path == null)
+    {
+      throw 'Null path specified for FlxAtlasSprite!';
+    }
+
     super(x, y, path, settings);
 
     if (this.anim.curInstance == null)
@@ -137,7 +142,8 @@ class FlxAtlasSprite extends FlxAnimate
     anim.callback = function(_, frame:Int) {
       var offset = loop ? 0 : -1;
 
-      if (frame == (anim.getFrameLabel(id).duration + offset) + anim.getFrameLabel(id).index)
+      var frameLabel = anim.getFrameLabel(id);
+      if (frame == (frameLabel.duration + offset) + frameLabel.index)
       {
         if (loop)
         {

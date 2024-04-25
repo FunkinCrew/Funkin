@@ -20,6 +20,6 @@ class GaussianBlurShader extends FlxRuntimeShader
   public function setAmount(value:Float):Void
   {
     this.amount = value;
-    this.setFloat("amount", amount);
+    this.setFloat("_amount", amount);
   }
 }

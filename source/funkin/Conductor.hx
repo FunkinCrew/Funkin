@@ -42,16 +42,16 @@ class Conductor
 
   static var _instance:Null<Conductor> = null;
 
-  static function get_instance():Conductor
-  {
-    if (_instance == null) _instance = new Conductor();
-    return _instance;
-  }
-
   /**
-   * Signal fired when the current Conductor instance advances to a new measure.
+   * Signal fired when the current static Conductor instance advances to a new measure.
    */
   public static var measureHit(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Signal fired when THIS Conductor instance advances to a new measure.
+   * TODO: This naming sucks but we can't make a static and instance field with the same name!
+   */
+  public var onMeasureHit(default, null):FlxSignal = new FlxSignal();
 
   /**
    * Signal fired when the current Conductor instance advances to a new beat.
@@ -59,9 +59,21 @@ class Conductor
   public static var beatHit(default, null):FlxSignal = new FlxSignal();
 
   /**
+   * Signal fired when THIS Conductor instance advances to a new beat.
+   * TODO: This naming sucks but we can't make a static and instance field with the same name!
+   */
+  public var onBeatHit(default, null):FlxSignal = new FlxSignal();
+
+  /**
    * Signal fired when the current Conductor instance advances to a new step.
    */
   public static var stepHit(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Signal fired when THIS Conductor instance advances to a new step.
+   * TODO: This naming sucks but we can't make a static and instance field with the same name!
+   */
+  public var onStepHit(default, null):FlxSignal = new FlxSignal();
 
   /**
    * The list of time changes in the song.
@@ -286,6 +298,69 @@ class Conductor
     return Std.int(timeSignatureNumerator / timeSignatureDenominator * Constants.STEPS_PER_BEAT * Constants.STEPS_PER_BEAT);
   }
 
+  /**
+   * Reset the Conductor, replacing the current instance with a fresh one.
+   */
+  public static function reset():Void
+  {
+    set_instance(new Conductor());
+  }
+
+  static function dispatchMeasureHit():Void
+  {
+    Conductor.measureHit.dispatch();
+  }
+
+  static function dispatchBeatHit():Void
+  {
+    Conductor.beatHit.dispatch();
+  }
+
+  static function dispatchStepHit():Void
+  {
+    Conductor.stepHit.dispatch();
+  }
+
+  static function setupSingleton(input:Conductor):Void
+  {
+    input.onMeasureHit.add(dispatchMeasureHit);
+
+    input.onBeatHit.add(dispatchBeatHit);
+
+    input.onStepHit.add(dispatchStepHit);
+  }
+
+  static function clearSingleton(input:Conductor):Void
+  {
+    input.onMeasureHit.remove(dispatchMeasureHit);
+
+    input.onBeatHit.remove(dispatchBeatHit);
+
+    input.onStepHit.remove(dispatchStepHit);
+  }
+
+  static function get_instance():Conductor
+  {
+    if (Conductor._instance == null) set_instance(new Conductor());
+    if (Conductor._instance == null) throw "Could not initialize singleton Conductor!";
+    return Conductor._instance;
+  }
+
+  static function set_instance(instance:Conductor):Conductor
+  {
+    // Use _instance in here to avoid recursion
+    if (Conductor._instance != null) clearSingleton(Conductor._instance);
+
+    Conductor._instance = instance;
+
+    if (Conductor._instance != null) setupSingleton(Conductor._instance);
+
+    return Conductor._instance;
+  }
+
+  /**
+   * The constructor.
+   */
   public function new() {}
 
   /**
@@ -296,6 +371,7 @@ class Conductor
    *
    * WARNING: Avoid this for things like setting the BPM of the title screen music,
    * you should have a metadata file for it instead.
+   * We should probably deprecate this in the future.
    */
   public function forceBPM(?bpm:Float):Void
   {
@@ -372,24 +448,20 @@ class Conductor
       this.currentMeasure = Math.floor(currentMeasureTime);
     }
 
-    // Only fire the signal if we are THE Conductor.
-    if (this == Conductor.instance || forceDispatch)
+    // FlxSignals are really cool.
+    if (currentStep != oldStep)
     {
-      // FlxSignals are really cool.
-      if (currentStep != oldStep)
-      {
-        Conductor.stepHit.dispatch();
-      }
+      this.onStepHit.dispatch();
+    }
 
-      if (currentBeat != oldBeat)
-      {
-        Conductor.beatHit.dispatch();
-      }
+    if (currentBeat != oldBeat)
+    {
+      this.onBeatHit.dispatch();
+    }
 
-      if (currentMeasure != oldMeasure)
-      {
-        Conductor.measureHit.dispatch();
-      }
+    if (currentMeasure != oldMeasure)
+    {
+      this.onMeasureHit.dispatch();
     }
 
     // only update the timestamp if songPosition actually changed
@@ -589,22 +661,14 @@ class Conductor
    * Adds Conductor fields to the Flixel debugger variable display.
    * @param conductorToUse The conductor to use. Defaults to `Conductor.instance`.
    */
-  public static function watchQuick(?conductorToUse:Conductor):Void
+  public static function watchQuick(?target:Conductor):Void
   {
-    if (conductorToUse == null) conductorToUse = Conductor.instance;
+    if (target == null) target = Conductor.instance;
 
-    FlxG.watch.addQuick("songPosition", conductorToUse.songPosition);
-    FlxG.watch.addQuick("bpm", conductorToUse.bpm);
-    FlxG.watch.addQuick("currentMeasureTime", conductorToUse.currentMeasureTime);
-    FlxG.watch.addQuick("currentBeatTime", conductorToUse.currentBeatTime);
-    FlxG.watch.addQuick("currentStepTime", conductorToUse.currentStepTime);
-  }
-
-  /**
-   * Reset the Conductor, replacing the current instance with a fresh one.
-   */
-  public static function reset():Void
-  {
-    _instance = new Conductor();
+    FlxG.watch.addQuick('songPosition', target.songPosition);
+    FlxG.watch.addQuick('bpm', target.bpm);
+    FlxG.watch.addQuick('currentMeasureTime', target.currentMeasureTime);
+    FlxG.watch.addQuick('currentBeatTime', target.currentBeatTime);
+    FlxG.watch.addQuick('currentStepTime', target.currentStepTime);
   }
 }

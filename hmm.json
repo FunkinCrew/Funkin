@@ -4,7 +4,7 @@
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
-      "ref": "2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5",
+      "ref": "2d83fa8",
       "url": "https://github.com/Aidan63/linc_discord-rpc"
     },
     {
@@ -18,7 +18,7 @@
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "a523c3b56622f0640933944171efed46929e360e",
+      "ref": "a523c3b",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -30,20 +30,27 @@
       "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "719b4f10d94186ed55f6fef1b6618d32abec8c15",
+      "ref": "719b4f1",
       "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "9bacdd6ea39f5e3a33b0f5dfb7bc583fe76060d4",
+      "ref": "17e0d59",
       "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
       "name": "format",
       "type": "haxelib",
       "version": "3.5.0"
+    },
+    {
+      "name": "funkVis",
+      "type": "git",
+      "dir": null,
+      "ref": "7fc9901",
+      "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
       "name": "hamcrest",
@@ -54,14 +61,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "0212d8fdfcafeb5f0d5a41e1ddba8ff21d0e183b",
+      "ref": "0212d8fd",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "63a906a6148958dbfde8c7b48d90b0693767fd95",
+      "ref": "63a906a",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -73,7 +80,7 @@
       "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "387e1665d6feb5762358134f168e6ebfe46acec8",
+      "ref": "387e166",
       "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
@@ -85,7 +92,7 @@
       "name": "hxcpp-debug-server",
       "type": "git",
       "dir": "hxcpp-debug-server",
-      "ref": "147294123f983e35f50a966741474438069a7a8f",
+      "ref": "1472941",
       "url": "https://github.com/FunkinCrew/hxcpp-debugger"
     },
     {
@@ -97,42 +104,42 @@
       "name": "json2object",
       "type": "git",
       "dir": null,
-      "ref": "a8c26f18463c98da32f744c214fe02273e1823fa",
+      "ref": "a8c26f1",
       "url": "https://github.com/FunkinCrew/json2object"
     },
     {
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "90e6727a8127e016f1071ace045b5c6542ded099",
+      "ref": "43ebebdd8119936b99f23407057025c7849c5f5b",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
       "name": "mconsole",
       "type": "git",
       "dir": null,
-      "ref": "master",
+      "ref": "06c0499",
       "url": "https://github.com/massive-oss/mconsole"
     },
     {
       "name": "mcover",
       "type": "git",
       "dir": "src",
-      "ref": "master",
+      "ref": "c3c47cd",
       "url": "https://github.com/massive-oss/mcover"
     },
     {
       "name": "mockatoo",
       "type": "git",
       "dir": "src",
-      "ref": "master",
+      "ref": "13d77a0",
       "url": "https://github.com/FunkinCrew/mockatoo"
     },
     {
       "name": "munit",
       "type": "git",
       "dir": "src",
-      "ref": "master",
+      "ref": "f61be7f",
       "url": "https://github.com/FunkinCrew/MassiveUnit"
     },
     {

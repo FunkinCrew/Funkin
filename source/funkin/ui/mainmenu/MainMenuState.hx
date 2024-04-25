@@ -1,5 +1,6 @@
 package funkin.ui.mainmenu;
 
+import funkin.graphics.FunkinSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
@@ -67,7 +68,7 @@ class MainMenuState extends MusicBeatState
     camFollow = new FlxObject(0, 0, 1, 1);
     add(camFollow);
 
-    magenta = new FlxSprite(Paths.image('menuDesat'));
+    magenta = new FlxSprite(Paths.image('menuBGMagenta'));
     magenta.scrollFactor.x = bg.scrollFactor.x;
     magenta.scrollFactor.y = bg.scrollFactor.y;
     magenta.setGraphicSize(Std.int(bg.width));
@@ -75,7 +76,6 @@ class MainMenuState extends MusicBeatState
     magenta.x = bg.x;
     magenta.y = bg.y;
     magenta.visible = false;
-    magenta.color = 0xFFfd719b;
 
     // TODO: Why doesn't this line compile I'm going fucking feral
 
@@ -172,8 +172,9 @@ class MainMenuState extends MusicBeatState
 
   function resetCamStuff()
   {
-    FlxG.cameras.reset(new FunkinCamera());
+    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
     FlxG.camera.follow(camFollow, null, 0.06);
+    FlxG.camera.snapToTarget();
   }
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
@@ -322,10 +323,37 @@ class MainMenuState extends MusicBeatState
     }
 
     // Open the debug menu, defaults to ` / ~
+    #if CHART_EDITOR_SUPPORTED
     if (controls.DEBUG_MENU)
     {
       FlxG.state.openSubState(new DebugMenuSubState());
     }
+    #end
+
+    #if (debug || FORCE_DEBUG_VERSION)
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
+    {
+      // Give the user a score of 1 point on Weekend 1 story mode.
+      // This makes the level count as cleared and displays the songs in Freeplay.
+      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
+        {
+          score: 1,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            },
+          accuracy: 0,
+        });
+    }
+    #end
 
     if (FlxG.sound.music.volume < 0.8)
     {

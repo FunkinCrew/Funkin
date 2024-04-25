@@ -470,11 +470,7 @@ class FreeplayState extends MusicBeatSubState
       albumRoll.playIntro();
 
       new FlxTimer().start(0.75, function(_) {
-        albumRoll.showTitle();
-      });
-
-      new FlxTimer().start(35 / 24, function(_) {
-        albumRoll.showStars();
+        // albumRoll.showTitle();
       });
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
@@ -521,7 +517,7 @@ class FreeplayState extends MusicBeatSubState
 
     // var swag:Alphabet = new Alphabet(1, 0, 'swag');
 
-    var funnyCam:FunkinCamera = new FunkinCamera(0, 0, FlxG.width, FlxG.height);
+    var funnyCam:FunkinCamera = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam);
 
@@ -543,41 +539,14 @@ class FreeplayState extends MusicBeatSubState
    * Given the current filter, rebuild the current song list.
    *
    * @param filterStuff A filter to apply to the song list (regex, startswith, all, favorite)
-   * @param force
+   * @param force Whether the capsules should "jump" back in or not using their animation
    * @param onlyIfChanged Only apply the filter if the song list has changed
    */
   public function generateSongList(filterStuff:Null<SongFilter>, force:Bool = false, onlyIfChanged:Bool = true):Void
   {
     var tempSongs:Array<FreeplaySongData> = songs;
 
-    if (filterStuff != null)
-    {
-      switch (filterStuff.filterType)
-      {
-        case REGEXP:
-          // filterStuff.filterData has a string with the first letter of the sorting range, and the second one
-          // this creates a filter to return all the songs that start with a letter between those two
-          var filterRegexp:EReg = new EReg('^[' + filterStuff.filterData + '].*', 'i');
-          tempSongs = tempSongs.filter(str -> {
-            if (str == null) return true; // Random
-            return filterRegexp.match(str.songName);
-          });
-        case STARTSWITH:
-          tempSongs = tempSongs.filter(str -> {
-            if (str == null) return true; // Random
-            return str.songName.toLowerCase().startsWith(filterStuff.filterData);
-          });
-        case ALL:
-        // no filter!
-        case FAVORITE:
-          tempSongs = tempSongs.filter(str -> {
-            if (str == null) return true; // Random
-            return str.isFav;
-          });
-        default:
-          // return all on default
-      }
-    }
+    if (filterStuff != null) tempSongs = sortSongs(tempSongs, filterStuff);
 
     // Filter further by current selected difficulty.
     if (currentDifficulty != null)
@@ -642,14 +611,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
       funnyMenu.hsvShader = hsvShader;
 
-      if (i < 8)
-      {
-        funnyMenu.initJumpIn(Math.min(i, 4), force);
-      }
-      else
-      {
-        funnyMenu.forcePosition();
-      }
+      funnyMenu.forcePosition();
 
       grpCapsules.add(funnyMenu);
     }
@@ -660,6 +622,48 @@ class FreeplayState extends MusicBeatSubState
 
     changeSelection();
     changeDiff();
+  }
+
+  /**
+   * Filters an array of songs based on a filter
+   * @param songsToFilter What data to use when filtering
+   * @param songFilter The filter to apply
+   * @return Array<FreeplaySongData>
+   */
+  public function sortSongs(songsToFilter:Array<FreeplaySongData>, songFilter:SongFilter):Array<FreeplaySongData>
+  {
+    switch (songFilter.filterType)
+    {
+      case REGEXP:
+        // filterStuff.filterData has a string with the first letter of the sorting range, and the second one
+        // this creates a filter to return all the songs that start with a letter between those two
+
+        // if filterData looks like "A-C", the regex should look something like this: ^[A-C].*
+        // to get every song that starts between A and C
+        var filterRegexp:EReg = new EReg('^[' + songFilter.filterData + '].*', 'i');
+        songsToFilter = songsToFilter.filter(str -> {
+          if (str == null) return true; // Random
+          return filterRegexp.match(str.songName);
+        });
+
+      case STARTSWITH:
+        // extra note: this is essentially a "search"
+
+        songsToFilter = songsToFilter.filter(str -> {
+          if (str == null) return true; // Random
+          return str.songName.toLowerCase().startsWith(songFilter.filterData);
+        });
+      case ALL:
+      // no filter!
+      case FAVORITE:
+        songsToFilter = songsToFilter.filter(str -> {
+          if (str == null) return true; // Random
+          return str.isFav;
+        });
+      default:
+        // return all on default
+    }
+    return songsToFilter;
   }
 
   var touchY:Float = 0;
@@ -1047,15 +1051,12 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    // Set the difficulty star count on the right.
-    albumRoll.setDifficultyStars(daSong?.songRating);
-
     // Set the album graphic and play the animation if relevant.
     var newAlbumId:String = daSong?.albumId;
     if (albumRoll.albumId != newAlbumId)
     {
       albumRoll.albumId = newAlbumId;
-      albumRoll.playIntro();
+      albumRoll.skipIntro();
     }
   }
 
@@ -1169,10 +1170,6 @@ class FreeplayState extends MusicBeatSubState
     {
       currentDifficulty = rememberedDifficulty;
     }
-
-    // Set the difficulty star count on the right.
-    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected]?.songData;
-    albumRoll.setDifficultyStars(daSong?.songRating ?? 0);
   }
 
   function changeSelection(change:Int = 0):Void

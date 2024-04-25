@@ -81,7 +81,6 @@ class ZoomCameraSongEvent extends SongEvent
         PlayState.instance.tweenCameraZoom(zoom, 0, isDirectMode);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
         if (easeFunction == null)
         {
@@ -102,9 +101,9 @@ class ZoomCameraSongEvent extends SongEvent
    * ```
    * {
    *   'zoom': FLOAT, // Target zoom level.
-   *   'duration': FLOAT, // Optional duration in steps.
-   *   'mode': ENUM, // Whether to set additive zoom or direct zoom.
-   *   'ease': ENUM, // Optional easing function.
+   *   'duration': FLOAT, // Duration in steps.
+   *   'mode': ENUM, // Whether zoom is relative to the stage or absolute zoom.
+   *   'ease': ENUM, // Easing function.
    * }
    * @return SongEventSchema
    */
@@ -130,9 +129,9 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'mode',
         title: 'Mode',
-        defaultValue: 'direct',
+        defaultValue: 'stage',
         type: SongEventFieldType.ENUM,
-        keys: ['Additive' => 'additive', 'Direct' => 'direct']
+        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
       },
       {
         name: 'ease',
@@ -142,6 +141,9 @@ class ZoomCameraSongEvent extends SongEvent
         keys: [
           'Linear' => 'linear',
           'Instant' => 'INSTANT',
+          'Sine In' => 'sineIn',
+          'Sine Out' => 'sineOut',
+          'Sine In/Out' => 'sineInOut',
           'Quad In' => 'quadIn',
           'Quad Out' => 'quadOut',
           'Quad In/Out' => 'quadInOut',
@@ -154,15 +156,15 @@ class ZoomCameraSongEvent extends SongEvent
           'Quint In' => 'quintIn',
           'Quint Out' => 'quintOut',
           'Quint In/Out' => 'quintInOut',
+          'Expo In' => 'expoIn',
+          'Expo Out' => 'expoOut',
+          'Expo In/Out' => 'expoInOut',
           'Smooth Step In' => 'smoothStepIn',
           'Smooth Step Out' => 'smoothStepOut',
           'Smooth Step In/Out' => 'smoothStepInOut',
-          'Sine In' => 'sineIn',
-          'Sine Out' => 'sineOut',
-          'Sine In/Out' => 'sineInOut',
           'Elastic In' => 'elasticIn',
           'Elastic Out' => 'elasticOut',
-          'Elastic In/Out' => 'elasticInOut',
+          'Elastic In/Out' => 'elasticInOut'
         ]
       }
     ]);
