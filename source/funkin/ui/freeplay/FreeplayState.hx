@@ -464,6 +464,15 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.3
       });
 
+    var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
+    var diffSelRight:DifficultySelector = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
+    diffSelLeft.visible = false;
+    diffSelRight.visible = false;
+    add(diffSelLeft);
+    add(diffSelRight);
+
+    // be careful not to "add()" things in here unless it's to a group that's already added to the state
+    // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
     dj.onIntroDone.add(function() {
       // when boyfriend hits dat shiii
 
@@ -475,12 +484,8 @@ class FreeplayState extends MusicBeatSubState
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
-      var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
-      var diffSelRight:DifficultySelector = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
-
-      add(diffSelLeft);
-      add(diffSelRight);
-
+      diffSelLeft.visible = true;
+      diffSelRight.visible = true;
       letterSort.visible = true;
 
       exitMovers.set([diffSelLeft, diffSelRight],
@@ -515,11 +520,10 @@ class FreeplayState extends MusicBeatSubState
 
     generateSongList(null, false);
 
-    // var swag:Alphabet = new Alphabet(1, 0, 'swag');
-
+    // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
     var funnyCam:FunkinCamera = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     funnyCam.bgColor = FlxColor.TRANSPARENT;
-    FlxG.cameras.add(funnyCam);
+    FlxG.cameras.add(funnyCam, false);
 
     typing = new FlxInputText(100, 100);
 
