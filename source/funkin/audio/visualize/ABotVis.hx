@@ -51,7 +51,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
       var visStr = 'viz';
       viz.animation.addByPrefix('VIZ', visStr + lol, 0);
-      viz.animation.play('VIZ', false, false, 2);
+      viz.animation.play('VIZ', false, false, 6);
     }
   }
 
