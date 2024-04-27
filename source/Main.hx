@@ -113,6 +113,8 @@ class Main extends Sprite
 
     addChild(game);
 
+    game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+
     addChild(fpsCounter);
 
     #if hxcpp_debug_server
@@ -129,6 +131,7 @@ class Main extends Sprite
     // - It scans the class path and registers any HaxeUI components.
     Toolkit.init();
     Toolkit.theme = 'dark'; // don't be cringe
+    // Toolkit.theme = 'light'; // embrace cringe
     Toolkit.autoScale = false;
     // Don't focus on UI elements when they first appear.
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
