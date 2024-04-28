@@ -312,7 +312,8 @@
       "props": {
         "ignoreExtern": true,
         "format": "^[a-z][a-zA-Z0-9]*$",
-        "tokens": []
+        "tokens": [],
+        "severity": "IGNORE"
       },
       "type": "MethodName"
     },
