@@ -1,7 +1,7 @@
-package funkin.data.freeplay;
+package funkin.data.freeplay.album;
 
 import funkin.ui.freeplay.Album;
-import funkin.data.freeplay.AlbumData;
+import funkin.data.freeplay.album.AlbumData;
 import funkin.ui.freeplay.ScriptedAlbum;
 
 class AlbumRegistry extends BaseRegistry<Album, AlbumData>

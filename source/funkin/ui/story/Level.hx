@@ -6,8 +6,8 @@ import flixel.util.FlxColor;
 import funkin.play.song.Song;
 import funkin.data.IRegistryEntry;
 import funkin.data.song.SongRegistry;
-import funkin.data.level.LevelRegistry;
-import funkin.data.level.LevelData;
+import funkin.data.story.level.LevelRegistry;
+import funkin.data.story.level.LevelData;
 
 /**
  * An object used to retrieve data about a story mode level (also known as "weeks").

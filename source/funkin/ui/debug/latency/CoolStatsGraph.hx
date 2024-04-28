@@ -7,7 +7,6 @@ import flash.text.TextField;
 import flash.text.TextFormatAlign;
 import flixel.math.FlxMath;
 import flixel.system.debug.DebuggerUtil;
-import flixel.system.debug.stats.Stats;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 
@@ -16,12 +15,30 @@ import flixel.util.FlxDestroyUtil;
  * SHAMELESSLY STOLEN FROM FLIXEL
  * https://github.com/HaxeFlixel/flixel/blob/master/flixel/system/debug/stats/StatsGraph.hx
  */
-#if FLX_DEBUG
 class CoolStatsGraph extends Sprite
 {
   static inline var AXIS_COLOR:FlxColor = 0xffffff;
   static inline var AXIS_ALPHA:Float = 0.5;
   static inline var HISTORY_MAX:Int = 500;
+
+  /**
+   * How often to update the stats, in ms. The lower, the more performance-intense!
+   */
+  static inline var UPDATE_DELAY:Int = 250;
+
+  /**
+   * The initial width of the stats window.
+   */
+  static inline var INITIAL_WIDTH:Int = 160;
+
+  static inline var FPS_COLOR:FlxColor = 0xff96ff00;
+  static inline var MEMORY_COLOR:FlxColor = 0xff009cff;
+  static inline var DRAW_TIME_COLOR:FlxColor = 0xffA60004;
+  static inline var UPDATE_TIME_COLOR:FlxColor = 0xffdcd400;
+
+  public static inline var LABEL_COLOR:FlxColor = 0xaaffffff;
+  public static inline var TEXT_SIZE:Int = 11;
+  public static inline var DECIMALS:Int = 1;
 
   public var minLabel:TextField;
   public var curLabel:TextField;
@@ -45,6 +62,7 @@ class CoolStatsGraph extends Sprite
   public function new(X:Int, Y:Int, Width:Int, Height:Int, GraphColor:FlxColor, Unit:String, LabelWidth:Int = 45, ?Label:String)
   {
     super();
+
     x = X;
     y = Y;
     _width = Width - LabelWidth;
@@ -57,11 +75,11 @@ class CoolStatsGraph extends Sprite
     _axis = new Shape();
     _axis.x = _labelWidth + 10;
 
-    maxLabel = DebuggerUtil.createTextField(0, 0, Stats.LABEL_COLOR, Stats.TEXT_SIZE);
-    curLabel = DebuggerUtil.createTextField(0, (_height / 2) - (Stats.TEXT_SIZE / 2), graphColor, Stats.TEXT_SIZE);
-    minLabel = DebuggerUtil.createTextField(0, _height - Stats.TEXT_SIZE, Stats.LABEL_COLOR, Stats.TEXT_SIZE);
+    maxLabel = DebuggerUtil.createTextField(0, 0, LABEL_COLOR, TEXT_SIZE);
+    curLabel = DebuggerUtil.createTextField(0, (_height / 2) - (TEXT_SIZE / 2), graphColor, TEXT_SIZE);
+    minLabel = DebuggerUtil.createTextField(0, _height - TEXT_SIZE, LABEL_COLOR, TEXT_SIZE);
 
-    avgLabel = DebuggerUtil.createTextField(_labelWidth + 20, (_height / 2) - (Stats.TEXT_SIZE / 2) - 10, Stats.LABEL_COLOR, Stats.TEXT_SIZE);
+    avgLabel = DebuggerUtil.createTextField(_labelWidth + 20, (_height / 2) - (TEXT_SIZE / 2) - 10, LABEL_COLOR, TEXT_SIZE);
     avgLabel.width = _width;
     avgLabel.defaultTextFormat.align = TextFormatAlign.CENTER;
     avgLabel.alpha = 0.5;
@@ -136,7 +154,7 @@ class CoolStatsGraph extends Sprite
 
   function formatValue(value:Float):String
   {
-    return FlxMath.roundDecimal(value, Stats.DECIMALS) + " " + _unit;
+    return FlxMath.roundDecimal(value, DECIMALS) + " " + _unit;
   }
 
   public function average():Float
@@ -157,4 +175,3 @@ class CoolStatsGraph extends Sprite
     history = null;
   }
 }
-#end

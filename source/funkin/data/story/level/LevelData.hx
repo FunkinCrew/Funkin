@@ -1,4 +1,4 @@
-package funkin.data.level;
+package funkin.data.story.level;
 
 import funkin.data.animation.AnimationData;
 
@@ -13,7 +13,7 @@ typedef LevelData =
    * When making changes to the level data format, this should be incremented,
    * and a migration function should be added to LevelDataParser to handle old versions.
    */
-  @:default(funkin.data.level.LevelRegistry.LEVEL_DATA_VERSION)
+  @:default(funkin.data.story.level.LevelRegistry.LEVEL_DATA_VERSION)
   var version:String;
 
   /**
