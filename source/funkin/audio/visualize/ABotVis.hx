@@ -8,8 +8,8 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import funkin.util.MathUtil;
-import funkVis.dsp.SpectralAnalyzer;
-import funkVis.audioclip.frontends.LimeAudioClip;
+import funkin.vis.dsp.SpectralAnalyzer;
+import funkin.vis.audioclip.frontends.LimeAudioClip;
 
 using Lambda;
 
@@ -90,7 +90,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   }
 
   /**
-   * TJW funkVis based visualizer! updateFFT() is the old nasty shit that dont worky!
+   * TJW funkin.vis based visualizer! updateFFT() is the old nasty shit that dont worky!
    */
   function drawFFT():Void
   {
