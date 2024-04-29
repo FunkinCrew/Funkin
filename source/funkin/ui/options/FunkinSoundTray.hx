@@ -20,6 +20,7 @@ class FunkinSoundTray extends FlxSoundTray
 {
   var graphicScale:Float = 0.30;
   var lerpYPos:Float = 0;
+  var alphaTarget:Float = 0;
 
   var volumeMaxSound:String;
 
@@ -40,7 +41,7 @@ class FunkinSoundTray extends FlxSoundTray
 
     // makes an alpha'd version of all the bars (bar_10.png)
     var backingBar:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/bars_10")));
-    backingBar.x = 10;
+    backingBar.x = 9;
     backingBar.y = 5;
     backingBar.scaleX = graphicScale;
     backingBar.scaleY = graphicScale;
@@ -56,7 +57,7 @@ class FunkinSoundTray extends FlxSoundTray
     for (i in 1...11)
     {
       var bar:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/bars_" + i)));
-      bar.x = 10;
+      bar.x = 9;
       bar.y = 5;
       bar.scaleX = graphicScale;
       bar.scaleY = graphicScale;
@@ -77,15 +78,18 @@ class FunkinSoundTray extends FlxSoundTray
   override public function update(MS:Float):Void
   {
     y = MathUtil.coolLerp(y, lerpYPos, 0.1);
+    alpha = MathUtil.coolLerp(alpha, alphaTarget, 0.25);
 
     // Animate sound tray thing
     if (_timer > 0)
     {
       _timer -= (MS / 1000);
+      alphaTarget = 1;
     }
     else if (y > -height)
     {
       lerpYPos = -height - 10;
+      alphaTarget = 0;
 
       if (y <= -height)
       {
