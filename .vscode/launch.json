@@ -8,6 +8,12 @@
       "request": "launch"
     },
     {
+      "name": "Debug",
+      "type": "lime",
+      "request": "launch",
+      "preLaunchTask": null
+    },
+    {
       // Launch in browser
       "name": "HTML5 Debug",
       "type": "chrome",

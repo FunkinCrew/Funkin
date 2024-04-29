@@ -23,7 +23,9 @@ class DebugMenuSubState extends MusicBeatSubState
 
   override function create():Void
   {
+    FlxTransitionableState.skipNextTransIn = true;
     super.create();
+
     bgColor = 0x00000000;
 
     // Create an object for the camera to track.
@@ -48,9 +50,12 @@ class DebugMenuSubState extends MusicBeatSubState
     items.onChange.add(onMenuChange);
     add(items);
 
+    FlxTransitionableState.skipNextTransIn = true;
+
     // Create each menu item.
     // Call onMenuChange when the first item is created to move the camera .
     onMenuChange(createItem("CHART EDITOR", openChartEditor));
+    createItem("Input Offset Testing", openInputOffsetTesting);
     createItem("ANIMATION EDITOR", openAnimationEditor);
     createItem("STAGE EDITOR", openStageEditor);
     createItem("TEST STICKERS", testStickers);
@@ -90,6 +95,12 @@ class DebugMenuSubState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
 
     FlxG.switchState(() -> new ChartEditorState());
+  }
+
+  function openInputOffsetTesting()
+  {
+    openSubState(new funkin.ui.debug.latency.LatencyState());
+    trace('Input Offset Testing');
   }
 
   function openAnimationEditor()

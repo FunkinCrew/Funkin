@@ -15,6 +15,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -44,6 +45,25 @@ class Strumline extends FlxSpriteGroup
    * False means it's controlled by the opponent or Bot Play.
    */
   public var isPlayer:Bool;
+
+  /**
+   * Usually you want to keep this as is, but if you are using a Strumline and
+   * playing a sound that has it's own conductor, set this (LatencyState for example)
+   */
+  public var conductorInUse(get, set):Conductor;
+
+  var _conductorInUse:Null<Conductor>;
+
+  function get_conductorInUse():Conductor
+  {
+    if (_conductorInUse == null) return Conductor.instance;
+    return _conductorInUse;
+  }
+
+  function set_conductorInUse(value:Conductor):Conductor
+  {
+    return _conductorInUse = value;
+  }
 
   /**
    * The notes currently being rendered on the strumline.
@@ -151,24 +171,10 @@ class Strumline extends FlxSpriteGroup
     updateNotes();
   }
 
-  var frameMax:Int;
-  var animFinishedEver:Bool;
-
   /**
-   * Get a list of notes within + or - the given strumtime.
-   * @param strumTime The current time.
-   * @param hitWindow The hit window to check.
+   * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `NoteSprite` objects.
    */
-  public function getNotesInRange(strumTime:Float, hitWindow:Float):Array<NoteSprite>
-  {
-    var hitWindowStart:Float = strumTime - hitWindow;
-    var hitWindowEnd:Float = strumTime + hitWindow;
-
-    return notes.members.filter(function(note:NoteSprite) {
-      return note != null && note.alive && !note.hasBeenHit && note.strumTime >= hitWindowStart && note.strumTime <= hitWindowEnd;
-    });
-  }
-
   public function getNotesMayHit():Array<NoteSprite>
   {
     return notes.members.filter(function(note:NoteSprite) {
@@ -176,23 +182,14 @@ class Strumline extends FlxSpriteGroup
     });
   }
 
+  /**
+   * Return hold notes that are within `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `SustainTrail` objects.
+   */
   public function getHoldNotesHitOrMissed():Array<SustainTrail>
   {
     return holdNotes.members.filter(function(holdNote:SustainTrail) {
       return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
-    });
-  }
-
-  public function getHoldNotesInRange(strumTime:Float, hitWindow:Float):Array<SustainTrail>
-  {
-    var hitWindowStart:Float = strumTime - hitWindow;
-    var hitWindowEnd:Float = strumTime + hitWindow;
-
-    return holdNotes.members.filter(function(note:SustainTrail) {
-      return note != null
-        && note.alive
-        && note.strumTime >= hitWindowStart
-        && (note.strumTime + note.fullSustainLength) <= hitWindowEnd;
     });
   }
 
@@ -280,7 +277,7 @@ class Strumline extends FlxSpriteGroup
    * @param strumTime
    * @return Float
    */
-  static function calculateNoteYPos(strumTime:Float, vwoosh:Bool = true):Float
+  public function calculateNoteYPos(strumTime:Float, vwoosh:Bool = true):Float
   {
     // Make the note move faster visually as it moves offscreen.
     // var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
@@ -288,7 +285,8 @@ class Strumline extends FlxSpriteGroup
     var vwoosh:Float = 1.0;
     var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
-    return Constants.PIXELS_PER_MS * (Conductor.instance.songPosition - strumTime) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
+    return
+      Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
   }
 
   function updateNotes():Void
@@ -301,8 +299,8 @@ class Strumline extends FlxSpriteGroup
     // if (conductorInUse.currentStep == 0) nextNoteIndex = 0;
 
     var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
-    var hitWindowStart:Float = Conductor.instance.songPosition - Constants.HIT_WINDOW_MS;
-    var renderWindowStart:Float = Conductor.instance.songPosition + RENDER_DISTANCE_MS;
+    var hitWindowStart:Float = conductorInUse.songPosition - Constants.HIT_WINDOW_MS;
+    var renderWindowStart:Float = conductorInUse.songPosition + RENDER_DISTANCE_MS;
 
     for (noteIndex in nextNoteIndex...noteData.length)
     {
@@ -351,7 +349,7 @@ class Strumline extends FlxSpriteGroup
     {
       if (holdNote == null || !holdNote.alive) continue;
 
-      if (Conductor.instance.songPosition > holdNote.strumTime && holdNote.hitNote && !holdNote.missedNote)
+      if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote && !holdNote.missedNote)
       {
         if (isPlayer && !isKeyHeld(holdNote.noteDirection))
         {
@@ -365,7 +363,7 @@ class Strumline extends FlxSpriteGroup
 
       var renderWindowEnd = holdNote.strumTime + holdNote.fullSustainLength + Constants.HIT_WINDOW_MS + RENDER_DISTANCE_MS / 8;
 
-      if (holdNote.missedNote && Conductor.instance.songPosition >= renderWindowEnd)
+      if (holdNote.missedNote && conductorInUse.songPosition >= renderWindowEnd)
       {
         // Hold note is offscreen, kill it.
         holdNote.visible = false;
@@ -422,13 +420,13 @@ class Strumline extends FlxSpriteGroup
           holdNote.cover.kill();
         }
       }
-      else if (Conductor.instance.songPosition > holdNote.strumTime && holdNote.hitNote)
+      else if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote)
       {
         // Hold note is currently being hit, clip it off.
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
-        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - Conductor.instance.songPosition;
+        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
 
         if (holdNote.sustainLength <= 10)
         {

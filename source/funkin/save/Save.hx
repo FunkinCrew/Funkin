@@ -87,6 +87,8 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          inputOffset: 0,
+          audioVisualOffset: 0,
 
           controls:
             {
@@ -865,6 +867,18 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * Offset the users inputs by this many ms.
+   * @default `0`
+   */
+  var inputOffset:Int;
+
+  /**
+   * Affects the delay between the audio and the visuals during gameplay
+   * @default `0`
+   */
+  var audioVisualOffset:Int;
 
   var controls:
     {

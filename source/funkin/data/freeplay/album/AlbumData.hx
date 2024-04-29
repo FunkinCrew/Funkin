@@ -1,4 +1,4 @@
-package funkin.data.freeplay;
+package funkin.data.freeplay.album;
 
 import funkin.data.animation.AnimationData;
 
