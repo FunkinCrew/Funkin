@@ -16,5 +16,5 @@
     - Mac: [`lime setup mac` Documentation](https://lime.openfl.org/docs/advanced-setup/macos/)
     - Linux: [`lime setup linux` Documentation](https://lime.openfl.org/docs/advanced-setup/linux/)
     - HTML5: Compiles without any extra setup
-6. If you are targeting for native, you likely need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
-7. `lime test PLATFORM` !
+6. If you are targeting for native, you may need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
+7. `lime test PLATFORM` ! Add `-debug` to enable several debug features such as time travel (`PgUp`/`PgDn` in Play State).
