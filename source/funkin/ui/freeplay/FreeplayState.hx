@@ -456,6 +456,14 @@ class FreeplayState extends MusicBeatSubState
         default:
           generateSongList({filterType: REGEXP, filterData: str}, true);
       }
+
+      // We want to land on the first song of the group, rather than random song when changing letter sorts
+      // that is, only if there's more than one song in the group!
+      if (grpCapsules.members.length > 0)
+      {
+        curSelected = 1;
+        changeSelection();
+      }
     };
 
     exitMovers.set([fp, txtCompletion, fnfHighscoreSpr],
