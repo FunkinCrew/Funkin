@@ -1,4 +1,4 @@
-package funkin.data.dialogue;
+package funkin.data.dialogue.dialoguebox;
 
 import funkin.data.animation.AnimationData;
 

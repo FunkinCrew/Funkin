@@ -5,6 +5,9 @@ import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
+import funkin.save.Save;
+import haxe.Timer;
+import flixel.sound.FlxSound;
 
 /**
  * A core class which handles musical timing throughout the game,
@@ -88,6 +91,9 @@ class Conductor
    * Update this every frame based on the audio position using `Conductor.instance.update()`.
    */
   public var songPosition(default, null):Float = 0;
+
+  var prevTimestamp:Float = 0;
+  var prevTime:Float = 0;
 
   /**
    * Beats per minute of the current song at the current time.
@@ -233,8 +239,41 @@ class Conductor
 
   /**
    * An offset set by the user to compensate for input lag.
+   * No matter if you're using a local conductor or not, this always loads
+   * to/from the save file
    */
-  public var inputOffset:Float = 0;
+  public var inputOffset(get, set):Int;
+
+  /**
+   * An offset set by the user to compensate for audio/visual lag
+   * No matter if you're using a local conductor or not, this always loads
+   * to/from the save file
+   */
+  public var audioVisualOffset(get, set):Int;
+
+  function get_inputOffset():Int
+  {
+    return Save.instance.options.inputOffset;
+  }
+
+  function set_inputOffset(value:Int):Int
+  {
+    Save.instance.options.inputOffset = value;
+    Save.instance.flush();
+    return Save.instance.options.inputOffset;
+  }
+
+  function get_audioVisualOffset():Int
+  {
+    return Save.instance.options.audioVisualOffset;
+  }
+
+  function set_audioVisualOffset(value:Int):Int
+  {
+    Save.instance.options.audioVisualOffset = value;
+    Save.instance.flush();
+    return Save.instance.options.audioVisualOffset;
+  }
 
   /**
    * The number of beats in a measure. May be fractional depending on the time signature.
@@ -353,15 +392,18 @@ class Conductor
    * BPM, current step, etc. will be re-calculated based on the song position.
    *
    * @param	songPosition The current position in the song in milliseconds.
-   *        Leave blank to use the `FlxG.sound.music` position.
+   *        Leave blank to use the FlxG.sound.music position.
+   * @param applyOffsets If it should apply the instrumentalOffset + formatOffset + audioVisualOffset
    */
-  public function update(?songPos:Float):Void
+  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false)
   {
     if (songPos == null)
     {
-      // Take into account instrumental and file format song offsets.
-      songPos = (FlxG.sound.music != null) ? (FlxG.sound.music.time + instrumentalOffset + formatOffset) : 0.0;
+      songPos = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
     }
+
+    // Take into account instrumental and file format song offsets.
+    songPos += applyOffsets ? (instrumentalOffset + formatOffset + audioVisualOffset) : 0;
 
     var oldMeasure:Float = this.currentMeasure;
     var oldBeat:Float = this.currentBeat;
@@ -421,6 +463,35 @@ class Conductor
     {
       this.onMeasureHit.dispatch();
     }
+
+    // only update the timestamp if songPosition actually changed
+    // which it doesn't do every frame!
+    if (prevTime != this.songPosition)
+    {
+      // Update the timestamp for use in-between frames
+      prevTime = this.songPosition;
+      prevTimestamp = Std.int(Timer.stamp() * 1000);
+    }
+  }
+
+  /**
+   * Can be called in-between frames, usually for input related things
+   * that can potentially get processed on exact milliseconds/timestmaps.
+   * If you need song position, use `Conductor.instance.songPosition` instead
+   * for use in update() related functions.
+   * @param soundToCheck Which FlxSound object to check, defaults to FlxG.sound.music if no input
+   * @return Float
+   */
+  public function getTimeWithDiff(?soundToCheck:FlxSound):Float
+  {
+    if (soundToCheck == null) soundToCheck = FlxG.sound.music;
+    // trace(this.songPosition);
+
+    @:privateAccess
+    this.songPosition = soundToCheck._channel.position;
+    // return this.songPosition + (Std.int(Timer.stamp() * 1000) - prevTimestamp);
+    // trace("\t--> " + this.songPosition);
+    return this.songPosition;
   }
 
   /**
@@ -468,7 +539,7 @@ class Conductor
     }
 
     // Update currentStepTime
-    this.update(Conductor.instance.songPosition);
+    this.update(this.songPosition, false);
   }
 
   /**
@@ -587,7 +658,8 @@ class Conductor
   }
 
   /**
-   * Add variables of the current Conductor instance to the Flixel debugger.
+   * Adds Conductor fields to the Flixel debugger variable display.
+   * @param conductorToUse The conductor to use. Defaults to `Conductor.instance`.
    */
   public static function watchQuick(?target:Conductor):Void
   {
