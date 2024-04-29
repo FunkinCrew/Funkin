@@ -12,12 +12,12 @@ import funkin.ui.MusicBeatState;
  * After about 2 minutes of inactivity on the title screen,
  * the game will enter the Attract state, as a reference to physical arcade machines.
  *
- * In the current version, this just plays the Kickstarter trailer, but this can be changed to
+ * In the current version, this just plays the ~~Kickstarter trailer~~ Erect teaser, but this can be changed to
  * gameplay footage, a generic game trailer, or something more elaborate.
  */
 class AttractState extends MusicBeatState
 {
-  static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('kickstarterTrailer', 'shared'));
+  static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('erectTeaser', 'shared'));
 
   public override function create():Void
   {
