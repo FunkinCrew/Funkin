@@ -560,6 +560,12 @@ class FreeplayState extends MusicBeatSubState
   {
     var tempSongs:Array<FreeplaySongData> = songs;
 
+    // Remember just the difficulty because it's important for song sorting.
+    if (rememberedDifficulty != null)
+    {
+      currentDifficulty = rememberedDifficulty;
+    }
+
     if (filterStuff != null) tempSongs = sortSongs(tempSongs, filterStuff);
 
     // Filter further by current selected difficulty.
@@ -579,6 +585,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Only now do we know that the filter is actually changing.
 
+    // If curSelected is 0, the result will be null and fall back to the rememberedSongId.
     rememberedSongId = grpCapsules.members[curSelected]?.songData?.songId ?? rememberedSongId;
 
     for (cap in grpCapsules.members)
@@ -635,7 +642,7 @@ class FreeplayState extends MusicBeatSubState
     rememberSelection();
 
     changeSelection();
-    changeDiff();
+    changeDiff(0, true);
   }
 
   /**
@@ -987,7 +994,7 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function changeDiff(change:Int = 0):Void
+  function changeDiff(change:Int = 0, force:Bool = false):Void
   {
     touchTimer = 0;
 
@@ -1047,7 +1054,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    if (change != 0)
+    if (change != 0 || force)
     {
       // Update the song capsules to reflect the new difficulty info.
       for (songCapsule in grpCapsules.members)
