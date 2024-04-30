@@ -120,6 +120,7 @@ class FunkinPreloader extends FlxBasePreloader
   var progressRightText:TextField;
 
   var dspText:TextField;
+  var fnfText:TextField;
   var enhancedText:TextField;
   var stereoText:TextField;
 
@@ -202,6 +203,7 @@ class FunkinPreloader extends FlxBasePreloader
     // Create the progress message.
     progressLeftText = new TextField();
     dspText = new TextField();
+    fnfText = new TextField();
     enhancedText = new TextField();
     stereoText = new TextField();
 
@@ -251,6 +253,15 @@ class FunkinPreloader extends FlxBasePreloader
     dspText.x = 10;
     dspText.y = -5;
     box.addChild(dspText);
+
+    fnfText.selectable = false;
+    fnfText.textColor = 0x000000;
+    fnfText.width = this._width;
+    fnfText.height = 20;
+    fnfText.x = 75;
+    fnfText.y = -5;
+    fnfText.text = 'FNF';
+    box.addChild(fnfText);
 
     enhancedText.selectable = false;
     enhancedText.textColor = Constants.COLOR_PRELOADER_BAR;
@@ -967,8 +978,12 @@ class FunkinPreloader extends FlxBasePreloader
         progressLeftText.text = text;
 
         dspText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
-        dspText.text = 'DSP\t\t\t\t\tFNF'; // fukin dum....
+        dspText.text = 'DSP'; // fukin dum....
         dspText.textColor = 0x000000;
+
+        fnfText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
+        fnfText.text = 'FNF';
+        fnfText.textColor = 0x000000;
 
         enhancedText.defaultTextFormat = new TextFormat("Inconsolata Black", 16, Constants.COLOR_PRELOADER_BAR, false);
         enhancedText.text = 'ENHANCED';
@@ -1007,6 +1022,7 @@ class FunkinPreloader extends FlxBasePreloader
     progressRightText.alpha = logo.alpha;
     box.alpha = logo.alpha;
     dspText.alpha = logo.alpha;
+    fnfText.alpha = logo.alpha;
     enhancedText.alpha = logo.alpha;
     stereoText.alpha = logo.alpha;
     progressLines.alpha = logo.alpha;
