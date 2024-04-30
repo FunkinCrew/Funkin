@@ -54,6 +54,7 @@ class MainMenuState extends MusicBeatState
 
     playMenuMusic();
 
+    // We want the state to always be able to begin with being able to accept inputs and show the anims of the menu items.
     persistentUpdate = true;
     persistentDraw = true;
 
@@ -360,7 +361,7 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (FlxG.sound.music.volume < 0.8)
+    if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
     {
       FlxG.sound.music.volume += 0.5 * elapsed;
     }

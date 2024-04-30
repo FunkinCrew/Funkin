@@ -4,18 +4,38 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED]
-### Added
-- Cool waveform stuff for chart editor
-- Noises in chart editor lol!
-- 3 AWESOME PICO VS. DARNELL SONGS!!
-- Character offset editor / spritesheet viewer
-## Changed
-- Lerp'd the healthbar
-- Resetting from game over and "restart song" should be faster
-- Health gain is different depending on how accurate you hit notes!
-- slight less health gained on sustain notes
-- The wave-y effect on Thorns for the school is now a shader, instead of a pre-baked animation!
+## [0.3.0] - 2024-03-29
+# Added
+- New Story Level: Weekend 1, starting Pico, Darnell, and Nene.
+  - Beat the level in Story Mode to unlock the songs for Freeplay!
+- 12 new Erect remixes, featuring Kawai Sprite, Saruky, Kohta Takahashi, and Saster
+  - Unlocked instantly in Freeplay
+- New visually enhanced Freeplay menu.
+  - Sorting, favorites, and more.
+- New Results screen upon completing any song or story level.
+- New refactored Chart Editor prototype (accessible via `~` in the main menu or `7` in the Play State, rebindable). (VERY EARLY PROTOTYPE. EXPECT BUGS AND CRASHES)
+- Implemented a new scripting system using HScript (an interpreted language with Haxe-like syntax) for incredible flexibility.
+  - All character-specific, stage-specific, or song-specific behaviors have been moved to HScript.
+- New song events system allows for simple customization of camera behavior.
+  - Mods can implement custom song events via HScript, and new built-in song events will come in the future.
+- New credits menu to list all the dozens of people who contributed.
+# Changed
+- Completely refactored the game's input system for higher reliability and accuracy.
+- Reworked note rendering to massively reduce lag on larger charts.
+- Reworks to scoring and health gain.
+- Dedicated gamepad support with the ability to rebind buttons.
+- Improvements to video cutscenes and dialogue, allowing them to be easily skipped or restarted.
+- Updated Polymod by several major versions, allowing for fully dynamic asset replacement and support for scripted classes.
+- Completely refactored almost every part of the game's code for performance, stability, and extensibility.
+  - This is not the Ludem Dare game held together with sticks and glue you played three years ago.
+- Characters, stages, songs, story levels, and dialogue are now built from JSON data registries rather than being hardcoded.
+  - All of these also support attaching scripts for custom behavior, more documentation on this soon.
+  - You can forcibly reload the game's JSON data and scripts by pressing F5.
+- Fully refactored the game's chart file format for extensibility and readability.
+  - You can migrate old charts using the Import FNF Legacy option in the chart editor.
+- Various visual tweaks and improvements.
+# Fixed
+- 17 quadrillion bugs across hundreds of PRs.
 
 ## [0.2.8] - 2021-04-18 (note, this one is iffy cuz we slacked wit it lol!)
 ### Added
@@ -90,7 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clear section button to note editor
 - Swap button in note editor
 - a new boot text or two
-- automatic check for when you're on an old version of the game! 
+- automatic check for when you're on an old version of the game!
 ### Changed
 - Made Spookeez on Normal easier.
 - Mouse is now visible in note editor

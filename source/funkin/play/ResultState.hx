@@ -324,7 +324,8 @@ class ResultState extends MusicBeatSubState
     FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.8});
 
     songName.y = -songName.height;
-    FlxTween.tween(songName, {y: diffYTween - 35}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
+    var fuckedupnumber = (10) * (songName.text.length / 15);
+    FlxTween.tween(songName, {y: diffYTween - 35 - fuckedupnumber}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
     songName.x = (difficulty.x + difficulty.width) + 20;
 
     new FlxTimer().start(3, _ -> {
