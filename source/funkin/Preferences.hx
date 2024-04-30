@@ -15,7 +15,7 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
-    return Save.instance.options.naughtyness;
+    return Save?.instance?.options?.naughtyness;
   }
 
   static function set_naughtyness(value:Bool):Bool
@@ -34,7 +34,7 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save.instance.options.downscroll;
+    return Save?.instance?.options?.downscroll;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -91,7 +91,7 @@ class Preferences
 
   static function get_debugDisplay():Bool
   {
-    return Save.instance.options.debugDisplay;
+    return Save?.instance?.options?.debugDisplay;
   }
 
   static function set_debugDisplay(value:Bool):Bool
