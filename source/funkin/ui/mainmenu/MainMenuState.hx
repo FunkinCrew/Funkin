@@ -54,7 +54,7 @@ class MainMenuState extends MusicBeatState
 
     playMenuMusic();
 
-    persistentUpdate = false;
+    persistentUpdate = true;
     persistentDraw = true;
 
     var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
@@ -103,6 +103,7 @@ class MainMenuState extends MusicBeatState
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
+
       openSubState(new FreeplayState());
     });
 
@@ -274,6 +275,8 @@ class MainMenuState extends MusicBeatState
   public function openPrompt(prompt:Prompt, onClose:Void->Void):Void
   {
     menuItems.enabled = false;
+    persistentUpdate = false;
+
     prompt.closeCallback = function() {
       menuItems.enabled = true;
       if (onClose != null) onClose();
@@ -326,6 +329,8 @@ class MainMenuState extends MusicBeatState
     #if CHART_EDITOR_SUPPORTED
     if (controls.DEBUG_MENU)
     {
+      persistentUpdate = false;
+
       FlxG.state.openSubState(new DebugMenuSubState());
     }
     #end
