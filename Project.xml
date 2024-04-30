@@ -124,7 +124,7 @@
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
 	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
-	<haxelib name="funkVis"/>
+	<haxelib name="funkin.vis"/>
 
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
