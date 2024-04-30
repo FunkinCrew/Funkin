@@ -74,6 +74,7 @@ class InitState extends FlxState
     //
 
     // Setup window events (like callbacks for onWindowClose)
+    // and fullscreen keybind setup
     WindowUtil.initWindowEvents();
     // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
     WindowUtil.disableCrashHandler();
