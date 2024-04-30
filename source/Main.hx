@@ -113,7 +113,9 @@ class Main extends Sprite
 
     addChild(game);
 
+    #if debug
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+    #end
 
     addChild(fpsCounter);
 
