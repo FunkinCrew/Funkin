@@ -251,7 +251,7 @@ class TitleState extends MusicBeatState
 
   var transitioning:Bool = false;
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     FlxG.bitmapLog.add(FlxG.camera.buffer);
 
@@ -286,7 +286,6 @@ class TitleState extends MusicBeatState
     }
 
     if (FlxG.sound.music != null) Conductor.instance.update(FlxG.sound.music.time);
-    if (FlxG.keys.justPressed.F) FlxG.fullscreen = !FlxG.fullscreen;
 
     // do controls.PAUSE | controls.ACCEPT instead?
     var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;

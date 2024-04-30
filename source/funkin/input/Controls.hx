@@ -66,6 +66,7 @@ class Controls extends FlxActionSet
   var _volume_up = new FunkinAction(Action.VOLUME_UP);
   var _volume_down = new FunkinAction(Action.VOLUME_DOWN);
   var _volume_mute = new FunkinAction(Action.VOLUME_MUTE);
+  var _fullscreen = new FunkinAction(Action.FULLSCREEN);
 
   var byName:Map<String, FunkinAction> = new Map<String, FunkinAction>();
 
@@ -272,6 +273,11 @@ class Controls extends FlxActionSet
   inline function get_VOLUME_MUTE()
     return _volume_mute.check();
 
+  public var FULLSCREEN(get, never):Bool;
+
+  inline function get_FULLSCREEN()
+    return _fullscreen.check();
+
   public function new(name, scheme:KeyboardScheme = null)
   {
     super(name);
@@ -296,6 +302,7 @@ class Controls extends FlxActionSet
     add(_volume_up);
     add(_volume_down);
     add(_volume_mute);
+    add(_fullscreen);
 
     for (action in digitalActions) {
       if (Std.isOfType(action, FunkinAction)) {
@@ -399,6 +406,7 @@ class Controls extends FlxActionSet
       case VOLUME_UP: _volume_up;
       case VOLUME_DOWN: _volume_down;
       case VOLUME_MUTE: _volume_mute;
+      case FULLSCREEN: _fullscreen;
     }
   }
 
@@ -474,6 +482,8 @@ class Controls extends FlxActionSet
         func(_volume_down, JUST_PRESSED);
       case VOLUME_MUTE:
         func(_volume_mute, JUST_PRESSED);
+      case FULLSCREEN:
+        func(_fullscreen, JUST_PRESSED);
     }
   }
 
@@ -668,6 +678,7 @@ class Controls extends FlxActionSet
     bindKeys(Control.VOLUME_UP, getDefaultKeybinds(scheme, Control.VOLUME_UP));
     bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(scheme, Control.VOLUME_DOWN));
     bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(scheme, Control.VOLUME_MUTE));
+    bindKeys(Control.FULLSCREEN, getDefaultKeybinds(scheme, Control.FULLSCREEN));
 
     bindMobileLol();
   }
@@ -696,6 +707,8 @@ class Controls extends FlxActionSet
           case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
           case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
           case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
+          case Control.FULLSCREEN: return [FlxKey.F];
+
         }
       case Duo(true):
         switch (control) {
@@ -719,6 +732,8 @@ class Controls extends FlxActionSet
           case Control.VOLUME_UP: return [PLUS];
           case Control.VOLUME_DOWN: return [MINUS];
           case Control.VOLUME_MUTE: return [ZERO];
+          case Control.FULLSCREEN: return [FlxKey.F];
+
         }
       case Duo(false):
         switch (control) {
@@ -742,6 +757,8 @@ class Controls extends FlxActionSet
           case Control.VOLUME_UP: return [NUMPADPLUS];
           case Control.VOLUME_DOWN: return [NUMPADMINUS];
           case Control.VOLUME_MUTE: return [NUMPADZERO];
+          case Control.FULLSCREEN: return [];
+
         }
       default:
         // Fallthrough.
@@ -876,6 +893,7 @@ class Controls extends FlxActionSet
       case Control.CUTSCENE_ADVANCE: return [A];
       case Control.DEBUG_MENU: return [];
       case Control.DEBUG_CHART: return [];
+      case Control.FULLSCREEN: return [];
       default:
         // Fallthrough.
     }
@@ -1398,6 +1416,7 @@ enum Control
   ACCEPT;
   BACK;
   PAUSE;
+  FULLSCREEN;
   // CUTSCENE
   CUTSCENE_ADVANCE;
   // SCREENSHOT
@@ -1443,6 +1462,7 @@ enum abstract Action(String) to String from String
   var BACK = "back";
   var PAUSE = "pause";
   var RESET = "reset";
+  var FULLSCREEN = "fullscreen";
   // SCREENSHOT
   var SCREENSHOT = "screenshot";
   // CUTSCENE
