@@ -54,9 +54,9 @@ class MainMenuState extends MusicBeatState
 
     playMenuMusic();
 
-    // If something else overrides these, we should keep those values.
-    // persistentUpdate = true;
-    // persistentDraw = true;
+    // We want the state to always be able to begin with being able to accept inputs and show the anims of the menu items.
+    persistentUpdate = true;
+    persistentDraw = true;
 
     var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
     bg.scrollFactor.x = 0;
