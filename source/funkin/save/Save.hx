@@ -555,20 +555,22 @@ class Save
     return false;
   }
 
-  public function getControls(playerId:Int, inputType:Device):SaveControlsData
+  public function getControls(playerId:Int, inputType:Device):Null<SaveControlsData>
   {
     switch (inputType)
     {
       case Keys:
-        return (playerId == 0) ? data.options.controls.p1.keyboard : data.options.controls.p2.keyboard;
+        return (playerId == 0) ? data?.options?.controls?.p1.keyboard : data?.options?.controls?.p2.keyboard;
       case Gamepad(_):
-        return (playerId == 0) ? data.options.controls.p1.gamepad : data.options.controls.p2.gamepad;
+        return (playerId == 0) ? data?.options?.controls?.p1.gamepad : data?.options?.controls?.p2.gamepad;
     }
   }
 
   public function hasControls(playerId:Int, inputType:Device):Bool
   {
     var controls = getControls(playerId, inputType);
+    if (controls == null) return false;
+
     var controlsFields = Reflect.fields(controls);
     return controlsFields.length > 0;
   }
