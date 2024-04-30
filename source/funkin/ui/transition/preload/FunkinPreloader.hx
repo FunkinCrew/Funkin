@@ -112,6 +112,7 @@ class FunkinPreloader extends FlxBasePreloader
   var logo:Bitmap;
   #if TOUCH_HERE_TO_PLAY
   var touchHereToPlay:Bitmap;
+  var touchHereSprite:Sprite;
   #end
   var progressBarPieces:Array<Sprite>;
   var progressBar:Bitmap;
@@ -123,6 +124,7 @@ class FunkinPreloader extends FlxBasePreloader
   var stereoText:TextField;
 
   var vfdShader:VFDOverlay;
+  var vfdBitmap:Bitmap;
   var box:Sprite;
   var progressLines:Sprite;
 
@@ -161,18 +163,6 @@ class FunkinPreloader extends FlxBasePreloader
       bmp.y = (this._height - bmp.height) / 2;
     });
     // addChild(logo);
-
-    #if TOUCH_HERE_TO_PLAY
-    touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap) {
-      // Scale and center the touch to start image.
-      // We have to do this inside the async call, after the image size is known.
-      bmp.scaleX = bmp.scaleY = ratio;
-      bmp.x = (this._width - bmp.width) / 2;
-      bmp.y = (this._height - bmp.height) / 2;
-    });
-    touchHereToPlay.alpha = 0.0;
-    addChild(touchHereToPlay);
-    #end
 
     var amountOfPieces:Int = 16;
     progressBarPieces = [];
@@ -289,11 +279,27 @@ class FunkinPreloader extends FlxBasePreloader
     // gradient.graphics.endFill();
     // addChild(gradient);
 
-    var vfdBitmap:Bitmap = new Bitmap(new BitmapData(this._width, this._height, true, 0xFFFFFFFF));
+    vfdBitmap = new Bitmap(new BitmapData(this._width, this._height, true, 0xFFFFFFFF));
     addChild(vfdBitmap);
 
     vfdShader = new VFDOverlay();
     vfdBitmap.shader = vfdShader;
+
+    #if TOUCH_HERE_TO_PLAY
+    touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap) {
+      // Scale and center the touch to start image.
+      // We have to do this inside the async call, after the image size is known.
+      bmp.scaleX = bmp.scaleY = ratio;
+      bmp.x = (this._width - bmp.width) / 2;
+      bmp.y = (this._height - bmp.height) / 2;
+    });
+    touchHereToPlay.alpha = 0.0;
+
+    touchHereSprite = new Sprite();
+    touchHereSprite.buttonMode = false;
+    touchHereSprite.addChild(touchHereToPlay);
+    addChild(touchHereSprite);
+    #end
   }
 
   var lastElapsed:Float = 0.0;
@@ -802,9 +808,14 @@ class FunkinPreloader extends FlxBasePreloader
 
         if (touchHereToPlay.alpha < 1.0)
         {
+          touchHereSprite.buttonMode = true;
           touchHereToPlay.alpha = 1.0;
+          removeChild(vfdBitmap);
 
           addEventListener(MouseEvent.CLICK, onTouchHereToPlay);
+          touchHereSprite.addEventListener(MouseEvent.MOUSE_OVER, overTouchHereToPlay);
+          touchHereSprite.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownTouchHereToPlay);
+          touchHereSprite.addEventListener(MouseEvent.MOUSE_OUT, outTouchHereToPlay);
         }
 
         return 1.0;
@@ -818,9 +829,34 @@ class FunkinPreloader extends FlxBasePreloader
   }
 
   #if TOUCH_HERE_TO_PLAY
+  function overTouchHereToPlay(e:MouseEvent):Void
+  {
+    touchHereToPlay.scaleX = touchHereToPlay.scaleY = ratio * 1.1;
+    touchHereToPlay.x = (this._width - touchHereToPlay.width) / 2;
+    touchHereToPlay.y = (this._height - touchHereToPlay.height) / 2;
+  }
+
+  function outTouchHereToPlay(e:MouseEvent):Void
+  {
+    touchHereToPlay.scaleX = touchHereToPlay.scaleY = ratio * 1;
+    touchHereToPlay.x = (this._width - touchHereToPlay.width) / 2;
+    touchHereToPlay.y = (this._height - touchHereToPlay.height) / 2;
+  }
+
+  function mouseDownTouchHereToPlay(e:MouseEvent):Void
+  {
+    touchHereToPlay.y += 10;
+  }
+
   function onTouchHereToPlay(e:MouseEvent):Void
   {
+    touchHereToPlay.x = (this._width - touchHereToPlay.width) / 2;
+    touchHereToPlay.y = (this._height - touchHereToPlay.height) / 2;
+
     removeEventListener(MouseEvent.CLICK, onTouchHereToPlay);
+    touchHereSprite.removeEventListener(MouseEvent.MOUSE_OVER, overTouchHereToPlay);
+    touchHereSprite.removeEventListener(MouseEvent.MOUSE_OUT, outTouchHereToPlay);
+    touchHereSprite.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownTouchHereToPlay);
 
     // This is the actual thing that makes the game load.
     immediatelyStartGame();
@@ -999,9 +1035,9 @@ class FunkinPreloader extends FlxBasePreloader
    */
   override function createSiteLockFailureScreen():Void
   {
-    addChild(createSiteLockFailureBackground(Constants.COLOR_PRELOADER_LOCK_BG, Constants.COLOR_PRELOADER_LOCK_BG));
-    addChild(createSiteLockFailureIcon(Constants.COLOR_PRELOADER_LOCK_FG, 0.9));
-    addChild(createSiteLockFailureText(30));
+    // addChild(createSiteLockFailureBackground(Constants.COLOR_PRELOADER_LOCK_BG, Constants.COLOR_PRELOADER_LOCK_BG));
+    // addChild(createSiteLockFailureIcon(Constants.COLOR_PRELOADER_LOCK_FG, 0.9));
+    // addChild(createSiteLockFailureText(30));
   }
 
   /**
