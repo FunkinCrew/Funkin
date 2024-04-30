@@ -17,7 +17,7 @@ import funkin.ui.MusicBeatState;
  */
 class AttractState extends MusicBeatState
 {
-  static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('erectTeaser'));
+  static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('toyCommercial'));
 
   public override function create():Void
   {
