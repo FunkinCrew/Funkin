@@ -86,26 +86,26 @@ class FunkinSoundTray extends FlxSoundTray
       _timer -= (MS / 1000);
       alphaTarget = 1;
     }
-    else if (y > -height)
+    else if (y >= -height)
     {
       lerpYPos = -height - 10;
       alphaTarget = 0;
+    }
 
-      if (y <= -height)
+    if (y <= -height)
+    {
+      visible = false;
+      active = false;
+
+      #if FLX_SAVE
+      // Save sound preferences
+      if (FlxG.save.isBound)
       {
-        visible = false;
-        active = false;
-
-        #if FLX_SAVE
-        // Save sound preferences
-        if (FlxG.save.isBound)
-        {
-          FlxG.save.data.mute = FlxG.sound.muted;
-          FlxG.save.data.volume = FlxG.sound.volume;
-          FlxG.save.flush();
-        }
-        #end
+        FlxG.save.data.mute = FlxG.sound.muted;
+        FlxG.save.data.volume = FlxG.sound.volume;
+        FlxG.save.flush();
       }
+      #end
     }
   }
 
