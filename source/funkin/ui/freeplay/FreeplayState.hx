@@ -336,7 +336,6 @@ class FreeplayState extends MusicBeatSubState
     exitMovers.set([blackOverlayBullshitLOLXD, bgDad],
       {
         x: FlxG.width * 1.5,
-        y: bgDad.height,
         speed: 0.4,
         wait: 0
       });
@@ -409,6 +408,7 @@ class FreeplayState extends MusicBeatSubState
 
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
+    ostName.shader = sillyStroke;
     add(fnfFreeplay);
     add(ostName);
 
