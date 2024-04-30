@@ -115,7 +115,7 @@ class Preferences
 
   static function get_autoPause():Bool
   {
-    return Save.instance.options.autoPause;
+    return Save?.instance?.options?.autoPause ?? true;
   }
 
   static function set_autoPause(value:Bool):Bool
