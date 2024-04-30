@@ -326,15 +326,20 @@ class LoadingState extends MusicBeatSubState
       // I will fix this properly later I swear -eric
       if (!path.endsWith('.png')) continue;
 
-      FunkinSprite.cacheTexture(path);
+      new Future<String>(function() {
+        FunkinSprite.cacheTexture(path);
+        // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
+        // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
+        if (path.endsWith('spritemap1.png'))
+        {
+          trace('Preloading FlxAnimate asset: ${path}');
+          openfl.Assets.getBitmapData(path, true);
+        }
+        return 'Done precaching ${path}';
+      }, true);
 
-      // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
-      // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
-      if (path.endsWith('spritemap1.png'))
-      {
-        trace('Preloading FlxAnimate asset: ${path}');
-        openfl.Assets.getBitmapData(path, true);
-      }
+      trace("Queued ${path} for precaching");
+      // FunkinSprite.cacheTexture(path);
     }
 
     // FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
