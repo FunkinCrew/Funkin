@@ -430,6 +430,7 @@ class FreeplayState extends MusicBeatSubState
     add(fp);
 
     var clearBoxSprite:FlxSprite = new FlxSprite(1165, 65).loadGraphic(Paths.image('freeplay/clearBox'));
+    clearBoxSprite.visible = false;
     add(clearBoxSprite);
 
     txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
@@ -466,7 +467,7 @@ class FreeplayState extends MusicBeatSubState
       }
     };
 
-    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr],
+    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, txtCompletion, clearBoxSprite],
       {
         x: FlxG.width,
         speed: 0.3
@@ -509,6 +510,7 @@ class FreeplayState extends MusicBeatSubState
         fp.visible = true;
         fp.updateScore(0);
 
+        clearBoxSprite.visible = true;
         txtCompletion.visible = true;
         intendedCompletion = 0;
 
@@ -752,13 +754,13 @@ class FreeplayState extends MusicBeatSubState
     switch (txtCompletion.text.length)
     {
       case 3:
-        txtCompletion.x = 1185 - 10;
+        txtCompletion.offset.x = 10;
       case 2:
-        txtCompletion.x = 1185;
+        txtCompletion.offset.x = 0;
       case 1:
-        txtCompletion.x = 1185 + 24;
+        txtCompletion.offset.x = -24;
       default:
-        txtCompletion.x = 1185;
+        txtCompletion.offset.x = 0;
     }
 
     handleInputs(elapsed);
