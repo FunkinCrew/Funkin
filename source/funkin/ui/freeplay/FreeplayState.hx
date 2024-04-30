@@ -342,7 +342,7 @@ class FreeplayState extends MusicBeatSubState
       });
 
     add(bgDad);
-    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.75}, 1, {ease: FlxEase.quintOut});
+    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.75}, 0.7, {ease: FlxEase.quintOut});
 
     blackOverlayBullshitLOLXD.shader = bgDad.shader;
 
