@@ -53,7 +53,7 @@ class Preferences
 
   static function get_flashingLights():Bool
   {
-    return Save.instance.options.flashingLights;
+    return Save?.instance?.options?.flashingLights ?? true;
   }
 
   static function set_flashingLights(value:Bool):Bool
@@ -115,7 +115,7 @@ class Preferences
 
   static function get_autoPause():Bool
   {
-    return Save.instance.options.autoPause;
+    return Save?.instance?.options?.autoPause ?? true;
   }
 
   static function set_autoPause(value:Bool):Bool

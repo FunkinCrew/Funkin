@@ -18,7 +18,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.data.level.LevelRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -336,13 +336,12 @@ class FreeplayState extends MusicBeatSubState
     exitMovers.set([blackOverlayBullshitLOLXD, bgDad],
       {
         x: FlxG.width * 1.5,
-        y: bgDad.height,
         speed: 0.4,
         wait: 0
       });
 
     add(bgDad);
-    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.75}, 1, {ease: FlxEase.quintOut});
+    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.75}, 0.7, {ease: FlxEase.quintOut});
 
     blackOverlayBullshitLOLXD.shader = bgDad.shader;
 
@@ -409,6 +408,7 @@ class FreeplayState extends MusicBeatSubState
 
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
+    ostName.shader = sillyStroke;
     add(fnfFreeplay);
     add(ostName);
 
@@ -430,6 +430,7 @@ class FreeplayState extends MusicBeatSubState
     add(fp);
 
     var clearBoxSprite:FlxSprite = new FlxSprite(1165, 65).loadGraphic(Paths.image('freeplay/clearBox'));
+    clearBoxSprite.visible = false;
     add(clearBoxSprite);
 
     txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
@@ -456,9 +457,17 @@ class FreeplayState extends MusicBeatSubState
         default:
           generateSongList({filterType: REGEXP, filterData: str}, true);
       }
+
+      // We want to land on the first song of the group, rather than random song when changing letter sorts
+      // that is, only if there's more than one song in the group!
+      if (grpCapsules.members.length > 0)
+      {
+        curSelected = 1;
+        changeSelection();
+      }
     };
 
-    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr],
+    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, txtCompletion, clearBoxSprite],
       {
         x: FlxG.width,
         speed: 0.3
@@ -501,6 +510,7 @@ class FreeplayState extends MusicBeatSubState
         fp.visible = true;
         fp.updateScore(0);
 
+        clearBoxSprite.visible = true;
         txtCompletion.visible = true;
         intendedCompletion = 0;
 
@@ -744,13 +754,13 @@ class FreeplayState extends MusicBeatSubState
     switch (txtCompletion.text.length)
     {
       case 3:
-        txtCompletion.x = 1185 - 10;
+        txtCompletion.offset.x = 10;
       case 2:
-        txtCompletion.x = 1185;
+        txtCompletion.offset.x = 0;
       case 1:
-        txtCompletion.x = 1185 + 24;
+        txtCompletion.offset.x = -24;
       default:
-        txtCompletion.x = 1185;
+        txtCompletion.offset.x = 0;
     }
 
     handleInputs(elapsed);

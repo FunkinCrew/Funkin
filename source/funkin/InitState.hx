@@ -16,14 +16,14 @@ import funkin.util.macro.MacroUtil;
 import funkin.util.WindowUtil;
 import funkin.play.PlayStatePlaylist;
 import openfl.display.BitmapData;
-import funkin.data.level.LevelRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
-import funkin.data.dialogue.ConversationRegistry;
-import funkin.data.dialogue.DialogueBoxRegistry;
-import funkin.data.dialogue.SpeakerRegistry;
-import funkin.data.freeplay.AlbumRegistry;
+import funkin.data.dialogue.conversation.ConversationRegistry;
+import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
+import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.modding.module.ModuleHandler;
@@ -74,6 +74,7 @@ class InitState extends FlxState
     //
 
     // Setup window events (like callbacks for onWindowClose)
+    // and fullscreen keybind setup
     WindowUtil.initWindowEvents();
     // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
     WindowUtil.disableCrashHandler();
@@ -304,7 +305,7 @@ class InitState extends FlxState
    */
   function startLevel(levelId:String, difficultyId:String = 'normal'):Void
   {
-    var currentLevel:funkin.ui.story.Level = funkin.data.level.LevelRegistry.instance.fetchEntry(levelId);
+    var currentLevel:funkin.ui.story.Level = funkin.data.story.level.LevelRegistry.instance.fetchEntry(levelId);
 
     if (currentLevel == null)
     {

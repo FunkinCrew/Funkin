@@ -46,10 +46,10 @@
       "version": "3.5.0"
     },
     {
-      "name": "funkVis",
+      "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "7fc9901553fbe9b8fcf6e2e84bc86eabeaf29701",
+      "ref": "98c9db09f0bbfedfe67a84538a5814aaef80bdea",
       "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
@@ -80,7 +80,7 @@
       "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "387e1665d6feb5762358134f168e6ebfe46acec8",
+      "ref": "c0c7f2680cc190c932a549c2e2fdd9b0ba2bd10e",
       "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
