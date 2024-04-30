@@ -946,16 +946,16 @@ class FreeplayState extends MusicBeatSubState
         caps.doJumpOut = true;
       }
 
-      if (Type.getClass(FlxG.state) == MainMenuState)
+      if (Type.getClass(_parentState) == MainMenuState)
       {
-        FlxG.state.persistentUpdate = false;
-        FlxG.state.persistentDraw = true;
+        _parentState.persistentUpdate = false;
+        _parentState.persistentDraw = true;
       }
 
       new FlxTimer().start(longestTimer, (_) -> {
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-        if (Type.getClass(FlxG.state) == MainMenuState)
+        if (Type.getClass(_parentState) == MainMenuState)
         {
           FunkinSound.playMusic('freakyMenu',
             {

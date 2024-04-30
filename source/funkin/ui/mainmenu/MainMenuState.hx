@@ -54,8 +54,9 @@ class MainMenuState extends MusicBeatState
 
     playMenuMusic();
 
-    persistentUpdate = true;
-    persistentDraw = true;
+    // If something else overrides these, we should keep those values.
+    // persistentUpdate = true;
+    // persistentDraw = true;
 
     var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
     bg.scrollFactor.x = 0;
