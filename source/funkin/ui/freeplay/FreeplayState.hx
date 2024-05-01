@@ -146,6 +146,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     super(FlxColor.TRANSPARENT);
+    FlxG.state.persistentUpdate = false;
   }
 
   override function create():Void
@@ -1279,11 +1280,10 @@ class FreeplayState extends MusicBeatSubState
   public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
   {
     var result = new MainMenuState();
-    result.persistentUpdate = false;
-    result.persistentDraw = true;
 
     result.openSubState(new FreeplayState(params, stickers));
-
+    result.persistentUpdate = false;
+    result.persistentDraw = true;
     return result;
   }
 }
