@@ -50,11 +50,10 @@ class Save
   /**
    * Constructing a new Save will load the default values.
    */
-  public function new(data:RawSaveData)
+  public function new(?data:RawSaveData)
   {
-    this.data = data;
-
-    if (this.data == null) data = Save.getDefault();
+    if (data == null) this.data = Save.getDefault();
+    else this.data = data;
   }
 
   public static function getDefault():RawSaveData
