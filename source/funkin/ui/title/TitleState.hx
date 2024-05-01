@@ -115,7 +115,7 @@ class TitleState extends MusicBeatState
   var titleText:FlxSprite;
   var maskShader = new LeftMaskShader();
 
-  function startIntro()
+  function startIntro():Void
   {
     playMenuMusic();
 
@@ -129,7 +129,7 @@ class TitleState extends MusicBeatState
     logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
     logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
-
+    logoBl.shader = swagShader.shader;
     logoBl.updateHitbox();
 
     outlineShaderShit = new TitleOutline();
@@ -144,7 +144,7 @@ class TitleState extends MusicBeatState
     // maskShader.frameUV = gfDance.frame.uv;
     // gfDance.shader = maskShader;
 
-    // gfDance.shader = swagShader.shader;
+    gfDance.shader = swagShader.shader;
 
     // gfDance.shader = new TitleOutline();
 
@@ -158,6 +158,7 @@ class TitleState extends MusicBeatState
     titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
     titleText.animation.play('idle');
     titleText.updateHitbox();
+    titleText.shader = swagShader.shader;
     // titleText.screenCenter(X);
     add(titleText);
 
@@ -378,7 +379,7 @@ class TitleState extends MusicBeatState
     cheatActive = true;
 
     var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
-    add(spec);
+    // add(spec);
 
     Conductor.instance.forceBPM(190);
     FlxG.camera.flash(FlxColor.WHITE, 1);
