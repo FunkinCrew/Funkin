@@ -243,11 +243,18 @@ class CrashHandler
 
   static function renderMethod():String
   {
-    return switch (FlxG.renderMethod)
+    try
     {
-      case FlxRenderMethod.DRAW_TILES: 'DRAW_TILES';
-      case FlxRenderMethod.BLITTING: 'BLITTING';
-      default: 'UNKNOWN';
+      return switch (FlxG.renderMethod)
+      {
+        case FlxRenderMethod.DRAW_TILES: 'DRAW_TILES';
+        case FlxRenderMethod.BLITTING: 'BLITTING';
+        default: 'UNKNOWN';
+      }
+    }
+    catch (e)
+    {
+      return 'ERROR ON QUERY RENDER METHOD: ${e}';
     }
   }
 }
