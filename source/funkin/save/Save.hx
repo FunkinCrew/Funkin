@@ -681,6 +681,8 @@ class Save
       else
       {
         trace('[SAVE] No legacy save data found.');
+        var gameSave = new Save();
+        FlxG.save.mergeData(gameSave.data, true);
       }
     }
     else
