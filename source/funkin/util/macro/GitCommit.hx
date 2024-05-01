@@ -80,7 +80,24 @@ class GitCommit
       haxe.macro.Context.info('[WARN] Could not determine current git commit; is this a proper Git repository?', pos);
     }
 
-    var output:String = branchProcess.stdout.readLine();
+    var output:String = '';
+    try
+    {
+      output = branchProcess.stdout.readLine();
+    }
+    catch (e)
+    {
+      if (e.message == 'Eof')
+      {
+        // Do nothing.
+        // Eof = No output.
+      }
+      else
+      {
+        // Rethrow other exceptions.
+        throw e;
+      }
+    }
     trace('Git Status Output: ${output}');
 
     // Generates a string expression
