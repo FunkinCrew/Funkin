@@ -63,5 +63,32 @@ class GitCommit
     return macro $v{branchName};
     #end
   }
+
+  /**
+   * Get whether the local Git repository is dirty or not.
+   */
+  public static macro function getGitHasLocalChanges():haxe.macro.Expr.ExprOf<Bool>
+  {
+    #if !display
+    // Get the current line number.
+    var pos = haxe.macro.Context.currentPos();
+    var branchProcess = new sys.io.Process('git', ['status', '--porcelain']);
+
+    if (branchProcess.exitCode() != 0)
+    {
+      var message = branchProcess.stderr.readAll().toString();
+      haxe.macro.Context.info('[WARN] Could not determine current git commit; is this a proper Git repository?', pos);
+    }
+
+    var output:String = branchProcess.stdout.readLine();
+    trace('Git Status Output: ${output}');
+
+    // Generates a string expression
+    return macro $v{output.length > 0};
+    #else
+    // `#if display` is used for code completion. In this case we just assume true.
+    return macro $v{true};
+    #end
+  }
 }
 #end

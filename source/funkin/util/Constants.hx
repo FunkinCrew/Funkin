@@ -46,7 +46,7 @@ class Constants
   #if (debug || FORCE_DEBUG_VERSION)
   static function get_VERSION():String
   {
-    return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH})' + VERSION_SUFFIX;
+    return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH}${GIT_HAS_LOCAL_CHANGES ? ' : MODIFIED' : ''})' + VERSION_SUFFIX;
   }
   #else
   static function get_VERSION():String
@@ -99,6 +99,8 @@ class Constants
    * The current Git commit hash.
    */
   public static final GIT_HASH:String = funkin.util.macro.GitCommit.getGitCommitHash();
+
+  public static final GIT_HAS_LOCAL_CHANGES:Bool = funkin.util.macro.GitCommit.getGitHasLocalChanges();
 
   /**
    * The current library versions, as provided by hmm.
