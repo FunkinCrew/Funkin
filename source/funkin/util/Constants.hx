@@ -90,7 +90,6 @@ class Constants
    */
   // ==============================
 
-  #if (debug || FORCE_DEBUG_VERSION)
   /**
    * The current Git branch.
    */
@@ -100,7 +99,6 @@ class Constants
    * The current Git commit hash.
    */
   public static final GIT_HASH:String = funkin.util.macro.GitCommit.getGitCommitHash();
-  #end
 
   /**
    * The current library versions, as provided by hmm.
