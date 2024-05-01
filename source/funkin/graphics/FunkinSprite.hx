@@ -214,6 +214,7 @@ class FunkinSprite extends FlxSprite
     for (graphicKey in previousCachedTextures.keys())
     {
       var graphic = previousCachedTextures.get(graphicKey);
+      if (graphic == null) continue;
       FlxG.bitmap.remove(graphic);
       graphic.destroy();
       previousCachedTextures.remove(graphicKey);
