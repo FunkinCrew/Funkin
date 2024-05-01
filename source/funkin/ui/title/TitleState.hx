@@ -62,6 +62,7 @@ class TitleState extends MusicBeatState
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
     FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+    FlxG.sound.cache(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
 
     // DEBUG BULLSHIT
 
@@ -379,9 +380,16 @@ class TitleState extends MusicBeatState
     cheatActive = true;
 
     var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
-    // add(spec);
 
-    Conductor.instance.forceBPM(190);
+    FunkinSound.playMusic('girlfriendsRingtone',
+      {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: true
+      });
+
+    FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+
     FlxG.camera.flash(FlxColor.WHITE, 1);
     FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
   }
