@@ -253,7 +253,7 @@ class Conductor
 
   function get_inputOffset():Int
   {
-    return Save.instance.options.inputOffset;
+    return Save?.instance?.options?.inputOffset ?? 0;
   }
 
   function set_inputOffset(value:Int):Int
@@ -265,7 +265,7 @@ class Conductor
 
   function get_audioVisualOffset():Int
   {
-    return Save.instance.options.audioVisualOffset;
+    return Save?.instance?.options?.audioVisualOffset ?? 0;
   }
 
   function set_audioVisualOffset(value:Int):Int

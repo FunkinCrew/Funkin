@@ -72,7 +72,7 @@ class Preferences
 
   static function get_zoomCamera():Bool
   {
-    return Save.instance.options.zoomCamera;
+    return Save?.instance?.options?.zoomCamera;
   }
 
   static function set_zoomCamera(value:Bool):Bool
