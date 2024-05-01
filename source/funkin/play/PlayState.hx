@@ -1010,7 +1010,8 @@ class PlayState extends MusicBeatSubState
       if (health <= Constants.HEALTH_MIN && !isPracticeMode && !isPlayerDying)
       {
         vocals.pause();
-        FlxG.sound.music.pause();
+
+        if (FlxG.sound.music != null) FlxG.sound.music.pause();
 
         deathCounter += 1;
 
@@ -3115,8 +3116,8 @@ class PlayState extends MusicBeatSubState
    */
   public function pauseMusic():Void
   {
-    FlxG.sound.music.pause();
-    vocals.pause();
+    if (FlxG.sound.music != null) FlxG.sound.music.pause();
+    if (vocals != null) vocals.pause();
   }
 
   /**
