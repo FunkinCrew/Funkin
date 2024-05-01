@@ -4,8 +4,16 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1]
+
+### Fixed
+- Pico game over confirm plays correctly
+
+### Changed
+- Updated peepo in creds to peepo173
+
 ## [0.3.0] - 2024-04-30
-# Added
+### Added
 - New Story Level: Weekend 1, starting Pico, Darnell, and Nene.
   - Beat the level in Story Mode to unlock the songs for Freeplay!
 - 12 new Erect remixes, featuring Kawai Sprite, Saruky, Kohta Takahashi, and Saster
@@ -19,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New song events system allows for simple customization of camera behavior.
   - Mods can implement custom song events via HScript, and new built-in song events will come in the future.
 - New credits menu to list all the dozens of people who contributed.
-# Changed
+### Changed
 - Completely refactored the game's input system for higher reliability and accuracy.
 - Reworked note rendering to massively reduce lag on larger charts.
 - Reworks to scoring and health gain.
@@ -34,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fully refactored the game's chart file format for extensibility and readability.
   - You can migrate old charts using the Import FNF Legacy option in the chart editor.
 - Various visual tweaks and improvements.
-# Fixed
+### Fixed
 - 17 quadrillion bugs across hundreds of PRs.
 
 ## [0.2.8] - 2021-04-18 (note, this one is iffy cuz we slacked wit it lol!)
