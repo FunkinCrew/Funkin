@@ -1,7 +1,6 @@
 package funkin.util.macro;
 
 #if !display
-#if (debug || FORCE_DEBUG_VERSION)
 class GitCommit
 {
   /**
@@ -65,5 +64,4 @@ class GitCommit
     #end
   }
 }
-#end
 #end
