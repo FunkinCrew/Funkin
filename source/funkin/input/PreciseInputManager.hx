@@ -163,7 +163,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
   static function getPreventDefaultKeys():Array<FlxKey>
   {
-    return [];
+    return FlxG.keys.preventDefaultKeys;
   }
 
   /**

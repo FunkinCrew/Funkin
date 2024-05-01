@@ -1773,7 +1773,6 @@ class PlayState extends MusicBeatSubState
 
   function initPreciseInputs():Void
   {
-    FlxG.keys.preventDefaultKeys = [];
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
     PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
   }
