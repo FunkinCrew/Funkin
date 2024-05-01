@@ -81,6 +81,11 @@ class CrashHandler
 
       trace('Message: $message');
     }
+
+    #if sys
+    // Exit the game. Since it threw an error, we use a non-zero exit code.
+    Sys.exit(1);
+    #end
   }
 
   static function displayError(error:UncaughtErrorEvent):Void
