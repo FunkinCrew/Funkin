@@ -918,42 +918,53 @@ class FunkinPreloader extends FlxBasePreloader
     for (i in 0...ellipsisCount)
       ellipsis += '.';
 
+    var percentage:Int = Math.floor(percent * 100);
     // Render status text
     switch (currentState)
     {
       // case FunkinPreloaderState.NotStarted:
       default:
         updateProgressLeftText('Loading \n0/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.DownloadingAssets:
         updateProgressLeftText('Downloading assets \n1/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.PreloadingPlayAssets:
         updateProgressLeftText('Preloading assets \n2/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.InitializingScripts:
         updateProgressLeftText('Initializing scripts \n3/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.CachingGraphics:
         updateProgressLeftText('Caching graphics \n4/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.CachingAudio:
         updateProgressLeftText('Caching audio \n5/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.CachingData:
         updateProgressLeftText('Caching data \n6/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.ParsingSpritesheets:
         updateProgressLeftText('Parsing spritesheets \n7/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.ParsingStages:
         updateProgressLeftText('Parsing stages \n8/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.ParsingCharacters:
         updateProgressLeftText('Parsing characters \n9/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.ParsingSongs:
         updateProgressLeftText('Parsing songs \n10/$TOTAL_STEPS $ellipsis');
+        trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       case FunkinPreloaderState.Complete:
         updateProgressLeftText('Finishing up \n$TOTAL_STEPS/$TOTAL_STEPS $ellipsis');
+        // trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       #if TOUCH_HERE_TO_PLAY
       case FunkinPreloaderState.TouchHereToPlay:
         updateProgressLeftText(null);
+        // trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
       #end
     }
-
-    var percentage:Int = Math.floor(percent * 100);
-    trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
 
     // Render percent text
     progressRightText.text = '$percentage%';
