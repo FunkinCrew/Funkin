@@ -5171,6 +5171,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Do nothing.
     }
 
+    // Place events at playhead.
+    if (FlxG.keys.justPressed.COMMA) placeEventAtPlayhead(true);
+    if (FlxG.keys.justPressed.PERIOD) placeEventAtPlayhead(false);
+
     updatePlayheadGhostHoldNotes();
   }
 
@@ -5204,6 +5208,41 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     else
     {
       trace('Already a note there. ${column}');
+    }
+  }
+
+  function placeEventAtPlayhead(isOpponent:Bool):Void
+  {
+    // SHIFT + press or LEFT_SHOULDER + press to remove events instead of placing them.
+    var removeEventInstead:Bool = FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_SHOULDER ?? false);
+
+    var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
+    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
+    var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
+    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
+
+    // Look for events within 1 step of the playhead.
+    var eventsAtPos:Array<SongEventData> = SongDataUtils.getEventsInTimeRange(currentSongChartEventData, playheadPosSnappedMs,
+      playheadPosSnappedMs + Conductor.instance.stepLengthMs * noteSnapRatio);
+    eventsAtPos = SongDataUtils.getEventsWithKind(eventsAtPos, ['FocusCamera']);
+
+    if (eventsAtPos.length == 0 && !removeEventInstead)
+    {
+      trace('Placing event ${isOpponent}');
+      var newEventData:SongEventData = new SongEventData(playheadPosSnappedMs, 'FocusCamera',
+        {
+          char: isOpponent ? 1 : 0,
+        });
+      performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
+    }
+    else if (removeEventInstead)
+    {
+      trace('Removing existing event at position.');
+      performCommand(new RemoveEventsCommand(eventsAtPos));
+    }
+    else
+    {
+      trace('Already an event there.');
     }
   }
 

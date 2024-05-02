@@ -290,6 +290,16 @@ class SongDataUtils
       return data.indexOf(note.data) != -1;
     });
   }
+
+  /**
+   * Filter a list of events to only include events whose kind is one of the given values.
+   */
+  public static function getEventsWithKind(events:Array<SongEventData>, kinds:Array<String>):Array<SongEventData>
+  {
+    return events.filter(function(event:SongEventData):Bool {
+      return kinds.indexOf(event.eventKind) != -1;
+    });
+  }
 }
 
 typedef SongClipboardItems =
