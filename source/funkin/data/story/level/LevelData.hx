@@ -35,6 +35,14 @@ typedef LevelData =
   var props:Array<LevelPropData>;
 
   /**
+   * Whether this week is visible in the story menu.
+   * @default `true`
+   */
+  @:default(true)
+  @:optional
+  var visible:Bool;
+
+  /**
    * The list of song IDs included in this level.
    */
   @:default(['bopeebo'])

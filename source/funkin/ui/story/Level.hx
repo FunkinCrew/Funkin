@@ -111,7 +111,7 @@ class Level implements IRegistryEntry<LevelData>
    */
   public function isVisible():Bool
   {
-    return true;
+    return _data.visible;
   }
 
   /**

@@ -97,6 +97,11 @@ class StoryMenuState extends MusicBeatState
    */
   var difficultySprite:FlxSprite;
 
+  /**
+   * List of available level IDs.
+   */
+  var levelList:Array<String> = [];
+
   var difficultySprites:Map<String, FlxSprite>;
 
   var stickerSubState:StickerSubState;
@@ -117,6 +122,15 @@ class StoryMenuState extends MusicBeatState
   override function create():Void
   {
     super.create();
+
+    levelList = LevelRegistry.instance.listSortedLevelIds();
+    levelList = levelList.filter(function(id) {
+      var levelData = LevelRegistry.instance.fetchEntry(id);
+      if (levelData == null) return false;
+
+      return levelData.isVisible();
+    });
+    if (levelList.length == 0) levelList = ['tutorial']; // Make sure there's at least one level to display.
 
     difficultySprites = new Map<String, FlxSprite>();
 
@@ -273,14 +287,13 @@ class StoryMenuState extends MusicBeatState
   {
     levelTitles.clear();
 
-    var levelIds:Array<String> = LevelRegistry.instance.listSortedLevelIds();
-    if (levelIds.length == 0) levelIds = ['tutorial']; // Make sure there's at least one level to display.
-
-    for (levelIndex in 0...levelIds.length)
+    for (levelIndex in 0...levelList.length)
     {
-      var levelId:String = levelIds[levelIndex];
+      var levelId:String = levelList[levelIndex];
       var level:Level = LevelRegistry.instance.fetchEntry(levelId);
-      if (level == null) continue;
+      if (level == null || !level.isVisible()) continue;
+
+      // TODO: Readd lock icon if unlocked is false.
 
       var levelTitleItem:LevelTitle = new LevelTitle(0, Std.int(levelBackground.y + levelBackground.height + 10), level);
       levelTitleItem.targetY = ((levelTitleItem.height + 20) * levelIndex);
@@ -373,9 +386,6 @@ class StoryMenuState extends MusicBeatState
    */
   function changeLevel(change:Int = 0):Void
   {
-    var levelList:Array<String> = LevelRegistry.instance.listSortedLevelIds();
-    if (levelList.length == 0) levelList = ['tutorial'];
-
     var currentIndex:Int = levelList.indexOf(currentLevelId);
 
     currentIndex += change;
