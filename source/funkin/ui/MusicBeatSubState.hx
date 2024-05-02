@@ -5,6 +5,7 @@ import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
 import flixel.util.FlxColor;
+import funkin.audio.FunkinSound;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.modding.module.ModuleHandler;
@@ -161,5 +162,55 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     this.close();
     this._parentState.openSubState(substate);
+  }
+
+  override function startOutro(onComplete:() -> Void):Void
+  {
+    var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
+
+    dispatchEvent(event);
+
+    if (event.eventCanceled)
+    {
+      return;
+    }
+    else
+    {
+      FunkinSound.stopAllAudio();
+
+      onComplete();
+    }
+  }
+
+  public override function openSubState(targetSubState:FlxSubState):Void
+  {
+    var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
+
+    dispatchEvent(event);
+
+    if (event.eventCanceled) return;
+
+    super.openSubState(targetSubState);
+  }
+
+  function onOpenSubStateComplete(targetState:FlxSubState):Void
+  {
+    dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
+  }
+
+  public override function closeSubState():Void
+  {
+    var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
+
+    dispatchEvent(event);
+
+    if (event.eventCanceled) return;
+
+    super.closeSubState();
+  }
+
+  function onCloseSubStateComplete(targetState:FlxSubState):Void
+  {
+    dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
   }
 }
