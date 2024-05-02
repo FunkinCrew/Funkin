@@ -162,6 +162,26 @@ class CrashHandler
 
     fullContents += '\n';
 
+    fullContents += 'Loaded mods: \n';
+
+    if (funkin.modding.PolymodHandler.loadedModIds.length == 0)
+    {
+      fullContents += 'No mods loaded.\n';
+    }
+    else
+    {
+      for (mod in funkin.modding.PolymodHandler.loadedModIds)
+      {
+        fullContents += '- ${mod}\n';
+      }
+    }
+
+    fullContents += '\n';
+
+    fullContents += '=====================\n';
+
+    fullContents += '\n';
+
     fullContents += message;
 
     fullContents += '\n';

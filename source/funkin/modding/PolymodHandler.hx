@@ -52,6 +52,8 @@ class PolymodHandler
     null
     #end;
 
+  public static var loadedModIds:Array<String> = [];
+
   /**
    * If the mods folder doesn't exist, create it.
    */
@@ -159,9 +161,11 @@ class PolymodHandler
       }
     }
 
+    loadedModIds = [];
     for (mod in loadedModList)
     {
       trace('  * ${mod.title} v${mod.modVersion} [${mod.id}]');
+      loadedModIds.push(mod.id);
     }
 
     #if debug
