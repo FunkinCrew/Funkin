@@ -43,8 +43,6 @@ class StoryMenuState extends MusicBeatState
   var exitingMenu:Bool = false;
   var selectedLevel:Bool = false;
 
-  var displayingModdedLevels:Bool = false;
-
   //
   // RENDER OBJECTS
   //
@@ -172,13 +170,6 @@ class StoryMenuState extends MusicBeatState
     scoreText.zIndex = 1000;
     add(scoreText);
 
-    modeText = new FlxText(10, 10, 0, 'Base Game Levels [TAB to switch]');
-    modeText.setFormat('VCR OSD Mono', 32);
-    modeText.screenCenter(X);
-    modeText.visible = hasModdedLevels();
-    modeText.zIndex = 1000;
-    add(modeText);
-
     levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
     levelTitleText.setFormat('VCR OSD Mono', 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
@@ -282,7 +273,7 @@ class StoryMenuState extends MusicBeatState
   {
     levelTitles.clear();
 
-    var levelIds:Array<String> = displayingModdedLevels ? LevelRegistry.instance.listModdedLevelIds() : LevelRegistry.instance.listBaseGameLevelIds();
+    var levelIds:Array<String> = LevelRegistry.instance.listSortedLevelIds();
     if (levelIds.length == 0) levelIds = ['tutorial']; // Make sure there's at least one level to display.
 
     for (levelIndex in 0...levelIds.length)
@@ -298,15 +289,6 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  function switchMode(moddedLevels:Bool):Void
-  {
-    displayingModdedLevels = moddedLevels;
-    buildLevelTitles();
-
-    changeLevel(999999); // Jump past the end of the list to the beginning.
-    changeDifficulty(0);
-  }
-
   override function update(elapsed:Float):Void
   {
     Conductor.instance.update();
@@ -314,9 +296,6 @@ class StoryMenuState extends MusicBeatState
     highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.5));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
-
-    modeText.text = displayingModdedLevels ? 'Mods [TAB to switch]' : 'Base Game [TAB to switch]';
-    modeText.screenCenter(X);
 
     levelTitleText.text = currentLevel.getTitle();
     levelTitleText.x = FlxG.width - (levelTitleText.width + 10); // Right align.
@@ -372,11 +351,6 @@ class StoryMenuState extends MusicBeatState
         {
           leftDifficultyArrow.animation.play('idle');
         }
-
-        if (FlxG.keys.justPressed.TAB && modeText.visible)
-        {
-          switchMode(!displayingModdedLevels);
-        }
       }
 
       if (controls.ACCEPT)
@@ -393,19 +367,13 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  function hasModdedLevels():Bool
-  {
-    return false;
-    // return LevelRegistry.instance.listModdedLevelIds().length > 0;
-  }
-
   /**
    * Changes the selected level.
    * @param change +1 (down), -1 (up)
    */
   function changeLevel(change:Int = 0):Void
   {
-    var levelList:Array<String> = displayingModdedLevels ? LevelRegistry.instance.listModdedLevelIds() : LevelRegistry.instance.listBaseGameLevelIds();
+    var levelList:Array<String> = LevelRegistry.instance.listSortedLevelIds();
     if (levelList.length == 0) levelList = ['tutorial'];
 
     var currentIndex:Int = levelList.indexOf(currentLevelId);

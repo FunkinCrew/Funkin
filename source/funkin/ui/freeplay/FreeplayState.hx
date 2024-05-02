@@ -189,7 +189,7 @@ class FreeplayState extends MusicBeatSubState
     displayedVariations = (currentCharacter == 'bf') ? [Constants.DEFAULT_VARIATION, 'erect'] : [currentCharacter];
 
     // programmatically adds the songs via LevelRegistry and SongRegistry
-    for (levelId in LevelRegistry.instance.listBaseGameLevelIds())
+    for (levelId in LevelRegistry.instance.listSortedLevelIds())
     {
       for (songId in LevelRegistry.instance.parseEntryData(levelId).songs)
       {

@@ -1,5 +1,6 @@
 package funkin.data.story.level;
 
+import funkin.util.SortUtil;
 import funkin.ui.story.Level;
 import funkin.data.story.level.LevelData;
 import funkin.ui.story.ScriptedLevel;
@@ -103,6 +104,13 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
       "week7",
       "weekend1"
     ];
+  }
+
+  public function listSortedLevelIds():Array<String>
+  {
+    var result = listEntryIds();
+    result.sort(SortUtil.defaultsThenAlphabetically.bind(listBaseGameLevelIds()));
+    return result;
   }
 
   /**
