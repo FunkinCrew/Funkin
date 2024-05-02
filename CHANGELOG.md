@@ -5,9 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.3.2] - 2024-05-??
+### Added
+- Added `,` and `.` keybinds to the Chart Editor. These place Focus Camera events at the playhead, for the opponent and player respectively.
+- Implemented a blacklist to prevent mods from calling system functions.
+  - Added a couple utility functions to call useful stuff that got blacklisted.
+- Added an `onSongLoad` script event which allows for mutation of notes and events.
+- Added the current loaded modlist to crash logs.
 ### Changed
 - Songs in the mod folders will display in Freeplay without any extra scripting.
 - Story levels in the mod folders will display in Story without any extra scripting.
+### Fixed
+- Fixed an issue where health icon transition animations would loop and never finish properly.
+- Fixed an issue where video cutscenes flagged as mid-song would crash the game when they finish.
+- Fixed an issue where some substate lifecycle events were not being dispatched.
+- Fixed a crash when trying to load into the Animation Offsets menu with an invalid character.
+### Removed
+- Removed some unused `.txt` files in the `assets/data` folder.
 
 ## [0.3.1] - 2024-05-01
 ### Changed
@@ -77,7 +90,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Easter eggs
 - readme's in desktop versions of the game
 ### Changed
-
 - New icons, old one was placeholder since October woops!
 - Made the transitions between the story mode levels more seamless.
 - Offset of the Newgrounds logo on boot screen.
