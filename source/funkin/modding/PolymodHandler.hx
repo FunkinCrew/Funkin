@@ -1,5 +1,6 @@
 package funkin.modding;
 
+import polymod.fs.ZipFileSystem;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
@@ -53,6 +54,9 @@ class PolymodHandler
     #end;
 
   public static var loadedModIds:Array<String> = [];
+
+  // Use SysZipFileSystem on desktop and MemoryZipFilesystem on web.
+  static var modFileSystem:Null<ZipFileSystem> = null;
 
   /**
    * If the mods folder doesn't exist, create it.
@@ -115,6 +119,8 @@ class PolymodHandler
 
     buildImports();
 
+    if (modFileSystem == null) modFileSystem = buildFileSystem();
+
     var loadedModList:Array<ModMetadata> = polymod.Polymod.init(
       {
         // Root directory for all mods.
@@ -131,6 +137,8 @@ class PolymodHandler
         // modVersions: null,
         // A map telling Polymod what the asset type is for unfamiliar file extensions.
         // extensionMap: [],
+
+        customFilesystem: modFileSystem,
 
         frameworkParams: buildFrameworkParams(),
 
@@ -204,6 +212,16 @@ class PolymodHandler
       trace('  * $item');
     }
     #end
+  }
+
+  static function buildFileSystem():polymod.fs.ZipFileSystem
+  {
+    polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
+    return new ZipFileSystem(
+      {
+        modRoot: MOD_FOLDER,
+        autoScan: true
+      });
   }
 
   static function buildImports():Void
@@ -284,10 +302,14 @@ class PolymodHandler
   public static function getAllMods():Array<ModMetadata>
   {
     trace('Scanning the mods folder...');
+
+    if (modFileSystem == null) modFileSystem = buildFileSystem();
+
     var modMetadata:Array<ModMetadata> = Polymod.scan(
       {
         modRoot: MOD_FOLDER,
         apiVersionRule: API_VERSION,
+        fileSystem: modFileSystem,
         errorCallback: PolymodErrorHandler.onPolymodError
       });
     trace('Found ${modMetadata.length} mods when scanning.');
