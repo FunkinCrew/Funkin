@@ -211,8 +211,20 @@ class PolymodHandler
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
 
     // Add blacklisting for prohibited classes and packages.
+
+    // `Sys`
+    Polymod.blacklistImport('Sys');
+
     // `polymod.*`
     for (cls in ClassMacro.listClassesInPackage('polymod'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // `sys.*`
+    for (cls in ClassMacro.listClassesInPackage('sys'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
