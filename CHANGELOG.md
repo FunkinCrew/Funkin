@@ -11,14 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added a couple utility functions to call useful stuff that got blacklisted.
 - Added an `onSongLoad` script event which allows for mutation of notes and events.
 - Added the current loaded modlist to crash logs.
+- Added the `visible` attribute to Level JSON data.
+- Enabled ZIP file system support for Polymod (make sure the metadata is in the root of the ZIP).
 ### Changed
 - Songs in the mod folders will display in Freeplay without any extra scripting.
 - Story levels in the mod folders will display in Story without any extra scripting.
+- Moved scroll speed to a variable in `PlayState` so it can be modified after the song starts.
 ### Fixed
+- Fixed a typo in the credits folder (`Custcene` -> `Cutscene`)
 - Fixed an issue where health icon transition animations would loop and never finish properly.
 - Fixed an issue where video cutscenes flagged as mid-song would crash the game when they finish.
 - Fixed an issue where some substate lifecycle events were not being dispatched.
 - Fixed a crash when trying to load into the Animation Offsets menu with an invalid character.
+- Fixed an issue where the preloader would spam the logs when it was complete and waiting for user input.
 ### Removed
 - Removed some unused `.txt` files in the `assets/data` folder.
 
