@@ -213,9 +213,23 @@ class PolymodHandler
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
+    // Sys.command() can run malicious processes
     Polymod.blacklistImport('Sys');
 
+    // `Reflect`
+    // Reflect.callMethod() can access blacklisted packages
+    Polymod.blacklistImport('Reflect');
+
+    // `Type`
+    // Type.createInstance(Type.resolveClass()) can access blacklisted packages
+    Polymod.blacklistImport('Type');
+
+    // `cpp.Lib`
+    // Lib.load() can load malicious DLLs
+    Polymod.blacklistImport('cpp.Lib');
+
     // `polymod.*`
+    // You can probably unblacklist a module
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
       if (cls == null) continue;
