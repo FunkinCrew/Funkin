@@ -357,10 +357,10 @@ class HealthIcon extends FunkinSprite
     this.animation.addByPrefix(Idle, Idle, 24, true);
     this.animation.addByPrefix(Winning, Winning, 24, true);
     this.animation.addByPrefix(Losing, Losing, 24, true);
-    this.animation.addByPrefix(ToWinning, ToWinning, 24, true);
-    this.animation.addByPrefix(ToLosing, ToLosing, 24, true);
-    this.animation.addByPrefix(FromWinning, FromWinning, 24, true);
-    this.animation.addByPrefix(FromLosing, FromLosing, 24, true);
+    this.animation.addByPrefix(ToWinning, ToWinning, 24, false);
+    this.animation.addByPrefix(ToLosing, ToLosing, 24, false);
+    this.animation.addByPrefix(FromWinning, FromWinning, 24, false);
+    this.animation.addByPrefix(FromLosing, FromLosing, 24, false);
   }
 
   /**
