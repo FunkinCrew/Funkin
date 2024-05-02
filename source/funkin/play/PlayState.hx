@@ -1831,15 +1831,21 @@ class PlayState extends MusicBeatSubState
     Highscore.tallies.combo = 0;
     Highscore.tallies = new Tallies();
 
-    // Reset song events.
-    songEvents = currentChart.getEvents();
+    var event:SongLoadScriptEvent = new SongLoadScriptEvent(currentChart.song.id, currentChart.difficulty, currentChart.notes.copy(), currentChart.getEvents());
+
+    dispatchEvent(event);
+
+    var builtNoteData = event.notes;
+    var builtEventData = event.events;
+
+    songEvents = builtEventData;
     SongEventRegistry.resetEvents(songEvents);
 
     // Reset the notes on each strumline.
     var playerNoteData:Array<SongNoteData> = [];
     var opponentNoteData:Array<SongNoteData> = [];
 
-    for (songNote in currentChart.notes)
+    for (songNote in builtNoteData)
     {
       var strumTime:Float = songNote.time;
       if (strumTime < startTime) continue; // Skip notes that are before the start time.
