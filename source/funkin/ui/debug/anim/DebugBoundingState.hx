@@ -532,6 +532,11 @@ class DebugBoundingState extends FlxState
     // swagChar.debugMode = true;
     offsetView.add(swagChar);
 
+    if (swagChar == null || swagChar.frames == null)
+    {
+      trace('ERROR: Failed to load character ${char}!');
+    }
+
     generateOutlines(swagChar.frames.frames);
     bf.pixels = swagChar.pixels;
 
