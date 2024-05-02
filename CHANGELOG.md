@@ -4,8 +4,18 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.1]
+## [0.3.2] - 2024-05-??
+### Changed
+- Songs in the mod folders will display in Freeplay without any extra scripting.
+- Story levels in the mod folders will display in Story without any extra scripting.
 
+## [0.3.1] - 2024-05-01
+### Changed
+- Ensure the Git commit hash always displays in the log files.
+- Added whether the local Git repo was modified to the log files.
+- Removed "PROTOTYPE" text on release builds only (it still shows on debug builds).
+- Added additional credits and special thanks.
+- Updated peepo in creds to peepo173
 ### Fixed
 - Fix a crash when retrieving system specs while handing a crash.
 - Fix a crash triggered when pausing before the song started.
@@ -14,13 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pico game over confirm plays correctly
 - When exiting from a song into freeplay, main menu no longer takes inputs unintentionally (aka issues with merch links opening up when selecting songs)
 - Fix for arrow keys causing web browser page scroll
-
-### Changed
-- Ensure the Git commit hash always displays in the log files.
-- Added whether the local Git repo was modified to the log files.
-- Removed "PROTOTYPE" text on release builds only (it still shows on debug builds).
-- Added additional credits and special thanks.
-- Updated peepo in creds to peepo173
 
 ## [0.3.0] - 2024-04-30
 ### Added
