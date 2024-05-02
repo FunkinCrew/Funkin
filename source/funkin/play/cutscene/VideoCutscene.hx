@@ -339,7 +339,8 @@ class VideoCutscene
       case CutsceneType.ENDING:
         PlayState.instance.endSong(true); // true = right goddamn now
       case CutsceneType.MIDSONG:
-        throw "Not implemented!";
+        // Do nothing.
+        // throw "Not implemented!";
     }
   }
 }
@@ -347,6 +348,6 @@ class VideoCutscene
 enum CutsceneType
 {
   STARTING; // The default cutscene type. Starts the countdown after the video is done.
-  MIDSONG; // TODO: Implement this!
+  MIDSONG; // Does nothing.
   ENDING; // Ends the song after the video is done.
 }
