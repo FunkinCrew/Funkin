@@ -283,7 +283,7 @@ class Strumline extends FlxSpriteGroup
     // var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     // ^^^ commented this out... do NOT make it move faster as it moves offscreen!
     var vwoosh:Float = 1.0;
-    var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+    var scrollSpeed:Float = (isPlayer ? PlayState.instance?.playerScrollSpeed : PlayState.instance?.opponentScrollSpeed) ?? 1.0;
 
     return
       Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
