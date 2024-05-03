@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Songs in the mod folders will display in Freeplay without any extra scripting.
 - Story levels in the mod folders will display in Story without any extra scripting.
-- Moved scroll speed to a variable in `PlayState` so it can be modified after the song starts.
 ### Fixed
 - Fixed a typo in the credits folder (`Custcene` -> `Cutscene`)
 - Fixed an issue where health icon transition animations would loop and never finish properly.
