@@ -192,7 +192,7 @@ class StoryMenuState extends MusicBeatState
 
     buildLevelTitles();
 
-    leftDifficultyArrow = new FlxSprite(levelTitles.members[0].x + levelTitles.members[0].width + 10, levelTitles.members[0].y + 10);
+    leftDifficultyArrow = new FlxSprite(870, 480);
     leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
     leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
     leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
@@ -202,7 +202,7 @@ class StoryMenuState extends MusicBeatState
     buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
-    rightDifficultyArrow = new FlxSprite(difficultySprite.x + difficultySprite.width + 10, leftDifficultyArrow.y);
+    rightDifficultyArrow = new FlxSprite(1245, leftDifficultyArrow.y);
     rightDifficultyArrow.frames = leftDifficultyArrow.frames;
     rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
     rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
