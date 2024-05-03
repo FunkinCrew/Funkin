@@ -128,7 +128,6 @@ class FreeplayState extends MusicBeatSubState
   var albumRoll:AlbumRoll;
 
   var letterSort:LetterSort;
-  var typing:FlxInputText;
   var exitMovers:ExitMoverData = new Map();
 
   var stickerSubState:StickerSubState;
@@ -536,12 +535,6 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
-    typing = new FlxInputText(100, 100);
-
-    typing.callback = function(txt, action) {
-      trace(action);
-    };
-
     forEach(function(bs) {
       bs.cameras = [funnyCam];
     });
@@ -916,7 +909,7 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true);
     }
 
-    if (controls.BACK && !typing.hasFocus)
+    if (controls.BACK)
     {
       FlxTween.globalManager.clear();
       FlxTimer.globalManager.clear();
