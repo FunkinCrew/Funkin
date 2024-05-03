@@ -4,7 +4,7 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.2] - 2024-05-??
+## [0.3.2] - 2024-05-03
 ### Added
 - Added `,` and `.` keybinds to the Chart Editor. These place Focus Camera events at the playhead, for the opponent and player respectively.
 - Implemented a blacklist to prevent mods from calling system functions.
@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Songs in the mod folders will display in Freeplay without any extra scripting.
 - Story levels in the mod folders will display in Story without any extra scripting.
+- All audio should sound better in HTML5, less muddy
 ### Fixed
 - Fixed a typo in the credits folder (`Custcene` -> `Cutscene`)
 - Fixed an issue where health icon transition animations would loop and never finish properly.
@@ -23,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue where some substate lifecycle events were not being dispatched.
 - Fixed a crash when trying to load into the Animation Offsets menu with an invalid character.
 - Fixed an issue where the preloader would spam the logs when it was complete and waiting for user input.
+- Should definitely have the fix for freeplay where it stops taking control of the main menu below it
+- Changed the code for the story menu difficulties so that "normal" doesn't overlap the arrows after leaving Weekend 1
 ### Removed
 - Removed some unused `.txt` files in the `assets/data` folder.
 
