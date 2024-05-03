@@ -145,12 +145,13 @@ class FreeplayState extends MusicBeatSubState
     }
 
     super(FlxColor.TRANSPARENT);
-    FlxG.state.persistentUpdate = false;
   }
 
   override function create():Void
   {
     super.create();
+
+    FlxG.state.persistentUpdate = false;
 
     FlxTransitionableState.skipNextTransIn = true;
 
