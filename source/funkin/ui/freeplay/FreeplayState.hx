@@ -732,8 +732,6 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    if (FlxG.keys.justPressed.T) typing.hasFocus = true;
-
     lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
     lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
 
