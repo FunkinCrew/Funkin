@@ -217,16 +217,6 @@ class PlayState extends MusicBeatSubState
   public var playbackRate:Float = 1.0;
 
   /**
-   * The scroll speed on the player's strumline.
-   */
-  public var playerScrollSpeed:Float = 1.0;
-
-  /**
-   * The scroll speed on the opponent's strumline.
-   */
-  public var opponentScrollSpeed:Float = 1.0;
-
-  /**
    * An empty FlxObject contained in the scene.
    * The current gameplay camera will always follow this object. Tween its position to move the camera smoothly.
    *
@@ -879,9 +869,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.clean();
       opponentStrumline.clean();
 
-      playerScrollSpeed = currentChart?.scrollSpeed ?? 1.0;
-      opponentScrollSpeed = currentChart?.scrollSpeed ?? 1.0;
-
       // Delete all notes and reset the arrays.
       regenNoteData();
 
@@ -1468,7 +1455,7 @@ class PlayState extends MusicBeatSubState
    */
   function danceOnBeat():Void
   {
-    if (currentStage == null || Conductor.instance == null) return;
+    if (currentStage == null) return;
 
     // TODO: Add HEY! song events to Tutorial.
     if (Conductor.instance.currentBeat % 16 == 15
