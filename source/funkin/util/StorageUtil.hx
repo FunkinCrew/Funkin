@@ -94,12 +94,14 @@ class StorageUtil
           StorageUtil.mkDirs(Path.directory(savePath));
         }
 
-        FileUtil.writeBytesToPath(savePath, Assets.getBytes(copyPath), true); // Write bytes to the savePath
+        // Write bytes to the savePath
+        FileUtil.writeBytesToPath(savePath, Assets.getBytes(copyPath), true);
       }
     }
     catch (e:Exception)
     {
-      trace(e.message); // Catch and trace any exceptions that occur
+      // Catch and trace any exceptions that occur
+      trace(e.message);
     }
   }
 }
