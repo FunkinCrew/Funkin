@@ -406,10 +406,11 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.2,
         wait: 0
       });
-
+    /* Breaks on AMD temp fix
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
     ostName.shader = sillyStroke;
+    */
     add(fnfFreeplay);
     add(ostName);
 
