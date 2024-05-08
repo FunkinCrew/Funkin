@@ -140,16 +140,29 @@ class HitNoteScriptEvent extends NoteScriptEvent
    */
   public var score:Int;
 
-  public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, comboCount:Int = 0):Void
+  /**
+   * Whether the judgement caused a combo break.
+   */
+  public var isComboBreak:Bool = false;
+
+  /**
+   * The time difference when the player hit the note
+   */
+  public var hitDiff:Float = 0;
+
+  public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0):Void
   {
     super(NOTE_HIT, note, healthChange, comboCount, true);
     this.score = score;
     this.judgement = judgement;
+    this.isComboBreak = isComboBreak;
+    this.hitDiff = hitDiff;
   }
 
   public override function toString():String
   {
-    return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ')';
+    return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ', isComboBreak='
+      + isComboBreak + ', hitDiff=' + hitDiff + ')';
   }
 }
 
