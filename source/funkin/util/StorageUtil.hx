@@ -87,7 +87,7 @@ class StorageUtil
   {
     try
     {
-      if (!FileUtil.doesFileExist.exists(savePath) && Assets.exists(copyPath))
+      if (!FileUtil.doesFileExist(savePath) && Assets.exists(copyPath))
       {
         if (!FileUtil.doesFileExist(Path.directory(savePath)))
         {
