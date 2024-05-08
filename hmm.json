@@ -84,6 +84,11 @@
       "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
+      "name": "extension-androidtools",
+      "type": "haxelib",
+      "version": "2.0.2"
+    },
+    {
       "name": "hxcpp",
       "type": "haxelib",
       "version": "4.3.2"
