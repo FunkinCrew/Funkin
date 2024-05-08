@@ -65,7 +65,15 @@ class WiggleEffectRuntime extends FlxRuntimeShader
     return time = v;
   }
 
-  public function new(speed:Float, freq:Float, amplitude:Float, ?effect:WiggleEffectType = DREAMY):Void
+  var pixelPerfect(default, set):Bool = false;
+
+  function set_pixelPerfect(v:Bool):Bool
+  {
+    this.setBool('uPixelPerfect', v);
+    return pixelPerfect = v;
+  }
+
+  public function new(speed:Float, freq:Float, amplitude:Float, ?effect:WiggleEffectType = DREAMY, ?pixelPerfect:Bool = false):Void
   {
     super(Assets.getText(Paths.frag('wiggle')));
 
@@ -74,6 +82,7 @@ class WiggleEffectRuntime extends FlxRuntimeShader
     this.waveFrequency = freq;
     this.waveAmplitude = amplitude;
     this.effectType = effect;
+    this.pixelPerfect = pixelPerfect;
   }
 
   public function update(elapsed:Float)
