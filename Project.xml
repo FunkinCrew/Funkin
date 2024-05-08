@@ -124,6 +124,7 @@
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
 	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
+	<haxelib name="extension-androidtools" if="android" /> <!-- Android Functions -->
 	<haxelib name="funkin.vis"/>
 
 
@@ -234,7 +235,7 @@
 	<postbuild haxe="source/Postbuild.hx"/> -->
 
 	<!-- Enable this on platforms which do not support dropping files onto the window. -->
-	<haxedef name="FILE_DROP_UNSUPPORTED" if="mac" />
+	<haxedef name="FILE_DROP_UNSUPPORTED" if="mac || mobile" />
 	<section unless="FILE_DROP_UNSUPPORTED">
 		<haxedef name="FILE_DROP_SUPPORTED" />
 	</section>

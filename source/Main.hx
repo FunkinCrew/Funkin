@@ -1,5 +1,9 @@
 package;
 
+#if android
+import android.content.Context;
+import android.os.Build;
+#end
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
@@ -35,6 +39,10 @@ class Main extends Sprite
 
   public static function main():Void
   {
+    #if android
+    Sys.setCwd(Path.addTrailingSlash(VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir()));
+    #end
+
     // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
     CrashHandler.initialize();
     CrashHandler.queryStatus();
