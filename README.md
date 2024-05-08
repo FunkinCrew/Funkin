@@ -11,7 +11,7 @@ This game was made with love to Newgrounds and it's community. Extra love to Tom
 
 **PLEASE USE THE LINKS ABOVE IF YOU JUST WANT TO PLAY THE GAME**
 
-To learn how to install the necessary dependencies and compile the game from source, please check out our [building the game](/docs/compiling.md) guide.
+To learn how to install the necessary dependencies and compile the game from source, please check out our [building the game](/docs/COMPILING.md) guide.
 
 # Contributing
 
