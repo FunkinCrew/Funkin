@@ -1,12 +1,9 @@
 package funkin.util;
 
+import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.Exception;
 import lime.utils.Assets;
-#if sys
-import sys.FileSystem;
-import sys.io.File;
-#end
 
 using StringTools;
 
@@ -48,7 +45,7 @@ class Storage
 
         total += part;
 
-        if (!FileSystem.exists(total)) FileSystem.createDirectory(total);
+        FileUtil.createDirIfNotExists(total);
       }
     }
   }
@@ -57,11 +54,11 @@ class Storage
   {
     try
     {
-      if (!FileSystem.exists(savePath) && Assets.exists(copyPath))
+      if (!FileUtil.doesFileExist.exists(savePath) && Assets.exists(copyPath))
       {
-        if (!FileSystem.exists(Path.directory(savePath))) Storage.mkDirs(Path.directory(savePath));
+        if (!FileUtil.doesFileExist(Path.directory(savePath))) Storage.mkDirs(Path.directory(savePath));
 
-        File.saveBytes(savePath, Assets.getBytes(copyPath));
+        FileUtil.writeBytesToPath(savePath, Assets.getBytes(copyPath), Force);
       }
     }
     catch (e:Exception)
