@@ -12,7 +12,7 @@
 `1` (Play) - End Song
 `2` (Play) - Add 10% Health
 `3` (Play) - Subtract 5% Health
-`7` (Play) - (NOT WORKING) Open Chart Editor
+`7` (Play) - Open Chart Editor
 `8` (Play) - Open Animation Editor
 `9` (Play) - (Easter Egg) Classic Health Icon
 `PGUP`/`Fn+Up` (Play) - Skip Forward In Time
