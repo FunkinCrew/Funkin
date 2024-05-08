@@ -123,7 +123,8 @@
 	<haxelib name="flixel-text-input" /> <!-- Improved text field rendering for HaxeUI -->
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
-	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
+	<haxelib name="hxCodec" if="desktop || android" unless="hl" /> <!-- Video playback -->
+	<haxelib name="extension-androidtools" if="android" /> <!-- Android Functions -->
 	<haxelib name="funkin.vis"/>
 
 
@@ -212,7 +213,7 @@
 	<!-- Uncomment this to wipe your input settings. -->
 	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
 
-	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5 || GITHUB_BUILD">
+	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5 || mobile || GITHUB_BUILD">
 		<!--
 			Use the parent assets folder rather than the exported one
 			No more will we accidentally undo our changes!
@@ -234,14 +235,14 @@
 	<postbuild haxe="source/Postbuild.hx"/> -->
 
 	<!-- Enable this on platforms which do not support dropping files onto the window. -->
-	<haxedef name="FILE_DROP_UNSUPPORTED" if="mac" />
+	<haxedef name="FILE_DROP_UNSUPPORTED" if="mac || mobile" />
 	<section unless="FILE_DROP_UNSUPPORTED">
 		<haxedef name="FILE_DROP_SUPPORTED" />
 	</section>
 
 	<!-- Enable this on platforms which do not support the edsior views. -->
-	<haxedef name="CHART_EDITOR_UNSUPPORTED" if="web" />
-	<haxedef name="CHART_EDITOR_SUPPORTED" unless="web"/>
+	<haxedef name="CHART_EDITOR_UNSUPPORTED" if="web || mobile" />
+	<haxedef name="CHART_EDITOR_SUPPORTED" unless="web || mobile"/>
 
 	<!-- Options for Polymod -->
 	<section if="polymod">
