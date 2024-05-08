@@ -648,7 +648,7 @@ class FileUtil
   public static function openFolder(pathFolder:String)
   {
     #if windows
-    Sys.command('explorer', [pathFolder]);
+    WindowUtil.shellExecute("open", pathFolder);
     #elseif mac
     // mac could be fuckie with where the log folder is relative to the game file...
     // if this comment is still here... it means it has NOT been verified on mac yet!
