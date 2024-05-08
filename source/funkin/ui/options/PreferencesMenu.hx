@@ -71,7 +71,7 @@ class PreferencesMenu extends Page
 
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length), defaultValue);
 
     items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
       var value = !checkbox.currentValue;
