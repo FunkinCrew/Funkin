@@ -69,11 +69,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   /**
-   * Internally used to define the animation offsets to apply.
-   */
-  var _currentAnimOffset:FlxPoint = FlxPoint.get();
-
-  /**
    * The offset of the character relative to the position specified by the stage.
    */
   public var globalOffsets(default, set):Array<Float> = [0, 0];
@@ -101,7 +96,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (animOffsets == null) animOffsets = [0, 0];
     if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
-    _currentAnimOffset.set(value[0], value[1]);
     return animOffsets = value;
   }
 
@@ -354,14 +348,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
-    output -= _currentAnimOffset;
+    output.x -= animOffsets[0];
+    output.y -= animOffsets[1];
     return output;
-  }
-
-  override function destroy():Void
-  {
-    _currentAnimOffset = flixel.util.FlxDestroyUtil.put(_currentAnimOffset);
-    super.destroy();
   }
 
   public function onPause(event:PauseScriptEvent) {}
