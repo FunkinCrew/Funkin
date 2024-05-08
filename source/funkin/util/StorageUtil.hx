@@ -14,12 +14,12 @@ class StorageUtil
 {
   /**
    * Copies necessary files based on specified mappings of file extensions to folder paths.
-   * 
+   *
    * @param extensionToFolder A map containing file extensions as keys and folder paths as values.
    */
   public static function copyNecessaryFiles(extensionToFolder:Map<String, String>):Void
   {
-    for (key => value in extensionToFolderMap)
+    for (key => value in extensionToFolder)
     {
       for (file in Assets.list().filter(folder -> folder.startsWith(value)))
       {
@@ -39,7 +39,7 @@ class StorageUtil
 
   /**
    * Creates directories recursively for a given directory path.
-   * 
+   *
    * @param directory The directory path to create.
    */
   public static function mkDirs(directory:String):Void
@@ -79,7 +79,7 @@ class StorageUtil
 
   /**
    * Copies a file from assets to a specified location.
-   * 
+   *
    * @param copyPath The path of the asset to copy.
    * @param savePath The destination path to save the copied file.
    */
@@ -95,7 +95,7 @@ class StorageUtil
         }
 
         // Write bytes to the savePath
-        FileUtil.writeBytesToPath(savePath, Assets.getBytes(copyPath), true);
+        FileUtil.writeBytesToPath(savePath, Assets.getBytes(copyPath), FileWriteMode.Force);
       }
     }
     catch (e:Exception)
