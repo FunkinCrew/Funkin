@@ -426,7 +426,7 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
-        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
+        holdNote.updateSustainLength(conductorInUse);
 
         if (holdNote.sustainLength <= 10)
         {
@@ -651,6 +651,8 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
+    holdNote.updateSustainLength(conductorInUse);
+
     // TODO: Add a setting to disable note splashes.
     // if (Settings.noSplash) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;

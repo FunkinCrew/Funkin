@@ -150,6 +150,11 @@ class SustainTrail extends FlxSprite
     return (susLength * 0.45 * scroll);
   }
 
+  public inline function updateSustainLength(conductorInUse:Conductor):Void
+  {
+    sustainLength = (strumTime + fullSustainLength) - conductorInUse.songPosition;
+  }
+
   function set_sustainLength(s:Float):Float
   {
     if (s < 0.0) s = 0.0;
