@@ -197,8 +197,12 @@ class FreeplayState extends MusicBeatSubState
 
         // Only display songs which actually have available charts for the current character.;
         var variations = [Constants.DEFAULT_VARIATION];
-        for (variation in song.variations)
-          if (!variations.contains(variation)) variations.push(variation);
+        if (song.variations.contains(currentCharacter)) variations = [currentCharacter];
+        else
+        {
+          for (variation in song.variations)
+            if (!variations.contains(variation)) variations.push(variation);
+        }
 
         var availableDifficultiesForSong:Array<String> = song.listDifficulties(variations, false);
         if (availableDifficultiesForSong.length == 0) continue;
