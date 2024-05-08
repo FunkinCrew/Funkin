@@ -1,7 +1,7 @@
 # Funkin' Debug Hotkeys
 
-`F4` (EVERYWHERE) - Leave Current State and move to Main Menu
-`F5` (EVERYWHERE) - Hot Reload Data Files
+`F4` (ANYWHERE) - Leave Current State and move to Main Menu
+`F5` (ANYWHERE) - Hot Reload Data Files
 
 `Y` (Title Screen) - WOAH
 
