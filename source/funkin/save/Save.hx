@@ -56,6 +56,10 @@ class Save
     else this.data = data;
   }
 
+  /**
+   * Returns the defaults for a save file.
+   * @return RawSaveData
+   */
   public static function getDefault():RawSaveData
   {
     return {
