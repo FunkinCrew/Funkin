@@ -517,8 +517,10 @@ class FreeplayState extends MusicBeatSubState
         intendedCompletion = 0;
 
         new FlxTimer().start(1.5 / 24, function(bold) {
+          /* Breaks on AMD temp fix
           sillyStroke.width = 0;
           sillyStroke.height = 0;
+          */
           changeSelection();
         });
       });
