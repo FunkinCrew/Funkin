@@ -213,7 +213,7 @@
 	<!-- Uncomment this to wipe your input settings. -->
 	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
 
-	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5 || GITHUB_BUILD">
+	<section if="debug" unless="NO_REDIRECT_ASSETS_FOLDER || html5 || mobile || GITHUB_BUILD">
 		<!--
 			Use the parent assets folder rather than the exported one
 			No more will we accidentally undo our changes!
@@ -241,8 +241,8 @@
 	</section>
 
 	<!-- Enable this on platforms which do not support the edsior views. -->
-	<haxedef name="CHART_EDITOR_UNSUPPORTED" if="web" />
-	<haxedef name="CHART_EDITOR_SUPPORTED" unless="web"/>
+	<haxedef name="CHART_EDITOR_UNSUPPORTED" if="web || mobile" />
+	<haxedef name="CHART_EDITOR_SUPPORTED" unless="web || mobile"/>
 
 	<!-- Options for Polymod -->
 	<section if="polymod">
