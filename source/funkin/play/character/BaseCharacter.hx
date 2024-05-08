@@ -1,6 +1,7 @@
 package funkin.play.character;
 
 import flixel.math.FlxPoint;
+import flixel.FlxCamera;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.character.CharacterData.CharacterRenderType;
@@ -118,19 +119,17 @@ class BaseCharacter extends Bopper
    */
   public var cameraFocusPoint(default, null):FlxPoint = new FlxPoint(0, 0);
 
+  /**
+   * Defines the animation offset.
+   */
+  public var animOffset:FlxPoint = FlxPoint.get();
+
   override function set_animOffsets(value:Array<Float>):Array<Float>
   {
     if (animOffsets == null) value = [0, 0];
     if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
-    // Make sure animOffets are halved when scale is 0.5.
-    var xDiff = (animOffsets[0] * this.scale.x / (this.isPixel ? 6 : 1)) - value[0];
-    var yDiff = (animOffsets[1] * this.scale.y / (this.isPixel ? 6 : 1)) - value[1];
-
-    // Call the super function so that camera focus point is not affected.
-    super.set_x(this.x + xDiff);
-    super.set_y(this.y + yDiff);
-
+    animOffset.set(value[0], value[1]);
     return animOffsets = value;
   }
 
@@ -570,9 +569,23 @@ class BaseCharacter extends Bopper
     }
   }
 
+  // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output -= animOffset;
+    return output;
+  }
+
   public override function onDestroy(event:ScriptEvent):Void
   {
     this.characterType = OTHER;
+  }
+
+  override function destroy():Void
+  {
+    animOffset = flixel.util.FlxDestroyUtil.put(animOffset);
+    super.destroy();
   }
 
   /**
