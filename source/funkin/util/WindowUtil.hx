@@ -115,6 +115,20 @@ class WindowUtil
   }
 
   /**
+   * Runs ShellExecute from shell32
+   */
+  public static function shellExecute(?operation:String, ?file:String, ?parameters:String, ?directory:String):Void
+  {
+    #if (cpp && windows)
+    untyped __cpp__('static HMODULE hShell32 = LoadLibraryW(L"shell32.dll");');
+    untyped __cpp__('static const auto pShellExecuteW = (decltype(ShellExecuteW)*)GetProcAddress(hShell32, "ShellExecuteW");');
+    untyped __cpp__('pShellExecuteW(NULL, operation.__WCStr(), file.__WCStr(), parameters.__WCStr(), directory.__WCStr(), SW_SHOWDEFAULT);');
+    #else
+    // Do nothing.
+    #end
+  }
+
+  /**
    * Sets the title of the application window.
    * @param value The title to use.
    */
