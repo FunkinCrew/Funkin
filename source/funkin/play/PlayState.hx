@@ -2552,7 +2552,7 @@ class PlayState extends MusicBeatSubState
       if (isChartingMode)
       {
         if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
-        PlayState.instance.close(); // This only works because PlayState is a substate!
+        this.close(); // This only works because PlayState is a substate!
       }
       else
       {
