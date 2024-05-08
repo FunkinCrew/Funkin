@@ -14,7 +14,7 @@ FNFC files are a store of all the required files for crediting and editing chart
 
 ## Overview
 
-Friday Night Funkin' charts utilize a concept called "variations"; these are groups of difficulties which share gameplay data. This is done to prevent significant redundancy; if each chart
+Friday Night Funkin' charts utilize a concept called "variations"; these are groups of difficulties which share gameplay data. This is done to prevent significant redundancy.
 
 If a difficulty for a song should have the same events as another difficulty, those difficulties should be in the same variation (for example, Normal and Hard). If a particular difficulty for a song should have different song events, characters, stages, or music (including instruments or vocals) from the base variation, they should use a different variation. Difficulties for a song start in the `default` variation.
 
