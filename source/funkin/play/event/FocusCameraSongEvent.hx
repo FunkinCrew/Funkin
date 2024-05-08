@@ -127,7 +127,7 @@ class FocusCameraSongEvent extends SongEvent
     switch (ease)
     {
       case 'CLASSIC': // Old-school. No ease. Just set follow point.
-        PlayState.instance.resetCamera(false, true);
+        PlayState.instance.cancelCameraFollowTween();
         PlayState.instance.cameraFollowPoint.setPosition(targetX, targetY);
       case 'INSTANT': // Instant ease. Duration is automatically 0.
         PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
