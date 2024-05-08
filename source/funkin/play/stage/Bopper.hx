@@ -1,6 +1,7 @@
 package funkin.play.stage;
 
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
@@ -68,6 +69,11 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   /**
+   * Internally used to define the animation offsets to apply.
+   */
+  var _currentAnimOffset:FlxPoint = FlxPoint.get();
+
+  /**
    * The offset of the character relative to the position specified by the stage.
    */
   public var globalOffsets(default, set):Array<Float> = [0, 0];
@@ -95,12 +101,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (animOffsets == null) animOffsets = [0, 0];
     if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
-    var xDiff = animOffsets[0] - value[0];
-    var yDiff = animOffsets[1] - value[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
-
+    _currentAnimOffset.set(value[0], value[1]);
     return animOffsets = value;
   }
 
@@ -347,6 +348,20 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   {
     if (this.animation == null || this.animation.curAnim == null) return "";
     return this.animation.curAnim.name;
+  }
+
+  // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output -= _currentAnimOffset;
+    return output;
+  }
+
+  override function destroy():Void
+  {
+    _currentAnimOffset = flixel.util.FlxDestroyUtil.put(_currentAnimOffset);
+    super.destroy();
   }
 
   public function onPause(event:PauseScriptEvent) {}
