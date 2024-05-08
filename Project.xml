@@ -124,6 +124,7 @@
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
 	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
+	<haxelib name="discord_rpc" if="desktop" unless="hl" /> <!-- Discord RPC -->
 	<haxelib name="funkin.vis"/>
 
 

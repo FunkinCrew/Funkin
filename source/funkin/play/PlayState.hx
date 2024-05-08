@@ -1,27 +1,23 @@
 package funkin.play;
 
-import flixel.addons.display.FlxPieDial;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
-import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.Transition;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.Highscore.Tallies;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
-import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongEventData;
@@ -30,7 +26,6 @@ import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
-import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -39,34 +34,27 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.ComboMilestone;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
-import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.notes.NoteDirection;
-import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
-import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
+import funkin.ui.MusicBeatSubState;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.MusicBeatSubState;
-import funkin.ui.options.PreferencesMenu;
-import funkin.ui.story.StoryMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
-import lime.ui.Haptic;
-import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
-import openfl.Lib;
 #if discord_rpc
-import Discord.DiscordClient;
+import funkin.api.discord.Discord.DiscordClient;
 #end
 
 /**
@@ -961,7 +949,7 @@ class PlayState extends MusicBeatSubState
         }
 
         #if discord_rpc
-        DiscordClient.changePresence(detailsPausedText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+        DiscordClient.changePresence(detailsPausedText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
         #end
       }
     }
@@ -1051,7 +1039,7 @@ class PlayState extends MusicBeatSubState
 
         #if discord_rpc
         // Game Over doesn't get his own variable because it's only used here
-        DiscordClient.changePresence('Game Over - ' + detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+        DiscordClient.changePresence('Game Over - ' + detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
         #end
       }
       else if (isPlayerDying)
@@ -1227,7 +1215,7 @@ class PlayState extends MusicBeatSubState
       Countdown.resumeCountdown();
 
       #if discord_rpc
-      if (startTimer.finished)
+      if (Countdown.countdownStep == AFTER)
       {
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
           currentSongLengthMs - Conductor.instance.songPosition);
@@ -1254,16 +1242,16 @@ class PlayState extends MusicBeatSubState
    */
   public override function onFocus():Void
   {
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
+    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
     {
-      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
+      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong
         + ' ('
         + storyDifficultyText
         + ')', iconRPC, true,
         currentSongLengthMs
         - Conductor.instance.songPosition);
       else
-        DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+        DiscordClient.changePresence(detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
     }
 
     super.onFocus();
@@ -1274,8 +1262,8 @@ class PlayState extends MusicBeatSubState
    */
   public override function onFocusLost():Void
   {
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
-      currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
+      currentSong + ' (' + storyDifficultyText + ')', iconRPC);
 
     super.onFocusLost();
   }
@@ -1748,8 +1736,8 @@ class PlayState extends MusicBeatSubState
   function initDiscord():Void
   {
     #if discord_rpc
-    storyDifficultyText = difficultyString();
-    iconRPC = currentSong.player2;
+    storyDifficultyText = currentDifficulty;
+    iconRPC = currentStage.getDad().characterId;
 
     // To avoid having duplicate images in Discord assets
     switch (iconRPC)
@@ -1763,7 +1751,7 @@ class PlayState extends MusicBeatSubState
     }
 
     // String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-    detailsText = isStoryMode ? 'Story Mode: Week $storyWeek' : 'Freeplay';
+    detailsText = PlayStatePlaylist.isStoryMode ? 'Story Mode: Week ${PlayStatePlaylist.campaignId}' : 'Freeplay';
     detailsPausedText = 'Paused - $detailsText';
 
     // Updating Discord Rich Presence.

@@ -1,11 +1,11 @@
 package funkin.ui.freeplay;
 
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.ui.FlxInputText;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
@@ -18,8 +18,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.data.story.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.AngleMask;
@@ -29,15 +29,18 @@ import funkin.graphics.shaders.StrokeShader;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
-import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
+import funkin.save.Save;
 import funkin.ui.AtlasText;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import lime.utils.Assets;
+#if discord_rpc
+import funkin.api.discord.Discord.DiscordClient;
+#end
 
 /**
  * Parameters used to initialize the FreeplayState.

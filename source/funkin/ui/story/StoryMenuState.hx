@@ -1,7 +1,7 @@
 package funkin.ui.story;
 
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -9,21 +9,24 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.data.story.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
-import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
-import funkin.ui.mainmenu.MainMenuState;
+import funkin.save.Save;
 import funkin.ui.MusicBeatState;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import openfl.utils.Assets;
+#if discord_rpc
+import funkin.api.discord.Discord.DiscordClient;
+#end
 
 class StoryMenuState extends MusicBeatState
 {
