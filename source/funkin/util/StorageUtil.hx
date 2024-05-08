@@ -7,7 +7,7 @@ import lime.utils.Assets;
 
 using StringTools;
 
-class Storage
+class StorageUtil
 {
   public static function copyNecessaryFiles(what:Map<String, String>):Void
   {
@@ -21,7 +21,7 @@ class Storage
           final library:String = shit.replace(shit.substring(shit.indexOf('/', 0), shit.length), '');
 
           @:privateAccess
-          Storage.copyFile(Assets.libraryPaths.exists(library) ? '$library:$file' : file, file);
+          copyFile(Assets.libraryPaths.exists(library) ? '$library:$file' : file, file);
         }
       }
     }
