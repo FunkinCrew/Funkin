@@ -11,7 +11,7 @@ import funkin.ui.TextMenuList.TextMenuItem;
 
 class PreferencesMenu extends Page
 {
-  var items:TextMenuList;
+  var textItems:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
 
   var menuCamera:FlxCamera;
@@ -26,20 +26,20 @@ class PreferencesMenu extends Page
     menuCamera.bgColor = 0x0;
     camera = menuCamera;
 
-    add(items = new TextMenuList());
+    add(textItems = new TextMenuList());
     add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
 
     createPrefItems();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
-    if (items != null) camFollow.y = items.selectedItem.y;
+    if (textItems != null) camFollow.y = textItems.selectedItem.y;
 
     menuCamera.follow(camFollow, null, 0.06);
     var margin = 160;
     menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
     menuCamera.minScrollY = 0;
 
-    items.onChange.add(function(selected) {
+    textItems.onChange.add(function(selected) {
       camFollow.y = selected.y;
     });
   }
@@ -71,9 +71,9 @@ class PreferencesMenu extends Page
 
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length), defaultValue);
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (textItems.length), defaultValue);
 
-    items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
+    textItems.createItem(120, (120 * textItems.length) + 30, prefName, AtlasFont.BOLD, function() {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
@@ -88,14 +88,18 @@ class PreferencesMenu extends Page
 
     // Indent the selected item.
     // TODO: Only do this on menu change?
-    items.forEach(function(daItem:TextMenuItem) {
-      if (items.selectedItem == daItem) daItem.x = 150;
+    textItems.forEach(function(daItem:TextMenuItem) {
+      if (textItems.selectedItem == daItem) daItem.x = 150;
       else
         daItem.x = 120;
     });
   }
 }
 
+/**
+ * An interactable checkbox sprite, representing a `Bool` preference.
+ *
+ */
 class CheckboxPreferenceItem extends FlxSprite
 {
   public var currentValue(default, set):Bool;
@@ -114,7 +118,7 @@ class CheckboxPreferenceItem extends FlxSprite
     this.currentValue = defaultValue;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
