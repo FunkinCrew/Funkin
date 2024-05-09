@@ -237,6 +237,11 @@ class PlayState extends MusicBeatSubState
   public var cameraZoomTween:FlxTween;
 
   /**
+   * An FlxTween that changes the additive speed to the desired amount.
+   */
+  public var additiveScrollSpeedTween:FlxTween;
+
+  /**
    * The camera follow point from the last stage.
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
@@ -1178,6 +1183,11 @@ class PlayState extends MusicBeatSubState
       {
         cameraZoomTween.active = false;
         cameraTweensPausedBySubState.add(cameraZoomTween);
+      }
+      if (additiveScrollSpeedTween != null && additiveScrollSpeedTween.active)
+      {
+        additiveScrollSpeedTween.active = false;
+        cameraTweensPausedBySubState.add(additiveScrollSpeedTween);
       }
 
       // Pause the countdown.
@@ -3023,8 +3033,9 @@ class PlayState extends MusicBeatSubState
     // Stop camera zooming on beat.
     cameraZoomRate = 0;
 
-    // Cancel camera tweening if it's active.
+    // Cancel camera and scroll tweening if it's active.
     cancelAllCameraTweens();
+    cancelAdditiveScrollSpeedTween();
 
     // If the opponent is GF, zoom in on the opponent.
     // Else, if there is no GF, zoom in on BF.
@@ -3242,6 +3253,41 @@ class PlayState extends MusicBeatSubState
   {
     cancelCameraFollowTween();
     cancelCameraZoomTween();
+  }
+
+  /**
+   * The magical function that shall tween the additive scroll speed.
+   */
+  public function tweenAdditiveScrollSpeed(?speed:Float, ?duration:Float, ?ease:Null<Float->Float>):Void
+  {
+    // Cancel the current tween if it's active.
+    cancelAdditiveScrollSpeedTween();
+    var strumLineTargets:Array<Float> = [
+      playerStrumline.scrollSpeedAdditive + speed,
+      opponentStrumline.scrollSpeedAdditive + speed
+    ];
+
+    if (duration == 0)
+    {
+      playerStrumline.scrollSpeedAdditive = strumLineTargets[0];
+      opponentStrumline.scrollSpeedAdditive = strumLineTargets[1];
+    }
+    else
+    {
+      additiveScrollSpeedTween = FlxTween.tween(this,
+        {
+          "playerStrumline.scrollSpeedAdditive": strumLineTargets[0],
+          "opponentStrumline.scrollSpeedAdditive": strumLineTargets[1]
+        }, duration, {ease: ease});
+    }
+  }
+
+  public function cancelAdditiveScrollSpeedTween()
+  {
+    if (additiveScrollSpeedTween != null)
+    {
+      additiveScrollSpeedTween.cancel();
+    }
   }
 
   #if (debug || FORCE_DEBUG_VERSION)

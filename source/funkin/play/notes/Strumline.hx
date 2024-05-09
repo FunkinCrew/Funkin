@@ -52,6 +52,15 @@ class Strumline extends FlxSpriteGroup
    */
   public var conductorInUse(get, set):Conductor;
 
+  // Used in-game to control the scroll speed within a song, for example if a song has an additive scroll speed of 1 and the base scroll speed is 1, it will be 2 - burgerballs
+  public var scrollSpeedAdditive:Float = 0;
+  public var scrollSpeed(get, never):Float;
+
+  function get_scrollSpeed():Float
+  {
+    return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0) + scrollSpeedAdditive;
+  }
+
   var _conductorInUse:Null<Conductor>;
 
   function get_conductorInUse():Conductor
@@ -208,6 +217,11 @@ class Strumline extends FlxSpriteGroup
     return null;
   }
 
+  public function resetScrollSpeed():Void
+  {
+    scrollSpeedAdditive = 0;
+  }
+
   public function getHoldNoteSprite(noteData:SongNoteData):SustainTrail
   {
     if (noteData == null || ((noteData.length ?? 0.0) <= 0.0)) return null;
@@ -283,7 +297,6 @@ class Strumline extends FlxSpriteGroup
     // var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     // ^^^ commented this out... do NOT make it move faster as it moves offscreen!
     var vwoosh:Float = 1.0;
-    var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
     return
       Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
@@ -539,6 +552,7 @@ class Strumline extends FlxSpriteGroup
     {
       playStatic(dir);
     }
+    scrollSpeedAdditive = 0;
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
@@ -705,6 +719,7 @@ class Strumline extends FlxSpriteGroup
 
     if (holdNoteSprite != null)
     {
+      holdNoteSprite.parentStrumline = this;
       holdNoteSprite.noteData = note;
       holdNoteSprite.strumTime = note.time;
       holdNoteSprite.noteDirection = note.getDirection();
