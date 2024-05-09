@@ -347,10 +347,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
     var pathsFunction = params.pathsFunction ?? MUSIC;
+    var suffix = params.suffix ?? '';
     var pathToUse = switch (pathsFunction)
     {
       case MUSIC: Paths.music('$key/$key');
-      case INST: Paths.inst('$key');
+      case INST: Paths.inst('$key', suffix);
       default: Paths.music('$key/$key');
     }
 
@@ -359,7 +360,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (shouldLoadPartial)
     {
       var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0, params.partialParams?.end ?? 1, params?.startingVolume ?? 1.0,
-        params.loop ?? true, false, true);
+        params.loop ?? true, false, true, params.onComplete, params.onLoad);
 
       if (music != null)
       {
@@ -542,6 +543,12 @@ typedef FunkinSoundPlayMusicParams =
   var ?startingVolume:Float;
 
   /**
+   * The suffix of the music file to play. Usually for "-erect" tracks when loading an INST file
+   * @default ``
+   */
+  var ?suffix:String;
+
+  /**
    * Whether to override music if a different track is already playing.
    * @default `false`
    */
@@ -572,6 +579,9 @@ typedef FunkinSoundPlayMusicParams =
   var ?pathsFunction:PathsFunction;
 
   var ?partialParams:PartialSoundParams;
+
+  var ?onComplete:Void->Void;
+  var ?onLoad:Void->Void;
 }
 
 typedef PartialSoundParams =
