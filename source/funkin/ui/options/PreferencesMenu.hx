@@ -194,6 +194,9 @@ class SliderMenuItem extends TextMenuItem
     this.onChange = onChange;
   }
 
+  /**
+   * Called whenever this item is interacted with (ENTER key).
+   */
   public function callbackPlaceholder():Void
   {
     trace("floatSlider text interacted with");
