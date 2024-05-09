@@ -22,7 +22,7 @@
 	<!--Desktop-specific-->
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
+	<window if="mobile" orientation="landscape" fullscreen="true" width="1280" height="720" resizable="false" />
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
@@ -221,6 +221,7 @@
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
 	</section>
 
+	<!-- <architecture exclude="armv7" if="android" /> -->
 
 	<section>
 		<!--
