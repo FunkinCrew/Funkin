@@ -35,7 +35,7 @@ class Log
         println(message);
         #end
 
-        #if (mobile && !display)
+        #if (mobile && !macro)
         @:privateAccess
         funkin.util.logging.CrashHandler.logErrorMessage(message);
         #end
