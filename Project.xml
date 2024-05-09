@@ -221,15 +221,14 @@
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
 	</section>
 
-	<!-- <architecture exclude="armv7" if="android" /> -->
+	<architecture exclude="armv7" if="android" />
 
 	<section>
 		<!--
 			This flag enables the popup/crashlog error handler.
 			However, it also messes with breakpoints on some platforms.
 		-->
-		<define name="openfl-enable-handle-error" />
-		<undefine name="openfl-disable-handle-error" />
+		<haxedef name="openfl-enable-handle-error" />
 	</section>
 
 	<!-- Run a script before and after building. -->
