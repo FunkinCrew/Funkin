@@ -19,7 +19,7 @@ class Constants
    * The title of the game, for debug printing purposes.
    * Change this if you're making an engine.
    */
-  public static final TITLE:String = "Friday Night Funkin'";
+  public static final TITLE:String = "FNF: Rhombus Engine";
 
   /**
    * The current version number of the game.
@@ -113,12 +113,12 @@ class Constants
   // ==============================
 
   /**
-   * The color used by the enemy health bar.
+   * The default color used by the enemy health bar.
    */
   public static final COLOR_HEALTH_BAR_RED:FlxColor = 0xFFFF0000;
 
   /**
-   * The color used by the player health bar.
+   * The default color used by the player health bar.
    */
   public static final COLOR_HEALTH_BAR_GREEN:FlxColor = 0xFF66FF33;
 

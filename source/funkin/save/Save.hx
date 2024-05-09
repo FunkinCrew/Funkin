@@ -86,6 +86,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+		  ghostTapping: true,
           inputOffset: 0,
           audioVisualOffset: 0,
 
@@ -860,7 +861,7 @@ typedef SaveDataOptions =
   var zoomCamera:Bool;
 
   /**
-   * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
+   * If enabled, an FPS and memory counter will show even if this is not a debug build.
    * @default `false`
    */
   var debugDisplay:Bool;
@@ -870,6 +871,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * If enabled, you won't miss from pressing keys while there are no notes able to be hit.
+   * @default `true`
+   */
+   var ghostTapping:Bool;
 
   /**
    * Offset the users inputs by this many ms.

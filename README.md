@@ -1,11 +1,8 @@
-# Friday Night Funkin' 
+# Friday Night Funkin' Rhombus Engine
 
-Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for Ludem Dare 47.
+This is a fork of Friday Night Funkin', created as the successor to Unknown Engine, a fork of Psych Engine.
 
-This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
-
-- [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
-- [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
+FNF was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
 # Getting Started
 
@@ -20,6 +17,13 @@ Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can act
 # Credits and Special Thanks
 
 Full credits can be found in-game, or wherever the credits.json file is.
+
+# Rhombus Engine
+
+- [LeonGamer](https://youtube.com/@LeonGamerPS4) - Lead Programmer
+- [Fastbreak383](https://twitter.com/C97Mystical) - Programmer
+
+# Funkin' Crew
 
 ## Programming
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer

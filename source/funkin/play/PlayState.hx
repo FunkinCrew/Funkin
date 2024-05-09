@@ -101,7 +101,7 @@ typedef PlayStateParams =
    */
   ?practiceMode:Bool,
   /**
-   * Whether the song should start in Bot Play Mode.
+   * Whether the song should start in BOTPLAY.
    * @default `false`
    */
   ?botPlayMode:Bool,
@@ -145,7 +145,7 @@ class PlayState extends MusicBeatSubState
    */
   /**
    * The currently active PlayState.
-   * There should be only one PlayState in existance at a time, we can use a singleton.
+   * There should be only one PlayState in existence at a time, we can use a singleton.
    */
   public static var instance:PlayState = null;
 
@@ -198,10 +198,61 @@ class PlayState extends MusicBeatSubState
   public var health:Float = Constants.HEALTH_STARTING;
 
   /**
+   * How health should display on the score bar.
+   */
+  public var healthDisplay:Float = 50;
+
+  /**
    * The player's current score.
    * TODO: Move this to its own class.
    */
   public var songScore:Int = 0;
+
+  /**
+   * The player's current miss amount.
+   */
+  public var songMisses:Int = 0;
+
+  /**
+   * The player's current accuracy.
+   */
+  public var ratingPercent:Float;
+
+  /**
+   * The player's current rating.
+   */
+  public var ratingName:String = "?";
+
+  /**
+   * The player's current FC rating.
+   */
+  public var ratingFC:String = "Clear";
+
+  /**
+   * The amount of notes the player has hit.
+   */
+  public var totalNotesHit:Float = 0.0;
+
+  /**
+   * The amount of notes in total.
+   */
+  public var totalNotesPlayed:Int = 0;
+
+  /**
+   * The values for the rating system.
+   */
+  public static var ratingStuff:Array<Dynamic> = [
+	['Uninstall', 0.2], // From 0% to 19%.
+	['F', 0.4], // From 20% to 39%.
+	['D', 0.5], // From 40% to 49%.
+	['C', 0.6], // From 50% to 59%.
+	['B', 0.69], // From 60% to 68%.
+	['Nice', 0.7], // 69%. Nice (:
+	['A', 0.8], // From 70% to 79%.
+	['S', 0.9], // From 80% to 89%.
+	['X', 1], // From 90% to 99%.
+	['PERFECT!!', 1] // The value on this one isn't used actually, since "PERFECT!!" is always 1.
+  ];
 
   /**
    * Start at this point in the song once the countdown is done.
@@ -235,6 +286,11 @@ class PlayState extends MusicBeatSubState
    * An FlxTween that zooms the camera to the desired amount.
    */
   public var cameraZoomTween:FlxTween;
+
+  /**
+   * An FlxTween that makes the score bar bounce when a note is hit.
+   */
+  public var scoreTween:FlxTween;
 
   /**
    * The camera follow point from the last stage.
@@ -459,6 +515,16 @@ class PlayState extends MusicBeatSubState
    * Emma says the image is slightly skewed so I'm leaving it as an image instead of a `createGraphic`.
    */
   public var healthBarBG:FunkinSprite;
+
+  /**
+   * The bar which displays the time of the song.
+   */
+  public var timeBar:FlxBar;
+
+  /**
+   * The background image used for the time bar.
+   */
+  public var timeBarBG:FunkinSprite;
 
   /**
    * The health icon representing the player.
@@ -879,6 +945,12 @@ class PlayState extends MusicBeatSubState
 
       health = Constants.HEALTH_STARTING;
       songScore = 0;
+	  songMisses = 0;
+	  totalNotesHit = 0;
+	  totalNotesPlayed = 0;
+	  healthDisplay = 50;
+	  ratingPercent = 100;
+	  ratingName = "?";
       Highscore.tallies.combo = 0;
       Countdown.performCountdown(currentStageId.startsWith('school'));
 
@@ -969,6 +1041,9 @@ class PlayState extends MusicBeatSubState
     // Cap health.
     if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
+
+	// Don't round this for smooth health bar movement.
+	healthDisplay = health / 0.02;
 
     // Apply camera zoom + multipliers.
     if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
@@ -1494,7 +1569,7 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-   * Initializes the health bar on the HUD.
+   * Initializes the health bar and other items on the HUD.
    */
   function initHealthBar():Void
   {
@@ -1513,8 +1588,8 @@ class PlayState extends MusicBeatSubState
     add(healthBar);
 
     // The score text below the health bar.
-    scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
-    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scoreText = new FlxText(0, healthBarBG.y + 41, FlxG.width, "", 20);
+    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
@@ -1996,15 +2071,40 @@ class PlayState extends MusicBeatSubState
    */
   function updateScoreText():Void
   {
+	var accuracy:String = "?";
+	if (totalNotesPlayed != 0)
+	{
+		var percent:Float = Math.floor(ratingPercent * 100);
+		accuracy = percent + '%';
+	}
+		
     // TODO: Add functionality for modules to update the score text.
     if (isBotPlayMode)
     {
-      scoreText.text = 'Bot Play Enabled';
+      scoreText.text = "Botplay is enabled. | Your score will not be saved.";
     }
     else
     {
-      scoreText.text = 'Score:' + songScore;
+      scoreText.text = 'Score: ' + songScore + ' | Misses: ' + songMisses + ' | Health: ' + FlxMath.roundDecimal(healthDisplay, 0) + '% | Accuracy: ' + accuracy;
     }
+  }
+
+  /**
+   * Makes the score bar bounce when a note is hit.
+   */
+  function doScoreBop():Void
+  {
+	if (/*!scoreZoom || */scoreText == null) return;
+
+	if (scoreTween != null) scoreTween.cancel();
+
+	scoreText.scale.x = 1.075;
+	scoreText.scale.y = 1.075;
+	scoreTween = FlxTween.tween(scoreText.scale, {x: 1, y: 1}, 0.2, {
+		onComplete: function(twn:FlxTween) {
+			scoreTween = null;
+		}
+	});
   }
 
   /**
@@ -2402,6 +2502,9 @@ class PlayState extends MusicBeatSubState
 
     // Display the combo meter and add the calculation to the score.
     popUpScore(note, event.score, event.judgement, event.healthChange);
+
+	totalNotesPlayed++;
+	doScoreBop();
   }
 
   /**
@@ -2455,6 +2558,8 @@ class PlayState extends MusicBeatSubState
     vocals.playerVolume = 0;
 
     Highscore.tallies.missed++;
+	totalNotesPlayed++;
+	songMisses++;
 
     if (Highscore.tallies.combo != 0)
     {
@@ -2490,8 +2595,11 @@ class PlayState extends MusicBeatSubState
     // Calling event.cancelEvent() skips animations and penalties. Neat!
     if (event.eventCanceled) return;
 
-    health += event.healthChange;
-    songScore += event.scoreChange;
+	if (!Preferences.ghostTapping)
+	{
+		health += event.healthChange;
+		songScore += event.scoreChange;
+	}
 
     if (!isPracticeMode)
     {
@@ -2585,10 +2693,27 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-   * Handles health, score, and rating popups when a note is hit.
+   * Handles health, score, accuracy, and rating popups when a note is hit.
    */
   function popUpScore(daNote:NoteSprite, score:Int, daRating:String, healthChange:Float):Void
   {
+	if(totalNotesPlayed != 0) {
+		ratingPercent = Math.min(1, Math.max(0, totalNotesHit / totalNotesPlayed));
+
+		ratingName = ratingStuff[ratingStuff.length-1][0];
+		if(ratingPercent < 1) {
+			for (i in 0...ratingStuff.length-1) {
+				if(ratingPercent < ratingStuff[i][1])
+				{
+					ratingName = ratingStuff[i][0];
+					break;
+				}
+			}
+		}
+	}
+
+	ratingFC = '';
+
     if (daRating == 'miss')
     {
       // If daRating is 'miss', that means we made a mistake and should not continue.
@@ -2622,6 +2747,40 @@ class PlayState extends MusicBeatSubState
       default:
         FlxG.log.error('Wuh? Buh? Guh? Note hit judgement was $daRating!');
     }
+
+	var ratingMod = switch (daRating) 
+	{
+		case 'good':
+			0.67;
+		case 'bad':
+			0.34;
+		case 'shit':
+			0;
+		default:
+			1; // This should only trigger on "Sick!" judgements.
+	}
+
+	totalNotesPlayed++;
+	totalNotesHit += ratingMod;
+
+	if (songMisses == 0)
+	{
+		var sickJudge = Highscore.tallies.sick;
+		var goodJudge = Highscore.tallies.good;
+		var badJudge = Highscore.tallies.bad;
+		var shitJudge = Highscore.tallies.shit;
+
+		if (badJudge > 0 || shitJudge > 0) ratingFC = 'FC';
+		else if (goodJudge > 0) ratingFC = 'GFC';
+		else if (sickJudge > 0) ratingFC = 'SFC';
+
+
+	}
+	else 
+	{
+		if (songMisses < 10) ratingFC = 'SDCB';
+		else ratingFC = 'Clear';
+	}
 
     health += healthChange;
 
