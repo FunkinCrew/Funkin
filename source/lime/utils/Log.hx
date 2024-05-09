@@ -1,6 +1,5 @@
 package lime.utils;
 
-import funkin.util.logging.CrashHandler;
 import haxe.PosInfos;
 
 #if !lime_debug
