@@ -8,7 +8,7 @@ import flixel.FlxG.FlxRenderMethod;
 /**
  * A custom crash handler that writes to a log file and displays a message box.
  */
-// @:nullSafety
+@:nullSafety
 class CrashHandler
 {
   public static final LOG_FOLDER = 'logs';
