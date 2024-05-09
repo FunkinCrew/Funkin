@@ -8,15 +8,19 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import funkin.util.MathUtil;
+#if web
 import funkin.vis.dsp.SpectralAnalyzer;
 import funkin.vis.audioclip.frontends.LimeAudioClip;
+#end
 
 using Lambda;
 
 class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 {
+  #if web
   // public var vis:VisShit;
   var analyzer:SpectralAnalyzer;
+  #end
 
   var volumes:Array<Float> = [];
 
@@ -57,10 +61,12 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   public function initAnalyzer()
   {
+    #if web
     @:privateAccess
     analyzer = new SpectralAnalyzer(7, new LimeAudioClip(cast snd._channel.__source), 0.01, 30);
     analyzer.maxDb = -35;
     // analyzer.fftN = 2048;
+    #end
   }
 
   var visTimer:Float = -1;
@@ -94,6 +100,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
    */
   function drawFFT():Void
   {
+    #if web
     var levels = analyzer.getLevels(false);
 
     for (i in 0...min(group.members.length, levels.length))
@@ -107,6 +114,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
       group.members[i].animation.curAnim.curFrame = animFrame;
     }
+    #end
   }
 
   // function updateFFT(elapsed:Float)
