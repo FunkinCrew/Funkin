@@ -10,7 +10,17 @@ class TextMenuList extends MenuTypedList<TextMenuItem>
     super(navControls, wrapMode);
   }
 
-  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false)
+  /**
+   * Create a `TextMenuItem` in this `TextMenuList`.
+   * @param x X position
+   * @param y Y position
+   * @param name Item text
+   * @param font `AtlasFont` item font
+   * @param callback What will execute when this `TextMenuItem` is interacted with
+   * @param fireInstantly Will this ignore the "interacted" animation (i.e. execute `callback` immediately)
+   * @return `TextMenuItem`
+   */
+  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false):TextMenuItem
   {
     var item = new TextMenuItem(x, y, name, font, callback);
     item.fireInstantly = fireInstantly;
@@ -34,7 +44,7 @@ class TextTypedMenuItem<T:AtlasText> extends MenuTypedItem<T>
     super(x, y, label, name, callback);
   }
 
-  override function setItem(name:String, ?callback:Void->Void)
+  override function setItem(name:String, ?callback:Void->Void):Void
   {
     if (label != null)
     {

@@ -67,6 +67,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+    createPrefItemSlider('Background dim', 'How dark is the dim behind gameplay', function(value:Float):Void {
+      Preferences.gameplayBackgroundAlpha = value;
+    }, Preferences.gameplayBackgroundAlpha, 0, 1, 0.1);
   }
 
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
@@ -80,6 +83,14 @@ class PreferencesMenu extends Page
     }, true);
 
     preferenceItems.add(checkbox);
+  }
+
+  function createPrefItemSlider(prefName:String, prefDesc:String, onChange:Float->Void, defaultValue:Float, minValue:Float, maxValue:Float,
+      increment:Float):Void
+  {
+    var sliderItem:SliderMenuItem = new SliderMenuItem(20, (120 * preferenceItems.length) + 30, defaultValue, minValue, maxValue, increment, onChange);
+    textItems.createItem(160, (120 * textItems.length) + 30, prefName, AtlasFont.BOLD, sliderItem.callbackPlaceholder, true);
+    preferenceItems.add(sliderItem);
   }
 
   override function update(elapsed:Float)
@@ -143,5 +154,59 @@ class CheckboxPreferenceItem extends FlxSprite
     }
 
     return currentValue = value;
+  }
+}
+
+/**
+ * A wrapper for a `TextMenuItem` which can be interacted with to increase the inner `Float` value.
+ */
+class SliderMenuItem extends TextMenuItem
+{
+  var curValue:Float;
+  var minValue:Float;
+  var maxValue:Float;
+  var increment:Float;
+  var onChange:Float->Void;
+
+  // holy args
+
+  /**
+   * Creates a new number menu item.
+   * @param x X pos
+   * @param y Y pos
+   * @param defaultValue Item default text
+   * @param minValue Item minimum number
+   * @param maxValue Item maximum number
+   * @param increment Item increment per key press
+   * @param onChange Callback fired when item value changed
+   */
+  public function new(x:Float = 0.0, y:Float = 0.0, defaultValue:Float = 0.0, minValue:Float = 0.0, maxValue:Float = 1.0, increment:Float = 0.1,
+      onChange:Float->Void)
+  {
+    super(x, y, Std.string(defaultValue), AtlasFont.DEFAULT, callbackPlaceholder);
+
+    this.fireInstantly = true;
+    this.select();
+    this.curValue = defaultValue;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+    this.increment = increment;
+    this.onChange = onChange;
+  }
+
+  public function callbackPlaceholder():Void
+  {
+    trace("floatSlider text interacted with");
+    if (curValue + increment > maxValue)
+    {
+      curValue = Math.round(minValue * 100) / 100;
+    }
+    else
+    {
+      curValue = Math.round((curValue + increment) * 100) / 100;
+    }
+    trace(Std.string(curValue));
+    super.setItem(Std.string(curValue), callbackPlaceholder);
+    onChange(curValue);
   }
 }
