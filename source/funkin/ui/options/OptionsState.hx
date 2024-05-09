@@ -39,12 +39,14 @@ class OptionsState extends MusicBeatState
     add(menuBG);
 
     var options = addPage(Options, new OptionsMenu());
+    var sliders = addPage(Sliders, new SliderPreferencesMenu());
     var preferences = addPage(Preferences, new PreferencesMenu());
     var controls = addPage(Controls, new ControlsMenu());
 
     if (options.hasMultipleOptions())
     {
       options.onExit.add(exitToMainMenu);
+      sliders.onExit.add(switchPage.bind(Options));
       controls.onExit.add(exitControls);
       preferences.onExit.add(switchPage.bind(Options));
     }
@@ -60,7 +62,7 @@ class OptionsState extends MusicBeatState
     super.create();
   }
 
-  function addPage<T:Page>(name:PageName, page:T)
+  function addPage<T:Page>(name:PageName, page:T):T
   {
     page.onSwitch.add(switchPage);
     pages[name] = page;
@@ -69,7 +71,7 @@ class OptionsState extends MusicBeatState
     return page;
   }
 
-  function setPage(name:PageName)
+  function setPage(name:PageName):Void
   {
     if (pages.exists(currentName))
     {
@@ -86,14 +88,14 @@ class OptionsState extends MusicBeatState
     }
   }
 
-  override function finishTransIn()
+  override function finishTransIn():Void
   {
     super.finishTransIn();
 
     currentPage.enabled = true;
   }
 
-  function switchPage(name:PageName)
+  function switchPage(name:PageName):Void
   {
     // TODO: Animate this transition?
     setPage(name);
@@ -108,7 +110,7 @@ class OptionsState extends MusicBeatState
     switchPage(Options);
   }
 
-  function exitToMainMenu()
+  function exitToMainMenu():Void
   {
     currentPage.enabled = false;
     // TODO: Animate this transition?
@@ -190,6 +192,7 @@ class OptionsMenu extends Page
 
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() switchPage(Preferences));
+    createItem("sliders", function() switchPage(Sliders));
     createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
       FlxG.state.openSubState(new LatencyState());
@@ -273,4 +276,5 @@ enum PageName
   Colors;
   Mods;
   Preferences;
+  Sliders;
 }
