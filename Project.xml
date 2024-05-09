@@ -228,7 +228,8 @@
 			This flag enables the popup/crashlog error handler.
 			However, it also messes with breakpoints on some platforms.
 		-->
-		<haxedef name="openfl-enable-handle-error" />
+		<define name="openfl-enable-handle-error" />
+		<undefine name="openfl-disable-handle-error" />
 	</section>
 
 	<!-- Run a script before and after building. -->
