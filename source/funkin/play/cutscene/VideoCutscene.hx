@@ -145,8 +145,7 @@ class VideoCutscene
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
-      // vid.autoPause = false;
-      // Doesn't build with this, uhhh? -Zack
+      vid.autoPause = false;
 
       vid.cameras = [PlayState.instance.camCutscene];
 
