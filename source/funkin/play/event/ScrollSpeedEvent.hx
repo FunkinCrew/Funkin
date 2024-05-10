@@ -17,30 +17,31 @@ import funkin.data.event.SongEventSchema.SongEventFieldType;
  * Example: Scroll speed change of both strums from 1x to 1.3x:
  * ```
  * {
- *   'e': 'AdditiveScrollSpeed',
+ *   'e': 'ScrollSpeed',
  *   "v": {
- *      "scroll": "0.3",
+ *      "scroll": "1.3",
  *      "duration": "4",
  *      "ease": "linear"
  *    }
  * }
  * ```
  */
-class AdditiveScrollSpeedEvent extends SongEvent
+class ScrollSpeedEvent extends SongEvent
 {
   public function new()
   {
-    super('AdditiveScrollSpeed');
+    super('ScrollSpeed');
   }
 
-  static final DEFAULT_SCROLL:Float = 0;
+  static final DEFAULT_SCROLL:Float = 1;
   static final DEFAULT_DURATION:Float = 4.0;
   static final DEFAULT_EASE:String = 'linear';
+  static final DEFAULT_STRUMLINE:String = 'both'; // my special little trick
 
   public override function handleEvent(data:SongEventData):Void
   {
-    // Does nothing if there is no PlayState camera or stage.
-    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    // Does nothing if there is no PlayState.
+    if (PlayState.instance == null) return;
 
     var scroll:Float = data.getFloat('scroll') ?? DEFAULT_SCROLL;
 
@@ -48,11 +49,28 @@ class AdditiveScrollSpeedEvent extends SongEvent
 
     var ease:String = data.getString('ease') ?? DEFAULT_EASE;
 
+    var strumline:String = data.getString('strumline') ?? DEFAULT_STRUMLINE;
+
+    var strumlineNames:Array<String> = [];
+
+    if (scroll == 0)
+    {
+      // if the parameter is set to 0, reset the scroll speed to normal.
+      scroll = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+    }
+
+    switch (strumline)
+    {
+      case 'both':
+        strumlineNames = ['playerStrumline', 'opponentStrumline'];
+      default:
+        strumlineNames = [strumline + 'Strumline'];
+    }
     // If it's a string, check the value.
     switch (ease)
     {
       case 'INSTANT':
-        PlayState.instance.tweenAdditiveScrollSpeed(scroll, 0);
+        PlayState.instance.tweenScrollSpeed(scroll, 0, null, strumlineNames);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
@@ -62,19 +80,19 @@ class AdditiveScrollSpeedEvent extends SongEvent
           return;
         }
 
-        PlayState.instance.tweenAdditiveScrollSpeed(scroll, durSeconds, easeFunction);
+        PlayState.instance.tweenScrollSpeed(scroll, durSeconds, easeFunction, strumlineNames);
     }
   }
 
   public override function getTitle():String
   {
-    return 'Additive Scroll Speed';
+    return 'Scroll Speed';
   }
 
   /**
    * ```
    * {
-   *   'scroll': FLOAT, // Target additive scroll level.
+   *   'scroll': FLOAT, // Target scroll level.
    *   'duration': FLOAT, // Duration in steps.
    *   'ease': ENUM, // Easing function.
    * }
@@ -85,7 +103,7 @@ class AdditiveScrollSpeedEvent extends SongEvent
     return new SongEventSchema([
       {
         name: 'scroll',
-        title: 'Additive Scroll Amount',
+        title: 'Scroll Amount',
         defaultValue: 0.0,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
@@ -106,7 +124,7 @@ class AdditiveScrollSpeedEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Instant' => 'INSTANT',
+          'Instant (Ignores Duration)' => 'INSTANT',
           'Sine In' => 'sineIn',
           'Sine Out' => 'sineOut',
           'Sine In/Out' => 'sineInOut',
@@ -132,6 +150,13 @@ class AdditiveScrollSpeedEvent extends SongEvent
           'Elastic Out' => 'elasticOut',
           'Elastic In/Out' => 'elasticInOut'
         ]
+      },
+      {
+        name: 'strumline',
+        title: 'Target Strumline',
+        defaultValue: 'both',
+        type: SongEventFieldType.ENUM,
+        keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
       }
     ]);
   }

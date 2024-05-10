@@ -239,7 +239,7 @@ class PlayState extends MusicBeatSubState
   /**
    * An FlxTween that changes the additive speed to the desired amount.
    */
-  public var additiveScrollSpeedTween:FlxTween;
+  public var scrollSpeedTweens:Array<FlxTween> = [];
 
   /**
    * The camera follow point from the last stage.
@@ -1184,10 +1184,14 @@ class PlayState extends MusicBeatSubState
         cameraZoomTween.active = false;
         cameraTweensPausedBySubState.add(cameraZoomTween);
       }
-      if (additiveScrollSpeedTween != null && additiveScrollSpeedTween.active)
+
+      for (tween in scrollSpeedTweens)
       {
-        additiveScrollSpeedTween.active = false;
-        cameraTweensPausedBySubState.add(additiveScrollSpeedTween);
+        if (tween != null && tween.active)
+        {
+          tween.active = false;
+          cameraTweensPausedBySubState.add(tween);
+        }
       }
 
       // Pause the countdown.
@@ -3035,7 +3039,7 @@ class PlayState extends MusicBeatSubState
 
     // Cancel camera and scroll tweening if it's active.
     cancelAllCameraTweens();
-    cancelAdditiveScrollSpeedTween();
+    cancelScrollSpeedTweens();
 
     // If the opponent is GF, zoom in on the opponent.
     // Else, if there is no GF, zoom in on BF.
@@ -3256,37 +3260,39 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-   * The magical function that shall tween the additive scroll speed.
+   * The magical function that shall tween the scroll speed.
    */
-  public function tweenAdditiveScrollSpeed(?speed:Float, ?duration:Float, ?ease:Null<Float->Float>):Void
+  public function tweenScrollSpeed(?speed:Float, ?duration:Float, ?ease:Null<Float->Float>, strumlines:Array<String>):Void
   {
     // Cancel the current tween if it's active.
-    cancelAdditiveScrollSpeedTween();
-    var strumLineTargets:Array<Float> = [
-      playerStrumline.scrollSpeedAdditive + speed,
-      opponentStrumline.scrollSpeedAdditive + speed
-    ];
+    cancelScrollSpeedTweens();
+    for (i in strumlines)
+    {
+      var value:Float = speed;
+      var strum:Strumline = Reflect.getProperty(this, i);
 
-    if (duration == 0)
-    {
-      playerStrumline.scrollSpeedAdditive = strumLineTargets[0];
-      opponentStrumline.scrollSpeedAdditive = strumLineTargets[1];
-    }
-    else
-    {
-      additiveScrollSpeedTween = FlxTween.tween(this,
-        {
-          "playerStrumline.scrollSpeedAdditive": strumLineTargets[0],
-          "opponentStrumline.scrollSpeedAdditive": strumLineTargets[1]
-        }, duration, {ease: ease});
+      if (duration == 0)
+      {
+        strum.scrollSpeed = value;
+      }
+      else
+      {
+        scrollSpeedTweens.push(FlxTween.tween(strum,
+          {
+            'scrollSpeed': value
+          }, duration, {ease: ease}));
+      }
     }
   }
 
-  public function cancelAdditiveScrollSpeedTween()
+  public function cancelScrollSpeedTweens()
   {
-    if (additiveScrollSpeedTween != null)
+    for (tween in scrollSpeedTweens)
     {
-      additiveScrollSpeedTween.cancel();
+      if (tween != null)
+      {
+        tween.cancel();
+      }
     }
   }
 

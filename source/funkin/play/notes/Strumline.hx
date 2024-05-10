@@ -52,13 +52,12 @@ class Strumline extends FlxSpriteGroup
    */
   public var conductorInUse(get, set):Conductor;
 
-  // Used in-game to control the scroll speed within a song, for example if a song has an additive scroll speed of 1 and the base scroll speed is 1, it will be 2 - burgerballs
-  public var scrollSpeedAdditive:Float = 0;
-  public var scrollSpeed(get, never):Float;
+  // Used in-game to control the scroll speed within a song
+  public var scrollSpeed:Float = 1.0;
 
-  function get_scrollSpeed():Float
+  public function resetScrollSpeed():Void
   {
-    return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0) + scrollSpeedAdditive;
+    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
   }
 
   var _conductorInUse:Null<Conductor>;
@@ -143,6 +142,7 @@ class Strumline extends FlxSpriteGroup
     this.refresh();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
+    resetScrollSpeed();
 
     for (i in 0...KEY_COUNT)
     {
@@ -215,11 +215,6 @@ class Strumline extends FlxSpriteGroup
     }
 
     return null;
-  }
-
-  public function resetScrollSpeed():Void
-  {
-    scrollSpeedAdditive = 0;
   }
 
   public function getHoldNoteSprite(noteData:SongNoteData):SustainTrail
@@ -552,7 +547,7 @@ class Strumline extends FlxSpriteGroup
     {
       playStatic(dir);
     }
-    scrollSpeedAdditive = 0;
+    resetScrollSpeed();
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
