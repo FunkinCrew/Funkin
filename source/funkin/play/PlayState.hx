@@ -1749,7 +1749,7 @@ class PlayState extends MusicBeatSubState
     // Position the background slightly offset from the strumbar for a bit of padding
     strumlineBackground.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) - 15;
     strumlineBackground.y = 0;
-    strumlineBackground.zIndex = 999;
+    strumlineBackground.zIndex = 600; // Renders beneath the health bar
     strumlineBackground.cameras = [camHUD];
 
     if (!PlayStatePlaylist.isStoryMode)
