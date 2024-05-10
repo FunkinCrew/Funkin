@@ -1,12 +1,10 @@
 package funkin.mobile;
 
+import flixel.input.touch.FlxTouch;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
-import flixel.input.touch.FlxTouch;
 import flixel.math.FlxPoint;
-import flixel.sound.FlxSound;
-import flixel.text.FlxText;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -66,22 +64,22 @@ class FunkinButton extends FlxSprite implements IFlxInput
   public var status(default, set):Int;
 
   /**
-   * The properties of this button's `onUp` event (callback function, sound).
+   * The properties of this button's `onUp` callback.
    */
   public var onUp(default, null):Void->Void;
 
   /**
-   * The properties of this button's `onDown` event (callback function, sound).
+   * The properties of this button's `onDown` callback.
    */
   public var onDown(default, null):Void->Void;
 
   /**
-   * The properties of this button's `onOver` event (callback function, sound).
+   * The properties of this button's `onOver` callback.
    */
   public var onOver(default, null):Void->Void;
 
   /**
-   * The properties of this button's `onOut` event (callback function, sound).
+   * The properties of this button's `onOut` callback.
    */
   public var onOut(default, null):Void->Void;
 
@@ -103,7 +101,7 @@ class FunkinButton extends FlxSprite implements IFlxInput
   var lastStatus:Int = -1;
 
   /**
-   * Creates a new `FlxTypedButton` object with a gray background.
+   * Creates a new `FunkinButton` object with a gray background.
    *
    * @param X The x position of the button.
    * @param Y The y position of the button.
@@ -149,11 +147,10 @@ class FunkinButton extends FlxSprite implements IFlxInput
    */
   public override function destroy():Void
   {
-    onUp = FlxDestroyUtil.destroy(onUp);
-    onDown = FlxDestroyUtil.destroy(onDown);
-    onOver = FlxDestroyUtil.destroy(onOver);
-    onOut = FlxDestroyUtil.destroy(onOut);
-
+    onUp = null;
+    onDown = null;
+    onOver = null;
+    onOut = null;
     currentInput = null;
     input = null;
 
