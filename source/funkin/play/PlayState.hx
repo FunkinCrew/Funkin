@@ -3294,6 +3294,7 @@ class PlayState extends MusicBeatSubState
         tween.cancel();
       }
     }
+    scrollSpeedTweens = [];
   }
 
   #if (debug || FORCE_DEBUG_VERSION)
