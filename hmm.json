@@ -80,8 +80,8 @@
       "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "46bbb87a87f36736cc1b1c59e5e673260e0125fa",
-      "url": "https://github.com/FunkinDroidTeam/hxCodec"
+      "ref": "61b98a7a353b7f529a8fec84ed9afc919a2dffdd",
+      "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
       "name": "extension-androidtools",
