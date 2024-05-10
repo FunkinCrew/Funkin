@@ -1379,7 +1379,7 @@ class FlxActionInputDigitalAndroid extends FlxActionInputDigital
 
   override public function check(Action:FlxAction):Bool
   {
-    returnswitch(trigger)
+    return switch(trigger)
     {
       #if android
       case PRESSED: FlxG.android.checkStatus(inputID, PRESSED) || FlxG.android.checkStatus(inputID, PRESSED);
