@@ -216,7 +216,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The player's current accuracy.
    */
-  public var ratingPercent:Float = 100;
+  public var ratingPercent:Float;
 
   /**
    * The player's current rating.
@@ -234,14 +234,14 @@ class PlayState extends MusicBeatSubState
   public var totalNotesHit:Float = 0.0;
 
   /**
-   * The amount of notes in total.
+   * The amount of notes played in total.
    */
-  public var totalNotesPlayed:Int = 0;
+  public var totalPlayed:Int = 0;
 
   /**
    * The values for the rating system.
    */
-  public static var ratingStuff:Array<Dynamic> = [
+  public var ratingStuff:Array<Dynamic> = [
 	['Uninstall', 0.2], // From 0% to 19%.
 	['F', 0.4], // From 20% to 39%.
 	['D', 0.5], // From 40% to 49%.
@@ -503,6 +503,21 @@ class PlayState extends MusicBeatSubState
    * The FlxText which displays the current score.
    */
   var scoreText:FlxText;
+
+  /**
+   * The FlxText which displays the time of the song.
+   */
+  var timeText:FlxText;
+
+  /**
+   * The FlxText which displays the judgements, NPS, etc.
+   */
+  var judgementCounter:FlxText;
+
+  /**
+   * The FlxText which displays the game version.
+   */
+  var versionText:FlxText;
 
   /**
    * The bar which displays the player's health.
@@ -947,9 +962,9 @@ class PlayState extends MusicBeatSubState
       songScore = 0;
 	  songMisses = 0;
 	  totalNotesHit = 0;
-	  totalNotesPlayed = 0;
+	  totalPlayed = 0;
 	  healthDisplay = 50;
-	  ratingPercent = 100;
+	  ratingPercent = 0;
 	  ratingName = "?";
       Highscore.tallies.combo = 0;
       Countdown.performCountdown(currentStageId.startsWith('school'));
@@ -1586,6 +1601,17 @@ class PlayState extends MusicBeatSubState
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
     healthBar.zIndex = 801;
     add(healthBar);
+	
+	// The time text at the top of the screen.
+	timeText = new FlxText(0, 19, 400, "", 32);
+	timeText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	timeText.scrollFactor.set();
+	timeText.borderSize = 2;
+	timeText.visible = true;
+	timeText.zIndex = 804;
+
+	if(Preferences.downscroll) 
+		timeText.y = FlxG.height - 44;
 
     // The score text below the health bar.
     scoreText = new FlxText(0, healthBarBG.y + 41, FlxG.width, "", 20);
@@ -1593,10 +1619,17 @@ class PlayState extends MusicBeatSubState
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
 
-    // Move the health bar to the HUD camera.
+	// The version text on the bottom left corner of the screen.
+	versionText = new FlxText(0, FlxG.height - 18, 0, currentChart.songName + ' - ' + currentDifficulty + ' | RE v0.1.0', 16);
+	versionText.setFormat(Paths.font("vcr.ttf"), 15, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	versionText.scrollFactor.set();
+	add(versionText);
+
+    // Move the HUD items to its own camera.
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
+	versionText.cameras = [camHUD];
   }
 
   /**
@@ -1800,8 +1833,7 @@ class PlayState extends MusicBeatSubState
     add(opponentStrumline);
 
     // Position the player strumline on the right half of the screen
-    playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
-    // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
+    playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
@@ -2036,6 +2068,8 @@ class PlayState extends MusicBeatSubState
     vocals.pitch = playbackRate;
     resyncVocals();
 
+	
+
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
     DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
@@ -2074,9 +2108,9 @@ class PlayState extends MusicBeatSubState
   function updateScoreText():Void
   {
 	var accuracy:String = "?";
-	if (totalNotesPlayed != 0)
+	if (totalPlayed != 0)
 	{
-		var percent:Float = Math.floor(ratingPercent * 100);
+		var percent:Float = Math.floor(ratingPercent * 100 * 2);
 		accuracy = percent + '%';
 	}
 		
@@ -2505,7 +2539,7 @@ class PlayState extends MusicBeatSubState
     // Display the combo meter and add the calculation to the score.
     popUpScore(note, event.score, event.judgement, event.healthChange);
 
-	totalNotesPlayed++;
+	totalPlayed++;
 	doScoreBop();
   }
 
@@ -2560,7 +2594,7 @@ class PlayState extends MusicBeatSubState
     vocals.playerVolume = 0;
 
     Highscore.tallies.missed++;
-	totalNotesPlayed++;
+	totalPlayed++;
 	songMisses++;
 
     if (Highscore.tallies.combo != 0)
@@ -2699,19 +2733,21 @@ class PlayState extends MusicBeatSubState
    */
   function popUpScore(daNote:NoteSprite, score:Int, daRating:String, healthChange:Float):Void
   {
-	if(totalNotesPlayed != 0) {
-		ratingPercent = Math.min(1, Math.max(0, totalNotesHit / totalNotesPlayed));
+	ratingName = '?';
+	if(totalPlayed != 0) // To prevent dividing by 0.
+	{
+		// Rating percent.
+		ratingPercent = Math.min(1, Math.max(0, totalNotesHit / totalPlayed));
 
-		ratingName = ratingStuff[ratingStuff.length-1][0];
-		if(ratingPercent < 1) {
-			for (i in 0...ratingStuff.length-1) {
+		// Rating name.
+		ratingName = ratingStuff[ratingStuff.length-1][0]; // Uses last string.
+		if(ratingPercent < 1)
+			for (i in 0...ratingStuff.length-1)
 				if(ratingPercent < ratingStuff[i][1])
 				{
 					ratingName = ratingStuff[i][0];
 					break;
 				}
-			}
-		}
 	}
 
 	ratingFC = '';
@@ -2762,7 +2798,7 @@ class PlayState extends MusicBeatSubState
 			1; // This should only trigger on "Sick!" judgements.
 	}
 
-	totalNotesPlayed++;
+	totalPlayed++;
 	totalNotesHit += ratingMod;
 
 	if (songMisses == 0)

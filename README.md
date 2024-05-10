@@ -6,15 +6,13 @@ FNF was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
 # Getting Started
 
-**PLEASE USE THE LINKS ABOVE IF YOU JUST WANT TO PLAY THE GAME**
-
 To learn how to install the necessary dependencies and compile the game from source, please check out our [building the game](/docs/COMPILING.md) guide.
 
 # Contributing
 
 Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can actively participate in the development of Friday Night Funkin'.
 
-# Credits and Special Thanks
+# Credits and Special Thanks:
 
 Full credits can be found in-game, or wherever the credits.json file is.
 
