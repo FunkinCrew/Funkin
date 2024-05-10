@@ -89,7 +89,7 @@ class PreferencesMenu extends Page
       increment:Float):Void
   {
     var sliderItem:SliderMenuItem = new SliderMenuItem(20, (120 * preferenceItems.length) + 30, defaultValue, minValue, maxValue, increment, onChange);
-    textItems.createItem(160, (120 * textItems.length) + 30, prefName, AtlasFont.BOLD, sliderItem.callbackPlaceholder, true);
+    textItems.createItem(160, (120 * textItems.length) + 30, prefName, AtlasFont.BOLD, sliderItem.incrementSlider, true);
     preferenceItems.add(sliderItem);
   }
 
@@ -183,7 +183,7 @@ class SliderMenuItem extends TextMenuItem
   public function new(x:Float = 0.0, y:Float = 0.0, defaultValue:Float = 0.0, minValue:Float = 0.0, maxValue:Float = 1.0, increment:Float = 0.1,
       onChange:Float->Void)
   {
-    super(x, y, Std.string(defaultValue), AtlasFont.DEFAULT, callbackPlaceholder);
+    super(x, y, Std.string(defaultValue), AtlasFont.DEFAULT, incrementSlider);
 
     this.fireInstantly = true;
     this.select();
@@ -197,7 +197,7 @@ class SliderMenuItem extends TextMenuItem
   /**
    * Called whenever this item is interacted with (ENTER key).
    */
-  public function callbackPlaceholder():Void
+  public function incrementSlider():Void
   {
     trace("floatSlider text interacted with");
     if (curValue + increment > maxValue)
@@ -209,7 +209,7 @@ class SliderMenuItem extends TextMenuItem
       curValue = Math.round((curValue + increment) * 100) / 100;
     }
     trace(Std.string(curValue));
-    super.setItem(Std.string(curValue), callbackPlaceholder);
+    super.setItem(Std.string(curValue), incrementSlider);
     onChange(curValue);
   }
 }
