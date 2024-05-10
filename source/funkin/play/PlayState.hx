@@ -216,7 +216,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The player's current accuracy.
    */
-  public var ratingPercent:Float;
+  public var ratingPercent:Float = 100;
 
   /**
    * The player's current rating.
@@ -1592,7 +1592,6 @@ class PlayState extends MusicBeatSubState
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
-    add(scoreText);
 
     // Move the health bar to the HUD camera.
     healthBar.cameras = [camHUD];
@@ -1734,6 +1733,9 @@ class PlayState extends MusicBeatSubState
       add(iconP1);
       iconP1.cameras = [camHUD];
     }
+
+	// Add the score bar above the character icons.
+	add(scoreText);
 
     //
     // ADD CHARACTERS TO SCENE

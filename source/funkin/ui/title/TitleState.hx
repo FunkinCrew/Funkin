@@ -454,8 +454,8 @@ class TitleState extends MusicBeatState
             case 1:
               createCoolText(['Rhombus Engine by']);
             case 3:
-              addMoreText('LeonGamer10');
-			  addMoreText('Fastbreak383');
+              addMoreText('LeonGamer');
+			  addMoreText('CStriker');
             case 4:
               deleteCoolText();
             case 5:
