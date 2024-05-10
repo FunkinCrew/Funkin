@@ -1726,7 +1726,8 @@ class PlayState extends MusicBeatSubState
     opponentStrumline = new Strumline(noteStyle, false);
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     strumlineBackground = new FlxSprite();
-    strumlineBackground.makeGraphic(200, 200, FlxColor.BLACK);
+    // padding of 30
+    strumlineBackground.makeGraphic(Strumline.NOTE_SPACING * 4 + 30, 5000, FlxColor.BLACK);
     add(playerStrumline);
     add(opponentStrumline);
     add(strumlineBackground);
@@ -1745,7 +1746,8 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.cameras = [camHUD];
 
     strumlineBackground.alpha = Preferences.gameplayBackgroundAlpha;
-    strumlineBackground.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) - 30;
+    // Position the background slightly offset from the strumbar for a bit of padding
+    strumlineBackground.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) - 15;
     strumlineBackground.y = 0;
     strumlineBackground.zIndex = 999;
     strumlineBackground.cameras = [camHUD];
