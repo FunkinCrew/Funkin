@@ -892,7 +892,7 @@ class FreeplayState extends MusicBeatSubState
     if (FlxG.mouse.wheel != 0)
     {
       dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+      changeSelection(-Math.round(FlxG.mouse.wheel));
     }
 
     if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
