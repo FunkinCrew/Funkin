@@ -67,22 +67,22 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   /**
    * The properties of this button's `onUp` callback.
    */
-  public var onUp(default, null):Void->Void;
+  public var onUp:Void->Void;
 
   /**
    * The properties of this button's `onDown` callback.
    */
-  public var onDown(default, null):Void->Void;
+  public var onDown:Void->Void;
 
   /**
    * The properties of this button's `onOver` callback.
    */
-  public var onOver(default, null):Void->Void;
+  public var onOver:Void->Void;
 
   /**
    * The properties of this button's `onOut` callback.
    */
-  public var onOut(default, null):Void->Void;
+  public var onOut:Void->Void;
 
   public var justReleased(get, never):Bool;
   public var released(get, never):Bool;
