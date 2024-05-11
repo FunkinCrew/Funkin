@@ -888,14 +888,6 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, state) addButtons(action, buttons, state, id));
   }
 
-  public function touchShit(control:Control, id)
-  {
-    forEachBound(control, function(action, state)
-    {
-      // action
-    });
-  }
-
   /**
    * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
    * If binder is a literal you can inline this
