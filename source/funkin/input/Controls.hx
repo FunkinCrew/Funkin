@@ -618,11 +618,6 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, state) addKeys(action, keys, state));
   }
 
-  public function bindSwipe(control:Control, swipeDir:Int = FlxDirectionFlags.UP, ?swpLength:Float = 90)
-  {
-    forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press, swpLength)));
-  }
-
   /**
    * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
    * If binder is a literal you can inline this
@@ -769,21 +764,6 @@ class Controls extends FlxActionSet
 
   function bindMobileLol()
   {
-    #if FLX_TOUCH
-    // MAKE BETTER TOUCH BIND CODE
-
-    bindSwipe(Control.NOTE_UP, FlxDirectionFlags.UP, 40);
-    bindSwipe(Control.NOTE_DOWN, FlxDirectionFlags.DOWN, 40);
-    bindSwipe(Control.NOTE_LEFT, FlxDirectionFlags.LEFT, 40);
-    bindSwipe(Control.NOTE_RIGHT, FlxDirectionFlags.RIGHT, 40);
-
-    // feels more like drag when up/down are inversed
-    bindSwipe(Control.UI_UP, FlxDirectionFlags.DOWN);
-    bindSwipe(Control.UI_DOWN, FlxDirectionFlags.UP);
-    bindSwipe(Control.UI_LEFT, FlxDirectionFlags.LEFT);
-    bindSwipe(Control.UI_RIGHT, FlxDirectionFlags.RIGHT);
-    #end
-
     #if android
     forEachBound(Control.BACK, function(action, pres)
     {
@@ -1239,127 +1219,6 @@ class FunkinAction extends FlxActionDigital {
     cache.set(key, {timestamp: FlxG.game.ticks, value: result});
 
     return result;
-  }
-}
-
-class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
-{
-  var touchMap:Map<Int, Swipes> = new Map();
-
-  var vibrationSteps:Int = 5;
-  var curStep:Int = 5;
-  var activateLength:Float = 90;
-  var hapticPressure:Int = 100;
-
-  public function new(swipeDir:Int = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
-  {
-    super(OTHER, swipeDir, Trigger);
-
-    activateLength = swipeLength;
-  }
-
-  // fix right swipe
-  // make so cant double swipe during gameplay
-  // hold notes?
-
-  override function update():Void
-  {
-    super.update();
-
-    #if FLX_TOUCH
-    for (touch in FlxG.touches.list)
-    {
-      if (touch.justPressed)
-      {
-        var pos:FlxPoint = new FlxPoint(touch.screenX, touch.screenY);
-        var pos2:FlxPoint = new FlxPoint(touch.screenX, touch.screenY);
-
-        var swp:Swipes =
-          {
-            initTouchPos: pos,
-            curTouchPos: pos2,
-            touchAngle: 0,
-            touchLength: 0
-          };
-        touchMap[touch.touchPointID] = swp;
-
-        curStep = 1;
-        Haptic.vibrate(40, 70);
-      }
-      if (touch.pressed)
-      {
-        var daSwipe = touchMap[touch.touchPointID];
-
-        daSwipe.curTouchPos.set(touch.screenX, touch.screenY);
-
-        var dx = daSwipe.initTouchPos.x - touch.screenX;
-        var dy = daSwipe.initTouchPos.y - touch.screenY;
-
-        daSwipe.touchAngle = Math.atan2(dy, dx);
-        daSwipe.touchLength = Math.sqrt(dx * dx + dy * dy);
-
-        FlxG.watch.addQuick("LENGTH", daSwipe.touchLength);
-        FlxG.watch.addQuick("ANGLE", FlxAngle.asDegrees(daSwipe.touchAngle));
-
-        if (daSwipe.touchLength >= (activateLength / vibrationSteps) * curStep)
-        {
-          curStep += 1;
-          // Haptic.vibrate(Std.int(hapticPressure / (curStep * 1.5)), 50);
-        }
-      }
-
-      if (touch.justReleased)
-      {
-        touchMap.remove(touch.touchPointID);
-      }
-
-      /* switch (inputID)
-        {
-          case FlxDirectionFlags.UP:
-            return
-          case FlxDirectionFlags.DOWN:
-        }
-       */
-    }
-    #end
-  }
-
-  override public function check(Action:FlxAction):Bool
-  {
-    for (swp in touchMap)
-    {
-      var degAngle = FlxAngle.asDegrees(swp.touchAngle);
-
-      switch(trigger)
-      {
-        case JUST_PRESSED:
-          if (swp.touchLength >= activateLength)
-          {
-            switch(inputID)
-            {
-              case FlxDirectionFlags.UP:
-                if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.DOWN:
-                if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.LEFT:
-                if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
-              case FlxDirectionFlags.RIGHT:
-                if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
-            }
-          }
-        default:
-      }
-    }
-
-    return false;
-  }
-
-  function properTouch(swipe:Swipes):Bool
-  {
-    curStep = 1;
-    Haptic.vibrate(100, 30);
-    swipe.initTouchPos.set(swipe.curTouchPos.x, swipe.curTouchPos.y);
-    return true;
   }
 }
 
