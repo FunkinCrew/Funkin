@@ -1,5 +1,6 @@
 package funkin.mobile;
 
+import funkin.graphics.FunkinSprite;
 import flixel.input.touch.FlxTouch;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
@@ -16,7 +17,7 @@ import flixel.FlxSprite;
 #if !display
 @:generic
 #end
-class FunkinButton extends FlxSprite implements IFlxInput
+class FunkinButton extends FunkinSprite implements IFlxInput
 {
   /**
    * Used with public variable status, means not highlighted or pressed.
