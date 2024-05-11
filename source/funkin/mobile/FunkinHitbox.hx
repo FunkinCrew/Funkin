@@ -1,6 +1,5 @@
 package funkin.mobile;
 
-import funkin.util.tools.IntTools;
 import funkin.mobile.FunkinButton;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
@@ -76,12 +75,18 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   {
     var shape:Shape = new Shape();
 
-    final radius:Float = Math.min(width, height) / 2;
-    
-    var gradientMatrix:Matrix = new Matrix();
-    gradientMatrix.createGradientBox(radius * 2, radius * 2, 0, (width - radius * 2) / 2, (height - radius * 2) / 2);
-    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor], [0.6, 0], [0, 255], gradientMatrix);
-    shape.graphics.drawCircle(width / 2, height / 2, radius);
+    var matrix:Matrix = new Matrix();
+    matrix.createGradientBox(width, height, 0, 0, 0);
+    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor, baseColor], [1.0, 0.0], [0, 255], matrix);
+    shape.graphics.drawRect(0, 0, width, height);
+    shape.graphics.endFill();
+
+    final circleRadius:Float = Math.min(width, height) / 4;
+  
+    var circleMatrix:Matrix = new Matrix();
+    circleMatrix.createGradientBox(circleRadius * 2, circleRadius * 2, 0, (width - circleRadius * 2) / 2, (height - circleRadius * 2) / 2);
+    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor, baseColor], [1.0, 0.0], [0, 255], circleMatrix);
+    shape.graphics.drawCircle(width / 2, height / 2, circleRadius);
     shape.graphics.endFill();
 
     shape.graphics.lineStyle(3, baseColor);
