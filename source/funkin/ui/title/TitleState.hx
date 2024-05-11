@@ -223,7 +223,6 @@ class TitleState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    var shouldFadeIn:Bool = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
     FunkinSound.playMusic('freakyMenu',
       {
@@ -231,6 +230,7 @@ class TitleState extends MusicBeatState
         overrideExisting: true,
         restartTrack: true
       });
+    var shouldFadeIn:Bool = (FlxG.sound.music != null);
     // Fade from 0.0 to 0.7 over 4 seconds
     if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
   }
@@ -302,6 +302,8 @@ class TitleState extends MusicBeatState
       if (gamepad.justPressed.B) pressedEnter = true;
       #end
     }
+
+    if (funkin.util.TouchUtil.justPressed) pressedEnter = true;
 
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
