@@ -76,15 +76,16 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   {
     var shape:Shape = new Shape();
 
+    final radius:Float = Math.min(width, height) / 2;
+    
     var gradientMatrix:Matrix = new Matrix();
-    gradientMatrix.createGradientBox(width, height, 0, 0, 0);
+    gradientMatrix.createGradientBox(radius * 2, radius * 2, 0, (width - radius * 2) / 2, (height - radius * 2) / 2);
     shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor], [0.6, 0], [0, 255], gradientMatrix);
-
-    shape.graphics.drawRect(0, 0, width, height);
+    shape.graphics.drawCircle(width / 2, height / 2, radius);
     shape.graphics.endFill();
 
     shape.graphics.lineStyle(3, baseColor);
-    shape.graphics.drawRect(0, 0, width - 1, height - 1);
+    shape.graphics.drawRect(0, 0, width, height);
     shape.graphics.endFill();
 
     var bitmap:BitmapData = new BitmapData(width, height, true, 0);
