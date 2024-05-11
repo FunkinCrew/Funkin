@@ -51,7 +51,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     hints = FlxDestroyUtil.destroyArray(hints);
   }
 
-  private function createHint(x:Float, y:Float, width:Int, height:Int, color:Int = 0xFFFFFF):FunkinButton
+  private function createHint(x:Float, y:Float, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF):FunkinButton
   {
     var hint:FunkinButton = new FunkinButton(x, y);
     hint.loadGraphic(createHintGraphic(width, height, color));
@@ -71,13 +71,10 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     return hint;
   }
 
-  private function createHintGraphic(width:Int, height:Int, baseColor:Int = 0xFFFFFF):BitmapData
+  private function createHintGraphic(width:Int, height:Int, baseColor:FlxColor = 0xFFFFFFFF):BitmapData
   {
     var shape:Shape = new Shape();
-
-    var matrix:Matrix = new Matrix();
-    matrix.createGradientBox(width, height, 0, 0, 0);
-    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor, baseColor], [1.0, 0.0], [0, 255], matrix);
+    shape.graphics.beginFill(baseColor, 0.6);
     shape.graphics.drawRect(0, 0, width, height);
     shape.graphics.endFill();
 
@@ -85,7 +82,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   
     var circleMatrix:Matrix = new Matrix();
     circleMatrix.createGradientBox(circleRadius * 2, circleRadius * 2, 0, (width - circleRadius * 2) / 2, (height - circleRadius * 2) / 2);
-    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor, baseColor], [1.0, 0.0], [0, 255], circleMatrix);
+    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor, FlxColor.TRANSPARENT], [1.0, 0.0], [255, 0], circleMatrix);
     shape.graphics.drawCircle(width / 2, height / 2, circleRadius);
     shape.graphics.endFill();
 
