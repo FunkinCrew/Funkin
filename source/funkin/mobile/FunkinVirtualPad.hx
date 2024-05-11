@@ -8,7 +8,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
 
-enum FlxDPadMode
+enum FunkinDPadMode
 {
   UP_DOWN;
   LEFT_RIGHT;
@@ -18,7 +18,7 @@ enum FlxDPadMode
   NONE;
 }
 
-enum FlxActionMode
+enum FunkinActionMode
 {
   A;
   B;
@@ -35,7 +35,7 @@ enum FlxActionMode
  * A virtual gamepad.
  * It's easy to customize the layout.
  */
-class FlxVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
+class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
 {
   public var buttonLeft:FunkinButton = new FunkinButton(0, 0);
   public var buttonUp:FunkinButton = new FunkinButton(0, 0);
