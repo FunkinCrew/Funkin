@@ -9,6 +9,7 @@ import flixel.FlxG;
 import openfl.display.BitmapData;
 import openfl.display.GradientType;
 import openfl.display.Shape;
+import openfl.geom.Matrix;
 
 /**
  * A zone with 4 buttons (A hitbox).
