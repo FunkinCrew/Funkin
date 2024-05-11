@@ -74,37 +74,21 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
 
   private function createHintGraphic(width:Int, height:Int, baseColor:Int = 0xFFFFFF):BitmapData
   {
-    final darkerColor:Int = adjustColorBrightness(baseColor, -30);
-    final lighterColor:Int = adjustColorBrightness(baseColor, 30);
+    var shape:Shape = new Shape();
 
     var gradientMatrix:Matrix = new Matrix();
     gradientMatrix.createGradientBox(width, height, 0, 0, 0);
+    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor], [0.6, 0], [0, 255], gradientMatrix);
 
-    var shape:Shape = new Shape();
-
-    shape.graphics.beginGradientFill(GradientType.LINEAR, [darkerColor, baseColor, lighterColor], [0, 1, 0], [0, 128, 255], gradientMatrix);
     shape.graphics.drawRect(0, 0, width, height);
     shape.graphics.endFill();
 
-    shape.graphics.lineStyle(2, baseColor);
+    shape.graphics.lineStyle(3, baseColor);
     shape.graphics.drawRect(0, 0, width - 1, height - 1);
     shape.graphics.endFill();
 
     var bitmap:BitmapData = new BitmapData(width, height, true, 0);
     bitmap.draw(shape, true);
     return bitmap;
-  }
-
-  private function adjustColorBrightness(color:Int, delta:Int):Int
-  {
-    var r:Int = (color >> 16) & 0xFF;
-    var g:Int = (color >> 8) & 0xFF;
-    var b:Int = color & 0xFF;
-
-    r = IntTools.clamp(r + delta, 0, 255);
-    g = IntTools.clamp(g + delta, 0, 255);
-    b = IntTools.clamp(b + delta, 0, 255);
-
-    return (r << 16) | (g << 8) | b;
   }
 }
