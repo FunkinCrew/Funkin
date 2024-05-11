@@ -62,7 +62,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * Shows the current state of the button, either `FunkinButton.NORMAL`,
    * `FunkinButton.HIGHLIGHT` or `FunkinButton.PRESSED`.
    */
-  public var status(default, set):Int;
+  public var status:Int;
 
   /**
    * The properties of this button's `onUp` callback.
