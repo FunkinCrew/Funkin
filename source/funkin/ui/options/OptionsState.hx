@@ -266,11 +266,11 @@ class OptionsMenu extends Page
   #end
 }
 
-enum PageName
+enum abstract PageName(String)
 {
-  Options;
-  Controls;
-  Colors;
-  Mods;
-  Preferences;
+  var Options = "options";
+  var Controls = "controls";
+  var Colors = "colors";
+  var Mods = "mods";
+  var Preferences = "preferences";
 }
