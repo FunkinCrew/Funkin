@@ -252,6 +252,7 @@ class GameOverSubState extends MusicBeatSubState
         this.close();
         if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
         PlayState.instance.close(); // This only works because PlayState is a substate!
+        return;
       }
       else if (PlayStatePlaylist.isStoryMode)
       {
