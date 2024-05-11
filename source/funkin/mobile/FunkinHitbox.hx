@@ -31,7 +31,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   {
     super();
 
-    if (colors == null || colors.length < ammo) colors = [for (i in 0...ammo) 0xFFFFFF];
+    if (colors == null || colors.length < ammo) colors = [for (i in 0...ammo) 0xFFFFFFFF];
 
     for (i in 0...ammo)
       add(hints[i] = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, colors[i]));
