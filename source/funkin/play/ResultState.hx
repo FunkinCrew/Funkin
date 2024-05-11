@@ -12,6 +12,8 @@ import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
 import funkin.ui.freeplay.FreeplayScore;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
@@ -31,12 +33,27 @@ class ResultState extends MusicBeatSubState
 {
   final params:ResultsStateParams;
 
-  var resultsVariation:ResultVariations;
-  var songName:FlxBitmapText;
-  var difficulty:FlxSprite;
+  final rank:ResultRank;
+  final songName:FlxBitmapText;
+  final difficulty:FlxSprite;
 
-  var maskShaderSongName:LeftMaskShader = new LeftMaskShader();
-  var maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
+  final maskShaderSongName:LeftMaskShader = new LeftMaskShader();
+  final maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
+
+  final resultsAnim:FunkinSprite;
+  final ratingsPopin:FunkinSprite;
+  final scorePopin:FunkinSprite;
+
+  final bgFlash:FlxSprite;
+
+  final highscoreNew:FlxSprite;
+  final score:ResultScore;
+
+  var bfPerfect:Null<FlxAtlasSprite> = null;
+  var bfExcellent:Null<FlxAtlasSprite> = null;
+  var bfGood:Null<FlxSprite> = null;
+  var gfGood:Null<FlxSprite> = null;
+  var bfShit:Null<FlxAtlasSprite> = null;
 
   public function new(params:ResultsStateParams)
   {
@@ -44,7 +61,11 @@ class ResultState extends MusicBeatSubState
 
     this.params = params;
 
-    resultsVariation = calculateVariation(params);
+    rank = calculateRank(params);
+    // rank = SHIT;
+
+    // We build a lot of this stuff in the constructor, then place it in create().
+    // This prevents having to do `null` checks everywhere.
 
     var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
     songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
@@ -55,18 +76,22 @@ class ResultState extends MusicBeatSubState
 
     difficulty = new FlxSprite(555);
     difficulty.zIndex = 1000;
+
+    bgFlash = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFEB69, 0xFFFFE66A], 90);
+
+    resultsAnim = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
+
+    ratingsPopin = FunkinSprite.createSparrow(-150, 120, "resultScreen/ratingsPopin");
+
+    scorePopin = FunkinSprite.createSparrow(-180, 520, "resultScreen/scorePopin");
+
+    highscoreNew = new FlxSprite(310, 570);
+
+    score = new ResultScore(35, 305, 10, params.scoreData.score);
   }
 
   override function create():Void
   {
-    FunkinSound.playMusic(resultsVariation.getMusicPath(),
-      {
-        startingVolume: 1.0,
-        overrideExisting: true,
-        restartTrack: true,
-        loop: resultsVariation.shouldMusicLoop()
-      });
-
     // Reset the camera zoom on the results screen.
     FlxG.camera.zoom = 1.0;
 
@@ -75,10 +100,9 @@ class ResultState extends MusicBeatSubState
     bg.zIndex = 10;
     add(bg);
 
-    var bgFlash:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFEB69, 0xFFFFE66A], 90);
     bgFlash.scrollFactor.set();
     bgFlash.visible = false;
-    bg.zIndex = 20;
+    bgFlash.zIndex = 20;
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
@@ -92,13 +116,7 @@ class ResultState extends MusicBeatSubState
     soundSystem.zIndex = 1100;
     add(soundSystem);
 
-    var bfPerfect:Null<FlxAtlasSprite> = null;
-    var bfExcellent:Null<FlxAtlasSprite> = null;
-    var bfGood:Null<FlxSprite> = null;
-    var gfGood:Null<FlxSprite> = null;
-    var bfShit:Null<FlxAtlasSprite> = null;
-
-    switch (resultsVariation)
+    switch (rank)
     {
       case PERFECT | PERFECT_GOLD | PERFECT_PLATINUM:
         bfPerfect = new FlxAtlasSprite(370, -180, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
@@ -107,8 +125,11 @@ class ResultState extends MusicBeatSubState
         add(bfPerfect);
 
         bfPerfect.anim.onComplete = () -> {
-          bfPerfect.anim.curFrame = 136;
-          bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+          if (bfPerfect != null)
+          {
+            bfPerfect.anim.curFrame = 137;
+            bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+          }
         };
 
       case EXCELLENT:
@@ -118,7 +139,10 @@ class ResultState extends MusicBeatSubState
         add(bfExcellent);
 
         bfExcellent.onAnimationFinish.add((animName) -> {
-          bfExcellent.playAnimation('Loop Start');
+          if (bfExcellent != null)
+          {
+            bfExcellent.playAnimation('Loop Start');
+          }
         });
 
       case GOOD | GREAT:
@@ -127,7 +151,10 @@ class ResultState extends MusicBeatSubState
         gfGood.visible = false;
         gfGood.zIndex = 500;
         gfGood.animation.finishCallback = _ -> {
-          gfGood.animation.play('clap', true, false, 9);
+          if (gfGood != null)
+          {
+            gfGood.animation.play('clap', true, false, 9);
+          }
         };
         add(gfGood);
 
@@ -136,7 +163,10 @@ class ResultState extends MusicBeatSubState
         bfGood.visible = false;
         bfGood.zIndex = 501;
         bfGood.animation.finishCallback = function(_) {
-          bfGood.animation.play('fall', true, false, 14);
+          if (bfGood != null)
+          {
+            bfGood.animation.play('fall', true, false, 14);
+          }
         };
         add(bfGood);
 
@@ -146,7 +176,10 @@ class ResultState extends MusicBeatSubState
         bfShit.zIndex = 500;
         add(bfShit);
         bfShit.onAnimationFinish.add((animName) -> {
-          bfShit.playAnimation('Loop Start');
+          if (bfShit != null)
+          {
+            bfShit.playAnimation('Loop Start');
+          }
         });
     }
 
@@ -189,25 +222,21 @@ class ResultState extends MusicBeatSubState
     blackTopBar.zIndex = 1010;
     add(blackTopBar);
 
-    var resultsAnim:FunkinSprite = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
     resultsAnim.animation.addByPrefix("result", "results instance 1", 24, false);
     resultsAnim.animation.play("result");
     resultsAnim.zIndex = 1200;
     add(resultsAnim);
 
-    var ratingsPopin:FunkinSprite = FunkinSprite.createSparrow(-150, 120, "resultScreen/ratingsPopin");
     ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
     ratingsPopin.visible = false;
     ratingsPopin.zIndex = 1200;
     add(ratingsPopin);
 
-    var scorePopin:FunkinSprite = FunkinSprite.createSparrow(-180, 520, "resultScreen/scorePopin");
     scorePopin.animation.addByPrefix("score", "tally score", 24, false);
     scorePopin.visible = false;
     scorePopin.zIndex = 1200;
     add(scorePopin);
 
-    var highscoreNew:FlxSprite = new FlxSprite(310, 570);
     highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
     highscoreNew.animation.addByPrefix("new", "NEW HIGHSCORE", 24);
     highscoreNew.visible = false;
@@ -249,7 +278,6 @@ class ResultState extends MusicBeatSubState
     var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.scoreData.tallies.missed, 0xFFC68AE6);
     ratingGrp.add(tallyMissed);
 
-    var score:ResultScore = new ResultScore(35, 305, 10, params.scoreData.score);
     score.visible = false;
     score.zIndex = 1200;
     add(score);
@@ -263,7 +291,68 @@ class ResultState extends MusicBeatSubState
       });
     }
 
-    new FlxTimer().start(0.5, _ -> {
+    startRankTallySequence();
+
+    refresh();
+
+    super.create();
+  }
+
+  var rankTallyTimer:Null<FlxTimer> = null;
+  var clearPercentTarget:Int = 100;
+  var clearPercentLerp:Int = 0;
+
+  function startRankTallySequence():Void
+  {
+    clearPercentTarget = Math.floor((params.scoreData.tallies.totalNotesHit) / params.scoreData.tallies.totalNotes * 100);
+    // clearPercentTarget = 97;
+
+    var clearPercentText = new FlxText(FlxG.width / 2, FlxG.height / 2, 0, 'CLEAR: ${clearPercentLerp}%');
+    clearPercentText.setFormat(Paths.font('vcr.ttf'), 64, FlxColor.BLACK, FlxTextAlign.RIGHT);
+    clearPercentText.zIndex = 1000;
+    add(clearPercentText);
+
+    rankTallyTimer = new FlxTimer().start(1 / 24, _ -> {
+      // Tick up.
+      if (clearPercentLerp < clearPercentTarget)
+      {
+        clearPercentLerp++;
+
+        clearPercentText.text = 'CLEAR: ${clearPercentLerp}%';
+        FunkinSound.playOnce(Paths.sound('scrollMenu'));
+      }
+
+      // Don't overshoot.
+      if (clearPercentLerp > clearPercentTarget)
+      {
+        clearPercentLerp = clearPercentTarget;
+      }
+
+      if (clearPercentLerp == clearPercentTarget)
+      {
+        if (rankTallyTimer != null)
+        {
+          rankTallyTimer.destroy();
+          rankTallyTimer = null;
+        }
+
+        // Play confirm sound.
+        FunkinSound.playOnce(Paths.sound('confirmMenu'));
+
+        new FlxTimer().start(1.0, _ -> {
+          remove(clearPercentText);
+
+          afterRankTallySequence();
+        });
+      }
+    }, 0); // 0 = Loop until stopped
+
+    if (ratingsPopin == null)
+    {
+      trace("Could not build ratingsPopin!");
+    }
+    else
+    {
       ratingsPopin.animation.play("idle");
       ratingsPopin.visible = true;
 
@@ -286,76 +375,139 @@ class ResultState extends MusicBeatSubState
           highscoreNew.visible = false;
         }
       };
-
-      switch (resultsVariation)
-      {
-        case PERFECT | PERFECT_GOLD | PERFECT_PLATINUM:
-          if (bfPerfect == null)
-          {
-            trace("Could not build PERFECT animation!");
-          }
-          else
-          {
-            bfPerfect.visible = true;
-            bfPerfect.playAnimation('');
-          }
-
-        case EXCELLENT:
-          if (bfExcellent == null)
-          {
-            trace("Could not build EXCELLENT animation!");
-          }
-          else
-          {
-            bfExcellent.visible = true;
-            bfExcellent.playAnimation('Intro');
-          }
-
-        case SHIT:
-          if (bfShit == null)
-          {
-            trace("Could not build SHIT animation!");
-          }
-          else
-          {
-            bfShit.visible = true;
-            bfShit.playAnimation('Intro');
-          }
-
-        case GREAT | GOOD:
-          if (bfGood == null || gfGood == null)
-          {
-            trace("Could not build GOOD animation!");
-          }
-          else
-          {
-            bfGood.animation.play('fall');
-            bfGood.visible = true;
-
-            new FlxTimer().start((1 / 24) * 12, _ -> {
-              bgFlash.visible = true;
-              FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
-              new FlxTimer().start((1 / 24) * 2, _ ->
-                {
-                  // bgFlash.alpha = 0.5;
-
-                  // bgFlash.visible = false;
-                });
-            });
-
-            new FlxTimer().start((1 / 24) * 22, _ -> {
-              // plays about 22 frames (at 24fps timing) after bf spawns in
-              gfGood.animation.play('clap', true);
-              gfGood.visible = true;
-            });
-          }
-        default:
-      }
-    });
+    }
 
     refresh();
+  }
 
-    super.create();
+  function afterRankTallySequence():Void
+  {
+    FunkinSound.playMusic(rank.getMusicPath(),
+      {
+        startingVolume: 1.0,
+        overrideExisting: true,
+        restartTrack: true,
+        loop: rank.shouldMusicLoop()
+      });
+
+    FlxG.sound.music.onComplete = () -> {
+      if (rank == SHIT)
+      {
+        FunkinSound.playMusic('bluu',
+          {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: true,
+            loop: true
+          });
+        FlxG.sound.music.fadeIn(10.0, 0.0, 1.0);
+      }
+    }
+
+    switch (rank)
+    {
+      case PERFECT | PERFECT_GOLD | PERFECT_PLATINUM:
+        if (bfPerfect == null)
+        {
+          trace("Could not build PERFECT animation!");
+        }
+        else
+        {
+          bfPerfect.visible = true;
+          bfPerfect.playAnimation('');
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
+        }
+
+      case EXCELLENT:
+        if (bfExcellent == null)
+        {
+          trace("Could not build EXCELLENT animation!");
+        }
+        else
+        {
+          bfExcellent.visible = true;
+          bfExcellent.playAnimation('Intro');
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
+        }
+
+      case SHIT:
+        if (bfShit == null)
+        {
+          trace("Could not build SHIT animation!");
+        }
+        else
+        {
+          bfShit.visible = true;
+          bfShit.playAnimation('Intro');
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
+        }
+
+      case GREAT | GOOD:
+        if (bfGood == null)
+        {
+          trace("Could not build GOOD animation!");
+        }
+        else
+        {
+          bfGood.animation.play('fall');
+          bfGood.visible = true;
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
+
+          new FlxTimer().start((1 / 24) * 22, _ -> {
+            // plays about 22 frames (at 24fps timing) after bf spawns in
+            if (gfGood != null)
+            {
+              gfGood.animation.play('clap', true);
+              gfGood.visible = true;
+            }
+            else
+            {
+              trace("Could not build GOOD animation!");
+            }
+          });
+        }
+      default:
+    }
   }
 
   function timerThenSongName():Void
@@ -391,11 +543,8 @@ class ResultState extends MusicBeatSubState
   {
     super.draw();
 
-    if (songName != null)
-    {
-      songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
-      // PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
-    }
+    songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
+    // PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
 
     // if (songName != null && songName.frame != null)
     // maskShaderSongName.frameUV = songName.frame.uv;
@@ -448,17 +597,17 @@ class ResultState extends MusicBeatSubState
     super.update(elapsed);
   }
 
-  public static function calculateVariation(params:ResultsStateParams):ResultVariations
+  public static function calculateRank(params:ResultsStateParams):ResultRank
   {
     // Perfect (Platinum) is a Sick Full Clear
     var isPerfectPlat = (params.scoreData.tallies.sick + params.scoreData.tallies.good) == params.scoreData.tallies.totalNotes
       && params.scoreData.tallies.sick / params.scoreData.tallies.totalNotes >= Constants.RANK_PERFECT_PLAT_THRESHOLD;
-    if (isPerfectPlat) return ResultVariations.PERFECT_PLATINUM;
+    if (isPerfectPlat) return ResultRank.PERFECT_PLATINUM;
 
     // Perfect (Gold) is an 85% Sick Full Clear
     var isPerfectGold = (params.scoreData.tallies.sick + params.scoreData.tallies.good) == params.scoreData.tallies.totalNotes
       && params.scoreData.tallies.sick / params.scoreData.tallies.totalNotes >= Constants.RANK_PERFECT_GOLD_THRESHOLD;
-    if (isPerfectGold) return ResultVariations.PERFECT_GOLD;
+    if (isPerfectGold) return ResultRank.PERFECT_GOLD;
 
     // Else, use the standard grades
 
@@ -467,28 +616,28 @@ class ResultState extends MusicBeatSubState
 
     if (clear == Constants.RANK_PERFECT_THRESHOLD)
     {
-      return ResultVariations.PERFECT;
+      return ResultRank.PERFECT;
     }
     else if (clear >= Constants.RANK_EXCELLENT_THRESHOLD)
     {
-      return ResultVariations.EXCELLENT;
+      return ResultRank.EXCELLENT;
     }
     else if (clear >= Constants.RANK_GREAT_THRESHOLD)
     {
-      return ResultVariations.GREAT;
+      return ResultRank.GREAT;
     }
     else if (clear >= Constants.RANK_GOOD_THRESHOLD)
     {
-      return ResultVariations.GOOD;
+      return ResultRank.GOOD;
     }
     else
     {
-      return ResultVariations.SHIT;
+      return ResultRank.SHIT;
     }
   }
 }
 
-enum abstract ResultVariations(String)
+enum abstract ResultRank(String)
 {
   var PERFECT_PLATINUM;
   var PERFECT_GOLD;
