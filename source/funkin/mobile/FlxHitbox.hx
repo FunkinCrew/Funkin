@@ -14,7 +14,7 @@ import openfl.display.Shape;
  * A zone with 4 buttons (A hitbox).
  * It's really easy to customize the layout.
  */
-class FlxHitbox extends FlxSpriteGroup
+class FlxHitbox extends FlxTypedSpriteGroup<FunkinButton>
 {
   /**
    * The array containing the hitbox's buttons.
