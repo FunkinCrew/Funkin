@@ -1,8 +1,8 @@
-package flixel.mobile;
+package funkin.mobile;
 
 import funkin.util.tools.IntTools;
+import funkin.mobile.FunkinButton;
 import flixel.group.FlxSpriteGroup;
-import flixel.mobile.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
@@ -19,7 +19,7 @@ class FlxHitbox extends FlxSpriteGroup
   /**
    * The array containing the hitbox's buttons.
    */
-  public var hints(default, null):Array<FlxButton> = [];
+  public var hints(default, null):Array<FunkinButton> = [];
 
   /**
    * Create the zone.
@@ -51,9 +51,9 @@ class FlxHitbox extends FlxSpriteGroup
     hints = FlxDestroyUtil.destroyArray(hints);
   }
 
-  private function createHint(x:Float, y:Float, width:Int, height:Int, color:Int = 0xFFFFFF):FlxButton
+  private function createHint(x:Float, y:Float, width:Int, height:Int, color:Int = 0xFFFFFF):FunkinButton
   {
-    var hint:FlxButton = new FlxButton(x, y);
+    var hint:FunkinButton = new FunkinButton(x, y);
     hint.loadGraphic(createHintGraphic(width, height, color));
     hint.solid = false;
     hint.multiTouch = true;
