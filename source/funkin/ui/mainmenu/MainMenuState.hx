@@ -304,24 +304,6 @@ class MainMenuState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (FlxG.onMobile)
-    {
-      var touch:FlxTouch = FlxG.touches.getFirst();
-
-      if (touch != null)
-      {
-        for (item in menuItems)
-        {
-          if (touch.overlaps(item))
-          {
-            if (menuItems.selectedIndex == item.ID && touch.justPressed) menuItems.accept();
-            else
-              menuItems.selectItem(item.ID);
-          }
-        }
-      }
-    }
-
     // Open the debug menu, defaults to ` / ~
     #if CHART_EDITOR_SUPPORTED
     if (controls.DEBUG_MENU)
