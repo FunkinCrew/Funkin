@@ -6,8 +6,10 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
 import openfl.display.BitmapData;
+import openfl.display.InterpolationMethod;
 import openfl.display.GradientType;
 import openfl.display.Shape;
+import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 
 /**
@@ -76,8 +78,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     var shape:Shape = new Shape();
   
     var matrix:Matrix = new Matrix();
-    matrix.createGradientBox(width, height, 0, -width / 2, -height / 2);
-    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor, FlxColor.TRANSPARENT], [0.6, 0.6], [255, 0], matrix);
+    matrix.createGradientBox(width, height, Math.PI / 2, width / 2, height / 2);
+    shape.graphics.beginGradientFill(GradientType.RADIAL, [baseColor, FlxColor.TRANSPARENT], [0.6, 0.6], [0, 255], matrix, SpreadMethod.PAD, InterpolationMethod.LINEAR_RGB);
     shape.graphics.drawRect(0, 0, width, height);
     shape.graphics.endFill();
 
