@@ -55,7 +55,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
    * @param dPad The D-Pad mode. `LEFT_FULL` for example.
    * @param action The action buttons mode. `A_B_C` for example.
    */
-  public function new(dPad:FlxDPadMode = LEFT_FULL, action:FlxActionMode = A_B_C):Void
+  public function new(dPad:FunkinDPadMode = LEFT_FULL, action:FunkinActionMode = A_B_C):Void
   {
     super();
 
