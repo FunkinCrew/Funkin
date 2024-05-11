@@ -74,10 +74,10 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     var shape:Shape = new Shape();
 
     shape.graphics.beginFill(baseColor, 0.6);
-    shape.graphics.drawRect(3, 3, Width - 6, Height - 6);
+    shape.graphics.drawRect(6, 6, Width - 12, Height - 12);
     shape.graphics.endFill();
 
-    shape.graphics.lineStyle(3, baseColor);
+    shape.graphics.lineStyle(6, baseColor);
     shape.graphics.drawRect(0, 0, width, height);
     shape.graphics.endFill();
 
