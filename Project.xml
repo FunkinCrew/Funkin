@@ -103,6 +103,8 @@
 	-->
 	<assets path="assets/fonts" embed="true" />
 
+	<assets path="assets/vpad" if="mobile" />
+
 	<!-- If compiled via github actions, show debug version number. -->
 	<define name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD" />
 	<define name="NO_REDIRECT_ASSETS_FOLDER" if="GITHUB_BUILD" />
