@@ -19,7 +19,6 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import lime.ui.Haptic;
 
 /**
  * A core class which handles receiving player input and interpreting it into game actions.
@@ -765,9 +764,9 @@ class Controls extends FlxActionSet
   function bindMobileLol()
   {
     #if android
-    forEachBound(Control.BACK, function(action, pres)
+    forEachBound(Control.PAUSE, function(action, pres)
     {
-      action.add(new FlxActionInputDigitalAndroid(FlxAndroidKey.BACK, JUST_PRESSED));
+      action.add(new FlxActionInputDigitalAndroid(FlxAndroidKey.BACK, JUST_RELEASED));
     });
     #end
   }
