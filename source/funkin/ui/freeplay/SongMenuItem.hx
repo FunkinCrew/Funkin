@@ -202,8 +202,12 @@ class SongMenuItem extends FlxSpriteGroup
     pixelIcon.loadGraphic(Paths.image(charPath));
     pixelIcon.scale.x = pixelIcon.scale.y = 2;
 
-    // Set the pixel icon x origin for position adjustments
-    pixelIcon.origin.x = charPixelIconData.origin[0];
+    // Set to 100 for default position
+    pixelIcon.origin.x = 100;
+
+    // Add the pixel icon origin with offsets for position adjustments
+    pixelIcon.origin.x += charPixelIconData.originOffsets[0];
+    pixelIcon.origin.y += charPixelIconData.originOffsets[1];
     // Set whether or not to flip the pixel icon
     pixelIcon.flipX = charPixelIconData.flipX;
   }

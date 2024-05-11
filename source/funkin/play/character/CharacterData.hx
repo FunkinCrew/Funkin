@@ -419,7 +419,7 @@ class CharacterDataParser
   static final DEFAULT_NAME:String = 'Untitled Character';
   static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
   static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
-  static final DEFAULT_PIXELICON_ORIGIN:Array<Int> = [100, 0];
+  static final DEFAULT_PIXELICON_ORIGIN_OFFSETS:Array<Int> = [0, 0];
   static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   static final DEFAULT_SCALE:Float = 1;
   static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -517,7 +517,7 @@ class CharacterDataParser
         {
           id: null,
           flipX: null,
-          origin: null
+          originOffsets: null
         };
     }
 
@@ -531,9 +531,9 @@ class CharacterDataParser
       input.pixelIcon.flipX = DEFAULT_FLIPX;
     }
 
-    if (input.pixelIcon.origin == null)
+    if (input.pixelIcon.originOffsets == null)
     {
-      input.pixelIcon.origin = DEFAULT_PIXELICON_ORIGIN;
+      input.pixelIcon.originOffsets = DEFAULT_PIXELICON_ORIGIN_OFFSETS;
     }
 
     if (input.startingAnimation == null)
@@ -810,10 +810,10 @@ typedef PixelIconData =
   var flipX:Null<Bool>;
 
   /**
-   * The origin of the pixel icon, in pixels.
-   * @default [100, 0]
+   * The origin offsets of the pixel icon, in pixels.
+   * @default [0, 0]
    */
-  var origin:Null<Array<Int>>;
+  var originOffsets:Null<Array<Int>>;
 }
 
 typedef DeathData =
