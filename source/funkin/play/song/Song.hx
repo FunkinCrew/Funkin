@@ -400,6 +400,27 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * Given that this character is selected in the Freeplay menu,
+   * which variations should be available?
+   * @param charId The character ID to query.
+   * @return An array of available variations.
+   */
+  public function getVariationsByCharId(?charId:String):Array<String>
+  {
+    if (charId == null) charId = Constants.DEFAULT_CHARACTER;
+
+    if (variations.contains(charId))
+    {
+      return [charId];
+    }
+    else
+    {
+      // TODO: How to exclude character variations while keeping other custom variations?
+      return variations;
+    }
+  }
+
+  /**
    * List all the difficulties in this song.
    *
    * @param variationId Optionally filter by a single variation.
