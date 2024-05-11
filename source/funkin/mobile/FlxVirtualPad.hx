@@ -34,11 +34,8 @@ enum FlxActionMode
 /**
  * A virtual gamepad.
  * It's easy to customize the layout.
- *
- * @author Ka Wing Chin
- * @author Mihai Alexandru (M.A. Jigsaw)
  */
-class FlxVirtualPad extends FlxSpriteGroup
+class FlxVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
 {
   public var buttonLeft:FunkinButton = new FunkinButton(0, 0);
   public var buttonUp:FunkinButton = new FunkinButton(0, 0);
