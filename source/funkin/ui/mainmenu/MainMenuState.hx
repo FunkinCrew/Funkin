@@ -148,6 +148,10 @@ class MainMenuState extends MusicBeatState
       }
     });
 
+    #if mobile
+    addVirtualPad(UP_DOWN, A_B);
+    #end
+
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     super.create();
