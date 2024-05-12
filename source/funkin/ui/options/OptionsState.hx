@@ -57,6 +57,9 @@ class OptionsState extends MusicBeatState
 
     // disable for intro transition
     currentPage.enabled = false;
+
+    addVPad(LEFT_FULL, A_B);
+    addVPadCamera(false);
     super.create();
   }
 

@@ -14,6 +14,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
+import funkin.util.TouchUtil;
 #if mobile
 import flixel.input.actions.FlxActionInput;
 import flixel.util.FlxDestroyUtil;
@@ -37,6 +38,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public var rightWatermarkText:FlxText = null;
 
   public var conductorInUse(get, set):Conductor;
+
+  public static var isTouch:Bool = FlxG.onMobile ? true : false;
 
   var _conductorInUse:Null<Conductor>;
 
@@ -73,8 +76,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function addVPad(dPad:FunkinDPadMode, action:FunkinActionMode, ?visible:Bool = true):Void
   {
-    if (vPad != null)
-      removeVPad();
+    if (vPad != null) removeVPad();
 
     vPad = new FunkinVirtualPad(dPad, action);
     vPad.visible = visible;
@@ -98,17 +100,14 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function removeVPad():Void
   {
-    if (trackedInputsVirtualPad.length > 0)
-      controls.removeVControlsInput(trackedInputsVirtualPad);
+    if (trackedInputsVirtualPad.length > 0) controls.removeVControlsInput(trackedInputsVirtualPad);
 
-    if (vPad != null)
-      remove(vPad);
+    if (vPad != null) remove(vPad);
   }
 
   public function addHitbox(?visible:Bool = true):Void
   {
-    if (hitbox != null)
-      removeHitbox();
+    if (hitbox != null) removeHitbox();
 
     hitbox = new FunkinHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xC34B9A, 0x00FFFF, 0x12FB06, 0xF9393F]);
     hitbox.visible = visible;
@@ -132,11 +131,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function removeHitbox():Void
   {
-    if (trackedInputsHitbox.length > 0)
-      controls.removeVControlsInput(trackedInputsHitbox);
+    if (trackedInputsHitbox.length > 0) controls.removeVControlsInput(trackedInputsHitbox);
 
-    if (hitbox != null)
-      remove(hitbox);
+    if (hitbox != null) remove(hitbox);
   }
   #end
 
@@ -153,21 +150,17 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public override function destroy():Void
   {
     #if mobile
-    if (trackedInputsHitbox.length > 0)
-      controls.removeVControlsInput(trackedInputsHitbox);
+    if (trackedInputsHitbox.length > 0) controls.removeVControlsInput(trackedInputsHitbox);
 
-    if (trackedInputsVirtualPad.length > 0)
-      controls.removeVControlsInput(trackedInputsVirtualPad);
+    if (trackedInputsVirtualPad.length > 0) controls.removeVControlsInput(trackedInputsVirtualPad);
     #end
 
     super.destroy();
 
     #if mobile
-    if (vPad != null)
-      vPad = FlxDestroyUtil.destroy(vPad);
+    if (vPad != null) vPad = FlxDestroyUtil.destroy(vPad);
 
-    if (hitbox != null)
-      hitbox = FlxDestroyUtil.destroy(hitbox);
+    if (hitbox != null) hitbox = FlxDestroyUtil.destroy(hitbox);
     #end
 
     Conductor.beatHit.remove(this.beatHit);
@@ -188,6 +181,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     super.update(elapsed);
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
+
+    if (FlxG.keys.justPressed.ANY && isTouch) isTouch = false;
+    if (TouchUtil.justPressed && !isTouch) isTouch = true;
   }
 
   function createWatermarkText()

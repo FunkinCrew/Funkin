@@ -11,7 +11,6 @@ import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.typeLimit.NextState;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
 import funkin.data.song.SongData.SongMusicData;
 import flixel.tweens.FlxEase;
@@ -104,7 +103,7 @@ class MainMenuState extends MusicBeatState
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
-
+      FlxTween.tween(vPad, {alpha: 0}, 0.2, {ease: FlxEase.circOut});
       openSubState(new FreeplayState());
     });
 
@@ -149,7 +148,7 @@ class MainMenuState extends MusicBeatState
     });
 
     #if mobile
-    addVirtualPad(UP_DOWN, A_B);
+    addVPad(UP_DOWN, A_B);
     #end
 
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
@@ -197,7 +196,7 @@ class MainMenuState extends MusicBeatState
   override function closeSubState():Void
   {
     magenta.visible = false;
-
+    if (vPad.alpha == 0) FlxTween.tween(vPad, {alpha: 0.4}, 0.3, {ease: FlxEase.expoOut});
     super.closeSubState();
   }
 

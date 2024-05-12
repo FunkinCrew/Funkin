@@ -161,7 +161,7 @@ class ControlsHandler
 
     switch (action)
     {
-      case A:
+      case A | A_C:
         controls.forEachBound(Control.ACCEPT, function(action:FlxActionDigital, state:FlxInputState):Void {
           if (virtualPad != null && virtualPad.buttonA != null)
           {
@@ -175,7 +175,7 @@ class ControlsHandler
             addButton(action, virtualPad.buttonB, state, cachedInput);
           }
         });
-      case A_B | A_B_C | A_B_X_Y | A_B_C_X_Y_Z:
+      case A_B | A_B_C | A_B_X_Y | A_B_C_X_Y | A_B_C_X_Y_Z:
         controls.forEachBound(Control.ACCEPT, function(action:FlxActionDigital, state:FlxInputState):Void {
           if (virtualPad != null && virtualPad.buttonA != null)
           {

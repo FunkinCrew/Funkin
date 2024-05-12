@@ -682,6 +682,10 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
+    // Initialize the hitbox for mobile controls
+    addHitbox();
+    addHitboxCamera(false);
+
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff();
     comboPopUps.zIndex = 900;

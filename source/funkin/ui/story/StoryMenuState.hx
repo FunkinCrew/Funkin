@@ -220,6 +220,8 @@ class StoryMenuState extends MusicBeatState
     // Updating Discord Rich Presence
     DiscordClient.changePresence('In the Menus', null);
     #end
+
+    addVPad(LEFT_FULL, A_B);
   }
 
   function rememberSelection():Void

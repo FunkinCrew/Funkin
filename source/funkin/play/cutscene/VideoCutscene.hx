@@ -153,11 +153,10 @@ class VideoCutscene
 
       PlayState.instance.refresh();
 
-      if (vid.load(filePath))
-        vid.play();
+      if (vid.load(filePath)) vid.play();
 
       // Resize videos bigger or smaller than the screen.
-      vid.bitmap.onTextureSetup.add(() -> {
+      vid.bitmap.onFormatSetup.add(() -> {
         vid.setGraphicSize(FlxG.width, FlxG.height);
         vid.updateHitbox();
         vid.x = 0;

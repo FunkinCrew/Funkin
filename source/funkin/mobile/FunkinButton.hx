@@ -89,7 +89,11 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var pressed(get, never):Bool;
   public var justPressed(get, never):Bool;
 
-  /** 
+  public var role:ButtonRole;
+
+  public var tag:String;
+
+  /**
    * We don't need an ID here, so let's just use `Int` as the type.
    */
   var input:FlxInput<Int>;
@@ -107,7 +111,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * @param X The x position of the button.
    * @param Y The y position of the button.
    */
-  public function new(X:Float = 0, Y:Float = 0):Void
+  public function new(X:Float = 0, Y:Float = 0, ?role:ButtonRole):Void
   {
     super(X, Y);
 
@@ -120,6 +124,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     statusAnimations[FunkinButton.HIGHLIGHT] = 'normal';
 
     input = new FlxInput(0);
+
+    this.role = role;
   }
 
   public override function graphicLoaded():Void
@@ -344,4 +350,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     return input.justPressed;
   }
+}
+
+enum ButtonRole
+{
+  DIRECTION_BUTTON;
+  ACTION_BUTTON;
 }
