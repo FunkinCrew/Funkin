@@ -24,7 +24,7 @@ class ControlsHandler
    */
   public static function addButton(action:FlxActionDigital, button:FunkinButton, state:FlxInputState, cachedInput:Array<FlxActionInput>):Void
   {
-    final input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state, cachedInput);
+    final input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state);
     cachedInput.push(input);
     action.add(input);
   }
