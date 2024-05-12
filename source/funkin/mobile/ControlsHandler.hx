@@ -2,6 +2,7 @@ package funkin.mobile;
 
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
+import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.FlxInput;
 import funkin.input.Controls;
 import funkin.mobile.FunkinButton;
