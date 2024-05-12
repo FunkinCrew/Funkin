@@ -20,7 +20,7 @@ class ControlsHandler
    * @param state The input state to associate with the action.
    * @param cachedInput The array of FlxActionInput objects to cache the input.
    */
-  public static function addButton(action:FlxActionDigital, button:FunkinButton, state, cachedInput:FlxInputState, cachedInput:Array<FlxActionInput>):Void
+  public static function addButton(action:FlxActionDigital, button:FunkinButton, cachedInput:FlxInputState, cachedInput:Array<FlxActionInput>):Void
   {
     final input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state, cachedInput);
     cachedInput.push(input);
