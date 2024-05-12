@@ -78,7 +78,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     var matrix = new Matrix();
     matrix.createGradientBox(width - 12, height - 12, 0, 0, 0);
     shape.graphics.beginGradientFill(RADIAL, [baseColor, baseColor], [0, 0.6], [60, 255], matrix, PAD, RGB, 0);
-    shape.graphics.drawRect(6, 6, Width - 12, Height - 12);
+    shape.graphics.drawRect(6, 6, width - 12, height - 12);
     shape.graphics.endFill();
 
     // Outline
