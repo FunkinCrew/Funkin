@@ -94,7 +94,7 @@
 		If we can exclude the `mods` folder from the manifest, we can re-enable this line.
 		<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
 	-->
-	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art" unless="mobile"/>
+	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art"/>
 	<assets path="CHANGELOG.md" rename="changelog.txt" library="art"/>
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
