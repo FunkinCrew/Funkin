@@ -20,7 +20,7 @@ class ControlsHandler
    * @param state The input state to associate with the action.
    * @param cachedInput The array of FlxActionInput objects to cache the input.
    */
-  public static function addButton(action:FlxActionDigital, button:FunkinButton, cachedInput:FlxInputState, cachedInput:Array<FlxActionInput>):Void
+  public static function addButton(action:FlxActionDigital, button:FunkinButton, state:FlxInputState, cachedInput:Array<FlxActionInput>):Void
   {
     final input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state, cachedInput);
     cachedInput.push(input);
@@ -36,10 +36,35 @@ class ControlsHandler
    */
   public static function setupHitbox(controls:Controls, hitbox:FunkinHitbox, cachedInput:Array<FlxActionInput>):Void
   {
-    controls.forEachBound(Control.NOTE_LEFT, (action, state) -> addButton(action, hitbox.hints[0], state, cachedInput));
-    controls.forEachBound(Control.NOTE_DOWN, (action, state) -> addButton(action, hitbox.hints[1], state, cachedInput));
-    controls.forEachBound(Control.NOTE_UP, (action, state) -> addButton(action, hitbox.hints[2], state, cachedInput));
-    controls.forEachBound(Control.NOTE_RIGHT, (action, state) -> addButton(action, hitbox.hints[3], state, cachedInput));
+    if (controls == null)
+    {
+      return;
+    }
+
+    controls.forEachBound(Control.NOTE_LEFT, function(action:FlxActionDigital, state:FlxInputState):Void {
+      if (hitbox != null && hitbox.hints[0] != null)
+      {
+        addButton(action, hitbox.hints[0], state, cachedInput);
+      }
+    });
+    controls.forEachBound(Control.NOTE_DOWN, function(action:FlxActionDigital, state:FlxInputState):Void {
+      if (hitbox != null && hitbox.hints[1] != null)
+      {
+        addButton(action, hitbox.hints[1], state, cachedInput);
+      }
+    });
+    controls.forEachBound(Control.NOTE_UP, function(action:FlxActionDigital, state:FlxInputState):Void {
+      if (hitbox != null && hitbox.hints[2] != null)
+      {
+        addButton(action, hitbox.hints[2], state, cachedInput);
+      }
+    });
+    controls.forEachBound(Control.NOTE_RIGHT, function(action:FlxActionDigital, state:FlxInputState):Void {
+      if (hitbox != null && hitbox.hints[3] != null)
+      {
+        addButton(action, hitbox.hints[3], state, cachedInput);
+      }
+    });
   }
 
   /**
@@ -51,37 +76,118 @@ class ControlsHandler
    * @param action The Action mode for configuring action controls.
    * @param cachedInput The array of FlxActionInput objects to cache the input.
    */
-  public static function setupVirtualPad(controls:Controls, virtualPad:FunkinVirtualPad, dPad:FunkinDPadMode, action:FunkinActionMode, cachedInput:Array<FlxActionInput>):Void
+  public static function setupVirtualPad(controls:Controls, virtualPad:FunkinVirtualPad, dPad:FunkinDPadMode, action:FunkinActionMode,
+      cachedInput:Array<FlxActionInput>):Void
   {
+    if (controls == null)
+    {
+      return;
+    }
+
     switch (dPad)
     {
       case UP_DOWN:
-        controls.forEachBound(Control.UI_UP, (action, state) -> addButton(action, virtualPad.buttonUp, state, cachedInput));
-        controls.forEachBound(Control.UI_DOWN, (action, state) -> addButton(action, virtualPad.buttonDown, state, cachedInput));
+        controls.forEachBound(Control.UI_UP, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonUp != null)
+          {
+            addButton(action, virtualPad.buttonUp, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.UI_DOWN, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonDown != null)
+          {
+            addButton(action, virtualPad.buttonDown, state, cachedInput);
+          }
+        });
       case LEFT_RIGHT:
-        controls.forEachBound(Control.UI_LEFT, (action, state) -> addButton(action, virtualPad.buttonLeft, state, cachedInput));
-        controls.forEachBound(Control.UI_RIGHT, (action, state) -> addButton(action, virtualPad.buttonRight, state, cachedInput));
+        controls.forEachBound(Control.UI_LEFT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonLeft != null)
+          {
+            addButton(action, virtualPad.buttonLeft, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.UI_RIGHT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonRight != null)
+          {
+            addButton(action, virtualPad.buttonRight, state, cachedInput);
+          }
+        });
       case UP_LEFT_RIGHT:
-        controls.forEachBound(Control.UI_UP, (action, state) -> addButton(action, virtualPad.buttonUp, state, cachedInput));
-        controls.forEachBound(Control.UI_LEFT, (action, state) -> addButton(action, virtualPad.buttonLeft, state, cachedInput));
-        controls.forEachBound(Control.UI_RIGHT, (action, state) -> addButton(action, virtualPad.buttonRight, state, cachedInput));
+        controls.forEachBound(Control.UI_UP, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonUp != null)
+          {
+            addButton(action, virtualPad.buttonUp, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.UI_LEFT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonLeft != null)
+          {
+            addButton(action, virtualPad.buttonLeft, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.UI_RIGHT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonRight != null)
+          {
+            addButton(action, virtualPad.buttonRight, state, cachedInput);
+          }
+        });
       case LEFT_FULL | RIGHT_FULL:
-        controls.forEachBound(Control.UI_UP, (action, state) -> addButton(action, virtualPad.buttonUp, state, cachedInput));
-        controls.forEachBound(Control.UI_DOWN, (action, state) -> addButton(action, virtualPad.buttonDown, state, cachedInput));
-        controls.forEachBound(Control.UI_LEFT, (action, state) -> addButton(action, virtualPad.buttonLeft, state, cachedInput));
-        controls.forEachBound(Control.UI_RIGHT, (action, state) -> addButton(action, virtualPad.buttonRight, state, cachedInput));
+        controls.forEachBound(Control.UI_UP, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonUp != null)
+          {
+            addButton(action, virtualPad.buttonUp, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.UI_DOWN, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonDown != null)
+          {
+            addButton(action, virtualPad.buttonDown, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.UI_LEFT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonLeft != null)
+          {
+            addButton(action, virtualPad.buttonLeft, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.UI_RIGHT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonRight != null)
+          {
+            addButton(action, virtualPad.buttonRight, state, cachedInput);
+          }
+        });
       case NONE: // do nothing
     }
 
     switch (action)
     {
       case A:
-        controls.forEachBound(Control.ACCEPT, (action, state) -> addButton(action, virtualPad.buttonA, state, cachedInput));
+        controls.forEachBound(Control.ACCEPT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonA != null)
+          {
+            addButton(action, virtualPad.buttonA, state, cachedInput);
+          }
+        });
       case B:
-        controls.forEachBound(Control.BACK, (action, state) -> addButton(action, virtualPad.buttonB, state, cachedInput));
+        controls.forEachBound(Control.BACK, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonB != null)
+          {
+            addButton(action, virtualPad.buttonB, state, cachedInput);
+          }
+        });
       case A_B | A_B_C | A_B_X_Y | A_B_C_X_Y_Z:
-        controls.forEachBound(Control.ACCEPT, (action, state) -> addButton(action, virtualPad.buttonA, state, cachedInput));
-        controls.forEachBound(Control.BACK, (action, state) -> addButton(action, virtualPad.buttonB, state, cachedInput));
+        controls.forEachBound(Control.ACCEPT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonA != null)
+          {
+            addButton(action, virtualPad.buttonA, state, cachedInput);
+          }
+        });
+        controls.forEachBound(Control.BACK, function(action:FlxActionDigital, state:FlxInputState):Void {
+          if (virtualPad != null && virtualPad.buttonB != null)
+          {
+            addButton(action, virtualPad.buttonB, state, cachedInput);
+          }
+        });
       case NONE: // do nothing
     }
   }
@@ -105,7 +211,9 @@ class ControlsHandler
         while (j-- > 0)
         {
           if (cachedInput[j] == action.inputs[i])
+          {
             action.remove(action.inputs[i]);
+          }
         }
       }
     }
