@@ -218,5 +218,7 @@ class ControlsHandler
         }
       }
     }
+
+    cachedInput = [];
   }
 }
