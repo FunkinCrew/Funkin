@@ -335,7 +335,7 @@ class Controls extends FlxActionSet
     action.add(input);
   }
 
-  public function setHitbox(hitbox:FunkinHitbox, mania:Int = 0):Void
+  public function setHitbox(hitbox:FunkinHitbox):Void
   {
     inline forEachBound(Control.NOTE_LEFT, (action, state) -> addButton(action, hitbox.hints[0], state));
     inline forEachBound(Control.NOTE_DOWN, (action, state) -> addButton(action, hitbox.hints[1], state));
