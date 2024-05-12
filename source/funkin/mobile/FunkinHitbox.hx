@@ -7,6 +7,7 @@ import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
+import openfl.geom.Matrix;
 
 /**
  * A zone with 4 buttons (A hitbox).
@@ -74,7 +75,9 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     var shape:Shape = new Shape();
 
     // Back color rectangle
-    shape.graphics.beginFill(baseColor, 0.6);
+    var matrix = new Matrix();
+    matrix.createGradientBox(width - 12, height - 12, 0, 0, 0);
+    shape.graphics.beginGradientFill(RADIAL, [baseColor, baseColor], [0, 0.6], [60, 255], matrix, PAD, RGB, 0);
     shape.graphics.drawRect(6, 6, Width - 12, Height - 12);
     shape.graphics.endFill();
 
