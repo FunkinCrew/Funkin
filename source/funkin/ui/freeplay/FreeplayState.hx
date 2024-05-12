@@ -120,8 +120,6 @@ class FreeplayState extends MusicBeatSubState
   var curCapsule:SongMenuItem;
   var curPlaying:Bool = false;
 
-  var displayedVariations:Array<String>;
-
   var dj:DJBoyfriend;
 
   var ostName:FlxText;
@@ -184,10 +182,6 @@ class FreeplayState extends MusicBeatSubState
     // Add a null entry that represents the RANDOM option
     songs.push(null);
 
-    // TODO: This makes custom variations disappear from Freeplay. Figure out a better solution later.
-    // Default character (BF) shows default and Erect variations. Pico shows only Pico variations.
-    displayedVariations = (currentCharacter == 'bf') ? [Constants.DEFAULT_VARIATION, 'erect'] : [currentCharacter];
-
     // programmatically adds the songs via LevelRegistry and SongRegistry
     for (levelId in LevelRegistry.instance.listSortedLevelIds())
     {
@@ -195,7 +189,8 @@ class FreeplayState extends MusicBeatSubState
       {
         var song:Song = SongRegistry.instance.fetchEntry(songId);
 
-        // Only display songs which actually have available charts for the current character.
+        // Only display songs which actually have available difficulties for the current character.
+        var displayedVariations = song.getVariationsByCharId(currentCharacter);
         var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
         if (availableDifficultiesForSong.length == 0) continue;
 
@@ -487,10 +482,6 @@ class FreeplayState extends MusicBeatSubState
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
-
-      new FlxTimer().start(0.75, function(_) {
-        // albumRoll.showTitle();
-      });
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
@@ -1072,6 +1063,9 @@ class FreeplayState extends MusicBeatSubState
       albumRoll.albumId = newAlbumId;
       albumRoll.skipIntro();
     }
+
+    // Set difficulty star count.
+    albumRoll.setDifficultyStars(daSong?.difficultyRating);
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
@@ -1383,11 +1377,12 @@ class FreeplaySongData
 
   public var songName(default, null):String = '';
   public var songCharacter(default, null):String = '';
-  public var songRating(default, null):Int = 0;
+  public var difficultyRating(default, null):Int = 0;
   public var albumId(default, null):Null<String> = null;
 
   public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
-  public var displayedVariations(default, null):Array<String> = [Constants.DEFAULT_VARIATION];
+
+  var displayedVariations:Array<String> = [Constants.DEFAULT_VARIATION];
 
   function set_currentDifficulty(value:String):String
   {
@@ -1417,7 +1412,7 @@ class FreeplaySongData
     if (songDifficulty == null) return;
     this.songName = songDifficulty.songName;
     this.songCharacter = songDifficulty.characters.opponent;
-    this.songRating = songDifficulty.difficultyRating;
+    this.difficultyRating = songDifficulty.difficultyRating;
     if (songDifficulty.album == null)
     {
       FlxG.log.warn('No album for: ${songDifficulty.songName}');

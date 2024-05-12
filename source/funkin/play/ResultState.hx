@@ -12,6 +12,8 @@ import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
 import funkin.ui.freeplay.FreeplayScore;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
@@ -26,107 +28,84 @@ import funkin.play.components.TallyCounter;
 /**
  * The state for the results screen after a song or week is finished.
  */
+@:nullSafety
 class ResultState extends MusicBeatSubState
 {
   final params:ResultsStateParams;
 
-  var resultsVariation:ResultVariations;
-  var songName:FlxBitmapText;
-  var difficulty:FlxSprite;
+  final rank:ResultRank;
+  final songName:FlxBitmapText;
+  final difficulty:FlxSprite;
 
-  var maskShaderSongName:LeftMaskShader = new LeftMaskShader();
-  var maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
+  final maskShaderSongName:LeftMaskShader = new LeftMaskShader();
+  final maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
+
+  final resultsAnim:FunkinSprite;
+  final ratingsPopin:FunkinSprite;
+  final scorePopin:FunkinSprite;
+
+  final bgFlash:FlxSprite;
+
+  final highscoreNew:FlxSprite;
+  final score:ResultScore;
+
+  var bfPerfect:Null<FlxAtlasSprite> = null;
+  var bfExcellent:Null<FlxAtlasSprite> = null;
+  var bfGood:Null<FlxSprite> = null;
+  var gfGood:Null<FlxSprite> = null;
+  var bfShit:Null<FlxAtlasSprite> = null;
 
   public function new(params:ResultsStateParams)
   {
     super();
 
     this.params = params;
+
+    rank = calculateRank(params);
+    // rank = SHIT;
+
+    // We build a lot of this stuff in the constructor, then place it in create().
+    // This prevents having to do `null` checks everywhere.
+
+    var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
+    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
+    songName.text = params.title;
+    songName.letterSpacing = -15;
+    songName.angle = -4.4;
+    songName.zIndex = 1000;
+
+    difficulty = new FlxSprite(555);
+    difficulty.zIndex = 1000;
+
+    bgFlash = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFEB69, 0xFFFFE66A], 90);
+
+    resultsAnim = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
+
+    ratingsPopin = FunkinSprite.createSparrow(-150, 120, "resultScreen/ratingsPopin");
+
+    scorePopin = FunkinSprite.createSparrow(-180, 520, "resultScreen/scorePopin");
+
+    highscoreNew = new FlxSprite(310, 570);
+
+    score = new ResultScore(35, 305, 10, params.scoreData.score);
   }
 
   override function create():Void
   {
-    /*
-      if (params.scoreData.sick == params.scoreData.totalNotesHit
-        && params.scoreData.maxCombo == params.scoreData.totalNotesHit) resultsVariation = PERFECT;
-      else if (params.scoreData.missed + params.scoreData.bad + params.scoreData.shit >= params.scoreData.totalNotes * 0.50)
-        resultsVariation = SHIT; // if more than half of your song was missed, bad, or shit notes, you get shit ending!
-      else
-        resultsVariation = NORMAL;
-     */
-    resultsVariation = NORMAL;
-
-    FunkinSound.playMusic('results$resultsVariation',
-      {
-        startingVolume: 1.0,
-        overrideExisting: true,
-        restartTrack: true,
-        loop: resultsVariation != SHIT
-      });
-
     // Reset the camera zoom on the results screen.
     FlxG.camera.zoom = 1.0;
 
-    // TEMP-ish, just used to sorta "cache" the 3000x3000 image!
-    var cacheBullShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/soundSystem"));
-    add(cacheBullShit);
-
-    var dumb:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/scorePopin"));
-    add(dumb);
-
     var bg:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFECC5C, 0xFFFDC05C], 90);
     bg.scrollFactor.set();
+    bg.zIndex = 10;
     add(bg);
 
-    var bgFlash:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFEB69, 0xFFFFE66A], 90);
     bgFlash.scrollFactor.set();
     bgFlash.visible = false;
+    bgFlash.zIndex = 20;
     add(bgFlash);
 
-    // var bfGfExcellent:FlxAtlasSprite = new FlxAtlasSprite(380, -170, Paths.animateAtlas("resultScreen/resultsBoyfriendExcellent", "shared"));
-    // bfGfExcellent.visible = false;
-    // add(bfGfExcellent);
-    //
-    // var bfPerfect:FlxAtlasSprite = new FlxAtlasSprite(370, -180, Paths.animateAtlas("resultScreen/resultsBoyfriendPerfect", "shared"));
-    // bfPerfect.visible = false;
-    // add(bfPerfect);
-    //
-    // var bfSHIT:FlxAtlasSprite = new FlxAtlasSprite(0, 20, Paths.animateAtlas("resultScreen/resultsBoyfriendSHIT", "shared"));
-    // bfSHIT.visible = false;
-    // add(bfSHIT);
-    //
-    // bfGfExcellent.anim.onComplete = () -> {
-    // bfGfExcellent.anim.curFrame = 28;
-    // bfGfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
-    // };
-    //
-    // bfPerfect.anim.onComplete = () -> {
-    //  bfPerfect.anim.curFrame = 136;
-    //  bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
-    // };
-    //
-    // bfSHIT.anim.onComplete = () -> {
-    //  bfSHIT.anim.curFrame = 150;
-    //  bfSHIT.anim.play(); // unpauses this anim, since it's on PlayOnce!
-    // };
-
-    var gf:FlxSprite = FunkinSprite.createSparrow(625, 325, 'resultScreen/resultGirlfriendGOOD');
-    gf.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
-    gf.visible = false;
-    gf.animation.finishCallback = _ -> {
-      gf.animation.play('clap', true, false, 9);
-    };
-    add(gf);
-
-    var boyfriend:FlxSprite = FunkinSprite.createSparrow(640, -200, 'resultScreen/resultBoyfriendGOOD');
-    boyfriend.animation.addByPrefix("fall", "Boyfriend Good Anim0", 24, false);
-    boyfriend.visible = false;
-    boyfriend.animation.finishCallback = function(_) {
-      boyfriend.animation.play('fall', true, false, 14);
-    };
-
-    add(boyfriend);
-
+    // The sound system which falls into place behind the score text. Plays every time!
     var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15, -180, 'resultScreen/soundSystem');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
@@ -134,9 +113,75 @@ class ResultState extends MusicBeatSubState
       soundSystem.animation.play("idle");
       soundSystem.visible = true;
     });
+    soundSystem.zIndex = 1100;
     add(soundSystem);
 
-    difficulty = new FlxSprite(555);
+    switch (rank)
+    {
+      case PERFECT | PERFECT_GOLD | PERFECT_PLATINUM:
+        bfPerfect = new FlxAtlasSprite(370, -180, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
+        bfPerfect.visible = false;
+        bfPerfect.zIndex = 500;
+        add(bfPerfect);
+
+        bfPerfect.anim.onComplete = () -> {
+          if (bfPerfect != null)
+          {
+            bfPerfect.anim.curFrame = 137;
+            bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+          }
+        };
+
+      case EXCELLENT:
+        bfExcellent = new FlxAtlasSprite(380, -170, Paths.animateAtlas("resultScreen/results-bf/resultsEXCELLENT", "shared"));
+        bfExcellent.visible = false;
+        bfExcellent.zIndex = 500;
+        add(bfExcellent);
+
+        bfExcellent.onAnimationFinish.add((animName) -> {
+          if (bfExcellent != null)
+          {
+            bfExcellent.playAnimation('Loop Start');
+          }
+        });
+
+      case GOOD | GREAT:
+        gfGood = FunkinSprite.createSparrow(625, 325, 'resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD');
+        gfGood.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
+        gfGood.visible = false;
+        gfGood.zIndex = 500;
+        gfGood.animation.finishCallback = _ -> {
+          if (gfGood != null)
+          {
+            gfGood.animation.play('clap', true, false, 9);
+          }
+        };
+        add(gfGood);
+
+        bfGood = FunkinSprite.createSparrow(640, -200, 'resultScreen/results-bf/resultsGOOD/resultBoyfriendGOOD');
+        bfGood.animation.addByPrefix("fall", "Boyfriend Good Anim0", 24, false);
+        bfGood.visible = false;
+        bfGood.zIndex = 501;
+        bfGood.animation.finishCallback = function(_) {
+          if (bfGood != null)
+          {
+            bfGood.animation.play('fall', true, false, 14);
+          }
+        };
+        add(bfGood);
+
+      case SHIT:
+        bfShit = new FlxAtlasSprite(0, 20, Paths.animateAtlas("resultScreen/results-bf/resultsSHIT", "shared"));
+        bfShit.visible = false;
+        bfShit.zIndex = 500;
+        add(bfShit);
+        bfShit.onAnimationFinish.add((animName) -> {
+          if (bfShit != null)
+          {
+            bfShit.playAnimation('Loop Start');
+          }
+        });
+    }
 
     var diffSpr:String = switch (PlayState.instance.currentDifficulty)
     {
@@ -157,11 +202,6 @@ class ResultState extends MusicBeatSubState
     difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
     add(difficulty);
 
-    var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
-    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
-    songName.text = params.title;
-    songName.letterSpacing = -15;
-    songName.angle = -4.4;
     add(songName);
 
     var angleRad = songName.angle * Math.PI / 180;
@@ -179,34 +219,36 @@ class ResultState extends MusicBeatSubState
     var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
     blackTopBar.y = -blackTopBar.height;
     FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
+    blackTopBar.zIndex = 1010;
     add(blackTopBar);
 
-    var resultsAnim:FunkinSprite = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
     resultsAnim.animation.addByPrefix("result", "results instance 1", 24, false);
     resultsAnim.animation.play("result");
+    resultsAnim.zIndex = 1200;
     add(resultsAnim);
 
-    var ratingsPopin:FunkinSprite = FunkinSprite.createSparrow(-150, 120, "resultScreen/ratingsPopin");
     ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
     ratingsPopin.visible = false;
+    ratingsPopin.zIndex = 1200;
     add(ratingsPopin);
 
-    var scorePopin:FunkinSprite = FunkinSprite.createSparrow(-180, 520, "resultScreen/scorePopin");
     scorePopin.animation.addByPrefix("score", "tally score", 24, false);
     scorePopin.visible = false;
+    scorePopin.zIndex = 1200;
     add(scorePopin);
 
-    var highscoreNew:FlxSprite = new FlxSprite(310, 570);
     highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
     highscoreNew.animation.addByPrefix("new", "NEW HIGHSCORE", 24);
     highscoreNew.visible = false;
     highscoreNew.setGraphicSize(Std.int(highscoreNew.width * 0.8));
     highscoreNew.updateHitbox();
+    highscoreNew.zIndex = 1200;
     add(highscoreNew);
 
     var hStuf:Int = 50;
 
     var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
+    ratingGrp.zIndex = 1200;
     add(ratingGrp);
 
     /**
@@ -236,8 +278,8 @@ class ResultState extends MusicBeatSubState
     var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.scoreData.tallies.missed, 0xFFC68AE6);
     ratingGrp.add(tallyMissed);
 
-    var score:ResultScore = new ResultScore(35, 305, 10, params.scoreData.score);
     score.visible = false;
+    score.zIndex = 1200;
     add(score);
 
     for (ind => rating in ratingGrp.members)
@@ -249,7 +291,68 @@ class ResultState extends MusicBeatSubState
       });
     }
 
-    new FlxTimer().start(0.5, _ -> {
+    startRankTallySequence();
+
+    refresh();
+
+    super.create();
+  }
+
+  var rankTallyTimer:Null<FlxTimer> = null;
+  var clearPercentTarget:Int = 100;
+  var clearPercentLerp:Int = 0;
+
+  function startRankTallySequence():Void
+  {
+    clearPercentTarget = Math.floor((params.scoreData.tallies.totalNotesHit) / params.scoreData.tallies.totalNotes * 100);
+    // clearPercentTarget = 97;
+
+    var clearPercentText = new FlxText(FlxG.width / 2, FlxG.height / 2, 0, 'CLEAR: ${clearPercentLerp}%');
+    clearPercentText.setFormat(Paths.font('vcr.ttf'), 64, FlxColor.BLACK, FlxTextAlign.RIGHT);
+    clearPercentText.zIndex = 1000;
+    add(clearPercentText);
+
+    rankTallyTimer = new FlxTimer().start(1 / 24, _ -> {
+      // Tick up.
+      if (clearPercentLerp < clearPercentTarget)
+      {
+        clearPercentLerp++;
+
+        clearPercentText.text = 'CLEAR: ${clearPercentLerp}%';
+        FunkinSound.playOnce(Paths.sound('scrollMenu'));
+      }
+
+      // Don't overshoot.
+      if (clearPercentLerp > clearPercentTarget)
+      {
+        clearPercentLerp = clearPercentTarget;
+      }
+
+      if (clearPercentLerp == clearPercentTarget)
+      {
+        if (rankTallyTimer != null)
+        {
+          rankTallyTimer.destroy();
+          rankTallyTimer = null;
+        }
+
+        // Play confirm sound.
+        FunkinSound.playOnce(Paths.sound('confirmMenu'));
+
+        new FlxTimer().start(1.0, _ -> {
+          remove(clearPercentText);
+
+          afterRankTallySequence();
+        });
+      }
+    }, 0); // 0 = Loop until stopped
+
+    if (ratingsPopin == null)
+    {
+      trace("Could not build ratingsPopin!");
+    }
+    else
+    {
       ratingsPopin.animation.play("idle");
       ratingsPopin.visible = true;
 
@@ -272,16 +375,112 @@ class ResultState extends MusicBeatSubState
           highscoreNew.visible = false;
         }
       };
+    }
 
-      switch (resultsVariation)
+    refresh();
+  }
+
+  function afterRankTallySequence():Void
+  {
+    FunkinSound.playMusic(rank.getMusicPath(),
       {
-        // case SHIT:
-        // bfSHIT.visible = true;
-        // bfSHIT.playAnimation("");
+        startingVolume: 1.0,
+        overrideExisting: true,
+        restartTrack: true,
+        loop: rank.shouldMusicLoop()
+      });
 
-        case NORMAL:
-          boyfriend.animation.play('fall');
-          boyfriend.visible = true;
+    FlxG.sound.music.onComplete = () -> {
+      if (rank == SHIT)
+      {
+        FunkinSound.playMusic('bluu',
+          {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: true,
+            loop: true
+          });
+        FlxG.sound.music.fadeIn(10.0, 0.0, 1.0);
+      }
+    }
+
+    switch (rank)
+    {
+      case PERFECT | PERFECT_GOLD | PERFECT_PLATINUM:
+        if (bfPerfect == null)
+        {
+          trace("Could not build PERFECT animation!");
+        }
+        else
+        {
+          bfPerfect.visible = true;
+          bfPerfect.playAnimation('');
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
+        }
+
+      case EXCELLENT:
+        if (bfExcellent == null)
+        {
+          trace("Could not build EXCELLENT animation!");
+        }
+        else
+        {
+          bfExcellent.visible = true;
+          bfExcellent.playAnimation('Intro');
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
+        }
+
+      case SHIT:
+        if (bfShit == null)
+        {
+          trace("Could not build SHIT animation!");
+        }
+        else
+        {
+          bfShit.visible = true;
+          bfShit.playAnimation('Intro');
+
+          new FlxTimer().start((1 / 24) * 12, _ -> {
+            bgFlash.visible = true;
+            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
+            new FlxTimer().start((1 / 24) * 2, _ ->
+              {
+                // bgFlash.alpha = 0.5;
+
+                // bgFlash.visible = false;
+              });
+          });
+        }
+
+      case GREAT | GOOD:
+        if (bfGood == null)
+        {
+          trace("Could not build GOOD animation!");
+        }
+        else
+        {
+          bfGood.animation.play('fall');
+          bfGood.visible = true;
 
           new FlxTimer().start((1 / 24) * 12, _ -> {
             bgFlash.visible = true;
@@ -296,20 +495,19 @@ class ResultState extends MusicBeatSubState
 
           new FlxTimer().start((1 / 24) * 22, _ -> {
             // plays about 22 frames (at 24fps timing) after bf spawns in
-            gf.animation.play('clap', true);
-            gf.visible = true;
+            if (gfGood != null)
+            {
+              gfGood.animation.play('clap', true);
+              gfGood.visible = true;
+            }
+            else
+            {
+              trace("Could not build GOOD animation!");
+            }
           });
-        // case PERFECT:
-        //          bfPerfect.visible = true;
-        //          bfPerfect.playAnimation("");
-
-        // bfGfExcellent.visible = true;
-        // bfGfExcellent.playAnimation("");
-        default:
-      }
-    });
-
-    super.create();
+        }
+      default:
+    }
   }
 
   function timerThenSongName():Void
@@ -345,11 +543,8 @@ class ResultState extends MusicBeatSubState
   {
     super.draw();
 
-    if (songName != null)
-    {
-      songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
-      // PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
-    }
+    songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
+    // PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
 
     // if (songName != null && songName.frame != null)
     // maskShaderSongName.frameUV = songName.frame.uv;
@@ -401,14 +596,100 @@ class ResultState extends MusicBeatSubState
 
     super.update(elapsed);
   }
+
+  public static function calculateRank(params:ResultsStateParams):ResultRank
+  {
+    // Perfect (Platinum) is a Sick Full Clear
+    var isPerfectPlat = (params.scoreData.tallies.sick + params.scoreData.tallies.good) == params.scoreData.tallies.totalNotes
+      && params.scoreData.tallies.sick / params.scoreData.tallies.totalNotes >= Constants.RANK_PERFECT_PLAT_THRESHOLD;
+    if (isPerfectPlat) return ResultRank.PERFECT_PLATINUM;
+
+    // Perfect (Gold) is an 85% Sick Full Clear
+    var isPerfectGold = (params.scoreData.tallies.sick + params.scoreData.tallies.good) == params.scoreData.tallies.totalNotes
+      && params.scoreData.tallies.sick / params.scoreData.tallies.totalNotes >= Constants.RANK_PERFECT_GOLD_THRESHOLD;
+    if (isPerfectGold) return ResultRank.PERFECT_GOLD;
+
+    // Else, use the standard grades
+
+    // Clear % (including bad and shit). 1.00 is a full clear but not a full combo
+    var clear = (params.scoreData.tallies.totalNotesHit) / params.scoreData.tallies.totalNotes;
+
+    if (clear == Constants.RANK_PERFECT_THRESHOLD)
+    {
+      return ResultRank.PERFECT;
+    }
+    else if (clear >= Constants.RANK_EXCELLENT_THRESHOLD)
+    {
+      return ResultRank.EXCELLENT;
+    }
+    else if (clear >= Constants.RANK_GREAT_THRESHOLD)
+    {
+      return ResultRank.GREAT;
+    }
+    else if (clear >= Constants.RANK_GOOD_THRESHOLD)
+    {
+      return ResultRank.GOOD;
+    }
+    else
+    {
+      return ResultRank.SHIT;
+    }
+  }
 }
 
-enum abstract ResultVariations(String)
+enum abstract ResultRank(String)
 {
+  var PERFECT_PLATINUM;
+  var PERFECT_GOLD;
   var PERFECT;
   var EXCELLENT;
-  var NORMAL;
+  var GREAT;
+  var GOOD;
   var SHIT;
+
+  public function getMusicPath():String
+  {
+    switch (abstract)
+    {
+      case PERFECT_PLATINUM:
+        return 'resultsPERFECT';
+      case PERFECT_GOLD:
+        return 'resultsPERFECT';
+      case PERFECT:
+        return 'resultsPERFECT';
+      case EXCELLENT:
+        return 'resultsNORMAL';
+      case GREAT:
+        return 'resultsNORMAL';
+      case GOOD:
+        return 'resultsNORMAL';
+      case SHIT:
+        return 'resultsSHIT';
+    }
+  }
+
+  public function shouldMusicLoop():Bool
+  {
+    switch (abstract)
+    {
+      case PERFECT_PLATINUM:
+        return true;
+      case PERFECT_GOLD:
+        return true;
+      case PERFECT:
+        return true;
+      case EXCELLENT:
+        return true;
+      case GREAT:
+        return true;
+      case GOOD:
+        return true;
+      case SHIT:
+        return false;
+      default:
+        return false;
+    }
+  }
 }
 
 typedef ResultsStateParams =
