@@ -14,6 +14,13 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
+#if mobile
+import flixel.input.actions.FlxActionInput;
+import flixel.util.FlxDestroyUtil;
+import flixel.FlxCamera;
+import funkin.mobile.FunkinHitbox;
+import funkin.mobile.FunkinVirtualPad;
+#end
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -56,6 +63,82 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     subStateOpened.add(onOpenSubStateComplete);
     subStateClosed.add(onCloseSubStateComplete);
   }
+
+  #if mobile
+  var hitbox:FunkinHitbox;
+  var vPad:FunkinVirtualPad;
+
+  var trackedInputsHitbox:Array<FlxActionInput> = [];
+  var trackedInputsVirtualPad:Array<FlxActionInput> = [];
+
+  public function addVPad(dPad:FunkinDPadMode, action:FunkinActionMode, ?visible:Bool = true):Void
+  {
+    if (vPad != null)
+      removeVPad();
+
+    vPad = new FunkinVirtualPad(dPad, action);
+    vPad.visible = visible;
+    add(vPad);
+
+    controls.setVPad(vPad, dPad, action);
+    trackedInputsVirtualPad = controls.trackedInputs;
+    controls.trackedInputs = [];
+  }
+
+  public function addVPadCamera(defaultDrawTarget:Bool = true):Void
+  {
+    if (vPad != null)
+    {
+      var camControls:FlxCamera = new FlxCamera();
+      FlxG.cameras.add(camControls, defaultDrawTarget);
+      camControls.bgColor.alpha = 0;
+      vPad.cameras = [camControls];
+    }
+  }
+
+  public function removeVPad():Void
+  {
+    if (trackedInputsVirtualPad.length > 0)
+      controls.removeVControlsInput(trackedInputsVirtualPad);
+
+    if (vPad != null)
+      remove(vPad);
+  }
+
+  public function addHitbox(?visible:Bool = true):Void
+  {
+    if (hitbox != null)
+      removeHitbox();
+
+    hitbox = new FunkinHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xC34B9A, 0x00FFFF, 0x12FB06, 0xF9393F]);
+    hitbox.visible = visible;
+    add(hitbox);
+
+    controls.setHitbox(hitbox);
+    trackedInputsHitbox = controls.trackedInputs;
+    controls.trackedInputs = [];
+  }
+
+  public function addHitboxCamera(DefaultDrawTarget:Bool = true):Void
+  {
+    if (hitbox != null)
+    {
+      var camControls:FlxCamera = new FlxCamera();
+      FlxG.cameras.add(camControls, DefaultDrawTarget);
+      camControls.bgColor.alpha = 0;
+      hitbox.cameras = [camControls];
+    }
+  }
+
+  public function removeHitbox():Void
+  {
+    if (trackedInputsHitbox.length > 0)
+      controls.removeVControlsInput(trackedInputsHitbox);
+
+    if (hitbox != null)
+      remove(hitbox);
+  }
+  #end
 
   override function create()
   {
