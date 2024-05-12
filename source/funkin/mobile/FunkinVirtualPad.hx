@@ -147,6 +147,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
    */
   override public function destroy():Void
   {
+    // Is this intensive?
     for (field in Reflect.fields(this))
     {
       if (field != null)
