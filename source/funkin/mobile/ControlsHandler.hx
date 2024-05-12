@@ -35,6 +35,7 @@ class ControlsHandler
    * @param hitbox The FunkinHitbox to associate with the controls.
    * @param cachedInput The array of FlxActionInput objects to cache the input.
    */
+  @:access(funkin.input.Controls)
   public static function setupHitbox(controls:Controls, hitbox:FunkinHitbox, cachedInput:Array<FlxActionInput>):Void
   {
     if (controls == null) return;
@@ -62,6 +63,7 @@ class ControlsHandler
    * @param action The Action mode for configuring action controls.
    * @param cachedInput The array of FlxActionInput objects to cache the input.
    */
+  @:access(funkin.input.Controls)
   public static function setupVirtualPad(controls:Controls, virtualPad:FunkinVirtualPad, dPad:FunkinDPadMode, action:FunkinActionMode,
       cachedInput:Array<FlxActionInput>):Void
   {
