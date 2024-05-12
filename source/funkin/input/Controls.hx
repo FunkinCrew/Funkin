@@ -19,11 +19,6 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-#if mobile
-import funkin.mobile.FunkinButton;
-import funkin.mobile.FunkinHitbox;
-import funkin.mobile.FunkinVirtualPad;
-#end
 
 /**
  * A core class which handles receiving player input and interpreting it into game actions.
@@ -324,79 +319,6 @@ class Controls extends FlxActionSet
 
     setKeyboardScheme(scheme, false);
   }
-
-  #if mobile
-  public var trackedInputs:Array<FlxActionInput> = [];
-
-  public function addButton(action:FlxActionDigital, button:FunkinButton, state:FlxInputState):Void
-  {
-    final input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state);
-    trackedInputs.push(input);
-    action.add(input);
-  }
-
-  public function setHitbox(hitbox:FunkinHitbox):Void
-  {
-    inline forEachBound(Control.NOTE_LEFT, (action, state) -> addButton(action, hitbox.hints[0], state));
-    inline forEachBound(Control.NOTE_DOWN, (action, state) -> addButton(action, hitbox.hints[1], state));
-    inline forEachBound(Control.NOTE_UP, (action, state) -> addButton(action, hitbox.hints[2], state));
-    inline forEachBound(Control.NOTE_RIGHT, (action, state) -> addButton(action, hitbox.hints[3], state));
-  }
-
-  public function setVPad(vPad:FunkinVirtualPad, dPad:FunkinDPadMode, action:FunkinActionMode):Void
-  {
-    switch (dPad)
-    {
-      case UP_DOWN:
-        inline forEachBound(Control.UI_UP, (action, state) -> addButton(action, vPad.buttonUp, state));
-        inline forEachBound(Control.UI_DOWN, (action, state) -> addButton(action, vPad.buttonDown, state));
-      case LEFT_RIGHT:
-        inline forEachBound(Control.UI_LEFT, (action, state) -> addButton(action, vPad.buttonLeft, state));
-        inline forEachBound(Control.UI_RIGHT, (action, state) -> addButton(action, vPad.buttonRight, state));
-      case UP_LEFT_RIGHT:
-        inline forEachBound(Control.UI_UP, (action, state) -> addButton(action, vPad.buttonUp, state));
-        inline forEachBound(Control.UI_LEFT, (action, state) -> addButton(action, vPad.buttonLeft, state));
-        inline forEachBound(Control.UI_RIGHT, (action, state) -> addButton(action, vPad.buttonRight, state));
-      case LEFT_FULL | RIGHT_FULL:
-        inline forEachBound(Control.UI_UP, (action, state) -> addButton(action, vPad.buttonUp, state));
-        inline forEachBound(Control.UI_DOWN, (action, state) -> addButton(action, vPad.buttonDown, state));
-        inline forEachBound(Control.UI_LEFT, (action, state) -> addButton(action, vPad.buttonLeft, state));
-        inline forEachBound(Control.UI_RIGHT, (action, state) -> addButton(action, vPad.buttonRight, state));
-      case NONE: // do nothing
-    }
-
-    switch (action)
-    {
-      case A:
-        inline forEachBound(Control.ACCEPT, (action, state) -> addButton(action, vPad.buttonA, state));
-      case B:
-        inline forEachBound(Control.BACK, (action, state) -> addButton(action, vPad.buttonB, state));
-      case A_B | A_B_C | A_B_X_Y | A_B_C_X_Y_Z:
-        inline forEachBound(Control.ACCEPT, (action, state) -> addButton(action, vPad.buttonA, state));
-        inline forEachBound(Control.BACK, (action, state) -> addButton(action, vPad.buttonB, state));
-      case NONE: // do nothing
-    }
-  }
-
-  public function removeVControlsInput(tInputs:Array<FlxActionInput>):Void
-  {
-    for (action in digitalActions)
-    {
-      var i:Int = action.inputs.length;
-
-      while (i-- > 0)
-      {
-        var j:Int = tInputs.length;
-
-        while (j-- > 0)
-        {
-          if (tInputs[j] == action.inputs[i])
-            action.remove(action.inputs[i]);
-        }
-      }
-    }
-  }
-  #end
 
   override function update()
   {
@@ -1251,18 +1173,18 @@ class FunkinAction extends FlxActionDigital {
 
     // We don't return early because we need to call check() on ALL inputs.
     var result = false;
-    var len = inputs != null ? inputs.length : 0;
-    for (i in 0...len)
-    {
-      var j = len - i - 1;
-      var input = inputs[j];
+		var len = inputs != null ? inputs.length : 0;
+		for (i in 0...len)
+		{
+			var j = len - i - 1;
+			var input = inputs[j];
 
       // Filter out dead inputs.
-      if (input.destroyed)
-      {
-        inputs.splice(j, 1);
-        continue;
-      }
+			if (input.destroyed)
+			{
+				inputs.splice(j, 1);
+				continue;
+			}
 
       // Update the input.
       input.update();
@@ -1278,11 +1200,11 @@ class FunkinAction extends FlxActionDigital {
       }
 
       // Check whether the input has triggered.
-      if (input.check(this))
-      {
-        result = true;
-      }
-    }
+			if (input.check(this))
+			{
+				result = true;
+			}
+		}
 
     // We need to cache this result.
     cache.set(key, {timestamp: FlxG.game.ticks, value: result});
@@ -1297,8 +1219,8 @@ class FlxActionInputDigitalAndroid extends FlxActionInputDigital
 {
   /**
    * Android buttons action input
-   * @param  androidKeyID Key identifier (FlxAndroidKey.BACK, FlxAndroidKey.MENU... those are the only 2 android specific ones)
-   * @param  Trigger What state triggers this action (PRESSED, JUST_PRESSED, RELEASED, JUST_RELEASED)
+   * @param	androidKeyID Key identifier (FlxAndroidKey.BACK, FlxAndroidKey.MENU... those are the only 2 android specific ones)
+   * @param	Trigger What state triggers this action (PRESSED, JUST_PRESSED, RELEASED, JUST_RELEASED)
    */
   public function new(androidKeyID:FlxAndroidKey, Trigger:FlxInputState)
   {
