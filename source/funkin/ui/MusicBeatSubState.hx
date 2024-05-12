@@ -18,6 +18,7 @@ import funkin.util.TouchUtil;
 import flixel.input.actions.FlxActionInput;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxCamera;
+import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinHitbox;
 import funkin.mobile.FunkinVirtualPad;
 #end
@@ -60,53 +61,63 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   #if mobile
   var hitbox:FunkinHitbox;
-  var vPad:FunkinVirtualPad;
+  var virtualPad:FunkinVirtualPad;
 
   var trackedInputsHitbox:Array<FlxActionInput> = [];
   var trackedInputsVirtualPad:Array<FlxActionInput> = [];
 
-  public function addVPad(dPad:FunkinDPadMode, action:FunkinActionMode, ?visible:Bool = true):Void
+  public function addVirtualPad(dPad:FunkinDPadMode, action:FunkinActionMode, ?visible:Bool = true):Void
   {
-    if (vPad != null) removeVPad();
+    if (virtualPad != null)
+    {
+      removeVirtualPad();
+    }
 
-    vPad = new FunkinVirtualPad(dPad, action);
-    vPad.visible = visible;
-    add(vPad);
+    virtualPad = new FunkinVirtualPad(dPad, action);
 
-    controls.setVPad(vPad, dPad, action);
-    trackedInputsVirtualPad = controls.trackedInputs;
-    controls.trackedInputs = [];
+    ControlsHandler.setupVirtualPad(controls, virtualPad, dPad, action, trackedInputsVirtualPad);
+
+    virtualPad.visible = visible;
+    add(virtualPad);
   }
 
-  public function addVPadCamera(defaultDrawTarget:Bool = true):Void
+  public function addVirtualPadCamera(defaultDrawTarget:Bool = true):Void
   {
-    if (vPad != null)
+    if (virtualPad != null)
     {
       var camControls:FlxCamera = new FlxCamera();
       FlxG.cameras.add(camControls, defaultDrawTarget);
       camControls.bgColor.alpha = 0;
-      vPad.cameras = [camControls];
+      virtualPad.cameras = [camControls];
     }
   }
 
-  public function removeVPad():Void
+  public function removeVirtualPad():Void
   {
-    if (trackedInputsVirtualPad.length > 0) controls.removeVControlsInput(trackedInputsVirtualPad);
+    if (trackedInputsVirtualPad != null && trackedInputsVirtualPad.length > 0)
+    {
+      ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
+    }
 
-    if (vPad != null) remove(vPad);
+    if (virtualPad != null)
+    {
+      remove(virtualPad);
+    }
   }
 
   public function addHitbox(?visible:Bool = true):Void
   {
-    if (hitbox != null) removeHitbox();
+    if (hitbox != null)
+    {
+      removeHitbox();
+    }
 
     hitbox = new FunkinHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xC34B9A, 0x00FFFF, 0x12FB06, 0xF9393F]);
+
+    ControlsHandler.setupHitbox(controls, hitbox, trackedInputsHitbox);
+
     hitbox.visible = visible;
     add(hitbox);
-
-    controls.setHitbox(hitbox);
-    trackedInputsHitbox = controls.trackedInputs;
-    controls.trackedInputs = [];
   }
 
   public function addHitboxCamera(DefaultDrawTarget:Bool = true):Void
@@ -122,9 +133,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public function removeHitbox():Void
   {
-    if (trackedInputsHitbox.length > 0) controls.removeVControlsInput(trackedInputsHitbox);
+    if (trackedInputsHitbox != null && trackedInputsHitbox.length > 0)
+    {
+      ControlsHandler.removeCachedInput(controls, trackedInputsHitbox);
+    }
 
-    if (hitbox != null) remove(hitbox);
+    if (hitbox != null)
+    {
+      remove(hitbox);
+    }
   }
   #end
 
@@ -141,17 +158,29 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   public override function destroy():Void
   {
     #if mobile
-    if (trackedInputsHitbox.length > 0) controls.removeVControlsInput(trackedInputsHitbox);
+    if (trackedInputsHitbox != null && trackedInputsHitbox.length > 0)
+    {
+      ControlsHandler.removeCachedInput(controls, trackedInputsHitbox);
+    }
 
-    if (trackedInputsVirtualPad.length > 0) controls.removeVControlsInput(trackedInputsVirtualPad);
+    if (trackedInputsVirtualPad != null && trackedInputsVirtualPad.length > 0)
+    {
+      ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
+    }
     #end
 
     super.destroy();
 
     #if mobile
-    if (vPad != null) vPad = FlxDestroyUtil.destroy(vPad);
+    if (virtualPad != null)
+    {
+      virtualPad = FlxDestroyUtil.destroy(virtualPad);
+    }
 
-    if (hitbox != null) hitbox = FlxDestroyUtil.destroy(hitbox);
+    if (hitbox != null)
+    {
+      hitbox = FlxDestroyUtil.destroy(hitbox);
+    }
     #end
 
     Conductor.beatHit.remove(this.beatHit);
