@@ -49,8 +49,6 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
   public var buttonY:FunkinButton = new FunkinButton(0, 0);
   public var buttonZ:FunkinButton = new FunkinButton(0, 0);
 
-  private var defaultButtonRole:ButtonRole = DIRECTION_BUTTON;
-
   /**
    * Create a virtual gamepad.
    *
@@ -86,7 +84,6 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
       case NONE: // do nothing
     }
 
-    defaultButtonRole = ACTION_BUTTON;
     switch (action)
     {
       case A:
@@ -150,13 +147,17 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
    */
   override public function destroy():Void
   {
-    for (button in Reflect.fields(this))
+    for (field in Reflect.fields(this))
     {
-      if (Reflect.field(this, button) is FunkinButton)
+      if (field != null)
       {
-        Reflect.setField(this, button, FlxDestroyUtil.destroy(Reflect.field(this, button)));
+        var button:Dynamic = Reflect.field(this, field);
+
+        if (button is FunkinButton)
+          Reflect.setField(this, field, FlxDestroyUtil.destroy(button));
       }
     }
+
     super.destroy();
   }
 }
