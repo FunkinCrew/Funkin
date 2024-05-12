@@ -49,6 +49,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
   public var buttonY:FunkinButton = new FunkinButton(0, 0);
   public var buttonZ:FunkinButton = new FunkinButton(0, 0);
 
+  private var nextButtonRole:ButtonRole = DIRECTION_BUTTON;
   /**
    * Create a virtual gamepad.
    *
@@ -83,7 +84,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
         add(buttonDown = createButton(FlxG.width - 258, FlxG.height - 201, 'down', 0xFF00FFFF));
       case NONE: // do nothing
     }
-
+    nextButtonRole = ACTION_BUTTON;
     switch (action)
     {
       case A:
@@ -128,7 +129,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
   {
     var graphic:FlxGraphic = FlxG.bitmap.add('assets/vpad/$key.png');
 
-    var button:FunkinButton = new FunkinButton(x, y, ACTION_BUTTON);
+    var button:FunkinButton = new FunkinButton(x, y, nextButtonRole);
     button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.weak(Std.int(graphic.width / 3), graphic.height));
     button.solid = false;
     button.immovable = true;
