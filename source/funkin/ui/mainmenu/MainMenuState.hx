@@ -103,7 +103,7 @@ class MainMenuState extends MusicBeatState
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
-      FlxTween.tween(vPad, {alpha: 0}, 0.2, {ease: FlxEase.circOut});
+      FlxTween.tween(virtualPad, {alpha: 0}, 0.2, {ease: FlxEase.circOut});
       openSubState(new FreeplayState());
     });
 
@@ -148,7 +148,7 @@ class MainMenuState extends MusicBeatState
     });
 
     #if mobile
-    addVPad(UP_DOWN, A_B);
+    addVirtualPad(UP_DOWN, A_B);
     #end
 
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
@@ -196,7 +196,7 @@ class MainMenuState extends MusicBeatState
   override function closeSubState():Void
   {
     magenta.visible = false;
-    if (vPad.alpha == 0) FlxTween.tween(vPad, {alpha: 0.4}, 0.3, {ease: FlxEase.expoOut});
+    if (virtualPad.alpha == 0) FlxTween.tween(virtualPad, {alpha: 0.4}, 0.3, {ease: FlxEase.expoOut});
     super.closeSubState();
   }
 

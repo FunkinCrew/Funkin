@@ -540,8 +540,8 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
-    addVPad(UP_DOWN, A_B_C);
-    vPad.forEachAlive((button) -> {
+    addVirtualPad(UP_DOWN, A_B_C);
+    virtualPad.forEachAlive((button) -> {
       switch (button.role)
       {
         case DIRECTION_BUTTON:
@@ -721,7 +721,7 @@ class FreeplayState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.F #if mobile || vPad.buttonC.justPressed #end)
+    if (FlxG.keys.justPressed.F #if mobile || virtualPad.buttonC.justPressed #end)
     {
       var targetSong = grpCapsules.members[curSelected]?.songData;
       if (targetSong != null)
@@ -955,7 +955,7 @@ class FreeplayState extends MusicBeatSubState
 
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
-      vPad.forEachAlive((button) -> {
+      virtualPad.forEachAlive((button) -> {
         switch (button.role)
         {
           case DIRECTION_BUTTON:

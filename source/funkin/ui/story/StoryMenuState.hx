@@ -221,7 +221,7 @@ class StoryMenuState extends MusicBeatState
     DiscordClient.changePresence('In the Menus', null);
     #end
 
-    addVPad(LEFT_FULL, A_B);
+    addVirtualPad(LEFT_FULL, A_B);
   }
 
   function rememberSelection():Void
