@@ -8,6 +8,13 @@
       "request": "launch"
     },
     {
+      // Launch in native/CPP on Windows/OSX/Linux (without compiling)
+      "name": "Debug",
+      "type": "lime",
+      "request": "launch",
+      "preLaunchTask": null
+    },
+    {
       // Launch in browser
       "name": "HTML5 Debug",
       "type": "chrome",
