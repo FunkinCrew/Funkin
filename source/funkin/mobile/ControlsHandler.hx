@@ -214,11 +214,10 @@ class ControlsHandler
           if (cachedInput[j] == action.inputs[i])
           {
             action.remove(action.inputs[i]);
+            cachedInput.remove(cachedInput[j]);
           }
         }
       }
     }
-
-    cachedInput = [];
   }
 }
