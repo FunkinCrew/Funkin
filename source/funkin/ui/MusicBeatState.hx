@@ -151,8 +151,25 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   }
 
   public override function destroy():Void
-  {
-    super.destroy();
+	{
+		#if mobile
+		if (trackedInputsHitbox.length > 0)
+			controls.removeVControlsInput(trackedInputsHitbox);
+
+		if (trackedInputsVirtualPad.length > 0)
+			controls.removeVControlsInput(trackedInputsVirtualPad);
+		#end
+
+		super.destroy();
+
+		#if mobile
+		if (vPad != null)
+			vPad = FlxDestroyUtil.destroy(vPad);
+
+		if (hitbox != null)
+			hitbox = FlxDestroyUtil.destroy(hitbox);
+		#end
+
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
   }
