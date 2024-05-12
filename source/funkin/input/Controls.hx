@@ -676,8 +676,6 @@ class Controls extends FlxActionSet
     bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(scheme, Control.VOLUME_DOWN));
     bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(scheme, Control.VOLUME_MUTE));
     bindKeys(Control.FULLSCREEN, getDefaultKeybinds(scheme, Control.FULLSCREEN));
-
-    bindMobileLol();
   }
 
   function getDefaultKeybinds(scheme:KeyboardScheme, control:Control):Array<FlxKey>
@@ -764,15 +762,6 @@ class Controls extends FlxActionSet
     }
 
     return [];
-  }
-
-  function bindMobileLol()
-  {
-    #if android
-    forEachBound(Control.PAUSE, function(action, pres) {
-      action.add(new FlxActionInputDigitalAndroid(FlxAndroidKey.BACK, JUST_RELEASED));
-    });
-    #end
   }
 
   function removeKeyboard()
