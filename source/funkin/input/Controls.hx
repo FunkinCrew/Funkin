@@ -19,6 +19,7 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.input.IFlxInput;
 
 /**
  * A core class which handles receiving player input and interpreting it into game actions.
@@ -529,12 +530,17 @@ class Controls extends FlxActionSet
           action.inputs[i].inputID = toAdd;
         }
         hasReplaced = true;
-      } else if (input.device == KEYBOARD && input.inputID == toAdd) {
+      }
+      else if (input.device == KEYBOARD && input.inputID == toAdd)
+      {
         // This key is already bound!
-        if (hasReplaced) {
+        if (hasReplaced)
+        {
           // Remove the duplicate keybind, don't replace.
           action.inputs.remove(input);
-        } else {
+        }
+        else
+        {
           hasReplaced = true;
         }
       }
@@ -618,6 +624,31 @@ class Controls extends FlxActionSet
           keyboardScheme = Custom;
       }
     }
+  }
+
+  public function bindInput(control:Control, input:IFlxInput)
+  {
+    forEachBound(control, function(action, state) {
+      action.addInput(input, state);
+    });
+  }
+
+  public function unbindInput(control:Control, input:IFlxInput)
+  {
+    forEachBound(control, (action, state) -> {
+      for (i in 0...action.inputs.length)
+      {
+        if (action.inputs[i] is FlxActionInputDigitalIFlxInput)
+        {
+          var digitalAction:FlxActionInputDigitalIFlxInput = cast action.inputs[i];
+          @:privateAccess
+          if (digitalAction.input == input)
+          {
+            action.remove(digitalAction);
+          }
+        }
+      }
+    });
   }
 
   /**
@@ -1037,9 +1068,12 @@ class Controls extends FlxActionSet
       var inputs = getInputsFor(control, device);
       isEmpty = isEmpty && inputs.length == 0;
 
-      if (inputs.length == 0) {
+      if (inputs.length == 0)
+      {
         inputs = [FlxKey.NONE];
-      } else {
+      }
+      else
+      {
         inputs = inputs.unique();
       }
 
