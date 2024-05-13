@@ -31,24 +31,18 @@ class VirtualGamepadPlugin extends FlxBasic // maybe OnSceenControlPlugin??
 {
   var gamepad:VirtualGamepad;
 
-	public var ruleList:Array<StateConfig> = [
-		{
-			state: funkin.InitState,
-			dPadMode: NONE,
-			actionMode: NONE
-		},
+  public var ruleList:Array<StateConfig> = [
     {
-			state: funkin.ui.title.TitleState,
-			dPadMode: NONE,
-			actionMode: NONE
-		},
+      state: funkin.InitState,
+      dPadMode: NONE,
+      actionMode: NONE
+    },
     {
-			state: funkin.ui.mainmenu.MainMenuState,
-			dPadMode: UP_DOWN,
-			actionMode: NONE,
-      sharedRule: true
-		}
-	]; // funkin.play.PlayState
+      state: funkin.ui.title.TitleState,
+      dPadMode: NONE,
+      actionMode: NONE
+    }
+  ]; // funkin.play.PlayState
 
   public function new()
   {
@@ -60,11 +54,11 @@ class VirtualGamepadPlugin extends FlxBasic // maybe OnSceenControlPlugin??
     FlxG.signals.postStateSwitch.add(onPostStateSwitch);
   }
 
-
   function getRule(state:OneOfTwo<FlxState, FlxSubState>)
   {
     var currentRule:StateConfig = null;
-    for (rule in ruleList) {
+    for (rule in ruleList)
+    {
       if (cast Type.getClass(state) == rule.state)
       {
         currentRule = rule;
@@ -73,15 +67,15 @@ class VirtualGamepadPlugin extends FlxBasic // maybe OnSceenControlPlugin??
     }
     if (currentRule == null)
     {
-      currentRule = {
-        state: Type.getClass(state),
-        dPadMode: FULL,
-        actionMode: A_B
-      }
+      currentRule =
+        {
+          state: Type.getClass(state),
+          dPadMode: FULL,
+          actionMode: A_B
+        }
     }
 
-    if (currentRule.sharedRule == null)
-      currentRule.sharedRule = false;
+    if (currentRule.sharedRule == null) currentRule.sharedRule = false;
 
     return currentRule;
   }
@@ -119,8 +113,7 @@ class VirtualGamepadPlugin extends FlxBasic // maybe OnSceenControlPlugin??
 
     subState.add(gamepad = new VirtualGamepad());
 
-    if (!isInherited)
-      gamepad.switchMode(rule.dPadMode, rule.actionMode, true);
+    if (!isInherited) gamepad.switchMode(rule.dPadMode, rule.actionMode, true);
     else
       gamepad.switchMode(prevRule.dPadMode, prevRule.actionMode, true);
 
@@ -153,16 +146,17 @@ class VirtualGamepadPlugin extends FlxBasic // maybe OnSceenControlPlugin??
 
 typedef StateConfig =
 {
-	/**
-	 * The class of state or substate to which this rule will apply
-	 */
-	var state:Class<OneOfTwo<FlxState, FlxSubState>>;
+  /**
+   * The class of state or substate to which this rule will apply
+   */
+  var state:Class<OneOfTwo<FlxState, FlxSubState>>;
+
   // Instance of class
   // var ?instanceOfState:OneOfTwo<FlxState, FlxSubState>;
-	// mode of the left side of gamepad (for example left, right, up, down)
-	var dPadMode:DPadMode;
-	// mode of the right side of gamepad (for example a, b, c, x, y)
-	var actionMode:ActionMode;
-	// tells whether this rule is inherited by the substate
-	var ?sharedRule:Bool;
+  // mode of the left side of gamepad (for example left, right, up, down)
+  var dPadMode:DPadMode;
+  // mode of the right side of gamepad (for example a, b, c, x, y)
+  var actionMode:ActionMode;
+  // tells whether this rule is inherited by the substate
+  var ?sharedRule:Bool;
 }
