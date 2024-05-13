@@ -16,6 +16,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.util.FlxStringUtil;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
@@ -60,6 +61,7 @@ import funkin.ui.options.PreferencesMenu;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
+import rhombus.CoolUtil;
 import haxe.Int64;
 import lime.ui.Haptic;
 import openfl.display.BitmapData;
@@ -227,6 +229,11 @@ class PlayState extends MusicBeatSubState
    * The player's current FC rating.
    */
   public var ratingFC:String = "Clear";
+  
+  /**
+   * The current percentage for a song.
+   */
+  public var songPercent:Float = 0;
 
   /**
    * The amount of notes the player has hit.
@@ -237,6 +244,21 @@ class PlayState extends MusicBeatSubState
    * The amount of notes played in total.
    */
   public var totalPlayed:Int = 0;
+
+  /**
+   * The amount of notes per second.
+   */
+  public var notesPerSecond:Int = 0;
+
+  /**
+   * Array of the amount of notes per second.
+   */
+  public var npsArray:Array<Date> = [];
+
+  /**
+   * The maximum amount of notes per second.
+   */
+  public var maxNps:Int = 0;
 
   /**
    * The values for the rating system.
@@ -751,6 +773,39 @@ class PlayState extends MusicBeatSubState
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
+
+	// Initializes the time bar.
+	timeText = new FlxText(Constants.STRUMLINE_X_OFFSET + (FlxG.width / 2) - 248, 19, 400, "", 32);
+	timeText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	timeText.scrollFactor.set();
+	timeText.borderSize = 2;
+	timeText.visible = true;
+	timeText.zIndex = 804;
+	timeText.alpha = 0;
+
+	timeBarBG = FunkinSprite.create(Constants.STRUMLINE_X_OFFSET + (FlxG.width / 2) - 248, timeText.y + (timeText.height / 4), 'timeBar');
+	timeBarBG.zIndex = 803;
+	timeBarBG.alpha = 0;
+
+	timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), 
+		this, 'songPercent', 0, 1);
+	timeBar.createFilledBar(0xFF8C8C8C, 0xFF73FF91);
+	timeBar.scrollFactor.x = 0;
+	timeBar.scrollFactor.y = 0;
+	timeBar.numDivisions = 800;
+	timeBar.zIndex = 802;
+	timeBar.visible = true;
+	timeBar.alpha = 0;
+
+	add(timeBar);
+	add(timeBarBG);
+	add(timeText);
+
+	if(Preferences.downscroll)
+		timeText.y = FlxG.height - 44;
+
+	timeText.cameras = timeBarBG.cameras = timeBar.cameras = [camHUD];
+
     initHealthBar();
     if (!isMinimalMode)
     {
@@ -763,7 +818,18 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
-    // Initialize the judgements and combo meter.
+    // Initialize the judgements, judgement counter, and combo meter.
+	judgementCounter = new FlxText(20, 0, 0, "", 20);
+	judgementCounter.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+	judgementCounter.scrollFactor.set();
+	judgementCounter.screenCenter(Y);
+	judgementCounter.borderSize = 1.25;
+	add(judgementCounter);
+
+	judgementCounter.text = 'NPS: 0 (Max: 0)\nSicks: 0\nGoods: 0\nBads: 0\nShits: 0';
+
+	judgementCounter.cameras = [camHUD];
+
     comboPopUps = new PopUpStuff();
     comboPopUps.zIndex = 900;
     add(comboPopUps);
@@ -886,7 +952,7 @@ class PlayState extends MusicBeatSubState
     return true;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     // TOTAL: 9.42% CPU Time when profiled in VS 2019.
 
@@ -897,6 +963,13 @@ class PlayState extends MusicBeatSubState
     var list = FlxG.sound.list;
     updateHealthBar();
     updateScoreText();
+
+	// Update the song's current time.
+  	if(timeBar != null) 
+	{
+		songPercent = (Conductor.instance.songPosition / currentSongLengthMs);
+		timeText.text = FlxStringUtil.formatTime((currentSongLengthMs - Conductor.instance.songPosition) / 1000, false);
+	}
 
     // Handle restarting the song when needed (player death or pressing Retry)
     if (needsReset)
@@ -967,6 +1040,13 @@ class PlayState extends MusicBeatSubState
 	  ratingPercent = 0;
 	  ratingName = "?";
       Highscore.tallies.combo = 0;
+	  songPercent = 0;
+
+	  timeBar.alpha = 0;
+	  timeBarBG.alpha = 0;
+	  timeText.alpha = 0;
+	  judgementCounter.text = 'NPS: 0 (Max: 0)\nSicks: 0\nGoods: 0\nBads: 0\nShits: 0';
+
       Countdown.performCountdown(currentStageId.startsWith('school'));
 
       needsReset = false;
@@ -1059,6 +1139,21 @@ class PlayState extends MusicBeatSubState
 
 	// Don't round this for smooth health bar movement.
 	healthDisplay = health / 0.02;
+
+	// Manage how NPS works.
+	var balls = npsArray.length - 1;
+	while (balls >= 0)
+	{
+		var cock:Date = npsArray[balls];
+		if (cock != null && cock.getTime() + 1000 < Date.now().getTime())
+			npsArray.remove(cock);
+		else
+			balls = 0;
+		balls--;
+	}
+	notesPerSecond = npsArray.length;
+	if (notesPerSecond > maxNps)
+		maxNps = notesPerSecond;
 
     // Apply camera zoom + multipliers.
     if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
@@ -1588,48 +1683,37 @@ class PlayState extends MusicBeatSubState
    */
   function initHealthBar():Void
   {
+    // The health bar for the opponent and player.
     var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
     healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
+    healthBarBG.zIndex = 801;
     add(healthBarBG);
 
     healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
       'healthLerp', 0, 2);
     healthBar.scrollFactor.set();
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    healthBar.zIndex = 801;
+    healthBar.zIndex = 800;
     add(healthBar);
-	
-	// The time text at the top of the screen.
-	timeText = new FlxText(0, 19, 400, "", 32);
-	timeText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-	timeText.scrollFactor.set();
-	timeText.borderSize = 2;
-	timeText.visible = true;
-	timeText.zIndex = 804;
-
-	if(Preferences.downscroll) 
-		timeText.y = FlxG.height - 44;
 
     // The score text below the health bar.
     scoreText = new FlxText(0, healthBarBG.y + 41, FlxG.width, "", 20);
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
+	add(scoreText);
 
 	// The version text on the bottom left corner of the screen.
-	versionText = new FlxText(0, FlxG.height - 18, 0, currentChart.songName + ' - ' + currentDifficulty + ' | RE v0.1.0', 16);
+	versionText = new FlxText(0, FlxG.height - 18, 0, currentChart.songName + ' - ' + currentDifficulty.toTitleCase() + ' | RE v0.1.0', 16);
 	versionText.setFormat(Paths.font("vcr.ttf"), 15, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 	versionText.scrollFactor.set();
 	add(versionText);
 
     // Move the HUD items to its own camera.
-    healthBar.cameras = [camHUD];
-    healthBarBG.cameras = [camHUD];
-    scoreText.cameras = [camHUD];
-	versionText.cameras = [camHUD];
+    healthBar.cameras = healthBarBG.cameras = [camHUD];
+	versionText.cameras = scoreText.cameras = [camHUD];
   }
 
   /**
@@ -1766,9 +1850,6 @@ class PlayState extends MusicBeatSubState
       add(iconP1);
       iconP1.cameras = [camHUD];
     }
-
-	// Add the score bar above the character icons.
-	add(scoreText);
 
     //
     // ADD CHARACTERS TO SCENE
@@ -2068,7 +2149,12 @@ class PlayState extends MusicBeatSubState
     vocals.pitch = playbackRate;
     resyncVocals();
 
-	
+	timeBar.scale.x = 0.01;
+	timeBarBG.scale.x = 0.01;
+
+	FlxTween.tween(timeBar, {alpha: 1, "scale.x": 1}, 0.5, {ease: FlxEase.circOut});
+	FlxTween.tween(timeBarBG, {alpha: 1, "scale.x": 1}, 0.5, {ease: FlxEase.circOut});
+	FlxTween.tween(timeText, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
@@ -2107,7 +2193,7 @@ class PlayState extends MusicBeatSubState
    */
   function updateScoreText():Void
   {
-	var accuracy:String = "?";
+	var accuracy:String = "100%";
 	if (totalPlayed != 0)
 	{
 		var percent:Float = Math.floor(ratingPercent * 100 * 2);
@@ -2539,6 +2625,8 @@ class PlayState extends MusicBeatSubState
     // Display the combo meter and add the calculation to the score.
     popUpScore(note, event.score, event.judgement, event.healthChange);
 
+	if (!note.isHoldNote) npsArray.unshift(Date.now());
+
 	totalPlayed++;
 	doScoreBop();
   }
@@ -2621,6 +2709,8 @@ class PlayState extends MusicBeatSubState
    */
   function ghostNoteMiss(direction:NoteDirection, hasPossibleNotes:Bool = true):Void
   {
+    if (Preferences.ghostTapping) return;
+
     var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
       hasPossibleNotes, // Whether there was a note you could have hit.
       - 1 * Constants.HEALTH_MISS_PENALTY, // How much health to add (negative).
@@ -2631,11 +2721,8 @@ class PlayState extends MusicBeatSubState
     // Calling event.cancelEvent() skips animations and penalties. Neat!
     if (event.eventCanceled) return;
 
-	if (!Preferences.ghostTapping)
-	{
-		health += event.healthChange;
-		songScore += event.scoreChange;
-	}
+	health += event.healthChange;
+	songScore += event.scoreChange;
 
     if (!isPracticeMode)
     {
@@ -2801,24 +2888,24 @@ class PlayState extends MusicBeatSubState
 	totalPlayed++;
 	totalNotesHit += ratingMod;
 
+	var sickJudge = Highscore.tallies.sick;
+	var goodJudge = Highscore.tallies.good;
+	var badJudge = Highscore.tallies.bad;
+	var shitJudge = Highscore.tallies.shit;
+
 	if (songMisses == 0)
 	{
-		var sickJudge = Highscore.tallies.sick;
-		var goodJudge = Highscore.tallies.good;
-		var badJudge = Highscore.tallies.bad;
-		var shitJudge = Highscore.tallies.shit;
-
 		if (badJudge > 0 || shitJudge > 0) ratingFC = 'FC';
 		else if (goodJudge > 0) ratingFC = 'GFC';
 		else if (sickJudge > 0) ratingFC = 'SFC';
-
-
 	}
 	else 
 	{
 		if (songMisses < 10) ratingFC = 'SDCB';
 		else ratingFC = 'Clear';
 	}
+
+	judgementCounter.text = 'NPS: ${notesPerSecond} (Max: ${maxNps})\nSicks: ${sickJudge}\nGoods: ${goodJudge}\nBads: ${badJudge}\nShits: ${shitJudge}';
 
     health += healthChange;
 
