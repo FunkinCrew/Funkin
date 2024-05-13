@@ -53,7 +53,8 @@ class Save
   public function new(?data:RawSaveData)
   {
     if (data == null) this.data = Save.getDefault();
-    else this.data = data;
+    else
+      this.data = data;
   }
 
   public static function getDefault():RawSaveData
@@ -82,6 +83,7 @@ class Save
           // Reasonable defaults.
           naughtyness: true,
           downscroll: false,
+          ghostapping: true,
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
@@ -848,6 +850,12 @@ typedef SaveDataOptions =
   var downscroll:Bool;
 
   /**
+   * ghosttapping
+   * @default `true`
+   */
+  var ghostapping:Bool;
+
+  /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */
@@ -1041,7 +1049,7 @@ typedef SaveDataChartEditorOptions =
   var ?theme:ChartEditorTheme;
 
   /**
-   * Downscroll in the Chart Editor.
+   * ghosttappin in the Chart Editor.
    * @default `false`
    */
   var ?downscroll:Bool;

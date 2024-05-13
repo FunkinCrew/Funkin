@@ -46,6 +46,25 @@ class Preferences
   }
 
   /**
+   * If enabled, notehits when no note is present wont penalize ypu.
+   * @default `true`
+   */
+  public static var ghostapping(get, set):Bool;
+
+  static function get_ghostapping():Bool
+  {
+    return Save?.instance?.options?.ghostapping;
+  }
+
+  static function set_ghostapping(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.ghostapping = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */

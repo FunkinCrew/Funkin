@@ -394,6 +394,7 @@ class CharacterDataParser
   static final DEFAULT_NAME:String = 'Untitled Character';
   static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
   static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
+  static final DEFAULT_HEALTHCOLOR:Array<Int> = [0, 25, 0];
   static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   static final DEFAULT_SCALE:Float = 1;
   static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -460,6 +461,7 @@ class CharacterDataParser
           id: null,
           scale: null,
           flipX: null,
+          type: null,
           isPixel: null,
           offsets: null
         };
@@ -504,6 +506,15 @@ class CharacterDataParser
     {
       input.healthIcon.isPixel = input.isPixel;
     }
+    if (input.healthIcon.type == null)
+    {
+      input.healthIcon.type = 'og';
+    }
+
+    if (input.healthIcon.type == null)
+    {
+      input.healthIcon.type = 'og';
+    }
 
     if (input.danceEvery == null)
     {
@@ -513,6 +524,11 @@ class CharacterDataParser
     if (input.singTime == null)
     {
       input.singTime = DEFAULT_SINGTIME;
+    }
+
+    if (input.healthcolor == null)
+    {
+      input.healthcolor = DEFAULT_HEALTHCOLOR;
     }
 
     if (input.animations == null || input.animations.length == 0)
@@ -610,6 +626,11 @@ typedef CharacterData =
    * The sematic version number of the character data JSON format.
    */
   var version:String;
+
+  /**
+   * The default healthcolor.  to do: make it dependent on the character type
+   */
+  public var healthcolor:Array<Int>;
 
   /**
    * The readable name of the character.
@@ -711,6 +732,8 @@ typedef HealthIconData =
    * @default The character's ID
    */
   var id:Null<String>;
+
+  var type:Null<String>;
 
   /**
    * The scale of the health icon.

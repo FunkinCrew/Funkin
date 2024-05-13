@@ -55,6 +55,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemCheckbox('Ghosttapping', 'Enable to make hitting a note when none is prefsent do nothing', function(value:Bool):Void {
+      Preferences.ghostapping = value;
+    }, Preferences.ghostapping);
     createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);

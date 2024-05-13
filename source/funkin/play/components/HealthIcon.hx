@@ -74,6 +74,11 @@ class HealthIcon extends FunkinSprite
   public var isPixel(default, set):Bool = false;
 
   /**
+   * the icon type.
+   */
+  public var type:String = 'og';
+
+  /**
    * Whether this is a legacy icon or not.
    */
   var isLegacyStyle:Bool = false;
@@ -97,7 +102,7 @@ class HealthIcon extends FunkinSprite
    * The size of a non-pixel icon when using the legacy format.
    * Remember, modern icons can be any size.
    */
-  public static final HEALTH_ICON_SIZE:Int = 150;
+  public var HEALTH_ICON_SIZE:Int = 150;
 
   /**
    * The size of a pixel icon when using the legacy format.
@@ -142,6 +147,15 @@ class HealthIcon extends FunkinSprite
     return isPixel;
   }
 
+  function set_type(value:Null<String>):String
+  {
+    if (value == type) return value;
+
+    type = value ?? 'og';
+    trace('type is' + type);
+    return type;
+  }
+
   /**
    * Easter egg; press 9 in the PlayState to use the old player icon.
    */
@@ -175,14 +189,16 @@ class HealthIcon extends FunkinSprite
       this.offset.x = 0.0;
       this.offset.y = 0.0;
       this.flipX = false;
+      this.type = 'og';
     }
     else
     {
       this.characterId = data.id;
       this.isPixel = data.isPixel ?? false;
-
+      set_type(data.type);
       loadCharacter(characterId);
 
+      // this is spitiing in the face of the nice code here im so sorry
       this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
       this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
       this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;
@@ -368,11 +384,20 @@ class HealthIcon extends FunkinSprite
    * Simply assumes two icons, the idle and losing icons.
    * @param charId
    */
-  function loadAnimationOld():Void
+  function loadAnimationOld(type:String):Void
   {
-    // Don't flip BF's icon here! That's done later.
-    this.animation.add(Idle, [0], 0, false, false);
-    this.animation.add(Losing, [1], 0, false, false);
+    switch (type)
+    {
+      default:
+        this.animation.add(Idle, [0], 0, false, false);
+        this.animation.add(Losing, [1], 0, false, false);
+      case 'win':
+        this.animation.add(Idle, [0], 0, false, false);
+        this.animation.add(Losing, [1], 0, false, false);
+        this.animation.add(Winning, [2], 0, false, false);
+        trace('winicon');
+        trace(hasAnimation('Winning'));
+    }
   }
 
   function correctCharacterId(charId:Null<String>):String
@@ -415,9 +440,17 @@ class HealthIcon extends FunkinSprite
     }
     else
     {
-      loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
+      switch (type)
+      {
+        case 'og':
+          trace('og');
 
-      loadAnimationOld();
+        case 'win':
+          trace('win');
+      }
+      loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
+      loadAnimationOld(type);
+      trace(HEALTH_ICON_SIZE);
     }
 
     this.antialiasing = !isPixel;
@@ -461,6 +494,7 @@ class HealthIcon extends FunkinSprite
   public function playAnimation(name:String, fallback:String = null, restart = false):Void
   {
     // Attempt to play the animation
+
     if (hasAnimation(name))
     {
       this.animation.play(name, restart, false, 0);

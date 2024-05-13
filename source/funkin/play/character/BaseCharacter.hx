@@ -36,6 +36,11 @@ class BaseCharacter extends Bopper
   public var holdTimer:Float = 0;
 
   /**
+   * so this is for healthcolors...idk what else to say
+   */
+  public var healthcolor:Array<Int>;
+
+  /**
    * Set to true when the character dead. Part of the handling for death animations.
    */
   public var isDead:Bool = false;
@@ -183,6 +188,7 @@ class BaseCharacter extends Bopper
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
+      this.healthcolor = _data.healthcolor;
     }
 
     shouldBop = false;
@@ -333,6 +339,7 @@ class BaseCharacter extends Bopper
         return;
       }
       PlayState.instance.iconP1.configure(_data.healthIcon);
+
       PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
     }
     else
@@ -371,6 +378,10 @@ class BaseCharacter extends Bopper
     if (!getCurrentAnimation().endsWith('-hold') && hasAnimation(getCurrentAnimation() + '-hold') && isAnimationFinished())
     {
       playAnimation(getCurrentAnimation() + '-hold');
+    }
+    if (!getCurrentAnimation().endsWith('-end') && hasAnimation(getCurrentAnimation() + '-end') && isAnimationFinished())
+    {
+      playAnimation(getCurrentAnimation() + '-end');
     }
 
     // Handle character note hold time.

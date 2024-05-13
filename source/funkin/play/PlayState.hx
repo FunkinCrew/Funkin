@@ -150,6 +150,13 @@ class PlayState extends MusicBeatSubState
   public static var instance:PlayState = null;
 
   /**
+   * so. were making dad and boyfriend public... LETS HOPE ITS NOT GONA BREAK THINGS
+   */
+  public var dad:BaseCharacter;
+
+  public var boyfriend:BaseCharacter;
+
+  /**
    * This sucks. We need this because FlxG.resetState(); assumes the constructor has no arguments.
    * @see https://github.com/HaxeFlixel/flixel/issues/2541
    */
@@ -670,7 +677,7 @@ class PlayState extends MusicBeatSubState
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
-    initHealthBar();
+
     if (!isMinimalMode)
     {
       initStage();
@@ -680,6 +687,8 @@ class PlayState extends MusicBeatSubState
     {
       initMinimalMode();
     }
+    initHealthBar();
+    initicons();
     initStrumlines();
 
     // Initialize the judgements and combo meter.
@@ -1508,7 +1517,8 @@ class PlayState extends MusicBeatSubState
     healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
       'healthLerp', 0, 2);
     healthBar.scrollFactor.set();
-    healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
+    healthBar.createFilledBar(FlxColor.fromRGB(dad.healthcolor[0], dad.healthcolor[1], dad.healthcolor[2]),
+      FlxColor.fromRGB(boyfriend.healthcolor[0], boyfriend.healthcolor[1], boyfriend.healthcolor[2]));
     healthBar.zIndex = 801;
     add(healthBar);
 
@@ -1623,7 +1633,7 @@ class PlayState extends MusicBeatSubState
     //
     // DAD
     //
-    var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+    dad = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
 
     if (dad != null)
     {
@@ -1632,18 +1642,12 @@ class PlayState extends MusicBeatSubState
       //
       // OPPONENT HEALTH ICON
       //
-      iconP2 = new HealthIcon('dad', 1);
-      iconP2.y = healthBar.y - (iconP2.height / 2);
-      dad.initHealthIcon(true); // Apply the character ID here
-      iconP2.zIndex = 850;
-      add(iconP2);
-      iconP2.cameras = [camHUD];
     }
 
     //
     // BOYFRIEND
     //
-    var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+    boyfriend = CharacterDataParser.fetchCharacter(currentCharacterData.player);
 
     if (boyfriend != null)
     {
@@ -1652,12 +1656,6 @@ class PlayState extends MusicBeatSubState
       //
       // PLAYER HEALTH ICON
       //
-      iconP1 = new HealthIcon('bf', 0);
-      iconP1.y = healthBar.y - (iconP1.height / 2);
-      boyfriend.initHealthIcon(false); // Apply the character ID here
-      iconP1.zIndex = 850;
-      add(iconP1);
-      iconP1.cameras = [camHUD];
     }
 
     //
@@ -1699,6 +1697,23 @@ class PlayState extends MusicBeatSubState
       // Rearrange by z-indexes.
       currentStage.refresh();
     }
+  }
+
+  function initicons():Void
+  {
+    iconP1 = new HealthIcon('bf', 0);
+    iconP1.y = healthBar.y - (iconP1.height / 2);
+    boyfriend.initHealthIcon(false); // Apply the character ID here
+    iconP1.zIndex = 850;
+    add(iconP1);
+    iconP1.cameras = [camHUD];
+
+    iconP2 = new HealthIcon('dad', 1);
+    iconP2.y = healthBar.y - (iconP2.height / 2);
+    dad.initHealthIcon(true); // Apply the character ID here
+    iconP2.zIndex = 850;
+    add(iconP2);
+    iconP2.cameras = [camHUD];
   }
 
   /**
@@ -2480,48 +2495,54 @@ class PlayState extends MusicBeatSubState
    */
   function ghostNoteMiss(direction:NoteDirection, hasPossibleNotes:Bool = true):Void
   {
-    var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
-      hasPossibleNotes, // Whether there was a note you could have hit.
-      - 1 * Constants.HEALTH_MISS_PENALTY, // How much health to add (negative).
-      - 10 // Amount of score to add (negative).
-    );
-    dispatchEvent(event);
-
-    // Calling event.cancelEvent() skips animations and penalties. Neat!
-    if (event.eventCanceled) return;
-
-    health += event.healthChange;
-    songScore += event.scoreChange;
-
-    if (!isPracticeMode)
+    if (Preferences.ghostapping == false)
     {
-      var pressArray:Array<Bool> = [
-        controls.NOTE_LEFT_P,
-        controls.NOTE_DOWN_P,
-        controls.NOTE_UP_P,
-        controls.NOTE_RIGHT_P
-      ];
+      var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
+        hasPossibleNotes, // Whether there was a note you could have hit.
+        - 1 * Constants.HEALTH_MISS_PENALTY, // How much health to add (negative).
+        - 10 // Amount of score to add (negative).
+      );
+      dispatchEvent(event);
+      // Calling event.cancelEvent() skips animations and penalties. Neat!
+      if (event.eventCanceled) return;
 
-      var indices:Array<Int> = [];
-      for (i in 0...pressArray.length)
+      health += event.healthChange;
+      songScore += event.scoreChange;
+
+      if (!isPracticeMode)
       {
-        if (pressArray[i]) indices.push(i);
+        var pressArray:Array<Bool> = [
+          controls.NOTE_LEFT_P,
+          controls.NOTE_DOWN_P,
+          controls.NOTE_UP_P,
+          controls.NOTE_RIGHT_P
+        ];
+
+        var indices:Array<Int> = [];
+        for (i in 0...pressArray.length)
+        {
+          if (pressArray[i]) indices.push(i);
+        }
+        for (i in 0...indices.length)
+        {
+          inputSpitter.push(
+            {
+              t: Std.int(Conductor.instance.songPosition),
+              d: indices[i],
+              l: 20
+            });
+        }
       }
-      for (i in 0...indices.length)
+
+      if (event.playSound)
       {
-        inputSpitter.push(
-          {
-            t: Std.int(Conductor.instance.songPosition),
-            d: indices[i],
-            l: 20
-          });
+        vocals.playerVolume = 0;
+        FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
       }
     }
-
-    if (event.playSound)
+    else
     {
-      vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      return;
     }
   }
 
