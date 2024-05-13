@@ -15,6 +15,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
 import funkin.util.TouchUtil;
+import funkin.input.PreciseInputManager;
 #if mobile
 import flixel.input.actions.FlxActionInput;
 import flixel.util.FlxDestroyUtil;
@@ -114,7 +115,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
   }
 
-  public function addHitbox(?visible:Bool = true):Void
+  public function addHitbox(?visible:Bool = true, ?initInput:Bool = true):Void
   {
     if (hitbox != null)
     {
@@ -127,6 +128,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     hitbox.visible = visible;
     add(hitbox);
+
+    if (initInput) PreciseInputManager.instance.initializeHitbox(hitbox);
   }
 
   public function addHitboxCamera(DefaultDrawTarget:Bool = true):Void

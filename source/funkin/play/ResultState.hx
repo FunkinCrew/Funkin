@@ -22,6 +22,7 @@ import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
+import funkin.util.TouchUtil;
 
 /**
  * The state for the results screen after a song or week is finished.
@@ -380,7 +381,7 @@ class ResultState extends MusicBeatSubState
       speedOfTween.x -= 0.1;
     }
 
-    if (controls.PAUSE)
+    if (controls.PAUSE || TouchUtil.justPressed)
     {
       FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8);
       FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,

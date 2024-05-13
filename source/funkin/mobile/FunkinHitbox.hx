@@ -1,13 +1,14 @@
 package funkin.mobile;
 
-import funkin.mobile.FunkinButton;
-import flixel.group.FlxSpriteGroup;
-import flixel.util.FlxColor;
-import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
-import openfl.display.BitmapData;
-import openfl.display.Shape;
 import openfl.geom.Matrix;
+import openfl.display.Shape;
+import flixel.util.FlxColor;
+import openfl.display.BitmapData;
+import funkin.mobile.FunkinButton;
+import flixel.util.FlxDestroyUtil;
+import flixel.group.FlxSpriteGroup;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 /**
  * A zone with 4 buttons (A hitbox).
@@ -19,6 +20,16 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
    * The array containing the hitbox's buttons.
    */
   public var hints(default, null):Array<FunkinButton> = [];
+
+  /**
+   * A `FlxTypedSignal` that triggers every time a hint was pressed.
+   */
+  public var onHintDown:FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void> = new FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void>();
+
+  /**
+   * A `FlxTypedSignal` that triggers every time a hint was released.
+   */
+  public var onHintUp:FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void> = new FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void>();
 
   /**
    * Create the zone.
@@ -59,9 +70,11 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     hint.immovable = true;
     hint.alpha = 0.00001;
     hint.onDown = hint.onOver = function():Void {
+      onHintDown.dispatch(this, hint);
       if (hint.alpha != 0.2) hint.alpha = 0.2;
     }
     hint.onUp = hint.onOut = function():Void {
+      onHintUp.dispatch(this, hint);
       if (hint.alpha != 0.00001) hint.alpha = 0.00001;
     }
     #if FLX_DEBUG

@@ -22,7 +22,7 @@
 	<!--Desktop-specific-->
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" allow-high-dpi="true" />
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
@@ -94,8 +94,8 @@
 		If we can exclude the `mods` folder from the manifest, we can re-enable this line.
 		<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
 	-->
-	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art" unless="mobile"/>
-	<assets path="CHANGELOG.md" rename="changelog.txt" library="art" unless="mobile"/>
+	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art" />
+	<assets path="CHANGELOG.md" rename="changelog.txt" library="art" />
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
 		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
@@ -155,7 +155,7 @@
 	<!-- Disable trace() calls in release builds to bump up performance.
 		<haxeflag name="- -no-traces" unless="debug" />-->
 	<!-- HScript relies heavily on Reflection, which means we can't use DCE. -->
-	<haxeflag name="-dce no" />
+	<haxeflag name="-dce no" unless="USE_DCE"/>
 	<!-- Ensure all Funkin' classes are available at runtime. -->
 	<haxeflag name="--macro" value="include('funkin')" />
 	<!-- Ensure all UI components are available at runtime. -->

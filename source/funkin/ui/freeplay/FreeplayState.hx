@@ -937,7 +937,7 @@ class FreeplayState extends MusicBeatSubState
     {
       diffSelRight.setPress(true);
       dj.resetAFKTimer();
-      changeDiff(-1);
+      changeDiff(1);
       generateSongList(currentFilter, true);
     }
     if (TouchUtil.justReleased)

@@ -65,6 +65,7 @@ import lime.ui.Haptic;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.Lib;
+import funkin.util.TouchUtil;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -2730,7 +2731,7 @@ class PlayState extends MusicBeatSubState
     if (currentConversation != null)
     {
       // Pause/unpause may conflict with advancing the conversation!
-      if (controls.CUTSCENE_ADVANCE && !justUnpaused)
+      if ((controls.CUTSCENE_ADVANCE || TouchUtil.justPressed) && !justUnpaused)
       {
         currentConversation.advanceConversation();
       }
