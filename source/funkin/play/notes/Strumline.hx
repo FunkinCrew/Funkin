@@ -435,7 +435,7 @@ class Strumline extends FlxSpriteGroup
 
         if (Preferences.downscroll)
         {
-          holdNote.y = this.y - holdNote.height - INITIAL_OFFSET + STRUMLINE_SIZE / 2; // + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y - holdNote.height - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
         }
         else
         {
