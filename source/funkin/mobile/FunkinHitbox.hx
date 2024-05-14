@@ -1,14 +1,14 @@
 package funkin.mobile;
 
+import funkin.mobile.FunkinButton;
+import flixel.group.FlxSpriteGroup;
+import flixel.util.FlxColor;
+import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxSignal;
 import flixel.FlxG;
 import openfl.geom.Matrix;
 import openfl.display.Shape;
-import flixel.util.FlxColor;
 import openfl.display.BitmapData;
-import funkin.mobile.FunkinButton;
-import flixel.util.FlxDestroyUtil;
-import flixel.group.FlxSpriteGroup;
-import flixel.util.FlxSignal.FlxTypedSignal;
 
 /**
  * A zone with 4 buttons (A hitbox).
@@ -22,12 +22,12 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   public var hints(default, null):Array<FunkinButton> = [];
 
   /**
-   * A `FlxTypedSignal` that triggers every time a hint was pressed.
+   * A `FlxTypedSignal` that triggers every time a button was pressed.
    */
   public var onHintDown:FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void> = new FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void>();
 
   /**
-   * A `FlxTypedSignal` that triggers every time a hint was released.
+   * A `FlxTypedSignal` that triggers every time a button was released.
    */
   public var onHintUp:FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void> = new FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void>();
 
@@ -49,16 +49,6 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
       add(hints[i] = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, colors[i]));
 
     scrollFactor.set();
-  }
-
-  /**
-   * Clean up memory.
-   */
-  override public function destroy():Void
-  {
-    super.destroy();
-
-    hints = FlxDestroyUtil.destroyArray(hints);
   }
 
   private function createHint(x:Float, y:Float, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF):FunkinButton
@@ -102,5 +92,15 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     var bitmap:BitmapData = new BitmapData(width, height, true, 0);
     bitmap.draw(shape, true); // Smoothed so it looks good
     return bitmap;
+  }
+
+  /**
+   * Clean up memory.
+   */
+  override public function destroy():Void
+  {
+    super.destroy();
+
+    hints = FlxDestroyUtil.destroyArray(hints);
   }
 }
