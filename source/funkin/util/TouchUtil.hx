@@ -36,6 +36,7 @@ class TouchUtil
    *
    * @param object The FlxBasic object to check against touches.
    * @param camera Optional camera to use for overlap check. If null, object's camera is used.
+   *
    * @return `true` if there is an overlap with any touch; `false` otherwise.
    */
   public static function overlaps(object:FlxBasic, ?camera:FlxCamera):Bool
