@@ -131,6 +131,7 @@ class FreeplayState extends MusicBeatSubState
   var exitMovers:ExitMoverData = new Map();
 
   var stickerSubState:StickerSubState;
+  var funnyCam:FunkinCamera;
 
   public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   public static var rememberedSongId:Null<String> = 'tutorial';
@@ -535,7 +536,7 @@ class FreeplayState extends MusicBeatSubState
     generateSongList(null, false);
 
     // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
-    var funnyCam:FunkinCamera = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
+    funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
@@ -989,7 +990,7 @@ class FreeplayState extends MusicBeatSubState
       clearDaCache(daSong.songName);
     }
     // remove and destroy freeplay camera
-    FlxG.cameras.remove(FlxG.cameras.list[FlxG.cameras.list.length - 1]);
+    FlxG.cameras.remove(funnyCam);
   }
 
   function changeDiff(change:Int = 0, force:Bool = false):Void
