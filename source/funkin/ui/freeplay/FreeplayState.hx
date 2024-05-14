@@ -527,6 +527,9 @@ class FreeplayState extends MusicBeatSubState
       orangeBackShit.visible = true;
       alsoOrangeLOL.visible = true;
       grpTxtScrolls.visible = true;
+
+      // render optimisation
+      _parentState.persistentDraw = false;
     });
 
     generateSongList(null, false);
@@ -985,6 +988,8 @@ class FreeplayState extends MusicBeatSubState
     {
       clearDaCache(daSong.songName);
     }
+    // remove and destroy freeplay camera
+    FlxG.cameras.remove(FlxG.cameras.list[FlxG.cameras.list.length - 1]);
   }
 
   function changeDiff(change:Int = 0, force:Bool = false):Void
