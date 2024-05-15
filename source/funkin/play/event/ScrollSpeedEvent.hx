@@ -36,6 +36,7 @@ class ScrollSpeedEvent extends SongEvent
   static final DEFAULT_SCROLL:Float = 1;
   static final DEFAULT_DURATION:Float = 4.0;
   static final DEFAULT_EASE:String = 'linear';
+  static final DEFAULT_ABSOLUTE:Bool = false;
   static final DEFAULT_STRUMLINE:String = 'both'; // my special little trick
 
   public override function handleEvent(data:SongEventData):Void
@@ -51,12 +52,14 @@ class ScrollSpeedEvent extends SongEvent
 
     var strumline:String = data.getString('strumline') ?? DEFAULT_STRUMLINE;
 
+    var absolute:Bool = data.getBool('absolute') ?? DEFAULT_ABSOLUTE;
+
     var strumlineNames:Array<String> = [];
 
-    if (scroll == 0)
+    if (!absolute)
     {
-      // if the parameter is set to 0, reset the scroll speed to normal.
-      scroll = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+      // If absolute is set to false, do the awesome multiplicative thing
+      scroll = scroll * (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
     }
 
     switch (strumline)
@@ -103,8 +106,8 @@ class ScrollSpeedEvent extends SongEvent
     return new SongEventSchema([
       {
         name: 'scroll',
-        title: 'Scroll Amount',
-        defaultValue: 0.0,
+        title: 'Target Value',
+        defaultValue: 1.0,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
         units: 'x'
@@ -157,6 +160,12 @@ class ScrollSpeedEvent extends SongEvent
         defaultValue: 'both',
         type: SongEventFieldType.ENUM,
         keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
+      },
+      {
+        name: 'absolute',
+        title: 'Absolute',
+        defaultValue: false,
+        type: SongEventFieldType.BOOL,
       }
     ]);
   }

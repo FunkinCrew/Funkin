@@ -3259,6 +3259,8 @@ class PlayState extends MusicBeatSubState
     cancelCameraZoomTween();
   }
 
+  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruely
+
   /**
    * The magical function that shall tween the scroll speed.
    */
@@ -3266,6 +3268,18 @@ class PlayState extends MusicBeatSubState
   {
     // Cancel the current tween if it's active.
     cancelScrollSpeedTweens();
+
+    // Snap to previous event value to prevent the tween breaking when another event cancels the previous tween.
+    for (i in prevScrollTargets)
+    {
+      var value:Float = i[1];
+      var strum:Strumline = Reflect.getProperty(this, i[0]);
+      strum.scrollSpeed = value;
+    }
+
+    // for next event, clean array.
+    prevScrollTargets = [];
+
     for (i in strumlines)
     {
       var value:Float = speed;
@@ -3282,6 +3296,8 @@ class PlayState extends MusicBeatSubState
             'scrollSpeed': value
           }, duration, {ease: ease}));
       }
+      // make sure charts dont break if the charter is dumb and stupid
+      prevScrollTargets.push([value, i]);
     }
   }
 
