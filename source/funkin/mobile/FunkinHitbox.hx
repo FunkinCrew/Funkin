@@ -49,6 +49,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
       add(hints[i] = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, colors[i]));
 
     scrollFactor.set();
+
+    zIndex = 100000;
   }
 
   private function createHint(x:Float, y:Float, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF):FunkinButton
