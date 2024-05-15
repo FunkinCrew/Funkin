@@ -141,7 +141,7 @@ class HitNoteScriptEvent extends NoteScriptEvent
   public var score:Int;
 
   /**
-   * Whether the judgement caused a combo break.
+   * If the hit causes a combo break.
    */
   public var isComboBreak:Bool = false;
 
@@ -150,19 +150,26 @@ class HitNoteScriptEvent extends NoteScriptEvent
    */
   public var hitDiff:Float = 0;
 
-  public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0):Void
+  /**
+   * If the hit causes a notesplash
+   */
+  public var doesNotesplash:Bool = false;
+
+  public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0,
+      doesNotesplash:Bool = false):Void
   {
     super(NOTE_HIT, note, healthChange, comboCount, true);
     this.score = score;
     this.judgement = judgement;
     this.isComboBreak = isComboBreak;
+    this.doesNotesplash = doesNotesplash;
     this.hitDiff = hitDiff;
   }
 
   public override function toString():String
   {
     return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ', isComboBreak='
-      + isComboBreak + ', hitDiff=' + hitDiff + ')';
+      + isComboBreak + ', hitDiff=' + hitDiff + ', doesNotesplash=' + doesNotesplash + ')';
   }
 }
 
