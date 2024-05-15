@@ -83,6 +83,8 @@ class GameOverSubState extends MusicBeatSubState
 
   var isChartingMode:Bool = false;
 
+  var mustNotExit:Bool = false;
+
   var transparent:Bool;
 
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
@@ -245,7 +247,7 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
-    if (controls.BACK)
+    if (controls.BACK && !mustNotExit)
     {
       blueballed = false;
       PlayState.instance.deathCounter = 0;
