@@ -1,5 +1,14 @@
 package;
 
+/*
+*Simple About
+*---------------------Friday Night Funkin(FNF)------------------
+*Verison:0.26
+*Developer:NinjaMuffin
+*
+*the creator of this simple About:tohar777
+*/
+
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
