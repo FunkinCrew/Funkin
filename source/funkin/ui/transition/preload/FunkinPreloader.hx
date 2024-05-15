@@ -173,7 +173,7 @@ class FunkinPreloader extends FlxBasePreloader
 
     progressLines = new openfl.display.Sprite();
     progressLines.graphics.lineStyle(2, Constants.COLOR_PRELOADER_BAR);
-    progressLines.graphics.drawRect(-2, 480, this._width + 4, 30);
+    progressLines.graphics.drawRect(-2, this._height - BAR_PADDING - BAR_HEIGHT - 208, this._width + 4, 30);
     addChild(progressLines);
 
     var progressBarPiece = new Sprite();
