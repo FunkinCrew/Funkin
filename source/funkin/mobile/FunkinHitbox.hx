@@ -56,7 +56,6 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     var hint:FunkinButton = new FunkinButton(x, y, DIRECTION_BUTTON);
     hint.loadGraphic(createHintGraphic(width, height, color));
     hint.solid = false;
-    hint.multiTouch = true;
     hint.immovable = true;
     hint.alpha = 0.00001;
     hint.onDown = hint.onOver = function():Void
