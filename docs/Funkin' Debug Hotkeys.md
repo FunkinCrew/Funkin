@@ -1,31 +1,31 @@
 # Funkin' Debug Hotkeys
 
-`F4` (EVERYWHERE) - Leave Current State and move to Main Menu
-`F5` (EVERYWHERE) - Hot Reload Data Files
+Most of this functionality is only available on debug builds of the game!
 
-`Y` (Title Screen) - WOAH
+## Any State
+- `F2`: ***OVERLAY***: Enables the Flixel debug overlay, which has partial support for scripting.
+- `F3`: ***SCREENSHOT***: Takes a screenshot of the game and saves it to the local `screenshots` directory. Works outside of debug builds too!
+- `F4`: ***EJECT***: Forcibly switch state to the Main Menu (with no extra transition). Useful if you're stuck in a level and you need to get out!
+- `F5`: ***HOT RELOAD***: Forcibly reload the game's scripts and data files, then restart the current state. If any files in the `assets` folder have been modified, the game should process the changes for you! NOTE: Known bug, this does not reset song charts or song scripts, but it should reset everything else (such as stage layout data and character animation data).
+- `CTRL-SHIFT-L`: ***FORCE CRASH***: Immediately crash the game with a detailed crash log and a stack trace.
 
-`~` (Main Menu) - Access Debug Menu
+## **Play State**
+- `H`: ***HIDE UI***: Makes the user interface invisible. Works in Pause Menu, great for screenshots.
+- `1`: ***END SONG***: Immediately ends the song and moves to Results Screen on Freeplay, or next song on Story Mode.
+- `2`: ***GAIN HEALTH***: Debug function, add 10% to the player's health.
+- `3`: ***LOSE HEALTH***: Debug function, subtract 5% to the player's health.
+- `9`: NEATO!
+- `PAGEUP` (MacOS: `Fn-Up`): ***FORWARDS TIME TRAVEL****: Move forward by 2 sections. Hold SHIFT to move forward by 20 sections instead.
+- `PAGEDOWN` (MacOS: `Fn-Down`): ***BACKWARDS TIME TRAVEL****: Move backward by 2 sections. Hold SHIFT to move backward by 20 sections instead.
 
-`U` (Play) - Open Stage Editor State
-`H` (Play) - Show/Hide HUD
-`1` (Play) - End Song
-`2` (Play) - Add 10% Health
-`3` (Play) - Subtract 5% Health
-`7` (Play) - (NOT WORKING) Open Chart Editor
-`8` (Play) - Open Animation Editor
-`9` (Play) - (Easter Egg) Classic Health Icon
-`PGUP`/`Fn+Up` (Play) - Skip Forward In Time
-`PGDN`/`Fn+Down` (Play) - 🦃 That's right, we're going to go BACK IN TIME
+## **Freeplay State**
+- `F` (Freeplay Menu) - Move to Favorites
+- `Q` (Freeplay Menu) - Back one category
+- `E` (Freeplay Menu) - Forward one category
 
-`F` (Freeplay Menu) - Move to Favorites
-`P` (Freeplay Menu) - Switch to Pico (probably doesn't work)
-`T` (Freeplay Menu) - Start typing in search bar
-`Q` (Freeplay Menu) - Back one letter
-`E` (Freeplay Menu) - Forward one letter
+## **Title State**
+- `Y` - WOAH
 
-`Arrows` (Stage Editor) - Move Prop
-`Ctrl-Z` (Stage Editor) - Undo
-`Y` (Stage Editor) - Leave Stage Editor
-
-`H` (Pause Menu) - Hide the Pause Menu UI (good for screenshots!)
+## **Main Menu**
+- `~`: ***DEBUG****: Opens a menu to access the Chart Editor and other work-in-progress editors. Rebindable in the options menu.
+- `CTRL-ALT-SHIFT-W`: ***ALL ACCESS***: Unlocks all songs in Freeplay. Only available on debug builds.
