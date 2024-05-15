@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue where hold note would be invisible for a single frame (thanks ImCodist!)
 - Fix tween accumulation on title screen when pressing Y multiple times (thanks TheGaloXx!)
 - Fix for a game over easter egg so you don't accidentally exit it when viewing
+- Fix a crash when querying FlxG.state in the crash handler
+- Fix an issue where the Freeplay menu never displays 100% clear
+- Chart debug key now properly returns you to the previous chart editor session if you were playtesting a chart (thanks nebulazorua!)
+- Hopefully fixed Freeplay crashes on AMD gpu's
 
 ## [0.3.2] - 2024-05-03
 ### Added
