@@ -84,7 +84,9 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
         add(buttonDown = createButton(FlxG.width - 258, FlxG.height - 201, 'down', 0xFF00FFFF));
       case NONE: // do nothing
     }
+
     nextButtonRole = ACTION_BUTTON;
+
     switch (action)
     {
       case A:
@@ -123,6 +125,8 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
     }
 
     scrollFactor.set();
+
+    zIndex = 100000;
   }
 
   private function createButton(x:Float, y:Float, key:String, color:Int = 0xFFFFFF):FunkinButton
