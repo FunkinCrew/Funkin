@@ -827,6 +827,8 @@ class PlayState extends MusicBeatSubState
     {
       if (!assertChartExists()) return;
 
+      prevScrollTargets = [];
+
       dispatchEvent(new ScriptEvent(SONG_RETRY));
 
       resetCamera();
@@ -3272,8 +3274,8 @@ class PlayState extends MusicBeatSubState
     // Snap to previous event value to prevent the tween breaking when another event cancels the previous tween.
     for (i in prevScrollTargets)
     {
-      var value:Float = i[1];
-      var strum:Strumline = Reflect.getProperty(this, i[0]);
+      var value:Float = i[0];
+      var strum:Strumline = Reflect.getProperty(this, i[1]);
       strum.scrollSpeed = value;
     }
 
