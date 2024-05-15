@@ -733,8 +733,8 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
-    lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
+    lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
+    lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
 
     if (Math.isNaN(lerpScore))
     {
@@ -899,7 +899,7 @@ class FreeplayState extends MusicBeatSubState
     if (FlxG.mouse.wheel < 0)
     {
       dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
     }
     else if (FlxG.mouse.wheel > 0)
     {
