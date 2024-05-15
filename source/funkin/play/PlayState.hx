@@ -2549,12 +2549,20 @@ class PlayState extends MusicBeatSubState
     // Redirect to the chart editor playing the current song.
     if (controls.DEBUG_CHART)
     {
-      disableKeys = true;
-      persistentUpdate = false;
-      FlxG.switchState(() -> new ChartEditorState(
-        {
-          targetSongId: currentSong.id,
-        }));
+      if (isChartingMode)
+      {
+        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+        this.close(); // This only works because PlayState is a substate!
+      }
+      else
+      {
+        disableKeys = true;
+        persistentUpdate = false;
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: currentSong.id,
+          }));
+      }
     }
     #end
 
