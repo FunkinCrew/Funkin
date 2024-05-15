@@ -241,8 +241,8 @@ class FunkinPreloader extends FlxBasePreloader
     box.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 0.1);
     box.graphics.drawRoundRect(0, 0, 128, 20, 5, 5);
     box.graphics.endFill();
-    box.x = 880;
-    box.y = 440;
+    box.x = this._width - BAR_PADDING - BAR_HEIGHT - 432;
+    box.y = this._height - BAR_PADDING - BAR_HEIGHT - 244;
     addChild(box);
 
     dspText.selectable = false;
