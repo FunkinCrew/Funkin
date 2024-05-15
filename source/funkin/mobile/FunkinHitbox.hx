@@ -59,13 +59,19 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     hint.multiTouch = true;
     hint.immovable = true;
     hint.alpha = 0.00001;
-    hint.onDown = hint.onOver = function():Void {
+    hint.onDown = hint.onOver = function():Void
+    {
       onHintDown.dispatch(this, hint);
-      if (hint.alpha != 0.2) hint.alpha = 0.2;
+
+      if (hint.alpha != 0.3)
+        hint.alpha = 0.3;
     }
-    hint.onUp = hint.onOut = function():Void {
+    hint.onUp = hint.onOut = function():Void
+    {
       onHintUp.dispatch(this, hint);
-      if (hint.alpha != 0.00001) hint.alpha = 0.00001;
+
+      if (hint.alpha != 0.00001)
+        hint.alpha = 0.00001;
     }
     #if FLX_DEBUG
     hint.ignoreDrawDebug = true;
@@ -77,8 +83,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   {
     var shape:Shape = new Shape();
 
-    // Back color rectangle
-    var matrix = new Matrix();
+    // Back color rectangle with gradient
+    var matrix:Matrix = new Matrix();
     matrix.createGradientBox(width - 12, height - 12, 0, 0, 0);
     shape.graphics.beginGradientFill(RADIAL, [baseColor, baseColor], [0, 1], [60, 255], matrix, PAD, RGB, 0);
     shape.graphics.drawRect(6, 6, width - 12, height - 12);
