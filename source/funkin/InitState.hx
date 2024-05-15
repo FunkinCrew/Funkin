@@ -154,9 +154,6 @@ class InitState extends FlxState
     funkin.util.plugins.VolumePlugin.initialize();
     funkin.util.plugins.WatchPlugin.initialize();
 
-    // Disable for now
-    // funkin.util.plugins.VirtualGamepadPlugin.initialize();
-
     //
     // GAME DATA PARSING
     //
