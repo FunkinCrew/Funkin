@@ -168,7 +168,6 @@ class SustainTrail extends FlxSprite
     if (s < 0.0) s = 0.0;
 
     if (sustainLength == s) return s;
-    graphicHeight = sustainHeight(s, parentStrumline?.scrollSpeed ?? 1.0);
     this.sustainLength = s;
     triggerRedraw();
     return this.sustainLength;
@@ -176,6 +175,7 @@ class SustainTrail extends FlxSprite
 
   function triggerRedraw()
   {
+    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     updateClipping();
     updateHitbox();
   }
