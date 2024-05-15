@@ -41,17 +41,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var statusAnimations:Array<String> = ['normal', 'highlight', 'pressed'];
 
   /**
-   * Whether you can press the button simply by releasing the touch button over it (default).
-   * If false, the input has to be pressed while hovering over the button.
-   */
-  public var allowSwiping:Bool = true;
-
-  /**
-   * Whether the button can use multiple fingers on it.
-   */
-  public var multiTouch:Bool = false;
-
-  /**
    * Maximum distance a pointer can move to still trigger event handlers.
    * If it moves beyond this limit, onOut is triggered.
    * Defaults to `Math.POSITIVE_INFINITY` (i.e. no limit).
@@ -117,7 +106,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     loadDefaultGraphic();
 
-    status = multiTouch ? FunkinButton.NORMAL : FunkinButton.HIGHLIGHT;
+    status = FunkinButton.NORMAL;
 
     scrollFactor.set();
 
@@ -259,8 +248,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     }
     else if (status == FunkinButton.NORMAL)
     {
-      // Allow 'swiping' to press a button (dragging it over the button while pressed)
-      if (allowSwiping && input.pressed)
+      if (input.pressed)
       {
         onDownHandler();
       }
