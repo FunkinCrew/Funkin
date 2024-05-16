@@ -195,6 +195,7 @@ class FreeplayState extends MusicBeatSubState
       {
         var song:Song = SongRegistry.instance.fetchEntry(songId);
 
+        if (song == null) continue;
         // Only display songs which actually have available charts for the current character.
         var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
         if (availableDifficultiesForSong.length == 0) continue;
