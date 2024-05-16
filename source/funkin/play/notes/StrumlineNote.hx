@@ -35,7 +35,7 @@ class StrumlineNote extends FunkinSprite
   /**
    * How long to continue the hold note animation after a note is pressed.
    */
-  static final CONFIRM_HOLD_TIME:Float = 0.1;
+  static final CONFIRM_HOLD_TIME:Float = 0.15;
 
   /**
    * How long the hold note animation has been playing after a note is pressed.
@@ -66,13 +66,7 @@ class StrumlineNote extends FunkinSprite
 
   function onAnimationFinished(name:String):Void
   {
-    // Run a timer before we stop playing the confirm animation.
-    // On opponent, this prevent issues with hold notes.
-    // On player, this allows holding the confirm key to fall back to press.
-    if (name == 'confirm')
-    {
-      confirmHoldTimer = 0;
-    }
+    // Do nothing.
   }
 
   override function update(elapsed:Float)
@@ -138,6 +132,11 @@ class StrumlineNote extends FunkinSprite
   {
     this.active = (forceActive || isAnimationDynamic('confirm'));
     this.playAnimation('confirm', true);
+
+    // Run a timer before when we play the confirm animation.
+    // On opponent, this prevent issues with hold notes.
+    // On player, this allows holding the confirm key to fall back to press.
+    confirmHoldTimer = 0;
   }
 
   public function isConfirm():Bool
