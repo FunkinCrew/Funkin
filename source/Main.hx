@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
@@ -115,7 +114,7 @@ class Main extends Sprite
     Save.load();
 
     #if mobile
-    FlxG.signals.gameResized.add(resizeGame);
+    flixel.FlxG.signals.gameResized.add(resizeGame);
     #end
 
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
