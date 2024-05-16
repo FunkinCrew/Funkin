@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
@@ -112,6 +113,11 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
+
+    #if mobile
+    FlxG.signals.gameResized.add(resizeGame);
+    #end
+
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
@@ -126,7 +132,11 @@ class Main extends Sprite
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     #end
 
+    #if mobile
+    FlxG.game.addChild(fpsCounter);
+    #else
     addChild(fpsCounter);
+    #end
 
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
@@ -148,5 +158,17 @@ class Main extends Sprite
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
     funkin.input.Cursor.registerHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
+  }
+
+  function resizeGame(width:Int, height:Int):Void
+	{
+    // Calling this so it gets scaled based on the resolution of the game and device's resolution.
+		final scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
+
+		if (fpsCounter != null)
+			fpsCounter.scaleX = fpsCounter.scaleY = (scale > 1 ? scale : 1);
+
+		if (memoryCounter != null)
+			memoryCounter.scaleX = memoryCounter.scaleY = (scale > 1 ? scale : 1);
   }
 }
