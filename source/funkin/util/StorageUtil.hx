@@ -4,6 +4,9 @@ import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.Exception;
 import lime.utils.Assets;
+#if (target.threaded)
+import sys.thread.Mutex;
+#end
 
 using StringTools;
 
@@ -19,6 +22,10 @@ class StorageUtil
    */
   public static function copyNecessaryFiles(extensionToFolder:Map<String, String>):Void
   {
+    #if (target.threaded)
+    var copyFilesMutex:Mutex = new Mutex();
+    #end
+
     for (key => value in extensionToFolder)
     {
       for (file in Assets.list().filter(folder -> folder.startsWith(value)))
@@ -29,9 +36,17 @@ class StorageUtil
           final fileName:String = file.replace(file.substring(0, file.indexOf('/', 0) + 1), '');
           final library:String = fileName.replace(fileName.substring(fileName.indexOf('/', 0), fileName.length), '');
 
+          #if (target.threaded)
+          copyFilesMutex.acquire();
+          #end
+
           // Copy the file using library prefix if available, otherwise directly
           @:privateAccess
           copyFile(Assets.libraryPaths.exists(library) ? '$library:$file' : file, file);
+
+          #if (target.threaded)
+          copyFilesMutex.release();
+          #end
         }
       }
     }
