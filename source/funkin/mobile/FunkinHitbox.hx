@@ -1,6 +1,7 @@
 package funkin.mobile;
 
 import funkin.mobile.FunkinButton;
+import flixel.graphics.FlxGraphic;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
@@ -80,7 +81,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     return hint;
   }
 
-  private function createHintGraphic(width:Int, height:Int, baseColor:FlxColor = 0xFFFFFFFF):BitmapData
+  private function createHintGraphic(width:Int, height:Int, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
   {
     var shape:Shape = new Shape();
 
@@ -98,7 +99,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
 
     var bitmap:BitmapData = new BitmapData(width, height, true, 0);
     bitmap.draw(shape, true); // Smoothed so it looks good
-    return bitmap;
+    return FlxGraphic.fromBitmapData(bitmap, false, null, false);
   }
 
   /**
