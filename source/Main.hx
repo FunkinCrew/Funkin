@@ -160,13 +160,13 @@ class Main extends Sprite
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
   }
 
-	function resizeGame(width:Int, height:Int):Void
-	{
-		// Calling this so it gets scaled based on the resolution of the game and device's resolution.
-		final scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
+  function resizeGame(width:Int, height:Int):Void
+  {
+    // Calling this so it gets scaled based on the resolution of the game and device's resolution.
+    final scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
 
-		if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = (scale > 1 ? scale : 1);
+    if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = (scale > 1 ? scale : 1);
 
-		if (memoryCounter != null) memoryCounter.scaleX = memoryCounter.scaleY = (scale > 1 ? scale : 1);
-	}
+    if (memoryCounter != null) memoryCounter.scaleX = memoryCounter.scaleY = (scale > 1 ? scale : 1);
+  }
 }
