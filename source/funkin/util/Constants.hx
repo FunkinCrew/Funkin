@@ -61,9 +61,9 @@ class Constants
   // ==============================
 
   /**
-   * Link to buy merch for the game.
+   * Link to the Discord server of the mod.
    */
-  public static final URL_MERCH:String = 'https://needlejuicerecords.com/pages/friday-night-funkin';
+  public static final DISCORD_INV:String = 'https://discord.gg/xVxxzV7VUc';
 
   /**
    * Preloader sitelock.

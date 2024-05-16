@@ -802,7 +802,11 @@ class PlayState extends MusicBeatSubState
 	add(timeText);
 
 	if(Preferences.downscroll)
+	{
 		timeText.y = FlxG.height - 44;
+		timeBarBG.y = timeText.y + (timeText.height / 4);
+		timeBar.y = timeBarBG.y + 4;
+	}
 
 	timeText.cameras = timeBarBG.cameras = timeBar.cameras = [camHUD];
 
@@ -1045,6 +1049,7 @@ class PlayState extends MusicBeatSubState
 	  timeBar.alpha = 0;
 	  timeBarBG.alpha = 0;
 	  timeText.alpha = 0;
+	  versionText.text = currentChart.songName + ' - ' + currentDifficulty.toTitleCase() + ' | RE v0.1.0'
 	  judgementCounter.text = 'NPS: 0 (Max: 0)\nSicks: 0\nGoods: 0\nBads: 0\nShits: 0';
 
       Countdown.performCountdown(currentStageId.startsWith('school'));
