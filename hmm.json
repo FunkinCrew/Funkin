@@ -46,6 +46,13 @@
       "version": "3.5.0"
     },
     {
+      "name": "funkin.vis",
+      "type": "git",
+      "dir": null,
+      "ref": "98c9db09f0bbfedfe67a84538a5814aaef80bdea",
+      "url": "https://github.com/FunkinCrew/funkVis"
+    },
+    {
       "name": "hamcrest",
       "type": "haxelib",
       "version": "3.0.0"
