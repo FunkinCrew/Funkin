@@ -85,7 +85,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     super.graphicLoaded();
 
     setupAnimation('normal', FunkinButton.NORMAL);
-    setupAnimation('pressed', FunkinButton.PRESSED);
+    setupAnimation('pressed', FunkinButton.PRESSED - 1);
   }
 
   private function loadDefaultGraphic():Void
@@ -121,56 +121,44 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     if (visible)
     {
-      // Update the button.
-      final overlapCheck:Bool = checkTouchOverlap();
+      // Update input.
+      if (TouchUtil.overlapsComplex(this))
+      {
+        if (TouchUtil.justPressed)
+        {
+          status = FunkinButton.PRESSED;
 
-      if (input.justReleased && overlapCheck) onUpHandler();
+          input.press();
+
+          if (onDown != null) onDown();
+        }
+
+        if (TouchUtil.justReleased)
+        {
+          status = FunkinButton.NORMAL;
+
+          input.release();
+
+          if (onUp != null) onUp();
+        }
+      }
 
       // Trigger the animation only if the button's input status changes.
       if (lastStatus != status)
       {
-        animation.play(statusAnimations[status]);
+        switch (status)
+        {
+            case FunkinButton.PRESSED:
+              animation.play('pressed');
+            case FunkinButton.NORMAL:
+              animation.play('normal');
+        }
+
         lastStatus = status;
       }
     }
 
     input.update();
-  }
-
-  private function checkTouchOverlap():Bool
-  {
-    if (TouchUtil.overlapsComplex(this))
-    {
-      if (TouchUtil.justPressed) onDownHandler();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Internal function that handles the onUp event.
-   */
-  private function onUpHandler():Void
-  {
-    status = FunkinButton.NORMAL;
-
-    input.release();
-
-    if (onUp != null) onUp();
-  }
-
-  /**
-   * Internal function that handles the onDown event.
-   */
-  private function onDownHandler():Void
-  {
-    status = FunkinButton.PRESSED;
-
-    input.press();
-
-    if (onDown != null) onDown();
   }
 
   private inline function get_justReleased():Bool
