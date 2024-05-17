@@ -171,6 +171,11 @@ class Main extends Sprite
 
     if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = (scale > 1 ? scale : 1);
 
-    if (memoryCounter != null) memoryCounter.scaleX = memoryCounter.scaleY = (scale > 1 ? scale : 1);
+    if (memoryCounter != null)
+    {
+      memoryCounter.scaleX = memoryCounter.scaleY = (scale > 1 ? scale : 1);
+
+      memoryCounter.y = 13 * memoryCounter.scaleY;
+    }
   }
 }
