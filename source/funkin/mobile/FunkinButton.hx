@@ -1,9 +1,21 @@
 package funkin.mobile;
 
 import funkin.graphics.FunkinSprite;
-import funkin.util.TouchUtil;
+import flixel.input.touch.FlxTouch;
 import flixel.input.FlxInput;
+import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
+import flixel.math.FlxPoint;
+import flixel.util.FlxDestroyUtil;
+import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.FlxSprite;
+
+enum abstract FunkinButtonStatus(Int) from Int to Int
+{
+  var NORMAL = 0;
+  var PRESSED = 1;  
+}
 
 /**
  * A simple button class that calls a function when touched.
@@ -14,25 +26,9 @@ import flixel.input.IFlxInput;
 class FunkinButton extends FunkinSprite implements IFlxInput
 {
   /**
-   * Used with public variable status, means not pressed.
-   */
-  public static inline var NORMAL:Int = 0;
-
-  /**
-   * Used with public variable status, means pressed (usually from touch click).
-   */
-  public static inline var PRESSED:Int = 2;
-
-  /**
-   * What animation should be played for each status.
-   * Default is ['normal', 'pressed'].
-   */
-  public var statusAnimations:Array<String> = ['normal', 'pressed'];
-
-  /**
    * Shows the current state of the button, either `FunkinButton.NORMAL` or `FunkinButton.PRESSED`.
    */
-  public var status:Int;
+  public var status:FunkinButtonStatus;
 
   /**
    * The properties of this button's `onUp` callback.
@@ -44,12 +40,23 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   public var onDown:Void->Void;
 
+  /**
+   * The properties of this button's `onOver` callback.
+   */
+  public var onOver:Void->Void;
+
+  /**
+   * The properties of this button's `onOut` callback.
+   */
+  public var onOut:Void->Void;
+
   public var justReleased(get, never):Bool;
   public var released(get, never):Bool;
   public var pressed(get, never):Bool;
   public var justPressed(get, never):Bool;
 
   public var role:ButtonRole;
+
   public var tag:String;
 
   /**
@@ -57,7 +64,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   var input:FlxInput<Int>;
 
-  var lastStatus:Int = -1;
+  /**
+   * The input currently pressing this button, if none, it's `null`. Needed to check for its release.
+   */
+  var currentInput:IFlxInput;
 
   /**
    * Creates a new `FunkinButton` object with a gray background.
@@ -69,35 +79,13 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     super(X, Y);
 
-    loadDefaultGraphic();
-
-    status = FunkinButton.NORMAL;
+    status = FunkinButtonStatus.NORMAL;
 
     scrollFactor.set();
 
     input = new FlxInput(0);
 
     this.role = role;
-  }
-
-  public override function graphicLoaded():Void
-  {
-    super.graphicLoaded();
-
-    setupAnimation('normal', FunkinButton.NORMAL);
-    setupAnimation('pressed', FunkinButton.PRESSED - 1);
-  }
-
-  private function loadDefaultGraphic():Void
-  {
-    loadGraphic('flixel/images/ui/button.png', true, 80, 20);
-  }
-
-  private function setupAnimation(animationName:String, frameIndex:Int):Void
-  {
-    // make sure the animation doesn't contain an invalid frame
-    frameIndex = Std.int(Math.min(frameIndex, #if (flixel < "5.3.0") animation.frames #else animation.numFrames #end - 1));
-    animation.add(animationName, [frameIndex]);
   }
 
   /**
@@ -107,6 +95,9 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     onUp = null;
     onDown = null;
+    onOver = null;
+    onOut = null;
+    currentInput = null;
     input = null;
 
     super.destroy();
@@ -119,58 +110,122 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     super.update(elapsed);
 
-    if (visible)
+    #if FLX_POINTER_INPUT
+    // Update the button, but only if at least either touches are enabled
+    if (visible) updateButton();
+    #end
+
+    input.update();
+  }
+
+  /**
+   * Basic button update logic - searches for overlaps with touches and
+   * the touch and calls `updateStatus()`.
+   */
+  private function updateButton():Void
+  {
+    final overlapFound:Bool = checkTouchOverlap();
+
+    if (currentInput != null && currentInput.justReleased && overlapFound) onUpHandler();
+
+    if (status != FunkinButtonStatus.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased))) onOutHandler();
+  }
+
+  private function checkTouchOverlap():Bool
+  {
+    for (camera in cameras)
     {
-      // Update input.
-      final touchOverlaps:Bool = TouchUtil.overlapsComplex(this);
-
-      if (touchOverlaps)
+      for (touch in FlxG.touches.list)
       {
-        // TODO: Recheck this?
-        if (TouchUtil.pressed)
-        {
-          status = FunkinButton.PRESSED;
-
-          if (TouchUtil.justPressed)
-            input.press();
-
-          if (onDown != null) onDown();
-        }
-
-        if (TouchUtil.justReleased)
-        {
-          status = FunkinButton.NORMAL;
-
-          input.release();
-
-          if (onUp != null) onUp();
-        }
-      }
-      else if (status != FunkinButton.NORMAL && TouchUtil.justReleased)
-      {
-          status = FunkinButton.NORMAL;
-
-          input.release();
-
-          if (onUp != null) onUp();
-      }
-
-      // Trigger the animation only if the button's input status changes.
-      if (lastStatus != status)
-      {
-        switch (status)
-        {
-            case FunkinButton.PRESSED:
-              animation.play('pressed');
-            case FunkinButton.NORMAL:
-              animation.play('normal');
-        }
-
-        lastStatus = status;
+        if (checkInput(touch, touch, touch.justPressedPosition, camera)) return true;
       }
     }
 
-    input.update();
+    return false;
+  }
+
+  private function checkInput(pointer:FlxPointer, input:IFlxInput, justPressedPosition:FlxPoint, camera:FlxCamera):Bool
+  {
+    if (overlapsPoint(pointer.getWorldPosition(camera, _point), true, camera))
+    {
+      updateStatus(input);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Updates the button status by calling the respective event handler function.
+   */
+  private function updateStatus(input:IFlxInput):Void
+  {
+    if (input.justPressed)
+    {
+      currentInput = input;
+
+      onDownHandler();
+    }
+    else if (status == FunkinButtonStatus.NORMAL)
+    {
+      if (input.pressed)
+      {
+        onDownHandler();
+      }
+      else
+      {
+        onOverHandler();
+      }
+    }
+  }
+
+  /**
+   * Internal function that handles the onUp event.
+   */
+  private function onUpHandler():Void
+  {
+    status = FunkinButtonStatus.NORMAL;
+
+    input.release();
+
+    currentInput = null;
+
+    if (onUp != null) onUp();
+  }
+
+  /**
+   * Internal function that handles the onDown event.
+   */
+  private function onDownHandler():Void
+  {
+    status = FunkinButtonStatus.PRESSED;
+
+    input.press();
+
+    if (onDown != null) onDown();
+  }
+
+  /**
+   * Internal function that handles the onOver event.
+   */
+  private function onOverHandler():Void
+  {
+    status = FunkinButtonStatus.NORMAL;
+
+    if (onOver != null) onOver();
+  }
+
+  /**
+   * Internal function that handles the onOut event.
+   */
+  private function onOutHandler():Void
+  {
+    status = FunkinButtonStatus.NORMAL;
+
+    input.release();
+
+    if (onOut != null) onOut();
   }
 
   private inline function get_justReleased():Bool
