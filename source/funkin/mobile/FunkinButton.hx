@@ -1,15 +1,13 @@
 package funkin.mobile;
 
 import funkin.graphics.FunkinSprite;
-import flixel.input.touch.FlxTouch;
+import funkin.util.TouchUtil;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
 import flixel.math.FlxPoint;
-import flixel.util.FlxDestroyUtil;
 import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.FlxSprite;
 
 /**
  * A simple button class that calls a function when touched.
@@ -20,14 +18,9 @@ import flixel.FlxSprite;
 class FunkinButton extends FunkinSprite implements IFlxInput
 {
   /**
-   * Used with public variable status, means not highlighted or pressed.
+   * Used with public variable status, means not pressed.
    */
   public static inline var NORMAL:Int = 0;
-
-  /**
-   * Used with public variable status, means highlighted (usually from touch over).
-   */
-  public static inline var HIGHLIGHT:Int = 1;
 
   /**
    * Used with public variable status, means pressed (usually from touch click).
@@ -36,20 +29,12 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
   /**
    * What animation should be played for each status.
-   * Default is ['normal', 'highlight', 'pressed'].
+   * Default is ['normal', 'pressed'].
    */
-  public var statusAnimations:Array<String> = ['normal', 'highlight', 'pressed'];
+  public var statusAnimations:Array<String> = ['normal', 'pressed'];
 
   /**
-   * Maximum distance a pointer can move to still trigger event handlers.
-   *
-   * Defaults to `Math.POSITIVE_INFINITY` (i.e. no limit).
-   */
-  public var maxInputMovement:Float = Math.POSITIVE_INFINITY;
-
-  /**
-   * Shows the current state of the button, either `FunkinButton.NORMAL`,
-   * `FunkinButton.HIGHLIGHT` or `FunkinButton.PRESSED`.
+   * Shows the current state of the button, either `FunkinButton.NORMAL` or `FunkinButton.PRESSED`.
    */
   public var status:Int;
 
@@ -100,8 +85,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     scrollFactor.set();
 
-    statusAnimations[FunkinButton.HIGHLIGHT] = 'normal';
-
     input = new FlxInput(0);
 
     this.role = role;
@@ -112,7 +95,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     super.graphicLoaded();
 
     setupAnimation('normal', FunkinButton.NORMAL);
-    setupAnimation('highlight', FunkinButton.HIGHLIGHT);
     setupAnimation('pressed', FunkinButton.PRESSED);
   }
 
@@ -159,7 +141,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
       if (lastStatus != status)
       {
         updateStatusAnimation();
-
         lastStatus = status;
       }
     }
@@ -178,35 +159,17 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   private function updateButton():Void
   {
-    if (currentInput != null && currentInput.justReleased && checkTouchOverlap())
+    final overlapFound:Bool = checkTouchOverlap();
+
+    if (currentInput != null && currentInput.justReleased && overlapFound)
+    {
       onUpHandler();
+    }
   }
 
   private function checkTouchOverlap():Bool
   {
-    for (camera in cameras)
-    {
-      for (touch in FlxG.touches.list)
-      {
-        if (checkInput(touch, touch, touch.justPressedPosition, camera))
-        {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  private function checkInput(pointer:FlxPointer, input:IFlxInput, justPressedPosition:FlxPoint, camera:FlxCamera):Bool
-  {
-    if (maxInputMovement != Math.POSITIVE_INFINITY
-      && justPressedPosition.distanceTo(pointer.getScreenPosition(FlxPoint.weak())) > maxInputMovement
-      && input == currentInput)
-    {
-      currentInput = null;
-    }
-    else if (overlapsPoint(pointer.getWorldPosition(camera, _point), true, camera))
+    if (TouchUtil.overlapsComplex(this))
     {
       updateStatus(input);
 
@@ -227,7 +190,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       onDownHandler();
     }
-    else if (status == FunkinButton.NORMAL && input.pressed) onDownHandler();
   }
 
   /**
