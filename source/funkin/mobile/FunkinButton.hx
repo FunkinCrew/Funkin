@@ -126,7 +126,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       if (touchOverlaps)
       {
-        if (TouchUtil.justPressed || (status == FunkinButton.NORMAL && TouchUtil.pressed))
+        // TODO: Recheck this?
+        if (TouchUtil.justPressed || TouchUtil.pressed || status == FunkinButton.NORMAL)
         {
           status = FunkinButton.PRESSED;
 
@@ -144,7 +145,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
           if (onUp != null) onUp();
         }
       }
-      else if (status != FunkinButton.NORMAL && TouchUtil.justReleased)
+      else if (status != FunkinButton.NORMAL || TouchUtil.justReleased)
       {
           status = FunkinButton.NORMAL;
 
