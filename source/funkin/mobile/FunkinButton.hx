@@ -57,8 +57,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
   public var role:ButtonRole;
 
-  public var tag:String;
-
   /**
    * We don't need an ID here, so let's just use `Int` as the type.
    */
