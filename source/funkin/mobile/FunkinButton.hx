@@ -3,11 +3,7 @@ package funkin.mobile;
 import funkin.graphics.FunkinSprite;
 import funkin.util.TouchUtil;
 import flixel.input.FlxInput;
-import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
-import flixel.math.FlxPoint;
-import flixel.FlxCamera;
-import flixel.FlxG;
 
 /**
  * A simple button class that calls a function when touched.
@@ -54,7 +50,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var justPressed(get, never):Bool;
 
   public var role:ButtonRole;
-
   public var tag:String;
 
   /**
