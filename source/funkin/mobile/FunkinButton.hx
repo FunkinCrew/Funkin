@@ -122,9 +122,11 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     if (visible)
     {
       // Update input.
-      if (TouchUtil.overlapsComplex(this))
+      final touchOverlaps:Bool = TouchUtil.overlapsComplex(this);
+
+      if (touchOverlaps)
       {
-        if (TouchUtil.justPressed)
+        if (TouchUtil.justPressed || (status == FunkinButton.NORMAL && TouchUtil.pressed))
         {
           status = FunkinButton.PRESSED;
 
@@ -141,6 +143,14 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
           if (onUp != null) onUp();
         }
+      }
+      else if (status != FunkinButton.NORMAL && TouchUtil.justReleased)
+      {
+          status = FunkinButton.NORMAL;
+
+          input.release();
+
+          if (onUp != null) onUp();
       }
 
       // Trigger the animation only if the button's input status changes.
