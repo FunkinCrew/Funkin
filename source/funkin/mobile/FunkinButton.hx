@@ -132,17 +132,12 @@ class FunkinButton extends FunkinSprite implements IFlxInput
       // Trigger the animation only if the button's input status changes.
       if (lastStatus != status)
       {
-        updateStatusAnimation();
+        animation.play(statusAnimations[status]);
         lastStatus = status;
       }
     }
 
     input.update();
-  }
-
-  private function updateStatusAnimation():Void
-  {
-    animation.play(statusAnimations[status]);
   }
 
   private function checkTouchOverlap():Bool
