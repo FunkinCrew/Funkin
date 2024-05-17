@@ -134,10 +134,12 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
     var graphic:FlxGraphic = FlxG.bitmap.add('assets/vpad/$key.png');
 
     var button:FunkinButton = new FunkinButton(x, y, nextButtonRole);
-    button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.weak(Std.int(graphic.width / 3), graphic.height));
+    button.loadGraphic(graphic, true, Std.int(graphic.width / 3), graphic.height);
+    button.animation.add('normal', [0], 0, false);
+    button.animation.add('pressed', [2], 0, false);
+    button.animation.play('normal');
     button.solid = false;
     button.immovable = true;
-    button.scrollFactor.set();
     button.color = color;
     button.alpha = 0.4;
     button.tag = key.toUpperCase();
