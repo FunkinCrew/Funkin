@@ -211,7 +211,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   private function onOverHandler():Void
   {
-    status = FunkinButtonStatus.NORMAL;
+    status = FunkinButtonStatus.PRESSED;
 
     if (onOver != null) onOver();
   }
