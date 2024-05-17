@@ -122,7 +122,9 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     if (visible)
     {
       // Update the button.
-      if (input.justReleased && checkTouchOverlap()) onUpHandler();
+      final overlapCheck:Bool = checkTouchOverlap();
+
+      if (input.justReleased && overlapCheck) onUpHandler();
 
       // Trigger the animation only if the button's input status changes.
       if (lastStatus != status)
