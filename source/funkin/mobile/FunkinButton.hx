@@ -62,11 +62,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   var input:FlxInput<Int>;
 
-  /**
-   * The input currently pressing this button, if none, it's `null`. Needed to check for its release.
-   */
-  var currentInput:IFlxInput;
-
   var lastStatus:Int = -1;
 
   /**
@@ -117,7 +112,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     onUp = null;
     onDown = null;
-    currentInput = null;
     input = null;
 
     super.destroy();
@@ -161,32 +155,19 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     final overlapFound:Bool = checkTouchOverlap();
 
-    if (currentInput != null && currentInput.justReleased && overlapFound) onUpHandler();
+    if (input.justReleased && overlapFound) onUpHandler();
   }
 
   private function checkTouchOverlap():Bool
   {
     if (TouchUtil.overlapsComplex(this))
     {
-      updateStatus(input);
+      if (input.justPressed) onDownHandler();
 
       return true;
     }
 
     return false;
-  }
-
-  /**
-   * Updates the button status by calling the respective event handler function.
-   */
-  private function updateStatus(input:IFlxInput):Void
-  {
-    if (input.justPressed)
-    {
-      currentInput = input;
-
-      onDownHandler();
-    }
   }
 
   /**
@@ -197,8 +178,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     status = FunkinButton.NORMAL;
 
     input.release();
-
-    currentInput = null;
 
     if (onUp != null) onUp();
   }
