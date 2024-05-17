@@ -141,7 +141,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     if (TouchUtil.overlapsComplex(this))
     {
-      if (input.justPressed) onDownHandler();
+      if (TouchUtil.justPressed) onDownHandler();
 
       return true;
     }
