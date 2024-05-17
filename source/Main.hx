@@ -175,7 +175,7 @@ class Main extends Sprite
     {
       memoryCounter.scaleX = memoryCounter.scaleY = (scale > 1 ? scale : 1);
 
-      memoryCounter.y = 13 * (scale > 1 ? scale : 1);;
+      memoryCounter.y = 13 * (scale > 1 ? scale : 1);
     }
   }
 }
