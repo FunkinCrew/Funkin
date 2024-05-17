@@ -42,7 +42,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
   /**
    * Maximum distance a pointer can move to still trigger event handlers.
-   * If it moves beyond this limit, onOut is triggered.
+   *
    * Defaults to `Math.POSITIVE_INFINITY` (i.e. no limit).
    */
   public var maxInputMovement:Float = Math.POSITIVE_INFINITY;
@@ -62,16 +62,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * The properties of this button's `onDown` callback.
    */
   public var onDown:Void->Void;
-
-  /**
-   * The properties of this button's `onOver` callback.
-   */
-  public var onOver:Void->Void;
-
-  /**
-   * The properties of this button's `onOut` callback.
-   */
-  public var onOut:Void->Void;
 
   public var justReleased(get, never):Bool;
   public var released(get, never):Bool;
@@ -145,8 +135,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     onUp = null;
     onDown = null;
-    onOver = null;
-    onOut = null;
     currentInput = null;
     input = null;
 
@@ -171,6 +159,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
       if (lastStatus != status)
       {
         updateStatusAnimation();
+
         lastStatus = status;
       }
     }
@@ -189,17 +178,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   private function updateButton():Void
   {
-    final overlapFound:Bool = checkTouchOverlap();
-
-    if (currentInput != null && currentInput.justReleased && overlapFound)
-    {
+    if (currentInput != null && currentInput.justReleased && checkTouchOverlap())
       onUpHandler();
-    }
-
-    if (status != FunkinButton.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased)))
-    {
-      onOutHandler();
-    }
   }
 
   private function checkTouchOverlap():Bool
@@ -244,19 +224,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     if (input.justPressed)
     {
       currentInput = input;
+
       onDownHandler();
     }
-    else if (status == FunkinButton.NORMAL)
-    {
-      if (input.pressed)
-      {
-        onDownHandler();
-      }
-      else
-      {
-        onOverHandler();
-      }
-    }
+    else if (status == FunkinButton.NORMAL && input.pressed) onDownHandler();
   }
 
   /**
@@ -270,10 +241,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     currentInput = null;
 
-    if (onUp != null)
-    {
-      onUp();
-    }
+    if (onUp != null) onUp();
   }
 
   /**
@@ -285,38 +253,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     input.press();
 
-    if (onDown != null)
-    {
-      onDown();
-    }
-  }
-
-  /**
-   * Internal function that handles the onOver event.
-   */
-  private function onOverHandler():Void
-  {
-    status = FunkinButton.HIGHLIGHT;
-
-    if (onOver != null)
-    {
-      onOver();
-    }
-  }
-
-  /**
-   * Internal function that handles the onOut event.
-   */
-  private function onOutHandler():Void
-  {
-    status = FunkinButton.NORMAL;
-
-    input.release();
-
-    if (onOut != null)
-    {
-      onOut();
-    }
+    if (onDown != null) onDown();
   }
 
   private inline function get_justReleased():Bool
