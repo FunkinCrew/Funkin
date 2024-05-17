@@ -161,10 +161,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     final overlapFound:Bool = checkTouchOverlap();
 
-    if (currentInput != null && currentInput.justReleased && overlapFound)
-    {
-      onUpHandler();
-    }
+    if (currentInput != null && currentInput.justReleased && overlapFound) onUpHandler();
   }
 
   private function checkTouchOverlap():Bool
