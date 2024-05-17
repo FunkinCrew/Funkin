@@ -126,10 +126,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     if (visible)
     {
-      // Update the button, but only if at least either touches are enabled
-      #if FLX_POINTER_INPUT
-      updateButton();
-      #end
+      // Update the button.
+      if (input.justReleased && checkTouchOverlap()) onUpHandler();
 
       // Trigger the animation only if the button's input status changes.
       if (lastStatus != status)
@@ -145,17 +143,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   private function updateStatusAnimation():Void
   {
     animation.play(statusAnimations[status]);
-  }
-
-  /**
-   * Basic button update logic - searches for overlaps with touches and
-   * the touch and calls `updateStatus()`.
-   */
-  private function updateButton():Void
-  {
-    final overlapFound:Bool = checkTouchOverlap();
-
-    if (input.justReleased && overlapFound) onUpHandler();
   }
 
   private function checkTouchOverlap():Bool
