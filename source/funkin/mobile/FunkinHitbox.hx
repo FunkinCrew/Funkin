@@ -7,9 +7,9 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import flixel.FlxG;
-import openfl.geom.Matrix;
 import openfl.display.Shape;
 import openfl.display.BitmapData;
+import openfl.geom.Matrix;
 
 /**
  * A zone with 4 buttons (A hitbox).
