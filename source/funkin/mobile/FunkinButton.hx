@@ -10,6 +10,7 @@ import flixel.util.FlxDestroyUtil;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.util.FlxSignal;
 
 /**
  * Enum representing the status of the button.
@@ -17,7 +18,7 @@ import flixel.FlxSprite;
 enum abstract FunkinButtonStatus(Int) from Int to Int
 {
   var NORMAL = 0;
-  var PRESSED = 1;  
+  var PRESSED = 1;
 }
 
 /**
@@ -56,11 +57,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * The callback function to call when the button is pressed down.
    */
   public var onDown(default, null):FlxSignal = new FlxSignal();
-
-  /**
-   * The callback function to call when the button is hovered over.
-   */
-  public var onOver(default, null):FlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is no longer hovered over.
@@ -105,7 +101,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * @param Y The y position of the button.
    * @param role The role of the button.
    */
-  public function new(X:Float = 0, Y:Float = 0, role:FunkinButtonRole):Void
+  public function new(X:Float = 0, Y:Float = 0, ?role:FunkinButtonRole):Void
   {
     super(X, Y);
 
@@ -190,10 +186,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
       {
         onDownHandler();
       }
-      else
-      {
-        onOverHandler();
-      }
     }
   }
 
@@ -215,13 +207,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     input.press();
 
     onDown.dispatch();
-  }
-
-  private function onOverHandler():Void
-  {
-    status = FunkinButtonStatus.NORMAL;
-
-    onOver.dispatch();
   }
 
   private function onOutHandler():Void

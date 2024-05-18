@@ -540,6 +540,7 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
+    #if mobile
     addVirtualPad(UP_DOWN, A_B_C);
     virtualPad.forEachAlive((button) -> {
       switch (button.role)
@@ -554,6 +555,7 @@ class FreeplayState extends MusicBeatSubState
           FlxTween.tween(button, {y: baseY}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
       }
     });
+    #end
 
     forEach(function(bs) {
       bs.cameras = [funnyCam];
@@ -969,6 +971,7 @@ class FreeplayState extends MusicBeatSubState
 
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
+      #if mobile
       virtualPad.forEachAlive((button) -> {
         switch (button.role)
         {
@@ -978,6 +981,7 @@ class FreeplayState extends MusicBeatSubState
             FlxTween.tween(button, {y: button.y + button.height}, FlxG.random.float(0.3, 0.55), {ease: FlxEase.quartInOut});
         }
       });
+      #end
 
       var longestTimer:Float = 0;
 

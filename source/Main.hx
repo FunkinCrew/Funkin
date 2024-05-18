@@ -39,9 +39,8 @@ class Main extends Sprite
     #if android
     // Set the current working directory for Android devices
     // Determine the appropriate directory based on Android version
-    Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ?
-        android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
-        android.content.Context.getExternalFilesDir()  // Use External Files directory for Android SDK version < 30
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
+      android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
     ));
     #end
 
@@ -124,7 +123,7 @@ class Main extends Sprite
 
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
 
-    // FlxG.game._customSoundTray wants just the class, it calls new from
+    // flixel.FlxG.game._customSoundTray wants just the class, it calls new from
     // create() in there, which gets called when it's added to stage
     // which is why it needs to be added before addChild(game) here
     @:privateAccess
@@ -137,7 +136,7 @@ class Main extends Sprite
     #end
 
     #if mobile
-    FlxG.game.addChild(fpsCounter);
+    flixel.FlxG.game.addChild(fpsCounter);
     #else
     addChild(fpsCounter);
     #end
@@ -167,7 +166,7 @@ class Main extends Sprite
   function resizeGame(width:Int, height:Int):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
-    final scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
+    final scale:Float = Math.min(flixel.FlxG.stage.stageWidth / flixel.FlxG.width, flixel.FlxG.stage.stageHeight / flixel.FlxG.height);
 
     if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = (scale > 1 ? scale : 1);
 

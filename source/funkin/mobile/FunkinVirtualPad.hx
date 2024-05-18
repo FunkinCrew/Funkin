@@ -140,7 +140,6 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
     button.color = color;
     button.alpha = 0.4;
     button.onDown.add(button.animation.play.bind('pressed'));
-    button.onOver.add(button.animation.play.bind('normal'));
     button.onUp.add(button.animation.play.bind('normal'));
     button.onOut.add(button.animation.play.bind('normal'));
     #if FLX_DEBUG
@@ -161,8 +160,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
       {
         var button:Dynamic = Reflect.field(this, field);
 
-        if (button is FunkinButton)
-          Reflect.setField(this, field, FlxDestroyUtil.destroy(button));
+        if (button is FunkinButton) Reflect.setField(this, field, FlxDestroyUtil.destroy(button));
       }
     }
 
