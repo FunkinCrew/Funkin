@@ -8,6 +8,9 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
 
+/**
+ * Enum for different direction modes.
+ */
 enum FunkinDPadMode
 {
   UP_DOWN;
@@ -18,6 +21,9 @@ enum FunkinDPadMode
   NONE;
 }
 
+/**
+ * Enum for different action modes.
+ */
 enum FunkinActionMode
 {
   A;
@@ -37,16 +43,54 @@ enum FunkinActionMode
  */
 class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
 {
+  /**
+   * The left directional button.
+   */
   public var buttonLeft:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The up directional button.
+   */
   public var buttonUp:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The right directional button.
+   */
   public var buttonRight:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The down directional button.
+   */
   public var buttonDown:FunkinButton = new FunkinButton(0, 0);
 
+  /**
+   * The A action button.
+   */
   public var buttonA:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The B action button.
+   */
   public var buttonB:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The C action button.
+   */
   public var buttonC:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The X action button.
+   */
   public var buttonX:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The Y action button.
+   */
   public var buttonY:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The Z action button.
+   */
   public var buttonZ:FunkinButton = new FunkinButton(0, 0);
 
   /**
@@ -153,7 +197,6 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
    */
   override public function destroy():Void
   {
-    // Is this intensive?
     for (field in Reflect.fields(this))
     {
       if (field != null)
