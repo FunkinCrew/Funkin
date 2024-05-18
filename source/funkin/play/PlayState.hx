@@ -1099,8 +1099,11 @@ class PlayState extends MusicBeatSubState
 
     healthBar.value = healthLerp;
 
-    iconP1.updatePosition();
-    iconP2.updatePosition();
+    if (!isMinimalMode)
+    {
+      iconP1.updatePosition();
+      iconP2.updatePosition();
+    }
 
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
