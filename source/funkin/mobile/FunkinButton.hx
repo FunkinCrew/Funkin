@@ -50,22 +50,22 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   /**
    * The callback function to call when the button is released.
    */
-  public var onUp(default, null):IFlxSignal = new FlxSignal();
+  public var onUp(default, null):FlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is pressed down.
    */
-  public var onDown(default, null):IFlxSignal = new FlxSignal();
+  public var onDown(default, null):FlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is hovered over.
    */
-  public var onOver(default, null):IFlxSignal = new FlxSignal();
+  public var onOver(default, null):FlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is no longer hovered over.
    */
-  public var onOut(default, null):IFlxSignal = new FlxSignal();
+  public var onOut(default, null):FlxSignal = new FlxSignal();
 
   /**
    * Whether the button was just released.
@@ -123,10 +123,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   public override function destroy():Void
   {
-    onUp = FlxDestroyUtil.destroy(onUp);
-    onDown = FlxDestroyUtil.destroy(onDown);
-    onOver = FlxDestroyUtil.destroy(onOver);
-    onOut = FlxDestroyUtil.destroy(onOut);
     currentInput = null;
     input = null;
 
