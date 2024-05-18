@@ -7,7 +7,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
@@ -703,16 +702,7 @@ class FreeplayState extends MusicBeatSubState
     return songsToFilter;
   }
 
-  var touchY:Float = 0;
-  var touchX:Float = 0;
-  var dxTouch:Float = 0;
-  var dyTouch:Float = 0;
-  var velTouch:Float = 0;
-
   var veloctiyLoopShit:Float = 0;
-  var touchTimer:Float = 0;
-
-  var initTouchPos:FlxPoint = new FlxPoint();
 
   var spamTimer:Float = 0;
   var spamming:Bool = false;
@@ -794,75 +784,6 @@ class FreeplayState extends MusicBeatSubState
     var upP:Bool = controls.UI_UP_P && !FlxG.keys.pressed.CONTROL;
     var downP:Bool = controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL;
     var accepted:Bool = controls.ACCEPT && !FlxG.keys.pressed.CONTROL;
-
-    if (FlxG.onMobile)
-    {
-      for (touch in FlxG.touches.list)
-      {
-        if (touch.justPressed)
-        {
-          initTouchPos.set(touch.screenX, touch.screenY);
-        }
-        if (touch.pressed)
-        {
-          var dx:Float = initTouchPos.x - touch.screenX;
-          var dy:Float = initTouchPos.y - touch.screenY;
-
-          var angle:Float = Math.atan2(dy, dx);
-          var length:Float = Math.sqrt(dx * dx + dy * dy);
-
-          FlxG.watch.addQuick('LENGTH', length);
-          FlxG.watch.addQuick('ANGLE', Math.round(FlxAngle.asDegrees(angle)));
-        }
-      }
-
-      // HELP WHY DOSEN'T THIS USE FLXWIPE!?!?!?!
-      if (FlxG.touches.getFirst() != null)
-      {
-        if (touchTimer >= 1.5) accepted = true;
-
-        touchTimer += elapsed;
-        var touch:FlxTouch = FlxG.touches.getFirst();
-
-        velTouch = Math.abs((touch.screenY - dyTouch)) / 50;
-
-        dyTouch = touch.screenY - touchY;
-        dxTouch = touch.screenX - touchX;
-
-        if (touch.justPressed)
-        {
-          touchY = touch.screenY;
-          dyTouch = 0;
-          velTouch = 0;
-
-          touchX = touch.screenX;
-          dxTouch = 0;
-        }
-
-        /*
-          if (Math.abs(dxTouch) >= 100)
-          {
-            touchX = touch.screenX;
-            if (dxTouch != 0) dxTouch < 0 ? changeDiff(1) : changeDiff(-1);
-          }
-
-          if (Math.abs(dyTouch) >= 100)
-          {
-            touchY = touch.screenY;
-
-            if (dyTouch != 0) dyTouch < 0 ? changeSelection(1) : changeSelection(-1);
-          }
-         */
-      }
-      else
-      {
-        touchTimer = 0;
-      }
-    }
-
-    #if mobile
-    // if (TouchUtil.justPressed && TouchUtil.overlaps(grpCapsules.members[curSelected], funnyCam)) accepted = true;
-    #end
 
     if (!FlxG.keys.pressed.CONTROL && (controls.UI_UP || controls.UI_DOWN))
     {
@@ -1056,8 +977,6 @@ class FreeplayState extends MusicBeatSubState
 
   function changeDiff(change:Int = 0, force:Bool = false):Void
   {
-    touchTimer = 0;
-
     var currentDifficultyIndex:Int = diffIdsCurrent.indexOf(currentDifficulty);
 
     if (currentDifficultyIndex == -1) currentDifficultyIndex = diffIdsCurrent.indexOf(Constants.DEFAULT_DIFFICULTY);

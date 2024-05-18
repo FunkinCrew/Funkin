@@ -3,7 +3,6 @@ package funkin.play;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.input.touch.FlxTouch;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
@@ -225,21 +224,6 @@ class GameOverSubState extends MusicBeatSubState
     //
     // Handle user inputs.
     //
-
-    // MOBILE ONLY: Restart the level when tapping Boyfriend.
-    /*
-      if (FlxG.onMobile)
-      {
-        var touch:FlxTouch = FlxG.touches.getFirst();
-        if (touch != null)
-        {
-          if (boyfriend == null || touch.overlaps(boyfriend))
-          {
-            confirmDeath();
-          }
-        }
-      }
-     */
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
     if (controls.ACCEPT && blueballed)
