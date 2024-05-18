@@ -55,7 +55,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
 
   /**
    * The right directional button.
-   */Direction
+   */
   public var buttonRight:FunkinButton = new FunkinButton(0, 0);
 
   /**
@@ -96,8 +96,8 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
   /**
    * Create a virtual gamepad.
    *
-   * @param direction The directional mode. `LEFT_FULL` for example.
-   * @param action The action buttons mode. `A_B_C` for example.
+   * @param direction The directional mode.
+   * @param action The action buttons mode.
    */
   public function new(direction:FunkinDirectionalMode = LEFT_FULL, action:FunkinActionMode = A_B_C):Void
   {
