@@ -50,22 +50,22 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   /**
    * The callback function to call when the button is released.
    */
-  public var onUp:Void->Void;
+  public var onUp:FlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is pressed down.
    */
-  public var onDown:Void->Void;
+  public var onDown:FlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is hovered over.
    */
-  public var onOver:Void->Void;
+  public var onOver:FlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is no longer hovered over.
    */
-  public var onOut:Void->Void;
+  public var onOut:FlxSignal = new FlxSignal();
 
   /**
    * Whether the button was just released.
@@ -123,10 +123,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   public override function destroy():Void
   {
-    onUp = null;
-    onDown = null;
-    onOver = null;
-    onOut = null;
+    onUp = FlxDestroyUtil.destroy(onUp);
+    onDown = FlxDestroyUtil.destroy(onDown);
+    onOver = FlxDestroyUtil.destroy(onOver);
+    onOut = FlxDestroyUtil.destroy(onOut);
     currentInput = null;
     input = null;
 
@@ -209,7 +209,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     currentInput = null;
 
-    if (onUp != null) onUp();
+    onUp.dispatch();
   }
 
   private function onDownHandler():Void
@@ -218,14 +218,14 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     input.press();
 
-    if (onDown != null) onDown();
+    onDown.dispatch();
   }
 
   private function onOverHandler():Void
   {
-    status = FunkinButtonStatus.PRESSED;
+    status = FunkinButtonStatus.NORMAL;
 
-    if (onOver != null) onOver();
+    onOver.dispatch();
   }
 
   private function onOutHandler():Void
@@ -234,7 +234,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     input.release();
 
-    if (onOut != null) onOut();
+    onOut.dispatch();
   }
 
   private inline function get_justReleased():Bool
