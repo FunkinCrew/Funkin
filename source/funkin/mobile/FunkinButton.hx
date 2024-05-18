@@ -11,6 +11,9 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
+/**
+ * Enum representing the status of the button.
+ */
 enum abstract FunkinButtonStatus(Int) from Int to Int
 {
   var NORMAL = 0;
@@ -26,44 +29,63 @@ enum abstract FunkinButtonStatus(Int) from Int to Int
 class FunkinButton extends FunkinSprite implements IFlxInput
 {
   /**
-   * Shows the current state of the button, either `FunkinButton.NORMAL` or `FunkinButton.PRESSED`.
+   * The current state of the button, either `FunkinButtonStatus.NORMAL` or `FunkinButtonStatus.PRESSED`.
    */
   public var status:FunkinButtonStatus;
 
   /**
-   * The properties of this button's `onUp` callback.
+   * The callback function to call when the button is released.
    */
   public var onUp:Void->Void;
 
   /**
-   * The properties of this button's `onDown` callback.
+   * The callback function to call when the button is pressed down.
    */
   public var onDown:Void->Void;
 
   /**
-   * The properties of this button's `onOver` callback.
+   * The callback function to call when the button is hovered over.
    */
   public var onOver:Void->Void;
 
   /**
-   * The properties of this button's `onOut` callback.
+   * The callback function to call when the button is no longer hovered over.
    */
   public var onOut:Void->Void;
 
+  /**
+   * Whether the button was just released.
+   */
   public var justReleased(get, never):Bool;
+
+  /**
+   * Whether the button is currently released.
+   */
   public var released(get, never):Bool;
+
+  /**
+   * Whether the button is currently pressed.
+   */
   public var pressed(get, never):Bool;
+
+  /**
+   * Whether the button was just pressed.
+   */
   public var justPressed(get, never):Bool;
 
+  /**
+   * The role of the button, defining its purpose.
+   */
   public var role:ButtonRole;
 
   /**
-   * We don't need an ID here, so let's just use `Int` as the type.
+   * The input associated with the button, using `Int` as the type.
    */
   var input:FlxInput<Int>;
 
   /**
-   * The input currently pressing this button, if none, it's `null`. Needed to check for its release.
+   * The input currently pressing this button, if none, it's `null`.
+   * Needed to check for its release.
    */
   var currentInput:IFlxInput;
 
@@ -72,6 +94,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    *
    * @param X The x position of the button.
    * @param Y The y position of the button.
+   * @param role The role of the button (optional).
    */
   public function new(X:Float = 0, Y:Float = 0, ?role:ButtonRole):Void
   {
@@ -87,7 +110,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   }
 
   /**
-   * Called by the game state when state is changed (if this object belongs to the state)
+   * Called by the game state when the state is changed (if this object belongs to the state).
    */
   public override function destroy():Void
   {
@@ -109,14 +132,14 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     super.update(elapsed);
 
     #if FLX_POINTER_INPUT
-    // Update the button, but only if at least either touches are enabled
+    // Update the button, but only if touches are enabled
     if (visible)
     {
-          final overlapFound:Bool = checkTouchOverlap();
+      final overlapFound:Bool = checkTouchOverlap();
 
-          if (currentInput != null && currentInput.justReleased && overlapFound) onUpHandler();
+      if (currentInput != null && currentInput.justReleased && overlapFound) onUpHandler();
 
-          if (status != FunkinButtonStatus.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased))) onOutHandler();
+      if (status != FunkinButtonStatus.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased))) onOutHandler();
     }
     #end
 
@@ -148,9 +171,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     return false;
   }
 
-  /**
-   * Updates the button status by calling the respective event handler function.
-   */
   private function updateStatus(input:IFlxInput):Void
   {
     if (input.justPressed)
@@ -172,9 +192,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     }
   }
 
-  /**
-   * Internal function that handles the onUp event.
-   */
   private function onUpHandler():Void
   {
     status = FunkinButtonStatus.NORMAL;
@@ -186,9 +203,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     if (onUp != null) onUp();
   }
 
-  /**
-   * Internal function that handles the onDown event.
-   */
   private function onDownHandler():Void
   {
     status = FunkinButtonStatus.PRESSED;
@@ -198,9 +212,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     if (onDown != null) onDown();
   }
 
-  /**
-   * Internal function that handles the onOver event.
-   */
   private function onOverHandler():Void
   {
     status = FunkinButtonStatus.PRESSED;
@@ -208,9 +219,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     if (onOver != null) onOver();
   }
 
-  /**
-   * Internal function that handles the onOut event.
-   */
   private function onOutHandler():Void
   {
     status = FunkinButtonStatus.NORMAL;
@@ -241,6 +249,9 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   }
 }
 
+/**
+ * Enum representing the role of the button.
+ */
 enum ButtonRole
 {
   DIRECTION_BUTTON;
