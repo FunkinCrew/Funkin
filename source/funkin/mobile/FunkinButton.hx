@@ -21,6 +21,15 @@ enum abstract FunkinButtonStatus(Int) from Int to Int
 }
 
 /**
+ * Enum representing the role of the button.
+ */
+enum FunkinButtonRole
+{
+  DIRECTION_BUTTON;
+  ACTION_BUTTON;
+}
+
+/**
  * A simple button class that calls a function when touched.
  */
 #if !display
@@ -32,6 +41,11 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * The current state of the button, either `FunkinButtonStatus.NORMAL` or `FunkinButtonStatus.PRESSED`.
    */
   public var status:FunkinButtonStatus;
+
+  /**
+   * The role of the button, defining its purpose.
+   */
+  public var role:FunkinButtonRole;
 
   /**
    * The callback function to call when the button is released.
@@ -74,11 +88,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var justPressed(get, never):Bool;
 
   /**
-   * The role of the button, defining its purpose.
-   */
-  public var role:ButtonRole;
-
-  /**
    * The input associated with the button, using `Int` as the type.
    */
   var input:FlxInput<Int>;
@@ -94,9 +103,9 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    *
    * @param X The x position of the button.
    * @param Y The y position of the button.
-   * @param role The role of the button (optional).
+   * @param role The role of the button.
    */
-  public function new(X:Float = 0, Y:Float = 0, ?role:ButtonRole):Void
+  public function new(X:Float = 0, Y:Float = 0, role:FunkinButtonRole):Void
   {
     super(X, Y);
 
@@ -247,13 +256,4 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     return input.justPressed;
   }
-}
-
-/**
- * Enum representing the role of the button.
- */
-enum ButtonRole
-{
-  DIRECTION_BUTTON;
-  ACTION_BUTTON;
 }
