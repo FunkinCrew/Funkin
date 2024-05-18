@@ -53,7 +53,8 @@ class Save
   public function new(?data:RawSaveData)
   {
     if (data == null) this.data = Save.getDefault();
-    else this.data = data;
+    else
+      this.data = data;
   }
 
   public static function getDefault():RawSaveData
@@ -809,11 +810,6 @@ typedef SaveScoreData =
    * The count of each judgement hit.
    */
   var tallies:SaveScoreTallyData;
-
-  /**
-   * The accuracy percentage.
-   */
-  var accuracy:Float;
 }
 
 typedef SaveScoreTallyData =

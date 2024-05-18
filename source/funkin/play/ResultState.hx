@@ -24,6 +24,7 @@ import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
+import funkin.play.components.ClearPercentCounter;
 
 /**
  * The state for the results screen after a song or week is finished.
@@ -109,7 +110,7 @@ class ResultState extends MusicBeatSubState
     var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15, -180, 'resultScreen/soundSystem');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
-    new FlxTimer().start(0.4, _ -> {
+    new FlxTimer().start(0.3, _ -> {
       soundSystem.animation.play("idle");
       soundSystem.visible = true;
     });
@@ -118,7 +119,7 @@ class ResultState extends MusicBeatSubState
 
     switch (rank)
     {
-      case PERFECT | PERFECT_GOLD | PERFECT_PLATINUM:
+      case PERFECT | PERFECT_GOLD:
         bfPerfect = new FlxAtlasSprite(370, -180, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
         bfPerfect.visible = false;
         bfPerfect.zIndex = 500;
@@ -183,22 +184,7 @@ class ResultState extends MusicBeatSubState
         });
     }
 
-    var diffSpr:String = switch (PlayState.instance.currentDifficulty)
-    {
-      case 'easy':
-        'difEasy';
-      case 'normal':
-        'difNormal';
-      case 'hard':
-        'difHard';
-      case 'erect':
-        'difErect';
-      case 'nightmare':
-        'difNightmare';
-      case _:
-        'difNormal';
-    }
-
+    var diffSpr:String = 'dif${params?.difficultyId ?? 'Normal'}';
     difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
     add(difficulty);
 
@@ -208,7 +194,7 @@ class ResultState extends MusicBeatSubState
     speedOfTween.x = -1.0 * Math.cos(angleRad);
     speedOfTween.y = -1.0 * Math.sin(angleRad);
 
-    timerThenSongName();
+    timerThenSongName(1.0);
 
     songName.shader = maskShaderSongName;
     difficulty.shader = maskShaderDifficulty;
@@ -218,24 +204,40 @@ class ResultState extends MusicBeatSubState
 
     var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
     blackTopBar.y = -blackTopBar.height;
-    FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut, startDelay: 0.5});
+    FlxTween.tween(blackTopBar, {y: 0}, 0.4, {ease: FlxEase.quartOut});
     blackTopBar.zIndex = 1010;
     add(blackTopBar);
 
     resultsAnim.animation.addByPrefix("result", "results instance 1", 24, false);
-    resultsAnim.animation.play("result");
+    resultsAnim.visible = false;
     resultsAnim.zIndex = 1200;
     add(resultsAnim);
+    new FlxTimer().start(0.3, _ -> {
+      resultsAnim.visible = true;
+      resultsAnim.animation.play("result");
+    });
 
     ratingsPopin.animation.addByPrefix("idle", "Categories", 24, false);
     ratingsPopin.visible = false;
     ratingsPopin.zIndex = 1200;
     add(ratingsPopin);
+    new FlxTimer().start(1.0, _ -> {
+      ratingsPopin.visible = true;
+      ratingsPopin.animation.play("idle");
+    });
 
     scorePopin.animation.addByPrefix("score", "tally score", 24, false);
     scorePopin.visible = false;
     scorePopin.zIndex = 1200;
     add(scorePopin);
+    new FlxTimer().start(1.0, _ -> {
+      scorePopin.visible = true;
+      scorePopin.animation.play("score");
+      scorePopin.animation.finishCallback = anim -> {
+        score.visible = true;
+        score.animateNumbers();
+      };
+    });
 
     highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
     highscoreNew.animation.addByPrefix("new", "NEW HIGHSCORE", 24);
@@ -285,13 +287,26 @@ class ResultState extends MusicBeatSubState
     for (ind => rating in ratingGrp.members)
     {
       rating.visible = false;
-      new FlxTimer().start((0.3 * ind) + 0.55, _ -> {
+      new FlxTimer().start((0.3 * ind) + 1.20, _ -> {
         rating.visible = true;
         FlxTween.tween(rating, {curNumber: rating.neededNumber}, 0.5, {ease: FlxEase.quartOut});
       });
     }
 
-    startRankTallySequence();
+    ratingsPopin.animation.finishCallback = anim -> {
+      startRankTallySequence();
+
+      if (params.isNewHighscore ?? false)
+      {
+        highscoreNew.visible = true;
+        highscoreNew.animation.play("new");
+        FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
+      }
+      else
+      {
+        highscoreNew.visible = false;
+      }
+    };
 
     refresh();
 
@@ -304,48 +319,43 @@ class ResultState extends MusicBeatSubState
 
   function startRankTallySequence():Void
   {
-    clearPercentTarget = Math.floor((params.scoreData.tallies.totalNotesHit) / params.scoreData.tallies.totalNotes * 100);
-    // clearPercentTarget = 97;
+    clearPercentTarget = Math.floor((params.scoreData.tallies.sick + params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes * 100);
+    clearPercentTarget = 100;
 
-    var clearPercentText = new FlxText(FlxG.width / 2, FlxG.height / 2, 0, 'CLEAR: ${clearPercentLerp}%');
-    clearPercentText.setFormat(Paths.font('vcr.ttf'), 64, FlxColor.BLACK, FlxTextAlign.RIGHT);
-    clearPercentText.zIndex = 1000;
-    add(clearPercentText);
+    clearPercentLerp = Std.int(Math.max(0, clearPercentTarget - 36));
 
-    rankTallyTimer = new FlxTimer().start(1 / 24, _ -> {
-      // Tick up.
-      if (clearPercentLerp < clearPercentTarget)
+    var clearPercentCounter:ClearPercentCounter = new ClearPercentCounter(FlxG.width / 2 + 300, FlxG.height / 2 - 100, clearPercentTarget);
+    clearPercentCounter.curNumber = clearPercentLerp;
+    FlxTween.tween(clearPercentCounter, {curNumber: clearPercentTarget}, 1.5,
       {
-        clearPercentLerp++;
+        ease: FlxEase.quartOut,
+        onUpdate: _ -> {
+          // Only play the tick sound if the number increased.
+          if (clearPercentLerp != clearPercentCounter.curNumber)
+          {
+            clearPercentLerp = clearPercentCounter.curNumber;
+            FunkinSound.playOnce(Paths.sound('scrollMenu'));
+          }
+        },
+        onComplete: _ -> {
+          // Play confirm sound.
+          FunkinSound.playOnce(Paths.sound('confirmMenu'));
 
-        clearPercentText.text = 'CLEAR: ${clearPercentLerp}%';
-        FunkinSound.playOnce(Paths.sound('scrollMenu'));
-      }
+          // Flash background.
+          bgFlash.visible = true;
+          FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
 
-      // Don't overshoot.
-      if (clearPercentLerp > clearPercentTarget)
-      {
-        clearPercentLerp = clearPercentTarget;
-      }
+          displayRankText();
 
-      if (clearPercentLerp == clearPercentTarget)
-      {
-        if (rankTallyTimer != null)
-        {
-          rankTallyTimer.destroy();
-          rankTallyTimer = null;
+          new FlxTimer().start(2.0, _ -> {
+            // remove(clearPercentCounter);
+
+            afterRankTallySequence();
+          });
         }
-
-        // Play confirm sound.
-        FunkinSound.playOnce(Paths.sound('confirmMenu'));
-
-        new FlxTimer().start(1.0, _ -> {
-          remove(clearPercentText);
-
-          afterRankTallySequence();
-        });
-      }
-    }, 0); // 0 = Loop until stopped
+      });
+    clearPercentCounter.zIndex = 450;
+    add(clearPercentCounter);
 
     if (ratingsPopin == null)
     {
@@ -353,18 +363,15 @@ class ResultState extends MusicBeatSubState
     }
     else
     {
-      ratingsPopin.animation.play("idle");
-      ratingsPopin.visible = true;
+      // ratingsPopin.animation.play("idle");
+      // ratingsPopin.visible = true;
 
       ratingsPopin.animation.finishCallback = anim -> {
-        scorePopin.animation.play("score");
-        scorePopin.animation.finishCallback = anim -> {
-          score.visible = true;
-          score.animateNumbers();
-        };
-        scorePopin.visible = true;
+        // scorePopin.animation.play("score");
 
-        if (params.isNewHighscore)
+        // scorePopin.visible = true;
+
+        if (params.isNewHighscore ?? false)
         {
           highscoreNew.visible = true;
           highscoreNew.animation.play("new");
@@ -375,6 +382,23 @@ class ResultState extends MusicBeatSubState
           highscoreNew.visible = false;
         }
       };
+    }
+
+    refresh();
+  }
+
+  function displayRankText():Void
+  {
+    var rankTextVert:FunkinSprite = FunkinSprite.create(FlxG.width - 64, 100, rank.getVerTextAsset());
+    rankTextVert.zIndex = 2000;
+    add(rankTextVert);
+
+    for (i in 0...10)
+    {
+      var rankTextBack:FunkinSprite = FunkinSprite.create(FlxG.width / 2 - 80, 50, rank.getHorTextAsset());
+      rankTextBack.y += (rankTextBack.height * i / 2) + 10;
+      rankTextBack.zIndex = 100;
+      add(rankTextBack);
     }
 
     refresh();
@@ -406,7 +430,7 @@ class ResultState extends MusicBeatSubState
 
     switch (rank)
     {
-      case PERFECT | PERFECT_GOLD | PERFECT_PLATINUM:
+      case PERFECT | PERFECT_GOLD:
         if (bfPerfect == null)
         {
           trace("Could not build PERFECT animation!");
@@ -415,17 +439,6 @@ class ResultState extends MusicBeatSubState
         {
           bfPerfect.visible = true;
           bfPerfect.playAnimation('');
-
-          new FlxTimer().start((1 / 24) * 12, _ -> {
-            bgFlash.visible = true;
-            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
-            new FlxTimer().start((1 / 24) * 2, _ ->
-              {
-                // bgFlash.alpha = 0.5;
-
-                // bgFlash.visible = false;
-              });
-          });
         }
 
       case EXCELLENT:
@@ -437,17 +450,6 @@ class ResultState extends MusicBeatSubState
         {
           bfExcellent.visible = true;
           bfExcellent.playAnimation('Intro');
-
-          new FlxTimer().start((1 / 24) * 12, _ -> {
-            bgFlash.visible = true;
-            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
-            new FlxTimer().start((1 / 24) * 2, _ ->
-              {
-                // bgFlash.alpha = 0.5;
-
-                // bgFlash.visible = false;
-              });
-          });
         }
 
       case SHIT:
@@ -459,17 +461,6 @@ class ResultState extends MusicBeatSubState
         {
           bfShit.visible = true;
           bfShit.playAnimation('Intro');
-
-          new FlxTimer().start((1 / 24) * 12, _ -> {
-            bgFlash.visible = true;
-            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
-            new FlxTimer().start((1 / 24) * 2, _ ->
-              {
-                // bgFlash.alpha = 0.5;
-
-                // bgFlash.visible = false;
-              });
-          });
         }
 
       case GREAT | GOOD:
@@ -481,17 +472,6 @@ class ResultState extends MusicBeatSubState
         {
           bfGood.animation.play('fall');
           bfGood.visible = true;
-
-          new FlxTimer().start((1 / 24) * 12, _ -> {
-            bgFlash.visible = true;
-            FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
-            new FlxTimer().start((1 / 24) * 2, _ ->
-              {
-                // bgFlash.alpha = 0.5;
-
-                // bgFlash.visible = false;
-              });
-          });
 
           new FlxTimer().start((1 / 24) * 22, _ -> {
             // plays about 22 frames (at 24fps timing) after bf spawns in
@@ -510,7 +490,7 @@ class ResultState extends MusicBeatSubState
     }
   }
 
-  function timerThenSongName():Void
+  function timerThenSongName(timerLength:Float = 3.0):Void
   {
     movingSongStuff = false;
 
@@ -526,7 +506,7 @@ class ResultState extends MusicBeatSubState
     FlxTween.tween(songName, {y: diffYTween - 35 - fuckedupnumber}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
     songName.x = (difficulty.x + difficulty.width) + 20;
 
-    new FlxTimer().start(3, _ -> {
+    new FlxTimer().start(timerLength, _ -> {
       var tempSpeed = FlxPoint.get(speedOfTween.x, speedOfTween.y);
 
       speedOfTween.set(0, 0);
@@ -600,33 +580,29 @@ class ResultState extends MusicBeatSubState
   public static function calculateRank(params:ResultsStateParams):ResultRank
   {
     // Perfect (Platinum) is a Sick Full Clear
-    var isPerfectPlat = (params.scoreData.tallies.sick + params.scoreData.tallies.good) == params.scoreData.tallies.totalNotes
-      && params.scoreData.tallies.sick / params.scoreData.tallies.totalNotes >= Constants.RANK_PERFECT_PLAT_THRESHOLD;
-    if (isPerfectPlat) return ResultRank.PERFECT_PLATINUM;
-
-    // Perfect (Gold) is an 85% Sick Full Clear
-    var isPerfectGold = (params.scoreData.tallies.sick + params.scoreData.tallies.good) == params.scoreData.tallies.totalNotes
-      && params.scoreData.tallies.sick / params.scoreData.tallies.totalNotes >= Constants.RANK_PERFECT_GOLD_THRESHOLD;
+    var isPerfectGold = params.scoreData.tallies.sick == params.scoreData.tallies.totalNotes;
     if (isPerfectGold) return ResultRank.PERFECT_GOLD;
 
     // Else, use the standard grades
 
+    // Grade % (only good and sick), 1.00 is a full combo
+    var grade = (params.scoreData.tallies.sick + params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes;
     // Clear % (including bad and shit). 1.00 is a full clear but not a full combo
     var clear = (params.scoreData.tallies.totalNotesHit) / params.scoreData.tallies.totalNotes;
 
-    if (clear == Constants.RANK_PERFECT_THRESHOLD)
+    if (grade == Constants.RANK_PERFECT_THRESHOLD)
     {
       return ResultRank.PERFECT;
     }
-    else if (clear >= Constants.RANK_EXCELLENT_THRESHOLD)
+    else if (grade >= Constants.RANK_EXCELLENT_THRESHOLD)
     {
       return ResultRank.EXCELLENT;
     }
-    else if (clear >= Constants.RANK_GREAT_THRESHOLD)
+    else if (grade >= Constants.RANK_GREAT_THRESHOLD)
     {
       return ResultRank.GREAT;
     }
-    else if (clear >= Constants.RANK_GOOD_THRESHOLD)
+    else if (grade >= Constants.RANK_GOOD_THRESHOLD)
     {
       return ResultRank.GOOD;
     }
@@ -639,7 +615,6 @@ class ResultState extends MusicBeatSubState
 
 enum abstract ResultRank(String)
 {
-  var PERFECT_PLATINUM;
   var PERFECT_GOLD;
   var PERFECT;
   var EXCELLENT;
@@ -651,8 +626,6 @@ enum abstract ResultRank(String)
   {
     switch (abstract)
     {
-      case PERFECT_PLATINUM:
-        return 'resultsPERFECT';
       case PERFECT_GOLD:
         return 'resultsPERFECT';
       case PERFECT:
@@ -665,6 +638,8 @@ enum abstract ResultRank(String)
         return 'resultsNORMAL';
       case SHIT:
         return 'resultsSHIT';
+      default:
+        return 'resultsNORMAL';
     }
   }
 
@@ -672,8 +647,6 @@ enum abstract ResultRank(String)
   {
     switch (abstract)
     {
-      case PERFECT_PLATINUM:
-        return true;
       case PERFECT_GOLD:
         return true;
       case PERFECT:
@@ -688,6 +661,48 @@ enum abstract ResultRank(String)
         return false;
       default:
         return false;
+    }
+  }
+
+  public function getHorTextAsset()
+  {
+    switch (abstract)
+    {
+      case PERFECT_GOLD:
+        return 'resultScreen/rankText/rankScrollPERFECT';
+      case PERFECT:
+        return 'resultScreen/rankText/rankScrollPERFECT';
+      case EXCELLENT:
+        return 'resultScreen/rankText/rankScrollEXCELLENT';
+      case GREAT:
+        return 'resultScreen/rankText/rankScrollGREAT';
+      case GOOD:
+        return 'resultScreen/rankText/rankScrollGOOD';
+      case SHIT:
+        return 'resultScreen/rankText/rankScrollLOSS';
+      default:
+        return 'resultScreen/rankText/rankScrollGOOD';
+    }
+  }
+
+  public function getVerTextAsset()
+  {
+    switch (abstract)
+    {
+      case PERFECT_GOLD:
+        return 'resultScreen/rankText/rankTextPERFECT';
+      case PERFECT:
+        return 'resultScreen/rankText/rankTextPERFECT';
+      case EXCELLENT:
+        return 'resultScreen/rankText/rankTextEXCELLENT';
+      case GREAT:
+        return 'resultScreen/rankText/rankTextGREAT';
+      case GOOD:
+        return 'resultScreen/rankText/rankTextGOOD';
+      case SHIT:
+        return 'resultScreen/rankText/rankTextLOSS';
+      default:
+        return 'resultScreen/rankText/rankTextGOOD';
     }
   }
 }
@@ -707,10 +722,21 @@ typedef ResultsStateParams =
   /**
    * Whether the displayed score is a new highscore
    */
-  var isNewHighscore:Bool;
+  var ?isNewHighscore:Bool;
+
+  /**
+   * The difficulty ID of the song/week we just played.
+   * @default Normal
+   */
+  var ?difficultyId:String;
 
   /**
    * The score, accuracy, and judgements.
    */
   var scoreData:SaveScoreData;
+
+  /**
+   * The previous score data, used for rank comparision.
+   */
+  var ?prevScoreData:SaveScoreData;
 };
