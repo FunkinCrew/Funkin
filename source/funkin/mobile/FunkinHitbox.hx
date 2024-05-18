@@ -58,8 +58,6 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   {
     var hint:FunkinButton = new FunkinButton(x, y, DIRECTION_BUTTON);
     hint.loadGraphic(createHintGraphic(width, height, color));
-    hint.solid = false;
-    hint.immovable = true;
     hint.alpha = 0.00001;
     hint.onDown.add(function():Void {
       onHintDown.dispatch(this, hint);
@@ -76,9 +74,6 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
 
       if (hint.alpha != 0.00001) hint.alpha = 0.00001;
     });
-    #if FLX_DEBUG
-    hint.ignoreDrawDebug = true;
-    #end
     return hint;
   }
 

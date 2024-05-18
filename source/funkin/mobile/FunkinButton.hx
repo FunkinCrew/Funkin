@@ -106,9 +106,12 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     super(X, Y);
 
     status = FunkinButtonStatus.NORMAL;
-
+    solid = false;
+    immovable = true;
+    #if FLX_DEBUG
+    ignoreDrawDebug = true;
+    #end
     scrollFactor.set();
-
     input = new FlxInput(0);
 
     this.role = role;

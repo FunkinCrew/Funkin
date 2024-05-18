@@ -8,7 +8,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
 
-/**
+/**Direction
  * Enum for different direction modes.
  */
 enum FunkinDPadMode
@@ -55,7 +55,7 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
 
   /**
    * The right directional button.
-   */
+   */Direction
   public var buttonRight:FunkinButton = new FunkinButton(0, 0);
 
   /**
@@ -179,16 +179,11 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
     button.animation.add('normal', [0], 0, false);
     button.animation.add('pressed', [1], 0, false);
     button.animation.play('normal');
-    button.solid = false;
-    button.immovable = true;
     button.color = color;
     button.alpha = 0.4;
     button.onDown.add(button.animation.play.bind('pressed'));
     button.onUp.add(button.animation.play.bind('normal'));
     button.onOut.add(button.animation.play.bind('normal'));
-    #if FLX_DEBUG
-    button.ignoreDrawDebug = true;
-    #end
     return button;
   }
 

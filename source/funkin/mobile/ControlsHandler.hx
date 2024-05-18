@@ -62,12 +62,12 @@ class ControlsHandler
    *
    * @param controls The Controls instance defining game controls.
    * @param virtualPad The FunkinVirtualPad to associate with the controls.
-   * @param dPad The DPad mode for configuring directional controls.
+   * @param dPad The Direction mode for configuring directional controls.
    * @param action The Action mode for configuring action controls.
    * @param cachedInput The array of FlxActionInput objects to cache the input.
    */
   @:access(funkin.input.Controls)
-  public static function setupVirtualPad(controls:Controls, virtualPad:FunkinVirtualPad, dPad:FunkinDPadMode, action:FunkinActionMode,
+  public static function setupVirtualPad(controls:Controls, virtualPad:FunkinVirtualPad, dPad:FunkinDirectionMode, action:FunkinActionMode,
       cachedInput:Array<FlxActionInput>):Void
   {
     if (controls == null || virtualPad == null) return;
