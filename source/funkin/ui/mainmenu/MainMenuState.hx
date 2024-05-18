@@ -42,6 +42,8 @@ class MainMenuState extends MusicBeatState
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
+  static var rememberedSelectedIndex:Int = 0;
+
   override function create():Void
   {
     #if discord_rpc
@@ -136,6 +138,8 @@ class MainMenuState extends MusicBeatState
       // This one affects how much the menu items move when you scroll between them.
       menuItem.scrollFactor.y = 0.4;
     }
+
+    menuItems.selectItem(rememberedSelectedIndex);
 
     resetCamStuff();
 
@@ -285,6 +289,8 @@ class MainMenuState extends MusicBeatState
   function startExitState(state:NextState):Void
   {
     menuItems.enabled = false; // disable for exit
+    rememberedSelectedIndex = menuItems.selectedIndex;
+
     var duration = 0.4;
     menuItems.forEach(function(item) {
       if (menuItems.selectedIndex != item.ID)
