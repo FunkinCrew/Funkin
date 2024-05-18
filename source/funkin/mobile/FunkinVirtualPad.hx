@@ -8,7 +8,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
 
-/**Direction
+/**
  * Enum for different direction modes.
  */
 enum FunkinDirectionalMode
