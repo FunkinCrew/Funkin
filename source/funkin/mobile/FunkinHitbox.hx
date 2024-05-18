@@ -75,13 +75,13 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     });
     button.onUp.add(function():Void
     {
-      onHintDown.dispatch(this, hint);
+      onHintUp.dispatch(this, hint);
 
       if (hint.alpha != 0.00001) hint.alpha = 0.00001;
     });
     button.onOut.add(function():Void
     {
-      onHintDown.dispatch(this, hint);
+      onHintUp.dispatch(this, hint);
 
       if (hint.alpha != 0.00001) hint.alpha = 0.00001;
     });
