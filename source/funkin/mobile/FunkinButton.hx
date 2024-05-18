@@ -50,22 +50,22 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   /**
    * The callback function to call when the button is released.
    */
-  public var onUp:FlxSignal = new FlxSignal();
+  public var onUp(default, null):IFlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is pressed down.
    */
-  public var onDown:FlxSignal = new FlxSignal();
+  public var onDown(default, null):IFlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is hovered over.
    */
-  public var onOver:FlxSignal = new FlxSignal();
+  public var onOver(default, null):IFlxSignal = new FlxSignal();
 
   /**
    * The callback function to call when the button is no longer hovered over.
    */
-  public var onOut:FlxSignal = new FlxSignal();
+  public var onOut(default, null):IFlxSignal = new FlxSignal();
 
   /**
    * Whether the button was just released.
