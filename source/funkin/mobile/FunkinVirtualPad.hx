@@ -11,7 +11,7 @@ import flixel.FlxG;
 /**Direction
  * Enum for different direction modes.
  */
-enum FunkinDPadMode
+enum FunkinDirectionalMode
 {
   UP_DOWN;
   LEFT_RIGHT;
@@ -96,14 +96,14 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
   /**
    * Create a virtual gamepad.
    *
-   * @param dPad The D-Pad mode. `LEFT_FULL` for example.
+   * @param direction The directional mode. `LEFT_FULL` for example.
    * @param action The action buttons mode. `A_B_C` for example.
    */
-  public function new(dPad:FunkinDPadMode = LEFT_FULL, action:FunkinActionMode = A_B_C):Void
+  public function new(direction:FunkinDirectionalMode = LEFT_FULL, action:FunkinActionMode = A_B_C):Void
   {
     super();
 
-    switch (dPad)
+    switch (direction)
     {
       case UP_DOWN:
         add(buttonUp = createButton(0, FlxG.height - 255, 'up', 0xFF12FA05, DIRECTION_BUTTON));

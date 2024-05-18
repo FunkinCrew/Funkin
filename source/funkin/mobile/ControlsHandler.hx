@@ -34,9 +34,9 @@ class ControlsHandler
   /**
    * Sets up hitbox controls based on game controls and hitbox hints.
    *
-   * @param controls The Controls instance defining game controls.
-   * @param hitbox The FunkinHitbox to associate with the controls.
-   * @param cachedInput The array of FlxActionInput objects to cache the input.
+   * @param controls The controls instance defining game controls.
+   * @param hitbox The hitbox to associate with the controls.
+   * @param cachedInput The array of action input objects to cache the input.
    */
   @:access(funkin.input.Controls)
   public static function setupHitbox(controls:Controls, hitbox:FunkinHitbox, cachedInput:Array<FlxActionInput>):Void
@@ -60,19 +60,19 @@ class ControlsHandler
   /**
    * Sets up virtual pad controls based on game controls and virtual pad configuration.
    *
-   * @param controls The Controls instance defining game controls.
-   * @param virtualPad The FunkinVirtualPad to associate with the controls.
-   * @param dPad The Direction mode for configuring directional controls.
-   * @param action The Action mode for configuring action controls.
-   * @param cachedInput The array of FlxActionInput objects to cache the input.
+   * @param controls The controls instance defining game controls.
+   * @param virtualPad The virtualPad to associate with the controls.
+   * @param direction The directional mode for configuring directional controls.
+   * @param action The action mode for configuring action controls.
+   * @param cachedInput The array of action input objects to cache the input.
    */
   @:access(funkin.input.Controls)
-  public static function setupVirtualPad(controls:Controls, virtualPad:FunkinVirtualPad, dPad:FunkinDirectionMode, action:FunkinActionMode,
+  public static function setupVirtualPad(controls:Controls, virtualPad:FunkinVirtualPad, direction:FunkinDirectionalMode, action:FunkinActionMode,
       cachedInput:Array<FlxActionInput>):Void
   {
     if (controls == null || virtualPad == null) return;
 
-    switch (dPad)
+    switch (direction)
     {
       case UP_DOWN:
         controls.forEachBound(Control.UI_UP, function(action:FlxActionDigital, state:FlxInputState):Void {
@@ -139,7 +139,7 @@ class ControlsHandler
    * Removes cached input associated with game controls.
    *
    * @param controls The Controls instance defining game controls.
-   * @param cachedInput The array of FlxActionInput objects to clear cached input from.
+   * @param cachedInput The array of action input objects to clear cached input from.
    */
   public static function removeCachedInput(controls:Controls, cachedInput:Array<FlxActionInput>):Void
   {

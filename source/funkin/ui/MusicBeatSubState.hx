@@ -67,16 +67,16 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   var trackedInputsHitbox:Array<FlxActionInput> = [];
   var trackedInputsVirtualPad:Array<FlxActionInput> = [];
 
-  public function addVirtualPad(dPad:FunkinDirectionMode, action:FunkinActionMode, ?visible:Bool = true):Void
+  public function addVirtualPad(direction:FunkinDirectionalMode, action:FunkinActionMode, ?visible:Bool = true):Void
   {
     if (virtualPad != null)
     {
       removeVirtualPad();
     }
 
-    virtualPad = new FunkinVirtualPad(dPad, action);
+    virtualPad = new FunkinVirtualPad(direction, action);
 
-    ControlsHandler.setupVirtualPad(controls, virtualPad, dPad, action, trackedInputsVirtualPad);
+    ControlsHandler.setupVirtualPad(controls, virtualPad, direction, action, trackedInputsVirtualPad);
 
     virtualPad.visible = visible;
     add(virtualPad);
