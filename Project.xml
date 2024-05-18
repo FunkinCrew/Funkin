@@ -108,7 +108,7 @@
 	<!-- If compiled via github actions, show debug version number. -->
 	<define name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD" />
 	<define name="NO_REDIRECT_ASSETS_FOLDER" if="GITHUB_BUILD" />
-	<define name="TOUCH_HERE_TO_PLAY" if="web" />
+	<define name="TOUCH_HERE_TO_PLAY" if="web || mobile" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="lime" /> <!-- Game engine backend -->
