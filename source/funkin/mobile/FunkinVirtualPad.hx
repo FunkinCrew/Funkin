@@ -139,8 +139,10 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
     button.immovable = true;
     button.color = color;
     button.alpha = 0.4;
-    button.onDown = button.onOver = button.animation.play.bind('pressed');
-    button.onUp = button.onOut = button.animation.play.bind('normal');
+    button.onDown.add(button.animation.play.bind('pressed'));
+    button.onOver.add(button.animation.play.bind('normal'));
+    button.onUp.add(button.animation.play.bind('normal'));
+    button.onOut.add(button.animation.play.bind('normal'));
     #if FLX_DEBUG
     button.ignoreDrawDebug = true;
     #end
