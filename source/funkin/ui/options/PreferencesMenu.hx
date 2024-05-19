@@ -55,6 +55,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemCheckbox('Center Strumline', 'Enable to move the strumline to the middle of the screen.', function(value:Bool):Void {
+      Preferences.centerStrumlines = value;
+    }, Preferences.centerStrumlines);
     createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);
