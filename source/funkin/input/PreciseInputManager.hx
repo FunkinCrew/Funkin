@@ -158,7 +158,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   }
 
   #if mobile
-  // SORRY IT'S HARDCODED BUT I COULDN'T DO SMTH LIKE getHintForAction
   public static function getHintForDirection(noteDirection:NoteDirection, hitbox:FunkinHitbox)
   {
     return switch (noteDirection)
@@ -273,12 +272,10 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     for (noteDirection in DIRECTIONS)
     {
       var hint:FunkinButton = getHintForDirection(noteDirection, hitbox);
-
+      
       _hintList[hint.ID] = hint;
+      _hintListMap.set(hint.ID, @:privateAccess hint.input);
       _hintListDir.set(hint, noteDirection);
-
-      @:privateAccess
-      _hintListMap.set(hint.ID, hint.input);
     }
   }
   #end
