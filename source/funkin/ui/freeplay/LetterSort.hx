@@ -98,10 +98,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
           if (20 <= Math.sqrt(swipeDistance.x * swipeDistance.x + swipeDistance.y * swipeDistance.y)
             && Math.abs(swipeDistance.x) > Math.abs(swipeDistance.y))
           {
-            if (swipeDistance.x > 0)
-               changeSelection(-1);
-            else
-              changeSelection(1);
+            changeSelection(swipeDistance.x > 0 ? -1 : 1);
             break;
           }
         }
