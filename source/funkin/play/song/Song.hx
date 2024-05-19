@@ -121,6 +121,18 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * The artist of the song.
+   */
+  public var charter(get, never):String;
+
+  function get_charter():String
+  {
+    if (_data != null) return _data?.charter ?? 'Unknown';
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.charter ?? 'Unknown';
+    return Constants.DEFAULT_CHARTER;
+  }
+
+  /**
    * @param id The ID of the song to load.
    * @param ignoreErrors If false, an exception will be thrown if the song data could not be loaded.
    */
@@ -270,6 +282,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.songName = metadata.songName;
         difficulty.songArtist = metadata.artist;
+        difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
         difficulty.timeFormat = metadata.timeFormat;
         difficulty.divisions = metadata.divisions;
         difficulty.timeChanges = metadata.timeChanges;
@@ -334,6 +347,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         {
           difficulty.songName = metadata.songName;
           difficulty.songArtist = metadata.artist;
+          difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
           difficulty.timeFormat = metadata.timeFormat;
           difficulty.divisions = metadata.divisions;
           difficulty.timeChanges = metadata.timeChanges;
@@ -586,6 +600,7 @@ class SongDifficulty
 
   public var songName:String = Constants.DEFAULT_SONGNAME;
   public var songArtist:String = Constants.DEFAULT_ARTIST;
+  public var charter:String = Constants.DEFAULT_CHARTER;
   public var timeFormat:SongTimeFormat = Constants.DEFAULT_TIMEFORMAT;
   public var divisions:Null<Int> = null;
   public var looped:Bool = false;
