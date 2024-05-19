@@ -26,7 +26,9 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
   public var inputEnabled:Bool = true;
 
+  #if mobile
   var swipeBounds:FlxSprite;
+  #end
 
   public function new(x, y)
   {
@@ -68,8 +70,10 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     // rightArrow.animation.play("arrow");
 
+    #if mobile
     swipeBounds = new FlxSprite(-20, -20).makeGraphic(420, 95, FlxColor.TRANSPARENT);
     add(swipeBounds);
+    #end
 
     changeSelection(0);
   }
@@ -92,7 +96,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
           if (20 <= Math.sqrt(swipeDistanceX * swipeDistanceX + swipeDistanceY * swipeDistanceY)
             && Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY))
           {
-            if (swipeDistanceX > 0) changeSelection(-1);
+            if (swipeDistanceX > 0)
+               changeSelection(-1);
             else
               changeSelection(1);
             break;
