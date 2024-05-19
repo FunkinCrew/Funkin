@@ -25,12 +25,12 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
   /**
    * A `FlxTypedSignal` that triggers every time a button was pressed.
    */
-  public var onHintDown:FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void> = new FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void>();
+  public var onHintDown:FlxTypedSignal<FunkinButton->Void> = new FlxTypedSignal<FunkinButton->Void>();
 
   /**
    * A `FlxTypedSignal` that triggers every time a button was released.
    */
-  public var onHintUp:FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void> = new FlxTypedSignal<(FunkinHitbox, FunkinButton) -> Void>();
+  public var onHintUp:FlxTypedSignal<FunkinButton->Void> = new FlxTypedSignal<FunkinButton->Void>();
 
   /**
    * Create the zone.
@@ -47,33 +47,34 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
     if (colors == null || colors.length < ammo) colors = [for (i in 0...ammo) 0xFFFFFFFF];
 
     for (i in 0...ammo)
-      add(hints[i] = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, colors[i]));
+      add(hints[i] = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, i, colors[i]));
 
     scrollFactor.set();
 
     zIndex = 100000;
   }
 
-  private function createHint(x:Float, y:Float, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF):FunkinButton
+  private function createHint(x:Float, y:Float, width:Int, height:Int, id:Int, color:FlxColor = 0xFFFFFFFF):FunkinButton
   {
     var hint:FunkinButton = new FunkinButton(x, y, DIRECTION_BUTTON);
     hint.loadGraphic(createHintGraphic(width, height, color));
     hint.alpha = 0.00001;
     hint.onDown.add(function():Void {
-      onHintDown.dispatch(this, hint);
+      onHintDown.dispatch(hint);
 
       if (hint.alpha != 0.25) hint.alpha = 0.25;
     });
     hint.onUp.add(function():Void {
-      onHintUp.dispatch(this, hint);
+      onHintUp.dispatch(hint);
 
       if (hint.alpha != 0.00001) hint.alpha = 0.00001;
     });
     hint.onOut.add(function():Void {
-      onHintUp.dispatch(this, hint);
+      onHintUp.dispatch(hint);
 
       if (hint.alpha != 0.00001) hint.alpha = 0.00001;
     });
+    hint.ID = i;
     return hint;
   }
 
