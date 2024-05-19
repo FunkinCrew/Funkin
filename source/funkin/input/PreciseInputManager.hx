@@ -471,7 +471,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     }
   }
 
-  function handleHintUp(hitbox:FunkinHitbox, hint:FunkinButton):Void
+  function handleHintUp(hint:FunkinButton):Void
   {
     var timestamp:Int64 = getCurrentTimestamp();
 
