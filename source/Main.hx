@@ -36,16 +36,15 @@ class Main extends Sprite
 
   public static function main():Void
   {
-    #if mobile
+    #if android
     // Set the current working directory for Android and iOS devices
     // For Android we determine the appropriate directory based on Android version
-    Sys.setCwd(#if android haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ?
-        android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
-        android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
-    ) #elseif ios
-        lime.system.System.documentsDirectory // For iOS we use documents directory and this is only way we can do
-        #end
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
+      android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
     );
+    #elseif ios
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory)); // For iOS we use documents directory and this is only way we can do.
+    #end
 
     // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
     CrashHandler.initialize();
