@@ -1761,6 +1761,9 @@ class PlayState extends MusicBeatSubState
       playerStrumline.fadeInArrows();
       opponentStrumline.fadeInArrows();
     }
+
+    // Toggle ghost tapping depending on the user's preferences.
+    if (Preferences.ghostTapping) Constants.GHOST_TAPPING = true;
   }
 
   /**

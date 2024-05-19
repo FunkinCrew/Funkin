@@ -55,6 +55,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemCheckbox('Ghost Tapping', 'Enable to stop you from taking damage when no notes are on a lane.', function(value:Bool):Void {
+      Preferences.ghostTapping = value;
+    }, Preferences.ghostTapping);
     createPrefItemCheckbox('Center Strumline', 'Enable to move the strumline to the middle of the screen.', function(value:Bool):Void {
       Preferences.centerStrumlines = value;
     }, Preferences.centerStrumlines);

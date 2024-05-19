@@ -65,6 +65,25 @@ class Preferences
   }
 
   /**
+   * If enabled, pressing any note buttons will not count as a miss.
+   * @default `false`
+   */
+  public static var ghostTapping(get, set):Bool;
+
+  static function get_ghostTapping():Bool
+  {
+    return Save?.instance?.options?.ghostTapping;
+  }
+
+  static function set_ghostTapping(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.ghostTapping = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */
