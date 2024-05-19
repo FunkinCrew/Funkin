@@ -16,6 +16,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
 import funkin.modding.events.ScriptEvent;
+import funkin.util.Constants;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -99,6 +100,8 @@ class Strumline extends FlxSpriteGroup
   {
     super();
 
+    if (Preferences.centerStrumlines) Constants.STRUMLINE_X_OFFSET = 96;
+    
     this.isPlayer = isPlayer;
     this.noteStyle = noteStyle;
 
