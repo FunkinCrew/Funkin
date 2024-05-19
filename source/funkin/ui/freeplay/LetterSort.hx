@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
@@ -86,17 +87,18 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     {
       if (FlxG.keys.justPressed.E) changeSelection(1);
       if (FlxG.keys.justPressed.Q) changeSelection(-1);
+
       #if mobile
       if (TouchUtil.overlaps(swipeBounds))
       {
         for (swipe in FlxG.swipes)
         {
-          var swipeDistanceX = swipe.endPosition.x - swipe.startPosition.x;
-          var swipeDistanceY = swipe.endPosition.y - swipe.startPosition.y;
-          if (20 <= Math.sqrt(swipeDistanceX * swipeDistanceX + swipeDistanceY * swipeDistanceY)
-            && Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY))
+          final swipeDistance:FlxPoint = FlxPoint.weak(swipe.endPosition.x - swipe.startPosition.x, swipe.endPosition.y - swipe.startPosition.y);
+
+          if (20 <= Math.sqrt(swipeDistance.x * swipeDistance.x + swipeDistance.y * swipeDistance.y)
+            && Math.abs(swipeDistance.x) > Math.abs(swipeDistance.y))
           {
-            if (swipeDistanceX > 0)
+            if (swipeDistance.x > 0)
                changeSelection(-1);
             else
               changeSelection(1);
