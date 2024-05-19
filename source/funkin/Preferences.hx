@@ -46,6 +46,25 @@ class Preferences
   }
 
   /**
+   * If enabled, the strumline is moved to the middle of the screen.
+   * @default `false`
+   */
+  public static var centerStrumlines(get, set):Bool;
+
+  static function get_centerStrumlines():Bool
+  {
+    return Save?.instance?.options?.centerStrumlines;
+  }
+
+  static function set_centerStrumlines(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.centerStrumlines = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */
