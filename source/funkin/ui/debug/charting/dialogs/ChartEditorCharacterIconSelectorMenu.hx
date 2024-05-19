@@ -67,7 +67,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 
     var charGrid = new Grid();
     charGrid.columns = 5;
-    charGrid.width = 100;
+    charGrid.width = this.width;
     charSelectScroll.addComponent(charGrid);
 
     var charIds:Array<String> = CharacterDataParser.listCharacterIds();

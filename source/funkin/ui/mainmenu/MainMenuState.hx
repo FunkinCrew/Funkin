@@ -139,10 +139,6 @@ class MainMenuState extends MusicBeatState
 
     resetCamStuff();
 
-    subStateClosed.add(_ -> {
-      resetCamStuff();
-    });
-
     subStateOpened.add(sub -> {
       if (Type.getClass(sub) == FreeplayState)
       {
