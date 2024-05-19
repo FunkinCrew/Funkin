@@ -172,6 +172,10 @@ class LatencyState extends MusicBeatSubState
     add(helpText);
 
     regenNoteData();
+
+    #if mobile
+    addVirtualPad(NONE, B);
+    #end
   }
 
   function preciseInputPressed(event:PreciseInputEvent)
