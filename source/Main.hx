@@ -41,7 +41,7 @@ class Main extends Sprite
     // For Android we determine the appropriate directory based on Android version
     Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
       android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
-    );
+    ));
     #elseif ios
     Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory)); // For iOS we use documents directory and this is only way we can do.
     #end

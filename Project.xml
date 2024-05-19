@@ -223,7 +223,7 @@
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
 	</section>
 
-	<architecture exclude="armv7" if="android" />
+	<architecture exclude="armv7" if="android NO_ARMV7" />
 
 	<section>
 		<!--
