@@ -13,6 +13,9 @@ import funkin.graphics.shaders.HSVShader;
 import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
+#if mobile
+import funkin.mobile.ControlsHandler;
+#end
 
 class OptionsState extends MusicBeatState
 {
@@ -111,6 +114,12 @@ class OptionsState extends MusicBeatState
     PlayerSettings.init();
 
     switchPage(Options);
+
+    #if mobile
+    // re-initalie virtual pad input
+    ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
+    ControlsHandler.setupVirtualPad(controls, virtualPad, LEFT_FULL, A_B, trackedInputsVirtualPad);
+    #end
   }
 
   function exitToMainMenu()

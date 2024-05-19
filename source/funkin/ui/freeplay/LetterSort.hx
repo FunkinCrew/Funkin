@@ -8,6 +8,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.util.TouchUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
@@ -24,6 +25,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
   var grpSeperators:Array<FlxSprite> = [];
 
   public var inputEnabled:Bool = true;
+
+  var swipeBounds:FlxSprite;
 
   public function new(x, y)
   {
@@ -64,7 +67,9 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
 
     // rightArrow.animation.play("arrow");
-    add(rightArrow);
+
+    swipeBounds = new FlxSprite(-20, -20).makeGraphic(420, 95, FlxColor.TRANSPARENT);
+    add(swipeBounds);
 
     changeSelection(0);
   }
@@ -77,6 +82,24 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     {
       if (FlxG.keys.justPressed.E) changeSelection(1);
       if (FlxG.keys.justPressed.Q) changeSelection(-1);
+      #if mobile
+      if (TouchUtil.overlaps(swipeBounds))
+      {
+        for (swipe in FlxG.swipes)
+        {
+          var swipeDistanceX = swipe.endPosition.x - swipe.startPosition.x;
+          var swipeDistanceY = swipe.endPosition.y - swipe.startPosition.y;
+          if (20 <= Math.sqrt(swipeDistanceX * swipeDistanceX + swipeDistanceY * swipeDistanceY)
+            && Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY))
+          {
+            if (swipeDistanceX > 0) changeSelection(-1);
+            else
+              changeSelection(1);
+            break;
+          }
+        }
+      }
+      #end
     }
   }
 
