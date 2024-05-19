@@ -848,6 +848,12 @@ typedef SaveDataOptions =
   var downscroll:Bool;
 
   /**
+   * If enabled, the strumline is moved to the middle of the screen.
+   * @default `false`
+   */
+  var centerStrumlines:Bool;
+
+  /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */
