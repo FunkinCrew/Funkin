@@ -23,6 +23,7 @@ import flixel.FlxCamera;
 import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinHitbox;
 import funkin.mobile.FunkinVirtualPad;
+import funkin.mobile.PreciseInputHandler;
 #end
 
 /**
@@ -70,8 +71,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   }
 
   #if mobile
-  var hitbox:FunkinHitbox;
-  var virtualPad:FunkinVirtualPad;
+  public var hitbox:FunkinHitbox;
+  public var virtualPad:FunkinVirtualPad;
+
+  public var vpadCam:FlxCamera;
+  public var hitboxCam:FlxCamera;
 
   var trackedInputsHitbox:Array<FlxActionInput> = [];
   var trackedInputsVirtualPad:Array<FlxActionInput> = [];
@@ -91,15 +95,14 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     add(virtualPad);
   }
 
-  public function addVirtualPadCamera(defaultDrawTarget:Bool = true):Void
+  public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
   {
-    if (virtualPad != null)
-    {
-      var camControls:FlxCamera = new FlxCamera();
-      FlxG.cameras.add(camControls, defaultDrawTarget);
-      camControls.bgColor.alpha = 0;
-      virtualPad.cameras = [camControls];
-    }
+    if (virtualPad == null || vpadCam != null) return;
+
+    vpadCam = new FlxCamera();
+    FlxG.cameras.add(vpadCam, defaultDrawTarget);
+    vpadCam.bgColor.alpha = 0;
+    virtualPad.cameras = [vpadCam];
   }
 
   public function removeVirtualPad():Void
@@ -112,6 +115,12 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     if (virtualPad != null)
     {
       remove(virtualPad);
+    }
+
+    if (vpadCam != null)
+    {
+      FlxG.cameras.remove(vpadCam, false);
+      vpadCam = FlxDestroyUtil.destroy(vpadCam);
     }
   }
 
@@ -129,18 +138,16 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     hitbox.visible = visible;
     add(hitbox);
 
-    if (initInput) PreciseInputManager.instance.initializeHitbox(hitbox);
+    if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
 
-  public function addHitboxCamera(DefaultDrawTarget:Bool = true):Void
+  public function addHitboxCamera(DefaultDrawTarget:Bool = false):Void
   {
-    if (hitbox != null)
-    {
-      var camControls:FlxCamera = new FlxCamera();
-      FlxG.cameras.add(camControls, DefaultDrawTarget);
-      camControls.bgColor.alpha = 0;
-      hitbox.cameras = [camControls];
-    }
+    if (hitbox == null || hitboxCam != null) return;
+    hitboxCam = new FlxCamera();
+    FlxG.cameras.add(hitboxCam, DefaultDrawTarget);
+    hitboxCam.bgColor.alpha = 0;
+    hitbox.cameras = [hitboxCam];
   }
 
   public function removeHitbox():Void
@@ -153,6 +160,12 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     if (hitbox != null)
     {
       remove(hitbox);
+    }
+
+    if (hitboxCam != null)
+    {
+      FlxG.cameras.remove(hitboxCam, false);
+      hitboxCam = FlxDestroyUtil.destroy(hitboxCam);
     }
   }
   #end

@@ -73,6 +73,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     #if mobile
     swipeBounds = new FlxSprite(-20, -20).makeGraphic(420, 95, FlxColor.TRANSPARENT);
+    swipeBounds.active = false;
     add(swipeBounds);
     #end
 

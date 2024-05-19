@@ -20,10 +20,6 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
-#if mobile
-import funkin.mobile.FunkinButton;
-import funkin.mobile.FunkinHitbox;
-#end
 
 /**
  * A precise input manager that:
@@ -68,20 +64,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
    */
   var _buttonListDir:Map<Int, Map<FlxGamepadInputID, NoteDirection>>;
 
-  #if mobile
-  /**
-   * The list of hints that are bound to game inputs (up/down/left/right).
-   */
-  var _hintList:Array<FunkinButton>;
-
-  /**
-   * The direction that a given hint is bound to.
-   */
-  var _hintListDir:Map<FunkinButton, NoteDirection>;
-
-  var _hintListMap:Map<Int, FlxInput<Int>>;
-  #end
-
   /**
    * The timestamp at which a given note direction was last pressed.
    */
@@ -113,12 +95,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     _buttonListMap = [];
     _buttonListArray = [];
     _buttonListDir = new Map<Int, Map<FlxGamepadInputID, NoteDirection>>();
-
-    #if mobile
-    _hintList = [];
-    _hintListDir = new Map<FunkinButton, NoteDirection>();
-    _hintListMap = new Map<Int, FlxInput<Int>>();
-    #end
 
     _dirPressTimestamps = new Map<NoteDirection, Int64>();
     _dirReleaseTimestamps = new Map<NoteDirection, Int64>();
@@ -156,19 +132,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       case NoteDirection.RIGHT: controls.getButtonsForAction(NOTE_RIGHT);
     };
   }
-
-  #if mobile
-  public static function getHintForDirection(noteDirection:NoteDirection, hitbox:FunkinHitbox)
-  {
-    return switch (noteDirection)
-    {
-      case NoteDirection.LEFT: hitbox.hints[0];
-      case NoteDirection.DOWN: hitbox.hints[1];
-      case NoteDirection.UP: hitbox.hints[2];
-      case NoteDirection.RIGHT: hitbox.hints[3];
-    };
-  }
-  #end
 
   /**
    * Convert from int to Int64.
@@ -261,25 +224,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     }
   }
 
-  #if mobile
-  public function initializeHitbox(hitbox:FunkinHitbox):Void
-  {
-    clearHints();
-
-    hitbox.onHintDown.add(handleHintnDown);
-    hitbox.onHintUp.add(handleHintUp);
-
-    for (noteDirection in DIRECTIONS)
-    {
-      var hint:FunkinButton = getHintForDirection(noteDirection, hitbox);
-      
-      _hintList[hint.ID] = hint;
-      _hintListMap.set(hint.ID, @:privateAccess hint.input);
-      _hintListDir.set(hint, noteDirection);
-    }
-  }
-  #end
-
   /**
    * Get the time, in nanoseconds, since the given note direction was last pressed.
    * @param noteDirection The note direction to check.
@@ -312,13 +256,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     return _buttonListMap.get(gamepad.id).get(button);
   }
 
-  #if mobile
-  public function getInputByHintID(hintID:Int):FlxInput<Int>
-  {
-    return _hintListMap.get(hintID);
-  }
-  #end
-
   public function getDirectionForKey(key:FlxKey):NoteDirection
   {
     return _keyListDir.get(key);
@@ -328,13 +265,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   {
     return _buttonListDir.get(gamepad.id).get(button);
   }
-
-  #if mobile
-  public function getDirectionForHint(hint:FunkinButton):NoteDirection
-  {
-    return _hintListDir.get(hint);
-  }
-  #end
 
   function getButton(gamepad:FlxGamepad, button:FlxGamepadInputID):FlxInput<FlxGamepadInputID>
   {
@@ -449,50 +379,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     }
   }
 
-  #if mobile
-  function handleHintnDown(hint:FunkinButton):Void
-  {
-    var timestamp:Int64 = getCurrentTimestamp();
-
-    if (_hintList == null || _hintList.indexOf(hint) == -1) return;
-
-    // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
-    // timestamp *= Constants.NS_PER_MS;
-
-    if (getInputByHintID(hint.ID)?.justPressed ?? false)
-    {
-      onInputPressed.dispatch(
-        {
-          noteDirection: getDirectionForHint(hint),
-          timestamp: timestamp
-        });
-      _dirPressTimestamps.set(getDirectionForHint(hint), timestamp);
-    }
-  }
-
-  function handleHintUp(hitbox:FunkinHitbox, hint:FunkinButton):Void
-  {
-    var timestamp:Int64 = getCurrentTimestamp();
-
-    if (_hintList == null || _hintList.indexOf(hint) == -1) return;
-
-    // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
-    // timestamp *= Constants.NS_PER_MS;
-
-    if (getInputByHintID(hint.ID)?.justReleased ?? false)
-    {
-      onInputReleased.dispatch(
-        {
-          noteDirection: getDirectionForHint(hint),
-          timestamp: timestamp
-        });
-      _dirPressTimestamps.set(getDirectionForHint(hint), timestamp);
-    }
-  }
-  #end
-
   static function convertKeyCode(input:KeyCode):FlxKey
   {
     @:privateAccess
@@ -523,15 +409,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     _deviceBinds.clear();
   }
 
-  #if mobile
-  function clearHints():Void
-  {
-    _hintList = [];
-    _hintListDir.clear();
-    _hintListMap.clear();
-  }
-  #end
-
   public override function destroy():Void
   {
     // Keyboard
@@ -540,9 +417,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     clearKeys();
     clearButtons();
-    #if mobile
-    clearHints();
-    #end
   }
 }
 
