@@ -1,6 +1,5 @@
 package funkin.ui.freeplay;
 
-import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
@@ -9,8 +8,8 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.util.TouchUtil;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 {
@@ -27,9 +26,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
   public var inputEnabled:Bool = true;
 
-  #if mobile
-  var swipeBounds:FlxObject;
-  #end
+  var swipeBounds:FlxSprite;
 
   public function new(x, y)
   {
@@ -71,9 +68,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     // rightArrow.animation.play("arrow");
 
-    #if mobile
-    swipeBounds = new FlxObject(-20, -20, 420, 95);
-    #end
+    swipeBounds = new FlxSprite(-20, -20).makeGraphic(420, 95, FlxColor.TRANSPARENT);
+    add(swipeBounds);
 
     changeSelection(0);
   }
@@ -86,27 +82,19 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     {
       if (FlxG.keys.justPressed.E) changeSelection(1);
       if (FlxG.keys.justPressed.Q) changeSelection(-1);
-
       #if mobile
       if (TouchUtil.overlaps(swipeBounds))
       {
         for (swipe in FlxG.swipes)
         {
-          final swipeDistanceX:Float = swipe.endPosition.x - swipe.startPosition.x;
-          final swipeDistanceY:Float = swipe.endPosition.y - swipe.startPosition.y;
-
+          var swipeDistanceX = swipe.endPosition.x - swipe.startPosition.x;
+          var swipeDistanceY = swipe.endPosition.y - swipe.startPosition.y;
           if (20 <= Math.sqrt(swipeDistanceX * swipeDistanceX + swipeDistanceY * swipeDistanceY)
             && Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY))
           {
-            if (swipeDistanceX > 0)
-            {
-              changeSelection(-1);
-            }
+            if (swipeDistanceX > 0) changeSelection(-1);
             else
-            {
               changeSelection(1);
-            }
-
             break;
           }
         }
