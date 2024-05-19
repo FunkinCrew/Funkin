@@ -273,14 +273,12 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     for (noteDirection in DIRECTIONS)
     {
       var hint:FunkinButton = getHintForDirection(noteDirection, hitbox);
-      var hintID:Int = hitbox.hints.indexOf(hint);
+
+      _hintList[hint.ID] = hint;
+      _hintListDir.set(hint, noteDirection);
 
       @:privateAccess
-      var input:FlxInput<Int> = hint.input;
-
-      _hintList[hintID] = hint;
-      _hintListDir.set(hint, noteDirection);
-      _hintListMap.set(hintID, input);
+      _hintListMap.set(hint.ID, hint.input);
     }
   }
   #end
@@ -455,10 +453,9 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   }
 
   #if mobile
-  function handleHintnDown(hitbox:FunkinHitbox, hint:FunkinButton):Void
+  function handleHintnDown(hint:FunkinButton):Void
   {
     var timestamp:Int64 = getCurrentTimestamp();
-    var hintID:Int = hitbox.hints.indexOf(hint);
 
     if (_hintList == null || _hintList.indexOf(hint) == -1) return;
 
@@ -466,7 +463,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
     // timestamp *= Constants.NS_PER_MS;
 
-    if (getInputByHintID(hintID)?.justPressed ?? false)
+    if (getInputByHintID(hint.ID)?.justPressed ?? false)
     {
       onInputPressed.dispatch(
         {
@@ -480,7 +477,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   function handleHintUp(hitbox:FunkinHitbox, hint:FunkinButton):Void
   {
     var timestamp:Int64 = getCurrentTimestamp();
-    var hintID:Int = hitbox.hints.indexOf(hint);
 
     if (_hintList == null || _hintList.indexOf(hint) == -1) return;
 
@@ -488,7 +484,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
     // timestamp *= Constants.NS_PER_MS;
 
-    if (getInputByHintID(hintID)?.justReleased ?? false)
+    if (getInputByHintID(hint.ID)?.justReleased ?? false)
     {
       onInputReleased.dispatch(
         {
