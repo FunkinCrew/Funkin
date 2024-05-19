@@ -74,7 +74,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
 
       if (hint.alpha != 0.00001) hint.alpha = 0.00001;
     });
-    hint.ID = i;
+    hint.ID = id;
     return hint;
   }
 
