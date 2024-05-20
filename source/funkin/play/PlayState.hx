@@ -772,19 +772,19 @@ class PlayState extends MusicBeatSubState
       var message:String = 'There was a critical error. Click OK to return to the main menu.';
       if (currentSong == null)
       {
-        message = 'The was a critical error loading this song\'s chart. Click OK to return to the main menu.';
+        message = 'There was a critical error loading this song\'s chart. Click OK to return to the main menu.';
       }
       else if (currentDifficulty == null)
       {
-        message = 'The was a critical error selecting a difficulty for this song. Click OK to return to the main menu.';
+        message = 'There was a critical error selecting a difficulty for this song. Click OK to return to the main menu.';
       }
       else if (currentChart == null)
       {
-        message = 'The was a critical error retrieving data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
+        message = 'There was a critical error retrieving data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
       }
       else if (currentChart.notes == null)
       {
-        message = 'The was a critical error retrieving note data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
+        message = 'There was a critical error retrieving note data for this song on "$currentDifficulty" difficulty with variation "$currentVariation". Click OK to return to the main menu.';
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
