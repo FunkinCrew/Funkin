@@ -224,6 +224,7 @@
 	</section>
 
 	<architecture exclude="armv7" if="android NO_ARMV7" />
+	<architecture exclude="arm64" if="android NO_ARM64" />
 
 	<section>
 		<!--

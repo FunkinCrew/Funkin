@@ -83,9 +83,9 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   override function draw()
   {
-    #if web
+    // #if web
     if (analyzer != null) drawFFT();
-    #end
+    // #end
     super.draw();
   }
 
