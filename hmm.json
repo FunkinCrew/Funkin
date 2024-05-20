@@ -49,8 +49,8 @@
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "2aa654b974507ab51ab1724d2d97e75726fd7d78",
-      "url": "https://github.com/FunkinCrew/funkVis"
+      "ref": "dcbd701196aff39959bc2e18a6d7c51c37f78098",
+      "url": "https://github.com/FunkinDroidTeam/funkVis"
     },
     {
       "name": "hamcrest",
