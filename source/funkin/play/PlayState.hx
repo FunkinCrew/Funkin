@@ -491,9 +491,9 @@ class PlayState extends MusicBeatSubState
   public var camGame:FlxCamera;
 
   /**
-   * The camera which contains, and controls visibility of, a video cutscene.
+   * The camera which contains, and controls visibility of, a video cutscene, dialogue, pause menu and sticker transition.
    */
-  public var camCutscene:FlxCamera;
+  public var camOther:FlxCamera;
 
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
@@ -960,7 +960,7 @@ class PlayState extends MusicBeatSubState
 
           FlxTransitionableState.skipNextTransIn = true;
           FlxTransitionableState.skipNextTransOut = true;
-          pauseSubState.camera = camHUD;
+          pauseSubState.camera = camOther;
           openSubState(pauseSubState);
           // boyfriendPos.put(); // TODO: Why is this here?
         }
@@ -1501,12 +1501,12 @@ class PlayState extends MusicBeatSubState
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
-    camCutscene = new FlxCamera();
-    camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
+    camOther = new FlxCamera();
+    camOther.bgColor.alpha = 0; // Show the game scene behind the camera.
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
-    FlxG.cameras.add(camCutscene, false);
+    FlxG.cameras.add(camOther, false);
 
     // Configure camera follow point.
     if (previousCameraFollowPoint != null)
@@ -1900,7 +1900,6 @@ class PlayState extends MusicBeatSubState
     if (!result) return;
 
     isInCutscene = false;
-    camCutscene.visible = false;
 
     // TODO: Maybe tween in the camera after any cutscenes.
     camHUD.visible = true;
@@ -1919,7 +1918,7 @@ class PlayState extends MusicBeatSubState
     if (!currentConversation.alive) currentConversation.revive();
 
     currentConversation.completeCallback = onConversationComplete;
-    currentConversation.cameras = [camCutscene];
+    currentConversation.cameras = [camOther];
     currentConversation.zIndex = 1000;
     add(currentConversation);
     refresh();
@@ -2751,7 +2750,7 @@ class PlayState extends MusicBeatSubState
         persistentUpdate = false;
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-        pauseSubState.camera = camCutscene;
+        pauseSubState.camera = camOther;
         openSubState(pauseSubState);
       }
     }
@@ -2767,7 +2766,7 @@ class PlayState extends MusicBeatSubState
         persistentUpdate = false;
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-        pauseSubState.camera = camCutscene;
+        pauseSubState.camera = camOther;
         openSubState(pauseSubState);
       }
     }
