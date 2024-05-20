@@ -81,12 +81,11 @@ class VideoCutscene
     // Trigger the cutscene. Don't play the song in the background.
     PlayState.instance.isInCutscene = true;
     PlayState.instance.camHUD.visible = false;
-    PlayState.instance.camCutscene.visible = true;
 
     // Display a black screen to hide the game while the video is playing.
     blackScreen = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     blackScreen.scrollFactor.set(0, 0);
-    blackScreen.cameras = [PlayState.instance.camCutscene];
+    blackScreen.cameras = [PlayState.instance.camOther];
     PlayState.instance.add(blackScreen);
 
     VideoCutscene.cutsceneType = cutsceneType;
@@ -120,7 +119,7 @@ class VideoCutscene
 
       vid.finishCallback = finishVideo.bind(0.5);
 
-      vid.cameras = [PlayState.instance.camCutscene];
+      vid.cameras = [PlayState.instance.camOther];
 
       PlayState.instance.add(vid);
 
@@ -147,7 +146,7 @@ class VideoCutscene
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
       vid.autoPause = false;
 
-      vid.cameras = [PlayState.instance.camCutscene];
+      vid.cameras = [PlayState.instance.camOther];
 
       PlayState.instance.add(vid);
 
@@ -305,7 +304,6 @@ class VideoCutscene
     vid = null;
     #end
 
-    PlayState.instance.camCutscene.visible = true;
     PlayState.instance.camHUD.visible = true;
 
     FlxTween.tween(blackScreen, {alpha: 0}, transitionTime,
