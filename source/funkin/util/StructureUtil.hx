@@ -44,8 +44,15 @@ class StructureUtil
     return Std.isOfType(a, haxe.Constraints.IMap);
   }
 
-  public static function isObject(a:Dynamic):Bool
+  /**
+   * Returns `true` if `a` is an anonymous structure.
+   * I believe this returns `false` even for class instances and arrays.
+   */
+  public static function isStructure(a:Dynamic):Bool
   {
+    // TODO: Is there a difference?
+    // return Reflect.isObject(foo);
+
     switch (Type.typeof(a))
     {
       case TObject:
@@ -53,6 +60,22 @@ class StructureUtil
       default:
         return false;
     }
+  }
+
+  /**
+   * Returns true if `a` is an array.
+   *
+   * NOTE: isObject and isInstance also return true,
+   * since they're objects of the Array<> class, so check this first!
+   */
+  public static function isArray(a:Dynamic):Bool
+  {
+    return Std.is(a, Array);
+  }
+
+  public static function isInstance(a:Dynamic):Bool
+  {
+    return Type.getClass(a) != null;
   }
 
   public static function isPrimitive(a:Dynamic):Bool
@@ -89,6 +112,7 @@ class StructureUtil
   {
     if (a == null) return b;
     if (b == null) return null;
+    if (isArray(a) && isArray(b)) return b;
     if (isPrimitive(a) && isPrimitive(b)) return b;
     if (isMap(b))
     {
@@ -101,7 +125,6 @@ class StructureUtil
         return StructureUtil.toMap(a).merge(b);
       }
     }
-    if (!Reflect.isObject(a) || !Reflect.isObject(b)) return b;
     if (Std.isOfType(b, haxe.ds.StringMap))
     {
       if (Std.isOfType(a, haxe.ds.StringMap))
@@ -113,15 +136,14 @@ class StructureUtil
         return StructureUtil.toMap(a).merge(b);
       }
     }
+    if (!isStructure(a) || !isStructure(b)) return b;
 
     var result:DynamicAccess<Dynamic> = Reflect.copy(a);
 
     for (field in Reflect.fields(b))
     {
-      if (Reflect.isObject(b))
+      if (isStructure(b))
       {
-        // Note that isObject also returns true for class instances,
-        // but we just assume that's not a problem here.
         result.set(field, deepMerge(Reflect.field(result, field), Reflect.field(b, field)));
       }
       else

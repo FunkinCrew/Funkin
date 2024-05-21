@@ -24,6 +24,8 @@ class SaveDataMigrator
     }
     else
     {
+      // Sometimes the Haxe serializer has issues with the version so we fix it here.
+      version = VersionUtil.repairVersion(version);
       if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
         // Simply import the structured data.
@@ -32,8 +34,9 @@ class SaveDataMigrator
       }
       else
       {
-        trace('[SAVE] Invalid save data version! Returning blank data.');
-        trace(inputData);
+        var message:String = 'Error migrating save data, expected ${Save.SAVE_DATA_VERSION}.';
+        lime.app.Application.current.window.alert(message, "Save Data Failure");
+        trace('[SAVE] ' + message);
         return new Save(Save.getDefault());
       }
     }
