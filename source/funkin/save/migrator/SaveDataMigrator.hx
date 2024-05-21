@@ -3,7 +3,6 @@ package funkin.save.migrator;
 import funkin.save.Save;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import thx.semver.Version;
-import funkin.util.StructureUtil;
 import funkin.util.VersionUtil;
 
 @:nullSafety
@@ -29,7 +28,7 @@ class SaveDataMigrator
       if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
         // Import the structured data.
-        var saveDataWithDefaults:RawSaveData = thx.Objects.deepCombine(Save.getDefault(), inputData);
+        var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefault(), inputData);
         var save:Save = new Save(saveDataWithDefaults);
         return save;
       }

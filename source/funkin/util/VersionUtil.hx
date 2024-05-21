@@ -36,7 +36,7 @@ class VersionUtil
   {
     var versionData:thx.semver.Version.SemVer = version;
 
-    if (StructureUtil.isStructure(versionData.version))
+    if (thx.Types.isAnonymousObject(versionData.version))
     {
       // This is bad! versionData.version should be an array!
       versionData.version = [versionData.version[0], versionData.version[1], versionData.version[2]];
