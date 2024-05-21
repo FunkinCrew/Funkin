@@ -539,7 +539,6 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
-    #if mobile
     addVirtualPad(UP_DOWN, A_B_C);
     virtualPad.forEachAlive((button) -> {
       switch (button.role)
@@ -554,7 +553,6 @@ class FreeplayState extends MusicBeatSubState
           FlxTween.tween(button, {y: baseY}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
       }
     });
-    #end
 
     forEach(function(bs) {
       bs.cameras = [funnyCam];
@@ -713,7 +711,7 @@ class FreeplayState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.F #if mobile || virtualPad.buttonC.justPressed #end)
+    if (FlxG.keys.justPressed.F || virtualPad.buttonC.justPressed)
     {
       var targetSong = grpCapsules.members[curSelected]?.songData;
       if (targetSong != null)
@@ -860,7 +858,6 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true);
     }
 
-    #if mobile
     // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
     if (TouchUtil.overlapsComplex(diffSelLeft) && TouchUtil.justPressed)
     {
@@ -881,7 +878,6 @@ class FreeplayState extends MusicBeatSubState
       diffSelRight.setPress(false);
       diffSelLeft.setPress(false);
     }
-    #end
 
     if (controls.BACK)
     {
@@ -892,7 +888,6 @@ class FreeplayState extends MusicBeatSubState
 
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
-      #if mobile
       virtualPad.forEachAlive((button) -> {
         switch (button.role)
         {
@@ -902,7 +897,6 @@ class FreeplayState extends MusicBeatSubState
             FlxTween.tween(button, {y: button.y + button.height}, FlxG.random.float(0.3, 0.55), {ease: FlxEase.quartInOut});
         }
       });
-      #end
 
       var longestTimer:Float = 0;
 
