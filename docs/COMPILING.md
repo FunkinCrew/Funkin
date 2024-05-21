@@ -21,4 +21,64 @@
 
 # Troubleshooting
 
-- During the cloning process, you may experience an error along the lines of `error: RPC failed; curl 92 HTTP/2 stream 0 was not closed cleanly: PROTOCOL_ERROR (err 1)` due to poor connectivity. A common fix is to run ` git config --global http.postBuffer 4096M`.
+While performing the process of compilation, you may experience one of the following issues:
+
+## PolymodHandler: extra field coreAssetRedirect
+
+```
+Installing funkin.vis from https://github.com/FunkinCrew/funkVis branch: 98c9db09f0bbfedfe67a84538a5814aaef80bdea
+Error: std@sys_remove_dir
+Execution error: command "haxelib --never git funkin.vis https://github.com/FunkinCrew/funkVis 98c9db09f0bbfedfe67a84538a5814aaef80bdea" failed with status: 1 in cwd
+```
+
+If you receive this error, you are on an outdated version of Polymod.
+
+To solve, you should try reinstalling Polymod:
+
+```
+haxelib run hmm reinstall --force polymod
+```
+
+You can also try deleting your `.haxelib` folder in your Funkin' project, then reinstalling all your Haxelibs to prevent any other errors:
+
+```
+rm -rf ./.haxelib
+haxelib run hmm reinstall --force
+```
+
+## PolymodHandler: Couldn't find a match for this asset library: (vlc)
+
+```
+source/funkin/modding/PolymodErrorHandler.hx:84: [ERROR] Your Lime/OpenFL configuration is using custom asset libraries, and you provided frameworkParams in Polymod.init(), but we couldn't find a match for this asset library: (vlc)
+source/funkin/modding/PolymodHandler.hx:158: An error occurred! Failed when loading mods!
+source/funkin/util/logging/CrashHandler.hx:62: Error while handling crash: Null Object Reference
+```
+
+This error is specific to Linux targets. If you receive this error, you are on an outdated verison of hxCodec.
+
+To solve, you should try reinstalling hxCodec:
+
+```
+haxelib run hmm reinstall --force hxCodec
+```
+
+You can also try deleting your `.haxelib` folder in your Funkin' project, then reinstalling all your Haxelibs to prevent any other errors:
+
+```
+rm -rf ./.haxelib
+haxelib run hmm reinstall --force
+```
+
+## Git: stream 0 was not closed cleanly: PROTOCOL_ERROR
+
+```
+error: RPC failed; curl 92 HTTP/2 stream 0 was not closed cleanly: PROTOCOL_ERROR (err 1)
+```
+
+If you receive this error while cloning, you may be experiencing issues with your network connection.
+
+To solve, you should try modifying your git configuration before cloning again:
+
+```
+git config --global http.postBuffer 4096M
+```
