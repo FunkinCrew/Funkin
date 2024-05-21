@@ -15,6 +15,7 @@ import flixel.util.FlxSort;
 import funkin.input.Controls;
 import funkin.util.TouchUtil;
 import funkin.input.PreciseInputManager;
+#if mobile
 import flixel.input.actions.FlxActionInput;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxCamera;
@@ -22,6 +23,7 @@ import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinHitbox;
 import funkin.mobile.FunkinVirtualPad;
 import funkin.mobile.PreciseInputHandler;
+#end
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
@@ -59,6 +61,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   inline function get_controls():Controls
     return PlayerSettings.player1.controls;
 
+  #if mobile
   public var hitbox:FunkinHitbox;
   public var virtualPad:FunkinVirtualPad;
 
@@ -156,6 +159,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
       hitboxCam = FlxDestroyUtil.destroy(hitboxCam);
     }
   }
+  #end
 
   override function create():Void
   {
@@ -169,6 +173,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public override function destroy():Void
   {
+    #if mobile
     if (trackedInputsHitbox != null && trackedInputsHitbox.length > 0)
     {
       ControlsHandler.removeCachedInput(controls, trackedInputsHitbox);
@@ -178,9 +183,11 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     {
       ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
     }
+    #end
 
     super.destroy();
 
+    #if mobile
     if (virtualPad != null)
     {
       virtualPad = FlxDestroyUtil.destroy(virtualPad);
@@ -190,6 +197,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     {
       hitbox = FlxDestroyUtil.destroy(hitbox);
     }
+    #end
 
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
@@ -211,9 +219,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     if (FlxG.keys.justPressed.ANY && isTouch) isTouch = false;
     if (TouchUtil.justPressed && !isTouch) isTouch = true;
-
-    if (virtualPad != null) virtualPad.visible = isTouch;
-    if (hitbox != null) hitbox.visible = isTouch;
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }

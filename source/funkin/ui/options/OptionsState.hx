@@ -13,7 +13,9 @@ import funkin.graphics.shaders.HSVShader;
 import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
+#if mobile
 import funkin.mobile.ControlsHandler;
+#end
 
 class OptionsState extends MusicBeatState
 {
@@ -59,8 +61,10 @@ class OptionsState extends MusicBeatState
     // disable for intro transition
     currentPage.enabled = false;
 
+    #if mobile
     addVirtualPad(LEFT_FULL, A_B);
     addVirtualPadCamera(false);
+    #end
     super.create();
   }
 
@@ -111,9 +115,11 @@ class OptionsState extends MusicBeatState
 
     switchPage(Options);
 
+    #if mobile
     // re-initalie virtual pad input
     ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
     ControlsHandler.setupVirtualPad(controls, virtualPad, LEFT_FULL, A_B, trackedInputsVirtualPad);
+    #end
   }
 
   function exitToMainMenu()
