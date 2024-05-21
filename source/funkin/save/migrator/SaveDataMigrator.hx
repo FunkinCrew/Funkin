@@ -28,8 +28,9 @@ class SaveDataMigrator
       version = VersionUtil.repairVersion(version);
       if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
-        // Simply import the structured data.
-        var save:Save = new Save(StructureUtil.deepMerge(Save.getDefault(), inputData));
+        // Import the structured data.
+        var saveDataWithDefaults:RawSaveData = thx.Objects.deepCombine(Save.getDefault(), inputData);
+        var save:Save = new Save(saveDataWithDefaults);
         return save;
       }
       else
