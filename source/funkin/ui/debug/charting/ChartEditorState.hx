@@ -2254,9 +2254,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function setupWelcomeMusic()
   {
-    this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop/chartEditorLoop'));
-    FlxG.sound.list.add(this.welcomeMusic);
-    this.welcomeMusic.looped = true;
+    this.welcomeMusic = FunkinSound.load(Paths.music('chartEditorLoop/chartEditorLoop'), 1.0, true);
   }
 
   public function loadPreferences():Void
@@ -3385,16 +3383,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
-        var oldStepTime:Float = Conductor.instance.currentStepTime;
-        var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
-        Conductor.instance.update(audioInstTrack.time);
-        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
           audioVocalTrackGroup.time = audioInstTrack.time;
         }
+
+        var oldStepTime:Float = Conductor.instance.currentStepTime;
+        var oldSongPosition:Float = Conductor.instance.songPosition;
+        trace(audioInstTrack);
+        Conductor.instance.update(audioInstTrack.time);
+
         var diffStepTime:Float = Conductor.instance.currentStepTime - oldStepTime;
+
+        var newSongPosition:Float = Conductor.instance.songPosition;
+        handleHitsounds(oldSongPosition, newSongPosition);
 
         // Move the playhead.
         playheadPositionInPixels += diffStepTime * GRID_SIZE;
@@ -3404,18 +3407,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         // Else, move the entire view.
-        var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
-        Conductor.instance.update(audioInstTrack.time);
-        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
           audioVocalTrackGroup.time = audioInstTrack.time;
         }
 
+        var oldSongPosition:Float = Conductor.instance.songPosition;
+        Conductor.instance.update(audioInstTrack.time);
+
         // We need time in fractional steps here to allow the song to actually play.
         // Also account for a potentially offset playhead.
         scrollPositionInPixels = (Conductor.instance.currentStepTime + Conductor.instance.instrumentalOffsetSteps) * GRID_SIZE - playheadPositionInPixels;
+
+        var newSongPosition:Float = Conductor.instance.songPosition;
+        handleHitsounds(oldSongPosition, newSongPosition);
 
         // DO NOT move song to scroll position here specifically.
 
@@ -3631,7 +3638,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // If a new event is needed, call buildEventSprite.
         var eventSprite:ChartEditorEventSprite = renderedEvents.recycle(() -> new ChartEditorEventSprite(this), false, true);
         eventSprite.parentState = this;
-        trace('Creating new Event... (${renderedEvents.members.length})');
+        // trace('Creating new Event... (${renderedEvents.members.length})');
 
         // The event sprite handles animation playback and positioning.
         eventSprite.eventData = eventData;
@@ -6279,11 +6286,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Set to true when a hitsound is played, then set to false the frame after.
+   * Used to prevent doubling up on hitsounds.
+   */
+  var playedHitsoundLastFrame:Bool = false;
+
+  /**
    * Handle the playback of hitsounds.
    */
   function handleHitsounds(oldSongPosition:Float, newSongPosition:Float):Void
   {
     if (!hitsoundsEnabled) return;
+    if (oldSongPosition == newSongPosition) return;
+
+    // Don't play hitsounds when moving backwards in time.
+    // This prevents issues caused by FlxSound occasionally jumping backwards in time at the start of playback.
+    if (newSongPosition < oldSongPosition) return;
+
+    // Skip hitsounds this frame if they were already played one frame ago.
+    if (playedHitsoundLastFrame)
+    {
+      // trace('IGNORING hitsound (${oldSongPosition} -> ${newSongPosition}), already played last check!');
+      playedHitsoundLastFrame = false;
+      return;
+    }
 
     // Assume notes are sorted by time.
     for (noteData in currentSongChartNoteData)
@@ -6293,7 +6319,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteData.time < oldSongPosition) // Note is in the past.
         continue;
 
-      if (noteData.time > newSongPosition) // Note is in the future.
+      if (noteData.time >= newSongPosition) // Note is in the future.
         return; // Assume all notes are also in the future.
 
       // Note was just hit.
@@ -6318,6 +6344,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         case 1: // Opponent
           if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
       }
+
+      playedHitsoundLastFrame = true;
     }
   }
 

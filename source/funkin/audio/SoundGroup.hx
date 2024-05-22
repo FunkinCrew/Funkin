@@ -178,9 +178,10 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function get_time():Float
   {
-    if (getFirstAlive() != null)
+    var firstAlive:Null<FunkinSound> = getFirstAlive();
+    if (firstAlive != null)
     {
-      return getFirstAlive().time;
+      return firstAlive.time;
     }
     else
     {
@@ -260,7 +261,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   function set_pitch(val:Float):Float
   {
     #if FLX_PITCH
-    trace('Setting audio pitch to ' + val);
+    // trace('Setting audio pitch to ' + val);
     forEachAlive(function(snd:FunkinSound) {
       snd.pitch = val;
     });

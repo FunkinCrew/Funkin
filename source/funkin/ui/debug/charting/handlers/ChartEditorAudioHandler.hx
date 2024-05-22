@@ -175,7 +175,7 @@ class ChartEditorAudioHandler
     if (instId == '') instId = 'default';
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
     var perfStart:Float = TimerUtil.start();
-    var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
+    var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData, 'chartEditor-inst${instId == '' ? '' : '-${instId}'}');
     trace('Built instrumental track in ${TimerUtil.seconds(perfStart)} seconds.');
     if (instTrack == null) return false;
 
@@ -205,7 +205,7 @@ class ChartEditorAudioHandler
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackId);
     var perfStart:Float = TimerUtil.start();
-    var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+    var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData, 'chartEditor-vocals-${charId}${instId == '' ? '' : '-${instId}'}');
     trace('Built vocal track in ${TimerUtil.seconds(perfStart)}.');
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
