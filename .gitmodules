@@ -1,6 +1,5 @@
 [submodule "assets"]
 	path = assets
-	url = https://github.com/FunkinCrew/funkin.assets
-[submodule "art"]
+	url = https://github.com/FunkinCrew/Funkin-Assets-secret
 	path = art
-	url = https://github.com/FunkinCrew/funkin.art
+	url = https://github.com/FunkinCrew/Funkin-Art-secret
