@@ -3,7 +3,6 @@ package funkin.save.migrator;
 import funkin.save.Save;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import thx.semver.Version;
-import funkin.util.StructureUtil;
 import funkin.util.VersionUtil;
 
 @:nullSafety
@@ -24,16 +23,20 @@ class SaveDataMigrator
     }
     else
     {
+      // Sometimes the Haxe serializer has issues with the version so we fix it here.
+      version = VersionUtil.repairVersion(version);
       if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
-        // Simply import the structured data.
-        var save:Save = new Save(StructureUtil.deepMerge(Save.getDefault(), inputData));
+        // Import the structured data.
+        var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefault(), inputData);
+        var save:Save = new Save(saveDataWithDefaults);
         return save;
       }
       else
       {
-        trace('[SAVE] Invalid save data version! Returning blank data.');
-        trace(inputData);
+        var message:String = 'Error migrating save data, expected ${Save.SAVE_DATA_VERSION}.';
+        lime.app.Application.current.window.alert(message, "Save Data Failure");
+        trace('[SAVE] ' + message);
         return new Save(Save.getDefault());
       }
     }
