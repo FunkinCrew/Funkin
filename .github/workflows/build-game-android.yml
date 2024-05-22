@@ -4,6 +4,7 @@ jobs:
   Android:
     runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         flag: [NO_ARMV7, NO_ARM64]
     steps:
@@ -11,11 +12,6 @@ jobs:
         uses: actions/checkout@main
         with:
           submodules: true
-      # - name: Setup Android NDK
-        # uses: nttld/setup-ndk@main
-        # id: setup-ndk
-        # with:
-          # ndk-version: r21e
       - name: Setup Java JDK
         uses: actions/setup-java@main
         with:
@@ -33,7 +29,7 @@ jobs:
       - name: Configure Android
         run: |
           haxelib run lime config ANDROID_SDK $ANDROID_HOME
-          haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_HOME # ${{ steps.setup-ndk.outputs.ndk-path }}
+          haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
           haxelib run lime config ANDROID_SETUP true
       - name: Compile
