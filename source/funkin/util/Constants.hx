@@ -249,6 +249,11 @@ class Constants
   public static final DEFAULT_ARTIST:String = 'Unknown';
 
   /**
+   * The default charter for songs.
+   */
+  public static final DEFAULT_CHARTER:String = 'Unknown';
+
+  /**
    * The default note style for songs.
    */
   public static final DEFAULT_NOTE_STYLE:String = 'funkin';
