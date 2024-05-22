@@ -49,8 +49,15 @@
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "dcbd701196aff39959bc2e18a6d7c51c37f78098",
-      "url": "https://github.com/FunkinDroidTeam/funkVis"
+      "ref": "useGrig",
+      "url": "https://github.com/FunkinCrew/funkVis"
+    },
+    {
+      "name": "grig.audio",
+      "type": "git",
+      "dir": null,
+      "ref": "stealAudaciousDSP",
+      "url": "https://github.com/osakared/grig.audio"
     },
     {
       "name": "hamcrest",
@@ -85,6 +92,13 @@
       "name": "extension-androidtools",
       "type": "haxelib",
       "version": "2.0.2"
+    },
+    {
+      "name": "extension-androidtools",
+      "type": "git",
+      "dir": null,
+      "ref": "d3c61402a4bd02cb410961a2c47bd85ca1d3a559",
+      "url": "https://github.com/MAJigsaw77/extension-androidtools"
     },
     {
       "name": "hxcpp",
