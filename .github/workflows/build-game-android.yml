@@ -1,0 +1,42 @@
+name: Build Game for Android
+on: workflow_dispatch
+jobs:
+  Android:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          submodules: true
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@main
+        id: setup-ndk
+        with:
+          ndk-version: r21e
+      - name: Setup Java JDK
+        uses: actions/setup-java@main
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.4
+      - name: Install Libraries
+        run: |
+          haxelib install hmm --quiet
+          haxelib run hmm install --quiet
+      - name: Configure Android
+        run: |
+          haxelib run lime config ANDROID_SDK $ANDROID_HOME
+          haxelib run lime config ANDROID_NDK_ROOT ${{ steps.setup-ndk.outputs.ndk-path }}
+          haxelib run lime config JAVA_HOME $JAVA_HOME
+          haxelib run lime config ANDROID_SETUP true
+      - name: Compile
+        run: haxelib run lime build android
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: androidBuild
+          path: export/release/android/bin/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
