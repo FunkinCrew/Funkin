@@ -2,7 +2,7 @@ name: Create and publish Docker image
 
 on:
   workflow_dispatch:
-  push:
+  # push:
     paths:
     - '**/Dockerfile'
     - '.github/workflows/build-docker-image.yml'
