@@ -699,8 +699,8 @@ class FreeplayState extends MusicBeatSubState
       if (targetSong != null)
       {
         var realShit:Int = curSelected;
-        targetSong.isFav = !targetSong.isFav;
-        if (targetSong.isFav)
+        var isFav = targetSong.toggleFavorite();
+        if (isFav)
         {
           FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4,
             {
@@ -1412,9 +1412,30 @@ class FreeplaySongData
     this.levelId = levelId;
     this.songId = songId;
     this.song = song;
+
+    this.isFav = Save.instance.isSongFavorited(songId);
+
     if (displayedVariations != null) this.displayedVariations = displayedVariations;
 
     updateValues(displayedVariations);
+  }
+
+  /**
+   * Toggle whether or not the song is favorited, then flush to save data.
+   * @return Whether or not the song is now favorited.
+   */
+  public function toggleFavorite():Bool
+  {
+    isFav = !isFav;
+    if (isFav)
+    {
+      Save.instance.favoriteSong(this.songId);
+    }
+    else
+    {
+      Save.instance.unfavoriteSong(this.songId);
+    }
+    return isFav;
   }
 
   function updateValues(variations:Array<String>):Void
