@@ -156,7 +156,7 @@
 	<!-- Disable trace() calls in release builds to bump up performance.
 		<haxeflag name="- -no-traces" unless="debug" />-->
 	<!-- HScript relies heavily on Reflection, which means we can't use DCE. -->
-	<haxeflag name="-dce no" unless="USE_DCE"/>
+	<haxeflag name="-dce no" />
 	<!-- Ensure all Funkin' classes are available at runtime. -->
 	<haxeflag name="--macro" value="include('funkin')" />
 	<!-- Ensure all UI components are available at runtime. -->
