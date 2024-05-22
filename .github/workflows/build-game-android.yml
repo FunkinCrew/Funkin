@@ -3,6 +3,9 @@ on: workflow_dispatch
 jobs:
   Android:
     runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        flag: [NO_ARMV7, NO_ARM64]
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -33,10 +36,10 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME
           haxelib run lime config ANDROID_SETUP true
       - name: Compile
-        run: haxelib run lime build android
+        run: haxelib run lime build android -D ${{matrix.flag}}
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
-          name: androidBuild
+          name: androidBuild-${{matrix.flag}}
           path: export/release/android/bin/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
