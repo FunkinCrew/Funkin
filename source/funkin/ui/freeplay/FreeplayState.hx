@@ -156,6 +156,12 @@ class FreeplayState extends MusicBeatSubState
 
     FlxTransitionableState.skipNextTransIn = true;
 
+    // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
+    funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
+    funnyCam.bgColor = FlxColor.TRANSPARENT;
+    FlxG.cameras.add(funnyCam, false);
+    this.cameras = [funnyCam];
+
     if (stickerSubState != null)
     {
       this.persistentUpdate = true;
@@ -534,15 +540,6 @@ class FreeplayState extends MusicBeatSubState
     });
 
     generateSongList(null, false);
-
-    // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
-    funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
-    funnyCam.bgColor = FlxColor.TRANSPARENT;
-    FlxG.cameras.add(funnyCam, false);
-
-    forEach(function(bs) {
-      bs.cameras = [funnyCam];
-    });
   }
 
   var currentFilter:SongFilter = null;
