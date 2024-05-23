@@ -724,8 +724,8 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
-    lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
+    lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
+    lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
 
     if (Math.isNaN(lerpScore))
     {
@@ -880,11 +880,24 @@ class FreeplayState extends MusicBeatSubState
       spamTimer = 0;
     }
 
+    #if !html5
     if (FlxG.mouse.wheel != 0)
     {
       dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+      changeSelection(-Math.round(FlxG.mouse.wheel));
     }
+    #else
+    if (FlxG.mouse.wheel < 0)
+    {
+      dj.resetAFKTimer();
+      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+    }
+    else if (FlxG.mouse.wheel > 0)
+    {
+      dj.resetAFKTimer();
+      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+    }
+    #end
 
     if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
     {
@@ -901,6 +914,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (controls.BACK)
     {
+      busy = true;
       FlxTween.globalManager.clear();
       FlxTimer.globalManager.clear();
       dj.onIntroDone.removeAll();
