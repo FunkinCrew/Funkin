@@ -364,10 +364,20 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
       if (music != null)
       {
+        for (future in partialQueue)
+        {
+          future = cast Future.withError("Music was overridden by another partial load");
+        }
+        partialQueue = [];
+        partialQueue.push(music);
+
+        @:nullSafety(Off)
         music.onComplete(function(partialMusic:Null<FunkinSound>) {
-          @:nullSafety(Off)
-          FlxG.sound.music = partialMusic;
-          FlxG.sound.list.remove(FlxG.sound.music);
+          if (partialQueue.pop() == music)
+          {
+            FlxG.sound.music = partialMusic;
+            FlxG.sound.list.remove(FlxG.sound.music);
+          }
         });
 
         return true;
@@ -395,6 +405,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
   }
+
+  static var partialQueue:Array<Future<Null<FunkinSound>>> = [];
 
   /**
    * Creates a new `FunkinSound` object synchronously.
@@ -461,6 +473,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param looped Whether the sound file should loop
    * @param autoDestroy Whether the sound file should be destroyed after it finishes playing
    * @param autoPlay Whether the sound file should play immediately
+   * @param onComplete Callback when the sound finishes playing
+   * @param onLoad Callback when the sound finishes loading
    * @return A FunkinSound object
    */
   public static function loadPartial(path:String, start:Float = 0, end:Float = 1, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false,
