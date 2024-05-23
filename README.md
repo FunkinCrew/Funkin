@@ -1,25 +1,25 @@
-# Friday Night Funkin' &middot; [![GitHub license](https://img.shields.io/badge/license-Modified%20Apache%20V2-blue.svg)](https://github.com/ninjamuffin99/Funkin/blob/master/LICENSE.md) ![Repo size](https://img.shields.io/github/repo-size/ninjamuffin99/Funkin) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ninjamuffin99/Funkin/pulls)
+# Friday Night Funkin' 
 
-Friday Night Funkin' is a rhythm game that doubles as a playable cartoon. Built using HaxeFlixel for Ludem Dare 47.
+Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for Ludum Dare 47.
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
-## [Play for free on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
-## [Download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
-
-![Friday Night Funkin' Logo](./art/thumbnailNewer.png)
+- [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
+- [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
 
 # Getting Started
 
 **PLEASE USE THE LINKS ABOVE IF YOU JUST WANT TO PLAY THE GAME**
 
-To learn how to install the necessary dependencies and compile the game from source, please check out our [building the game](/docs/compiling.md) guide.
+To learn how to install the necessary dependencies and compile the game from source, please check out our [building the game](/docs/COMPILING.md) guide.
 
 # Contributing
 
 Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can actively participate in the development of Friday Night Funkin'.
 
 # Credits and Special Thanks
+
+Full credits can be found in-game, or wherever the credits.json file is.
 
 ## Programming
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer
