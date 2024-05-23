@@ -1,5 +1,7 @@
 # Compiling Friday Night Funkin'
 
+This guide should help you compile Friday Night Funkin'
+
 0. Setup
     - Download Haxe from [Haxe.org](https://haxe.org)
 1. Cloning the Repository: Make sure when you clone, you clone the submodules to get the assets repo:
