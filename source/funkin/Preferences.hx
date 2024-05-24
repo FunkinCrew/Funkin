@@ -190,8 +190,6 @@ class Preferences
 
   static function set_legacyControls(value:Bool):Bool
   {
-    if (value != Save.instance.options.legacyControls) FlxG.save.data.legacyControls = value;
-
     var save:Save = Save.instance;
     save.options.legacyControls = value;
     save.flush();
