@@ -62,7 +62,7 @@ class PreferencesMenu extends Page
     pref.minValue = 60;
     pref.maxValue = 360;
     pref.changeRate = 1;
-    pref.changeSpeed = 0.05;
+    pref.changeDelay = 0.05;
     addPref(pref);
     #end
 
@@ -133,14 +133,14 @@ class PreferenceItem extends FlxTypedSpriteGroup<FlxSprite>
   public var name:String = "";
   public var description:String = "";
 
-  public function handleInput(deltaTime:Float):Void {}
+  public function handleInput(elapsed:Float):Void {}
 }
 
 class NumberedPreferenceItem extends PreferenceItem
 {
   public var onChange:Float->Void;
   public var changeRate:Float = 1.0;
-  public var changeSpeed:Float = 0.1;
+  public var changeDelay:Float = 0.1;
 
   public var minValue(default, set):Null<Float>;
 
@@ -191,9 +191,9 @@ class NumberedPreferenceItem extends PreferenceItem
 
   var timeToWait:Float = 0;
 
-  public override function handleInput(deltaTime:Float):Void
+  public override function handleInput(elapsed:Float):Void
   {
-    timeToWait -= deltaTime;
+    timeToWait -= elapsed;
 
     if (timeToWait > 0)
     {
@@ -203,12 +203,12 @@ class NumberedPreferenceItem extends PreferenceItem
     if (PlayerSettings.player1.controls.UI_RIGHT)
     {
       currentValue += changeRate;
-      timeToWait = changeSpeed;
+      timeToWait = changeDelay;
     }
     else if (PlayerSettings.player1.controls.UI_LEFT)
     {
       currentValue -= changeRate;
-      timeToWait = changeSpeed;
+      timeToWait = changeDelay;
     }
   }
 
