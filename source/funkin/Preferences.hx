@@ -176,4 +176,27 @@ class Preferences
       #end
     }
   }
+
+  #if mobile
+  /**
+   * If enabled, vpad will be disabled.
+   * @default `true`
+   */
+  public static var legacyControls(get, set):Bool;
+
+  static function get_legacyControls():Bool
+  {
+    return Save?.instance?.options?.legacyControls ?? true;
+  }
+
+  static function set_legacyControls(value:Bool):Bool
+  {
+    if (value != Save.instance.options.legacyControls) FlxG.legacyControls = value;
+
+    var save:Save = Save.instance;
+    save.options.legacyControls = value;
+    save.flush();
+    return value;
+  }
+  #end
 }
