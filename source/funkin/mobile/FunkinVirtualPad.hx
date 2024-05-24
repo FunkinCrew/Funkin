@@ -28,6 +28,7 @@ enum FunkinActionMode
 {
   A;
   B;
+  P;
   A_B;
   A_C;
   A_B_C;
@@ -72,6 +73,11 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
    * The B action button.
    */
   public var buttonB:FunkinButton = new FunkinButton(0, 0);
+
+  /**
+   * The P action button.
+   */
+  public var buttonP:FunkinButton = new FunkinButton(0, 0);
 
   /**
    * The C action button.
@@ -134,6 +140,8 @@ class FunkinVirtualPad extends FlxTypedSpriteGroup<FunkinButton>
         add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, 'a', 0xFF0000, ACTION_BUTTON));
       case B:
         add(buttonB = createButton(FlxG.width - 132, FlxG.height - 135, 'b', 0xFFCB00, ACTION_BUTTON));
+      case P:
+        add(buttonP = createButton(FlxG.width - 132, 0, 'x', 0x99062D, ACTION_BUTTON));
       case A_B:
         add(buttonB = createButton(FlxG.width - 258, FlxG.height - 135, 'b', 0xFFCB00, ACTION_BUTTON));
         add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, 'a', 0xFF0000, ACTION_BUTTON));

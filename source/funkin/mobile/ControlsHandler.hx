@@ -131,7 +131,7 @@ class ControlsHandler
         controls.forEachBound(Control.BACK, function(action:FlxActionDigital, state:FlxInputState):Void {
           addButton(action, virtualPad.buttonB, state, cachedInput);
         });
-      case NONE: // do nothing
+      case P | NONE: // do nothing
     }
   }
 

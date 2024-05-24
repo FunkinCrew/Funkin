@@ -683,6 +683,12 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
+    #if !android
+    // Initialize the pause button for non-android
+    addVirtualPad(NONE, P);
+    addVirtualPadCamera(false);
+    #end
+
     // Initialize the hitbox for mobile controls
     addHitbox(false);
     addHitboxCamera(false);
@@ -926,7 +932,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
+    if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
@@ -1955,7 +1961,7 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
-    hitbox.visible = true;
+    hitbox.visible = #if !android virtualPad.visible = #end true;
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
@@ -2750,7 +2756,7 @@ class PlayState extends MusicBeatSubState
       {
         currentConversation.advanceConversation();
       }
-      else if ((controls.PAUSE || androidPause) && !justUnpaused)
+      else if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause) && !justUnpaused)
       {
         currentConversation.pauseMusic();
 
@@ -2766,7 +2772,7 @@ class PlayState extends MusicBeatSubState
     else if (VideoCutscene.isPlaying())
     {
       // This is a video cutscene.
-      if ((controls.PAUSE || androidPause) && !justUnpaused)
+      if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause) && !justUnpaused)
       {
         VideoCutscene.pauseVideo();
 
@@ -2802,7 +2808,7 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
-    hitbox.visible = false;
+    hitbox.visible = #if !android virtualPad.visible = #end false;
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);
