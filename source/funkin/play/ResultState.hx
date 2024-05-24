@@ -53,6 +53,7 @@ class ResultState extends MusicBeatSubState
 
   var bfPerfect:Null<FlxAtlasSprite> = null;
   var bfExcellent:Null<FlxAtlasSprite> = null;
+  var bfGreat:Null<FlxAtlasSprite> = null;
   var bfGood:Null<FlxSprite> = null;
   var gfGood:Null<FlxSprite> = null;
   var bfShit:Null<FlxAtlasSprite> = null;
@@ -151,7 +152,20 @@ class ResultState extends MusicBeatSubState
           }
         });
 
-      case GOOD | GREAT:
+      case GREAT:
+        bfGreat = new FlxAtlasSprite(640, 200, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT", "shared"));
+        bfGreat.visible = false;
+        bfGreat.zIndex = 500;
+        add(bfGreat);
+
+        bfGreat.onAnimationFinish.add((animName) -> {
+          if (bfGreat != null)
+          {
+            bfGreat.playAnimation('Loop Start');
+          }
+        });
+
+      case GOOD:
         gfGood = FunkinSprite.createSparrow(625, 325, 'resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD');
         gfGood.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
         gfGood.visible = false;
@@ -476,6 +490,17 @@ class ResultState extends MusicBeatSubState
           bfExcellent.playAnimation('Intro');
         }
 
+      case GREAT:
+        if (bfGreat == null)
+        {
+          trace("Could not build GREAT animation!");
+        }
+        else
+        {
+          bfGreat.visible = true;
+          bfGreat.playAnimation('Intro');
+        }
+
       case SHIT:
         if (bfShit == null)
         {
@@ -487,7 +512,7 @@ class ResultState extends MusicBeatSubState
           bfShit.playAnimation('Intro');
         }
 
-      case GREAT | GOOD:
+      case GOOD:
         if (bfGood == null)
         {
           trace("Could not build GOOD animation!");

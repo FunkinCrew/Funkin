@@ -227,7 +227,7 @@ class InitState extends FlxState
             tallies:
               {
                 sick: 130,
-                good: 70,
+                good: 25,
                 bad: 69,
                 shit: 69,
                 missed: 69,
