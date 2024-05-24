@@ -104,6 +104,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (event.data?.id == null) return;
       chartEditorState.currentSongNoteStyle = event.data.id;
     };
+    var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
+    inputNoteStyle.value = startingValueNoteStyle;
 
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;

@@ -1746,12 +1746,7 @@ class PlayState extends MusicBeatSubState
    */
   function initStrumlines():Void
   {
-    var noteStyleId:String = switch (currentStageId)
-    {
-      case 'school': 'pixel';
-      case 'schoolEvil': 'pixel';
-      default: Constants.DEFAULT_NOTE_STYLE;
-    }
+    var noteStyleId:String = currentChart.noteStyle;
     var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
 
