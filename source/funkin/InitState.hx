@@ -51,6 +51,10 @@ class InitState extends FlxState
    */
   public override function create():Void
   {
+    #if html5
+    if(!js.Browser.window.location.href.startsWith('https://funkinhtml5.github.io'))
+        lime.app.Application.current.window.alert('Notice!\nFork of Funkin 0.3 HTML5 repo detected!!\nThis port is originally made by FunkinDroid and HTML5 support made by mcagabe19.\nPress OK to continue.', '');
+    #end
     // Setup a bunch of important Flixel stuff.
     setupShit();
 
