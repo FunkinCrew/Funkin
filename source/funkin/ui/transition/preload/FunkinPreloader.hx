@@ -889,7 +889,7 @@ class FunkinPreloader extends FlxBasePreloader
         #if TOUCH_HERE_TO_PLAY
         // The logo has faded out, but we're not quite done yet.
         // In order to prevent autoplay issues, we need the user to click after the loading finishes.
-        currentState = FunkinPreloaderState.TouchHereToPlay;
+        (FlxG.onMobile) ? currentState = FunkinPreloaderState.TouchHereToPlay : immediatelyStartGame();
         #else
         immediatelyStartGame();
         #end

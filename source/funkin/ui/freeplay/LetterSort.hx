@@ -27,9 +27,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
   public var inputEnabled:Bool = true;
 
-  #if mobile
   var swipeBounds:FlxSprite;
-  #end
 
   public function new(x, y)
   {
@@ -71,11 +69,9 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     // rightArrow.animation.play("arrow");
 
-    #if mobile
     swipeBounds = new FlxSprite(-20, -20).makeGraphic(420, 95, FlxColor.TRANSPARENT);
     swipeBounds.active = false;
     add(swipeBounds);
-    #end
 
     changeSelection(0);
   }
@@ -89,7 +85,6 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       if (FlxG.keys.justPressed.E) changeSelection(1);
       if (FlxG.keys.justPressed.Q) changeSelection(-1);
 
-      #if mobile
       if (TouchUtil.overlaps(swipeBounds))
       {
         for (swipe in FlxG.swipes)
@@ -104,7 +99,6 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
           }
         }
       }
-      #end
     }
   }
 

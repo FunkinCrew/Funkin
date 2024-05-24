@@ -373,6 +373,10 @@ class HealthIcon extends FunkinSprite
     // Don't flip BF's icon here! That's done later.
     this.animation.add(Idle, [0], 0, false, false);
     this.animation.add(Losing, [1], 0, false, false);
+    if (animation.numFrames >= 3)
+    {
+      this.animation.add(Winning, [2], 0, false, false);
+    }
   }
 
   function correctCharacterId(charId:Null<String>):String
