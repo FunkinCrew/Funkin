@@ -177,7 +177,6 @@ class Preferences
     }
   }
 
-  #if mobile
   /**
    * If enabled, vpad will be disabled.
    * @default `true`
@@ -191,12 +190,11 @@ class Preferences
 
   static function set_legacyControls(value:Bool):Bool
   {
-    if (value != Save.instance.options.legacyControls) FlxG.legacyControls = value;
+    if (value != Save.instance.options.legacyControls) FlxG.save.data.legacyControls = value;
 
     var save:Save = Save.instance;
     save.options.legacyControls = value;
     save.flush();
     return value;
   }
-  #end
 }
