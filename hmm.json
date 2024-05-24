@@ -49,8 +49,15 @@
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "2aa654b974507ab51ab1724d2d97e75726fd7d78",
+      "ref": "c6a1e24d48646849ea63563ca45561512c953779",
       "url": "https://github.com/FunkinCrew/funkVis"
+    },
+    {
+      "name": "grig.audio",
+      "type": "git",
+      "dir": "src",
+      "ref": "cbf91e2180fd2e374924fe74844086aab7891666",
+      "url": "https://gitlab.com/haxe-grig/grig.audio.git"
     },
     {
       "name": "hamcrest",
