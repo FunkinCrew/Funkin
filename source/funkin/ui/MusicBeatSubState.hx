@@ -70,8 +70,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public function addVirtualPad(direction:FunkinDirectionalMode, action:FunkinActionMode, ?visible:Bool = true):Void
   {
-    if (Preferences.legacyControls) return;
-    
     if (virtualPad != null)
     {
       removeVirtualPad();
@@ -81,13 +79,13 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     ControlsHandler.setupVirtualPad(controls, virtualPad, direction, action, trackedInputsVirtualPad);
 
-    virtualPad.visible = visible;
+    virtualPad.visible = (Preferences.legacyControls) ? visible : false;
     add(virtualPad);
   }
 
   public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
   {
-    if (Preferences.legacyControls || virtualPad == null || vpadCam != null) return;
+    if (virtualPad == null || vpadCam != null) return;
 
     vpadCam = new FlxCamera();
     FlxG.cameras.add(vpadCam, defaultDrawTarget);
@@ -97,8 +95,8 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public function removeVirtualPad():Void
   {
-    if (Preferences.legacyControls && virtualPad == null) return;
-    
+    if (virtualPad == null) return;
+
     if (trackedInputsVirtualPad != null && trackedInputsVirtualPad.length > 0)
     {
       ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
@@ -216,12 +214,16 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     if (FlxG.keys.justPressed.ANY && isTouch) isTouch = false;
     if (TouchUtil.justPressed && !isTouch) isTouch = true;
 
-    if (Std.isOfType(FlxG.state, funkin.play.PlayState)) {
-      if (Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown")) {
+    if (Std.isOfType(FlxG.state, funkin.play.PlayState))
+    {
+      if (Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown"))
+      {
         if (virtualPad != null) virtualPad.visible = false;
         if (hitbox != null) hitbox.visible = false;
       }
-    } else {
+    }
+    else
+    {
       if (virtualPad != null) virtualPad.visible = isTouch;
       if (hitbox != null) hitbox.visible = isTouch;
     }

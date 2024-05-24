@@ -53,7 +53,8 @@ class Save
   public function new(?data:RawSaveData)
   {
     if (data == null) this.data = Save.getDefault();
-    else this.data = data;
+    else
+      this.data = data;
   }
 
   public static function getDefault():RawSaveData
@@ -86,7 +87,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
-          legacyControls: true,
+          legacyControls: false,
           inputOffset: 0,
           audioVisualOffset: 0,
 
