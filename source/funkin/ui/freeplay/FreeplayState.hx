@@ -36,8 +36,9 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
-import lime.utils.Assets;
 import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import lime.utils.Assets;
 
 /**
  * Parameters used to initialize the FreeplayState.

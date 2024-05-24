@@ -79,6 +79,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function addVirtualPad(direction:FunkinDirectionalMode, action:FunkinActionMode, ?visible:Bool = true):Void
   {
+    if (Preferences.legacyControls) return;
+    
     if (virtualPad != null)
     {
       removeVirtualPad();
@@ -94,7 +96,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
   {
-    if (virtualPad == null || vpadCam != null) return;
+    if (Preferences.legacyControls || virtualPad == null || vpadCam != null) return;
 
     vpadCam = new FlxCamera();
     FlxG.cameras.add(vpadCam, defaultDrawTarget);
@@ -104,6 +106,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function removeVirtualPad():Void
   {
+    if (Preferences.legacyControls && virtualPad == null) return;
+    
     if (trackedInputsVirtualPad != null && trackedInputsVirtualPad.length > 0)
     {
       ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
