@@ -683,11 +683,9 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
-    #if mobile
     // Initialize the hitbox for mobile controls
     addHitbox(false);
     addHitboxCamera(false);
-    #end
 
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff();
@@ -1957,9 +1955,7 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
-    #if mobile
     hitbox.visible = true;
-    #end
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
@@ -2806,9 +2802,7 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
-    #if mobile
     hitbox.visible = false;
-    #end
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);
