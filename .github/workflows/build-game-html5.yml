@@ -26,8 +26,8 @@ jobs:
       - name: Upload To Website
         run: |
           cd ..
-          git clone https://github.com/FunkiniOSTeam/FunkiniOSTeam.github.io
-          cd FunkiniOSTeam.github.io
+          git clone https://github.com/FunkinWeb/FunkinWeb.github.io
+          cd FunkinWeb.github.io
           mv index.html ..
           rm -rf *
           mv ${{ github.workspace }}/export/release/html5/bin/index.html ${{ github.workspace }}/export/release/html5/bin/game.html
