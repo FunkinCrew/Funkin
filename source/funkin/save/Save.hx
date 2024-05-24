@@ -86,6 +86,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          legacyControls: true,
           inputOffset: 0,
           audioVisualOffset: 0,
 
@@ -874,6 +875,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * If enabled, vpad will be disabled.
+   * @default `true`
+   */
+  var legacyControls:Bool;
 
   /**
    * Offset the users inputs by this many ms.
