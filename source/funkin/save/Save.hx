@@ -53,7 +53,8 @@ class Save
   public function new(?data:RawSaveData)
   {
     if (data == null) this.data = Save.getDefault();
-    else this.data = data;
+    else
+      this.data = data;
   }
 
   public static function getDefault():RawSaveData
@@ -80,6 +81,7 @@ class Save
       options:
         {
           // Reasonable defaults.
+          framerate: 60,
           naughtyness: true,
           downscroll: false,
           flashingLights: true,
@@ -835,6 +837,12 @@ typedef SaveScoreTallyData =
  */
 typedef SaveDataOptions =
 {
+  /**
+   * FPS
+   * @default `60`
+   */
+  var framerate:Int;
+
   /**
    * Whether some particularly fowl language is displayed.
    * @default `true`

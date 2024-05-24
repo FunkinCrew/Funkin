@@ -3,16 +3,16 @@ package funkin.ui.options;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
-import funkin.ui.TextMenuList.TextMenuItem;
 
 class PreferencesMenu extends Page
 {
-  var items:TextMenuList;
-  var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
+  var curSelected:Int = 0;
+  var prefs:FlxTypedSpriteGroup<PreferenceItem>;
 
   var menuCamera:FlxCamera;
   var camFollow:FlxObject;
@@ -26,22 +26,27 @@ class PreferencesMenu extends Page
     menuCamera.bgColor = 0x0;
     camera = menuCamera;
 
-    add(items = new TextMenuList());
-    add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
+    prefs = new FlxTypedSpriteGroup<PreferenceItem>();
+    add(prefs);
 
     createPrefItems();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
-    if (items != null) camFollow.y = items.selectedItem.y;
 
     menuCamera.follow(camFollow, null, 0.06);
     var margin = 160;
     menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
     menuCamera.minScrollY = 0;
 
-    items.onChange.add(function(selected) {
-      camFollow.y = selected.y;
-    });
+    changeSelection(0);
+  }
+
+  function addPref(pref:PreferenceItem):Void
+  {
+    pref.x = 0;
+    pref.y = 120 * prefs.length;
+    pref.ID = prefs.length;
+    prefs.add(pref);
   }
 
   /**
@@ -49,50 +54,168 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-    createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
-      Preferences.naughtyness = value;
-    }, Preferences.naughtyness);
-    createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
-      Preferences.downscroll = value;
-    }, Preferences.downscroll);
-    createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
-      Preferences.flashingLights = value;
-    }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
-      Preferences.zoomCamera = value;
-    }, Preferences.zoomCamera);
-    createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
-      Preferences.debugDisplay = value;
-    }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
-      Preferences.autoPause = value;
-    }, Preferences.autoPause);
+    #if !web
+    var pref:NumberedPreferenceItem = new NumberedPreferenceItem("FPS", "The framerate that the game is running on", Preferences.framerate,
+      function(value:Float):Void {
+        Preferences.framerate = Std.int(value);
+      });
+    pref.minValue = 60;
+    pref.maxValue = 360;
+    pref.changeRate = 1;
+    pref.changeSpeed = 0.05;
+    addPref(pref);
+    #end
+
+    // TODO: add these back
+    // createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
+    //   Preferences.naughtyness = value;
+    // }, Preferences.naughtyness);
+    // createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
+    //   Preferences.downscroll = value;
+    // }, Preferences.downscroll);
+    // createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
+    //   Preferences.flashingLights = value;
+    // }, Preferences.flashingLights);
+    // createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
+    //   Preferences.zoomCamera = value;
+    // }, Preferences.zoomCamera);
+    // createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
+    //   Preferences.debugDisplay = value;
+    // }, Preferences.debugDisplay);
+    // createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
+    //   Preferences.autoPause = value;
+    // }, Preferences.autoPause);
   }
 
-  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
+  function changeSelection(change:Int):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
+    curSelected += change;
+    if (curSelected < 0)
+    {
+      curSelected = prefs.length - 1;
+    }
+    else if (curSelected >= prefs.length)
+    {
+      curSelected = 0;
+    }
 
-    items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
-      var value = !checkbox.currentValue;
-      onChange(value);
-      checkbox.currentValue = value;
-    });
-
-    preferenceItems.add(checkbox);
+    for (pref in prefs)
+    {
+      pref.x = 0;
+      if (pref.ID == curSelected)
+      {
+        pref.x = 20;
+        camFollow.y = pref.y;
+      }
+    }
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
-    // Indent the selected item.
-    // TODO: Only do this on menu change?
-    items.forEach(function(daItem:TextMenuItem) {
-      if (items.selectedItem == daItem) daItem.x = 150;
-      else
-        daItem.x = 120;
-    });
+    if (controls.UI_DOWN_P)
+    {
+      changeSelection(1);
+    }
+    else if (controls.UI_UP_P)
+    {
+      changeSelection(-1);
+    }
+
+    var selectedPref:PreferenceItem = prefs.members[curSelected];
+    selectedPref.handleInput(elapsed);
+  }
+}
+
+class PreferenceItem extends FlxTypedSpriteGroup<FlxSprite>
+{
+  public var name:String = "";
+  public var description:String = "";
+
+  public function handleInput(deltaTime:Float):Void {}
+}
+
+class NumberedPreferenceItem extends PreferenceItem
+{
+  public var onChange:Float->Void;
+  public var changeRate:Float = 1.0;
+  public var changeSpeed:Float = 0.1;
+
+  public var minValue(default, set):Null<Float>;
+
+  function set_minValue(value:Float):Float
+  {
+    minValue = value;
+    currentValue = currentValue;
+    return value;
+  }
+
+  public var maxValue(default, set):Null<Float>;
+
+  function set_maxValue(value:Float):Float
+  {
+    maxValue = value;
+    currentValue = currentValue;
+    return value;
+  }
+
+  public var currentValue(default, set):Float;
+
+  function set_currentValue(value:Float):Float
+  {
+    currentValue = FlxMath.bound(value, minValue, maxValue);
+    onChange(currentValue);
+    updateText();
+    return currentValue;
+  }
+
+  var valueText:AtlasText;
+  var preferenceText:AtlasText;
+
+  public function new(name:String, description:String, defaultValue:Float, onChange:Float->Void)
+  {
+    super();
+
+    this.valueText = new AtlasText(0, 0, '$defaultValue', AtlasFont.DEFAULT);
+    add(this.valueText);
+
+    this.preferenceText = new AtlasText(this.valueText.width + 30, 0, '$name', AtlasFont.BOLD);
+    add(this.preferenceText);
+
+    this.name = name;
+    this.description = description;
+    this.onChange = onChange;
+    this.currentValue = defaultValue;
+  }
+
+  var timeToWait:Float = 0;
+
+  public override function handleInput(deltaTime:Float):Void
+  {
+    timeToWait -= deltaTime;
+
+    if (timeToWait > 0)
+    {
+      return;
+    }
+
+    if (PlayerSettings.player1.controls.UI_RIGHT)
+    {
+      currentValue += changeRate;
+      timeToWait = changeSpeed;
+    }
+    else if (PlayerSettings.player1.controls.UI_LEFT)
+    {
+      currentValue -= changeRate;
+      timeToWait = changeSpeed;
+    }
+  }
+
+  function updateText():Void
+  {
+    valueText.text = '$currentValue';
+    preferenceText.x = valueText.width + 30;
   }
 }
 
