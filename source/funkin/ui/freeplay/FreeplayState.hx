@@ -877,6 +877,7 @@ class FreeplayState extends MusicBeatSubState
     {
       diffSelRight.setPress(false);
       diffSelLeft.setPress(false);
+    }
 
     if (controls.BACK)
     {
