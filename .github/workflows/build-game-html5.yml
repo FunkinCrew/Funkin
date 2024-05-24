@@ -22,7 +22,7 @@ jobs:
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
       - name: Compile
-        run: haxelib run lime build html5 -minify
+        run: haxelib run lime build html5
       - name: Upload To Website
         run: |
           cd ..
