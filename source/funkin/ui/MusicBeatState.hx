@@ -234,7 +234,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
     else
     {
-      if (virtualPad != null) virtualPad.visible = isTouch;
+      if (virtualPad != null) virtualPad.visible = (Preferences.legacyControls) ? isTouch : false;
       if (hitbox != null) hitbox.visible = isTouch;
     }
   }
