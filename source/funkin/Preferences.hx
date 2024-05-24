@@ -177,7 +177,6 @@ class Preferences
     }
   }
 
-  #if mobile
   /**
    * If enabled, vpad will be disabled.
    * @default `true`
@@ -198,5 +197,4 @@ class Preferences
     save.flush();
     return value;
   }
-  #end
 }
