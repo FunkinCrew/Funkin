@@ -36,8 +36,9 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
-import lime.utils.Assets;
 import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import lime.utils.Assets;
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -712,6 +713,23 @@ class FreeplayState extends MusicBeatSubState
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (SwipeUtil.swipeLeft)
+    {
+      trace("Swiped left!");
+    }
+    if (SwipeUtil.swipeRight)
+    {
+      trace("Swiped right!");
+    }
+    if (SwipeUtil.swipeUp)
+    {
+      trace("Swiped up!");
+    }
+    if (SwipeUtil.swipeDown)
+    {
+      trace("Swiped down!");
+    }
 
     if (FlxG.keys.justPressed.F #if mobile || virtualPad.buttonC.justPressed #end)
     {
