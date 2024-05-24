@@ -68,7 +68,7 @@ class PreferencesMenu extends Page
       Preferences.autoPause = value;
     }, Preferences.autoPause);
     #if mobile 
-    createPrefItemCheckbox('Legacy Controls', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
+    createPrefItemCheckbox('Legacy Controls', 'Toggle legacy controls', function(value:Bool):Void {
       Preferences.legacyControls = value;
     }, Preferences.legacyControls);
     #end
