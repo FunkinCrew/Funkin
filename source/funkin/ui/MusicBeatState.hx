@@ -224,7 +224,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     if (Std.isOfType(FlxG.state, funkin.play.PlayState)) {
       if (Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown")) {
-        // if (virtualPad != null) virtualPad.visible = false;
+        if (virtualPad != null) virtualPad.visible = false;
         if (hitbox != null) hitbox.visible = false;
       }
     } else {
