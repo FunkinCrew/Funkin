@@ -4,13 +4,20 @@ import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
+import funkin.audio.FunkinSound;
 
 class PreferencesMenu extends Page
 {
+  /**
+   * Wether you can selected a different option
+   */
+  public static var allowScrolling:Bool = true;
+
   var curSelected:Int = 0;
   var prefs:FlxTypedSpriteGroup<PreferenceItem>;
 
@@ -130,12 +137,14 @@ class PreferencesMenu extends Page
   {
     super.update(elapsed);
 
-    if (controls.UI_DOWN_P)
+    if (controls.UI_DOWN_P && allowScrolling)
     {
+      FunkinSound.playOnce(Paths.sound('scrollMenu'));
       changeSelection(1);
     }
-    else if (controls.UI_UP_P)
+    else if (controls.UI_UP_P && allowScrolling)
     {
+      FunkinSound.playOnce(Paths.sound('scrollMenu'));
       changeSelection(-1);
     }
 
@@ -220,11 +229,13 @@ class NumberedPreferenceItem extends PreferenceItem
     {
       currentValue += changeRate;
       timeToWait = changeDelay;
+      // FunkinSound.playOnce(Paths.sound('scrollMenu'));
     }
     else if (PlayerSettings.player1.controls.UI_LEFT)
     {
       currentValue -= changeRate;
       timeToWait = changeDelay;
+      // FunkinSound.playOnce(Paths.sound('scrollMenu'));
     }
   }
 
@@ -282,11 +293,20 @@ class CheckboxPreferenceItem extends PreferenceItem
     this.currentValue = defaultValue;
   }
 
+  var isAccepting:Bool = false;
+
   public override function handleInput(elapsed:Float):Void
   {
-    if (PlayerSettings.player1.controls.ACCEPT)
+    if (PlayerSettings.player1.controls.ACCEPT && !isAccepting)
     {
-      currentValue = !currentValue;
+      isAccepting = true;
+      PreferencesMenu.allowScrolling = false;
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      FlxFlicker.flicker(preferenceText, 1, 0.06, true, false, function(_) {
+        isAccepting = false;
+        PreferencesMenu.allowScrolling = true;
+        currentValue = !currentValue;
+      });
     }
   }
 }
