@@ -10,9 +10,12 @@ jobs:
           submodules: true
           persist-credentials: false
       - name: Configure git
-        run: git config --global url."https://${TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+        run: |
+          git config --global url."https://${TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global user.name "mcagabe19"
+          git config --global user.email "egzozu.be.bas@gmail.com"
         env:
-          TOKEN: ${{ secrets.GH_TOKEN }}
+          TOKEN: ${{ secrets.LILY_GH_TOKEN }}
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
         with:
@@ -23,18 +26,13 @@ jobs:
           haxelib run hmm install --quiet
       - name: Compile
         run: haxelib run lime build html5
-      # - name: Upload To Website
-        # run: |
-          # cd ..
-          # git clone https://github.com/FunkinWeb/FunkinWeb.github.io
-          # cd FunkinWeb.github.io
-          # mv index.html ..
-          # rm -rf *
-          # mv ${{ github.workspace }}/export/release/html5/bin/index.html ${{ github.workspace }}/export/release/html5/bin/game.html
-          # mv ${{ github.workspace }}/export/release/html5/bin/* .
-          # mv ../index.html .
-          # git config --global user.name "mcagabe19"
-          # git config --global user.email "egzozu.be.bas@gmail.com"
-          # git add .
-          # git commit -m "Uploaded via actions."
-          # git push -u origin main
+      - name: Upload To Website
+        run: |
+          cd ..
+          git clone https://github.com/FunkinDroidTeam/funkin-0.3-html5
+          cd funkin-0.3-html5
+          rm -rf *
+          mv ${{ github.workspace }}/export/release/html5/bin/* .
+          git add .
+          git commit -m "Uploaded via actions."
+          git push -u origin main
