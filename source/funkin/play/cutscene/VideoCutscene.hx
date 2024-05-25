@@ -144,7 +144,10 @@ class VideoCutscene
     if (vid != null)
     {
       vid.zIndex = 0;
-      vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
+      vid.bitmap.onEndReached.add(() -> {
+        finishVideo.bind(0.5);
+        lime.media.AudioManager.resume();
+      });
       vid.autoPause = false;
 
       vid.cameras = [PlayState.instance.camCutscene];
