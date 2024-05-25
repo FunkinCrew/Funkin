@@ -124,11 +124,14 @@ class PreferencesMenu extends Page
 
     for (pref in prefs)
     {
-      pref.x = 0;
       if (pref.ID == curSelected)
       {
-        pref.x = 30;
+        pref.onSelect(true);
         camFollow.y = pref.y;
+      }
+      else
+      {
+        pref.onSelect(false);
       }
     }
   }
@@ -159,6 +162,8 @@ class PreferenceItem extends FlxTypedSpriteGroup<FlxSprite>
   public var description:String = "";
 
   public function handleInput(elapsed:Float):Void {}
+
+  public function onSelect(isSelected:Bool):Void {}
 }
 
 class NumberedPreferenceItem extends PreferenceItem
@@ -239,10 +244,27 @@ class NumberedPreferenceItem extends PreferenceItem
     }
   }
 
+  var isSelected:Bool = false;
+
+  public override function onSelect(isSelected:Bool):Void
+  {
+    this.isSelected = isSelected;
+    if (isSelected)
+    {
+      preferenceText.x = valueText.x + valueText.width + 60;
+      preferenceText.alpha = 1.0;
+    }
+    else
+    {
+      preferenceText.x = valueText.x + valueText.width + 30;
+      preferenceText.alpha = 0.6;
+    }
+  }
+
   function updateText():Void
   {
     valueText.text = '$currentValue';
-    preferenceText.x = valueText.x + valueText.width + 30;
+    preferenceText.x = valueText.x + valueText.width + (isSelected ? 60 : 30);
   }
 }
 
@@ -307,6 +329,20 @@ class CheckboxPreferenceItem extends PreferenceItem
         PreferencesMenu.allowScrolling = true;
         currentValue = !currentValue;
       });
+    }
+  }
+
+  public override function onSelect(isSelected:Bool):Void
+  {
+    if (isSelected)
+    {
+      preferenceText.x = 150;
+      preferenceText.alpha = 1.0;
+    }
+    else
+    {
+      preferenceText.alpha = 0.6;
+      preferenceText.x = 120;
     }
   }
 }
