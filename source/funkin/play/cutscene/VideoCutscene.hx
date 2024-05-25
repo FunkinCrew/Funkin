@@ -145,8 +145,8 @@ class VideoCutscene
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(() -> {
-        finishVideo.bind(0.5);
         lime.media.AudioManager.resume();
+        finishVideo.bind(0.5);
       });
       vid.autoPause = false;
 
