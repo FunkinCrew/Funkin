@@ -66,25 +66,41 @@ class PreferencesMenu extends Page
     addPref(pref);
     #end
 
-    // TODO: add these back
-    // createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
-    //   Preferences.naughtyness = value;
-    // }, Preferences.naughtyness);
-    // createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
-    //   Preferences.downscroll = value;
-    // }, Preferences.downscroll);
-    // createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
-    //   Preferences.flashingLights = value;
-    // }, Preferences.flashingLights);
-    // createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
-    //   Preferences.zoomCamera = value;
-    // }, Preferences.zoomCamera);
-    // createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
-    //   Preferences.debugDisplay = value;
-    // }, Preferences.debugDisplay);
-    // createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
-    //   Preferences.autoPause = value;
-    // }, Preferences.autoPause);
+    var pref:CheckboxPreferenceItem = new CheckboxPreferenceItem('Naughtyness', 'Toggle displaying raunchy content', Preferences.naughtyness,
+      function(value:Bool):Void {
+        Preferences.naughtyness = value;
+      });
+    addPref(pref);
+
+    var pref:CheckboxPreferenceItem = new CheckboxPreferenceItem('Downscroll', 'Enable to make notes move downwards', Preferences.downscroll,
+      function(value:Bool):Void {
+        Preferences.downscroll = value;
+      });
+    addPref(pref);
+
+    var pref:CheckboxPreferenceItem = new CheckboxPreferenceItem('Flashing Lights', 'Disable to dampen flashing effects', Preferences.flashingLights,
+      function(value:Bool):Void {
+        Preferences.flashingLights = value;
+      });
+    addPref(pref);
+
+    var pref:CheckboxPreferenceItem = new CheckboxPreferenceItem('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song',
+      Preferences.zoomCamera, function(value:Bool):Void {
+        Preferences.zoomCamera = value;
+    });
+    addPref(pref);
+
+    var pref:CheckboxPreferenceItem = new CheckboxPreferenceItem('Debug Display', 'Enable to show FPS and other debug stats', Preferences.debugDisplay,
+      function(value:Bool):Void {
+        Preferences.debugDisplay = value;
+      });
+    addPref(pref);
+
+    var pref:CheckboxPreferenceItem = new CheckboxPreferenceItem('Auto Pause', 'Automatically pause the game when it loses focus', Preferences.autoPause,
+      function(value:Bool):Void {
+        Preferences.autoPause = value;
+      });
+    addPref(pref);
   }
 
   function changeSelection(change:Int):Void
@@ -104,7 +120,7 @@ class PreferencesMenu extends Page
       pref.x = 0;
       if (pref.ID == curSelected)
       {
-        pref.x = 20;
+        pref.x = 30;
         camFollow.y = pref.y;
       }
     }
@@ -124,7 +140,7 @@ class PreferencesMenu extends Page
     }
 
     var selectedPref:PreferenceItem = prefs.members[curSelected];
-    selectedPref.handleInput(elapsed);
+    selectedPref?.handleInput(elapsed);
   }
 }
 
@@ -177,10 +193,10 @@ class NumberedPreferenceItem extends PreferenceItem
   {
     super();
 
-    this.valueText = new AtlasText(0, 0, '$defaultValue', AtlasFont.DEFAULT);
+    this.valueText = new AtlasText(20, 30, '$defaultValue', AtlasFont.DEFAULT);
     add(this.valueText);
 
-    this.preferenceText = new AtlasText(this.valueText.width + 30, 0, '$name', AtlasFont.BOLD);
+    this.preferenceText = new AtlasText(this.valueText.x + this.valueText.width + 30, 30, '$name', AtlasFont.BOLD);
     add(this.preferenceText);
 
     this.name = name;
@@ -215,52 +231,62 @@ class NumberedPreferenceItem extends PreferenceItem
   function updateText():Void
   {
     valueText.text = '$currentValue';
-    preferenceText.x = valueText.width + 30;
+    preferenceText.x = valueText.x + valueText.width + 30;
   }
 }
 
-class CheckboxPreferenceItem extends FlxSprite
+class CheckboxPreferenceItem extends PreferenceItem
 {
+  public var onChange:Bool->Void;
+
   public var currentValue(default, set):Bool;
-
-  public function new(x:Float, y:Float, defaultValue:Bool = false)
-  {
-    super(x, y);
-
-    frames = Paths.getSparrowAtlas('checkboxThingie');
-    animation.addByPrefix('static', 'Check Box unselected', 24, false);
-    animation.addByPrefix('checked', 'Check Box selecting animation', 24, false);
-
-    setGraphicSize(Std.int(width * 0.7));
-    updateHitbox();
-
-    this.currentValue = defaultValue;
-  }
-
-  override function update(elapsed:Float)
-  {
-    super.update(elapsed);
-
-    switch (animation.curAnim.name)
-    {
-      case 'static':
-        offset.set();
-      case 'checked':
-        offset.set(17, 70);
-    }
-  }
 
   function set_currentValue(value:Bool):Bool
   {
     if (value)
     {
-      animation.play('checked', true);
+      checkBox.animation.play('checked', true);
+      checkBox.offset.set(17, 70);
     }
     else
     {
-      animation.play('static');
+      checkBox.animation.play('static');
+      checkBox.offset.set();
     }
+    currentValue = value;
+    onChange(value);
+    return value;
+  }
 
-    return currentValue = value;
+  var checkBox:FlxSprite;
+  var preferenceText:AtlasText;
+
+  public function new(name:String, description:String, defaultValue:Bool, onChange:Bool->Void)
+  {
+    super();
+
+    this.checkBox = new FlxSprite();
+    this.checkBox.frames = Paths.getSparrowAtlas('checkboxThingie');
+    this.checkBox.animation.addByPrefix('static', 'Check Box unselected', 24, false);
+    this.checkBox.animation.addByPrefix('checked', 'Check Box selecting animation', 24, false);
+    this.checkBox.setGraphicSize(Std.int(this.checkBox.width * 0.7));
+    this.checkBox.updateHitbox();
+    add(this.checkBox);
+
+    this.preferenceText = new AtlasText(120, 30, '$name', AtlasFont.BOLD);
+    add(this.preferenceText);
+
+    this.name = name;
+    this.description = description;
+    this.onChange = onChange;
+    this.currentValue = defaultValue;
+  }
+
+  public override function handleInput(elapsed:Float):Void
+  {
+    if (PlayerSettings.player1.controls.ACCEPT)
+    {
+      currentValue = !currentValue;
+    }
   }
 }
