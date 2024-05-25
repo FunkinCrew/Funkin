@@ -165,8 +165,8 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "228c1b5063911e2ad75cef6e3168ef0a4b9f9134",
-      "url": "https://github.com/FunkinCrew/openfl"
+      "ref": "develop",
+      "url": "https://github.com/FunkinDroidTeam/openfl"
     },
     {
       "name": "polymod",
