@@ -136,7 +136,8 @@ class StrumlineNote extends FunkinSprite
 
   public function playConfirm():Void
   {
-    this.active = (forceActive || isAnimationDynamic('confirm'));
+    this.active = true;
+    this.confirmHoldTimer = -1;
     this.playAnimation('confirm', true);
   }
 
