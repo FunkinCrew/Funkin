@@ -23,18 +23,18 @@ jobs:
           haxelib run hmm install --quiet
       - name: Compile
         run: haxelib run lime build html5
-      - name: Upload To Website
-        run: |
-          cd ..
-          git clone https://github.com/FunkinWeb/FunkinWeb.github.io
-          cd FunkinWeb.github.io
-          mv index.html ..
-          rm -rf *
-          mv ${{ github.workspace }}/export/release/html5/bin/index.html ${{ github.workspace }}/export/release/html5/bin/game.html
-          mv ${{ github.workspace }}/export/release/html5/bin/* .
-          mv ../index.html .
-          git config --global user.name "mcagabe19"
-          git config --global user.email "egzozu.be.bas@gmail.com"
-          git add .
-          git commit -m "Uploaded via actions."
-          git push -u origin main
+      # - name: Upload To Website
+        # run: |
+          # cd ..
+          # git clone https://github.com/FunkinWeb/FunkinWeb.github.io
+          # cd FunkinWeb.github.io
+          # mv index.html ..
+          # rm -rf *
+          # mv ${{ github.workspace }}/export/release/html5/bin/index.html ${{ github.workspace }}/export/release/html5/bin/game.html
+          # mv ${{ github.workspace }}/export/release/html5/bin/* .
+          # mv ../index.html .
+          # git config --global user.name "mcagabe19"
+          # git config --global user.email "egzozu.be.bas@gmail.com"
+          # git add .
+          # git commit -m "Uploaded via actions."
+          # git push -u origin main
