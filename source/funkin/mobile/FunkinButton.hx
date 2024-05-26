@@ -95,7 +95,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   var currentInput:IFlxInput;
 
   /**
-   * Creates a new `FunkinButton` object with a gray background.
+   * Creates a new `FunkinButton` object.
    *
    * @param X The x position of the button.
    * @param Y The y position of the button.
