@@ -149,6 +149,16 @@ class Save
   /**
    * NOTE: Modifications will not be saved without calling `Save.flush()`!
    */
+  public var mobile(get, never):SaveDataMobileOptions;
+
+  function get_mobile():SaveDataMobileOptions
+  {
+    return data.mobile;
+  }
+
+  /**
+   * NOTE: Modifications will not be saved without calling `Save.flush()`!
+   */
   public var modOptions(get, never):Map<String, Dynamic>;
 
   function get_modOptions():Map<String, Dynamic>
