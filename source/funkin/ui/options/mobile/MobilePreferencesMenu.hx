@@ -1,6 +1,7 @@
 package funkin.ui.options.mobile;
 
 import funkin.ui.options.PreferencesMenu;
+import funkin.mobile.MobilePreferences:
 
 class MobilePreferencesMenu extends PreferencesMenu
 {
@@ -10,7 +11,7 @@ class MobilePreferencesMenu extends PreferencesMenu
   override function createPrefItems():Void
   {
     createPrefItemCheckbox('Legacy Controls', 'Toggle legacy controls', function(value:Bool):Void {
-      Preferences.legacyControls = value;
-    }, Preferences.legacyControls);
+      MobilePreferences.legacyControls = value;
+    }, MobilePreferences.legacyControls);
   }
 }
