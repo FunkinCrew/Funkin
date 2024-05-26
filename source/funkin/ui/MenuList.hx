@@ -7,6 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.util.SwipeUtil;
+import funkin.mobile.MobilePreferences;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
@@ -96,17 +97,17 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     // #else // TODO: Tell zack to clean this BEFORE RELEASE.
     var newIndex = switch (navControls)
     {
-      case Vertical: (!Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown,
+      case Vertical: (!MobilePreferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown,
           wrapY) : navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Horizontal: (!Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
+      case Horizontal: (!MobilePreferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
           wrapX) : navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
       case Both: (!Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft || SwipeUtil.swipeUp, SwipeUtil.swipeRight || SwipeUtil.swipeDown,
           !wrapMode.match(None)) : navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
 
-      case Columns(num): (!Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX,
+      case Columns(num): (!MobilePreferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX,
           SwipeUtil.swipeUp, SwipeUtil.swipeDown,
           wrapY) : navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Rows(num): (!Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY,
+      case Rows(num): (!MobilePreferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY,
           SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
           wrapX) : navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
     }
