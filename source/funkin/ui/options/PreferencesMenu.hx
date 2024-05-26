@@ -67,11 +67,6 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    //if (MusicBeatState.isTouch) {
-      createPrefItemCheckbox('Legacy Controls', 'Toggle legacy controls', function(value:Bool):Void {
-        Preferences.legacyControls = value;
-      }, Preferences.legacyControls);
-    //}
   }
 
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
