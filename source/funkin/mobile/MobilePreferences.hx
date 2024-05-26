@@ -23,13 +23,13 @@ class MobilePreferences
 
   static function get_legacyControls():Bool
   {
-    return Save?.instance?.options?.legacyControls ?? true;
+    return Save?.instance?.mobile?.legacyControls ?? true;
   }
 
   static function set_legacyControls(value:Bool):Bool
   {
     var save:Save = Save.instance;
-    save.options.legacyControls = value;
+    save.mobile.legacyControls = value;
     save.flush();
     return value;
   }
