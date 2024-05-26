@@ -32,6 +32,7 @@ import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
+import funkin.mobile.MobilePreferences;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -57,6 +58,7 @@ class InitState extends FlxState
     // Load player options from save data.
     // Flixel has already loaded the save data, so we can just use it.
     Preferences.init();
+    MobilePreferences.init();
 
     // Load controls from save data.
     PlayerSettings.init();
