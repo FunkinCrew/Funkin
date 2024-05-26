@@ -137,6 +137,8 @@ class Preferences
     FlxG.autoPause = Preferences.autoPause;
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
+    // Apply the allowScreenTimeout setting (enables screen timeout).
+    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
   }
 
   static function toggleDebugDisplay(show:Bool):Void
@@ -177,6 +179,46 @@ class Preferences
     }
   }
 
+  /**
+   * If enabled, device will be able to sleep on its own.
+   * @default `false`
+   */
+  public static var screenTimeout(get, set):Bool;
+
+  static function get_screenTimeout():Bool
+  {
+    return Save?.instance?.mobile?.screenTimeout ?? false;
+  }
+
+  static function set_screenTimeout(value:Bool):Bool
+  {
+    if (value != Save.instance.mobile.screenTimeout) lime.system.System.allowScreenTimeout = value;
+    
+    var save:Save = Save.instance;
+    save.mobile.screenTimeout = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, vibration will be enabled.
+   * @default `true`
+   */
+  public static var vibration(get, set):Bool;
+
+  static function get_vibration():Bool
+  {
+    return Save?.instance?.mobile?.vibration ?? true;
+  }
+
+  static function set_vibration(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.mobile.vibration = value;
+    save.flush();
+    return value;
+  }
+  
   /**
    * If enabled, vpad will be disabled.
    * @default `true`
