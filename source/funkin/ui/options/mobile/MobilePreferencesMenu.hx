@@ -1,7 +1,7 @@
 package funkin.ui.options.mobile;
 
 import funkin.ui.options.PreferencesMenu;
-import funkin.mobile.MobilePreferences:
+import funkin.mobile.MobilePreferences;
 
 class MobilePreferencesMenu extends PreferencesMenu
 {
