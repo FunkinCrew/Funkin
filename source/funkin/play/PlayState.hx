@@ -413,6 +413,11 @@ class PlayState extends MusicBeatSubState
   var startingSong:Bool = false;
 
   /**
+   * True if the song has finished playing.
+   */
+  var endingSong:Bool = false;
+
+  /**
    * Track if we currently have the music paused for a Pause substate, so we can unpause it when we return.
    */
   var musicPausedBySubState:Bool = false;
@@ -909,6 +914,12 @@ class PlayState extends MusicBeatSubState
       Conductor.instance.update(Conductor.instance.songPosition
         - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset)
         + elapsed * 1000 * playbackRate); // Normal conductor update.
+
+      // FlxG.sound.music.onComplete may sometimes not get fired up lol
+      if (Conductor.instance.songPosition >= FlxG.sound.music.length)
+      {
+        endSong(false);
+      }
     }
 
     var androidPause:Bool = false;
@@ -1988,7 +1999,6 @@ class PlayState extends MusicBeatSubState
     vocals.pause();
 
     FlxG.sound.music.time = Conductor.instance.songPosition;
-    FlxG.sound.music.play(Conductor.instance.songPosition);
 
     vocals.time = Conductor.instance.songPosition;
     vocals.play(false, Conductor.instance.songPosition);
@@ -2769,6 +2779,9 @@ class PlayState extends MusicBeatSubState
    */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
+    if (endingSong) return;
+    endingSong = true;
+
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;
