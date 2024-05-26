@@ -49,6 +49,7 @@ class OptionsState extends MusicBeatState
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(switchPage.bind(Options));
+      mobilePreferences.onExit.add(switchPage.bind(Options));
     }
     else
     {
