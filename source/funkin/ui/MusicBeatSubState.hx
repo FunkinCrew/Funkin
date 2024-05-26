@@ -219,7 +219,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     {
       if (Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown"))
       {
-        if (virtualPad != null) virtualPad.visible = (Preferences.legacyControls) ? isTouch : false;
+        if (virtualPad != null) virtualPad.visible = (MobilePreferences.legacyControls) ? isTouch : false;
         if (hitbox != null) hitbox.visible = false;
       }
     }
