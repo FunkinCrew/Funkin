@@ -14,7 +14,6 @@ import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
 import funkin.mobile.ControlsHandler;
-import funkin.ui.options.mobile.MobilePreferencesMenu;
 
 class OptionsState extends MusicBeatState
 {
