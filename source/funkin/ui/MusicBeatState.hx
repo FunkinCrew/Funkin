@@ -23,7 +23,6 @@ import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinHitbox;
 import funkin.mobile.FunkinVirtualPad;
 import funkin.mobile.PreciseInputHandler;
-import funkin.mobile.MobilePreferences;
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -89,7 +88,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     ControlsHandler.setupVirtualPad(controls, virtualPad, direction, action, trackedInputsVirtualPad);
 
-    virtualPad.visible = (MobilePreferences.legacyControls) ? visible : false;
+    virtualPad.visible = (Preferences.legacyControls) ? visible : false;
     add(virtualPad);
   }
 
@@ -235,7 +234,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
     else
     {
-      if (virtualPad != null) virtualPad.visible = (MobilePreferences.legacyControls) ? isTouch : false;
+      if (virtualPad != null) virtualPad.visible = (Preferences.legacyControls) ? isTouch : false;
       if (hitbox != null) hitbox.visible = isTouch;
     }
   }
