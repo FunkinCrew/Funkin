@@ -109,7 +109,9 @@ class Save
       mobile:
         {
           //Defaults.
-          legacyControls: false
+          screenTimeout: false,
+          vibration: true,
+          legacyControls: false //true
         },
 
       mods:
@@ -923,6 +925,18 @@ typedef SaveDataOptions =
 
 typedef SaveDataMobileOptions =
 {
+  /**
+   * If enabled, device will be able to sleep on its own.
+   * @default `false`
+   */
+  var screenTimeout:Bool;
+  
+  /**
+   * If enabled, vibration will be enabled.
+   * @default `true`
+   */
+  var vibration:Bool;
+  
   /**
    * If enabled, vpad will be disabled.
    * @default `true`
