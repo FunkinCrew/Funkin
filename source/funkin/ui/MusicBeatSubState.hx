@@ -22,6 +22,7 @@ import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinHitbox;
 import funkin.mobile.FunkinVirtualPad;
 import funkin.mobile.PreciseInputHandler;
+import funkin.mobile.MobilePreferences;
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
@@ -79,7 +80,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     ControlsHandler.setupVirtualPad(controls, virtualPad, direction, action, trackedInputsVirtualPad);
 
-    virtualPad.visible = (Preferences.legacyControls) ? visible : false;
+    virtualPad.visible = (MobilePreferences.legacyControls) ? visible : false;
     add(virtualPad);
   }
 
