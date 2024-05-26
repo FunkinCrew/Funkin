@@ -640,6 +640,9 @@ class PlayState extends MusicBeatSubState
       cameraFollowPoint = new FlxObject(0, 0);
     }
 
+    // Force allowScreenTimeout to be disabled
+    lime.system.System.allowScreenTimeout = false;
+
     // Reduce physics accuracy (who cares!!!) to improve animation quality.
     FlxG.fixedTimestep = false;
 
@@ -2993,6 +2996,9 @@ class PlayState extends MusicBeatSubState
     criticalFailure = true; // Stop game updates.
     performCleanup();
     super.close();
+
+    // Syncing allowScreenTimeout with Preferences option.
+    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
   }
 
   /**
