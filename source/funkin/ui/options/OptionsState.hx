@@ -14,6 +14,7 @@ import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
 import funkin.mobile.ControlsHandler;
+import funkin.ui.options.mobile.MobilePreferencesMenu;
 
 class OptionsState extends MusicBeatState
 {
@@ -41,6 +42,7 @@ class OptionsState extends MusicBeatState
 
     var options = addPage(Options, new OptionsMenu());
     var preferences = addPage(Preferences, new PreferencesMenu());
+    var mobilePreferences = addPage(MobilePreferences, new MobilePreferencesMenu());
     var controls = addPage(Controls, new ControlsMenu());
 
     if (options.hasMultipleOptions())
@@ -198,6 +200,7 @@ class OptionsMenu extends Page
 
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() switchPage(Preferences));
+    createItem("MOBILE PREFERENCES", function() switchPage(MobilePreferences));
     createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
       FlxG.state.openSubState(new LatencyState());
@@ -281,4 +284,5 @@ enum PageName
   Colors;
   Mods;
   Preferences;
+  MobilePreferences;
 }
