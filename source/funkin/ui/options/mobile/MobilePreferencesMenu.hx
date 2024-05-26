@@ -1,4 +1,4 @@
-package funkin.ui.options;
+package funkin.ui.options.mobile;
 
 import funkin.ui.options.PreferencesMenu;
 
