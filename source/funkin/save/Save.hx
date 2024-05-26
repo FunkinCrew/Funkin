@@ -87,7 +87,6 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
-          legacyControls: false,
           inputOffset: 0,
           audioVisualOffset: 0,
 
@@ -105,6 +104,12 @@ class Save
                   gamepad: {},
                 },
             },
+        },
+
+      mobile:
+        {
+          //Defaults.
+          legacyControls: false
         },
 
       mods:
@@ -746,6 +751,8 @@ typedef RawSaveData =
    */
   var options:SaveDataOptions;
 
+  var mobile:SaveDataMobileOptions;
+
   var mods:SaveDataMods;
 
   /**
@@ -878,12 +885,6 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
-   * If enabled, vpad will be disabled.
-   * @default `true`
-   */
-  var legacyControls:Bool;
-
-  /**
    * Offset the users inputs by this many ms.
    * @default `0`
    */
@@ -908,6 +909,15 @@ typedef SaveDataOptions =
           var gamepad:SaveControlsData;
         };
     };
+};
+
+typedef SaveDataMobileOptions =
+{
+  /**
+   * If enabled, vpad will be disabled.
+   * @default `true`
+   */
+  var legacyControls:Bool;
 };
 
 /**
