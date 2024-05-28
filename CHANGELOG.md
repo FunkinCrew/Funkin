@@ -4,6 +4,28 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2024-05-??
+### Added
+- 2 new Erect remixes, Eggnog and Satin Panties. Check them out from
+- Improvements to the Freeplay screen, with song difficulty ratings and player rank displays.
+- Reworked the Results screen, with additional animations and audio based on your performance.
+- Added a Charter field to the chart format, to allow for crediting the creator of a level's chart.
+  - You can see who charted a song from the Pause menu.
+### Changed
+- Tweaked the charts for several songs:
+  - Winter Horrorland
+  - Stress
+  - Lit Up
+- Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
+- Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
+  - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
+### Fixed
+- Fixed a bug where pressing the volume keys would stop the Toy commercial (thanks gamerbross!)
+- Fixed a bug where the Chart Editor would crash when losing (thanks gamerbross!)
+- Made improvements to compiling documentation (thanks gedehari!)
+- Fixed a crash on Linux caused by an old version of hxCodec (thanks Noobz4Life!)
+- Optimized animation handling for characters (thanks richTrash21!)
+
 ## [0.3.3] - 2024-05-14
 ### Changed
 - Cleaned up some code in `PlayAnimationSongEvent.hx` (thanks BurgerBalls!)
