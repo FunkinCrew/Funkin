@@ -809,11 +809,6 @@ typedef SaveScoreData =
    * The count of each judgement hit.
    */
   var tallies:SaveScoreTallyData;
-
-  /**
-   * The accuracy percentage.
-   */
-  var accuracy:Float;
 }
 
 typedef SaveScoreTallyData =

@@ -121,7 +121,7 @@ class SaveDataMigrator
     var scoreDataEasy:SaveScoreData =
       {
         score: inputSaveData.songScores.get('${levelId}-easy') ?? 0,
-        accuracy: inputSaveData.songCompletion.get('${levelId}-easy') ?? 0.0,
+        // accuracy: inputSaveData.songCompletion.get('${levelId}-easy') ?? 0.0,
         tallies:
           {
             sick: 0,
@@ -140,7 +140,7 @@ class SaveDataMigrator
     var scoreDataNormal:SaveScoreData =
       {
         score: inputSaveData.songScores.get('${levelId}') ?? 0,
-        accuracy: inputSaveData.songCompletion.get('${levelId}') ?? 0.0,
+        // accuracy: inputSaveData.songCompletion.get('${levelId}') ?? 0.0,
         tallies:
           {
             sick: 0,
@@ -159,7 +159,7 @@ class SaveDataMigrator
     var scoreDataHard:SaveScoreData =
       {
         score: inputSaveData.songScores.get('${levelId}-hard') ?? 0,
-        accuracy: inputSaveData.songCompletion.get('${levelId}-hard') ?? 0.0,
+        // accuracy: inputSaveData.songCompletion.get('${levelId}-hard') ?? 0.0,
         tallies:
           {
             sick: 0,
@@ -181,7 +181,6 @@ class SaveDataMigrator
     var scoreDataEasy:SaveScoreData =
       {
         score: 0,
-        accuracy: 0,
         tallies:
           {
             sick: 0,
@@ -199,14 +198,13 @@ class SaveDataMigrator
     for (songId in songIds)
     {
       scoreDataEasy.score = Std.int(Math.max(scoreDataEasy.score, inputSaveData.songScores.get('${songId}-easy') ?? 0));
-      scoreDataEasy.accuracy = Math.max(scoreDataEasy.accuracy, inputSaveData.songCompletion.get('${songId}-easy') ?? 0.0);
+      // scoreDataEasy.accuracy = Math.max(scoreDataEasy.accuracy, inputSaveData.songCompletion.get('${songId}-easy') ?? 0.0);
     }
     result.setSongScore(songIds[0], 'easy', scoreDataEasy);
 
     var scoreDataNormal:SaveScoreData =
       {
         score: 0,
-        accuracy: 0,
         tallies:
           {
             sick: 0,
@@ -224,14 +222,13 @@ class SaveDataMigrator
     for (songId in songIds)
     {
       scoreDataNormal.score = Std.int(Math.max(scoreDataNormal.score, inputSaveData.songScores.get('${songId}') ?? 0));
-      scoreDataNormal.accuracy = Math.max(scoreDataNormal.accuracy, inputSaveData.songCompletion.get('${songId}') ?? 0.0);
+      // scoreDataNormal.accuracy = Math.max(scoreDataNormal.accuracy, inputSaveData.songCompletion.get('${songId}') ?? 0.0);
     }
     result.setSongScore(songIds[0], 'normal', scoreDataNormal);
 
     var scoreDataHard:SaveScoreData =
       {
         score: 0,
-        accuracy: 0,
         tallies:
           {
             sick: 0,
@@ -249,7 +246,7 @@ class SaveDataMigrator
     for (songId in songIds)
     {
       scoreDataHard.score = Std.int(Math.max(scoreDataHard.score, inputSaveData.songScores.get('${songId}-hard') ?? 0));
-      scoreDataHard.accuracy = Math.max(scoreDataHard.accuracy, inputSaveData.songCompletion.get('${songId}-hard') ?? 0.0);
+      // scoreDataHard.accuracy = Math.max(scoreDataHard.accuracy, inputSaveData.songCompletion.get('${songId}-hard') ?? 0.0);
     }
     result.setSongScore(songIds[0], 'hard', scoreDataHard);
   }

@@ -2777,6 +2777,7 @@ class PlayState extends MusicBeatSubState
     deathCounter = 0;
 
     var isNewHighscore = false;
+    var prevScoreData:Null<SaveScoreData> = Save.instance.getSongScore(currentSong.id, currentDifficulty);
 
     if (currentSong != null && currentSong.validScore)
     {
@@ -2796,7 +2797,6 @@ class PlayState extends MusicBeatSubState
               totalNotesHit: Highscore.tallies.totalNotesHit,
               totalNotes: Highscore.tallies.totalNotes,
             },
-          accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
         };
 
       // adds current song data into the tallies for the level (story levels)
@@ -2833,7 +2833,7 @@ class PlayState extends MusicBeatSubState
               score: PlayStatePlaylist.campaignScore,
               tallies:
                 {
-                  // TODO: Sum up the values for the whole level!
+                  // TODO: Sum up the values for the whole week!
                   sick: 0,
                   good: 0,
                   bad: 0,
@@ -2844,7 +2844,6 @@ class PlayState extends MusicBeatSubState
                   totalNotesHit: 0,
                   totalNotes: 0,
                 },
-              accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
             };
 
           if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
@@ -2930,11 +2929,11 @@ class PlayState extends MusicBeatSubState
       {
         if (rightGoddamnNow)
         {
-          moveToResultsScreen(isNewHighscore);
+          moveToResultsScreen(isNewHighscore, prevScoreData);
         }
         else
         {
-          zoomIntoResultsScreen(isNewHighscore);
+          zoomIntoResultsScreen(isNewHighscore, prevScoreData);
         }
       }
     }
@@ -3008,7 +3007,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Play the camera zoom animation and then move to the results screen once it's done.
    */
-  function zoomIntoResultsScreen(isNewHighscore:Bool):Void
+  function zoomIntoResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
   {
     trace('WENT TO RESULTS SCREEN!');
 
@@ -3048,7 +3047,7 @@ class PlayState extends MusicBeatSubState
     FlxTween.tween(camHUD, {alpha: 0}, 0.6,
       {
         onComplete: function(_) {
-          moveToResultsScreen(isNewHighscore);
+          moveToResultsScreen(isNewHighscore, prevScoreData);
         }
       });
 
@@ -3081,7 +3080,7 @@ class PlayState extends MusicBeatSubState
   /**
    * Move to the results screen right goddamn now.
    */
-  function moveToResultsScreen(isNewHighscore:Bool):Void
+  function moveToResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
   {
     persistentUpdate = false;
     vocals.stop();
@@ -3093,6 +3092,8 @@ class PlayState extends MusicBeatSubState
       {
         storyMode: PlayStatePlaylist.isStoryMode,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+        prevScoreData: prevScoreData,
+        difficultyId: currentDifficulty,
         scoreData:
           {
             score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
@@ -3108,7 +3109,6 @@ class PlayState extends MusicBeatSubState
                 totalNotesHit: talliesToUse.totalNotesHit,
                 totalNotes: talliesToUse.totalNotes,
               },
-            accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
           },
         isNewHighscore: isNewHighscore
       });
