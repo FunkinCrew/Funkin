@@ -14,8 +14,7 @@ import funkin.util.SerializerUtil;
 @:nullSafety
 class Save
 {
-  // Version 2.0.2 adds attributes to `optionsChartEditor`, that should return default values if they are null.
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.3";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.4";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -53,7 +52,8 @@ class Save
   public function new(?data:RawSaveData)
   {
     if (data == null) this.data = Save.getDefault();
-    else this.data = data;
+    else
+      this.data = data;
   }
 
   public static function getDefault():RawSaveData
@@ -77,6 +77,9 @@ class Save
           levels: [],
           songs: [],
         },
+
+      favoriteSongs: [],
+
       options:
         {
           // Reasonable defaults.
@@ -554,6 +557,35 @@ class Save
     return false;
   }
 
+  public function isSongFavorited(id:String):Bool
+  {
+    if (data.favoriteSongs == null)
+    {
+      data.favoriteSongs = [];
+      flush();
+    };
+
+    return data.favoriteSongs.contains(id);
+  }
+
+  public function favoriteSong(id:String):Void
+  {
+    if (!isSongFavorited(id))
+    {
+      data.favoriteSongs.push(id);
+      flush();
+    }
+  }
+
+  public function unfavoriteSong(id:String):Void
+  {
+    if (isSongFavorited(id))
+    {
+      data.favoriteSongs.remove(id);
+      flush();
+    }
+  }
+
   public function getControls(playerId:Int, inputType:Device):Null<SaveControlsData>
   {
     switch (inputType)
@@ -740,6 +772,12 @@ typedef RawSaveData =
    */
   var options:SaveDataOptions;
 
+  /**
+   * The user's favorited songs in the Freeplay menu,
+   * as a list of song IDs.
+   */
+  var favoriteSongs:Array<String>;
+
   var mods:SaveDataMods;
 
   /**
@@ -809,11 +847,6 @@ typedef SaveScoreData =
    * The count of each judgement hit.
    */
   var tallies:SaveScoreTallyData;
-
-  /**
-   * The accuracy percentage.
-   */
-  var accuracy:Float;
 }
 
 typedef SaveScoreTallyData =
