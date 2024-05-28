@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project>
+<project xmlns="http://lime.openfl.org/project/1.0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
 	<!-- _________________________ Application Settings _________________________ -->
 	<app title="Friday Night Funkin'" file="Funkin" packageName="com.funkin.fnf" package="com.funkin.fnf" main="Main" version="0.3.3" company="ninjamuffin99" />
 	<!--Switch Export with Unique ApplicationID and Icon-->
@@ -14,6 +15,7 @@
 
 	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
+	<
 	<!-- ____________________________ Window Settings ___________________________ -->
 	<!--These window settings apply to all targets-->
 	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
@@ -28,7 +30,7 @@
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
-	<classpath name="source" />
+	<source path="source" />
 	<assets path="assets/preload" rename="assets" exclude="*.ogg|*.wav" if="web" />
 	<assets path="assets/preload" rename="assets" exclude="*.mp3|*.wav" unless="web" />
 	<define name="PRELOAD_ALL" unless="web" />
