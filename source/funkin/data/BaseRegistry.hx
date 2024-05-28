@@ -117,7 +117,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         var entry:T = createEntry(entryId);
         if (entry != null)
         {
-          trace('  Loaded entry data: ${entry.id}');
+          trace('  Loaded entry data: ${entry}');
           entries.set(entry.id, entry);
         }
       }
