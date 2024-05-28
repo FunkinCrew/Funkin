@@ -1012,7 +1012,7 @@ class FreeplayState extends MusicBeatSubState
     {
       var songScore:SaveScoreData = Save.instance.getSongScore(grpCapsules.members[curSelected].songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore?.accuracy ?? 0.0;
+      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
     }
     else
@@ -1210,7 +1210,7 @@ class FreeplayState extends MusicBeatSubState
     {
       var songScore:SaveScoreData = Save.instance.getSongScore(daSongCapsule.songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore?.accuracy ?? 0.0;
+      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       diffIdsCurrent = daSongCapsule.songData.songDifficulties;
       rememberedSongId = daSongCapsule.songData.songId;
       changeDiff();
