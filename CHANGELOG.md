@@ -4,6 +4,46 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2024-05-??
+### Added
+- 2 new Erect remixes, Eggnog and Satin Panties. Check them out from
+- Improvements to the Freeplay screen, with song difficulty ratings and player rank displays.
+- Reworked the Results screen, with additional animations and audio based on your performance.
+- Added a Charter field to the chart format, to allow for crediting the creator of a level's chart.
+  - You can see who charted a song from the Pause menu.
+### Changed
+- Tweaked the charts for several songs:
+  - Winter Horrorland
+  - Stress
+  - Lit Up
+- Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
+- Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
+  - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
+### Fixed
+- Fixed a bug where pressing the volume keys would stop the Toy commercial (thanks gamerbross!)
+- Fixed a bug where the Chart Editor would crash when losing (thanks gamerbross!)
+- Made improvements to compiling documentation (thanks gedehari!)
+- Fixed a crash on Linux caused by an old version of hxCodec (thanks Noobz4Life!)
+- Optimized animation handling for characters (thanks richTrash21!)
+
+## [0.3.3] - 2024-05-14
+### Changed
+- Cleaned up some code in `PlayAnimationSongEvent.hx` (thanks BurgerBalls!)
+### Fixed
+- Fix Web Loading Bar (thanks lemz1!)
+- Don't allow any more inputs when exiting freeplay (thanks gamerbros!)
+- Fixed using mouse wheel to scroll on freeplay (thanks JugieNoob!)
+- Fixed the reset's of the health icons, score, and notes when re-entering gameplay from gameover (thanks ImCodist!)
+- Fixed the chart editor character selector's hitbox width (thanks MadBear422!)
+- Fixed camera stutter once a wipe transition to the Main Menu completes (thanks ImCodist!)
+- Fixed an issue where hold note would be invisible for a single frame (thanks ImCodist!)
+- Fix tween accumulation on title screen when pressing Y multiple times (thanks TheGaloXx!)
+- Fix for a game over easter egg so you don't accidentally exit it when viewing
+- Fix a crash when querying FlxG.state in the crash handler
+- Fix an issue where the Freeplay menu never displays 100% clear
+- Chart debug key now properly returns you to the previous chart editor session if you were playtesting a chart (thanks nebulazorua!)
+- Hopefully fixed Freeplay crashes on AMD gpu's
+
 ## [0.3.2] - 2024-05-03
 ### Added
 - Added `,` and `.` keybinds to the Chart Editor. These place Focus Camera events at the playhead, for the opponent and player respectively.

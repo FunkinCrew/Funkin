@@ -37,6 +37,7 @@ class ResultState extends MusicBeatSubState
   final rank:ResultRank;
   final songName:FlxBitmapText;
   final difficulty:FlxSprite;
+  final clearPercentSmall:ClearPercentCounter;
 
   final maskShaderSongName:LeftMaskShader = new LeftMaskShader();
   final maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
@@ -52,6 +53,7 @@ class ResultState extends MusicBeatSubState
 
   var bfPerfect:Null<FlxAtlasSprite> = null;
   var bfExcellent:Null<FlxAtlasSprite> = null;
+  var bfGreat:Null<FlxAtlasSprite> = null;
   var bfGood:Null<FlxSprite> = null;
   var gfGood:Null<FlxSprite> = null;
   var bfShit:Null<FlxAtlasSprite> = null;
@@ -77,6 +79,10 @@ class ResultState extends MusicBeatSubState
 
     difficulty = new FlxSprite(555);
     difficulty.zIndex = 1000;
+
+    clearPercentSmall = new ClearPercentCounter(FlxG.width / 2 + 300, FlxG.height / 2 - 100, 100, true);
+    clearPercentSmall.zIndex = 1000;
+    clearPercentSmall.visible = false;
 
     bgFlash = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFEB69, 0xFFFFE66A], 90);
 
@@ -146,7 +152,20 @@ class ResultState extends MusicBeatSubState
           }
         });
 
-      case GOOD | GREAT:
+      case GREAT:
+        bfGreat = new FlxAtlasSprite(640, 200, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT", "shared"));
+        bfGreat.visible = false;
+        bfGreat.zIndex = 500;
+        add(bfGreat);
+
+        bfGreat.onAnimationFinish.add((animName) -> {
+          if (bfGreat != null)
+          {
+            bfGreat.playAnimation('Loop Start');
+          }
+        });
+
+      case GOOD:
         gfGood = FunkinSprite.createSparrow(625, 325, 'resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD');
         gfGood.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
         gfGood.visible = false;
@@ -194,7 +213,7 @@ class ResultState extends MusicBeatSubState
     speedOfTween.x = -1.0 * Math.cos(angleRad);
     speedOfTween.y = -1.0 * Math.sin(angleRad);
 
-    timerThenSongName(1.0);
+    timerThenSongName(1.0, false);
 
     songName.shader = maskShaderSongName;
     difficulty.shader = maskShaderDifficulty;
@@ -319,13 +338,15 @@ class ResultState extends MusicBeatSubState
 
   function startRankTallySequence():Void
   {
-    clearPercentTarget = Math.floor((params.scoreData.tallies.sick + params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes * 100);
-    clearPercentTarget = 100;
+    var clearPercentFloat = (params.scoreData.tallies.sick + params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes * 100;
+    clearPercentTarget = Math.floor(clearPercentFloat);
+    // Prevent off-by-one errors.
 
     clearPercentLerp = Std.int(Math.max(0, clearPercentTarget - 36));
 
-    var clearPercentCounter:ClearPercentCounter = new ClearPercentCounter(FlxG.width / 2 + 300, FlxG.height / 2 - 100, clearPercentTarget);
-    clearPercentCounter.curNumber = clearPercentLerp;
+    trace('Clear percent target: ' + clearPercentFloat + ', round: ' + clearPercentTarget);
+
+    var clearPercentCounter:ClearPercentCounter = new ClearPercentCounter(FlxG.width / 2 + 300, FlxG.height / 2 - 100, clearPercentLerp);
     FlxTween.tween(clearPercentCounter, {curNumber: clearPercentTarget}, 1.5,
       {
         ease: FlxEase.quartOut,
@@ -345,10 +366,25 @@ class ResultState extends MusicBeatSubState
           bgFlash.visible = true;
           FlxTween.tween(bgFlash, {alpha: 0}, 0.4);
 
+          // Just to be sure that the lerp didn't mess things up.
+          clearPercentCounter.curNumber = clearPercentTarget;
+
+          clearPercentCounter.flash(true);
+          new FlxTimer().start(0.4, _ -> {
+            clearPercentCounter.flash(false);
+          });
+
           displayRankText();
 
           new FlxTimer().start(2.0, _ -> {
-            // remove(clearPercentCounter);
+            FlxTween.tween(clearPercentCounter, {alpha: 0}, 0.5,
+              {
+                startDelay: 0.5,
+                ease: FlxEase.quartOut,
+                onComplete: _ -> {
+                  remove(clearPercentCounter);
+                }
+              });
 
             afterRankTallySequence();
           });
@@ -406,6 +442,8 @@ class ResultState extends MusicBeatSubState
 
   function afterRankTallySequence():Void
   {
+    showSmallClearPercent();
+
     FunkinSound.playMusic(rank.getMusicPath(),
       {
         startingVolume: 1.0,
@@ -452,6 +490,17 @@ class ResultState extends MusicBeatSubState
           bfExcellent.playAnimation('Intro');
         }
 
+      case GREAT:
+        if (bfGreat == null)
+        {
+          trace("Could not build GREAT animation!");
+        }
+        else
+        {
+          bfGreat.visible = true;
+          bfGreat.playAnimation('Intro');
+        }
+
       case SHIT:
         if (bfShit == null)
         {
@@ -463,7 +512,7 @@ class ResultState extends MusicBeatSubState
           bfShit.playAnimation('Intro');
         }
 
-      case GREAT | GOOD:
+      case GOOD:
         if (bfGood == null)
         {
           trace("Could not build GOOD animation!");
@@ -490,7 +539,7 @@ class ResultState extends MusicBeatSubState
     }
   }
 
-  function timerThenSongName(timerLength:Float = 3.0):Void
+  function timerThenSongName(timerLength:Float = 3.0, autoScroll:Bool = true):Void
   {
     movingSongStuff = false;
 
@@ -501,10 +550,17 @@ class ResultState extends MusicBeatSubState
     difficulty.y = -difficulty.height;
     FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.8});
 
+    if (clearPercentSmall != null)
+    {
+      clearPercentSmall.x = (difficulty.x + difficulty.width) + 60;
+      clearPercentSmall.y = -clearPercentSmall.height;
+      FlxTween.tween(clearPercentSmall, {y: 122 - 5}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.8});
+    }
+
     songName.y = -songName.height;
     var fuckedupnumber = (10) * (songName.text.length / 15);
-    FlxTween.tween(songName, {y: diffYTween - 35 - fuckedupnumber}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
-    songName.x = (difficulty.x + difficulty.width) + 20;
+    FlxTween.tween(songName, {y: diffYTween - 25 - fuckedupnumber}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
+    songName.x = clearPercentSmall.x + clearPercentSmall.width - 30;
 
     new FlxTimer().start(timerLength, _ -> {
       var tempSpeed = FlxPoint.get(speedOfTween.x, speedOfTween.y);
@@ -512,8 +568,27 @@ class ResultState extends MusicBeatSubState
       speedOfTween.set(0, 0);
       FlxTween.tween(speedOfTween, {x: tempSpeed.x, y: tempSpeed.y}, 0.7, {ease: FlxEase.quadIn});
 
-      movingSongStuff = true;
+      movingSongStuff = (autoScroll);
     });
+  }
+
+  function showSmallClearPercent():Void
+  {
+    if (clearPercentSmall != null)
+    {
+      add(clearPercentSmall);
+      clearPercentSmall.visible = true;
+      clearPercentSmall.flash(true);
+      new FlxTimer().start(0.4, _ -> {
+        clearPercentSmall.flash(false);
+      });
+
+      clearPercentSmall.curNumber = clearPercentTarget;
+      clearPercentSmall.zIndex = 1000;
+      refresh();
+    }
+
+    movingSongStuff = true;
   }
 
   var movingSongStuff:Bool = false;
@@ -523,7 +598,8 @@ class ResultState extends MusicBeatSubState
   {
     super.draw();
 
-    songName.clipRect = FlxRect.get(Math.max(0, 540 - songName.x), 0, FlxG.width, songName.height);
+    songName.clipRect = FlxRect.get(Math.max(0, 520 - songName.x), 0, FlxG.width, songName.height);
+
     // PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
 
     // if (songName != null && songName.frame != null)
@@ -539,8 +615,10 @@ class ResultState extends MusicBeatSubState
     {
       songName.x += speedOfTween.x;
       difficulty.x += speedOfTween.x;
+      clearPercentSmall.x += speedOfTween.x;
       songName.y += speedOfTween.y;
       difficulty.y += speedOfTween.y;
+      clearPercentSmall.y += speedOfTween.y;
 
       if (songName.x + songName.width < 100)
       {

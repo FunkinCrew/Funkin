@@ -227,14 +227,14 @@ class InitState extends FlxState
             tallies:
               {
                 sick: 130,
-                good: 69,
+                good: 25,
                 bad: 69,
                 shit: 69,
                 missed: 69,
                 combo: 69,
                 maxCombo: 69,
                 totalNotesHit: 140,
-                totalNotes: 2000,
+                totalNotes: 200 // 0,
               }
           },
       }));
