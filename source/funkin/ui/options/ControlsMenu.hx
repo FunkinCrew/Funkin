@@ -28,8 +28,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
     [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
     [CUTSCENE_ADVANCE],
-    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
-    [DEBUG_MENU, DEBUG_CHART]
+    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE]
   ];
 
   var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
@@ -47,6 +46,10 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
   public function new()
   {
     super();
+
+    #if !web
+    controlGroups.push([DEBUG_MENU, DEBUG_CHART]);
+    #end
 
     menuCamera = new FunkinCamera('controlsMenu');
     FlxG.cameras.add(menuCamera, false);
