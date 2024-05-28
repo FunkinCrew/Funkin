@@ -474,10 +474,6 @@ class Save
 
   public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
   {
-    #if ios
-    // TODO: Remove this after hxvlc gets fixed.
-    if (levelId == "weekend1") return true;
-    #end
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
