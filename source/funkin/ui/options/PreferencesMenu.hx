@@ -3,6 +3,7 @@ package funkin.ui.options;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
@@ -67,16 +68,17 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    //Mobile preferences
-    createPrefItemCheckbox('Allow Screen Timeout', 'Toggle screen timeout', function(value:Bool):Void {
-      Preferences.screenTimeout = value;
-    }, Preferences.screenTimeout);
-    createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
-      Preferences.vibration = value;
-    }, Preferences.vibration);
-    createPrefItemCheckbox('Legacy Controls', 'Toggle legacy controls', function(value:Bool):Void {
-      Preferences.legacyControls = value;
-    }, Preferences.legacyControls);
+    if (FlxG.onMobile) {
+      createPrefItemCheckbox('Allow Screen Timeout', 'Toggle screen timeout', function(value:Bool):Void {
+        Preferences.screenTimeout = value;
+      }, Preferences.screenTimeout);
+      createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
+        Preferences.vibration = value;
+      }, Preferences.vibration);
+      createPrefItemCheckbox('Legacy Controls', 'Toggle legacy controls', function(value:Bool):Void {
+        Preferences.legacyControls = value;
+      }, Preferences.legacyControls);
+    }
   }
 
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
