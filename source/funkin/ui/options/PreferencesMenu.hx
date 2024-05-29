@@ -14,7 +14,7 @@ import funkin.audio.FunkinSound;
 class PreferencesMenu extends Page
 {
   /**
-   * Wether you can selected a different option
+   * Wether you can select a different option
    */
   public static var allowScrolling:Bool = true;
 
