@@ -128,6 +128,7 @@
 
 
 	<haxelib name="json2object" /> <!-- JSON parsing -->
+	<haxelib name="thx.core" /> <!-- General utility library, "the lodash of Haxe" -->
 	<haxelib name="thx.semver" /> <!-- Version string handling -->
 
 	<haxelib name="hxcpp-debug-server" if="desktop debug" /> <!-- VSCode debug support -->
