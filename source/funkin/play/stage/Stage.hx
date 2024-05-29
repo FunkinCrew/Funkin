@@ -852,6 +852,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
+  public override function toString():String
+  {
+    return 'Stage($id)';
+  }
+
   static function _fetchData(id:String):Null<StageData>
   {
     return StageRegistry.instance.parseEntryDataWithMigration(id, StageRegistry.instance.fetchEntryVersion(id));

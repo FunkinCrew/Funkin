@@ -57,8 +57,7 @@ class LoadingState extends MusicBeatSubState
     funkay.scrollFactor.set();
     funkay.screenCenter();
 
-    loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(FlxG.width, 10, 0xFFff16d2);
-    loadBar.screenCenter(X);
+    loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(0, 10, 0xFFff16d2);
     add(loadBar);
 
     initSongsManifest().onComplete(function(lib) {
@@ -162,7 +161,16 @@ class LoadingState extends MusicBeatSubState
     {
       targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
 
-      loadBar.scale.x = FlxMath.lerp(loadBar.scale.x, targetShit, 0.50);
+      var lerpWidth:Int = Std.int(FlxMath.lerp(loadBar.width, FlxG.width * targetShit, 0.2));
+      // this if-check prevents the setGraphicSize function
+      // from setting the width of the loadBar to the height of the loadBar
+      // this is a behaviour that is implemented in the setGraphicSize function
+      // if the width parameter is equal to 0
+      if (lerpWidth > 0)
+      {
+        loadBar.setGraphicSize(lerpWidth, loadBar.height);
+        loadBar.updateHitbox();
+      }
       FlxG.watch.addQuick('percentage?', callbacks.numRemaining / callbacks.length);
     }
 

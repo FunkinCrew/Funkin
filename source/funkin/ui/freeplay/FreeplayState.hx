@@ -29,8 +29,9 @@ import funkin.graphics.shaders.StrokeShader;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
-import funkin.save.Save.SaveScoreData;
+import funkin.ui.story.Level;
 import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.mainmenu.MainMenuState;
@@ -194,9 +195,23 @@ class FreeplayState extends MusicBeatSubState
     // programmatically adds the songs via LevelRegistry and SongRegistry
     for (levelId in LevelRegistry.instance.listSortedLevelIds())
     {
-      for (songId in LevelRegistry.instance.parseEntryData(levelId).songs)
+      var level:Level = LevelRegistry.instance.fetchEntry(levelId);
+
+      if (level == null)
+      {
+        trace('[WARN] Could not find level with id (${levelId})');
+        continue;
+      }
+
+      for (songId in level.getSongs())
       {
         var song:Song = SongRegistry.instance.fetchEntry(songId);
+
+        if (song == null)
+        {
+          trace('[WARN] Could not find song with id (${songId})');
+          continue;
+        }
 
         // Only display songs which actually have available charts for the current character.
         var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
@@ -736,8 +751,8 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
-    lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
+    lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
+    lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
 
     if (Math.isNaN(lerpScore))
     {
@@ -892,11 +907,24 @@ class FreeplayState extends MusicBeatSubState
       spamTimer = 0;
     }
 
+    #if !html5
     if (FlxG.mouse.wheel != 0)
     {
       dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+      changeSelection(-Math.round(FlxG.mouse.wheel));
     }
+    #else
+    if (FlxG.mouse.wheel < 0)
+    {
+      dj.resetAFKTimer();
+      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+    }
+    else if (FlxG.mouse.wheel > 0)
+    {
+      dj.resetAFKTimer();
+      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+    }
+    #end
 
     if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
     {
@@ -913,6 +941,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (controls.BACK)
     {
+      busy = true;
       FlxTween.globalManager.clear();
       FlxTimer.globalManager.clear();
       dj.onIntroDone.removeAll();
