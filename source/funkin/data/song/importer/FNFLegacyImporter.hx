@@ -65,7 +65,7 @@ class FNFLegacyImporter
 
     songMetadata.timeChanges = rebuildTimeChanges(songData);
 
-    songMetadata.playData.characters = new SongCharacterData(songData?.song?.player1 ?? 'bf', 'gf', songData?.song?.player2 ?? 'dad', 'mom');
+    songMetadata.playData.characters = new SongCharacterData(songData?.song?.player1 ?? 'bf', 'gf', songData?.song?.player2 ?? 'dad');
 
     return songMetadata;
   }
