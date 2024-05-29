@@ -3,7 +3,6 @@ package funkin.audio.visualize;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import funkin.audio.visualize.dsp.FFT;
-import lime.system.ThreadPool;
 import lime.utils.Int16Array;
 import funkin.util.MathUtil;
 
@@ -73,9 +72,6 @@ class VisShit
 
       freqOutput.push([]);
 
-      // if (FlxG.keys.justPressed.M)
-      // trace(FFT.rfft(chunk).map(z -> z.scale(1 / fs).magnitude));
-
       // find spectral peaks and their instantaneous frequencies
       for (k => s in freqs)
       {
@@ -91,7 +87,6 @@ class VisShit
         if (freq < maxFreq) freqOutput[indexOfArray].push(power);
         //
       }
-      // haxe.Log.trace("", null);
 
       indexOfArray++;
       // move to next (overlapping) chunk

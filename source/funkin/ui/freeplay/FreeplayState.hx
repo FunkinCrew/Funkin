@@ -1251,23 +1251,25 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
+        var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
         // TODO: Stream the instrumental of the selected song?
-        var didReplace:Bool = FunkinSound.playMusic('freakyMenu',
+        FunkinSound.playMusic(daSongCapsule.songData.songId,
           {
             startingVolume: 0.0,
             overrideExisting: true,
-            restartTrack: false
+            restartTrack: false,
+            pathsFunction: INST,
+            suffix: potentiallyErect,
+            partialParams:
+              {
+                loadPartial: true,
+                start: 0,
+                end: 0.1
+              },
+            onLoad: function() {
+              FlxG.sound.music.fadeIn(2, 0, 0.4);
+            }
           });
-        if (didReplace)
-        {
-          FunkinSound.playMusic('freakyMenu',
-            {
-              startingVolume: 0.0,
-              overrideExisting: true,
-              restartTrack: false
-            });
-          FlxG.sound.music.fadeIn(2, 0, 0.8);
-        }
       }
       grpCapsules.members[curSelected].selected = true;
     }
