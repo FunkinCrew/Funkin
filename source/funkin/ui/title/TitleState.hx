@@ -67,9 +67,11 @@ class TitleState extends MusicBeatState
     // DEBUG BULLSHIT
 
     // netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-    new FlxTimer().start(1, function(tmr:FlxTimer) {
+    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
       startIntro();
     });
+    else
+      startIntro();
   }
 
   function client_onMetaData(metaData:Dynamic)
@@ -118,7 +120,7 @@ class TitleState extends MusicBeatState
 
   function startIntro():Void
   {
-    playMenuMusic();
+    if (!initialized || FlxG.sound.music == null) playMenuMusic();
 
     persistentUpdate = true;
 
@@ -231,7 +233,7 @@ class TitleState extends MusicBeatState
         overrideExisting: true,
         restartTrack: true
       });
-    // Fade from 0.0 to 0.7 over 4 seconds
+    // Fade from 0.0 to 1 over 4 seconds
     if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
   }
 
