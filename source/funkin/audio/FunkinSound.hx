@@ -11,10 +11,9 @@ import funkin.audio.waveform.WaveformDataParser;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
 import funkin.util.tools.ICloneable;
-import openfl.Assets;
 import openfl.media.SoundMixer;
+
 #if (openfl >= "8.0.0")
-import openfl.utils.AssetType;
 #end
 
 /**
