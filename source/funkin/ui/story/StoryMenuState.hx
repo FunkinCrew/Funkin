@@ -466,6 +466,9 @@ class StoryMenuState extends MusicBeatState
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
+
+    updateText();
+    refresh();
   }
 
   final FADE_OUT_TIME:Float = 1.5;
