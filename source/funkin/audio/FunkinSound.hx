@@ -17,8 +17,8 @@ import openfl.Assets;
 import lime.app.Future;
 import lime.app.Promise;
 import openfl.media.SoundMixer;
+
 #if (openfl >= "8.0.0")
-import openfl.utils.AssetType;
 #end
 
 /**

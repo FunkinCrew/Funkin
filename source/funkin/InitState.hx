@@ -214,6 +214,30 @@ class InitState extends FlxState
     #elseif STAGEBUILD
     // -DSTAGEBUILD
     FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
+    #elseif RESULTS
+    // -DRESULTS
+    FlxG.switchState(() -> new funkin.play.ResultState(
+      {
+        storyMode: false,
+        title: "CUM SONG",
+        isNewHighscore: true,
+        scoreData:
+          {
+            score: 1_234_567,
+            tallies:
+              {
+                sick: 130,
+                good: 25,
+                bad: 69,
+                shit: 69,
+                missed: 69,
+                combo: 69,
+                maxCombo: 69,
+                totalNotesHit: 140,
+                totalNotes: 200 // 0,
+              }
+          },
+      }));
     #elseif ANIMDEBUG
     // -DANIMDEBUG
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
