@@ -746,6 +746,7 @@ class Save
 
 /**
  * An anonymous structure containingg all the user's save data.
+ * Isn't stored with JSON, stored with some sort of Haxe built-in serialization?
  */
 typedef RawSaveData =
 {
@@ -756,8 +757,6 @@ typedef RawSaveData =
   /**
    * A semantic versioning string for the save data format.
    */
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   var version:Version;
 
   var api:SaveApiData;

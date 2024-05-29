@@ -13,11 +13,10 @@ class LevelProp extends Bopper
     // Only reset the prop if the asset path has changed.
     if (propData == null || value?.assetPath != propData?.assetPath)
     {
-      this.visible = (value != null);
-      this.propData = value;
-      danceEvery = this.propData?.danceEvery ?? 0;
       applyData();
     }
+    this.visible = (value != null);
+    danceEvery = this.propData?.danceEvery ?? 0;
 
     return this.propData;
   }
