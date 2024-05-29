@@ -360,24 +360,24 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (shouldLoadPartial)
     {
       var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0, params.partialParams?.end ?? 1, params?.startingVolume ?? 1.0,
-        params.loop ?? true, false, true, params.onComplete, params.onLoad);
+        params.loop ?? true, false, false, params.onComplete);
 
       if (music != null)
       {
-        for (future in partialQueue)
+        while (partialQueue.length > 0)
         {
-          future = cast Future.withError("Music was overridden by another partial load");
+          @:nullSafety(Off)
+          partialQueue.pop().error("Cancel loading partial sound");
         }
-        partialQueue = [];
+
         partialQueue.push(music);
 
         @:nullSafety(Off)
-        music.onComplete(function(partialMusic:Null<FunkinSound>) {
-          if (partialQueue.pop() == music)
-          {
-            FlxG.sound.music = partialMusic;
-            FlxG.sound.list.remove(FlxG.sound.music);
-          }
+        music.future.onComplete(function(partialMusic:Null<FunkinSound>) {
+          FlxG.sound.music = partialMusic;
+          FlxG.sound.list.remove(FlxG.sound.music);
+
+          if (params.onLoad != null) params.onLoad();
         });
 
         return true;
@@ -406,7 +406,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
   }
 
-  static var partialQueue:Array<Future<Null<FunkinSound>>> = [];
+  static var partialQueue:Array<Promise<Null<FunkinSound>>> = [];
 
   /**
    * Creates a new `FunkinSound` object synchronously.
@@ -478,7 +478,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @return A FunkinSound object
    */
   public static function loadPartial(path:String, start:Float = 0, end:Float = 1, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false,
-      autoPlay:Bool = true, ?onComplete:Void->Void, ?onLoad:Void->Void):Future<Null<FunkinSound>>
+      autoPlay:Bool = true, ?onComplete:Void->Void, ?onLoad:Void->Void):Promise<Null<FunkinSound>>
   {
     var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
 
@@ -488,12 +488,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
 
-    soundRequest.onComplete(function(partialSound) {
+    promise.future.onError(function(e) {
+      soundRequest.error("Sound loading was errored or cancelled");
+    });
+
+    soundRequest.future.onComplete(function(partialSound) {
       var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, onComplete, onLoad);
       promise.complete(snd);
     });
 
-    return promise.future;
+    return promise;
   }
 
   @:nullSafety(Off)
