@@ -27,7 +27,7 @@ import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
-import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.title.OutdatedSubState;
 import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.api.newgrounds.NGio;
@@ -67,11 +67,24 @@ class TitleState extends MusicBeatState
     // DEBUG BULLSHIT
 
     // netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
-      startIntro();
-    });
+    if (!initialized)
+    {
+      new FlxTimer().start(1, function(tmr:FlxTimer) {
+        // TODO: maybe add a preprocessor which only enables this check for base version and disables for mods
+        #if !web
+        if (OutdatedSubState.outdated && !OutdatedSubState.leftState)
+        {
+          this.persistentUpdate = false;
+          this.openSubState(new OutdatedSubState());
+        }
+        #end
+        startIntro();
+      });
+    }
     else
+    {
       startIntro();
+    }
   }
 
   function client_onMetaData(metaData:Dynamic)
@@ -121,8 +134,6 @@ class TitleState extends MusicBeatState
   function startIntro():Void
   {
     if (!initialized || FlxG.sound.music == null) playMenuMusic();
-
-    persistentUpdate = true;
 
     var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
     bg.screenCenter();
@@ -345,9 +356,11 @@ class TitleState extends MusicBeatState
     super.update(elapsed);
   }
 
-  override function draw()
+  override function closeSubState():Void
   {
-    super.draw();
+    super.closeSubState();
+
+    this.persistentUpdate = true;
   }
 
   var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
