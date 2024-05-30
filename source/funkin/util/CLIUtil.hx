@@ -15,19 +15,26 @@ class CLIUtil
   public static function resetWorkingDir():Void
   {
     #if sys
-    var exeDir:String = Path.addTrailingSlash(#if android android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : android.content.Context.getExternalFilesDir() #elseif ios lime.system.System.documentsDirectory #else Path.directory(Sys.programPath()) #end);
+    var gameDir:String = '';
+    #if android
+    gameDir = Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : android.content.Context.getExternalFilesDir());
+    #elseif ios
+    gameDir = Path.addTrailingSlash(lime.system.System.documentsDirectory);
+    #else
+    gameDir =  Path.addTrailingSlash(Path.directory(Sys.programPath()));
+    #end
     #if mac
-    exeDir = Path.addTrailingSlash(Path.join([exeDir, '../Resources/']));
+    gameDir = Path.addTrailingSlash(Path.join([gameDir, '../Resources/']));
     #end
     var cwd:String = Path.addTrailingSlash(Sys.getCwd());
-    if (cwd == exeDir)
+    if (cwd == gameDir)
     {
       trace('Working directory is already correct.');
     }
     else
     {
-      trace('Changing working directory from ${Sys.getCwd()} to ${exeDir}');
-      Sys.setCwd(exeDir);
+      trace('Changing working directory from ${Sys.getCwd()} to ${gameDir}');
+      Sys.setCwd(gameDir);
     }
     #end
   }
