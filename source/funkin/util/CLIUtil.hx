@@ -20,11 +20,10 @@ class CLIUtil
     gameDir = Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : android.content.Context.getExternalFilesDir());
     #elseif ios
     gameDir = Path.addTrailingSlash(lime.system.System.documentsDirectory);
+    #elseif mac
+    gameDir = Path.addTrailingSlash(Path.join([gameDir, '../Resources/']));
     #else
     gameDir =  Path.addTrailingSlash(Path.directory(Sys.programPath()));
-    #end
-    #if mac
-    gameDir = Path.addTrailingSlash(Path.join([gameDir, '../Resources/']));
     #end
     var cwd:String = Path.addTrailingSlash(Sys.getCwd());
     if (cwd == gameDir)
