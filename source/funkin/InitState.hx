@@ -220,6 +220,8 @@ class InitState extends FlxState
       {
         storyMode: false,
         title: "CUM SONG",
+        songId: "cum",
+        difficultyId: "hard",
         isNewHighscore: true,
         scoreData:
           {
@@ -227,7 +229,7 @@ class InitState extends FlxState
             tallies:
               {
                 sick: 130,
-                good: 25,
+                good: 70,
                 bad: 69,
                 shit: 69,
                 missed: 69,
