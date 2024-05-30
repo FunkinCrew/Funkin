@@ -234,7 +234,7 @@ class PauseSubState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
-    charterFadeTween.destroy();
+    charterFadeTween.cancel();
     charterFadeTween = null;
     pauseMusic.stop();
   }
