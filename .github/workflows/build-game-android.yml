@@ -12,31 +12,37 @@ jobs:
         uses: actions/checkout@main
         with:
           submodules: true
+
       - name: Setup Java JDK
         uses: actions/setup-java@main
         with:
           distribution: 'temurin'
           java-version: '11'
+
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.3.4
+
       - name: Install Libraries
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
           haxelib run lime rebuild hxcpp
+
       - name: Configure Android
         run: |
           haxelib run lime config ANDROID_SDK $ANDROID_HOME
           haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
           haxelib run lime config ANDROID_SETUP true
+
       - name: Compile
         run: haxelib run lime build android -D ${{matrix.flag}}
+
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
           name: androidBuild-${{matrix.flag}}
-          path: export/release/android/bin/app/build/outputs/apk/debug/*.apk
+          path: export/release/android/bin/app/build/outputs/apk/debug
           if-no-files-found: error
