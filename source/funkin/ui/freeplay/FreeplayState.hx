@@ -1,5 +1,6 @@
 package funkin.ui.freeplay;
 
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
@@ -10,6 +11,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
+import openfl.display.BlendMode;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -38,6 +40,8 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import lime.utils.Assets;
+import flixel.tweens.misc.ShakeTween;
+import funkin.effects.IntervalShake;
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -133,6 +137,29 @@ class FreeplayState extends MusicBeatSubState
   public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   public static var rememberedSongId:Null<String> = 'tutorial';
 
+  var funnyCam:FunkinCamera;
+  var rankCamera:FunkinCamera;
+  var rankBg:FunkinSprite;
+  var rankVignette:FlxSprite;
+
+  var backingTextYeah:FlxAtlasSprite;
+  var orangeBackShit:FunkinSprite;
+  var alsoOrangeLOL:FunkinSprite;
+  var pinkBack:FunkinSprite;
+  var confirmGlow:FlxSprite;
+  var confirmGlow2:FlxSprite;
+  var confirmTextGlow:FlxSprite;
+
+  var moreWays:BGScrollingText;
+  var funnyScroll:BGScrollingText;
+  var txtNuts:BGScrollingText;
+  var funnyScroll2:BGScrollingText;
+  var moreWays2:BGScrollingText;
+  var funnyScroll3:BGScrollingText;
+
+  var bgDad:FlxSprite;
+  var cardGlow:FlxSprite;
+
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
     currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
@@ -211,17 +238,17 @@ class FreeplayState extends MusicBeatSubState
     trace(FlxG.camera.initialZoom);
     trace(FlxCamera.defaultZoom);
 
-    var pinkBack:FunkinSprite = FunkinSprite.create('freeplay/pinkBack');
+    pinkBack = FunkinSprite.create('freeplay/pinkBack');
     pinkBack.color = 0xFFFFD4E9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
 
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
 
-    var orangeBackShit:FunkinSprite = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
+    orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
     add(orangeBackShit);
 
-    var alsoOrangeLOL:FunkinSprite = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
+    alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
     add(alsoOrangeLOL);
 
     exitMovers.set([pinkBack, orangeBackShit, alsoOrangeLOL],
@@ -236,13 +263,30 @@ class FreeplayState extends MusicBeatSubState
     orangeBackShit.visible = false;
     alsoOrangeLOL.visible = false;
 
+    confirmTextGlow = new FlxSprite(-8, 115).loadGraphic(Paths.image('freeplay/glowingText'));
+    confirmTextGlow.blend = BlendMode.ADD;
+    confirmTextGlow.visible = false;
+
+    confirmGlow = new FlxSprite(-30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
+    confirmGlow.blend = BlendMode.ADD;
+
+    confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('freeplay/confirmGlow2'));
+
+    confirmGlow.visible = false;
+    confirmGlow2.visible = false;
+
+    add(confirmGlow2);
+    add(confirmGlow);
+
+    add(confirmTextGlow);
+
     var grpTxtScrolls:FlxGroup = new FlxGroup();
     add(grpTxtScrolls);
     grpTxtScrolls.visible = false;
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(BGScrollingText, ['x', 'y', 'speed', 'size']));
 
-    var moreWays:BGScrollingText = new BGScrollingText(0, 160, 'HOT BLOODED IN MORE WAYS THAN ONE', FlxG.width, true, 43);
+    moreWays = new BGScrollingText(0, 160, 'HOT BLOODED IN MORE WAYS THAN ONE', FlxG.width, true, 43);
     moreWays.funnyColor = 0xFFFFF383;
     moreWays.speed = 6.8;
     grpTxtScrolls.add(moreWays);
@@ -253,7 +297,7 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4,
       });
 
-    var funnyScroll:BGScrollingText = new BGScrollingText(0, 220, 'BOYFRIEND', FlxG.width / 2, false, 60);
+    funnyScroll = new BGScrollingText(0, 220, 'BOYFRIEND', FlxG.width / 2, false, 60);
     funnyScroll.funnyColor = 0xFFFF9963;
     funnyScroll.speed = -3.8;
     grpTxtScrolls.add(funnyScroll);
@@ -266,7 +310,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
-    var txtNuts:BGScrollingText = new BGScrollingText(0, 285, 'PROTECT YO NUTS', FlxG.width / 2, true, 43);
+    txtNuts = new BGScrollingText(0, 285, 'PROTECT YO NUTS', FlxG.width / 2, true, 43);
     txtNuts.speed = 3.5;
     grpTxtScrolls.add(txtNuts);
     exitMovers.set([txtNuts],
@@ -275,7 +319,7 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4,
       });
 
-    var funnyScroll2:BGScrollingText = new BGScrollingText(0, 335, 'BOYFRIEND', FlxG.width / 2, false, 60);
+    funnyScroll2 = new BGScrollingText(0, 335, 'BOYFRIEND', FlxG.width / 2, false, 60);
     funnyScroll2.funnyColor = 0xFFFF9963;
     funnyScroll2.speed = -3.8;
     grpTxtScrolls.add(funnyScroll2);
@@ -286,7 +330,7 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.5,
       });
 
-    var moreWays2:BGScrollingText = new BGScrollingText(0, 397, 'HOT BLOODED IN MORE WAYS THAN ONE', FlxG.width, true, 43);
+    moreWays2 = new BGScrollingText(0, 397, 'HOT BLOODED IN MORE WAYS THAN ONE', FlxG.width, true, 43);
     moreWays2.funnyColor = 0xFFFFF383;
     moreWays2.speed = 6.8;
     grpTxtScrolls.add(moreWays2);
@@ -297,7 +341,7 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.4
       });
 
-    var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y + 10, 'BOYFRIEND', FlxG.width / 2, 60);
+    funnyScroll3 = new BGScrollingText(0, orangeBackShit.y + 10, 'BOYFRIEND', FlxG.width / 2, 60);
     funnyScroll3.funnyColor = 0xFFFEA400;
     funnyScroll3.speed = -3.8;
     grpTxtScrolls.add(funnyScroll3);
@@ -307,6 +351,24 @@ class FreeplayState extends MusicBeatSubState
         x: -funnyScroll3.width * 2,
         speed: 0.3
       });
+
+    backingTextYeah = new FlxAtlasSprite(640, 370, Paths.animateAtlas("freeplay/backing-text-yeah"),
+      {
+        FrameRate: 24.0,
+        Reversed: false,
+        // ?OnComplete:Void -> Void,
+        ShowPivot: false,
+        Antialiasing: true,
+        ScrollFactor: new FlxPoint(1, 1),
+      });
+
+    add(backingTextYeah);
+
+    cardGlow = new FlxSprite(-30, -30).loadGraphic(Paths.image('freeplay/cardGlow'));
+    cardGlow.blend = BlendMode.ADD;
+    cardGlow.visible = false;
+
+    add(cardGlow);
 
     dj = new DJBoyfriend(640, 366);
     exitMovers.set([dj],
@@ -320,7 +382,7 @@ class FreeplayState extends MusicBeatSubState
 
     add(dj);
 
-    var bgDad:FlxSprite = new FlxSprite(pinkBack.width * 0.75, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
+    bgDad = new FlxSprite(pinkBack.width * 0.75, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
     bgDad.setGraphicSize(0, FlxG.height);
     bgDad.updateHitbox();
     bgDad.shader = new AngleMask();
@@ -337,9 +399,13 @@ class FreeplayState extends MusicBeatSubState
       });
 
     add(bgDad);
-    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.75}, 0.7, {ease: FlxEase.quintOut});
+    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.76}, 0.7, {ease: FlxEase.quintOut});
 
     blackOverlayBullshitLOLXD.shader = bgDad.shader;
+
+    rankBg = new FunkinSprite(0, 0);
+    rankBg.makeSolidColor(FlxG.width, FlxG.height, 0xD3000000);
+    add(rankBg);
 
     grpSongs = new FlxTypedGroup<Alphabet>();
     add(grpSongs);
@@ -518,18 +584,35 @@ class FreeplayState extends MusicBeatSubState
       orangeBackShit.visible = true;
       alsoOrangeLOL.visible = true;
       grpTxtScrolls.visible = true;
+
+      cardGlow.visible = true;
+      FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
     });
 
     generateSongList(null, false);
 
     // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
-    var funnyCam:FunkinCamera = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
+    funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
+
+    rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
+    rankVignette.scale.set(2, 2);
+    rankVignette.updateHitbox();
+    rankVignette.blend = BlendMode.ADD;
+    // rankVignette.cameras = [rankCamera];
+    add(rankVignette);
+    rankVignette.alpha = 0;
 
     forEach(function(bs) {
       bs.cameras = [funnyCam];
     });
+
+    rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
+    rankCamera.bgColor = FlxColor.TRANSPARENT;
+    FlxG.cameras.add(rankCamera, false);
+    rankBg.cameras = [rankCamera];
+    rankBg.alpha = 0;
   }
 
   var currentFilter:SongFilter = null;
@@ -576,6 +659,7 @@ class FreeplayState extends MusicBeatSubState
 
     for (cap in grpCapsules.members)
     {
+      cap.songText.resetText();
       cap.kill();
     }
 
@@ -593,9 +677,11 @@ class FreeplayState extends MusicBeatSubState
     };
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
-    randomCapsule.alpha = 0.5;
+    randomCapsule.alpha = 0;
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
+    randomCapsule.ranking.visible = false;
+    randomCapsule.blurredRanking.visible = false;
     randomCapsule.initJumpIn(0, force);
     randomCapsule.hsvShader = hsvShader;
     grpCapsules.add(randomCapsule);
@@ -618,7 +704,11 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
       funnyMenu.hsvShader = hsvShader;
 
+      funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
+
       funnyMenu.forcePosition();
+
+      funnyMenu.checkClip();
 
       grpCapsules.add(funnyMenu);
     }
@@ -673,6 +763,210 @@ class FreeplayState extends MusicBeatSubState
     return songsToFilter;
   }
 
+  function rankAnimStart()
+  {
+    dj.fistPump();
+    // rankCamera.fade(FlxColor.BLACK, 0.5, true);
+    rankCamera.fade(0xFF000000, 0.5, true, null, true);
+    FlxG.sound.music.volume = 0;
+    rankBg.alpha = 1;
+
+    originalPos.x = grpCapsules.members[curSelected].x;
+    originalPos.y = grpCapsules.members[curSelected].y;
+
+    grpCapsules.members[curSelected].ranking.alpha = 0;
+    grpCapsules.members[curSelected].blurredRanking.alpha = 0;
+
+    rankCamera.zoom = 1.85;
+    FlxTween.tween(rankCamera, {"zoom": 1.8}, 0.6, {ease: FlxEase.sineIn});
+
+    funnyCam.zoom = 1.15;
+    FlxTween.tween(funnyCam, {"zoom": 1.1}, 0.6, {ease: FlxEase.sineIn});
+
+    grpCapsules.members[curSelected].cameras = [rankCamera];
+    grpCapsules.members[curSelected].targetPos.set((FlxG.width / 2) - (grpCapsules.members[curSelected].width / 2),
+      (FlxG.height / 2) - (grpCapsules.members[curSelected].height / 2));
+
+    new FlxTimer().start(0.5, _ -> {
+      grpCapsules.members[curSelected].doLerp = false;
+      rankDisplayNew();
+    });
+  }
+
+  function rankDisplayNew()
+  {
+    grpCapsules.members[curSelected].ranking.alpha = 1;
+    grpCapsules.members[curSelected].blurredRanking.alpha = 1;
+
+    grpCapsules.members[curSelected].ranking.scale.set(20, 20);
+    grpCapsules.members[curSelected].blurredRanking.scale.set(20, 20);
+    // var tempr:Int = FlxG.random.int(0, 4);
+
+    // grpCapsules.members[curSelected].ranking.rank = tempr;
+    grpCapsules.members[curSelected].ranking.animation.play(grpCapsules.members[curSelected].ranking.animation.curAnim.name, true);
+    FlxTween.tween(grpCapsules.members[curSelected].ranking, {"scale.x": 1, "scale.y": 1}, 0.1);
+
+    grpCapsules.members[curSelected].blurredRanking.animation.play(grpCapsules.members[curSelected].blurredRanking.animation.curAnim.name, true);
+    FlxTween.tween(grpCapsules.members[curSelected].blurredRanking, {"scale.x": 1, "scale.y": 1}, 0.1);
+
+    new FlxTimer().start(0.1, _ -> {
+      trace(grpCapsules.members[curSelected].ranking.rank);
+      switch (grpCapsules.members[curSelected].tempr)
+      {
+        case 0:
+          FunkinSound.playOnce(Paths.sound('ranks/rankinbad'));
+        case 4:
+          FunkinSound.playOnce(Paths.sound('ranks/rankinperfect'));
+        case 5:
+          FunkinSound.playOnce(Paths.sound('ranks/rankinperfect'));
+        default:
+          FunkinSound.playOnce(Paths.sound('ranks/rankinnormal'));
+      }
+      rankCamera.zoom = 1.3;
+      // FlxTween.tween(rankCamera, {"zoom": 1.4}, 0.3, {ease: FlxEase.elasticOut});
+
+      FlxTween.tween(rankCamera, {"zoom": 1.5}, 0.3, {ease: FlxEase.backInOut});
+
+      grpCapsules.members[curSelected].x -= 10;
+      grpCapsules.members[curSelected].y -= 20;
+
+      FlxTween.tween(funnyCam, {"zoom": 1.05}, 0.3, {ease: FlxEase.elasticOut});
+
+      grpCapsules.members[curSelected].capsule.angle = -3;
+      FlxTween.tween(grpCapsules.members[curSelected].capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+
+      IntervalShake.shake(grpCapsules.members[curSelected].capsule, 0.3, 1 / 30, 0.1, 0, FlxEase.quadOut);
+    });
+
+    new FlxTimer().start(0.4, _ -> {
+      FlxTween.tween(funnyCam, {"zoom": 1}, 0.8, {ease: FlxEase.sineIn});
+      FlxTween.tween(rankCamera, {"zoom": 1.2}, 0.8, {ease: FlxEase.backIn});
+      // IntervalShake.shake(grpCapsules.members[curSelected], 0.8 + 0.5, 1 / 24, 0, 2, FlxEase.quadIn);
+      FlxTween.tween(grpCapsules.members[curSelected], {x: originalPos.x - 7, y: originalPos.y - 80}, 0.8 + 0.5, {ease: FlxEase.quartIn});
+    });
+
+    new FlxTimer().start(0.6, _ -> {
+      rankAnimSlam();
+      // IntervalShake.shake(grpCapsules.members[curSelected].capsule, 0.3, 1 / 30, 0, 0.3, FlxEase.quartIn);
+    });
+  }
+
+  function rankAnimSlam()
+  {
+    // FlxTween.tween(rankCamera, {"zoom": 1.9}, 0.5, {ease: FlxEase.backOut});
+    FlxTween.tween(rankBg, {alpha: 0}, 0.5, {ease: FlxEase.expoIn});
+
+    // FlxTween.tween(grpCapsules.members[curSelected], {angle: 5}, 0.5, {ease: FlxEase.backIn});
+
+    switch (grpCapsules.members[curSelected].tempr)
+    {
+      case 0:
+        FunkinSound.playOnce(Paths.sound('ranks/loss'));
+      case 1:
+        FunkinSound.playOnce(Paths.sound('ranks/good'));
+      case 2:
+        FunkinSound.playOnce(Paths.sound('ranks/great'));
+      case 3:
+        FunkinSound.playOnce(Paths.sound('ranks/excellent'));
+      case 4:
+        FunkinSound.playOnce(Paths.sound('ranks/perfect'));
+      case 5:
+        FunkinSound.playOnce(Paths.sound('ranks/perfect'));
+      default:
+        FunkinSound.playOnce(Paths.sound('ranks/loss'));
+    }
+
+    FlxTween.tween(grpCapsules.members[curSelected], {"targetPos.x": originalPos.x, "targetPos.y": originalPos.y}, 0.5, {ease: FlxEase.expoOut});
+    new FlxTimer().start(0.5, _ -> {
+      funnyCam.shake(0.0045, 0.35);
+
+      if (grpCapsules.members[curSelected].tempr == 0)
+      {
+        dj.pumpFistBad();
+      }
+      else
+      {
+        dj.pumpFist();
+      }
+
+      rankCamera.zoom = 0.8;
+      funnyCam.zoom = 0.8;
+      FlxTween.tween(rankCamera, {"zoom": 1}, 1, {ease: FlxEase.elasticOut});
+      FlxTween.tween(funnyCam, {"zoom": 1}, 0.8, {ease: FlxEase.elasticOut});
+
+      for (index => capsule in grpCapsules.members)
+      {
+        var distFromSelected:Float = Math.abs(index - curSelected) - 1;
+
+        if (distFromSelected < 5)
+        {
+          if (index == curSelected)
+          {
+            FlxTween.cancelTweensOf(capsule);
+            // capsule.targetPos.x += 50;
+            capsule.fadeAnim();
+
+            rankVignette.color = capsule.getTrailColor();
+            rankVignette.alpha = 1;
+            FlxTween.tween(rankVignette, {alpha: 0}, 0.6, {ease: FlxEase.expoOut});
+
+            capsule.doLerp = false;
+            capsule.setPosition(originalPos.x, originalPos.y);
+            IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12, 0, FlxEase.quadOut, function(_) {
+              capsule.doLerp = true;
+              capsule.cameras = [funnyCam];
+            }, null);
+
+            // FlxTween.tween(capsule, {"targetPos.x": capsule.targetPos.x - 50}, 0.6,
+            //   {
+            //     ease: FlxEase.backInOut,
+            //     onComplete: function(_) {
+            //       capsule.cameras = [funnyCam];
+            //     }
+            //   });
+            FlxTween.tween(capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+          }
+          if (index > curSelected)
+          {
+            // capsule.color = FlxColor.RED;
+            new FlxTimer().start(distFromSelected / 20, _ -> {
+              capsule.doLerp = false;
+
+              capsule.capsule.angle = FlxG.random.float(-10 + (distFromSelected * 2), 10 - (distFromSelected * 2));
+              FlxTween.tween(capsule.capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+
+              IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, FlxEase.quadOut, function(_) {
+                capsule.doLerp = true;
+              });
+            });
+          }
+
+          if (index < curSelected)
+          {
+            // capsule.color = FlxColor.BLUE;
+            new FlxTimer().start(distFromSelected / 20, _ -> {
+              capsule.doLerp = false;
+
+              capsule.capsule.angle = FlxG.random.float(-10 + (distFromSelected * 2), 10 - (distFromSelected * 2));
+              FlxTween.tween(capsule.capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+
+              IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, FlxEase.quadOut, function(_) {
+                capsule.doLerp = true;
+              });
+            });
+          }
+        }
+
+        index += 1;
+      }
+    });
+
+    new FlxTimer().start(2, _ -> {
+      // dj.fistPump();
+      FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+    });
+  }
+
   var touchY:Float = 0;
   var touchX:Float = 0;
   var dxTouch:Float = 0;
@@ -689,9 +983,47 @@ class FreeplayState extends MusicBeatSubState
 
   var busy:Bool = false; // Set to true once the user has pressed enter to select a song.
 
+  var originalPos:FlxPoint = new FlxPoint();
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (FlxG.keys.justPressed.T)
+    {
+      rankAnimStart();
+    }
+
+    if (FlxG.keys.justPressed.H)
+    {
+      rankDisplayNew();
+    }
+
+    if (FlxG.keys.justPressed.G)
+    {
+      rankAnimSlam();
+    }
+
+    if (FlxG.keys.justPressed.I)
+    {
+      confirmTextGlow.y -= 1;
+      trace(confirmTextGlow.x, confirmTextGlow.y);
+    }
+    if (FlxG.keys.justPressed.J)
+    {
+      confirmTextGlow.x -= 1;
+      trace(confirmTextGlow.x, confirmTextGlow.y);
+    }
+    if (FlxG.keys.justPressed.L)
+    {
+      confirmTextGlow.x += 1;
+      trace(confirmTextGlow.x, confirmTextGlow.y);
+    }
+    if (FlxG.keys.justPressed.K)
+    {
+      confirmTextGlow.y += 1;
+      trace(confirmTextGlow.x, confirmTextGlow.y);
+    }
 
     if (FlxG.keys.justPressed.F)
     {
@@ -1153,6 +1485,42 @@ class FreeplayState extends MusicBeatSubState
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
     dj.confirm();
 
+    grpCapsules.members[curSelected].songText.flickerText();
+
+    // FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
+    FlxTween.color(pinkBack, 0.33, 0xFFFFD0D5, 0xFF171831, {ease: FlxEase.quadOut});
+    orangeBackShit.visible = false;
+    alsoOrangeLOL.visible = false;
+
+    confirmGlow.visible = true;
+    confirmGlow2.visible = true;
+
+    backingTextYeah.anim.play("BF back card confirm raw", false, false, 0);
+    confirmGlow2.alpha = 0;
+    confirmGlow.alpha = 0;
+
+    FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
+      {
+        ease: FlxEase.quadOut,
+        onComplete: function(_) {
+          confirmGlow2.alpha = 0.6;
+          confirmGlow.alpha = 1;
+          confirmTextGlow.visible = true;
+          confirmTextGlow.alpha = 1;
+          FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
+          FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
+        }
+      });
+
+    // confirmGlow
+
+    moreWays.visible = false;
+    funnyScroll.visible = false;
+    txtNuts.visible = false;
+    funnyScroll2.visible = false;
+    moreWays2.visible = false;
+    funnyScroll3.visible = false;
+
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       Paths.setCurrentLevel(cap.songData.levelId);
       LoadingState.loadPlayState(
@@ -1391,6 +1759,7 @@ class FreeplaySongData
 
   public var songName(default, null):String = '';
   public var songCharacter(default, null):String = '';
+  public var songStartingBpm(default, null):Float = 0;
   public var difficultyRating(default, null):Int = 0;
   public var albumId(default, null):Null<String> = null;
 
@@ -1445,6 +1814,7 @@ class FreeplaySongData
 
     var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, variations);
     if (songDifficulty == null) return;
+    this.songStartingBpm = songDifficulty.getStartingBPM();
     this.songName = songDifficulty.songName;
     this.songCharacter = songDifficulty.characters.opponent;
     this.difficultyRating = songDifficulty.difficultyRating;
