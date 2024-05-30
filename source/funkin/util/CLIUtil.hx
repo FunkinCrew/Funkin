@@ -21,9 +21,9 @@ class CLIUtil
     #elseif ios
     gameDir = Path.addTrailingSlash(lime.system.System.documentsDirectory);
     #elseif mac
-    gameDir = Path.addTrailingSlash(Path.join([gameDir, '../Resources/']));
+    gameDir = Path.addTrailingSlash(Path.join([Path.directory(Sys.programPath()), '../Resources/']));
     #else
-    gameDir =  Path.addTrailingSlash(Path.directory(Sys.programPath()));
+    gameDir = Path.addTrailingSlash(Path.directory(Sys.programPath()));
     #end
     var cwd:String = Path.addTrailingSlash(Sys.getCwd());
     if (cwd == gameDir)
