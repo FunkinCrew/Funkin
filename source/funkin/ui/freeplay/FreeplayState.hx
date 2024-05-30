@@ -785,13 +785,16 @@ class FreeplayState extends MusicBeatSubState
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
-    if (TouchUtil.pressed && canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
 
     var canTouch:Bool = MusicBeatState.isTouch && !Preferences.legacyControls;
     var touchPress:Bool = canTouch && TouchUtil.justPressed && !SwipeUtil.swipeAny;
 
+    if (TouchUtil.pressed && canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
+
+    // These are unusued, maybe we should comment them out?
     var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp && canTouch);
     var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown && canTouch);
+    // this one is fine though
     var accepted:Bool = (controls.ACCEPT && !FlxG.keys.pressed.CONTROL)
       || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && touchPress);
 
