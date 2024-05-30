@@ -391,6 +391,7 @@ class CharacterDataParser
   static final DEFAULT_FRAMERATE:Int = 24;
   static final DEFAULT_ISPIXEL:Bool = false;
   static final DEFAULT_LOOP:Bool = false;
+  static final DEFAULT_NOTESTYLE:String = 'funkin';
   static final DEFAULT_NAME:String = 'Untitled Character';
   static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
   static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
@@ -452,6 +453,10 @@ class CharacterDataParser
     if (input.cameraOffsets == null)
     {
       input.cameraOffsets = DEFAULT_OFFSETS;
+    }
+    if (input.notestyle == null)
+    {
+      input.notestyle = DEFAULT_NOTESTYLE;
     }
 
     if (input.healthIcon == null)
@@ -582,6 +587,7 @@ class CharacterDataParser
     }
 
     // All good!
+
     return input;
   }
 }
@@ -626,6 +632,11 @@ typedef CharacterData =
    * The sematic version number of the character data JSON format.
    */
   var version:String;
+
+  /**
+   * The Notestyle for the character. defaults to funkin
+   */
+  var notestyle:String;
 
   /**
    * The default healthcolor.  to do: make it dependent on the character type

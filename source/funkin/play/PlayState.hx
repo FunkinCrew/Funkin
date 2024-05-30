@@ -65,9 +65,7 @@ import lime.ui.Haptic;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.Lib;
-#if discord_rpc
-import Discord.DiscordClient;
-#end
+import funkin.api.discord.Discord.DiscordClient;
 
 /**
  * Parameters used to initialize the PlayState.
@@ -209,6 +207,11 @@ class PlayState extends MusicBeatSubState
    * TODO: Move this to its own class.
    */
   public var songScore:Int = 0;
+
+  /**
+   * The player's current miss count.
+   */
+  public var misscount:Int = 0;
 
   /**
    * Start at this point in the song once the countdown is done.
@@ -439,13 +442,11 @@ class PlayState extends MusicBeatSubState
    */
   public var vocals:VoicesGroup;
 
-  #if discord_rpc
   // Discord RPC variables
   var storyDifficultyText:String = '';
   var iconRPC:String = '';
   var detailsText:String = '';
   var detailsPausedText:String = '';
-  #end
 
   /**
    * RENDER OBJECTS
@@ -454,6 +455,11 @@ class PlayState extends MusicBeatSubState
    * The FlxText which displays the current score.
    */
   var scoreText:FlxText;
+
+  /**
+   * The FlxText which displays the current score.
+   */
+  var missText:FlxText;
 
   /**
    * The bar which displays the player's health.
@@ -697,10 +703,8 @@ class PlayState extends MusicBeatSubState
     add(comboPopUps);
     comboPopUps.cameras = [camHUD];
 
-    #if discord_rpc
     // Initialize Discord Rich Presence.
     initDiscord();
-    #end
 
     // Read the song's note data and pass it to the strumlines.
     generateSong();
@@ -974,9 +978,7 @@ class PlayState extends MusicBeatSubState
           // boyfriendPos.put(); // TODO: Why is this here?
         }
 
-        #if discord_rpc
-        DiscordClient.changePresence(detailsPausedText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
-        #end
+        DiscordClient.changePresence(detailsPausedText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
       }
     }
 
@@ -1063,10 +1065,8 @@ class PlayState extends MusicBeatSubState
           moveToGameOver();
         }
 
-        #if discord_rpc
         // Game Over doesn't get his own variable because it's only used here
-        DiscordClient.changePresence('Game Over - ' + detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
-        #end
+        DiscordClient.changePresence('Game Over - ' + detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
       }
       else if (isPlayerDying)
       {
@@ -1256,8 +1256,7 @@ class PlayState extends MusicBeatSubState
       // Resume the countdown.
       Countdown.resumeCountdown();
 
-      #if discord_rpc
-      if (startTimer.finished)
+      if (Countdown.countdownStep == AFTER)
       {
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
           currentSongLengthMs - Conductor.instance.songPosition);
@@ -1266,7 +1265,6 @@ class PlayState extends MusicBeatSubState
       {
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
       }
-      #end
 
       justUnpaused = true;
     }
@@ -1278,22 +1276,21 @@ class PlayState extends MusicBeatSubState
     super.closeSubState();
   }
 
-  #if discord_rpc
   /**
    * Function called when the game window gains focus.
    */
   public override function onFocus():Void
   {
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
+    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
     {
-      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
+      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong
         + ' ('
         + storyDifficultyText
         + ')', iconRPC, true,
         currentSongLengthMs
         - Conductor.instance.songPosition);
       else
-        DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+        DiscordClient.changePresence(detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
     }
 
     super.onFocus();
@@ -1304,12 +1301,11 @@ class PlayState extends MusicBeatSubState
    */
   public override function onFocusLost():Void
   {
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
-      currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
+      currentSong + ' (' + storyDifficultyText + ')', iconRPC);
 
     super.onFocusLost();
   }
-  #end
 
   /**
    * Removes any references to the current stage, then clears the stage cache,
@@ -1549,11 +1545,17 @@ class PlayState extends MusicBeatSubState
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
+    missText = new FlxText(healthBarBG.x + healthBarBG.width - 490, healthBarBG.y + 30, 0, '', 20);
+    missText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    missText.scrollFactor.set();
+    missText.zIndex = 802;
+    add(missText);
 
     // Move the health bar to the HUD camera.
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
+    missText.cameras = [camHUD];
   }
 
   /**
@@ -1673,10 +1675,6 @@ class PlayState extends MusicBeatSubState
     if (boyfriend != null)
     {
       boyfriend.characterType = CharacterType.BF;
-
-      //
-      // PLAYER HEALTH ICON
-      //
     }
 
     //
@@ -1742,25 +1740,29 @@ class PlayState extends MusicBeatSubState
    */
   function initStrumlines():Void
   {
-    var noteStyleId:String = switch (currentStageId)
-    {
-      case 'school': 'pixel';
-      case 'schoolEvil': 'pixel';
-      default: Constants.DEFAULT_NOTE_STYLE;
-    }
-    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
-    if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    var bfnoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(boyfriend.notestyle);
+    if (bfnoteStyle == null) bfnoteStyle = NoteStyleRegistry.instance.fetchDefault();
 
-    playerStrumline = new Strumline(noteStyle, !isBotPlayMode);
+    var dadnoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(dad.notestyle);
+    if (dadnoteStyle == null) dadnoteStyle = NoteStyleRegistry.instance.fetchDefault();
+
+    playerStrumline = new Strumline(bfnoteStyle, !isBotPlayMode);
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
-    opponentStrumline = new Strumline(noteStyle, false);
+    opponentStrumline = new Strumline(dadnoteStyle, false);
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     add(playerStrumline);
     add(opponentStrumline);
 
     // Position the player strumline on the right half of the screen
-    playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
-    // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
+    if (Preferences.middlescroll)
+    {
+      playerStrumline.x = FlxG.width / 2 - playerStrumline.width / 2;
+      trace('MIDDLE');
+    }
+    else
+    {
+      playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
+    }
     playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
@@ -1770,6 +1772,14 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
+    if (Preferences.middlescroll)
+    {
+      opponentStrumline.alpha = 0;
+      for (arrow in opponentStrumline.members)
+      {
+        arrow.visible = false;
+      }
+    }
 
     if (!PlayStatePlaylist.isStoryMode)
     {
@@ -1783,9 +1793,8 @@ class PlayState extends MusicBeatSubState
    */
   function initDiscord():Void
   {
-    #if discord_rpc
-    storyDifficultyText = difficultyString();
-    iconRPC = currentSong.player2;
+    storyDifficultyText = currentDifficulty;
+    iconRPC = currentStage.getDad().characterId;
 
     // To avoid having duplicate images in Discord assets
     switch (iconRPC)
@@ -1799,12 +1808,10 @@ class PlayState extends MusicBeatSubState
     }
 
     // String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-    detailsText = isStoryMode ? 'Story Mode: Week $storyWeek' : 'Freeplay';
-    detailsPausedText = 'Paused - $detailsText';
+    detailsText = PlayStatePlaylist.isStoryMode ? 'Story Mode: Week ${PlayStatePlaylist.campaignId}' : 'Freeplay';
 
     // Updating Discord Rich Presence.
     DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
-    #end
   }
 
   function initPreciseInputs():Void
@@ -1993,12 +2000,9 @@ class PlayState extends MusicBeatSubState
     vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
-    resyncVocals();
 
-    #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
-    DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
-    #end
+    DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs, 'eye');
 
     if (startTimestamp > 0)
     {
@@ -2007,6 +2011,7 @@ class PlayState extends MusicBeatSubState
     }
 
     dispatchEvent(new ScriptEvent(SONG_START));
+    resyncVocals();
   }
 
   /**
@@ -2035,10 +2040,12 @@ class PlayState extends MusicBeatSubState
     // TODO: Add functionality for modules to update the score text.
     if (isBotPlayMode)
     {
+      missText.text = 'Miss-count' + misscount;
       scoreText.text = 'Bot Play Enabled';
     }
     else
     {
+      missText.text = 'Miss-count' + misscount;
       scoreText.text = 'Score:' + songScore;
     }
   }
@@ -2450,6 +2457,7 @@ class PlayState extends MusicBeatSubState
 
     health += healthChange;
     songScore -= 10;
+    misscount += 1;
 
     if (!isPracticeMode)
     {

@@ -1,19 +1,16 @@
 package funkin.api.discord;
 
 import Sys.sleep;
-#if discord_rpc
 import discord_rpc.DiscordRpc;
-#end
 
 class DiscordClient
 {
-  #if discord_rpc
   public function new()
   {
     trace("Discord Client starting...");
     DiscordRpc.start(
       {
-        clientID: "814588678700924999",
+        clientID: "1244363525527310367",
         onReady: onReady,
         onError: onError,
         onDisconnected: onDisconnected
@@ -41,8 +38,8 @@ class DiscordClient
       {
         details: "In the Menus",
         state: null,
-        largeImageKey: 'icon',
-        largeImageText: "Friday Night Funkin'"
+        largeImageKey: 'chorus',
+        largeImageText: "Project Chorus"
       });
   }
 
@@ -64,7 +61,8 @@ class DiscordClient
     trace("Discord Client initialized");
   }
 
-  public static function changePresence(details:String, ?state:String, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float)
+  public static function changePresence(details:String, ?state:String, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float,
+      ?largeImageKey:String = 'chorus')
   {
     var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
 
@@ -77,8 +75,8 @@ class DiscordClient
       {
         details: details,
         state: state,
-        largeImageKey: 'icon',
-        largeImageText: "Friday Night Funkin'",
+        largeImageKey: largeImageKey,
+        largeImageText: "Project Chorus",
         smallImageKey: smallImageKey,
         // Obtained times are in milliseconds so they are divided so Discord can use it
         startTimestamp: Std.int(startTimestamp / 1000),
@@ -87,5 +85,4 @@ class DiscordClient
 
     // trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
   }
-  #end
 }

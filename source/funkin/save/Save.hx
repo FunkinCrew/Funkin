@@ -83,6 +83,7 @@ class Save
           // Reasonable defaults.
           naughtyness: true,
           downscroll: false,
+          middlescroll: false,
           ghostapping: true,
           flashingLights: true,
           zoomCamera: true,
@@ -850,6 +851,12 @@ typedef SaveDataOptions =
   var downscroll:Bool;
 
   /**
+   * If enabled, the strumline is at the middle of the screen
+   * @default `false`
+   */
+  var middlescroll:Bool;
+
+  /**
    * ghosttapping
    * @default `true`
    */
@@ -1047,6 +1054,12 @@ typedef SaveDataChartEditorOptions =
    * @default `ChartEditorTheme.Light`
    */
   var ?theme:ChartEditorTheme;
+
+  /**
+   * ghosttappin in the Chart Editor.
+   * @default `false`
+   */
+  var ?middlescroll:Bool;
 
   /**
    * ghosttappin in the Chart Editor.

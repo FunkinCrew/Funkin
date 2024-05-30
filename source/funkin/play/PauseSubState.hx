@@ -49,6 +49,7 @@ class PauseSubState extends MusicBeatSubState
   static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
     {text: 'Restart Song', callback: restartPlayState},
+    {text: 'Options', callback: optionsmenu},
     {text: 'Change Difficulty', callback: switchMode.bind(_, Difficulty)},
     {text: 'Enable Practice Mode', callback: enablePracticeMode, filter: () -> !(PlayState.instance?.isPracticeMode ?? false)},
     {text: 'Exit to Menu', callback: quitToMenu},
@@ -666,6 +667,17 @@ class PauseSubState extends MusicBeatSubState
     {
       state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
     }
+  }
+
+  static function optionsmenu(state:PauseSubState):Void
+  {
+    state.allowInput = false;
+
+    PlayState.instance.deathCounter = 0;
+
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxTransitionableState.skipNextTransOut = true;
+    state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.options.OptionsState()));
   }
 
   /**

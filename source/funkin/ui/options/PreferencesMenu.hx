@@ -55,6 +55,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemCheckbox('Middlescroll', 'Enable to make notes centered', function(value:Bool):Void {
+      Preferences.middlescroll = value;
+    }, Preferences.middlescroll);
     createPrefItemCheckbox('Ghosttapping', 'Enable to make hitting a note when none is prefsent do nothing', function(value:Bool):Void {
       Preferences.ghostapping = value;
     }, Preferences.ghostapping);

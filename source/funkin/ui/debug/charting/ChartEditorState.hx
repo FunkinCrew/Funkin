@@ -128,6 +128,7 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.Toolkit;
 import openfl.display.BitmapData;
+import funkin.api.discord.Discord.DiscordClient;
 
 using Lambda;
 
@@ -2250,6 +2251,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         this.openBackupAvailableDialog(welcomeDialog);
       }
     }
+    DiscordClient.changePresence("in the charter", null);
   }
 
   function setupWelcomeMusic()
@@ -2363,6 +2365,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #else
     menubarOpenRecent.hide();
     #end
+    DiscordClient.changePresence("charting" + currentSongMetadata.songName, null);
   }
 
   var bgMusicTimer:FlxTimer;
@@ -2489,6 +2492,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.zIndex = 30;
 
     add(audioWaveforms);
+    DiscordClient.changePresence("charting" + currentSongMetadata.songName, null);
   }
 
   function buildMeasureTicks():Void
@@ -4566,8 +4570,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
 
             gridGhostHoldNote.visible = true;
-            gridGhostHoldNote.noteData = gridGhostNote.noteData;
-            gridGhostHoldNote.noteDirection = gridGhostNote.noteData.getDirection();
+            gridGhostHoldNote.noteData = currentPlaceNoteData;
+            gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
             gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
 
             gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);

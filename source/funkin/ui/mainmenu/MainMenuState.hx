@@ -27,9 +27,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
-#if discord_rpc
-import Discord.DiscordClient;
-#end
+import funkin.api.discord.Discord.DiscordClient;
 #if newgrounds
 import funkin.ui.NgPrompt;
 import io.newgrounds.NG;
@@ -44,10 +42,8 @@ class MainMenuState extends MusicBeatState
 
   override function create():Void
   {
-    #if discord_rpc
     // Updating Discord Rich Presence
     DiscordClient.changePresence("In the Menus", null);
-    #end
 
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;

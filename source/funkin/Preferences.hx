@@ -27,6 +27,25 @@ class Preferences
   }
 
   /**
+   * If enabled, the strumline is centered
+   * @default `false`
+   */
+  public static var middlescroll(get, set):Bool;
+
+  static function get_middlescroll():Bool
+  {
+    return Save?.instance?.options?.middlescroll;
+  }
+
+  static function set_middlescroll(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.middlescroll = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the strumline is at the bottom of the screen rather than the top.
    * @default `false`
    */
