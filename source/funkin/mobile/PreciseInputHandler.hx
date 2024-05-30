@@ -1,8 +1,8 @@
 package funkin.mobile;
 
+import flixel.input.FlxInput;
 import funkin.input.PreciseInputManager;
 import funkin.play.notes.NoteDirection;
-import flixel.input.FlxInput;
 import haxe.ds.Map;
 import haxe.Int64;
 
@@ -24,7 +24,7 @@ class PreciseInputHandler
 
   static var _hintListMap:Map<Int, FlxInput<Int>> = new Map<Int, FlxInput<Int>>();
 
-  public static function getHintForDirection(noteDirection:NoteDirection, hitbox:FunkinHitbox)
+  public static function getHintForDirection(noteDirection:NoteDirection, hitbox:FunkinHitbox):FunkinButton
   {
     return switch (noteDirection)
     {
