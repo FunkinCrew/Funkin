@@ -15,7 +15,7 @@ class CLIUtil
   public static function resetWorkingDir():Void
   {
     #if sys
-    var exeDir:String = Path.addTrailingSlash(Path.directory(Sys.programPath()));
+    var exeDir:String = Path.addTrailingSlash(#if android android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : android.content.Context.getExternalFilesDir() #elseif ios lime.system.System.documentsDirectory #else Path.directory(Sys.programPath()) #end);
     #if mac
     exeDir = Path.addTrailingSlash(Path.join([exeDir, '../Resources/']));
     #end
