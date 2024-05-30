@@ -238,6 +238,11 @@ class PlayState extends MusicBeatSubState
   public var cameraZoomTween:FlxTween;
 
   /**
+   * An FlxTween that changes the additive speed to the desired amount.
+   */
+  public var scrollSpeedTweens:Array<FlxTween> = [];
+
+  /**
    * The camera follow point from the last stage.
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
@@ -836,6 +841,8 @@ class PlayState extends MusicBeatSubState
     {
       if (!assertChartExists()) return;
 
+      prevScrollTargets = [];
+
       dispatchEvent(new ScriptEvent(SONG_RETRY));
 
       resetCamera();
@@ -1216,6 +1223,15 @@ class PlayState extends MusicBeatSubState
       {
         cameraZoomTween.active = false;
         cameraTweensPausedBySubState.add(cameraZoomTween);
+      }
+
+      for (tween in scrollSpeedTweens)
+      {
+        if (tween != null && tween.active)
+        {
+          tween.active = false;
+          cameraTweensPausedBySubState.add(tween);
+        }
       }
 
       // Pause the countdown.
@@ -3069,8 +3085,9 @@ class PlayState extends MusicBeatSubState
     // Stop camera zooming on beat.
     cameraZoomRate = 0;
 
-    // Cancel camera tweening if it's active.
+    // Cancel camera and scroll tweening if it's active.
     cancelAllCameraTweens();
+    cancelScrollSpeedTweens();
 
     // If the opponent is GF, zoom in on the opponent.
     // Else, if there is no GF, zoom in on BF.
@@ -3288,6 +3305,60 @@ class PlayState extends MusicBeatSubState
   {
     cancelCameraFollowTween();
     cancelCameraZoomTween();
+  }
+
+  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruely
+
+  /**
+   * The magical function that shall tween the scroll speed.
+   */
+  public function tweenScrollSpeed(?speed:Float, ?duration:Float, ?ease:Null<Float->Float>, strumlines:Array<String>):Void
+  {
+    // Cancel the current tween if it's active.
+    cancelScrollSpeedTweens();
+
+    // Snap to previous event value to prevent the tween breaking when another event cancels the previous tween.
+    for (i in prevScrollTargets)
+    {
+      var value:Float = i[0];
+      var strum:Strumline = Reflect.getProperty(this, i[1]);
+      strum.scrollSpeed = value;
+    }
+
+    // for next event, clean array.
+    prevScrollTargets = [];
+
+    for (i in strumlines)
+    {
+      var value:Float = speed;
+      var strum:Strumline = Reflect.getProperty(this, i);
+
+      if (duration == 0)
+      {
+        strum.scrollSpeed = value;
+      }
+      else
+      {
+        scrollSpeedTweens.push(FlxTween.tween(strum,
+          {
+            'scrollSpeed': value
+          }, duration, {ease: ease}));
+      }
+      // make sure charts dont break if the charter is dumb and stupid
+      prevScrollTargets.push([value, i]);
+    }
+  }
+
+  public function cancelScrollSpeedTweens()
+  {
+    for (tween in scrollSpeedTweens)
+    {
+      if (tween != null)
+      {
+        tween.cancel();
+      }
+    }
+    scrollSpeedTweens = [];
   }
 
   #if (debug || FORCE_DEBUG_VERSION)
