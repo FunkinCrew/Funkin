@@ -32,6 +32,25 @@ class VersionUtil
     }
   }
 
+  public static function repairVersion(version:thx.semver.Version):thx.semver.Version
+  {
+    var versionData:thx.semver.Version.SemVer = version;
+
+    if (thx.Types.isAnonymousObject(versionData.version))
+    {
+      // This is bad! versionData.version should be an array!
+      versionData.version = [versionData.version[0], versionData.version[1], versionData.version[2]];
+
+      var fixedVersion:thx.semver.Version = versionData;
+      return fixedVersion;
+    }
+    else
+    {
+      // No need for repair.
+      return version;
+    }
+  }
+
   /**
    * Checks that a given verison number satisisfies a given version rule.
    * Version rule can be complex, e.g. "1.0.x" or ">=1.0.0,<1.1.0", or anything NPM supports.

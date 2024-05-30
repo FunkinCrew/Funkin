@@ -124,8 +124,6 @@ class FreeplayState extends MusicBeatSubState
   var curCapsule:SongMenuItem;
   var curPlaying:Bool = false;
 
-  var displayedVariations:Array<String>;
-
   var dj:DJBoyfriend;
 
   var ostName:FlxText;
@@ -211,10 +209,6 @@ class FreeplayState extends MusicBeatSubState
     // Add a null entry that represents the RANDOM option
     songs.push(null);
 
-    // TODO: This makes custom variations disappear from Freeplay. Figure out a better solution later.
-    // Default character (BF) shows default and Erect variations. Pico shows only Pico variations.
-    displayedVariations = (currentCharacter == 'bf') ? [Constants.DEFAULT_VARIATION, 'erect'] : [currentCharacter];
-
     // programmatically adds the songs via LevelRegistry and SongRegistry
     for (levelId in LevelRegistry.instance.listSortedLevelIds())
     {
@@ -222,7 +216,8 @@ class FreeplayState extends MusicBeatSubState
       {
         var song:Song = SongRegistry.instance.fetchEntry(songId);
 
-        // Only display songs which actually have available charts for the current character.
+        // Only display songs which actually have available difficulties for the current character.
+        var displayedVariations = song.getVariationsByCharId(currentCharacter);
         var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
         if (availableDifficultiesForSong.length == 0) continue;
 
@@ -553,10 +548,6 @@ class FreeplayState extends MusicBeatSubState
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
-
-      new FlxTimer().start(0.75, function(_) {
-        // albumRoll.showTitle();
-      });
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
@@ -1040,8 +1031,8 @@ class FreeplayState extends MusicBeatSubState
       if (targetSong != null)
       {
         var realShit:Int = curSelected;
-        targetSong.isFav = !targetSong.isFav;
-        if (targetSong.isFav)
+        var isFav = targetSong.toggleFavorite();
+        if (isFav)
         {
           FlxTween.tween(grpCapsules.members[realShit], {angle: 360}, 0.4,
             {
@@ -1065,8 +1056,8 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
-    lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
+    lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
+    lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
 
     if (Math.isNaN(lerpScore))
     {
@@ -1221,11 +1212,24 @@ class FreeplayState extends MusicBeatSubState
       spamTimer = 0;
     }
 
+    #if !html5
     if (FlxG.mouse.wheel != 0)
     {
       dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+      changeSelection(-Math.round(FlxG.mouse.wheel));
     }
+    #else
+    if (FlxG.mouse.wheel < 0)
+    {
+      dj.resetAFKTimer();
+      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+    }
+    else if (FlxG.mouse.wheel > 0)
+    {
+      dj.resetAFKTimer();
+      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+    }
+    #end
 
     if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
     {
@@ -1242,6 +1246,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (controls.BACK)
     {
+      busy = true;
       FlxTween.globalManager.clear();
       FlxTimer.globalManager.clear();
       dj.onIntroDone.removeAll();
@@ -1339,7 +1344,7 @@ class FreeplayState extends MusicBeatSubState
     {
       var songScore:SaveScoreData = Save.instance.getSongScore(grpCapsules.members[curSelected].songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore?.accuracy ?? 0.0;
+      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
     }
     else
@@ -1404,6 +1409,9 @@ class FreeplayState extends MusicBeatSubState
       albumRoll.albumId = newAlbumId;
       albumRoll.skipIntro();
     }
+
+    // Set difficulty star count.
+    albumRoll.setDifficultyStars(daSong?.difficultyRating);
   }
 
   // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
@@ -1570,7 +1578,7 @@ class FreeplayState extends MusicBeatSubState
     {
       var songScore:SaveScoreData = Save.instance.getSongScore(daSongCapsule.songData.songId, currentDifficulty);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore?.accuracy ?? 0.0;
+      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       diffIdsCurrent = daSongCapsule.songData.songDifficulties;
       rememberedSongId = daSongCapsule.songData.songId;
       changeDiff();
@@ -1752,11 +1760,12 @@ class FreeplaySongData
   public var songName(default, null):String = '';
   public var songCharacter(default, null):String = '';
   public var songStartingBpm(default, null):Float = 0;
-  public var songRating(default, null):Int = 0;
+  public var difficultyRating(default, null):Int = 0;
   public var albumId(default, null):Null<String> = null;
 
   public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
-  public var displayedVariations(default, null):Array<String> = [Constants.DEFAULT_VARIATION];
+
+  var displayedVariations:Array<String> = [Constants.DEFAULT_VARIATION];
 
   function set_currentDifficulty(value:String):String
   {
@@ -1772,9 +1781,30 @@ class FreeplaySongData
     this.levelId = levelId;
     this.songId = songId;
     this.song = song;
+
+    this.isFav = Save.instance.isSongFavorited(songId);
+
     if (displayedVariations != null) this.displayedVariations = displayedVariations;
 
     updateValues(displayedVariations);
+  }
+
+  /**
+   * Toggle whether or not the song is favorited, then flush to save data.
+   * @return Whether or not the song is now favorited.
+   */
+  public function toggleFavorite():Bool
+  {
+    isFav = !isFav;
+    if (isFav)
+    {
+      Save.instance.favoriteSong(this.songId);
+    }
+    else
+    {
+      Save.instance.unfavoriteSong(this.songId);
+    }
+    return isFav;
   }
 
   function updateValues(variations:Array<String>):Void
@@ -1787,7 +1817,7 @@ class FreeplaySongData
     this.songStartingBpm = songDifficulty.getStartingBPM();
     this.songName = songDifficulty.songName;
     this.songCharacter = songDifficulty.characters.opponent;
-    this.songRating = songDifficulty.difficultyRating;
+    this.difficultyRating = songDifficulty.difficultyRating;
     if (songDifficulty.album == null)
     {
       FlxG.log.warn('No album for: ${songDifficulty.songName}');

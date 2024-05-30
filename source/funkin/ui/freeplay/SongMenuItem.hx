@@ -439,8 +439,8 @@ class SongMenuItem extends FlxSpriteGroup
     songText.text = songData?.songName ?? 'Random';
     // Update capsule character.
     if (songData?.songCharacter != null) setCharacter(songData.songCharacter);
-    updateDifficultyRating(songData?.songRating ?? 0);
     updateBPM(Std.int(songData?.songStartingBpm) ?? 0);
+    updateDifficultyRating(songData?.difficultyRating ?? 0);
     // Update opacity, offsets, etc.
     updateSelected();
 
