@@ -137,7 +137,7 @@ using Lambda;
  *
  * Some functionality is split into handler classes to help maintain my sanity.
  *
- * @author MasterEric
+ * @author EliteMasterEric
  */
 // @:nullSafety
 

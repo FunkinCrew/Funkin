@@ -1,9 +1,7 @@
 package funkin.audio;
 
-import funkin.audio.FunkinSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import funkin.audio.waveform.WaveformData;
-import funkin.audio.waveform.WaveformDataParser;
 
 class VoicesGroup extends SoundGroup
 {
