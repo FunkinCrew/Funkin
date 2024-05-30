@@ -71,7 +71,7 @@ class TitleState extends MusicBeatState
     {
       new FlxTimer().start(1, function(tmr:FlxTimer) {
         // TODO: maybe add a preprocessor which only enables this check for base version and disables for mods
-        #if !web
+        #if (!web && !debug)
         if (OutdatedSubState.outdated && !OutdatedSubState.leftState)
         {
           this.persistentUpdate = false;
