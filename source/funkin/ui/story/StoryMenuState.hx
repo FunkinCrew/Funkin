@@ -23,6 +23,8 @@ import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
@@ -326,30 +328,31 @@ class StoryMenuState extends MusicBeatState
     {
       if (!selectedLevel)
       {
-        if (controls.UI_UP_P)
+        var canTouch = MusicBeatState.isTouch && !Preferences.legacyControls;
+        if (controls.UI_UP_P || (SwipeUtil.swipeUp && canTouch))
         {
           changeLevel(-1);
           changeDifficulty(0);
         }
 
-        if (controls.UI_DOWN_P)
+        if (controls.UI_DOWN_P || (SwipeUtil.swipeDown && canTouch))
         {
           changeLevel(1);
           changeDifficulty(0);
         }
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P)
+        if (controls.UI_RIGHT_P || (TouchUtil.overlaps(rightDifficultyArrow) && TouchUtil.justPressed && canTouch))
         {
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P)
+        if (controls.UI_LEFT_P || (TouchUtil.overlaps(leftDifficultyArrow) && TouchUtil.justPressed && canTouch))
         {
           changeDifficulty(-1);
         }
 
-        if (controls.UI_RIGHT)
+        if (controls.UI_RIGHT || (TouchUtil.overlaps(rightDifficultyArrow) && canTouch))
         {
           rightDifficultyArrow.animation.play('press');
         }
@@ -358,7 +361,7 @@ class StoryMenuState extends MusicBeatState
           rightDifficultyArrow.animation.play('idle');
         }
 
-        if (controls.UI_LEFT)
+        if (controls.UI_LEFT || (TouchUtil.overlaps(leftDifficultyArrow) && canTouch))
         {
           leftDifficultyArrow.animation.play('press');
         }
@@ -368,7 +371,10 @@ class StoryMenuState extends MusicBeatState
         }
       }
 
-      if (controls.ACCEPT)
+      if (controls.ACCEPT
+        || (TouchUtil.overlaps(levelTitles.members[levelList.indexOf(currentLevelId)])
+          && TouchUtil.justPressed
+          && !TouchUtil.overlaps(leftDifficultyArrow)))
       {
         selectLevel();
       }

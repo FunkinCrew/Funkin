@@ -6,7 +6,7 @@ class AnsiTrace
   // but adds nice cute ANSI things
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
-    // #if debug
+    #if debug
     var str = formatOutput(v, info);
     #if js
     if (js.Syntax.typeof(untyped console) != "undefined" && (untyped console).log != null) (untyped console).log(str);
@@ -17,7 +17,7 @@ class AnsiTrace
     #else
     throw new haxe.exceptions.NotImplementedException()
     #end
-    // #end
+    #end
   }
 
   public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM") == "xterm" || Sys.getEnv("ANSICON") != null) #else false #end;

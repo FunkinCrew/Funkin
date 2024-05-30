@@ -22,6 +22,8 @@ import funkin.ui.AtlasText;
 import funkin.ui.debug.latency.LatencyState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.StickerSubState;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -336,16 +338,18 @@ class PauseSubState extends MusicBeatSubState
   {
     if (!allowInput) return;
 
-    if (controls.UI_UP_P)
+    var canTouch = MusicBeatSubState.isTouch && !Preferences.legacyControls;
+    if (controls.UI_UP_P || (SwipeUtil.swipeUp && canTouch))
     {
       changeSelection(-1);
     }
-    if (controls.UI_DOWN_P)
+    if (controls.UI_DOWN_P || (SwipeUtil.swipeDown && canTouch))
     {
       changeSelection(1);
     }
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT
+      || (TouchUtil.overlaps(menuEntryText.members[currentEntry]) && TouchUtil.justPressed && canTouch && !SwipeUtil.swipeAny))
     {
       currentMenuEntries[currentEntry].callback(this);
     }

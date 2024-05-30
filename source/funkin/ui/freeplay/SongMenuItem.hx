@@ -354,7 +354,7 @@ class SongMenuItem extends FlxSpriteGroup
     grayscaleShader.setAmount(this.selected ? 0 : 0.8);
     songText.alpha = this.selected ? 1 : 0.6;
     songText.blurredText.visible = this.selected ? true : false;
-    capsule.offset.x = this.selected ? 0 : -5;
+    capsule.offset.x = this.selected ? 0 : -5; // oh god
     capsule.animation.play(this.selected ? "selected" : "unselected");
     ranking.alpha = this.selected ? 1 : 0.7;
     ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;

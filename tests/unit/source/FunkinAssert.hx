@@ -134,7 +134,9 @@ class FunkinAssert
   {
     var oldTrace = haxe.Log.trace;
     haxe.Log.trace = function(v:Dynamic, ?infos:haxe.PosInfos) {
+      #if debug
       onTrace(v, infos);
+      #end
       // oldTrace(v, infos);
     };
   }

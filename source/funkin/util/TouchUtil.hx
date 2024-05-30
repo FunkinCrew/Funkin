@@ -1,9 +1,10 @@
 package funkin.util;
 
-import flixel.FlxG;
 import flixel.FlxBasic;
-import flixel.FlxObject;
 import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.input.touch.FlxTouch;
 
 /**

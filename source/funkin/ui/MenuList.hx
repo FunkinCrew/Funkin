@@ -1,12 +1,14 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
@@ -35,6 +37,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
   // bit awkward because BACK is also a menu control and this doesn't affect that
 
+  /** touchBuddy over here helps with the touch input! Because overlap for touch does not account for the graphic, only the hitbox.
+   * And, `FlxG.pixelPerfectOverlap` uses two FlxSprites, so we can't use the `FlxTouch` object */
+  public var touchBuddy:FlxSprite;
+
   public function new(navControls:NavControls = Vertical, ?wrapMode:WrapMode)
   {
     this.navControls = navControls;
@@ -47,6 +53,9 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
         case Vertical: Vertical;
         default: Both;
       }
+
+    // Make touchBuddy! No need to add them.
+    touchBuddy = new FlxSprite().makeGraphic(10, 10);
     super();
   }
 
@@ -83,17 +92,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     var wrapX = wrapMode.match(Horizontal | Both);
     var wrapY = wrapMode.match(Vertical | Both);
-    // #if desktop
-    // var newIndex = switch (navControls)
-    // {
-    //   case Vertical: navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-    //   case Horizontal: navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-    //   case Both: navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
 
-    //   case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-    //   case Rows(num): navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-    // }
-    // #else // TODO: Tell zack to clean this BEFORE RELEASE.
     var newIndex = switch (navControls)
     {
       case Vertical: (!Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown,
@@ -110,7 +109,6 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
           SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
           wrapX) : navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
     }
-    // #end
 
     if (newIndex != selectedIndex)
     {
@@ -118,8 +116,25 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       selectItem(newIndex);
     }
 
+    if (TouchUtil.pressed) touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
+
+    // This is one fuckhead of a fucking if statement i fucking hate it fuck you,
+    // TODO: Clean this? Does it need to be cleaned? isMainMenuState could be moved to new() instead perhaps.
+
+    // conditions for key input
+    var isAcceptInput = controls.ACCEPT && (Preferences.legacyControls || !MusicBeatState.isTouch);
+
+    // conditions for touch input, might need refining? Don't forget after proposal.
+    var isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
+    var isPixelOverlap = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && TouchUtil.justPressed && !SwipeUtil.swipeAny;
+    var isRegularOverlap = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justPressed && !SwipeUtil.swipeAny;
+    var isInputOverlap = (isMainMenuState && isPixelOverlap) || isRegularOverlap;
+    /** The reason why we're using pixelOverlap for MainMenuState is due to the offsets,
+     * overlaps checks for the sprite's hitbox, not the graphic itself.
+     * pixelOverlap however, does that. */
+
     // Todo: bypass popup blocker on firefox
-    if (controls.ACCEPT) accept();
+    if (isAcceptInput || isInputOverlap) accept();
   }
 
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int

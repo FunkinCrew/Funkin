@@ -19,6 +19,9 @@ import flixel.FlxG;
  * if (SwipeUtil.swipeDown) {
  *     trace("Swiped down!");
  * }
+ * if (SwipeUtil.swipeAny) {
+ *     trace("Swiped in any direction!");
+ * }
  * ```
  */
 class SwipeUtil
@@ -42,6 +45,11 @@ class SwipeUtil
    * Indicates if there is an up swipe gesture detected.
    */
   public static var swipeUp(get, never):Bool;
+
+  /**
+   * Indicates if there is any swipe gesture detected.
+   */
+  public static var swipeAny(get, never):Bool;
 
   /**
    * Determines if there is a down swipe in the FlxG.swipes array.
@@ -113,5 +121,16 @@ class SwipeUtil
       }
     }
     return false;
+  }
+
+  /**
+   * Determines if there is any swipe in the FlxG.swipes array.
+   *
+   * @return True if any swipe input is detected, false otherwise.
+   */
+  @:noCompletion
+  static function get_swipeAny():Bool
+  {
+    return get_swipeDown() || get_swipeLeft() || get_swipeRight() || get_swipeUp();
   }
 }

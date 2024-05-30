@@ -139,6 +139,8 @@ class FreeplayState extends MusicBeatSubState
   public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   public static var rememberedSongId:Null<String> = 'tutorial';
 
+  var touchBuddy:FlxSprite;
+
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
     currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
@@ -558,6 +560,10 @@ class FreeplayState extends MusicBeatSubState
     forEach(function(bs) {
       bs.cameras = [funnyCam];
     });
+
+    touchBuddy = new FlxSprite().makeGraphic(10, 10, FlxColor.GREEN);
+    touchBuddy.cameras = [funnyCam]; // this is stupid but it works.
+    // add(touchBuddy);
   }
 
   var currentFilter:SongFilter = null;
@@ -779,12 +785,17 @@ class FreeplayState extends MusicBeatSubState
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
+    if (TouchUtil.pressed && canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
 
-    var upP:Bool = controls.UI_UP_P && !FlxG.keys.pressed.CONTROL;
-    var downP:Bool = controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL;
-    var accepted:Bool = controls.ACCEPT && !FlxG.keys.pressed.CONTROL;
+    var canTouch:Bool = MusicBeatState.isTouch && !Preferences.legacyControls;
+    var touchPress:Bool = canTouch && TouchUtil.justPressed && !SwipeUtil.swipeAny;
 
-    if (!FlxG.keys.pressed.CONTROL && (controls.UI_UP || controls.UI_DOWN))
+    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp && canTouch);
+    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown && canTouch);
+    var accepted:Bool = (controls.ACCEPT && !FlxG.keys.pressed.CONTROL)
+      || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && touchPress);
+
+    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP || controls.UI_DOWN) || ((SwipeUtil.swipeUp || SwipeUtil.swipeDown) && canTouch)))
     {
       if (spamming)
       {
@@ -792,7 +803,7 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
 
-          if (controls.UI_UP)
+          if (controls.UI_UP || (SwipeUtil.swipeUp && canTouch))
           {
             changeSelection(-1);
           }
@@ -808,7 +819,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else if (spamTimer <= 0)
       {
-        if (controls.UI_UP)
+        if (controls.UI_UP || (SwipeUtil.swipeUp && canTouch))
         {
           changeSelection(-1);
         }
@@ -846,13 +857,13 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
+    if ((controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeLeft && canTouch))
     {
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if (controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL)
+    if ((controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeRight && canTouch))
     {
       dj.resetAFKTimer();
       changeDiff(1);
@@ -860,21 +871,22 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
-    if (TouchUtil.overlapsComplex(diffSelLeft) && TouchUtil.justPressed)
+    // TODO: If zack forgets and commits without fixing this, tell him to do it ASAP. He has commitment issues -Zack
+    if (TouchUtil.overlapsComplex(diffSelLeft) && touchPress)
     {
       diffSelLeft.setPress(true);
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if (TouchUtil.overlapsComplex(diffSelRight) && TouchUtil.justPressed)
+    if (TouchUtil.overlapsComplex(diffSelRight) && touchPress)
     {
       diffSelRight.setPress(true);
       dj.resetAFKTimer();
       changeDiff(1);
       generateSongList(currentFilter, true);
     }
-    if (TouchUtil.justReleased)
+    if (TouchUtil.justReleased && canTouch)
     {
       diffSelRight.setPress(false);
       diffSelLeft.setPress(false);
