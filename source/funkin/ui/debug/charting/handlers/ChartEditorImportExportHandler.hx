@@ -384,17 +384,32 @@ class ChartEditorImportExportHandler
       if (variationId == '')
       {
         var variationMetadata:Null<SongMetadata> = state.songMetadata.get(variation);
-        if (variationMetadata != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata.json', variationMetadata.serialize()));
+        if (variationMetadata != null)
+        {
+          variationMetadata.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata.json', variationMetadata.serialize()));
+        }
         var variationChart:Null<SongChartData> = state.songChartData.get(variation);
-        if (variationChart != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart.json', variationChart.serialize()));
+        if (variationChart != null)
+        {
+          variationChart.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart.json', variationChart.serialize()));
+        }
       }
       else
       {
         var variationMetadata:Null<SongMetadata> = state.songMetadata.get(variation);
-        if (variationMetadata != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata-$variationId.json',
-          variationMetadata.serialize()));
+        if (variationMetadata != null)
+        {
+          variationMetadata.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-metadata-$variationId.json', variationMetadata.serialize()));
+        }
         var variationChart:Null<SongChartData> = state.songChartData.get(variation);
-        if (variationChart != null) zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart-$variationId.json', variationChart.serialize()));
+        if (variationChart != null)
+        {
+          variationChart.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
+          zipEntries.push(FileUtil.makeZIPEntry('${state.currentSongId}-chart-$variationId.json', variationChart.serialize()));
+        }
       }
     }
 
