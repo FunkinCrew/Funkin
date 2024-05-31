@@ -377,7 +377,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
           FlxG.sound.music = partialMusic;
           FlxG.sound.list.remove(FlxG.sound.music);
 
-          if (params.onLoad != null) params.onLoad();
+          if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
         });
 
         return true;
@@ -488,14 +488,21 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
 
-    promise.future.onError(function(e) {
-      soundRequest.error("Sound loading was errored or cancelled");
-    });
+    if (soundRequest == null)
+    {
+      promise.complete(null);
+    }
+    else
+    {
+      promise.future.onError(function(e) {
+        soundRequest.error("Sound loading was errored or cancelled");
+      });
 
-    soundRequest.future.onComplete(function(partialSound) {
-      var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, onComplete, onLoad);
-      promise.complete(snd);
-    });
+      soundRequest.future.onComplete(function(partialSound) {
+        var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, onComplete, onLoad);
+        promise.complete(snd);
+      });
+    }
 
     return promise;
   }
