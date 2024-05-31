@@ -117,12 +117,21 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public function serialize(pretty:Bool = true):String
   {
+    // Update generatedBy and version before writing.
+    updateVersionToLatest();
+
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
     // I believe @:jignored should be ignored by the writer?
     // var output = this.clone();
     // output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
     return writer.write(this, pretty ? '  ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.version = SongRegistry.SONG_METADATA_VERSION;
+    this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
   }
 
   /**
@@ -373,6 +382,12 @@ class SongMusicData implements ICloneable<SongMusicData>
     this.variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
   }
 
+  public function updateVersionToLatest():Void
+  {
+    this.version = SongRegistry.SONG_MUSIC_DATA_VERSION;
+    this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
+  }
+
   public function clone():SongMusicData
   {
     var result:SongMusicData = new SongMusicData(this.songName, this.artist, this.variation);
@@ -605,9 +620,18 @@ class SongChartData implements ICloneable<SongChartData>
    */
   public function serialize(pretty:Bool = true):String
   {
+    // Update generatedBy and version before writing.
+    updateVersionToLatest();
+
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongChartData>(ignoreNullOptionals);
     return writer.write(this, pretty ? '  ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.version = SongRegistry.SONG_CHART_DATA_VERSION;
+    this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
   }
 
   public function clone():SongChartData
