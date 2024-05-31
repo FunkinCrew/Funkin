@@ -9,6 +9,8 @@ import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
+import funkin.ui.Backspace;
+import flixel.util.FlxColor;
 
 class PreferencesMenu extends Page
 {
@@ -43,6 +45,9 @@ class PreferencesMenu extends Page
     items.onChange.add(function(selected) {
       camFollow.y = selected.y;
     });
+
+    backButton = new Backspace(986, 609, FlxColor.BLACK);
+    add(backButton);
   }
 
   /**
@@ -73,7 +78,8 @@ class PreferencesMenu extends Page
       Preferences.screenTimeout = value;
     }, Preferences.screenTimeout);
     #end
-    if (FlxG.onMobile) {
+    if (FlxG.onMobile)
+    {
       createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
         Preferences.vibration = value;
       }, Preferences.vibration);

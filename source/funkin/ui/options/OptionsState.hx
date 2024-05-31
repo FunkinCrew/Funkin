@@ -14,6 +14,9 @@ import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
 import funkin.mobile.ControlsHandler;
+import funkin.ui.Backspace;
+import funkin.util.TouchUtil;
+import flixel.util.FlxColor;
 
 class OptionsState extends MusicBeatState
 {
@@ -61,6 +64,7 @@ class OptionsState extends MusicBeatState
 
     addVirtualPad(LEFT_FULL, A_B);
     addVirtualPadCamera(false);
+
     super.create();
   }
 
@@ -134,6 +138,8 @@ class Page extends FlxGroup
 
   var controls(get, never):Controls;
 
+  var backButton:Backspace;
+
   inline function get_controls()
     return PlayerSettings.player1.controls;
 
@@ -158,7 +164,13 @@ class Page extends FlxGroup
 
   function updateEnabled(elapsed:Float)
   {
-    if (canExit && controls.BACK)
+    if (canExit
+      && (controls.BACK
+        || (backButton != null
+          && TouchUtil.overlapsComplex(backButton)
+          && TouchUtil.justPressed
+          && MusicBeatState.isTouch
+          && !funkin.Preferences.legacyControls)))
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
@@ -198,7 +210,7 @@ class OptionsMenu extends Page
 
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() switchPage(Preferences));
-    createItem("CONTROLS", function() switchPage(Controls));
+    if (!MusicBeatState.isTouch) createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
       FlxG.state.openSubState(new LatencyState());
     });

@@ -25,6 +25,7 @@ import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
+import funkin.ui.Backspace;
 import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
@@ -110,6 +111,8 @@ class StoryMenuState extends MusicBeatState
 
   static var rememberedLevelId:Null<String> = null;
   static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
+
+  var backButton:Backspace;
 
   public function new(?stickers:StickerSubState = null)
   {
@@ -224,6 +227,9 @@ class StoryMenuState extends MusicBeatState
     #end
 
     addVirtualPad(LEFT_FULL, A_B);
+
+    var backButton = new Backspace(986, 609);
+    add(backButton);
   }
 
   function rememberSelection():Void
@@ -324,11 +330,11 @@ class StoryMenuState extends MusicBeatState
 
   function handleKeyPresses():Void
   {
+    var canTouch = MusicBeatState.isTouch && !Preferences.legacyControls;
     if (!exitingMenu)
     {
       if (!selectedLevel)
       {
-        var canTouch = MusicBeatState.isTouch && !Preferences.legacyControls;
         if (controls.UI_UP_P || (SwipeUtil.swipeUp && canTouch))
         {
           changeLevel(-1);
@@ -374,13 +380,14 @@ class StoryMenuState extends MusicBeatState
       if (controls.ACCEPT
         || (TouchUtil.overlaps(levelTitles.members[levelList.indexOf(currentLevelId)])
           && TouchUtil.justPressed
-          && !TouchUtil.overlaps(leftDifficultyArrow)))
+          && !TouchUtil.overlaps(leftDifficultyArrow)
+          && canTouch))
       {
         selectLevel();
       }
     }
 
-    if (controls.BACK && !exitingMenu && !selectedLevel)
+    if (((controls.BACK) || (TouchUtil.overlaps(backButton) && TouchUtil.justPressed && canTouch)) && !exitingMenu && !selectedLevel)
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exitingMenu = true;

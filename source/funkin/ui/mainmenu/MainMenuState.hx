@@ -10,6 +10,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.typeLimit.NextState;
+import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import funkin.data.song.SongData.SongMusicData;
@@ -25,7 +26,9 @@ import funkin.ui.MenuList;
 import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
+import funkin.ui.Backspace;
 import funkin.util.WindowUtil;
+import funkin.util.TouchUtil;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -40,6 +43,8 @@ class MainMenuState extends MusicBeatState
 
   var magenta:FlxSprite;
   var camFollow:FlxObject;
+
+  var backButton:Backspace;
 
   override function create():Void
   {
@@ -153,6 +158,9 @@ class MainMenuState extends MusicBeatState
     virtualPad.y -= 18;
 
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
+
+    backButton = new Backspace(49, 568, FlxColor.BLACK);
+    add(backButton);
 
     super.create();
 
@@ -351,7 +359,10 @@ class MainMenuState extends MusicBeatState
 
     if (_exiting) menuItems.enabled = false;
 
-    if (controls.BACK && menuItems.enabled && !menuItems.busy)
+    if (((controls.BACK)
+      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed && !Preferences.legacyControls && MusicBeatState.isTouch))
+      && menuItems.enabled
+      && !menuItems.busy)
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       FlxG.switchState(() -> new TitleState());

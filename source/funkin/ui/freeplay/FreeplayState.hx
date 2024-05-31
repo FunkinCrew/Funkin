@@ -40,6 +40,7 @@ import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 import lime.utils.Assets;
+import funkin.ui.Backspace;
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -141,6 +142,8 @@ class FreeplayState extends MusicBeatSubState
   public static var rememberedSongId:Null<String> = 'tutorial';
 
   var touchBuddy:FlxSprite;
+
+  var backButton:Backspace;
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
@@ -578,7 +581,10 @@ class FreeplayState extends MusicBeatSubState
 
     touchBuddy = new FlxSprite().makeGraphic(10, 10, FlxColor.GREEN);
     touchBuddy.cameras = [funnyCam]; // this is stupid but it works.
-    // add(touchBuddy);
+
+    backButton = new Backspace(1224, 608);
+    add(backButton);
+    FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
   }
 
   var currentFilter:SongFilter = null;
@@ -889,15 +895,14 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
-    // TODO: If zack forgets and commits without fixing this, tell him to do it ASAP. He has commitment issues -Zack
-    if (TouchUtil.overlapsComplex(diffSelLeft) && touchPress)
+    if (TouchUtil.overlapsComplex(diffSelLeft) && MusicBeatState.isTouch && TouchUtil.justPressed)
     {
       diffSelLeft.setPress(true);
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if (TouchUtil.overlapsComplex(diffSelRight) && touchPress)
+    if (TouchUtil.overlapsComplex(diffSelRight) && MusicBeatState.isTouch && TouchUtil.justPressed)
     {
       diffSelRight.setPress(true);
       dj.resetAFKTimer();
@@ -910,7 +915,7 @@ class FreeplayState extends MusicBeatSubState
       diffSelLeft.setPress(false);
     }
 
-    if (controls.BACK)
+    if (controls.BACK || (FlxG.pixelPerfectOverlap(touchBuddy, backButton, 0) && FlxG.mouse.justPressed))
     {
       busy = true;
       FlxTween.globalManager.clear();
@@ -928,6 +933,8 @@ class FreeplayState extends MusicBeatSubState
             FlxTween.tween(button, {y: button.y + button.height}, FlxG.random.float(0.3, 0.55), {ease: FlxEase.quartInOut});
         }
       });
+
+      FlxTween.tween(backButton, {x: 1524}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.quartInOut});
 
       var longestTimer:Float = 0;
 
