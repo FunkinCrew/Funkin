@@ -20,16 +20,6 @@ class NoteKind implements INoteScriptedClass
    */
   public var description:String = "";
 
-  /**
-   * this only exists for people that don't like calling functions
-   */
-  var notes(get, never):Array<NoteSprite>;
-
-  function get_notes():Array<NoteSprite>
-  {
-    return this.getNotes();
-  }
-
   public function new(noteKind:String, description:String = "")
   {
     this.noteKind = noteKind;
