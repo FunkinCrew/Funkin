@@ -830,7 +830,7 @@ class FreeplayState extends MusicBeatSubState
     dj.fistPump();
     // rankCamera.fade(FlxColor.BLACK, 0.5, true);
     rankCamera.fade(0xFF000000, 0.5, true, null, true);
-    FlxG.sound.music.volume = 0;
+    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     rankBg.alpha = 1;
 
     originalPos.x = grpCapsules.members[curSelected].x;
