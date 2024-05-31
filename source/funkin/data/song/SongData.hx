@@ -56,6 +56,8 @@ class SongMetadata implements ICloneable<SongMetadata>
   @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
+  @:optional
+  @:default(funkin.data.song.SongData.SongTimeFormat.MILLISECONDS)
   public var timeFormat:SongTimeFormat;
 
   public var timeChanges:Array<SongTimeChange>;
@@ -117,7 +119,7 @@ class SongMetadata implements ICloneable<SongMetadata>
   {
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
-    // I believe @:jignored should be iggnored by the writer?
+    // I believe @:jignored should be ignored by the writer?
     // var output = this.clone();
     // output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
     return writer.write(this, pretty ? '  ' : null);
