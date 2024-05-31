@@ -104,6 +104,7 @@ class FreeplayState extends MusicBeatSubState
 
   /**
    * For the audio preview, the duration of the fade-out effect.
+   *
    */
   public static final FADE_OUT_DURATION:Float = 0.25;
 
@@ -1690,7 +1691,6 @@ class FreeplayState extends MusicBeatSubState
       else
       {
         var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
-        // TODO: Stream the instrumental of the selected song?
         FunkinSound.playMusic(daSongCapsule.songData.songId,
           {
             startingVolume: 0.0,
@@ -1701,8 +1701,8 @@ class FreeplayState extends MusicBeatSubState
             partialParams:
               {
                 loadPartial: true,
-                start: 0,
-                end: 0.1
+                start: 0.05,
+                end: 0.25
               },
             onLoad: function() {
               FlxG.sound.music.fadeIn(2, 0, 0.4);
