@@ -371,7 +371,7 @@ class SongMenuItem extends FlxSpriteGroup
       switch (i)
       {
         case 0:
-          if (newRating > 10)
+          if (newRating < 10)
           {
             bigNumbers[i].digit = 0;
           }
@@ -677,7 +677,7 @@ class FreeplayRank extends FlxSprite
   {
     rank = val;
 
-    if (rank == null)
+    if (rank == null || val == null)
     {
       this.visible = false;
     }
@@ -686,6 +686,8 @@ class FreeplayRank extends FlxSprite
       this.visible = true;
 
       animation.play(val.getFreeplayRankIconAsset(), true, false);
+
+      trace(val.getFreeplayRankIconAsset());
 
       centerOffsets(false);
 
@@ -707,6 +709,7 @@ class FreeplayRank extends FlxSprite
         // offset.y += 5;
         default:
           centerOffsets(false);
+          this.visible = false;
       }
       updateHitbox();
     }
