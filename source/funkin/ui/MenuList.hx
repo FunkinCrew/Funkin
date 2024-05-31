@@ -121,20 +121,18 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     // This is one fuckhead of a fucking if statement i fucking hate it fuck you,
     // TODO: Clean this? Does it need to be cleaned? isMainMenuState could be moved to new() instead perhaps.
 
-    // conditions for key input
-    var isAcceptInput = controls.ACCEPT && (Preferences.legacyControls || !MusicBeatState.isTouch);
-
     // conditions for touch input, might need refining? Don't forget after proposal.
+    var canTouch = MusicBeatState.isTouch && !Preferences.legacyControls;
     var isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
-    var isPixelOverlap = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && TouchUtil.justPressed && !SwipeUtil.swipeAny;
-    var isRegularOverlap = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justPressed && !SwipeUtil.swipeAny;
-    var isInputOverlap = (isMainMenuState && isPixelOverlap) || isRegularOverlap;
+    var isPixelOverlap = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
+    var isRegularOverlap = TouchUtil.overlapsComplex(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
+    var isInputOverlap = ((isMainMenuState && isPixelOverlap) || isRegularOverlap) && canTouch;
     /** The reason why we're using pixelOverlap for MainMenuState is due to the offsets,
      * overlaps checks for the sprite's hitbox, not the graphic itself.
      * pixelOverlap however, does that. */
 
     // Todo: bypass popup blocker on firefox
-    if (isAcceptInput || isInputOverlap) accept();
+    if (controls.ACCEPT || isInputOverlap) accept();
   }
 
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int

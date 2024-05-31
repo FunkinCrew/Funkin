@@ -808,7 +808,7 @@ class FreeplayState extends MusicBeatSubState
     if (busy) return;
 
     var canTouch:Bool = MusicBeatState.isTouch && !Preferences.legacyControls;
-    var touchPress:Bool = canTouch && TouchUtil.justPressed && !SwipeUtil.swipeAny;
+    var touchPress:Bool = canTouch && TouchUtil.justReleased && !SwipeUtil.swipeAny;
 
     if (TouchUtil.pressed && canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
 
