@@ -3122,9 +3122,10 @@ class PlayState extends MusicBeatSubState
     var res:ResultState = new ResultState(
       {
         storyMode: PlayStatePlaylist.isStoryMode,
+        songId: currentChart.song.id,
+        difficultyId: currentDifficulty,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
         prevScoreData: prevScoreData,
-        difficultyId: currentDifficulty,
         scoreData:
           {
             score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,

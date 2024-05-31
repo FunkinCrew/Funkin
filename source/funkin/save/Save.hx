@@ -1,15 +1,17 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
-import funkin.save.migrator.SaveDataMigrator;
-import thx.semver.Version;
 import funkin.input.Controls.Device;
+import funkin.play.scoring.Scoring;
+import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
+import funkin.save.migrator.SaveDataMigrator;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
-import thx.semver.Version;
 import funkin.util.SerializerUtil;
+import thx.semver.Version;
+import thx.semver.Version;
 
 @:nullSafety
 class Save
@@ -490,6 +492,11 @@ class Save
       data.scores.songs.set(songId, song);
     }
     return song.get(difficultyId);
+  }
+
+  public function getSongRank(songId:String, difficultyId:String = 'normal'):Null<ScoringRank>
+  {
+    return Scoring.calculateRank(getSongScore(songId, difficultyId));
   }
 
   /**

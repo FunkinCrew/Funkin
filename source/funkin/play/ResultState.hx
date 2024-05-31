@@ -21,6 +21,7 @@ import funkin.audio.FunkinSound;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
 import funkin.save.Save;
+import funkin.play.scoring.Scoring;
 import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
@@ -34,7 +35,7 @@ class ResultState extends MusicBeatSubState
 {
   final params:ResultsStateParams;
 
-  final rank:ResultRank;
+  final rank:ScoringRank;
   final songName:FlxBitmapText;
   final difficulty:FlxSprite;
   final clearPercentSmall:ClearPercentCounter;
@@ -64,8 +65,7 @@ class ResultState extends MusicBeatSubState
 
     this.params = params;
 
-    rank = calculateRank(params);
-    // rank = SHIT;
+    rank = Scoring.calculateRank(params.scoreData) ?? SHIT;
 
     // We build a lot of this stuff in the constructor, then place it in create().
     // This prevents having to do `null` checks everywhere.
@@ -99,6 +99,8 @@ class ResultState extends MusicBeatSubState
 
   override function create():Void
   {
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
     // Reset the camera zoom on the results screen.
     FlxG.camera.zoom = 1.0;
 
@@ -327,6 +329,33 @@ class ResultState extends MusicBeatSubState
       }
     };
 
+    new FlxTimer().start(rank.getMusicDelay(), _ -> {
+      if (rank.hasMusicIntro())
+      {
+        // Play the intro music.
+        var introMusic:String = Paths.music(rank.getMusicPath() + '/' + rank.getMusicPath() + '-intro');
+        FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
+          FunkinSound.playMusic(rank.getMusicPath(),
+            {
+              startingVolume: 1.0,
+              overrideExisting: true,
+              restartTrack: true,
+              loop: rank.shouldMusicLoop()
+            });
+        });
+      }
+      else
+      {
+        FunkinSound.playMusic(rank.getMusicPath(),
+          {
+            startingVolume: 1.0,
+            overrideExisting: true,
+            restartTrack: true,
+            loop: rank.shouldMusicLoop()
+          });
+      }
+    });
+
     refresh();
 
     super.create();
@@ -376,7 +405,8 @@ class ResultState extends MusicBeatSubState
 
           displayRankText();
 
-          new FlxTimer().start(2.0, _ -> {
+          // previously 2.0 seconds
+          new FlxTimer().start(0.25, _ -> {
             FlxTween.tween(clearPercentCounter, {alpha: 0}, 0.5,
               {
                 startDelay: 0.5,
@@ -444,28 +474,6 @@ class ResultState extends MusicBeatSubState
   {
     showSmallClearPercent();
 
-    FunkinSound.playMusic(rank.getMusicPath(),
-      {
-        startingVolume: 1.0,
-        overrideExisting: true,
-        restartTrack: true,
-        loop: rank.shouldMusicLoop()
-      });
-
-    FlxG.sound.music.onComplete = () -> {
-      if (rank == SHIT)
-      {
-        FunkinSound.playMusic('bluu',
-          {
-            startingVolume: 0.0,
-            overrideExisting: true,
-            restartTrack: true,
-            loop: true
-          });
-        FlxG.sound.music.fadeIn(10.0, 0.0, 1.0);
-      }
-    }
-
     switch (rank)
     {
       case PERFECT | PERFECT_GOLD:
@@ -478,7 +486,6 @@ class ResultState extends MusicBeatSubState
           bfPerfect.visible = true;
           bfPerfect.playAnimation('');
         }
-
       case EXCELLENT:
         if (bfExcellent == null)
         {
@@ -489,7 +496,6 @@ class ResultState extends MusicBeatSubState
           bfExcellent.visible = true;
           bfExcellent.playAnimation('Intro');
         }
-
       case GREAT:
         if (bfGreat == null)
         {
@@ -500,7 +506,6 @@ class ResultState extends MusicBeatSubState
           bfGreat.visible = true;
           bfGreat.playAnimation('Intro');
         }
-
       case SHIT:
         if (bfShit == null)
         {
@@ -511,7 +516,6 @@ class ResultState extends MusicBeatSubState
           bfShit.visible = true;
           bfShit.playAnimation('Intro');
         }
-
       case GOOD:
         if (bfGood == null)
         {
@@ -521,7 +525,6 @@ class ResultState extends MusicBeatSubState
         {
           bfGood.animation.play('fall');
           bfGood.visible = true;
-
           new FlxTimer().start((1 / 24) * 22, _ -> {
             // plays about 22 frames (at 24fps timing) after bf spawns in
             if (gfGood != null)
@@ -635,153 +638,38 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE)
     {
-      FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8);
-      FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
-        {
-          onComplete: _ -> {
-            FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
-          }
-        });
+      if (FlxG.sound.music != null)
+      {
+        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8);
+        FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
+          {
+            onComplete: _ -> {
+              FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
+            }
+          });
+      }
       if (params.storyMode)
       {
         openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
       }
       else
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
+          {
+            {
+              fromResults:
+                {
+                  oldRank: Scoring.calculateRank(params?.prevScoreData),
+                  newRank: rank,
+                  songId: params.songId,
+                  difficultyId: params.difficultyId
+                }
+            }
+          }, sticker)));
       }
     }
 
     super.update(elapsed);
-  }
-
-  public static function calculateRank(params:ResultsStateParams):ResultRank
-  {
-    // Perfect (Platinum) is a Sick Full Clear
-    var isPerfectGold = params.scoreData.tallies.sick == params.scoreData.tallies.totalNotes;
-    if (isPerfectGold) return ResultRank.PERFECT_GOLD;
-
-    // Else, use the standard grades
-
-    // Grade % (only good and sick), 1.00 is a full combo
-    var grade = (params.scoreData.tallies.sick + params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes;
-    // Clear % (including bad and shit). 1.00 is a full clear but not a full combo
-    var clear = (params.scoreData.tallies.totalNotesHit) / params.scoreData.tallies.totalNotes;
-
-    if (grade == Constants.RANK_PERFECT_THRESHOLD)
-    {
-      return ResultRank.PERFECT;
-    }
-    else if (grade >= Constants.RANK_EXCELLENT_THRESHOLD)
-    {
-      return ResultRank.EXCELLENT;
-    }
-    else if (grade >= Constants.RANK_GREAT_THRESHOLD)
-    {
-      return ResultRank.GREAT;
-    }
-    else if (grade >= Constants.RANK_GOOD_THRESHOLD)
-    {
-      return ResultRank.GOOD;
-    }
-    else
-    {
-      return ResultRank.SHIT;
-    }
-  }
-}
-
-enum abstract ResultRank(String)
-{
-  var PERFECT_GOLD;
-  var PERFECT;
-  var EXCELLENT;
-  var GREAT;
-  var GOOD;
-  var SHIT;
-
-  public function getMusicPath():String
-  {
-    switch (abstract)
-    {
-      case PERFECT_GOLD:
-        return 'resultsPERFECT';
-      case PERFECT:
-        return 'resultsPERFECT';
-      case EXCELLENT:
-        return 'resultsNORMAL';
-      case GREAT:
-        return 'resultsNORMAL';
-      case GOOD:
-        return 'resultsNORMAL';
-      case SHIT:
-        return 'resultsSHIT';
-      default:
-        return 'resultsNORMAL';
-    }
-  }
-
-  public function shouldMusicLoop():Bool
-  {
-    switch (abstract)
-    {
-      case PERFECT_GOLD:
-        return true;
-      case PERFECT:
-        return true;
-      case EXCELLENT:
-        return true;
-      case GREAT:
-        return true;
-      case GOOD:
-        return true;
-      case SHIT:
-        return false;
-      default:
-        return false;
-    }
-  }
-
-  public function getHorTextAsset()
-  {
-    switch (abstract)
-    {
-      case PERFECT_GOLD:
-        return 'resultScreen/rankText/rankScrollPERFECT';
-      case PERFECT:
-        return 'resultScreen/rankText/rankScrollPERFECT';
-      case EXCELLENT:
-        return 'resultScreen/rankText/rankScrollEXCELLENT';
-      case GREAT:
-        return 'resultScreen/rankText/rankScrollGREAT';
-      case GOOD:
-        return 'resultScreen/rankText/rankScrollGOOD';
-      case SHIT:
-        return 'resultScreen/rankText/rankScrollLOSS';
-      default:
-        return 'resultScreen/rankText/rankScrollGOOD';
-    }
-  }
-
-  public function getVerTextAsset()
-  {
-    switch (abstract)
-    {
-      case PERFECT_GOLD:
-        return 'resultScreen/rankText/rankTextPERFECT';
-      case PERFECT:
-        return 'resultScreen/rankText/rankTextPERFECT';
-      case EXCELLENT:
-        return 'resultScreen/rankText/rankTextEXCELLENT';
-      case GREAT:
-        return 'resultScreen/rankText/rankTextGREAT';
-      case GOOD:
-        return 'resultScreen/rankText/rankTextGOOD';
-      case SHIT:
-        return 'resultScreen/rankText/rankTextLOSS';
-      default:
-        return 'resultScreen/rankText/rankTextGOOD';
-    }
   }
 }
 
@@ -796,6 +684,8 @@ typedef ResultsStateParams =
    * Either "Song Name by Artist Name" or "Week Name"
    */
   var title:String;
+
+  var songId:String;
 
   /**
    * Whether the displayed score is a new highscore

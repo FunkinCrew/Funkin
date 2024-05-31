@@ -35,6 +35,8 @@ import funkin.ui.story.Level;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
+import funkin.play.scoring.Scoring;
+import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
@@ -50,6 +52,34 @@ import funkin.effects.IntervalShake;
 typedef FreeplayStateParams =
 {
   ?character:String,
+
+  ?fromResults:FromResultsParams,
+};
+
+/**
+ * A set of parameters for transitioning to the FreeplayState from the ResultsState.
+ */
+typedef FromResultsParams =
+{
+  /**
+   * The previous rank the song hand, if any. Null if it had no score before.
+   */
+  var ?oldRank:ScoringRank;
+
+  /**
+   * The new rank the song has.
+   */
+  var newRank:ScoringRank;
+
+  /**
+   * The song ID to play the animation on.
+   */
+  var songId:String;
+
+  /**
+   * The difficulty ID to play the animation on.
+   */
+  var difficultyId:String;
 };
 
 /**
@@ -161,9 +191,13 @@ class FreeplayState extends MusicBeatSubState
   var bgDad:FlxSprite;
   var cardGlow:FlxSprite;
 
+  var fromResultsParams:Null<FromResultsParams> = null;
+
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
     currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
+
+    fromResultsParams = params?.fromResults;
 
     if (stickers != null)
     {
@@ -602,6 +636,11 @@ class FreeplayState extends MusicBeatSubState
 
       cardGlow.visible = true;
       FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
+
+      if (fromResultsParams != null)
+      {
+        rankAnimStart(fromResultsParams);
+      }
     });
 
     generateSongList(null, false);
@@ -671,6 +710,12 @@ class FreeplayState extends MusicBeatSubState
 
     // If curSelected is 0, the result will be null and fall back to the rememberedSongId.
     rememberedSongId = grpCapsules.members[curSelected]?.songData?.songId ?? rememberedSongId;
+
+    if (fromResultsParams != null)
+    {
+      rememberedSongId = fromResultsParams.songId;
+      rememberedDifficulty = fromResultsParams.difficultyId;
+    }
 
     for (cap in grpCapsules.members)
     {
@@ -778,8 +823,10 @@ class FreeplayState extends MusicBeatSubState
     return songsToFilter;
   }
 
-  function rankAnimStart()
+  function rankAnimStart(fromResults:Null<FromResultsParams>):Void
   {
+    busy = true;
+
     dj.fistPump();
     // rankCamera.fade(FlxColor.BLACK, 0.5, true);
     rankCamera.fade(0xFF000000, 0.5, true, null, true);
@@ -804,21 +851,21 @@ class FreeplayState extends MusicBeatSubState
 
     new FlxTimer().start(0.5, _ -> {
       grpCapsules.members[curSelected].doLerp = false;
-      rankDisplayNew();
+      rankDisplayNew(fromResults);
     });
   }
 
-  function rankDisplayNew()
+  function rankDisplayNew(fromResults:Null<FromResultsParams>):Void
   {
     grpCapsules.members[curSelected].ranking.alpha = 1;
     grpCapsules.members[curSelected].blurredRanking.alpha = 1;
 
     grpCapsules.members[curSelected].ranking.scale.set(20, 20);
     grpCapsules.members[curSelected].blurredRanking.scale.set(20, 20);
-    // var tempr:Int = FlxG.random.int(0, 4);
 
-    // grpCapsules.members[curSelected].ranking.rank = tempr;
-    grpCapsules.members[curSelected].ranking.animation.play(grpCapsules.members[curSelected].ranking.animation.curAnim.name, true);
+    grpCapsules.members[curSelected].ranking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
+    // grpCapsules.members[curSelected].ranking.animation.curAnim.name, true);
+
     FlxTween.tween(grpCapsules.members[curSelected].ranking, {"scale.x": 1, "scale.y": 1}, 0.1);
 
     grpCapsules.members[curSelected].blurredRanking.animation.play(grpCapsules.members[curSelected].blurredRanking.animation.curAnim.name, true);
@@ -826,13 +873,13 @@ class FreeplayState extends MusicBeatSubState
 
     new FlxTimer().start(0.1, _ -> {
       trace(grpCapsules.members[curSelected].ranking.rank);
-      switch (grpCapsules.members[curSelected].tempr)
+      switch (fromResultsParams?.newRank)
       {
-        case 0:
+        case SHIT:
           FunkinSound.playOnce(Paths.sound('ranks/rankinbad'));
-        case 4:
+        case PERFECT:
           FunkinSound.playOnce(Paths.sound('ranks/rankinperfect'));
-        case 5:
+        case PERFECT_GOLD:
           FunkinSound.playOnce(Paths.sound('ranks/rankinperfect'));
         default:
           FunkinSound.playOnce(Paths.sound('ranks/rankinnormal'));
@@ -861,31 +908,31 @@ class FreeplayState extends MusicBeatSubState
     });
 
     new FlxTimer().start(0.6, _ -> {
-      rankAnimSlam();
+      rankAnimSlam(fromResults);
       // IntervalShake.shake(grpCapsules.members[curSelected].capsule, 0.3, 1 / 30, 0, 0.3, FlxEase.quartIn);
     });
   }
 
-  function rankAnimSlam()
+  function rankAnimSlam(fromResultsParams:Null<FromResultsParams>)
   {
     // FlxTween.tween(rankCamera, {"zoom": 1.9}, 0.5, {ease: FlxEase.backOut});
     FlxTween.tween(rankBg, {alpha: 0}, 0.5, {ease: FlxEase.expoIn});
 
     // FlxTween.tween(grpCapsules.members[curSelected], {angle: 5}, 0.5, {ease: FlxEase.backIn});
 
-    switch (grpCapsules.members[curSelected].tempr)
+    switch (fromResultsParams?.newRank)
     {
-      case 0:
+      case SHIT:
         FunkinSound.playOnce(Paths.sound('ranks/loss'));
-      case 1:
+      case GOOD:
         FunkinSound.playOnce(Paths.sound('ranks/good'));
-      case 2:
+      case GREAT:
         FunkinSound.playOnce(Paths.sound('ranks/great'));
-      case 3:
+      case EXCELLENT:
         FunkinSound.playOnce(Paths.sound('ranks/excellent'));
-      case 4:
+      case PERFECT:
         FunkinSound.playOnce(Paths.sound('ranks/perfect'));
-      case 5:
+      case PERFECT_GOLD:
         FunkinSound.playOnce(Paths.sound('ranks/perfect'));
       default:
         FunkinSound.playOnce(Paths.sound('ranks/loss'));
@@ -895,7 +942,7 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(0.5, _ -> {
       funnyCam.shake(0.0045, 0.35);
 
-      if (grpCapsules.members[curSelected].tempr == 0)
+      if (fromResultsParams?.newRank == SHIT)
       {
         dj.pumpFistBad();
       }
@@ -930,6 +977,9 @@ class FreeplayState extends MusicBeatSubState
             IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12, 0, FlxEase.quadOut, function(_) {
               capsule.doLerp = true;
               capsule.cameras = [funnyCam];
+
+              // NOW we can interact with the menu
+              busy = false;
             }, null);
 
             // FlxTween.tween(capsule, {"targetPos.x": capsule.targetPos.x - 50}, 0.6,
@@ -996,7 +1046,10 @@ class FreeplayState extends MusicBeatSubState
   var spamTimer:Float = 0;
   var spamming:Bool = false;
 
-  var busy:Bool = false; // Set to true once the user has pressed enter to select a song.
+  /**
+   * If true, disable interaction with the interface.
+   */
+  var busy:Bool = false;
 
   var originalPos:FlxPoint = new FlxPoint();
 
@@ -1004,19 +1057,20 @@ class FreeplayState extends MusicBeatSubState
   {
     super.update(elapsed);
 
+    #if debug
     if (FlxG.keys.justPressed.T)
     {
-      rankAnimStart();
+      rankAnimStart(fromResultsParams);
     }
 
     if (FlxG.keys.justPressed.H)
     {
-      rankDisplayNew();
+      rankDisplayNew(fromResultsParams);
     }
 
     if (FlxG.keys.justPressed.G)
     {
-      rankAnimSlam();
+      rankAnimSlam(fromResultsParams);
     }
 
     if (FlxG.keys.justPressed.I)
@@ -1039,6 +1093,7 @@ class FreeplayState extends MusicBeatSubState
       confirmTextGlow.y += 1;
       trace(confirmTextGlow.x, confirmTextGlow.y);
     }
+    #end
 
     if (FlxG.keys.justPressed.F)
     {
@@ -1782,6 +1837,8 @@ class FreeplaySongData
 
   public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
 
+  public var scoringRank:Null<ScoringRank> = null;
+
   var displayedVariations:Array<String> = [Constants.DEFAULT_VARIATION];
 
   function set_currentDifficulty(value:String):String
@@ -1844,6 +1901,8 @@ class FreeplaySongData
     {
       this.albumId = songDifficulty.album;
     }
+
+    this.scoringRank = Save.instance.getSongRank(songId, currentDifficulty);
   }
 }
 
