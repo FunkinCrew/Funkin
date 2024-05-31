@@ -18,9 +18,8 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
-import funkin.data.event.SongEventRegistry;
-import funkin.data.stage.StageRegistry;
-import funkin.data.story.level.LevelRegistry;
+import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.notes.notekind.NoteKindScriptManager;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.notes.notekind.NoteKindManager;
@@ -181,7 +180,7 @@ class InitState extends FlxState
     // Move it to use a BaseRegistry.
     CharacterDataParser.loadCharacterCache();
 
-    NoteKindManager.loadScripts();
+    NoteKindScriptManager.loadScripts();
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
