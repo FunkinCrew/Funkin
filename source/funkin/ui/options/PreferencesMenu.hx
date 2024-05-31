@@ -85,6 +85,8 @@ class PreferencesMenu extends Page
       }, Preferences.vibration);
       createPrefItemCheckbox('Legacy Controls', 'Toggle legacy controls', function(value:Bool):Void {
         Preferences.legacyControls = value;
+        backButton.active = !value;
+        backButton.visible = !value;
       }, Preferences.legacyControls);
     }
   }
