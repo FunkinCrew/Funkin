@@ -146,7 +146,7 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
-  static final NOTE_KINDS:Map<String, String> = [
+  public static final NOTE_KINDS:Map<String, String> = [
     // Base
     "" => "Default",
     "~CUSTOM~" => "Custom",
