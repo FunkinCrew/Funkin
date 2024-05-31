@@ -211,19 +211,22 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
     Conductor.watchQuick(conductorInUse);
 
-    if (FlxG.keys.justPressed.ANY && isTouch) isTouch = false;
-    if (TouchUtil.justPressed && !isTouch) isTouch = true;
+    if (FlxG.onMobile)
+    {
+      if (FlxG.keys.justPressed.ANY && isTouch) isTouch = false;
+      if (TouchUtil.justPressed && !isTouch) isTouch = true;
 
-    if (Std.isOfType(FlxG.state, funkin.play.PlayState))
-    {
-        var useDefault:Bool = Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown");
-        if (virtualPad != null) virtualPad.visible = useDefault ? virtualPad.visible : isTouch;
-        if (hitbox != null) hitbox.visible = useDefault ? hitbox.visible : isTouch;
-    }
-    else
-    {
+      if (Std.isOfType(FlxG.state, funkin.play.PlayState))
+      {
+          var useDefault:Bool = Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown");
+          if (virtualPad != null) virtualPad.visible = useDefault ? virtualPad.visible : isTouch;
+          if (hitbox != null) hitbox.visible = useDefault ? hitbox.visible : isTouch;
+      }
+      else
+      {
         if (virtualPad != null) virtualPad.visible = Preferences.legacyControls ? isTouch : false;
         if (hitbox != null) hitbox.visible = isTouch;
+      }
     }
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
