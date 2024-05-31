@@ -264,8 +264,6 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateBPM(newBPM:Int):Void
   {
-    trace(newBPM);
-
     var shiftX:Float = 191;
     var tempShift:Float = 0;
 
