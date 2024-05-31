@@ -31,6 +31,7 @@ import funkin.graphics.shaders.StrokeShader;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.ui.story.Level;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
@@ -212,9 +213,23 @@ class FreeplayState extends MusicBeatSubState
     // programmatically adds the songs via LevelRegistry and SongRegistry
     for (levelId in LevelRegistry.instance.listSortedLevelIds())
     {
-      for (songId in LevelRegistry.instance.parseEntryData(levelId).songs)
+      var level:Level = LevelRegistry.instance.fetchEntry(levelId);
+
+      if (level == null)
+      {
+        trace('[WARN] Could not find level with id (${levelId})');
+        continue;
+      }
+
+      for (songId in level.getSongs())
       {
         var song:Song = SongRegistry.instance.fetchEntry(songId);
+
+        if (song == null)
+        {
+          trace('[WARN] Could not find song with id (${songId})');
+          continue;
+        }
 
         // Only display songs which actually have available difficulties for the current character.
         var displayedVariations = song.getVariationsByCharId(currentCharacter);
@@ -1619,23 +1634,25 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
+        var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
         // TODO: Stream the instrumental of the selected song?
-        var didReplace:Bool = FunkinSound.playMusic('freakyMenu',
+        FunkinSound.playMusic(daSongCapsule.songData.songId,
           {
             startingVolume: 0.0,
             overrideExisting: true,
-            restartTrack: false
+            restartTrack: false,
+            pathsFunction: INST,
+            suffix: potentiallyErect,
+            partialParams:
+              {
+                loadPartial: true,
+                start: 0,
+                end: 0.1
+              },
+            onLoad: function() {
+              FlxG.sound.music.fadeIn(2, 0, 0.4);
+            }
           });
-        if (didReplace)
-        {
-          FunkinSound.playMusic('freakyMenu',
-            {
-              startingVolume: 0.0,
-              overrideExisting: true,
-              restartTrack: false
-            });
-          FlxG.sound.music.fadeIn(2, 0, 0.8);
-        }
       }
       grpCapsules.members[curSelected].selected = true;
     }

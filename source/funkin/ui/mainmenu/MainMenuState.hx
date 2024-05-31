@@ -49,6 +49,8 @@ class MainMenuState extends MusicBeatState
     DiscordClient.changePresence("In the Menus", null);
     #end
 
+    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
+
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
@@ -170,7 +172,6 @@ class MainMenuState extends MusicBeatState
 
   function resetCamStuff():Void
   {
-    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
     FlxG.camera.follow(camFollow, null, 0.06);
     FlxG.camera.snapToTarget();
   }
@@ -329,6 +330,8 @@ class MainMenuState extends MusicBeatState
       persistentUpdate = false;
 
       FlxG.state.openSubState(new DebugMenuSubState());
+      // reset camera when debug menu is closed
+      subStateClosed.addOnce(_ -> resetCamStuff());
     }
     #end
 
