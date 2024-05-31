@@ -13,7 +13,7 @@ class NoteKindManager
     var scriptedClassName:Array<String> = ScriptedNoteKind.listScriptClasses();
     if (scriptedClassName.length > 0)
     {
-      trace('Instantiating ${scriptedClassName.length} scripted note kind...');
+      trace('Instantiating ${scriptedClassName.length} scripted note kind(s)...');
       for (scriptedClass in scriptedClassName)
       {
         try
