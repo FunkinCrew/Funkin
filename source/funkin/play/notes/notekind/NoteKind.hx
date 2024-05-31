@@ -6,7 +6,7 @@ import funkin.modding.events.ScriptEvent;
 /**
  * Class for note scripts
  */
-class NoteKindScript implements INoteScriptedClass
+class NoteKind implements INoteScriptedClass
 {
   /**
    * the name of the note kind

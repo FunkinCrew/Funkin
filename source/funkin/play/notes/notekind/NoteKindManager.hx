@@ -4,13 +4,13 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 
-class NoteKindScriptManager
+class NoteKindManager
 {
-  static var noteKindScripts:Map<String, NoteKindScript> = [];
+  static var noteKinds:Map<String, NoteKind> = [];
 
   public static function loadScripts():Void
   {
-    var scriptedClassName:Array<String> = ScriptedNoteKindScript.listScriptClasses();
+    var scriptedClassName:Array<String> = ScriptedNoteKind.listScriptClasses();
     if (scriptedClassName.length > 0)
     {
       trace('Instantiating ${scriptedClassName.length} scripted note kind...');
@@ -18,9 +18,9 @@ class NoteKindScriptManager
       {
         try
         {
-          var script:NoteKindScript = ScriptedNoteKindScript.init(scriptedClass, "unknown");
+          var script:NoteKind = ScriptedNoteKind.init(scriptedClass, "unknown");
           trace(' Initialized scripted note kind: ${script.noteKind}');
-          noteKindScripts.set(script.noteKind, script);
+          noteKinds.set(script.noteKind, script);
           ChartEditorDropdowns.NOTE_KINDS.set(script.noteKind, script.description);
         }
         catch (e)
@@ -34,13 +34,13 @@ class NoteKindScriptManager
 
   public static function callEvent(noteKind:String, event:ScriptEvent):Void
   {
-    var noteKindScript:NoteKindScript = noteKindScripts.get(noteKind);
+    var noteKind:NoteKind = noteKinds.get(noteKind);
 
-    if (noteKindScript == null)
+    if (noteKind == null)
     {
       return;
     }
 
-    ScriptEventDispatcher.callEvent(noteKindScript, event);
+    ScriptEventDispatcher.callEvent(noteKind, event);
   }
 }

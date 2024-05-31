@@ -49,7 +49,7 @@ import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
-import funkin.play.notes.notekind.NoteKindScriptManager;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
@@ -1182,7 +1182,7 @@ class PlayState extends MusicBeatSubState
     if (Std.isOfType(event, NoteScriptEvent))
     {
       var noteEvent:NoteScriptEvent = cast(event, NoteScriptEvent);
-      NoteKindScriptManager.callEvent(noteEvent.note.noteData.kind, noteEvent);
+      NoteKindManager.callEvent(noteEvent.note.noteData.kind, noteEvent);
     }
   }
 
