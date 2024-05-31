@@ -43,4 +43,12 @@ class NoteKindManager
 
     ScriptEventDispatcher.callEvent(noteKind, event);
   }
+
+  public static function callEventForAll(event:ScriptEvent):Void
+  {
+    for (noteKind in noteKinds.iterator())
+    {
+      ScriptEventDispatcher.callEvent(noteKind, event);
+    }
+  }
 }
