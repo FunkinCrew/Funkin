@@ -32,23 +32,31 @@ class NoteKindManager
     }
   }
 
-  public static function callEvent(noteKind:String, event:ScriptEvent):Void
+  /**
+   * Calls the given event for note kind scripts
+   * @param event The event
+   */
+  public static function callEvent(event:ScriptEvent):Void
   {
-    var noteKind:NoteKind = noteKinds.get(noteKind);
-
-    if (noteKind == null)
+    // if it is a note script event,
+    // then only call the event for the specific note kind script
+    if (Std.isOfType(event, NoteScriptEvent))
     {
-      return;
+      var noteEvent:NoteScriptEvent = cast(event, NoteScriptEvent);
+
+      var noteKind:NoteKind = noteKinds.get(noteEvent.note.noteData.kind);
+
+      if (noteKind != null)
+      {
+        ScriptEventDispatcher.callEvent(noteKind, event);
+      }
     }
-
-    ScriptEventDispatcher.callEvent(noteKind, event);
-  }
-
-  public static function callEventForAll(event:ScriptEvent):Void
-  {
-    for (noteKind in noteKinds.iterator())
+    else // call the event for all note kind scripts
     {
-      ScriptEventDispatcher.callEvent(noteKind, event);
+      for (noteKind in noteKinds.iterator())
+      {
+        ScriptEventDispatcher.callEvent(noteKind, event);
+      }
     }
   }
 }
