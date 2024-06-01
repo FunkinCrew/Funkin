@@ -3,6 +3,8 @@ package funkin.play.notes.notekind;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
 
 class NoteKindManager
 {
@@ -44,7 +46,7 @@ class NoteKindManager
     {
       var noteEvent:NoteScriptEvent = cast(event, NoteScriptEvent);
 
-      var noteKind:NoteKind = noteKinds.get(noteEvent.note.noteData.kind);
+      var noteKind:NoteKind = noteKinds.get(noteEvent.note.kind);
 
       if (noteKind != null)
       {
@@ -58,5 +60,17 @@ class NoteKindManager
         ScriptEventDispatcher.callEvent(noteKind, event);
       }
     }
+  }
+
+  /**
+   * Retrieve the note style from the given note kind
+   * @param noteKind note kind name
+   * @return NoteStyle
+   */
+  public static function getNoteStyle(noteKind:String):Null<NoteStyle>
+  {
+    var noteStyleId:String = noteKinds.get(noteKind)?.noteStyleId ?? "";
+
+    return NoteStyleRegistry.instance.fetchEntry(noteStyleId);
   }
 }
