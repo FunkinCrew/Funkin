@@ -39,8 +39,12 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var songText:CapsuleText;
   public var favIcon:FlxSprite;
+
   public var ranking:FreeplayRank;
   public var blurredRanking:FreeplayRank;
+
+  public var fakeRanking:FreeplayRank;
+  public var fakeBlurredRanking:FreeplayRank;
 
   var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect", "perfectsick"];
 
@@ -131,12 +135,23 @@ class SongMenuItem extends FlxSpriteGroup
     // doesn't get added, simply is here to help with visibility of things for the pop in!
     grpHide = new FlxGroup();
 
+    fakeRanking = new FreeplayRank(420, 41);
+    add(fakeRanking);
+
+    fakeBlurredRanking = new FreeplayRank(fakeRanking.x, fakeRanking.y);
+    fakeBlurredRanking.shader = new GaussianBlurShader(1);
+    add(fakeBlurredRanking);
+
+    fakeRanking.visible = false;
+    fakeBlurredRanking.visible = false;
+
     ranking = new FreeplayRank(420, 41);
     add(ranking);
 
     blurredRanking = new FreeplayRank(ranking.x, ranking.y);
     blurredRanking.shader = new GaussianBlurShader(1);
     add(blurredRanking);
+
     // ranking.loadGraphic(Paths.image('freeplay/ranks/' + rank));
     // ranking.scale.x = ranking.scale.y = realScaled;
     // ranking.alpha = 0.75;

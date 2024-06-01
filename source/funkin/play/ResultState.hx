@@ -364,7 +364,7 @@ class ResultState extends MusicBeatSubState
     rankBg.zIndex = 99999;
     add(rankBg);
 
-   rankBg.alpha = 0;
+    rankBg.alpha = 0;
 
     refresh();
 
@@ -665,8 +665,7 @@ class ResultState extends MusicBeatSubState
       else
       {
         var rigged:Bool = true;
-        if (rank > Scoring.calculateRank(params?.prevScoreData))
-        //if (rigged)
+        if (rank > Scoring.calculateRank(params?.prevScoreData)) // if (rigged)
         {
           trace('THE RANK IS Higher.....');
 
@@ -682,7 +681,8 @@ class ResultState extends MusicBeatSubState
                           oldRank: Scoring.calculateRank(params?.prevScoreData),
                           newRank: rank,
                           songId: params.songId,
-                          difficultyId: params.difficultyId
+                          difficultyId: params.difficultyId,
+                          playRankAnim: true
                         }
                     }
                   }));
@@ -698,6 +698,7 @@ class ResultState extends MusicBeatSubState
                 fromResults:
                   {
                     oldRank: null,
+                    playRankAnim: false,
                     newRank: rank,
                     songId: params.songId,
                     difficultyId: params.difficultyId

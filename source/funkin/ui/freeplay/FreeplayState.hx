@@ -6,6 +6,7 @@ import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
+import funkin.graphics.shaders.GaussianBlurShader;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
@@ -45,6 +46,7 @@ import funkin.util.MathUtil;
 import lime.utils.Assets;
 import flixel.tweens.misc.ShakeTween;
 import funkin.effects.IntervalShake;
+import funkin.ui.freeplay.SongMenuItem.FreeplayRank;
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -65,6 +67,11 @@ typedef FromResultsParams =
    * The previous rank the song hand, if any. Null if it had no score before.
    */
   var ?oldRank:ScoringRank;
+
+  /**
+   * Whether or not to play the rank animation on returning to freeplay.
+   */
+  var playRankAnim:Bool;
 
   /**
    * The new rank the song has.
@@ -201,7 +208,8 @@ class FreeplayState extends MusicBeatSubState
 
     fromResultsParams = params?.fromResults;
 
-    if(fromResultsParams?.oldRank != null){
+    if (fromResultsParams?.playRankAnim == true)
+    {
       prepForNewRank = true;
     }
 
@@ -244,10 +252,10 @@ class FreeplayState extends MusicBeatSubState
     if (prepForNewRank == false)
     {
       FunkinSound.playMusic('freakyMenu',
-      {
-        overrideExisting: true,
-        restartTrack: false
-      });
+        {
+          overrideExisting: true,
+          restartTrack: false
+        });
     }
 
     // Add a null entry that represents the RANDOM option
@@ -837,6 +845,9 @@ class FreeplayState extends MusicBeatSubState
     return songsToFilter;
   }
 
+  var sparks:FlxSprite;
+  var sparksADD:FlxSprite;
+
   function rankAnimStart(fromResults:Null<FromResultsParams>):Void
   {
     busy = true;
@@ -848,6 +859,49 @@ class FreeplayState extends MusicBeatSubState
     FlxG.sound.music.volume = 0;
     rankBg.alpha = 1;
 
+    if (fromResults?.oldRank != null)
+    {
+      grpCapsules.members[curSelected].fakeRanking.rank = fromResults.oldRank;
+      grpCapsules.members[curSelected].fakeBlurredRanking.rank = fromResults.oldRank;
+
+      sparks = new FlxSprite(0, 0);
+      sparks.frames = Paths.getSparrowAtlas('freeplay/sparks');
+      sparks.animation.addByPrefix('sparks', 'sparks', 24, false);
+      sparks.visible = false;
+      sparks.blend = BlendMode.ADD;
+      sparks.setPosition(517, 134);
+      sparks.scale.set(0.5, 0.5);
+      add(sparks);
+      sparks.cameras = [rankCamera];
+
+      sparksADD = new FlxSprite(0, 0);
+      sparksADD.visible = false;
+      sparksADD.frames = Paths.getSparrowAtlas('freeplay/sparksadd');
+      sparksADD.animation.addByPrefix('sparks add', 'sparks add', 24, false);
+      sparksADD.setPosition(498, 116);
+      sparksADD.blend = BlendMode.ADD;
+      sparksADD.scale.set(0.5, 0.5);
+      add(sparksADD);
+      sparksADD.cameras = [rankCamera];
+
+      switch (fromResults.oldRank)
+      {
+        case SHIT:
+          sparksADD.color = 0xFF6044FF;
+        case GOOD:
+          sparksADD.color = 0xFFEF8764;
+        case GREAT:
+          sparksADD.color = 0xFFEAF6FF;
+        case EXCELLENT:
+          sparksADD.color = 0xFFFDCB42;
+        case PERFECT:
+          sparksADD.color = 0xFFFF58B4;
+        case PERFECT_GOLD:
+          sparksADD.color = 0xFFFFB619;
+      }
+      // sparksADD.color = sparks.color;
+    }
+
     grpCapsules.members[curSelected].doLerp = false;
 
     // originalPos.x = grpCapsules.members[curSelected].x;
@@ -857,8 +911,8 @@ class FreeplayState extends MusicBeatSubState
     originalPos.y = 235.6;
     trace(originalPos);
 
-    grpCapsules.members[curSelected].ranking.alpha = 0;
-    grpCapsules.members[curSelected].blurredRanking.alpha = 0;
+    grpCapsules.members[curSelected].ranking.visible = false;
+    grpCapsules.members[curSelected].blurredRanking.visible = false;
 
     rankCamera.zoom = 1.85;
     FlxTween.tween(rankCamera, {"zoom": 1.8}, 0.6, {ease: FlxEase.sineIn});
@@ -880,9 +934,8 @@ class FreeplayState extends MusicBeatSubState
 
   function rankDisplayNew(fromResults:Null<FromResultsParams>):Void
   {
-    grpCapsules.members[curSelected].ranking.alpha = 1;
-    grpCapsules.members[curSelected].blurredRanking.alpha = 1;
-
+    grpCapsules.members[curSelected].ranking.visible = true;
+    grpCapsules.members[curSelected].blurredRanking.visible = true;
     grpCapsules.members[curSelected].ranking.scale.set(20, 20);
     grpCapsules.members[curSelected].blurredRanking.scale.set(20, 20);
 
@@ -895,7 +948,23 @@ class FreeplayState extends MusicBeatSubState
     FlxTween.tween(grpCapsules.members[curSelected].blurredRanking, {"scale.x": 1, "scale.y": 1}, 0.1);
 
     new FlxTimer().start(0.1, _ -> {
-      trace(grpCapsules.members[curSelected].ranking.rank);
+      // trace(grpCapsules.members[curSelected].ranking.rank);
+      if (fromResults?.oldRank != null)
+      {
+        grpCapsules.members[curSelected].fakeRanking.visible = false;
+        grpCapsules.members[curSelected].fakeBlurredRanking.visible = false;
+
+        sparks.visible = true;
+        sparksADD.visible = true;
+        sparks.animation.play('sparks', true);
+        sparksADD.animation.play('sparks add', true);
+
+        sparks.animation.finishCallback = anim -> {
+          sparks.visible = false;
+          sparksADD.visible = false;
+        };
+      }
+
       switch (fromResultsParams?.newRank)
       {
         case SHIT:
@@ -1053,10 +1122,10 @@ class FreeplayState extends MusicBeatSubState
       // dj.fistPump();
       prepForNewRank = false;
       FunkinSound.playMusic('freakyMenu',
-      {
-        overrideExisting: true,
-        restartTrack: false
-      });
+        {
+          overrideExisting: true,
+          restartTrack: false
+        });
       FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
     });
   }
@@ -1092,35 +1161,56 @@ class FreeplayState extends MusicBeatSubState
       rankAnimStart(fromResultsParams);
     }
 
-    if (FlxG.keys.justPressed.H)
-    {
-      rankDisplayNew(fromResultsParams);
-    }
+    // if (FlxG.keys.justPressed.H)
+    // {
+    //   rankDisplayNew(fromResultsParams);
+    // }
+
+    // if (FlxG.keys.justPressed.G)
+    // {
+    //   rankAnimSlam(fromResultsParams);
+    // }
 
     if (FlxG.keys.justPressed.G)
     {
-      rankAnimSlam(fromResultsParams);
+      sparks.y -= 2;
+      trace(sparks.x, sparks.y);
+    }
+    if (FlxG.keys.justPressed.V)
+    {
+      sparks.x -= 2;
+      trace(sparks.x, sparks.y);
+    }
+    if (FlxG.keys.justPressed.N)
+    {
+      sparks.x += 2;
+      trace(sparks.x, sparks.y);
+    }
+    if (FlxG.keys.justPressed.B)
+    {
+      sparks.y += 2;
+      trace(sparks.x, sparks.y);
     }
 
     if (FlxG.keys.justPressed.I)
     {
-      confirmTextGlow.y -= 1;
-      trace(confirmTextGlow.x, confirmTextGlow.y);
+      sparksADD.y -= 2;
+      trace(sparksADD.x, sparksADD.y);
     }
     if (FlxG.keys.justPressed.J)
     {
-      confirmTextGlow.x -= 1;
-      trace(confirmTextGlow.x, confirmTextGlow.y);
+      sparksADD.x -= 2;
+      trace(sparksADD.x, sparksADD.y);
     }
     if (FlxG.keys.justPressed.L)
     {
-      confirmTextGlow.x += 1;
-      trace(confirmTextGlow.x, confirmTextGlow.y);
+      sparksADD.x += 2;
+      trace(sparksADD.x, sparksADD.y);
     }
     if (FlxG.keys.justPressed.K)
     {
-      confirmTextGlow.y += 1;
-      trace(confirmTextGlow.x, confirmTextGlow.y);
+      sparksADD.y += 2;
+      trace(sparksADD.x, sparksADD.y);
     }
     #end
 
@@ -1758,26 +1848,27 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
-        if(prepForNewRank == false){
-        var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
-        // TODO: Stream the instrumental of the selected song?
-        FunkinSound.playMusic(daSongCapsule.songData.songId,
-          {
-            startingVolume: 0.0,
-            overrideExisting: true,
-            restartTrack: false,
-            pathsFunction: INST,
-            suffix: potentiallyErect,
-            partialParams:
-              {
-                loadPartial: true,
-                start: 0,
-                end: 0.1
-              },
-            onLoad: function() {
-              FlxG.sound.music.fadeIn(2, 0, 0.4);
-            }
-          });
+        if (prepForNewRank == false)
+        {
+          var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
+          // TODO: Stream the instrumental of the selected song?
+          FunkinSound.playMusic(daSongCapsule.songData.songId,
+            {
+              startingVolume: 0.0,
+              overrideExisting: true,
+              restartTrack: false,
+              pathsFunction: INST,
+              suffix: potentiallyErect,
+              partialParams:
+                {
+                  loadPartial: true,
+                  start: 0,
+                  end: 0.1
+                },
+              onLoad: function() {
+                FlxG.sound.music.fadeIn(2, 0, 0.4);
+              }
+            });
         }
       }
       grpCapsules.members[curSelected].selected = true;
@@ -1791,9 +1882,12 @@ class FreeplayState extends MusicBeatSubState
   public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
   {
     var result:MainMenuState;
-    if(params?.fromResults.oldRank != null){
+    if (params?.fromResults.playRankAnim == true)
+    {
       result = new MainMenuState(true);
-    }else{
+    }
+    else
+    {
       result = new MainMenuState(false);
     }
 
