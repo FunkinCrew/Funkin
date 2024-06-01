@@ -77,11 +77,9 @@
       "version": "2.5.0"
     },
     {
-      "name": "hxCodec",
-      "type": "git",
-      "dir": null,
-      "ref": "61b98a7a353b7f529a8fec84ed9afc919a2dffdd",
-      "url": "https://github.com/FunkinCrew/hxCodec"
+      "name": "hxvlc",
+      "type": "haxelib",
+      "version": "1.5.4"
     },
     {
       "name": "hxcpp",
