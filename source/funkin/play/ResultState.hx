@@ -15,8 +15,10 @@ import funkin.ui.freeplay.FreeplayScore;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinCamera;
 import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
+import flixel.addons.display.FlxBackdrop;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
@@ -59,6 +61,10 @@ class ResultState extends MusicBeatSubState
   var gfGood:Null<FlxSprite> = null;
   var bfShit:Null<FlxAtlasSprite> = null;
 
+  final cameraBG:FunkinCamera;
+  final cameraScroll:FunkinCamera;
+  final cameraEverything:FunkinCamera;
+
   public function new(params:ResultsStateParams)
   {
     super();
@@ -66,6 +72,10 @@ class ResultState extends MusicBeatSubState
     this.params = params;
 
     rank = Scoring.calculateRank(params.scoreData) ?? SHIT;
+
+    cameraBG = new FunkinCamera('resultsBG', 0, 0, FlxG.width, FlxG.height);
+    cameraScroll = new FunkinCamera('resultsScroll', 0, 0, FlxG.width, FlxG.height);
+    cameraEverything = new FunkinCamera('resultsEverything', 0, 0, FlxG.width, FlxG.height);
 
     // We build a lot of this stuff in the constructor, then place it in create().
     // This prevents having to do `null` checks everywhere.
@@ -101,17 +111,32 @@ class ResultState extends MusicBeatSubState
   {
     if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
+    // We need multiple cameras so we can put one at an angle.
+    cameraScroll.angle = -3.8;
+
+    cameraBG.bgColor = FlxColor.MAGENTA;
+    cameraScroll.bgColor = FlxColor.TRANSPARENT;
+    cameraEverything.bgColor = FlxColor.TRANSPARENT;
+
+    FlxG.cameras.add(cameraBG, false);
+    FlxG.cameras.add(cameraScroll, false);
+    FlxG.cameras.add(cameraEverything, false);
+
+    FlxG.cameras.setDefaultDrawTarget(cameraEverything, true);
+
     // Reset the camera zoom on the results screen.
     FlxG.camera.zoom = 1.0;
 
     var bg:FlxSprite = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFECC5C, 0xFFFDC05C], 90);
     bg.scrollFactor.set();
     bg.zIndex = 10;
+    bg.cameras = [cameraBG];
     add(bg);
 
     bgFlash.scrollFactor.set();
     bgFlash.visible = false;
     bgFlash.zIndex = 20;
+    bgFlash.cameras = [cameraBG];
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
@@ -455,16 +480,27 @@ class ResultState extends MusicBeatSubState
 
   function displayRankText():Void
   {
-    var rankTextVert:FunkinSprite = FunkinSprite.create(FlxG.width - 64, 100, rank.getVerTextAsset());
-    rankTextVert.zIndex = 2000;
+    var rankTextVert:FlxBackdrop = new FlxBackdrop(Paths.image(rank.getVerTextAsset()), Y, 0, 30);
+    rankTextVert.x = FlxG.width - 64;
+    rankTextVert.y = 100;
+    rankTextVert.zIndex = 990;
     add(rankTextVert);
+
+    // Scrolling.
+    rankTextVert.velocity.y = -50;
 
     for (i in 0...10)
     {
-      var rankTextBack:FunkinSprite = FunkinSprite.create(FlxG.width / 2 - 80, 50, rank.getHorTextAsset());
-      rankTextBack.y += (rankTextBack.height * i / 2) + 10;
+      var rankTextBack:FlxBackdrop = new FlxBackdrop(Paths.image(rank.getHorTextAsset()), X, 10, 0);
+      rankTextBack.x = FlxG.width / 2 - 320;
+      rankTextBack.y = 50 + (150 * i / 2) + 10;
+      // rankTextBack.angle = -3.8;
       rankTextBack.zIndex = 100;
+      rankTextBack.cameras = [cameraScroll];
       add(rankTextBack);
+
+      // Scrolling.
+      rankTextBack.velocity.x = (i % 2 == 0) ? -10.0 : 10.0;
     }
 
     refresh();
