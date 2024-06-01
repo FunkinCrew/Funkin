@@ -140,7 +140,11 @@ class NoteSprite extends FunkinSprite
     this.active = false;
   }
 
-  function setupNoteGraphic(noteStyle:NoteStyle):Void
+  /**
+   * Creates frames and animations
+   * @param noteStyle The `NoteStyle` instance
+   */
+  public function setupNoteGraphic(noteStyle:NoteStyle):Void
   {
     noteStyle.buildNoteSprite(this);
 

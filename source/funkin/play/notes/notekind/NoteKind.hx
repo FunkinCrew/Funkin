@@ -1,7 +1,5 @@
 package funkin.play.notes.notekind;
 
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.play.notes.notestyle.NoteStyle;
 import funkin.modding.IScriptedClass.INoteScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
@@ -11,41 +9,30 @@ import funkin.modding.events.ScriptEvent;
 class NoteKind implements INoteScriptedClass
 {
   /**
-   * the name of the note kind
+   * The name of the note kind
    */
   public var noteKind:String;
 
   /**
-   * description used in chart editor
+   * Description used in chart editor
    */
-  public var description:String = "";
+  public var description:String;
 
-  public function new(noteKind:String, description:String = "")
+  /**
+   * Custom note style
+   */
+  public var noteStyleId:String;
+
+  public function new(noteKind:String, description:String = "", noteStyleId:String = "")
   {
     this.noteKind = noteKind;
     this.description = description;
+    this.noteStyleId = noteStyleId;
   }
 
   public function toString():String
   {
     return noteKind;
-  }
-
-  /**
-   * Changes the note style of the given note. Use this in `onNoteIncoming`
-   * @param note
-   * @param noteStyle
-   */
-  function setNoteStyle(note:NoteSprite, noteStyleId:String):Void
-  {
-    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
-    noteStyle.buildNoteSprite(note);
-
-    note.setGraphicSize(Strumline.STRUMLINE_SIZE);
-    note.updateHitbox();
-
-    // this calls the setter for playing the correct animation
-    note.direction = note.direction;
   }
 
   /**
