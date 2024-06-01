@@ -7,50 +7,85 @@ import polymod.fs.PolymodFileSystem;
 import polymod.fs.SysFileSystem;
 
 /**
- * An implementation of IFileSystem which accesses files using the Android DocumentFile API.
- * This allows for interaction with files and directories managed by the Android storage access framework.
+ * Represents a custom file system implementation tailored for the Polymod framework on Android.
+ *
+ * This allows interacting with files and directories managed by the Android storage access framework.
  */
 class AndroidDocumentFileSystem extends SysFileSystem
 {
-    public function new(params:PolymodFileSystemParams):Void
-    {
-        super(params);
-    }
+  /**
+   * Constructor for AndroidDocumentFileSystem.
+   *
+   * @param params The parameters required for initializing the file system.
+   */
+  public function new(params:PolymodFileSystemParams):Void
+  {
+    super(params);
+  }
 
-    public override function exists(path:String):Bool
-    {
-        return DocumentFileUtil.exists(path);
-    }
+  /**
+   * Checks if a file or directory exists at the specified path.
+   *
+   * @param path The path to the file or directory.
+   * @return true if the file or directory exists, false otherwise.
+   */
+  public override function exists(path:String):Bool
+  {
+    return DocumentFileUtil.exists(path);
+  }
 
-    public override function isDirectory(path:String):Bool
-    {
-        return DocumentFileUtil.isDirectory(path);
-    }
+  /**
+   * Checks if the specified path is a directory.
+   *
+   * @param path The path to check.
+   * @return true if the path is a directory, false otherwise.
+   */
+  public override function isDirectory(path:String):Bool
+  {
+    return DocumentFileUtil.isDirectory(path);
+  }
 
-    public override function readDirectory(path:String):Array<String>
+  /**
+   * Reads the contents of a directory at the specified path.
+   *
+   * @param path The path to the directory.
+   * @return An array of strings representing the names of the files and directories in the specified directory.
+   */
+  public override function readDirectory(path:String):Array<String>
+  {
+    try
     {
-        try
-        {
-            return DocumentFileUtil.readDirectory(path);
-        }
-        catch (e:Dynamic)
-        {
-            Polymod.warning(DIRECTORY_MISSING, 'Could not find directory "${path}"');
-            return [];
-        }
+      return DocumentFileUtil.readDirectory(path);
     }
-
-    public override function getFileContent(path:String):String
+    catch (e:Dynamic)
     {
-        return DocumentFileUtil.getContent(path);
+      Polymod.warning(DIRECTORY_MISSING, 'Could not find directory "${path}"');
+      return [];
     }
+  }
 
-    public override function getFileBytes(path:String):Bytes
-    {
-        if (!exists(path))
-            return null;
+  /**
+   * Gets the content of a file at the specified path as a string.
+   *
+   * @param path The path to the file.
+   * @return The content of the file as a string.
+   */
+  public override function getFileContent(path:String):String
+  {
+    return DocumentFileUtil.getContent(path);
+  }
 
-        return DocumentFileUtil.getBytes(path);
-    }
+  /**
+   * Gets the content of a file at the specified path as bytes.
+   *
+   * @param path The path to the file.
+   * @return The content of the file as a byte array.
+   */
+  public override function getFileBytes(path:String):Bytes
+  {
+    if (!exists(path)) return null;
+
+    return DocumentFileUtil.getBytes(path);
+  }
 }
 #end
