@@ -1,7 +1,5 @@
 package funkin.data.dialogue.conversation;
 
-import funkin.data.animation.AnimationData;
-
 /**
  * A type definition for the data for a specific conversation.
  * It includes things like what dialogue boxes to use, what text to display, and what animations to play.
