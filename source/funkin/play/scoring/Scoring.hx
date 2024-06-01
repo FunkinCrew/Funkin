@@ -351,6 +351,9 @@ class Scoring
   {
     if (scoreData == null) return null;
 
+    // we can return null here, meaning that the player hasn't actually played and finished the song (thus has no data)
+    if (scoreData.tallies.totalNotes == 0) return null;
+
     // Perfect (Platinum) is a Sick Full Clear
     var isPerfectGold = scoreData.tallies.sick == scoreData.tallies.totalNotes;
     if (isPerfectGold) return ScoringRank.PERFECT_GOLD;
