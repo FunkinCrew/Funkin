@@ -123,7 +123,7 @@
 	<haxelib name="flixel-text-input" /> <!-- Improved text field rendering for HaxeUI -->
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
-	<haxelib name="hxvlc" if="desktop" unless="hl" /> <!-- Video playback -->
+	<haxelib name="hxvlc" if="desktop || mobile" unless="hl" /> <!-- Video playback -->
 	<haxelib name="funkin.vis"/>
 
 
