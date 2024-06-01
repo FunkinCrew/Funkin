@@ -54,7 +54,7 @@ class CreditsDataHandler
           body: [
             {line: 'ninjamuffin99'},
             {line: 'PhantomArcade'},
-            {line: 'KawaiSprite'},
+            {line: 'Kawai Sprite'},
             {line: 'evilsk8r'},
           ]
         }

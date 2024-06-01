@@ -868,7 +868,7 @@ class FreeplayState extends MusicBeatSubState
 
     FlxTween.tween(grpCapsules.members[curSelected].ranking, {"scale.x": 1, "scale.y": 1}, 0.1);
 
-    grpCapsules.members[curSelected].blurredRanking.animation.play(grpCapsules.members[curSelected].blurredRanking.animation.curAnim.name, true);
+    grpCapsules.members[curSelected].blurredRanking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
     FlxTween.tween(grpCapsules.members[curSelected].blurredRanking, {"scale.x": 1, "scale.y": 1}, 0.1);
 
     new FlxTimer().start(0.1, _ -> {
