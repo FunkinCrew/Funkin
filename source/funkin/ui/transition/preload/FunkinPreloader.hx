@@ -131,10 +131,6 @@ class FunkinPreloader extends FlxBasePreloader
 
   public function new()
   {
-    #if mobile
-    funkin.util.StorageUtil.initializeCWD();
-    #end
-
     super(Constants.PRELOADER_MIN_STAGE_TIME);
 
     // We can't even call trace() yet, until Flixel loads.
