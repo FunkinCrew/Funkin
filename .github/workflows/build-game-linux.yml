@@ -16,6 +16,9 @@ jobs:
         with:
           haxe-version: 4.3.4
 
+      - name: Installing Dependencies
+        run: sudo apt-get install libvlc-dev libvlccore-dev vlc-bin vlc
+        
       - name: Install Libraries
         run: |
           haxelib install hmm --quiet
