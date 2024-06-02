@@ -3650,11 +3650,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           holdNoteSprite.noteData = noteSprite.noteData;
           holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
-          holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind) ?? currentSongNoteStyle;
 
           holdNoteSprite.setHeightDirectly(noteLengthPixels);
 
-          holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
+          holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind) ?? currentSongNoteStyle;
 
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
 
@@ -3718,10 +3717,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         holdNoteSprite.noteData = noteData;
         holdNoteSprite.noteDirection = noteData.getDirection();
-        holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind) ?? currentSongNoteStyle;
         holdNoteSprite.setHeightDirectly(noteLengthPixels);
 
-        holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
+        holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind) ?? currentSongNoteStyle;
 
         holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
 
@@ -4601,9 +4599,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             gridGhostHoldNote.visible = true;
             gridGhostHoldNote.noteData = currentPlaceNoteData;
             gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
-            gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind) ?? currentSongNoteStyle;
             gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
-            gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
+            gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind) ?? currentSongNoteStyle;
             gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
           }
           else
@@ -5279,11 +5276,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Readd the new ghost hold note.
         ghostHold.noteData = targetNoteData.clone();
         ghostHold.noteDirection = ghostHold.noteData.getDirection();
-        ghostHold.noteStyle = NoteKindManager.getNoteStyleId(ghostHold.noteData.kind) ?? currentSongNoteStyle;
         ghostHold.visible = true;
         ghostHold.alpha = 0.6;
         ghostHold.setHeightDirectly(0);
-        ghostHold.noteStyle = NoteKindManager.getNoteStyleId(ghostHold.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
+        ghostHold.noteStyle = NoteKindManager.getNoteStyleId(ghostHold.noteData.kind) ?? currentSongNoteStyle;
         ghostHold.updateHoldNotePosition(renderedHoldNotes);
       }
 
