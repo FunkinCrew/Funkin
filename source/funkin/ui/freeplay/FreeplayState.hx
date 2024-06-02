@@ -1121,12 +1121,6 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(2, _ -> {
       // dj.fistPump();
       prepForNewRank = false;
-      FunkinSound.playMusic('freakyMenu',
-        {
-          overrideExisting: true,
-          restartTrack: false
-        });
-      FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
     });
   }
 
@@ -1527,6 +1521,7 @@ class FreeplayState extends MusicBeatSubState
               overrideExisting: true,
               restartTrack: false
             });
+          FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
           close();
         }
         else
@@ -1842,13 +1837,13 @@ class FreeplayState extends MusicBeatSubState
           {
             startingVolume: 0.0,
             overrideExisting: true,
-            restartTrack: true
+            restartTrack: false
           });
         FlxG.sound.music.fadeIn(2, 0, 0.8);
       }
       else
       {
-        if (prepForNewRank == false)
+        if (!prepForNewRank)
         {
           var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
           // TODO: Stream the instrumental of the selected song?
@@ -1882,14 +1877,9 @@ class FreeplayState extends MusicBeatSubState
   public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
   {
     var result:MainMenuState;
-    if (params?.fromResults.playRankAnim == true)
-    {
-      result = new MainMenuState(true);
-    }
+    if (params?.fromResults.playRankAnim) result = new MainMenuState(true);
     else
-    {
       result = new MainMenuState(false);
-    }
 
     result.openSubState(new FreeplayState(params, stickers));
     result.persistentUpdate = false;
