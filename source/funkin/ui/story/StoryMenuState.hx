@@ -25,7 +25,7 @@ import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
-import funkin.ui.Backspace;
+import funkin.mobile.Backspace;
 import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState

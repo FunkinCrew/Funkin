@@ -14,7 +14,7 @@ import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
 import funkin.mobile.ControlsHandler;
-import funkin.ui.Backspace;
+import funkin.mobile.Backspace;
 import funkin.util.TouchUtil;
 import flixel.util.FlxColor;
 

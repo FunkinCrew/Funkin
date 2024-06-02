@@ -1,4 +1,4 @@
-package funkin.ui;
+package funkin.mobile;
 
 import flixel.FlxG;
 import flixel.FlxSprite;

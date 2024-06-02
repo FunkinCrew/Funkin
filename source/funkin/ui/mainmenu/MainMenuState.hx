@@ -26,7 +26,7 @@ import funkin.ui.MenuList;
 import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
-import funkin.ui.Backspace;
+import funkin.mobile.Backspace;
 import funkin.util.WindowUtil;
 import funkin.util.TouchUtil;
 #if discord_rpc

@@ -40,7 +40,7 @@ import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 import lime.utils.Assets;
-import funkin.ui.Backspace;
+import funkin.mobile.Backspace;
 
 /**
  * Parameters used to initialize the FreeplayState.
