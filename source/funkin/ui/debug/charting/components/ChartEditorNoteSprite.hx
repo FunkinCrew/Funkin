@@ -77,29 +77,23 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       buildEmptyFrameCollection();
 
-      for (entry in entries)
-      {
-        addNoteStyleFrames(fetchNoteStyle(entry));
-      }
+      addNoteStyleFrames(fetchNoteStyle('funkin'));
+      addNoteStyleFrames(fetchNoteStyle('pixel'));
     }
 
     if (noteFrameCollection == null) throw 'ERROR: Could not initialize note sprite animations.';
 
     this.frames = noteFrameCollection;
 
-    for (entry in entries)
-    {
-      addNoteStyleAnimations(fetchNoteStyle(entry));
-    }
+    addNoteStyleAnimations(fetchNoteStyle('funkin'));
+    addNoteStyleAnimations(fetchNoteStyle('pixel'));
   }
 
   static var noteFrameCollection:Null<FlxFramesCollection> = null;
 
   function fetchNoteStyle(noteStyleId:String):NoteStyle
   {
-    var result = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
-    if (result != null) return result;
-    return NoteStyleRegistry.instance.fetchDefault();
+    return NoteStyleRegistry.instance.fetchEntry(noteStyleId) ?? NoteStyleRegistry.instance.fetchDefault();
   }
 
   @:access(funkin.play.notes.notestyle.NoteStyle)
@@ -109,12 +103,6 @@ class ChartEditorNoteSprite extends FlxSprite
     var prefix:String = noteStyle.id.toTitleCase();
 
     var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary());
-    if (frameCollection == null)
-    {
-      trace('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
-      FlxG.log.error('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
-      return;
-    }
     for (frame in frameCollection.frames)
     {
       // cloning the frame because else
@@ -123,6 +111,26 @@ class ChartEditorNoteSprite extends FlxSprite
       clonedFrame.name = '$prefix${clonedFrame.name}';
       noteFrameCollection.pushFrame(clonedFrame);
     }
+  }
+
+  @:access(funkin.play.notes.notestyle.NoteStyle)
+  @:nullSafety(Off)
+  function addNoteStyleAnimations(noteStyle:NoteStyle):Void
+  {
+    var prefix:String = noteStyle.id.toTitleCase();
+    var suffix:String = noteStyle.id.toTitleCase();
+
+    var leftData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.LEFT);
+    this.animation.addByPrefix('tapLeft$suffix', '$prefix${leftData.prefix}', leftData.frameRate, leftData.looped, leftData.flipX, leftData.flipY);
+
+    var downData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.DOWN);
+    this.animation.addByPrefix('tapDown$suffix', '$prefix${downData.prefix}', downData.frameRate, downData.looped, downData.flipX, downData.flipY);
+
+    var upData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.UP);
+    this.animation.addByPrefix('tapUp$suffix', '$prefix${upData.prefix}', upData.frameRate, upData.looped, upData.flipX, upData.flipY);
+
+    var rightData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.RIGHT);
+    this.animation.addByPrefix('tapRight$suffix', '$prefix${rightData.prefix}', rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
   }
 
   @:access(funkin.play.notes.notestyle.NoteStyle)
@@ -200,19 +208,17 @@ class ChartEditorNoteSprite extends FlxSprite
 
   function get_noteStyle():Null<String>
   {
-    if (this.noteStyle == null)
+    if (this.parentState.currentCustomNoteKindStyle != null)
     {
-      var result = this.parentState.currentSongNoteStyle;
-      return result;
+      return this.parentState.currentCustomNoteKindStyle;
     }
-    return this.noteStyle;
-  }
 
-  function set_noteStyle(value:Null<String>):Null<String>
-  {
-    this.noteStyle = value;
-    this.playNoteAnimation();
-    return value;
+    if (NOTE_STYLES.contains(this.parentState.currentSongNoteStyle))
+    {
+      return this.parentState.currentSongNoteStyle;
+    }
+
+    return 'funkin';
   }
 
   @:nullSafety(Off)
