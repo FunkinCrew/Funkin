@@ -131,7 +131,7 @@ class AlbumRoll extends FlxSpriteGroup
 
     if (exitMovers == null) return;
 
-    exitMovers.set([newAlbumArt],
+    exitMovers.set([newAlbumArt, difficultyStars],
       {
         x: FlxG.width,
         speed: 0.4,

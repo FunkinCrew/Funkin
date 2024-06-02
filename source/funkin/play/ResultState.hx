@@ -61,6 +61,7 @@ class ResultState extends MusicBeatSubState
   var gfGood:Null<FlxSprite> = null;
   var bfShit:Null<FlxAtlasSprite> = null;
 
+  var rankBg:FunkinSprite;
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;
   final cameraEverything:FunkinCamera;
@@ -105,6 +106,8 @@ class ResultState extends MusicBeatSubState
     highscoreNew = new FlxSprite(310, 570);
 
     score = new ResultScore(35, 305, 10, params.scoreData.score);
+
+    rankBg = new FunkinSprite(0, 0);
   }
 
   override function create():Void
@@ -381,6 +384,12 @@ class ResultState extends MusicBeatSubState
           });
       }
     });
+
+    rankBg.makeSolidColor(FlxG.width, FlxG.height, 0xFF000000);
+    rankBg.zIndex = 99999;
+    add(rankBg);
+
+    rankBg.alpha = 0;
 
     refresh();
 
@@ -691,18 +700,48 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
-          {
+        var rigged:Bool = true;
+        if (rank > Scoring.calculateRank(params?.prevScoreData)) // if (rigged)
+        {
+          trace('THE RANK IS Higher.....');
+
+          FlxTween.tween(rankBg, {alpha: 1}, 0.5,
             {
-              fromResults:
-                {
-                  oldRank: Scoring.calculateRank(params?.prevScoreData),
-                  newRank: rank,
-                  songId: params.songId,
-                  difficultyId: params.difficultyId
-                }
-            }
-          }, sticker)));
+              ease: FlxEase.expoOut,
+              onComplete: function(_) {
+                FlxG.switchState(FreeplayState.build(
+                  {
+                    {
+                      fromResults:
+                        {
+                          oldRank: Scoring.calculateRank(params?.prevScoreData),
+                          newRank: rank,
+                          songId: params.songId,
+                          difficultyId: params.difficultyId,
+                          playRankAnim: true
+                        }
+                    }
+                  }));
+              }
+            });
+        }
+        else
+        {
+          trace('rank is lower...... and/or equal');
+          openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
+            {
+              {
+                fromResults:
+                  {
+                    oldRank: null,
+                    playRankAnim: false,
+                    newRank: rank,
+                    songId: params.songId,
+                    difficultyId: params.difficultyId
+                  }
+              }
+            }, sticker)));
+        }
       }
     }
 

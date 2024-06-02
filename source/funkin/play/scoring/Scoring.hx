@@ -349,7 +349,7 @@ class Scoring
 
   public static function calculateRank(scoreData:Null<SaveScoreData>):Null<ScoringRank>
   {
-    if (scoreData == null) return null;
+    if (scoreData?.tallies.totalNotes == 0 || scoreData == null) return null;
 
     // we can return null here, meaning that the player hasn't actually played and finished the song (thus has no data)
     if (scoreData.tallies.totalNotes == 0) return null;
@@ -396,6 +396,62 @@ enum abstract ScoringRank(String)
   var GREAT;
   var GOOD;
   var SHIT;
+
+  @:op(A > B) static function compare(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  {
+    if (a != null && b == null) return true;
+    if (a == null || b == null) return false;
+
+    var temp1:Int = 0;
+    var temp2:Int = 0;
+
+    // temp 1
+    switch (a)
+    {
+      case PERFECT_GOLD:
+        temp1 = 5;
+      case PERFECT:
+        temp1 = 4;
+      case EXCELLENT:
+        temp1 = 3;
+      case GREAT:
+        temp1 = 2;
+      case GOOD:
+        temp1 = 1;
+      case SHIT:
+        temp1 = 0;
+      default:
+        temp1 = -1;
+    }
+
+    // temp 2
+    switch (b)
+    {
+      case PERFECT_GOLD:
+        temp2 = 5;
+      case PERFECT:
+        temp2 = 4;
+      case EXCELLENT:
+        temp2 = 3;
+      case GREAT:
+        temp2 = 2;
+      case GOOD:
+        temp2 = 1;
+      case SHIT:
+        temp2 = 0;
+      default:
+        temp2 = -1;
+    }
+
+    if (temp1 > temp2)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 
   /**
    * Delay in seconds
