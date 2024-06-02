@@ -8,6 +8,8 @@ import haxe.ui.containers.Grid;
 import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
+import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notekind.NoteKindManager;
 
@@ -78,9 +80,33 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
       if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
       {
+        // Edit the note data of any selected notes.
+        var noteSprites:Array<ChartEditorNoteSprite> = chartEditorState.renderedNotes.members.copy();
+        var holdNoteSprites:Array<ChartEditorHoldNoteSprite> = chartEditorState.renderedHoldNotes.members.copy();
         for (note in chartEditorState.currentNoteSelection)
         {
-          // Edit the note data of any selected notes.
+          // update note sprites
+          for (noteSprite in noteSprites)
+          {
+            if (noteSprite.noteData == note)
+            {
+              noteSprite.noteStyle = NoteKindManager.getNoteStyleId(chartEditorState.noteKindToPlace) ?? chartEditorState.currentSongNoteStyle;
+              noteSprites.remove(noteSprite);
+              break;
+            }
+          }
+
+          // update hold note sprites
+          for (holdNoteSprite in holdNoteSprites)
+          {
+            if (holdNoteSprite.noteData == note)
+            {
+              holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(chartEditorState.noteKindToPlace) ?? chartEditorState.currentSongNoteStyle;
+              holdNoteSprites.remove(holdNoteSprite);
+              break;
+            }
+          }
+
           note.kind = chartEditorState.noteKindToPlace;
           note.params = ChartEditorState.cloneNoteParams(chartEditorState.noteParamsToPlace);
 

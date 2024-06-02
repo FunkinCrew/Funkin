@@ -101,7 +101,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   function updateHoldNoteGraphic():Void
   {
     var bruhStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle);
-    this.setupHoldNoteGraphic(bruhStyle);
+    setupHoldNoteGraphic(bruhStyle);
 
     zoom = 1.0;
     zoom *= bruhStyle.fetchHoldNoteScale();
