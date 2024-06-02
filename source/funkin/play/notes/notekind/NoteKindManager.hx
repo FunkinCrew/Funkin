@@ -73,4 +73,14 @@ class NoteKindManager
 
     return NoteStyleRegistry.instance.fetchEntry(noteStyleId);
   }
+
+  /**
+   * Retrieve the note style id from the given note kind
+   * @param noteKind note kind name
+   * @return Null<String>
+   */
+  public static function getNoteStyleId(noteKind:String):Null<String>
+  {
+    return noteKinds.get(noteKind)?.noteStyleId;
+  }
 }

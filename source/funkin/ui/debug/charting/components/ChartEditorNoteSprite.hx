@@ -212,17 +212,14 @@ class ChartEditorNoteSprite extends FlxSprite
 
   function get_noteStyle():Null<String>
   {
-    if (this.parentState.currentCustomNoteKindStyle != null)
-    {
-      return this.parentState.currentCustomNoteKindStyle;
-    }
+    return this.noteStyle ?? this.parentState.currentSongNoteStyle;
+  }
 
-    if (NOTE_STYLES.contains(this.parentState.currentSongNoteStyle))
-    {
-      return this.parentState.currentSongNoteStyle;
-    }
-
-    return 'funkin';
+  function set_noteStyle(value:Null<String>):Null<String>
+  {
+    this.noteStyle = value;
+    this.playNoteAnimation();
+    return value;
   }
 
   @:nullSafety(Off)

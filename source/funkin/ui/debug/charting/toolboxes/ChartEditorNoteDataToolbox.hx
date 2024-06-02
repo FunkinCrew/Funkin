@@ -116,9 +116,6 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       var customKind:Null<String> = event?.target?.text;
       chartEditorState.noteKindToPlace = customKind;
 
-      var noteStyle:Null<NoteStyle> = NoteKindManager.getNoteStyle(customKind);
-      chartEditorState.currentCustomNoteKindStyle = noteStyle?.id;
-
       if (chartEditorState.currentEventSelection.length > 0)
       {
         // Edit the note data of any selected notes.

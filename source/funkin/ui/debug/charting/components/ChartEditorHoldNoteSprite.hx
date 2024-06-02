@@ -97,6 +97,22 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     setup();
   }
 
+  @:nullSafety(Off)
+  function updateHoldNoteGraphic():Void
+  {
+    var bruhStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle);
+    this.setupHoldNoteGraphic(bruhStyle);
+
+    zoom = 1.0;
+    zoom *= bruhStyle.fetchHoldNoteScale();
+    zoom *= 0.7;
+    zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
+
+    flipY = false;
+
+    setup();
+  }
+
   public override function updateHitbox():Void
   {
     // Expand the clickable hitbox to the full column width, then nudge to the left to re-center it.
