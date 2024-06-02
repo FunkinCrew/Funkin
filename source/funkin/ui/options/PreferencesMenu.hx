@@ -11,6 +11,9 @@ import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.Backspace;
 import flixel.util.FlxColor;
+import flixel.math.FlxPoint;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 
 class PreferencesMenu extends Page
 {
@@ -115,6 +118,23 @@ class PreferencesMenu extends Page
       else
         daItem.x = 120;
     });
+
+    // TODO: Clean this - zack
+    if (MusicBeatState.isTouch)
+    {
+      // I have tried EVERY. SINGLE. METHOD. UNDER THE MOON. This is the only way it can work, I've tried everything trust me.
+      var daPos = new FlxPoint(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130));
+      var canTouch = items.enabled && !items.busy && !Preferences.legacyControls;
+      if (canTouch && items.selectedItem.overlapsPoint(daPos, false, menuCamera) && TouchUtil.justReleased && !SwipeUtil.swipeAny)
+      {
+        items.accept();
+      }
+    }
+  }
+
+  override function set_currentName(value:OptionsState.PageName):OptionsState.PageName
+  {
+    return items.currentPage = currentName = value;
   }
 }
 

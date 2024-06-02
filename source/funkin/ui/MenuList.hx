@@ -9,6 +9,7 @@ import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
+import funkin.ui.options.OptionsState.PageName;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
@@ -40,6 +41,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   /** touchBuddy over here helps with the touch input! Because overlap for touch does not account for the graphic, only the hitbox.
    * And, `FlxG.pixelPerfectOverlap` uses two FlxSprites, so we can't use the `FlxTouch` object */
   public var touchBuddy:FlxSprite;
+
+  /** Only used in Options, basically acts the same as OptionsState's `currentName`, it's the current name of the current page in OptionsState.
+   * Why is it needed? Because touch control's a bitch. Thats why. */
+  public var currentPage:PageName;
 
   public function new(navControls:NavControls = Vertical, ?wrapMode:WrapMode)
   {
@@ -95,17 +100,17 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     var newIndex = switch (navControls)
     {
-      case Vertical: (!Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown,
+      case Vertical: (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown,
           wrapY) : navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Horizontal: (!Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
+      case Horizontal: (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
           wrapX) : navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-      case Both: (!Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft || SwipeUtil.swipeUp, SwipeUtil.swipeRight || SwipeUtil.swipeDown,
+      case Both: (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft || SwipeUtil.swipeUp, SwipeUtil.swipeRight || SwipeUtil.swipeDown,
           !wrapMode.match(None)) : navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
 
-      case Columns(num): (!Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX,
+      case Columns(num): (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX,
           SwipeUtil.swipeUp, SwipeUtil.swipeDown,
           wrapY) : navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Rows(num): (!Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY,
+      case Rows(num): (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY,
           SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
           wrapX) : navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
     }
@@ -122,11 +127,13 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     // TODO: Clean this? Does it need to be cleaned? isMainMenuState could be moved to new() instead perhaps.
 
     // conditions for touch input, might need refining? Don't forget after proposal.
-    var canTouch = MusicBeatState.isTouch && !Preferences.legacyControls;
+    var canTouch = MusicBeatState.isTouch && !funkin.Preferences.legacyControls;
     var isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
     var isPixelOverlap = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
-    var isRegularOverlap = TouchUtil.overlapsComplex(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
-    var isInputOverlap = ((isMainMenuState && isPixelOverlap) || isRegularOverlap) && canTouch;
+    var isRegularOverlap = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
+    var pageCheck = currentPage != null && currentPage != Preferences;
+    var isInputOverlap = ((isMainMenuState && isPixelOverlap) || (isRegularOverlap && !isMainMenuState && pageCheck)) && canTouch;
+
     /** The reason why we're using pixelOverlap for MainMenuState is due to the offsets,
      * overlaps checks for the sprite's hitbox, not the graphic itself.
      * pixelOverlap however, does that. */

@@ -118,6 +118,7 @@ class OptionsState extends MusicBeatState
     // re-initalie virtual pad input
     ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
     ControlsHandler.setupVirtualPad(controls, virtualPad, LEFT_FULL, A_B, trackedInputsVirtualPad);
+    // ^^^ Since Controls can not be accessed in mobile, should we get rid of this?
   }
 
   function exitToMainMenu()
@@ -137,11 +138,15 @@ class Page extends FlxGroup
   public var canExit = true;
 
   var controls(get, never):Controls;
-
-  var backButton:Backspace;
+  var currentName(default, set):PageName = Options;
 
   inline function get_controls()
     return PlayerSettings.player1.controls;
+
+  function set_currentName(value:PageName):PageName
+    return currentName = value;
+
+  var backButton:Backspace;
 
   var subState:FlxSubState;
 
@@ -164,13 +169,12 @@ class Page extends FlxGroup
 
   function updateEnabled(elapsed:Float)
   {
-    if (canExit
-      && (controls.BACK
-        || (backButton != null
-          && TouchUtil.overlapsComplex(backButton)
-          && TouchUtil.justPressed
-          && MusicBeatState.isTouch
-          && !funkin.Preferences.legacyControls)))
+    var canTouch = TouchUtil.overlapsComplex(backButton)
+      && TouchUtil.justPressed
+      && MusicBeatState.isTouch
+      && !funkin.Preferences.legacyControls;
+    // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
+    if (canExit && (controls.BACK || (backButton != null && canTouch)))
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();

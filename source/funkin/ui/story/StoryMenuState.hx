@@ -228,7 +228,7 @@ class StoryMenuState extends MusicBeatState
 
     addVirtualPad(LEFT_FULL, A_B);
 
-    var backButton = new Backspace(986, 609);
+    backButton = new Backspace(986, 609);
     add(backButton);
   }
 
@@ -387,7 +387,9 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    if (((controls.BACK) || (TouchUtil.overlaps(backButton) && TouchUtil.justPressed && canTouch)) && !exitingMenu && !selectedLevel)
+    if (((controls.BACK) || (TouchUtil.overlaps(backButton) && TouchUtil.justReleased && !SwipeUtil.swipeAny))
+      && !exitingMenu
+      && !selectedLevel)
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exitingMenu = true;
