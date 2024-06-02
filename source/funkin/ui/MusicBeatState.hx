@@ -84,12 +84,13 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
       removeVirtualPad();
     }
 
-    virtualPad = new FunkinVirtualPad(direction, action);
+    virtualPad = new FunkinVirtualPad(FlxG.onMobile ? direction : NONE, FlxG.onMobile ? action : NONE);
 
     ControlsHandler.setupVirtualPad(controls, virtualPad, direction, action, trackedInputsVirtualPad);
 
     virtualPad.visible = (Preferences.legacyControls) ? visible : false;
-    add(virtualPad);
+
+    if (FlxG.onMobile) add(virtualPad);
   }
 
   public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
@@ -135,7 +136,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     ControlsHandler.setupHitbox(controls, hitbox, trackedInputsHitbox);
 
     hitbox.visible = visible;
-    add(hitbox);
+    if (FlxG.onMobile) add(hitbox);
 
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
@@ -221,16 +222,16 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
 
-    if(FlxG.onMobile)
+    if (FlxG.onMobile)
     {
       if (FlxG.keys.justPressed.ANY && isTouch) isTouch = false;
       if (TouchUtil.justPressed && !isTouch) isTouch = true;
 
       if (Std.isOfType(FlxG.state, funkin.play.PlayState))
       {
-          var useDefault:Bool = Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown");
-          if (virtualPad != null) virtualPad.visible = useDefault ? virtualPad.visible : isTouch;
-          if (hitbox != null) hitbox.visible = useDefault ? hitbox.visible : isTouch;
+        var useDefault:Bool = Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown");
+        if (virtualPad != null) virtualPad.visible = useDefault ? virtualPad.visible : isTouch;
+        if (hitbox != null) hitbox.visible = useDefault ? hitbox.visible : isTouch;
       }
       else
       {

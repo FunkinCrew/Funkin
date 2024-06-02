@@ -10,9 +10,6 @@ import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
-#if android
-import funkin.mobile.polymod.AndroidDocumentZipFileSystem;
-#end
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
@@ -58,11 +55,8 @@ class PolymodHandler
 
   public static var loadedModIds:Array<String> = [];
 
-  #if android
-  static var modFileSystem:Null<AndroidDocumentZipFileSystem> = null;
-  #else // Use SysZipFileSystem on native and MemoryZipFilesystem on web.
+  // Use SysZipFileSystem on desktop and MemoryZipFilesystem on web.
   static var modFileSystem:Null<ZipFileSystem> = null;
-  #end
 
   /**
    * If the mods folder doesn't exist, create it.
@@ -220,7 +214,6 @@ class PolymodHandler
     #end
   }
 
-  #if !android
   static function buildFileSystem():polymod.fs.ZipFileSystem
   {
     polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
@@ -230,17 +223,6 @@ class PolymodHandler
         autoScan: true
       });
   }
-  #else
-  static function buildFileSystem():AndroidDocumentZipFileSystem
-  {
-    polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
-    return new AndroidDocumentZipFileSystem(
-      {
-        modRoot: MOD_FOLDER,
-        autoScan: true
-      });
-  }
-  #end
 
   static function buildImports():Void
   {

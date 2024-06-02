@@ -75,12 +75,13 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
       removeVirtualPad();
     }
 
-    virtualPad = new FunkinVirtualPad(direction, action);
+    virtualPad = new FunkinVirtualPad(FlxG.onMobile ? direction : NONE, FlxG.onMobile ? action : NONE);
 
     ControlsHandler.setupVirtualPad(controls, virtualPad, direction, action, trackedInputsVirtualPad);
 
     virtualPad.visible = (Preferences.legacyControls) ? visible : false;
-    add(virtualPad);
+
+    if (FlxG.onMobile) add(virtualPad);
   }
 
   public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
@@ -125,8 +126,8 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     ControlsHandler.setupHitbox(controls, hitbox, trackedInputsHitbox);
 
-    hitbox.visible = (Preferences.legacyControls) ? visible : false;
-    add(hitbox);
+    hitbox.visible = visible;
+    if (FlxG.onMobile) add(hitbox);
 
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
