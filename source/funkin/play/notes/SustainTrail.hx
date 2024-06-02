@@ -150,7 +150,7 @@ class SustainTrail extends FlxSprite
     return output;
   }
 
-  function getScrollSpeed():Float
+  function getBaseScrollSpeed():Float
   {
     return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
   }
