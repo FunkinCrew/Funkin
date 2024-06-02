@@ -712,12 +712,6 @@ class FreeplayState extends MusicBeatSubState
     // If curSelected is 0, the result will be null and fall back to the rememberedSongId.
     rememberedSongId = grpCapsules.members[curSelected]?.songData?.songId ?? rememberedSongId;
 
-    if (fromResultsParams != null)
-    {
-      rememberedSongId = fromResultsParams.songId;
-      rememberedDifficulty = fromResultsParams.difficultyId;
-    }
-
     for (cap in grpCapsules.members)
     {
       cap.songText.resetText();
@@ -827,6 +821,14 @@ class FreeplayState extends MusicBeatSubState
   function rankAnimStart(fromResults:Null<FromResultsParams>):Void
   {
     busy = true;
+
+    if (fromResults != null)
+    {
+      rememberedSongId = fromResults.songId;
+      rememberedDifficulty = fromResults.difficultyId;
+      changeSelection();
+      changeDiff();
+    }
 
     dj.fistPump();
     // rankCamera.fade(FlxColor.BLACK, 0.5, true);
