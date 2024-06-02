@@ -3144,7 +3144,7 @@ class PlayState extends MusicBeatSubState
           },
         isNewHighscore: isNewHighscore
       });
-    res.camera = camHUD;
+    this.persistentDraw = false;
     openSubState(res);
   }
 

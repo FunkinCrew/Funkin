@@ -219,9 +219,9 @@ class InitState extends FlxState
     FlxG.switchState(() -> new funkin.play.ResultState(
       {
         storyMode: false,
-        title: "CUM SONG",
+        title: "Cum Song Erect by Kawai Sprite",
         songId: "cum",
-        difficultyId: "hard",
+        difficultyId: "nightmare",
         isNewHighscore: true,
         scoreData:
           {

@@ -111,6 +111,7 @@ class FreeplayState extends MusicBeatSubState
 
   /**
    * For the audio preview, the duration of the fade-out effect.
+   *
    */
   public static final FADE_OUT_DURATION:Float = 0.25;
 
@@ -733,12 +734,6 @@ class FreeplayState extends MusicBeatSubState
     // If curSelected is 0, the result will be null and fall back to the rememberedSongId.
     rememberedSongId = grpCapsules.members[curSelected]?.songData?.songId ?? rememberedSongId;
 
-    if (fromResultsParams != null)
-    {
-      rememberedSongId = fromResultsParams.songId;
-      rememberedDifficulty = fromResultsParams.difficultyId;
-    }
-
     for (cap in grpCapsules.members)
     {
       cap.songText.resetText();
@@ -853,10 +848,18 @@ class FreeplayState extends MusicBeatSubState
     busy = true;
     // grpCapsules.members[curSelected].forcePosition();
 
+    if (fromResults != null)
+    {
+      rememberedSongId = fromResults.songId;
+      rememberedDifficulty = fromResults.difficultyId;
+      changeSelection();
+      changeDiff();
+    }
+
     dj.fistPump();
     // rankCamera.fade(FlxColor.BLACK, 0.5, true);
     rankCamera.fade(0xFF000000, 0.5, true, null, true);
-    FlxG.sound.music.volume = 0;
+    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     rankBg.alpha = 1;
 
     if (fromResults?.oldRank != null)
@@ -1843,28 +1846,24 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
-        if (!prepForNewRank)
-        {
-          var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
-          // TODO: Stream the instrumental of the selected song?
-          FunkinSound.playMusic(daSongCapsule.songData.songId,
-            {
-              startingVolume: 0.0,
-              overrideExisting: true,
-              restartTrack: false,
-              pathsFunction: INST,
-              suffix: potentiallyErect,
-              partialParams:
-                {
-                  loadPartial: true,
-                  start: 0,
-                  end: 0.1
-                },
-              onLoad: function() {
-                FlxG.sound.music.fadeIn(2, 0, 0.4);
-              }
-            });
-        }
+        var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
+        FunkinSound.playMusic(daSongCapsule.songData.songId,
+          {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: false,
+            pathsFunction: INST,
+            suffix: potentiallyErect,
+            partialParams:
+              {
+                loadPartial: true,
+                start: 0.05,
+                end: 0.25
+              },
+            onLoad: function() {
+              FlxG.sound.music.fadeIn(2, 0, 0.4);
+            }
+          });
       }
       grpCapsules.members[curSelected].selected = true;
     }
