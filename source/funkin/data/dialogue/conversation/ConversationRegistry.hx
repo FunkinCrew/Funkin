@@ -1,6 +1,7 @@
 package funkin.data.dialogue.conversation;
 
 import funkin.play.cutscene.dialogue.Conversation;
+import funkin.data.dialogue.conversation.ConversationData;
 import funkin.play.cutscene.dialogue.ScriptedConversation;
 
 class ConversationRegistry extends BaseRegistry<Conversation, ConversationData>

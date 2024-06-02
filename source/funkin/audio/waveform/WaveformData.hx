@@ -1,5 +1,7 @@
 package funkin.audio.waveform;
 
+import funkin.util.MathUtil;
+
 @:nullSafety
 class WaveformData
 {

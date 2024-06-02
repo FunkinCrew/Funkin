@@ -1,9 +1,13 @@
 package funkin.audio.visualize;
 
+import funkin.audio.visualize.dsp.FFT;
 import flixel.FlxSprite;
+import flixel.addons.plugin.taskManager.FlxTask;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
+import funkin.util.MathUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
 import funkin.vis.audioclip.frontends.LimeAudioClip;
 
