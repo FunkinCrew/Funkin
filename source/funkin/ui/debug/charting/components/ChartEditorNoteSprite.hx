@@ -70,20 +70,26 @@ class ChartEditorNoteSprite extends FlxSprite
 
     this.parentState = parent;
 
+    var entries:Array<String> = NoteStyleRegistry.instance.listEntryIds();
+
     if (noteFrameCollection == null)
     {
       buildEmptyFrameCollection();
 
-      addNoteStyleFrames(fetchNoteStyle('funkin'));
-      addNoteStyleFrames(fetchNoteStyle('pixel'));
+      for (entry in entries)
+      {
+        addNoteStyleFrames(fetchNoteStyle(entry));
+      }
     }
 
     if (noteFrameCollection == null) throw 'ERROR: Could not initialize note sprite animations.';
 
     this.frames = noteFrameCollection;
 
-    addNoteStyleAnimations(fetchNoteStyle('funkin'));
-    addNoteStyleAnimations(fetchNoteStyle('pixel'));
+    for (entry in entries)
+    {
+      addNoteStyleAnimations(fetchNoteStyle(entry));
+    }
   }
 
   static var noteFrameCollection:Null<FlxFramesCollection> = null;
