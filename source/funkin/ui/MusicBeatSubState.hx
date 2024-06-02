@@ -125,7 +125,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     ControlsHandler.setupHitbox(controls, hitbox, trackedInputsHitbox);
 
-    hitbox.visible = visible;
+    hitbox.visible = (Preferences.legacyControls) ? visible : false;
     add(hitbox);
 
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
@@ -218,9 +218,9 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
       if (Std.isOfType(FlxG.state, funkin.play.PlayState))
       {
-          var useDefault:Bool = Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown");
-          if (virtualPad != null) virtualPad.visible = useDefault ? virtualPad.visible : isTouch;
-          if (hitbox != null) hitbox.visible = useDefault ? hitbox.visible : isTouch;
+        var useDefault:Bool = Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown");
+        if (virtualPad != null) virtualPad.visible = useDefault ? virtualPad.visible : isTouch;
+        if (hitbox != null) hitbox.visible = useDefault ? hitbox.visible : isTouch;
       }
       else
       {

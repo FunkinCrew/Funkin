@@ -98,21 +98,31 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var wrapX = wrapMode.match(Horizontal | Both);
     var wrapY = wrapMode.match(Vertical | Both);
 
-    var newIndex = switch (navControls)
-    {
-      case Vertical: (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown,
-          wrapY) : navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Horizontal: (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
-          wrapX) : navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-      case Both: (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navList(SwipeUtil.swipeLeft || SwipeUtil.swipeUp, SwipeUtil.swipeRight || SwipeUtil.swipeDown,
-          !wrapMode.match(None)) : navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
+    var newIndex = 0;
 
-      case Columns(num): (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX,
-          SwipeUtil.swipeUp, SwipeUtil.swipeDown,
-          wrapY) : navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Rows(num): (!funkin.Preferences.legacyControls && MusicBeatState.isTouch) ? navGrid(num, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY,
-          SwipeUtil.swipeLeft, SwipeUtil.swipeRight,
-          wrapX) : navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
+    if (!funkin.Preferences.legacyControls && MusicBeatState.isTouch)
+    {
+      newIndex = switch (navControls)
+      {
+        case Vertical: navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY);
+        case Horizontal: navList(SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX);
+        case Both: navList(SwipeUtil.swipeLeft || SwipeUtil.swipeUp, SwipeUtil.swipeRight || SwipeUtil.swipeDown, !wrapMode.match(None));
+
+        case Columns(num): navGrid(num, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY);
+        case Rows(num): navGrid(num, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX);
+      };
+    }
+    else
+    {
+      newIndex = switch (navControls)
+      {
+        case Vertical: navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
+        case Horizontal: navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
+        case Both: navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
+
+        case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
+        case Rows(num): navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
+      };
     }
 
     if (newIndex != selectedIndex)

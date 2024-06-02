@@ -691,11 +691,10 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
-    #if !android
-    // Initialize the pause button for non-android
+    // Initialize the pause button for mobile
+    // Since newer android phones hide their back-button, this will also be needed to prevent accidental missing.
     addVirtualPad(NONE, P);
     addVirtualPadCamera(false);
-    #end
 
     // Initialize the hitbox for mobile controls
     addHitbox(false);
@@ -942,7 +941,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
+    if ((controls.PAUSE || virtualPad.buttonP.justPressed || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
@@ -1980,7 +1979,10 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
-    hitbox.visible = #if !android virtualPad.visible = #end true;
+    // Only "activates" when there's a touch device.
+    // Still contemplating on whether or not to support ALL touch devices, or just mobile. Might need to talk about this with Eric. -Zack
+    hitbox.visible = virtualPad.visible = MusicBeatSubState.isTouch;
+    // Virtual pad is the pause button!!
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
@@ -2807,7 +2809,8 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
-    hitbox.visible = #if !android virtualPad.visible = #end false;
+    hitbox.visible = #if !android virtualPad.visible = #end
+    false;
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);

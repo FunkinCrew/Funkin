@@ -119,13 +119,12 @@ class PreferencesMenu extends Page
         daItem.x = 120;
     });
 
-    // TODO: Clean this - zack
-    if (MusicBeatState.isTouch)
+    if (MusicBeatState.isTouch && TouchUtil.touch != null)
     {
       // I have tried EVERY. SINGLE. METHOD. UNDER THE MOON. This is the only way it can work, I've tried everything trust me.
-      var daPos = new FlxPoint(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130));
-      var canTouch = items.enabled && !items.busy && !Preferences.legacyControls;
-      if (canTouch && items.selectedItem.overlapsPoint(daPos, false, menuCamera) && TouchUtil.justReleased && !SwipeUtil.swipeAny)
+      var thePosToCheck = new FlxPoint(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130));
+      var canTouch = items.enabled && !items.busy && !Preferences.legacyControls && TouchUtil.justReleased && !SwipeUtil.swipeAny;
+      if (canTouch && items.selectedItem.overlapsPoint(thePosToCheck, false, menuCamera))
       {
         items.accept();
       }
