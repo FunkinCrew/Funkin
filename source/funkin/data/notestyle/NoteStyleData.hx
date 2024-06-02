@@ -157,6 +157,15 @@ typedef NoteStyleData_NoteSplash =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  var left1:UnnamedAnimationData;
+  var left2:UnnamedAnimationData;
+  var down1:UnnamedAnimationData;
+  var down2:UnnamedAnimationData;
+  var up1:UnnamedAnimationData;
+  var up2:UnnamedAnimationData;
+  var right1:UnnamedAnimationData;
+  var right2:UnnamedAnimationData;
 };
 
 typedef NoteStyleData_HoldNoteCover =
@@ -168,4 +177,17 @@ typedef NoteStyleData_HoldNoteCover =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  var leftStart:UnnamedAnimationData;
+  var leftContinue:UnnamedAnimationData;
+  var leftEnd:UnnamedAnimationData;
+  var downStart:UnnamedAnimationData;
+  var downContinue:UnnamedAnimationData;
+  var downEnd:UnnamedAnimationData;
+  var upStart:UnnamedAnimationData;
+  var upContinue:UnnamedAnimationData;
+  var upEnd:UnnamedAnimationData;
+  var rightStart:UnnamedAnimationData;
+  var rightContinue:UnnamedAnimationData;
+  var rightEnd:UnnamedAnimationData;
 };

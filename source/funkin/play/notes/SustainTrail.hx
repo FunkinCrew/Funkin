@@ -87,6 +87,11 @@ class SustainTrail extends FlxSprite
 
   public var isPixel:Bool;
 
+  /**
+   * Offsets the position of the SustainTrail.
+   */
+  public var offsets:Array<Float> = [0, 0];
+
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
 
@@ -108,7 +113,8 @@ class SustainTrail extends FlxSprite
       endOffset = bottomClip = 1;
       antialiasing = false;
     }
-    zoom *= noteStyle.fetchHoldNoteScale();
+    zoom *= noteStyle.getHoldNoteScale();
+    offsets = noteStyle.getHoldNoteOffsets();
 
     // BASIC SETUP
     this.sustainLength = sustainLength;
@@ -133,6 +139,14 @@ class SustainTrail extends FlxSprite
     indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
+  }
+
+  override function getScreenPosition(?result:flixel.math.FlxPoint, ?camera:flixel.FlxCamera):flixel.math.FlxPoint
+  {
+    var output = super.getScreenPosition(result, camera);
+    output.x += offsets[0];
+    output.y += offsets[1];
+    return output;
   }
 
   function getScrollSpeed():Float
