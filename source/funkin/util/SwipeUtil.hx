@@ -61,7 +61,7 @@ class SwipeUtil
   {
     for (swipe in FlxG.swipes)
     {
-      if (swipe.degrees > 45 && swipe.degrees < 135 && swipe.distance > 20)
+      if (swipe.degrees > -135 && swipe.degrees < -45 && swipe.distance > 20)
       {
         return true;
       }
@@ -115,7 +115,7 @@ class SwipeUtil
   {
     for (swipe in FlxG.swipes)
     {
-      if (swipe.degrees > -135 && swipe.degrees < -45 && swipe.distance > 20)
+      if (swipe.degrees > 45 && swipe.degrees < 135 && swipe.distance > 20)
       {
         return true;
       }
