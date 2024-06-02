@@ -79,8 +79,6 @@ class AttractState extends MusicBeatState
       {
         if (vid.load(bytes))
           vid.play();
-
-        onVideoStarted.dispatch();
       });
     }
     else

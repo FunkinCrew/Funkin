@@ -165,9 +165,11 @@ class VideoCutscene
       openfl.Assets.loadBytes(filePath).onComplete(function(bytes:openfl.utils.ByteArray):Void
       {
         if (vid.load(bytes))
+        {
           vid.play();
 
-        onVideoStarted.dispatch();
+          onVideoStarted.dispatch();
+        }
       });
     }
     else
