@@ -9,6 +9,7 @@ import polymod.Polymod.ModMetadata;
 import polymod.util.zip.ZipParser;
 import polymod.util.Util;
 import thx.semver.VersionRule;
+import polymod.Polymod;
 
 using StringTools;
 

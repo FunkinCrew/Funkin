@@ -942,7 +942,10 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
+    if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause)
+      && isInCountdown
+      && mayPauseGame
+      && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
@@ -1980,7 +1983,8 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
-    hitbox.visible = #if !android virtualPad.visible = #end true;
+    hitbox.visible = #if !android virtualPad.visible = #end
+    true;
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
@@ -2807,7 +2811,8 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
-    hitbox.visible = #if !android virtualPad.visible = #end false;
+    hitbox.visible = #if !android virtualPad.visible = #end
+    false;
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);

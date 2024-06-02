@@ -5,6 +5,7 @@ import android.DocumentFileUtil;
 import haxe.io.Bytes;
 import polymod.fs.PolymodFileSystem;
 import polymod.fs.SysFileSystem;
+import polymod.Polymod;
 
 /**
  * Represents a custom file system implementation tailored for the Polymod framework on Android.
