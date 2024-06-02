@@ -655,7 +655,7 @@ class FreeplayState extends MusicBeatSubState
       cardGlow.visible = true;
       FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
 
-      if (prepForNewRank == true)
+      if (prepForNewRank)
       {
         rankAnimStart(fromResultsParams);
       }
@@ -686,7 +686,7 @@ class FreeplayState extends MusicBeatSubState
     rankBg.cameras = [rankCamera];
     rankBg.alpha = 0;
 
-    if (prepForNewRank == true)
+    if (prepForNewRank)
     {
       rankCamera.fade(0xFF000000, 0, false, null, true);
     }
@@ -782,10 +782,8 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.hsvShader = hsvShader;
 
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
-
-      funnyMenu.forcePosition();
-
       funnyMenu.checkClip();
+      funnyMenu.forcePosition();
 
       grpCapsules.add(funnyMenu);
     }
@@ -1223,6 +1221,8 @@ class FreeplayState extends MusicBeatSubState
           grpCapsules.members[realShit].favIcon.visible = true;
           grpCapsules.members[realShit].favIcon.animation.play('fav');
           FunkinSound.playOnce(Paths.sound('fav'), 1);
+          grpCapsules.members[realShit].checkClip();
+          grpCapsules.members[realShit].selected = grpCapsules.members[realShit].selected; // set selected again, so it can run it's getter function to initialize movement
           busy = true;
 
           grpCapsules.members[realShit].doLerp = false;
@@ -1244,6 +1244,7 @@ class FreeplayState extends MusicBeatSubState
           FunkinSound.playOnce(Paths.sound('unfav'), 1);
           new FlxTimer().start(0.2, _ -> {
             grpCapsules.members[realShit].favIcon.visible = false;
+            grpCapsules.members[realShit].checkClip();
           });
 
           busy = true;

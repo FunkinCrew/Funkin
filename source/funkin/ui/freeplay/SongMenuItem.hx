@@ -266,7 +266,7 @@ class SongMenuItem extends FlxSpriteGroup
     var clipType:Int = 0;
 
     if (ranking.visible == true) clipType += 1;
-    if (favIcon.visible == true) clipType += 1;
+    if (favIcon.visible == true) clipType = 2;
     switch (clipType)
     {
       case 2:
