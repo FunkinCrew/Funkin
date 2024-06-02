@@ -123,6 +123,7 @@ class ResultState extends MusicBeatSubState
     FlxG.cameras.add(cameraEverything, false);
 
     FlxG.cameras.setDefaultDrawTarget(cameraEverything, true);
+    this.camera = cameraEverything;
 
     // Reset the camera zoom on the results screen.
     FlxG.camera.zoom = 1.0;
