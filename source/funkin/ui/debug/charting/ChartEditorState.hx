@@ -1663,6 +1663,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return currentSongMetadata.playData.characters.instrumental = value;
   }
 
+  var currentCustomNoteKindStyle:Null<String>;
+
   /**
    * HAXEUI COMPONENTS
    */
