@@ -60,34 +60,30 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
       if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
       {
-        // Edit the note data of any selected notes.
-        var noteSprites:Array<ChartEditorNoteSprite> = chartEditorState.renderedNotes.members.copy();
-        var holdNoteSprites:Array<ChartEditorHoldNoteSprite> = chartEditorState.renderedHoldNotes.members.copy();
         for (note in chartEditorState.currentNoteSelection)
         {
+          // Edit the note data of any selected notes.
+          note.kind = chartEditorState.noteKindToPlace;
+
           // update note sprites
-          for (noteSprite in noteSprites)
+          for (noteSprite in chartEditorState.renderedNotes.members)
           {
             if (noteSprite.noteData == note)
             {
-              noteSprite.noteStyle = NoteKindManager.getNoteStyleId(chartEditorState.noteKindToPlace) ?? chartEditorState.currentSongNoteStyle;
-              noteSprites.remove(noteSprite);
+              noteSprite.noteStyle = NoteKindManager.getNoteStyleId(note.kind) ?? chartEditorState.currentSongNoteStyle;
               break;
             }
           }
 
           // update hold note sprites
-          for (holdNoteSprite in holdNoteSprites)
+          for (holdNoteSprite in chartEditorState.renderedHoldNotes.members)
           {
             if (holdNoteSprite.noteData == note)
             {
-              holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(chartEditorState.noteKindToPlace) ?? chartEditorState.currentSongNoteStyle;
-              holdNoteSprites.remove(holdNoteSprite);
+              holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(note.kind) ?? chartEditorState.currentSongNoteStyle;
               break;
             }
           }
-
-          note.kind = chartEditorState.noteKindToPlace;
         }
         chartEditorState.saveDataDirty = true;
         chartEditorState.noteDisplayDirty = true;

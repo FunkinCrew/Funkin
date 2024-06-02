@@ -73,6 +73,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     flipY = false;
 
     setup();
+
+    triggerRedraw();
   }
 
   public override function updateHitbox():Void
