@@ -22,7 +22,5 @@ class Backspace extends FlxSprite
     animation.play("idle");
     color = theColor;
     cameras = [backButtonCam];
-
-    active = FlxG.onMobile && !Preferences.legacyControls && MusicBeatState.isTouch;
   }
 }
