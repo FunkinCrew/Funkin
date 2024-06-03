@@ -88,7 +88,7 @@ class GameOverSubState extends MusicBeatSubState
 
   var transparent:Bool;
 
-  var backButton:Backspace;
+  var backButton:Backspace = new Backspace(986, 609, FlxColor.WHITE);
 
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
@@ -163,8 +163,6 @@ class GameOverSubState extends MusicBeatSubState
 
     addVirtualPad(NONE, A_B);
     addVirtualPadCamera(false);
-
-    backButton = new Backspace(986, 609, FlxColor.WHITE);
     add(backButton);
   }
 
