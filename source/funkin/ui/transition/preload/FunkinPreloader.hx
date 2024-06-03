@@ -169,7 +169,7 @@ class FunkinPreloader extends FlxBasePreloader
 
     var amountOfPieces:Int = 16;
     progressBarPieces = [];
-    var maxBarWidth = this._width - BAR_PADDING * 2 * ratio;
+    var maxBarWidth = this._width - BAR_PADDING * 2;
     var pieceWidth = maxBarWidth / amountOfPieces;
     var pieceGap:Int = 8;
 
