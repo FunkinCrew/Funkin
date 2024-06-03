@@ -5,6 +5,7 @@ import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import funkin.util.TouchUtil;
 
 /**
  * The state used to display the credits scroll.
@@ -184,7 +185,7 @@ class CreditsState extends MusicBeatState
       }
     }
 
-    if (controls.BACK || hasEnded())
+    if (controls.BACK || hasEnded() || TouchUtil.justPressed && MusicBeatState.canTouch && !TouchUtil.overlaps(backButton))
     {
       exit();
     }
