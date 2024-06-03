@@ -26,7 +26,6 @@ import funkin.ui.MenuList;
 import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
-import funkin.mobile.Backspace;
 import funkin.util.WindowUtil;
 import funkin.util.TouchUtil;
 #if discord_rpc
@@ -43,8 +42,6 @@ class MainMenuState extends MusicBeatState
 
   var magenta:FlxSprite;
   var camFollow:FlxObject;
-
-  var backButton:Backspace;
 
   override function create():Void
   {
@@ -159,8 +156,7 @@ class MainMenuState extends MusicBeatState
 
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
-    backButton = new Backspace(49, 568, FlxColor.BLACK);
-    add(backButton);
+    addBackButton(FlxG.width * 0.03, FlxG.height * 0.79, FlxColor.BLACK);
 
     super.create();
 
@@ -360,7 +356,7 @@ class MainMenuState extends MusicBeatState
     if (_exiting) menuItems.enabled = false;
 
     if (((controls.BACK)
-      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed && !Preferences.legacyControls && MusicBeatState.isTouch))
+      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed && MusicBeatState.canTouch))
       && menuItems.enabled
       && !menuItems.busy)
     {
