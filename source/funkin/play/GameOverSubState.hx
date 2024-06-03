@@ -15,7 +15,6 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
-import funkin.mobile.Backspace;
 import openfl.utils.Assets;
 
 /**
@@ -87,8 +86,6 @@ class GameOverSubState extends MusicBeatSubState
   var mustNotExit:Bool = false;
 
   var transparent:Bool;
-
-  var backButton:Null<Backspace> = null;
 
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
@@ -163,12 +160,7 @@ class GameOverSubState extends MusicBeatSubState
 
     addVirtualPad(NONE, A_B);
     addVirtualPadCamera(false);
-
-    if (FlxG.onMobile)
-    {
-      backButton = new Backspace(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE)
-      add(backButton);
-    }
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE);
   }
 
   @:nullSafety(Off)
