@@ -14,7 +14,7 @@ class Backspace extends FlxSprite
   {
     super(xPos, yPos);
     backButtonCam = new FunkinCamera('backButton');
-    backButtonCam.bgColor.alpha = 0;
+    backButtonCam.bgColor.alpha = 0.00001;
     FlxG.cameras.add(backButtonCam, false);
 
     frames = Paths.getSparrowAtlas("backspace");
