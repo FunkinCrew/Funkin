@@ -909,7 +909,7 @@ class FreeplayState extends MusicBeatSubState
       changeDiff(1);
       generateSongList(currentFilter, true);
     }
-    if (TouchUtil.justReleased && canTouch)
+    if (TouchUtil.justReleased)
     {
       diffSelRight.setPress(false);
       diffSelLeft.setPress(false);
