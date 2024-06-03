@@ -143,14 +143,14 @@ class ResultState extends MusicBeatSubState
     bgFlash.scrollFactor.set();
     bgFlash.visible = false;
     bgFlash.zIndex = 20;
-    //bgFlash.cameras = [cameraBG];
+    // bgFlash.cameras = [cameraBG];
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
     var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15, -180, 'resultScreen/soundSystem');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
-    new FlxTimer().start(8/24, _ -> {
+    new FlxTimer().start(8 / 24, _ -> {
       soundSystem.animation.play("idle");
       soundSystem.visible = true;
     });
@@ -168,12 +168,11 @@ class ResultState extends MusicBeatSubState
         heartsPerfect.anim.onComplete = () -> {
           if (heartsPerfect != null)
           {
-            //bfPerfect.anim.curFrame = 137;
+            // bfPerfect.anim.curFrame = 137;
             heartsPerfect.anim.curFrame = 43;
             heartsPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
           }
         };
-
 
         bfPerfect = new FlxAtlasSprite(1342, 370, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
         bfPerfect.visible = false;
@@ -183,7 +182,7 @@ class ResultState extends MusicBeatSubState
         bfPerfect.anim.onComplete = () -> {
           if (bfPerfect != null)
           {
-            //bfPerfect.anim.curFrame = 137;
+            // bfPerfect.anim.curFrame = 137;
             bfPerfect.anim.curFrame = 137;
             bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
           }
@@ -202,7 +201,6 @@ class ResultState extends MusicBeatSubState
             bfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
           }
         };
-
 
       case GREAT:
         gfGreat = new FlxAtlasSprite(802, 331, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/gf", "shared"));
@@ -273,7 +271,7 @@ class ResultState extends MusicBeatSubState
         });
     }
 
-    var diffSpr:String = 'dif${params?.difficultyId ?? 'Normal'}';
+    var diffSpr:String = 'diff_${params?.difficultyId ?? 'Normal'}';
     difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
     add(difficulty);
 
@@ -293,7 +291,7 @@ class ResultState extends MusicBeatSubState
 
     var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
     blackTopBar.y = -blackTopBar.height;
-    FlxTween.tween(blackTopBar, {y: 0}, 7/24, {ease: FlxEase.quartOut, startDelay: 3/24});
+    FlxTween.tween(blackTopBar, {y: 0}, 7 / 24, {ease: FlxEase.quartOut, startDelay: 3 / 24});
     blackTopBar.zIndex = 1010;
     add(blackTopBar);
 
@@ -301,7 +299,7 @@ class ResultState extends MusicBeatSubState
     resultsAnim.visible = false;
     resultsAnim.zIndex = 1200;
     add(resultsAnim);
-    new FlxTimer().start(6/24, _ -> {
+    new FlxTimer().start(6 / 24, _ -> {
       resultsAnim.visible = true;
       resultsAnim.animation.play("result");
     });
@@ -310,7 +308,7 @@ class ResultState extends MusicBeatSubState
     ratingsPopin.visible = false;
     ratingsPopin.zIndex = 1200;
     add(ratingsPopin);
-    new FlxTimer().start(21/24, _ -> {
+    new FlxTimer().start(21 / 24, _ -> {
       ratingsPopin.visible = true;
       ratingsPopin.animation.play("idle");
     });
@@ -319,15 +317,13 @@ class ResultState extends MusicBeatSubState
     scorePopin.visible = false;
     scorePopin.zIndex = 1200;
     add(scorePopin);
-    new FlxTimer().start(36/24, _ -> {
+    new FlxTimer().start(36 / 24, _ -> {
       scorePopin.visible = true;
       scorePopin.animation.play("score");
-      scorePopin.animation.finishCallback = anim -> {
-
-      };
+      scorePopin.animation.finishCallback = anim -> {};
     });
 
-    new FlxTimer().start(37/24, _ -> {
+    new FlxTimer().start(37 / 24, _ -> {
       score.visible = true;
       score.animateNumbers();
       startRankTallySequence();
@@ -344,22 +340,22 @@ class ResultState extends MusicBeatSubState
     highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
     highscoreNew.animation.addByPrefix("new", "highscoreAnim0", 24, false);
     highscoreNew.visible = false;
-    //highscoreNew.setGraphicSize(Std.int(highscoreNew.width * 0.8));
+    // highscoreNew.setGraphicSize(Std.int(highscoreNew.width * 0.8));
     highscoreNew.updateHitbox();
     highscoreNew.zIndex = 1200;
     add(highscoreNew);
 
     new FlxTimer().start(rank.getHighscoreDelay(), _ -> {
-       if (params.isNewHighscore ?? false)
-        {
-          highscoreNew.visible = true;
-          highscoreNew.animation.play("new");
-          highscoreNew.animation.finishCallback = _ -> highscoreNew.animation.play("new", true, false, 16);
-        }
-        else
-        {
-          highscoreNew.visible = false;
-        }
+      if (params.isNewHighscore ?? false)
+      {
+        highscoreNew.visible = true;
+        highscoreNew.animation.play("new");
+        highscoreNew.animation.finishCallback = _ -> highscoreNew.animation.play("new", true, false, 16);
+      }
+      else
+      {
+        highscoreNew.visible = false;
+      }
     });
 
     var hStuf:Int = 50;
@@ -411,17 +407,16 @@ class ResultState extends MusicBeatSubState
       });
     }
 
-
-      // if (params.isNewHighscore ?? false)
-      // {
-      //   highscoreNew.visible = true;
-      //   highscoreNew.animation.play("new");
-      //   //FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
-      // }
-      // else
-      // {
-      //   highscoreNew.visible = false;
-      // }
+    // if (params.isNewHighscore ?? false)
+    // {
+    //   highscoreNew.visible = true;
+    //   highscoreNew.animation.play("new");
+    //   //FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
+    // }
+    // else
+    // {
+    //   highscoreNew.visible = false;
+    // }
 
     new FlxTimer().start(rank.getMusicDelay(), _ -> {
       if (rank.hasMusicIntro())
@@ -468,7 +463,7 @@ class ResultState extends MusicBeatSubState
   function startRankTallySequence():Void
   {
     bgFlash.visible = true;
-    FlxTween.tween(bgFlash, {alpha: 0}, 5/24);
+    FlxTween.tween(bgFlash, {alpha: 0}, 5 / 24);
     var clearPercentFloat = (params.scoreData.tallies.sick + params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes * 100;
     clearPercentTarget = Math.floor(clearPercentFloat);
     // Prevent off-by-one errors.
@@ -478,7 +473,7 @@ class ResultState extends MusicBeatSubState
     trace('Clear percent target: ' + clearPercentFloat + ', round: ' + clearPercentTarget);
 
     var clearPercentCounter:ClearPercentCounter = new ClearPercentCounter(FlxG.width / 2 + 190, FlxG.height / 2 - 70, clearPercentLerp);
-    FlxTween.tween(clearPercentCounter, {curNumber: clearPercentTarget}, 58/24,
+    FlxTween.tween(clearPercentCounter, {curNumber: clearPercentTarget}, 58 / 24,
       {
         ease: FlxEase.quartOut,
         onUpdate: _ -> {
@@ -501,7 +496,7 @@ class ResultState extends MusicBeatSubState
             clearPercentCounter.flash(false);
           });
 
-          //displayRankText();
+          // displayRankText();
 
           // previously 2.0 seconds
           new FlxTimer().start(0.25, _ -> {
@@ -514,7 +509,7 @@ class ResultState extends MusicBeatSubState
                 }
               });
 
-           //afterRankTallySequence();
+            // afterRankTallySequence();
           });
         }
       });
@@ -554,7 +549,7 @@ class ResultState extends MusicBeatSubState
   {
     bgFlash.visible = true;
     bgFlash.alpha = 1;
-    FlxTween.tween(bgFlash, {alpha: 0}, 14/24);
+    FlxTween.tween(bgFlash, {alpha: 0}, 14 / 24);
 
     var rankTextVert:FlxBackdrop = new FlxBackdrop(Paths.image(rank.getVerTextAsset()), Y, 0, 30);
     rankTextVert.x = FlxG.width - 44;
@@ -562,13 +557,12 @@ class ResultState extends MusicBeatSubState
     rankTextVert.zIndex = 990;
     add(rankTextVert);
 
-    FlxFlicker.flicker(rankTextVert, 2/24 * 3, 2/24, true);
+    FlxFlicker.flicker(rankTextVert, 2 / 24 * 3, 2 / 24, true);
 
     // Scrolling.
-    new FlxTimer().start(30/24, _ -> {
-        rankTextVert.velocity.y = -80;
+    new FlxTimer().start(30 / 24, _ -> {
+      rankTextVert.velocity.y = -80;
     });
-
 
     for (i in 0...12)
     {
@@ -589,7 +583,6 @@ class ResultState extends MusicBeatSubState
 
   function afterRankTallySequence():Void
   {
-
     showSmallClearPercent();
 
     switch (rank)
@@ -605,15 +598,15 @@ class ResultState extends MusicBeatSubState
           bfPerfect.playAnimation('');
         }
         new FlxTimer().start(106 / 24, _ -> {
-        if (heartsPerfect == null)
-        {
-          trace("Could not build heartsPerfect animation!");
-        }
-        else
-        {
-          heartsPerfect.visible = true;
-          heartsPerfect.playAnimation('');
-        }
+          if (heartsPerfect == null)
+          {
+            trace("Could not build heartsPerfect animation!");
+          }
+          else
+          {
+            heartsPerfect.visible = true;
+            heartsPerfect.playAnimation('');
+          }
         });
       case EXCELLENT:
         if (bfExcellent == null)
@@ -637,15 +630,15 @@ class ResultState extends MusicBeatSubState
         }
 
         new FlxTimer().start(6 / 24, _ -> {
-        if (gfGreat == null)
-        {
-          trace("Could not build GREAT animation for gf!");
-        }
-        else
-        {
-          gfGreat.visible = true;
-          gfGreat.playAnimation('');
-        }
+          if (gfGreat == null)
+          {
+            trace("Could not build GREAT animation for gf!");
+          }
+          else
+          {
+            gfGreat.visible = true;
+            gfGreat.playAnimation('');
+          }
         });
       case SHIT:
         if (bfShit == null)
