@@ -220,14 +220,14 @@ class Preferences
   }
   
   /**
-   * If enabled, vpad will be disabled.
-   * @default `true`
+   * If enabled, controls for mobile devices will be vpad, otherwise touch will be enabled.
+   * @default `false`
    */
   public static var legacyControls(get, set):Bool;
 
   static function get_legacyControls():Bool
   {
-    return Save?.instance?.mobile?.legacyControls ?? true;
+    return Save?.instance?.mobile?.legacyControls ?? false;
   }
 
   static function set_legacyControls(value:Bool):Bool
