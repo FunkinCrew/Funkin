@@ -185,7 +185,7 @@ class CreditsState extends MusicBeatState
       }
     }
 
-    if (controls.BACK || hasEnded() || TouchUtil.justPressed && MusicBeatState.canTouch && TouchUtil.overlaps(backButton))
+    if (controls.BACK || hasEnded() || TouchUtil.pressed && MusicBeatState.canTouch && TouchUtil.overlaps(backButton))
     {
       exit();
     }
