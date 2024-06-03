@@ -375,7 +375,7 @@ class StoryMenuState extends MusicBeatState
         || (TouchUtil.overlaps(levelTitles.members[levelList.indexOf(currentLevelId)])
           && TouchUtil.justPressed
           && !TouchUtil.overlaps(leftDifficultyArrow)
-          && canTouch))
+          && MusicBeatState.canTouch))
       {
         selectLevel();
       }
