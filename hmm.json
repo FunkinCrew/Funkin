@@ -56,8 +56,8 @@
       "name": "grig.audio",
       "type": "git",
       "dir": null,
-      "ref": "7326afb05ebfc9a064a93a76304188a76fad2c95",
-      "url": "https://github.com/FunkinDroidTeam/grig.audio"
+      "ref": "57f5d47f2533fd0c3dcd025a86cb86c0dfa0b6d2",
+      "url": "https://github.com/osakared/grig.audio"
     },
     {
       "name": "hamcrest",
