@@ -35,6 +35,9 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public static var isTouch:Bool = FlxG.onMobile ? true : false;
 
+  // To check if you can touch
+  public static var canTouch:Bool = MusicBeatSubState.isTouch && !Preferences.legacyControls;
+
   var _conductorInUse:Null<Conductor>;
 
   function get_conductorInUse():Conductor
