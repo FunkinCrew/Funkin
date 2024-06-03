@@ -802,13 +802,13 @@ class FreeplayState extends MusicBeatSubState
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
-    var touchPress:Bool = canTouch && TouchUtil.justReleased && !SwipeUtil.swipeAny;
+    var touchPress:Bool = MusicBeatSubState.canTouch && TouchUtil.justReleased && !SwipeUtil.swipeAny;
 
-    if (TouchUtil.pressed && canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
+    if (TouchUtil.pressed && MusicBeatSubState.canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
 
     // These are unusued, maybe we should comment them out?
-    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp && canTouch);
-    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown && canTouch);
+    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch);
+    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown && MusicBeatSubState.canTouch);
     // this one is fine though
     var accepted:Bool = (controls.ACCEPT && !FlxG.keys.pressed.CONTROL)
       || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && touchPress);
@@ -821,7 +821,7 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
 
-          if (controls.UI_UP || (SwipeUtil.swipeUp && canTouch))
+          if (controls.UI_UP || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch))
           {
             changeSelection(-1);
           }
@@ -837,7 +837,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else if (spamTimer <= 0)
       {
-        if (controls.UI_UP || (SwipeUtil.swipeUp && canTouch))
+        if (controls.UI_UP || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch))
         {
           changeSelection(-1);
         }
