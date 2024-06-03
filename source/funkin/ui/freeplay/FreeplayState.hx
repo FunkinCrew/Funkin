@@ -40,7 +40,6 @@ import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 import lime.utils.Assets;
-import funkin.mobile.Backspace;
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -142,8 +141,6 @@ class FreeplayState extends MusicBeatSubState
   public static var rememberedSongId:Null<String> = 'tutorial';
 
   var touchBuddy:FlxSprite;
-
-  var backButton:Backspace;
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
@@ -567,8 +564,7 @@ class FreeplayState extends MusicBeatSubState
     touchBuddy = new FlxSprite().makeGraphic(10, 10, FlxColor.GREEN);
     touchBuddy.cameras = [funnyCam]; // this is stupid but it works.
 
-    backButton = new Backspace(1224, 608);
-    add(backButton);
+    addBackButton(FlxG.width * 0.96, FlxG.height * 0.84);
     FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
   }
 
@@ -791,20 +787,18 @@ class FreeplayState extends MusicBeatSubState
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
+    var touchPress:Bool = MusicBeatSubState.canTouch && TouchUtil.justReleased && !SwipeUtil.swipeAny;
 
-    var canTouch:Bool = MusicBeatState.isTouch;
-    var touchPress:Bool = canTouch && TouchUtil.justReleased && !SwipeUtil.swipeAny;
-
-    if (TouchUtil.pressed && canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
+    if (TouchUtil.pressed && MusicBeatSubState.canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
 
     // These are unusued, maybe we should comment them out?
-    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp && canTouch);
-    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown && canTouch);
+    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch);
+    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown && MusicBeatSubState.canTouch);
     // this one is fine though
     var accepted:Bool = (controls.ACCEPT && !FlxG.keys.pressed.CONTROL)
       || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && touchPress);
 
-    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP || controls.UI_DOWN) || ((SwipeUtil.swipeUp || SwipeUtil.swipeDown) && canTouch)))
+    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP || controls.UI_DOWN) || ((SwipeUtil.swipeUp || SwipeUtil.swipeDown) && MusicBeatSubState.canTouch)))
     {
       if (spamming)
       {
@@ -812,7 +806,7 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
 
-          if (controls.UI_UP || (SwipeUtil.swipeUp && canTouch))
+          if (controls.UI_UP || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch))
           {
             changeSelection(-1);
           }
@@ -828,7 +822,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else if (spamTimer <= 0)
       {
-        if (controls.UI_UP || (SwipeUtil.swipeUp && canTouch))
+        if (controls.UI_UP || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch))
         {
           changeSelection(-1);
         }

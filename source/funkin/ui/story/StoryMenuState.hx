@@ -25,7 +25,6 @@ import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
-import funkin.mobile.Backspace;
 import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
@@ -111,8 +110,6 @@ class StoryMenuState extends MusicBeatState
 
   static var rememberedLevelId:Null<String> = null;
   static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
-
-  var backButton:Backspace;
 
   public function new(?stickers:StickerSubState = null)
   {
@@ -226,8 +223,7 @@ class StoryMenuState extends MusicBeatState
     DiscordClient.changePresence('In the Menus', null);
     #end
 
-    backButton = new Backspace(986, 609);
-    add(backButton);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
   }
 
   function rememberSelection():Void
@@ -328,35 +324,34 @@ class StoryMenuState extends MusicBeatState
 
   function handleKeyPresses():Void
   {
-    var canTouch = MusicBeatState.isTouch;
     if (!exitingMenu)
     {
       if (!selectedLevel)
       {
-        if (controls.UI_UP_P || (SwipeUtil.swipeUp && canTouch))
+        if (controls.UI_UP_P || (SwipeUtil.swipeUp && MusicBeatState.canTouch))
         {
           changeLevel(-1);
           changeDifficulty(0);
         }
 
-        if (controls.UI_DOWN_P || (SwipeUtil.swipeDown && canTouch))
+        if (controls.UI_DOWN_P || (SwipeUtil.swipeDown && MusicBeatState.canTouch))
         {
           changeLevel(1);
           changeDifficulty(0);
         }
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P || (TouchUtil.overlaps(rightDifficultyArrow) && TouchUtil.justPressed && canTouch))
+        if (controls.UI_RIGHT_P || (TouchUtil.overlaps(rightDifficultyArrow) && TouchUtil.justPressed && MusicBeatState.canTouch))
         {
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P || (TouchUtil.overlaps(leftDifficultyArrow) && TouchUtil.justPressed && canTouch))
+        if (controls.UI_LEFT_P || (TouchUtil.overlaps(leftDifficultyArrow) && TouchUtil.justPressed && MusicBeatState.canTouch))
         {
           changeDifficulty(-1);
         }
 
-        if (controls.UI_RIGHT || (TouchUtil.overlaps(rightDifficultyArrow) && canTouch))
+        if (controls.UI_RIGHT || (TouchUtil.overlaps(rightDifficultyArrow) && MusicBeatState.canTouch))
         {
           rightDifficultyArrow.animation.play('press');
         }
@@ -365,7 +360,7 @@ class StoryMenuState extends MusicBeatState
           rightDifficultyArrow.animation.play('idle');
         }
 
-        if (controls.UI_LEFT || (TouchUtil.overlaps(leftDifficultyArrow) && canTouch))
+        if (controls.UI_LEFT || (TouchUtil.overlaps(leftDifficultyArrow) && MusicBeatState.canTouch))
         {
           leftDifficultyArrow.animation.play('press');
         }
@@ -379,7 +374,7 @@ class StoryMenuState extends MusicBeatState
         || (TouchUtil.overlaps(levelTitles.members[levelList.indexOf(currentLevelId)])
           && TouchUtil.justPressed
           && !TouchUtil.overlaps(leftDifficultyArrow)
-          && canTouch))
+          && MusicBeatState.canTouch))
       {
         selectLevel();
       }

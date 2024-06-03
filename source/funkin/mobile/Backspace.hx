@@ -4,7 +4,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinCamera;
-import funkin.ui.MusicBeatState;
 
 class Backspace extends FlxSprite
 {
@@ -23,6 +22,7 @@ class Backspace extends FlxSprite
     animation.play("idle");
     color = theColor;
     cameras = [backButtonCam];
+
     zIndex = 100000;
   }
 }

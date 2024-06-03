@@ -15,7 +15,6 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
-import funkin.mobile.Backspace;
 import openfl.utils.Assets;
 
 /**
@@ -88,8 +87,6 @@ class GameOverSubState extends MusicBeatSubState
 
   var transparent:Bool;
 
-  var backButton:Backspace = new Backspace(986, 609, FlxColor.WHITE);
-
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
   var targetCameraZoom:Float = 1.0;
@@ -161,7 +158,7 @@ class GameOverSubState extends MusicBeatSubState
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
 
-    add(backButton);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE);
   }
 
   @:nullSafety(Off)
@@ -230,15 +227,14 @@ class GameOverSubState extends MusicBeatSubState
 
     // Restart the level when pressing the assigned key.
     // Removed the tapping BF thing due to it not working 50% of the time.
-    var canTouch = MusicBeatSubState.isTouch;
-    if ((controls.ACCEPT || (TouchUtil.justPressed && canTouch && !TouchUtil.overlaps(backButton))) && blueballed)
+    if ((controls.ACCEPT || (TouchUtil.justPressed && MusicBeatSubState.canTouch && !TouchUtil.overlaps(backButton))) && blueballed)
     {
       blueballed = false;
       confirmDeath();
     }
 
     // Return to the menu when pressing the assigned key.
-    if ((controls.BACK || (TouchUtil.justPressed && canTouch && TouchUtil.overlaps(backButton))) && !mustNotExit)
+    if ((controls.BACK || (TouchUtil.justPressed && MusicBeatSubState.canTouch && TouchUtil.overlaps(backButton))) && !mustNotExit)
     {
       blueballed = false;
       PlayState.instance.deathCounter = 0;

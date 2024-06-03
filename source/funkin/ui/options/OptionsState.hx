@@ -62,6 +62,8 @@ class OptionsState extends MusicBeatState
     // disable for intro transition
     currentPage.enabled = false;
 
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
+    
     super.create();
   }
 
@@ -165,7 +167,8 @@ class Page extends FlxGroup
       && TouchUtil.justPressed
       && MusicBeatState.isTouch;
     // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
-    if (canExit && (controls.BACK || (backButton != null && canTouch)))
+    if (canExit && (controls.BACK || (backButton != null && TouchUtil.overlapsComplex(backButton)
+      && TouchUtil.justPressed && MusicBeatState.canTouch)))
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();

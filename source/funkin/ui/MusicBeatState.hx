@@ -22,6 +22,7 @@ import flixel.FlxCamera;
 import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinHitbox;
 import funkin.mobile.PreciseInputHandler;
+import funkin.mobile.Backspace;
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -40,6 +41,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public var conductorInUse(get, set):Conductor;
 
   public static var isTouch:Bool = FlxG.onMobile ? true : false;
+
+  // To check if you can touch
+  public static var canTouch:Bool = isTouch && !Preferences.legacyControls;
 
   var _conductorInUse:Null<Conductor>;
 
@@ -68,6 +72,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   }
 
   public var hitbox:FunkinHitbox;
+  public var backButton:Backspace;
+  
   public var hitboxCam:FlxCamera;
 
   var trackedInputsHitbox:Array<FlxActionInput> = [];
@@ -117,6 +123,18 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
   }
 
+  public function addBackButton(xPos:Float, yPos:Float, ?color:FlxColor = FlxColor.WHITE):Void
+  {
+    //definitely not based on previous functions...
+    if (backButton != null) remove(backButton);
+    
+    backButton = new Backspace(xPos, yPos, color);
+    
+    backButton.active = backButton.visible = canTouch;
+    
+    if (FlxG.onMobile) add(backButton);
+  }
+
   override function create()
   {
     super.create();
@@ -139,6 +157,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     if (hitbox != null)
     {
       hitbox = FlxDestroyUtil.destroy(hitbox);
+    }
+
+    if (backButton != null)
+    {
+      backButton = FlxDestroyUtil.destroy(backButton);
     }
 
     Conductor.beatHit.remove(this.beatHit);
