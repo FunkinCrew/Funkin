@@ -156,20 +156,13 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     {
       for (touch in FlxG.touches.list)
       {
-        if (checkInput(touch, touch, touch.justPressedPosition, camera)) return true;
+        if (overlapsPoint(touch.getWorldPosition(camera, _point), true, camera))
+        {
+          updateStatus(touch);
+
+          return true;
+        }
       }
-    }
-
-    return false;
-  }
-
-  private function checkInput(pointer:FlxPointer, input:IFlxInput, justPressedPosition:FlxPoint, camera:FlxCamera):Bool
-  {
-    if (overlapsPoint(pointer.getWorldPosition(camera, _point), true, camera))
-    {
-      updateStatus(input);
-
-      return true;
     }
 
     return false;
