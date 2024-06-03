@@ -88,11 +88,14 @@ class GameOverSubState extends MusicBeatSubState
 
   var transparent:Bool;
 
-  var backButton:Backspace = new Backspace(986, 609, FlxColor.WHITE);
+  var backButton:Null<Backspace> = null;
 
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
   var targetCameraZoom:Float = 1.0;
+
+  // To check if touch is enabled
+  static final canTouch = MusicBeatSubState.isTouch && !Preferences.legacyControls;
 
   public function new(params:GameOverParams)
   {
@@ -163,7 +166,12 @@ class GameOverSubState extends MusicBeatSubState
 
     addVirtualPad(NONE, A_B);
     addVirtualPadCamera(false);
-    add(backButton);
+
+    if (FlxG.onMobile)
+    {
+      backButton = new Backspace(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE)
+      add(backButton);
+    }
   }
 
   @:nullSafety(Off)
@@ -232,7 +240,6 @@ class GameOverSubState extends MusicBeatSubState
 
     // Restart the level when pressing the assigned key.
     // Removed the tapping BF thing due to it not working 50% of the time.
-    var canTouch = MusicBeatSubState.isTouch && !Preferences.legacyControls;
     if ((controls.ACCEPT || (TouchUtil.justPressed && canTouch && !TouchUtil.overlaps(backButton))) && blueballed)
     {
       blueballed = false;
