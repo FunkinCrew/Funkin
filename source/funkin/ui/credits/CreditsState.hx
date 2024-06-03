@@ -173,7 +173,7 @@ class CreditsState extends MusicBeatState
     if (!scrollPaused)
     {
       // TODO: Replace with whatever the special note button is.
-      if (controls.ACCEPT || FlxG.keys.pressed.SPACE)
+      if (controls.ACCEPT || FlxG.keys.pressed.SPACE || TouchUtil.justPressed && MusicBeatState.canTouch && !TouchUtil.overlaps(backButton))
       {
         // Move the whole group.
         creditsGroup.y -= CREDITS_SCROLL_FAST_SPEED * elapsed;
@@ -185,7 +185,7 @@ class CreditsState extends MusicBeatState
       }
     }
 
-    if (controls.BACK || hasEnded() || TouchUtil.justPressed && MusicBeatState.canTouch && !TouchUtil.overlaps(backButton))
+    if (controls.BACK || hasEnded() || TouchUtil.justPressed && MusicBeatState.canTouch && TouchUtil.overlaps(backButton))
     {
       exit();
     }
