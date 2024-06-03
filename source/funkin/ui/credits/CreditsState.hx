@@ -5,7 +5,6 @@ import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
-import funkin.mobile.Backspace;
 
 /**
  * The state used to display the credits scroll.
@@ -70,8 +69,6 @@ class CreditsState extends MusicBeatState
 
   var scrollPaused:Bool = false;
 
-  var backButton:Backspace;
-
   public function new()
   {
     super();
@@ -114,8 +111,7 @@ class CreditsState extends MusicBeatState
       });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
-    backButton = new Backspace(986, 609, FlxColor.WHITE);
-    add(backButton);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE);
   }
 
   function buildCreditsGroup():Void
