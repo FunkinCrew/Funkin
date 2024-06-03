@@ -64,6 +64,7 @@ class OptionsState extends MusicBeatState
 
     addVirtualPad(LEFT_FULL, A_B);
     addVirtualPadCamera(false);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
 
     super.create();
   }
@@ -174,7 +175,8 @@ class Page extends FlxGroup
       && MusicBeatState.isTouch
       && !funkin.Preferences.legacyControls;
     // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
-    if (canExit && (controls.BACK || (backButton != null && canTouch)))
+    if (canExit && (controls.BACK || (backButton != null && TouchUtil.overlapsComplex(backButton)
+      && TouchUtil.justPressed && MusicBeatState.canTouch)))
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
