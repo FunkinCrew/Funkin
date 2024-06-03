@@ -44,7 +44,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
   /** Only used in Options, basically acts the same as OptionsState's `currentName`, it's the current name of the current page in OptionsState.
    * Why is it needed? Because touch control's a bitch. Thats why. */
-  public var currentPage:PageName;
+  public var currentPage:PageName = Options;
 
   public function new(navControls:NavControls = Vertical, ?wrapMode:WrapMode)
   {
@@ -141,7 +141,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
     var isPixelOverlap = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
     var isRegularOverlap = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
-    var pageCheck = currentPage != null && currentPage != Preferences;
+    var pageCheck = currentPage != null || currentPage != Preferences;
     var isInputOverlap = ((isMainMenuState && isPixelOverlap) || (isRegularOverlap && !isMainMenuState && pageCheck)) && canTouch;
 
     /** The reason why we're using pixelOverlap for MainMenuState is due to the offsets,
