@@ -111,7 +111,7 @@ class Save
           //Defaults.
           screenTimeout: false,
           vibration: true,
-          legacyControls: true //false
+          legacyControls: false
         },
 
       mods:
