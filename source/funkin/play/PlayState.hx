@@ -2809,8 +2809,7 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
-    hitbox.visible = #if !android virtualPad.visible = #end
-    false;
+    hitbox.visible = virtualPad.visible = false;
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);

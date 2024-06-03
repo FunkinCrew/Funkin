@@ -881,13 +881,13 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if ((controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeLeft && canTouch))
+    if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
     {
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if ((controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeRight && canTouch))
+    if (controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL)
     {
       dj.resetAFKTimer();
       changeDiff(1);
