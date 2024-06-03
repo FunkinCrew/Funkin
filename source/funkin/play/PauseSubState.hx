@@ -349,7 +349,10 @@ class PauseSubState extends MusicBeatSubState
     }
 
     if (controls.ACCEPT
-      || (TouchUtil.overlaps(menuEntryText.members[currentEntry]) && TouchUtil.justReleased && canTouch && !SwipeUtil.swipeAny))
+      || (TouchUtil.overlapsComplex(menuEntryText.members[currentEntry])
+        && TouchUtil.justReleased
+        && canTouch
+        && !SwipeUtil.swipeAny))
     {
       currentMenuEntries[currentEntry].callback(this);
     }
