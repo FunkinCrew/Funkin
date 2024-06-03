@@ -65,6 +65,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public var hitbox:FunkinHitbox;
   public var virtualPad:FunkinVirtualPad;
+  public var backButton:Backspace;
 
   public var vpadCam:FlxCamera;
   public var hitboxCam:FlxCamera;
