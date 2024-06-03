@@ -23,7 +23,6 @@ class Backspace extends FlxSprite
     color = theColor;
     cameras = [backButtonCam];
 
-    visible = FlxG.onMobile && !Preferences.legacyControls && MusicBeatState.isTouch;
     active = FlxG.onMobile && !Preferences.legacyControls && MusicBeatState.isTouch;
   }
 }
