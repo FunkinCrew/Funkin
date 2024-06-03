@@ -10,9 +10,10 @@ class Backspace extends FlxSprite
 {
   public var backButtonCam:FunkinCamera;
 
-  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE)
+  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE):Void
   {
     super(xPos, yPos);
+
     backButtonCam = new FunkinCamera('backButton');
     backButtonCam.bgColor.alpha = 0;
     FlxG.cameras.add(backButtonCam, false);
@@ -22,8 +23,6 @@ class Backspace extends FlxSprite
     animation.play("idle");
     color = theColor;
     cameras = [backButtonCam];
-
-    visible = FlxG.onMobile && !Preferences.legacyControls && MusicBeatState.isTouch;
-    active = FlxG.onMobile && !Preferences.legacyControls && MusicBeatState.isTouch;
+    zIndex = 100000;
   }
 }

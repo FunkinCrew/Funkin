@@ -226,8 +226,6 @@ class StoryMenuState extends MusicBeatState
     DiscordClient.changePresence('In the Menus', null);
     #end
 
-    addVirtualPad(LEFT_FULL, A_B);
-
     backButton = new Backspace(986, 609);
     add(backButton);
   }
@@ -330,7 +328,7 @@ class StoryMenuState extends MusicBeatState
 
   function handleKeyPresses():Void
   {
-    var canTouch = MusicBeatState.isTouch && !Preferences.legacyControls;
+    var canTouch = MusicBeatState.isTouch;
     if (!exitingMenu)
     {
       if (!selectedLevel)

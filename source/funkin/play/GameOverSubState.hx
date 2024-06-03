@@ -161,8 +161,6 @@ class GameOverSubState extends MusicBeatSubState
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
 
-    addVirtualPad(NONE, A_B);
-    addVirtualPadCamera(false);
     add(backButton);
   }
 
@@ -232,7 +230,7 @@ class GameOverSubState extends MusicBeatSubState
 
     // Restart the level when pressing the assigned key.
     // Removed the tapping BF thing due to it not working 50% of the time.
-    var canTouch = MusicBeatSubState.isTouch && !Preferences.legacyControls;
+    var canTouch = MusicBeatSubState.isTouch;
     if ((controls.ACCEPT || (TouchUtil.justPressed && canTouch && !TouchUtil.overlaps(backButton))) && blueballed)
     {
       blueballed = false;

@@ -86,11 +86,6 @@ class PreferencesMenu extends Page
       createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
         Preferences.vibration = value;
       }, Preferences.vibration);
-      createPrefItemCheckbox('Legacy Controls', 'Toggle legacy controls', function(value:Bool):Void {
-        Preferences.legacyControls = value;
-        backButton.active = !value;
-        backButton.visible = !value;
-      }, Preferences.legacyControls);
     }
   }
 
@@ -123,7 +118,7 @@ class PreferencesMenu extends Page
     {
       // I have tried EVERY. SINGLE. METHOD. UNDER THE MOON. This is the only way it can work, I've tried everything trust me.
       var thePosToCheck = new FlxPoint(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130));
-      var canTouch = items.enabled && !items.busy && !Preferences.legacyControls && TouchUtil.justReleased && !SwipeUtil.swipeAny;
+      var canTouch = items.enabled && !items.busy && TouchUtil.justReleased && !SwipeUtil.swipeAny;
       if (canTouch && items.selectedItem.overlapsPoint(thePosToCheck, false, menuCamera))
       {
         items.accept();

@@ -691,11 +691,6 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
-    // Initialize the pause button for mobile
-    // Since newer android phones hide their back-button, this will also be needed to prevent accidental missing.
-    addVirtualPad(NONE, P);
-    addVirtualPadCamera(false);
-
     // Initialize the hitbox for mobile controls
     addHitbox(false);
     addHitboxCamera(false);
@@ -941,7 +936,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || virtualPad.buttonP.justPressed || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
+    if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
@@ -1979,10 +1974,7 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
-    // Only "activates" when there's a touch device.
-    // Still contemplating on whether or not to support ALL touch devices, or just mobile. Might need to talk about this with Eric. -Zack
-    hitbox.visible = virtualPad.visible = MusicBeatSubState.isTouch;
-    // Virtual pad is the pause button!!
+    hitbox.visible = true;
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
@@ -2757,7 +2749,7 @@ class PlayState extends MusicBeatSubState
       {
         currentConversation.advanceConversation();
       }
-      else if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause) && !justUnpaused)
+      else if ((controls.PAUSE || androidPause) && !justUnpaused)
       {
         currentConversation.pauseMusic();
 
@@ -2773,7 +2765,7 @@ class PlayState extends MusicBeatSubState
     else if (VideoCutscene.isPlaying())
     {
       // This is a video cutscene.
-      if ((controls.PAUSE #if !android || virtualPad.buttonP.justPressed #end || androidPause) && !justUnpaused)
+      if ((controls.PAUSE || androidPause) && !justUnpaused)
       {
         VideoCutscene.pauseVideo();
 
@@ -2809,7 +2801,7 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
-    hitbox.visible = virtualPad.visible = false;
+    hitbox.visible = false;
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);

@@ -205,9 +205,6 @@ class PauseSubState extends MusicBeatSubState
     regenerateMenu();
 
     transitionIn();
-
-    addVirtualPad(UP_DOWN, A);
-    addVirtualPadCamera(false);
   }
 
   /**
@@ -338,7 +335,7 @@ class PauseSubState extends MusicBeatSubState
   {
     if (!allowInput) return;
 
-    var canTouch = MusicBeatSubState.isTouch && !Preferences.legacyControls;
+    var canTouch = MusicBeatSubState.isTouch;
     if (controls.UI_UP_P || (SwipeUtil.swipeUp && canTouch))
     {
       changeSelection(-1);

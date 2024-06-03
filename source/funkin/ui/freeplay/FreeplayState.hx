@@ -560,21 +560,6 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
-    addVirtualPad(UP_DOWN, A_B_C);
-    virtualPad.forEachAlive((button) -> {
-      switch (button.role)
-      {
-        case DIRECTION_BUTTON:
-          var baseX:Float = button.x;
-          button.x -= button.width;
-          FlxTween.tween(button, {x: baseX}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
-        case ACTION_BUTTON:
-          var baseY:Float = button.y;
-          button.y += button.height;
-          FlxTween.tween(button, {y: baseY}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
-      }
-    });
-
     forEach(function(bs) {
       bs.cameras = [funnyCam];
     });
@@ -739,7 +724,7 @@ class FreeplayState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.F || virtualPad.buttonC.justPressed)
+    if (FlxG.keys.justPressed.F)
     {
       var targetSong = grpCapsules.members[curSelected]?.songData;
       if (targetSong != null)
@@ -807,7 +792,7 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var canTouch:Bool = MusicBeatState.isTouch && !Preferences.legacyControls;
+    var canTouch:Bool = MusicBeatState.isTouch;
     var touchPress:Bool = canTouch && TouchUtil.justReleased && !SwipeUtil.swipeAny;
 
     if (TouchUtil.pressed && canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
@@ -923,16 +908,6 @@ class FreeplayState extends MusicBeatSubState
       dj.onIntroDone.removeAll();
 
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
-
-      virtualPad.forEachAlive((button) -> {
-        switch (button.role)
-        {
-          case DIRECTION_BUTTON:
-            FlxTween.tween(button, {x: button.x - button.width}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.quartInOut});
-          case ACTION_BUTTON:
-            FlxTween.tween(button, {y: button.y + button.height}, FlxG.random.float(0.3, 0.55), {ease: FlxEase.quartInOut});
-        }
-      });
 
       FlxTween.tween(backButton, {x: 1524}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.quartInOut});
 

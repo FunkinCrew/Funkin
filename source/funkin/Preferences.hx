@@ -193,7 +193,7 @@ class Preferences
   static function set_screenTimeout(value:Bool):Bool
   {
     if (value != Save.instance.mobile.screenTimeout) lime.system.System.allowScreenTimeout = value;
-    
+
     var save:Save = Save.instance;
     save.mobile.screenTimeout = value;
     save.flush();
@@ -215,25 +215,6 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobile.vibration = value;
-    save.flush();
-    return value;
-  }
-  
-  /**
-   * If enabled, controls for mobile devices will be vpad, otherwise touch will be enabled.
-   * @default `false`
-   */
-  public static var legacyControls(get, set):Bool;
-
-  static function get_legacyControls():Bool
-  {
-    return Save?.instance?.mobile?.legacyControls ?? false;
-  }
-
-  static function set_legacyControls(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.mobile.legacyControls = value;
     save.flush();
     return value;
   }
