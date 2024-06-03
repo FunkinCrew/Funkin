@@ -62,10 +62,8 @@ class OptionsState extends MusicBeatState
     // disable for intro transition
     currentPage.enabled = false;
 
-    addVirtualPad(LEFT_FULL, A_B);
-    addVirtualPadCamera(false);
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
-
+    
     super.create();
   }
 
@@ -115,11 +113,6 @@ class OptionsState extends MusicBeatState
     PlayerSettings.init();
 
     switchPage(Options);
-
-    // re-initalie virtual pad input
-    ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
-    ControlsHandler.setupVirtualPad(controls, virtualPad, LEFT_FULL, A_B, trackedInputsVirtualPad);
-    // ^^^ Since Controls can not be accessed in mobile, should we get rid of this?
   }
 
   function exitToMainMenu()
@@ -172,8 +165,7 @@ class Page extends FlxGroup
   {
     var canTouch = TouchUtil.overlapsComplex(backButton)
       && TouchUtil.justPressed
-      && MusicBeatState.isTouch
-      && !funkin.Preferences.legacyControls;
+      && MusicBeatState.isTouch;
     // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
     if (canExit && (controls.BACK || (backButton != null && TouchUtil.overlapsComplex(backButton)
       && TouchUtil.justPressed && MusicBeatState.canTouch)))

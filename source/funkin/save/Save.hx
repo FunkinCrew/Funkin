@@ -110,8 +110,7 @@ class Save
         {
           //Defaults.
           screenTimeout: false,
-          vibration: true,
-          legacyControls: false
+          vibration: true
         },
 
       mods:
@@ -926,18 +925,12 @@ typedef SaveDataMobileOptions =
    * @default `false`
    */
   var screenTimeout:Bool;
-  
+
   /**
    * If enabled, vibration will be enabled.
    * @default `true`
    */
   var vibration:Bool;
-  
-  /**
-   * If enabled, vpad will be disabled.
-   * @default `true`
-   */
-  var legacyControls:Bool;
 };
 
 /**

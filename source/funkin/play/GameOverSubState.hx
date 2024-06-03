@@ -158,8 +158,6 @@ class GameOverSubState extends MusicBeatSubState
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
 
-    addVirtualPad(NONE, A_B);
-    addVirtualPadCamera(false);
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE);
   }
 

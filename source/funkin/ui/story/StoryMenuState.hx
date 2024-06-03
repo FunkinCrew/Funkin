@@ -223,7 +223,6 @@ class StoryMenuState extends MusicBeatState
     DiscordClient.changePresence('In the Menus', null);
     #end
 
-    addVirtualPad(LEFT_FULL, A_B);
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
   }
 

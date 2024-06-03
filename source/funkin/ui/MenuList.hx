@@ -100,7 +100,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     var newIndex = 0;
 
-    if (!funkin.Preferences.legacyControls && MusicBeatState.isTouch)
+    if (MusicBeatState.isTouch)
     {
       newIndex = switch (navControls)
       {
@@ -137,7 +137,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     // TODO: Clean this? Does it need to be cleaned? isMainMenuState could be moved to new() instead perhaps.
 
     // conditions for touch input, might need refining? Don't forget after proposal.
-    var canTouch = MusicBeatState.isTouch && !funkin.Preferences.legacyControls;
+    var canTouch = MusicBeatState.isTouch;
     var isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
     var isPixelOverlap = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
     var isRegularOverlap = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;

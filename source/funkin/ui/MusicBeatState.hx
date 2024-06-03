@@ -21,7 +21,6 @@ import flixel.util.FlxDestroyUtil;
 import flixel.FlxCamera;
 import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinHitbox;
-import funkin.mobile.FunkinVirtualPad;
 import funkin.mobile.PreciseInputHandler;
 import funkin.mobile.Backspace;
 
@@ -73,61 +72,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   }
 
   public var hitbox:FunkinHitbox;
-  public var virtualPad:FunkinVirtualPad;
   public var backButton:Backspace;
-
-  public var vpadCam:FlxCamera;
+  
   public var hitboxCam:FlxCamera;
 
   var trackedInputsHitbox:Array<FlxActionInput> = [];
-  var trackedInputsVirtualPad:Array<FlxActionInput> = [];
-
-  public function addVirtualPad(direction:FunkinDirectionalMode, action:FunkinActionMode, ?visible:Bool = true):Void
-  {
-    if (virtualPad != null)
-    {
-      removeVirtualPad();
-    }
-
-    virtualPad = new FunkinVirtualPad(FlxG.onMobile ? direction : NONE, FlxG.onMobile ? action : NONE);
-
-    ControlsHandler.setupVirtualPad(controls, virtualPad, direction, action, trackedInputsVirtualPad);
-
-    virtualPad.visible = (Preferences.legacyControls) ? visible : false;
-
-    if (FlxG.onMobile) add(virtualPad);
-  }
-
-  public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
-  {
-    if (virtualPad == null || vpadCam != null) return;
-
-    vpadCam = new FlxCamera();
-    FlxG.cameras.add(vpadCam, defaultDrawTarget);
-    vpadCam.bgColor.alpha = 0;
-    virtualPad.cameras = [vpadCam];
-  }
-
-  public function removeVirtualPad():Void
-  {
-    if (virtualPad == null) return;
-
-    if (trackedInputsVirtualPad != null && trackedInputsVirtualPad.length > 0)
-    {
-      ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
-    }
-
-    if (virtualPad != null)
-    {
-      remove(virtualPad);
-    }
-
-    if (vpadCam != null)
-    {
-      FlxG.cameras.remove(vpadCam, false);
-      vpadCam = FlxDestroyUtil.destroy(vpadCam);
-    }
-  }
 
   public function addHitbox(?visible:Bool = true, ?initInput:Bool = true):Void
   {
@@ -203,17 +152,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
       ControlsHandler.removeCachedInput(controls, trackedInputsHitbox);
     }
 
-    if (trackedInputsVirtualPad != null && trackedInputsVirtualPad.length > 0)
-    {
-      ControlsHandler.removeCachedInput(controls, trackedInputsVirtualPad);
-    }
-
     super.destroy();
-
-    if (virtualPad != null)
-    {
-      virtualPad = FlxDestroyUtil.destroy(virtualPad);
-    }
 
     if (hitbox != null)
     {
@@ -243,24 +182,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     super.update(elapsed);
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
-
-    if (FlxG.onMobile)
-    {
-      if (FlxG.keys.justPressed.ANY && isTouch) isTouch = false;
-      if (TouchUtil.justPressed && !isTouch) isTouch = true;
-
-      if (Std.isOfType(FlxG.state, funkin.play.PlayState))
-      {
-        var useDefault:Bool = Reflect.field(FlxG.state, "isInCutscene") || Reflect.field(FlxG.state, "isInCountdown");
-        if (virtualPad != null) virtualPad.visible = useDefault ? virtualPad.visible : isTouch;
-        if (hitbox != null) hitbox.visible = useDefault ? hitbox.visible : isTouch;
-      }
-      else
-      {
-        if (virtualPad != null) virtualPad.visible = Preferences.legacyControls ? isTouch : false;
-        if (hitbox != null) hitbox.visible = isTouch;
-      }
-    }
   }
 
   function createWatermarkText()

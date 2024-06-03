@@ -107,7 +107,6 @@ class MainMenuState extends MusicBeatState
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
-      FlxTween.tween(virtualPad, {alpha: 0}, 0.2, {ease: FlxEase.circOut});
       openSubState(new FreeplayState());
     });
 
@@ -150,9 +149,6 @@ class MainMenuState extends MusicBeatState
         });
       }
     });
-
-    addVirtualPad(UP_DOWN, A_B);
-    virtualPad.y -= 18;
 
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
@@ -200,7 +196,6 @@ class MainMenuState extends MusicBeatState
   override function closeSubState():Void
   {
     magenta.visible = false;
-    if (virtualPad.alpha == 0) FlxTween.tween(virtualPad, {alpha: 0.4}, 0.9, {ease: FlxEase.expoOut});
     super.closeSubState();
   }
 
@@ -356,7 +351,7 @@ class MainMenuState extends MusicBeatState
     if (_exiting) menuItems.enabled = false;
 
     if (((controls.BACK)
-      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed && MusicBeatState.canTouch))
+      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed && MusicBeatState.isTouch))
       && menuItems.enabled
       && !menuItems.busy)
     {
