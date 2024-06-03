@@ -63,7 +63,7 @@ class OptionsState extends MusicBeatState
     currentPage.enabled = false;
 
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
-    
+
     super.create();
   }
 
@@ -163,12 +163,9 @@ class Page extends FlxGroup
 
   function updateEnabled(elapsed:Float)
   {
-    var canTouch = TouchUtil.overlapsComplex(backButton)
-      && TouchUtil.justPressed
-      && MusicBeatState.isTouch;
     // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
     if (canExit && (controls.BACK || (backButton != null && TouchUtil.overlapsComplex(backButton)
-      && TouchUtil.justPressed && MusicBeatState.canTouch)))
+      && TouchUtil.justPressed)))
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
@@ -208,7 +205,7 @@ class OptionsMenu extends Page
 
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() switchPage(Preferences));
-    if (!MusicBeatState.isTouch) createItem("CONTROLS", function() switchPage(Controls));
+    createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
       FlxG.state.openSubState(new LatencyState());
     });

@@ -100,30 +100,21 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     var newIndex = 0;
 
-    if (MusicBeatState.isTouch)
+    // Define unified input handlers
+    final inputUp = SwipeUtil.swipeUp || controls.UI_UP_P;
+    final inputDown = SwipeUtil.swipeDown || controls.UI_DOWN_P;
+    final inputLeft = SwipeUtil.swipeLeft || controls.UI_LEFT_P;
+    final inputRight = SwipeUtil.swipeRight || controls.UI_RIGHT_P;
+    
+    newIndex = switch (navControls)
     {
-      newIndex = switch (navControls)
-      {
-        case Vertical: navList(SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY);
-        case Horizontal: navList(SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX);
-        case Both: navList(SwipeUtil.swipeLeft || SwipeUtil.swipeUp, SwipeUtil.swipeRight || SwipeUtil.swipeDown, !wrapMode.match(None));
-
-        case Columns(num): navGrid(num, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY);
-        case Rows(num): navGrid(num, SwipeUtil.swipeUp, SwipeUtil.swipeDown, wrapY, SwipeUtil.swipeLeft, SwipeUtil.swipeRight, wrapX);
-      };
-    }
-    else
-    {
-      newIndex = switch (navControls)
-      {
-        case Vertical: navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-        case Horizontal: navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-        case Both: navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
-
-        case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-        case Rows(num): navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-      };
-    }
+        case Vertical: navList(inputUp, inputDown, wrapY);
+        case Horizontal: navList(inputLeft, inputRight, wrapX);
+        case Both: navList(inputLeft || inputUp, inputRight || inputDown, !wrapMode.match(None));
+    
+        case Columns(num): navGrid(num, inputLeft, inputRight, wrapX, inputUp, inputDown, wrapY);
+        case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
+    };
 
     if (newIndex != selectedIndex)
     {
@@ -137,12 +128,11 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     // TODO: Clean this? Does it need to be cleaned? isMainMenuState could be moved to new() instead perhaps.
 
     // conditions for touch input, might need refining? Don't forget after proposal.
-    var canTouch = MusicBeatState.isTouch;
     var isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
     var isPixelOverlap = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
     var isRegularOverlap = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
     var pageCheck = currentPage != null || currentPage != Preferences;
-    var isInputOverlap = ((isMainMenuState && isPixelOverlap) || (isRegularOverlap && !isMainMenuState && pageCheck)) && canTouch;
+    var isInputOverlap = ((isMainMenuState && isPixelOverlap) || (isRegularOverlap && !isMainMenuState && pageCheck));
 
     /** The reason why we're using pixelOverlap for MainMenuState is due to the offsets,
      * overlaps checks for the sprite's hitbox, not the graphic itself.

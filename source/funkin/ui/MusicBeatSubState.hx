@@ -33,11 +33,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public var conductorInUse(get, set):Conductor;
 
-  public static var isTouch:Bool = FlxG.onMobile ? true : false;
-
-  // To check if you can touch
-  public static var canTouch:Bool = isTouch && !Preferences.legacyControls;
-
   var _conductorInUse:Null<Conductor>;
 
   function get_conductorInUse():Conductor
@@ -118,11 +113,9 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     //definitely not based on previous functions...
     if (backButton != null) remove(backButton);
-    
+
     backButton = new Backspace(xPos, yPos, color);
-    
-    backButton.active = backButton.visible = canTouch;
-    
+
     if (FlxG.onMobile) add(backButton);
   }
 

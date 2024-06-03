@@ -351,7 +351,7 @@ class MainMenuState extends MusicBeatState
     if (_exiting) menuItems.enabled = false;
 
     if (((controls.BACK)
-      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed && MusicBeatState.isTouch))
+      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed))
       && menuItems.enabled
       && !menuItems.busy)
     {

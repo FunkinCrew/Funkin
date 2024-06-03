@@ -787,18 +787,18 @@ class FreeplayState extends MusicBeatSubState
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
-    var touchPress:Bool = MusicBeatSubState.canTouch && TouchUtil.justReleased && !SwipeUtil.swipeAny;
+    var touchPress:Bool = TouchUtil.justReleased && !SwipeUtil.swipeAny;
 
-    if (TouchUtil.pressed && MusicBeatSubState.canTouch) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
+    if (TouchUtil.pressed ) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
 
     // These are unusued, maybe we should comment them out?
-    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch);
-    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown && MusicBeatSubState.canTouch);
+    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp );
+    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown );
     // this one is fine though
     var accepted:Bool = (controls.ACCEPT && !FlxG.keys.pressed.CONTROL)
       || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && touchPress);
 
-    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP || controls.UI_DOWN) || ((SwipeUtil.swipeUp || SwipeUtil.swipeDown) && MusicBeatSubState.canTouch)))
+    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP || controls.UI_DOWN) || ((SwipeUtil.swipeUp || SwipeUtil.swipeDown) )))
     {
       if (spamming)
       {
@@ -806,7 +806,7 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
 
-          if (controls.UI_UP || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch))
+          if (controls.UI_UP || (SwipeUtil.swipeUp ))
           {
             changeSelection(-1);
           }
@@ -822,7 +822,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else if (spamTimer <= 0)
       {
-        if (controls.UI_UP || (SwipeUtil.swipeUp && MusicBeatSubState.canTouch))
+        if (controls.UI_UP || (SwipeUtil.swipeUp ))
         {
           changeSelection(-1);
         }
@@ -874,14 +874,14 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
-    if (TouchUtil.overlapsComplex(diffSelLeft) && MusicBeatState.isTouch && TouchUtil.justPressed)
+    if (TouchUtil.overlapsComplex(diffSelLeft) && TouchUtil.justPressed)
     {
       diffSelLeft.setPress(true);
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if (TouchUtil.overlapsComplex(diffSelRight) && MusicBeatState.isTouch && TouchUtil.justPressed)
+    if (TouchUtil.overlapsComplex(diffSelRight) && TouchUtil.justPressed)
     {
       diffSelRight.setPress(true);
       dj.resetAFKTimer();
@@ -1294,11 +1294,9 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
-    if (!MusicBeatSubState.isTouch)
-    {
-      if (flipX && controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
-      if (!flipX && controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
-    }
+    if (flipX && controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
+
     super.update(elapsed);
   }
 

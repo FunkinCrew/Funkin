@@ -328,30 +328,30 @@ class StoryMenuState extends MusicBeatState
     {
       if (!selectedLevel)
       {
-        if (controls.UI_UP_P || (SwipeUtil.swipeUp && MusicBeatState.canTouch))
+        if (controls.UI_UP_P || (SwipeUtil.swipeUp))
         {
           changeLevel(-1);
           changeDifficulty(0);
         }
 
-        if (controls.UI_DOWN_P || (SwipeUtil.swipeDown && MusicBeatState.canTouch))
+        if (controls.UI_DOWN_P || (SwipeUtil.swipeDown))
         {
           changeLevel(1);
           changeDifficulty(0);
         }
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P || (TouchUtil.overlaps(rightDifficultyArrow) && TouchUtil.justPressed && MusicBeatState.canTouch))
+        if (controls.UI_RIGHT_P || (TouchUtil.overlaps(rightDifficultyArrow) && TouchUtil.justPressed))
         {
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P || (TouchUtil.overlaps(leftDifficultyArrow) && TouchUtil.justPressed && MusicBeatState.canTouch))
+        if (controls.UI_LEFT_P || (TouchUtil.overlaps(leftDifficultyArrow) && TouchUtil.justPressed))
         {
           changeDifficulty(-1);
         }
 
-        if (controls.UI_RIGHT || (TouchUtil.overlaps(rightDifficultyArrow) && MusicBeatState.canTouch))
+        if (controls.UI_RIGHT || TouchUtil.overlaps(rightDifficultyArrow))
         {
           rightDifficultyArrow.animation.play('press');
         }
@@ -360,7 +360,7 @@ class StoryMenuState extends MusicBeatState
           rightDifficultyArrow.animation.play('idle');
         }
 
-        if (controls.UI_LEFT || (TouchUtil.overlaps(leftDifficultyArrow) && MusicBeatState.canTouch))
+        if (controls.UI_LEFT || TouchUtil.overlaps(leftDifficultyArrow))
         {
           leftDifficultyArrow.animation.play('press');
         }
@@ -373,8 +373,7 @@ class StoryMenuState extends MusicBeatState
       if (controls.ACCEPT
         || (TouchUtil.overlaps(levelTitles.members[levelList.indexOf(currentLevelId)])
           && TouchUtil.justPressed
-          && !TouchUtil.overlaps(leftDifficultyArrow)
-          && MusicBeatState.canTouch))
+          && !TouchUtil.overlaps(leftDifficultyArrow)))
       {
         selectLevel();
       }

@@ -227,14 +227,14 @@ class GameOverSubState extends MusicBeatSubState
 
     // Restart the level when pressing the assigned key.
     // Removed the tapping BF thing due to it not working 50% of the time.
-    if ((controls.ACCEPT || (TouchUtil.justPressed && MusicBeatSubState.canTouch && !TouchUtil.overlaps(backButton))) && blueballed)
+    if ((controls.ACCEPT || (TouchUtil.justPressed && !TouchUtil.overlaps(backButton))) && blueballed)
     {
       blueballed = false;
       confirmDeath();
     }
 
     // Return to the menu when pressing the assigned key.
-    if ((controls.BACK || (TouchUtil.justPressed && MusicBeatSubState.canTouch && TouchUtil.overlaps(backButton))) && !mustNotExit)
+    if ((controls.BACK || (TouchUtil.justPressed && TouchUtil.overlaps(backButton))) && !mustNotExit)
     {
       blueballed = false;
       PlayState.instance.deathCounter = 0;
