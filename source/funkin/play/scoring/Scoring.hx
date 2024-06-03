@@ -462,9 +462,75 @@ enum abstract ScoringRank(String)
     {
       case PERFECT_GOLD | PERFECT:
         // return 2.5;
-        return 5.0;
+        return 95/24;
       case EXCELLENT:
-        return 1.75;
+        return 0;
+      case GREAT:
+        return 5/24;
+      case GOOD:
+        return 3/24;
+      case SHIT:
+        return 2/24;
+      default:
+        return 3.5;
+    }
+  }
+
+  public function getBFDelay():Float
+  {
+    switch (abstract)
+    {
+      case PERFECT_GOLD | PERFECT:
+        // return 2.5;
+        return 95/24;
+      case EXCELLENT:
+        return 97/24;
+      case GREAT:
+        return 95/24;
+      case GOOD:
+        return 95/24;
+      case SHIT:
+        return 95/24;
+      default:
+        return 3.5;
+    }
+  }
+
+  public function getFlashDelay():Float
+  {
+    switch (abstract)
+    {
+      case PERFECT_GOLD | PERFECT:
+        // return 2.5;
+        return 129/24;
+      case EXCELLENT:
+        return 122/24;
+      case GREAT:
+        return 109/24;
+      case GOOD:
+        return 107/24;
+      case SHIT:
+        return 186/24;
+      default:
+        return 3.5;
+    }
+  }
+
+  public function getHighscoreDelay():Float
+  {
+    switch (abstract)
+    {
+      case PERFECT_GOLD | PERFECT:
+        // return 2.5;
+        return 140/24;
+      case EXCELLENT:
+        return 140/24;
+      case GREAT:
+        return 129/24;
+      case GOOD:
+        return 127/24;
+      case SHIT:
+        return 207/24;
       default:
         return 3.5;
     }
