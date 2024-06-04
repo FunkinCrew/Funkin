@@ -5,7 +5,9 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+#if FLX_TOUCH
 import flixel.input.touch.FlxTouch;
+#end
 
 /**
  * Utility class for handling touch input in a FlxG context.
@@ -44,8 +46,12 @@ class TouchUtil
   {
     if (object == null) return false;
 
+    #if FLX_TOUCH
     for (touch in FlxG.touches.list)
+    {
       if (touch.overlaps(object, camera ?? object.camera)) return true;
+    }
+    #end
 
     return false;
   }
@@ -61,6 +67,7 @@ class TouchUtil
   {
     if (object == null) return false;
 
+    #if FLX_TOUCH
     for (camera in object.cameras)
     {
       for (touch in FlxG.touches.list)
@@ -69,6 +76,7 @@ class TouchUtil
         if (object.overlapsPoint(touch.getWorldPosition(camera, object._point), true, camera)) return true;
       }
     }
+    #end
 
     return false;
   }
@@ -76,10 +84,12 @@ class TouchUtil
   @:noCompletion
   private static function get_pressed():Bool
   {
+    #if FLX_TOUCH
     for (touch in FlxG.touches.list)
     {
       if (touch.pressed) return true;
     }
+    #end
 
     return false;
   }
@@ -87,10 +97,12 @@ class TouchUtil
   @:noCompletion
   private static function get_justPressed():Bool
   {
+    #if FLX_TOUCH
     for (touch in FlxG.touches.list)
     {
       if (touch.justPressed) return true;
     }
+    #end
 
     return false;
   }
@@ -98,10 +110,12 @@ class TouchUtil
   @:noCompletion
   private static function get_justReleased():Bool
   {
+    #if FLX_TOUCH
     for (touch in FlxG.touches.list)
     {
       if (touch.justReleased) return true;
     }
+    #end
 
     return false;
   }
@@ -109,13 +123,15 @@ class TouchUtil
   @:noCompletion
   private static function get_touch():FlxTouch
   {
+    #if FLX_TOUCH
     for (touch in FlxG.touches.list)
     {
-      if (touch == null) continue;
-
-      return touch;
+      if (touch != null) return touch;
     }
 
     return FlxG.touches.getFirst();
+    #else
+    return null;
+    #end
   }
 }
