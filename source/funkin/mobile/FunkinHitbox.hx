@@ -1,6 +1,9 @@
 package funkin.mobile;
 
+import funkin.mobile.ControlsHandler;
 import funkin.mobile.FunkinButton;
+import funkin.play.notes.NoteSprite;
+import flixel.input.actions.FlxActionInput;
 import flixel.graphics.FlxGraphic;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
@@ -33,26 +36,31 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
    */
   public var onHintUp:FlxTypedSignal<FunkinButton->Void> = new FlxTypedSignal<FunkinButton->Void>();
 
+  var trackedInputs:Array<FlxActionInput> = [];
+
   /**
    * Create the zone.
-   *
-   * @param ammo The ammount of buttons you want to create.
-   * @param perHintWidth The width that the buttons will use.
-   * @param perHintHeight The height that the buttons will use.
-   * @param colors The color per button.
    */
-  public function new(ammo:UInt, perHintWidth:Int, perHintHeight:Int, colors:Array<FlxColor>):Void
+  public function new():Void
   {
     super();
 
-    if (colors == null || colors.length < ammo) colors = [for (i in 0...ammo) 0xFFFFFFFF];
+    final hintsColors:Array<FlxColor> = [0xFFC34B9A, 0xFF00FFFF, 0xFF12FB06, 0xFFF9393F];
+    final hintWidth:Int = Math.floor(FlxG.width / NoteSprite.DIRECTION_COLORS);
+    final hintHeight:Int = FlxG.height;
 
-    for (i in 0...ammo)
-      add(hints[i] = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, i, colors[i]));
+    for (i in 0...NoteSprite.DIRECTION_COLORS)
+    {
+      var hint:FunkinButton = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, i, hintsColors[i]);
+      hints[hint.ID] = hint;
+      add(hint);
+    }
 
     scrollFactor.set();
 
     zIndex = 100000;
+
+    ControlsHandler.setupHitbox(PlayerSettings.player1.controls, this, trackedInputs);
   }
 
   private function createHint(x:Float, y:Float, width:Int, height:Int, id:Int, color:FlxColor = 0xFFFFFFFF):FunkinButton
@@ -99,6 +107,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
    */
   override public function destroy():Void
   {
+    if (trackedInputs != null && trackedInputs.length > 0) ControlsHandler.removeCachedInput(PlayerSettings.player1.controls, trackedInputs);
+
     super.destroy();
 
     hints = FlxDestroyUtil.destroyArray(hints);
