@@ -16,7 +16,7 @@ import thx.semver.Version;
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.4";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.5";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -56,6 +56,9 @@ class Save
     if (data == null) this.data = Save.getDefault();
     else
       this.data = data;
+
+    // Make sure the verison number is up to date before we flush.
+    this.data.version = Save.SAVE_DATA_VERSION;
   }
 
   public static function getDefault():RawSaveData
@@ -713,7 +716,6 @@ class Save
       {
         trace('[SAVE] Found legacy save data, converting...');
         var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
-        @:privateAccess
         FlxG.save.mergeData(gameSave.data, true);
       }
       else
@@ -725,20 +727,19 @@ class Save
     }
     else
     {
-      trace('[SAVE] Loaded save data.');
-      @:privateAccess
+      trace('[SAVE] Found existing save data.');
       var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
       FlxG.save.mergeData(gameSave.data, true);
     }
   }
 
-  public static function archiveBadSaveData(data:Dynamic):Void
+  public static function archiveBadSaveData(data:Dynamic):Int
   {
     // We want to save this somewhere so we can try to recover it for the user in the future!
 
     final RECOVERY_SLOT_START = 1000;
 
-    writeToAvailableSlot(RECOVERY_SLOT_START, data);
+    return writeToAvailableSlot(RECOVERY_SLOT_START, data);
   }
 
   public static function debug_queryBadSaveData():Void
@@ -763,7 +764,7 @@ class Save
     return targetSaveData.data;
   }
 
-  static function writeToAvailableSlot(slot:Int, data:Dynamic):Void
+  static function writeToAvailableSlot(slot:Int, data:Dynamic):Int
   {
     trace('[SAVE] Finding slot to write data to (starting with ${slot})...');
 
@@ -781,6 +782,7 @@ class Save
     targetSaveData.mergeData(data, true);
 
     trace('[SAVE] Data written to slot ${slot}!');
+    return slot;
   }
 
   /**

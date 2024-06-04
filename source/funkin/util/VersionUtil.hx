@@ -23,6 +23,8 @@ class VersionUtil
   {
     try
     {
+      var versionRaw:thx.semver.Version.SemVer = version;
+      trace('${versionRaw} satisfies (${versionRule})? ${version.satisfies(versionRule)}');
       return version.satisfies(versionRule);
     }
     catch (e)
@@ -40,10 +42,22 @@ class VersionUtil
     {
       // This is bad! versionData.version should be an array!
       trace('[SAVE] Version data repair required! (got ${versionData.version})');
-      var fixedVersionData = [versionData.version[0], versionData.version[1], versionData.version[2]];
-      versionData.version = fixedVersionData;
+      // Turn the objects back into arrays.
+      // I'd use DynamicsT.values but IDK if it maintains order
+      versionData.version = [versionData.version[0], versionData.version[1], versionData.version[2]];
+
+      // This is so jank but it should work.
+      var buildData:Dynamic<String> = cast versionData.build;
+      var buildDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(buildData)
+        .map(function(d:Dynamic) return StringId(d.toString()));
+      versionData.build = buildDataFixed;
+
+      var preData:Dynamic<String> = cast versionData.pre;
+      var preDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(preData).map(function(d:Dynamic) return StringId(d.toString()));
+      versionData.pre = preDataFixed;
 
       var fixedVersion:thx.semver.Version = versionData;
+      trace('[SAVE] Fixed version: ${fixedVersion}');
       return fixedVersion;
     }
     else
