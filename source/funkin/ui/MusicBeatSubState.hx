@@ -13,15 +13,12 @@ import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 import funkin.input.Controls;
-import funkin.util.TouchUtil;
-import funkin.input.PreciseInputManager;
-import flixel.input.actions.FlxActionInput;
-import flixel.util.FlxDestroyUtil;
-import flixel.FlxCamera;
-import funkin.mobile.ControlsHandler;
+#if mobile
+import funkin.graphics.FunkinCamera;
 import funkin.mobile.FunkinHitbox;
 import funkin.mobile.PreciseInputHandler;
 import funkin.mobile.Backspace;
+#end
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
@@ -57,62 +54,47 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   inline function get_controls():Controls
     return PlayerSettings.player1.controls;
 
+  #if mobile
   public var hitbox:FunkinHitbox;
   public var backButton:Backspace;
-
-  public var hitboxCam:FlxCamera;
-
-  var trackedInputsHitbox:Array<FlxActionInput> = [];
+  public var controlsCamera:FunkinCamera;
 
   public function addHitbox(?visible:Bool = true, ?initInput:Bool = true):Void
   {
     if (hitbox != null)
     {
-      removeHitbox();
+      hitbox.destory();
+      remove(hitbox);
     }
 
-    hitbox = new FunkinHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xC34B9A, 0x00FFFF, 0x12FB06, 0xF9393F]);
-    ControlsHandler.setupHitbox(controls, hitbox, trackedInputsHitbox);
+    if (controlsCamera == null)
+    {
+      controlsCamera = new FunkinCamera('controlsCamera');
+      FlxG.cameras.add(controlsCamera, false);
+      controlsCamera.bgColor = 0x0;
+    }
+
+    hitbox = new FunkinHitbox();
+    hitbox.camera = controlsCamera;
     hitbox.visible = visible;
     add(hitbox);
 
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
 
-  public function addHitboxCamera(DefaultDrawTarget:Bool = false):Void
-  {
-    if (hitbox == null || hitboxCam != null) return;
-    hitboxCam = new FlxCamera();
-    FlxG.cameras.add(hitboxCam, DefaultDrawTarget);
-    hitboxCam.bgColor.alpha = 0;
-    hitbox.cameras = [hitboxCam];
-  }
-
-  public function removeHitbox():Void
-  {
-    if (trackedInputsHitbox != null && trackedInputsHitbox.length > 0)
-    {
-      ControlsHandler.removeCachedInput(controls, trackedInputsHitbox);
-    }
-
-    if (hitbox != null)
-    {
-      remove(hitbox);
-    }
-
-    if (hitboxCam != null)
-    {
-      FlxG.cameras.remove(hitboxCam, false);
-      hitboxCam = FlxDestroyUtil.destroy(hitboxCam);
-    }
-  }
-
-  #if mobile
   public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?onClick:Void->Void = null):Void
   {
     if (backButton != null) remove(backButton);
 
+    if (controlsCamera == null)
+    {
+      controlsCamera = new FunkinCamera('controlsCamera');
+      FlxG.cameras.add(controlsCamera, false);
+      controlsCamera.bgColor = 0x0;
+    }
+
     backButton = new Backspace(xPos, yPos, color, onClick);
+    backButton.camera = controlsCamera;
     add(backButton);
   }
   #end
@@ -129,22 +111,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   public override function destroy():Void
   {
-    if (trackedInputsHitbox != null && trackedInputsHitbox.length > 0)
-    {
-      ControlsHandler.removeCachedInput(controls, trackedInputsHitbox);
-    }
-
     super.destroy();
-
-    if (hitbox != null)
-    {
-      hitbox = FlxDestroyUtil.destroy(hitbox);
-    }
-
-    if (backButton != null)
-    {
-      backButton = FlxDestroyUtil.destroy(backButton);
-    }
 
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
