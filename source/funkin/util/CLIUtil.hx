@@ -20,7 +20,6 @@ class CLIUtil
     #if android
     gameDir = Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : android.content.Context.getExternalFilesDir());
     #elseif ios
-    //gameDir = Path.addTrailingSlash(lime.system.System.documentsDirectory);
     // Why? Because for some reason lime.system.System.documentsDirectory is returning a directory that's different and we're unable to read or write from, so it's disabled until a solution is found...
     trace('[WARN]: Reseting the Current Working Directory is unavailable on iOS targets');
     gameDir = cwd;
