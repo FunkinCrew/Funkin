@@ -62,8 +62,6 @@ class OptionsState extends MusicBeatState
     // disable for intro transition
     currentPage.enabled = false;
 
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
-
     super.create();
   }
 
