@@ -2,6 +2,7 @@ package funkin.mobile;
 
 import flixel.input.FlxInput;
 import funkin.input.PreciseInputManager;
+import funkin.mobile.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
 import haxe.ds.Map;
 import haxe.Int64;
@@ -15,16 +16,16 @@ class PreciseInputHandler
   /**
    * The list of hints that are bound to game inputs (up/down/left/right).
    */
-  static var _hintList:Array<FunkinButton> = [];
+  static var _hintList:Array<FunkinHint> = [];
 
   /**
    * The direction that a given hint is bound to.
    */
-  static var _hintListDir:Map<FunkinButton, NoteDirection> = new Map<FunkinButton, NoteDirection>();
+  static var _hintListDir:Map<FunkinHint, NoteDirection> = new Map<FunkinHint, NoteDirection>();
 
   static var _hintListMap:Map<Int, FlxInput<Int>> = new Map<Int, FlxInput<Int>>();
 
-  public static function getHintForDirection(noteDirection:NoteDirection, hitbox:FunkinHitbox):FunkinButton
+  public static function getHintForDirection(noteDirection:NoteDirection, hitbox:FunkinHitbox):FunkinHint
   {
     return switch (noteDirection)
     {
@@ -44,7 +45,7 @@ class PreciseInputHandler
 
     for (noteDirection in PreciseInputManager.DIRECTIONS)
     {
-      var hint:FunkinButton = getHintForDirection(noteDirection, hitbox);
+      var hint:FunkinHint = getHintForDirection(noteDirection, hitbox);
 
       _hintList[hint.ID] = hint;
       _hintListMap.set(hint.ID, @:privateAccess hint.input);
@@ -57,12 +58,12 @@ class PreciseInputHandler
     return _hintListMap.get(hintID);
   }
 
-  public static function getDirectionForHint(hint:FunkinButton):NoteDirection
+  public static function getDirectionForHint(hint:FunkinHint):NoteDirection
   {
     return _hintListDir.get(hint);
   }
 
-  static function handleHintnDown(hint:FunkinButton):Void
+  static function handleHintnDown(hint:FunkinHint):Void
   {
     var timestamp:Int64 = PreciseInputManager.getCurrentTimestamp();
 
@@ -83,7 +84,7 @@ class PreciseInputHandler
     }
   }
 
-  static function handleHintUp(hint:FunkinButton):Void
+  static function handleHintUp(hint:FunkinHint):Void
   {
     var timestamp:Int64 = PreciseInputManager.getCurrentTimestamp();
 
