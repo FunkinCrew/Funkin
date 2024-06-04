@@ -2003,7 +2003,9 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
+    #if mobile
     hitbox.visible = true;
+    #end
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
@@ -2765,10 +2767,15 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused) return;
 
+    var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
 
     #if android
     androidPause = FlxG.android.justPressed.BACK;
+    #end
+
+    #if mobile
+    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justReleased;
     #end
 
     if (currentConversation != null)
@@ -2778,7 +2785,7 @@ class PlayState extends MusicBeatSubState
       {
         currentConversation.advanceConversation();
       }
-      else if ((controls.PAUSE || androidPause) && !justUnpaused)
+      else if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
         currentConversation.pauseMusic();
 
@@ -2794,7 +2801,7 @@ class PlayState extends MusicBeatSubState
     else if (VideoCutscene.isPlaying())
     {
       // This is a video cutscene.
-      if ((controls.PAUSE || androidPause) && !justUnpaused)
+      if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
         VideoCutscene.pauseVideo();
 
@@ -2830,7 +2837,9 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
-    hitbox.visible = false;
+    #if mobile
+    hitbox.visible = pauseButton.visible = false;
+    #end
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);
