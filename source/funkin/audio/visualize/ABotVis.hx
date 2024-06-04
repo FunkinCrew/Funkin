@@ -95,7 +95,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
    */
   function drawFFT():Void
   {
-    var levels = analyzer.getLevels();
+    var levels = analyzer.getLevels(false);
 
     for (i in 0...min(group.members.length, levels.length))
     {
