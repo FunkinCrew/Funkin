@@ -732,6 +732,87 @@ class Save
     }
   }
 
+  public static function archiveBadSaveData(data:Dynamic):Void
+  {
+    // We want to save this somewhere so we can try to recover it for the user in the future!
+
+    final RECOVERY_SLOT_START = 1000;
+
+    writeToAvailableSlot(RECOVERY_SLOT_START, data);
+  }
+
+  public static function debug_queryBadSaveData():Void
+  {
+    final RECOVERY_SLOT_START = 1000;
+    final RECOVERY_SLOT_END = 1100;
+    var firstBadSaveData = querySlotRange(RECOVERY_SLOT_START, RECOVERY_SLOT_END);
+    if (firstBadSaveData > 0)
+    {
+      trace('[SAVE] Found bad save data in slot ${firstBadSaveData}!');
+      trace('We should look into recovery...');
+
+      trace(haxe.Json.stringify(fetchFromSlotRaw(firstBadSaveData)));
+    }
+  }
+
+  static function fetchFromSlotRaw(slot:Int):Null<Dynamic>
+  {
+    var targetSaveData = new FlxSave();
+    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    if (targetSaveData.isEmpty()) return null;
+    return targetSaveData.data;
+  }
+
+  static function writeToAvailableSlot(slot:Int, data:Dynamic):Void
+  {
+    trace('[SAVE] Finding slot to write data to (starting with ${slot})...');
+
+    var targetSaveData = new FlxSave();
+    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    while (!targetSaveData.isEmpty())
+    {
+      // Keep trying to bind to slots until we find an empty slot.
+      trace('[SAVE] Slot ${slot} is taken, continuing...');
+      slot++;
+      targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    }
+
+    trace('[SAVE] Writing data to slot ${slot}...');
+    targetSaveData.mergeData(data, true);
+
+    trace('[SAVE] Data written to slot ${slot}!');
+  }
+
+  /**
+   * Return true if the given save slot is not empty.
+   * @param slot The slot number to check.
+   * @return Whether the slot is not empty.
+   */
+  static function querySlot(slot:Int):Bool
+  {
+    var targetSaveData = new FlxSave();
+    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    return !targetSaveData.isEmpty();
+  }
+
+  /**
+   * Return true if any of the slots in the given range is not empty.
+   * @param start The starting slot number to check.
+   * @param end The ending slot number to check.
+   * @return The first slot in the range that is not empty, or `-1` if none are.
+   */
+  static function querySlotRange(start:Int, end:Int):Int
+  {
+    for (i in start...end)
+    {
+      if (querySlot(i))
+      {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   static function fetchLegacySaveData():Null<RawSaveData_v1_0_0>
   {
     trace("[SAVE] Checking for legacy save data...");

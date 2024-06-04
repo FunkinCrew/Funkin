@@ -39,13 +39,16 @@ class VersionUtil
     if (thx.Types.isAnonymousObject(versionData.version))
     {
       // This is bad! versionData.version should be an array!
-      versionData.version = [versionData.version[0], versionData.version[1], versionData.version[2]];
+      trace('[SAVE] Version data repair required! (got ${versionData.version})');
+      var fixedVersionData = [versionData.version[0], versionData.version[1], versionData.version[2]];
+      versionData.version = fixedVersionData;
 
       var fixedVersion:thx.semver.Version = versionData;
       return fixedVersion;
     }
     else
     {
+      trace('[SAVE] Version data repair not required (got ${version})');
       // No need for repair.
       return version;
     }

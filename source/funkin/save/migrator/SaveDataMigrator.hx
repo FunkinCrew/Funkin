@@ -36,6 +36,7 @@ class SaveDataMigrator
       {
         var message:String = 'Error migrating save data, expected ${Save.SAVE_DATA_VERSION}.';
         lime.app.Application.current.window.alert(message, "Save Data Failure");
+        Save.archiveBadSaveData(inputData);
         trace('[SAVE] ' + message);
         return new Save(Save.getDefault());
       }
