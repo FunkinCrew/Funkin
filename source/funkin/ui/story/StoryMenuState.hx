@@ -381,7 +381,7 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    if (((controls.BACK) || (TouchUtil.overlaps(backButton) && TouchUtil.justReleased && !SwipeUtil.swipeAny))
+    if (((controls.BACK) #if mobile || (TouchUtil.overlaps(backButton) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
       && !exitingMenu
       && !selectedLevel)
     {
