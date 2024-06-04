@@ -118,7 +118,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
   }
 
-  public function addBackButton(xPos:Float, yPos:Float, ?color:FlxColor = FlxColor.WHITE):Void
+  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE):Void
   {
     //definitely not based on previous functions...
     if (backButton != null) remove(backButton);
