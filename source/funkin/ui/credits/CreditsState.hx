@@ -112,7 +112,9 @@ class CreditsState extends MusicBeatState
       });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
+    #if mobile
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE);
+    #end
   }
 
   function buildCreditsGroup():Void

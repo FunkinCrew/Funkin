@@ -564,8 +564,11 @@ class FreeplayState extends MusicBeatSubState
     touchBuddy = new FlxSprite().makeGraphic(10, 10, FlxColor.GREEN);
     touchBuddy.cameras = [funnyCam]; // this is stupid but it works.
 
+    #if mobile
     addBackButton(FlxG.width * 0.96, FlxG.height * 0.84);
+
     FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
+    #end
   }
 
   var currentFilter:SongFilter = null;

@@ -81,11 +81,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
 
     hitbox = new FunkinHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xC34B9A, 0x00FFFF, 0x12FB06, 0xF9393F]);
-
     ControlsHandler.setupHitbox(controls, hitbox, trackedInputsHitbox);
-
     hitbox.visible = visible;
-    if (FlxG.onMobile) add(hitbox);
+    add(hitbox);
 
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
@@ -118,15 +116,15 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
   }
 
+  #if mobile
   public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE):Void
   {
-    //definitely not based on previous functions...
     if (backButton != null) remove(backButton);
 
     backButton = new Backspace(xPos, yPos, color);
-
-    if (FlxG.onMobile) add(backButton);
+    add(backButton);
   }
+  #end
 
   override function create()
   {

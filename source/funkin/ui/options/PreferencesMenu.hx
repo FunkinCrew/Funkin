@@ -80,13 +80,10 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Allow Screen Timeout', 'Toggle screen timeout', function(value:Bool):Void {
       Preferences.screenTimeout = value;
     }, Preferences.screenTimeout);
+    createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
+      Preferences.vibration = value;
+    }, Preferences.vibration);
     #end
-    if (FlxG.onMobile)
-    {
-      createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
-        Preferences.vibration = value;
-      }, Preferences.vibration);
-    }
   }
 
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void

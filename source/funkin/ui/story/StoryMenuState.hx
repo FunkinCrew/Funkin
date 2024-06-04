@@ -223,7 +223,9 @@ class StoryMenuState extends MusicBeatState
     DiscordClient.changePresence('In the Menus', null);
     #end
 
+    #if mobile
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
+    #end
   }
 
   function rememberSelection():Void
