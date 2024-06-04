@@ -66,7 +66,7 @@ class AlbumRoll extends FlxSpriteGroup
     add(newAlbumArt);
 
     difficultyStars = new DifficultyStars(140, 39);
-    difficultyStars.stars.visible = false;
+    difficultyStars.visible = false;
     add(difficultyStars);
   }
 
@@ -149,7 +149,7 @@ class AlbumRoll extends FlxSpriteGroup
     newAlbumArt.visible = true;
     newAlbumArt.playAnimation(animNames.get('$albumId-active'), false, false, false);
 
-    difficultyStars.stars.visible = false;
+    difficultyStars.visible = false;
     new FlxTimer().start(0.75, function(_) {
       // showTitle();
       showStars();
@@ -172,6 +172,7 @@ class AlbumRoll extends FlxSpriteGroup
    */
   public function showStars():Void
   {
-    difficultyStars.stars.visible = true; // true;
+    difficultyStars.visible = true; // true;
+    difficultyStars.flameCheck();
   }
 }

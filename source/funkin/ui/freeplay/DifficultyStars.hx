@@ -19,7 +19,7 @@ class DifficultyStars extends FlxSpriteGroup
 
   public var stars:FlxAtlasSprite;
 
-  var flames:FreeplayFlames;
+  public var flames:FreeplayFlames;
 
   var hsvShader:HSVShader;
 
@@ -80,11 +80,16 @@ class DifficultyStars extends FlxSpriteGroup
       curDifficulty = difficulty - 1;
     }
 
+    flameCheck();
+
+    return difficulty;
+  }
+
+  public function flameCheck():Void
+  {
     if (difficulty > 10) flames.flameCount = difficulty - 10;
     else
       flames.flameCount = 0;
-
-    return difficulty;
   }
 
   function set_curDifficulty(value:Int):Int
