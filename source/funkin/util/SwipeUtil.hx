@@ -61,11 +61,9 @@ class SwipeUtil
   {
     for (swipe in FlxG.swipes)
     {
-      if (swipe.degrees > -135 && swipe.degrees < -45 && swipe.distance > 20)
-      {
-        return true;
-      }
+      if (swipe.degrees > -135 && swipe.degrees < -45 && swipe.distance > 20) return true;
     }
+
     return false;
   }
 
@@ -79,11 +77,9 @@ class SwipeUtil
   {
     for (swipe in FlxG.swipes)
     {
-      if ((swipe.degrees > 135 || swipe.degrees < -135) && swipe.distance > 20)
-      {
-        return true;
-      }
+      if ((swipe.degrees > 135 || swipe.degrees < -135) && swipe.distance > 20) return true;
     }
+
     return false;
   }
 
@@ -97,11 +93,9 @@ class SwipeUtil
   {
     for (swipe in FlxG.swipes)
     {
-      if (swipe.degrees > -45 && swipe.degrees < 45 && swipe.distance > 20)
-      {
-        return true;
-      }
+      if (swipe.degrees > -45 && swipe.degrees < 45 && swipe.distance > 20) return true;
     }
+
     return false;
   }
 
@@ -115,11 +109,9 @@ class SwipeUtil
   {
     for (swipe in FlxG.swipes)
     {
-      if (swipe.degrees > 45 && swipe.degrees < 135 && swipe.distance > 20)
-      {
-        return true;
-      }
+      if (swipe.degrees > 45 && swipe.degrees < 135 && swipe.distance > 20) return true;
     }
+
     return false;
   }
 
@@ -131,6 +123,6 @@ class SwipeUtil
   @:noCompletion
   static function get_swipeAny():Bool
   {
-    return get_swipeDown() || get_swipeLeft() || get_swipeRight() || get_swipeUp();
+    return swipeDown || swipeLeft || swipeRight || swipeUp;
   }
 }
