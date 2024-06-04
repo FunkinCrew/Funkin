@@ -63,8 +63,9 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     if (hitbox != null)
     {
-      hitbox.destory();
+      hitbox.kill();
       remove(hitbox);
+      hitbox.destroy();
     }
 
     if (camControls == null)
