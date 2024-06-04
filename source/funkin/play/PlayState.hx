@@ -2097,7 +2097,7 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyPress(event:PreciseInputEvent):Void
   {
-    if (isGamePaused #if mobile || TouchUtil.overlapsComplex(pauseButton) #end) return;
+    if (isGamePaused #if mobile || (pauseButton != null && TouchUtil.overlapsComplex(pauseButton)) #end) return;
 
     // Do the minimal possible work here.
     inputPressQueue.push(event);
@@ -2108,7 +2108,7 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
-    if (isGamePaused #if mobile || TouchUtil.overlapsComplex(pauseButton) #end) return;
+    if (isGamePaused #if mobile || (pauseButton != null && TouchUtil.overlapsComplex(pauseButton)) #end) return;
 
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
