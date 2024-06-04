@@ -2,7 +2,7 @@ name: Build Game for Windows
 on: workflow_dispatch
 jobs:
   Windows:
-    runs-on: ubuntu-24.04
+    runs-on: windows-latest
     strategy:
       fail-fast: false
     steps:
