@@ -72,7 +72,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     if (hitbox != null)
     {
-      hitbox.destory();
+      hitbox.destroy();
       remove(hitbox);
     }
 
