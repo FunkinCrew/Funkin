@@ -267,14 +267,6 @@ class TitleState extends MusicBeatState
 
     Conductor.instance.update();
 
-    #if mobile
-    if (gfDance != null)
-    {
-      gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
-      // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
-    }
-    #end
-
     if (FlxG.keys.justPressed.I)
     {
       FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
