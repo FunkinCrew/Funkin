@@ -14,6 +14,15 @@ import flixel.FlxSprite;
 import flixel.util.FlxSignal;
 
 /**
+ * Enum representing the status of the button.
+ */
+enum abstract FunkinButtonStatus(Int) from Int to Int
+{
+  var NORMAL = 0;
+  var PRESSED = 1;
+}
+
+/**
  * A simple button class that calls a function when touched.
  */
 #if !display
@@ -133,7 +142,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
   private function checkTouchOverlap():Bool
   {
-    final deadZonesChecks:Array<Array<Bool>> = [for (zone in deadZones) [TouchUtil.overlapsComplex(zone), FlxG.overlap(this, zone)]]:
+    final deadZonesChecks:Array<Array<Bool>> = [for (zone in deadZones) [TouchUtil.overlapsComplex(zone), FlxG.overlap(this, zone)]];
     
     for (camera in cameras)
     {
