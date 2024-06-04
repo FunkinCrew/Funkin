@@ -749,6 +749,7 @@ class PlayState extends MusicBeatSubState
     pauseButton.animation.play("idle");
     add(pauseButton);
     pauseButton.color = FlxColor.WHITE;
+    hitbox.hints[3].deadZones.push(pauseButton);
     #end
 
     // Do this last to prevent beatHit from being called before create() is done.
