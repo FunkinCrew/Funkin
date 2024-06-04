@@ -84,7 +84,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
 
     hitbox = new FunkinHitbox();
-    hitbox.camera = controlsCamera;
+    hitbox.cameras = [controlsCamera];
     hitbox.visible = visible;
     add(hitbox);
 
@@ -103,7 +103,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
 
     backButton = new Backspace(xPos, yPos, color, onClick);
-    backButton.camera = controlsCamera;
+    backButton.cameras = [controlsCamera];
     add(backButton);
   }
   #end
