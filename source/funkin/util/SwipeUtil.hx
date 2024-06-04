@@ -1,27 +1,24 @@
 package funkin.util;
 
+#if FLX_POINTER_INPUT
 import flixel.FlxG;
+#end
 
 /**
  * Utility class for handling swipe gestures in HaxeFlixel and dispatching signals for different swipe directions.
+ *
  * Example usage:
  *
  * ```haxe
- * if (SwipeUtil.swipeLeft) {
- *     trace("Swiped left!");
- * }
- * if (SwipeUtil.swipeRight) {
- *     trace("Swiped right!");
- * }
- * if (SwipeUtil.swipeUp) {
- *     trace("Swiped up!");
- * }
- * if (SwipeUtil.swipeDown) {
- *     trace("Swiped down!");
- * }
- * if (SwipeUtil.swipeAny) {
- *     trace("Swiped in any direction!");
- * }
+ * if (SwipeUtil.swipeLeft) trace("Swiped left!");
+ *
+ * if (SwipeUtil.swipeRight) trace("Swiped right!");
+ *
+ * if (SwipeUtil.swipeUp) trace("Swiped up!");
+ *
+ * if (SwipeUtil.swipeDown) trace("Swiped down!");
+ *
+ * if (SwipeUtil.swipeAny) trace("Swiped in any direction!");
  * ```
  */
 class SwipeUtil
@@ -59,10 +56,12 @@ class SwipeUtil
   @:noCompletion
   static function get_swipeDown():Bool
   {
+    #if FLX_POINTER_INPUT
     for (swipe in FlxG.swipes)
     {
       if (swipe.degrees > -135 && swipe.degrees < -45 && swipe.distance > 20) return true;
     }
+    #end
 
     return false;
   }
@@ -75,10 +74,12 @@ class SwipeUtil
   @:noCompletion
   static function get_swipeLeft():Bool
   {
+    #if FLX_POINTER_INPUT
     for (swipe in FlxG.swipes)
     {
       if ((swipe.degrees > 135 || swipe.degrees < -135) && swipe.distance > 20) return true;
     }
+    #end
 
     return false;
   }
@@ -91,10 +92,12 @@ class SwipeUtil
   @:noCompletion
   static function get_swipeRight():Bool
   {
+    #if FLX_POINTER_INPUT
     for (swipe in FlxG.swipes)
     {
       if (swipe.degrees > -45 && swipe.degrees < 45 && swipe.distance > 20) return true;
     }
+    #end
 
     return false;
   }
@@ -107,10 +110,12 @@ class SwipeUtil
   @:noCompletion
   static function get_swipeUp():Bool
   {
+    #if FLX_POINTER_INPUT
     for (swipe in FlxG.swipes)
     {
       if (swipe.degrees > 45 && swipe.degrees < 135 && swipe.distance > 20) return true;
     }
+    #end
 
     return false;
   }
