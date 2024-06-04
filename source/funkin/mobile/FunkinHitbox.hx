@@ -16,14 +16,17 @@ import openfl.display.BitmapData;
 import openfl.geom.Matrix;
 
 /**
- * This class mainly exist just for the hints to be able to use the hsvs shader like the notes.
+ * The `FunkinHint` class represents a button with HSV color properties, allowing hue and saturation adjustments.
  */
 class FunkinHint extends FunkinButton
 {
-  var hsvShader:HSVShader;
+  /**
+   * The HSV shader used to adjust the hue and saturation of the button.
+   */
+  private var hsvShader:HSVShader;
 
   /**
-   * Creates a new `FunkinButton` object.
+   * Creates a new `FunkinHint` object.
    *
    * @param X The x position of the button.
    * @param Y The y position of the button.
@@ -40,21 +43,28 @@ class FunkinHint extends FunkinButton
     shader = hsvShader;
   }
 
+  /**
+   * Desaturates the button, setting its saturation to 0.2.
+   */
   public function desaturate():Void
   {
-    this.hsvShader.saturation = 0.2;
+    hsvShader.saturation = 0.2;
   }
 
+  /**
+   * Sets the hue of the button.
+   *
+   * @param hue The new hue value.
+   */
   public function setHue(hue:Float):Void
   {
-    this.hsvShader.hue = hue;
+    hsvShader.hue = hue;
   }
 }
 
 /**
- * A zone with 4 buttons (A hitbox).
- *
- * It's really easy to customize the layout.
+ * The `FunkinHitbox` class represents a zone with four buttons, designed to be easily customizable in layout.
+ * It extends `FlxTypedSpriteGroup` with `FunkinHint` as the type parameter.
  */
 class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 {
@@ -64,19 +74,22 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   public var hints(default, null):Array<FunkinHint> = [];
 
   /**
-   * A `FlxTypedSignal` that triggers every time a button was pressed.
+   * A `FlxTypedSignal` that triggers every time a button is pressed.
    */
   public var onHintDown:FlxTypedSignal<FunkinHint->Void> = new FlxTypedSignal<FunkinHint->Void>();
 
   /**
-   * A `FlxTypedSignal` that triggers every time a button was released.
+   * A `FlxTypedSignal` that triggers every time a button is released.
    */
   public var onHintUp:FlxTypedSignal<FunkinHint->Void> = new FlxTypedSignal<FunkinHint->Void>();
 
-  var trackedInputs:Array<FlxActionInput> = [];
+  /**
+   * The list of tracked inputs for the hitbox.
+   */
+  private var trackedInputs:Array<FlxActionInput> = [];
 
   /**
-   * Create the zone.
+   * Creates a new `FunkinHitbox` object.
    */
   @:access(funkin.play.notes.NoteSprite)
   public function new():Void
@@ -89,7 +102,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 
     for (i in 0...NoteSprite.DIRECTION_COLORS)
     {
-      var hint:FunkinHint = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, i, hintsColors[i]);
+      var hint:FunkinHint = createHint(i * hintWidth, 0, hintWidth, hintHeight, i, hintsColors[i]);
       hints[hint.ID] = hint;
       add(hint);
     }
@@ -101,6 +114,17 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     ControlsHandler.setupHitbox(PlayerSettings.player1.controls, this, trackedInputs);
   }
 
+  /**
+   * Creates a new `FunkinHint` button with specified properties.
+   *
+   * @param x The x position of the button.
+   * @param y The y position of the button.
+   * @param width The width of the button.
+   * @param height The height of the button.
+   * @param id The ID of the button.
+   * @param color The color of the button.
+   * @return A new `FunkinHint` object.
+   */
   private function createHint(x:Float, y:Float, width:Int, height:Int, id:Int, color:FlxColor = 0xFFFFFFFF):FunkinHint
   {
     var hint:FunkinHint = new FunkinHint(x, y);
@@ -125,6 +149,14 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     return hint;
   }
 
+  /**
+   * Creates a graphic for a hint button.
+   *
+   * @param width The width of the graphic.
+   * @param height The height of the graphic.
+   * @param baseColor The base color of the graphic.
+   * @return A `FlxGraphic` object representing the button graphic.
+   */
   private function createHintGraphic(width:Int, height:Int, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
   {
     var matrix:Matrix = new Matrix();
@@ -141,7 +173,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   }
 
   /**
-   * Clean up memory.
+   * Cleans up memory used by the `FunkinHitbox`.
    */
   override public function destroy():Void
   {
