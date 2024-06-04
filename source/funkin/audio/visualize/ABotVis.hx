@@ -59,8 +59,8 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function initAnalyzer()
   {
     @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__source, 7);
-    // analyzer.maxDb = -35;
+    analyzer = new SpectralAnalyzer(7, new LimeAudioClip(cast snd._channel.__source), 0.01, 30); 
+    analyzer.maxDb = -35;
     // analyzer.fftN = 2048;
   }
 
