@@ -19,6 +19,7 @@ jobs:
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
+          haxelib run lime rebuild hxcpp
       - name: Compile
         run: haxelib run lime build mac
       - name: Upload Artifact
