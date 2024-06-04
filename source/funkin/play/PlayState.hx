@@ -953,7 +953,6 @@ class PlayState extends MusicBeatSubState
     var androidPause:Bool = false;
     // So the player wouldn't miss when pressing the pause utton
     #if mobile
-    hitbox.active = !TouchUtil.overlapsComplex(pauseButton);
     pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justReleased;
     #end
 
@@ -2098,7 +2097,7 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyPress(event:PreciseInputEvent):Void
   {
-    if (isGamePaused) return;
+    if (isGamePaused #if mobile || TouchUtil.overlapsComplex(pauseButton) #end) return;
 
     // Do the minimal possible work here.
     inputPressQueue.push(event);
@@ -2109,7 +2108,7 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
-    if (isGamePaused) return;
+    if (isGamePaused #if mobile || TouchUtil.overlapsComplex(pauseButton) #end) return;
 
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
