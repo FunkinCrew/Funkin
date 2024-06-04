@@ -248,7 +248,7 @@
 	</section>
 
 	<!-- Enable this on platforms which do not support the edsior views. -->
-	<haxedef name="CHART_EDITOR_UNSUPPORTED" if="web" />
+	<haxedef name="CHART_EDITOR_UNSUPPORTED" if="web || ios" />
 	<haxedef name="CHART_EDITOR_SUPPORTED" unless="web" />
 
 	<!-- Options for Polymod -->
