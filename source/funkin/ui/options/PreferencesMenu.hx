@@ -9,7 +9,6 @@ import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.mobile.Backspace;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
 import funkin.util.TouchUtil;
@@ -49,8 +48,7 @@ class PreferencesMenu extends Page
       camFollow.y = selected.y;
     });
 
-    backButton = new Backspace(986, 609, FlxColor.BLACK);
-    add(backButton);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.BLACK);
   }
 
   /**
