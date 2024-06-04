@@ -701,7 +701,6 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Initialize the hitbox for mobile controls
     addHitbox(false);
-    addHitboxCamera(false);
     #end
 
     // Initialize the judgements and combo meter.
