@@ -698,9 +698,11 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
 
+    #if mobile
     // Initialize the hitbox for mobile controls
     addHitbox(false);
     addHitboxCamera(false);
+    #end
 
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff();
@@ -743,12 +745,16 @@ class PlayState extends MusicBeatSubState
 
     // Create the pause button.
     #if mobile
-    pauseButton = FunkinSprite.createSparrow(FlxG.width * 0.9, FlxG.height * 0.1, "alphabet");
-    pauseButton.alpha = 0.65;
-    pauseButton.animation.addByPrefix("idle", "<0", 24, true);
+    pauseButton = FunkinSprite.createSparrow(0, 0, "fonts/bold");
+    pauseButton.animation.addByPrefix("idle", "(", 24, true);
     pauseButton.animation.play("idle");
-    add(pauseButton);
     pauseButton.color = FlxColor.WHITE;
+    pauseButton.alpha = 0.65;
+    pauseButton.updateHitbox();
+    pauseButton.x = FlxG.width - pauseButton.width;
+    pauseButton.cameras = [controlsCamera];
+    add(pauseButton);
+
     hitbox.hints[3].deadZones.push(pauseButton);
     #end
 
@@ -757,9 +763,6 @@ class PlayState extends MusicBeatSubState
 
     leftWatermarkText.cameras = [camHUD];
     rightWatermarkText.cameras = [camHUD];
-    #if mobile
-    pauseButton.cameras = [camHUD];
-    #end
 
     // Initialize some debug stuff.
     #if (debug || FORCE_DEBUG_VERSION)
