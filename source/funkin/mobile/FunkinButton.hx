@@ -1,6 +1,7 @@
 package funkin.mobile;
 
 import funkin.graphics.FunkinSprite;
+import funkin.util.TouchUtil;
 import flixel.input.touch.FlxTouch;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
@@ -22,15 +23,6 @@ enum abstract FunkinButtonStatus(Int) from Int to Int
 }
 
 /**
- * Enum representing the role of the button.
- */
-enum FunkinButtonRole
-{
-  DIRECTION_BUTTON;
-  ACTION_BUTTON;
-}
-
-/**
  * A simple button class that calls a function when touched.
  */
 #if !display
@@ -42,11 +34,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * The current state of the button, either `FunkinButtonStatus.NORMAL` or `FunkinButtonStatus.PRESSED`.
    */
   public var status:FunkinButtonStatus;
-
-  /**
-   * The role of the button, defining its purpose.
-   */
-  public var role:FunkinButtonRole;
 
   /**
    * The callback function to call when the button is released.
@@ -82,6 +69,11 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * Whether the button was just pressed.
    */
   public var justPressed(get, never):Bool;
+
+  /**
+	 * An array of objects that blocks your input.
+	 */
+  public var deadZones:Array<FunkinSprite> = [];
 
   /**
    * The input associated with the button, using `Int` as the type.
@@ -152,11 +144,15 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
   private function checkTouchOverlap():Bool
   {
+    var deadZonesBool:Array<Array<Bool>> = []:
+    for(zone in deadZones)
+   		deadZonesBool.push([TouchUtil.overlapsComplex(zone), FlxG.overlap(this, zone)]);
+    
     for (camera in cameras)
     {
       for (touch in FlxG.touches.list)
       {
-        if (overlapsPoint(touch.getWorldPosition(camera, _point), true, camera))
+        if (overlapsPoint(touch.getWorldPosition(camera, _point), true, camera) && !deadZonesBool.contains([true, true]))
         {
           updateStatus(touch);
 
