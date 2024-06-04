@@ -61,25 +61,26 @@ class TouchUtil
   {
     if (object == null) return false;
 
-    var overlap = false;
-
     for (camera in object.cameras)
     {
       for (touch in FlxG.touches.list)
       {
         @:privateAccess
-        if (object.overlapsPoint(touch.getWorldPosition(camera, object._point), true, camera)) overlap = true;
+        if (object.overlapsPoint(touch.getWorldPosition(camera, object._point), true, camera)) return true;
       }
     }
 
-    return overlap;
+    return false;
   }
 
   @:noCompletion
   private static function get_pressed():Bool
   {
     for (touch in FlxG.touches.list)
+    {
       if (touch.pressed) return true;
+    }
+
     return false;
   }
 
@@ -87,7 +88,10 @@ class TouchUtil
   private static function get_justPressed():Bool
   {
     for (touch in FlxG.touches.list)
+    {
       if (touch.justPressed) return true;
+    }
+
     return false;
   }
 
@@ -95,7 +99,10 @@ class TouchUtil
   private static function get_justReleased():Bool
   {
     for (touch in FlxG.touches.list)
+    {
       if (touch.justReleased) return true;
+    }
+
     return false;
   }
 
@@ -104,9 +111,12 @@ class TouchUtil
   {
     for (touch in FlxG.touches.list)
     {
-      if (touch == null) continue;
+      if (touch == null)
+        continue;
+
       return touch;
     }
+
     return FlxG.touches.getFirst();
   }
 }
