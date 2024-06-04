@@ -326,7 +326,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   var evilTrail:FlxTrail;
 
-  public function fadeAnim()
+  public function fadeAnim():Void
   {
     impactThing = new FunkinSprite(0, 0);
     impactThing.frames = capsule.frames;
