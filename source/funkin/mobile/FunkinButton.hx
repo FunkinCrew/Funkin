@@ -148,7 +148,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     {
       for (touch in FlxG.touches.list)
       {
-        if (overlapsPoint(touch.getWorldPosition(camera, _point), true, camera) && !deadZonesBool.contains([true, true]))
+        if (overlapsPoint(touch.getWorldPosition(camera, _point), true, camera) && !deadZonesChecks.contains([true, true]))
         {
           updateStatus(touch);
 
