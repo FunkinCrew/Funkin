@@ -13,6 +13,7 @@ import openfl.geom.Matrix;
 
 /**
  * A zone with 4 buttons (A hitbox).
+ *
  * It's really easy to customize the layout.
  */
 class FunkinHitbox extends FlxTypedSpriteGroup<FunkinButton>
