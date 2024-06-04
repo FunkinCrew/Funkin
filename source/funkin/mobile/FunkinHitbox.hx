@@ -97,10 +97,10 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     super();
 
     final hintsColors:Array<FlxColor> = [0xFFC34B9A, 0xFF00FFFF, 0xFF12FB06, 0xFFF9393F];
-    final hintWidth:Int = Math.floor(FlxG.width / NoteSprite.DIRECTION_COLORS);
+    final hintWidth:Int = Math.floor(FlxG.width / NoteSprite.DIRECTION_COLORS.length);
     final hintHeight:Int = FlxG.height;
 
-    for (i in 0...NoteSprite.DIRECTION_COLORS)
+    for (i in 0...NoteSprite.DIRECTION_COLORS.length)
     {
       var hint:FunkinHint = createHint(i * hintWidth, 0, hintWidth, hintHeight, i, hintsColors[i]);
       hints[hint.ID] = hint;
