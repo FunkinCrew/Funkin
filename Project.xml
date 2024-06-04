@@ -223,10 +223,10 @@
 	</section>
 
 	<section if="mobile">
-		<architecture exclude="armv7" if="ONLY_ARM64" />
-		<architecture include="arm64" if="ONLY_ARM64 || ALL_ARCHITECTURES" />
-		<architecture include="armv7" if="ONLY_ARMV7 || ALL_ARCHITECTURES" />
-		<architecture exclude="arm64" if="ONLY_ARMV7" />
+		<architecture exclude="armv7" if="ONLY_ARM64" unless="UNIVERSAL"/>
+		<architecture include="arm64" if="ONLY_ARM64 || UNIVERSAL" />
+		<architecture include="armv7" if="ONLY_ARMV7 || UNIVERSAL" />
+		<architecture exclude="arm64" if="ONLY_ARMV7" unless="UNIVERSAL"/>
 	</section>
 
 	<section>
