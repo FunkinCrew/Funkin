@@ -173,7 +173,7 @@ class CreditsState extends MusicBeatState
     if (!scrollPaused)
     {
       // TODO: Replace with whatever the special note button is.
-      if (controls.ACCEPT || FlxG.keys.pressed.SPACE || TouchUtil.justPressed && !TouchUtil.overlaps(backButton))
+      if (controls.ACCEPT || FlxG.keys.pressed.SPACE || TouchUtil.pressed && !TouchUtil.overlaps(backButton))
       {
         // Move the whole group.
         creditsGroup.y -= CREDITS_SCROLL_FAST_SPEED * elapsed;
