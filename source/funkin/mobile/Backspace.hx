@@ -1,15 +1,15 @@
 package funkin.mobile;
 
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinCamera;
+import funkin.mobile.FunkinButton;
 
-class Backspace extends FlxSprite
+class Backspace extends FunkinButton
 {
   public var backButtonCam:FunkinCamera;
 
-  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE):Void
+  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE, ?onClick:Void->Void = null):Void
   {
     super(xPos, yPos);
 
@@ -22,6 +22,8 @@ class Backspace extends FlxSprite
     animation.play("idle");
     color = theColor;
     cameras = [backButtonCam];
+
+    if (onClick != null) onDown.add(onClick);
 
     zIndex = 100000;
   }
