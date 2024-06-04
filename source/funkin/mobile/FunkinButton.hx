@@ -14,15 +14,6 @@ import flixel.FlxSprite;
 import flixel.util.FlxSignal;
 
 /**
- * Enum representing the status of the button.
- */
-enum abstract FunkinButtonStatus(Int) from Int to Int
-{
-  var NORMAL = 0;
-  var PRESSED = 1;
-}
-
-/**
  * A simple button class that calls a function when touched.
  */
 #if !display
@@ -71,8 +62,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var justPressed(get, never):Bool;
 
   /**
-	 * An array of objects that blocks your input.
-	 */
+   * An array of objects that blocks your input.
+   */
   public var deadZones:Array<FunkinSprite> = [];
 
   /**
@@ -91,9 +82,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    *
    * @param X The x position of the button.
    * @param Y The y position of the button.
-   * @param role The role of the button.
    */
-  public function new(X:Float = 0, Y:Float = 0, ?role:FunkinButtonRole):Void
+  public function new(X:Float = 0, Y:Float = 0):Void
   {
     super(X, Y);
 
@@ -105,8 +95,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     #end
     scrollFactor.set();
     input = new FlxInput(0);
-
-    this.role = role;
   }
 
   /**
@@ -114,7 +102,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    */
   public override function destroy():Void
   {
-    currentInput = null;
+    deadZones = FlxDestroyUtil.destroyArray(deadZones);
+		currentInput = null;
     input = null;
 
     super.destroy();
@@ -144,9 +133,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
   private function checkTouchOverlap():Bool
   {
-    var deadZonesBool:Array<Array<Bool>> = []:
-    for(zone in deadZones)
-   		deadZonesBool.push([TouchUtil.overlapsComplex(zone), FlxG.overlap(this, zone)]);
+    final deadZonesChecks:Array<Array<Bool>> = [for (zone in deadZones) [TouchUtil.overlapsComplex(zone), FlxG.overlap(this, zone)]]:
     
     for (camera in cameras)
     {
