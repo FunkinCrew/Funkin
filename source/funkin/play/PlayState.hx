@@ -752,7 +752,7 @@ class PlayState extends MusicBeatSubState
     pauseButton.alpha = 0.65;
     pauseButton.updateHitbox();
     pauseButton.x = FlxG.width - pauseButton.width;
-    pauseButton.cameras = [controlsCamera];
+    pauseButton.cameras = [camControls];
     add(pauseButton);
 
     hitbox.hints[3].deadZones.push(pauseButton);

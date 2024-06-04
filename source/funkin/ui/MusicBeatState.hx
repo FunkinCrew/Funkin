@@ -66,7 +66,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   #if mobile
   public var hitbox:FunkinHitbox;
   public var backButton:Backspace;
-  public var controlsCamera:FunkinCamera;
+  public var camControls:FunkinCamera;
 
   public function addHitbox(?visible:Bool = true, ?initInput:Bool = true):Void
   {
@@ -76,15 +76,15 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
       remove(hitbox);
     }
 
-    if (controlsCamera == null)
+    if (camControls == null)
     {
-      controlsCamera = new FunkinCamera('controlsCamera');
-      FlxG.cameras.add(controlsCamera, false);
-      controlsCamera.bgColor = 0x0;
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
     }
 
     hitbox = new FunkinHitbox();
-    hitbox.cameras = [controlsCamera];
+    hitbox.cameras = [camControls];
     hitbox.visible = visible;
     add(hitbox);
 
@@ -95,15 +95,15 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     if (backButton != null) remove(backButton);
 
-    if (controlsCamera == null)
+    if (camControls == null)
     {
-      controlsCamera = new FunkinCamera('controlsCamera');
-      FlxG.cameras.add(controlsCamera, false);
-      controlsCamera.bgColor = 0x0;
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
     }
 
     backButton = new Backspace(xPos, yPos, color, onClick);
-    backButton.cameras = [controlsCamera];
+    backButton.cameras = [camControls];
     add(backButton);
   }
   #end
