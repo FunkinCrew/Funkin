@@ -671,14 +671,9 @@ class SongMenuItem extends FlxSpriteGroup
     ranking.alpha = this.selected ? 1 : 0.7;
     ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
 
-    if (selected)
-    {
-      if (songText.tooLong == true) songText.initMove();
-    }
-    else
-    {
-      if (songText.tooLong == true) songText.resetText();
-    }
+    if (songText.tooLong) songText.resetText();
+
+    if (selected && songText.tooLong) songText.initMove();
   }
 }
 
