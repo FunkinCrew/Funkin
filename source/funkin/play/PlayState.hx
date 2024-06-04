@@ -507,6 +507,11 @@ class PlayState extends MusicBeatSubState
   public var comboPopUps:PopUpStuff;
 
   /**
+   * The pause button for the game, only appears in Mobile targets.
+   */
+  var pauseButton:FunkinSprite;
+
+  /**
    * PROPERTIES
    */
   /**
@@ -734,11 +739,20 @@ class PlayState extends MusicBeatSubState
       startCountdown();
     }
 
+    // Create the pause button.
+    pauseButton = FunkinSprite.createSparrow(FlxG.width * 0.9, FlxG.height * 0.1, "alphabet");
+    pauseButton.alpha = 0.65;
+    pauseButton.animation.addByPrefix("idle", "<0", 24, true);
+    pauseButton.animation.play("idle");
+    add(pauseButton);
+    pauseButton.color = FlxColor.WHITE;
+
     // Do this last to prevent beatHit from being called before create() is done.
     super.create();
 
     leftWatermarkText.cameras = [camHUD];
     rightWatermarkText.cameras = [camHUD];
+    pauseButton.cameras = [camHUD];
 
     // Initialize some debug stuff.
     #if (debug || FORCE_DEBUG_VERSION)
@@ -930,13 +944,16 @@ class PlayState extends MusicBeatSubState
     }
 
     var androidPause:Bool = false;
+    // So the player wouldn't miss when pressing the pause utton
+    hitbox.active = !TouchUtil.overlapsComplex(pauseButton);
 
     #if android
     androidPause = FlxG.android.justReleased.BACK;
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
+    var pauseButt = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justReleased;
+    if ((controls.PAUSE || androidPause || pauseButt) && isInCountdown && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 

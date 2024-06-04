@@ -111,8 +111,7 @@ class TouchUtil
   {
     for (touch in FlxG.touches.list)
     {
-      if (touch == null)
-        continue;
+      if (touch == null) continue;
 
       return touch;
     }
