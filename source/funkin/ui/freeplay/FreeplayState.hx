@@ -928,7 +928,9 @@ class FreeplayState extends MusicBeatSubState
 
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
+    #if mobile
     FlxTween.tween(backButton, {x: 1524}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.quartInOut});
+    #end
 
     var longestTimer:Float = 0;
 
