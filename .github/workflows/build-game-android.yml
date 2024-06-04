@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flag: [ONLY_ARMV7, ONLY_ARM64]
+        flag: [ONLY_ARMV7, ONLY_ARM64, ALL_ARCHITECTURES]
     steps:
       - name: Checkout
         uses: actions/checkout@main
