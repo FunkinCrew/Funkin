@@ -140,7 +140,9 @@ class FreeplayState extends MusicBeatSubState
   public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   public static var rememberedSongId:Null<String> = 'tutorial';
 
+  #if mobile
   var touchBuddy:FlxSprite;
+  #end
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
@@ -561,11 +563,11 @@ class FreeplayState extends MusicBeatSubState
       bs.cameras = [funnyCam];
     });
 
+    #if mobile
     touchBuddy = new FlxSprite().makeGraphic(10, 10, FlxColor.GREEN);
     touchBuddy.cameras = [funnyCam]; // this is stupid but it works.
 
-    #if mobile
-    addBackButton(FlxG.width * 0.96, FlxG.height * 0.84);
+    addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
 
     FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
     #end
@@ -790,18 +792,20 @@ class FreeplayState extends MusicBeatSubState
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
-    var touchPress:Bool = TouchUtil.justReleased && !SwipeUtil.swipeAny;
+    #if mobile
+    final touchPress:Bool = TouchUtil.justReleased && !SwipeUtil.swipeAny;
 
-    if (TouchUtil.pressed ) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
+    if (TouchUtil.pressed) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
+    #end
 
     // These are unusued, maybe we should comment them out?
-    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp );
-    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown );
+    var upP:Bool = (controls.UI_UP_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeUp);
+    var downP:Bool = (controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL) || (SwipeUtil.swipeDown);
     // this one is fine though
-    var accepted:Bool = (controls.ACCEPT && !FlxG.keys.pressed.CONTROL)
-      || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && touchPress);
+    final accepted:Bool = (controls.ACCEPT && !FlxG.keys.pressed.CONTROL) #if mobile
+    || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && touchPress) #end;
 
-    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP || controls.UI_DOWN) || ((SwipeUtil.swipeUp || SwipeUtil.swipeDown) )))
+    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP || controls.UI_DOWN) || ((SwipeUtil.swipeUp || SwipeUtil.swipeDown))))
     {
       if (spamming)
       {
@@ -809,7 +813,7 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
 
-          if (controls.UI_UP || (SwipeUtil.swipeUp ))
+          if (controls.UI_UP || (SwipeUtil.swipeUp))
           {
             changeSelection(-1);
           }
@@ -825,7 +829,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else if (spamTimer <= 0)
       {
-        if (controls.UI_UP || (SwipeUtil.swipeUp ))
+        if (controls.UI_UP || (SwipeUtil.swipeUp))
         {
           changeSelection(-1);
         }
@@ -897,71 +901,7 @@ class FreeplayState extends MusicBeatSubState
       diffSelLeft.setPress(false);
     }
 
-    if (controls.BACK || (FlxG.pixelPerfectOverlap(touchBuddy, backButton, 0) && FlxG.mouse.justPressed))
-    {
-      busy = true;
-      FlxTween.globalManager.clear();
-      FlxTimer.globalManager.clear();
-      dj.onIntroDone.removeAll();
-
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-
-      FlxTween.tween(backButton, {x: 1524}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.quartInOut});
-
-      var longestTimer:Float = 0;
-
-      for (grpSpr in exitMovers.keys())
-      {
-        var moveData:MoveData = exitMovers.get(grpSpr);
-
-        for (spr in grpSpr)
-        {
-          if (spr == null) continue;
-
-          var funnyMoveShit:MoveData = moveData;
-
-          if (moveData.x == null) funnyMoveShit.x = spr.x;
-          if (moveData.y == null) funnyMoveShit.y = spr.y;
-          if (moveData.speed == null) funnyMoveShit.speed = 0.2;
-          if (moveData.wait == null) funnyMoveShit.wait = 0;
-
-          FlxTween.tween(spr, {x: funnyMoveShit.x, y: funnyMoveShit.y}, funnyMoveShit.speed, {ease: FlxEase.expoIn});
-
-          longestTimer = Math.max(longestTimer, funnyMoveShit.speed + funnyMoveShit.wait);
-        }
-      }
-
-      for (caps in grpCapsules.members)
-      {
-        caps.doJumpIn = false;
-        caps.doLerp = false;
-        caps.doJumpOut = true;
-      }
-
-      if (Type.getClass(_parentState) == MainMenuState)
-      {
-        _parentState.persistentUpdate = false;
-        _parentState.persistentDraw = true;
-      }
-
-      new FlxTimer().start(longestTimer, (_) -> {
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-        if (Type.getClass(_parentState) == MainMenuState)
-        {
-          FunkinSound.playMusic('freakyMenu',
-            {
-              overrideExisting: true,
-              restartTrack: false
-            });
-          close();
-        }
-        else
-        {
-          FlxG.switchState(() -> new MainMenuState());
-        }
-      });
-    }
+    if (controls.BACK) goBack();
 
     if (accepted)
     {
@@ -977,6 +917,72 @@ class FreeplayState extends MusicBeatSubState
     {
       clearDaCache(daSong.songName);
     }
+  }
+
+  public function goBack()
+  {
+    busy = true;
+    FlxTween.globalManager.clear();
+    FlxTimer.globalManager.clear();
+    dj.onIntroDone.removeAll();
+
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+
+    FlxTween.tween(backButton, {x: 1524}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.quartInOut});
+
+    var longestTimer:Float = 0;
+
+    for (grpSpr in exitMovers.keys())
+    {
+      var moveData:MoveData = exitMovers.get(grpSpr);
+
+      for (spr in grpSpr)
+      {
+        if (spr == null) continue;
+
+        var funnyMoveShit:MoveData = moveData;
+
+        if (moveData.x == null) funnyMoveShit.x = spr.x;
+        if (moveData.y == null) funnyMoveShit.y = spr.y;
+        if (moveData.speed == null) funnyMoveShit.speed = 0.2;
+        if (moveData.wait == null) funnyMoveShit.wait = 0;
+
+        FlxTween.tween(spr, {x: funnyMoveShit.x, y: funnyMoveShit.y}, funnyMoveShit.speed, {ease: FlxEase.expoIn});
+
+        longestTimer = Math.max(longestTimer, funnyMoveShit.speed + funnyMoveShit.wait);
+      }
+    }
+
+    for (caps in grpCapsules.members)
+    {
+      caps.doJumpIn = false;
+      caps.doLerp = false;
+      caps.doJumpOut = true;
+    }
+
+    if (Type.getClass(_parentState) == MainMenuState)
+    {
+      _parentState.persistentUpdate = false;
+      _parentState.persistentDraw = true;
+    }
+
+    new FlxTimer().start(longestTimer, (_) -> {
+      FlxTransitionableState.skipNextTransIn = true;
+      FlxTransitionableState.skipNextTransOut = true;
+      if (Type.getClass(_parentState) == MainMenuState)
+      {
+        FunkinSound.playMusic('freakyMenu',
+          {
+            overrideExisting: true,
+            restartTrack: false
+          });
+        close();
+      }
+      else
+      {
+        FlxG.switchState(() -> new MainMenuState());
+      }
+    });
   }
 
   function changeDiff(change:Int = 0, force:Bool = false):Void

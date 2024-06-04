@@ -159,7 +159,7 @@ class GameOverSubState extends MusicBeatSubState
     Conductor.instance.update(0);
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE, goBack);
     #end
   }
 
@@ -236,29 +236,7 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // Return to the menu when pressing the assigned key.
-    if ((controls.BACK || (TouchUtil.justPressed && TouchUtil.overlaps(backButton))) && !mustNotExit)
-    {
-      blueballed = false;
-      PlayState.instance.deathCounter = 0;
-      // PlayState.seenCutscene = false; // old thing...
-      if (gameOverMusic != null) gameOverMusic.stop();
-
-      if (isChartingMode)
-      {
-        this.close();
-        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
-        PlayState.instance.close(); // This only works because PlayState is a substate!
-        return;
-      }
-      else if (PlayStatePlaylist.isStoryMode)
-      {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
-      }
-      else
-      {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(sticker)));
-      }
-    }
+    if (controls.BACK) goBack();
 
     if (gameOverMusic != null && gameOverMusic.playing)
     {
@@ -423,6 +401,31 @@ class GameOverSubState extends MusicBeatSubState
     {
       @:privateAccess
       trace('Music already playing! ${gameOverMusic?._label}');
+    }
+  }
+
+  public function goBack()
+  {
+    if (mustNotExit) return;
+    blueballed = false;
+    PlayState.instance.deathCounter = 0;
+    // PlayState.seenCutscene = false; // old thing...
+    if (gameOverMusic != null) gameOverMusic.stop();
+
+    if (isChartingMode)
+    {
+      this.close();
+      if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+      PlayState.instance.close(); // This only works because PlayState is a substate!
+      return;
+    }
+    else if (PlayStatePlaylist.isStoryMode)
+    {
+      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
+    }
+    else
+    {
+      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(sticker)));
     }
   }
 

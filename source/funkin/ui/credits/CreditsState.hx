@@ -113,7 +113,7 @@ class CreditsState extends MusicBeatState
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, exit);
     #end
   }
 
@@ -187,7 +187,7 @@ class CreditsState extends MusicBeatState
       }
     }
 
-    if (controls.BACK || hasEnded() || TouchUtil.pressed && TouchUtil.overlaps(backButton))
+    if (controls.BACK || hasEnded())
     {
       exit();
     }
@@ -202,7 +202,7 @@ class CreditsState extends MusicBeatState
     return creditsGroup.y < -creditsGroup.height;
   }
 
-  function exit():Void
+  public function exit():Void
   {
     FlxG.switchState(funkin.ui.mainmenu.MainMenuState.new);
   }

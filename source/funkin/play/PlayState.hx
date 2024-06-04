@@ -952,7 +952,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    var pauseButt = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justReleased;
+    final pauseButt:Bool = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justReleased;
     if ((controls.PAUSE || androidPause || pauseButt) && isInCountdown && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));

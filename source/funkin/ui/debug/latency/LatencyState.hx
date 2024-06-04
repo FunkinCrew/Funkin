@@ -172,6 +172,10 @@ class LatencyState extends MusicBeatSubState
     add(helpText);
 
     regenNoteData();
+
+    #if mobile
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, close);
+    #end
   }
 
   function preciseInputPressed(event:PreciseInputEvent)

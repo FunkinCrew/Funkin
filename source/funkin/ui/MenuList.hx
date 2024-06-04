@@ -38,9 +38,11 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
   // bit awkward because BACK is also a menu control and this doesn't affect that
 
+  #if mobile
   /** touchBuddy over here helps with the touch input! Because overlap for touch does not account for the graphic, only the hitbox.
    * And, `FlxG.pixelPerfectOverlap` uses two FlxSprites, so we can't use the `FlxTouch` object */
   public var touchBuddy:FlxSprite;
+  #end
 
   /** Only used in Options, basically acts the same as OptionsState's `currentName`, it's the current name of the current page in OptionsState.
    * Why is it needed? Because touch control's a bitch. Thats why. */
@@ -59,8 +61,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
         default: Both;
       }
 
+    #if mobile
     // Make touchBuddy! No need to add them.
     touchBuddy = new FlxSprite().makeGraphic(10, 10);
+    #end
     super();
   }
 
@@ -105,15 +109,15 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     final inputDown = SwipeUtil.swipeDown || controls.UI_DOWN_P;
     final inputLeft = SwipeUtil.swipeLeft || controls.UI_LEFT_P;
     final inputRight = SwipeUtil.swipeRight || controls.UI_RIGHT_P;
-    
+
     newIndex = switch (navControls)
     {
-        case Vertical: navList(inputUp, inputDown, wrapY);
-        case Horizontal: navList(inputLeft, inputRight, wrapX);
-        case Both: navList(inputLeft || inputUp, inputRight || inputDown, !wrapMode.match(None));
-    
-        case Columns(num): navGrid(num, inputLeft, inputRight, wrapX, inputUp, inputDown, wrapY);
-        case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
+      case Vertical: navList(inputUp, inputDown, wrapY);
+      case Horizontal: navList(inputLeft, inputRight, wrapX);
+      case Both: navList(inputLeft || inputUp, inputRight || inputDown, !wrapMode.match(None));
+
+      case Columns(num): navGrid(num, inputLeft, inputRight, wrapX, inputUp, inputDown, wrapY);
+      case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
     };
 
     if (newIndex != selectedIndex)
@@ -122,6 +126,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       selectItem(newIndex);
     }
 
+    #if mobile
     if (TouchUtil.pressed) touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
 
     // This is one fuckhead of a fucking if statement i fucking hate it fuck you,
@@ -133,13 +138,14 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var isRegularOverlap = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
     var pageCheck = currentPage != null || currentPage != Preferences;
     var isInputOverlap = ((isMainMenuState && isPixelOverlap) || (isRegularOverlap && !isMainMenuState && pageCheck));
+    #end
 
     /** The reason why we're using pixelOverlap for MainMenuState is due to the offsets,
      * overlaps checks for the sprite's hitbox, not the graphic itself.
      * pixelOverlap however, does that. */
 
     // Todo: bypass popup blocker on firefox
-    if (controls.ACCEPT || isInputOverlap) accept();
+    if (controls.ACCEPT #if mobile || isInputOverlap #end) accept();
   }
 
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int

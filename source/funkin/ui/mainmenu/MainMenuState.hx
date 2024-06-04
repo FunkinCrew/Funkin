@@ -153,7 +153,7 @@ class MainMenuState extends MusicBeatState
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     #if mobile
-    addBackButton(FlxG.width * 0.03, FlxG.height * 0.79, FlxColor.BLACK);
+    addBackButton(FlxG.width * 0.03, FlxG.height * 0.79, FlxColor.BLACK, goBack);
     #end
 
     super.create();
@@ -352,13 +352,14 @@ class MainMenuState extends MusicBeatState
 
     if (_exiting) menuItems.enabled = false;
 
-    if (((controls.BACK)
-      || (TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed))
-      && menuItems.enabled
-      && !menuItems.busy)
-    {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-      FlxG.switchState(() -> new TitleState());
-    }
+    if (controls.BACK) goBack();
+  }
+
+  public function goBack()
+  {
+    if (!menuItems.enabled) return;
+    if (menuItems.busy) return;
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FlxG.switchState(() -> new TitleState());
   }
 }
