@@ -357,6 +357,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var shouldLoadPartial = params.partialParams?.loadPartial ?? false;
 
+    // even if we arent' trying to partial load a song, we want to error out any songs in progress,
+    // so we don't get overlapping music if someone were to load a new song while a partial one is loading!
+
+    emptyPartialQueue();
+
     if (shouldLoadPartial)
     {
       var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0.0, params.partialParams?.end ?? 1.0, params?.startingVolume ?? 1.0,
@@ -364,12 +369,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
       if (music != null)
       {
-        while (partialQueue.length > 0)
-        {
-          @:nullSafety(Off)
-          partialQueue.pop().error("Cancel loading partial sound");
-        }
-
         partialQueue.push(music);
 
         @:nullSafety(Off)
@@ -403,6 +402,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       {
         return false;
       }
+    }
+  }
+
+  public static function emptyPartialQueue():Void
+  {
+    while (partialQueue.length > 0)
+    {
+      @:nullSafety(Off)
+      partialQueue.pop().error("Cancel loading partial sound");
     }
   }
 
