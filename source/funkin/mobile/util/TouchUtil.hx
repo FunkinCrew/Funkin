@@ -1,4 +1,4 @@
-package funkin.util;
+package funkin.mobile.util;
 
 import flixel.FlxBasic;
 import flixel.FlxCamera;

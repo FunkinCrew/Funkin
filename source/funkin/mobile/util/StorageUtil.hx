@@ -1,4 +1,4 @@
-package funkin.util;
+package funkin.mobile.util;
 
 import funkin.util.FileUtil;
 import haxe.io.Path;

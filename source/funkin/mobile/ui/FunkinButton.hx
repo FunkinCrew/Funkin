@@ -1,7 +1,6 @@
 package funkin.mobile.ui;
 
 import funkin.graphics.FunkinSprite;
-import funkin.mobile.util.TouchUtil;
 import flixel.input.touch.FlxTouch;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;

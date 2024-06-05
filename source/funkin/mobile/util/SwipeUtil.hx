@@ -1,4 +1,4 @@
-package funkin.util;
+package funkin.mobile.util;
 
 #if FLX_POINTER_INPUT
 import flixel.FlxG;
