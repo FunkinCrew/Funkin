@@ -804,6 +804,13 @@ class FreeplayState extends MusicBeatSubState
    */
   public function sortSongs(songsToFilter:Array<FreeplaySongData>, songFilter:SongFilter):Array<FreeplaySongData>
   {
+    var filterAlphabetically = function(a:FreeplaySongData, b:FreeplaySongData):Int {
+      if (a?.songName.toLowerCase() < b?.songName.toLowerCase()) return -1;
+      else if (a?.songName.toLowerCase() > b?.songName.toLowerCase()) return 1;
+      else
+        return 0;
+    };
+
     switch (songFilter.filterType)
     {
       case REGEXP:
@@ -817,6 +824,8 @@ class FreeplayState extends MusicBeatSubState
           if (str == null) return true; // Random
           return filterRegexp.match(str.songName);
         });
+
+        songsToFilter.sort(filterAlphabetically);
 
       case STARTSWITH:
         // extra note: this is essentially a "search"
@@ -832,9 +841,13 @@ class FreeplayState extends MusicBeatSubState
           if (str == null) return true; // Random
           return str.isFav;
         });
+
+        songsToFilter.sort(filterAlphabetically);
+
       default:
         // return all on default
     }
+
     return songsToFilter;
   }
 
