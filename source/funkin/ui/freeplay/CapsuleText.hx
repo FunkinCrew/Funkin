@@ -58,12 +58,24 @@ class CapsuleText extends FlxSpriteGroup
   function set_clipWidth(value:Int):Int
   {
     resetText();
-    if (whiteText.width > value)
+    checkClipWidth(value);
+    return clipWidth = value;
+  }
+
+  /**
+   * Checks if the text if it's too long, and clips if it is
+   * @param wid
+   */
+  function checkClipWidth(?wid:Int):Void
+  {
+    if (wid == null) wid = clipWidth;
+
+    if (whiteText.width > wid)
     {
       tooLong = true;
 
-      blurredText.clipRect = new FlxRect(0, 0, value, blurredText.height);
-      whiteText.clipRect = new FlxRect(0, 0, value, whiteText.height);
+      blurredText.clipRect = new FlxRect(0, 0, wid, blurredText.height);
+      whiteText.clipRect = new FlxRect(0, 0, wid, whiteText.height);
     }
     else
     {
@@ -72,7 +84,6 @@ class CapsuleText extends FlxSpriteGroup
       blurredText.clipRect = null;
       whiteText.clipRect = null;
     }
-    return clipWidth = value;
   }
 
   function set_text(value:String):String
@@ -86,6 +97,7 @@ class CapsuleText extends FlxSpriteGroup
 
     blurredText.text = value;
     whiteText.text = value;
+    checkClipWidth();
     whiteText.textField.filters = [
       new openfl.filters.GlowFilter(0x00ccff, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
       // new openfl.filters.BlurFilter(5, 5, BitmapFilterQuality.LOW)
