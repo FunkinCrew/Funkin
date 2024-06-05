@@ -2024,7 +2024,7 @@ class FreeplaySongData
 
   function set_currentDifficulty(value:String):String
   {
-    if (currentDifficulty == value) return value;
+    // if (currentDifficulty == value) return value;
 
     currentDifficulty = value;
     updateValues(displayedVariations);
@@ -2064,7 +2064,7 @@ class FreeplaySongData
 
   function updateValues(variations:Array<String>):Void
   {
-    this.songDifficulties = song.listDifficulties(variations, false, false);
+    this.songDifficulties = song.listDifficulties(null, variations, false, false);
     if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
 
     var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, variations);
