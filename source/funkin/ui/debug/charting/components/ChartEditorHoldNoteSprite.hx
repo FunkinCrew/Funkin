@@ -48,15 +48,6 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     super(0, 100, noteStyle);
 
     this.parentState = parent;
-
-    zoom = 1.0;
-    zoom *= noteStyle.fetchHoldNoteScale();
-    zoom *= 0.7;
-    zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
-
-    flipY = false;
-
-    setup();
   }
 
   @:nullSafety(Off)
@@ -64,17 +55,38 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   {
     var bruhStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle);
     setupHoldNoteGraphic(bruhStyle);
+  }
+
+  override function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
+  {
+    loadGraphic(noteStyle.getHoldNoteAssetPath());
+
+    antialiasing = true;
+
+    this.isPixel = noteStyle.isHoldNotePixel();
+    if (isPixel)
+    {
+      endOffset = bottomClip = 1;
+      antialiasing = false;
+    }
 
     zoom = 1.0;
-    zoom *= bruhStyle.fetchHoldNoteScale();
+    zoom *= noteStyle.fetchHoldNoteScale();
     zoom *= 0.7;
     zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
+    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
+    graphicHeight = sustainLength * 0.45; // sustainHeight
+
     flipY = false;
 
-    setup();
+    alpha = 1.0;
 
-    triggerRedraw();
+    updateColorTransform();
+
+    updateClipping();
+
+    setup();
   }
 
   public override function updateHitbox():Void
