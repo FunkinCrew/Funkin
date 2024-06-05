@@ -12,8 +12,10 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.mobile.ui.FunkinBackspace;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
+#if mobile
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
+#end
 
 class PreferencesMenu extends Page
 {
@@ -111,16 +113,18 @@ class PreferencesMenu extends Page
         daItem.x = 120;
     });
 
+    #if mobile
     if (TouchUtil.touch != null)
     {
       // I have tried EVERY. SINGLE. METHOD. UNDER THE MOON. This is the only way it can work, I've tried everything trust me.
-      var thePosToCheck = new FlxPoint(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130));
+      final thePosToCheck:FlxPoint = new FlxPoint(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130));
 
       if (items.enabled && !items.busy && TouchUtil.justReleased && !SwipeUtil.swipeAny && items.selectedItem.overlapsPoint(thePosToCheck, false, menuCamera))
       {
         items.accept();
       }
     }
+    #end
   }
 
   override function set_currentName(value:OptionsState.PageName):OptionsState.PageName
