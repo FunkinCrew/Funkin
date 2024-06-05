@@ -38,6 +38,7 @@ class SongMenuItem extends FlxSpriteGroup
   public var selected(default, set):Bool;
 
   public var songText:CapsuleText;
+  public var favIconBlurred:FlxSprite;
   public var favIcon:FlxSprite;
 
   public var ranking:FreeplayRank;
@@ -189,6 +190,16 @@ class SongMenuItem extends FlxSpriteGroup
     pixelIcon.active = false;
     add(pixelIcon);
     grpHide.add(pixelIcon);
+
+    favIconBlurred = new FlxSprite(380, 40);
+    favIconBlurred.frames = Paths.getSparrowAtlas('freeplay/favHeart');
+    favIconBlurred.animation.addByPrefix('fav', 'favorite heart', 24, false);
+    favIconBlurred.animation.play('fav');
+    favIconBlurred.setGraphicSize(50, 50);
+    favIconBlurred.blend = BlendMode.ADD;
+    favIconBlurred.shader = new GaussianBlurShader(1.2);
+    favIconBlurred.visible = false;
+    add(favIconBlurred);
 
     favIcon = new FlxSprite(380, 40);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
@@ -669,6 +680,8 @@ class SongMenuItem extends FlxSpriteGroup
     capsule.offset.x = this.selected ? 0 : -5;
     capsule.animation.play(this.selected ? "selected" : "unselected");
     ranking.alpha = this.selected ? 1 : 0.7;
+    favIcon.alpha = this.selected ? 1 : 0.6;
+    favIconBlurred.alpha = this.selected ? 1 : 0;
     ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
 
     if (songText.tooLong) songText.resetText();

@@ -757,6 +757,7 @@ class FreeplayState extends MusicBeatSubState
     randomCapsule.alpha = 0;
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
+    randomCapsule.favIconBlurred.visible = false;
     randomCapsule.ranking.visible = false;
     randomCapsule.blurredRanking.visible = false;
     randomCapsule.initJumpIn(0, force);
@@ -779,6 +780,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.capsule.alpha = 0.5;
       funnyMenu.songText.visible = false;
       funnyMenu.favIcon.visible = tempSongs[i].isFav;
+      funnyMenu.favIconBlurred.visible = tempSongs[i].isFav;
       funnyMenu.hsvShader = hsvShader;
 
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
@@ -1232,7 +1234,9 @@ class FreeplayState extends MusicBeatSubState
         if (isFav)
         {
           grpCapsules.members[realShit].favIcon.visible = true;
+          grpCapsules.members[realShit].favIconBlurred.visible = true;
           grpCapsules.members[realShit].favIcon.animation.play('fav');
+          grpCapsules.members[realShit].favIconBlurred.animation.play('fav');
           FunkinSound.playOnce(Paths.sound('fav'), 1);
           grpCapsules.members[realShit].checkClip();
           grpCapsules.members[realShit].selected = grpCapsules.members[realShit].selected; // set selected again, so it can run it's getter function to initialize movement
@@ -1254,9 +1258,11 @@ class FreeplayState extends MusicBeatSubState
         else
         {
           grpCapsules.members[realShit].favIcon.animation.play('fav', true, true, 9);
+          grpCapsules.members[realShit].favIconBlurred.animation.play('fav', true, true, 9);
           FunkinSound.playOnce(Paths.sound('unfav'), 1);
           new FlxTimer().start(0.2, _ -> {
             grpCapsules.members[realShit].favIcon.visible = false;
+            grpCapsules.members[realShit].favIconBlurred.visible = false;
             grpCapsules.members[realShit].checkClip();
           });
 
