@@ -1769,6 +1769,8 @@ class FreeplayState extends MusicBeatSubState
     funnyScroll3.visible = false;
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
+      FunkinSound.emptyPartialQueue();
+
       Paths.setCurrentLevel(cap.songData.levelId);
       LoadingState.loadPlayState(
         {
