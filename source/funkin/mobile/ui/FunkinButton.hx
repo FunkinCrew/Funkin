@@ -112,7 +112,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public override function destroy():Void
   {
     deadZones = FlxDestroyUtil.destroyArray(deadZones);
-		currentInput = null;
+    currentInput = null;
     input = null;
 
     super.destroy();
@@ -142,13 +142,18 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
   private function checkTouchOverlap():Bool
   {
-    final deadZonesChecks:Array<Array<Bool>> = [for (zone in deadZones) [TouchUtil.overlapsComplex(zone), FlxG.overlap(this, zone)]];
-
     for (camera in cameras)
     {
       for (touch in FlxG.touches.list)
       {
-        if (overlapsPoint(touch.getWorldPosition(camera, _point), true, camera) && !deadZonesChecks.contains([true, true]))
+        final worldPos:FlxPoint = touch.getWorldPosition(camera, _point);
+
+        for (zone in deadZones)
+        {
+          if (zone.overlapsPoint(worldPos, true, camera) return false;
+        }
+
+        if (overlapsPoint(worldPos, true, camera))
         {
           updateStatus(touch);
 
