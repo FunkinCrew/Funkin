@@ -708,8 +708,6 @@ class FreeplayRank extends FlxSprite
 
       animation.play(val.getFreeplayRankIconAsset(), true, false);
 
-      trace(val.getFreeplayRankIconAsset());
-
       centerOffsets(false);
 
       switch (val)
