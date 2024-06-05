@@ -1,4 +1,4 @@
-package funkin.mobile;
+package funkin.mobile.ui;
 
 import flixel.input.actions.FlxActionInput;
 import flixel.graphics.FlxGraphic;
@@ -8,8 +8,8 @@ import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import flixel.FlxG;
 import funkin.graphics.shaders.HSVShader;
-import funkin.mobile.ControlsHandler;
-import funkin.mobile.FunkinButton;
+import funkin.mobile.input.ControlsHandler;
+import funkin.mobile.ui.FunkinButton;
 import funkin.play.notes.NoteSprite;
 import openfl.display.Shape;
 import openfl.display.BitmapData;

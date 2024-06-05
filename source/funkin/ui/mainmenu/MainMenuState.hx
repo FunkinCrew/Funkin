@@ -27,7 +27,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
-import funkin.util.TouchUtil;
+import funkin.mobile.util.TouchUtil;
 #if discord_rpc
 import Discord.DiscordClient;
 #end

@@ -296,7 +296,7 @@ class TitleState extends MusicBeatState
       #end
     }
 
-    if (funkin.util.TouchUtil.justPressed) pressedEnter = true;
+    if (funkin.mobile.util.TouchUtil.justPressed) pressedEnter = true;
 
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)

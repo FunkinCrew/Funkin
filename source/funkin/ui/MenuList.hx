@@ -7,8 +7,8 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
-import funkin.util.SwipeUtil;
-import funkin.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
+import funkin.mobile.util.TouchUtil;
 import funkin.ui.options.OptionsState.PageName;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>

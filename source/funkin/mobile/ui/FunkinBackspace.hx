@@ -1,10 +1,10 @@
-package funkin.mobile;
+package funkin.mobile.ui;
 
 import flixel.FlxG;
 import flixel.util.FlxColor;
-import funkin.mobile.FunkinButton;
+import funkin.mobile.ui.FunkinButton;
 
-class Backspace extends FunkinButton
+class FunkinBackspace extends FunkinButton
 {
   public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE, ?onClick:Void->Void = null):Void
   {
@@ -16,7 +16,5 @@ class Backspace extends FunkinButton
     color = theColor;
 
     if (onClick != null) onDown.add(onClick);
-
-    zIndex = 100000;
   }
 }

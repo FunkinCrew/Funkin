@@ -5,7 +5,7 @@ import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
-import funkin.util.TouchUtil;
+import funkin.mobile.util.TouchUtil;
 
 /**
  * The state used to display the credits scroll.

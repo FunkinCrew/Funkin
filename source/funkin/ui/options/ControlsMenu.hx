@@ -152,7 +152,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
       labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
     });
 
-    prompt = new Prompt("\nPress any key to rebind\n\n\nBackspace to unbind\n    Escape to cancel", None);
+    prompt = new Prompt("\nPress any key to rebind\n\n\nFunkinBackspace to unbind\n    Escape to cancel", None);
     prompt.create();
     prompt.createBgFromMargin(100, 0xFFfafd6d);
     prompt.back.scrollFactor.set(0, 0);

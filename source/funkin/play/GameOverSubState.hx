@@ -14,7 +14,7 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
-import funkin.util.TouchUtil;
+import funkin.mobile.util.TouchUtil;
 import openfl.utils.Assets;
 
 /**

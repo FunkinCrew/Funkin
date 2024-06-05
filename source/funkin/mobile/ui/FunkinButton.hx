@@ -1,7 +1,7 @@
-package funkin.mobile;
+package funkin.mobile.ui;
 
 import funkin.graphics.FunkinSprite;
-import funkin.util.TouchUtil;
+import funkin.mobile.util.TouchUtil;
 import flixel.input.touch.FlxTouch;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
@@ -143,7 +143,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   private function checkTouchOverlap():Bool
   {
     final deadZonesChecks:Array<Array<Bool>> = [for (zone in deadZones) [TouchUtil.overlapsComplex(zone), FlxG.overlap(this, zone)]];
-    
+
     for (camera in cameras)
     {
       for (touch in FlxG.touches.list)

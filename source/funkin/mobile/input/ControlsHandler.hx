@@ -1,12 +1,12 @@
-package funkin.mobile;
+package funkin.mobile.input;
 
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.FlxInput;
 import funkin.input.Controls;
-import funkin.mobile.FunkinButton;
-import funkin.mobile.FunkinHitbox;
+import funkin.mobile.ui.FunkinButton;
+import funkin.mobile.ui.FunkinHitbox;
 
 /**
  * Handles setting up and managing input controls for the game.

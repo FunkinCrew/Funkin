@@ -15,9 +15,9 @@ import flixel.util.FlxSort;
 import funkin.input.Controls;
 #if mobile
 import funkin.graphics.FunkinCamera;
-import funkin.mobile.FunkinHitbox;
-import funkin.mobile.PreciseInputHandler;
-import funkin.mobile.Backspace;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.input.PreciseInputHandler;
+import funkin.mobile.ui.FunkinBackspace;
 #end
 
 /**
@@ -56,7 +56,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   #if mobile
   public var hitbox:FunkinHitbox;
-  public var backButton:Backspace;
+  public var backButton:FunkinBackspace;
   public var camControls:FunkinCamera;
 
   public function addHitbox(?visible:Bool = true, ?initInput:Bool = true):Void
@@ -94,7 +94,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
       camControls.bgColor = 0x0;
     }
 
-    backButton = new Backspace(xPos, yPos, color, onClick);
+    backButton = new FunkinBackspace(xPos, yPos, color, onClick);
     backButton.cameras = [camControls];
     add(backButton);
   }

@@ -13,9 +13,9 @@ import funkin.graphics.shaders.HSVShader;
 import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
-import funkin.mobile.ControlsHandler;
-import funkin.mobile.Backspace;
-import funkin.util.TouchUtil;
+import funkin.mobile.input.ControlsHandler;
+import funkin.mobile.ui.FunkinBackspace;
+import funkin.mobile.util.TouchUtil;
 import flixel.util.FlxColor;
 
 class OptionsState extends MusicBeatState
@@ -138,7 +138,7 @@ class Page extends FlxGroup
   function set_currentName(value:PageName):PageName
     return currentName = value;
 
-  var backButton:Backspace;
+  var backButton:FunkinBackspace;
 
   var subState:FlxSubState;
 

@@ -22,7 +22,7 @@ import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
-import funkin.util.TouchUtil;
+import funkin.mobile.util.TouchUtil;
 
 /**
  * The state for the results screen after a song or week is finished.

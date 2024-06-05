@@ -65,7 +65,7 @@ import lime.ui.Haptic;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.Lib;
-import funkin.util.TouchUtil;
+import funkin.mobile.util.TouchUtil;
 #if discord_rpc
 import Discord.DiscordClient;
 #end

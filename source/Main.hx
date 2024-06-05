@@ -62,7 +62,7 @@ class Main extends Sprite
     funkin.util.logging.AnsiTrace.traceBF();
 
     #if mobile
-    funkin.util.StorageUtil.copyNecessaryFiles(['mp4' => 'assets/videos']);
+    funkin.mobile.util.StorageUtil.copyNecessaryFiles(['mp4' => 'assets/videos']);
     #end
 
     // Load mods to override assets.

@@ -37,8 +37,8 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
-import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
+import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
 import lime.utils.Assets;
 
 /**
