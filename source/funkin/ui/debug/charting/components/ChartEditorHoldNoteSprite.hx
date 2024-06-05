@@ -53,16 +53,13 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   @:nullSafety(Off)
   function updateHoldNoteGraphic():Void
   {
-    var bruhStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyle);
-    if (bruhStyle == null) bruhStyle = NoteStyleRegistry.instance.fetchDefault();
+    var bruhStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle);
     setupHoldNoteGraphic(bruhStyle);
   }
 
   override function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
   {
-    var graphicPath = noteStyle.getHoldNoteAssetPath();
-    if (graphicPath == null) return;
-    loadGraphic(graphicPath);
+    loadGraphic(noteStyle.getHoldNoteAssetPath());
 
     antialiasing = true;
 
@@ -71,11 +68,6 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     {
       endOffset = bottomClip = 1;
       antialiasing = false;
-    }
-    else
-    {
-      endOffset = 0.5;
-      bottomClip = 0.9;
     }
 
     zoom = 1.0;
@@ -95,24 +87,6 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     updateClipping();
 
     setup();
-  }
-
-  @:nullSafety(Off)
-  function updateHoldNoteGraphic():Void
-  {
-    var bruhStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle);
-    setupHoldNoteGraphic(bruhStyle);
-
-    zoom = 1.0;
-    zoom *= bruhStyle.fetchHoldNoteScale();
-    zoom *= 0.7;
-    zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
-
-    flipY = false;
-
-    setup();
-
-    triggerRedraw();
   }
 
   public override function updateHitbox():Void
