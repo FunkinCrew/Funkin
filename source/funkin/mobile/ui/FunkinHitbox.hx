@@ -109,8 +109,6 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 
     scrollFactor.set();
 
-    zIndex = 100000;
-
     ControlsHandler.setupHitbox(PlayerSettings.player1.controls, this, trackedInputs);
   }
 
