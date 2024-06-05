@@ -1640,6 +1640,7 @@ class FreeplayState extends MusicBeatSubState
         {
           songCapsule.songData.currentDifficulty = currentDifficulty;
           songCapsule.init(null, null, songCapsule.songData);
+          songCapsule.checkClip();
         }
         else
         {
@@ -2024,8 +2025,6 @@ class FreeplaySongData
 
   function set_currentDifficulty(value:String):String
   {
-    // if (currentDifficulty == value) return value;
-
     currentDifficulty = value;
     updateValues(displayedVariations);
     return value;
