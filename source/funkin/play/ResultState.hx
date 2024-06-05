@@ -691,13 +691,13 @@ class ResultState extends MusicBeatSubState
     {
       clearPercentSmall.x = (difficulty.x + difficulty.width) + 60;
       clearPercentSmall.y = -clearPercentSmall.height;
-      FlxTween.tween(clearPercentSmall, {y: 122 - 5}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.8});
+      FlxTween.tween(clearPercentSmall, {y: 122 - 5}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.85});
     }
 
     songName.y = -songName.height;
     var fuckedupnumber = (10) * (songName.text.length / 15);
     FlxTween.tween(songName, {y: diffYTween - 25 - fuckedupnumber}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
-    songName.x = clearPercentSmall.x + clearPercentSmall.width - 30;
+    songName.x = clearPercentSmall.x + 94;
 
     new FlxTimer().start(timerLength, _ -> {
       var tempSpeed = FlxPoint.get(speedOfTween.x, speedOfTween.y);

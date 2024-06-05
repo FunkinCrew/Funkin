@@ -59,14 +59,14 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
 
   var tmr:Float = 0;
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
     if (numberChanged) drawNumbers();
   }
 
-  function drawNumbers()
+  function drawNumbers():Void
   {
     var seperatedScore:Array<Int> = [];
     var tempCombo:Int = Math.round(curNumber);
@@ -83,7 +83,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     for (ind => num in seperatedScore)
     {
-      var digitIndex = ind + 1;
+      var digitIndex:Int = ind + 1;
       // If there's only one digit, move it to the right
       // If there's three digits, move them all to the left
       var digitOffset = (seperatedScore.length == 1) ? 1 : (seperatedScore.length == 3) ? -1 : 0;
@@ -95,7 +95,6 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
       var yPos = (digitIndex - 1 + digitOffset) * (digitHeightOffset * this.scale.y);
       yPos += small ? 0 : 72;
 
-      trace('[COUNTER] Drawing digit ${num}');
       if (digitIndex >= members.length)
       {
         // Three digits = LLR because the 1 and 0 won't be the same anyway.
@@ -116,10 +115,8 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
         members[digitIndex].visible = true;
       }
     }
-    trace('[COUNTER] Members: ${members.length}, expected members: ${seperatedScore.length + 1}');
     for (ind in (seperatedScore.length + 1)...(members.length))
     {
-      trace('Hiding digit ${ind}');
       members[ind].visible = false;
     }
   }
