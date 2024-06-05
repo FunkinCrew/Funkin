@@ -956,7 +956,7 @@ class PlayState extends MusicBeatSubState
     var androidPause:Bool = false;
     // So the player wouldn't miss when pressing the pause utton
     #if mobile
-    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justReleased;
+    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justPressed;
     #end
 
     #if android
@@ -2774,7 +2774,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if mobile
-    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justReleased;
+    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justPressed;
     #end
 
     if (currentConversation != null)
