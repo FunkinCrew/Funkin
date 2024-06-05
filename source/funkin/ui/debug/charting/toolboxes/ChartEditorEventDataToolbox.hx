@@ -58,17 +58,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
   function initialize():Void
   {
-    toolboxEventsEventKind.dataSource = new ArrayDataSource();
-
-    var songEvents:Array<SongEvent> = SongEventRegistry.listEvents();
-
-    for (event in songEvents)
-    {
-      toolboxEventsEventKind.dataSource.add({text: event.getTitle(), value: event.id});
-    }
-
     toolboxEventsEventKind.onChange = function(event:UIEvent) {
-      var eventType:String = event.data.value;
+      var eventType:String = event.data.id;
 
       trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event type changed: $eventType');
 
@@ -83,7 +74,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         return;
       }
 
-      buildEventDataFormFromSchema(toolboxEventsDataGrid, schema);
+      buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
 
       if (!_initializing && chartEditorState.currentEventSelection.length > 0)
       {
@@ -98,14 +89,38 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     }
-    toolboxEventsEventKind.value = chartEditorState.eventKindToPlace;
+    var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
+    toolboxEventsEventKind.value = startingEventValue;
   }
 
   public override function refresh():Void
   {
     super.refresh();
 
-    toolboxEventsEventKind.value = chartEditorState.eventKindToPlace;
+    var newDropdownElement = ChartEditorDropdowns.findDropdownElement(chartEditorState.eventKindToPlace, toolboxEventsEventKind);
+
+    if (newDropdownElement == null)
+    {
+      throw 'ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind not in dropdown: ${chartEditorState.eventKindToPlace}';
+    }
+    else if (toolboxEventsEventKind.value != newDropdownElement)
+    {
+      toolboxEventsEventKind.value = newDropdownElement;
+
+      var schema:SongEventSchema = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
+      if (schema == null)
+      {
+        trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Unknown event kind: ${chartEditorState.eventKindToPlace}');
+      }
+      else
+      {
+        buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
+      }
+    }
+    else
+    {
+      trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind not changed: ${toolboxEventsEventKind.value} == ${newDropdownElement}');
+    }
 
     for (pair in chartEditorState.eventDataToPlace.keyValueIterator())
     {
@@ -116,7 +131,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       if (field == null)
       {
-        throw 'ChartEditorToolboxHandler.refresh() - Field "${fieldId}" does not exist in the event data form.';
+        throw 'ChartEditorToolboxHandler.refresh() - Field "${fieldId}" does not exist in the event data form for kind ${lastEventKind}.';
       }
       else
       {
@@ -141,9 +156,15 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  function buildEventDataFormFromSchema(target:Box, schema:SongEventSchema):Void
+  var lastEventKind:String = 'unknown';
+
+  function buildEventDataFormFromSchema(target:Box, schema:SongEventSchema, eventKind:String):Void
   {
-    trace(schema);
+    trace('Building event data form from schema for event kind: ${eventKind}');
+    // trace(schema);
+
+    lastEventKind = eventKind ?? 'unknown';
+
     // Clear the frame.
     target.removeAllComponents();
 
@@ -197,11 +218,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           for (optionName in field.keys.keys())
           {
             var optionValue:Null<Dynamic> = field.keys.get(optionName);
-            trace('$optionName : $optionValue');
+            // trace('$optionName : $optionValue');
             dropDown.dataSource.add({value: optionValue, text: optionName});
           }
 
           dropDown.value = field.defaultValue;
+
+          // TODO: Add an option to customize sort.
+          dropDown.dataSource.sort('text', ASCENDING);
 
           input = dropDown;
         case STRING:
