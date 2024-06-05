@@ -150,7 +150,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
         for (zone in deadZones)
         {
-          if (zone.overlapsPoint(worldPos, true, camera) return false;
+          if (zone != null)
+          {
+            if (zone.overlapsPoint(worldPos, true, camera)) return false;
+          }
         }
 
         if (overlapsPoint(worldPos, true, camera))
