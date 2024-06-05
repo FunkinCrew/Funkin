@@ -13,9 +13,10 @@ import funkin.graphics.shaders.HSVShader;
 import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
-import funkin.mobile.input.ControlsHandler;
+#if mobile
 import funkin.mobile.ui.FunkinBackspace;
 import funkin.mobile.util.TouchUtil;
+#end
 import flixel.util.FlxColor;
 
 class OptionsState extends MusicBeatState
@@ -138,7 +139,9 @@ class Page extends FlxGroup
   function set_currentName(value:PageName):PageName
     return currentName = value;
 
+  #if mobile
   var backButton:FunkinBackspace;
+  #end
 
   var subState:FlxSubState;
 
@@ -162,8 +165,7 @@ class Page extends FlxGroup
   function updateEnabled(elapsed:Float)
   {
     // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
-    if (canExit && (controls.BACK || (backButton != null && TouchUtil.overlapsComplex(backButton)
-      && TouchUtil.justPressed)))
+    if (canExit && (controls.BACK #if mobile || (backButton != null && TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed) #end))
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
