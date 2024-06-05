@@ -378,7 +378,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public function getDifficulty(?diffId:String, ?variation:String, ?variations:Array<String>):Null<SongDifficulty>
   {
-    if (diffId == null) diffId = listDifficulties(variation)[0];
+    if (diffId == null) diffId = listDifficulties(variation, variations)[0];
     if (variation == null) variation = Constants.DEFAULT_VARIATION;
     if (variations == null) variations = [variation];
 
