@@ -35,7 +35,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
     super(x, y);
 
     flashShader = new PureColor(FlxColor.WHITE);
-    flashShader.colorSet = true;
+    flashShader.colorSet = false;
 
     curNumber = startingNumber;
 
@@ -54,10 +54,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
    */
   public function flash(enabled:Bool):Void
   {
-    for (member in members)
-    {
-      member.shader = enabled ? flashShader : null;
-    }
+    flashShader.colorSet = enabled;
   }
 
   var tmr:Float = 0;
@@ -98,6 +95,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
       var yPos = (digitIndex - 1 + digitOffset) * (digitHeightOffset * this.scale.y);
       yPos += small ? 0 : 72;
 
+      trace('[COUNTER] Drawing digit ${num}');
       if (digitIndex >= members.length)
       {
         // Three digits = LLR because the 1 and 0 won't be the same anyway.
@@ -105,6 +103,8 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
         // var variant:Bool = (seperatedScore.length % 2 != 0) ? (digitIndex % 2 == 0) : (digitIndex % 2 == 1);
         var numb:ClearPercentNumber = new ClearPercentNumber(xPos, yPos, num, variant, this.small);
         numb.scale.set(this.scale.x, this.scale.y);
+        numb.shader = flashShader;
+        numb.visible = true;
         add(numb);
       }
       else
@@ -113,7 +113,14 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
         // Reset the position of the number
         members[digitIndex].x = xPos + this.x;
         members[digitIndex].y = yPos + this.y;
+        members[digitIndex].visible = true;
       }
+    }
+    trace('[COUNTER] Members: ${members.length}, expected members: ${seperatedScore.length + 1}');
+    for (ind in (seperatedScore.length + 1)...(members.length))
+    {
+      trace('Hiding digit ${ind}');
+      members[ind].visible = false;
     }
   }
 }
