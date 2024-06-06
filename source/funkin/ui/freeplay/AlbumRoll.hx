@@ -38,7 +38,7 @@ class AlbumRoll extends FlxSpriteGroup
 
   var newAlbumArt:FlxAtlasSprite;
 
-  // var difficultyStars:DifficultyStars;
+  var difficultyStars:DifficultyStars;
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
 
   var albumData:Album;
@@ -65,9 +65,9 @@ class AlbumRoll extends FlxSpriteGroup
 
     add(newAlbumArt);
 
-    // difficultyStars = new DifficultyStars(140, 39);
-    // difficultyStars.stars.visible = false;
-    // add(difficultyStars);
+    difficultyStars = new DifficultyStars(140, 39);
+    difficultyStars.visible = false;
+    add(difficultyStars);
   }
 
   function onAlbumFinish(animName:String):Void
@@ -86,8 +86,13 @@ class AlbumRoll extends FlxSpriteGroup
   {
     if (albumId == null)
     {
-      // difficultyStars.stars.visible = false;
+      this.visible = false;
+      difficultyStars.stars.visible = false;
       return;
+    }
+    else
+    {
+      this.visible = true;
     }
 
     albumData = AlbumRegistry.instance.fetchEntry(albumId);
@@ -126,7 +131,7 @@ class AlbumRoll extends FlxSpriteGroup
 
     if (exitMovers == null) return;
 
-    exitMovers.set([newAlbumArt],
+    exitMovers.set([newAlbumArt, difficultyStars],
       {
         x: FlxG.width,
         speed: 0.4,
@@ -144,10 +149,10 @@ class AlbumRoll extends FlxSpriteGroup
     newAlbumArt.visible = true;
     newAlbumArt.playAnimation(animNames.get('$albumId-active'), false, false, false);
 
-    // difficultyStars.stars.visible = false;
+    difficultyStars.visible = false;
     new FlxTimer().start(0.75, function(_) {
       // showTitle();
-      // showStars();
+      showStars();
     });
   }
 
@@ -156,16 +161,18 @@ class AlbumRoll extends FlxSpriteGroup
     newAlbumArt.playAnimation(animNames.get('$albumId-trans'), false, false, false);
   }
 
-  // public function setDifficultyStars(?difficulty:Int):Void
-  // {
-  //   if (difficulty == null) return;
-  //   difficultyStars.difficulty = difficulty;
-  // }
-  // /**
-  //  * Make the album stars visible.
-  //  */
-  // public function showStars():Void
-  // {
-  //   difficultyStars.stars.visible = false; // true;
-  // }
+  public function setDifficultyStars(?difficulty:Int):Void
+  {
+    if (difficulty == null) return;
+    difficultyStars.difficulty = difficulty;
+  }
+
+  /**
+   * Make the album stars visible.
+   */
+  public function showStars():Void
+  {
+    difficultyStars.visible = true; // true;
+    difficultyStars.flameCheck();
+  }
 }

@@ -36,6 +36,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     zoom *= 0.7;
     zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
+    flipY = false;
+
     setup();
   }
 
