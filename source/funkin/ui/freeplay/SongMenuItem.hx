@@ -20,6 +20,9 @@ import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.addons.effects.FlxTrail;
+import funkin.play.scoring.Scoring.ScoringRank;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
 import flixel.util.FlxColor;
 
 class SongMenuItem extends FlxSpriteGroup
@@ -37,9 +40,14 @@ class SongMenuItem extends FlxSpriteGroup
   public var selected(default, set):Bool;
 
   public var songText:CapsuleText;
+  public var favIconBlurred:FlxSprite;
   public var favIcon:FlxSprite;
+
   public var ranking:FreeplayRank;
   public var blurredRanking:FreeplayRank;
+
+  public var fakeRanking:FreeplayRank;
+  public var fakeBlurredRanking:FreeplayRank;
 
   var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect", "perfectsick"];
 
@@ -70,7 +78,9 @@ class SongMenuItem extends FlxSpriteGroup
 
   var impactThing:FunkinSprite;
 
-  public var tempr:Int;
+  public var sparkle:FlxSprite;
+
+  var sparkleTimer:FlxTimer;
 
   public function new(x:Float, y:Float)
   {
@@ -106,7 +116,7 @@ class SongMenuItem extends FlxSpriteGroup
     newText.animation.play('newAnim', true);
     newText.setGraphicSize(Std.int(newText.width * 0.9));
 
-    newText.visible = false;
+    // newText.visible = false;
 
     add(newText);
 
@@ -132,15 +142,35 @@ class SongMenuItem extends FlxSpriteGroup
     // doesn't get added, simply is here to help with visibility of things for the pop in!
     grpHide = new FlxGroup();
 
-    var rank:String = FlxG.random.getObject(ranks);
+    fakeRanking = new FreeplayRank(420, 41);
+    add(fakeRanking);
 
-    tempr = FlxG.random.int(0, 5);
-    ranking = new FreeplayRank(420, 41, tempr);
+    fakeBlurredRanking = new FreeplayRank(fakeRanking.x, fakeRanking.y);
+    fakeBlurredRanking.shader = new GaussianBlurShader(1);
+    add(fakeBlurredRanking);
+
+    fakeRanking.visible = false;
+    fakeBlurredRanking.visible = false;
+
+    ranking = new FreeplayRank(420, 41);
     add(ranking);
 
-    blurredRanking = new FreeplayRank(ranking.x, ranking.y, tempr);
+    blurredRanking = new FreeplayRank(ranking.x, ranking.y);
     blurredRanking.shader = new GaussianBlurShader(1);
     add(blurredRanking);
+
+    sparkle = new FlxSprite(ranking.x, ranking.y);
+    sparkle.frames = Paths.getSparrowAtlas('freeplay/sparkle');
+    sparkle.animation.addByPrefix('sparkle', 'sparkle', 24, false);
+    sparkle.animation.play('sparkle', true);
+    sparkle.scale.set(0.8, 0.8);
+    sparkle.blend = BlendMode.ADD;
+
+    sparkle.visible = false;
+    sparkle.alpha = 0.7;
+
+    add(sparkle);
+
     // ranking.loadGraphic(Paths.image('freeplay/ranks/' + rank));
     // ranking.scale.x = ranking.scale.y = realScaled;
     // ranking.alpha = 0.75;
@@ -179,6 +209,16 @@ class SongMenuItem extends FlxSpriteGroup
     add(pixelIcon);
     grpHide.add(pixelIcon);
 
+    favIconBlurred = new FlxSprite(380, 40);
+    favIconBlurred.frames = Paths.getSparrowAtlas('freeplay/favHeart');
+    favIconBlurred.animation.addByPrefix('fav', 'favorite heart', 24, false);
+    favIconBlurred.animation.play('fav');
+    favIconBlurred.setGraphicSize(50, 50);
+    favIconBlurred.blend = BlendMode.ADD;
+    favIconBlurred.shader = new GaussianBlurShader(1.2);
+    favIconBlurred.visible = false;
+    add(favIconBlurred);
+
     favIcon = new FlxSprite(380, 40);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', 'favorite heart', 24, false);
@@ -194,6 +234,13 @@ class SongMenuItem extends FlxSpriteGroup
     weekNumbers.push(weekNumber);
 
     setVisibleGrp(false);
+  }
+
+  function sparkleEffect(timer:FlxTimer):Void
+  {
+    sparkle.setPosition(FlxG.random.float(ranking.x - 20, ranking.x + 3), FlxG.random.float(ranking.y - 29, ranking.y + 4));
+    sparkle.animation.play('sparkle', true);
+    sparkleTimer = new FlxTimer().start(FlxG.random.float(1.2, 4.5), sparkleEffect);
   }
 
   // no way to grab weeks rn, so this needs to be done :/
@@ -255,7 +302,7 @@ class SongMenuItem extends FlxSpriteGroup
     var clipType:Int = 0;
 
     if (ranking.visible == true) clipType += 1;
-    if (favIcon.visible == true) clipType += 1;
+    if (favIcon.visible == true) clipType = 2;
     switch (clipType)
     {
       case 2:
@@ -268,8 +315,6 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateBPM(newBPM:Int):Void
   {
-    trace(newBPM);
-
     var shiftX:Float = 191;
     var tempShift:Float = 0;
 
@@ -317,7 +362,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   var evilTrail:FlxTrail;
 
-  public function fadeAnim()
+  public function fadeAnim():Void
   {
     impactThing = new FunkinSprite(0, 0);
     impactThing.frames = capsule.frames;
@@ -344,19 +389,19 @@ class SongMenuItem extends FlxSpriteGroup
       });
     add(evilTrail);
 
-    switch (tempr)
+    switch (ranking.rank)
     {
-      case 0:
+      case SHIT:
         evilTrail.color = 0xFF6044FF;
-      case 1:
+      case GOOD:
         evilTrail.color = 0xFFEF8764;
-      case 2:
+      case GREAT:
         evilTrail.color = 0xFFEAF6FF;
-      case 3:
+      case EXCELLENT:
         evilTrail.color = 0xFFFDCB42;
-      case 4:
+      case PERFECT:
         evilTrail.color = 0xFFFF58B4;
-      case 5:
+      case PERFECT_GOLD:
         evilTrail.color = 0xFFFFB619;
     }
   }
@@ -375,7 +420,7 @@ class SongMenuItem extends FlxSpriteGroup
       switch (i)
       {
         case 0:
-          if (newRating > 10)
+          if (newRating < 10)
           {
             bigNumbers[i].digit = 0;
           }
@@ -391,6 +436,21 @@ class SongMenuItem extends FlxSpriteGroup
     }
     // diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
     // diffRatingSprite.visible = false;
+  }
+
+  function updateScoringRank(newRank:Null<ScoringRank>):Void
+  {
+    if (sparkleTimer != null) sparkleTimer.cancel();
+    sparkle.visible = false;
+
+    this.ranking.rank = newRank;
+    this.blurredRanking.rank = newRank;
+
+    if (newRank == PERFECT_GOLD)
+    {
+      sparkleTimer = new FlxTimer().start(1, sparkleEffect);
+      sparkle.visible = true;
+    }
   }
 
   function set_hsvShader(value:HSVShader):HSVShader
@@ -441,6 +501,8 @@ class SongMenuItem extends FlxSpriteGroup
     if (songData?.songCharacter != null) setCharacter(songData.songCharacter);
     updateBPM(Std.int(songData?.songStartingBpm) ?? 0);
     updateDifficultyRating(songData?.difficultyRating ?? 0);
+    updateScoringRank(songData?.scoringRank);
+    newText.visible = songData?.isNew;
     // Update opacity, offsets, etc.
     updateSelected();
 
@@ -653,56 +715,66 @@ class SongMenuItem extends FlxSpriteGroup
     capsule.offset.x = this.selected ? 0 : -5;
     capsule.animation.play(this.selected ? "selected" : "unselected");
     ranking.alpha = this.selected ? 1 : 0.7;
+    favIcon.alpha = this.selected ? 1 : 0.6;
+    favIconBlurred.alpha = this.selected ? 1 : 0;
     ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
 
-    if (selected)
-    {
-      if (songText.tooLong == true) songText.initMove();
-    }
-    else
-    {
-      if (songText.tooLong == true) songText.resetText();
-    }
+    if (songText.tooLong) songText.resetText();
+
+    if (selected && songText.tooLong) songText.initMove();
   }
 }
 
 class FreeplayRank extends FlxSprite
 {
-  public var rank(default, set):Int = 0;
+  public var rank(default, set):Null<ScoringRank> = null;
 
-  var numToRank:Array<String> = ["LOSS", "GOOD", "GREAT", "EXCELLENT", "PERFECT", "PERFECTSICK"];
-
-  function set_rank(val):Int
+  function set_rank(val:Null<ScoringRank>):Null<ScoringRank>
   {
-    animation.play(numToRank[val], true, false);
+    rank = val;
 
-    centerOffsets(false);
-
-    switch (val)
+    if (rank == null || val == null)
     {
-      case 0:
-      // offset.x -= 1;
-      case 1:
-        // offset.x -= 1;
-        offset.y -= 8;
-      case 2:
-        // offset.x -= 1;
-        offset.y -= 8;
-      case 3:
-      // offset.y += 5;
-      case 4:
-      // offset.y += 5;
-      default:
-        centerOffsets(false);
+      this.visible = false;
     }
-    updateHitbox();
-    return val;
+    else
+    {
+      this.visible = true;
+
+      animation.play(val.getFreeplayRankIconAsset(), true, false);
+
+      centerOffsets(false);
+
+      switch (val)
+      {
+        case SHIT:
+        // offset.x -= 1;
+        case GOOD:
+          // offset.x -= 1;
+          offset.y -= 8;
+        case GREAT:
+          // offset.x -= 1;
+          offset.y -= 8;
+        case EXCELLENT:
+        // offset.y += 5;
+        case PERFECT:
+        // offset.y += 5;
+        case PERFECT_GOLD:
+        // offset.y += 5;
+        default:
+          centerOffsets(false);
+          this.visible = false;
+      }
+      updateHitbox();
+    }
+
+    return rank = val;
   }
 
-  public var baseY:Float = 0;
   public var baseX:Float = 0;
+  public var baseY:Float = 0;
 
-  public function new(x:Float, y:Float, ?initRank:Int = 0)
+  public function new(x:Float, y:Float)
   {
     super(x, y);
 
@@ -717,9 +789,7 @@ class FreeplayRank extends FlxSprite
 
     blend = BlendMode.ADD;
 
-    this.rank = initRank;
-
-    animation.play(numToRank[initRank], true);
+    this.rank = null;
 
     // setGraphicSize(Std.int(width * 0.9));
     scale.set(0.9, 0.9);

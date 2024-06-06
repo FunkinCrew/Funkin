@@ -27,8 +27,8 @@ class DJBoyfriend extends FlxAtlasSprite
 
   var gotSpooked:Bool = false;
 
-  static final SPOOK_PERIOD:Float = 120.0;
-  static final TV_PERIOD:Float = 180.0;
+  static final SPOOK_PERIOD:Float = 60.0;
+  static final TV_PERIOD:Float = 120.0;
 
   // Time since dad last SPOOKED you.
   var timeSinceSpook:Float = 0;

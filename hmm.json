@@ -41,6 +41,13 @@
       "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "f986332ba5ab02abd386ce662578baf04904604a",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
       "name": "format",
       "type": "haxelib",
       "version": "3.5.0"

@@ -219,7 +219,9 @@ class InitState extends FlxState
     FlxG.switchState(() -> new funkin.play.ResultState(
       {
         storyMode: false,
-        title: "CUM SONG",
+        title: "Cum Song Erect by Kawai Sprite",
+        songId: "cum",
+        difficultyId: "nightmare",
         isNewHighscore: true,
         scoreData:
           {
@@ -227,7 +229,7 @@ class InitState extends FlxState
             tallies:
               {
                 sick: 130,
-                good: 25,
+                good: 60,
                 bad: 69,
                 shit: 69,
                 missed: 69,

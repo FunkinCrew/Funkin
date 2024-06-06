@@ -35,7 +35,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
     super(x, y);
 
     flashShader = new PureColor(FlxColor.WHITE);
-    flashShader.colorSet = true;
+    flashShader.colorSet = false;
 
     curNumber = startingNumber;
 
@@ -54,22 +54,19 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
    */
   public function flash(enabled:Bool):Void
   {
-    for (member in members)
-    {
-      member.shader = enabled ? flashShader : null;
-    }
+    flashShader.colorSet = enabled;
   }
 
   var tmr:Float = 0;
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
     if (numberChanged) drawNumbers();
   }
 
-  function drawNumbers()
+  function drawNumbers():Void
   {
     var seperatedScore:Array<Int> = [];
     var tempCombo:Int = Math.round(curNumber);
@@ -86,7 +83,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     for (ind => num in seperatedScore)
     {
-      var digitIndex = ind + 1;
+      var digitIndex:Int = ind + 1;
       // If there's only one digit, move it to the right
       // If there's three digits, move them all to the left
       var digitOffset = (seperatedScore.length == 1) ? 1 : (seperatedScore.length == 3) ? -1 : 0;
@@ -105,6 +102,8 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
         // var variant:Bool = (seperatedScore.length % 2 != 0) ? (digitIndex % 2 == 0) : (digitIndex % 2 == 1);
         var numb:ClearPercentNumber = new ClearPercentNumber(xPos, yPos, num, variant, this.small);
         numb.scale.set(this.scale.x, this.scale.y);
+        numb.shader = flashShader;
+        numb.visible = true;
         add(numb);
       }
       else
@@ -113,7 +112,12 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
         // Reset the position of the number
         members[digitIndex].x = xPos + this.x;
         members[digitIndex].y = yPos + this.y;
+        members[digitIndex].visible = true;
       }
+    }
+    for (ind in (seperatedScore.length + 1)...(members.length))
+    {
+      members[ind].visible = false;
     }
   }
 }
