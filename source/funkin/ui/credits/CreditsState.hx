@@ -102,7 +102,7 @@ class CreditsState extends MusicBeatState
           backerIndexToBuild: 0,
           hasBuiltHeader: (entry.header == null),
           hasBuiltBody: (entry.body.length == 0),
-          hasBuiltBackers: (!entry.appendBackers && backersToBuild.length > 0)
+          hasBuiltBackers: (!entry.appendBackers || backersToBuild.length == 0)
         });
     }
 
