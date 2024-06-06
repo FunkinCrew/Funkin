@@ -28,9 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved logic for NoteHitScriptEvents, allowing you to view the hit diff and modify whether a note hit is a combo break (thanks nebulazorua!)
 - Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
   - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
+- Improved the Event Toolbox in the Chart Editor; dropdowns are now bigger, include search field, and display elements in alphabetical order rather than a random order.
 ### Fixed
 - Fixed a bug where the game would silently fail to load saves on HTML5
 - Fixed some bugs with the props on the Story Menu not bopping properly
+- Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
 - Additional fixes to the Loading bar on HTML5 (thanks lemz1!)
 - Fixed several bugs with the TitleState, including missing music when returning from the Main Menu (thanks gamerbross!)
 - Fixed a camera bug in the Main Menu (thanks richTrash21!)

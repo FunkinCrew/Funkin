@@ -209,6 +209,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
           dropDown.width = 200.0;
+          dropDown.dropdownSize = 10;
+          dropDown.dropdownWidth = 300;
+          dropDown.searchable = true;
           dropDown.dataSource = new ArrayDataSource();
 
           if (field.keys == null) throw 'Field "${field.name}" is of Enum type but has no keys.';
