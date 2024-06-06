@@ -21,6 +21,8 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
 import flixel.util.FlxColor;
 
 class SongMenuItem extends FlxSpriteGroup
@@ -76,6 +78,10 @@ class SongMenuItem extends FlxSpriteGroup
 
   var impactThing:FunkinSprite;
 
+  public var sparkle:FlxSprite;
+
+  var sparkleTimer:FlxTimer;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
@@ -110,7 +116,7 @@ class SongMenuItem extends FlxSpriteGroup
     newText.animation.play('newAnim', true);
     newText.setGraphicSize(Std.int(newText.width * 0.9));
 
-    newText.visible = false;
+    // newText.visible = false;
 
     add(newText);
 
@@ -152,6 +158,18 @@ class SongMenuItem extends FlxSpriteGroup
     blurredRanking = new FreeplayRank(ranking.x, ranking.y);
     blurredRanking.shader = new GaussianBlurShader(1);
     add(blurredRanking);
+
+    sparkle = new FlxSprite(ranking.x, ranking.y);
+    sparkle.frames = Paths.getSparrowAtlas('freeplay/sparkle');
+    sparkle.animation.addByPrefix('sparkle', 'sparkle', 24, false);
+    sparkle.animation.play('sparkle', true);
+    sparkle.scale.set(0.8, 0.8);
+    sparkle.blend = BlendMode.ADD;
+
+    sparkle.visible = false;
+    sparkle.alpha = 0.7;
+
+    add(sparkle);
 
     // ranking.loadGraphic(Paths.image('freeplay/ranks/' + rank));
     // ranking.scale.x = ranking.scale.y = realScaled;
@@ -216,6 +234,13 @@ class SongMenuItem extends FlxSpriteGroup
     weekNumbers.push(weekNumber);
 
     setVisibleGrp(false);
+  }
+
+  function sparkleEffect(timer:FlxTimer):Void
+  {
+    sparkle.setPosition(FlxG.random.float(ranking.x - 20, ranking.x + 3), FlxG.random.float(ranking.y - 29, ranking.y + 4));
+    sparkle.animation.play('sparkle', true);
+    sparkleTimer = new FlxTimer().start(FlxG.random.float(1.2, 4.5), sparkleEffect);
   }
 
   // no way to grab weeks rn, so this needs to be done :/
@@ -415,8 +440,17 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateScoringRank(newRank:Null<ScoringRank>):Void
   {
+    if (sparkleTimer != null) sparkleTimer.cancel();
+    sparkle.visible = false;
+
     this.ranking.rank = newRank;
     this.blurredRanking.rank = newRank;
+
+    if (newRank == PERFECT_GOLD)
+    {
+      sparkleTimer = new FlxTimer().start(1, sparkleEffect);
+      sparkle.visible = true;
+    }
   }
 
   function set_hsvShader(value:HSVShader):HSVShader
@@ -468,6 +502,7 @@ class SongMenuItem extends FlxSpriteGroup
     updateBPM(Std.int(songData?.songStartingBpm) ?? 0);
     updateDifficultyRating(songData?.difficultyRating ?? 0);
     updateScoringRank(songData?.scoringRank);
+    newText.visible = songData?.isNew;
     // Update opacity, offsets, etc.
     updateSelected();
 

@@ -91,6 +91,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return _metadata.keys().array();
   }
 
+  // this returns false so that any new song can override this and return true when needed
+  public function isSongNew(currentDifficulty:String):Bool
+  {
+    return false;
+  }
+
   /**
    * Set to false if the song was edited in the charter and should not be saved as a high score.
    */
