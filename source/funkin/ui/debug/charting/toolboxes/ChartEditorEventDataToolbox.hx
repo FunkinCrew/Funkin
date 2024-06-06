@@ -90,6 +90,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       }
     }
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
+    trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Starting event kind: ${startingEventValue}');
     toolboxEventsEventKind.value = startingEventValue;
   }
 
@@ -103,7 +104,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     {
       throw 'ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind not in dropdown: ${chartEditorState.eventKindToPlace}';
     }
-    else if (toolboxEventsEventKind.value != newDropdownElement)
+    else if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)
     {
       toolboxEventsEventKind.value = newDropdownElement;
 
@@ -114,12 +115,13 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       }
       else
       {
+        trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind changed: ${toolboxEventsEventKind.value.id} != ${newDropdownElement.id} != ${lastEventKind}, rebuilding form');
         buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
       }
     }
     else
     {
-      trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind not changed: ${toolboxEventsEventKind.value} == ${newDropdownElement}');
+      trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind not changed: ${toolboxEventsEventKind.value} == ${newDropdownElement} == ${lastEventKind}');
     }
 
     for (pair in chartEditorState.eventDataToPlace.keyValueIterator())
