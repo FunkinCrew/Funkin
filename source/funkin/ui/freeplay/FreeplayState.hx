@@ -859,6 +859,7 @@ class FreeplayState extends MusicBeatSubState
   function rankAnimStart(fromResults:Null<FromResultsParams>):Void
   {
     busy = true;
+    grpCapsules.members[curSelected].sparkle.alpha = 0;
     // grpCapsules.members[curSelected].forcePosition();
 
     if (fromResults != null)
@@ -1088,6 +1089,8 @@ class FreeplayState extends MusicBeatSubState
 
               // NOW we can interact with the menu
               busy = false;
+              grpCapsules.members[curSelected].sparkle.alpha = 0.7;
+              playCurSongPreview(capsule);
             }, null);
 
             // FlxTween.tween(capsule, {"targetPos.x": capsule.targetPos.x - 50}, 0.6,
@@ -1814,7 +1817,7 @@ class FreeplayState extends MusicBeatSubState
 
   function changeSelection(change:Int = 0):Void
   {
-    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (!prepForNewRank) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     var prevSelected:Int = curSelected;
 
@@ -1855,40 +1858,45 @@ class FreeplayState extends MusicBeatSubState
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
-    if (grpCapsules.countLiving() > 0)
+    if (grpCapsules.countLiving() > 0 && !prepForNewRank)
     {
-      if (curSelected == 0)
-      {
-        FunkinSound.playMusic('freeplayRandom',
-          {
-            startingVolume: 0.0,
-            overrideExisting: true,
-            restartTrack: false
-          });
-        FlxG.sound.music.fadeIn(2, 0, 0.8);
-      }
-      else
-      {
-        var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
-        FunkinSound.playMusic(daSongCapsule.songData.songId,
-          {
-            startingVolume: 0.0,
-            overrideExisting: true,
-            restartTrack: false,
-            pathsFunction: INST,
-            suffix: potentiallyErect,
-            partialParams:
-              {
-                loadPartial: true,
-                start: 0.05,
-                end: 0.25
-              },
-            onLoad: function() {
-              FlxG.sound.music.fadeIn(2, 0, 0.4);
-            }
-          });
-      }
+      playCurSongPreview(daSongCapsule);
       grpCapsules.members[curSelected].selected = true;
+    }
+  }
+
+  public function playCurSongPreview(daSongCapsule:SongMenuItem):Void
+  {
+    if (curSelected == 0)
+    {
+      FunkinSound.playMusic('freeplayRandom',
+        {
+          startingVolume: 0.0,
+          overrideExisting: true,
+          restartTrack: false
+        });
+      FlxG.sound.music.fadeIn(2, 0, 0.8);
+    }
+    else
+    {
+      var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
+      FunkinSound.playMusic(daSongCapsule.songData.songId,
+        {
+          startingVolume: 0.0,
+          overrideExisting: true,
+          restartTrack: false,
+          pathsFunction: INST,
+          suffix: potentiallyErect,
+          partialParams:
+            {
+              loadPartial: true,
+              start: 0.05,
+              end: 0.25
+            },
+          onLoad: function() {
+            FlxG.sound.music.fadeIn(2, 0, 0.4);
+          }
+        });
     }
   }
 
@@ -2004,6 +2012,8 @@ class FreeplaySongData
    */
   public var isFav:Bool = false;
 
+  public var isNew:Bool = false;
+
   var song:Song;
 
   public var levelId(default, null):String = '';
@@ -2083,6 +2093,8 @@ class FreeplaySongData
     }
 
     this.scoringRank = Save.instance.getSongRank(songId, currentDifficulty);
+
+    this.isNew = song.isSongNew(currentDifficulty);
   }
 }
 
