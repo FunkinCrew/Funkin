@@ -15,22 +15,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new Scroll Speed chart event to change the note speed mid-song (thanks )
 ### Changed
 - Tweaked the charts for several songs:
+  - Tutorial (increased the note speed slightly)
+  - Spookeez
   - Monster
   - Winter Horrorland
+  - M.I.L.F.
+  - Senpai (increased the note speed)
+  - Roses
+  - Thorns (increased the note speed slightly)
+  - Ugh
   - Stress
   - Lit Up
-  - Tutorial (increased the note speed slightly)
-  - Senpai (increased the note speed)
-  - Thorns (increased the note speed slightly)
 - Favorite songs marked in Freeplay are now stored between sessions.
 - In the event that the game cannot load your save data, it will now perform a backup before clearing it, so that we can try to repair it in the future.
 - Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
-- Improved logic for NoteHitScriptEvents, allowing you to view the hit diff and modify whether a note hit is a combo break (thanks nebulazorua!)
 - Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
   - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
 ### Fixed
 - Fixed a bug where the game would silently fail to load saves on HTML5
 - Fixed some bugs with the props on the Story Menu not bopping properly
+- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
 - Additional fixes to the Loading bar on HTML5 (thanks lemz1!)
 - Fixed several bugs with the TitleState, including missing music when returning from the Main Menu (thanks gamerbross!)
 - Fixed a camera bug in the Main Menu (thanks richTrash21!)
