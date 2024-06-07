@@ -6,7 +6,6 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.sound.FlxSound;
 import funkin.vis.dsp.SpectralAnalyzer;
 import funkin.vis.audioclip.frontends.LimeAudioClip;
-import lime.media.AudioSource;
 
 using Lambda;
 
@@ -55,7 +54,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function initAnalyzer()
   {
     @:privateAccess
-    analyzer = new SpectralAnalyzer(7, new LimeAudioClip(cast snd._channel.__source), 0.1, 30);
+    analyzer = new SpectralAnalyzer(snd._channel.__source, 7, 0.1, 30);
 
     #if !web
     // On non web it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
@@ -63,7 +62,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     analyzer.fftN = 512;
     #end
 
-    analyzer.maxDb = -35;
+    // analyzer.maxDb = -35;
     // analyzer.fftN = 2048;
   }
 
