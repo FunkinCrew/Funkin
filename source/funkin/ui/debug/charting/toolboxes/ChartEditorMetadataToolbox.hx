@@ -29,6 +29,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 {
   var inputSongName:TextField;
   var inputSongArtist:TextField;
+  var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
   var buttonCharacterPlayer:Button;
@@ -89,6 +90,20 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
+    inputSongCharter.onChange = function(event:UIEvent) {
+      var valid:Bool = event.target.text != null && event.target.text != '';
+
+      if (valid)
+      {
+        inputSongCharter.removeClass('invalid-value');
+        chartEditorState.currentSongMetadata.charter = event.target.text;
+      }
+      else
+      {
+        chartEditorState.currentSongMetadata.charter = null;
+      }
+    };
+
     inputStage.onChange = function(event:UIEvent) {
       var valid:Bool = event.data != null && event.data.id != null;
 
@@ -104,6 +119,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (event.data?.id == null) return;
       chartEditorState.currentSongNoteStyle = event.data.id;
     };
+    var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
+    inputNoteStyle.value = startingValueNoteStyle;
 
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;
@@ -176,6 +193,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
+    inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;

@@ -249,6 +249,11 @@ class Constants
   public static final DEFAULT_ARTIST:String = 'Unknown';
 
   /**
+   * The default charter for songs.
+   */
+  public static final DEFAULT_CHARTER:String = 'Unknown';
+
+  /**
    * The default note style for songs.
    */
   public static final DEFAULT_NOTE_STYLE:String = 'funkin';
@@ -455,6 +460,17 @@ class Constants
   public static final JUDGEMENT_BAD_COMBO_BREAK:Bool = true;
   public static final JUDGEMENT_SHIT_COMBO_BREAK:Bool = true;
 
+  // % Sick
+  public static final RANK_PERFECT_PLAT_THRESHOLD:Float = 1.0; // % Sick
+  public static final RANK_PERFECT_GOLD_THRESHOLD:Float = 0.85; // % Sick
+
+  // % Hit
+  public static final RANK_PERFECT_THRESHOLD:Float = 1.00;
+  public static final RANK_EXCELLENT_THRESHOLD:Float = 0.90;
+  public static final RANK_GREAT_THRESHOLD:Float = 0.80;
+  public static final RANK_GOOD_THRESHOLD:Float = 0.60;
+
+  // public static final RANK_SHIT_THRESHOLD:Float = 0.00;
   /**
    * FILE EXTENSIONS
    */
