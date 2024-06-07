@@ -137,8 +137,10 @@ class Preferences
     FlxG.autoPause = Preferences.autoPause;
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
+    #if mobile
     // Apply the allowScreenTimeout setting (enables screen timeout).
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    #end
   }
 
   static function toggleDebugDisplay(show:Bool):Void
