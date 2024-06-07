@@ -162,6 +162,8 @@ class GameOverSubState extends MusicBeatSubState
   @:nullSafety(Off)
   function setCameraTarget():Void
   {
+    if (PlayState.instance.isMinimalMode || boyfriend == null) return;
+
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
     cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
@@ -254,6 +256,7 @@ class GameOverSubState extends MusicBeatSubState
         this.close();
         if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
         PlayState.instance.close(); // This only works because PlayState is a substate!
+        return;
       }
       else if (PlayStatePlaylist.isStoryMode)
       {

@@ -41,6 +41,13 @@
       "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "f986332ba5ab02abd386ce662578baf04904604a",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
       "name": "format",
       "type": "haxelib",
       "version": "3.5.0"
@@ -49,8 +56,15 @@
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "2aa654b974507ab51ab1724d2d97e75726fd7d78",
+      "ref": "38261833590773cb1de34ac5d11e0825696fc340",
       "url": "https://github.com/FunkinCrew/funkVis"
+    },
+    {
+      "name": "grig.audio",
+      "type": "git",
+      "dir": "src",
+      "ref": "57f5d47f2533fd0c3dcd025a86cb86c0dfa0b6d2",
+      "url": "https://gitlab.com/haxe-grig/grig.audio.git"
     },
     {
       "name": "hamcrest",
@@ -80,7 +94,7 @@
       "name": "hxCodec",
       "type": "git",
       "dir": null,
-      "ref": "c0c7f2680cc190c932a549c2e2fdd9b0ba2bd10e",
+      "ref": "61b98a7a353b7f529a8fec84ed9afc919a2dffdd",
       "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
@@ -153,7 +167,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "8553b800965f225bb14c7ab8f04bfa9cdec362ac",
+      "ref": "bfbe30d81601b3543d80dce580108ad6b7e182c7",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

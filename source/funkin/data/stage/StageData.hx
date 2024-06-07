@@ -58,8 +58,16 @@ class StageData
    */
   public function serialize(pretty:Bool = true):String
   {
+    // Update generatedBy and version before writing.
+    updateVersionToLatest();
+
     var writer = new json2object.JsonWriter<StageData>();
     return writer.write(this, pretty ? '  ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.version = StageRegistry.STAGE_DATA_VERSION;
   }
 }
 

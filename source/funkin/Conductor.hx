@@ -430,7 +430,7 @@ class Conductor
     else if (currentTimeChange != null && this.songPosition > 0.0)
     {
       // roundDecimal prevents representing 8 as 7.9999999
-      this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * 4) + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
+      this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT) + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
       this.currentMeasureTime = currentStepTime / stepsPerMeasure;
       this.currentStep = Math.floor(currentStepTime);
@@ -564,7 +564,7 @@ class Conductor
         if (ms >= timeChange.timeStamp)
         {
           lastTimeChange = timeChange;
-          resultStep = lastTimeChange.beatTime * 4;
+          resultStep = lastTimeChange.beatTime * Constants.STEPS_PER_BEAT;
         }
         else
         {
@@ -600,7 +600,7 @@ class Conductor
       var lastTimeChange:SongTimeChange = timeChanges[0];
       for (timeChange in timeChanges)
       {
-        if (stepTime >= timeChange.beatTime * 4)
+        if (stepTime >= timeChange.beatTime * Constants.STEPS_PER_BEAT)
         {
           lastTimeChange = timeChange;
           resultMs = lastTimeChange.timeStamp;
@@ -613,7 +613,7 @@ class Conductor
       }
 
       var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
-      resultMs += (stepTime - lastTimeChange.beatTime * 4) * lastStepLengthMs;
+      resultMs += (stepTime - lastTimeChange.beatTime * Constants.STEPS_PER_BEAT) * lastStepLengthMs;
 
       return resultMs;
     }

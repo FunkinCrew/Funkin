@@ -4,11 +4,63 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2024-06-06
+### Added
+- 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
+- Major visual improvements to the Results screen, with additional animations and audio based on your performance.
+- Major visual improvements to the Freeplay screen, with song difficulty ratings and player rank displays.
+  - Freeplay now plays a preview of songs when you hover over them.
+- Added a Charter field to the chart format, to allow for crediting the creator of a level's chart.
+  - You can see who charted a song from the Pause menu.
+- Added a new Scroll Speed chart event to change the note speed mid-song (thanks burgerballs!)
+### Changed
+- Tweaked the charts for several songs:
+  - Tutorial (increased the note speed slightly)
+  - Spookeez
+  - Monster
+  - Winter Horrorland
+  - M.I.L.F.
+  - Senpai (increased the note speed)
+  - Roses
+  - Thorns (increased the note speed slightly)
+  - Ugh
+  - Stress
+  - Lit Up
+- Favorite songs marked in Freeplay are now stored between sessions.
+- The Freeplay easter eggs are now easier to see.
+- In the event that the game cannot load your save data, it will now perform a backup before clearing it, so that we can try to repair it in the future.
+- Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
+- Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
+  - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
+### Fixed
+- Fixed an issue where Nene's visualizer would not play on Desktop builds
+- Fixed a bug where the game would silently fail to load saves on HTML5
+- Fixed some bugs with the props on the Story Menu not bopping properly
+- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
+- Fixed a crash on Linux caused by an old version of hxCodec (thanks Noobz4Life!)
+- Optimized animation handling for characters (thanks richTrash21!)
+- Made improvements to compiling documentation (thanks gedehari!)
+- Fixed a bug where pressing the volume keys would stop the Toy commercial (thanks gamerbross!)
+- Fixed a bug where the Chart Editor Playtest would crash when losing (thanks gamerbross!)
+- Removed a large number of unused imports to optimize builds (thanks Ethan-makes-music!)
+- Fixed a bug where hold notes would be positioned wrong on downscroll (thanks MaybeMaru!)
+- Additional fixes to the Loading bar on HTML5 (thanks lemz1!)
+- Fixed a crash in Freeplay caused by a level referencing an invalid song (thanks gamerbross!)
+- Improved debug logging for unscripted stages (thanks gamerbross!)
+- Fixed a bug where changing difficulties in Story mode wouldn't update the score (thanks sectorA!)
+- Fixed an issue where the Chart Editor would use an incorrect instrumental on imported Legacy songs (thanks gamerbross!)
+- Fixed a camera bug in the Main Menu (thanks richTrash21!)
+- Fixed several bugs with the TitleState, including missing music when returning from the Main Menu (thanks gamerbross!)
+- Fixed a bug where opening the game from the command line would crash the preloader (thanks NotHyper474!)
+- Fixed a bug where hold notes would display improperly in the Chart Editor when downscroll was enabled for gameplay (thanks gamerbross!)
+- Fixed a bug where characters would sometimes use the wrong scale value (thanks PurSnake!)
+- Additional bug fixes and optimizations.
+
 ## [0.3.3] - 2024-05-14
 ### Changed
 - Cleaned up some code in `PlayAnimationSongEvent.hx` (thanks BurgerBalls!)
 ### Fixed
-- Fix Web Loading Bar (thanks lemz1!)
+- Fixes to the Loading bar on HTML5 (thanks lemz1!)
 - Don't allow any more inputs when exiting freeplay (thanks gamerbros!)
 - Fixed using mouse wheel to scroll on freeplay (thanks JugieNoob!)
 - Fixed the reset's of the health icons, score, and notes when re-entering gameplay from gameover (thanks ImCodist!)
@@ -16,11 +68,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed camera stutter once a wipe transition to the Main Menu completes (thanks ImCodist!)
 - Fixed an issue where hold note would be invisible for a single frame (thanks ImCodist!)
 - Fix tween accumulation on title screen when pressing Y multiple times (thanks TheGaloXx!)
-- Fix for a game over easter egg so you don't accidentally exit it when viewing
 - Fix a crash when querying FlxG.state in the crash handler
+- Fix for a game over easter egg so you don't accidentally exit it when viewing
 - Fix an issue where the Freeplay menu never displays 100% clear
+- Fix an issue where Weekend 1 Pico attempted to retrieve a missing asset.
+- Fix an issue where duplicate keybinds would be stoed, potentially causing a crash
 - Chart debug key now properly returns you to the previous chart editor session if you were playtesting a chart (thanks nebulazorua!)
-- Hopefully fixed Freeplay crashes on AMD gpu's
+- Fix a crash on Freeplay found on AMD graphics cards
 
 ## [0.3.2] - 2024-05-03
 ### Added
