@@ -176,6 +176,12 @@ class PlayState extends MusicBeatSubState
   public var currentVariation:String = Constants.DEFAULT_VARIATION;
 
   /**
+   * The currently selected instrumental ID.
+   * @default `''`
+   */
+  public var currentInstrumental:String = '';
+
+  /**
    * The currently active Stage. This is the object containing all the props.
    */
   public var currentStage:Stage = null;
@@ -603,6 +609,7 @@ class PlayState extends MusicBeatSubState
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
+    if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
     isBotPlayMode = params.botPlayMode ?? false;
     isMinimalMode = params.minimalMode ?? false;
@@ -1968,7 +1975,7 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
-      currentChart.playInst(1.0, false);
+      currentChart.playInst(1.0, currentInstrumental, false);
     }
 
     if (FlxG.sound.music == null)
