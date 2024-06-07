@@ -124,7 +124,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       getGirlfriend().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.gf;
-      var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
+      var finalScale:Float = getGirlfriend().getBaseScale() * stageCharData.scale;
       getGirlfriend().setScale(finalScale);
       getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
@@ -134,7 +134,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       getDad().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.dad;
-      var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
+      var finalScale:Float = getDad().getBaseScale() * stageCharData.scale;
       getDad().setScale(finalScale);
       getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
@@ -850,6 +850,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
       return null;
     }
+  }
+
+  public override function toString():String
+  {
+    return 'Stage($id)';
   }
 
   static function _fetchData(id:String):Null<StageData>
