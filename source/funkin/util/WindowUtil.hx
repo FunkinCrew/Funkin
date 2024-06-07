@@ -24,7 +24,7 @@ class WindowUtil
   {
     #if CAN_OPEN_LINKS
     #if linux
-    Sys.command('/usr/bin/xdg-open', [targetUrl, '&']);
+    Sys.command('/usr/bin/xdg-open $targetUrl &');
     #else
     // This should work on Windows and HTML5.
     FlxG.openURL(targetUrl);
