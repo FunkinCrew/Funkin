@@ -156,6 +156,11 @@
       "args": ["-debug", "-DDIALOGUE"]
     },
     {
+      "label": "Windows / Debug (Results Screen Test)",
+      "target": "windows",
+      "args": ["-debug", "-DRESULTS"]
+    },
+    {
       "label": "Windows / Debug (Straight to Chart Editor)",
       "target": "windows",
       "args": ["-debug", "-DCHARTING", "-DFORCE_DEBUG_VERSION"]

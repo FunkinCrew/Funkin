@@ -21,7 +21,9 @@ import funkin.data.event.SongEventSchema.SongEventFieldType;
  *   "v": {
  *      "scroll": "1.3",
  *      "duration": "4",
- *      "ease": "linear"
+ *      "ease": "linear",
+ *      "strumline": "both",
+ *      "absolute": false
  *    }
  * }
  * ```
@@ -98,6 +100,8 @@ class ScrollSpeedEvent extends SongEvent
    *   'scroll': FLOAT, // Target scroll level.
    *   'duration': FLOAT, // Duration in steps.
    *   'ease': ENUM, // Easing function.
+   *   'strumline': ENUM, // Which strumline to change
+   *   'absolute': BOOL, // True to set the scroll speed to the target level, false to set the scroll speed to (target level x base scroll speed)
    * }
    * @return SongEventSchema
    */

@@ -744,7 +744,8 @@ class Controls extends FlxActionSet
           case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
           case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
           case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
-          case Control.FULLSCREEN: return [FlxKey.F];
+          case Control.FULLSCREEN: return [FlxKey.F11]; // We use F for other things LOL.
+
         }
       case Duo(true):
         switch (control)
@@ -1011,7 +1012,7 @@ class Controls extends FlxActionSet
     for (control in Control.createAll())
     {
       var inputs:Array<Int> = Reflect.field(data, control.getName());
-      inputs = inputs.unique();
+      inputs = inputs.distinct();
       if (inputs != null)
       {
         if (inputs.length == 0)
@@ -1071,10 +1072,8 @@ class Controls extends FlxActionSet
       if (inputs.length == 0)
       {
         inputs = [FlxKey.NONE];
-      }
-      else
-      {
-        inputs = inputs.unique();
+      } else {
+        inputs = inputs.distinct();
       }
 
       Reflect.setField(data, control.getName(), inputs);
