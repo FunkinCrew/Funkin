@@ -583,6 +583,8 @@ class FreeplayState extends MusicBeatSubState
           generateSongList({filterType: FAVORITE}, true);
         case 'ALL':
           generateSongList(null, true);
+        case '#':
+          generateSongList({filterType: REGEXP, filterData: '0-9'}, true);
         default:
           generateSongList({filterType: REGEXP, filterData: str}, true);
       }
