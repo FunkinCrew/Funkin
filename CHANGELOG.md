@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Stress
   - Lit Up
 - Favorite songs marked in Freeplay are now stored between sessions.
+- The Freeplay easter eggs are now easier to see.
 - In the event that the game cannot load your save data, it will now perform a backup before clearing it, so that we can try to repair it in the future.
 - Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
 - Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
