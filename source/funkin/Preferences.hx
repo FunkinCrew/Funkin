@@ -179,6 +179,7 @@ class Preferences
     }
   }
 
+  #if mobile
   /**
    * If enabled, device will be able to sleep on its own.
    * @default `false`
@@ -187,7 +188,7 @@ class Preferences
 
   static function get_screenTimeout():Bool
   {
-    return Save?.instance?.mobile?.screenTimeout ?? false;
+    return Save?.instance?.mobileOptions?.screenTimeout ?? false;
   }
 
   static function set_screenTimeout(value:Bool):Bool
@@ -195,7 +196,7 @@ class Preferences
     if (value != Save.instance.mobile.screenTimeout) lime.system.System.allowScreenTimeout = value;
 
     var save:Save = Save.instance;
-    save.mobile.screenTimeout = value;
+    save.mobileOptions.screenTimeout = value;
     save.flush();
     return value;
   }
@@ -208,14 +209,15 @@ class Preferences
 
   static function get_vibration():Bool
   {
-    return Save?.instance?.mobile?.vibration ?? true;
+    return Save?.instance?.mobileOptions?.vibration ?? true;
   }
 
   static function set_vibration(value:Bool):Bool
   {
     var save:Save = Save.instance;
-    save.mobile.vibration = value;
+    save.mobileOptions.vibration = value;
     save.flush();
     return value;
   }
+  #end
 }
