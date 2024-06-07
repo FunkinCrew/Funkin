@@ -195,7 +195,7 @@ class Preferences
 
   static function set_screenTimeout(value:Bool):Bool
   {
-    if (value != Save.instance.mobile.screenTimeout) lime.system.System.allowScreenTimeout = value;
+    if (value != Save.instance.mobileOptions.screenTimeout) lime.system.System.allowScreenTimeout = value;
 
     var save:Save = Save.instance;
     save.mobileOptions.screenTimeout = value;
