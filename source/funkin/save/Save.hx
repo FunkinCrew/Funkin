@@ -164,7 +164,7 @@ class Save
 
   function get_mobileOptions():SaveDataMobileOptions
   {
-    return data.mobile;
+    return data.mobileOptions;
   }
   #end
 
