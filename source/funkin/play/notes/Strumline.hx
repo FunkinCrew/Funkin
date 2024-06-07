@@ -181,6 +181,20 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Returns `true` if no notes are in range of the strumline and the player can spam without penalty.
+   */
+  public function mayGhostTap():Bool
+  {
+    // TODO: Refine this. Only querying "can be hit" is too tight but "is being rendered" is too loose.
+    // Also, if you just hit a note, there should be a (short) period where this is off so you can't spam.
+
+    // If there are any notes on screen, we can't ghost tap.
+    return notes.members.filter(function(note:NoteSprite) {
+      return note != null && note.alive && !note.hasBeenHit;
+    }).length == 0;
+  }
+
+  /**
    * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
    * @return An array of `NoteSprite` objects.
    */

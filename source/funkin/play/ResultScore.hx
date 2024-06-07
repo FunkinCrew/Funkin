@@ -2,10 +2,15 @@ package funkin.play;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
 
 class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 {
   public var scoreShit(default, set):Int = 0;
+
+  public var scoreStart:Int = 0;
 
   function set_scoreShit(val):Int
   {
@@ -16,7 +21,8 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 
     while (dumbNumb > 0)
     {
-      group.members[loopNum].digit = dumbNumb % 10;
+      scoreStart += 1;
+      group.members[loopNum].finalDigit = dumbNumb % 10;
 
       // var funnyNum = group.members[loopNum];
       // prevNum = group.members[loopNum + 1];
@@ -44,9 +50,15 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 
   public function animateNumbers():Void
   {
-    for (i in group.members)
+    for (i in group.members.length-scoreStart...group.members.length)
     {
-      i.playAnim();
+     // if(i.finalDigit == 10) continue;
+
+      new FlxTimer().start((i-1)/24, _ -> {
+        group.members[i].finalDelay = scoreStart - (i-1);
+        group.members[i].playAnim();
+        group.members[i].shuffle();
+      });
     }
   }
 
@@ -71,12 +83,26 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 class ScoreNum extends FlxSprite
 {
   public var digit(default, set):Int = 10;
+  public var finalDigit(default, set):Int = 10;
+  public var glow:Bool = true;
+
+  function set_finalDigit(val):Int
+  {
+    animation.play('GONE', true, false, 0);
+
+    return finalDigit = val;
+  }
 
   function set_digit(val):Int
   {
     if (val >= 0 && animation.curAnim != null && animation.curAnim.name != numToString[val])
     {
-      animation.play(numToString[val], true, false, 0);
+      if(glow){
+        animation.play(numToString[val], true, false, 0);
+        glow = false;
+      }else{
+        animation.play(numToString[val], true, false, 4);
+      }
       updateHitbox();
 
       switch (val)
@@ -107,12 +133,57 @@ class ScoreNum extends FlxSprite
     animation.play(numToString[digit], true, false, 0);
   }
 
+  public var shuffleTimer:FlxTimer;
+  public var finalTween:FlxTween;
+  public var finalDelay:Float = 0;
+
   public var baseY:Float = 0;
   public var baseX:Float = 0;
 
   var numToString:Array<String> = [
     "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "DISABLED"
   ];
+
+  function finishShuffleTween():Void{
+
+    var tweenFunction = function(x) {
+      var digitRounded = Math.floor(x);
+      //if(digitRounded == finalDigit) glow = true;
+      digit = digitRounded;
+    };
+
+    finalTween = FlxTween.num(0.0, finalDigit, 23/24, {
+      ease: FlxEase.quadOut,
+      onComplete: function (input) {
+        new FlxTimer().start((finalDelay)/24, _ -> {
+          animation.play(animation.curAnim.name, true, false, 0);
+        });
+        // fuck
+      }
+    }, tweenFunction);
+  }
+
+
+  function shuffleProgress(shuffleTimer:FlxTimer):Void
+  {
+    var tempDigit:Int = digit;
+    tempDigit += 1;
+    if(tempDigit > 9) tempDigit = 0;
+    if(tempDigit < 0) tempDigit = 0;
+    digit = tempDigit;
+
+    if (shuffleTimer.loops > 0 && shuffleTimer.loopsLeft == 0)
+    {
+      //digit = finalDigit;
+      finishShuffleTween();
+    }
+  }
+
+  public function shuffle():Void{
+    var duration:Float = 41/24;
+    var interval:Float = 1/24;
+    shuffleTimer = new FlxTimer().start(interval, shuffleProgress, Std.int(duration / interval));
+  }
 
   public function new(x:Float, y:Float)
   {
@@ -130,6 +201,7 @@ class ScoreNum extends FlxSprite
     }
 
     animation.addByPrefix('DISABLED', 'DISABLED', 24, false);
+    animation.addByPrefix('GONE', 'GONE', 24, false);
 
     this.digit = 10;
 

@@ -102,6 +102,10 @@ class PauseSubState extends MusicBeatSubState
    */
   static final MUSIC_FINAL_VOLUME:Float = 0.75;
 
+  static final CHARTER_FADE_DELAY:Float = 15.0;
+
+  static final CHARTER_FADE_DURATION:Float = 0.75;
+
   /**
    * Defines which pause music to use.
    */
@@ -165,6 +169,12 @@ class PauseSubState extends MusicBeatSubState
   var metadataDeaths:FlxText;
 
   /**
+   * A text object which displays the current song's artist.
+   * Fades to the charter after a period before fading back.
+   */
+  var metadataArtist:FlxText;
+
+  /**
    * The actual text objects for the menu entries.
    */
   var menuEntryText:FlxTypedSpriteGroup<AtlasText>;
@@ -204,6 +214,8 @@ class PauseSubState extends MusicBeatSubState
     regenerateMenu();
 
     transitionIn();
+
+    startCharterTimer();
   }
 
   /**
@@ -223,6 +235,8 @@ class PauseSubState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
+    charterFadeTween.cancel();
+    charterFadeTween = null;
     pauseMusic.stop();
   }
 
@@ -271,16 +285,25 @@ class PauseSubState extends MusicBeatSubState
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20, 15, FlxG.width - 40, 'Song Name - Artist');
+    var metadataSong:FlxText = new FlxText(20, 15, FlxG.width - 40, 'Song Name');
     metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
-      metadataSong.text = '${PlayState.instance.currentChart.songName} - ${PlayState.instance.currentChart.songArtist}';
+      metadataSong.text = '${PlayState.instance.currentChart.songName}';
     }
     metadataSong.scrollFactor.set(0, 0);
     metadata.add(metadataSong);
 
-    var metadataDifficulty:FlxText = new FlxText(20, 15 + 32, FlxG.width - 40, 'Difficulty: ');
+    metadataArtist = new FlxText(20, metadataSong.y + 32, FlxG.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    if (PlayState.instance?.currentChart != null)
+    {
+      metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
+    }
+    metadataArtist.scrollFactor.set(0, 0);
+    metadata.add(metadataArtist);
+
+    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, FlxG.width - 40, 'Difficulty: ');
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
@@ -289,18 +312,74 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, 15 + 64, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
-    metadataPractice = new FlxText(20, 15 + 96, FlxG.width - 40, 'PRACTICE MODE');
+    metadataPractice = new FlxText(20, metadataDeaths.y + 32, FlxG.width - 40, 'PRACTICE MODE');
     metadataPractice.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
 
     updateMetadataText();
+  }
+
+  var charterFadeTween:Null<FlxTween> = null;
+
+  function startCharterTimer():Void
+  {
+    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
+      {
+        startDelay: CHARTER_FADE_DELAY,
+        ease: FlxEase.quartOut,
+        onComplete: (_) -> {
+          if (PlayState.instance?.currentChart != null)
+          {
+            metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
+          }
+          else
+          {
+            metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
+          }
+
+          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
+            {
+              ease: FlxEase.quartOut,
+              onComplete: (_) -> {
+                startArtistTimer();
+              }
+            });
+        }
+      });
+  }
+
+  function startArtistTimer():Void
+  {
+    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
+      {
+        startDelay: CHARTER_FADE_DELAY,
+        ease: FlxEase.quartOut,
+        onComplete: (_) -> {
+          if (PlayState.instance?.currentChart != null)
+          {
+            metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
+          }
+          else
+          {
+            metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
+          }
+
+          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
+            {
+              ease: FlxEase.quartOut,
+              onComplete: (_) -> {
+                startCharterTimer();
+              }
+            });
+        }
+      });
   }
 
   /**

@@ -32,11 +32,12 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     this.parentState = parent;
 
     zoom = 1.0;
-    zoom *= noteStyle.getHoldNoteScale();
+    zoom *= noteStyle.fetchHoldNoteScale();
     zoom *= 0.7;
     zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
     flipY = false;
+
     setup();
   }
 

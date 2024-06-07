@@ -138,7 +138,7 @@ using Lambda;
  *
  * Some functionality is split into handler classes to help maintain my sanity.
  *
- * @author MasterEric
+ * @author EliteMasterEric
  */
 // @:nullSafety
 
@@ -1271,7 +1271,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var result:Null<SongMetadata> = songMetadata.get(selectedVariation);
     if (result == null)
     {
-      result = new SongMetadata('DadBattle', 'Kawai Sprite', selectedVariation);
+      result = new SongMetadata('Default Song Name', Constants.DEFAULT_ARTIST, selectedVariation);
       songMetadata.set(selectedVariation, result);
     }
     return result;
