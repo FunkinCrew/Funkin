@@ -114,7 +114,7 @@ class Save
         },
 
       #if mobile
-      mobile:
+      mobileOptions:
         {
           // Reasonable defaults.
           screenTimeout: false,
