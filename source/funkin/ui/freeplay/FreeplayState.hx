@@ -285,7 +285,10 @@ class FreeplayState extends MusicBeatSubState
 
         // Only display songs which actually have available difficulties for the current character.
         var displayedVariations = song.getVariationsByCharId(currentCharacter);
+        trace(songId);
+        trace(displayedVariations);
         var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
+        trace(availableDifficultiesForSong);
         if (availableDifficultiesForSong.length == 0) continue;
 
         songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
@@ -2076,7 +2079,7 @@ class FreeplaySongData
     this.songDifficulties = song.listDifficulties(null, variations, false, false);
     if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
 
-    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, variations);
+    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, null, variations);
     if (songDifficulty == null) return;
     this.songStartingBpm = songDifficulty.getStartingBPM();
     this.songName = songDifficulty.songName;
