@@ -61,8 +61,16 @@ class ChartManifestData
    */
   public function serialize(pretty:Bool = true):String
   {
+    // Update generatedBy and version before writing.
+    updateVersionToLatest();
+
     var writer = new json2object.JsonWriter<ChartManifestData>();
     return writer.write(this, pretty ? '  ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.version = CHART_MANIFEST_DATA_VERSION;
   }
 
   public static function deserialize(contents:String):Null<ChartManifestData>
