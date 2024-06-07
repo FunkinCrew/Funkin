@@ -54,7 +54,11 @@ class Save
   public function new(?data:RawSaveData)
   {
     if (data == null) this.data = Save.getDefault();
-    else this.data = data;
+    else
+      this.data = data;
+
+    // Make sure the verison number is up to date before we flush.
+    this.data.version = Save.SAVE_DATA_VERSION;
   }
 
   public static function getDefault():RawSaveData
@@ -109,12 +113,14 @@ class Save
             },
         },
 
+      #if mobile
       mobile:
         {
-          //Defaults.
+          // Reasonable defaults.
           screenTimeout: false,
           vibration: true
         },
+      #end
 
       mods:
         {
@@ -150,15 +156,17 @@ class Save
     return data.options;
   }
 
+  #if mobile
   /**
    * NOTE: Modifications will not be saved without calling `Save.flush()`!
    */
-  public var mobile(get, never):SaveDataMobileOptions;
+  public var mobileOptions(get, never):SaveDataMobileOptions;
 
-  function get_mobile():SaveDataMobileOptions
+  function get_mobileOptions():SaveDataMobileOptions
   {
     return data.mobile;
   }
+  #end
 
   /**
    * NOTE: Modifications will not be saved without calling `Save.flush()`!
@@ -874,6 +882,19 @@ typedef RawSaveData =
    */
   var options:SaveDataOptions;
 
+  #if mobile
+  /**
+   * The user's preferences for mobile.
+   */
+  var mobileOptions:SaveDataMobileOptions;
+  #end
+
+  /**
+   * The user's favorited songs in the Freeplay menu,
+   * as a list of song IDs.
+   */
+  var favoriteSongs:Array<String>;
+
   var mods:SaveDataMods;
 
   /**
@@ -1027,6 +1048,7 @@ typedef SaveDataOptions =
     };
 };
 
+#if mobile
 typedef SaveDataMobileOptions =
 {
   /**
@@ -1041,6 +1063,7 @@ typedef SaveDataMobileOptions =
    */
   var vibration:Bool;
 };
+#end
 
 /**
  * An anonymous structure containing a specific player's bound keys.
