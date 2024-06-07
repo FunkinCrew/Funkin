@@ -44,11 +44,12 @@ class MainMenuState extends MusicBeatState
 
   var overrideMusic:Bool = false;
 
+  static var rememberedSelectedIndex:Int = 0;
+
   public function new(?_overrideMusic:Bool = false)
   {
     super();
     overrideMusic = _overrideMusic;
-
   }
 
   override function create():Void
@@ -63,7 +64,7 @@ class MainMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    if(overrideMusic == false) playMenuMusic();
+    if (overrideMusic == false) playMenuMusic();
 
     // We want the state to always be able to begin with being able to accept inputs and show the anims of the menu items.
     persistentUpdate = true;
@@ -148,6 +149,8 @@ class MainMenuState extends MusicBeatState
       menuItem.scrollFactor.y = 0.4;
     }
 
+    menuItems.selectItem(rememberedSelectedIndex);
+
     resetCamStuff();
 
     subStateOpened.add(sub -> {
@@ -172,7 +175,7 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-      FunkinSound.playMusic('freakyMenu',
+    FunkinSound.playMusic('freakyMenu',
       {
         overrideExisting: true,
         restartTrack: false
@@ -295,6 +298,8 @@ class MainMenuState extends MusicBeatState
   function startExitState(state:NextState):Void
   {
     menuItems.enabled = false; // disable for exit
+    rememberedSelectedIndex = menuItems.selectedIndex;
+
     var duration = 0.4;
     menuItems.forEach(function(item) {
       if (menuItems.selectedIndex != item.ID)
