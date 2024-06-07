@@ -2269,11 +2269,20 @@ class PlayState extends MusicBeatSubState
       if (holdNote == null || !holdNote.alive) continue;
 
       // While the hold note is being hit, and there is length on the hold note...
-      if (!isBotPlayMode && holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Grant the player health.
-        health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-        songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
+        if (!isBotPlayMode)
+        {
+          health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
+          songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
+        }
+        
+        // Make sure the player keeps singing while the note is held by the bot.
+        if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
+        {
+          currentStage.getBoyfriend().holdTimer = 0;
+        }
       }
 
       if (holdNote.missedNote && !holdNote.handledMiss)
