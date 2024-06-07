@@ -23,7 +23,7 @@ class BaseCharacter extends Bopper
    */
   public var characterType(default, set):CharacterType = OTHER;
 
-  function set_characterType(value:CharacterType):CharacterType
+  public function set_characterType(value:CharacterType):CharacterType
   {
     return this.characterType = value;
   }

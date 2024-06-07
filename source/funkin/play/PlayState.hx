@@ -1741,11 +1741,11 @@ class PlayState extends MusicBeatSubState
   function initStrumlines():Void
   {
     var bfnoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(boyfriend.notestyle);
+
     if (bfnoteStyle == null) bfnoteStyle = NoteStyleRegistry.instance.fetchDefault();
 
     var dadnoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(dad.notestyle);
     if (dadnoteStyle == null) dadnoteStyle = NoteStyleRegistry.instance.fetchDefault();
-
     playerStrumline = new Strumline(bfnoteStyle, !isBotPlayMode);
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     opponentStrumline = new Strumline(dadnoteStyle, false);
@@ -1753,11 +1753,10 @@ class PlayState extends MusicBeatSubState
     add(playerStrumline);
     add(opponentStrumline);
 
-    // Position the player strumline on the right half of the screen
+    // Position the player strumline  deppending on prefrence
     if (Preferences.middlescroll)
     {
       playerStrumline.x = FlxG.width / 2 - playerStrumline.width / 2;
-      trace('MIDDLE');
     }
     else
     {
@@ -2255,6 +2254,7 @@ class PlayState extends MusicBeatSubState
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
+
         var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, -Constants.HEALTH_MISS_PENALTY, 0, true);
         dispatchEvent(event);
 
@@ -2418,6 +2418,7 @@ class PlayState extends MusicBeatSubState
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
+
     var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
@@ -2436,7 +2437,8 @@ class PlayState extends MusicBeatSubState
         healthChange = Constants.HEALTH_SHIT_BONUS;
     }
 
-    // Send the note hit event.
+    if (note.noteData.kind != 'noanim') {}
+
     var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, Highscore.tallies.combo + 1);
     dispatchEvent(event);
 

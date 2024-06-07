@@ -32,7 +32,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     this.parentState = parent;
 
     zoom = 1.0;
-    zoom *= noteStyle.fetchHoldNoteScale();
+    zoom *= noteStyle.getHoldNoteScale();
     zoom *= 0.7;
     zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
@@ -59,11 +59,11 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   {
     if (lerp)
     {
-      sustainLength = FlxMath.lerp(sustainLength, h / (getScrollSpeed() * Constants.PIXELS_PER_MS), 0.25);
+      sustainLength = FlxMath.lerp(sustainLength, h / (getBaseScrollSpeed() * Constants.PIXELS_PER_MS), 0.25);
     }
     else
     {
-      sustainLength = h / (getScrollSpeed() * Constants.PIXELS_PER_MS);
+      sustainLength = h / (getBaseScrollSpeed() * Constants.PIXELS_PER_MS);
     }
 
     fullSustainLength = sustainLength;

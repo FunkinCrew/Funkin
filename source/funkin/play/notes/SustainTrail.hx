@@ -32,6 +32,7 @@ class SustainTrail extends FlxSprite
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
   public var noteData:Null<SongNoteData>;
+  public var parentStrumline:Strumline;
 
   public var cover:NoteHoldCover = null;
 
@@ -87,6 +88,11 @@ class SustainTrail extends FlxSprite
 
   public var isPixel:Bool;
 
+  /**
+   * Offsets the position of the SustainTrail.
+   */
+  public var offsets:Array<Float> = [0, 0];
+
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
 
@@ -108,7 +114,8 @@ class SustainTrail extends FlxSprite
       endOffset = bottomClip = 1;
       antialiasing = false;
     }
-    zoom *= noteStyle.fetchHoldNoteScale();
+    zoom *= noteStyle.getHoldNoteScale();
+    offsets = noteStyle.getHoldNoteOffsets();
 
     // BASIC SETUP
     this.sustainLength = sustainLength;
@@ -119,7 +126,7 @@ class SustainTrail extends FlxSprite
 
     // CALCULATE SIZE
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
-    graphicHeight = sustainHeight(sustainLength, getScrollSpeed());
+    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
     flipY = Preferences.downscroll;
@@ -135,9 +142,29 @@ class SustainTrail extends FlxSprite
     this.active = true; // This NEEDS to be true for the note to be drawn!
   }
 
-  function getScrollSpeed():Float
+  override function getScreenPosition(?result:flixel.math.FlxPoint, ?camera:flixel.FlxCamera):flixel.math.FlxPoint
   {
-    return PlayState?.instance?.currentChart?.scrollSpeed ?? 1.0;
+    var output = super.getScreenPosition(result, camera);
+    output.x += offsets[0];
+    output.y += offsets[1];
+    return output;
+  }
+
+  function getBaseScrollSpeed():Float
+  {
+    return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+  }
+
+  var previousScrollSpeed:Float = 1;
+
+  override function update(elapsed)
+  {
+    super.update(elapsed);
+    if (previousScrollSpeed != (parentStrumline?.scrollSpeed ?? 1.0))
+    {
+      triggerRedraw();
+    }
+    previousScrollSpeed = parentStrumline?.scrollSpeed ?? 1.0;
   }
 
   /**
@@ -155,12 +182,16 @@ class SustainTrail extends FlxSprite
     if (s < 0.0) s = 0.0;
 
     if (sustainLength == s) return s;
-
-    graphicHeight = sustainHeight(s, getScrollSpeed());
     this.sustainLength = s;
+    triggerRedraw();
+    return this.sustainLength;
+  }
+
+  function triggerRedraw()
+  {
+    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     updateClipping();
     updateHitbox();
-    return this.sustainLength;
   }
 
   public override function updateHitbox():Void
@@ -178,7 +209,7 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping(songTime:Float = 0):Void
   {
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), getScrollSpeed()), 0, graphicHeight);
+    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
     if (clipHeight <= 0.1)
     {
       visible = false;

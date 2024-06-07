@@ -52,6 +52,14 @@ class Strumline extends FlxSpriteGroup
    */
   public var conductorInUse(get, set):Conductor;
 
+  // Used in-game to control the scroll speed within a song
+  public var scrollSpeed:Float = 1.0;
+
+  public function resetScrollSpeed():Void
+  {
+    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+  }
+
   var _conductorInUse:Null<Conductor>;
 
   function get_conductorInUse():Conductor
@@ -134,6 +142,7 @@ class Strumline extends FlxSpriteGroup
     this.refresh();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
+    resetScrollSpeed();
 
     for (i in 0...KEY_COUNT)
     {
@@ -283,7 +292,6 @@ class Strumline extends FlxSpriteGroup
     // var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     // ^^^ commented this out... do NOT make it move faster as it moves offscreen!
     var vwoosh:Float = 1.0;
-    var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
     return
       Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
@@ -539,6 +547,7 @@ class Strumline extends FlxSpriteGroup
     {
       playStatic(dir);
     }
+    resetScrollSpeed();
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
@@ -705,6 +714,7 @@ class Strumline extends FlxSpriteGroup
 
     if (holdNoteSprite != null)
     {
+      holdNoteSprite.parentStrumline = this;
       holdNoteSprite.noteData = note;
       holdNoteSprite.strumTime = note.time;
       holdNoteSprite.noteDirection = note.getDirection();
@@ -736,7 +746,7 @@ class Strumline extends FlxSpriteGroup
     if (noteSplashes.length < noteSplashes.maxSize)
     {
       // Create a new note splash.
-      result = new NoteSplash();
+      result = new NoteSplash(noteStyle);
       this.noteSplashes.add(result);
     }
     else
@@ -770,7 +780,7 @@ class Strumline extends FlxSpriteGroup
     if (noteHoldCovers.length < noteHoldCovers.maxSize)
     {
       // Create a new note hold cover.
-      result = new NoteHoldCover();
+      result = new NoteHoldCover(noteStyle);
       this.noteHoldCovers.add(result);
     }
     else
