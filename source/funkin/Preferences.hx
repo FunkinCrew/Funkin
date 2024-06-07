@@ -78,8 +78,7 @@ class Preferences
 
   static function set_naughtyness(value:Bool):Bool
   {
-    get().naughtyness = value;
-    return value;
+    return get().naughtyness = value;
   }
 
   /**
@@ -95,8 +94,7 @@ class Preferences
 
   static function set_downscroll(value:Bool):Bool
   {
-    get().downscroll = value;
-    return value;
+    return get().downscroll = value;
   }
 
   /**
@@ -112,8 +110,7 @@ class Preferences
 
   static function set_flashingLights(value:Bool):Bool
   {
-    get().flashingLights = value;
-    return value;
+    return get().flashingLights = value;
   }
 
   /**
@@ -129,8 +126,7 @@ class Preferences
 
   static function set_zoomCamera(value:Bool):Bool
   {
-    get().zoomCamera = value;
-    return value;
+    return get().zoomCamera = value;
   }
 
   /**
@@ -150,8 +146,7 @@ class Preferences
     {
       toggleDebugDisplay(value);
     }
-    get().debugDisplay = value;
-    return value;
+    return get().debugDisplay = value;
   }
 
   /**
@@ -168,8 +163,7 @@ class Preferences
   static function set_autoPause(value:Bool):Bool
   {
     if (value != get().autoPause) FlxG.autoPause = value;
-    get().autoPause = value;
-    return value;
+    return get().autoPause = value;
   }
 
   /**
