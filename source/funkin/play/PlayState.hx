@@ -454,6 +454,16 @@ class PlayState extends MusicBeatSubState
   var scoreText:FlxText;
 
   /**
+   * The FlxText which displays the amount of combo breaks the player has.
+   */
+  var comboBreakText:FlxText;
+
+  /**
+   * The FlxText which displays the accuracy of the player.
+   */
+  var accuracyText:FlxText;
+
+  /**
    * The bar which displays the player's health.
    * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
    */
@@ -821,6 +831,8 @@ class PlayState extends MusicBeatSubState
     var list = FlxG.sound.list;
     updateHealthBar();
     updateScoreText();
+    updateComboBreakText();
+    updateAccuracyText();
 
     // Handle restarting the song when needed (player death or pressing Retry)
     if (needsReset)
@@ -1553,16 +1565,30 @@ class PlayState extends MusicBeatSubState
     add(healthBar);
 
     // The score text below the health bar.
-    scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
+    scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 110, healthBarBG.y + 30, 0, '', 20);
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
 
+    comboBreakText = new FlxText(healthBarBG.x + 30, healthBarBG.y + 30, 0, '', 20);
+    comboBreakText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    comboBreakText.scrollFactor.set();
+    comboBreakText.zIndex = 802;
+    add(comboBreakText);
+
+    accuracyText = new FlxText(healthBarBG.x + 250, healthBarBG.y + 30, 0, '', 20);
+    accuracyText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    accuracyText.scrollFactor.set();
+    accuracyText.zIndex = 802;
+    add(accuracyText);
+
     // Move the health bar to the HUD camera.
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
+    comboBreakText.cameras = [camHUD];
+    accuracyText.cameras = [camHUD];
   }
 
   /**
@@ -2040,6 +2066,30 @@ class PlayState extends MusicBeatSubState
     {
       scoreText.text = 'Score:' + songScore;
     }
+  }
+
+  /**
+   * Updates the position and contents of the combo breaks display.
+   */
+  function updateComboBreakText():Void
+  {
+    comboBreakText.text = 'Combo breaks: ' + Highscore.tallies.missed;
+  }
+
+  /**
+   * Updates the position and contents of the accuracy display.
+   */
+  function updateAccuracyText():Void
+  {
+    var clearPercentFloat = ((Highscore.tallies.sick + Highscore.tallies.good) + 1) / ((Highscore.tallies.totalNotesHit + Highscore.tallies.missed) + 1) * 100;
+
+    // I'm not letting you have above a 0% accuracy if you can't even hit a single note
+    if (Highscore.tallies.totalNotesHit == 0)
+    {
+      clearPercentFloat = 0;
+    }
+
+    accuracyText.text = 'Accuracy: ' + Math.floor(clearPercentFloat) + '%';
   }
 
   /**
