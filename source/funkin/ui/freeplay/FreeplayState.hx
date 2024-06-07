@@ -1933,6 +1933,24 @@ class DifficultySelector extends FlxSprite
     super.update(elapsed);
   }
 
+  #if mobile
+  public function setPress(press:Bool):Void
+  {
+    if (!press)
+    {
+      scale.x = scale.y = 1;
+      whiteShader.colorSet = false;
+      updateHitbox();
+    }
+    else
+    {
+      offset.y -= 5;
+      whiteShader.colorSet = true;
+      scale.x = scale.y = 0.5;
+    }
+  }
+  #end
+
   function moveShitDown():Void
   {
     offset.y -= 5;
