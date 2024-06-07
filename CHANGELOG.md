@@ -4,7 +4,7 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 2024-05-??
+## [0.4.0] - 2024-06-06
 ### Added
 - 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
 - Major visual improvements to the Results screen, with additional animations and audio based on your performance.
@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Freeplay now plays a preview of songs when you hover over them.
 - Added a Charter field to the chart format, to allow for crediting the creator of a level's chart.
   - You can see who charted a song from the Pause menu.
-- Added a new Scroll Speed chart event to change the note speed mid-song (thanks )
+- Added a new Scroll Speed chart event to change the note speed mid-song (thanks burgerballs!)
 ### Changed
 - Tweaked the charts for several songs:
   - Tutorial (increased the note speed slightly)
