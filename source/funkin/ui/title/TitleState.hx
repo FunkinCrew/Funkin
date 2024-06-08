@@ -135,7 +135,9 @@ class TitleState extends MusicBeatState
   {
     if (!initialized || FlxG.sound.music == null) playMenuMusic();
 
-    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    persistentUpdate = true;
+
+    var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width + 2, FlxG.height, FlxColor.BLACK);
     bg.screenCenter();
     add(bg);
 
