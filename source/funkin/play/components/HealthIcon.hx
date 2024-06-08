@@ -24,7 +24,7 @@ import funkin.util.MathUtil;
  *     - i.e. `PlayState.instance.iconP1.playAnimation("losing")`
  *   - Scripts can also utilize all functionality that a normal FlxSprite would have access to, such as adding supplimental animations.
  *     - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
- * @author MasterEric
+ * @author EliteMasterEric
  */
 @:nullSafety
 class HealthIcon extends FunkinSprite
