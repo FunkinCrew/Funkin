@@ -11,11 +11,13 @@ class LevelProp extends Bopper
   function set_propData(value:LevelPropData):LevelPropData
   {
     // Only reset the prop if the asset path has changed.
-    if (propData == null || value?.assetPath != propData?.assetPath)
+    if (propData == null || !(thx.Dynamics.equals(value, propData)))
     {
-      this.visible = (value != null);
       this.propData = value;
+
+      this.visible = this.propData != null;
       danceEvery = this.propData?.danceEvery ?? 0;
+
       applyData();
     }
 

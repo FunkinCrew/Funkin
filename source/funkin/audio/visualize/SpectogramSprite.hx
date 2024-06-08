@@ -8,8 +8,6 @@ import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
 import funkin.audio.visualize.PolygonSpectogram.VISTYPE;
 import funkin.audio.visualize.VisShit.CurAudioInfo;
-import funkin.audio.visualize.dsp.FFT;
-import lime.system.ThreadPool;
 import lime.utils.Int16Array;
 
 using Lambda;
@@ -38,8 +36,6 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
     lengthOfShit = amnt;
 
     regenLineShit();
-
-    // makeGraphic(200, 200, FlxColor.BLACK);
   }
 
   public function regenLineShit():Void
@@ -88,8 +84,6 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
   public function generateSection(start:Float = 0, seconds:Float = 1):Void
   {
     checkAndSetBuffer();
-
-    // vis.checkAndSetBuffer();
 
     if (setBuffer)
     {
@@ -191,7 +185,6 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
           // a value between 10hz and 100Khz
           var hzPicker:Float = Math.pow(10, powedShit);
 
-          // var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, startingSample, startingSample + samplesToGen));
           var remappedFreq:Int = Std.int(FlxMath.remapToRange(hzPicker, 0, 10000, 0, freqShit[0].length - 1));
 
           group.members[i].x = prevLine.x;
@@ -211,8 +204,6 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
           var line = FlxPoint.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
 
           // dont draw a line until i figure out a nicer way to view da spikes and shit idk lol!
-          // group.members[i].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
-          // group.members[i].angle = line.degrees;
         }
       }
     }
@@ -261,9 +252,6 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
           group.members[Std.int(remappedSample)].x = prevLine.x;
           group.members[Std.int(remappedSample)].y = prevLine.y;
-          // group.members[0].y = prevLine.y;
-
-          // FlxSpriteUtil.drawLine(this, prevLine.x, prevLine.y, width * remappedSample, left * height / 2 + height / 2);
           prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
           prevLine.y = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
 

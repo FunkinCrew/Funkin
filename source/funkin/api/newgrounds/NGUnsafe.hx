@@ -1,9 +1,5 @@
 package funkin.api.newgrounds;
 
-import flixel.util.FlxSignal;
-import flixel.util.FlxTimer;
-import lime.app.Application;
-import openfl.display.Stage;
 #if newgrounds
 import io.newgrounds.NG;
 import io.newgrounds.NGLite;
