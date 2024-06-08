@@ -3070,7 +3070,7 @@ class PlayState extends MusicBeatSubState
     FlxG.camera.targetOffset.x += 20;
 
     // Replace zoom animation with a fade out for now.
-    camGame.fade(FlxColor.BLACK, 0.6);
+    FlxG.camera.fade(FlxColor.BLACK, 0.6);
 
     FlxTween.tween(camHUD, {alpha: 0}, 0.6,
       {
