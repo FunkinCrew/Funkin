@@ -230,6 +230,12 @@ class FreeplayState extends MusicBeatSubState
 
     FlxTransitionableState.skipNextTransIn = true;
 
+    // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
+    funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
+    funnyCam.bgColor = FlxColor.TRANSPARENT;
+    FlxG.cameras.add(funnyCam, false);
+    this.cameras = [funnyCam];
+
     if (stickerSubState != null)
     {
       this.persistentUpdate = true;
@@ -651,6 +657,9 @@ class FreeplayState extends MusicBeatSubState
       orangeBackShit.visible = true;
       alsoOrangeLOL.visible = true;
       grpTxtScrolls.visible = true;
+
+      // render optimisation
+      if (_parentState != null) _parentState.persistentDraw = false;
 
       cardGlow.visible = true;
       FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
@@ -1571,6 +1580,8 @@ class FreeplayState extends MusicBeatSubState
     {
       clearDaCache(daSong.songName);
     }
+    // remove and destroy freeplay camera
+    FlxG.cameras.remove(funnyCam);
   }
 
   function changeDiff(change:Int = 0, force:Bool = false):Void
