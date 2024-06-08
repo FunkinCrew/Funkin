@@ -420,7 +420,8 @@ class BaseCharacter extends Bopper
     {
       if (isSinging()) return;
 
-      if (['hey', 'cheer'].contains(getCurrentAnimation()) && !isAnimationFinished()) return;
+      var currentAnimation:String = getCurrentAnimation();
+      if ((currentAnimation == 'hey' || currentAnimation == 'cheer') && !isAnimationFinished()) return;
     }
 
     // Prevent dancing while another animation is playing.
@@ -441,19 +442,15 @@ class BaseCharacter extends Bopper
     switch (player)
     {
       case 1:
-        return [
-          PlayerSettings.player1.controls.NOTE_LEFT_P,
-          PlayerSettings.player1.controls.NOTE_DOWN_P,
-          PlayerSettings.player1.controls.NOTE_UP_P,
-          PlayerSettings.player1.controls.NOTE_RIGHT_P,
-        ].contains(true);
+        return PlayerSettings.player1.controls.NOTE_LEFT_P
+          || PlayerSettings.player1.controls.NOTE_DOWN_P
+          || PlayerSettings.player1.controls.NOTE_UP_P
+          || PlayerSettings.player1.controls.NOTE_RIGHT_P;
       case 2:
-        return [
-          PlayerSettings.player2.controls.NOTE_LEFT_P,
-          PlayerSettings.player2.controls.NOTE_DOWN_P,
-          PlayerSettings.player2.controls.NOTE_UP_P,
-          PlayerSettings.player2.controls.NOTE_RIGHT_P,
-        ].contains(true);
+        return PlayerSettings.player2.controls.NOTE_LEFT_P
+          || PlayerSettings.player2.controls.NOTE_DOWN_P
+          || PlayerSettings.player2.controls.NOTE_UP_P
+          || PlayerSettings.player2.controls.NOTE_RIGHT_P;
     }
     return false;
   }
@@ -469,19 +466,15 @@ class BaseCharacter extends Bopper
     switch (player)
     {
       case 1:
-        return [
-          PlayerSettings.player1.controls.NOTE_LEFT,
-          PlayerSettings.player1.controls.NOTE_DOWN,
-          PlayerSettings.player1.controls.NOTE_UP,
-          PlayerSettings.player1.controls.NOTE_RIGHT,
-        ].contains(true);
+        return PlayerSettings.player1.controls.NOTE_LEFT
+          || PlayerSettings.player1.controls.NOTE_DOWN
+          || PlayerSettings.player1.controls.NOTE_UP
+          || PlayerSettings.player1.controls.NOTE_RIGHT;
       case 2:
-        return [
-          PlayerSettings.player2.controls.NOTE_LEFT,
-          PlayerSettings.player2.controls.NOTE_DOWN,
-          PlayerSettings.player2.controls.NOTE_UP,
-          PlayerSettings.player2.controls.NOTE_RIGHT,
-        ].contains(true);
+        return PlayerSettings.player2.controls.NOTE_LEFT
+          || PlayerSettings.player2.controls.NOTE_DOWN
+          || PlayerSettings.player2.controls.NOTE_UP
+          || PlayerSettings.player2.controls.NOTE_RIGHT;
     }
     return false;
   }
