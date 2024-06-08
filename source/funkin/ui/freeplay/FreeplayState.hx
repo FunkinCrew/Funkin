@@ -172,7 +172,6 @@ class FreeplayState extends MusicBeatSubState
   var exitMovers:ExitMoverData = new Map();
 
   var stickerSubState:StickerSubState;
-  var funnyCam:FunkinCamera;
 
   public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
   public static var rememberedSongId:Null<String> = 'tutorial';
