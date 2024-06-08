@@ -1477,6 +1477,8 @@ class FreeplayState extends MusicBeatSubState
     {
       clearDaCache(daSong.songName);
     }
+    // remove and destroy freeplay camera
+    FlxG.cameras.remove(funnyCam);
   }
 
   function goBack():Void
