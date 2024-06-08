@@ -490,9 +490,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
 
+    #if (html || js)
     // split the path and get only after first :
     // we are bypassing the openfl/lime asset library fuss
     path = Paths.stripLibrary(path);
+    #end
 
     var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
 
