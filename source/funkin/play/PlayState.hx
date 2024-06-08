@@ -1211,6 +1211,9 @@ class PlayState extends MusicBeatSubState
         cameraTweensPausedBySubState.add(cameraZoomTween);
       }
 
+      // Pause camera follow
+      FlxG.camera.followLerp = 0;
+
       for (tween in scrollSpeedTweens)
       {
         if (tween != null && tween.active)
@@ -1254,6 +1257,9 @@ class PlayState extends MusicBeatSubState
         camTween.active = true;
       }
       cameraTweensPausedBySubState.clear();
+
+      // Resume camera follow
+      FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
 
       if (currentConversation != null)
       {
@@ -3165,7 +3171,7 @@ class PlayState extends MusicBeatSubState
       cancelAllCameraTweens();
     }
 
-    FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
+    FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
     FlxG.camera.targetOffset.set();
 
     if (resetZoom)
