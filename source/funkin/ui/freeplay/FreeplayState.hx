@@ -1566,12 +1566,6 @@ class FreeplayState extends MusicBeatSubState
           FlxG.switchState(() -> new MainMenuState());
         }
       });
-    }
-
-    if (accepted)
-    {
-      grpCapsules.members[curSelected].onConfirm();
-    }
   }
 
   public override function destroy():Void
