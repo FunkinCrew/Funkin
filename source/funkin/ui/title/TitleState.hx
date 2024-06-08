@@ -405,7 +405,9 @@ class TitleState extends MusicBeatState
   {
     if (credGroup == null || textGroup == null) return;
 
+    #if mobile
     if (Preferences.vibration) lime.ui.Haptic.vibrate(100, 100);
+    #end
 
     var coolText:AtlasText = new AtlasText(0, 0, text.trim(), AtlasFont.BOLD);
     coolText.screenCenter(X);

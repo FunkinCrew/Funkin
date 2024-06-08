@@ -51,8 +51,10 @@ class PreferencesMenu extends Page
       camFollow.y = selected.y;
     });
 
+    #if mobile
     backButton = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.BLACK);
     add(backButton);
+    #end
   }
 
   /**
@@ -119,7 +121,11 @@ class PreferencesMenu extends Page
       // I have tried EVERY. SINGLE. METHOD. UNDER THE MOON. This is the only way it can work, I've tried everything trust me.
       final thePosToCheck:FlxPoint = new FlxPoint(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130));
 
-      if (items.enabled && !items.busy && TouchUtil.justReleased && !SwipeUtil.swipeAny && items.selectedItem.overlapsPoint(thePosToCheck, false, menuCamera))
+      if (items.enabled
+        && !items.busy
+        && TouchUtil.justReleased
+        && !SwipeUtil.swipeAny
+        && items.selectedItem.overlapsPoint(thePosToCheck, false, menuCamera))
       {
         items.accept();
       }
