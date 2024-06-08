@@ -1,6 +1,5 @@
 package funkin.audio.visualize;
 
-import funkin.audio.visualize.PolygonSpectogram;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 

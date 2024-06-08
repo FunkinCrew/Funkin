@@ -6,9 +6,10 @@
     - `git clone --recurse-submodules https://github.com/FunkinCrew/funkin.git`
     - If you accidentally cloned without the `assets` submodule (aka didn't follow the step above), you can run `git submodule update --init --recursive` to get the assets in a foolproof way.
 2. Install `hmm` (run `haxelib --global install hmm` and then `haxelib --global run hmm setup`)
-3. Install all haxelibs of the current branch by running `hmm install`
-4. Setup lime: `haxelib run lime setup`
-5. Platform setup
+3. Download Git from [git-scm.com](https://www.git-scm.com)
+4. Install all haxelibs of the current branch by running `hmm install`
+5. Setup lime: `haxelib run lime setup`
+6. Platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
@@ -16,8 +17,8 @@
     - Mac: [`lime setup mac` Documentation](https://lime.openfl.org/docs/advanced-setup/macos/)
     - Linux: [`lime setup linux` Documentation](https://lime.openfl.org/docs/advanced-setup/linux/)
     - HTML5: Compiles without any extra setup
-6. If you are targeting for native, you may need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
-7. `lime test PLATFORM` ! Add `-debug` to enable several debug features such as time travel (`PgUp`/`PgDn` in Play State).
+7. If you are targeting for native, you may need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
+8. `lime test PLATFORM` ! Add `-debug` to enable several debug features such as time travel (`PgUp`/`PgDn` in Play State).
 
 # Troubleshooting
 

@@ -1,7 +1,5 @@
 package funkin.audio.visualize.dsp;
 
-import funkin.audio.visualize.dsp.Complex;
-
 using funkin.audio.visualize.dsp.OffsetArray;
 using funkin.audio.visualize.dsp.Signal;
 
