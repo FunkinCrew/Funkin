@@ -2024,9 +2024,10 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!FlxG.sound.music.playing) return;
 
+    FlxG.sound.music.pause();
     vocals.pause();
 
-    FlxG.sound.music.play(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+    FlxG.sound.music.play(false, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
 
     vocals.time = FlxG.sound.music.time;
     vocals.play(false, FlxG.sound.music.time);
@@ -2284,7 +2285,7 @@ class PlayState extends MusicBeatSubState
           health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
           songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
         }
-        
+
         // Make sure the player keeps singing while the note is held by the bot.
         if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
         {
