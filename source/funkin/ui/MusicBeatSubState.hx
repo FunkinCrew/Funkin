@@ -114,6 +114,10 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     super.destroy();
 
+    #if mobile
+    if (camControls != null) FlxG.cameras.remove(camControls);
+    #end
+
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
   }
