@@ -2020,7 +2020,7 @@ class PlayState extends MusicBeatSubState
 
     vocals.pause();
 
-    FlxG.sound.music.play(FlxG.sound.music.time);
+    FlxG.sound.music.play(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
 
     vocals.time = FlxG.sound.music.time;
     vocals.play(false, FlxG.sound.music.time);
