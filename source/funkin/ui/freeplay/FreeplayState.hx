@@ -1568,16 +1568,6 @@ class FreeplayState extends MusicBeatSubState
       });
   }
 
-  public override function destroy():Void
-  {
-    super.destroy();
-    var daSong:Null<FreeplaySongData> = currentFilteredSongs[curSelected];
-    if (daSong != null)
-    {
-      clearDaCache(daSong.songName);
-    }
-  }
-
   function changeDiff(change:Int = 0, force:Bool = false):Void
   {
     var currentDifficultyIndex:Int = diffIdsCurrent.indexOf(currentDifficulty);
