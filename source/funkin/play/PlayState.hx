@@ -752,10 +752,12 @@ class PlayState extends MusicBeatSubState
     pauseButton.color = FlxColor.WHITE;
     pauseButton.alpha = 0.65;
     pauseButton.updateHitbox();
-    pauseButton.setPosition((FlxG.width - pauseButton.width) - 15, 15);
-    pauseButton.cameras = [camControls];
+    pauseButton.setPosition((FlxG.width - pauseButton.width) - 40, 3);
+    pauseButton.cameras = [camHUD];
+    pauseButton.width *= 2;
+    pauseButton.height *= 2;
+    pauseButton.offset.set(-(pauseButton.width / 4), -(pauseButton.height / 4));
     add(pauseButton);
-
     hitbox.hints[3].deadZones.push(pauseButton);
     #end
 
@@ -2326,7 +2328,7 @@ class PlayState extends MusicBeatSubState
           health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
           songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
         }
-        
+
         // Make sure the player keeps singing while the note is held by the bot.
         if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
         {

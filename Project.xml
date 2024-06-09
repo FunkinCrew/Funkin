@@ -225,6 +225,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<haxedef name="REDIRECT_ASSETS_FOLDER" />
 	</section>
 
+	<!-- Mobile's architecture defines used for building. -->
 	<section if="mobile">
 		<architecture exclude="armv7" if="ONLY_ARM64" unless="UNIVERSAL"/>
 		<architecture include="arm64" if="ONLY_ARM64 || UNIVERSAL" />
