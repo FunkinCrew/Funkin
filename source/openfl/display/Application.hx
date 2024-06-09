@@ -4,7 +4,6 @@ import openfl.utils._internal.Lib;
 #if lime
 import lime.app.Application as LimeApplication;
 import lime.ui.WindowAttributes;
-#end
 #if (android  && !macro)
 import android.os.Build;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.widget.Toast;
 import haxe.io.Path;
 import sys.io.File;
 import sys.FileSystem;
+#end
 #end
 
 /**
@@ -62,7 +62,7 @@ class Application #if lime extends LimeApplication #end
       {
         @:privateAccess
         File.copy(file, Path.join([
-          Build.VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir(),
+          VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir(),
           funkin.modding.PolymodHandler.MOD_FOLDER,
           Path.withoutDirectory(file)
         ]));
