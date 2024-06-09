@@ -51,6 +51,25 @@ class Main extends Sprite
     CrashHandler.queryStatus();
 
     Lib.current.addChild(new Main());
+
+    #if android
+    Lib.current.stage.window.onDropFile.add(function(file:String):Void {
+      if (file != null && sys.FileSystem.exists(file) && haxe.io.Path.extension(file) == 'zip')
+      {
+        try
+        {
+          @:privateAccess
+          sys.io.File.copy(file, haxe.io.Path.join([funkin.modding.PolymodHandler.MOD_FOLDER, haxe.io.Path.withoutDirectory(file)]));
+
+          android.widget.Toast.makeText('Successfully copied "$file" to the mods folder.', Toast.LENGTH_LONG);
+        }
+        catch (e:haxe.Exception)
+          android.widget.Toast.makeText('Unable to copy mod zip "$file": ${e.messege}.', Toast.LENGTH_LONG);
+      }
+      else
+        android.widget.Toast.makeText('Unable to find mod zip "$file".', Toast.LENGTH_LONG);
+    });
+    #end
   }
 
   public function new()
