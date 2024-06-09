@@ -54,6 +54,7 @@ class Application #if lime extends LimeApplication #end
 
   #if lime
   #if (android  && !macro)
+  @:access(funkin.modding.PolymodHandler)
   public override function onWindowDropFile(file:String):Void
   {
     if (file != null && FileSystem.exists(file) && Path.extension(file) == 'zip')
@@ -66,7 +67,6 @@ class Application #if lime extends LimeApplication #end
 
       try
       {
-        @:privateAccess
         File.saveBytes(destination, File.getBytes(file));
 
         Toast.makeText('Successfully copied "$file" to the mods folder.', Toast.LENGTH_LONG);
