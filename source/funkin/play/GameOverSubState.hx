@@ -276,7 +276,7 @@ class GameOverSubState extends MusicBeatSubState
     }
     else if (boyfriend != null)
     {
-      if (PlayState.instance.isMinimalMode)
+      if (PlayState.instance != null && PlayState.instance.isMinimalMode)
       {
         // startDeathMusic(1.0, false);
       }
