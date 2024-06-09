@@ -20,7 +20,7 @@ body:
         - Newgrounds (Web)
     validations:
       required: true
-        
+
   - type: dropdown
     attributes:
       label: If you were playing on a browser, which one were you using?
@@ -41,16 +41,16 @@ body:
       required: true
 
   - type: markdown
-  attributes:
-    value: "## Describe your bug."
+    attributes:
+      value: "## Describe your bug."
 
   - type: markdown
-  attributes:
-    value: "### Please do not report issues from other engines. These must be reported in their repositories."
+    attributes:
+      value: "### Please do not report issues from other engines. These must be reported in their repositories."
 
   - type: markdown
-  attributes:
-    value: "#### Provide as many details as you can."
+    attributes:
+      value: "#### Provide as many details as you can."
 
   - type: textarea
     attributes:
