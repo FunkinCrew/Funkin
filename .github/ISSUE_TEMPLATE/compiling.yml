@@ -1,0 +1,42 @@
+name: Compiling help
+description: If you need help compiling the game, and you're running into issues.
+labels: ["compiling help"]
+title: "Compiling help: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      options:
+        - label: I have properly named the issue
+        - label: I looked in issues/discussions, if it has been previously reported
+
+  - type: dropdown
+    attributes:
+      label: What platform are you compiling to?
+      options:
+        - Windows
+        - MacOS
+        - Linux
+        - HTML5
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "## Describe the issue."
+
+  - type: markdown
+    attributes:
+      value: "### Please do not report issues from other engines. These must be reported in their repositories."
+
+  - type: markdown
+    attributes:
+      value: "#### Provide as many details as you can."
+
+  - type: textarea
+    attributes:
+      label: Context (Provide images, videos, etc.)
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce (or crash logs, errors, etc.)
