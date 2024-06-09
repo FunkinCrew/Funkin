@@ -1890,7 +1890,9 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      var instSuffix:String = SongRegistry.instance.fetchEntry(daSongCapsule.songData.songId)?.getDifficulty(currentDifficulty)?.characters?.instrumental ?? '';
+      var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(daSongCapsule.songData.songId);
+      var instSuffix:String = previewSong?.getDifficulty(currentDifficulty,
+        previewSong?.variations ?? Constants.DEFAULT_VARIATION_LIST)?.characters?.instrumental ?? '';
       instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
       FunkinSound.playMusic(daSongCapsule.songData.songId,
         {
