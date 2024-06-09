@@ -5,7 +5,7 @@ import openfl.utils._internal.Lib;
 import lime.app.Application as LimeApplication;
 import lime.ui.WindowAttributes;
 #end
-#if android
+#if (android  && !macro)
 import android.os.Build;
 import android.content.Context;
 import android.widget.Toast;
@@ -53,7 +53,7 @@ class Application #if lime extends LimeApplication #end
   }
 
   #if lime
-  #if android
+  #if (android  && !macro)
   public override function onWindowDropFile(file:String):Void
   {
     if (file != null && FileSystem.exists(file) && Path.extension(file) == 'zip')
