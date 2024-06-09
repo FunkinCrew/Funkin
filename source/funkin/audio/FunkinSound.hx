@@ -18,9 +18,6 @@ import lime.app.Future;
 import lime.app.Promise;
 import openfl.media.SoundMixer;
 
-#if (openfl >= "8.0.0")
-#end
-
 /**
  * A FlxSound which adds additional functionality:
  * - Delayed playback via negative song position.
@@ -492,7 +489,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     // split the path and get only after first :
     // we are bypassing the openfl/lime asset library fuss
+    #if web
     path = Paths.stripLibrary(path);
+    #end
 
     var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
 
