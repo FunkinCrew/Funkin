@@ -58,20 +58,22 @@ class Application #if lime extends LimeApplication #end
   {
     if (file != null && FileSystem.exists(file) && Path.extension(file) == 'zip')
     {
-      try
-      {
-        @:privateAccess
-        File.copy(file, Path.join([
+      final destination:String = Path.join([
           VERSION.SDK_INT > 30 ? Context.getObbDir() : Context.getExternalFilesDir(),
           funkin.modding.PolymodHandler.MOD_FOLDER,
           Path.withoutDirectory(file)
-        ]));
+      ]);
+
+      try
+      {
+        @:privateAccess
+        File.saveBytes(destination, File.getBytes(file));
 
         Toast.makeText('Successfully copied "$file" to the mods folder.', Toast.LENGTH_LONG);
       }
-      catch (e:haxe.Exception)
+      catch (e:Dynamic)
       {
-        Toast.makeText('Unable to copy mod zip "$file": ${e.message}.', Toast.LENGTH_LONG);
+        Toast.makeText('Unable to copy mod zip "$file" to "$destination".', Toast.LENGTH_LONG);
       }
     }
     else
