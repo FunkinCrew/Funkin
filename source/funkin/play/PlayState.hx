@@ -1211,6 +1211,9 @@ class PlayState extends MusicBeatSubState
         cameraTweensPausedBySubState.add(cameraZoomTween);
       }
 
+      // Pause camera follow
+      FlxG.camera.followLerp = 0;
+
       for (tween in scrollSpeedTweens)
       {
         if (tween != null && tween.active)
@@ -1254,6 +1257,9 @@ class PlayState extends MusicBeatSubState
         camTween.active = true;
       }
       cameraTweensPausedBySubState.clear();
+
+      // Resume camera follow
+      FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
 
       if (currentConversation != null)
       {
@@ -2270,11 +2276,20 @@ class PlayState extends MusicBeatSubState
       if (holdNote == null || !holdNote.alive) continue;
 
       // While the hold note is being hit, and there is length on the hold note...
-      if (!isBotPlayMode && holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Grant the player health.
-        health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-        songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
+        if (!isBotPlayMode)
+        {
+          health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
+          songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
+        }
+        
+        // Make sure the player keeps singing while the note is held by the bot.
+        if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
+        {
+          currentStage.getBoyfriend().holdTimer = 0;
+        }
       }
 
       if (holdNote.missedNote && !holdNote.handledMiss)
@@ -3070,7 +3085,7 @@ class PlayState extends MusicBeatSubState
     FlxG.camera.targetOffset.x += 20;
 
     // Replace zoom animation with a fade out for now.
-    camGame.fade(FlxColor.BLACK, 0.6);
+    FlxG.camera.fade(FlxColor.BLACK, 0.6);
 
     FlxTween.tween(camHUD, {alpha: 0}, 0.6,
       {
@@ -3165,7 +3180,7 @@ class PlayState extends MusicBeatSubState
       cancelAllCameraTweens();
     }
 
-    FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.04);
+    FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
     FlxG.camera.targetOffset.set();
 
     if (resetZoom)
