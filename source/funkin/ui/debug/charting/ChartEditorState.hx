@@ -1250,6 +1250,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         m?.playData?.difficulties ?? [];
       }
     ];
+    trace('All difficulties: ${result}');
     return result.flatten();
   }
 
@@ -1612,6 +1613,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (selectedVariation == value) return selectedVariation;
     selectedVariation = value;
 
+    // Force reset BPM and time signature.
+    Conductor.instance.forceBPM(null); // Disable the forced BPM.
+    Conductor.instance.instrumentalOffset = currentInstrumentalOffset; // Loads from the metadata.
+    // We map the time changes AFTER setting the variation so
+    Conductor.instance.mapTimeChanges(currentSongMetadata.timeChanges);
+    updateTimeSignature();
+
     // Make sure view is updated when the variation changes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
@@ -1626,7 +1634,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The difficulty ID for the difficulty which is currently being edited.
    */
-  var selectedDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
+  var selectedDifficulty(default, set):String = null;
 
   function set_selectedDifficulty(value:String):String
   {
@@ -2240,7 +2248,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else if (params != null && params.targetSongId != null)
     {
-      this.loadSongAsTemplate(params.targetSongId);
+      this.loadSongAsTemplate(params.targetSongId, params.targetVariation, params.targetDifficulty);
     }
     else
     {
@@ -6545,6 +6553,16 @@ typedef ChartEditorParams =
    * If non-null, load this song immediately instead of the welcome screen.
    */
   var ?targetSongId:String;
+
+  /**
+   * If non-null, load the target song on the specified variation (if available) rather than defaulting to Default.
+   */
+  var ?targetVariation:String;
+
+  /**
+   * If non-null, load the target song on the specified difficulty (if available) rather than defaulting to Normal.
+   */
+  var ?targetDifficulty:String;
 };
 
 /**
