@@ -36,8 +36,8 @@ class Main extends Sprite
 
   public static function main():Void
   {
-    #if android
     // Set the current working directory for Android and iOS devices
+    #if android
     // For Android we determine the appropriate directory based on Android version
     Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
       android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
@@ -51,26 +51,6 @@ class Main extends Sprite
     CrashHandler.queryStatus();
 
     Lib.current.addChild(new Main());
-
-    #if android
-    // This callback gets called only when you open a zip modpack file with this app.
-    Lib.current.stage.window.onDropFile.add(function(file:String):Void {
-      if (file != null && sys.FileSystem.exists(file) && haxe.io.Path.extension(file) == 'zip')
-      {
-        try
-        {
-          @:privateAccess
-          sys.io.File.copy(file, haxe.io.Path.join([funkin.modding.PolymodHandler.MOD_FOLDER, haxe.io.Path.withoutDirectory(file)]));
-
-          android.widget.Toast.makeText('Successfully copied "$file" to the mods folder.', android.widget.Toast.LENGTH_LONG);
-        }
-        catch (e:haxe.Exception)
-          android.widget.Toast.makeText('Unable to copy mod zip "$file": ${e.message}.', android.widget.Toast.LENGTH_LONG);
-      }
-      else
-        android.widget.Toast.makeText('Unable to find mod zip "$file".', android.widget.Toast.LENGTH_LONG);
-    });
-    #end
   }
 
   public function new()
