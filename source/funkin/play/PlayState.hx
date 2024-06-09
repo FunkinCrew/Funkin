@@ -2284,7 +2284,7 @@ class PlayState extends MusicBeatSubState
           health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
           songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
         }
-        
+
         // Make sure the player keeps singing while the note is held by the bot.
         if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
         {
@@ -2610,12 +2610,20 @@ class PlayState extends MusicBeatSubState
     // Redirect to the chart editor playing the current song.
     if (controls.DEBUG_CHART)
     {
-      disableKeys = true;
-      persistentUpdate = false;
-      FlxG.switchState(() -> new ChartEditorState(
-        {
-          targetSongId: currentSong.id,
-        }));
+      if (isChartingMode) {
+        // Simply return to the chart editor, instead of creating a new chart editor!
+        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+        PlayState.instance.close(); // This only works because PlayState is a substate!
+      } else {
+        disableKeys = true;
+        persistentUpdate = false;
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: currentSong.id,
+            targetVariation: currentVariation,
+            targetDifficulty: currentDifficulty
+          }));
+      }
     }
     #end
 

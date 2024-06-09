@@ -36,6 +36,7 @@ import funkin.ui.story.Level;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.ui.mainmenu.MainMenuState;
@@ -1292,6 +1293,25 @@ class FreeplayState extends MusicBeatSubState
               }
             });
         }
+      }
+    }
+
+    // Redirect to the chart editor playing the current song.
+    if (controls.DEBUG_CHART)
+    {
+      var targetSongData = grpCapsules.members[curSelected]?.songData;
+      var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongData?.songId);
+      if (targetSong != null)
+      {
+        var targetDifficulty:String = currentDifficulty;
+        var targetVariation:String = targetSong.getFirstValidVariation(targetDifficulty);
+
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: targetSong.id,
+            targetVariation: targetVariation,
+            targetDifficulty: targetDifficulty
+          }));
       }
     }
 
