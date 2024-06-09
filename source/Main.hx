@@ -53,6 +53,7 @@ class Main extends Sprite
     Lib.current.addChild(new Main());
 
     #if android
+    // This callback gets called only when you open a zip modpack file with this app.
     Lib.current.stage.window.onDropFile.add(function(file:String):Void {
       if (file != null && sys.FileSystem.exists(file) && haxe.io.Path.extension(file) == 'zip')
       {
@@ -61,13 +62,13 @@ class Main extends Sprite
           @:privateAccess
           sys.io.File.copy(file, haxe.io.Path.join([funkin.modding.PolymodHandler.MOD_FOLDER, haxe.io.Path.withoutDirectory(file)]));
 
-          android.widget.Toast.makeText('Successfully copied "$file" to the mods folder.', Toast.LENGTH_LONG);
+          android.widget.Toast.makeText('Successfully copied "$file" to the mods folder.', android.widget.Toast.LENGTH_LONG);
         }
         catch (e:haxe.Exception)
-          android.widget.Toast.makeText('Unable to copy mod zip "$file": ${e.messege}.', Toast.LENGTH_LONG);
+          android.widget.Toast.makeText('Unable to copy mod zip "$file": ${e.message}.', android.widget.Toast.LENGTH_LONG);
       }
       else
-        android.widget.Toast.makeText('Unable to find mod zip "$file".', Toast.LENGTH_LONG);
+        android.widget.Toast.makeText('Unable to find mod zip "$file".', android.widget.Toast.LENGTH_LONG);
     });
     #end
   }
