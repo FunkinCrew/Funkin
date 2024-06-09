@@ -1,0 +1,8 @@
+name: Question
+description: Ask a general question
+labels: ["question"]
+title: "Question: "
+body:
+  - type: textarea
+    attributes:
+      label: What is your question?
