@@ -1,9 +1,13 @@
 package funkin.mobile.ui;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
 import flixel.input.FlxInput;
+import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
+import flixel.input.touch.FlxTouch;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
