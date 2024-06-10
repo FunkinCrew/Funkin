@@ -1878,6 +1878,9 @@ class FreeplayState extends MusicBeatSubState
 
   public function playCurSongPreview(daSongCapsule:SongMenuItem):Void
   {
+    var volume:Float = 0.4;
+    if (dj.playingCartoon) volume *= 0.4; // 40%
+
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -1886,7 +1889,7 @@ class FreeplayState extends MusicBeatSubState
           overrideExisting: true,
           restartTrack: false
         });
-      FlxG.sound.music.fadeIn(2, 0, 0.8);
+      FlxG.sound.music.fadeIn(2, 0, volume);
     }
     else
     {
@@ -1905,7 +1908,7 @@ class FreeplayState extends MusicBeatSubState
               end: 0.25
             },
           onLoad: function() {
-            FlxG.sound.music.fadeIn(2, 0, 0.4);
+            FlxG.sound.music.fadeIn(2, 0, volume);
           }
         });
     }
