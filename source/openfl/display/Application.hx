@@ -67,7 +67,7 @@ class Application #if lime extends LimeApplication #end
 
       try
       {
-        File.saveBytes(destination, File.getBytes(file));
+        File.copy(destination, file);
 
         Toast.makeText('Successfully copied "$file" to the mods folder.', Toast.LENGTH_LONG);
       }
