@@ -42,6 +42,9 @@ class Main extends Sprite
     Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
       android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
     ));
+
+    // Checks and requests the necessary permissions based on the Android version.
+    funkin.mobile.util.PermissionsUtil.checkAndRequestPermissions();
     #elseif ios
     Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory)); // For iOS we use documents directory and this is only way we can do.
     #end
