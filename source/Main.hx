@@ -124,6 +124,12 @@ class Main extends Sprite
 
     #if mobile
     FlxG.signals.gameResized.add(resizeGame);
+
+    // Use device's refresh rate.
+    framerate = Lib.application.window.displayMode.refreshRate;
+
+    if (framerate < 60)
+        framerate = 60;
     #end
 
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
