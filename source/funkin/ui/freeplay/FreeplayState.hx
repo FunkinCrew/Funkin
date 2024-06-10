@@ -602,6 +602,7 @@ class FreeplayState extends MusicBeatSubState
       // that is, only if there's more than one song in the group!
       if (grpCapsules.members.length > 0)
       {
+        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
         curSelected = 1;
         changeSelection();
       }
