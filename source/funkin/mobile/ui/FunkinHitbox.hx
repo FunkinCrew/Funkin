@@ -3,6 +3,8 @@ package funkin.mobile.ui;
 import flixel.input.actions.FlxActionInput;
 import flixel.graphics.FlxGraphic;
 import flixel.group.FlxSpriteGroup;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
@@ -21,9 +23,24 @@ import openfl.geom.Matrix;
 class FunkinHint extends FunkinButton
 {
   /**
+   * The alpha value when the hint is pressed.
+   */
+  static final HINT_ALPHA_DOWN:Float = 0.3;
+
+  /**
+   * The alpha value when the hint is not pressed.
+   */
+  static final HINT_ALPHA_UP:Float = 0.00001;
+
+  /**
    * The HSV shader used to adjust the hue and saturation of the button.
    */
   private var hsvShader:HSVShader;
+
+  /**
+   * The tween used to animate the alpha changes of the button.
+   */
+  private var alphaTween:FlxTween;
 
   /**
    * Creates a new `FunkinHint` object.
@@ -35,12 +52,30 @@ class FunkinHint extends FunkinButton
   {
     super(X, Y);
 
+    onDown.add(function():Void {
+      if (alphaTween != null) alphaTween.cancel();
+
+      alphaTween = FlxTween.tween(this, {alpha: HINT_ALPHA_DOWN}, HINT_ALPHA_UP, {ease: FlxEase.circInOut});
+    });
+    onUp.add(function():Void {
+      if (alphaTween != null) alphaTween.cancel();
+
+      alphaTween = FlxTween.tween(this, {alpha: HINT_ALPHA_UP}, HINT_ALPHA_DOWN, {ease: FlxEase.circInOut});
+    });
+    onOut.add(function():Void {
+      if (alphaTween != null) alphaTween.cancel();
+
+      alphaTween = FlxTween.tween(this, {alpha: HINT_ALPHA_UP}, HINT_ALPHA_DOWN, {ease: FlxEase.circInOut});
+    });
+
     hsvShader = new HSVShader();
     hsvShader.hue = 1.0;
     hsvShader.saturation = 1.0;
     hsvShader.value = 1.0;
 
     shader = hsvShader;
+
+    alpha = HINT_ALPHA_UP;
   }
 
   /**
@@ -127,46 +162,9 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   {
     var hint:FunkinHint = new FunkinHint(x, y);
     hint.loadGraphic(createHintGraphic(width, height, color));
-    hint.alpha = 0.00001;
-    hint.onDown.callback = function()
-            {
-                if (hintTween != null)
-                    hintTween.cancel();
-
-                hintTween = FlxTween.tween(hint, {alpha: guh}, guh2, {
-                    ease: FlxEase.circInOut,
-                    onComplete: function(twn:FlxTween)
-                    {
-                        // hintTween = null;
-                    }
-                });
-            }
-            hint.onUp.callback = function()
-            {
-                if (hintTween != null)
-                    hintTween.cancel();
-
-                hintTween = FlxTween.tween(hint, {alpha: guh2}, guh, {
-                    ease: FlxEase.circInOut,
-                    onComplete: function(twn:FlxTween)
-                    {
-                        // hintTween = null;
-                    }
-                });
-            }
-            hint.onOut.callback = function()
-            {
-                if (hintTween != null)
-                    hintTween.cancel();
-
-                hintTween = FlxTween.tween(hint, {alpha: guh2}, guh, {
-                    ease: FlxEase.circInOut,
-                    onComplete: function(twn:FlxTween)
-                    {
-                        // hintTween = null;
-                    }
-                });
-            }
+    hint.onDown.add(() -> onHintDown.dispatch(hint));
+    hint.onUp.add(() -> onHintUp.dispatch(hint));
+    hint.onOut.add(() -> onHintUp.dispatch(hint));
     hint.ID = id;
     return hint;
   }
