@@ -92,6 +92,17 @@ class FunkinHint extends FunkinButton
   {
     hsvShader.hue = hue;
   }
+
+  /**
+   * Cleans up memory used by the `FunkinHint`.
+   */
+  public override function destroy():Void
+  {
+    super.destroy();
+
+    if (alphaTween != null)
+      alphaTween = FlxDestroyUtil.destroy(alphaTween);
+  }
 }
 
 /**
@@ -192,7 +203,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   /**
    * Cleans up memory used by the `FunkinHitbox`.
    */
-  override public function destroy():Void
+  public override function destroy():Void
   {
     if (trackedInputs != null && trackedInputs.length > 0) ControlsHandler.removeCachedInput(PlayerSettings.player1.controls, trackedInputs);
 
