@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.Permissions;
 import android.Settings;
-import openfl.Lib;
 #end
 
 /**
@@ -82,7 +81,7 @@ class PermissionsUtil
       case version if (version >= VERSION_CODES.R): // For Android 11+ or equal
         if (!Environment.isExternalStorageManager())
         {
-          Settings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION', REQUEST_CODE_MANAGE);
+          Settings.requestSetting('android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION', REQUEST_CODE_MANAGE);
         }
       case version if (version >= VERSION_CODES.M): // For Android 6+ or equal
         final grantedPermissions:Array<String> = Permissions.getGrantedPermissions();
