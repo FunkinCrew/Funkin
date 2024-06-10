@@ -1,10 +1,7 @@
 package funkin.mobile.input;
 
-import flixel.input.actions.FlxAction;
-import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputDigital;
-import flixel.input.FlxInput;
 import funkin.input.Controls;
+import flixel.input.actions.FlxActionInput;
 import funkin.mobile.ui.FunkinButton;
 import funkin.mobile.ui.FunkinHitbox;
 

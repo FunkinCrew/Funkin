@@ -23,8 +23,18 @@ class PreciseInputHandler
    */
   static var _hintListDir:Map<FunkinHint, NoteDirection> = new Map<FunkinHint, NoteDirection>();
 
+  /**
+   * The map of the list of hints.
+   */
   static var _hintListMap:Map<Int, FlxInput<Int>> = new Map<Int, FlxInput<Int>>();
 
+  /**
+   * Retrieves the hint for the specified direction from the given hitbox.
+   *
+   * @param noteDirection The direction to get the hint for.
+   * @param hitbox The hitbox containing the hints.
+   * @return The hint corresponding to the given direction.
+   */
   public static function getHintForDirection(noteDirection:NoteDirection, hitbox:FunkinHitbox):FunkinHint
   {
     return switch (noteDirection)
@@ -36,11 +46,16 @@ class PreciseInputHandler
     };
   }
 
+  /**
+   * Initializes the hitbox with the relevant hints and event handlers.
+   *
+   * @param hitbox The hitbox to initialize.
+   */
   public static function initializeHitbox(hitbox:FunkinHitbox):Void
   {
     clearHints();
 
-    hitbox.onHintDown.add(handleHintnDown);
+    hitbox.onHintDown.add(handleHintDown);
     hitbox.onHintUp.add(handleHintUp);
 
     for (noteDirection in PreciseInputManager.DIRECTIONS)
@@ -53,24 +68,41 @@ class PreciseInputHandler
     }
   }
 
+  /**
+   * Gets the input associated with a specific hint ID.
+   *
+   * @param hintID The ID of the hint.
+   * @return The input corresponding to the hint ID.
+   */
   public static function getInputByHintID(hintID:Int):FlxInput<Int>
   {
     return _hintListMap.get(hintID);
   }
 
+  /**
+   * Gets the direction associated with a specific hint.
+   *
+   * @param hint The hint to get the direction for.
+   * @return The direction corresponding to the hint.
+   */
   public static function getDirectionForHint(hint:FunkinHint):NoteDirection
   {
     return _hintListDir.get(hint);
   }
 
-  static function handleHintnDown(hint:FunkinHint):Void
+  /**
+   * Handles the event when a hint is pressed.
+   *
+   * @param hint The hint that was pressed.
+   */
+  static function handleHintDown(hint:FunkinHint):Void
   {
     var timestamp:Int64 = PreciseInputManager.getCurrentTimestamp();
 
     if (_hintList == null || _hintList.indexOf(hint) == -1) return;
 
     // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
+    // This is because SDL3's timestamps are measured in nanoseconds, not milliseconds.
     // timestamp *= Constants.NS_PER_MS;
 
     if (getInputByHintID(hint.ID)?.justPressed ?? false)
@@ -84,6 +116,11 @@ class PreciseInputHandler
     }
   }
 
+  /**
+   * Handles the event when a hint is released.
+   *
+   * @param hint The hint that was released.
+   */
   static function handleHintUp(hint:FunkinHint):Void
   {
     var timestamp:Int64 = PreciseInputManager.getCurrentTimestamp();
@@ -91,7 +128,7 @@ class PreciseInputHandler
     if (_hintList == null || _hintList.indexOf(hint) == -1) return;
 
     // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
+    // This is because SDL3's timestamps are measured in nanoseconds, not milliseconds.
     // timestamp *= Constants.NS_PER_MS;
 
     if (getInputByHintID(hint.ID)?.justReleased ?? false)
@@ -105,7 +142,11 @@ class PreciseInputHandler
     }
   }
 
-  // Needs to somehow get called in PreciseInputManager
+  // Needs to be somehow called here.
+
+  /**
+   * Clears the current list of hints and their associated data.
+   */
   public static function clearHints():Void
   {
     _hintList = [];
