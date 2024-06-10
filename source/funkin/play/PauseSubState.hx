@@ -414,19 +414,22 @@ class PauseSubState extends MusicBeatSubState
   {
     if (!allowInput) return;
 
-    if (controls.UI_UP_P || SwipeUtil.swipeUp)
+    // Doing this just so it'd look better i guess.
+    final upP:Bool = controls.UI_UP_P #if mobile || SwipeUtil.swipeUp #end;
+    final downP:Bool = controls.UI_DOWN_P #if mobile || SwipeUtil.swipeDown #end;
+    final accept:Bool = controls.ACCEPT #if mobile
+    || (TouchUtil.overlapsComplex(menuEntryText.members[currentEntry]) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end;
+
+    if (upP)
     {
       changeSelection(-1);
     }
-    if (controls.UI_DOWN_P || SwipeUtil.swipeDown)
+    if (downP)
     {
       changeSelection(1);
     }
 
-    if (controls.ACCEPT
-      || (TouchUtil.overlapsComplex(menuEntryText.members[currentEntry])
-        && TouchUtil.justReleased
-        && !SwipeUtil.swipeAny))
+    if (accept)
     {
       currentMenuEntries[currentEntry].callback(this);
     }
