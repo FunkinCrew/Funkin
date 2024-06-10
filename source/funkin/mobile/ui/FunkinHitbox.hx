@@ -128,21 +128,45 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     var hint:FunkinHint = new FunkinHint(x, y);
     hint.loadGraphic(createHintGraphic(width, height, color));
     hint.alpha = 0.00001;
-    hint.onDown.add(function():Void {
-      onHintDown.dispatch(hint);
+    hint.onDown.callback = function()
+            {
+                if (hintTween != null)
+                    hintTween.cancel();
 
-      if (hint.alpha != 0.25) hint.alpha = 0.25;
-    });
-    hint.onUp.add(function():Void {
-      onHintUp.dispatch(hint);
+                hintTween = FlxTween.tween(hint, {alpha: guh}, guh2, {
+                    ease: FlxEase.circInOut,
+                    onComplete: function(twn:FlxTween)
+                    {
+                        // hintTween = null;
+                    }
+                });
+            }
+            hint.onUp.callback = function()
+            {
+                if (hintTween != null)
+                    hintTween.cancel();
 
-      if (hint.alpha != 0.00001) hint.alpha = 0.00001;
-    });
-    hint.onOut.add(function():Void {
-      onHintUp.dispatch(hint);
+                hintTween = FlxTween.tween(hint, {alpha: guh2}, guh, {
+                    ease: FlxEase.circInOut,
+                    onComplete: function(twn:FlxTween)
+                    {
+                        // hintTween = null;
+                    }
+                });
+            }
+            hint.onOut.callback = function()
+            {
+                if (hintTween != null)
+                    hintTween.cancel();
 
-      if (hint.alpha != 0.00001) hint.alpha = 0.00001;
-    });
+                hintTween = FlxTween.tween(hint, {alpha: guh2}, guh, {
+                    ease: FlxEase.circInOut,
+                    onComplete: function(twn:FlxTween)
+                    {
+                        // hintTween = null;
+                    }
+                });
+            }
     hint.ID = id;
     return hint;
   }
