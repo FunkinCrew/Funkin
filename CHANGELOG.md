@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Bug where Dadbattle shows up as Dadbattle Erect when returning to freeplay
 - Fixed 2Hot not appearing under the "#" category in Freeplay menu
+- Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
+- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
+
+
 
 ## [0.4.0] - 2024-06-06
 ### Added
@@ -37,11 +41,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
 - Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
   - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
+- Improved the Event Toolbox in the Chart Editor; dropdowns are now bigger, include search field, and display elements in alphabetical order rather than a random order.
 ### Fixed
 - Fixed an issue where Nene's visualizer would not play on Desktop builds
 - Fixed a bug where the game would silently fail to load saves on HTML5
 - Fixed some bugs with the props on the Story Menu not bopping properly
-- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
+- Additional fixes to the Loading bar on HTML5 (thanks lemz1!)
+- Fixed several bugs with the TitleState, including missing music when returning from the Main Menu (thanks gamerbross!)
+- Fixed a camera bug in the Main Menu (thanks richTrash21!)
+- Fixed a bug where changing difficulties in Story mode wouldn't update the score (thanks sectorA!)
+- Fixed a crash in Freeplay caused by a level referencing an invalid song (thanks gamerbross!)
+- Fixed a bug where pressing the volume keys would stop the Toy commercial (thanks gamerbross!)
+- Fixed a bug where the Chart Editor Playtest would crash when losing (thanks gamerbross!)
+- Fixed a bug where hold notes would display improperly in the Chart Editor when downscroll was enabled for gameplay (thanks gamerbross!)
+- Fixed a bug where hold notes would be positioned wrong on downscroll (thanks MaybeMaru!)
+- Removed a large number of unused imports to optimize builds (thanks Ethan-makes-music!)
+- Improved debug logging for unscripted stages (thanks gamerbross!)
+- Made improvements to compiling documentation (thanks gedehari!)
 - Fixed a crash on Linux caused by an old version of hxCodec (thanks Noobz4Life!)
 - Optimized animation handling for characters (thanks richTrash21!)
 - Made improvements to compiling documentation (thanks gedehari!)
