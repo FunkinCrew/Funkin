@@ -2284,7 +2284,7 @@ class PlayState extends MusicBeatSubState
           health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
           songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
         }
-        
+
         // Make sure the player keeps singing while the note is held by the bot.
         if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
         {
@@ -2818,8 +2818,13 @@ class PlayState extends MusicBeatSubState
 
     deathCounter = 0;
 
+    // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
+    // `easy`, `erect`, `normal-pico`, etc.
+    var suffixedDifficulty = (currentVariation != Constants.DEFAULT_VARIATION
+      && currentVariation != 'erect') ? '$currentDifficulty-${currentVariation}' : currentDifficulty;
+
     var isNewHighscore = false;
-    var prevScoreData:Null<SaveScoreData> = Save.instance.getSongScore(currentSong.id, currentDifficulty);
+    var prevScoreData:Null<SaveScoreData> = Save.instance.getSongScore(currentSong.id, suffixedDifficulty);
 
     if (currentSong != null && currentSong.validScore)
     {
@@ -2844,13 +2849,21 @@ class PlayState extends MusicBeatSubState
       // adds current song data into the tallies for the level (story levels)
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
-      if (!isPracticeMode && !isBotPlayMode && Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
+      if (!isPracticeMode && !isBotPlayMode)
       {
-        Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
-        #if newgrounds
-        NGio.postScore(score, currentSong.id);
-        #end
-        isNewHighscore = true;
+        isNewHighscore = Save.instance.isSongHighScore(currentSong.id, suffixedDifficulty, data);
+
+        // If no high score is present, save both score and rank.
+        // If score or rank are better, save the highest one.
+        // If neither are higher, nothing will change.
+        Save.instance.applySongRank(currentSong.id, suffixedDifficulty, data);
+
+        if (isNewHighscore)
+        {
+          #if newgrounds
+          NGio.postScore(score, currentSong.id);
+          #end
+        }
       }
     }
 
