@@ -101,6 +101,10 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     {
       var animFrame:Int = Math.round(levels[i].value * 5);
 
+      #if desktop
+      animFrame = Math.round(animFrame * FlxG.sound.volume);
+      #end
+
       animFrame = Math.floor(Math.min(5, animFrame));
       animFrame = Math.floor(Math.max(0, animFrame));
 
