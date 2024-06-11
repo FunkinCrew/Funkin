@@ -65,11 +65,17 @@ class NoteKindManager
   /**
    * Retrieve the note style from the given note kind
    * @param noteKind note kind name
+   * @param isPixel whether to use pixel style
    * @return NoteStyle
    */
-  public static function getNoteStyle(noteKind:String):Null<NoteStyle>
+  public static function getNoteStyle(noteKind:String, isPixel:Bool = false):Null<NoteStyle>
   {
-    var noteStyleId:String = noteKinds.get(noteKind)?.noteStyleId ?? "";
+    var noteStyleId:Null<String> = getNoteStyleId(noteKind, isPixel);
+
+    if (noteStyleId == null)
+    {
+      return null;
+    }
 
     return NoteStyleRegistry.instance.fetchEntry(noteStyleId);
   }
@@ -77,10 +83,17 @@ class NoteKindManager
   /**
    * Retrieve the note style id from the given note kind
    * @param noteKind note kind name
+   * @param isPixel whether to use pixel style
    * @return Null<String>
    */
-  public static function getNoteStyleId(noteKind:String):Null<String>
+  public static function getNoteStyleId(noteKind:String, isPixel:Bool = false):Null<String>
   {
-    return noteKinds.get(noteKind)?.noteStyleId;
+    var noteStyleId:Null<String> = noteKinds.get(noteKind)?.noteStyleId;
+    if (isPixel && noteStyleId != null)
+    {
+      noteStyleId = NoteStyleRegistry.instance.hasEntry('$noteStyleId-pixel') ? '$noteStyleId-pixel' : noteStyleId;
+    }
+
+    return noteStyleId;
   }
 }
