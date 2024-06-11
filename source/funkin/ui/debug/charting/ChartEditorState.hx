@@ -904,7 +904,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_notePreviewDirty(value:Bool):Bool
   {
-    trace('Note preview dirtied!');
+    // trace('Note preview dirtied!');
     return notePreviewDirty = value;
   }
 
@@ -6304,7 +6304,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       tempNote.noteData = noteData;
       tempNote.scrollFactor.set(0, 0);
-      var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', 0);
+      var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', false, 0);
       dispatchEvent(event);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!

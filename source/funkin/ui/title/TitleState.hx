@@ -265,6 +265,13 @@ class TitleState extends MusicBeatState
     if (FlxG.keys.pressed.DOWN) FlxG.sound.music.pitch -= 0.5 * elapsed;
     #end
 
+    #if desktop
+    if (FlxG.keys.justPressed.ESCAPE)
+    {
+      Sys.exit(0);
+    }
+    #end
+
     Conductor.instance.update();
 
     /* if (FlxG.onMobile)
