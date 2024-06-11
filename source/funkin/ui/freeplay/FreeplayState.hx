@@ -458,14 +458,19 @@ class FreeplayState extends MusicBeatSubState
 
     add(dj);
 
-    bgDad = new FlxSprite(pinkBack.width * 0.75, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
-    bgDad.setGraphicSize(0, FlxG.height);
-    bgDad.updateHitbox();
+    bgDad = new FlxSprite(pinkBack.width * 0.74, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
     bgDad.shader = new AngleMask();
     bgDad.visible = false;
 
     var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height), FlxColor.BLACK);
     add(blackOverlayBullshitLOLXD); // used to mask the text lol!
+
+    // this makes the texture sizes consistent, for the angle shader
+    bgDad.setGraphicSize(0, FlxG.height);
+    blackOverlayBullshitLOLXD.setGraphicSize(0, FlxG.height);
+
+    bgDad.updateHitbox();
+    blackOverlayBullshitLOLXD.updateHitbox();
 
     exitMovers.set([blackOverlayBullshitLOLXD, bgDad],
       {
@@ -475,7 +480,7 @@ class FreeplayState extends MusicBeatSubState
       });
 
     add(bgDad);
-    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.76}, 0.7, {ease: FlxEase.quintOut});
+    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.74}, 0.7, {ease: FlxEase.quintOut});
 
     blackOverlayBullshitLOLXD.shader = bgDad.shader;
 
@@ -971,13 +976,15 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules.members[curSelected].ranking.scale.set(20, 20);
     grpCapsules.members[curSelected].blurredRanking.scale.set(20, 20);
 
-    if (fromResults?.newRank != null) {
+    if (fromResults?.newRank != null)
+    {
       grpCapsules.members[curSelected].ranking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
     }
 
     FlxTween.tween(grpCapsules.members[curSelected].ranking, {"scale.x": 1, "scale.y": 1}, 0.1);
 
-    if (fromResults?.newRank != null) {
+    if (fromResults?.newRank != null)
+    {
       grpCapsules.members[curSelected].blurredRanking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
     }
     FlxTween.tween(grpCapsules.members[curSelected].blurredRanking, {"scale.x": 1, "scale.y": 1}, 0.1);
