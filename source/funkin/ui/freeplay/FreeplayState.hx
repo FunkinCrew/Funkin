@@ -1712,10 +1712,19 @@ class FreeplayState extends MusicBeatSubState
       FlxG.log.warn('WARN: could not find song with id (${cap.songData.songId})');
       return;
     }
-    var targetDifficulty:String = currentDifficulty;
-    var targetVariation:String = targetSong.getFirstValidVariation(targetDifficulty);
-
+    var targetDifficultyId:String = currentDifficulty;
+    var targetVariation:String = targetSong.getFirstValidVariation(targetDifficultyId);
     PlayStatePlaylist.campaignId = cap.songData.levelId;
+
+    var targetDifficulty:SongDifficulty = targetSong.getDifficulty(targetDifficultyId, targetVariation);
+    if (targetDifficulty == null)
+    {
+      FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      return;
+    }
+
+    // TODO: Change this with alternate instrumentals
+    var targetInstId:String = targetDifficulty.characters.instrumental;
 
     // Visual and audio effects.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
@@ -1765,8 +1774,9 @@ class FreeplayState extends MusicBeatSubState
       LoadingState.loadPlayState(
         {
           targetSong: targetSong,
-          targetDifficulty: targetDifficulty,
+          targetDifficulty: targetDifficultyId,
           targetVariation: targetVariation,
+          targetInstrumental: targetInstId,
           practiceMode: false,
           minimalMode: false,
 
