@@ -21,9 +21,9 @@ class NoteKind implements INoteScriptedClass
   /**
    * Custom note style
    */
-  public var noteStyleId:String;
+  public var noteStyleId:Null<String>;
 
-  public function new(noteKind:String, description:String = "", noteStyleId:String = "")
+  public function new(noteKind:String, description:String = "", ?noteStyleId:String)
   {
     this.noteKind = noteKind;
     this.description = description;
