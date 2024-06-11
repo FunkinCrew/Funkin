@@ -371,6 +371,33 @@ class MainMenuState extends MusicBeatState
             }
         });
     }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.R)
+    {
+      // Give the user a hypothetical overridden score,
+      // and see if we can maintain that golden P rank.
+      funkin.save.Save.instance.setSongScore('tutorial', 'easy',
+        {
+          score: 1234567,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 1,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 1,
+              totalNotes: 10,
+            }
+        });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.E)
+    {
+      funkin.save.Save.instance.debug_dumpSave();
+    }
     #end
 
     if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)

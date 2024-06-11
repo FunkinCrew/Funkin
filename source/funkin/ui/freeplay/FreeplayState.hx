@@ -1608,7 +1608,19 @@ class FreeplayState extends MusicBeatSubState
     var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].songData;
     if (daSong != null)
     {
-      var songScore:SaveScoreData = Save.instance.getSongScore(grpCapsules.members[curSelected].songData.songId, currentDifficulty);
+      // TODO: Make this actually be the variation you're focused on. We don't need to fetch the song metadata just to calculate it.
+      var targetSong:Song = SongRegistry.instance.fetchEntry(grpCapsules.members[curSelected].songData.songId);
+      if (targetSong == null)
+      {
+        FlxG.log.warn('WARN: could not find song with id (${grpCapsules.members[curSelected].songData.songId})');
+        return;
+      }
+      var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty);
+
+      // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
+      var suffixedDifficulty = (targetVariation != Constants.DEFAULT_VARIATION
+        && targetVariation != 'erect') ? '$currentDifficulty-${targetVariation}' : currentDifficulty;
+      var songScore:SaveScoreData = Save.instance.getSongScore(grpCapsules.members[curSelected].songData.songId, suffixedDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
