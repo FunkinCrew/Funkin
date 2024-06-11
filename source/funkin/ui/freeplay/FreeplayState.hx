@@ -1332,9 +1332,7 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var upP:Bool = controls.UI_UP_P && !FlxG.keys.pressed.CONTROL;
-    var downP:Bool = controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL;
-    var accepted:Bool = controls.ACCEPT && !FlxG.keys.pressed.CONTROL;
+    var accepted:Bool = controls.ACCEPT;
 
     if (FlxG.onMobile)
     {
@@ -1408,7 +1406,7 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (!FlxG.keys.pressed.CONTROL && (controls.UI_UP || controls.UI_DOWN))
+    if (controls.UI_UP || controls.UI_DOWN)
     {
       if (spamming)
       {
@@ -1470,13 +1468,13 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
+    if (controls.UI_LEFT_P)
     {
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if (controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL)
+    if (controls.UI_RIGHT_P)
     {
       dj.resetAFKTimer();
       changeDiff(1);
@@ -1959,8 +1957,8 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
-    if (flipX && controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
-    if (!flipX && controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
+    if (flipX && controls.UI_RIGHT_P) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P) moveShitDown();
 
     super.update(elapsed);
   }
