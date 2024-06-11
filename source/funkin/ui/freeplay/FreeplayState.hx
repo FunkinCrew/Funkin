@@ -971,16 +971,18 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules.members[curSelected].ranking.scale.set(20, 20);
     grpCapsules.members[curSelected].blurredRanking.scale.set(20, 20);
 
-    grpCapsules.members[curSelected].ranking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
-    // grpCapsules.members[curSelected].ranking.animation.curAnim.name, true);
+    if (fromResults?.newRank != null) {
+      grpCapsules.members[curSelected].ranking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
+    }
 
     FlxTween.tween(grpCapsules.members[curSelected].ranking, {"scale.x": 1, "scale.y": 1}, 0.1);
 
-    grpCapsules.members[curSelected].blurredRanking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
+    if (fromResults?.newRank != null) {
+      grpCapsules.members[curSelected].blurredRanking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
+    }
     FlxTween.tween(grpCapsules.members[curSelected].blurredRanking, {"scale.x": 1, "scale.y": 1}, 0.1);
 
     new FlxTimer().start(0.1, _ -> {
-      // trace(grpCapsules.members[curSelected].ranking.rank);
       if (fromResults?.oldRank != null)
       {
         grpCapsules.members[curSelected].fakeRanking.visible = false;
@@ -1009,7 +1011,6 @@ class FreeplayState extends MusicBeatSubState
           FunkinSound.playOnce(Paths.sound('ranks/rankinnormal'));
       }
       rankCamera.zoom = 1.3;
-      // FlxTween.tween(rankCamera, {"zoom": 1.4}, 0.3, {ease: FlxEase.elasticOut});
 
       FlxTween.tween(rankCamera, {"zoom": 1.5}, 0.3, {ease: FlxEase.backInOut});
 
@@ -1027,13 +1028,11 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(0.4, _ -> {
       FlxTween.tween(funnyCam, {"zoom": 1}, 0.8, {ease: FlxEase.sineIn});
       FlxTween.tween(rankCamera, {"zoom": 1.2}, 0.8, {ease: FlxEase.backIn});
-      // IntervalShake.shake(grpCapsules.members[curSelected], 0.8 + 0.5, 1 / 24, 0, 2, FlxEase.quadIn);
       FlxTween.tween(grpCapsules.members[curSelected], {x: originalPos.x - 7, y: originalPos.y - 80}, 0.8 + 0.5, {ease: FlxEase.quartIn});
     });
 
     new FlxTimer().start(0.6, _ -> {
       rankAnimSlam(fromResults);
-      // IntervalShake.shake(grpCapsules.members[curSelected].capsule, 0.3, 1 / 30, 0, 0.3, FlxEase.quartIn);
     });
   }
 
@@ -1198,51 +1197,9 @@ class FreeplayState extends MusicBeatSubState
     // {
     //   rankAnimSlam(fromResultsParams);
     // }
-
-    if (FlxG.keys.justPressed.G)
-    {
-      sparks.y -= 2;
-      trace(sparks.x, sparks.y);
-    }
-    if (FlxG.keys.justPressed.V)
-    {
-      sparks.x -= 2;
-      trace(sparks.x, sparks.y);
-    }
-    if (FlxG.keys.justPressed.N)
-    {
-      sparks.x += 2;
-      trace(sparks.x, sparks.y);
-    }
-    if (FlxG.keys.justPressed.B)
-    {
-      sparks.y += 2;
-      trace(sparks.x, sparks.y);
-    }
-
-    if (FlxG.keys.justPressed.I)
-    {
-      sparksADD.y -= 2;
-      trace(sparksADD.x, sparksADD.y);
-    }
-    if (FlxG.keys.justPressed.J)
-    {
-      sparksADD.x -= 2;
-      trace(sparksADD.x, sparksADD.y);
-    }
-    if (FlxG.keys.justPressed.L)
-    {
-      sparksADD.x += 2;
-      trace(sparksADD.x, sparksADD.y);
-    }
-    if (FlxG.keys.justPressed.K)
-    {
-      sparksADD.y += 2;
-      trace(sparksADD.x, sparksADD.y);
-    }
     #end
 
-    if (FlxG.keys.justPressed.F && !busy)
+    if (controls.FREEPLAY_FAVORITE && !busy)
     {
       var targetSong = grpCapsules.members[curSelected]?.songData;
       if (targetSong != null)
