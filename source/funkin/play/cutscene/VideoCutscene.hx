@@ -85,7 +85,7 @@ class VideoCutscene
     // Display a black screen to hide the game while the video is playing.
     blackScreen = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     blackScreen.scrollFactor.set(0, 0);
-    blackScreen.cameras = [PlayState.instance.camOther];
+    blackScreen.cameras = [PlayState.instance.camCutscene];
     PlayState.instance.add(blackScreen);
 
     VideoCutscene.cutsceneType = cutsceneType;
@@ -119,7 +119,7 @@ class VideoCutscene
 
       vid.finishCallback = finishVideo.bind(0.5);
 
-      vid.cameras = [PlayState.instance.camOther];
+      vid.cameras = [PlayState.instance.camCutscene];
 
       PlayState.instance.add(vid);
 
@@ -146,7 +146,7 @@ class VideoCutscene
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
       vid.autoPause = FlxG.autoPause;
 
-      vid.cameras = [PlayState.instance.camOther];
+      vid.cameras = [PlayState.instance.camCutscene];
 
       PlayState.instance.add(vid);
 
