@@ -5,11 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.4.1]
+### Changed
+- Tweaked the chart for Lit Up some more to fix some offset notes.
 ### Fixed
 - Bug where Dadbattle shows up as Dadbattle Erect when returning to freeplay
 - Fixed 2Hot not appearing under the "#" category in Freeplay menu
 - Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
 - Improved offsets for Pico and Tankman opponents so they don't slide around as much.
+- Fixed an issue where M.I.L.F. displayed the wrong difficulty rating in the Freeplay menu.
 
 
 
