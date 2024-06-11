@@ -69,6 +69,11 @@ class ChartEditorHoldNoteSprite extends SustainTrail
       endOffset = bottomClip = 1;
       antialiasing = false;
     }
+    else
+    {
+      endOffset = 0.5;
+      bottomClip = 0.9;
+    }
 
     zoom = 1.0;
     zoom *= noteStyle.fetchHoldNoteScale();
