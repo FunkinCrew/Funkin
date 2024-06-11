@@ -126,7 +126,10 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var noteStyleIds:Array<String> = NoteStyleRegistry.instance.listEntryIds();
+    // hardcoding this because i dont want note kind styles to be shown as well
+    // there is probably a better solution
+    // var noteStyleIds:Array<String> = NoteStyleRegistry.instance.listEntryIds();
+    var noteStyleIds:Array<String> = ['funkin', 'pixel'];
 
     var returnValue:DropDownEntry = {id: "funkin", text: "Funkin'"};
 
