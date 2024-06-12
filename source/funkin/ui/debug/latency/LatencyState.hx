@@ -1,5 +1,6 @@
 package funkin.ui.debug.latency;
 
+import funkin.play.notes.NoteDirection;
 import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -176,7 +177,9 @@ class LatencyState extends MusicBeatSubState
 
   function preciseInputPressed(event:PreciseInputEvent)
   {
-    generateBeatStuff(event);
+    if(event.noteDirection == NoteDirection.UP || event.noteDirection == NoteDirection.DOWN)
+      generateBeatStuff(event);
+
     strumLine.pressKey(event.noteDirection);
     strumLine.playPress(event.noteDirection);
   }
@@ -271,6 +274,8 @@ class LatencyState extends MusicBeatSubState
     avgOffsetInput /= loopInd;
 
     offsetText.text += "\n\nEstimated average input offset needed: " + avgOffsetInput;
+    offsetText.text += "\n\nPress TAB to apply this offset.";
+    offsetText.text += "\n\nYou can press R to reset your inputs.";
 
     var multiply:Int = 10;
 
@@ -301,7 +306,17 @@ class LatencyState extends MusicBeatSubState
         {
           localConductor.inputOffset -= 1 * multiply;
         }
+      }
 
+      if (FlxG.keys.justPressed.TAB)
+      {
+        offsetsPerBeat = [];
+        diffGrp.forEach(memb -> memb.text = "");
+        localConductor.inputOffset = Std.int(avgOffsetInput);
+      }
+
+      if (FlxG.keys.justPressed.R)
+      {
         // reset the average, so you don't need to wait a full loop to start getting averages
         // also reset each text member
         offsetsPerBeat = [];
