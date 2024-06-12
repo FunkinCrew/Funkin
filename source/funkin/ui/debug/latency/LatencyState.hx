@@ -307,19 +307,19 @@ class LatencyState extends MusicBeatSubState
           localConductor.inputOffset -= 1 * multiply;
         }
       }
+    }
 
-      if (FlxG.keys.justPressed.TAB)
-      {
-        offsetsPerBeat = [];
-        diffGrp.forEach(memb -> memb.text = "");
-        localConductor.inputOffset = Std.int(avgOffsetInput);
-      }
+    if (FlxG.keys.justPressed.TAB)
+    {
+      offsetsPerBeat = [];
+      diffGrp.forEach(memb -> memb.text = "");
+      localConductor.inputOffset = Std.int(avgOffsetInput);
+    }
 
-      if (FlxG.keys.justPressed.R)
-      {
-        offsetsPerBeat = [];
-        diffGrp.forEach(memb -> memb.text = "");
-      }
+    if (FlxG.keys.justPressed.R)
+    {
+      offsetsPerBeat = [];
+      diffGrp.forEach(memb -> memb.text = "");
     }
 
     if (controls.BACK)
