@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.1] - 2024-06-12
 ### Added
 - Pressing ESCAPE on the title screen on desktop now exits the game, allowing you to exit the game while in fullscreen on desktop
+- Freeplay menu controls are now rebindable
 ### Changed
+- Highscores and ranks are now saved separately, which fixes the issue where people would overwrite their saves with higher scores,
+which would remove their rank if they had a lower one.
 - Tweaked the chart for Lit Up some more to fix some offset notes.
 - A-Bot speaker now reacts to the user's volume preference on desktop (thanks to [M7theguy for the issue report/suggestion](https://github.com/FunkinCrew/Funkin/issues/2744)!)
 - On Freeplay, heart icons are shifted to the right when you favorite a song that has no rank on it.
 - Only play `scrollMenu` sound effect when there's a real change on the freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
+- Gave antialiasing to the edge of the dad graphic on Freeplay
+- Rearranged some controls in the controls menu
 ### Fixed
+- Fixed an issue in the controls menu where some control binds would overlap their names
 - Fixed crash when attempting to exit the gameover screen when also attempting to retry the song ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
 - Fix botplay sustain release bug ([thanks Hundrec!](Fix botplay sustain release bug #2683))
 - Fix for the camera not pausing during a gameplay pause ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2684))
@@ -23,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
 - Improved offsets for Pico and Tankman opponents so they don't slide around as much.
 - Fixed an issue where M.I.L.F. displayed the wrong difficulty rating in the Freeplay menu.
+- Fixed the black "temp" graphic on freeplay from being incorrectly sized / masked, now it's identical to the dad freeplay graphic
 
 
 
