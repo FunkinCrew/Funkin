@@ -1892,7 +1892,7 @@ class FreeplayState extends MusicBeatSubState
     {
       var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(daSongCapsule.songData.songId);
       var instSuffix:String = previewSong?.getDifficulty(currentDifficulty,
-        previewSong?.variations ?? Constants.DEFAULT_VARIATION_LIST)?.characters?.instrumental ?? '';
+        previewSong?.getVariationsByCharId(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST)?.characters?.instrumental ?? '';
       instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
       FunkinSound.playMusic(daSongCapsule.songData.songId,
         {
