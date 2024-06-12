@@ -370,8 +370,7 @@ class MainMenuState extends MusicBeatState
 
   public function goBack()
   {
-    if (!menuItems.enabled) return;
-    if (menuItems.busy) return;
+    if (!menuItems.enabled || menuItems.busy) return;
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
     FlxG.switchState(() -> new TitleState());
   }
