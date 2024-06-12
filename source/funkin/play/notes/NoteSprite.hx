@@ -77,6 +77,7 @@ class NoteSprite extends FunkinSprite
     animation.play(DIRECTION_COLORS[value] + 'Scroll');
 
     // Disables the update() function if there's only 1 frame in the animation for performance.
+    // In my testing animations still don't play even with this, I am so unbelievably confused.
     this.active = animation.curAnim.numFrames > 1;
 
     this.direction = value;

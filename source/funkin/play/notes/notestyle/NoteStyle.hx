@@ -77,6 +77,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data.fallback;
   }
 
+  //       //
+  // NOTES //
+  //       //
+
   public function buildNoteSprite(target:NoteSprite):Void
   {
     // Apply the note sprite frames.
@@ -181,6 +185,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return data.scale;
   }
 
+  //            //
+  // HOLD NOTES //
+  //            //
+
   public function getHoldNoteAssetPath(raw:Bool = false):String
   {
     if (raw)
@@ -216,6 +224,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     if (data == null) return fallback.getHoldNoteScale();
     return data.scale;
   }
+
+  //           //
+  // STRUMLINE //
+  //           //
 
   public function applyStrumlineFrames(target:StrumlineNote):Void
   {
@@ -307,6 +319,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     return _data.assets.noteStrumline.scale;
   }
+
+  //               //
+  // NOTE SPLASHES //
+  //               //
 
   public function buildNoteSplashSprite(target:NoteSplash):Void
   {
@@ -429,6 +445,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     if (data == null) return fallback.isNoteSplashEnabled();
     return data.enabled;
   }
+
+  //                  //
+  // HOLD NOTE COVERS //
+  //                  //
 
   public function buildNoteHoldCoverSprite(target:NoteHoldCover):Void
   {
