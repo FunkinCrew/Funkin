@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Highscores and ranks are now saved separately, which fixes the issue where people would overwrite their saves with higher scores,
 which would remove their rank if they had a lower one.
-- Tweaked the chart for Lit Up some more to fix some offset notes.
 - A-Bot speaker now reacts to the user's volume preference on desktop (thanks to [M7theguy for the issue report/suggestion](https://github.com/FunkinCrew/Funkin/issues/2744)!)
 - On Freeplay, heart icons are shifted to the right when you favorite a song that has no rank on it.
 - Only play `scrollMenu` sound effect when there's a real change on the freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
