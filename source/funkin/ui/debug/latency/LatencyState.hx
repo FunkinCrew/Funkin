@@ -317,8 +317,6 @@ class LatencyState extends MusicBeatSubState
 
       if (FlxG.keys.justPressed.R)
       {
-        // reset the average, so you don't need to wait a full loop to start getting averages
-        // also reset each text member
         offsetsPerBeat = [];
         diffGrp.forEach(memb -> memb.text = "");
       }
