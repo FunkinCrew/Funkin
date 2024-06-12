@@ -387,6 +387,7 @@ class StoryMenuState extends MusicBeatState
   function changeLevel(change:Int = 0):Void
   {
     var currentIndex:Int = levelList.indexOf(currentLevelId);
+    var prevIndex:Int = currentIndex;
 
     currentIndex += change;
 
@@ -417,7 +418,7 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     updateText();
     updateBackground(previousLevelId);

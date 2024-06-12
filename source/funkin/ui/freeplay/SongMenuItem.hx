@@ -219,7 +219,7 @@ class SongMenuItem extends FlxSpriteGroup
     favIconBlurred.visible = false;
     add(favIconBlurred);
 
-    favIcon = new FlxSprite(380, 40);
+    favIcon = new FlxSprite(favIconBlurred.x, favIconBlurred.y);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', 'favorite heart', 24, false);
     favIcon.animation.play('fav');
@@ -294,21 +294,34 @@ class SongMenuItem extends FlxSpriteGroup
     }
   }
 
-  // 255, 27 normal
-  // 220, 27 favourited
+  /**
+   * Checks whether the song is favorited, and/or has a rank, and adjusts the clipping
+   * for the scenario when the text could be too long
+   */
   public function checkClip():Void
   {
     var clipSize:Int = 290;
     var clipType:Int = 0;
 
-    if (ranking.visible == true) clipType += 1;
-    if (favIcon.visible == true) clipType = 2;
+    if (ranking.visible)
+    {
+      favIconBlurred.x = this.x + 370;
+      favIcon.x = favIconBlurred.x;
+      clipType += 1;
+    }
+    else
+    {
+      favIconBlurred.x = favIcon.x = this.x + 405;
+    }
+
+    if (favIcon.visible) clipType += 1;
+
     switch (clipType)
     {
       case 2:
-        clipSize = 220;
+        clipSize = 210;
       case 1:
-        clipSize = 255;
+        clipSize = 245;
     }
     songText.clipWidth = clipSize;
   }

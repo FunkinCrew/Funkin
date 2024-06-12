@@ -58,7 +58,11 @@ class Controls extends FlxActionSet
   var _back = new FunkinAction(Action.BACK);
   var _pause = new FunkinAction(Action.PAUSE);
   var _reset = new FunkinAction(Action.RESET);
-  var _screenshot = new FunkinAction(Action.SCREENSHOT);
+  var _window_screenshot = new FunkinAction(Action.WINDOW_SCREENSHOT);
+  var _window_fullscreen = new FunkinAction(Action.WINDOW_FULLSCREEN);
+  var _freeplay_favorite = new FunkinAction(Action.FREEPLAY_FAVORITE);
+  var _freeplay_left = new FunkinAction(Action.FREEPLAY_LEFT);
+  var _freeplay_right = new FunkinAction(Action.FREEPLAY_RIGHT);
   var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
   var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
   var _debug_chart = new FunkinAction(Action.DEBUG_CHART);
@@ -66,7 +70,6 @@ class Controls extends FlxActionSet
   var _volume_up = new FunkinAction(Action.VOLUME_UP);
   var _volume_down = new FunkinAction(Action.VOLUME_DOWN);
   var _volume_mute = new FunkinAction(Action.VOLUME_MUTE);
-  var _fullscreen = new FunkinAction(Action.FULLSCREEN);
 
   var byName:Map<String, FunkinAction> = new Map<String, FunkinAction>();
 
@@ -233,10 +236,30 @@ class Controls extends FlxActionSet
   inline function get_RESET()
     return _reset.check();
 
-  public var SCREENSHOT(get, never):Bool;
+  public var WINDOW_FULLSCREEN(get, never):Bool;
 
-  inline function get_SCREENSHOT()
-    return _screenshot.check();
+  inline function get_WINDOW_FULLSCREEN()
+    return _window_fullscreen.check();
+
+  public var WINDOW_SCREENSHOT(get, never):Bool;
+
+  inline function get_WINDOW_SCREENSHOT()
+    return _window_screenshot.check();
+
+  public var FREEPLAY_FAVORITE(get, never):Bool;
+
+  inline function get_FREEPLAY_FAVORITE()
+    return _freeplay_favorite.check();
+
+  public var FREEPLAY_LEFT(get, never):Bool;
+
+  inline function get_FREEPLAY_LEFT()
+    return _freeplay_left.check();
+
+  public var FREEPLAY_RIGHT(get, never):Bool;
+
+  inline function get_FREEPLAY_RIGHT()
+    return _freeplay_right.check();
 
   public var CUTSCENE_ADVANCE(get, never):Bool;
 
@@ -273,11 +296,6 @@ class Controls extends FlxActionSet
   inline function get_VOLUME_MUTE()
     return _volume_mute.check();
 
-  public var FULLSCREEN(get, never):Bool;
-
-  inline function get_FULLSCREEN()
-    return _fullscreen.check();
-
   public function new(name, scheme:KeyboardScheme = null)
   {
     super(name);
@@ -294,7 +312,11 @@ class Controls extends FlxActionSet
     add(_back);
     add(_pause);
     add(_reset);
-    add(_screenshot);
+    add(_window_screenshot);
+    add(_window_fullscreen);
+    add(_freeplay_favorite);
+    add(_freeplay_left);
+    add(_freeplay_right);
     add(_cutscene_advance);
     add(_debug_menu);
     add(_debug_chart);
@@ -302,7 +324,6 @@ class Controls extends FlxActionSet
     add(_volume_up);
     add(_volume_down);
     add(_volume_mute);
-    add(_fullscreen);
 
     for (action in digitalActions) {
       if (Std.isOfType(action, FunkinAction)) {
@@ -398,7 +419,11 @@ class Controls extends FlxActionSet
       case BACK: _back;
       case PAUSE: _pause;
       case RESET: _reset;
-      case SCREENSHOT: _screenshot;
+      case WINDOW_SCREENSHOT: _window_screenshot;
+      case WINDOW_FULLSCREEN: _window_fullscreen;
+      case FREEPLAY_FAVORITE: _freeplay_favorite;
+      case FREEPLAY_LEFT: _freeplay_left;
+      case FREEPLAY_RIGHT: _freeplay_right;
       case CUTSCENE_ADVANCE: _cutscene_advance;
       case DEBUG_MENU: _debug_menu;
       case DEBUG_CHART: _debug_chart;
@@ -406,7 +431,6 @@ class Controls extends FlxActionSet
       case VOLUME_UP: _volume_up;
       case VOLUME_DOWN: _volume_down;
       case VOLUME_MUTE: _volume_mute;
-      case FULLSCREEN: _fullscreen;
     }
   }
 
@@ -466,8 +490,16 @@ class Controls extends FlxActionSet
         func(_pause, JUST_PRESSED);
       case RESET:
         func(_reset, JUST_PRESSED);
-      case SCREENSHOT:
-        func(_screenshot, JUST_PRESSED);
+      case WINDOW_SCREENSHOT:
+        func(_window_screenshot, JUST_PRESSED);
+      case WINDOW_FULLSCREEN:
+        func(_window_fullscreen, JUST_PRESSED);
+      case FREEPLAY_FAVORITE:
+        func(_freeplay_favorite, JUST_PRESSED);
+      case FREEPLAY_LEFT:
+        func(_freeplay_left, JUST_PRESSED);
+      case FREEPLAY_RIGHT:
+        func(_freeplay_right, JUST_PRESSED);
       case CUTSCENE_ADVANCE:
         func(_cutscene_advance, JUST_PRESSED);
       case DEBUG_MENU:
@@ -482,8 +514,6 @@ class Controls extends FlxActionSet
         func(_volume_down, JUST_PRESSED);
       case VOLUME_MUTE:
         func(_volume_mute, JUST_PRESSED);
-      case FULLSCREEN:
-        func(_fullscreen, JUST_PRESSED);
     }
   }
 
@@ -678,7 +708,11 @@ class Controls extends FlxActionSet
     bindKeys(Control.BACK, getDefaultKeybinds(scheme, Control.BACK));
     bindKeys(Control.PAUSE, getDefaultKeybinds(scheme, Control.PAUSE));
     bindKeys(Control.RESET, getDefaultKeybinds(scheme, Control.RESET));
-    bindKeys(Control.SCREENSHOT, getDefaultKeybinds(scheme, Control.SCREENSHOT));
+    bindKeys(Control.WINDOW_SCREENSHOT, getDefaultKeybinds(scheme, Control.WINDOW_SCREENSHOT));
+    bindKeys(Control.WINDOW_FULLSCREEN, getDefaultKeybinds(scheme, Control.WINDOW_FULLSCREEN));
+    bindKeys(Control.FREEPLAY_FAVORITE, getDefaultKeybinds(scheme, Control.FREEPLAY_FAVORITE));
+    bindKeys(Control.FREEPLAY_LEFT, getDefaultKeybinds(scheme, Control.FREEPLAY_LEFT));
+    bindKeys(Control.FREEPLAY_RIGHT, getDefaultKeybinds(scheme, Control.FREEPLAY_RIGHT));
     bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
     bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
     bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(scheme, Control.DEBUG_CHART));
@@ -686,7 +720,6 @@ class Controls extends FlxActionSet
     bindKeys(Control.VOLUME_UP, getDefaultKeybinds(scheme, Control.VOLUME_UP));
     bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(scheme, Control.VOLUME_DOWN));
     bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(scheme, Control.VOLUME_MUTE));
-    bindKeys(Control.FULLSCREEN, getDefaultKeybinds(scheme, Control.FULLSCREEN));
 
     bindMobileLol();
   }
@@ -707,7 +740,11 @@ class Controls extends FlxActionSet
           case Control.BACK: return [X, BACKSPACE, ESCAPE];
           case Control.PAUSE: return [P, ENTER, ESCAPE];
           case Control.RESET: return [R];
-          case Control.SCREENSHOT: return [F3]; // TODO: Change this back to PrintScreen
+          case Control.WINDOW_FULLSCREEN: return [F11]; // We use F for other things LOL.
+          case Control.WINDOW_SCREENSHOT: return [F3];
+          case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
+          case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
+          case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
           case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
@@ -715,8 +752,6 @@ class Controls extends FlxActionSet
           case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
           case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
           case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
-          case Control.FULLSCREEN: return [FlxKey.F11]; // We use F for other things LOL.
-
         }
       case Duo(true):
         switch (control) {
@@ -732,7 +767,11 @@ class Controls extends FlxActionSet
           case Control.BACK: return [H, X];
           case Control.PAUSE: return [ONE];
           case Control.RESET: return [R];
-          case Control.SCREENSHOT: return [PRINTSCREEN];
+          case Control.WINDOW_SCREENSHOT: return [F3];
+          case Control.WINDOW_FULLSCREEN: return [F11];
+          case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
+          case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
+          case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
           case Control.CUTSCENE_ADVANCE: return [G, Z];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           case Control.DEBUG_CHART: return [];
@@ -740,7 +779,6 @@ class Controls extends FlxActionSet
           case Control.VOLUME_UP: return [PLUS];
           case Control.VOLUME_DOWN: return [MINUS];
           case Control.VOLUME_MUTE: return [ZERO];
-          case Control.FULLSCREEN: return [FlxKey.F];
 
         }
       case Duo(false):
@@ -757,15 +795,18 @@ class Controls extends FlxActionSet
           case Control.BACK: return [ESCAPE];
           case Control.PAUSE: return [ONE];
           case Control.RESET: return [R];
-          case Control.SCREENSHOT: return [PRINTSCREEN];
+          case Control.WINDOW_SCREENSHOT: return [];
+          case Control.WINDOW_FULLSCREEN: return [];
+          case Control.FREEPLAY_FAVORITE: return [];
+          case Control.FREEPLAY_LEFT: return [];
+          case Control.FREEPLAY_RIGHT: return [];
           case Control.CUTSCENE_ADVANCE: return [ENTER];
-          case Control.DEBUG_MENU: return [GRAVEACCENT];
+          case Control.DEBUG_MENU: return [];
           case Control.DEBUG_CHART: return [];
           case Control.DEBUG_STAGE: return [];
           case Control.VOLUME_UP: return [NUMPADPLUS];
           case Control.VOLUME_DOWN: return [NUMPADMINUS];
           case Control.VOLUME_MUTE: return [NUMPADZERO];
-          case Control.FULLSCREEN: return [];
 
         }
       default:
@@ -856,34 +897,37 @@ class Controls extends FlxActionSet
   public function addDefaultGamepad(id):Void
   {
     addGamepadLiteral(id, [
-
       Control.ACCEPT => getDefaultGamepadBinds(Control.ACCEPT),
       Control.BACK => getDefaultGamepadBinds(Control.BACK),
       Control.UI_UP => getDefaultGamepadBinds(Control.UI_UP),
       Control.UI_DOWN => getDefaultGamepadBinds(Control.UI_DOWN),
       Control.UI_LEFT => getDefaultGamepadBinds(Control.UI_LEFT),
       Control.UI_RIGHT => getDefaultGamepadBinds(Control.UI_RIGHT),
-      // don't swap A/B or X/Y for switch on these. A is always the bottom face button
       Control.NOTE_UP => getDefaultGamepadBinds(Control.NOTE_UP),
       Control.NOTE_DOWN => getDefaultGamepadBinds(Control.NOTE_DOWN),
       Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT),
       Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT),
       Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE),
       Control.RESET => getDefaultGamepadBinds(Control.RESET),
-      // Control.SCREENSHOT => [],
-      // Control.VOLUME_UP => [RIGHT_SHOULDER],
-      // Control.VOLUME_DOWN => [LEFT_SHOULDER],
-      // Control.VOLUME_MUTE => [RIGHT_TRIGGER],
+      Control.WINDOW_FULLSCREEN => getDefaultGamepadBinds(Control.WINDOW_FULLSCREEN),
+      Control.WINDOW_SCREENSHOT => getDefaultGamepadBinds(Control.WINDOW_SCREENSHOT),
       Control.CUTSCENE_ADVANCE => getDefaultGamepadBinds(Control.CUTSCENE_ADVANCE),
-      // Control.DEBUG_MENU
-      // Control.DEBUG_CHART
+      Control.FREEPLAY_FAVORITE => getDefaultGamepadBinds(Control.FREEPLAY_FAVORITE),
+      Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT),
+      Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT),
+      Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
+      Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
+      Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
+      Control.DEBUG_MENU => getDefaultGamepadBinds(Control.DEBUG_MENU),
+      Control.DEBUG_CHART => getDefaultGamepadBinds(Control.DEBUG_CHART),
+      Control.DEBUG_STAGE => getDefaultGamepadBinds(Control.DEBUG_STAGE),
     ]);
   }
 
   function getDefaultGamepadBinds(control:Control):Array<FlxGamepadInputID> {
     switch(control) {
       case Control.ACCEPT: return [#if switch B #else A #end];
-      case Control.BACK: return [#if switch A #else B #end, FlxGamepadInputID.BACK];
+      case Control.BACK: return [#if switch A #else B #end];
       case Control.UI_UP: return [DPAD_UP, LEFT_STICK_DIGITAL_UP];
       case Control.UI_DOWN: return [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN];
       case Control.UI_LEFT: return [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT];
@@ -893,15 +937,19 @@ class Controls extends FlxActionSet
       case Control.NOTE_LEFT: return [DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT];
       case Control.NOTE_RIGHT: return [DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT];
       case Control.PAUSE: return [START];
-      case Control.RESET: return [RIGHT_SHOULDER];
-      case Control.SCREENSHOT: return [];
-      case Control.VOLUME_UP: return [];
-      case Control.VOLUME_DOWN: return [];
-      case Control.VOLUME_MUTE: return [];
+      case Control.RESET: return [FlxGamepadInputID.BACK]; // Back (i.e. Select)
+      case Control.WINDOW_FULLSCREEN: [];
+      case Control.WINDOW_SCREENSHOT: [];
       case Control.CUTSCENE_ADVANCE: return [A];
-      case Control.DEBUG_MENU: return [];
-      case Control.DEBUG_CHART: return [];
-      case Control.FULLSCREEN: return [];
+      case Control.FREEPLAY_FAVORITE: [FlxGamepadInputID.BACK]; // Back (i.e. Select)
+      case Control.FREEPLAY_LEFT: [LEFT_SHOULDER];
+      case Control.FREEPLAY_RIGHT: [RIGHT_SHOULDER];
+      case Control.VOLUME_UP: [];
+      case Control.VOLUME_DOWN: [];
+      case Control.VOLUME_MUTE: [];
+      case Control.DEBUG_MENU: [];
+      case Control.DEBUG_CHART: [];
+      case Control.DEBUG_STAGE: [];
       default:
         // Fallthrough.
     }
@@ -1392,7 +1440,7 @@ class FlxActionInputDigitalAndroid extends FlxActionInputDigital
 
   override public function check(Action:FlxAction):Bool
   {
-    returnswitch(trigger)
+    return switch(trigger)
     {
       #if android
       case PRESSED: FlxG.android.checkStatus(inputID, PRESSED) || FlxG.android.checkStatus(inputID, PRESSED);
@@ -1425,14 +1473,18 @@ enum Control
   UI_RIGHT;
   UI_DOWN;
   RESET;
-  SCREENSHOT;
   ACCEPT;
   BACK;
   PAUSE;
-  FULLSCREEN;
   // CUTSCENE
   CUTSCENE_ADVANCE;
-  // SCREENSHOT
+  // FREEPLAY
+  FREEPLAY_FAVORITE;
+  FREEPLAY_LEFT;
+  FREEPLAY_RIGHT;
+  // WINDOW
+  WINDOW_SCREENSHOT;
+  WINDOW_FULLSCREEN;
   // VOLUME
   VOLUME_UP;
   VOLUME_DOWN;
@@ -1475,11 +1527,15 @@ enum abstract Action(String) to String from String
   var BACK = "back";
   var PAUSE = "pause";
   var RESET = "reset";
-  var FULLSCREEN = "fullscreen";
-  // SCREENSHOT
-  var SCREENSHOT = "screenshot";
+  // WINDOW
+  var WINDOW_FULLSCREEN = "window_fullscreen";
+  var WINDOW_SCREENSHOT = "window_screenshot";
   // CUTSCENE
   var CUTSCENE_ADVANCE = "cutscene_advance";
+  // FREEPLAY
+  var FREEPLAY_FAVORITE = "freeplay_favorite";
+  var FREEPLAY_LEFT = "freeplay_left";
+  var FREEPLAY_RIGHT = "freeplay_right";
   // VOLUME
   var VOLUME_UP = "volume_up";
   var VOLUME_DOWN = "volume_down";
