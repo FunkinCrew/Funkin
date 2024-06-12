@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.1] - 2024-06-12
 ### Added
 - Pressing ESCAPE on the title screen on desktop now exits the game, allowing you to exit the game while in fullscreen on desktop
-- Freeplay menu controls are now rebindable
+- Freeplay menu controls (favoriting and switching categories) are now rebindable from the Options menu, and now have default binds on controllers.
 ### Changed
 - Highscores and ranks are now saved separately, which fixes the issue where people would overwrite their saves with higher scores,
 which would remove their rank if they had a lower one.
@@ -17,6 +17,10 @@ which would remove their rank if they had a lower one.
 - Only play `scrollMenu` sound effect when there's a real change on the freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
 - Gave antialiasing to the edge of the dad graphic on Freeplay
 - Rearranged some controls in the controls menu
+- Made several chart revisions
+  - Re-enabled custom camera events in Roses (Erect/Nightmare)
+  - Tweaked the chart for Lit Up (Hard)
+  - Corrected the difficulty ratings for M.I.L.F. (Easy/Normal/Hard)
 ### Fixed
 - Fixed an issue in the controls menu where some control binds would overlap their names
 - Fixed crash when attempting to exit the gameover screen when also attempting to retry the song ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
@@ -28,10 +32,7 @@ which would remove their rank if they had a lower one.
 - Fixed 2Hot not appearing under the "#" category in Freeplay menu
 - Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
 - Improved offsets for Pico and Tankman opponents so they don't slide around as much.
-- Fixed an issue where M.I.L.F. displayed the wrong difficulty rating in the Freeplay menu.
 - Fixed the black "temp" graphic on freeplay from being incorrectly sized / masked, now it's identical to the dad freeplay graphic
-
-
 
 ## [0.4.0] - 2024-06-06
 ### Added
