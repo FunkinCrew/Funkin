@@ -333,8 +333,8 @@ class TitleState extends MusicBeatState
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
 
     // TODO: Maybe use the dxdy method for swiping instead.
-    if (controls.UI_LEFT || SwipeUtil.swipeLeft) swagShader.update(-elapsed * 0.1);
-    if (controls.UI_RIGHT || SwipeUtil.swipeRight) swagShader.update(elapsed * 0.1);
+    if (controls.UI_LEFT #if mobile || SwipeUtil.swipeLeft #end) swagShader.update(-elapsed * 0.1);
+    if (controls.UI_RIGHT #if mobile || SwipeUtil.swipeRight #end) swagShader.update(elapsed * 0.1);
     if (!cheatActive && skippedIntro) cheatCodeShit();
     super.update(elapsed);
   }
