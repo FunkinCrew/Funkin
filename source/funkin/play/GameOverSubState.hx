@@ -237,7 +237,7 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT && blueballed)
+    if (controls.ACCEPT && blueballed && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();
