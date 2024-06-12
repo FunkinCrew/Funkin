@@ -904,7 +904,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_notePreviewDirty(value:Bool):Bool
   {
-    trace('Note preview dirtied!');
+    // trace('Note preview dirtied!');
     return notePreviewDirty = value;
   }
 

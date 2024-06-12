@@ -1,6 +1,7 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
+import funkin.util.FileUtil;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
@@ -58,7 +59,7 @@ class Save
       this.data = data;
 
     // Make sure the verison number is up to date before we flush.
-    this.data.version = Save.SAVE_DATA_VERSION;
+    updateVersionToLatest();
   }
 
   public static function getDefault():RawSaveData
@@ -503,7 +504,7 @@ class Save
   }
 
   /**
-   * Apply the score the user achieved for a given song on a given difficulty.
+   * Directly set the score the user achieved for a given song on a given difficulty.
    */
   public function setSongScore(songId:String, difficultyId:String, score:SaveScoreData):Void
   {
@@ -514,6 +515,44 @@ class Save
       data.scores.songs.set(songId, song);
     }
     song.set(difficultyId, score);
+
+    flush();
+  }
+
+  /**
+   * Only replace the ranking data for the song, because the old score is still better.
+   */
+  public function applySongRank(songId:String, difficultyId:String, newScoreData:SaveScoreData):Void
+  {
+    var newRank = Scoring.calculateRank(newScoreData);
+    if (newScoreData == null || newRank == null) return;
+
+    var song = data.scores.songs.get(songId);
+    if (song == null)
+    {
+      song = [];
+      data.scores.songs.set(songId, song);
+    }
+
+    var previousScoreData = song.get(difficultyId);
+
+    var previousRank = Scoring.calculateRank(previousScoreData);
+
+    if (previousScoreData == null || previousRank == null)
+    {
+      // Directly set the highscore.
+      setSongScore(songId, difficultyId, newScoreData);
+      return;
+    }
+
+    // Set the high score and the high rank separately.
+    var newScore:SaveScoreData =
+      {
+        score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
+        tallies: (previousRank > newRank) ? previousScoreData.tallies : newScoreData.tallies
+      };
+
+    song.set(difficultyId, newScore);
 
     flush();
   }
@@ -541,6 +580,39 @@ class Save
     }
 
     return score.score > currentScore.score;
+  }
+
+  /**
+   * Is the provided score data better than the current rank for the given song?
+   * @param songId The song ID to check.
+   * @param difficultyId The difficulty to check.
+   * @param score The score to check the rank for.
+   * @return Whether the score's rank is better than the current rank.
+   */
+  public function isSongHighRank(songId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
+  {
+    var newScoreRank = Scoring.calculateRank(score);
+    if (newScoreRank == null)
+    {
+      // The provided score is invalid.
+      return false;
+    }
+
+    var song = data.scores.songs.get(songId);
+    if (song == null)
+    {
+      song = [];
+      data.scores.songs.set(songId, song);
+    }
+    var currentScore = song.get(difficultyId);
+    var currentScoreRank = Scoring.calculateRank(currentScore);
+    if (currentScoreRank == null)
+    {
+      // There is no primary highscore for this song.
+      return true;
+    }
+
+    return newScoreRank > currentScoreRank;
   }
 
   /**
@@ -832,6 +904,29 @@ class Save
       return cast legacySave.data;
     }
   }
+
+  /**
+   * Serialize this Save into a JSON string.
+   * @param pretty Whether the JSON should be big ol string (false),
+   * or formatted with tabs (true)
+   * @return The JSON string.
+   */
+  public function serialize(pretty:Bool = true):String
+  {
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
+    return writer.write(data, pretty ? '  ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.data.version = Save.SAVE_DATA_VERSION;
+  }
+
+  public function debug_dumpSave():Void
+  {
+    FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+  }
 }
 
 /**
@@ -904,6 +999,9 @@ typedef SaveHighScoresData =
 typedef SaveDataMods =
 {
   var enabledMods:Array<String>;
+
+  // TODO: Make this not trip up the serializer when debugging.
+  @:jignored
   var modOptions:Map<String, Dynamic>;
 }
 

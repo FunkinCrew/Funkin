@@ -201,7 +201,8 @@ class ChartEditorThemeHandler
     // Selection borders horizontally in the middle.
     for (i in 1...(Conductor.instance.stepsPerMeasure))
     {
-      if ((i % Conductor.instance.beatsPerMeasure) == 0)
+      // There may be a different number of beats per measure, but there's always 4 steps per beat.
+      if ((i % Constants.STEPS_PER_BEAT) == 0)
       {
         state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (GRID_BEAT_DIVIDER_WIDTH / 2), state.gridBitmap.width,
           GRID_BEAT_DIVIDER_WIDTH),
