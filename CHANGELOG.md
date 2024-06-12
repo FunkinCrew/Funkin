@@ -4,11 +4,21 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.1]
+## [0.4.1] - 2024-06-12
+### Added
+- Pressing ESCAPE on the title screen on desktop now exits the game, allowing you to exit the game while in fullscreen on desktop
 ### Changed
 - Tweaked the chart for Lit Up some more to fix some offset notes.
+- A-Bot speaker now reacts to the user's volume preference on desktop (thanks to [M7theguy for the issue report/suggestion](https://github.com/FunkinCrew/Funkin/issues/2744)!)
+- On Freeplay, heart icons are shifted to the right when you favorite a song that has no rank on it.
+- Only play `scrollMenu` sound effect when there's a real change on the freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
 ### Fixed
-- Bug where Dadbattle shows up as Dadbattle Erect when returning to freeplay
+- Fixed crash when attempting to exit the gameover screen when also attempting to retry the song ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
+- Fix botplay sustain release bug ([thanks Hundrec!](Fix botplay sustain release bug #2683))
+- Fix for the camera not pausing during a gameplay pause ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2684))
+- Fixed issue where Pico's gameplay sprite would unintentionally appear on the gameover screen when dying on 2Hot from an explosion
+- Freeplay previews properly fade volume during the BF idle animation
+- Fixed bug where Dadbattle incorrectly appeared as Dadbattle Erect when returning to freeplay on Hard
 - Fixed 2Hot not appearing under the "#" category in Freeplay menu
 - Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
 - Improved offsets for Pico and Tankman opponents so they don't slide around as much.
