@@ -1,5 +1,8 @@
 package funkin.util;
 
+import flixel.math.FlxMath;
+import flixel.group.FlxGroup.FlxTypedGroup;
+
 /**
  * Utilities for performing mathematical operations.
  */
@@ -35,6 +38,18 @@ class MathUtil
   public static function cameraLerp(lerp:Float):Float
   {
     return lerp * (FlxG.elapsed / (1 / 60));
+  }
+
+  /**
+   * Simple way to wrap the curSelection index variable, used in menus
+   * @param curSelection Value of the current selected index.
+   * @param increment Value of the number you want the index to be incremented by.
+   * @param target The array or group used in the wrapping procedure.
+   * @return The wrapped value.
+   */
+  public static function curSelectionWrap(curSelection, increment, target):Int
+  {
+    return FlxMath.wrap(curSelection + increment, 0, target.length - 1);
   }
 
   /**
