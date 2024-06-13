@@ -356,7 +356,10 @@ class Scoring
 
     // Perfect (Platinum) is a Sick Full Clear
     var isPerfectGold = scoreData.tallies.sick == scoreData.tallies.totalNotes;
-    if (isPerfectGold) return ScoringRank.PERFECT_GOLD;
+    if (isPerfectGold)
+    {
+      return ScoringRank.PERFECT_GOLD;
+    }
 
     // Else, use the standard grades
 
@@ -397,61 +400,78 @@ enum abstract ScoringRank(String)
   var GOOD;
   var SHIT;
 
-  @:op(A > B) static function compare(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  /**
+   * Converts ScoringRank to an integer value for comparison.
+   * Better ranks should be tied to a higher value.
+   */
+  static function getValue(rank:Null<ScoringRank>):Int
+  {
+    if (rank == null) return -1;
+    switch (rank)
+    {
+      case PERFECT_GOLD:
+        return 5;
+      case PERFECT:
+        return 4;
+      case EXCELLENT:
+        return 3;
+      case GREAT:
+        return 2;
+      case GOOD:
+        return 1;
+      case SHIT:
+        return 0;
+      default:
+        return -1;
+    }
+  }
+
+  // Yes, we really need a different function for each comparison operator.
+  @:op(A > B) static function compareGT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
     if (a == null || b == null) return false;
 
-    var temp1:Int = 0;
-    var temp2:Int = 0;
+    var temp1:Int = getValue(a);
+    var temp2:Int = getValue(b);
 
-    // temp 1
-    switch (a)
-    {
-      case PERFECT_GOLD:
-        temp1 = 5;
-      case PERFECT:
-        temp1 = 4;
-      case EXCELLENT:
-        temp1 = 3;
-      case GREAT:
-        temp1 = 2;
-      case GOOD:
-        temp1 = 1;
-      case SHIT:
-        temp1 = 0;
-      default:
-        temp1 = -1;
-    }
-
-    // temp 2
-    switch (b)
-    {
-      case PERFECT_GOLD:
-        temp2 = 5;
-      case PERFECT:
-        temp2 = 4;
-      case EXCELLENT:
-        temp2 = 3;
-      case GREAT:
-        temp2 = 2;
-      case GOOD:
-        temp2 = 1;
-      case SHIT:
-        temp2 = 0;
-      default:
-        temp2 = -1;
-    }
-
-    if (temp1 > temp2)
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
+    return temp1 > temp2;
   }
+
+  @:op(A >= B) static function compareGTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  {
+    if (a != null && b == null) return true;
+    if (a == null || b == null) return false;
+
+    var temp1:Int = getValue(a);
+    var temp2:Int = getValue(b);
+
+    return temp1 >= temp2;
+  }
+
+  @:op(A < B) static function compareLT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  {
+    if (a != null && b == null) return true;
+    if (a == null || b == null) return false;
+
+    var temp1:Int = getValue(a);
+    var temp2:Int = getValue(b);
+
+    return temp1 < temp2;
+  }
+
+  @:op(A <= B) static function compareLTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  {
+    if (a != null && b == null) return true;
+    if (a == null || b == null) return false;
+
+    var temp1:Int = getValue(a);
+    var temp2:Int = getValue(b);
+
+    return temp1 <= temp2;
+  }
+
+  // @:op(A == B) isn't necessary!
 
   /**
    * Delay in seconds
@@ -462,15 +482,15 @@ enum abstract ScoringRank(String)
     {
       case PERFECT_GOLD | PERFECT:
         // return 2.5;
-        return 95/24;
+        return 95 / 24;
       case EXCELLENT:
         return 0;
       case GREAT:
-        return 5/24;
+        return 5 / 24;
       case GOOD:
-        return 3/24;
+        return 3 / 24;
       case SHIT:
-        return 2/24;
+        return 2 / 24;
       default:
         return 3.5;
     }
@@ -482,15 +502,15 @@ enum abstract ScoringRank(String)
     {
       case PERFECT_GOLD | PERFECT:
         // return 2.5;
-        return 95/24;
+        return 95 / 24;
       case EXCELLENT:
-        return 97/24;
+        return 97 / 24;
       case GREAT:
-        return 95/24;
+        return 95 / 24;
       case GOOD:
-        return 95/24;
+        return 95 / 24;
       case SHIT:
-        return 95/24;
+        return 95 / 24;
       default:
         return 3.5;
     }
@@ -502,15 +522,15 @@ enum abstract ScoringRank(String)
     {
       case PERFECT_GOLD | PERFECT:
         // return 2.5;
-        return 129/24;
+        return 129 / 24;
       case EXCELLENT:
-        return 122/24;
+        return 122 / 24;
       case GREAT:
-        return 109/24;
+        return 109 / 24;
       case GOOD:
-        return 107/24;
+        return 107 / 24;
       case SHIT:
-        return 186/24;
+        return 186 / 24;
       default:
         return 3.5;
     }
@@ -522,15 +542,15 @@ enum abstract ScoringRank(String)
     {
       case PERFECT_GOLD | PERFECT:
         // return 2.5;
-        return 140/24;
+        return 140 / 24;
       case EXCELLENT:
-        return 140/24;
+        return 140 / 24;
       case GREAT:
-        return 129/24;
+        return 129 / 24;
       case GOOD:
-        return 127/24;
+        return 127 / 24;
       case SHIT:
-        return 207/24;
+        return 207 / 24;
       default:
         return 3.5;
     }

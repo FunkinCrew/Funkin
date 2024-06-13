@@ -94,7 +94,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     if (newIndex != selectedIndex)
     {
-      FunkinSound.playOnce(Paths.sound('scrollMenu'));
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       selectItem(newIndex);
     }
 
@@ -142,7 +142,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
    */
   function navGrid(latSize:Int, latPrev:Bool, latNext:Bool, latAllowWrap:Bool, prev:Bool, next:Bool, allowWrap:Bool):Int
   {
-    // The grid lenth along the variable-length axis
+    // The grid length along the variable-length axis
     var size = Math.ceil(length / latSize);
     // The selected position along the variable-length axis
     var index = Math.floor(selectedIndex / latSize);
