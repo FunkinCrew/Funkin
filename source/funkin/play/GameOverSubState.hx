@@ -71,7 +71,7 @@ class GameOverSubState extends MusicBeatSubState
   var gameOverMusic:Null<FunkinSound> = null;
 
   /**
-   * Whether the player has confirmed and prepared to restart the level.
+   * Whether the player has confirmed and prepared to restart the level or to go back to the freeplay menu.
    * This means the animation and transition have already started.
    */
   var isEnding:Bool = false;
@@ -237,15 +237,16 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT && blueballed)
+    if (controls.ACCEPT && blueballed && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();
     }
 
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
-    if (controls.BACK && !mustNotExit)
+    if (controls.BACK && !mustNotExit && !isEnding)
     {
+      isEnding = true;
       blueballed = false;
       PlayState.instance.deathCounter = 0;
       // PlayState.seenCutscene = false; // old thing...
