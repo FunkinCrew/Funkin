@@ -105,10 +105,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var newIndex = 0;
 
     // Define unified input handlers
-    final inputUp:Bool = SwipeUtil.swipeUp || controls.UI_UP_P;
-    final inputDown:Bool = SwipeUtil.swipeDown || controls.UI_DOWN_P;
-    final inputLeft:Bool = SwipeUtil.swipeLeft || controls.UI_LEFT_P;
-    final inputRight:Bool = SwipeUtil.swipeRight || controls.UI_RIGHT_P;
+    final inputUp:Bool = #if mobile SwipeUtil.swipeUp || #end controls.UI_UP_P;
+    final inputDown:Bool = #if mobile SwipeUtil.swipeDown || #end controls.UI_DOWN_P;
+    final inputLeft:Bool = #if mobile SwipeUtil.swipeLeft || #end controls.UI_LEFT_P;
+    final inputRight:Bool = #if mobile SwipeUtil.swipeRight || #end controls.UI_RIGHT_P;
 
     newIndex = switch (navControls)
     {
@@ -133,7 +133,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     // TODO: Clean this? Does it need to be cleaned? isMainMenuState could be moved to new() instead perhaps.
 
     // conditions for touch input, might need refining? Don't forget after proposal.
-    final isMainMenuState:Vool = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
+    final isMainMenuState:Bool = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
     final isPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0)
       && TouchUtil.justReleased
       && !SwipeUtil.swipeAny;
