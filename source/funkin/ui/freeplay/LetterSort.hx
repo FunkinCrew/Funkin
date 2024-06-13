@@ -4,13 +4,13 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.input.Controls;
 #if mobile
+import funkin.mobile.util.SwipeUtil;
 import funkin.mobile.util.TouchUtil;
 #end
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
@@ -94,25 +94,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     if (inputEnabled)
     {
-      if (controls.FREEPLAY_LEFT) changeSelection(-1);
-      if (controls.FREEPLAY_RIGHT) changeSelection(1);
-
-      #if mobile
-      if (TouchUtil.overlaps(swipeBounds))
-      {
-        for (swipe in FlxG.swipes)
-        {
-          final swipeDistance:FlxPoint = FlxPoint.weak(swipe.endPosition.x - swipe.startPosition.x, swipe.endPosition.y - swipe.startPosition.y);
-
-          if (20 <= Math.sqrt(swipeDistance.x * swipeDistance.x + swipeDistance.y * swipeDistance.y)
-            && Math.abs(swipeDistance.x) > Math.abs(swipeDistance.y))
-          {
-            changeSelection(swipeDistance.x > 0 ? -1 : 1);
-            break;
-          }
-        }
-      }
-      #end
+      if (controls.FREEPLAY_LEFT #if mobile || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
+      if (controls.FREEPLAY_RIGHT #if mobile || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.swipeRight) #end) changeSelection(1);
     }
   }
 
