@@ -1322,10 +1322,6 @@ class FreeplayState extends MusicBeatSubState
     if (TouchUtil.pressed) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
     #end
 
-    var upP:Bool = controls.UI_UP_P && !FlxG.keys.pressed.CONTROL;
-    var downP:Bool = controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL;
-    var accepted:Bool = controls.ACCEPT && !FlxG.keys.pressed.CONTROL;
-
     var upP:Bool = (controls.UI_UP_P #if mobile || SwipeUtil.swipeUp #end && !FlxG.keys.pressed.CONTROL);
     var downP:Bool = (controls.UI_DOWN_P #if mobile || SwipeUtil.swipeDown #end && !FlxG.keys.pressed.CONTROL);
     var accepted:Bool = (controls.ACCEPT #if mobile || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end && !FlxG.keys.pressed.CONTROL);
