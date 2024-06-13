@@ -19,7 +19,6 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import flixel.input.IFlxInput;
 
 /**
  * A core class which handles receiving player input and interpreting it into game actions.
@@ -656,31 +655,6 @@ class Controls extends FlxActionSet
     }
   }
 
-  public function bindInput(control:Control, input:IFlxInput)
-  {
-    forEachBound(control, function(action, state) {
-      action.addInput(input, state);
-    });
-  }
-
-  public function unbindInput(control:Control, input:IFlxInput)
-  {
-    forEachBound(control, (action, state) -> {
-      for (i in 0...action.inputs.length)
-      {
-        if (action.inputs[i] is FlxActionInputDigitalIFlxInput)
-        {
-          var digitalAction:FlxActionInputDigitalIFlxInput = cast action.inputs[i];
-          @:privateAccess
-          if (digitalAction.input == input)
-          {
-            action.remove(digitalAction);
-          }
-        }
-      }
-    });
-  }
-
   /**
    * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
    * If binder is a literal you can inline this
@@ -928,32 +902,58 @@ class Controls extends FlxActionSet
     ]);
   }
 
-  function getDefaultGamepadBinds(control:Control):Array<FlxGamepadInputID> {
-    switch(control) {
-      case Control.ACCEPT: return [#if switch B #else A #end];
-      case Control.BACK: return [#if switch A #else B #end];
-      case Control.UI_UP: return [DPAD_UP, LEFT_STICK_DIGITAL_UP];
-      case Control.UI_DOWN: return [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN];
-      case Control.UI_LEFT: return [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT];
-      case Control.UI_RIGHT: return [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT];
-      case Control.NOTE_UP: return [DPAD_UP, Y, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP];
-      case Control.NOTE_DOWN: return [DPAD_DOWN, A, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN];
-      case Control.NOTE_LEFT: return [DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT];
-      case Control.NOTE_RIGHT: return [DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT];
-      case Control.PAUSE: return [START];
-      case Control.RESET: return [FlxGamepadInputID.BACK]; // Back (i.e. Select)
-      case Control.WINDOW_FULLSCREEN: [];
-      case Control.WINDOW_SCREENSHOT: [];
-      case Control.CUTSCENE_ADVANCE: return [A];
-      case Control.FREEPLAY_FAVORITE: [FlxGamepadInputID.BACK]; // Back (i.e. Select)
-      case Control.FREEPLAY_LEFT: [LEFT_SHOULDER];
-      case Control.FREEPLAY_RIGHT: [RIGHT_SHOULDER];
-      case Control.VOLUME_UP: [];
-      case Control.VOLUME_DOWN: [];
-      case Control.VOLUME_MUTE: [];
-      case Control.DEBUG_MENU: [];
-      case Control.DEBUG_CHART: [];
-      case Control.DEBUG_STAGE: [];
+  function getDefaultGamepadBinds(control:Control):Array<FlxGamepadInputID>
+  {
+    switch (control)
+    {
+      case Control.ACCEPT:
+        return [#if switch B #else A #end];
+      case Control.BACK:
+        return [#if switch A #else B #end];
+      case Control.UI_UP:
+        return [DPAD_UP, LEFT_STICK_DIGITAL_UP];
+      case Control.UI_DOWN:
+        return [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN];
+      case Control.UI_LEFT:
+        return [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT];
+      case Control.UI_RIGHT:
+        return [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT];
+      case Control.NOTE_UP:
+        return [DPAD_UP, Y, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP];
+      case Control.NOTE_DOWN:
+        return [DPAD_DOWN, A, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN];
+      case Control.NOTE_LEFT:
+        return [DPAD_LEFT, X, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT];
+      case Control.NOTE_RIGHT:
+        return [DPAD_RIGHT, B, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT];
+      case Control.PAUSE:
+        return [START];
+      case Control.RESET:
+        return [FlxGamepadInputID.BACK]; // Back (i.e. Select)
+      case Control.WINDOW_FULLSCREEN:
+        [];
+      case Control.WINDOW_SCREENSHOT:
+        [];
+      case Control.CUTSCENE_ADVANCE:
+        return [A];
+      case Control.FREEPLAY_FAVORITE:
+        [FlxGamepadInputID.BACK]; // Back (i.e. Select)
+      case Control.FREEPLAY_LEFT:
+        [LEFT_SHOULDER];
+      case Control.FREEPLAY_RIGHT:
+        [RIGHT_SHOULDER];
+      case Control.VOLUME_UP:
+        [];
+      case Control.VOLUME_DOWN:
+        [];
+      case Control.VOLUME_MUTE:
+        [];
+      case Control.DEBUG_MENU:
+        [];
+      case Control.DEBUG_CHART:
+        [];
+      case Control.DEBUG_STAGE:
+        [];
       default:
         // Fallthrough.
     }
@@ -1033,12 +1033,12 @@ class Controls extends FlxActionSet
    * An EMPTY array means the control is uninitialized and needs to be reset to default.
    * An array with a single FlxKey.NONE means the control was intentionally unbound by the user.
    */
-  public function fromSaveData(data:Dynamic, device:Device)
+  public function fromSaveData(data:Dynamic, device:Device):Void
   {
     for (control in Control.createAll())
     {
       var inputs:Array<Int> = Reflect.field(data, control.getName());
-      inputs = inputs.distinct();
+      inputs = inputs?.distinct();
       if (inputs != null)
       {
         if (inputs.length == 0)
@@ -1098,7 +1098,9 @@ class Controls extends FlxActionSet
       if (inputs.length == 0)
       {
         inputs = [FlxKey.NONE];
-      } else {
+      }
+      else
+      {
         inputs = inputs.distinct();
       }
 
