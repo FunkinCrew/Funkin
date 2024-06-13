@@ -16,6 +16,8 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
 import funkin.modding.events.ScriptEvent;
+import funkin.audio.FunkinSound;
+import funkin.ui.options.MenuItemEnums;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -653,10 +655,18 @@ class Strumline extends FlxSpriteGroup
     return getByDirection(direction).isConfirm();
   }
 
+  public function playNoteHitSound():Void
+  {
+    if (Preferences.noteHitSoundVolume <= 0 || Preferences.noteHitSound == NoteHitSoundType.None) return;
+
+    var hitSound:String = Preferences.noteHitSound + "Hit";
+    var path:String = Paths.sound('noteHitSounds/${hitSound}') ?? Paths.sound('noteHitSounds/pingPong');
+    FunkinSound.playOnce(path, Preferences.noteHitSoundVolume / 100);
+  }
+
   public function playNoteSplash(direction:NoteDirection):Void
   {
-    // TODO: Add a setting to disable note splashes.
-    // if (Settings.noSplash) return;
+    if (!Preferences.noteSplash) return;
     if (!noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
@@ -676,8 +686,7 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
-    // TODO: Add a setting to disable note splashes.
-    // if (Settings.noSplash) return;
+    if (!Preferences.noteSplash) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();

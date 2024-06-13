@@ -6,8 +6,13 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
+import funkin.ui.options.items.CheckboxPreferenceItem;
+import funkin.ui.options.items.PercentagePreferenceItem;
+import funkin.ui.options.items.EnumPreferenceItem;
 import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
+import funkin.audio.FunkinSound;
+import funkin.ui.options.MenuItemEnums;
 
 class PreferencesMenu extends Page
 {
@@ -55,6 +60,21 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemPercentage('Note hit sound volume', 'Enable to play a click sound when hitting notes', function(value:Int):Void {
+      Preferences.noteHitSoundVolume = value;
+    }, Preferences.noteHitSoundVolume);
+    createPrefItemEnum('Note hit sound', 'Enable to play a click sound when hitting notes', [
+      NoteHitSoundType.None => "None",
+      NoteHitSoundType.PingPong => "Ping pong",
+      NoteHitSoundType.VineBoom => "Vine boom"
+    ], function(value:String):Void {
+      Preferences.noteHitSound = value;
+      var hitSound:String = value + "Hit";
+      FunkinSound.playOnce(Paths.sound('noteHitSounds/${hitSound}') ?? Paths.sound('noteHitSounds/pingPongHit'));
+    }, Preferences.noteHitSound);
+    createPrefItemCheckbox('Note splashiness', 'Disable to remove splash animations when hitting notes', function(value:Bool):Void {
+      Preferences.noteSplash = value;
+    }, Preferences.noteSplash);
     createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);
@@ -67,6 +87,37 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+  }
+
+  override function update(elapsed:Float)
+  {
+    super.update(elapsed);
+
+    // Indent the selected item.
+    // TODO: Only do this on menu change?
+    items.forEach(function(daItem:TextMenuItem) {
+      var thyOffset:Int = 0;
+      if (Std.isOfType(daItem, EnumPreferenceItem)) thyOffset = cast(daItem, EnumPreferenceItem).lefthandText.getWidth();
+      if (Std.isOfType(daItem, PercentagePreferenceItem)) thyOffset = cast(daItem, PercentagePreferenceItem).lefthandText.getWidth();
+
+      // Very messy but it works
+      if (thyOffset == 0)
+      {
+        if (items.selectedItem == daItem) thyOffset += 150;
+        else
+          thyOffset += 120;
+      }
+      else if (items.selectedItem == daItem)
+      {
+        thyOffset += 70;
+      }
+      else
+      {
+        thyOffset += 25;
+      }
+
+      daItem.x = thyOffset;
+    });
   }
 
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
@@ -82,62 +133,21 @@ class PreferencesMenu extends Page
     preferenceItems.add(checkbox);
   }
 
-  override function update(elapsed:Float)
+  /**
+   * @param zeroIsDisabled If true, 0 will be displayed as "OFF"
+   */
+  function createPrefItemPercentage(prefName:String, prefDesc:String, onChange:Int->Void, defaultValue:Int, min:Int = 0, max:Int = 100,
+      zeroIsDisabled:Bool = false):Void
   {
-    super.update(elapsed);
-
-    // Indent the selected item.
-    // TODO: Only do this on menu change?
-    items.forEach(function(daItem:TextMenuItem) {
-      if (items.selectedItem == daItem) daItem.x = 150;
-      else
-        daItem.x = 120;
-    });
-  }
-}
-
-class CheckboxPreferenceItem extends FlxSprite
-{
-  public var currentValue(default, set):Bool;
-
-  public function new(x:Float, y:Float, defaultValue:Bool = false)
-  {
-    super(x, y);
-
-    frames = Paths.getSparrowAtlas('checkboxThingie');
-    animation.addByPrefix('static', 'Check Box unselected', 24, false);
-    animation.addByPrefix('checked', 'Check Box selecting animation', 24, false);
-
-    setGraphicSize(Std.int(width * 0.7));
-    updateHitbox();
-
-    this.currentValue = defaultValue;
+    var item = new PercentagePreferenceItem(145, (120 * items.length) + 30, prefName, defaultValue, min, max, zeroIsDisabled, onChange);
+    items.addItem(prefName, item);
+    preferenceItems.add(item.lefthandText);
   }
 
-  override function update(elapsed:Float)
+  function createPrefItemEnum(prefName:String, prefDesc:String, values:Map<String, String>, onChange:String->Void, defaultValue:String):Void
   {
-    super.update(elapsed);
-
-    switch (animation.curAnim.name)
-    {
-      case 'static':
-        offset.set();
-      case 'checked':
-        offset.set(17, 70);
-    }
-  }
-
-  function set_currentValue(value:Bool):Bool
-  {
-    if (value)
-    {
-      animation.play('checked', true);
-    }
-    else
-    {
-      animation.play('static');
-    }
-
-    return currentValue = value;
+    var item = new EnumPreferenceItem(145, (120 * items.length) + 30, prefName, values, defaultValue, onChange);
+    items.addItem(prefName, item);
+    preferenceItems.add(item.lefthandText);
   }
 }
