@@ -273,7 +273,7 @@ class LatencyState extends MusicBeatSubState
 
     avgOffsetInput /= loopInd;
 
-    offsetText.text += "\n\nEstimated average input offset needed: " + avgOffsetInput;
+    offsetText.text += "\n\nEstimated average input offset needed: " + (Math.isNaN(avgOffsetInput) ? "" : Std.string(avgOffsetInput));
     offsetText.text += "\n\nPress TAB to apply this offset.";
     offsetText.text += "\n\nYou can press R to reset your inputs.";
 
