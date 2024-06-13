@@ -33,8 +33,6 @@ import openfl.net.NetStream;
 import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
 
-#if desktop
-#end
 class TitleState extends MusicBeatState
 {
   /**

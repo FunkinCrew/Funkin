@@ -127,6 +127,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
 	<haxelib name="funkin.vis"/>
 	<haxelib name="grig.audio" />
+	<haxelib name="discord_rpc" if="cpp" />
 
 	<haxelib name="FlxPartialSound" /> <!-- Loading partial sound data -->
 
