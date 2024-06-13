@@ -52,6 +52,26 @@ class FunkinHint extends FunkinButton
   {
     super(X, Y);
 
+    hsvShader = new HSVShader();
+    hsvShader.hue = 1.0;
+    hsvShader.saturation = 1.0;
+    hsvShader.value = 1.0;
+    shader = hsvShader;
+  }
+
+  /**
+   * Initializes alpha tween animations for the button.
+   *
+   * Sets up handlers for `onDown`, `onUp`, and `onOut` events to modify the button's
+   * `alpha` property using tweens. Cancels any existing tween when an event occurs
+   * and creates a new tween to transition the `alpha` property accordingly:
+   * - `onDown`: Transitions `alpha` to `HINT_ALPHA_DOWN`.
+   * - `onUp` and `onOut`: Transitions `alpha` to `HINT_ALPHA_UP`.
+   *
+   * Uses `FlxEase.circInOut` easing for smooth transitions.
+   */
+  public function initAlphaTween():Void
+  {
     onDown.add(function():Void {
       if (alphaTween != null) alphaTween.cancel();
 
@@ -67,13 +87,6 @@ class FunkinHint extends FunkinButton
 
       alphaTween = FlxTween.tween(this, {alpha: HINT_ALPHA_UP}, HINT_ALPHA_DOWN, {ease: FlxEase.circInOut});
     });
-
-    hsvShader = new HSVShader();
-    hsvShader.hue = 1.0;
-    hsvShader.saturation = 1.0;
-    hsvShader.value = 1.0;
-
-    shader = hsvShader;
 
     alpha = HINT_ALPHA_UP;
   }
@@ -176,6 +189,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     hint.onDown.add(() -> onHintDown.dispatch(hint));
     hint.onUp.add(() -> onHintUp.dispatch(hint));
     hint.onOut.add(() -> onHintUp.dispatch(hint));
+    hint.initAlphaTween();
     hint.ID = id;
     return hint;
   }
