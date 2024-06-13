@@ -682,9 +682,9 @@ class SongDifficulty
     FlxG.sound.cache(getInstPath(instrumental));
   }
 
-  public function playInst(volume:Float = 1.0, looped:Bool = false):Void
+  public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
   {
-    var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
+    var suffix:String = (instId != '') ? '-$instId' : '';
 
     FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true);
 

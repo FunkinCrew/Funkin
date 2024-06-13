@@ -71,7 +71,7 @@ class GameOverSubState extends MusicBeatSubState
   var gameOverMusic:Null<FunkinSound> = null;
 
   /**
-   * Whether the player has confirmed and prepared to restart the level.
+   * Whether the player has confirmed and prepared to restart the level or to go back to the freeplay menu.
    * This means the animation and transition have already started.
    */
   var isEnding:Bool = false;
@@ -228,15 +228,13 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Restart the level when pressing the assigned key.
-    // Removed the tapping BF thing due to it not working 50% of the time.
-    if ((controls.ACCEPT #if mobile || (TouchUtil.justPressed && !TouchUtil.overlaps(backButton)) #end) && blueballed)
+    if ((controls.ACCEPT #if mobile || (TouchUtil.justPressed && !TouchUtil.overlaps(backButton)) #end) && blueballed && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();
     }
 
-    // Return to the menu when pressing the assigned key.
-    if (controls.BACK) goBack();
+    if (controls.BACK && !mustNotExit && !isEnding) goBack();
 
     if (gameOverMusic != null && gameOverMusic.playing)
     {
@@ -406,27 +404,27 @@ class GameOverSubState extends MusicBeatSubState
 
   public function goBack()
   {
-    if (mustNotExit) return;
-    blueballed = false;
-    PlayState.instance.deathCounter = 0;
-    // PlayState.seenCutscene = false; // old thing...
-    if (gameOverMusic != null) gameOverMusic.stop();
+      isEnding = true;
+      blueballed = false;
+      PlayState.instance.deathCounter = 0;
+      // PlayState.seenCutscene = false; // old thing...
+      if (gameOverMusic != null) gameOverMusic.stop();
 
-    if (isChartingMode)
-    {
-      this.close();
-      if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
-      PlayState.instance.close(); // This only works because PlayState is a substate!
-      return;
-    }
-    else if (PlayStatePlaylist.isStoryMode)
-    {
-      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
-    }
-    else
-    {
-      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(sticker)));
-    }
+      if (isChartingMode)
+      {
+        this.close();
+        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+        PlayState.instance.close(); // This only works because PlayState is a substate!
+        return;
+      }
+      else if (PlayStatePlaylist.isStoryMode)
+      {
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
+      }
+      else
+      {
+        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(sticker)));
+      }
   }
 
   /**
