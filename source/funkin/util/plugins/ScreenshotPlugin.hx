@@ -103,7 +103,7 @@ class ScreenshotPlugin extends FlxBasic
 
   public function hasPressedScreenshot():Bool
   {
-    return PlayerSettings.player1.controls.SCREENSHOT;
+    return PlayerSettings.player1.controls.WINDOW_SCREENSHOT;
   }
 
   public function updatePreferences():Void
