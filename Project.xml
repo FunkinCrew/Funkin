@@ -239,7 +239,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<config:android permission="android.permission.WRITE_EXTERNAL_STORAGE" />
 		<config:android permission="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
-		<config:android mimeType="application/zip" />
+		<!--<config:android mimeType="application/x-zip-compressed" />-->
 	</section>
 
 	<section>
