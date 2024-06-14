@@ -197,20 +197,10 @@ class OptionsMenu extends Page
 
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() switchPage(Preferences));
-    #if mobile
-    if (FlxG.gamepads.numActiveGamepads > 0)
-    {
-      createItem("CONTROLS", function() switchPage(Controls));
-      createItem("INPUT OFFSETS", function() {
-        FlxG.state.openSubState(new LatencyState());
-      });
-    }
-    #else
     createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
       FlxG.state.openSubState(new LatencyState());
     });
-    #end
 
     #if newgrounds
     if (NGio.isLoggedIn) createItem("LOGOUT", selectLogout);
