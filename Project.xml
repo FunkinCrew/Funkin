@@ -233,11 +233,13 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<architecture exclude="arm64" if="ONLY_ARMV7" unless="UNIVERSAL"/>
 	</section>
 
-	<!-- Android Permissions-->
+	<!-- Android Setup-->
 	<section if="android">
 		<config:android permission="android.permission.READ_EXTERNAL_STORAGE" />
 		<config:android permission="android.permission.WRITE_EXTERNAL_STORAGE" />
 		<config:android permission="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+		<config:android mimeType="application/zip" />
 	</section>
 
 	<section>
