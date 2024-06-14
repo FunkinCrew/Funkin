@@ -5,40 +5,46 @@ title: 'Bug Report: [DESCRIBE YOUR BUG IN DETAIL HERE]'
 labels: bug
 ---
 
-[weed]: <> (FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE)
-[weed]: <> (OR ELSE YOUR ISSUE WILL BE LESS LIKELY TO BE SOLVED!)
-[weed]: <> (DO NOT POST ABOUT ISSUES FROM OTHER FNF MOD ENGINES! I CANNOT AND PROBABLY WON'T SOLVE THOSE!)
-[weed]: <> (GO TO THEIR RESPECTIVE GITHUB ISSUES AND REPORT THEM THERE LOL!)
+<!-- FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE
+OR ELSE YOUR ISSUE WILL BE LESS LIKELY TO BE SOLVED!
 
-[weed]: <> (ALSO MAKE SURE THAT YOU USE PROPER LABELS, IF YOU'RE RUNNING INTO COMPILER ISSUES, USE THE compiler issue LABEL!!!)
+Do not post about issues from other FNF mod engines!
+We cannot and probably won't solve those!
+You can hopefully go to their respective GitHub issues and report them there, thank you :)
 
-#### Please check for duplicates or similar issues, as well performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
-### If you are playing the game in a browser, what site are you playing it from?
+Please check for duplicates or similar issues, as well performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
 
-[weed]: <> (Put an X in the [ ] thingies to fill out checkbox!)
-[weed]: <> (something like [x] pretty much, don't screw up or you will look stupid)
+From Joel On Software:
 
-- [ ] [Newgrounds](https://www.newgrounds.com/portal/view/770371)
-- [ ] [Itch.io](https://ninja-muffin24.itch.io/funkin)? Specify below
-- - [ ] Windows
-- - [ ] Mac
-- - [ ] Linux
+"It’s pretty easy to remember the rule for a good bug report. Every good bug report needs exactly three things.
 
-### If you are playing the game in a browser, what browser are you using?
+1. Steps to reproduce,
+2. What you expected to see, and
+3. What you saw instead."
 
-[weed]: <> (Again, put an x in the [ ] box!)
+-->
 
-- [ ] Google Chrome (or chomium based like Brave, vivaldi, MS Edge)
-- [ ] Firefox
-- [ ] Safari
+## Describe the bug
+<!-- A clear and concise description of what the bug is. -->
 
-## What version of the game are you using? Look in the bottom left corner of the main menu. (ex: 0.2.7, 0.2.1, shit like that)
+## To Reproduce
+<!-- Describe in DETAIL how to reproduce the bug/issue you are running into. -->
+## Expected behavior
+<!-- A clear and concise description of what you expected to happen. -->
 
+## Screenshots/Video
+<!-- If applicable, add screenshots/video to help explain your problem.
+Remember to mark the area in the application thats impacted. -->
 
-## Have you identified any steps to reproduce the bug? If so, please describe them below in as much detail as possible. Use images if possible.
+## Desktop
+ - OS:
+ <!-- [e.g. Windows 10, 11, Mac, Linux Mint, Ubuntu, Arch (btw)] -->
+ - Browser
+ <!-- [e.g. chrome, safari, firefox, edge, operaGX] -->
+ - Version:
+ <!-- [e.g. 0.4.0, 0.3.3, this can be found in the bottom left corner of the main menu!] -->
 
-## Please describe your issue. Provide extensive detail and images if possible.
+## Additional context
+<!-- Add any other context about the problem here. -->
 
-
-
-## If your game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting
+<!-- If you're game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting -->
