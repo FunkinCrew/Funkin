@@ -2094,8 +2094,13 @@ class FreeplaySongData
     {
       this.albumId = songDifficulty.album;
     }
+    
+    // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
+    // `easy`, `erect`, `normal-pico`, etc.
+    var suffixedDifficulty = (songDifficulty.variation != Constants.DEFAULT_VARIATION
+      && songDifficulty.variation != 'erect') ? '$currentDifficulty-${songDifficulty.variation}' : currentDifficulty;
 
-    this.scoringRank = Save.instance.getSongRank(songId, currentDifficulty);
+    this.scoringRank = Save.instance.getSongRank(songId, suffixedDifficulty);
 
     this.isNew = song.isSongNew(currentDifficulty);
   }
