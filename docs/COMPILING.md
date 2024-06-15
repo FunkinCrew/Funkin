@@ -3,12 +3,13 @@
 0. Setup
     - Download Haxe from [Haxe.org](https://haxe.org)
     - Download Git from [git-scm.com](https://www.git-scm.com)
-1. Cloning the Repository: Make sure when you clone, you clone the submodules to get the assets repo:
-    - `git clone --recurse-submodules https://github.com/FunkinCrew/funkin.git`
-    - If you accidentally cloned without the `assets` submodule (aka didn't follow the step above), you can run `git submodule update --init --recursive` to get the assets in a foolproof way.
-2. Install `hmm` (run `haxelib --global install hmm` and then `haxelib --global run hmm setup`)
-3. Install all haxelibs of the current branch by running `hmm install`
-4. Setup lime: `haxelib run lime setup`
+    - Do NOT download the repository using the Download ZIP button on GitHub or you may run into errors!
+    - Instead, open a command prompt and do the following steps...
+1. Run `git clone --recurse-submodules https://github.com/FunkinCrew/funkin.git` to clone the repository with the necessary assets submodule
+    - _If you accidentally cloned without the `assets` submodule (aka didn't follow the step above), you can run `git submodule update --init --recursive` to get the assets in a foolproof way._
+2. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
+3. Run `hmm install` to install all haxelibs of the current branch
+4. Run `haxelib run lime setup` to set up lime
 5. Platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
