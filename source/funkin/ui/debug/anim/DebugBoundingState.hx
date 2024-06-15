@@ -1,6 +1,7 @@
 package funkin.ui.debug.anim;
 
 import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.display.FlxBackdrop;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.FlxCamera;
@@ -55,7 +56,7 @@ class DebugBoundingState extends FlxState
     TODAY'S TO-DO
     - Cleaner UI
    */
-  var bg:FlxSprite;
+  var bg:FlxBackdrop;
   var fileInfo:FlxText;
 
   var txtGrp:FlxGroup;
@@ -80,7 +81,7 @@ class DebugBoundingState extends FlxState
   {
     // get the screen position, according to the HUD camera, temp default to FlxG.camera juuust in case?
     var hudMousePos:FlxPoint = FlxG.mouse.getScreenPosition(hudCam ?? FlxG.camera);
-    return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y);
+    return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y) || FlxG.mouse.overlaps(animDropDownMenu, hudCam);
   }
 
   override function create()
@@ -103,10 +104,7 @@ class DebugBoundingState extends FlxState
     hudCam = new FlxCamera();
     hudCam.bgColor.alpha = 0;
 
-    bg = FlxGridOverlay.create(10, 10);
-    // bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.GREEN);
-
-    bg.scrollFactor.set();
+    bg = new FlxBackdrop(FlxGridOverlay.createGrid(10, 10, FlxG.width, FlxG.height, true, 0xffe7e6e6, 0xffd9d5d5));
     add(bg);
 
     // we are setting this as the default draw camera only temporarily, to trick haxeui
@@ -289,15 +287,19 @@ class DebugBoundingState extends FlxState
 
   public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
   public var oldPos:FlxPoint = FlxPoint.get(0, 0);
+  public var movingCharacter:Bool = false;
 
   function mouseOffsetMovement()
   {
     if (swagChar != null)
     {
-      if (FlxG.mouse.justPressed)
+      if (FlxG.mouse.justPressed && !haxeUIFocused)
       {
+        movingCharacter = true;
         mouseOffset.set(FlxG.mouse.x - -swagChar.animOffsets[0], FlxG.mouse.y - -swagChar.animOffsets[1]);
       }
+
+      if (!movingCharacter) return;
 
       if (FlxG.mouse.pressed)
       {
@@ -306,6 +308,11 @@ class DebugBoundingState extends FlxState
         swagChar.animationOffsets.set(animDropDownMenu.selectedLabel, swagChar.animOffsets);
 
         txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
+      }
+
+      if (FlxG.mouse.justReleased)
+      {
+        movingCharacter = false;
       }
     }
   }
@@ -373,7 +380,7 @@ class DebugBoundingState extends FlxState
         offsetView.visible = true;
         offsetView.active = true;
         offsetControls();
-        if (!haxeUIFocused) mouseOffsetMovement();
+        mouseOffsetMovement();
     }
 
     if (FlxG.keys.justPressed.H) hudCam.visible = !hudCam.visible;
