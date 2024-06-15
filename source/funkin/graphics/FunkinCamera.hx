@@ -48,7 +48,7 @@ class FunkinCamera extends FlxCamera
   public var shouldDraw:Bool = true;
 
   // The camera's world rotation in degrees.
-  public var rotation:Float = 15;
+  public var rotation:Float = 0;
 
   // Used to identify the camera during debugging.
   final id:String = 'unknown';
