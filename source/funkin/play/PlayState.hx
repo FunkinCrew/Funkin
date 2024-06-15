@@ -1528,9 +1528,9 @@ class PlayState extends MusicBeatSubState
   {
     camGame = new FunkinCamera('playStateCamGame');
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
-    camHUD = new FlxCamera();
+    camHUD = new FunkinCamera('playStateCamHUD');
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
-    camCutscene = new FlxCamera();
+    camCutscene = new FunkinCamera('playStateCamCutscene');
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
 
     FlxG.cameras.reset(camGame);
