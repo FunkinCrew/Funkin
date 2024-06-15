@@ -69,7 +69,7 @@ class CharSelectSubState extends MusicBeatSubState
     availableChars.set(3, "pico");
   }
 
-  override public function create()
+  override public function create():Void
   {
     super.create();
 
@@ -78,6 +78,8 @@ class CharSelectSubState extends MusicBeatSubState
     selectSound.pitch = 1;
     selectSound.volume = 0.7;
     FlxG.sound.defaultSoundGroup.add(selectSound);
+
+    Conductor.instance.forceBPM(90);
 
     FunkinSound.playMusic('charSelect',
       {
@@ -343,11 +345,11 @@ class CharSelectSubState extends MusicBeatSubState
   var spamLeft:Bool = false;
   var spamRight:Bool = false;
 
-  override public function update(elapsed:Float)
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
-    // Conductor.update();
+    Conductor.instance.update();
 
     if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R) selectSound.pitch = 1;
 
@@ -503,7 +505,7 @@ class CharSelectSubState extends MusicBeatSubState
     cursorDarkBlue.y = MathUtil.coolLerp(cursorDarkBlue.y, cursorLocIntended.y, lerpAmnt * 0.2);
   }
 
-  function spamOnStep()
+  function spamOnStep():Void
   {
     if (spamUp || spamDown || spamLeft || spamRight)
     {
@@ -534,7 +536,7 @@ class CharSelectSubState extends MusicBeatSubState
     }
   }
 
-  private function updateLockAnims()
+  private function updateLockAnims():Void
   {
     for (index => member in grpIcons.group.members)
     {
@@ -572,7 +574,7 @@ class CharSelectSubState extends MusicBeatSubState
     }
   }
 
-  function getCurrentSelected()
+  function getCurrentSelected():Int
   {
     var tempX:Int = cursorX + 1;
     var tempY:Int = cursorY + 1;
