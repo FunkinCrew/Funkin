@@ -9,7 +9,6 @@ import openfl.display.BlendMode;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import funkin.play.stage.Stage;
-import funkin.play.stage.StageData.StageDataParser;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
