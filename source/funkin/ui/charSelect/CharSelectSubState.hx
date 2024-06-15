@@ -79,7 +79,12 @@ class CharSelectSubState extends MusicBeatSubState
     selectSound.volume = 0.7;
     FlxG.sound.defaultSoundGroup.add(selectSound);
 
-    Conductor.forceBPM(90);
+    FunkinSound.playMusic('charSelect',
+      {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: true
+      });
 
     var bg:FlxSprite = new FlxSprite(-153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
@@ -342,7 +347,7 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    Conductor.update();
+    // Conductor.update();
 
     if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R) selectSound.pitch = 1;
 
@@ -502,7 +507,7 @@ class CharSelectSubState extends MusicBeatSubState
   {
     if (spamUp || spamDown || spamLeft || spamRight)
     {
-      selectSound.changePitchBySemitone(1);
+      // selectSound.changePitchBySemitone(1);
       if (selectSound.pitch > 5) selectSound.pitch = 5;
       selectSound.play(true);
 
