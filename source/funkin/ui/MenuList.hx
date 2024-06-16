@@ -143,15 +143,20 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     final pageCheck:Bool = currentPage != null || currentPage != Preferences;
     final isInputOverlap:Bool = ((isMainMenuState && isPixelOverlap) || (isRegularOverlap && !isMainMenuState && pageCheck));
 
-    for (i in 0...members.length)
+    // This really sucks for memory :(
+    if (TouchUtil.pressed)
     {
-      final item = members[i];
-      if ((TouchUtil.overlaps(item) || FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0))
-        && TouchUtil.justReleased
-        && !SwipeUtil.swipeAny)
+      for (i in 0...members.length)
       {
-        newIndex = i;
-        break;
+        final item = members[i];
+        if (((TouchUtil.overlaps(item) && !isMainMenuState)
+          || (FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0) && isMainMenuState))
+          && TouchUtil.justReleased
+          && !SwipeUtil.swipeAny)
+        {
+          newIndex = i;
+          break;
+        }
       }
     }
     #end
