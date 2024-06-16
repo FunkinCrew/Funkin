@@ -434,6 +434,11 @@ class GameOverSubState extends MusicBeatSubState
   public static function playBlueBalledSFX():Void
   {
     blueballed = true;
+
+    #if mobile
+    if (Preferences.vibration) lime.ui.Haptic.vibrate(500, 1000);
+    #end
+
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
     {
       FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
