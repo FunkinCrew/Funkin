@@ -28,7 +28,7 @@ import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
 #if discord_rpc
-import funkin.api.discord.Discord.DiscordClient;
+import Discord.DiscordClient;
 #end
 #if newgrounds
 import funkin.ui.NgPrompt;

@@ -24,9 +24,6 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import openfl.utils.Assets;
-#if discord_rpc
-import funkin.api.discord.Discord.DiscordClient;
-#end
 
 class StoryMenuState extends MusicBeatState
 {

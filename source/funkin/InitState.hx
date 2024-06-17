@@ -33,8 +33,7 @@ import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
 #if discord_rpc
-import lime.app.Application;
-import funkin.api.discord.Discord.DiscordClient;
+import Discord.DiscordClient;
 #end
 
 /**
