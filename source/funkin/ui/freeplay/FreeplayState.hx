@@ -1888,6 +1888,7 @@ class FreeplayState extends MusicBeatSubState
           startingVolume: 0.0,
           overrideExisting: true,
           restartTrack: false,
+          mapTimeChanges: false, // The music metadata is not alongside the audio file so this won't work.
           pathsFunction: INST,
           suffix: potentiallyErect,
           partialParams:
