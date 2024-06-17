@@ -162,15 +162,12 @@ class VideoCutscene
         // vid.scale.set(0.5, 0.5);
       });
 
-      openfl.Assets.loadBytes(filePath).onComplete(function(bytes:openfl.utils.ByteArray):Void
+      if (vid.load(openfl.Assets.getBytes(filePath)))
       {
-        if (vid.load(bytes))
-        {
-          vid.play();
+        vid.play();
 
-          onVideoStarted.dispatch();
-        }
-      });
+        onVideoStarted.dispatch();
+      }
     }
     else
     {

@@ -81,11 +81,8 @@ class AttractState extends MusicBeatState
       vid.bitmap.onEndReached.add(onAttractEnd);
       add(vid);
 
-      openfl.Assets.loadBytes(filePath).onComplete(function(bytes:openfl.utils.ByteArray):Void
-      {
-        if (vid.load(bytes))
-          vid.play();
-      });
+      if (vid.load(openfl.Assets.getBytes(filePath)))
+        vid.play();
     }
     else
     {
