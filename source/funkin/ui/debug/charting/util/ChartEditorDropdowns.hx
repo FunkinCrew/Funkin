@@ -126,10 +126,7 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    // hardcoding this because i dont want note kind styles to be shown as well
-    // there is probably a better solution
-    // var noteStyleIds:Array<String> = NoteStyleRegistry.instance.listEntryIds();
-    var noteStyleIds:Array<String> = ['funkin', 'pixel'];
+    var noteStyleIds:Array<String> = NoteStyleRegistry.instance.listEntryIds();
 
     var returnValue:DropDownEntry = {id: "funkin", text: "Funkin'"};
 
@@ -137,6 +134,14 @@ class ChartEditorDropdowns
     {
       var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
       if (noteStyle == null) continue;
+
+      // check if the note style has all necessary assets (strums, notes, holdNotes)
+      if (noteStyle._data?.assets?.noteStrumline == null
+        || noteStyle._data?.assets?.note == null
+        || noteStyle._data?.assets?.holdNote == null)
+      {
+        continue;
+      }
 
       var value = {id: noteStyleId, text: noteStyle.getName()};
       if (startingStyleId == noteStyleId) returnValue = value;
