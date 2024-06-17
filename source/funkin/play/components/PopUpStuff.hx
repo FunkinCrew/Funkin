@@ -4,7 +4,9 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxDirection;
+import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.graphics.FunkinSprite;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.PlayState;
 import funkin.util.TimerUtil;
 
@@ -23,9 +25,15 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (daRating == null) daRating = "good";
 
+    var noteStyleId:String = PlayState.instance.currentChart.noteStyle;
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+
     var ratingPath:String = daRating;
 
-    if (PlayState.instance.currentChart.noteStyle.startsWith('pixel')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
+    if (!PlayState.instance.currentChart.noteStyle.startsWith('funkin'))
+    {
+      ratingPath = noteStyle.getRatingPath() + ratingPath + '-' + noteStyleId;
+    }
 
     var rating:FunkinSprite = FunkinSprite.create(0, 0, ratingPath);
     rating.scrollFactor.set(0.2, 0.2);
@@ -40,14 +48,14 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     add(rating);
 
-    if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
+    if (noteStyle.isRatingPixel())
     {
-      rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
+      rating.setGraphicSize(Std.int(rating.width * noteStyle.getRatingScale() * 0.7));
       rating.antialiasing = false;
     }
     else
     {
-      rating.setGraphicSize(Std.int(rating.width * 0.65));
+      rating.setGraphicSize(Std.int(rating.width * noteStyle.getRatingScale() * 0.65));
       rating.antialiasing = true;
     }
     rating.updateHitbox();
@@ -73,15 +81,10 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (combo == null) combo = 0;
 
-    var pixelShitPart1:String = "";
-    var pixelShitPart2:String = '';
+    var noteStyleId:String = PlayState.instance.currentChart.noteStyle;
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
 
-    if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
-    {
-      pixelShitPart1 = 'weeb/pixelUI/';
-      pixelShitPart2 = '-pixel';
-    }
-    var comboSpr:FunkinSprite = FunkinSprite.create(pixelShitPart1 + 'combo' + pixelShitPart2);
+    var comboSpr:FunkinSprite = FunkinSprite.create('combo');
     comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1];
     comboSpr.x = (FlxG.width * 0.507) + offsets[0];
     // comboSpr.x -= FlxG.camera.scroll.x * 0.2;
@@ -92,14 +95,14 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     // add(comboSpr);
 
-    if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
+    if (noteStyle.isRatingPixel())
     {
-      comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 0.7));
+      comboSpr.setGraphicSize(Std.int(comboSpr.width * noteStyle.getRatingScale() * 0.7));
       comboSpr.antialiasing = false;
     }
     else
     {
-      comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+      comboSpr.setGraphicSize(Std.int(comboSpr.width * noteStyle.getRatingScale() * 0.7));
       comboSpr.antialiasing = true;
     }
     comboSpr.updateHitbox();
@@ -127,18 +130,27 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     // seperatedScore.reverse();
 
     var daLoop:Int = 1;
+
+    var numScorePath = 'num';
+    var numScorePathSuffix = '';
+    if (!PlayState.instance.currentChart.noteStyle.startsWith('funkin'))
+    {
+      numScorePath = noteStyle.getRatingPath() + 'num';
+      numScorePathSuffix = '-' + noteStyleId;
+    }
+
     for (i in seperatedScore)
     {
-      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2);
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, numScorePath + Std.int(i) + numScorePathSuffix);
 
-      if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
+      if (noteStyle.isRatingPixel())
       {
-        numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 0.7));
+        numScore.setGraphicSize(Std.int(numScore.width * noteStyle.getRatingScale() * 0.7));
         numScore.antialiasing = false;
       }
       else
       {
-        numScore.setGraphicSize(Std.int(numScore.width * 0.45));
+        numScore.setGraphicSize(Std.int(numScore.width * noteStyle.getRatingScale() * 0.45));
         numScore.antialiasing = true;
       }
       numScore.updateHitbox();

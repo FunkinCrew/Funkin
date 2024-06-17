@@ -74,6 +74,12 @@ typedef NoteStyleAssetsData =
    */
   @:optional
   var holdNoteCover:NoteStyleAssetData<NoteStyleData_HoldNoteCover>;
+
+  /**
+   * The sprites for the ratings.
+   */
+  @:optional
+  var rating:NoteStyleAssetData<NoteStyleData_Rating>;
 }
 
 /**
@@ -169,3 +175,5 @@ typedef NoteStyleData_HoldNoteCover =
   @:default(true)
   var enabled:Bool;
 };
+
+typedef NoteStyleData_Rating = {}
