@@ -1,7 +1,7 @@
-name: Bug Report
-description: Report a bug or an issue in the game
-labels: ["type: minor bug", "status: pending triage"]
-title: "Bug Report: "
+name: Crash Report
+description: Report a crash that occurred while playing.
+labels: ["type: major bug", "status: pending triage"]
+title: "Crash: "
 body:
   - type: checkboxes
     attributes:
@@ -42,7 +42,7 @@ body:
 
   - type: markdown
     attributes:
-      value: "## Describe your bug."
+      value: "## Describe the issue."
 
   - type: markdown
     attributes:
@@ -54,8 +54,16 @@ body:
 
   - type: textarea
     attributes:
-      label: Context (Provide images, videos, etc.)
+      label: Context (Provide images, videos, etc. of the crash happening)
 
   - type: textarea
     attributes:
-      label: Steps to reproduce (or crash logs, errors, etc.)
+      label: Steps to reproduce
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Crash Logs (can be found in the crash folder)
+    validations:
+      required: true

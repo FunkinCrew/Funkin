@@ -1,6 +1,6 @@
 name: Bug Fix
 description: Fix a bug or critical performance issue
-labels: ["bug"]
+labels: ["type: minor bug", "status: pending triage"]
 title: "Bug Fix: "
 body:
   - type: checkboxes
@@ -8,7 +8,7 @@ body:
       label: Issue Checklist
       options:
         - label: I have checked if this PR isn't a duplicate
-        
+
   - type: textarea
     attributes:
       label: Does this PR fix any issues? Please link them below if so.
