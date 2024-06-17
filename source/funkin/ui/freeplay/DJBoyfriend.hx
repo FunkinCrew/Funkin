@@ -266,7 +266,7 @@ class DJBoyfriend extends FlxAtlasSprite
 
     // Fade out music to 40% volume over 1 second.
     // This helps make the TV a bit more audible.
-    FlxG.sound.music.fadeOut(1.0, 0.4);
+    FlxG.sound.music.fadeOut(1.0, 0.1);
 
     // Play the cartoon at a random time between the start and 5 seconds from the end.
     cartoonSnd.time = FlxG.random.float(0, Math.max(cartoonSnd.length - (5 * Constants.MS_PER_SEC), 0.0));
