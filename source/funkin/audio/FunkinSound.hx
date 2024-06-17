@@ -11,10 +11,14 @@ import funkin.audio.waveform.WaveformDataParser;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
 import funkin.util.tools.ICloneable;
+import funkin.util.flixel.sound.FlxPartialSound;
+import funkin.Paths.PathsFunction;
 import openfl.Assets;
+import lime.app.Future;
+import lime.app.Promise;
 import openfl.media.SoundMixer;
+
 #if (openfl >= "8.0.0")
-import openfl.utils.AssetType;
 #end
 
 /**
@@ -223,12 +227,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // already paused before we lost focus.
     if (_lostFocus && !_alreadyPaused)
     {
-      trace('Resuming audio (${this._label}) on focus!');
+      // trace('Resuming audio (${this._label}) on focus!');
       resume();
     }
     else
     {
-      trace('Not resuming audio (${this._label}) on focus!');
+      // trace('Not resuming audio (${this._label}) on focus!');
     }
     _lostFocus = false;
   }
@@ -238,7 +242,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   override function onFocusLost():Void
   {
-    trace('Focus lost, pausing audio!');
+    // trace('Focus lost, pausing audio!');
     _lostFocus = true;
     _alreadyPaused = _paused;
     pause();
@@ -342,22 +346,75 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         FlxG.log.warn('Tried and failed to find music metadata for $key');
       }
     }
-
-    var music = FunkinSound.load(Paths.music('$key/$key'), params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
-    if (music != null)
+    var pathsFunction = params.pathsFunction ?? MUSIC;
+    var suffix = params.suffix ?? '';
+    var pathToUse = switch (pathsFunction)
     {
-      FlxG.sound.music = music;
+      case MUSIC: Paths.music('$key/$key');
+      case INST: Paths.inst('$key', suffix);
+      default: Paths.music('$key/$key');
+    }
 
-      // Prevent repeat update() and onFocus() calls.
-      FlxG.sound.list.remove(FlxG.sound.music);
+    var shouldLoadPartial = params.partialParams?.loadPartial ?? false;
 
-      return true;
+    // even if we arent' trying to partial load a song, we want to error out any songs in progress,
+    // so we don't get overlapping music if someone were to load a new song while a partial one is loading!
+
+    emptyPartialQueue();
+
+    if (shouldLoadPartial)
+    {
+      var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0.0, params.partialParams?.end ?? 1.0, params?.startingVolume ?? 1.0,
+        params.loop ?? true, false, false, params.onComplete);
+
+      if (music != null)
+      {
+        partialQueue.push(music);
+
+        @:nullSafety(Off)
+        music.future.onComplete(function(partialMusic:Null<FunkinSound>) {
+          FlxG.sound.music = partialMusic;
+          FlxG.sound.list.remove(FlxG.sound.music);
+
+          if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
+        });
+
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
     else
     {
-      return false;
+      var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
+      if (music != null)
+      {
+        FlxG.sound.music = music;
+
+        // Prevent repeat update() and onFocus() calls.
+        FlxG.sound.list.remove(FlxG.sound.music);
+
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
   }
+
+  public static function emptyPartialQueue():Void
+  {
+    while (partialQueue.length > 0)
+    {
+      @:nullSafety(Off)
+      partialQueue.pop().error("Cancel loading partial sound");
+    }
+  }
+
+  static var partialQueue:Array<Promise<Null<FunkinSound>>> = [];
 
   /**
    * Creates a new `FunkinSound` object synchronously.
@@ -413,6 +470,49 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (onLoad != null && sound._sound != null) onLoad();
 
     return sound;
+  }
+
+  /**
+   * Will load a section of a sound file, useful for Freeplay where we don't want to load all the bytes of a song
+   * @param path The path to the sound file
+   * @param start The start time of the sound file
+   * @param end The end time of the sound file
+   * @param volume Volume to start at
+   * @param looped Whether the sound file should loop
+   * @param autoDestroy Whether the sound file should be destroyed after it finishes playing
+   * @param autoPlay Whether the sound file should play immediately
+   * @param onComplete Callback when the sound finishes playing
+   * @param onLoad Callback when the sound finishes loading
+   * @return A FunkinSound object
+   */
+  public static function loadPartial(path:String, start:Float = 0, end:Float = 1, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false,
+      autoPlay:Bool = true, ?onComplete:Void->Void, ?onLoad:Void->Void):Promise<Null<FunkinSound>>
+  {
+    var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
+
+    // split the path and get only after first :
+    // we are bypassing the openfl/lime asset library fuss
+    path = Paths.stripLibrary(path);
+
+    var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
+
+    if (soundRequest == null)
+    {
+      promise.complete(null);
+    }
+    else
+    {
+      promise.future.onError(function(e) {
+        soundRequest.error("Sound loading was errored or cancelled");
+      });
+
+      soundRequest.future.onComplete(function(partialSound) {
+        var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, onComplete, onLoad);
+        promise.complete(snd);
+      });
+    }
+
+    return promise;
   }
 
   @:nullSafety(Off)
@@ -476,6 +576,12 @@ typedef FunkinSoundPlayMusicParams =
   var ?startingVolume:Float;
 
   /**
+   * The suffix of the music file to play. Usually for "-erect" tracks when loading an INST file
+   * @default ``
+   */
+  var ?suffix:String;
+
+  /**
    * Whether to override music if a different track is already playing.
    * @default `false`
    */
@@ -498,4 +604,22 @@ typedef FunkinSoundPlayMusicParams =
    * @default `true`
    */
   var ?mapTimeChanges:Bool;
+
+  /**
+   * Which Paths function to use to load a song
+   * @default `MUSIC`
+   */
+  var ?pathsFunction:PathsFunction;
+
+  var ?partialParams:PartialSoundParams;
+
+  var ?onComplete:Void->Void;
+  var ?onLoad:Void->Void;
+}
+
+typedef PartialSoundParams =
+{
+  var loadPartial:Bool;
+  var start:Float;
+  var end:Float;
 }

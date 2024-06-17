@@ -52,6 +52,14 @@ class Strumline extends FlxSpriteGroup
    */
   public var conductorInUse(get, set):Conductor;
 
+  // Used in-game to control the scroll speed within a song
+  public var scrollSpeed:Float = 1.0;
+
+  public function resetScrollSpeed():Void
+  {
+    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+  }
+
   var _conductorInUse:Null<Conductor>;
 
   function get_conductorInUse():Conductor
@@ -134,6 +142,7 @@ class Strumline extends FlxSpriteGroup
     this.refresh();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
+    resetScrollSpeed();
 
     for (i in 0...KEY_COUNT)
     {
@@ -169,6 +178,20 @@ class Strumline extends FlxSpriteGroup
     super.update(elapsed);
 
     updateNotes();
+  }
+
+  /**
+   * Returns `true` if no notes are in range of the strumline and the player can spam without penalty.
+   */
+  public function mayGhostTap():Bool
+  {
+    // TODO: Refine this. Only querying "can be hit" is too tight but "is being rendered" is too loose.
+    // Also, if you just hit a note, there should be a (short) period where this is off so you can't spam.
+
+    // If there are any notes on screen, we can't ghost tap.
+    return notes.members.filter(function(note:NoteSprite) {
+      return note != null && note.alive && !note.hasBeenHit;
+    }).length == 0;
   }
 
   /**
@@ -283,7 +306,6 @@ class Strumline extends FlxSpriteGroup
     // var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     // ^^^ commented this out... do NOT make it move faster as it moves offscreen!
     var vwoosh:Float = 1.0;
-    var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
     return
       Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
@@ -539,6 +561,7 @@ class Strumline extends FlxSpriteGroup
     {
       playStatic(dir);
     }
+    resetScrollSpeed();
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
@@ -705,6 +728,7 @@ class Strumline extends FlxSpriteGroup
 
     if (holdNoteSprite != null)
     {
+      holdNoteSprite.parentStrumline = this;
       holdNoteSprite.noteData = note;
       holdNoteSprite.strumTime = note.time;
       holdNoteSprite.noteDirection = note.getDirection();

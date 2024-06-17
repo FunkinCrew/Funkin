@@ -91,6 +91,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return _metadata.keys().array();
   }
 
+  // this returns false so that any new song can override this and return true when needed
+  public function isSongNew(currentDifficulty:String):Bool
+  {
+    return false;
+  }
+
   /**
    * Set to false if the song was edited in the charter and should not be saved as a high score.
    */
@@ -118,6 +124,18 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (_data != null) return _data?.artist ?? DEFAULT_ARTIST;
     if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.artist ?? DEFAULT_ARTIST;
     return DEFAULT_ARTIST;
+  }
+
+  /**
+   * The artist of the song.
+   */
+  public var charter(get, never):String;
+
+  function get_charter():String
+  {
+    if (_data != null) return _data?.charter ?? 'Unknown';
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.charter ?? 'Unknown';
+    return Constants.DEFAULT_CHARTER;
   }
 
   /**
@@ -270,6 +288,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.songName = metadata.songName;
         difficulty.songArtist = metadata.artist;
+        difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
         difficulty.timeFormat = metadata.timeFormat;
         difficulty.divisions = metadata.divisions;
         difficulty.timeChanges = metadata.timeChanges;
@@ -334,6 +353,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         {
           difficulty.songName = metadata.songName;
           difficulty.songArtist = metadata.artist;
+          difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
           difficulty.timeFormat = metadata.timeFormat;
           difficulty.divisions = metadata.divisions;
           difficulty.timeChanges = metadata.timeChanges;
@@ -364,7 +384,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public function getDifficulty(?diffId:String, ?variation:String, ?variations:Array<String>):Null<SongDifficulty>
   {
-    if (diffId == null) diffId = listDifficulties(variation)[0];
+    if (diffId == null) diffId = listDifficulties(variation, variations)[0];
     if (variation == null) variation = Constants.DEFAULT_VARIATION;
     if (variations == null) variations = [variation];
 
@@ -400,6 +420,27 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * Given that this character is selected in the Freeplay menu,
+   * which variations should be available?
+   * @param charId The character ID to query.
+   * @return An array of available variations.
+   */
+  public function getVariationsByCharId(?charId:String):Array<String>
+  {
+    if (charId == null) charId = Constants.DEFAULT_CHARACTER;
+
+    if (variations.contains(charId))
+    {
+      return [charId];
+    }
+    else
+    {
+      // TODO: How to exclude character variations while keeping other custom variations?
+      return variations;
+    }
+  }
+
+  /**
    * List all the difficulties in this song.
    *
    * @param variationId Optionally filter by a single variation.
@@ -418,12 +459,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     // so we have to map it to the actual difficulty names.
     // We also filter out difficulties that don't match the variation or that don't exist.
 
-    var diffFiltered:Array<String> = difficulties.keys().array().map(function(diffId:String):Null<String> {
-      var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
-      if (difficulty == null) return null;
-      if (variationIds.length > 0 && !variationIds.contains(difficulty.variation)) return null;
-      return difficulty.difficulty;
-    }).nonNull().unique();
+    var diffFiltered:Array<String> = difficulties.keys()
+      .array()
+      .map(function(diffId:String):Null<String> {
+        var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
+        if (difficulty == null) return null;
+        if (variationIds.length > 0 && !variationIds.contains(difficulty.variation)) return null;
+        return difficulty.difficulty;
+      })
+      .filterNull()
+      .distinct();
 
     diffFiltered = diffFiltered.filter(function(diffId:String):Bool {
       if (showHidden) return true;
@@ -565,6 +610,7 @@ class SongDifficulty
 
   public var songName:String = Constants.DEFAULT_SONGNAME;
   public var songArtist:String = Constants.DEFAULT_ARTIST;
+  public var charter:String = Constants.DEFAULT_CHARTER;
   public var timeFormat:SongTimeFormat = Constants.DEFAULT_TIMEFORMAT;
   public var divisions:Null<Int> = null;
   public var looped:Bool = false;
@@ -636,9 +682,9 @@ class SongDifficulty
     FlxG.sound.cache(getInstPath(instrumental));
   }
 
-  public function playInst(volume:Float = 1.0, looped:Bool = false):Void
+  public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
   {
-    var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
+    var suffix:String = (instId != '') ? '-$instId' : '';
 
     FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true);
 

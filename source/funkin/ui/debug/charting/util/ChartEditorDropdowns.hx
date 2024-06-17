@@ -3,11 +3,13 @@ package funkin.ui.debug.charting.util;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.stage.StageData;
+import funkin.play.event.SongEvent;
 import funkin.data.stage.StageRegistry;
 import funkin.play.character.CharacterData;
 import haxe.ui.components.DropDown;
 import funkin.play.stage.Stage;
 import funkin.play.character.BaseCharacter.CharacterType;
+import funkin.data.event.SongEventRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
 
 /**
@@ -79,6 +81,42 @@ class ChartEditorDropdowns
     dropDown.dataSource.sort('text', ASCENDING);
 
     return returnValue;
+  }
+
+  public static function populateDropdownWithSongEvents(dropDown:DropDown, startingEventId:String):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var returnValue:DropDownEntry = {id: "FocusCamera", text: "Focus Camera"};
+
+    var songEvents:Array<SongEvent> = SongEventRegistry.listEvents();
+
+    for (event in songEvents)
+    {
+      var value = {id: event.id, text: event.getTitle()};
+      if (startingEventId == event.id) returnValue = value;
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('text', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Given the ID of a dropdown element, find the corresponding entry in the dropdown's dataSource.
+   */
+  public static function findDropdownElement(id:String, dropDown:DropDown):Null<DropDownEntry>
+  {
+    // Attempt to find the entry.
+    for (entryIndex in 0...dropDown.dataSource.size)
+    {
+      var entry = dropDown.dataSource.get(entryIndex);
+      if (entry.id == id) return entry;
+    }
+
+    // Not found.
+    return null;
   }
 
   /**
