@@ -4,6 +4,35 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2024-06-12
+### Added
+- Pressing ESCAPE on the title screen on desktop now exits the game, allowing you to exit the game while in fullscreen on desktop
+- Freeplay menu controls (favoriting and switching categories) are now rebindable from the Options menu, and now have default binds on controllers.
+### Changed
+- Highscores and ranks are now saved separately, which fixes the issue where people would overwrite their saves with higher scores,
+which would remove their rank if they had a lower one.
+- A-Bot speaker now reacts to the user's volume preference on desktop (thanks to [M7theguy for the issue report/suggestion](https://github.com/FunkinCrew/Funkin/issues/2744)!)
+- On Freeplay, heart icons are shifted to the right when you favorite a song that has no rank on it.
+- Only play `scrollMenu` sound effect when there's a real change on the freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
+- Gave antialiasing to the edge of the dad graphic on Freeplay
+- Rearranged some controls in the controls menu
+- Made several chart revisions
+  - Re-enabled custom camera events in Roses (Erect/Nightmare)
+  - Tweaked the chart for Lit Up (Hard)
+  - Corrected the difficulty ratings for M.I.L.F. (Easy/Normal/Hard)
+### Fixed
+- Fixed an issue in the controls menu where some control binds would overlap their names
+- Fixed crash when attempting to exit the gameover screen when also attempting to retry the song ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
+- Fix botplay sustain release bug ([thanks Hundrec!](Fix botplay sustain release bug #2683))
+- Fix for the camera not pausing during a gameplay pause ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2684))
+- Fixed issue where Pico's gameplay sprite would unintentionally appear on the gameover screen when dying on 2Hot from an explosion
+- Freeplay previews properly fade volume during the BF idle animation
+- Fixed bug where Dadbattle incorrectly appeared as Dadbattle Erect when returning to freeplay on Hard
+- Fixed 2Hot not appearing under the "#" category in Freeplay menu
+- Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
+- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
+- Fixed the black "temp" graphic on freeplay from being incorrectly sized / masked, now it's identical to the dad freeplay graphic
+
 ## [0.4.0] - 2024-06-06
 ### Added
 - 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
@@ -32,11 +61,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
 - Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
   - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
+- Improved the Event Toolbox in the Chart Editor; dropdowns are now bigger, include search field, and display elements in alphabetical order rather than a random order.
 ### Fixed
 - Fixed an issue where Nene's visualizer would not play on Desktop builds
 - Fixed a bug where the game would silently fail to load saves on HTML5
 - Fixed some bugs with the props on the Story Menu not bopping properly
-- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
+- Additional fixes to the Loading bar on HTML5 (thanks lemz1!)
+- Fixed several bugs with the TitleState, including missing music when returning from the Main Menu (thanks gamerbross!)
+- Fixed a camera bug in the Main Menu (thanks richTrash21!)
+- Fixed a bug where changing difficulties in Story mode wouldn't update the score (thanks sectorA!)
+- Fixed a crash in Freeplay caused by a level referencing an invalid song (thanks gamerbross!)
+- Fixed a bug where pressing the volume keys would stop the Toy commercial (thanks gamerbross!)
+- Fixed a bug where the Chart Editor Playtest would crash when losing (thanks gamerbross!)
+- Fixed a bug where hold notes would display improperly in the Chart Editor when downscroll was enabled for gameplay (thanks gamerbross!)
+- Fixed a bug where hold notes would be positioned wrong on downscroll (thanks MaybeMaru!)
+- Removed a large number of unused imports to optimize builds (thanks Ethan-makes-music!)
+- Improved debug logging for unscripted stages (thanks gamerbross!)
+- Made improvements to compiling documentation (thanks gedehari!)
 - Fixed a crash on Linux caused by an old version of hxCodec (thanks Noobz4Life!)
 - Optimized animation handling for characters (thanks richTrash21!)
 - Made improvements to compiling documentation (thanks gedehari!)
