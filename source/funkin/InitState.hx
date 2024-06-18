@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.transition.LoadingState;
 import flixel.FlxState;
@@ -164,6 +165,7 @@ class InitState extends FlxState
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
+    PlayerRegistry.instance.loadEntries();
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();

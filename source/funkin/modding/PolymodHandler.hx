@@ -8,6 +8,7 @@ import funkin.data.event.SongEventRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
@@ -369,15 +370,18 @@ class PolymodHandler
 
     // These MUST be imported at the top of the file and not referred to by fully qualified name,
     // to ensure build macros work properly.
+    SongEventRegistry.loadEventCache();
+
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
-    SongEventRegistry.loadEventCache();
+    PlayerRegistry.instance.loadEntries();
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     ModuleHandler.loadModuleCache();
   }

@@ -23,6 +23,7 @@ import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.AngleMask;
@@ -47,6 +48,7 @@ import lime.utils.Assets;
 import flixel.tweens.misc.ShakeTween;
 import funkin.effects.IntervalShake;
 import funkin.ui.freeplay.SongMenuItem.FreeplayRank;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -102,7 +104,9 @@ class FreeplayState extends MusicBeatSubState
    * The current character for this FreeplayState.
    * You can't change this without transitioning to a new FreeplayState.
    */
-  final currentCharacter:String;
+  final currentCharacterId:String;
+
+  final currentCharacter:PlayableCharacter;
 
   /**
    * For the audio preview, the duration of the fade-in effect.
@@ -205,7 +209,8 @@ class FreeplayState extends MusicBeatSubState
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
-    currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
+    currentCharacterId = params?.character ?? Constants.DEFAULT_CHARACTER;
+    currentCharacter = PlayerRegistry.instance.fetchEntry(currentCharacterId);
 
     fromResultsParams = params?.fromResults;
 
@@ -290,11 +295,10 @@ class FreeplayState extends MusicBeatSubState
         }
 
         // Only display songs which actually have available difficulties for the current character.
-        var displayedVariations = song.getVariationsByCharId(currentCharacter);
-        trace(songId);
-        trace(displayedVariations);
+        var displayedVariations = song.getVariationsByCharacter(currentCharacter);
+        trace('Displayed Variations (${songId}): $displayedVariations');
         var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
-        trace(availableDifficultiesForSong);
+        trace('Available Difficulties: $availableDifficultiesForSong');
         if (availableDifficultiesForSong.length == 0) continue;
 
         songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
@@ -454,7 +458,7 @@ class FreeplayState extends MusicBeatSubState
       });
 
     // TODO: Replace this.
-    if (currentCharacter == 'pico') dj.visible = false;
+    if (currentCharacterId == 'pico') dj.visible = false;
 
     add(dj);
 
@@ -1195,6 +1199,16 @@ class FreeplayState extends MusicBeatSubState
       rankAnimStart(fromResultsParams);
     }
 
+    if (FlxG.keys.justPressed.P)
+    {
+      FlxG.switchState(FreeplayState.build(
+        {
+          {
+            character: currentCharacterId == "pico" ? "bf" : "pico",
+          }
+        }));
+    }
+
     // if (FlxG.keys.justPressed.H)
     // {
     //   rankDisplayNew(fromResultsParams);
@@ -1302,9 +1316,9 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var upP:Bool = controls.UI_UP_P && !FlxG.keys.pressed.CONTROL;
-    var downP:Bool = controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL;
-    var accepted:Bool = controls.ACCEPT && !FlxG.keys.pressed.CONTROL;
+    var upP:Bool = controls.UI_UP_P;
+    var downP:Bool = controls.UI_DOWN_P;
+    var accepted:Bool = controls.ACCEPT;
 
     if (FlxG.onMobile)
     {
@@ -1378,7 +1392,7 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (!FlxG.keys.pressed.CONTROL && (controls.UI_UP || controls.UI_DOWN))
+    if ((controls.UI_UP || controls.UI_DOWN))
     {
       if (spamming)
       {
@@ -1440,13 +1454,13 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
+    if (controls.UI_LEFT_P)
     {
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if (controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL)
+    if (controls.UI_RIGHT_P)
     {
       dj.resetAFKTimer();
       changeDiff(1);
@@ -1720,7 +1734,7 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetDifficultyId:String = currentDifficulty;
-    var targetVariation:String = targetSong.getFirstValidVariation(targetDifficultyId);
+    var targetVariation:String = targetSong.getFirstValidVariation(targetDifficultyId, currentCharacter);
     PlayStatePlaylist.campaignId = cap.songData.levelId;
 
     var targetDifficulty:SongDifficulty = targetSong.getDifficulty(targetDifficultyId, targetVariation);
@@ -1730,8 +1744,18 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    // TODO: Change this with alternate instrumentals
-    var targetInstId:String = targetDifficulty.characters.instrumental;
+    var baseInstrumentalId:String = targetDifficulty?.characters?.instrumental ?? '';
+    var altInstrumentalIds:Array<String> = targetDifficulty?.characters?.altInstrumentals ?? [];
+
+    var targetInstId:String = baseInstrumentalId;
+
+    // TODO: Make this a UI element.
+    #if (debug || FORCE_DEBUG_VERSION)
+    if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
+    {
+      targetInstId = altInstrumentalIds[0];
+    }
+    #end
 
     // Visual and audio effects.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
@@ -1883,9 +1907,23 @@ class FreeplayState extends MusicBeatSubState
     else
     {
       var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(daSongCapsule.songData.songId);
-      var instSuffix:String = previewSong?.getDifficulty(currentDifficulty,
-        previewSong?.getVariationsByCharId(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST)?.characters?.instrumental ?? '';
+      var songDifficulty = previewSong?.getDifficulty(currentDifficulty,
+        previewSong?.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST);
+      var baseInstrumentalId:String = songDifficulty?.characters?.instrumental ?? '';
+      var altInstrumentalIds:Array<String> = songDifficulty?.characters?.altInstrumentals ?? [];
+
+      var instSuffix:String = baseInstrumentalId;
+
+      // TODO: Make this a UI element.
+      #if (debug || FORCE_DEBUG_VERSION)
+      if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
+      {
+        instSuffix = altInstrumentalIds[0];
+      }
+      #end
+
       instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
+
       FunkinSound.playMusic(daSongCapsule.songData.songId,
         {
           startingVolume: 0.0,
@@ -1914,7 +1952,7 @@ class FreeplayState extends MusicBeatSubState
   public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
   {
     var result:MainMenuState;
-    if (params?.fromResults.playRankAnim) result = new MainMenuState(true);
+    if (params?.fromResults?.playRankAnim) result = new MainMenuState(true);
     else
       result = new MainMenuState(false);
 
@@ -1952,8 +1990,8 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
-    if (flipX && controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
-    if (!flipX && controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
+    if (flipX && controls.UI_RIGHT_P) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P) moveShitDown();
 
     super.update(elapsed);
   }
