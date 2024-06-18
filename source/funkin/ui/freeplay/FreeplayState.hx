@@ -1882,14 +1882,17 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
+      var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(daSongCapsule.songData.songId);
+      var instSuffix:String = previewSong?.getDifficulty(currentDifficulty,
+        previewSong?.getVariationsByCharId(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST)?.characters?.instrumental ?? '';
+      instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
       FunkinSound.playMusic(daSongCapsule.songData.songId,
         {
           startingVolume: 0.0,
           overrideExisting: true,
           restartTrack: false,
           pathsFunction: INST,
-          suffix: potentiallyErect,
+          suffix: instSuffix,
           partialParams:
             {
               loadPartial: true,
