@@ -160,7 +160,7 @@ class SustainTrail extends FlxSprite
    */
   public static inline function sustainHeight(susLength:Float, scroll:Float)
   {
-    return (susLength * 0.45 * scroll);
+    return (susLength * Constants.PIXELS_PER_MS * scroll);
   }
 
   function set_sustainLength(s:Float):Float
