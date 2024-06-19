@@ -77,6 +77,11 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     return false;
   }
 
+  public function getFreeplayDJData():PlayerFreeplayDJData
+  {
+    return _data.freeplayDJ;
+  }
+
   /**
    * Returns whether this character is unlocked.
    */

@@ -167,7 +167,7 @@ class FreeplayState extends MusicBeatSubState
   var curCapsule:SongMenuItem;
   var curPlaying:Bool = false;
 
-  var dj:DJBoyfriend;
+  var dj:FreeplayDJ;
 
   var ostName:FlxText;
   var albumRoll:AlbumRoll;
@@ -211,6 +211,7 @@ class FreeplayState extends MusicBeatSubState
   {
     currentCharacterId = params?.character ?? Constants.DEFAULT_CHARACTER;
     currentCharacter = PlayerRegistry.instance.fetchEntry(currentCharacterId);
+    if (currentCharacter == null) throw 'Could not build Freeplay state for character: $currentCharacterId';
 
     fromResultsParams = params?.fromResults;
 
@@ -450,17 +451,16 @@ class FreeplayState extends MusicBeatSubState
 
     add(cardGlow);
 
-    dj = new DJBoyfriend(640, 366);
-    exitMovers.set([dj],
-      {
-        x: -dj.width * 1.6,
-        speed: 0.5
-      });
-
-    // TODO: Replace this.
-    if (currentCharacterId == 'pico') dj.visible = false;
-
-    add(dj);
+    if (currentCharacter?.getFreeplayDJData() != null)
+    {
+      dj = new FreeplayDJ(640, 366, currentCharacterId);
+      exitMovers.set([dj],
+        {
+          x: -dj.width * 1.6,
+          speed: 0.5
+        });
+      add(dj);
+    }
 
     bgDad = new FlxSprite(pinkBack.width * 0.74, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
     bgDad.shader = new AngleMask();
