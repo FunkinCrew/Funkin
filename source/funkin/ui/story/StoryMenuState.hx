@@ -336,6 +336,16 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
+        if (FlxG.mouse.wheel < 0)
+        {
+            changeLevel(-Math.round(FlxG.mouse.wheel / 8));
+        }
+
+        if (FlxG.mouse.wheel > 0)
+        {
+            changeLevel(Math.round(FlxG.mouse.wheel / 8));
+        }
+
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
         if (controls.UI_RIGHT_P)
         {
