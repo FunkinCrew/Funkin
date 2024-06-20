@@ -25,7 +25,7 @@
       * (ONLY DO THIS STEP IF THE DOWNLOAD FAILED) After installing the JDK, make sure you know where it installed! If you installed using a `.msi` file, it should be somewhere around `C:\Program Files\`. Go and look for an`Eclipse Adoptium` folder and open it.
       * (ONLY DO THIS STEP IF THE DOWNLOAD FAILED look for a folder named something like `jdk-17`. Right click and click on `Copy as path`.
       * (ONLY DO THIS STEP IF THE DOWNLOAD FAILED) Go to your command prompt and type `haxelib run lime config JAVA_HOME [JdkPathYouCopied]`
-      * after that is done all you need to do is to compile the app! `lime build android`
+      * after that is done delete the `temp` folder that just got made.
     * iOS:
       * Get Xcode from the app store on your MacOS Machine.
       * Download the iPhone SDK (First thing that pops up in Xcode)
