@@ -65,7 +65,6 @@ Full credits can be found in-game, or wherever the credits.json file is.
 * [JohnnyUtah](https://twitter.com/JohnnyUtahNG/) - Voice of Tankman
 * [L0Litsmonica](https://twitter.com/L0Litsmonica) - Voice of Mommy Mearest
 * [Shyllis](https://x.com/1shyll) - iOS Testing
-* team dumdum (yknow who)
 * [Toffee](https://x.com/toffee_caramel_) - Help with da guides
 
 
