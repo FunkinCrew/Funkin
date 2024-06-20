@@ -11,9 +11,16 @@ class Paths
 {
   static var currentLevel:Null<String> = null;
 
-  public static function setCurrentLevel(name:String):Void
+  public static function setCurrentLevel(name:Null<String>):Void
   {
-    currentLevel = name.toLowerCase();
+    if (name == null)
+    {
+      currentLevel = null;
+    }
+    else
+    {
+      currentLevel = name.toLowerCase();
+    }
   }
 
   public static function stripLibrary(path:String):String
