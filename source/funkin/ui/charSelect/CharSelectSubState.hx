@@ -79,14 +79,23 @@ class CharSelectSubState extends MusicBeatSubState
     selectSound.volume = 0.7;
     FlxG.sound.defaultSoundGroup.add(selectSound);
 
-    Conductor.instance.forceBPM(90);
-
-    FunkinSound.playMusic('charSelect',
+    // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
+    // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
+    FunkinSound.playMusic('stayFunky',
       {
-        startingVolume: 0.0,
+        startingVolume: 0,
         overrideExisting: true,
         restartTrack: true
       });
+    var introMusic:String = Paths.music('stayFunky/stayFunky-intro');
+    FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
+      FunkinSound.playMusic('stayFunky',
+        {
+          startingVolume: 1,
+          overrideExisting: true,
+          restartTrack: true
+        });
+    });
 
     var bg:FlxSprite = new FlxSprite(-153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
