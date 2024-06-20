@@ -2,8 +2,8 @@
 
 set ZIP_FILE="./temp/_temp_jdk.zip"
 set OUTPUT_DIR="./temp/"
-set SIX_LINK="https://download1326.mediafire.com/z0ecgdkuzfogLku0fmPps4X90mDN1VYj2pvfO3MmQKU2kmM5-MHEIEDsAfqIsmr6iWPjym7NKixK058SkwJtAK9_pM-yM9pdcCltXtxgakb7SWriW_OHpMV4JVeY9YJKhPebfP4zHDDs24YffZo7-pu1y5GJyqf-gpqQ_4kChktTqw/hl5ubksdmetvfcb/windows-jdk-64.zip"
-set EIGHT_LINK="https://download948.mediafire.com/1uri3yg8byugo6K5uv2c5kpOFf2ayY-dpy3BqlIKK6v1jPaw_BhRQNS5HatXsIbTBl-VrmTD8j0scEGGi3jWXI0Rgjr4ruyy51KQMy61CrMbauT0vk4zx7mLKHXHVJzOkQJmuWENfwnKeOT66b-PCgwiwFJ2-CKUERd4gOk_0TO54A/xw4f5db6cxjmbdb/windows-jdk-86.zip"
+set SIX_LINK="https://drive.usercontent.google.com/download?id=1GqFpIk_bkxFb0tNN3x9LxnN-Zh_oDUX5&export=download&authuser=0&confirm=t&uuid=43108c0a-bd53-4465-86f3-80aaceaa7a38&at=APZUnTVNS_BV9cNyC_iicDInosmz%3A1718921284514"
+set EIGHT_LINK="https://drive.usercontent.google.com/download?id=1X8jjtYYos8aDfZKwehGS9B3zFQa-sCb-&export=download&authuser=0&confirm=t&uuid=07b24a6c-5352-4ba5-9fb8-cff151a6d91e&at=APZUnTUfw26NBAl0nCMn6HBKgHwK%3A1718922303598"
 
 echo MAKING TEMP
 mkdir %OUTPUT_DIR%
@@ -57,11 +57,10 @@ echo MOVED JDK
 
 
 echo LIME SETTING UP
-(
-  echo %LOCALAPPDATA%\Android\Sdk
-  echo %LOCALAPPDATA%\Android\Sdk\ndk\21.4.7075529
-  echo %LOCALAPPDATA%\Android\Sdk\jdk\jdk-17.0.11+9
-) | lime setup android
+haxelib run lime config ANDROID_SDK %LOCALAPPDATA%\Android\Sdk
+haxelib run lime config ANDROID_NDK_ROOT %LOCALAPPDATA%\Android\Sdk\ndk\21.4.7075529
+haxelib run lime config JAVA_HOME %LOCALAPPDATA%\Android\Sdk\jdk\jdk-17.0.11+9
+haxelib run lime config ANDROID_SETUP true
 echo DONE
 
 pause
