@@ -35,6 +35,7 @@ class PlayerData
    * Data for displaying this character in the Freeplay menu.
    * If null, display no DJ.
    */
+  @:optional
   public var freeplayDJ:Null<PlayerFreeplayDJData> = null;
 
   /**
@@ -73,8 +74,24 @@ class PlayerFreeplayDJData
   var assetPath:String;
   var animations:Array<AnimationData>;
 
+  @:optional
+  @:default("BOYFRIEND")
+  var text1:String;
+
+  @:optional
+  @:default("HOT BLOODED IN MORE WAYS THAN ONE")
+  var text2:String;
+
+  @:optional
+  @:default("PROTECT YO NUTS")
+  var text3:String;
+
+
   @:jignored
   var animationMap:Map<String, AnimationData>;
+
+  @:jignored
+  var prefixToOffsetsMap:Map<String, Array<Float>>;
 
   @:optional
   var cartoon:Null<PlayerFreeplayDJCartoonData>;
@@ -87,17 +104,29 @@ class PlayerFreeplayDJData
   function mapAnimations()
   {
     if (animationMap == null) animationMap = new Map();
+    if (prefixToOffsetsMap == null) prefixToOffsetsMap = new Map();
 
     animationMap.clear();
+    prefixToOffsetsMap.clear();
     for (anim in animations)
     {
       animationMap.set(anim.name, anim);
+      prefixToOffsetsMap.set(anim.prefix, anim.offsets);
     }
   }
 
   public function getAtlasPath():String
   {
     return Paths.animateAtlas(assetPath);
+  }
+
+  public function getFreeplayDJText(index:Int):String {
+    switch (index) {
+      case 1: return text1;
+      case 2: return text2;
+      case 3: return text3;
+      default: return '';
+    }
   }
 
   public function getAnimationPrefix(name:String):Null<String>
@@ -109,13 +138,16 @@ class PlayerFreeplayDJData
     return anim.prefix;
   }
 
-  public function getAnimationOffsets(name:String):Null<Array<Float>>
+  public function getAnimationOffsetsByPrefix(?prefix:String):Array<Float>
   {
-    if (animationMap.size() == 0) mapAnimations();
+    if (prefixToOffsetsMap.size() == 0) mapAnimations();
+    if (prefix == null) return [0, 0];
+    return prefixToOffsetsMap.get(prefix);
+  }
 
-    var anim = animationMap.get(name);
-    if (anim == null) return null;
-    return anim.offsets;
+  public function getAnimationOffsets(name:String):Array<Float>
+  {
+    return getAnimationOffsetsByPrefix(getAnimationPrefix(name));
   }
 
   // TODO: These should really be frame labels, ehe.

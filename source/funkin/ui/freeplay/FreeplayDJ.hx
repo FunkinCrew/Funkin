@@ -135,8 +135,12 @@ class FreeplayDJ extends FlxAtlasSprite
         timeIdling = 0;
       case Cartoon:
         var animPrefix = playableCharData.getAnimationPrefix('cartoon');
-        if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, true);
-        timeIdling = 0;
+        if (animPrefix == null) {
+          currentState = IdleEasterEgg;
+        } else {
+          if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, true);
+          timeIdling = 0;
+        }
       default:
         // I shit myself.
     }
@@ -324,7 +328,7 @@ class FreeplayDJ extends FlxAtlasSprite
   function applyAnimOffset()
   {
     var AnimName = getCurrentAnimation();
-    var daOffset = playableCharData.getAnimationOffsets(AnimName);
+    var daOffset = playableCharData.getAnimationOffsetsByPrefix(AnimName);
     if (daOffset != null)
     {
       var xValue = daOffset[0];
@@ -335,12 +339,12 @@ class FreeplayDJ extends FlxAtlasSprite
         yValue += offsetY;
       }
 
-      trace('Successfully applied offset: ' + xValue + ', ' + yValue);
+      trace('Successfully applied offset ($AnimName): ' + xValue + ', ' + yValue);
       offset.set(xValue, yValue);
     }
     else
     {
-      trace('No offset found, defaulting to: 0, 0');
+      trace('No offset found ($AnimName), defaulting to: 0, 0');
       offset.set(0, 0);
     }
   }

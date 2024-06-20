@@ -117,7 +117,10 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      openSubState(new FreeplayState());
+      openSubState(new FreeplayState(
+        {
+          character: FlxG.keys.pressed.SHIFT ? 'pico' : 'bf',
+        }));
     });
 
     #if CAN_OPEN_LINKS
