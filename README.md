@@ -17,7 +17,13 @@ Currently speaking, this mobile port can: Load videos, mods, visualize sounds, b
 
 **PLEASE USE THE LINKS ABOVE IF YOU JUST WANT TO PLAY THE GAME**
 
-To learn how to install the necessary dependencies and compile the game from source, please check out our [building the game](/docs/COMPILING.md) guide.
+To learn how to install the necessary dependencies and compile the game from source, please check out our [building the game](/docs/COMPILING.md) guide. (THIS ALSO INCLUDES BUILDING INTO MOBILE)
+
+## About Mobile Controls
+
+It’s pretty complicated to explain, but mobile porting is pretty easy once you get used to it! Hit me up on discord and I’ll explain everything to ya! Be sure to remind me to not overwhelm you with big words, I’m a big dummy lol.
+
+`moondroid.` (WITH THE DOT)
 
 # Contributing
 
@@ -33,12 +39,12 @@ Full credits can be found in-game, or wherever the credits.json file is.
 * [EliteMasterEric](https://twitter.com/EliteMasterEric) - Programmer
 * [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
 * [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
-* ZackDroid - Mobile Programming (Android)
-* MAJigsaw77 - Mobile Programming (Android)
-* Karim-Akra - Mobile Programming (Android)
-* Sector_5 - Mobile Programming (Android)
-* Luckydog7 - Mobile Programming (Android)
-* mca.gabe9 - Mobile Programming (iOS)
+* [ZackDroid](https://x.com/ZackDroidCoder) - Mobile Programming (Android)
+* [MAJigsaw77](https://github.com/MAJigsaw77) - Mobile Programming (Android)
+* [Karim-Akra](https://x.com/KarimAkra_0) - Mobile Programming (Android)
+* [Sector_5](https://github.com/sector-a) - Mobile Programming (Android)
+* [Luckydog7](https://github.com/luckydog7) - Mobile Programming (Android)
+* [mca.gabe9](https://github.com/mcagabe19) - Mobile Programming (iOS)
 * Our contributors on GitHub
 
 ## Art / Animation / UI
@@ -58,8 +64,8 @@ Full credits can be found in-game, or wherever the credits.json file is.
 * [Tom Fulp](https://twitter.com/tomfulp) - For being a great guy and for Newgrounds
 * [JohnnyUtah](https://twitter.com/JohnnyUtahNG/) - Voice of Tankman
 * [L0Litsmonica](https://twitter.com/L0Litsmonica) - Voice of Mommy Mearest
-* Shyllis - iOS Testing
+* [Shyllis](https://x.com/1shyll) - iOS Testing
 * team dumdum (yknow who)
-* Toffee - Help with da guides
+* [Toffee](https://x.com/toffee_caramel_) - Help with da guides
 
 
