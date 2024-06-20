@@ -16,6 +16,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
 import openfl.utils.Assets;
+import funkin.effects.RetroCameraFade;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -332,9 +333,12 @@ class GameOverSubState extends MusicBeatSubState
       // After the animation finishes...
       new FlxTimer().start(0.7, function(tmr:FlxTimer) {
         // ...fade out the graphics. Then after that happens...
-        FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+
+        var resetPlaying = function(pixel:Bool = false) {
           // ...close the GameOverSubState.
-          FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
+          if (pixel) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
+          else
+            FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           PlayState.instance.needsReset = true;
 
           if (PlayState.instance.isMinimalMode || boyfriend == null) {}
@@ -351,7 +355,22 @@ class GameOverSubState extends MusicBeatSubState
 
           // Close the substate.
           close();
-        });
+        };
+
+        if (musicSuffix == '-pixel')
+        {
+          RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
+          new FlxTimer().start(2, _ -> {
+            FlxG.camera.filters = [];
+            resetPlaying(true);
+          });
+        }
+        else
+        {
+          FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+            resetPlaying();
+          });
+        }
       });
     }
   }

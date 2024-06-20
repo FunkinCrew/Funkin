@@ -9,6 +9,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import flixel.util.FlxTimer;
+import funkin.util.EaseUtil;
 import funkin.audio.FunkinSound;
 
 class Countdown
@@ -117,7 +118,7 @@ class Countdown
    *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
    */
-  public static function pauseCountdown()
+  public static function pauseCountdown():Void
   {
     if (countdownTimer != null && !countdownTimer.finished)
     {
@@ -130,7 +131,7 @@ class Countdown
    *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
    */
-  public static function resumeCountdown()
+  public static function resumeCountdown():Void
   {
     if (countdownTimer != null && !countdownTimer.finished)
     {
@@ -143,7 +144,7 @@ class Countdown
    *
    * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStart event.
    */
-  public static function stopCountdown()
+  public static function stopCountdown():Void
   {
     if (countdownTimer != null)
     {
@@ -156,7 +157,7 @@ class Countdown
   /**
    * Stops the current countdown, then starts the song for you.
    */
-  public static function skipCountdown()
+  public static function skipCountdown():Void
   {
     stopCountdown();
     // This will trigger PlayState.startSong()
@@ -185,8 +186,11 @@ class Countdown
   {
     var spritePath:String = null;
 
+    var fadeEase = FlxEase.cubeInOut;
+
     if (isPixelStyle)
     {
+      fadeEase = EaseUtil.stepped(8);
       switch (index)
       {
         case TWO:
@@ -227,12 +231,17 @@ class Countdown
     countdownSprite.screenCenter();
 
     // Fade sprite in, then out, then destroy it.
-    FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.instance.beatLengthMs / 1000,
+    FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100}, Conductor.instance.beatLengthMs / 1000,
       {
         ease: FlxEase.cubeInOut,
         onComplete: function(twn:FlxTween) {
           countdownSprite.destroy();
         }
+      });
+
+    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000,
+      {
+        ease: fadeEase
       });
 
     PlayState.instance.add(countdownSprite);
