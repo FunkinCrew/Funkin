@@ -109,7 +109,7 @@ class StrumlineNote extends FlxSprite
   {
     this.active = true;
     this.playAnimation('confirm', true);
-    if (!isPlayer) confirmHoldTimer = 0;
+    confirmHoldTimer = isPlayer ? -1 : 0;
   }
 
   public function isConfirm():Bool
