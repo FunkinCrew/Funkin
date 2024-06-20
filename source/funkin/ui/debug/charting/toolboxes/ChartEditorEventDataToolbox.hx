@@ -25,6 +25,7 @@ import haxe.ui.data.ArrayDataSource;
 import haxe.ui.containers.Grid;
 import haxe.ui.components.DropDown;
 import haxe.ui.containers.Frame;
+import haxe.ui.components.ColorPicker;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
@@ -151,6 +152,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           case Std.isOfType(_, TextField) => true:
             var textField:TextField = cast field;
             textField.text = value;
+          case Std.isOfType(_, ColorPicker) => true:
+            var colorPicker:ColorPicker = cast field;
+            colorPicker.currentColor = value;
           default:
             throw 'ChartEditorToolboxHandler.refresh() - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
         }
@@ -207,6 +211,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           checkBox.id = field.name;
           if (field.defaultValue != null) checkBox.selected = field.defaultValue;
           input = checkBox;
+        case COLOR:
+          var colorPicker:ColorPicker = new ColorPicker();
+          colorPicker.addClass("no-sliders");
+          colorPicker.id = field.name;
+          colorPicker.width = 200.0;
+          colorPicker.height = 250.0;
+          if (field.defaultValue != null) colorPicker.currentColor = field.defaultValue;
+          input = colorPicker;
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
@@ -261,15 +273,20 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       // Update the value of the event data.
       input.onChange = function(event:UIEvent) {
-        var value = event.target.value;
-        if (field.type == ENUM)
+        var value:Null<Dynamic>;
+
+        switch (field.type)
         {
-          value = event.target.value.value;
-        }
-        else if (field.type == BOOL)
-        {
-          var chk:CheckBox = cast event.target;
-          value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
+          case ENUM:
+            value = event.target.value.value;
+          case COLOR:
+            var clr:ColorPicker = cast event.target;
+            value = clr.currentColor.toHex();
+          case BOOL:
+            var chk:CheckBox = cast event.target;
+            value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
+          default:
+            value = event.target.value;
         }
 
         trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${value}');
