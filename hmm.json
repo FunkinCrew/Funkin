@@ -45,7 +45,7 @@
       "type": "git",
       "dir": null,
       "ref": "main",
-      "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "format",
@@ -174,7 +174,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "bfbe30d81601b3543d80dce580108ad6b7e182c7",
+      "ref": "05d1516e5d84f55317a92ba6d1e66eaaf2cfa6a5",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
