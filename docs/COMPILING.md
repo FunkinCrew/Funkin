@@ -5,7 +5,9 @@
     - Download Git from [git-scm.com](https://www.git-scm.com)
     - Do NOT download the repository using the Download ZIP button on GitHub or you may run into errors!
     - Instead, open a command prompt and do the following steps...
-1. Run `git clone --recursive https://github.com/FunkinCrew/funkin.git` to clone the base repository and its submodules.
+
+1. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
+2. Run `git submodule update --init --recursive` to download the game's assets.
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
 2. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
 3. Run `hmm install` to install all haxelibs of the current branch
