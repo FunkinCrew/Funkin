@@ -336,6 +336,24 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
+        #if !html5
+        if (FlxG.mouse.wheel != 0)
+        {
+          changeLevel(-Math.round(FlxG.mouse.wheel));
+        }
+        #else
+        if (FlxG.mouse.wheel < 0)
+        {
+          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
+        }
+        else if (FlxG.mouse.wheel > 0)
+        {
+          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
+        }
+        #end
+
+        // HTML and NON HTML builds mouse fix.
+
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
         if (controls.UI_RIGHT_P)
         {
