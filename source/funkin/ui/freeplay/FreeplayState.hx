@@ -1324,9 +1324,14 @@ class FreeplayState extends MusicBeatSubState
 
     var upP:Bool = (controls.UI_UP_P #if mobile || SwipeUtil.swipeUp #end && !FlxG.keys.pressed.CONTROL);
     var downP:Bool = (controls.UI_DOWN_P #if mobile || SwipeUtil.swipeDown #end && !FlxG.keys.pressed.CONTROL);
-    var accepted:Bool = (controls.ACCEPT #if mobile || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end && !FlxG.keys.pressed.CONTROL);
+    var accepted:Bool = (controls.ACCEPT #if mobile
+      || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0)
+        && TouchUtil.justReleased
+        && !SwipeUtil.swipeAny) #end
+      && !FlxG.keys.pressed.CONTROL);
 
-    if (!FlxG.keys.pressed.CONTROL && ((controls.UI_UP #if mobile || SwipeUtil.swipeUp #end) || (controls.UI_DOWN #if mobile || SwipeUtil.swipeDown #end)))
+    if (!FlxG.keys.pressed.CONTROL
+      && ((controls.UI_UP #if mobile || SwipeUtil.swipeUp #end) || (controls.UI_DOWN #if mobile || SwipeUtil.swipeDown #end)))
     {
       if (spamming)
       {
@@ -1449,89 +1454,90 @@ class FreeplayState extends MusicBeatSubState
 
   function goBack():Void
   {
-      busy = true;
-      FlxTween.globalManager.clear();
-      FlxTimer.globalManager.clear();
-      dj.onIntroDone.removeAll();
+    if (busy) return;
+    busy = true;
+    FlxTween.globalManager.clear();
+    FlxTimer.globalManager.clear();
+    dj.onIntroDone.removeAll();
 
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
     #if mobile
     FlxTween.tween(backButton, {x: 1524}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.quartInOut});
     #end
 
-      var longestTimer:Float = 0;
+    var longestTimer:Float = 0;
 
-      // FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
-      FlxTween.color(pinkBack, 0.25, 0xFFFFD863, 0xFFFFD0D5, {ease: FlxEase.quadOut});
+    // FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
+    FlxTween.color(pinkBack, 0.25, 0xFFFFD863, 0xFFFFD0D5, {ease: FlxEase.quadOut});
 
-      cardGlow.visible = true;
-      cardGlow.alpha = 1;
-      cardGlow.scale.set(1, 1);
-      FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
+    cardGlow.visible = true;
+    cardGlow.alpha = 1;
+    cardGlow.scale.set(1, 1);
+    FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
 
-      orangeBackShit.visible = false;
-      alsoOrangeLOL.visible = false;
+    orangeBackShit.visible = false;
+    alsoOrangeLOL.visible = false;
 
-      moreWays.visible = false;
-      funnyScroll.visible = false;
-      txtNuts.visible = false;
-      funnyScroll2.visible = false;
-      moreWays2.visible = false;
-      funnyScroll3.visible = false;
+    moreWays.visible = false;
+    funnyScroll.visible = false;
+    txtNuts.visible = false;
+    funnyScroll2.visible = false;
+    moreWays2.visible = false;
+    funnyScroll3.visible = false;
 
-      for (grpSpr in exitMovers.keys())
+    for (grpSpr in exitMovers.keys())
+    {
+      var moveData:MoveData = exitMovers.get(grpSpr);
+
+      for (spr in grpSpr)
       {
-        var moveData:MoveData = exitMovers.get(grpSpr);
+        if (spr == null) continue;
 
-        for (spr in grpSpr)
-        {
-          if (spr == null) continue;
+        var funnyMoveShit:MoveData = moveData;
 
-          var funnyMoveShit:MoveData = moveData;
+        if (moveData.x == null) funnyMoveShit.x = spr.x;
+        if (moveData.y == null) funnyMoveShit.y = spr.y;
+        if (moveData.speed == null) funnyMoveShit.speed = 0.2;
+        if (moveData.wait == null) funnyMoveShit.wait = 0;
 
-          if (moveData.x == null) funnyMoveShit.x = spr.x;
-          if (moveData.y == null) funnyMoveShit.y = spr.y;
-          if (moveData.speed == null) funnyMoveShit.speed = 0.2;
-          if (moveData.wait == null) funnyMoveShit.wait = 0;
+        FlxTween.tween(spr, {x: funnyMoveShit.x, y: funnyMoveShit.y}, funnyMoveShit.speed, {ease: FlxEase.expoIn});
 
-          FlxTween.tween(spr, {x: funnyMoveShit.x, y: funnyMoveShit.y}, funnyMoveShit.speed, {ease: FlxEase.expoIn});
-
-          longestTimer = Math.max(longestTimer, funnyMoveShit.speed + funnyMoveShit.wait);
-        }
+        longestTimer = Math.max(longestTimer, funnyMoveShit.speed + funnyMoveShit.wait);
       }
+    }
 
-      for (caps in grpCapsules.members)
-      {
-        caps.doJumpIn = false;
-        caps.doLerp = false;
-        caps.doJumpOut = true;
-      }
+    for (caps in grpCapsules.members)
+    {
+      caps.doJumpIn = false;
+      caps.doLerp = false;
+      caps.doJumpOut = true;
+    }
 
+    if (Type.getClass(_parentState) == MainMenuState)
+    {
+      _parentState.persistentUpdate = false;
+      _parentState.persistentDraw = true;
+    }
+
+    new FlxTimer().start(longestTimer, (_) -> {
+      FlxTransitionableState.skipNextTransIn = true;
+      FlxTransitionableState.skipNextTransOut = true;
       if (Type.getClass(_parentState) == MainMenuState)
       {
-        _parentState.persistentUpdate = false;
-        _parentState.persistentDraw = true;
+        FunkinSound.playMusic('freakyMenu',
+          {
+            overrideExisting: true,
+            restartTrack: false
+          });
+        FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+        close();
       }
-
-      new FlxTimer().start(longestTimer, (_) -> {
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-        if (Type.getClass(_parentState) == MainMenuState)
-        {
-          FunkinSound.playMusic('freakyMenu',
-            {
-              overrideExisting: true,
-              restartTrack: false
-            });
-          FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
-          close();
-        }
-        else
-        {
-          FlxG.switchState(() -> new MainMenuState());
-        }
-      });
+      else
+      {
+        FlxG.switchState(() -> new MainMenuState());
+      }
+    });
   }
 
   function changeDiff(change:Int = 0, force:Bool = false):Void
