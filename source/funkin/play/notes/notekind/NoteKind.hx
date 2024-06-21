@@ -2,6 +2,7 @@ package funkin.play.notes.notekind;
 
 import funkin.modding.IScriptedClass.INoteScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import flixel.math.FlxMath;
 
 /**
  * Class for note scripts
@@ -42,22 +43,47 @@ class NoteKind implements INoteScriptedClass
   }
 
   /**
-   * Retrieve the param with the given name
+   * Retrieve the value of the param with the given name
    * If there exists no param with the given name then `null` is returned
    * @param name Name of the param
-   * @return Null<NoteKindParam>
+   * @return Null<Dynamic>
    */
-  public function getParam(name:String):Null<NoteKindParam>
+  public function getParam(name:String):Null<Dynamic>
   {
     for (param in params)
     {
       if (param.name == name)
       {
-        return param;
+        return param.data.value;
       }
     }
 
     return null;
+  }
+
+  /**
+   * Set the value of the param with the given name
+   * @param name Name of the param
+   * @param value New value
+   */
+  public function setParam(name:String, value:Dynamic):Void
+  {
+    for (param in params)
+    {
+      if (param.name == name)
+      {
+        if (param.type == NoteKindParamType.RANGED_INT || param.type == NoteKindParamType.RANGED_FLOAT)
+        {
+          param.data.value = FlxMath.bound(value, param.data.min, param.data.max);
+        }
+        else
+        {
+          param.data.value = value;
+        }
+
+        break;
+      }
+    }
   }
 
   /**
@@ -91,7 +117,7 @@ class NoteKind implements INoteScriptedClass
  * Abstract for setting the type of the `NoteKindParam`
  * This was supposed to be an enum but polymod kept being annoying
  */
-abstract NoteKindParamType(String)
+abstract NoteKindParamType(String) to String
 {
   public static var STRING:String = "String";
 
@@ -108,11 +134,13 @@ typedef NoteKindParamData =
 {
   /**
    * Only used for `RangedInt` and `RangedFloat`
+   * If `min` is null, there is no minimum
    */
   var min:Null<Float>;
 
   /**
    * Only used for `RangedInt` and `RangedFloat`
+   * If `max` is null, there is no maximum
    */
   var max:Null<Float>;
 
