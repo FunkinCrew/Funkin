@@ -44,7 +44,7 @@ Full credits can be found in-game, or wherever the credits.json file is.
 * [Karim-Akra](https://x.com/KarimAkra_0) - Mobile Programming (Android)
 * [Sector_5](https://github.com/sector-a) - Mobile Programming (Android)
 * [Luckydog7](https://github.com/luckydog7) - Mobile Programming (Android)
-* [mca.gabe9](https://github.com/mcagabe19) - Mobile Programming (iOS)
+* [Lily](https://github.com/mcagabe19) - Mobile Programming (iOS)
 * Our contributors on GitHub
 
 ## Art / Animation / UI

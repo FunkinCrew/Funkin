@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * FlxPartialSound are now working on iOS Platforms due to openfl’s getBytes
 * FlxPartialSound are now working on Android Platforms due to it using sys libraries.
 * Plugging in a keyboard while inside the app doesn’t crash it now.
+* Armv7 builds on android do not crash now.
 
 ## \[0.4.1\] - 2024-06-12
 
