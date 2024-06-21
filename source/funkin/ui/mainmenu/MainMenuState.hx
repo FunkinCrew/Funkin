@@ -322,6 +322,12 @@ class MainMenuState extends MusicBeatState
   {
     super.update(elapsed);
 
+    // if (FlxG.keys.justPressed.M || FlxG.android.justReleased.BACK)
+    // {
+    //   FlxG.state.persistentUpdate = false;
+    //   openSubState(new funkin.mobile.ui.mods.ModsManager());
+    // }
+
     // Open the debug menu, defaults to ` / ~
     #if CHART_EDITOR_SUPPORTED
     if (controls.DEBUG_MENU)
