@@ -39,7 +39,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
-          name: androidBuild-${{matrix.flag}}
+          name: androidBuild
           path: export/release/android/bin/app/build/outputs/apk/debug
           if-no-files-found: error
   iOS:
