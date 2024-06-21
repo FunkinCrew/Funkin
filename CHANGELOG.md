@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 * Virtual pad controls are now entirely removed from the game.
+* html5 Builds are now removed from here.
 
 ### Fixed
 
