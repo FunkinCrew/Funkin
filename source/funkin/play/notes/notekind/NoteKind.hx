@@ -23,16 +23,41 @@ class NoteKind implements INoteScriptedClass
    */
   public var noteStyleId:Null<String>;
 
-  public function new(noteKind:String, description:String = "", ?noteStyleId:String)
+  /**
+   * Custom parameters for the chart editor
+   */
+  public var params:Array<NoteKindParam>;
+
+  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>)
   {
     this.noteKind = noteKind;
     this.description = description;
     this.noteStyleId = noteStyleId;
+    this.params = params ?? [];
   }
 
   public function toString():String
   {
     return noteKind;
+  }
+
+  /**
+   * Retrieve the param with the given name
+   * If there exists no param with the given name then `null` is returned
+   * @param name Name of the param
+   * @return Null<NoteKindParam>
+   */
+  public function getParam(name:String):Null<NoteKindParam>
+  {
+    for (param in params)
+    {
+      if (param.name == name)
+      {
+        return param;
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -60,4 +85,47 @@ class NoteKind implements INoteScriptedClass
   public function onNoteHit(event:HitNoteScriptEvent):Void {}
 
   public function onNoteMiss(event:NoteScriptEvent):Void {}
+}
+
+/**
+ * Abstract for setting the type of the `NoteKindParam`
+ * This was supposed to be an enum but polymod kept being annoying
+ */
+abstract NoteKindParamType(String)
+{
+  public static var STRING:String = "String";
+
+  public static var INT:String = "Int";
+
+  public static var RANGED_INT:String = "RangedInt";
+
+  public static var FLOAT:String = "Float";
+
+  public static var RANGED_FLOAT:String = "RangedFloat";
+}
+
+typedef NoteKindParamData =
+{
+  /**
+   * Only used for `RangedInt` and `RangedFloat`
+   */
+  var min:Null<Float>;
+
+  /**
+   * Only used for `RangedInt` and `RangedFloat`
+   */
+  var max:Null<Float>;
+
+  var value:Dynamic;
+}
+
+/**
+ * Typedef for creating custom parameters in the chart editor
+ */
+typedef NoteKindParam =
+{
+  var name:String;
+  var description:String;
+  var type:NoteKindParamType;
+  var data:NoteKindParamData;
 }
