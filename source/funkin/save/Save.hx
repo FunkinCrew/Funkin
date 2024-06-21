@@ -90,7 +90,9 @@ class Save
         {
           // Reasonable defaults.
           naughtyness: true,
+          ghostTapping: false,
           downscroll: false,
+          middlescroll: false,
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
@@ -1066,6 +1068,18 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var downscroll:Bool;
+
+  /**
+   * If enabled, the strumline is at the middle of the screen rather than the right side.
+   * @default `false`
+   */
+  var middlescroll:Bool;
+
+  /**
+   * If enabled, allows ghost tapping.
+   * @default `false`
+   */
+  var ghostTapping:Bool;
 
   /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.

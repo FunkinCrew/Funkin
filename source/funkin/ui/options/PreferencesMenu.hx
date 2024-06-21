@@ -35,7 +35,7 @@ class PreferencesMenu extends Page
     if (items != null) camFollow.y = items.selectedItem.y;
 
     menuCamera.follow(camFollow, null, 0.06);
-    var margin = 160;
+    var margin:Int = 160;
     menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
     menuCamera.minScrollY = 0;
 
@@ -55,6 +55,12 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemCheckbox('Middlescroll', 'Enable to show notes in the middle', function(value:Bool):Void {
+      Preferences.middlescroll = value;
+    }, Preferences.middlescroll);
+    createPrefItemCheckbox('Ghost Tapping', 'Allows tapping outside of notes', function(value:Bool):Void {
+      Preferences.ghostTapping = value;
+    }, Preferences.ghostTapping);
     createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);

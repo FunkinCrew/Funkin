@@ -27,6 +27,25 @@ class Preferences
   }
 
   /**
+   * If enabled, allows tapping outside of notes without losing health.
+   * @default `false`
+   */
+  public static var ghostTapping(get, set):Bool;
+
+  static function get_ghostTapping():Bool
+  {
+    return Save?.instance?.options?.ghostTapping;
+  }
+
+  static function set_ghostTapping(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.ghostTapping = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the strumline is at the bottom of the screen rather than the top.
    * @default `false`
    */
@@ -41,6 +60,25 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.downscroll = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the strumline is at the middle of the screen rather than the right side.
+   * @default `false`
+   */
+  public static var middlescroll(get, set):Bool;
+
+  static function get_middlescroll():Bool
+  {
+    return Save?.instance?.options?.middlescroll;
+  }
+
+  static function set_middlescroll(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.middlescroll = value;
     save.flush();
     return value;
   }

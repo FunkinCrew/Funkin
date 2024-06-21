@@ -1309,14 +1309,19 @@ class PlayState extends MusicBeatSubState
   {
     if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
     {
-      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
-        + ' ('
-        + storyDifficultyText
-        + ')', iconRPC, true,
-        currentSongLengthMs
-        - Conductor.instance.songPosition);
+      if (Conductor.instance.songPosition > 0.0)
+      {
+        DiscordClient.changePresence(detailsText, currentSong.song
+          + ' ('
+          + storyDifficultyText
+          + ')', iconRPC, true,
+          currentSongLengthMs
+          - Conductor.instance.songPosition);
+      }
       else
+      {
         DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+      }
     }
 
     super.onFocus();
@@ -1770,15 +1775,26 @@ class PlayState extends MusicBeatSubState
     add(playerStrumline);
     add(opponentStrumline);
 
-    // Position the player strumline on the right half of the screen
-    playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
-    // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
+    if (Preferences.middlescroll)
+    {
+      playerStrumline.x = (FlxG.width - playerStrumline.width) / 2;
+      opponentStrumline.visible = false;
+    }
+    else
+    {
+      // Position the player strumline on the right half of the screen
+      playerStrumline.x = FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET; // Classic style
+      // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
+
+      // Position the opponent strumline on the left half of the screen
+      opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
+      opponentStrumline.visible = true;
+    }
+
     playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
 
-    // Position the opponent strumline on the left half of the screen
-    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
     opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
@@ -1786,7 +1802,10 @@ class PlayState extends MusicBeatSubState
     if (!PlayStatePlaylist.isStoryMode)
     {
       playerStrumline.fadeInArrows();
-      opponentStrumline.fadeInArrows();
+      if (!Preferences.middlescroll)
+      {
+        opponentStrumline.fadeInArrows();
+      }
     }
   }
 
@@ -2373,6 +2392,7 @@ class PlayState extends MusicBeatSubState
       {
         // Pressed a wrong key with no notes nearby.
         // Perform a ghost miss (anti-spam).
+
         ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
 
         // Play the strumline animation.
@@ -2548,48 +2568,51 @@ class PlayState extends MusicBeatSubState
    */
   function ghostNoteMiss(direction:NoteDirection, hasPossibleNotes:Bool = true):Void
   {
-    var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
-      hasPossibleNotes, // Whether there was a note you could have hit.
-      - 1 * Constants.HEALTH_MISS_PENALTY, // How much health to add (negative).
-      - 10 // Amount of score to add (negative).
-    );
-    dispatchEvent(event);
-
-    // Calling event.cancelEvent() skips animations and penalties. Neat!
-    if (event.eventCanceled) return;
-
-    health += event.healthChange;
-    songScore += event.scoreChange;
-
-    if (!isPracticeMode)
+    if (!Preferences.ghostTapping)
     {
-      var pressArray:Array<Bool> = [
-        controls.NOTE_LEFT_P,
-        controls.NOTE_DOWN_P,
-        controls.NOTE_UP_P,
-        controls.NOTE_RIGHT_P
-      ];
+      var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
+        hasPossibleNotes, // Whether there was a note you could have hit.
+        - 1 * Constants.HEALTH_MISS_PENALTY, // How much health to add (negative).
+        - 10 // Amount of score to add (negative).
+      );
+      dispatchEvent(event);
 
-      var indices:Array<Int> = [];
-      for (i in 0...pressArray.length)
-      {
-        if (pressArray[i]) indices.push(i);
-      }
-      for (i in 0...indices.length)
-      {
-        inputSpitter.push(
-          {
-            t: Std.int(Conductor.instance.songPosition),
-            d: indices[i],
-            l: 20
-          });
-      }
-    }
+      // Calling event.cancelEvent() skips animations and penalties. Neat!
+      if (event.eventCanceled) return;
 
-    if (event.playSound)
-    {
-      vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      health += event.healthChange;
+      songScore += event.scoreChange;
+
+      if (!isPracticeMode)
+      {
+        var pressArray:Array<Bool> = [
+          controls.NOTE_LEFT_P,
+          controls.NOTE_DOWN_P,
+          controls.NOTE_UP_P,
+          controls.NOTE_RIGHT_P
+        ];
+
+        var indices:Array<Int> = [];
+        for (i in 0...pressArray.length)
+        {
+          if (pressArray[i]) indices.push(i);
+        }
+        for (i in 0...indices.length)
+        {
+          inputSpitter.push(
+            {
+              t: Std.int(Conductor.instance.songPosition),
+              d: indices[i],
+              l: 20
+            });
+        }
+      }
+
+      if (event.playSound)
+      {
+        vocals.playerVolume = 0;
+        FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      }
     }
   }
 
