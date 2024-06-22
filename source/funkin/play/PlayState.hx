@@ -51,6 +51,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
+import funkin.play.stage.Bopper;
 import funkin.save.Save;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
@@ -191,6 +192,11 @@ class PlayState extends MusicBeatSubState
    * Gets disabled once resetting happens.
    */
   public var needsReset:Bool = false;
+
+  /**
+   * Map of the boppers that will reset their bop speed once the restart occurs.
+   */
+  public var resetBoppers:Map<Bopper, Int> = new Map<Bopper, Int>();
 
   /**
    * The current 'Blueball Counter' to display in the pause menu.
@@ -891,6 +897,12 @@ class PlayState extends MusicBeatSubState
       // Delete all notes and reset the arrays.
       regenNoteData();
 
+      if (resetBoppers.size() > 0) {
+        for (bopper => speed in resetBoppers) {
+          bopper.danceEvery = speed;
+        }
+      }
+
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -1005,8 +1017,6 @@ class PlayState extends MusicBeatSubState
     }
     FlxG.watch.addQuick('health', health);
     FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
-
-    // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.
     if (!isInCutscene && !disableKeys)
