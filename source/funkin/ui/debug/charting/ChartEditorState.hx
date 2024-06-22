@@ -35,6 +35,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
+import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageData;
@@ -538,6 +539,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The note kind to use for notes being placed in the chart. Defaults to `null`.
    */
   var noteKindToPlace:Null<String> = null;
+
+  /**
+   * The note params to use for notes being placed in the chart. Defaults to `[]`.
+   */
+  var noteParamsToPlace:Array<NoteParamData> = [];
 
   /**
    * The event type to use for events being placed in the chart. Defaults to `''`.
@@ -2437,7 +2443,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     gridGhostNote = new ChartEditorNoteSprite(this);
     gridGhostNote.alpha = 0.6;
-    gridGhostNote.noteData = new SongNoteData(0, 0, 0, "");
+    gridGhostNote.noteData = new SongNoteData(0, 0, 0, "", []);
     gridGhostNote.visible = false;
     add(gridGhostNote);
     gridGhostNote.zIndex = 11;
@@ -4731,7 +4737,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace);
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace, noteParamsToPlace.clone());
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -4890,11 +4896,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
-            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, noteKindToPlace);
+            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, noteKindToPlace,
+              noteParamsToPlace.clone());
 
-            if (cursorColumn != noteData.data || noteKindToPlace != noteData.kind)
+            if (cursorColumn != noteData.data || noteKindToPlace != noteData.kind || noteParamsToPlace != noteData.params)
             {
               noteData.kind = noteKindToPlace;
+              noteData.params = noteParamsToPlace;
               noteData.data = cursorColumn;
               gridGhostNote.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, isPixelStyle()) ?? currentSongNoteStyle;
               gridGhostNote.playNoteAnimation();
@@ -5202,7 +5210,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (notesAtPos.length == 0 && !removeNoteInstead)
     {
       trace('Placing note. ${column}');
-      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace);
+      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace, noteParamsToPlace.clone());
       performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
       currentLiveInputPlaceNoteData[column] = newNoteData;
     }
@@ -5655,6 +5663,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     FlxG.watch.addQuick('musicTime', audioInstTrack?.time ?? 0.0);
 
     FlxG.watch.addQuick('noteKindToPlace', noteKindToPlace);
+    FlxG.watch.addQuick('noteParamsToPlace', noteParamsToPlace);
     FlxG.watch.addQuick('eventKindToPlace', eventKindToPlace);
 
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);

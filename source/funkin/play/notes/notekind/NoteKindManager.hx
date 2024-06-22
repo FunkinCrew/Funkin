@@ -5,6 +5,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.notekind.NoteKind.NoteKindParam;
 
 class NoteKindManager
 {
@@ -100,9 +101,9 @@ class NoteKindManager
   /**
    * Retrive custom params of the given note kind
    * @param noteKind Name of the note kind
-   * @return Array<NoteKind.NoteKindParam>
+   * @return Array<NoteKindParam>
    */
-  public static function getParams(noteKind:String):Array<NoteKind.NoteKindParam>
+  public static function getParams(noteKind:String):Array<NoteKindParam>
   {
     return noteKinds.get(noteKind)?.params ?? [];
   }

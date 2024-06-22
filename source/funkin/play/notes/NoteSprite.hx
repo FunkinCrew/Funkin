@@ -1,6 +1,7 @@
 package funkin.play.notes;
 
 import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.NoteParamData;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
@@ -63,6 +64,22 @@ class NoteSprite extends FunkinSprite
   {
     if (this.noteData == null) return value;
     return this.noteData.kind = value;
+  }
+
+  /**
+   * An array of custom parameters for this note
+   */
+  public var params(get, set):Array<NoteParamData>;
+
+  function get_params():Array<NoteParamData>
+  {
+    return this.noteData?.params ?? [];
+  }
+
+  function set_params(value:Array<NoteParamData>):Array<NoteParamData>
+  {
+    if (this.noteData == null) return value;
+    return this.noteData.params = value;
   }
 
   /**
@@ -152,6 +169,23 @@ class NoteSprite extends FunkinSprite
     updateHitbox();
 
     this.shader = hsvShader;
+  }
+
+  /**
+   * Retrieve the value of the param with the given name
+   * @param name Name of the param
+   * @return Null<Dynamic>
+   */
+  public function getParam(name:String):Null<Dynamic>
+  {
+    for (param in params)
+    {
+      if (param.name == name)
+      {
+        return param.value;
+      }
+    }
+    return null;
   }
 
   #if FLX_DEBUG

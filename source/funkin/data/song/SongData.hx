@@ -951,12 +951,18 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return this.kind = value;
   }
 
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
+  @:alias("p")
+  @:default([])
+  @:optional
+  public var params:Array<NoteParamData>;
+
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
   {
     this.time = time;
     this.data = data;
     this.length = length;
     this.kind = kind;
+    this.params = params ?? [];
   }
 
   /**
@@ -1053,7 +1059,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind);
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, this.params);
   }
 
   public function toString():String
@@ -1069,9 +1075,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 @:forward
 abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 {
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
   {
-    this = new SongNoteDataRaw(time, data, length, kind);
+    this = new SongNoteDataRaw(time, data, length, kind, params);
   }
 
   public static function buildDirectionName(data:Int, strumlineSize:Int = 4):String
@@ -1181,5 +1187,32 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   {
     return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
       + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+  }
+}
+
+class NoteParamData implements ICloneable<NoteParamData>
+{
+  @:alias("n")
+  public var name:String;
+
+  @:alias("v")
+  @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  public var value:Dynamic;
+
+  public function new(name:String, value:Dynamic)
+  {
+    this.name = name;
+    this.value = value;
+  }
+
+  public function clone():NoteParamData
+  {
+    return new NoteParamData(this.name, this.value);
+  }
+
+  public function toString():String
+  {
+    return 'NoteParamData(${this.name}, ${this.value})';
   }
 }
