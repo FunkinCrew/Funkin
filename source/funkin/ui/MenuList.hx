@@ -113,7 +113,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     }
     else
     {
-      return FlxMath.bound(index + change, 0, size - 1);
+      return Std.int(FlxMath.bound(index + change, 0, size - 1));
     }
 
     return index;
