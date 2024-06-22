@@ -82,12 +82,20 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
           paramLabel.horizontalAlign = "right";
 
           var paramStepper:NumberStepper = new NumberStepper();
-          paramStepper.min = param.data.min;
-          paramStepper.max = param.data.max;
-          paramStepper.value = param.data.value;
+          paramStepper.value = param.data.defaultValue;
           paramStepper.precision = 1;
           paramStepper.step = 0.1;
           paramStepper.percentWidth = 100;
+
+          // this check should be unnecessary but for some reason even when min or max is null it will set it to 0
+          if (param.data.min != null)
+          {
+            paramStepper.min = param.data.min;
+          }
+          if (param.data.max != null)
+          {
+            paramStepper.max = param.data.max;
+          }
 
           addNoteKindParam(paramLabel, paramStepper);
         }
