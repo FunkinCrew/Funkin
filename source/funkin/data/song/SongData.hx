@@ -1057,9 +1057,19 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     _stepLength = null;
   }
 
+  public function cloneParams():Array<NoteParamData>
+  {
+    var params:Array<NoteParamData> = [];
+    for (param in this.params)
+    {
+      params.push(param.clone());
+    }
+    return params;
+  }
+
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, this.params);
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams());
   }
 
   public function toString():String
@@ -1121,7 +1131,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       if (other.kind == '' || this.kind == null) return false;
     }
 
-    return this.time == other.time && this.data == other.data && this.length == other.length;
+    return this.time == other.time && this.data == other.data && this.length == other.length && this.params == other.params;
   }
 
   @:op(A != B)
@@ -1140,7 +1150,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       if (other.kind == '') return true;
     }
 
-    return this.time != other.time || this.data != other.data || this.length != other.length;
+    return this.time != other.time || this.data != other.data || this.length != other.length || this.params != other.params;
   }
 
   @:op(A > B)
@@ -1177,7 +1187,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 
   public function clone():SongNoteData
   {
-    return new SongNoteData(this.time, this.data, this.length, this.kind);
+    return new SongNoteData(this.time, this.data, this.length, this.kind, this.params);
   }
 
   /**
