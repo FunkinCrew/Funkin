@@ -2,11 +2,12 @@ package funkin.ui.debug.charting.toolboxes;
 
 import haxe.ui.components.DropDown;
 import haxe.ui.components.TextField;
+import haxe.ui.components.Label;
+import haxe.ui.components.NumberStepper;
+import haxe.ui.containers.Grid;
+import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
-import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
-import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
-import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notekind.NoteKindManager;
 
 /**
@@ -16,8 +17,12 @@ import funkin.play.notes.notekind.NoteKindManager;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/toolboxes/note-data.xml"))
 class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 {
+  static final DIALOG_HEIGHT:Int = 100;
+
+  var toolboxNotesGrid:Grid;
   var toolboxNotesNoteKind:DropDown;
   var toolboxNotesCustomKind:TextField;
+  var toolboxNotesParams:Array<ToolboxNoteKindParam> = [];
 
   var _initializing:Bool = true;
 
@@ -49,6 +54,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       if (noteKind == '~CUSTOM~')
       {
         showCustom();
+        clearNoteKindParams();
         toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
       }
       else
@@ -56,6 +62,25 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         hideCustom();
         chartEditorState.noteKindToPlace = noteKind;
         toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+
+        clearNoteKindParams();
+        for (param in NoteKindManager.getParams(noteKind))
+        {
+          var paramLabel:Label = new Label();
+          paramLabel.value = param.description;
+          paramLabel.verticalAlign = "center";
+          paramLabel.horizontalAlign = "right";
+
+          var paramStepper:NumberStepper = new NumberStepper();
+          paramStepper.min = param.data.min;
+          paramStepper.max = param.data.max;
+          paramStepper.value = param.data.value;
+          paramStepper.precision = 1;
+          paramStepper.step = 0.1;
+          paramStepper.percentWidth = 100;
+
+          addNoteKindParam(paramLabel, paramStepper);
+        }
       }
 
       if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
@@ -110,6 +135,9 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       }
     };
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+
+    // just to be safe
+    clearNoteKindParams();
   }
 
   public override function refresh():Void
@@ -132,8 +160,47 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     toolboxNotesCustomKind.hidden = true;
   }
 
+  function addNoteKindParam(label:Label, component:Component):Void
+  {
+    toolboxNotesParams.push({label: label, component: component});
+    toolboxNotesGrid.addComponent(label);
+    toolboxNotesGrid.addComponent(component);
+
+    this.height = Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT - 30 + toolboxNotesParams.length * 30);
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    // toolboxNotesGrid.height + 45
+    // this is what i found out is the calculation by printing this.height and grid.height
+    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, toolboxNotesGrid.height + 45));
+    if (this.height != heightToSet)
+    {
+      this.height = heightToSet;
+    }
+  }
+
+  function clearNoteKindParams():Void
+  {
+    for (param in toolboxNotesParams)
+    {
+      toolboxNotesGrid.removeComponent(param.component);
+      toolboxNotesGrid.removeComponent(param.label);
+    }
+    toolboxNotesParams = [];
+    this.height = DIALOG_HEIGHT;
+  }
+
   public static function build(chartEditorState:ChartEditorState):ChartEditorNoteDataToolbox
   {
     return new ChartEditorNoteDataToolbox(chartEditorState);
   }
+}
+
+typedef ToolboxNoteKindParam =
+{
+  var label:Label;
+  var component:Component;
 }

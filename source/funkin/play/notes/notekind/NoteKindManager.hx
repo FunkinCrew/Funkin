@@ -96,4 +96,14 @@ class NoteKindManager
 
     return noteStyleId;
   }
+
+  /**
+   * Retrive custom params of the given note kind
+   * @param noteKind Name of the note kind
+   * @return Array<NoteKind.NoteKindParam>
+   */
+  public static function getParams(noteKind:String):Array<NoteKind.NoteKindParam>
+  {
+    return noteKinds.get(noteKind)?.params ?? [];
+  }
 }
