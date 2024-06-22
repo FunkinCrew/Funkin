@@ -103,8 +103,13 @@ class NoteKindManager
    * @param noteKind Name of the note kind
    * @return Array<NoteKindParam>
    */
-  public static function getParams(noteKind:String):Array<NoteKindParam>
+  public static function getParams(noteKind:Null<String>):Array<NoteKindParam>
   {
+    if (noteKind == null)
+    {
+      return [];
+    }
+
     return noteKinds.get(noteKind)?.params ?? [];
   }
 }

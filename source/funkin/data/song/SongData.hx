@@ -1101,7 +1101,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, this.params);
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams());
   }
 
   public function toString():String
