@@ -72,13 +72,12 @@ class NoteKind implements INoteScriptedClass
     {
       if (param.name == name)
       {
-        if (param.type == NoteKindParamType.RANGED_INT || param.type == NoteKindParamType.RANGED_FLOAT)
+        switch (param.type)
         {
-          param.data.value = FlxMath.bound(value, param.data.min, param.data.max);
-        }
-        else
-        {
-          param.data.value = value;
+          case NoteKindParamType.INT | NoteKindParamType.FLOAT:
+            param.data.value = FlxMath.bound(value, param.data.min, param.data.max);
+          default:
+            param.data.value = value;
         }
 
         break;
@@ -123,23 +122,17 @@ abstract NoteKindParamType(String) to String
 
   public static var INT:String = "Int";
 
-  public static var RANGED_INT:String = "RangedInt";
-
   public static var FLOAT:String = "Float";
-
-  public static var RANGED_FLOAT:String = "RangedFloat";
 }
 
 typedef NoteKindParamData =
 {
   /**
-   * Only used for `RangedInt` and `RangedFloat`
    * If `min` is null, there is no minimum
    */
   var min:Null<Float>;
 
   /**
-   * Only used for `RangedInt` and `RangedFloat`
    * If `max` is null, there is no maximum
    */
   var max:Null<Float>;
