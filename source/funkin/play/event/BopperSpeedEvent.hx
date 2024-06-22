@@ -86,6 +86,7 @@ class BopperSpeedEvent extends SongEvent
         title: 'Dance Every Value',
         defaultValue: 1,
         step: 1,
+        min: 1,
         type: SongEventFieldType.INTEGER,
       },
       {
