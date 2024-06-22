@@ -43,50 +43,6 @@ class NoteKind implements INoteScriptedClass
   }
 
   /**
-   * Retrieve the value of the param with the given name
-   * If there exists no param with the given name then `null` is returned
-   * @param name Name of the param
-   * @return Null<Dynamic>
-   */
-  public function getParam(name:String):Null<Dynamic>
-  {
-    for (param in params)
-    {
-      if (param.name == name)
-      {
-        return param.data.value;
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Set the value of the param with the given name
-   * @param name Name of the param
-   * @param value New value
-   */
-  public function setParam(name:String, value:Dynamic):Void
-  {
-    for (param in params)
-    {
-      if (param.name == name)
-      {
-        if (param.type == NoteKindParamType.INT || param.type == NoteKindParamType.FLOAT)
-        {
-          param.data.value = FlxMath.bound(value, param.data.min, param.data.max);
-        }
-        else
-        {
-          param.data.value = value;
-        }
-
-        break;
-      }
-    }
-  }
-
-  /**
    * Retrieve all notes of this kind
    * @return Array<NoteSprite>
    */
@@ -131,14 +87,14 @@ typedef NoteKindParamData =
   /**
    * If `min` is null, there is no minimum
    */
-  var min:Null<Float>;
+  ?min:Null<Float>,
 
   /**
    * If `max` is null, there is no maximum
    */
-  var max:Null<Float>;
+  ?max:Null<Float>,
 
-  var value:Dynamic;
+  defaultValue:Dynamic
 }
 
 /**
@@ -146,8 +102,8 @@ typedef NoteKindParamData =
  */
 typedef NoteKindParam =
 {
-  var name:String;
-  var description:String;
-  var type:NoteKindParamType;
-  var data:NoteKindParamData;
+  name:String,
+  description:String,
+  type:NoteKindParamType,
+  data:NoteKindParamData
 }
