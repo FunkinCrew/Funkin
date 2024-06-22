@@ -22,7 +22,6 @@ class BopperSpeedEvent extends SongEvent
   }
 
   static final DEFAULT_DANCE_EVERY:Int = 1;
-  static final DEFAULT_DURATION:Float = 4.0;
 
   public override function handleEvent(data:SongEventData):Void
   {
@@ -31,9 +30,6 @@ class BopperSpeedEvent extends SongEvent
     var bopperName:String = data.getString('bopper');
 
     var speed:Int = data.getInt('danceEvery') ?? DEFAULT_DANCE_EVERY;
-
-    var duration:Float = data.getFloat('duration') ?? DEFAULT_DURATION;
-    var durSeconds:Float = Conductor.instance.stepLengthMs * duration / 1000;
 
     var bopperProp:FlxSprite = null;
 
@@ -58,11 +54,6 @@ class BopperSpeedEvent extends SongEvent
         bopper.danceEvery = speed;
         trace('Adding $bopperName to the list to reset the speed on restart.');
         PlayState.instance.resetBoppers.set(bopper, initEveryBeat);
-
-        new FlxTimer().start(durSeconds, function(tmr) {
-          trace('Resetting $bopperName speed back to $initEveryBeat.');
-          bopper.danceEvery = initEveryBeat;
-        });
       }
     }
   }
@@ -88,14 +79,6 @@ class BopperSpeedEvent extends SongEvent
         step: 1,
         min: 1,
         type: SongEventFieldType.INTEGER,
-      },
-      {
-        name: 'duration',
-        title: 'Duration',
-        defaultValue: 4.0,
-        step: 0.5,
-        type: SongEventFieldType.FLOAT,
-        units: 'steps'
       }
     ]);
   }
