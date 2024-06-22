@@ -4757,8 +4757,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace,
-                    ChartEditorState.cloneNoteParams(noteParamsToPlace));
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace, noteParamsToPlace.clone());
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -4918,7 +4917,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
             var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, noteKindToPlace,
-              ChartEditorState.cloneNoteParams(noteParamsToPlace));
+              noteParamsToPlace.clone());
 
             if (cursorColumn != noteData.data || noteKindToPlace != noteData.kind || noteParamsToPlace != noteData.params)
             {
@@ -5193,7 +5192,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (notesAtPos.length == 0 && !removeNoteInstead)
     {
       trace('Placing note. ${column}');
-      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace, ChartEditorState.cloneNoteParams(noteParamsToPlace));
+      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace, noteParamsToPlace.clone());
       performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
       currentLiveInputPlaceNoteData[column] = newNoteData;
     }

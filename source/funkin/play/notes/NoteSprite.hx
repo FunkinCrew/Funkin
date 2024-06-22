@@ -185,6 +185,23 @@ class NoteSprite extends FunkinSprite
     return null;
   }
 
+  /**
+   * Retrieve the value of the param with the given name
+   * @param name Name of the param
+   * @return Null<Dynamic>
+   */
+  public function getParam(name:String):Null<Dynamic>
+  {
+    for (param in params)
+    {
+      if (param.name == name)
+      {
+        return param.value;
+      }
+    }
+    return null;
+  }
+
   #if FLX_DEBUG
   /**
    * Call this to override how debug bounding boxes are drawn for this sprite.

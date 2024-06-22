@@ -9,6 +9,8 @@ import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notekind.NoteKind.NoteKindParam;
+import funkin.data.song.SongData.NoteParamData;
 
 /**
  * The toolbox which allows modifying information like Note Kind.
@@ -60,6 +62,13 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
       trace('ChartEditorToolboxHandler.buildToolboxNoteDataLayout() - Note kind changed: $noteKind');
 
+      var noteKindParams:Array<NoteKindParam> = NoteKindManager.getParams(noteKind);
+      var noteParamData:Array<NoteParamData> = [];
+      for (noteKindParam in noteKindParams)
+      {
+        noteParamData.push(new NoteParamData(noteKindParam.name, noteKindParam.data.defaultValue));
+      }
+
       // Edit the note data to place.
       if (noteKind == '~CUSTOM~')
       {
@@ -71,10 +80,11 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       {
         hideCustom();
         chartEditorState.noteKindToPlace = noteKind;
+        chartEditorState.noteParamsToPlace = noteParamData;
         toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
 
         clearNoteKindParams();
-        for (param in NoteKindManager.getParams(noteKind))
+        for (param in noteKindParams)
         {
           var paramLabel:Label = new Label();
           paramLabel.value = param.description;
@@ -109,10 +119,22 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
       if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
       {
+        for (i in 0...toolboxNotesParams.length)
+        {
+          var toolboxComponent:Component = toolboxNotesParams[i].component;
+          toolboxComponent.onChange = function(event:UIEvent) {
+            for (note in chartEditorState.currentNoteSelection)
+            {
+              note.params[i].value = toolboxComponent.value;
+            }
+          }
+        }
+
         for (note in chartEditorState.currentNoteSelection)
         {
           // Edit the note data of any selected notes.
           note.kind = chartEditorState.noteKindToPlace;
+          note.params = noteParamData.clone();
 
           // update note sprites
           for (noteSprite in chartEditorState.renderedNotes.members)
