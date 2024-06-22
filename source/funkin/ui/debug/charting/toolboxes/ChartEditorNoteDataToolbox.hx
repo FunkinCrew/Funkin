@@ -83,11 +83,11 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
           var paramStepper:NumberStepper = new NumberStepper();
           paramStepper.value = param.data.defaultValue;
-          paramStepper.precision = 1;
-          paramStepper.step = 0.1;
           paramStepper.percentWidth = 100;
+          paramStepper.step = param.data.step ?? 1;
 
-          // this check should be unnecessary but for some reason even when min or max is null it will set it to 0
+          // this check should be unnecessary but for some reason
+          // even when these are null it will set it to 0
           if (param.data.min != null)
           {
             paramStepper.min = param.data.min;
@@ -95,6 +95,10 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
           if (param.data.max != null)
           {
             paramStepper.max = param.data.max;
+          }
+          if (param.data.precision != null)
+          {
+            paramStepper.precision = param.data.precision;
           }
 
           addNoteKindParam(paramLabel, paramStepper);

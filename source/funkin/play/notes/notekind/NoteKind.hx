@@ -94,6 +94,16 @@ typedef NoteKindParamData =
    */
   ?max:Null<Float>,
 
+  /**
+   * If `step` is null, it will use 1.0
+   */
+  ?step:Null<Float>,
+
+  /**
+   * If `precision` is null, there will be 0 decimal places
+   */
+  ?precision:Null<Int>,
+
   defaultValue:Dynamic
 }
 
