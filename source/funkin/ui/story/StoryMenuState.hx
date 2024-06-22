@@ -352,7 +352,6 @@ class StoryMenuState extends MusicBeatState
         }
         #end
 
-        // HTML and NON HTML builds mouse fix.
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
         if (controls.UI_RIGHT_P)
