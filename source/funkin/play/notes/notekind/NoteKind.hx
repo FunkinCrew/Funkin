@@ -72,12 +72,13 @@ class NoteKind implements INoteScriptedClass
     {
       if (param.name == name)
       {
-        switch (param.type)
+        if (param.type == NoteKindParamType.INT || param.type == NoteKindParamType.FLOAT)
         {
-          case NoteKindParamType.INT | NoteKindParamType.FLOAT:
-            param.data.value = FlxMath.bound(value, param.data.min, param.data.max);
-          default:
-            param.data.value = value;
+          param.data.value = FlxMath.bound(value, param.data.min, param.data.max);
+        }
+        else
+        {
+          param.data.value = value;
         }
 
         break;
@@ -118,11 +119,11 @@ class NoteKind implements INoteScriptedClass
  */
 abstract NoteKindParamType(String) to String
 {
-  public static var STRING:String = "String";
+  public static final STRING:String = 'String';
 
-  public static var INT:String = "Int";
+  public static final INT:String = 'Int';
 
-  public static var FLOAT:String = "Float";
+  public static final FLOAT:String = 'Float';
 }
 
 typedef NoteKindParamData =
