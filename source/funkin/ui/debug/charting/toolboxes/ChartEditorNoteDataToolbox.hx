@@ -135,9 +135,6 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       }
     };
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
-
-    // just to be safe
-    clearNoteKindParams();
   }
 
   public override function refresh():Void
@@ -172,6 +169,12 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    // current dialog is minimized, dont change the height
+    if (this.minimized)
+    {
+      return;
+    }
 
     // toolboxNotesGrid.height + 45
     // this is what i found out is the calculation by printing this.height and grid.height
