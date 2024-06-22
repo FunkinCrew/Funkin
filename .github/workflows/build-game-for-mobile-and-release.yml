@@ -101,8 +101,8 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          automatic_release_tag: "0.4.x"
-          title: "0.4.x"
+          automatic_release_tag: "0.4.1"
+          title: "0.4.1"
           files: |
             /home/runner/*.apk
             /home/runner/*.zip
