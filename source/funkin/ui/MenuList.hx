@@ -4,7 +4,7 @@ import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-import funkin.util.MathUtil;
+import flixel.math.FlxMath;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 
@@ -106,19 +106,14 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int
   {
     if (prev == next) return index;
+    var change:Int = (prev ? -1 : 1);
     if (allowWrap)
     {
-      var change:Int = (prev ? -1 : 1);
-      return MathUtil.curSelectionWrap(index, change, members);
-    }
-
-    if (prev)
-    {
-      if (index > 0) index--;
+      return FlxMath.wrap(index + change, 0, size - 1);
     }
     else
     {
-      if (index < size - 1) index++;
+      return FlxMath.bound(index + change, 0, size - 1);
     }
 
     return index;

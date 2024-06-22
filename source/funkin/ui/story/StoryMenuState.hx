@@ -441,7 +441,7 @@ class StoryMenuState extends MusicBeatState
     var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
     // Wrap around
-    currentIndex = MathUtil.curSelectionWrap(currentIndex, change, difficultyList);
+    currentIndex = FlxMath.wrap(currentIndex + change, 0, difficultyList - 1);
 
     var hasChanged:Bool = currentDifficultyId != difficultyList[currentIndex];
     currentDifficultyId = difficultyList[currentIndex];

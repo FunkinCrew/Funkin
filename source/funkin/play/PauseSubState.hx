@@ -451,7 +451,7 @@ class PauseSubState extends MusicBeatSubState
   function changeSelection(change:Int = 0):Void
   {
     var prevEntry:Int = currentEntry;
-    currentEntry = MathUtil.curSelectionWrap(currentEntry, change, currentMenuEntries);
+    currentEntry = FlxMath.wrap(currentEntry + change, 0, currentMenuEntries.length - 1);
 
     if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 

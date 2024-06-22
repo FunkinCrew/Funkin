@@ -1564,7 +1564,7 @@ class FreeplayState extends MusicBeatSubState
     if (currentDifficultyIndex == -1) currentDifficultyIndex = diffIdsCurrent.indexOf(Constants.DEFAULT_DIFFICULTY);
 
     // Wrap around
-    currentDifficultyIndex = MathUtil.curSelectionWrap(currentDifficultyIndex, change, diffIdsCurrent);
+    currentDifficultyIndex = FlxMath.wrap(currentDifficultyIndex + change, 0, diffIdsCurrent.length - 1);
 
     currentDifficulty = diffIdsCurrent[currentDifficultyIndex];
 
@@ -1821,7 +1821,7 @@ class FreeplayState extends MusicBeatSubState
   {
     var prevSelected:Int = curSelected;
 
-    curSelected = FlxMath.wrap(curSelected + change, 0, grpCapsules.countLiving() - 1); // Doesn't use MathUtil.curSelectionWrap cuz your mom!!!
+    curSelected = FlxMath.wrap(curSelected + change, 0, grpCapsules.countLiving() - 1);
 
     if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
