@@ -346,6 +346,16 @@ class BaseCharacter extends Bopper
     }
   }
 
+  /**
+   * Stored the direction of the last note that was hit by this player.
+   */
+  var lastNoteDirection:Null<NoteDirection> = null;
+
+  /**
+   * Stores the time at which the player should stop looping the sing animation when pressing a hold note.
+   */
+  var lastHoldFinish:Null<Float> = null;
+
   public override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
@@ -388,6 +398,17 @@ class BaseCharacter extends Bopper
 
       // Without this check here, the player character would only play the `sing` animation
       // for one beat, as opposed to holding it as long as the player is holding the button.
+
+      // Repeat the sing animation when pressing a hold note just like in the old input system.
+      if ((this.characterType != BF || isHoldingNote())
+        && this.animation.curAnim.curFrame >= 3
+        && lastNoteDirection != null
+        && (lastHoldFinish != null && lastHoldFinish >= Conductor.instance.songPosition))
+      {
+        this.playSingAnimation(lastNoteDirection, false);
+        holdTimer = 0;
+      }
+
       var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
 
       FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
@@ -480,6 +501,15 @@ class BaseCharacter extends Bopper
   }
 
   /**
+   * Resets the hold data values to stop the animation from looping
+   */
+  function stopHolding()
+  {
+    lastNoteDirection = null;
+    lastHoldFinish = null;
+  }
+
+  /**
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
@@ -487,17 +517,16 @@ class BaseCharacter extends Bopper
   {
     super.onNoteHit(event);
 
-    if (event.note.noteData.getMustHitNote() && characterType == BF)
+    var noteDirection:NoteDirection = event.note.noteData.getDirection();
+
+    if ((event.note.noteData.getMustHitNote() && characterType == BF) || (!event.note.noteData.getMustHitNote() && characterType == DAD))
     {
       // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
+      this.playSingAnimation(noteDirection, false);
       holdTimer = 0;
-    }
-    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
-    {
-      // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
-      holdTimer = 0;
+
+      lastNoteDirection = noteDirection;
+      if (event.note.noteData.isHoldNote) lastHoldFinish = event.note.strumTime + event.note.noteData.length;
     }
   }
 
@@ -540,6 +569,8 @@ class BaseCharacter extends Bopper
         this.playAnimation(dropAnim, true, true);
       }
     }
+
+    stopHolding();
   }
 
   /**
@@ -561,6 +592,8 @@ class BaseCharacter extends Bopper
       // trace('Playing ghost miss animation...');
       this.playSingAnimation(event.dir, true);
     }
+
+    stopHolding();
   }
 
   public override function onDestroy(event:ScriptEvent):Void

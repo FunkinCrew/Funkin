@@ -111,6 +111,15 @@ class StrumlineNote extends FlxSprite
     this.playAnimation('confirm', true);
   }
 
+  public function playConfirmHold():Void
+  {
+    if (getCurrentAnimationFrame() >= 3)
+    {
+      this.active = true;
+      this.playAnimation('confirm', true);
+    }
+  }
+
   public function isConfirm():Bool
   {
     return getCurrentAnimation().startsWith('confirm');
@@ -136,6 +145,11 @@ class StrumlineNote extends FlxSprite
     {
       this.playAnimation('confirm', false, false);
     }
+  }
+
+  public function getCurrentAnimationFrame():Int
+  {
+    return this.animation.curAnim.curFrame;
   }
 
   /**
