@@ -352,7 +352,6 @@ class StoryMenuState extends MusicBeatState
         }
         #end
 
-
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
         if (controls.UI_RIGHT_P)
         {
