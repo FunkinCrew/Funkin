@@ -215,8 +215,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           var colorPicker:ColorPicker = new ColorPicker();
           colorPicker.addClass("no-sliders");
           colorPicker.id = field.name;
-          colorPicker.width = 200.0;
-          colorPicker.height = 250.0;
+          colorPicker.width = 215.0;
+          colorPicker.height = 230.0;
           if (field.defaultValue != null) colorPicker.currentColor = field.defaultValue;
           input = colorPicker;
         case ENUM:
