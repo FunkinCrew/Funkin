@@ -104,7 +104,7 @@ typedef NoteKindParamData =
    */
   ?precision:Null<Int>,
 
-  defaultValue:Dynamic
+  ?defaultValue:Dynamic
 }
 
 /**
@@ -115,5 +115,5 @@ typedef NoteKindParam =
   name:String,
   description:String,
   type:NoteKindParamType,
-  data:NoteKindParamData
+  ?data:NoteKindParamData
 }
