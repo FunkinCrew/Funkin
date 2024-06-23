@@ -10,6 +10,7 @@ import haxe.ui.events.UIEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.notes.notekind.NoteKind.NoteKindParam;
+import funkin.play.notes.notekind.NoteKind.NoteKindParamType;
 import funkin.data.song.SongData.NoteParamData;
 
 /**
@@ -83,9 +84,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         {
           // Edit the note data of any selected notes.
           note.kind = chartEditorState.noteKindToPlace;
-          trace(note.params);
           note.params = ChartEditorState.cloneNoteParams(chartEditorState.noteParamsToPlace);
-          trace(note.params);
 
           // update note sprites
           for (noteSprite in chartEditorState.renderedNotes.members)
@@ -185,48 +184,71 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       paramLabel.verticalAlign = "center";
       paramLabel.horizontalAlign = "right";
 
-      var paramStepper:NumberStepper = new NumberStepper();
-      paramStepper.value = (setParamsToPlace ? chartEditorState.noteParamsToPlace[i].value : param.data.defaultValue);
-      paramStepper.percentWidth = 100;
-      paramStepper.step = param.data.step ?? 1;
+      var paramComponent:Component = null;
 
-      // this check should be unnecessary but for some reason
-      // even when these are null it will set it to 0
-      if (param.data.min != null)
+      final paramType:String = param.type;
+      switch (paramType)
       {
-        paramStepper.min = param.data.min;
-      }
-      if (param.data.max != null)
-      {
-        paramStepper.max = param.data.max;
-      }
-      if (param.data.precision != null)
-      {
-        paramStepper.precision = param.data.precision;
+        case NoteKindParamType.INT | NoteKindParamType.FLOAT:
+          var paramStepper:NumberStepper = new NumberStepper();
+          paramStepper.value = (setParamsToPlace ? chartEditorState.noteParamsToPlace[i].value : param.data?.defaultValue) ?? 0.0;
+          paramStepper.percentWidth = 100;
+          paramStepper.step = param.data?.step ?? 1;
+
+          // this check should be unnecessary but for some reason
+          // even when these are null it will set it to 0
+          if (param.data?.min != null)
+          {
+            paramStepper.min = param.data.min;
+          }
+          if (param.data?.max != null)
+          {
+            paramStepper.max = param.data.max;
+          }
+          if (param.data?.precision != null)
+          {
+            paramStepper.precision = param.data.precision;
+          }
+          paramComponent = paramStepper;
+
+        case NoteKindParamType.STRING:
+          var paramTextField:TextField = new TextField();
+          paramTextField.value = (setParamsToPlace ? chartEditorState.noteParamsToPlace[i].value : param.data?.defaultValue) ?? '';
+          paramTextField.percentWidth = 100;
+          paramComponent = paramTextField;
       }
 
-      paramStepper.onChange = function(event:UIEvent) {
-        chartEditorState.noteParamsToPlace[i].value = paramStepper.value;
+      if (paramComponent == null)
+      {
+        continue;
+      }
+
+      paramComponent.onChange = function(event:UIEvent) {
+        chartEditorState.noteParamsToPlace[i].value = paramComponent.value;
 
         for (note in chartEditorState.currentNoteSelection)
         {
+          if (note.params.length != noteKindParams.length)
+          {
+            break;
+          }
+
           if (note.params[i].name == param.name)
           {
-            note.params[i].value = paramStepper.value;
-            trace(note.params[i]);
+            note.params[i].value = paramComponent.value;
           }
         }
       }
 
-      addNoteKindParam(paramLabel, paramStepper);
+      addNoteKindParam(paramLabel, paramComponent);
     }
 
     if (!setParamsToPlace)
     {
       var noteParamData:Array<NoteParamData> = [];
-      for (param in noteKindParams)
+      for (i in 0...noteKindParams.length)
       {
-        noteParamData.push(new NoteParamData(param.name, param.data.defaultValue));
+        noteParamData.push(new NoteParamData(noteKindParams[i].name, toolboxNotesParams[i].component.value));
       }
       chartEditorState.noteParamsToPlace = noteParamData;
     }
