@@ -6,6 +6,7 @@ import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 import funkin.util.tools.ICloneable;
+import flixel.util.FlxColor;
 
 /**
  * Data containing information about a song.
@@ -796,7 +797,16 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
-  public function getInt(key:String):Null<Int>
+  public inline function getColor(key:String):Null<FlxColor>
+  {
+    if(this.value == null) return null;
+    var stringResult = Reflect.field(this.value, key);
+    var resultToHex = '#' + StringTools.hex(Std.parseInt(stringResult), 6);
+    var result = FlxColor.fromString(resultToHex);
+    return cast result;
+  }
+
+  public inline function getInt(key:String):Null<Int>
   {
     if (this.value == null) return null;
     var result = Reflect.field(this.value, key);

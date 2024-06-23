@@ -281,7 +281,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
             value = event.target.value.value;
           case COLOR:
             var clr:ColorPicker = cast event.target;
-            value = clr.currentColor.toHex();
+            value = clr.currentColor;
           case BOOL:
             var chk:CheckBox = cast event.target;
             value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
