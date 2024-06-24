@@ -45,7 +45,7 @@ class EnumPreferenceItem extends TextMenuItem
       i += 1;
     }
 
-    lefthandText = new AtlasText(20, y, formatted(defaultValue), AtlasFont.DEFAULT);
+    lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
   }
 
   override function update(elapsed:Float):Void
