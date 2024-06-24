@@ -89,13 +89,13 @@ class NoteKindManager
    */
   public static function getNoteStyleId(noteKind:String, ?suffix:String):Null<String>
   {
-    if (suffix == null)
+    if (suffix == '')
     {
-      suffix = '';
+      suffix = null;
     }
 
     var noteStyleId:Null<String> = noteKinds.get(noteKind)?.noteStyleId;
-    if (noteStyleId != null)
+    if (noteStyleId != null && suffix != null)
     {
       noteStyleId = NoteStyleRegistry.instance.hasEntry('$noteStyleId-$suffix') ? '$noteStyleId-$suffix' : noteStyleId;
     }
