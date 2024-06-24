@@ -794,7 +794,7 @@ class Strumline extends FlxSpriteGroup
 
     if (noteSprite != null)
     {
-      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.isHoldNotePixel()) ?? this.noteStyle;
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
       noteSprite.setupNoteGraphic(noteKindStyle);
 
       noteSprite.direction = note.getDirection();
@@ -817,7 +817,7 @@ class Strumline extends FlxSpriteGroup
 
     if (holdNoteSprite != null)
     {
-      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.isHoldNotePixel()) ?? this.noteStyle;
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
       holdNoteSprite.setupHoldNoteGraphic(noteKindStyle);
 
       holdNoteSprite.parentStrumline = this;

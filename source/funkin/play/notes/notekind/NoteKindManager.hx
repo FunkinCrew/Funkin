@@ -66,12 +66,12 @@ class NoteKindManager
   /**
    * Retrieve the note style from the given note kind
    * @param noteKind note kind name
-   * @param isPixel whether to use pixel style
+   * @param suffix Used for song note styles
    * @return NoteStyle
    */
-  public static function getNoteStyle(noteKind:String, isPixel:Bool = false):Null<NoteStyle>
+  public static function getNoteStyle(noteKind:String, ?suffix:String):Null<NoteStyle>
   {
-    var noteStyleId:Null<String> = getNoteStyleId(noteKind, isPixel);
+    var noteStyleId:Null<String> = getNoteStyleId(noteKind, suffix);
 
     if (noteStyleId == null)
     {
@@ -83,16 +83,21 @@ class NoteKindManager
 
   /**
    * Retrieve the note style id from the given note kind
-   * @param noteKind note kind name
-   * @param isPixel whether to use pixel style
+   * @param noteKind Note kind name
+   * @param suffix Used for song note styles
    * @return Null<String>
    */
-  public static function getNoteStyleId(noteKind:String, isPixel:Bool = false):Null<String>
+  public static function getNoteStyleId(noteKind:String, ?suffix:String):Null<String>
   {
-    var noteStyleId:Null<String> = noteKinds.get(noteKind)?.noteStyleId;
-    if (isPixel && noteStyleId != null)
+    if (suffix == null)
     {
-      noteStyleId = NoteStyleRegistry.instance.hasEntry('$noteStyleId-pixel') ? '$noteStyleId-pixel' : noteStyleId;
+      suffix = '';
+    }
+
+    var noteStyleId:Null<String> = noteKinds.get(noteKind)?.noteStyleId;
+    if (noteStyleId != null)
+    {
+      noteStyleId = NoteStyleRegistry.instance.hasEntry('$noteStyleId-$suffix') ? '$noteStyleId-$suffix' : noteStyleId;
     }
 
     return noteStyleId;
