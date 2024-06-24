@@ -213,6 +213,7 @@ class SongMenuItem extends FlxSpriteGroup
     favIconBlurred.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIconBlurred.animation.addByPrefix('fav', 'favorite heart', 24, false);
     favIconBlurred.animation.play('fav');
+
     favIconBlurred.setGraphicSize(50, 50);
     favIconBlurred.blend = BlendMode.ADD;
     favIconBlurred.shader = new GaussianBlurShader(1.2);
@@ -516,6 +517,9 @@ class SongMenuItem extends FlxSpriteGroup
     updateDifficultyRating(songData?.difficultyRating ?? 0);
     updateScoringRank(songData?.scoringRank);
     newText.visible = songData?.isNew;
+    favIcon.animation.curAnim.curFrame = favIcon.animation.curAnim.numFrames - 1;
+    favIconBlurred.animation.curAnim.curFrame = favIconBlurred.animation.curAnim.numFrames - 1;
+
     // Update opacity, offsets, etc.
     updateSelected();
 
