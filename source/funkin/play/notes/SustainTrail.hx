@@ -131,7 +131,7 @@ class SustainTrail extends FlxSprite
     updateColorTransform();
 
     updateClipping();
-    indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
+    // indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
   }
@@ -195,7 +195,9 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping(songTime:Float = 0):Void
   {
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
+    songTime = Conductor.instance.songPosition;
+
+    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
     if (clipHeight <= 0.1)
     {
       visible = false;
@@ -206,102 +208,71 @@ class SustainTrail extends FlxSprite
       visible = true;
     }
 
-    var bottomHeight:Float = graphic.height * zoom * endOffset;
-    var partHeight:Float = clipHeight - bottomHeight;
+    var segmentIntervalMs:Float = Conductor.instance.stepLengthMs / 4 / (parentStrumline?.scrollSpeed ?? 1.0);
+    var segmentIntervalHeight:Float = sustainHeight(segmentIntervalMs, parentStrumline?.scrollSpeed ?? 1.0);
+    var remainingSusHeight:Float = graphicHeight;
+    var index:Int = 0;
+    var indicesIndex:Int = 0;
 
-    // ===HOLD VERTICES==
-    // Top left
-    vertices[0 * 2] = 0.0; // Inline with left side
-    vertices[0 * 2 + 1] = flipY ? clipHeight : graphicHeight - clipHeight;
+    var newSegment:Bool = true;
 
-    // Top right
-    vertices[1 * 2] = graphicWidth;
-    vertices[1 * 2 + 1] = vertices[0 * 2 + 1]; // Inline with top left vertex
+    vertices.splice(0, vertices.length);
+    uvtData.splice(0, uvtData.length);
+    indices.splice(0, indices.length);
 
-    // Bottom left
-    vertices[2 * 2] = 0.0; // Inline with left side
-    vertices[2 * 2 + 1] = if (partHeight > 0)
+    var sustainTime:Float = songTime - strumTime - (fullSustainLength - sustainLength);
+
+    while (true)
     {
-      // flipY makes the sustain render upside down.
-      flipY ? 0.0 + bottomHeight : vertices[1] + partHeight;
+      // left vertex
+      vertices[index + 0] = 0.0 + Math.sin(sustainTime * 0.01) * 30; // x
+      vertices[index + 1] = graphicHeight - remainingSusHeight; // y
+
+      // right vertex
+      vertices[index + 2] = graphicWidth + Math.sin(sustainTime * 0.01) * 30; // x
+      vertices[index + 3] = vertices[index + 1]; // y
+
+      // left uv
+      uvtData[index + 0] = 1 / 4 * (noteDirection % 4); // x
+      uvtData[index + 1] = ((graphicHeight - remainingSusHeight - clipHeight) / graphic.height) / zoom; // y
+
+      // right uv
+      uvtData[index + 2] = uvtData[index + 0] + (1 / 8); // x
+      uvtData[index + 3] = uvtData[index + 1]; // y
+
+      if (!newSegment)
+      {
+        var vertexIndex:Int = Std.int(index / 2);
+        indices[indicesIndex + 0] = vertexIndex - 2; // top left
+        indices[indicesIndex + 1] = vertexIndex - 1; // top right
+        indices[indicesIndex + 2] = vertexIndex; // bottom left
+
+        indices[indicesIndex + 3] = vertexIndex - 1; // top right
+        indices[indicesIndex + 4] = vertexIndex; // bottom left
+        indices[indicesIndex + 5] = vertexIndex + 1; // bottom right
+
+        indicesIndex += 6;
+      }
+
+      if (remainingSusHeight == 0)
+      {
+        break;
+      }
+
+      newSegment = false;
+
+      index += 4;
+      remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
+      sustainTime = Math.max(sustainTime - segmentIntervalMs, songTime - strumTime - (fullSustainLength - sustainLength) - sustainLength);
     }
-    else
-    {
-      vertices[0 * 2 + 1]; // Inline with top left vertex (no partHeight available)
-    }
-
-    // Bottom right
-    vertices[3 * 2] = graphicWidth;
-    vertices[3 * 2 + 1] = vertices[2 * 2 + 1]; // Inline with bottom left vertex
-
-    // ===HOLD UVs===
-
-    // The UVs are a bit more complicated.
-    // UV coordinates are normalized, so they range from 0 to 1.
-    // We are expecting an image containing 8 horizontal segments, each representing a different colored hold note followed by its end cap.
-
-    uvtData[0 * 2] = 1 / 4 * (noteDirection % 4); // 0%/25%/50%/75% of the way through the image
-    uvtData[0 * 2 + 1] = (-partHeight) / graphic.height / zoom; // top bound
-    // Top left
-
-    // Top right
-    uvtData[1 * 2] = uvtData[0 * 2] + 1 / 8; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left)
-    uvtData[1 * 2 + 1] = uvtData[0 * 2 + 1]; // top bound
-
-    // Bottom left
-    uvtData[2 * 2] = uvtData[0 * 2]; // 0%/25%/50%/75% of the way through the image
-    uvtData[2 * 2 + 1] = 0.0; // bottom bound
-
-    // Bottom right
-    uvtData[3 * 2] = uvtData[1 * 2]; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left)
-    uvtData[3 * 2 + 1] = uvtData[2 * 2 + 1]; // bottom bound
-
-    // === END CAP VERTICES ===
-    // Top left
-    vertices[4 * 2] = vertices[2 * 2]; // Inline with bottom left vertex of hold
-    vertices[4 * 2 + 1] = vertices[2 * 2 + 1]; // Inline with bottom left vertex of hold
-
-    // Top right
-    vertices[5 * 2] = vertices[3 * 2]; // Inline with bottom right vertex of hold
-    vertices[5 * 2 + 1] = vertices[3 * 2 + 1]; // Inline with bottom right vertex of hold
-
-    // Bottom left
-    vertices[6 * 2] = vertices[2 * 2]; // Inline with left side
-    vertices[6 * 2 + 1] = flipY ? (graphic.height * (-bottomClip + endOffset) * zoom) : (graphicHeight + graphic.height * (bottomClip - endOffset) * zoom);
-
-    // Bottom right
-    vertices[7 * 2] = vertices[3 * 2]; // Inline with right side
-    vertices[7 * 2 + 1] = vertices[6 * 2 + 1]; // Inline with bottom of end cap
-
-    // === END CAP UVs ===
-    // Top left
-    uvtData[4 * 2] = uvtData[2 * 2] + 1 / 8; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
-    uvtData[4 * 2 + 1] = if (partHeight > 0)
-    {
-      0;
-    }
-    else
-    {
-      (bottomHeight - clipHeight) / zoom / graphic.height;
-    };
-
-    // Top right
-    uvtData[5 * 2] = uvtData[4 * 2] + 1 / 8; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
-    uvtData[5 * 2 + 1] = uvtData[4 * 2 + 1]; // top bound
-
-    // Bottom left
-    uvtData[6 * 2] = uvtData[4 * 2]; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
-    uvtData[6 * 2 + 1] = bottomClip; // bottom bound
-
-    // Bottom right
-    uvtData[7 * 2] = uvtData[5 * 2]; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
-    uvtData[7 * 2 + 1] = uvtData[6 * 2 + 1]; // bottom bound
   }
 
   @:access(flixel.FlxCamera)
   override public function draw():Void
   {
     if (alpha == 0 || graphic == null || vertices == null) return;
+
+    triggerRedraw();
 
     for (camera in cameras)
     {
