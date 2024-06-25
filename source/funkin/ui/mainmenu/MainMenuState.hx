@@ -153,6 +153,9 @@ class MainMenuState extends MusicBeatState
 
     resetCamStuff();
 
+    // reset camera when debug menu is closed
+    subStateClosed.add(_ -> resetCamStuff(false));
+
     subStateOpened.add(sub -> {
       if (Type.getClass(sub) == FreeplayState)
       {
@@ -182,10 +185,11 @@ class MainMenuState extends MusicBeatState
       });
   }
 
-  function resetCamStuff():Void
+  function resetCamStuff(?snap:Bool = true):Void
   {
     FlxG.camera.follow(camFollow, null, 0.06);
-    FlxG.camera.snapToTarget();
+
+    if (snap) FlxG.camera.snapToTarget();
   }
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
@@ -344,8 +348,6 @@ class MainMenuState extends MusicBeatState
       persistentUpdate = false;
 
       FlxG.state.openSubState(new DebugMenuSubState());
-      // reset camera when debug menu is closed
-      subStateClosed.addOnce(_ -> resetCamStuff());
     }
     #end
 
