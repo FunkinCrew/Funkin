@@ -28,7 +28,7 @@ class NumberPreferenceItem extends TextMenuItem
     super(x, y, name, function() {
       callback(this.currentValue);
     });
-    lefthandText = new AtlasText(20, y, formatted(defaultValue), AtlasFont.DEFAULT);
+    lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
 
     updateHitbox();
 

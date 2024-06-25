@@ -84,22 +84,23 @@ class PreferencesMenu extends Page
     // TODO: Only do this on menu change?
     items.forEach(function(daItem:TextMenuItem) {
       var thyOffset:Int = 0;
-      if (Std.isOfType(daItem, NumberPreferenceItem)) thyOffset = cast(daItem, NumberPreferenceItem).lefthandText.getWidth();
+      // Initializing thy text width (if thou text present)
+      var thyTextWidth:Int = 0;
+      if (Std.isOfType(daItem, NumberPreferenceItem)) thyTextWidth = cast(daItem, NumberPreferenceItem).lefthandText.getWidth();
 
-      // Very messy but it works
-      if (thyOffset == 0)
+      if (thyTextWidth != 0)
       {
-        if (items.selectedItem == daItem) thyOffset += 150;
-        else
-          thyOffset += 120;
+        // Magic number because of the weird offset thats being added by default
+        thyOffset += thyTextWidth - 75;
       }
-      else if (items.selectedItem == daItem)
+
+      if (items.selectedItem == daItem)
       {
-        thyOffset += 70;
+        thyOffset += 150;
       }
       else
       {
-        thyOffset += 25;
+        thyOffset += 120;
       }
 
       daItem.x = thyOffset;
@@ -110,7 +111,7 @@ class PreferencesMenu extends Page
   {
     var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
 
-    items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
+    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
@@ -122,7 +123,7 @@ class PreferencesMenu extends Page
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, defaultValue:Float, min:Float, max:Float, step:Float,
       precision:Int):Void
   {
-    var item = new NumberPreferenceItem(145, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange);
+    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
   }
