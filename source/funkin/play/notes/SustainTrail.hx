@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import flixel.graphics.frames.FlxFrame;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
@@ -85,6 +86,9 @@ class SustainTrail extends FlxSprite
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
 
+  var holdPieceFrame:FlxFrame;
+  var holdEndFrame:FlxFrame;
+
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
    * @param NoteData
@@ -93,7 +97,30 @@ class SustainTrail extends FlxSprite
    */
   public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
   {
-    super(0, 0, noteStyle.getHoldNoteAssetPath());
+    super(0, 0);
+
+    var paths:Array<String> = noteStyle._data?.assets?.holdNote?.assetPath.split(Constants.LIBRARY_SEPARATOR);
+    var key:String = "";
+    var library:Null<String> = null;
+    if (paths.length == 1)
+    {
+      key = paths[0];
+    }
+    else
+    {
+      key = paths[1];
+      library = paths[0];
+    }
+
+    frames = Paths.getSparrowAtlas(key, library);
+    animation.addByPrefix('${NoteDirection.LEFT.name} hold piece', 'purple hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.LEFT.name} hold end', 'pruple end hold', 0, false);
+    animation.addByPrefix('${NoteDirection.DOWN.name} hold piece', 'blue hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.DOWN.name} hold end', 'blue hold end', 0, false);
+    animation.addByPrefix('${NoteDirection.UP.name} hold piece', 'green hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.UP.name} hold end', 'green hold end', 0, false);
+    animation.addByPrefix('${NoteDirection.RIGHT.name} hold piece', 'red hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.RIGHT.name} hold end', 'red hold end', 0, false);
 
     antialiasing = true;
 
@@ -182,6 +209,12 @@ class SustainTrail extends FlxSprite
     origin.set(width * 0.5, height * 0.5);
   }
 
+  function wrap(value:Float, min:Float, max:Float):Float
+  {
+    var range:Float = max - min;
+    return min + ((value - min) - (range * Math.floor((value - min) / range)));
+  }
+
   /**
    * Sets up new vertex, uv and index data for drawing the trail.
    */
@@ -214,6 +247,20 @@ class SustainTrail extends FlxSprite
 
     var sustainTime:Float = songTime - strumTime - (fullSustainLength - sustainLength);
 
+    var frameIndex:Int = animation.getByName('${noteDirection.name} hold piece').frames[0];
+    holdPieceFrame = frames.getByIndex(frameIndex);
+
+    var frameIndex:Int = animation.getByName('${noteDirection.name} hold end').frames[0];
+    holdEndFrame = frames.getByIndex(frameIndex);
+
+    if (holdPieceFrame == null || holdEndFrame == null)
+    {
+      trace("FRAMES ARE NULL!");
+      return;
+    }
+
+    graphicWidth = holdPieceFrame.frame.width * zoom;
+
     while (true)
     {
       var testOffset:Float = Math.sin(sustainTime * 0.01) * 30;
@@ -227,11 +274,12 @@ class SustainTrail extends FlxSprite
       vertices[index + 3] = vertices[index + 1]; // y
 
       // left uv
-      uvtData[index + 0] = 1 / 4 * (noteDirection % 4); // x
-      uvtData[index + 1] = ((graphicHeight - remainingSusHeight - clipHeight) / graphic.height) / zoom; // y
+      uvtData[index + 0] = holdPieceFrame.uv.left; // x
+      var uvY:Float = (graphicHeight - remainingSusHeight - clipHeight) / graphic.height / zoom;
+      uvtData[index + 1] = wrap(uvY, holdPieceFrame.uv.y, holdPieceFrame.uv.height); // y
 
       // right uv
-      uvtData[index + 2] = uvtData[index + 0] + (1 / 8); // x
+      uvtData[index + 2] = holdPieceFrame.uv.width; // x
       uvtData[index + 3] = uvtData[index + 1]; // y
 
       if (!newSegment)
@@ -272,7 +320,7 @@ class SustainTrail extends FlxSprite
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
       getScreenPosition(_point, camera).subtractPoint(offset);
-      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
+      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, false, antialiasing);
     }
 
     #if FLX_DEBUG
