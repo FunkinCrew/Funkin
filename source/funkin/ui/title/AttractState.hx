@@ -3,8 +3,8 @@ package funkin.ui.title;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
-#if hxvlc
-import hxvlc.flixel.FlxVideoSprite;
+#if (hxCodec || hxvlc)
+import hxcodec.flixel.FlxVideoSprite;
 #end
 import funkin.ui.MusicBeatState;
 
@@ -33,7 +33,7 @@ class AttractState extends MusicBeatState
     playVideoHTML5(ATTRACT_VIDEO_PATH);
     #end
 
-    #if hxvlc
+    #if (hxCodec || hxvlc)
     trace('Playing native video ${ATTRACT_VIDEO_PATH}');
     playVideoNative(ATTRACT_VIDEO_PATH);
     #end
@@ -61,7 +61,7 @@ class AttractState extends MusicBeatState
   }
   #end
 
-  #if hxvlc
+  #if (hxCodec || hxvlc)
   var vid:FlxVideoSprite;
 
   function playVideoNative(filePath:String):Void
@@ -75,9 +75,7 @@ class AttractState extends MusicBeatState
       vid.bitmap.onEndReached.add(onAttractEnd);
 
       add(vid);
-
-      if (vid.load(filePath))
-        vid.play();
+      vid.play(filePath, false);
     }
     else
     {
@@ -110,7 +108,7 @@ class AttractState extends MusicBeatState
     }
     #end
 
-    #if hxvlc
+    #if (hxCodec || hxvlc)
     if (vid != null)
     {
       vid.stop();
@@ -118,7 +116,7 @@ class AttractState extends MusicBeatState
     }
     #end
 
-    #if (html5 || hxvlc)
+    #if (html5 || hxCodec || hxvlc)
     vid.destroy();
     vid = null;
     #end

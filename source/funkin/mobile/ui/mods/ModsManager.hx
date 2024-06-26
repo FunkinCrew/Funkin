@@ -12,10 +12,11 @@ import funkin.modding.PolymodHandler;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
 import openfl.geom.Matrix;
-#if android
-import android.FileDialog;
-import android.widget.Toast;
-#end
+
+// #if android
+// import android.FileDialog;
+// import android.widget.Toast;
+// #end
 
 /**
  * A Placeholder substate for simplefied mods management on Android targets
