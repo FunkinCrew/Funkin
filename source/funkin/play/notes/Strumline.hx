@@ -478,6 +478,8 @@ class Strumline extends FlxSpriteGroup
         {
           holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2;
         }
+
+        holdNote.updateDrawData();
       }
     }
 

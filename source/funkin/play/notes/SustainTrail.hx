@@ -18,15 +18,9 @@ import funkin.ui.options.PreferencesMenu;
  *
  * @author MtH
  */
+@:allow(funkin.play.notes.Strumline)
 class SustainTrail extends FlxSprite
 {
-  /**
-   * The triangles corresponding to the hold, followed by the endcap.
-   * `top left, top right, bottom left`
-   * `top left, bottom left, bottom right`
-   */
-  static final TRIANGLE_VERTEX_INDICES:Array<Int> = [0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7];
-
   public var strumTime:Float = 0; // millis
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
@@ -148,7 +142,7 @@ class SustainTrail extends FlxSprite
     super.update(elapsed);
     if (previousScrollSpeed != (parentStrumline?.scrollSpeed ?? 1.0))
     {
-      triggerRedraw();
+      updateDrawData();
     }
     previousScrollSpeed = parentStrumline?.scrollSpeed ?? 1.0;
   }
@@ -169,11 +163,11 @@ class SustainTrail extends FlxSprite
 
     if (sustainLength == s) return s;
     this.sustainLength = s;
-    triggerRedraw();
+    updateDrawData();
     return this.sustainLength;
   }
 
-  function triggerRedraw()
+  function updateDrawData()
   {
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     updateClipping();
@@ -189,13 +183,11 @@ class SustainTrail extends FlxSprite
   }
 
   /**
-   * Sets up new vertex and UV data to clip the trail.
-   * If flipY is true, top and bottom bounds swap places.
-   * @param songTime	The time to clip the note at, in milliseconds.
+   * Sets up new vertex, uv and index data for drawing the trail.
    */
-  public function updateClipping(songTime:Float = 0):Void
+  public function updateClipping():Void
   {
-    songTime = Conductor.instance.songPosition;
+    var songTime:Float = Conductor.instance.songPosition;
 
     var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
     if (clipHeight <= 0.1)
@@ -224,12 +216,14 @@ class SustainTrail extends FlxSprite
 
     while (true)
     {
+      var testOffset:Float = Math.sin(sustainTime * 0.01) * 30;
+
       // left vertex
-      vertices[index + 0] = 0.0 + Math.sin(sustainTime * 0.01) * 30; // x
+      vertices[index + 0] = 0.0 + testOffset; // x
       vertices[index + 1] = graphicHeight - remainingSusHeight; // y
 
       // right vertex
-      vertices[index + 2] = graphicWidth + Math.sin(sustainTime * 0.01) * 30; // x
+      vertices[index + 2] = graphicWidth + testOffset; // x
       vertices[index + 3] = vertices[index + 1]; // y
 
       // left uv
@@ -271,8 +265,6 @@ class SustainTrail extends FlxSprite
   override public function draw():Void
   {
     if (alpha == 0 || graphic == null || vertices == null) return;
-
-    triggerRedraw();
 
     for (camera in cameras)
     {
