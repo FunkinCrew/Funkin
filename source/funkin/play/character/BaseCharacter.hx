@@ -180,6 +180,7 @@ class BaseCharacter extends Bopper
     {
       this.characterName = _data.name;
       this.name = _data.name;
+      this.danceEvery = _data.danceEvery;
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
