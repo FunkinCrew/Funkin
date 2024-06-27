@@ -551,9 +551,9 @@ class BaseCharacter extends Bopper
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
       if (event.isComboBreak)
-        playComboAnim("drop");
+        playCountAnimation("drop");
       else
-        playComboAnim("combo");
+        playCountAnimation("combo");
     }
   }
 
@@ -577,7 +577,7 @@ class BaseCharacter extends Bopper
     }
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
-      playComboAnim("drop");
+      playCountAnimation("drop");
       comboAnimPlayed.clear();
     }
   }
