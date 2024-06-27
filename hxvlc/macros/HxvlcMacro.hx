@@ -2,7 +2,7 @@ package macros;
 
 #if !display
 #if macro
-// A copy of funkin.util.macro.FlxMacro
+// Mostly a copy of funkin.util.macro.FlxMacro lmao
 class HxvlcMacro
 {
   /**
@@ -17,7 +17,7 @@ class HxvlcMacro
     // The fields of the FlxClass.
     var fields:Array<haxe.macro.Expr.Field> = haxe.macro.Context.getBuildFields();
 
-    haxe.macro.Context.info('[INFO] ${cls.name}: Adding onTextureSetup attribute...', pos);
+    // haxe.macro.Context.info('[INFO] ${cls.name}: Adding onTextureSetup attribute...', pos);
 
     // Here, we add the onTextureSetup attribute to all Video objects.
     // This has no functional code tied to it, but it can be used as a target value
@@ -31,8 +31,7 @@ class HxvlcMacro
     ]);
 
     // Here, we add extra parameters to the play method
-    // Check if the class is hxvlc.openfl.Video
-    haxe.macro.Context.info('[INFO] ${cls.name}: Adding new parameters to the play method in openFL Video...', pos);
+    // haxe.macro.Context.info('[INFO] ${cls.name}: Adding new parameters to the play method in openFL Video...', pos);
 
     for (field in fields)
     {
@@ -83,7 +82,7 @@ class HxvlcMacro
     var fields:Array<haxe.macro.Expr.Field> = haxe.macro.Context.getBuildFields();
 
     // Here, we add extra parameters to the play method
-    haxe.macro.Context.info('[INFO] ${cls.name}: Adding new parameters to the play method in FlxVideoSprite...', pos);
+    // haxe.macro.Context.info('[INFO] ${cls.name}: Adding new parameters to the play method in FlxVideoSprite...', pos);
 
     for (field in fields)
     {
