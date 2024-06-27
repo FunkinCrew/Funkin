@@ -533,11 +533,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * Play a sound effect once, then destroy it.
    * @param key
    * @param volume
-   * @return static function construct():FunkinSound
+   * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
-  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Void
+  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):FunkinSound
   {
     var result = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
+    return result;
   }
 
   /**
