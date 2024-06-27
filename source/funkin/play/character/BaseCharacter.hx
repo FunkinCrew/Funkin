@@ -519,6 +519,12 @@ class BaseCharacter extends Bopper
       // If the note is from the same strumline, play the sing animation.
       this.playSingAnimation(event.note.noteData.getDirection(), true);
     }
+    
+    /**  
+     * This GF animation code only runs when the player lets a note fly off the screen.
+     * Run this for all combo breaks instead (bad/shit).
+     * Maybe add a new public function called onComboBreak in play.stage.Bopper?
+     */
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
       var dropAnim = '';
