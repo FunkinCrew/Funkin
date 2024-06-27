@@ -543,8 +543,6 @@ class SongMenuItem extends FlxSpriteGroup
         charPath += 'monsterpixel';
       case 'mom-car':
         charPath += 'mommypixel';
-      case 'dad':
-        charPath += 'daddypixel';
       case 'darnell-blazin':
         charPath += 'darnellpixel';
       case 'senpai-angry':
@@ -559,7 +557,17 @@ class SongMenuItem extends FlxSpriteGroup
       return;
     }
 
-    pixelIcon.loadGraphic(Paths.image(charPath));
+    var isAnimated = openfl.utils.Assets.exists(Paths.file('images/$charPath.xml'));
+
+    if (isAnimated)
+    {
+      pixelIcon.frames = Paths.getSparrowAtlas(charPath);
+    }
+    else
+    {
+      pixelIcon.loadGraphic(Paths.image(charPath));
+    }
+
     pixelIcon.scale.x = pixelIcon.scale.y = 2;
 
     switch (char)
@@ -571,6 +579,22 @@ class SongMenuItem extends FlxSpriteGroup
     }
     // pixelIcon.origin.x = capsule.origin.x;
     // pixelIcon.offset.x -= pixelIcon.origin.x;
+
+    if (isAnimated)
+    {
+      pixelIcon.active = true;
+
+      pixelIcon.animation.addByPrefix('idle', 'idle0', 10, true);
+      pixelIcon.animation.addByPrefix('confirm', 'confirm0', 10, false);
+      pixelIcon.animation.addByPrefix('confirm-hold', 'confirm-hold0', 10, true);
+
+      pixelIcon.animation.finishCallback = function(name:String):Void {
+        trace('Finish pixel animation: ${name}');
+        if (name == 'confirm') pixelIcon.animation.play('confirm-hold');
+      };
+
+      pixelIcon.animation.play('idle');
+    }
   }
 
   var frameInTicker:Float = 0;
@@ -709,6 +733,18 @@ class SongMenuItem extends FlxSpriteGroup
     }
 
     super.update(elapsed);
+  }
+
+  /**
+   * Play any animations associated with selecting this song.
+   */
+  public function confirm():Void
+  {
+    if (songText != null) songText.flickerText();
+    if (pixelIcon != null)
+    {
+      pixelIcon.animation.play('confirm');
+    }
   }
 
   public function intendedY(index:Int):Float
