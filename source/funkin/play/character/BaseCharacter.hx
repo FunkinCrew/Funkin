@@ -60,8 +60,7 @@ class BaseCharacter extends Bopper
   public var dropNoteCounts(default, null):Array<Int>;
 
   /**
-   * A Map that keeps track of which combo animations have already been played.
-   * Ensures each animation only plays once.
+   * A Map that keeps track of which combo animations have already been played, ensures that each animation only plays once.
    * This will reset when the combo is broken.
    */
   var comboAnimPlayed:Map<String, Bool> = [];
