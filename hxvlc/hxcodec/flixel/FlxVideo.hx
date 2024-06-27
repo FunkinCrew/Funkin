@@ -10,20 +10,16 @@ class FlxVideo extends hxvlc.flixel.FlxVideo
     onFormatSetup.add(onTextureSetup.dispatch);
   }
 
-  overload extern inline public function play(location:String, shouldLoop:Bool = false):Int
+  override public function play(?location:String, ?shouldLoop:Bool):Bool
   {
+    if (shouldLoop == null) shouldLoop = false;
+
     if (load(location, shouldLoop ? [":input-repeat=65535"] : null))
     {
-      playVideo();
-      return 0;
+      super.play();
+      return true;
     }
 
-    return 1;
-  }
-
-  @:noCompletion
-  private function playVideo()
-  {
-    super.play();
+    return false;
   }
 }
