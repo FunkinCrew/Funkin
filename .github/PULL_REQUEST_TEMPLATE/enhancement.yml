@@ -1,0 +1,18 @@
+name: Enhancement
+description: Add a new feature
+labels: ["type: enhancement", "status: pending triage"]
+title: "Enhancement: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      options:
+        - label: I have checked if this PR isn't a duplicate
+
+  - type: textarea
+    attributes:
+      label: Does this PR fix any issues? Please link them below if so.
+
+  - type: textarea
+    attributes:
+      label: What do your change(s) add, and why should they be implemented?

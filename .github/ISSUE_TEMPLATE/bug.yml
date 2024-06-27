@@ -1,0 +1,61 @@
+name: Bug Report
+description: Report a bug or an issue in the game
+labels: ["type: minor bug", "status: pending triage"]
+title: "Bug Report: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      options:
+        - label: I have properly named the issue
+        - label: I looked in issues/discussions, if it has been previously reported
+
+  - type: dropdown
+    attributes:
+      label: What platform are you using?
+      options:
+        - Itch.io - Windows
+        - Itch.io - MacOS
+        - Itch.io - Linux
+        - Newgrounds (Web)
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: If you were playing on a browser, which one were you using?
+      options:
+        - Google Chrome
+        - Microsoft Edge
+        - Firefox
+        - Opera
+        - Safari
+        - Other (Specify below)
+
+  - type: input
+    attributes:
+      label: Version
+      description: What version were you using?
+      placeholder: ex. 0.4.1
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "## Describe your bug."
+
+  - type: markdown
+    attributes:
+      value: "### Please do not report issues from other engines. These must be reported in their repositories."
+
+  - type: markdown
+    attributes:
+      value: "#### Provide as many details as you can."
+
+  - type: textarea
+    attributes:
+      label: Context (Provide images, videos, etc.)
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce (or crash logs, errors, etc.)
