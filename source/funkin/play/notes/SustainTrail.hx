@@ -10,6 +10,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMath;
 import funkin.ui.options.PreferencesMenu;
+import funkin.util.MathUtil;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -85,9 +86,6 @@ class SustainTrail extends FlxSprite
 
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
-
-  var holdPieceFrame:FlxFrame;
-  var holdEndFrame:FlxFrame;
 
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
@@ -196,7 +194,6 @@ class SustainTrail extends FlxSprite
 
   function updateDrawData()
   {
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     updateClipping();
     updateHitbox();
   }
@@ -220,71 +217,140 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping():Void
   {
+    visible = true;
+
     var songTime:Float = Conductor.instance.songPosition;
 
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
-    if (clipHeight <= 0.1)
-    {
-      visible = false;
-      return;
-    }
-    else
-    {
-      visible = true;
-    }
-
-    var segmentIntervalMs:Float = Conductor.instance.stepLengthMs / 4 / (parentStrumline?.scrollSpeed ?? 1.0);
-    var segmentIntervalHeight:Float = sustainHeight(segmentIntervalMs, parentStrumline?.scrollSpeed ?? 1.0);
-    var remainingSusHeight:Float = graphicHeight;
-    var index:Int = 0;
-    var indicesIndex:Int = 0;
-
-    var newSegment:Bool = true;
-
-    vertices.splice(0, vertices.length);
-    uvtData.splice(0, uvtData.length);
-    indices.splice(0, indices.length);
-
-    var sustainTime:Float = songTime - strumTime - (fullSustainLength - sustainLength);
-
     var frameIndex:Int = animation.getByName('${noteDirection.name} hold piece').frames[0];
-    holdPieceFrame = frames.getByIndex(frameIndex);
+    var holdPieceFrame:FlxFrame = frames.getByIndex(frameIndex);
 
     var frameIndex:Int = animation.getByName('${noteDirection.name} hold end').frames[0];
-    holdEndFrame = frames.getByIndex(frameIndex);
+    var endPieceFrame:FlxFrame = frames.getByIndex(frameIndex);
 
-    if (holdPieceFrame == null || holdEndFrame == null)
+    if (holdPieceFrame == null || endPieceFrame == null)
     {
       trace("FRAMES ARE NULL!");
       return;
     }
 
-    graphicWidth = holdPieceFrame.frame.width * zoom;
+    var scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
 
+    // var segmentIntervalMs:Float = Conductor.instance.stepLengthMs / 4 / (parentStrumline?.scrollSpeed ?? 1.0);
+    // var segmentIntervalHeight:Float = sustainHeight(segmentIntervalMs, parentStrumline?.scrollSpeed ?? 1.0);
+    var index:Int = 0;
+    var indicesIndex:Int = 0;
+
+    // segmentIntervalHeight = holdPieceFrame.frame.height / 4;
+    // segmentIntervalMs = holdPieceFrame.frame.height / 4 / 0.45 / (parentStrumline?.scrollSpeed ?? 1.0);
+
+    // var newSegment:Bool = true;
+
+    vertices.splice(0, vertices.length);
+    uvtData.splice(0, uvtData.length);
+    indices.splice(0, indices.length);
+
+    graphicWidth = holdPieceFrame.frame.width * zoom;
+    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+
+    var remainingSusHeight:Float = graphicHeight;
+    var sustainTime:Float = (strumTime - songTime) + (fullSustainLength - sustainLength) + sustainLength;
+    var doEndPiece:Bool = true;
+
+    // cut the trail into segments of the size of the used frame
     while (true)
     {
-      var testOffset:Float = Math.sin(sustainTime * 0.01) * 30;
+      final testOffset:Float = Math.sin(sustainTime * 0.01) * 0;
 
-      // left vertex
+      final frame:FlxFrame = (doEndPiece ? endPieceFrame : holdPieceFrame);
+      final segmentIntervalHeight:Float = frame.frame.height * zoom;
+      final segmentIntervalMs:Float = segmentIntervalHeight / 0.45 / scrollSpeed;
+
+      // bottom left vertex
       vertices[index + 0] = 0.0 + testOffset; // x
-      vertices[index + 1] = graphicHeight - remainingSusHeight; // y
+      vertices[index + 1] = remainingSusHeight; // y
 
-      // right vertex
-      vertices[index + 2] = graphicWidth + testOffset; // x
+      // bottom right vertex
+      vertices[index + 2] = vertices[index + 0] + graphicWidth; // x
       vertices[index + 3] = vertices[index + 1]; // y
 
-      // left uv
-      uvtData[index + 0] = holdPieceFrame.uv.left; // x
-      var uvY:Float = (graphicHeight - remainingSusHeight - clipHeight) / graphic.height / zoom;
-      uvtData[index + 1] = wrap(uvY, holdPieceFrame.uv.y, holdPieceFrame.uv.height); // y
+      // bottom left uv
+      uvtData[index + 0] = frame.uv.x; // x
+      uvtData[index + 1] = frame.uv.height; // y
 
-      // right uv
-      uvtData[index + 2] = holdPieceFrame.uv.width; // x
+      // bottom right uv
+      uvtData[index + 2] = frame.uv.width; // x
       uvtData[index + 3] = uvtData[index + 1]; // y
 
-      if (!newSegment)
+      // top left vertex
+      vertices[index + 4] = 0.0 + testOffset; // x
+      vertices[index + 5] = Math.max(remainingSusHeight - segmentIntervalHeight, 0); // y
+
+      // top right vertex
+      vertices[index + 6] = vertices[index + 4] + graphicWidth; // x
+      vertices[index + 7] = vertices[index + 5]; // y
+
+      // top left uv
+      uvtData[index + 4] = frame.uv.x; // x
+      uvtData[index + 5] = frame.uv.y; // y
+
+      // top right uv
+      uvtData[index + 6] = frame.uv.width; // x
+      uvtData[index + 7] = uvtData[index + 5]; // y
+
+      // Clockwise Order
+      final vertexIndex:Int = Std.int(index / 2);
+      indices[indicesIndex + 0] = vertexIndex + 0; // bottom left
+      indices[indicesIndex + 1] = vertexIndex + 1; // bottom right
+      indices[indicesIndex + 2] = vertexIndex + 2; // top left
+
+      indices[indicesIndex + 3] = vertexIndex + 1; // bottom right
+      indices[indicesIndex + 4] = vertexIndex + 3; // top right
+      indices[indicesIndex + 5] = vertexIndex + 2; // top left
+
+      indicesIndex += 6;
+
+      if (remainingSusHeight == 0)
       {
-        var vertexIndex:Int = Std.int(index / 2);
+        break;
+      }
+
+      remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
+      sustainTime = Math.max(sustainTime - segmentIntervalMs, (strumTime - songTime) + (fullSustainLength - sustainLength));
+
+      index += 8;
+
+      doEndPiece = false;
+    }
+
+    /*
+       // cut the trail into segments of the size of the used frame
+      while (true)
+      {
+        final testOffset:Float = Math.sin(sustainTime * 0.01) * 0;
+
+        final frame:FlxFrame = (doEndPiece ? endPieceFrame : holdPieceFrame);
+        final segmentIntervalHeight:Float = holdPiece.frame.height;
+        final segmentIntervalMs:Float = segmentIntervalHeight / 0.45 / scrollSpeed;
+
+        // left vertex
+        vertices[index + 0] = 0.0 + testOffset; // x
+        vertices[index + 1] = remainingSusHeight; // y
+
+        // right vertex
+        vertices[index + 2] = vertices[index + 0] + graphicWidth; // x
+        vertices[index + 3] = vertices[index + 1]; // y
+
+        // left uv
+        uvtData[index + 0] = holdPieceFrame.uv.left; // x
+        // final uvY:Float = (graphicHeight - remainingSusHeight - clipHeight) / graphic.height / zoom;
+        // ratio = / zoom;
+        uvtData[index + 1] = MathUtil.lerp(holdPieceFrame.uv.y, holdPieceFrame.uv.height, ratio); // y
+
+        // right uv
+        uvtData[index + 2] = holdPieceFrame.uv.width; // x
+        uvtData[index + 3] = uvtData[index + 1]; // y
+
+        final vertexIndex:Int = Std.int(index / 2);
         indices[indicesIndex + 0] = vertexIndex - 2; // top left
         indices[indicesIndex + 1] = vertexIndex - 1; // top right
         indices[indicesIndex + 2] = vertexIndex; // bottom left
@@ -294,19 +360,71 @@ class SustainTrail extends FlxSprite
         indices[indicesIndex + 5] = vertexIndex + 1; // bottom right
 
         indicesIndex += 6;
-      }
 
-      if (remainingSusHeight == 0)
+        if (remainingSusHeight == 0)
+        {
+          break;
+        }
+
+        remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
+        sustainTime = Math.max(sustainTime - segmentIntervalMs, (strumTime - songTime) + (fullSustainLength - sustainLength));
+
+        index += 4;
+
+        doEndPiece = false;
+      }
+     */
+    /*
+      remainingSusHeight = graphicHeight;
+      sustainTime = songTime - strumTime - (fullSustainLength - sustainLength);
+
+      while (true)
       {
-        break;
+        var testOffset:Float = Math.sin(sustainTime * 0.01) * 30;
+
+        // left vertex
+        vertices[index + 0] = 0.0 + testOffset; // x
+        vertices[index + 1] = graphicHeight - remainingSusHeight; // y
+
+        // right vertex
+        vertices[index + 2] = graphicWidth + testOffset; // x
+        vertices[index + 3] = vertices[index + 1]; // y
+
+        // left uv
+        uvtData[index + 0] = holdPieceFrame.uv.left; // x
+        var uvY:Float = (graphicHeight - remainingSusHeight - clipHeight) / graphic.height / zoom;
+        uvtData[index + 1] = wrap(uvY, holdPieceFrame.uv.y, holdPieceFrame.uv.height); // y
+
+        // right uv
+        uvtData[index + 2] = holdPieceFrame.uv.width; // x
+        uvtData[index + 3] = uvtData[index + 1]; // y
+
+        if (!newSegment)
+        {
+          var vertexIndex:Int = Std.int(index / 2);
+          indices[indicesIndex + 0] = vertexIndex - 2; // top left
+          indices[indicesIndex + 1] = vertexIndex - 1; // top right
+          indices[indicesIndex + 2] = vertexIndex; // bottom left
+
+          indices[indicesIndex + 3] = vertexIndex - 1; // top right
+          indices[indicesIndex + 4] = vertexIndex; // bottom left
+          indices[indicesIndex + 5] = vertexIndex + 1; // bottom right
+
+          indicesIndex += 6;
+        }
+
+        if (remainingSusHeight == 0)
+        {
+          break;
+        }
+
+        newSegment = false;
+
+        index += 4;
+        remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
+        sustainTime = Math.max(sustainTime - segmentIntervalMs, songTime - strumTime - (fullSustainLength - sustainLength) - sustainLength);
       }
-
-      newSegment = false;
-
-      index += 4;
-      remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
-      sustainTime = Math.max(sustainTime - segmentIntervalMs, songTime - strumTime - (fullSustainLength - sustainLength) - sustainLength);
-    }
+     */
   }
 
   @:access(flixel.FlxCamera)
