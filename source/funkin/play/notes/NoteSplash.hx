@@ -1,6 +1,7 @@
 package funkin.play.notes;
 
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -8,23 +9,17 @@ import flixel.FlxSprite;
 
 class NoteSplash extends FlxSprite
 {
+  public var offsets:Array<Float> = [0.0, 0.0];
+
   static final ALPHA:Float = 0.6;
   static final FRAMERATE_DEFAULT:Int = 24;
   static final FRAMERATE_VARIANCE:Int = 2;
 
-  static var frameCollection:FlxFramesCollection;
-
-  public static function preloadFrames():Void
-  {
-    frameCollection = Paths.getSparrowAtlas('noteSplashes');
-    frameCollection.parent.persist = true;
-  }
-
-  public function new()
+  public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
 
-    setup();
+    setup(noteStyle);
 
     this.alpha = ALPHA;
     this.animation.finishCallback = this.onAnimationFinished;
@@ -33,21 +28,10 @@ class NoteSplash extends FlxSprite
   /**
    * Add ALL the animations to this sprite. We will recycle and reuse the FlxSprite multiple times.
    */
-  function setup():Void
+  function setup(noteStyle:NoteStyle):Void
   {
-    if (frameCollection?.parent?.isDestroyed ?? false) frameCollection = null;
-    if (frameCollection == null) preloadFrames();
-
-    this.frames = frameCollection;
-
-    this.animation.addByPrefix('splash1Left', 'note impact 1 purple0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash1Down', 'note impact 1  blue0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash1Up', 'note impact 1 green0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash1Right', 'note impact 1 red0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Left', 'note impact 2 purple0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Down', 'note impact 2 blue0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Up', 'note impact 2 green0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Right', 'note impact 2 red0', FRAMERATE_DEFAULT, false, false, false);
+    noteStyle.buildSplashSprite(this);
+    updateHitbox();
 
     if (this.animation.getAnimationList().length < 8)
     {
