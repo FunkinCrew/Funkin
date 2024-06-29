@@ -284,6 +284,21 @@ class Constants
   public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
 
   /**
+   * ANIMATIONS
+   */
+  // ==============================
+
+  /**
+   * A suffix used for animations played when an animation would loop.
+   */
+  public static final ANIMATION_HOLD_SUFFIX:String = '-hold';
+
+  /**
+   * A suffix used for animations played when an animation would end before transitioning to another.
+   */
+  public static final ANIMATION_END_SUFFIX:String = '-end';
+
+  /**
    * TIMING
    */
   // ==============================
