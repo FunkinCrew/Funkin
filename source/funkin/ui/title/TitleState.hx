@@ -32,6 +32,8 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
+import funkin.ui.title.OutdatedState;
+import lime.app.Application;
 
 #if desktop
 #end
@@ -55,9 +57,12 @@ class TitleState extends MusicBeatState
   var netStream:NetStream;
   var overlay:Sprite;
 
+  var leftState:Bool = false;
+
   override public function create():Void
   {
     super.create();
+
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -273,16 +278,6 @@ class TitleState extends MusicBeatState
     #end
 
     Conductor.instance.update();
-
-    /* if (FlxG.onMobile)
-          {
-      if (gfDance != null)
-      {
-        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
-        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
-      }
-          }
-     */
     if (FlxG.keys.justPressed.I)
     {
       FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
@@ -318,10 +313,52 @@ class TitleState extends MusicBeatState
       FlxG.switchState(() -> new MainMenuState());
     }
 
+    if (pressedEnter && skippedIntro)
+    {
+      var url = "https://raw.githubusercontent.com/Ethan-makes-music/Funkin/develop/gitVersion.txt";
+      var request = new haxe.Http(url);
+
+      request.onData = function(data:String) {
+        // Data is the content of the .txt file
+        var updateVersion = data.trim();
+        var ver = "v" + Application.current.meta.get('version');
+
+        // Print both versions for debugging
+        trace("Current Version: " + ver);
+        trace("Update Version: " + updateVersion);
+
+        // This makes it so if your in debug mode the Outdated screen will not appear
+        #if debug
+        FlxG.switchState(() -> new MainMenuState());
+        trace("Your in debug mode!");
+        #else
+        trace("Your NOT in debug mode!");
+        // Checks to see if the versions are not the same, if so go to the Outdated screen.
+        if (ver != updateVersion)
+        {
+          // Versions are different, switch to OutdatedState
+          FlxG.switchState(() -> new OutdatedState());
+        }
+        else if (ver == updateVersion)
+        {
+          // Versions are the same, switch to MainMenuState
+          FlxG.switchState(() -> new MainMenuState());
+        }
+        #end
+      };
+
+      // Set the callback for any errors
+      request.onError = function(msg:String) {
+        trace("Error: " + msg);
+      };
+
+      // Send the request
+      request.request(false);
+    }
+
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
-      // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
       NGio.unlockMedal(60960);
       // If it's Friday according to da clock
       if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
