@@ -11,6 +11,9 @@ import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMath;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.MathUtil;
+import funkin.play.notes.modifier.NotePath;
+import funkin.play.notes.modifier.DirectionalPathModifier;
+import lime.math.Vector2;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -29,6 +32,15 @@ class SustainTrail extends FlxSprite
   public var fullSustainLength:Float = 0;
   public var noteData:Null<SongNoteData>;
   public var parentStrumline:Strumline;
+
+  public var notePath(default, set):NotePath;
+
+  function set_notePath(value:NotePath):NotePath
+  {
+    this.notePath = value;
+    this.updateDrawData();
+    return value;
+  }
 
   public var cover:NoteHoldCover = null;
 
@@ -84,7 +96,7 @@ class SustainTrail extends FlxSprite
    */
   public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
   {
-    super(0, 0);
+    super(-9999, -9999);
 
     var paths:Array<String> = noteStyle._data?.assets?.holdNote?.assetPath.split(Constants.LIBRARY_SEPARATOR);
     var key:String = "";
@@ -136,7 +148,7 @@ class SustainTrail extends FlxSprite
     // alpha = 0.6;
     alpha = 1.0;
 
-    updateClipping();
+    updateDrawData();
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
   }
@@ -203,6 +215,12 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping():Void
   {
+    if (notePath == null)
+    {
+      visible = false;
+      return;
+    }
+
     visible = true;
 
     var songTime:Float = Conductor.instance.songPosition;
@@ -255,10 +273,18 @@ class SustainTrail extends FlxSprite
         graphic: graphic
       };
 
-    final sliceIntervalHeight:Float = sustainHeight(sliceIntervalMs, parentStrumline?.scrollSpeed ?? 1.0);
+    final scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
+
+    final sliceIntervalHeight:Float = sustainHeight(sliceIntervalMs, scrollSpeed);
+    final receptor:Null<StrumlineNote> = parentStrumline?.getByDirection(noteDirection);
+    final targetX:Float = (receptor != null ? (receptor.x + receptor.width / 2) : 0);
+    final targetY:Float = (receptor != null ? (receptor.y + receptor.height / 2) : 0);
 
     var remainingTrailHeight:Float = trailHeight;
 
+    final bruhTransform:NoteTransform = notePath.calculateTransform(trailTime + 0.1, scrollSpeed, targetX, targetY);
+    var previousX:Float = bruhTransform.x;
+    var previousY:Float = bruhTransform.y;
     while (true)
     {
       final vertexIndex:Int = data.vertices.length;
@@ -266,13 +292,23 @@ class SustainTrail extends FlxSprite
 
       final testOffset:Float = Math.sin(trailTime * 0.01) * 0;
 
+      final transform:NoteTransform = notePath.calculateTransform(trailTime, scrollSpeed, targetX, targetY);
+      var direction:Vector2 = new Vector2(transform.x - previousX, transform.y - previousY);
+      direction.normalize(1);
+
+      final offsetX:Float = -direction.y * (graphicWidth / 2);
+      final offsetY:Float = direction.x * (graphicWidth / 2);
+
+      previousX = transform.x;
+      previousY = transform.y;
+
       // left vertex
-      data.vertices[vertexIndex + 0] = 0.0 + testOffset; // x
-      data.vertices[vertexIndex + 1] = remainingTrailHeight; // y
+      data.vertices[vertexIndex + 0] = transform.x - offsetX; // x
+      data.vertices[vertexIndex + 1] = transform.y - offsetY; // y
 
       // right vertex
-      data.vertices[vertexIndex + 2] = data.vertices[vertexIndex + 0] + graphicWidth; // x
-      data.vertices[vertexIndex + 3] = data.vertices[vertexIndex + 1]; // y
+      data.vertices[vertexIndex + 2] = transform.x + offsetX; // x
+      data.vertices[vertexIndex + 3] = transform.y + offsetY; // y
 
       // left uv
       data.uvs[vertexIndex + 0] = 0.0; // x

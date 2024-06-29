@@ -354,9 +354,7 @@ class Strumline extends FlxSpriteGroup
     {
       if (note == null || !note.alive) continue;
 
-      var vwoosh:Bool = note.holdNoteSprite == null;
-      // Set the note's position.
-      note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime, vwoosh);
+      note.updatePosition();
 
       // If the note is miss
       var isOffscreen = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
@@ -422,19 +420,6 @@ class Strumline extends FlxSpriteGroup
         // Hold note was dropped before completing, keep it in its clipped state.
         holdNote.visible = true;
 
-        var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Constants.PIXELS_PER_MS;
-
-        var vwoosh:Bool = false;
-
-        if (Preferences.downscroll)
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
-        }
-        else
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2;
-        }
-
         // Clean up the cover.
         if (holdNote.cover != null)
         {
@@ -454,30 +439,11 @@ class Strumline extends FlxSpriteGroup
         {
           holdNote.visible = false;
         }
-
-        if (Preferences.downscroll)
-        {
-          holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
-        }
-        else
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
-        }
       }
       else
       {
         // Hold note is new, render it normally.
         holdNote.visible = true;
-        var vwoosh:Bool = false;
-
-        if (Preferences.downscroll)
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
-        }
-        else
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2;
-        }
 
         holdNote.updateDrawData();
       }
@@ -713,11 +679,9 @@ class Strumline extends FlxSpriteGroup
     {
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
+      noteSprite.parentStrumline = this;
 
-      noteSprite.x = this.x;
-      noteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
-      noteSprite.x -= NUDGE;
-      // noteSprite.x += INITIAL_OFFSET;
+      noteSprite.x = -9999;
       noteSprite.y = -9999;
     }
 
@@ -741,11 +705,8 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.visible = true;
       holdNoteSprite.alpha = 1.0;
 
-      holdNoteSprite.x = this.x;
-      holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
-      holdNoteSprite.x += STRUMLINE_SIZE / 2;
-      holdNoteSprite.x -= holdNoteSprite.width / 2;
-      holdNoteSprite.y = -9999;
+      holdNoteSprite.x = 0;
+      holdNoteSprite.y = 0;
     }
 
     return holdNoteSprite;
