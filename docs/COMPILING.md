@@ -2,14 +2,16 @@
 
 0. Setup
     - Download Haxe from [Haxe.org](https://haxe.org)
-1. Cloning the Repository: Make sure when you clone, you clone the submodules to get the assets repo:
-    - `git clone --recurse-submodules https://github.com/FunkinCrew/funkin.git`
-    - If you accidentally cloned without the `assets` submodule (aka didn't follow the step above), you can run `git submodule update --init --recursive` to get the assets in a foolproof way.
-2. Install `hmm` (run `haxelib --global install hmm` and then `haxelib --global run hmm setup`)
-3. Download Git from [git-scm.com](https://www.git-scm.com)
-4. Install all haxelibs of the current branch by running `hmm install`
-5. Setup lime: `haxelib run lime setup`
-6. Platform setup
+    - Download Git from [git-scm.com](https://www.git-scm.com)
+    - Do NOT download the repository using the Download ZIP button on GitHub or you may run into errors!
+    - Instead, open a command prompt and do the following steps...
+1. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
+2. Run `git submodule update --init --recursive` to download the game's assets.
+    - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
+2. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
+3. Run `hmm install` to install all haxelibs of the current branch
+4. Run `haxelib run lime setup` to set up lime
+5. Platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
@@ -17,8 +19,8 @@
     - Mac: [`lime setup mac` Documentation](https://lime.openfl.org/docs/advanced-setup/macos/)
     - Linux: [`lime setup linux` Documentation](https://lime.openfl.org/docs/advanced-setup/linux/)
     - HTML5: Compiles without any extra setup
-7. If you are targeting for native, you may need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
-8. `lime test PLATFORM` ! Add `-debug` to enable several debug features such as time travel (`PgUp`/`PgDn` in Play State).
+6. If you are targeting for native, you may need to run `lime rebuild PLATFORM` and `lime rebuild PLATFORM -debug`
+7. `lime test PLATFORM` ! Add `-debug` to enable several debug features such as time travel (`PgUp`/`PgDn` in Play State).
 
 # Troubleshooting
 
