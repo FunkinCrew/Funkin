@@ -179,6 +179,11 @@ class NoteSprite extends FunkinSprite
    */
   public function updatePosition():Void
   {
+    if (this.notePath == null)
+    {
+      return;
+    }
+
     final receptor:Null<StrumlineNote> = parentStrumline?.getByDirection(this.direction);
     final targetX:Float = (receptor != null ? (receptor.x + (receptor.width - this.width) / 2) : this.x);
     final targetY:Float = (receptor != null ? (receptor.y + (receptor.height - this.height) / 2) : this.y);
