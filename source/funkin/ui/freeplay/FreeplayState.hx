@@ -2038,6 +2038,8 @@ class FreeplaySongData
 
   function set_currentDifficulty(value:String):String
   {
+    if (currentDifficulty == value) return value;
+
     currentDifficulty = value;
     updateValues(displayedVariations);
     return value;
