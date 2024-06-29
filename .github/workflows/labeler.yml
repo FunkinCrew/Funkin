@@ -9,6 +9,19 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v5
+    - name: Set basic labels
+      uses: actions/labeler@v5
       with:
         sync-labels: true
+  changed-lines-count-labeler:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    name: An action for automatically labelling pull requests based on the changed lines count
+    steps:
+    - name: Set change count labels
+      uses: vkirilichev/changed-lines-count-labeler@v0.2
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/changed-lines-count-labeler.yml
