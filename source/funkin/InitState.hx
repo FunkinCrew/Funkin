@@ -26,6 +26,7 @@ import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
 import funkin.util.CLIUtil;
@@ -173,6 +174,8 @@ class InitState extends FlxState
     // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.
     CharacterDataParser.loadCharacterCache();
+
+    NoteKindManager.loadScripts();
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
