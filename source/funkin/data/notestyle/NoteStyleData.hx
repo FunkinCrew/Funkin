@@ -65,6 +65,7 @@ typedef NoteStyleAssetsData =
 
   /**
    * The sprites for the note splashes.
+   * @default The sprites from the fallback note style.
    */
   @:optional
   var noteSplash:NoteStyleAssetData<NoteStyleData_NoteSplash>;
@@ -150,6 +151,30 @@ typedef NoteStyleData_NoteStrumline =
 
 typedef NoteStyleData_NoteSplash =
 {
+  @:optional
+  var splash1Left:UnnamedAnimationData;
+
+  @:optional
+  var splash1Down:UnnamedAnimationData;
+
+  @:optional
+  var splash1Up:UnnamedAnimationData;
+
+  @:optional
+  var splash1Right:UnnamedAnimationData;
+
+  @:optional
+  var splash2Left:UnnamedAnimationData;
+
+  @:optional
+  var splash2Down:UnnamedAnimationData;
+
+  @:optional
+  var splash2Up:UnnamedAnimationData;
+
+  @:optional
+  var splash2Right:UnnamedAnimationData;
+
   /**
    * If false, note splashes are entirely hidden on this note style.
    * @default Note splashes are enabled.

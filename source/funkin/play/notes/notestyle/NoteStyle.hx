@@ -169,6 +169,135 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return (result == null) ? fallback.fetchNoteAnimationData(dir) : result;
   }
 
+  public function buildSplashSprite(target:NoteSplash):Void
+  {
+    // Apply the note sprite frames.
+    var atlas:FlxAtlasFrames = buildSplashFrames(false);
+
+    if (atlas == null)
+    {
+      throw 'Could not load spritesheet for note style: $id';
+    }
+
+    target.frames = atlas;
+
+    target.scale.x = fetchSplashScale();
+    target.scale.y = fetchSplashScale();
+    target.antialiasing = !fetchSplashPixel();
+    target.offsets = fetchSplashOffsets();
+
+    // Apply the animations.
+    buildSplashAnimations(target);
+  }
+
+  var splashFrames:FlxAtlasFrames = null;
+
+  function buildSplashFrames(force:Bool = false):FlxAtlasFrames
+  {
+    if (!FunkinSprite.isTextureCached(Paths.image(getSplashAssetPath())))
+    {
+      FlxG.log.warn('Note splash texture is not cached: ${getSplashAssetPath()}');
+    }
+
+    // Purge the note frames if the cached atlas is invalid.
+    if (splashFrames?.parent?.isDestroyed ?? false) splashFrames = null;
+
+    if (splashFrames != null && !force) return splashFrames;
+
+    splashFrames = Paths.getSparrowAtlas(getSplashAssetPath(), getSplashAssetLibrary());
+
+    if (splashFrames == null)
+    {
+      throw 'Could not load splash frames for note style: $id';
+    }
+
+    return splashFrames;
+  }
+
+  function getSplashAssetPath(raw:Bool = false):String
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data?.assets?.noteSplash?.assetPath;
+      if (rawPath == null) return fallback.getSplashAssetPath(true);
+      return rawPath;
+    }
+
+    // library:path
+    var parts = getSplashAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
+    if (parts.length == 1) return getSplashAssetPath(true);
+    return parts[1];
+  }
+
+  function getSplashAssetLibrary():Null<String>
+  {
+    // library:path
+    var parts = getSplashAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
+    if (parts.length == 1) return null;
+    return parts[0];
+  }
+
+  function buildSplashAnimations(target:NoteSplash):Void
+  {
+    applySplashAnimations(target, LEFT);
+    applySplashAnimations(target, DOWN);
+    applySplashAnimations(target, UP);
+    applySplashAnimations(target, RIGHT);
+  }
+
+  public function fetchSplashScale():Float
+  {
+    var data = _data?.assets?.noteSplash;
+    if (data == null) return fallback.fetchSplashScale();
+    return data.scale;
+  }
+
+  public function fetchSplashPixel():Bool
+  {
+    var data = _data?.assets?.noteSplash;
+    if (data == null) return fallback.fetchSplashPixel();
+    return data.isPixel;
+  }
+
+  public function fetchSplashOffsets():Array<Float>
+  {
+    var data = _data?.assets?.noteSplash;
+    if (data == null) return fallback.fetchSplashOffsets();
+    return data.offsets;
+  }
+
+  public function applySplashAnimations(target:NoteSplash, dir:NoteDirection):Void
+  {
+    FlxAnimationUtil.addAtlasAnimations(target, fetchSplashAnimationData(dir));
+  }
+
+  function fetchSplashAnimationData(dir:NoteDirection):Array<AnimationData>
+  {
+    var result:Null<Array<AnimationData>> = switch (dir)
+    {
+      case LEFT: [
+          _data?.assets?.noteSplash?.data?.splash1Left?.toNamed('splash1Left'),
+          _data?.assets?.noteSplash?.data?.splash2Left?.toNamed('splash2Left')
+        ];
+      case DOWN: [
+          _data?.assets?.noteSplash?.data?.splash1Down?.toNamed('splash1Down'),
+          _data?.assets?.noteSplash?.data?.splash2Down?.toNamed('splash2Down')
+        ];
+      case UP: [
+          _data?.assets?.noteSplash?.data?.splash1Up?.toNamed('splash1Up'),
+          _data?.assets?.noteSplash?.data?.splash2Up?.toNamed('splash2Up')
+        ];
+      case RIGHT: [
+          _data?.assets?.noteSplash?.data?.splash1Right?.toNamed('splash1Right'),
+          _data?.assets?.noteSplash?.data?.splash2Right?.toNamed('splash2Right')
+        ];
+    };
+
+    // TODO: Null check doesn't work here.
+    if (result == null) return fallback.fetchSplashAnimationData(dir);
+    return result;
+  }
+
   public function getHoldNoteAssetPath(raw:Bool = false):String
   {
     if (raw)

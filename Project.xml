@@ -234,8 +234,8 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	</section>
 
 	<!-- Run a script before and after building. -->
-	<prebuild haxe="source/Prebuild.hx"/> -->
-	<postbuild haxe="source/Postbuild.hx"/> -->
+	<prebuild haxe="source/Prebuild.hx"/>
+	<postbuild haxe="source/Postbuild.hx"/>
 
 	<!-- Enable this on platforms which do not support dropping files onto the window. -->
 	<haxedef name="FILE_DROP_UNSUPPORTED" if="mac" />
