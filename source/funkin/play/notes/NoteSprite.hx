@@ -143,11 +143,17 @@ class NoteSprite extends FunkinSprite
 
   function set_notePath(value:NotePath):NotePath
   {
-    this.notePath = value;
     if (this.holdNoteSprite != null)
     {
       this.holdNoteSprite.notePath = value;
     }
+
+    if (this.notePath == value)
+    {
+      return value;
+    }
+
+    this.notePath = value;
     this.updatePosition();
     return value;
   }

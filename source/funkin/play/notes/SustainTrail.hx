@@ -37,6 +37,11 @@ class SustainTrail extends FlxSprite
 
   function set_notePath(value:NotePath):NotePath
   {
+    if (this.notePath == value)
+    {
+      return value;
+    }
+
     this.notePath = value;
     this.updateDrawData();
     return value;
