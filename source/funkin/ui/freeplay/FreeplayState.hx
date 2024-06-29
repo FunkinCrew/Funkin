@@ -1302,9 +1302,7 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var upP:Bool = controls.UI_UP_P && !FlxG.keys.pressed.CONTROL;
-    var downP:Bool = controls.UI_DOWN_P && !FlxG.keys.pressed.CONTROL;
-    var accepted:Bool = controls.ACCEPT && !FlxG.keys.pressed.CONTROL;
+    var accepted:Bool = controls.ACCEPT;
 
     if (FlxG.onMobile)
     {
@@ -1378,7 +1376,7 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (!FlxG.keys.pressed.CONTROL && (controls.UI_UP || controls.UI_DOWN))
+    if (controls.UI_UP || controls.UI_DOWN)
     {
       if (spamming)
       {
@@ -1440,13 +1438,13 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
+    if (controls.UI_LEFT_P)
     {
       dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
-    if (controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL)
+    if (controls.UI_RIGHT_P)
     {
       dj.resetAFKTimer();
       changeDiff(1);
@@ -1870,6 +1868,9 @@ class FreeplayState extends MusicBeatSubState
 
   public function playCurSongPreview(daSongCapsule:SongMenuItem):Void
   {
+    var volume:Float = 0.4;
+    if (dj.playingCartoon) volume *= 0.4; // 40%
+
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -1878,7 +1879,7 @@ class FreeplayState extends MusicBeatSubState
           overrideExisting: true,
           restartTrack: false
         });
-      FlxG.sound.music.fadeIn(2, 0, 0.8);
+      FlxG.sound.music.fadeIn(2, 0, volume);
     }
     else
     {
@@ -1897,7 +1898,7 @@ class FreeplayState extends MusicBeatSubState
               end: 0.25
             },
           onLoad: function() {
-            FlxG.sound.music.fadeIn(2, 0, 0.4);
+            FlxG.sound.music.fadeIn(2, 0, volume);
           }
         });
     }
@@ -1948,8 +1949,8 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
-    if (flipX && controls.UI_RIGHT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
-    if (!flipX && controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL) moveShitDown();
+    if (flipX && controls.UI_RIGHT_P) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P) moveShitDown();
 
     super.update(elapsed);
   }
