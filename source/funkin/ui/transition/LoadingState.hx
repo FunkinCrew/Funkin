@@ -346,7 +346,7 @@ class LoadingState extends MusicBeatSubState
         return 'Done precaching ${path}';
       }, true);
 
-      trace("Queued ${path} for precaching");
+      trace('Queued ${path} for precaching');
       // FunkinSprite.cacheTexture(path);
     }
 
