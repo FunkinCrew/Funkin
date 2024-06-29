@@ -8,7 +8,19 @@ class NotePath
   /**
    * The `NotePathModifier` to use
    */
-  public var modifier:NotePathModifier;
+  public var modifier(default, set):NotePathModifier;
+
+  function set_modifier(value:NotePathModifier):NotePathModifier
+  {
+    if (value == null)
+    {
+      return this.modifier;
+    }
+
+    this.modifier = value;
+
+    return this.modifier;
+  }
 
   public function new()
   {
