@@ -101,7 +101,7 @@ class SustainTrail extends FlxSprite
 
     frames = Paths.getSparrowAtlas(key, library);
     animation.addByPrefix('${NoteDirection.LEFT.name} hold piece', 'purple hold piece', 0, false);
-    animation.addByPrefix('${NoteDirection.LEFT.name} hold end', 'purple end hold', 0, false);
+    animation.addByPrefix('${NoteDirection.LEFT.name} hold end', 'purple hold end', 0, false);
     animation.addByPrefix('${NoteDirection.DOWN.name} hold piece', 'blue hold piece', 0, false);
     animation.addByPrefix('${NoteDirection.DOWN.name} hold end', 'blue hold end', 0, false);
     animation.addByPrefix('${NoteDirection.UP.name} hold piece', 'green hold piece', 0, false);
