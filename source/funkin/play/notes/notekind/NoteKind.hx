@@ -73,7 +73,7 @@ class NoteKind implements INoteScriptedClass
  * Abstract for setting the type of the `NoteKindParam`
  * This was supposed to be an enum but polymod kept being annoying
  */
-abstract NoteKindParamType(String) to String
+abstract NoteKindParamType(String) from String to String
 {
   public static final STRING:String = 'String';
 
