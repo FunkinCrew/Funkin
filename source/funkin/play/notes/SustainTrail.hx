@@ -52,22 +52,8 @@ class SustainTrail extends FlxSprite
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
   /**
-   * A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
+   *
    */
-  public var vertices:DrawData<Float> = new DrawData<Float>();
-
-  /**
-   * A `Vector` of integers or indexes, where every three indexes define a triangle.
-   */
-  public var indices:DrawData<Int> = new DrawData<Int>();
-
-  /**
-   * A `Vector` of normalized coordinates used to apply texture mapping.
-   */
-  public var uvtData:DrawData<Float> = new DrawData<Float>();
-
-  private var processedGraphic:FlxGraphic;
-
   private var zoom:Float = 1;
 
   /**
@@ -86,6 +72,9 @@ class SustainTrail extends FlxSprite
 
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
+
+  var holdTrailData:TrailData;
+  var endTrailData:TrailData;
 
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
@@ -146,11 +135,8 @@ class SustainTrail extends FlxSprite
 
     // alpha = 0.6;
     alpha = 1.0;
-    // calls updateColorTransform(), which initializes processedGraphic!
-    updateColorTransform();
 
     updateClipping();
-    // indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
   }
@@ -221,216 +207,111 @@ class SustainTrail extends FlxSprite
 
     var songTime:Float = Conductor.instance.songPosition;
 
-    var frameIndex:Int = animation.getByName('${noteDirection.name} hold piece').frames[0];
-    var holdPieceFrame:FlxFrame = frames.getByIndex(frameIndex);
+    final frameIndex:Int = animation.getByName('${noteDirection.name} hold piece').frames[0];
+    final holdTrailFrame:FlxFrame = frames.getByIndex(frameIndex);
+    final holdTrailGraphic:FlxGraphic = FlxGraphic.fromFrame(holdTrailFrame);
 
-    var frameIndex:Int = animation.getByName('${noteDirection.name} hold end').frames[0];
-    var endPieceFrame:FlxFrame = frames.getByIndex(frameIndex);
+    final frameIndex:Int = animation.getByName('${noteDirection.name} hold end').frames[0];
+    final endTrailFrame:FlxFrame = frames.getByIndex(frameIndex);
+    final endTrailGraphic:FlxGraphic = FlxGraphic.fromFrame(endTrailFrame);
 
-    if (holdPieceFrame == null || endPieceFrame == null)
+    if (holdTrailGraphic == null || endTrailGraphic == null)
     {
       trace("FRAMES ARE NULL!");
       return;
     }
 
-    var scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
+    final scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
 
-    // var segmentIntervalMs:Float = Conductor.instance.stepLengthMs / 4 / (parentStrumline?.scrollSpeed ?? 1.0);
-    // var segmentIntervalHeight:Float = sustainHeight(segmentIntervalMs, parentStrumline?.scrollSpeed ?? 1.0);
-    var index:Int = 0;
-    var indicesIndex:Int = 0;
+    graphicWidth = holdTrailGraphic.width * zoom;
+    graphicHeight = sustainHeight(sustainLength, scrollSpeed);
 
-    // segmentIntervalHeight = holdPieceFrame.frame.height / 4;
-    // segmentIntervalMs = holdPieceFrame.frame.height / 4 / 0.45 / (parentStrumline?.scrollSpeed ?? 1.0);
+    final sliceIntervalMs:Float = Conductor.instance.stepLengthMs / 4 / scrollSpeed;
 
-    // var newSegment:Bool = true;
+    final endTrailHeightCap:Float = Math.max(graphicHeight - endTrailGraphic.height * zoom, 0);
 
-    vertices.splice(0, vertices.length);
-    uvtData.splice(0, uvtData.length);
-    indices.splice(0, indices.length);
+    final endTrailTime:Float = (strumTime - songTime) + (fullSustainLength - sustainLength) + sustainLength;
+    final endTrailTimeCap:Float = endTrailTime - (graphicHeight - endTrailHeightCap) / 0.45 / scrollSpeed;
 
-    graphicWidth = holdPieceFrame.frame.width * zoom;
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+    endTrailData = sliceTrailPart(endTrailGraphic, graphicHeight, endTrailHeightCap, endTrailTime, endTrailTimeCap, sliceIntervalMs);
 
-    var remainingSusHeight:Float = graphicHeight;
-    var sustainTime:Float = (strumTime - songTime) + (fullSustainLength - sustainLength) + sustainLength;
-    var doEndPiece:Bool = true;
+    final trailTimeCap:Float = (strumTime - songTime) + (fullSustainLength - sustainLength);
 
-    // cut the trail into segments of the size of the used frame
+    holdTrailData = sliceTrailPart(holdTrailGraphic, endTrailHeightCap, 0, endTrailTimeCap, trailTimeCap, sliceIntervalMs);
+  }
+
+  function sliceTrailPart(graphic:FlxGraphic, trailHeight:Float, trailHeightCap:Float, trailTime:Float, trailTimeCap:Float, sliceIntervalMs:Float):TrailData
+  {
+    if (trailHeight <= trailHeightCap)
+    {
+      return null;
+    }
+
+    var data:TrailData =
+      {
+        vertices: new DrawData<Float>(),
+        uvs: new DrawData<Float>(),
+        indices: new DrawData<Int>(),
+        graphic: graphic
+      };
+
+    final sliceIntervalHeight:Float = sustainHeight(sliceIntervalMs, parentStrumline?.scrollSpeed ?? 1.0);
+
+    var remainingTrailHeight:Float = trailHeight;
+
     while (true)
     {
-      final testOffset:Float = Math.sin(sustainTime * 0.01) * 0;
+      final vertexIndex:Int = data.vertices.length;
+      final indicesIndex:Int = data.indices.length;
 
-      final frame:FlxFrame = (doEndPiece ? endPieceFrame : holdPieceFrame);
-      final segmentIntervalHeight:Float = frame.frame.height * zoom;
-      final segmentIntervalMs:Float = segmentIntervalHeight / 0.45 / scrollSpeed;
+      final testOffset:Float = Math.sin(trailTime * 0.01) * 0;
 
-      // bottom left vertex
-      vertices[index + 0] = 0.0 + testOffset; // x
-      vertices[index + 1] = remainingSusHeight; // y
+      // left vertex
+      data.vertices[vertexIndex + 0] = 0.0 + testOffset; // x
+      data.vertices[vertexIndex + 1] = remainingTrailHeight; // y
 
-      // bottom right vertex
-      vertices[index + 2] = vertices[index + 0] + graphicWidth; // x
-      vertices[index + 3] = vertices[index + 1]; // y
+      // right vertex
+      data.vertices[vertexIndex + 2] = data.vertices[vertexIndex + 0] + graphicWidth; // x
+      data.vertices[vertexIndex + 3] = data.vertices[vertexIndex + 1]; // y
 
-      // bottom left uv
-      uvtData[index + 0] = frame.uv.x; // x
-      uvtData[index + 1] = frame.uv.height; // y
+      // left uv
+      data.uvs[vertexIndex + 0] = 0.0; // x
+      data.uvs[vertexIndex + 1] = 1.0 - (trailHeight - remainingTrailHeight) / graphic.height / zoom; // y
 
-      // bottom right uv
-      uvtData[index + 2] = frame.uv.width; // x
-      uvtData[index + 3] = uvtData[index + 1]; // y
+      // right uv
+      data.uvs[vertexIndex + 2] = 1.0; // x
+      data.uvs[vertexIndex + 3] = data.uvs[vertexIndex + 1]; // y
 
-      // top left vertex
-      vertices[index + 4] = 0.0 + testOffset; // x
-      vertices[index + 5] = Math.max(remainingSusHeight - segmentIntervalHeight, 0); // y
+      if (vertexIndex > 0)
+      {
+        final topVertexIndex:Int = Std.int(vertexIndex / 2);
+        final bottomVertexIndex:Int = topVertexIndex - 2;
 
-      // top right vertex
-      vertices[index + 6] = vertices[index + 4] + graphicWidth; // x
-      vertices[index + 7] = vertices[index + 5]; // y
+        data.indices[indicesIndex + 0] = topVertexIndex + 0; // top left
+        data.indices[indicesIndex + 1] = topVertexIndex + 1; // top right
+        data.indices[indicesIndex + 2] = bottomVertexIndex + 0; // bottom left
 
-      // top left uv
-      uvtData[index + 4] = frame.uv.x; // x
-      uvtData[index + 5] = frame.uv.y; // y
+        data.indices[indicesIndex + 3] = topVertexIndex + 1; // top right
+        data.indices[indicesIndex + 4] = bottomVertexIndex + 1; // bottom right
+        data.indices[indicesIndex + 5] = bottomVertexIndex + 0; // bottom left
+      }
 
-      // top right uv
-      uvtData[index + 6] = frame.uv.width; // x
-      uvtData[index + 7] = uvtData[index + 5]; // y
-
-      // Clockwise Order
-      final vertexIndex:Int = Std.int(index / 2);
-      indices[indicesIndex + 0] = vertexIndex + 0; // bottom left
-      indices[indicesIndex + 1] = vertexIndex + 1; // bottom right
-      indices[indicesIndex + 2] = vertexIndex + 2; // top left
-
-      indices[indicesIndex + 3] = vertexIndex + 1; // bottom right
-      indices[indicesIndex + 4] = vertexIndex + 3; // top right
-      indices[indicesIndex + 5] = vertexIndex + 2; // top left
-
-      indicesIndex += 6;
-
-      if (remainingSusHeight == 0)
+      if (remainingTrailHeight == trailHeightCap)
       {
         break;
       }
 
-      remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
-      sustainTime = Math.max(sustainTime - segmentIntervalMs, (strumTime - songTime) + (fullSustainLength - sustainLength));
-
-      index += 8;
-
-      doEndPiece = false;
+      remainingTrailHeight = Math.max(remainingTrailHeight - sliceIntervalHeight, trailHeightCap);
+      trailTime = Math.max(trailTime - sliceIntervalMs, trailTimeCap);
     }
 
-    /*
-       // cut the trail into segments of the size of the used frame
-      while (true)
-      {
-        final testOffset:Float = Math.sin(sustainTime * 0.01) * 0;
-
-        final frame:FlxFrame = (doEndPiece ? endPieceFrame : holdPieceFrame);
-        final segmentIntervalHeight:Float = holdPiece.frame.height;
-        final segmentIntervalMs:Float = segmentIntervalHeight / 0.45 / scrollSpeed;
-
-        // left vertex
-        vertices[index + 0] = 0.0 + testOffset; // x
-        vertices[index + 1] = remainingSusHeight; // y
-
-        // right vertex
-        vertices[index + 2] = vertices[index + 0] + graphicWidth; // x
-        vertices[index + 3] = vertices[index + 1]; // y
-
-        // left uv
-        uvtData[index + 0] = holdPieceFrame.uv.left; // x
-        // final uvY:Float = (graphicHeight - remainingSusHeight - clipHeight) / graphic.height / zoom;
-        // ratio = / zoom;
-        uvtData[index + 1] = MathUtil.lerp(holdPieceFrame.uv.y, holdPieceFrame.uv.height, ratio); // y
-
-        // right uv
-        uvtData[index + 2] = holdPieceFrame.uv.width; // x
-        uvtData[index + 3] = uvtData[index + 1]; // y
-
-        final vertexIndex:Int = Std.int(index / 2);
-        indices[indicesIndex + 0] = vertexIndex - 2; // top left
-        indices[indicesIndex + 1] = vertexIndex - 1; // top right
-        indices[indicesIndex + 2] = vertexIndex; // bottom left
-
-        indices[indicesIndex + 3] = vertexIndex - 1; // top right
-        indices[indicesIndex + 4] = vertexIndex; // bottom left
-        indices[indicesIndex + 5] = vertexIndex + 1; // bottom right
-
-        indicesIndex += 6;
-
-        if (remainingSusHeight == 0)
-        {
-          break;
-        }
-
-        remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
-        sustainTime = Math.max(sustainTime - segmentIntervalMs, (strumTime - songTime) + (fullSustainLength - sustainLength));
-
-        index += 4;
-
-        doEndPiece = false;
-      }
-     */
-    /*
-      remainingSusHeight = graphicHeight;
-      sustainTime = songTime - strumTime - (fullSustainLength - sustainLength);
-
-      while (true)
-      {
-        var testOffset:Float = Math.sin(sustainTime * 0.01) * 30;
-
-        // left vertex
-        vertices[index + 0] = 0.0 + testOffset; // x
-        vertices[index + 1] = graphicHeight - remainingSusHeight; // y
-
-        // right vertex
-        vertices[index + 2] = graphicWidth + testOffset; // x
-        vertices[index + 3] = vertices[index + 1]; // y
-
-        // left uv
-        uvtData[index + 0] = holdPieceFrame.uv.left; // x
-        var uvY:Float = (graphicHeight - remainingSusHeight - clipHeight) / graphic.height / zoom;
-        uvtData[index + 1] = wrap(uvY, holdPieceFrame.uv.y, holdPieceFrame.uv.height); // y
-
-        // right uv
-        uvtData[index + 2] = holdPieceFrame.uv.width; // x
-        uvtData[index + 3] = uvtData[index + 1]; // y
-
-        if (!newSegment)
-        {
-          var vertexIndex:Int = Std.int(index / 2);
-          indices[indicesIndex + 0] = vertexIndex - 2; // top left
-          indices[indicesIndex + 1] = vertexIndex - 1; // top right
-          indices[indicesIndex + 2] = vertexIndex; // bottom left
-
-          indices[indicesIndex + 3] = vertexIndex - 1; // top right
-          indices[indicesIndex + 4] = vertexIndex; // bottom left
-          indices[indicesIndex + 5] = vertexIndex + 1; // bottom right
-
-          indicesIndex += 6;
-        }
-
-        if (remainingSusHeight == 0)
-        {
-          break;
-        }
-
-        newSegment = false;
-
-        index += 4;
-        remainingSusHeight = Math.max(remainingSusHeight - segmentIntervalHeight, 0);
-        sustainTime = Math.max(sustainTime - segmentIntervalMs, songTime - strumTime - (fullSustainLength - sustainLength) - sustainLength);
-      }
-     */
+    return data;
   }
 
   @:access(flixel.FlxCamera)
   override public function draw():Void
   {
-    if (alpha == 0 || graphic == null || vertices == null) return;
+    if (alpha == 0 || graphic == null || (holdTrailData == null && endTrailData == null)) return;
 
     for (camera in cameras)
     {
@@ -438,7 +319,18 @@ class SustainTrail extends FlxSprite
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
       getScreenPosition(_point, camera).subtractPoint(offset);
-      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, false, antialiasing);
+
+      if (endTrailData != null)
+      {
+        camera.drawTriangles(endTrailData.graphic, endTrailData.vertices, endTrailData.indices, endTrailData.uvs, null, _point, blend, false, antialiasing,
+          colorTransform);
+      }
+
+      if (holdTrailData != null)
+      {
+        camera.drawTriangles(holdTrailData.graphic, holdTrailData.vertices, holdTrailData.indices, holdTrailData.uvs, null, _point, blend, true, antialiasing,
+          colorTransform);
+      }
     }
 
     #if FLX_DEBUG
@@ -477,19 +369,17 @@ class SustainTrail extends FlxSprite
 
   override public function destroy():Void
   {
-    vertices = null;
-    indices = null;
-    uvtData = null;
-    processedGraphic.destroy();
+    holdTrailData = null;
+    endTrailData = null;
 
     super.destroy();
   }
+}
 
-  override function updateColorTransform():Void
-  {
-    super.updateColorTransform();
-    if (processedGraphic != null) processedGraphic.destroy();
-    processedGraphic = FlxGraphic.fromGraphic(graphic, true);
-    processedGraphic.bitmap.colorTransform(processedGraphic.bitmap.rect, colorTransform);
-  }
+typedef TrailData =
+{
+  var vertices:DrawData<Float>;
+  var uvs:DrawData<Float>;
+  var indices:DrawData<Int>;
+  var graphic:FlxGraphic;
 }
