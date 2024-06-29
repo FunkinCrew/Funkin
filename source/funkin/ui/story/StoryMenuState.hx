@@ -1,6 +1,7 @@
 package funkin.ui.story;
 
 import flixel.addons.transition.FlxTransitionableState;
+import funkin.util.MathUtil;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
@@ -22,7 +23,7 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
-import funkin.util.MathUtil;
+import flixel.math.FlxMath;
 import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
@@ -439,11 +440,8 @@ class StoryMenuState extends MusicBeatState
     // var difficultyList:Array<String> = currentLevel.getDifficulties();
     var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
-    currentIndex += change;
-
     // Wrap around
-    if (currentIndex < 0) currentIndex = difficultyList.length - 1;
-    if (currentIndex >= difficultyList.length) currentIndex = 0;
+    currentIndex = FlxMath.wrap(currentIndex + change, 0, difficultyList.length - 1);
 
     var hasChanged:Bool = currentDifficultyId != difficultyList[currentIndex];
     currentDifficultyId = difficultyList[currentIndex];
