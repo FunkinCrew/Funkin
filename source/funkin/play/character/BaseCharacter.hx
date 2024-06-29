@@ -6,6 +6,7 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
+import funkin.Highscore;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -57,6 +58,12 @@ class BaseCharacter extends Bopper
    * This character plays a given animation when dropping combos larger than these numbers.
    */
   public var dropNoteCounts(default, null):Array<Int>;
+
+  /**
+   * A Map that keeps track of which combo animations have already been played, ensures that each animation only plays once.
+   * This will reset when the combo is broken.
+   */
+  var comboAnimPlayed:Map<String, Bool> = [];
 
   @:allow(funkin.ui.debug.anim.DebugBoundingState)
   final _data:CharacterData;
@@ -241,6 +248,50 @@ class BaseCharacter extends Bopper
   }
 
   /**
+   * Plays a count animation based on the animation type.
+   * The "drop" type will play when a combo with a certain threshold is broken.
+   * The "combo" type will play when a combo reaches a certain threshold.
+   */
+  function playCountAnimation(animType:String)
+  {
+    var dropAnim = '';
+    var comboAnim = '';
+    switch (animType)
+    {
+      case "drop":
+        for (count in dropNoteCounts)
+        {
+          if (Highscore.tallies.combo >= count)
+          {
+            dropAnim = 'drop${count}';
+          }
+        }
+
+        if (dropAnim != '')
+        {
+          trace('Playing GF combo drop animation: ${dropAnim}');
+          this.playAnimation(dropAnim, true, true);
+          comboAnimPlayed.clear();
+        }
+      case "combo":
+        for (count in comboNoteCounts)
+        {
+          if (Highscore.tallies.combo >= count)
+          {
+            comboAnim = 'combo${count}';
+          }
+        }
+
+        if (comboAnim != '' && !comboAnimPlayed.exists(comboAnim))
+        {
+          trace('Playing GF combo animation: ${comboAnim}');
+          this.playAnimation(comboAnim, true, true);
+          comboAnimPlayed.set(comboAnim, true);
+        }
+    }
+  }
+
+  /**
    * Reset the character so it can be used at the start of the level.
    * Call this when restarting the level.
    */
@@ -262,6 +313,9 @@ class BaseCharacter extends Bopper
 
     // Reset the camera focus point while we're at it.
     if (resetCamera) this.resetCameraFocusPoint();
+
+    // Clear GF's played combo animations
+    comboAnimPlayed.clear();
   }
 
   /**
@@ -499,6 +553,13 @@ class BaseCharacter extends Bopper
       this.playSingAnimation(event.note.noteData.getDirection(), false);
       holdTimer = 0;
     }
+    else if (event.note.noteData.getMustHitNote() && characterType == GF)
+    {
+      if (event.isComboBreak)
+        playCountAnimation("drop");
+      else
+        playCountAnimation("combo");
+    }
   }
 
   /**
@@ -521,24 +582,7 @@ class BaseCharacter extends Bopper
     }
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
-      var dropAnim = '';
-
-      // Choose the combo drop anim to play.
-      // If there are several (for example, drop10 and drop50) the highest one will be used.
-      // If the combo count is too low, no animation will be played.
-      for (count in dropNoteCounts)
-      {
-        if (event.comboCount >= count)
-        {
-          dropAnim = 'drop${count}';
-        }
-      }
-
-      if (dropAnim != '')
-      {
-        trace('Playing GF combo drop animation: ${dropAnim}');
-        this.playAnimation(dropAnim, true, true);
-      }
+      playCountAnimation("drop");
     }
   }
 
