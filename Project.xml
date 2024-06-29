@@ -294,5 +294,6 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<source path="hxvlc" />
 		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.buildOpenFLVideo())', 'hxvlc.openfl.Video')" />
 		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.buildFlxVideoSprite())', 'hxvlc.flixel.FlxVideoSprite')" />
+		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.buildFlxVideoSprite())', 'hxvlc.flixel.IFlxVideoSprite')" />
 	</section>
 </project>
