@@ -164,7 +164,7 @@ class BaseCharacter extends Bopper
 
   public function new(id:String, renderType:CharacterRenderType)
   {
-    super();
+    super(CharacterDataParser.DEFAULT_DANCEEVERY);
     this.characterId = id;
 
     _data = CharacterDataParser.fetchCharacterData(this.characterId);
