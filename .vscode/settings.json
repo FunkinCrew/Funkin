@@ -176,9 +176,9 @@
       "args": ["-debug", "-DANIMDEBUG", "-DFORCE_DEBUG_VERSION"]
     },
     {
-      "label": "Windows / Debug (Debug hxCodec)",
+      "label": "Windows / Debug (Debug hxvlc)",
       "target": "windows",
-      "args": ["-debug", "-DHXC_LIBVLC_LOGGING", "-DFORCE_DEBUG_VERSION"]
+      "args": ["-debug", "-DHXVLC_LOGGING", "-DHXVLC_VERBOSE=2", "-DFORCE_DEBUG_VERSION"]
     },
     {
       "label": "HashLink / Debug (Straight to Animation Editor)",
