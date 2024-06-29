@@ -113,7 +113,7 @@ class StoryMenuState extends MusicBeatState
   {
     super();
 
-    if (stickers != null)
+    if (stickers?.members != null)
     {
       stickerSubState = stickers;
     }
