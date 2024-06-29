@@ -7,6 +7,7 @@ import flixel.tweens.FlxTween;
 import openfl.display3D.textures.TextureBase;
 import funkin.graphics.framebuffer.FixedBitmapData;
 import openfl.display.BitmapData;
+import openfl.system.System;
 
 /**
  * An FlxSprite with additional functionality.
@@ -219,6 +220,8 @@ class FunkinSprite extends FlxSprite
       graphic.destroy();
       previousCachedTextures.remove(graphicKey);
     }
+
+    System.gc();
   }
 
   static function isGraphicCached(graphic:FlxGraphic):Bool
