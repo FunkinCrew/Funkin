@@ -141,14 +141,14 @@ class SustainTrail extends FlxSprite
     this.active = true; // This NEEDS to be true for the note to be drawn!
   }
 
-  function getBaseScrollSpeed()
+  function getBaseScrollSpeed():Float
   {
-    return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+    return PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
   }
 
   var previousScrollSpeed:Float = 1;
 
-  override function update(elapsed)
+  override function update(elapsed):Void
   {
     super.update(elapsed);
     if (previousScrollSpeed != (parentStrumline?.scrollSpeed ?? 1.0))
@@ -161,11 +161,11 @@ class SustainTrail extends FlxSprite
   /**
    * Calculates height of a sustain note for a given length (milliseconds) and scroll speed.
    * @param	susLength	The length of the sustain note in milliseconds.
-   * @param	scroll		The current scroll speed.
+   * @param	scroll    The current scroll speed.
    */
-  public static inline function sustainHeight(susLength:Float, scroll:Float)
+  public static inline function sustainHeight(susLength:Float, scroll:Float):Float
   {
-    return (susLength * 0.45 * scroll);
+    return susLength * Constants.PIXELS_PER_MS * scroll;
   }
 
   function set_sustainLength(s:Float):Float
@@ -178,7 +178,7 @@ class SustainTrail extends FlxSprite
     return this.sustainLength;
   }
 
-  function updateDrawData()
+  function updateDrawData():Void
   {
     updateClipping();
     updateHitbox();
@@ -226,12 +226,12 @@ class SustainTrail extends FlxSprite
     graphicWidth = holdTrailGraphic.width * zoom;
     graphicHeight = sustainHeight(sustainLength, scrollSpeed);
 
-    final sliceIntervalMs:Float = Conductor.instance.stepLengthMs / 4 / scrollSpeed;
+    final sliceIntervalMs:Float = Conductor.instance.stepLengthMs * Preferences.trailQuality.getMultiplier() / scrollSpeed;
 
     final endTrailHeightCap:Float = Math.max(graphicHeight - endTrailGraphic.height * zoom, 0);
 
     final endTrailTime:Float = (strumTime - songTime) + (fullSustainLength - sustainLength) + sustainLength;
-    final endTrailTimeCap:Float = endTrailTime - (graphicHeight - endTrailHeightCap) / 0.45 / scrollSpeed;
+    final endTrailTimeCap:Float = endTrailTime - (graphicHeight - endTrailHeightCap) / Constants.PIXELS_PER_MS / scrollSpeed;
 
     endTrailData = sliceTrailPart(endTrailGraphic, graphicHeight, endTrailHeightCap, endTrailTime, endTrailTimeCap, sliceIntervalMs);
 
@@ -382,4 +382,30 @@ typedef TrailData =
   var uvs:DrawData<Float>;
   var indices:DrawData<Int>;
   var graphic:FlxGraphic;
+}
+
+abstract TrailQuality(String) from String to String
+{
+  public static final LOW:String = 'Low';
+  public static final MEDIUM:String = 'Medium';
+  public static final HIGH:String = 'High';
+
+  /**
+   * Get the value to multiply the sliceIntervalMs with
+   * @return Float
+   */
+  public function getMultiplier():Float
+  {
+    switch (this)
+    {
+      case TrailQuality.LOW:
+        return 1.0;
+      case TrailQuality.MEDIUM:
+        return 0.5;
+      case TrailQuality.HIGH:
+        return 0.25;
+    }
+
+    return 0.25;
+  }
 }

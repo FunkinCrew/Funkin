@@ -5,6 +5,7 @@ import funkin.util.FileUtil;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
+import funkin.play.notes.SustainTrail.TrailQuality;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.save.migrator.SaveDataMigrator;
@@ -95,6 +96,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          trailQuality: TrailQuality.HIGH,
           inputOffset: 0,
           audioVisualOffset: 0,
 
@@ -1090,6 +1092,13 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * Determines how much the sustain trail is sliced.
+   * More slices means better visuals, but worse performance
+   * @default `High`
+   */
+  var trailQuality:TrailQuality;
 
   /**
    * Offset the users inputs by this many ms.
