@@ -760,7 +760,7 @@ class Strumline extends FlxSpriteGroup
     if (noteSplashes.length < noteSplashes.maxSize)
     {
       // Create a new note splash.
-      result = new NoteSplash();
+      result = new NoteSplash(noteStyle);
       this.noteSplashes.add(result);
     }
     else
@@ -794,7 +794,7 @@ class Strumline extends FlxSpriteGroup
     if (noteHoldCovers.length < noteHoldCovers.maxSize)
     {
       // Create a new note hold cover.
-      result = new NoteHoldCover();
+      result = new NoteHoldCover(noteStyle);
       this.noteHoldCovers.add(result);
     }
     else

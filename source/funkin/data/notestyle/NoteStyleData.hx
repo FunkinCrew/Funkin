@@ -157,6 +157,24 @@ typedef NoteStyleData_NoteSplash =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  // these all have to be optional unless you want to have to put "animation": "" 10 times over for something that's disabled
+  @:optional
+  var left1:UnnamedAnimationData;
+  @:optional
+  var left2:UnnamedAnimationData;
+  @:optional
+  var down1:UnnamedAnimationData;
+  @:optional
+  var down2:UnnamedAnimationData;
+  @:optional
+  var up1:UnnamedAnimationData;
+  @:optional
+  var up2:UnnamedAnimationData;
+  @:optional
+  var right1:UnnamedAnimationData;
+  @:optional
+  var right2:UnnamedAnimationData;
 };
 
 typedef NoteStyleData_HoldNoteCover =
@@ -168,4 +186,30 @@ typedef NoteStyleData_HoldNoteCover =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  // these all have to be optional unless you want to have to put "animation": "" 10 times over for something that's disabled
+  @:optional
+  var leftStart:UnnamedAnimationData;
+  @:optional
+  var leftContinue:UnnamedAnimationData;
+  @:optional
+  var leftEnd:UnnamedAnimationData;
+  @:optional
+  var downStart:UnnamedAnimationData;
+  @:optional
+  var downContinue:UnnamedAnimationData;
+  @:optional
+  var downEnd:UnnamedAnimationData;
+  @:optional
+  var upStart:UnnamedAnimationData;
+  @:optional
+  var upContinue:UnnamedAnimationData;
+  @:optional
+  var upEnd:UnnamedAnimationData;
+  @:optional
+  var rightStart:UnnamedAnimationData;
+  @:optional
+  var rightContinue:UnnamedAnimationData;
+  @:optional
+  var rightEnd:UnnamedAnimationData;
 };

@@ -76,6 +76,10 @@ class NoteSprite extends FunkinSprite
 
     animation.play(DIRECTION_COLORS[value] + 'Scroll');
 
+    // Disables the update() function if there's only 1 frame in the animation for performance.
+    // In my testing animations still don't play even with this, I am so unbelievably confused.
+    this.active = animation.curAnim.numFrames > 1;
+
     this.direction = value;
     return this.direction;
   }
@@ -127,27 +131,37 @@ class NoteSprite extends FunkinSprite
    */
   public var handledMiss:Bool;
 
+  /**
+   * Offsets the position of the NoteSprite.
+   */
+  public var offsets:Array<Float> = [0, 0];
+
   public function new(noteStyle:NoteStyle, direction:Int = 0)
   {
     super(0, -9999);
-    this.direction = direction;
-
     this.hsvShader = new HSVShader();
 
     setupNoteGraphic(noteStyle);
-
-    // Disables the update() function for performance.
-    this.active = false;
+    this.direction = direction;
   }
 
   function setupNoteGraphic(noteStyle:NoteStyle):Void
   {
     noteStyle.buildNoteSprite(this);
 
-    setGraphicSize(Strumline.STRUMLINE_SIZE);
+    setGraphicSize(Strumline.STRUMLINE_SIZE * noteStyle.getNoteScale());
     updateHitbox();
 
+    this.offsets = noteStyle.getNoteOffsets();
     this.shader = hsvShader;
+  }
+
+  override function getScreenPosition(?result:flixel.math.FlxPoint, ?camera:flixel.FlxCamera):flixel.math.FlxPoint
+  {
+    var output = super.getScreenPosition(result, camera);
+    output.x += offsets[0];
+    output.y += offsets[1];
+    return output;
   }
 
   #if FLX_DEBUG
@@ -188,7 +202,6 @@ class NoteSprite extends FunkinSprite
     super.revive();
     this.visible = true;
     this.alpha = 1.0;
-    this.active = false;
     this.tooEarly = false;
     this.hasBeenHit = false;
     this.mayHit = false;
