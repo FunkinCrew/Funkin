@@ -186,8 +186,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
       var paramComponent:Component = null;
 
-      final paramType:String = param.type;
-      switch (paramType)
+      switch (param.type)
       {
         case NoteKindParamType.INT | NoteKindParamType.FLOAT:
           var paramStepper:NumberStepper = new NumberStepper();
