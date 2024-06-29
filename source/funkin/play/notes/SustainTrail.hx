@@ -323,13 +323,13 @@ class SustainTrail extends FlxSprite
       if (endTrailData != null)
       {
         camera.drawTriangles(endTrailData.graphic, endTrailData.vertices, endTrailData.indices, endTrailData.uvs, null, _point, blend, false, antialiasing,
-          colorTransform);
+          colorTransform, shader);
       }
 
       if (holdTrailData != null)
       {
         camera.drawTriangles(holdTrailData.graphic, holdTrailData.vertices, holdTrailData.indices, holdTrailData.uvs, null, _point, blend, true, antialiasing,
-          colorTransform);
+          colorTransform, shader);
       }
     }
 
