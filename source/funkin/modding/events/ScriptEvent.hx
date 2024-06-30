@@ -151,25 +151,25 @@ class HitNoteScriptEvent extends NoteScriptEvent
   public var hitDiff:Float = 0;
 
   /**
-   * If the hit causes a notesplash
+   * If the hit causes a notesplash, or a note hit sound
    */
-  public var doesNotesplash:Bool = false;
+  public var doesNoteHitEffects:Bool = false;
 
   public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0,
-      doesNotesplash:Bool = false):Void
+      doesNoteHitEffects:Bool = false):Void
   {
     super(NOTE_HIT, note, healthChange, comboCount, true);
     this.score = score;
     this.judgement = judgement;
     this.isComboBreak = isComboBreak;
-    this.doesNotesplash = doesNotesplash;
+    this.doesNoteHitEffects = doesNoteHitEffects;
     this.hitDiff = hitDiff;
   }
 
   public override function toString():String
   {
     return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ', isComboBreak='
-      + isComboBreak + ', hitDiff=' + hitDiff + ', doesNotesplash=' + doesNotesplash + ')';
+      + isComboBreak + ', hitDiff=' + hitDiff + ', doesNoteHitEffects=' + doesNoteHitEffects + ')';
   }
 }
 

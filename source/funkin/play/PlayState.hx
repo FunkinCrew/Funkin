@@ -65,6 +65,7 @@ import lime.ui.Haptic;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.Lib;
+import funkin.ui.options.items.PercentagePreferenceItem;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -2422,7 +2423,6 @@ class PlayState extends MusicBeatSubState
 
       // Play the strumline animation.
       playerStrumline.playStatic(input.noteDirection);
-
       playerStrumline.releaseKey(input.noteDirection);
     }
   }
@@ -2471,7 +2471,12 @@ class PlayState extends MusicBeatSubState
     Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
     playerStrumline.hitNote(note, !isComboBreak);
-    if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
+    if (event.doesNoteHitEffects)
+    {
+      // they only play if enabled in settings
+      playerStrumline.playNoteSplash(note.noteData.getDirection());
+      playerStrumline.playNoteHitSound();
+    }
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     vocals.playerVolume = 1;
 
