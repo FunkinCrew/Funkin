@@ -1,6 +1,6 @@
 package funkin.play.notes.modifier;
 
-import funkin.play.notes.modifier.NotePath;
+import funkin.play.notes.modifier.NoteTransform;
 
 /**
  * Interface that describes how a note should move towards the strum

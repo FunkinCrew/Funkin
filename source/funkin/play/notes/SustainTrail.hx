@@ -1,6 +1,10 @@
 package funkin.play.notes;
 
+import lime.math.Vector2;
 import flixel.graphics.frames.FlxFrame;
+import funkin.play.notes.modifier.NotePathUtil;
+import funkin.play.notes.modifier.NotePathModifier;
+import funkin.play.notes.modifier.NoteTransform;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
@@ -11,9 +15,6 @@ import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMath;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.MathUtil;
-import funkin.play.notes.modifier.NotePath;
-import funkin.play.notes.modifier.DirectionalPathModifier;
-import lime.math.Vector2;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -33,16 +34,16 @@ class SustainTrail extends FlxSprite
   public var noteData:Null<SongNoteData>;
   public var parentStrumline:Strumline;
 
-  public var notePath(default, set):NotePath;
+  public var modifier(default, set):NotePathModifier;
 
-  function set_notePath(value:NotePath):NotePath
+  function set_modifier(value:NotePathModifier):NotePathModifier
   {
-    if (this.notePath == value)
+    if (this.modifier == value)
     {
       return value;
     }
 
-    this.notePath = value;
+    this.modifier = value;
     this.updateDrawData();
     return value;
   }
@@ -220,7 +221,7 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping():Void
   {
-    if (notePath == null)
+    if (modifier == null)
     {
       visible = false;
       return;
@@ -293,7 +294,7 @@ class SustainTrail extends FlxSprite
 
     var remainingTrailHeight:Float = trailHeight;
 
-    final bruhTransform:NoteTransform = notePath.calculateTransform(trailTime + 0.1, scrollSpeed, targetX, targetY);
+    final bruhTransform:NoteTransform = NotePathUtil.calculatePath(this.modifier, trailTime + 0.1, scrollSpeed, targetX, targetY);
     var previousX:Float = bruhTransform.x;
     var previousY:Float = bruhTransform.y;
     while (true)
@@ -303,7 +304,7 @@ class SustainTrail extends FlxSprite
 
       final testOffset:Float = Math.sin(trailTime * 0.01) * 0;
 
-      final transform:NoteTransform = notePath.calculateTransform(trailTime, scrollSpeed, targetX, targetY);
+      final transform:NoteTransform = NotePathUtil.calculatePath(this.modifier, trailTime, scrollSpeed, targetX, targetY);
       var direction:Vector2 = new Vector2(transform.x - previousX, transform.y - previousY);
       direction.normalize(1);
 

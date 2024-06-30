@@ -8,7 +8,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
 import funkin.play.notes.SustainTrail;
-import funkin.play.notes.modifier.NotePath;
+import funkin.play.notes.modifier.DirectionalPathModifier;
 import funkin.data.song.SongData.SongNoteData;
 import flixel.math.FlxMath;
 
@@ -42,7 +42,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
 
     setup();
 
-    notePath = new NotePath();
+    modifier = new DirectionalPathModifier(0.0);
   }
 
   public override function updateHitbox():Void

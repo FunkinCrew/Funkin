@@ -6,7 +6,10 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
-import funkin.play.notes.modifier.NotePath;
+import funkin.play.notes.modifier.NotePathModifier;
+import funkin.play.notes.modifier.DirectionalPathModifier;
+import funkin.play.notes.modifier.NotePathUtil;
+import funkin.play.notes.modifier.NoteTransform;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.StrumlineNote;
 
@@ -19,7 +22,12 @@ class NoteSprite extends FunkinSprite
   function set_holdNoteSprite(value:SustainTrail):SustainTrail
   {
     this.holdNoteSprite = value;
-    this.holdNoteSprite.notePath = this.notePath;
+
+    if (this.holdNoteSprite != null)
+    {
+      this.holdNoteSprite.modifier = this.modifier;
+    }
+
     return value;
   }
 
@@ -139,21 +147,21 @@ class NoteSprite extends FunkinSprite
 
   public var parentStrumline:Strumline;
 
-  public var notePath(default, set):NotePath;
+  public var modifier(default, set):NotePathModifier;
 
-  function set_notePath(value:NotePath):NotePath
+  function set_modifier(value:NotePathModifier):NotePathModifier
   {
     if (this.holdNoteSprite != null)
     {
-      this.holdNoteSprite.notePath = value;
+      this.holdNoteSprite.modifier = value;
     }
 
-    if (this.notePath == value)
+    if (this.modifier == value)
     {
       return value;
     }
 
-    this.notePath = value;
+    this.modifier = value;
     this.updatePosition();
     return value;
   }
@@ -168,18 +176,18 @@ class NoteSprite extends FunkinSprite
 
     setupNoteGraphic(noteStyle);
 
-    this.notePath = new NotePath();
+    this.modifier = new DirectionalPathModifier(0.0);
 
     // Disables the update() function for performance.
     this.active = false;
   }
 
   /**
-   * Update the notes position using its `NotePath`
+   * Update the notes position using its `NotePathModifier`
    */
   public function updatePosition():Void
   {
-    if (this.notePath == null)
+    if (this.modifier == null)
     {
       return;
     }
@@ -188,8 +196,8 @@ class NoteSprite extends FunkinSprite
     final targetX:Float = (receptor != null ? (receptor.x + (receptor.width - this.width) / 2) : this.x);
     final targetY:Float = (receptor != null ? (receptor.y + (receptor.height - this.height) / 2) : this.y);
 
-    final transform:NoteTransform = this.notePath.calculateTransform(this.strumTime - Conductor.instance.songPosition, parentStrumline?.scrollSpeed ?? 1.0,
-      targetX, targetY);
+    final transform:NoteTransform = NotePathUtil.calculatePath(this.modifier, this.strumTime - Conductor.instance.songPosition,
+      parentStrumline?.scrollSpeed ?? 1.0, targetX, targetY);
 
     this.x = transform.x;
     this.y = transform.y;
