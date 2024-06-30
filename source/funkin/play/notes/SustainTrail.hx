@@ -226,6 +226,15 @@ class SustainTrail extends FlxSprite
       return;
     }
 
+    final scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
+    graphicHeight = sustainHeight(sustainLength, scrollSpeed);
+
+    if (graphicHeight <= 0.1)
+    {
+      visible = false;
+      return;
+    }
+
     visible = true;
 
     var songTime:Float = Conductor.instance.songPosition;
@@ -244,10 +253,7 @@ class SustainTrail extends FlxSprite
       return;
     }
 
-    final scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
-
     graphicWidth = holdTrailGraphic.width * zoom;
-    graphicHeight = sustainHeight(sustainLength, scrollSpeed);
 
     final sliceIntervalMs:Float = Conductor.instance.stepLengthMs * Preferences.trailQuality.getMultiplier() / scrollSpeed;
 

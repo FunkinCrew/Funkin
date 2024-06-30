@@ -1,5 +1,6 @@
 package funkin.play.notes.modifier;
 
+import funkin.play.notes.modifier.NotePathModifier;
 import funkin.play.notes.modifier.NotePath;
 import flixel.math.FlxMath;
 
