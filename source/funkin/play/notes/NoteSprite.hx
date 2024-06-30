@@ -6,12 +6,30 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
+import funkin.play.notes.modifier.NotePathModifier;
+import funkin.play.notes.modifier.DirectionalPathModifier;
+import funkin.play.notes.modifier.NotePathUtil;
+import funkin.play.notes.modifier.NoteTransform;
+import funkin.play.notes.Strumline;
+import funkin.play.notes.StrumlineNote;
 
 class NoteSprite extends FunkinSprite
 {
   static final DIRECTION_COLORS:Array<String> = ['purple', 'blue', 'green', 'red'];
 
-  public var holdNoteSprite:SustainTrail;
+  public var holdNoteSprite(default, set):SustainTrail;
+
+  function set_holdNoteSprite(value:SustainTrail):SustainTrail
+  {
+    this.holdNoteSprite = value;
+
+    if (this.holdNoteSprite != null)
+    {
+      this.holdNoteSprite.modifier = this.modifier;
+    }
+
+    return value;
+  }
 
   var hsvShader:HSVShader;
 
@@ -127,17 +145,62 @@ class NoteSprite extends FunkinSprite
    */
   public var handledMiss:Bool;
 
+  public var parentStrumline:Strumline;
+
+  public var modifier(default, set):NotePathModifier;
+
+  function set_modifier(value:NotePathModifier):NotePathModifier
+  {
+    if (this.holdNoteSprite != null)
+    {
+      this.holdNoteSprite.modifier = value;
+    }
+
+    if (this.modifier == value)
+    {
+      return value;
+    }
+
+    this.modifier = value;
+    this.updatePosition();
+    return value;
+  }
+
   public function new(noteStyle:NoteStyle, direction:Int = 0)
   {
-    super(0, -9999);
+    super(-9999, -9999);
+
     this.direction = direction;
 
     this.hsvShader = new HSVShader();
 
     setupNoteGraphic(noteStyle);
 
+    this.modifier = new DirectionalPathModifier(0.0);
+
     // Disables the update() function for performance.
     this.active = false;
+  }
+
+  /**
+   * Update the notes position using its `NotePathModifier`
+   */
+  public function updatePosition():Void
+  {
+    if (this.modifier == null)
+    {
+      return;
+    }
+
+    final receptor:Null<StrumlineNote> = parentStrumline?.getByDirection(this.direction);
+    final targetX:Float = (receptor != null ? (receptor.x + (receptor.width - this.width) / 2) : this.x);
+    final targetY:Float = (receptor != null ? (receptor.y + (receptor.height - this.height) / 2) : this.y);
+
+    final transform:NoteTransform = NotePathUtil.calculatePath(this.modifier, this.strumTime - Conductor.instance.songPosition,
+      parentStrumline?.scrollSpeed ?? 1.0, targetX, targetY);
+
+    this.x = transform.x;
+    this.y = transform.y;
   }
 
   function setupNoteGraphic(noteStyle:NoteStyle):Void

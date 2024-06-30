@@ -1,6 +1,7 @@
 package funkin;
 
 import funkin.save.Save;
+import funkin.play.notes.SustainTrail.TrailQuality;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -124,6 +125,26 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.autoPause = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * Determines how much the sustain trail is sliced.
+   * More slices means better visuals, but worse performance
+   * @default `High`
+   */
+  public static var trailQuality(get, set):TrailQuality;
+
+  static function get_trailQuality():TrailQuality
+  {
+    return Save?.instance?.options?.trailQuality ?? TrailQuality.HIGH;
+  }
+
+  static function set_trailQuality(value:TrailQuality):TrailQuality
+  {
+    var save:Save = Save.instance;
+    save.options.trailQuality = value;
     save.flush();
     return value;
   }

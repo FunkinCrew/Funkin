@@ -1,5 +1,10 @@
 package funkin.play.notes;
 
+import lime.math.Vector2;
+import flixel.graphics.frames.FlxFrame;
+import funkin.play.notes.modifier.NotePathUtil;
+import funkin.play.notes.modifier.NotePathModifier;
+import funkin.play.notes.modifier.NoteTransform;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
@@ -9,6 +14,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMath;
 import funkin.ui.options.PreferencesMenu;
+import funkin.util.MathUtil;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -18,21 +24,29 @@ import funkin.ui.options.PreferencesMenu;
  *
  * @author MtH
  */
+@:allow(funkin.play.notes.Strumline)
 class SustainTrail extends FlxSprite
 {
-  /**
-   * The triangles corresponding to the hold, followed by the endcap.
-   * `top left, top right, bottom left`
-   * `top left, bottom left, bottom right`
-   */
-  static final TRIANGLE_VERTEX_INDICES:Array<Int> = [0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7];
-
   public var strumTime:Float = 0; // millis
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
   public var noteData:Null<SongNoteData>;
   public var parentStrumline:Strumline;
+
+  public var modifier(default, set):NotePathModifier;
+
+  function set_modifier(value:NotePathModifier):NotePathModifier
+  {
+    if (this.modifier == value)
+    {
+      return value;
+    }
+
+    this.modifier = value;
+    this.updateDrawData();
+    return value;
+  }
 
   public var cover:NoteHoldCover = null;
 
@@ -56,22 +70,8 @@ class SustainTrail extends FlxSprite
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
   /**
-   * A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
+   *
    */
-  public var vertices:DrawData<Float> = new DrawData<Float>();
-
-  /**
-   * A `Vector` of integers or indexes, where every three indexes define a triangle.
-   */
-  public var indices:DrawData<Int> = new DrawData<Int>();
-
-  /**
-   * A `Vector` of normalized coordinates used to apply texture mapping.
-   */
-  public var uvtData:DrawData<Float> = new DrawData<Float>();
-
-  private var processedGraphic:FlxGraphic;
-
   private var zoom:Float = 1;
 
   /**
@@ -91,6 +91,9 @@ class SustainTrail extends FlxSprite
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
 
+  var holdTrailData:TrailData;
+  var endTrailData:TrailData;
+
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
    * @param NoteData
@@ -99,7 +102,30 @@ class SustainTrail extends FlxSprite
    */
   public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
   {
-    super(0, 0, noteStyle.getHoldNoteAssetPath());
+    super(-9999, -9999);
+
+    var paths:Array<String> = noteStyle._data?.assets?.holdNote?.assetPath.split(Constants.LIBRARY_SEPARATOR);
+    var key:String = "";
+    var library:Null<String> = null;
+    if (paths.length == 1)
+    {
+      key = paths[0];
+    }
+    else
+    {
+      key = paths[1];
+      library = paths[0];
+    }
+
+    frames = Paths.getSparrowAtlas(key, library);
+    animation.addByPrefix('${NoteDirection.LEFT.name} hold piece', 'purple hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.LEFT.name} hold end', 'purple hold end', 0, false);
+    animation.addByPrefix('${NoteDirection.DOWN.name} hold piece', 'blue hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.DOWN.name} hold end', 'blue hold end', 0, false);
+    animation.addByPrefix('${NoteDirection.UP.name} hold piece', 'green hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.UP.name} hold end', 'green hold end', 0, false);
+    animation.addByPrefix('${NoteDirection.RIGHT.name} hold piece', 'red hold piece', 0, false);
+    animation.addByPrefix('${NoteDirection.RIGHT.name} hold end', 'red hold end', 0, false);
 
     antialiasing = true;
 
@@ -127,28 +153,25 @@ class SustainTrail extends FlxSprite
 
     // alpha = 0.6;
     alpha = 1.0;
-    // calls updateColorTransform(), which initializes processedGraphic!
-    updateColorTransform();
 
-    updateClipping();
-    indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
+    updateDrawData();
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
   }
 
-  function getBaseScrollSpeed()
+  function getBaseScrollSpeed():Float
   {
-    return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+    return PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
   }
 
   var previousScrollSpeed:Float = 1;
 
-  override function update(elapsed)
+  override function update(elapsed):Void
   {
     super.update(elapsed);
     if (previousScrollSpeed != (parentStrumline?.scrollSpeed ?? 1.0))
     {
-      triggerRedraw();
+      updateDrawData();
     }
     previousScrollSpeed = parentStrumline?.scrollSpeed ?? 1.0;
   }
@@ -156,11 +179,11 @@ class SustainTrail extends FlxSprite
   /**
    * Calculates height of a sustain note for a given length (milliseconds) and scroll speed.
    * @param	susLength	The length of the sustain note in milliseconds.
-   * @param	scroll		The current scroll speed.
+   * @param	scroll    The current scroll speed.
    */
-  public static inline function sustainHeight(susLength:Float, scroll:Float)
+  public static inline function sustainHeight(susLength:Float, scroll:Float):Float
   {
-    return (susLength * 0.45 * scroll);
+    return susLength * Constants.PIXELS_PER_MS * scroll;
   }
 
   function set_sustainLength(s:Float):Float
@@ -169,13 +192,12 @@ class SustainTrail extends FlxSprite
 
     if (sustainLength == s) return s;
     this.sustainLength = s;
-    triggerRedraw();
+    updateDrawData();
     return this.sustainLength;
   }
 
-  function triggerRedraw()
+  function updateDrawData():Void
   {
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     updateClipping();
     updateHitbox();
   }
@@ -188,120 +210,156 @@ class SustainTrail extends FlxSprite
     origin.set(width * 0.5, height * 0.5);
   }
 
-  /**
-   * Sets up new vertex and UV data to clip the trail.
-   * If flipY is true, top and bottom bounds swap places.
-   * @param songTime	The time to clip the note at, in milliseconds.
-   */
-  public function updateClipping(songTime:Float = 0):Void
+  function wrap(value:Float, min:Float, max:Float):Float
   {
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
-    if (clipHeight <= 0.1)
+    var range:Float = max - min;
+    return min + ((value - min) - (range * Math.floor((value - min) / range)));
+  }
+
+  /**
+   * Sets up new vertex, uv and index data for drawing the trail.
+   */
+  public function updateClipping():Void
+  {
+    if (modifier == null)
     {
       visible = false;
       return;
     }
-    else
+
+    final scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
+    graphicHeight = sustainHeight(sustainLength, scrollSpeed);
+
+    if (graphicHeight <= 0.1)
     {
-      visible = true;
+      visible = false;
+      return;
     }
 
-    var bottomHeight:Float = graphic.height * zoom * endOffset;
-    var partHeight:Float = clipHeight - bottomHeight;
+    visible = true;
 
-    // ===HOLD VERTICES==
-    // Top left
-    vertices[0 * 2] = 0.0; // Inline with left side
-    vertices[0 * 2 + 1] = flipY ? clipHeight : graphicHeight - clipHeight;
+    var songTime:Float = Conductor.instance.songPosition;
 
-    // Top right
-    vertices[1 * 2] = graphicWidth;
-    vertices[1 * 2 + 1] = vertices[0 * 2 + 1]; // Inline with top left vertex
+    final frameIndex:Int = animation.getByName('${noteDirection.name} hold piece').frames[0];
+    final holdTrailFrame:FlxFrame = frames.getByIndex(frameIndex);
+    final holdTrailGraphic:FlxGraphic = FlxGraphic.fromFrame(holdTrailFrame);
 
-    // Bottom left
-    vertices[2 * 2] = 0.0; // Inline with left side
-    vertices[2 * 2 + 1] = if (partHeight > 0)
+    final frameIndex:Int = animation.getByName('${noteDirection.name} hold end').frames[0];
+    final endTrailFrame:FlxFrame = frames.getByIndex(frameIndex);
+    final endTrailGraphic:FlxGraphic = FlxGraphic.fromFrame(endTrailFrame);
+
+    if (holdTrailGraphic == null || endTrailGraphic == null)
     {
-      // flipY makes the sustain render upside down.
-      flipY ? 0.0 + bottomHeight : vertices[1] + partHeight;
-    }
-    else
-    {
-      vertices[0 * 2 + 1]; // Inline with top left vertex (no partHeight available)
+      trace("FRAMES ARE NULL!");
+      return;
     }
 
-    // Bottom right
-    vertices[3 * 2] = graphicWidth;
-    vertices[3 * 2 + 1] = vertices[2 * 2 + 1]; // Inline with bottom left vertex
+    graphicWidth = holdTrailGraphic.width * zoom;
 
-    // ===HOLD UVs===
+    final sliceIntervalMs:Float = Conductor.instance.stepLengthMs * Preferences.trailQuality.getMultiplier() / scrollSpeed;
 
-    // The UVs are a bit more complicated.
-    // UV coordinates are normalized, so they range from 0 to 1.
-    // We are expecting an image containing 8 horizontal segments, each representing a different colored hold note followed by its end cap.
+    final endTrailHeightCap:Float = Math.max(graphicHeight - endTrailGraphic.height * zoom, 0);
 
-    uvtData[0 * 2] = 1 / 4 * (noteDirection % 4); // 0%/25%/50%/75% of the way through the image
-    uvtData[0 * 2 + 1] = (-partHeight) / graphic.height / zoom; // top bound
-    // Top left
+    final endTrailTime:Float = (strumTime - songTime) + (fullSustainLength - sustainLength) + sustainLength;
+    final endTrailTimeCap:Float = endTrailTime - (graphicHeight - endTrailHeightCap) / Constants.PIXELS_PER_MS / scrollSpeed;
 
-    // Top right
-    uvtData[1 * 2] = uvtData[0 * 2] + 1 / 8; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left)
-    uvtData[1 * 2 + 1] = uvtData[0 * 2 + 1]; // top bound
+    endTrailData = sliceTrailPart(endTrailGraphic, graphicHeight, endTrailHeightCap, endTrailTime, endTrailTimeCap, sliceIntervalMs);
 
-    // Bottom left
-    uvtData[2 * 2] = uvtData[0 * 2]; // 0%/25%/50%/75% of the way through the image
-    uvtData[2 * 2 + 1] = 0.0; // bottom bound
+    final trailTimeCap:Float = (strumTime - songTime) + (fullSustainLength - sustainLength);
 
-    // Bottom right
-    uvtData[3 * 2] = uvtData[1 * 2]; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left)
-    uvtData[3 * 2 + 1] = uvtData[2 * 2 + 1]; // bottom bound
+    holdTrailData = sliceTrailPart(holdTrailGraphic, endTrailHeightCap, 0, endTrailTimeCap, trailTimeCap, sliceIntervalMs);
+  }
 
-    // === END CAP VERTICES ===
-    // Top left
-    vertices[4 * 2] = vertices[2 * 2]; // Inline with bottom left vertex of hold
-    vertices[4 * 2 + 1] = vertices[2 * 2 + 1]; // Inline with bottom left vertex of hold
-
-    // Top right
-    vertices[5 * 2] = vertices[3 * 2]; // Inline with bottom right vertex of hold
-    vertices[5 * 2 + 1] = vertices[3 * 2 + 1]; // Inline with bottom right vertex of hold
-
-    // Bottom left
-    vertices[6 * 2] = vertices[2 * 2]; // Inline with left side
-    vertices[6 * 2 + 1] = flipY ? (graphic.height * (-bottomClip + endOffset) * zoom) : (graphicHeight + graphic.height * (bottomClip - endOffset) * zoom);
-
-    // Bottom right
-    vertices[7 * 2] = vertices[3 * 2]; // Inline with right side
-    vertices[7 * 2 + 1] = vertices[6 * 2 + 1]; // Inline with bottom of end cap
-
-    // === END CAP UVs ===
-    // Top left
-    uvtData[4 * 2] = uvtData[2 * 2] + 1 / 8; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
-    uvtData[4 * 2 + 1] = if (partHeight > 0)
+  function sliceTrailPart(graphic:FlxGraphic, trailHeight:Float, trailHeightCap:Float, trailTime:Float, trailTimeCap:Float, sliceIntervalMs:Float):TrailData
+  {
+    if (trailHeight <= trailHeightCap)
     {
-      0;
+      return null;
     }
-    else
+
+    var data:TrailData =
+      {
+        vertices: new DrawData<Float>(),
+        uvs: new DrawData<Float>(),
+        indices: new DrawData<Int>(),
+        graphic: graphic
+      };
+
+    final scrollSpeed:Float = parentStrumline?.scrollSpeed ?? 1.0;
+
+    final sliceIntervalHeight:Float = sustainHeight(sliceIntervalMs, scrollSpeed);
+    final receptor:Null<StrumlineNote> = parentStrumline?.getByDirection(noteDirection);
+    final targetX:Float = (receptor != null ? (receptor.x + receptor.width / 2) : 0);
+    final targetY:Float = (receptor != null ? (receptor.y + receptor.height / 2) : 0);
+
+    var remainingTrailHeight:Float = trailHeight;
+
+    final bruhTransform:NoteTransform = NotePathUtil.calculatePath(this.modifier, trailTime + 0.1, scrollSpeed, targetX, targetY);
+    var previousX:Float = bruhTransform.x;
+    var previousY:Float = bruhTransform.y;
+    while (true)
     {
-      (bottomHeight - clipHeight) / zoom / graphic.height;
-    };
+      final vertexIndex:Int = data.vertices.length;
+      final indicesIndex:Int = data.indices.length;
 
-    // Top right
-    uvtData[5 * 2] = uvtData[4 * 2] + 1 / 8; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
-    uvtData[5 * 2 + 1] = uvtData[4 * 2 + 1]; // top bound
+      final testOffset:Float = Math.sin(trailTime * 0.01) * 0;
 
-    // Bottom left
-    uvtData[6 * 2] = uvtData[4 * 2]; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
-    uvtData[6 * 2 + 1] = bottomClip; // bottom bound
+      final transform:NoteTransform = NotePathUtil.calculatePath(this.modifier, trailTime, scrollSpeed, targetX, targetY);
+      var direction:Vector2 = new Vector2(transform.x - previousX, transform.y - previousY);
+      direction.normalize(1);
 
-    // Bottom right
-    uvtData[7 * 2] = uvtData[5 * 2]; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
-    uvtData[7 * 2 + 1] = uvtData[6 * 2 + 1]; // bottom bound
+      final offsetX:Float = -direction.y * (graphicWidth / 2);
+      final offsetY:Float = direction.x * (graphicWidth / 2);
+
+      previousX = transform.x;
+      previousY = transform.y;
+
+      // left vertex
+      data.vertices[vertexIndex + 0] = transform.x - offsetX; // x
+      data.vertices[vertexIndex + 1] = transform.y - offsetY; // y
+
+      // right vertex
+      data.vertices[vertexIndex + 2] = transform.x + offsetX; // x
+      data.vertices[vertexIndex + 3] = transform.y + offsetY; // y
+
+      // left uv
+      data.uvs[vertexIndex + 0] = 0.0; // x
+      data.uvs[vertexIndex + 1] = 1.0 - (trailHeight - remainingTrailHeight) / graphic.height / zoom; // y
+
+      // right uv
+      data.uvs[vertexIndex + 2] = 1.0; // x
+      data.uvs[vertexIndex + 3] = data.uvs[vertexIndex + 1]; // y
+
+      if (vertexIndex > 0)
+      {
+        final topVertexIndex:Int = Std.int(vertexIndex / 2);
+        final bottomVertexIndex:Int = topVertexIndex - 2;
+
+        data.indices[indicesIndex + 0] = topVertexIndex + 0; // top left
+        data.indices[indicesIndex + 1] = topVertexIndex + 1; // top right
+        data.indices[indicesIndex + 2] = bottomVertexIndex + 0; // bottom left
+
+        data.indices[indicesIndex + 3] = topVertexIndex + 1; // top right
+        data.indices[indicesIndex + 4] = bottomVertexIndex + 1; // bottom right
+        data.indices[indicesIndex + 5] = bottomVertexIndex + 0; // bottom left
+      }
+
+      if (remainingTrailHeight == trailHeightCap)
+      {
+        break;
+      }
+
+      remainingTrailHeight = Math.max(remainingTrailHeight - sliceIntervalHeight, trailHeightCap);
+      trailTime = Math.max(trailTime - sliceIntervalMs, trailTimeCap);
+    }
+
+    return data;
   }
 
   @:access(flixel.FlxCamera)
   override public function draw():Void
   {
-    if (alpha == 0 || graphic == null || vertices == null) return;
+    if (alpha == 0 || graphic == null || (holdTrailData == null && endTrailData == null)) return;
 
     for (camera in cameras)
     {
@@ -309,7 +367,18 @@ class SustainTrail extends FlxSprite
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
       getScreenPosition(_point, camera).subtractPoint(offset);
-      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
+
+      if (endTrailData != null)
+      {
+        camera.drawTriangles(endTrailData.graphic, endTrailData.vertices, endTrailData.indices, endTrailData.uvs, null, _point, blend, false, antialiasing,
+          colorTransform, shader);
+      }
+
+      if (holdTrailData != null)
+      {
+        camera.drawTriangles(holdTrailData.graphic, holdTrailData.vertices, holdTrailData.indices, holdTrailData.uvs, null, _point, blend, true, antialiasing,
+          colorTransform, shader);
+      }
     }
 
     #if FLX_DEBUG
@@ -348,19 +417,43 @@ class SustainTrail extends FlxSprite
 
   override public function destroy():Void
   {
-    vertices = null;
-    indices = null;
-    uvtData = null;
-    processedGraphic.destroy();
+    holdTrailData = null;
+    endTrailData = null;
 
     super.destroy();
   }
+}
 
-  override function updateColorTransform():Void
+typedef TrailData =
+{
+  var vertices:DrawData<Float>;
+  var uvs:DrawData<Float>;
+  var indices:DrawData<Int>;
+  var graphic:FlxGraphic;
+}
+
+abstract TrailQuality(String) from String to String
+{
+  public static final LOW:String = 'Low';
+  public static final MEDIUM:String = 'Medium';
+  public static final HIGH:String = 'High';
+
+  /**
+   * Get the value to multiply the sliceIntervalMs with
+   * @return Float
+   */
+  public function getMultiplier():Float
   {
-    super.updateColorTransform();
-    if (processedGraphic != null) processedGraphic.destroy();
-    processedGraphic = FlxGraphic.fromGraphic(graphic, true);
-    processedGraphic.bitmap.colorTransform(processedGraphic.bitmap.rect, colorTransform);
+    switch (this)
+    {
+      case TrailQuality.LOW:
+        return 1.0;
+      case TrailQuality.MEDIUM:
+        return 0.5;
+      case TrailQuality.HIGH:
+        return 0.25;
+    }
+
+    return 0.25;
   }
 }

@@ -8,6 +8,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
 import funkin.play.notes.SustainTrail;
+import funkin.play.notes.modifier.DirectionalPathModifier;
 import funkin.data.song.SongData.SongNoteData;
 import flixel.math.FlxMath;
 
@@ -23,6 +24,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
    */
   public var parentState:ChartEditorState;
 
+  @:nullSafety(Off)
   public function new(parent:ChartEditorState)
   {
     var noteStyle = NoteStyleRegistry.instance.fetchDefault();
@@ -39,6 +41,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     flipY = false;
 
     setup();
+
+    modifier = new DirectionalPathModifier(0.0);
   }
 
   public override function updateHitbox():Void
@@ -97,7 +101,6 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     active = true;
     visible = true;
     alpha = 1.0;
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
 
     updateHitbox();
   }
