@@ -101,6 +101,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
+      Preferences.strumlineBackgroundOpacity = value;
+    }, Preferences.strumlineBackgroundOpacity);
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;
