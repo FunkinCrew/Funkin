@@ -8,6 +8,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
+import funkin.graphics.FunkinSprite;
 import funkin.play.notes.NoteHoldCover;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
@@ -84,6 +85,8 @@ class Strumline extends FlxSpriteGroup
 
   public var onNoteIncoming:FlxTypedSignal<NoteSprite->Void>;
 
+  var background:FunkinSprite;
+
   var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
   var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
@@ -102,6 +105,8 @@ class Strumline extends FlxSpriteGroup
   var nextNoteIndex:Int = -1;
 
   var heldKeys:Array<Bool> = [];
+
+  static final BACKGROUND_PAD:Int = 16;
 
   public function new(noteStyle:NoteStyle, isPlayer:Bool)
   {
@@ -139,6 +144,13 @@ class Strumline extends FlxSpriteGroup
     this.noteSplashes.zIndex = 50;
     this.add(this.noteSplashes);
 
+    this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(this.width + BACKGROUND_PAD * 2), FlxG.height, 0xFF000000);
+    // Convert the percent to a number between 0 and 1.
+    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
+    this.background.scrollFactor.set(0, 0);
+    this.background.x = -BACKGROUND_PAD;
+    this.add(this.background);
+
     this.refresh();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
@@ -161,6 +173,16 @@ class Strumline extends FlxSpriteGroup
 
     // This MUST be true for children to update!
     this.active = true;
+  }
+
+  override function set_y(value:Float):Float
+  {
+    super.set_y(value);
+
+    // Keep the background on the screen.
+    if (this.background != null) this.background.y = 0;
+
+    return value;
   }
 
   public function refresh():Void
@@ -917,5 +939,43 @@ class Strumline extends FlxSpriteGroup
   function compareHoldNoteSprites(order:Int, a:SustainTrail, b:SustainTrail):Int
   {
     return FlxSort.byValues(order, a?.strumTime, b?.strumTime);
+  }
+
+  override function findMinYHelper()
+  {
+    var value = Math.POSITIVE_INFINITY;
+    for (member in group.members)
+    {
+      if (member == null) continue;
+      // SKIP THE BACKGROUND
+      if (member == this.background) continue;
+
+      var minY:Float;
+      if (member.flixelType == SPRITEGROUP) minY = (cast member : FlxSpriteGroup).findMinY();
+      else
+        minY = member.y;
+
+      if (minY < value) value = minY;
+    }
+    return value;
+  }
+
+  override function findMaxYHelper()
+  {
+    var value = Math.NEGATIVE_INFINITY;
+    for (member in group.members)
+    {
+      if (member == null) continue;
+      // SKIP THE BACKGROUND
+      if (member == this.background) continue;
+
+      var maxY:Float;
+      if (member.flixelType == SPRITEGROUP) maxY = (cast member : FlxSpriteGroup).findMaxY();
+      else
+        maxY = member.y + member.height;
+
+      if (maxY > value) value = maxY;
+    }
+    return value;
   }
 }

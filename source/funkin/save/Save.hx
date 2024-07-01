@@ -95,6 +95,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          strumlineBackgroundOpacity: 0,
           inputOffset: 0,
           audioVisualOffset: 0,
 
@@ -1090,6 +1091,13 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * If >0, the game will display a semi-opaque background under the notes.
+   * `0` for no background, `100` for solid black if you're freaky like that
+   * @default `0`
+   */
+  var strumlineBackgroundOpacity:Int;
 
   /**
    * Offset the users inputs by this many ms.
