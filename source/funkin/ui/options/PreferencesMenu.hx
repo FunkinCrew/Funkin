@@ -54,7 +54,7 @@ class PreferencesMenu extends Page
     #if !web
     createPrefItemNumber('FPS', 'The framerate that the game is running on', function(value:Float) {
       Preferences.framerate = Std.int(value);
-    }, Preferences.framerate, 60, 360, 1, 0);
+    }, null, Preferences.framerate, 60, 360, 1, 0);
     #end
     createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
       Preferences.naughtyness = value;
@@ -120,10 +120,10 @@ class PreferencesMenu extends Page
     preferenceItems.add(checkbox);
   }
 
-  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, defaultValue:Float, min:Float, max:Float, step:Float,
-      precision:Int):Void
+  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
+      step:Float = 0.1, precision:Int):Void
   {
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange);
+    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
   }

@@ -14,16 +14,35 @@ class NumberPreferenceItem extends TextMenuItem
     return PlayerSettings.player1.controls;
   }
 
+  // Widgets
   public var lefthandText:AtlasText;
 
+  // Constants
+  static final HOLD_DELAY:Float = 0.3; // seconds
+  static final CHANGE_RATE:Float = 0.08; // seconds
+
+  // Constructor-initialized variables
   public var currentValue:Float;
   public var min:Float;
   public var max:Float;
   public var step:Float;
   public var precision:Int;
   public var onChangeCallback:Null<Float->Void>;
+  public var valueFormatter:Null<Float->String>;
 
-  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void):Void
+  // Variables
+  var holdDelayTimer:Float = HOLD_DELAY; // seconds
+  var changeRateTimer:Float = 0.0; // seconds
+
+  /**
+   * @param min Minimum value (example: 0)
+   * @param max Maximum value (example: 100)
+   * @param step The value to increment/decrement by (example: 10)
+   * @param callback Will get called every time the user changes the setting; use this to apply/save the setting.
+   * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed string looks
+   */
+  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
+      ?valueFormatter:Float->String):Void
   {
     super(x, y, name, function() {
       callback(this.currentValue);
@@ -38,13 +57,8 @@ class NumberPreferenceItem extends TextMenuItem
     this.step = step;
     this.precision = precision;
     this.onChangeCallback = callback;
+    this.valueFormatter = valueFormatter;
   }
-
-  static final HOLD_DELAY:Float = 0.5; // seconds
-  static final CHANGE_RATE:Float = 0.02; // seconds
-
-  var holdDelayTimer:Float = HOLD_DELAY; // seconds
-  var changeRateTimer:Float = 0.0; // seconds
 
   override function update(elapsed:Float):Void
   {
@@ -82,21 +96,36 @@ class NumberPreferenceItem extends TextMenuItem
         changeRateTimer = CHANGE_RATE;
       }
 
-      if (shouldDecrease) currentValue -= step;
-      else if (shouldIncrease) currentValue += step;
-      currentValue = currentValue.clamp(min, max);
-      if (onChangeCallback != null && (shouldIncrease || shouldDecrease))
+      // Actually increasing/decreasing the value
+      if (shouldDecrease)
       {
-        onChangeCallback(currentValue);
+        var isBelowMin:Bool = currentValue - step < min;
+        currentValue = (currentValue - step).clamp(min, max);
+        if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
+      }
+      else if (shouldIncrease)
+      {
+        var isAboveMax:Bool = currentValue + step > max;
+        currentValue = (currentValue + step).clamp(min, max);
+        if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
       }
     }
 
     lefthandText.text = formatted(currentValue);
   }
 
+  /** Turns the float into a string */
   function formatted(value:Float):String
   {
-    return '${toFixed(value)}';
+    var float:Float = toFixed(value);
+    if (valueFormatter != null)
+    {
+      return valueFormatter(float);
+    }
+    else
+    {
+      return '${float}';
+    }
   }
 
   function toFixed(value:Float):Float
