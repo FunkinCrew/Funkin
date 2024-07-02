@@ -31,8 +31,11 @@ class PreferencesMenu extends Page
     menuCamera.bgColor = 0x0;
     camera = menuCamera;
 
-    add(items = new TextMenuList());
-    add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
+    items = new TextMenuList();
+    preferenceItems = new FlxTypedSpriteGroup<FlxSprite>();
+
+    add(items);
+    add(preferenceItems);
 
     createPrefItems();
 
@@ -72,6 +75,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+    createPrefItemPercentage('<Gameplay Bg Opacity>', 'How dark the background behind gameplay should be', function(value:Int):Void {
+      Preferences.gameplayBackgroundAlpha = value;
+    }, Preferences.gameplayBackgroundAlpha, 0, 100);
   }
 
   override function update(elapsed:Float):Void
@@ -122,7 +128,7 @@ class PreferencesMenu extends Page
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
-    });
+    }, false);
 
     preferenceItems.add(checkbox);
   }

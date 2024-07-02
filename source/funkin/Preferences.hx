@@ -129,6 +129,27 @@ class Preferences
   }
 
   /**
+   * How dark the black screen behind gameplay should be.
+   *
+   * 0 = fully transparent. 100 = opaque.
+   * @default `0`
+   */
+  public static var gameplayBackgroundAlpha(get, set):Int;
+
+  static function get_gameplayBackgroundAlpha():Int
+  {
+    return Save?.instance?.options?.gameplayBackgroundAlpha ?? 0;
+  }
+
+  static function set_gameplayBackgroundAlpha(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.gameplayBackgroundAlpha = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * Loads the user's preferences from the save data and apply them.
    */
   public static function init():Void

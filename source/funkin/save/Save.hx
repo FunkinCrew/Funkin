@@ -97,6 +97,7 @@ class Save
           autoPause: true,
           inputOffset: 0,
           audioVisualOffset: 0,
+          gameplayBackgroundAlpha: 0,
 
           controls:
             {
@@ -1102,6 +1103,13 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var audioVisualOffset:Int;
+
+  /**
+   * How dark the background behind the strumline and approaching arrows should be.
+   *
+   * 0 = transparent, 1 = fully opaque.
+   */
+  var gameplayBackgroundAlpha:Int;
 
   var controls:
     {

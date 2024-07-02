@@ -6,6 +6,7 @@ import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxState;
+import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -480,6 +481,11 @@ class PlayState extends MusicBeatSubState
    * The health icon representing the opponent.
    */
   public var iconP2:HealthIcon;
+
+  /**
+   * The background behind the active player's strumline.
+   */
+  public var strumlineBackground:FlxSprite;
 
   /**
    * The sprite group containing active player's strumline notes.
@@ -1765,9 +1771,16 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode);
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
+
+    strumlineBackground = new FlxSprite();
+    // Pad the background 15 pixels on each side
+    strumlineBackground.makeGraphic(Strumline.NOTE_SPACING * 4 + 30, 5000, FlxColor.BLACK);
+
     opponentStrumline = new Strumline(noteStyle, false);
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
+
     add(playerStrumline);
+    add(strumlineBackground);
     add(opponentStrumline);
 
     // Position the player strumline on the right half of the screen
@@ -1782,6 +1795,18 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
+
+    // NOTE: Preferences.gameplayBackgroundAlpha is a percentage stored as an int
+    // i.e. `50%` is stored as `50`
+    // Dividing it by 100 gives us the real Float value we need to create a transparent object
+    var realBackgroundAlpha:Float = Preferences.gameplayBackgroundAlpha * 1.0;
+    realBackgroundAlpha /= 100;
+    strumlineBackground.alpha = realBackgroundAlpha;
+    // Position the background slightly offset from the strumbar for a bit of padding
+    strumlineBackground.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) - 15;
+    strumlineBackground.y = 0;
+    strumlineBackground.zIndex = 600; // Renders beneath the health bar
+    strumlineBackground.cameras = [camHUD];
 
     if (!PlayStatePlaylist.isStoryMode)
     {
