@@ -8,6 +8,35 @@ import funkin.save.Save;
 class Preferences
 {
   /**
+   * FPS
+   * @default `60`
+   */
+  public static var framerate(get, set):Int;
+
+  static function get_framerate():Int
+  {
+    #if web
+    return 60;
+    #else
+    return Save?.instance?.options?.framerate ?? 60;
+    #end
+  }
+
+  static function set_framerate(value:Int):Int
+  {
+    #if web
+    return 60;
+    #else
+    var save:Save = Save.instance;
+    save.options.framerate = value;
+    save.flush();
+    FlxG.updateFramerate = value;
+    FlxG.drawFramerate = value;
+    return value;
+    #end
+  }
+
+  /**
    * Whether some particularly fowl language is displayed.
    * @default `true`
    */
