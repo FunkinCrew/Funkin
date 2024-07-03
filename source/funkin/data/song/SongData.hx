@@ -62,6 +62,10 @@ class SongMetadata implements ICloneable<SongMetadata>
 
   public var timeChanges:Array<SongTimeChange>;
 
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_CHARACTER)
+  public var campaignCharacter:String;
+
   /**
    * Defaults to `Constants.DEFAULT_VARIATION`. Populated later.
    */
@@ -85,6 +89,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     this.playData.stage = 'mainStage';
     this.playData.noteStyle = Constants.DEFAULT_NOTE_STYLE;
     this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
+    this.campaignCharacter = Constants.DEFAULT_CHARACTER;
     // Variation ID.
     this.variation = (variation == null) ? Constants.DEFAULT_VARIATION : variation;
   }
