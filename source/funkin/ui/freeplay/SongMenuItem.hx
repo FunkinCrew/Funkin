@@ -24,12 +24,13 @@ import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import flixel.util.FlxColor;
+import funkin.ui.PixelatedIcon;
 
 class SongMenuItem extends FlxSpriteGroup
 {
   public var capsule:FlxSprite;
 
-  var pixelIcon:FlxSprite;
+  var pixelIcon:PixelatedIcon;
 
   /**
    * Modify this by calling `init()`
@@ -201,11 +202,7 @@ class SongMenuItem extends FlxSpriteGroup
     // TODO: Use value from metadata instead of random.
     updateDifficultyRating(FlxG.random.int(0, 20));
 
-    pixelIcon = new FlxSprite(160, 35);
-
-    pixelIcon.makeGraphic(32, 32, 0x00000000);
-    pixelIcon.antialiasing = false;
-    pixelIcon.active = false;
+    pixelIcon = new PixelatedIcon(160, 35);
     add(pixelIcon);
     grpHide.add(pixelIcon);
 
@@ -512,7 +509,7 @@ class SongMenuItem extends FlxSpriteGroup
     // Update capsule text.
     songText.text = songData?.songName ?? 'Random';
     // Update capsule character.
-    if (songData?.songCharacter != null) setCharacter(songData.songCharacter);
+    if (songData?.songCharacter != null) pixelIcon.setCharacter(songData.songCharacter);
     updateBPM(Std.int(songData?.songStartingBpm) ?? 0);
     updateDifficultyRating(songData?.difficultyRating ?? 0);
     updateScoringRank(songData?.scoringRank);
@@ -526,76 +523,6 @@ class SongMenuItem extends FlxSpriteGroup
     checkWeek(songData?.songId);
   }
 
-  /**
-   * Set the character displayed next to this song in the freeplay menu.
-   * @param char The character ID used by this song.
-   *             If the character has no freeplay icon, a warning will be thrown and nothing will display.
-   */
-  public function setCharacter(char:String):Void
-  {
-    var charPath:String = "freeplay/icons/";
-
-    // TODO: Put this in the character metadata where it belongs.
-    // TODO: Also, can use CharacterDataParser.getCharPixelIconAsset()
-    switch (char)
-    {
-      case 'monster-christmas':
-        charPath += 'monsterpixel';
-      case 'mom-car':
-        charPath += 'mommypixel';
-      case 'darnell-blazin':
-        charPath += 'darnellpixel';
-      case 'senpai-angry':
-        charPath += 'senpaipixel';
-      default:
-        charPath += '${char}pixel';
-    }
-
-    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
-    {
-      trace('[WARN] Character ${char} has no freeplay icon.');
-      return;
-    }
-
-    var isAnimated = openfl.utils.Assets.exists(Paths.file('images/$charPath.xml'));
-
-    if (isAnimated)
-    {
-      pixelIcon.frames = Paths.getSparrowAtlas(charPath);
-    }
-    else
-    {
-      pixelIcon.loadGraphic(Paths.image(charPath));
-    }
-
-    pixelIcon.scale.x = pixelIcon.scale.y = 2;
-
-    switch (char)
-    {
-      case 'parents-christmas':
-        pixelIcon.origin.x = 140;
-      default:
-        pixelIcon.origin.x = 100;
-    }
-    // pixelIcon.origin.x = capsule.origin.x;
-    // pixelIcon.offset.x -= pixelIcon.origin.x;
-
-    if (isAnimated)
-    {
-      pixelIcon.active = true;
-
-      pixelIcon.animation.addByPrefix('idle', 'idle0', 10, true);
-      pixelIcon.animation.addByPrefix('confirm', 'confirm0', 10, false);
-      pixelIcon.animation.addByPrefix('confirm-hold', 'confirm-hold0', 10, true);
-
-      pixelIcon.animation.finishCallback = function(name:String):Void {
-        trace('Finish pixel animation: ${name}');
-        if (name == 'confirm') pixelIcon.animation.play('confirm-hold');
-      };
-
-      pixelIcon.animation.play('idle');
-    }
-  }
 
   var frameInTicker:Float = 0;
   var frameInTypeBeat:Int = 0;

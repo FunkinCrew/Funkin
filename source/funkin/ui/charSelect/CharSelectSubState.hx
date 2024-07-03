@@ -1,12 +1,13 @@
 package funkin.ui.charSelect;
 
 import flixel.text.FlxText;
-import flixel.FlxSprite;
+import funkin.ui.PixelatedIcon;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
 import openfl.display.BlendMode;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import funkin.play.stage.Stage;
 import funkin.modding.events.ScriptEvent;
@@ -284,21 +285,11 @@ class CharSelectSubState extends MusicBeatSubState
       if (availableChars.exists(i))
       {
         var path:String = availableChars.get(i);
-        var temp:CharIconCharacter = new CharIconCharacter(path);
+        var temp:PixelatedIcon = new PixelatedIcon(0, 0);
+        temp.setCharacter(path);
+        temp.setGraphicSize(128, 128);
+        temp.updateHitbox();
         temp.ID = 0;
-
-        var idleAnimPrefix:String = switch (path)
-        {
-          case "pico":
-            "Pico Icon";
-          case "bf":
-            "boyfriend icon instance 1";
-          case _:
-            "Pico Icon";
-        };
-
-        // temp.animation.addByPrefix("idle", idleAnimPrefix, 0, false);
-        // temp.animation.play("idle");
         grpIcons.add(temp);
       }
       else
@@ -567,17 +558,19 @@ class CharSelectSubState extends MusicBeatSubState
             member.animation.play("idle");
           }
         case 0:
-          var memb:CharIconCharacter = cast member;
+          var memb:PixelatedIcon = cast member;
 
           if (index == getCurrentSelected())
           {
             // memb.pixels = memb.withDropShadow.clone();
-            memb.setGraphicSize(128 * 1.3);
+            memb.scale.set(2.6, 2.6);
+
+            if (controls.ACCEPT) memb.animation.play("confirm");
           }
           else
           {
             // memb.pixels = memb.noDropShadow.clone();
-            memb.setGraphicSize(128);
+            memb.scale.set(2, 2);
           }
       }
     }
