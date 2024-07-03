@@ -248,9 +248,8 @@ class BaseCharacter extends Bopper
   }
 
   /**
-   * Plays a count animation based on the animation type.
-   * The "drop" type will play when a combo with a certain threshold is broken.
-   * The "combo" type will play when a combo reaches a certain threshold.
+   * Plays a count animation.
+   * @param animType The animation type to use.
    */
   function playCountAnimation(animType:String)
   {
