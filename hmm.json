@@ -5,7 +5,7 @@
       "type": "git",
       "dir": null,
       "ref": "2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5",
-      "url": "https://github.com/Aidan63/linc_discord-rpc"
+      "url": "https://github.com/FunkinCrew/linc_discord-rpc"
     },
     {
       "name": "flixel",
@@ -44,7 +44,7 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "f986332ba5ab02abd386ce662578baf04904604a",
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
@@ -75,14 +75,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "0212d8fdfcafeb5f0d5a41e1ddba8ff21d0e183b",
+      "ref": "5dc4c933bdc029f6139a47962e3b8c754060f210",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "63a906a6148958dbfde8c7b48d90b0693767fd95",
+      "ref": "57c1604d6b5174839d7e0e012a4dd5dcbfc129da",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -112,7 +112,7 @@
     {
       "name": "hxp",
       "type": "haxelib",
-      "version": "1.2.2"
+      "version": "1.3.0"
     },
     {
       "name": "json2object",
@@ -174,15 +174,15 @@
       "name": "thx.core",
       "type": "git",
       "dir": null,
-      "ref": "22605ff44f01971d599641790d6bae4869f7d9f4",
-      "url": "https://github.com/FunkinCrew/thx.core"
+      "ref": "6240b6e136f7490d9298edbe8c1891374bd7cdf2",
+      "url": "https://github.com/fponticelli/thx.core"
     },
     {
       "name": "thx.semver",
       "type": "git",
       "dir": null,
-      "ref": "cf8d213589a2c7ce4a59b0fdba9e8ff36bc029fa",
-      "url": "https://github.com/FunkinCrew/thx.semver"
+      "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
+      "url": "https://github.com/fponticelli/thx.semver"
     }
   ]
 }

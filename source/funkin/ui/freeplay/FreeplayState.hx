@@ -227,7 +227,7 @@ class FreeplayState extends MusicBeatSubState
 
     super(FlxColor.TRANSPARENT);
 
-    if (stickers != null)
+    if (stickers?.members != null)
     {
       stickerSubState = stickers;
     }
@@ -640,7 +640,6 @@ class FreeplayState extends MusicBeatSubState
     // be careful not to "add()" things in here unless it's to a group that's already added to the state
     // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
     var onDJIntroDone = function() {
-
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
@@ -693,9 +692,12 @@ class FreeplayState extends MusicBeatSubState
       }
     };
 
-    if (dj != null) {
+    if (dj != null)
+    {
       dj.onIntroDone.add(onDJIntroDone);
-    } else {
+    }
+    else
+    {
       onDJIntroDone();
     }
 
@@ -1775,7 +1777,7 @@ class FreeplayState extends MusicBeatSubState
     if (dj != null) dj.confirm();
 
     grpCapsules.members[curSelected].forcePosition();
-    grpCapsules.members[curSelected].songText.flickerText();
+    grpCapsules.members[curSelected].confirm();
 
     // FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
     FlxTween.color(pinkBack, 0.33, 0xFFFFD0D5, 0xFF171831, {ease: FlxEase.quadOut});
@@ -1947,6 +1949,7 @@ class FreeplayState extends MusicBeatSubState
           startingVolume: 0.0,
           overrideExisting: true,
           restartTrack: false,
+          mapTimeChanges: false, // The music metadata is not alongside the audio file so this won't work.
           pathsFunction: INST,
           suffix: instSuffix,
           partialParams:
@@ -2097,6 +2100,8 @@ class FreeplaySongData
 
   function set_currentDifficulty(value:String):String
   {
+    if (currentDifficulty == value) return value;
+
     currentDifficulty = value;
     updateValues(displayedVariations);
     return value;
@@ -2153,7 +2158,7 @@ class FreeplaySongData
     {
       this.albumId = songDifficulty.album;
     }
-    
+
     // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
     // `easy`, `erect`, `normal-pico`, etc.
     var suffixedDifficulty = (songDifficulty.variation != Constants.DEFAULT_VARIATION

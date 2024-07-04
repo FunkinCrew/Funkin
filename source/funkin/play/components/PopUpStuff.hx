@@ -7,8 +7,9 @@ import flixel.util.FlxDirection;
 import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import funkin.util.TimerUtil;
+import funkin.util.EaseUtil;
 
-class PopUpStuff extends FlxTypedGroup<FlxSprite>
+class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 {
   public var offsets:Array<Int> = [0, 0];
 
@@ -17,7 +18,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     super();
   }
 
-  public function displayRating(daRating:String)
+  public function displayRating(daRating:String):Void
   {
     var perfStart:Float = TimerUtil.start();
 
@@ -40,10 +41,15 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     add(rating);
 
+    var fadeEase = null;
+
     if (PlayState.instance.currentStageId.startsWith('school'))
     {
       rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
       rating.antialiasing = false;
+      rating.pixelPerfectRender = true;
+      rating.pixelPerfectPosition = true;
+      fadeEase = EaseUtil.stepped(2);
     }
     else
     {
@@ -61,7 +67,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
           remove(rating, true);
           rating.destroy();
         },
-        startDelay: Conductor.instance.beatLengthMs * 0.001
+        startDelay: Conductor.instance.beatLengthMs * 0.001,
+        ease: fadeEase
       });
 
     trace('displayRating took: ${TimerUtil.seconds(perfStart)}');
@@ -92,10 +99,15 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     // add(comboSpr);
 
+    var fadeEase = null;
+
     if (PlayState.instance.currentStageId.startsWith('school'))
     {
-      comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 0.7));
+      comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 1));
       comboSpr.antialiasing = false;
+      comboSpr.pixelPerfectRender = true;
+      comboSpr.pixelPerfectPosition = true;
+      fadeEase = EaseUtil.stepped(2);
     }
     else
     {
@@ -110,7 +122,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
           remove(comboSpr, true);
           comboSpr.destroy();
         },
-        startDelay: Conductor.instance.beatLengthMs * 0.001
+        startDelay: Conductor.instance.beatLengthMs * 0.001,
+        ease: fadeEase
       });
 
     var seperatedScore:Array<Int> = [];
@@ -133,8 +146,10 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
       if (PlayState.instance.currentStageId.startsWith('school'))
       {
-        numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 0.7));
+        numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 1));
         numScore.antialiasing = false;
+        numScore.pixelPerfectRender = true;
+        numScore.pixelPerfectPosition = true;
       }
       else
       {
@@ -156,7 +171,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
             remove(numScore, true);
             numScore.destroy();
           },
-          startDelay: Conductor.instance.beatLengthMs * 0.002
+          startDelay: Conductor.instance.beatLengthMs * 0.002,
+          ease: fadeEase
         });
 
       daLoop++;
