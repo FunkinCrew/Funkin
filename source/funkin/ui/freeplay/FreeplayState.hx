@@ -214,7 +214,7 @@ class FreeplayState extends MusicBeatSubState
       prepForNewRank = true;
     }
 
-    if (stickers != null)
+    if (stickers?.members != null)
     {
       stickerSubState = stickers;
     }
@@ -1738,7 +1738,7 @@ class FreeplayState extends MusicBeatSubState
     dj.confirm();
 
     grpCapsules.members[curSelected].forcePosition();
-    grpCapsules.members[curSelected].songText.flickerText();
+    grpCapsules.members[curSelected].confirm();
 
     // FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
     FlxTween.color(pinkBack, 0.33, 0xFFFFD0D5, 0xFF171831, {ease: FlxEase.quadOut});
@@ -2039,6 +2039,8 @@ class FreeplaySongData
 
   function set_currentDifficulty(value:String):String
   {
+    if (currentDifficulty == value) return value;
+
     currentDifficulty = value;
     updateValues(displayedVariations);
     return value;
