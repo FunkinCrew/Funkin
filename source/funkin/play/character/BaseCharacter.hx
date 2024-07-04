@@ -164,7 +164,7 @@ class BaseCharacter extends Bopper
 
   public function new(id:String, renderType:CharacterRenderType)
   {
-    super();
+    super(CharacterDataParser.DEFAULT_DANCEEVERY);
     this.characterId = id;
 
     _data = CharacterDataParser.fetchCharacterData(this.characterId);
@@ -180,6 +180,7 @@ class BaseCharacter extends Bopper
     {
       this.characterName = _data.name;
       this.name = _data.name;
+      this.danceEvery = _data.danceEvery;
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
