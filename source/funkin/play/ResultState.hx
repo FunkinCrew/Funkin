@@ -187,22 +187,22 @@ class ResultState extends MusicBeatSubState
 
           if (animData.loopFrameLabel != null)
           {
-            animation.anim.onComplete = () -> {
+            animation.onAnimationFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.playAnimation(animData.loopFrameLabel ?? ''); // unpauses this anim, since it's on PlayOnce!
               }
-            }
+            });
           }
           else if (animData.loopFrame != null)
           {
-            animation.anim.onComplete = () -> {
+            animation.onAnimationFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.anim.curFrame = animData.loopFrame ?? 0;
                 animation.anim.play(); // unpauses this anim, since it's on PlayOnce!
               }
-            }
+            });
           }
 
           // Hide until ready to play.
