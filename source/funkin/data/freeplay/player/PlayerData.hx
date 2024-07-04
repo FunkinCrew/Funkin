@@ -38,6 +38,8 @@ class PlayerData
   @:optional
   public var freeplayDJ:Null<PlayerFreeplayDJData> = null;
 
+  public var results:Null<PlayerResultsData> = null;
+
   /**
    * Whether this character is unlocked by default.
    * Use a ScriptedPlayableCharacter to add custom logic.
@@ -86,7 +88,6 @@ class PlayerFreeplayDJData
   @:default("PROTECT YO NUTS")
   var text3:String;
 
-
   @:jignored
   var animationMap:Map<String, AnimationData>;
 
@@ -120,12 +121,18 @@ class PlayerFreeplayDJData
     return Paths.animateAtlas(assetPath);
   }
 
-  public function getFreeplayDJText(index:Int):String {
-    switch (index) {
-      case 1: return text1;
-      case 2: return text2;
-      case 3: return text3;
-      default: return '';
+  public function getFreeplayDJText(index:Int):String
+  {
+    switch (index)
+    {
+      case 1:
+        return text1;
+      case 2:
+        return text2;
+      case 3:
+        return text3;
+      default:
+        return '';
     }
   }
 
@@ -177,6 +184,51 @@ class PlayerFreeplayDJData
     return cartoon?.channelChangeFrame ?? 60;
   }
 }
+
+typedef PlayerResultsData =
+{
+  var perfect:Array<PlayerResultsAnimationData>;
+  var excellent:Array<PlayerResultsAnimationData>;
+  var great:Array<PlayerResultsAnimationData>;
+  var good:Array<PlayerResultsAnimationData>;
+  var loss:Array<PlayerResultsAnimationData>;
+};
+
+typedef PlayerResultsAnimationData =
+{
+  /**
+   * `sparrow` or `animate` or whatever
+   */
+  var renderType:String;
+
+  var assetPath:String;
+
+  @:optional
+  @:default([0, 0])
+  var offsets:Array<Float>;
+
+  @:optional
+  @:default(500)
+  var zIndex:Int;
+
+  @:optional
+  @:default(0.0)
+  var delay:Float;
+
+  @:optional
+  @:default(1.0)
+  var scale:Float;
+
+  @:optional
+  @:default('')
+  var startFrameLabel:Null<String>;
+
+  @:optional
+  var loopFrame:Null<Int>;
+
+  @:optional
+  var loopFrameLabel:Null<String>;
+};
 
 typedef PlayerFreeplayDJCartoonData =
 {

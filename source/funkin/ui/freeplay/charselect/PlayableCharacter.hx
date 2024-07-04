@@ -3,6 +3,7 @@ package funkin.ui.freeplay.charselect;
 import funkin.data.IRegistryEntry;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.play.scoring.Scoring.ScoringRank;
 
 /**
  * An object used to retrieve data about a playable character (also known as "weeks").
@@ -85,6 +86,32 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
   public function getFreeplayDJText(index:Int):String
   {
     return _data.freeplayDJ.getFreeplayDJText(index);
+  }
+
+  /**
+   * @param rank Which rank to get info for
+   * @return An array of animations. For example, BF Great has two animations, one for BF and one for GF
+   */
+  public function getResultsAnimationDatas(rank:ScoringRank):Array<PlayerResultsAnimationData>
+  {
+    if (_data.results == null)
+    {
+      return [];
+    }
+
+    switch (rank)
+    {
+      case PERFECT | PERFECT_GOLD:
+        return _data.results.perfect;
+      case EXCELLENT:
+        return _data.results.excellent;
+      case GREAT:
+        return _data.results.great;
+      case GOOD:
+        return _data.results.good;
+      case SHIT:
+        return _data.results.loss;
+    }
   }
 
   /**
