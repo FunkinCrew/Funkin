@@ -97,10 +97,8 @@
     },
     {
       "name": "extension-androidtools",
-      "type": "git",
-      "dir": null,
-      "ref": "6f5f6c074360b0760a09be21ae54448b61336f8f",
-      "url": "https://github.com/MAJigsaw77/extension-androidtools"
+      "type": "haxelib",
+      "version": "2.1.0"
     },
     {
       "name": "hxcpp",
