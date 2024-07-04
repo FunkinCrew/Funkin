@@ -14,3 +14,4 @@ node_modules/
 package.json
 package-lock.json
 .aider.*
+.aider*

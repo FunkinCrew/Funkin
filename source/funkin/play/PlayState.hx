@@ -1795,11 +1795,8 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
 
-    if (!PlayStatePlaylist.isStoryMode)
-    {
-      playerStrumline.fadeInArrows();
-      opponentStrumline.fadeInArrows();
-    }
+    playerStrumline.fadeInArrows();
+    opponentStrumline.fadeInArrows();
   }
 
   /**
