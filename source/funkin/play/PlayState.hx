@@ -2001,16 +2001,12 @@ class PlayState extends MusicBeatSubState
     vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
-    // resyncVocals();
+    resyncVocals();
 
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
     DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
     #end
-
-    new FlxTimer().start(0.005, function(_) {
-      resyncVocals();
-    });
 
     if (startTimestamp > 0)
     {
