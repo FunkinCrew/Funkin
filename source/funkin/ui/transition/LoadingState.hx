@@ -14,6 +14,7 @@ import funkin.ui.MusicBeatState;
 import haxe.io.Path;
 import funkin.graphics.FunkinSprite;
 import lime.app.Future;
+import funkin.audio.FunkinSound;
 import lime.app.Promise;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
@@ -289,6 +290,10 @@ class LoadingState extends MusicBeatSubState
   {
     // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
     FunkinSprite.preparePurgeCache();
+    FunkinSound.preparePurgeCache();
+    FunkinSound.cacheSound(Paths.sound('missnote1'));
+    FunkinSound.cacheSound(Paths.sound('missnote2'));
+    FunkinSound.cacheSound(Paths.sound('missnote3'));
     FunkinSprite.cacheTexture(Paths.image('healthBar'));
     FunkinSprite.cacheTexture(Paths.image('menuDesat'));
     FunkinSprite.cacheTexture(Paths.image('combo'));
@@ -356,7 +361,7 @@ class LoadingState extends MusicBeatSubState
     // FunkinSprite.cacheAllCharacterTextures(opponent)
     // FunkinSprite.cacheAllStageTextures(stage)
     // FunkinSprite.cacheAllSongTextures(stage)
-
+    FunkinSound.purgeCache();
     FunkinSprite.purgeCache();
   }
   #end

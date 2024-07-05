@@ -679,7 +679,8 @@ class SongDifficulty
 
   public function cacheInst(instrumental = ''):Void
   {
-    FlxG.sound.cache(getInstPath(instrumental));
+    var suffix:String = (instrumental != '') ? '-$instrumental' : '';
+    FunkinSound.cacheSound(getInstPath(instrumental));
   }
 
   public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
@@ -700,7 +701,7 @@ class SongDifficulty
   {
     for (voice in buildVoiceList())
     {
-      FlxG.sound.cache(voice);
+      FunkinSound.cacheSound(getInstPath(voice));
     }
   }
 
