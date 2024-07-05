@@ -683,11 +683,11 @@ class SongDifficulty
     FunkinSound.cacheSound(getInstPath(instrumental));
   }
 
-  public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
+  public function loadInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
   {
     var suffix:String = (instId != '') ? '-$instId' : '';
 
-    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true);
+    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped);
 
     // Workaround for a bug where FlxG.sound.music.update() was being called twice.
     FlxG.sound.list.remove(FlxG.sound.music);
