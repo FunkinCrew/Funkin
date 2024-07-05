@@ -1844,6 +1844,7 @@ class PlayState extends MusicBeatSubState
       // Stop the vocals if they already exist.
       if (vocals != null) vocals.stop();
       vocals = currentChart.buildVocals();
+      add(vocals); // add vocals
 
       if (vocals.members.length == 0)
       {
@@ -1980,11 +1981,6 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
-    if (!overrideMusic && !isGamePaused && currentChart != null)
-    {
-      FlxG.sound.music.play();
-    }
-
     if (FlxG.sound.music == null)
     {
       FlxG.log.error('PlayState failed to initialize instrumental!');
@@ -2002,16 +1998,19 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     trace('Playing vocals...');
-    add(vocals);
     vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
-    resyncVocals();
+    // resyncVocals();
 
     #if discord_rpc
     // Updating Discord Rich Presence (with Time Left)
     DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
     #end
+
+    new FlxTimer().start(0.005, function(_) {
+      resyncVocals();
+    });
 
     if (startTimestamp > 0)
     {
