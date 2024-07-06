@@ -95,8 +95,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (animOffsets == null) animOffsets = [0, 0];
     if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
-    var xDiff = animOffsets[0] - value[0];
-    var yDiff = animOffsets[1] - value[1];
+    var xDiff = (animOffsets[0] - value[0]) * (!this.isPixel ? this.scale.x : 1);
+    var yDiff = (animOffsets[1] - value[1]) * (!this.isPixel ? this.scale.y : 1);
 
     this.x += xDiff;
     this.y += yDiff;

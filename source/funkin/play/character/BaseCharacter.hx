@@ -124,8 +124,8 @@ class BaseCharacter extends Bopper
     if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
     // Make sure animOffets are halved when scale is 0.5.
-    var xDiff = (animOffsets[0] * this.scale.x / (this.isPixel ? 6 : 1)) - value[0];
-    var yDiff = (animOffsets[1] * this.scale.y / (this.isPixel ? 6 : 1)) - value[1];
+    var xDiff = (animOffsets[0] - value[0]) * (!this.isPixel ? this.scale.x : 1);
+    var yDiff = (animOffsets[1] - value[1]) * (!this.isPixel ? this.scale.y : 1);
 
     // Call the super function so that camera focus point is not affected.
     super.set_x(this.x + xDiff);
