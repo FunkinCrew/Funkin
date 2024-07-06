@@ -37,7 +37,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   /*
    * An internal list of all the sounds that must not be purged for various reasons
    */
-  static var purgeExclusions:Map<String> = ['assets/music/freakyMenu/freakyMenu.${Constants.EXT_SOUND}'];
+  static var purgeExclusions:Array<String> = ['assets/music/freakyMenu/freakyMenu.${Constants.EXT_SOUND}'];
 
   /**
    * An internal list of all the sounds cached with `cacheSound`.
