@@ -531,7 +531,14 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public static function preparePurgeCache():Void
   {
     previousCachedAudio = currentCachedAudio;
-    currentCachedAudio = [];
+    for (key => audio in currentCachedAudio)
+    {
+      if (!purgeExclusions.contains(key))
+      {
+        previousCachedAudio.set(key, audio);
+        currentCachedAudio.remove(key);
+      }
+    }
   }
 
   public static function purgeCache():Void
