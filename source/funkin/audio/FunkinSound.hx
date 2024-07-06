@@ -70,7 +70,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
   static function excludeSoundFromPurge(soundKey:String):Void
   {
-    purgeExclusions.push(sound);
+    purgeExclusions.push(soundKey);
   }
 
   /**
