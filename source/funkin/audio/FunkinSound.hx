@@ -495,7 +495,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // Sets `exists = true` as a side effect.
     sound.loadEmbedded(asset, looped, autoDestroy, onComplete);
 
-    // do this afterwards to fix music repeating bug
+    // do this after loading to fix music repeating bug
     if (embeddedSound is String)
     {
       sound._label = embeddedSound;
@@ -504,6 +504,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     {
       sound._label = 'unknown';
     }
+
     if (autoPlay) sound.play();
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
