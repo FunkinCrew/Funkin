@@ -468,14 +468,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
 
     var sound:FunkinSound = pool.recycle(construct);
-    var soundToUse:FlxSoundAsset = embeddedSound; // null safety is a bitch!!
 
     // cache the sound if not done already.
     cacheSound(embeddedSound);
     // Load the sound.
     // Sets `exists = true` as a side effect.
-    var soundToUseAgain:FlxSoundAsset = soundToUse == null ? '' : soundToUse; // null safety is a bitch    again!!!
-    sound.loadEmbedded(soundToUseAgain, looped, autoDestroy, onComplete);
+    sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
 
     if (embeddedSound is String)
     {
