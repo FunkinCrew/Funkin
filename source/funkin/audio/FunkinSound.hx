@@ -29,7 +29,7 @@ import openfl.media.SoundMixer;
  * - Delayed playback via negative song position.
  * - Easy functions for immediate playback and recycling.
  */
-// Null safety is disabled for this specific class in order for caching to function!
+@:nullSafety
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   static final MAX_VOLUME:Float = 1.0;
@@ -181,6 +181,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param key - The directory to the sound you want to cache
    * @return It returns the newly cached sound object, if it's already cached, it returns the one within the cache.
    */
+  @:nullSafety(Off)
   public static function cacheSound(key:String):Sound
   {
     // We don't want to cache the same sound twice.
@@ -188,7 +189,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (sound != null)
     {
       previousCachedAudio.remove(key);
-      return (cast sound : Sound);
+      return sound;
     }
     else if (Assets.exists(key, AssetType.SOUND) || Assets.exists(key, AssetType.MUSIC))
     {
@@ -474,6 +475,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
+  @:nullSafety(Off)
   public static function load(embeddedSound:FlxSoundAsset, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = false,
       ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
