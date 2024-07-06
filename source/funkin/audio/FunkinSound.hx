@@ -34,11 +34,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   static final MAX_VOLUME:Float = 1.0;
 
-  /*
-   * An internal list of all the sounds that must not be purged for various reasons
-   */
-  static var purgeExclusions:Array<String> = ['assets/music/freakyMenu/freakyMenu.${Constants.EXT_SOUND}'];
-
   /**
    * An internal list of all the sounds cached with `cacheSound`.
    */
@@ -66,11 +61,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
     return _onVolumeChanged;
-  }
-
-  static function excludeSoundFromPurge(soundKey:String):Void
-  {
-    purgeExclusions.push(soundKey);
   }
 
   /**
@@ -495,22 +485,25 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
 
     var sound:FunkinSound = pool.recycle(construct);
+    var asset:FlxSoundAsset = embeddedSound;
 
+    if (embeddedSound is String)
+    {
+      asset = cacheSound(embeddedSound);
+    }
     // Load the sound.
     // Sets `exists = true` as a side effect.
-    var asset:FlxSoundAsset = embeddedSound;
+    sound.loadEmbedded(asset, looped, autoDestroy, onComplete);
+
+    // do this afterwards to fix music repeating bug
     if (embeddedSound is String)
     {
       sound._label = embeddedSound;
-      asset = cacheSound(embeddedSound);
     }
     else
     {
       sound._label = 'unknown';
     }
-
-    sound.loadEmbedded(asset, looped, autoDestroy, onComplete);
-
     if (autoPlay) sound.play();
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
@@ -531,14 +524,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public static function preparePurgeCache():Void
   {
     previousCachedAudio = currentCachedAudio;
-    for (key => audio in currentCachedAudio)
-    {
-      if (!purgeExclusions.contains(key))
-      {
-        previousCachedAudio.set(key, audio);
-        currentCachedAudio.remove(key);
-      }
-    }
+    currentCachedAudio = [];
   }
 
   public static function purgeCache():Void
