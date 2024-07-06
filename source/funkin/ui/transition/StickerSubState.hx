@@ -151,6 +151,9 @@ class StickerSubState extends MusicBeatSubState
 
   function regenStickers():Void
   {
+    // Prepare cache purge before everything so the game doesn't unrender the stickers
+    FunkinSound.preparePurgeCache();
+    FunkinSprite.preparePurgeCache();
     if (grpStickers.members.length > 0)
     {
       grpStickers.clear();
@@ -265,8 +268,6 @@ class StickerSubState extends MusicBeatSubState
               // TODO: Rework this asset caching stuff
               // NOTE: This has to come AFTER the state switch,
               // otherwise the game tries to render destroyed sprites!
-              FunkinSound.preparePurgeCache();
-              FunkinSprite.preparePurgeCache();
               FunkinSound.purgeCache();
               FunkinSprite.purgeCache();
 
