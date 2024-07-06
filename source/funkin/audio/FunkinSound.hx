@@ -15,8 +15,10 @@ import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.Paths.PathsFunction;
 import openfl.Assets;
 import openfl.media.Sound;
+import openfl.utils.AssetType;
 import lime.app.Future;
 import lime.app.Promise;
+import funkin.util.MemoryUtil;
 import openfl.media.SoundMixer;
 
 #if (openfl >= "8.0.0")
@@ -27,10 +29,15 @@ import openfl.media.SoundMixer;
  * - Delayed playback via negative song position.
  * - Easy functions for immediate playback and recycling.
  */
-@:nullSafety
+// Null safety is disabled for this specific class in order for caching to function!
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
   static final MAX_VOLUME:Float = 1.0;
+
+  /*
+   * An internal list of all the sounds that must not be purged for various reasons
+   */
+  static var purgeExclusions:Map<String> = ['assets/music/freakyMenu/freakyMenu.${Constants.EXT_SOUND}'];
 
   /**
    * An internal list of all the sounds cached with `cacheSound`.
@@ -59,6 +66,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       }
     }
     return _onVolumeChanged;
+  }
+
+  static function excludeSoundFromPurge(soundKey:String):Void
+  {
+    purgeExclusions.push(sound);
   }
 
   /**
@@ -174,11 +186,25 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     return this;
   }
 
-  public static function cacheSound(key:String):Void
+  /**
+   * Caches audio
+   * @param key - The directory to the sound you want to cache
+   * @return It returns the newly cached sound object, if it's already cached, it returns the one within the cache.
+   */
+  public static function cacheSound(key:String):Sound
   {
     // We don't want to cache the same sound twice.
-    if (currentCachedAudio.exists(key)) return;
-    var sound:Sound = Sound.fromFile(key);
+    var sound:Null<Sound> = currentCachedAudio.get(key) ?? previousCachedAudio.get(key);
+    if (sound != null)
+    {
+      previousCachedAudio.remove(key);
+      return (cast sound : Sound);
+    }
+    else if (Assets.exists(key, AssetType.SOUND) || Assets.exists(key, AssetType.MUSIC))
+    {
+      sound = Assets.getSound(key);
+    }
+
     if (sound == null)
     {
       FlxG.log.warn('Failed to cache sound: $key');
@@ -188,6 +214,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       trace('Successfully cached sound: $key');
       currentCachedAudio.set(key, sound);
     }
+    return sound;
   }
 
   public override function play(forceRestart:Bool = false, startTime:Float = 0, ?endTime:Float):FunkinSound
@@ -471,18 +498,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     // Load the sound.
     // Sets `exists = true` as a side effect.
-    sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
-
+    var asset:FlxSoundAsset = embeddedSound;
     if (embeddedSound is String)
     {
-      // cache the sound if not done already. If the sound is a string!
-      cacheSound(embeddedSound);
       sound._label = embeddedSound;
+      asset = cacheSound(embeddedSound);
     }
     else
     {
       sound._label = 'unknown';
     }
+
+    sound.loadEmbedded(asset, looped, autoDestroy, onComplete);
 
     if (autoPlay) sound.play();
     sound.volume = volume;
@@ -517,6 +544,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       Assets.cache.clear(audioKey);
       previousCachedAudio.remove(audioKey);
     }
+    MemoryUtil.collect(true);
   }
 
   /**
