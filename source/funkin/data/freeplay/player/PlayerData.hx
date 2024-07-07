@@ -224,6 +224,10 @@ typedef PlayerResultsAnimationData =
   var startFrameLabel:Null<String>;
 
   @:optional
+  @:default(true)
+  var looped:Bool;
+
+  @:optional
   var loopFrame:Null<Int>;
 
   @:optional

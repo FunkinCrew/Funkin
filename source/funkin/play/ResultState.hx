@@ -61,7 +61,8 @@ class ResultState extends MusicBeatSubState
   var characterAtlasAnimations:Array<
     {
       sprite:FlxAtlasSprite,
-      delay:Float
+      delay:Float,
+      forceLoop:Bool
     }> = [];
   var characterSparrowAnimations:Array<
     {
@@ -185,7 +186,17 @@ class ResultState extends MusicBeatSubState
 
           animation.scale.set(animData.scale ?? 1.0, animData.scale ?? 1.0);
 
-          if (animData.loopFrameLabel != null)
+          if (!(animData.looped ?? true))
+          {
+            // Animation is not looped.
+            animation.onAnimationFinish.add((_name:String) -> {
+              if (animation != null)
+              {
+                animation.anim.pause();
+              }
+            });
+          }
+          else if (animData.loopFrameLabel != null)
           {
             animation.onAnimationFinish.add((_name:String) -> {
               if (animation != null)
@@ -211,7 +222,8 @@ class ResultState extends MusicBeatSubState
           characterAtlasAnimations.push(
             {
               sprite: animation,
-              delay: animData.delay ?? 0.0
+              delay: animData.delay ?? 0.0,
+              forceLoop: (animData.loopFrame ?? -1) == 0
             });
           // Add to the scene.
           add(animation);

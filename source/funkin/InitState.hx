@@ -239,8 +239,13 @@ class InitState extends FlxState
                 combo: 69,
                 maxCombo: 69,
                 totalNotesHit: 140,
-                totalNotes: 240 // 0,
+                totalNotes: 190
               }
+            // 2000 = loss
+            // 240 = good
+            // 230 = great
+            // 210 = excellent
+            // 190 = perfect
           },
       }));
     #elseif ANIMDEBUG

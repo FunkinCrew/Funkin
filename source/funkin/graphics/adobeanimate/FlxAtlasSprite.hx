@@ -158,6 +158,10 @@ class FlxAtlasSprite extends FlxAnimate
       }
     };
 
+    anim.onComplete = function() {
+      onAnimationFinish.dispatch(id);
+    };
+
     // Prevent other animations from playing if `ignoreOther` is true.
     if (ignoreOther) canPlayOtherAnims = false;
 
