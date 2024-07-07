@@ -87,14 +87,16 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<assets path="assets/week7" library="week7" exclude="*.fla|*.mp3|*.wav" unless="web" />
 	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.ogg|*.wav" if="web" />
 	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.mp3|*.wav" unless="web" />
-	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
+
 	<!--
-		AUTOMATICALLY MOVING EXAMPLE MODS INTO THE BUILD CAUSES ISSUES
-		Currently, this line will add the mod files to the library manifest,
-		which causes issues if the mod is not enabled.
-		If we can exclude the `mods` folder from the manifest, we can re-enable this line.
-		<assets path='example_mods' rename='mods' embed='false' exclude="*.md" />
+		You can infact exclude things from the manfiest, just set the thing
+		you wish to exclude to the "template" type, and you're done!
+
+		It still copies the folder to the export folder, but without the annoyances
+		of the manifest!
 	-->
+	<assets path='example_mods' rename='mods' embed='false' type='template'/>
+
 	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art"/>
 	<assets path="CHANGELOG.md" rename="changelog.txt" library="art"/>
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY
