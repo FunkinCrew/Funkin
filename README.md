@@ -32,13 +32,18 @@ Full credits can be found in-game, or wherever the credits.json file is.
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) - Artist and Animator
 - [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Moawling](https://twitter.com/moawko) - Week 6 Pixel Art
-- [IvanAlmighty](https://twitter.com/IvanA1mighty) - Misc UI Design
+- [IvanAlmighty](https://twitter.com/IvanA1mighty) - Misc UI Design, Voice of Darnell
 
 ## Music
-- [Kawaisprite](https://twitter.com/kawaisprite) - Musician
+- [Kawaisprite](https://twitter.com/kawaisprite) - Lead Musician
+- [Saruky](https://twitter.com/Saruky__) - Musician
+- [Saster](https://twitter,com/sub0ru) - Featured Guest Musician for "Thorns Erect"
+- [nuphory](https://twitter.com/nuphory) - Featured Guest Musician for "Results (Excellent)
+- [MtH](https://twitter.com/emmnyaa) - Featured Guest Musician for "Breakfast (Week 6 Version)
+- [Kohta Takahashi](https://twitter.com/kohta09) - Featured Guest Musician for "Fresh Erect", "High Erect"
 - [BassetFilms](https://twitter.com/Bassetfilms) - Music for "Monster", Additional Character Design
 
 ## Special Thanks
 - [Tom Fulp](https://twitter.com/tomfulp) - For being a great guy and for Newgrounds
 - [JohnnyUtah](https://twitter.com/JohnnyUtahNG/) - Voice of Tankman
-- [L0Litsmonica](https://twitter.com/L0Litsmonica) - Voice of Mommy Mearest
+- [L0Litsmonica](https://twitter.com/L0Litsmonica) - Voice of Mommy Mearest and Nene
