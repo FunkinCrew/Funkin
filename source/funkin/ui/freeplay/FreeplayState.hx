@@ -1232,7 +1232,7 @@ class FreeplayState extends MusicBeatSubState
     // }
     #end
 
-    if (FlxG.keys.justPressed.TAB)
+    if (controls.FREEPLAY_CHAR_SELECT && !busy)
     {
       FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
     }
