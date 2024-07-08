@@ -14,6 +14,7 @@ import funkin.data.song.SongData.SongTimeFormat;
 import funkin.data.song.SongRegistry;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.util.SortUtil;
 import openfl.utils.Assets;
 
@@ -401,11 +402,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return null;
   }
 
-  public function getFirstValidVariation(?diffId:String, ?possibleVariations:Array<String>):Null<String>
+  public function getFirstValidVariation(?diffId:String, ?currentCharacter:PlayableCharacter, ?possibleVariations:Array<String>):Null<String>
   {
     if (possibleVariations == null)
     {
-      possibleVariations = variations;
+      possibleVariations = getVariationsByCharacter(currentCharacter);
       possibleVariations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
     }
     if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
@@ -422,22 +423,29 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   /**
    * Given that this character is selected in the Freeplay menu,
    * which variations should be available?
-   * @param charId The character ID to query.
+   * @param char The playable character to query.
    * @return An array of available variations.
    */
-  public function getVariationsByCharId(?charId:String):Array<String>
+  public function getVariationsByCharacter(?char:PlayableCharacter):Array<String>
   {
-    if (charId == null) charId = Constants.DEFAULT_CHARACTER;
+    if (char == null) return variations;
 
-    if (variations.contains(charId))
+    var result = [];
+    trace('Evaluating variations for ${this.id} ${char.id}: ${this.variations}');
+    for (variation in variations)
     {
-      return [charId];
+      var metadata = _metadata.get(variation);
+
+      var playerCharId = metadata?.playData?.characters?.player;
+      if (playerCharId == null) continue;
+
+      if (char.shouldShowCharacter(playerCharId))
+      {
+        result.push(variation);
+      }
     }
-    else
-    {
-      // TODO: How to exclude character variations while keeping other custom variations?
-      return variations;
-    }
+
+    return result;
   }
 
   /**
@@ -454,6 +462,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     if (variationIds == null) variationIds = [];
     if (variationId != null) variationIds.push(variationId);
+
+    if (variationIds.length == 0) return [];
 
     // The difficulties array contains entries like 'normal', 'nightmare-erect', and 'normal-pico',
     // so we have to map it to the actual difficulty names.
