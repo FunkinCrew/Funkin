@@ -1,5 +1,6 @@
 package funkin.ui.charSelect;
 
+import funkin.ui.freeplay.FreeplayState;
 import flixel.text.FlxText;
 import funkin.ui.PixelatedIcon;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
@@ -451,7 +452,12 @@ class CharSelectSubState extends MusicBeatSubState
         pressedSelect = true;
         selectTimer.start(1.5, (_) -> {
           pressedSelect = false;
-          close();
+          FlxG.switchState(FreeplayState.build(
+            {
+              {
+                character: curChar
+              }
+            }));
         });
       }
 
