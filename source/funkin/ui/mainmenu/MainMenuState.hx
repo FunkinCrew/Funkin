@@ -344,17 +344,15 @@ class MainMenuState extends MusicBeatState
       }
     }
 
+    #if (debug || FORCE_DEBUG_VERSION)
     // Open the debug menu, defaults to ` / ~
-    #if CHART_EDITOR_SUPPORTED
     if (controls.DEBUG_MENU)
     {
       persistentUpdate = false;
 
       FlxG.state.openSubState(new DebugMenuSubState());
     }
-    #end
 
-    #if (debug || FORCE_DEBUG_VERSION)
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
     {
       // Give the user a score of 1 point on Weekend 1 story mode.

@@ -1232,6 +1232,11 @@ class FreeplayState extends MusicBeatSubState
     // }
     #end
 
+    if (controls.FREEPLAY_CHAR_SELECT && !busy)
+    {
+      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+    }
+
     if (controls.FREEPLAY_FAVORITE && !busy)
     {
       var targetSong = grpCapsules.members[curSelected]?.songData;
