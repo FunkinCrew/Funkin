@@ -203,6 +203,16 @@ typedef StageDataCharacter =
   var position:Array<Float>;
 
   /**
+   * If set to true, when positioning the character, the position origin will be at vertical bottom and horizontal center of the sprite.
+   * If set to false, when positioning the character, the position origin will be at the top-left of the sprite.
+   * This prevents characters from not being properly positioned.
+   * @default true
+   */
+  @:optional
+  @:default(true)
+  var fromOrigin:Bool;
+
+  /**
    * The scale to render the character at.
    */
   @:optional

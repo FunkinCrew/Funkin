@@ -267,8 +267,9 @@ class BaseCharacter extends Bopper
   /**
    * Set the character's sprite scale to the appropriate value.
    * @param scale The desired scale.
+   * @param fromOrigin If true, it will reposition the character from its origin.
    */
-  public function setScale(scale:Null<Float>):Void
+  public function setScale(scale:Null<Float>, fromOrigin:Bool = true):Void
   {
     if (scale == null) scale = 1.0;
 
@@ -276,9 +277,12 @@ class BaseCharacter extends Bopper
     this.scale.x = scale;
     this.scale.y = scale;
     this.updateHitbox();
-    // Reposition with newly scaled sprite.
-    this.x = feetPos.x - characterOrigin.x + globalOffsets[0];
-    this.y = feetPos.y - characterOrigin.y + globalOffsets[1];
+    if (fromOrigin)
+    {
+      // Reposition with newly scaled sprite.
+      this.x = feetPos.x - characterOrigin.x + globalOffsets[0];
+      this.y = feetPos.y - characterOrigin.y + globalOffsets[1];
+    }
   }
 
   /**
