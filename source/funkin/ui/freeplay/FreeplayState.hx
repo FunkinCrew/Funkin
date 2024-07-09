@@ -2158,7 +2158,7 @@ class FreeplaySongData
     {
       this.albumId = songDifficulty.album;
     }
-    
+
     // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
     // `easy`, `erect`, `normal-pico`, etc.
     var suffixedDifficulty = (songDifficulty.variation != Constants.DEFAULT_VARIATION
