@@ -5,7 +5,7 @@
     - Download Git from [git-scm.com](https://www.git-scm.com)
     - Do NOT download the repository using the Download ZIP button on GitHub or you may run into errors!
     - Instead, open a command prompt and do the following steps...
-1. Run `cd the/directory/you/want/the/source/code/in` to specify which folder the command prompt is working in.
+1. Run `cd the\directory\you\want\the\source\code\in` to specify which folder the command prompt is working in.
     - For example, `cd C:\Users\YOURNAME\Documents` would instruct the command prompt to perform the next steps in your Documents folder.
 2. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
 3. Run `git submodule update --init --recursive` to download the game's assets.
