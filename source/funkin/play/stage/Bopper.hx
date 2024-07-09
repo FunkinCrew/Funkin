@@ -177,7 +177,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public function onStepHit(event:SongTimeScriptEvent)
   {
-    if (danceEvery > 0) trace('step hit(${danceEvery}): ${event.step % (danceEvery * Constants.STEPS_PER_BEAT)} == 0?');
+    if (danceEvery > 0) trace('step hit(${danceEvery}, ${shouldBop}): ${event.step % (danceEvery * Constants.STEPS_PER_BEAT)} == 0?');
     if (danceEvery > 0 && (event.step % (danceEvery * Constants.STEPS_PER_BEAT)) == 0)
     {
       trace('dance onStepHit!');
