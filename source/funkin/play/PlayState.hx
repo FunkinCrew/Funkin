@@ -2437,7 +2437,7 @@ class PlayState extends MusicBeatSubState
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
-    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs + Conductor.instance.inputOffset);
+    var noteDiff:Int = Std.int(Math.abs(Conductor.instance.songPosition - note.noteData.time) - inputLatencyMs + Conductor.instance.inputOffset);
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
