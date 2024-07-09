@@ -131,12 +131,14 @@ class FlxAtlasSprite extends FlxAnimate
         anim.play('', false, false);
       }
     }
-
-    // Skip if the animation doesn't exist
-    if (!hasAnimation(id))
+    else
     {
-      trace('Animation ' + id + ' not found');
-      return;
+      // Skip if the animation doesn't exist
+      if (!hasAnimation(id))
+      {
+        trace('Animation ' + id + ' not found');
+        return;
+      }
     }
 
     anim.callback = function(_, frame:Int) {
@@ -154,6 +156,10 @@ class FlxAtlasSprite extends FlxAnimate
           onAnimationFinish.dispatch(id);
         }
       }
+    };
+
+    anim.onComplete = function() {
+      onAnimationFinish.dispatch(id);
     };
 
     // Prevent other animations from playing if `ignoreOther` is true.

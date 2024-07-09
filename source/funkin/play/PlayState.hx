@@ -3165,6 +3165,7 @@ class PlayState extends MusicBeatSubState
         storyMode: PlayStatePlaylist.isStoryMode,
         songId: currentChart.song.id,
         difficultyId: currentDifficulty,
+        characterId: currentChart.characters.player,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
         prevScoreData: prevScoreData,
         scoreData:
