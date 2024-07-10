@@ -6,9 +6,12 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.sound.FlxSound;
 import funkin.vis.dsp.SpectralAnalyzer;
 import funkin.vis.audioclip.frontends.LimeAudioClip;
+import funkin.util.assets.SoundUtil;
+import funkin.play.Countdown;
 
 using Lambda;
 
+// lol I did some changes here but its not needed anymore since I soft coded it -- From MidyGamy
 class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 {
   // public var vis:VisShit;
@@ -53,8 +56,8 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   public function initAnalyzer()
   {
-    @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__source, 7, 0.1, 40);
+    // @:privateAccess
+    analyzer = new SpectralAnalyzer(SoundUtil.getSoundChannelSource(snd), 7, 0.1, 40);
 
     #if desktop
     // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
@@ -99,10 +102,16 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     for (i in 0...min(group.members.length, levels.length))
     {
+      if (Countdown.countdownStep != AFTER)
+      {
+        group.members[i].animation.curAnim.curFrame = group.members[i].animation.curAnim.numFrames - 1;
+        continue;
+      }
+
       var animFrame:Int = Math.round(levels[i].value * 5);
 
       #if desktop
-      animFrame = Math.round(animFrame * FlxG.sound.volume);
+      // animFrame = Math.round(animFrame * FlxG.sound.volume);
       #end
 
       animFrame = Math.floor(Math.min(5, animFrame));
