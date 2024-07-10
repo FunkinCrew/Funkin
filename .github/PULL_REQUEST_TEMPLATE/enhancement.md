@@ -2,7 +2,7 @@
 name: Enhancement
 about: Add a new feature
 title: 'Enhancement: '
-labels: 'status: pending triage"
+labels: 'status: pending triage'
 ---
 #### Please check for duplicates or similar PRs before submitting this PR.
 ## Does this PR close any issues? If so, link them below.
