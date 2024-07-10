@@ -1566,8 +1566,8 @@ class PlayState extends MusicBeatSubState
     add(healthBar);
 
     // The score text below the health bar.
-    scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 350, healthBarBG.y + 40, 0, '', 24);
-    scoreText.setFormat(Paths.font('vcr.ttf'), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
+    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
