@@ -56,7 +56,7 @@ The full credits can be found in-game, or wherever the credits.json file is.
 - [SixImpala](https://twitter.com/SixImpala) - Musician
 - [Saster](https://twitter,com/sub0ru) - Featured Guest Musician for "Thorns Erect"
 - [nuphory](https://twitter.com/nuphory) - Featured Guest Musician for "Results (Excellent)
-- [MtH](https://twitter.com/emmnyaa) - Featured Guest Musician for "Breakfast (Week 6 Version)
+- [MtH](https://twitter.com/emmnyaa) - Featured Guest Musician for "Breakfast (Week 6 Version)"
 - [Kohta Takahashi](https://twitter.com/kohta09) - Featured Guest Musician for "Fresh Erect", "High Erect"
 - [BassetFilms](https://twitter.com/Bassetfilms) - Music for "Monster", Additional Character Design
 
