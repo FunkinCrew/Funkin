@@ -10,7 +10,7 @@ OR ELSE YOUR ISSUE WILL BE LESS LIKELY TO BE SOLVED!
 
 Do not post about issues from other FNF mod engines!
 We cannot and probably won't solve those!
-You can hopefully go to their respective GitHub issues and report them there, thank you :)
+You can hopefully go to their respective GitHub issues pages and report them there, thank you :)
 
 Please check for duplicates or similar issues, as well as performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
 
@@ -48,4 +48,4 @@ Remember to mark the area in the application that's impacted. -->
 ## Additional Context
 <!-- Add any other context about the problem here. -->
 
-<!-- If your game is FROZEN and you're playing a web version, press F12 to open up browser dev window, go to the console, and copy-paste whatever red error you're getting -->
+<!-- If your game is FROZEN and you're playing a web version, press F12 to open up the browser dev window, go to the "Console" tab, and copy-paste whatever red error you're getting below -->
