@@ -45,7 +45,7 @@ Remember to mark the area in the application that's impacted. -->
  - Version:
  <!-- [e.g. 0.4.0, 0.3.3, this can be found in the bottom left corner of the main menu!] -->
 
-## Additional context
+## Additional Context
 <!-- Add any other context about the problem here. -->
 
 <!-- If your game is FROZEN and you're playing a web version, press F12 to open up browser dev window, go to the console, and copy-paste whatever red error you're getting -->
