@@ -2,7 +2,7 @@
 name: Bug Report
 about: Report a bug or critical performance issue
 title: 'Bug Report: [DESCRIBE YOUR BUG IN DETAIL HERE]'
-labels: bug
+labels: 'status: pending triage'
 ---
 
 <!-- FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE
@@ -12,7 +12,7 @@ Do not post about issues from other FNF mod engines!
 We cannot and probably won't solve those!
 You can hopefully go to their respective GitHub issues and report them there, thank you :)
 
-Please check for duplicates or similar issues, as well performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
+Please check for duplicates or similar issues, as well as performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
 
 From Joel On Software:
 
@@ -24,27 +24,28 @@ From Joel On Software:
 
 -->
 
-## Describe the bug
+## Describe the Bug
 <!-- A clear and concise description of what the bug is. -->
 
 ## To Reproduce
-<!-- Describe in DETAIL how to reproduce the bug/issue you are running into. -->
-## Expected behavior
+<!-- Describe IN DETAIL how to reproduce the bug/issue you are running into. -->
+
+## Expected Behavior
 <!-- A clear and concise description of what you expected to happen. -->
 
 ## Screenshots/Video
 <!-- If applicable, add screenshots/video to help explain your problem.
-Remember to mark the area in the application thats impacted. -->
+Remember to mark the area in the application that's impacted. -->
 
 ## Desktop
  - OS:
  <!-- [e.g. Windows 10, 11, Mac, Linux Mint, Ubuntu, Arch (btw)] -->
- - Browser
- <!-- [e.g. chrome, safari, firefox, edge, operaGX] -->
+ - Browser:
+ <!-- [e.g. Chrome, Safari, Firefox, Edge, OperaGX, or None if you're playing the downloaded version!] -->
  - Version:
  <!-- [e.g. 0.4.0, 0.3.3, this can be found in the bottom left corner of the main menu!] -->
 
 ## Additional context
 <!-- Add any other context about the problem here. -->
 
-<!-- If you're game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting -->
+<!-- If your game is FROZEN and you're playing a web version, press F12 to open up browser dev window, go to the console, and copy-paste whatever red error you're getting -->
