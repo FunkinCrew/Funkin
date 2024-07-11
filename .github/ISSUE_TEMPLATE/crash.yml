@@ -65,6 +65,6 @@ body:
 
   - type: textarea
     attributes:
-      label: Crash Logs (can be found in the crash folder)
+      label: Crash logs (can be found in the logs folder where Funkin.exe is)
     validations:
       required: true
