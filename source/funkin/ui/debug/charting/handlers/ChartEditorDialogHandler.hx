@@ -808,8 +808,11 @@ class ChartEditorDialogHandler
         }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
         #if FILE_DROP_SUPPORTED
-        state.addDropHandler({component: songVariationMetadataEntry, handler: onDropFileMetadataVariation.bind(variation)
-          .bind(songVariationMetadataEntryLabel)});
+        state.addDropHandler(
+          {
+            component: songVariationMetadataEntry,
+            handler: onDropFileMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel)
+          });
         #end
         chartContainerB.addComponent(songVariationMetadataEntry);
 

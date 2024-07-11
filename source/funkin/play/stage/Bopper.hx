@@ -19,8 +19,10 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   /**
    * The bopper plays the dance animation once every `danceEvery` beats.
    * Set to 0 to disable idle animation.
+   * Supports up to 0.25 precision.
+   * @default 0.0 on props, 1.0 on characters
    */
-  public var danceEvery:Int = 1;
+  public var danceEvery:Float = 0.0;
 
   /**
    * Whether the bopper should dance left and right.
@@ -110,7 +112,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   var hasDanced:Bool = false;
 
-  public function new(danceEvery:Int = 1)
+  public function new(danceEvery:Float = 0.0)
   {
     super();
     this.danceEvery = danceEvery;
@@ -171,15 +173,19 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   /**
-   * Called once every beat of the song.
+   * Called once every step of the song.
    */
-  public function onBeatHit(event:SongTimeScriptEvent):Void
+  public function onStepHit(event:SongTimeScriptEvent)
   {
-    if (danceEvery > 0 && event.beat % danceEvery == 0)
+    if (danceEvery > 0) trace('step hit(${danceEvery}): ${event.step % (danceEvery * Constants.STEPS_PER_BEAT)} == 0?');
+    if (danceEvery > 0 && (event.step % (danceEvery * Constants.STEPS_PER_BEAT)) == 0)
     {
+      trace('dance onStepHit!');
       dance(shouldBop);
     }
   }
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void {}
 
   /**
    * Called every `danceEvery` beats of the song.
@@ -366,8 +372,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public function onSongEvent(event:SongEventScriptEvent) {}
 
   public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
-
-  public function onStepHit(event:SongTimeScriptEvent) {}
 
   public function onCountdownStart(event:CountdownScriptEvent) {}
 

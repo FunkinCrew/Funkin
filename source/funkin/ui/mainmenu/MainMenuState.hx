@@ -117,7 +117,10 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      openSubState(new FreeplayState());
+      openSubState(new FreeplayState(
+        {
+          character: FlxG.keys.pressed.SHIFT ? 'pico' : 'bf',
+        }));
     });
 
     #if CAN_OPEN_LINKS
@@ -341,17 +344,15 @@ class MainMenuState extends MusicBeatState
       }
     }
 
+    #if (debug || FORCE_DEBUG_VERSION)
     // Open the debug menu, defaults to ` / ~
-    #if CHART_EDITOR_SUPPORTED
     if (controls.DEBUG_MENU)
     {
       persistentUpdate = false;
 
       FlxG.state.openSubState(new DebugMenuSubState());
     }
-    #end
 
-    #if (debug || FORCE_DEBUG_VERSION)
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
     {
       // Give the user a score of 1 point on Weekend 1 story mode.
@@ -411,8 +412,8 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       FlxG.switchState(() -> new TitleState());
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
   }
 }

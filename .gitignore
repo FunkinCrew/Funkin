@@ -13,3 +13,10 @@ shitAudio/
 node_modules/
 package.json
 package-lock.json
+<<<<<<< HEAD
+.aider*
+||||||| bcaeae27
+=======
+.aider.*
+.aider*
+>>>>>>> rewrite/master

@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.transition.LoadingState;
 import flixel.FlxState;
@@ -164,6 +165,7 @@ class InitState extends FlxState
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
+    PlayerRegistry.instance.loadEntries();
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
@@ -221,6 +223,7 @@ class InitState extends FlxState
         storyMode: false,
         title: "Cum Song Erect by Kawai Sprite",
         songId: "cum",
+        characterId: "pico-playable",
         difficultyId: "nightmare",
         isNewHighscore: true,
         scoreData:
@@ -236,8 +239,13 @@ class InitState extends FlxState
                 combo: 69,
                 maxCombo: 69,
                 totalNotesHit: 140,
-                totalNotes: 200 // 0,
+                totalNotes: 190
               }
+            // 2000 = loss
+            // 240 = good
+            // 230 = great
+            // 210 = excellent
+            // 190 = perfect
           },
       }));
     #elseif ANIMDEBUG

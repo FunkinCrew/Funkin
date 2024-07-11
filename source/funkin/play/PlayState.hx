@@ -16,6 +16,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.util.FlxStringUtil;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
@@ -1301,12 +1302,18 @@ class PlayState extends MusicBeatSubState
     super.closeSubState();
   }
 
-  #if discord_rpc
   /**
    * Function called when the game window gains focus.
    */
   public override function onFocus():Void
   {
+    if (VideoCutscene.isPlaying() && FlxG.autoPause && isGamePaused) VideoCutscene.pauseVideo();
+    #if html5
+    else
+      VideoCutscene.resumeVideo();
+    #end
+
+    #if discord_rpc
     if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
     {
       if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
@@ -1318,6 +1325,7 @@ class PlayState extends MusicBeatSubState
       else
         DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
     }
+    #end
 
     super.onFocus();
   }
@@ -1327,12 +1335,17 @@ class PlayState extends MusicBeatSubState
    */
   public override function onFocusLost():Void
   {
+    #if html5
+    if (FlxG.autoPause) VideoCutscene.pauseVideo();
+    #end
+
+    #if discord_rpc
     if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
       currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+    #end
 
     super.onFocusLost();
   }
-  #end
 
   /**
    * Removes any references to the current stage, then clears the stage cache,
@@ -1783,11 +1796,8 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
 
-    if (!PlayStatePlaylist.isStoryMode)
-    {
-      playerStrumline.fadeInArrows();
-      opponentStrumline.fadeInArrows();
-    }
+    playerStrumline.fadeInArrows();
+    opponentStrumline.fadeInArrows();
   }
 
   /**
@@ -2051,7 +2061,9 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
-      scoreText.text = 'Score:' + songScore;
+      // TODO: Add an option for this maybe?
+      var commaSeparated:Bool = true;
+      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
     }
   }
 
@@ -2619,10 +2631,18 @@ class PlayState extends MusicBeatSubState
     {
       disableKeys = true;
       persistentUpdate = false;
-      FlxG.switchState(() -> new ChartEditorState(
-        {
-          targetSongId: currentSong.id,
-        }));
+      if (isChartingMode)
+      {
+        FlxG.sound.music?.pause();
+        this.close();
+      }
+      else
+      {
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: currentSong.id,
+          }));
+      }
     }
     #end
 
@@ -3156,6 +3176,7 @@ class PlayState extends MusicBeatSubState
         storyMode: PlayStatePlaylist.isStoryMode,
         songId: currentChart.song.id,
         difficultyId: currentDifficulty,
+        characterId: currentChart.characters.player,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
         prevScoreData: prevScoreData,
         scoreData:

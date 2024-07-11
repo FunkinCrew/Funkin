@@ -37,7 +37,7 @@ class Strumline extends FlxSpriteGroup
 
   static function get_RENDER_DISTANCE_MS():Float
   {
-    return FlxG.height / 0.45;
+    return FlxG.height / Constants.PIXELS_PER_MS;
   }
 
   /**
@@ -598,7 +598,6 @@ class Strumline extends FlxSpriteGroup
     {
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
-      note.holdNoteSprite.alpha = 1.0;
 
       note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
     }

@@ -164,7 +164,7 @@ class BaseCharacter extends Bopper
 
   public function new(id:String, renderType:CharacterRenderType)
   {
-    super();
+    super(CharacterDataParser.DEFAULT_DANCEEVERY);
     this.characterId = id;
 
     _data = CharacterDataParser.fetchCharacterData(this.characterId);
@@ -180,6 +180,7 @@ class BaseCharacter extends Bopper
     {
       this.characterName = _data.name;
       this.name = _data.name;
+      this.danceEvery = _data.danceEvery;
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
@@ -308,11 +309,24 @@ class BaseCharacter extends Bopper
     // so we can query which ones are available.
     this.comboNoteCounts = findCountAnimations('combo'); // example: combo50
     this.dropNoteCounts = findCountAnimations('drop'); // example: drop50
-    // trace('${this.animation.getNameList()}');
-    // trace('Combo note counts: ' + this.comboNoteCounts);
-    // trace('Drop note counts: ' + this.dropNoteCounts);
+    if (comboNoteCounts.length > 0) trace('Combo note counts: ' + this.comboNoteCounts);
+    if (dropNoteCounts.length > 0) trace('Drop note counts: ' + this.dropNoteCounts);
 
     super.onCreate(event);
+  }
+
+  override function onAnimationFinished(animationName:String):Void
+  {
+    super.onAnimationFinished(animationName);
+
+    trace('${characterId} has finished animation: ${animationName}');
+    if ((animationName.endsWith(Constants.ANIMATION_END_SUFFIX) && !animationName.startsWith('idle') && !animationName.startsWith('dance'))
+      || animationName.startsWith('combo')
+      || animationName.startsWith('drop'))
+    {
+      // Force the character to play the idle after the animation ends.
+      this.dance(true);
+    }
   }
 
   function resetCameraFocusPoint():Void
@@ -368,9 +382,11 @@ class BaseCharacter extends Bopper
     // and Darnell (this keeps the flame on his lighter flickering).
     // Works for idle, singLEFT/RIGHT/UP/DOWN, alt singing animations, and anything else really.
 
-    if (!getCurrentAnimation().endsWith('-hold') && hasAnimation(getCurrentAnimation() + '-hold') && isAnimationFinished())
+    if (!getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)
+      && hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)
+      && isAnimationFinished())
     {
-      playAnimation(getCurrentAnimation() + '-hold');
+      playAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX);
     }
 
     // Handle character note hold time.
@@ -395,7 +411,25 @@ class BaseCharacter extends Bopper
       {
         trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
         holdTimer = 0;
-        dance(true);
+
+        var currentAnimation:String = getCurrentAnimation();
+        // Strip "-hold" from the end.
+        if (currentAnimation.endsWith(Constants.ANIMATION_HOLD_SUFFIX)) currentAnimation = currentAnimation.substring(0,
+          currentAnimation.length - Constants.ANIMATION_HOLD_SUFFIX.length);
+
+        var endAnimation:String = currentAnimation + Constants.ANIMATION_END_SUFFIX;
+        if (hasAnimation(endAnimation))
+        {
+          // Play the '-end' animation, if one exists.
+          trace('${characterId}: playing ${endAnimation}');
+          playAnimation(endAnimation);
+        }
+        else
+        {
+          // Play the idle animation.
+          trace('${characterId}: attempting dance');
+          dance(true);
+        }
       }
     }
     else
@@ -408,7 +442,8 @@ class BaseCharacter extends Bopper
 
   public function isSinging():Bool
   {
-    return getCurrentAnimation().startsWith('sing');
+    var currentAnimation:String = getCurrentAnimation();
+    return currentAnimation.startsWith('sing') && !currentAnimation.endsWith(Constants.ANIMATION_END_SUFFIX);
   }
 
   override function dance(force:Bool = false):Void
@@ -418,15 +453,15 @@ class BaseCharacter extends Bopper
 
     if (!force)
     {
+      // Prevent dancing while a singing animation is playing.
       if (isSinging()) return;
 
+      // Prevent dancing while a non-idle special animation is playing.
       var currentAnimation:String = getCurrentAnimation();
-      if ((currentAnimation == 'hey' || currentAnimation == 'cheer') && !isAnimationFinished()) return;
+      if (!currentAnimation.startsWith('dance') && !currentAnimation.startsWith('idle') && !isAnimationFinished()) return;
     }
 
-    // Prevent dancing while another animation is playing.
-    if (!force && isSinging()) return;
-
+    trace('${characterId}: Actually dancing');
     // Otherwise, fallback to the super dance() method, which handles playing the idle animation.
     super.dance();
   }
@@ -499,6 +534,16 @@ class BaseCharacter extends Bopper
       this.playSingAnimation(event.note.noteData.getDirection(), false);
       holdTimer = 0;
     }
+    else if (characterType == GF && event.note.noteData.getMustHitNote())
+    {
+      switch (event.judgement)
+      {
+        case 'sick' | 'good':
+          playComboAnimation(event.comboCount);
+        default:
+          playComboDropAnimation(event.comboCount);
+      }
+    }
   }
 
   /**
@@ -521,24 +566,39 @@ class BaseCharacter extends Bopper
     }
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
-      var dropAnim = '';
+      playComboDropAnimation(Highscore.tallies.combo);
+    }
+  }
 
-      // Choose the combo drop anim to play.
-      // If there are several (for example, drop10 and drop50) the highest one will be used.
-      // If the combo count is too low, no animation will be played.
-      for (count in dropNoteCounts)
-      {
-        if (event.comboCount >= count)
-        {
-          dropAnim = 'drop${count}';
-        }
-      }
+  function playComboAnimation(comboCount:Int):Void
+  {
+    var comboAnim = 'combo${comboCount}';
+    if (hasAnimation(comboAnim))
+    {
+      trace('Playing GF combo animation: ${comboAnim}');
+      this.playAnimation(comboAnim, true, true);
+    }
+  }
 
-      if (dropAnim != '')
+  function playComboDropAnimation(comboCount:Int):Void
+  {
+    var dropAnim:Null<String> = null;
+
+    // Choose the combo drop anim to play.
+    // If there are several (for example, drop10 and drop50) the highest one will be used.
+    // If the combo count is too low, no animation will be played.
+    for (count in dropNoteCounts)
+    {
+      if (comboCount >= count)
       {
-        trace('Playing GF combo drop animation: ${dropAnim}');
-        this.playAnimation(dropAnim, true, true);
+        dropAnim = 'drop${count}';
       }
+    }
+
+    if (dropAnim != null)
+    {
+      trace('Playing GF combo drop animation: ${dropAnim}');
+      this.playAnimation(dropAnim, true, true);
     }
   }
 

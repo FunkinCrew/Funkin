@@ -590,7 +590,7 @@ enum abstract ScoringRank(String)
     }
   }
 
-  public function getFreeplayRankIconAsset():Null<String>
+  public function getFreeplayRankIconAsset():String
   {
     switch (abstract)
     {
@@ -607,7 +607,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 'LOSS';
       default:
-        return null;
+        return 'LOSS';
     }
   }
 
