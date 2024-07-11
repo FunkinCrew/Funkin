@@ -2,7 +2,7 @@
 name: Enhancement
 about: Suggest a new feature
 title: 'Enhancement: '
-labels: 'status: pending triage'
+labels: 'status: pending triage','type: enhancement'
 ---
 #### Please check for duplicates or similar issues before submitting this suggestion.
 ## What is your suggestion, and why should it be implemented?
