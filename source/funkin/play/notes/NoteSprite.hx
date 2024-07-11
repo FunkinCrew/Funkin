@@ -67,16 +67,16 @@ class NoteSprite extends FunkinSprite
   }
 
   /**
-   * An array of custom parameters for this note
+   * Custom parameters for this note
    */
-  public var params(get, set):Array<NoteParamData>;
+  public var params(get, set):Dynamic;
 
-  function get_params():Array<NoteParamData>
+  function get_params():Dynamic
   {
     return this.noteData?.params ?? [];
   }
 
-  function set_params(value:Array<NoteParamData>):Array<NoteParamData>
+  function set_params(value:Dynamic):Dynamic
   {
     if (this.noteData == null) return value;
     return this.noteData.params = value;
@@ -192,14 +192,7 @@ class NoteSprite extends FunkinSprite
    */
   public function getParam(name:String):Null<Dynamic>
   {
-    for (param in params)
-    {
-      if (param.name == name)
-      {
-        return param.value;
-      }
-    }
-    return null;
+    return this.noteData?.getDynamic(name);
   }
 
   #if FLX_DEBUG

@@ -3,7 +3,9 @@ package funkin.data.song;
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
+import funkin.data.notes.SongNoteSchema;
 import funkin.data.song.SongRegistry;
+import funkin.play.notes.notekind.NoteKindManager;
 import thx.semver.Version;
 import funkin.util.tools.ICloneable;
 
@@ -984,17 +986,18 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   }
 
   @:alias("p")
-  @:default([])
   @:optional
-  public var params:Array<NoteParamData>;
+  @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  public var params:Dynamic = null;
 
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Dynamic)
   {
     this.time = time;
     this.data = data;
     this.length = length;
     this.kind = kind;
-    this.params = params ?? [];
+    this.params = params;
   }
 
   /**
@@ -1089,19 +1092,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     _stepLength = null;
   }
 
-  public function cloneParams():Array<NoteParamData>
-  {
-    var params:Array<NoteParamData> = [];
-    for (param in this.params)
-    {
-      params.push(param.clone());
-    }
-    return params;
-  }
-
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams());
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, this.params);
   }
 
   public function toString():String
@@ -1117,7 +1110,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 @:forward
 abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 {
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Dynamic)
   {
     this = new SongNoteDataRaw(time, data, length, kind, params);
   }
@@ -1145,6 +1138,100 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   public function get_isHoldNote():Bool
   {
     return this.length > 0;
+  }
+
+  public function paramsAsStruct(?defaultKey:String = "key"):Dynamic
+  {
+    if (this.params == null) return {};
+
+    if (Reflect.isObject(this.params))
+    {
+      // We enter this case if the params are a struct.
+      return cast this.params;
+    }
+    else
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.params);
+      return cast result;
+    }
+  }
+
+  public inline function getSchema():Null<SongNoteSchema>
+  {
+    return NoteKindManager.getSchema(this.kind);
+  }
+
+  public inline function getDynamic(key:String):Null<Dynamic>
+  {
+    return this.params == null ? null : Reflect.field(this.params, key);
+  }
+
+  public inline function getBool(key:String):Null<Bool>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public inline function getInt(key:String):Null<Int>
+  {
+    if (this.params == null) return null;
+    var result = Reflect.field(this.params, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Int)) return result;
+    if (Std.isOfType(result, String)) return Std.parseInt(cast result);
+    return cast result;
+  }
+
+  public inline function getFloat(key:String):Null<Float>
+  {
+    if (this.params == null) return null;
+    var result = Reflect.field(this.params, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Float)) return result;
+    if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
+    return cast result;
+  }
+
+  public inline function getString(key:String):String
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public inline function getArray(key:String):Array<Dynamic>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public inline function getBoolArray(key:String):Array<Bool>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public function buildTooltip():Null<String>
+  {
+    var noteSchema = getSchema();
+
+    if (noteSchema == null) return null;
+
+    var result = '${this.kind}';
+
+    var defaultKey = noteSchema.getFirstField()?.name;
+    var paramsStruct:haxe.DynamicAccess<Dynamic> = paramsAsStruct(defaultKey);
+
+    for (pair in paramsStruct.keyValueIterator())
+    {
+      var key = pair.key;
+      var value = pair.value;
+
+      var title = noteSchema.getByName(key)?.title ?? 'UnknownField';
+
+      // if (noteSchema.stringifyFieldValue(key, value) != null) trace(noteSchema.stringifyFieldValue(key, value));
+      var valueStr = noteSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
+
+      result += '\n- ${title}: ${valueStr}';
+    }
+
+    return result;
   }
 
   @:op(A == B)
