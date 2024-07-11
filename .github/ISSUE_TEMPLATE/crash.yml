@@ -1,5 +1,5 @@
 name: Crash Report
-description: Report a crash that occurred while playing.
+description: Report a crash that occurred while playing the game.
 labels: ["type: major bug", "status: pending triage"]
 title: "Crash: "
 body:
@@ -8,22 +8,23 @@ body:
       label: Issue Checklist
       options:
         - label: I have properly named the issue
-        - label: I looked in issues/discussions, if it has been previously reported
+        - label: I have checked the issues/discussions pages to see if the issue has been previously reported
 
   - type: dropdown
     attributes:
       label: What platform are you using?
       options:
-        - Itch.io - Windows
-        - Itch.io - MacOS
-        - Itch.io - Linux
         - Newgrounds (Web)
+        - Itch.io (Web)
+        - Itch.io (Downloadable Build) - Windows
+        - Itch.io (Downloadable Build) - MacOS
+        - Itch.io (Downloadable Build) - Linux
     validations:
       required: true
 
   - type: dropdown
     attributes:
-      label: If you were playing on a browser, which one were you using?
+      label: If you are playing on a browser, which one are you using?
       options:
         - Google Chrome
         - Microsoft Edge
@@ -35,18 +36,18 @@ body:
   - type: input
     attributes:
       label: Version
-      description: What version were you using?
+      description: What version are you using?
       placeholder: ex. 0.4.1
     validations:
       required: true
 
   - type: markdown
     attributes:
-      value: "## Describe the issue."
+      value: "## Describe your bug."
 
   - type: markdown
     attributes:
-      value: "### Please do not report issues from other engines. These must be reported in their repositories."
+      value: "### Please do not report issues from other engines. These must be reported in their respective repositories."
 
   - type: markdown
     attributes:
