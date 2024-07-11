@@ -1502,7 +1502,7 @@ class PlayState extends MusicBeatSubState
     if (opponentStrumline != null) opponentStrumline.onBeatHit();
 
     // Make the characters dance on the beat
-    danceOnBeat();
+    //danceOnBeat();
 
     return true;
   }
@@ -1522,16 +1522,6 @@ class PlayState extends MusicBeatSubState
   function danceOnBeat():Void
   {
     if (currentStage == null) return;
-
-    // TODO: Add HEY! song events to Tutorial.
-    if (Conductor.instance.currentBeat % 16 == 15
-      && currentStage.getDad().characterId == 'gf'
-      && Conductor.instance.currentBeat > 16
-      && Conductor.instance.currentBeat < 48)
-    {
-      currentStage.getBoyfriend().playAnimation('hey', true);
-      currentStage.getDad().playAnimation('cheer', true);
-    }
   }
 
   /**
