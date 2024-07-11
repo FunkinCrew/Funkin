@@ -16,6 +16,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.util.FlxStringUtil;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
@@ -2060,7 +2061,9 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
-      scoreText.text = 'Score:' + songScore;
+      // TODO: Add an option for this maybe?
+      var commaSeparated:Bool = true;
+      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
     }
   }
 
@@ -2628,10 +2631,18 @@ class PlayState extends MusicBeatSubState
     {
       disableKeys = true;
       persistentUpdate = false;
-      FlxG.switchState(() -> new ChartEditorState(
-        {
-          targetSongId: currentSong.id,
-        }));
+      if (isChartingMode)
+      {
+        FlxG.sound.music?.pause();
+        this.close();
+      }
+      else
+      {
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: currentSong.id,
+          }));
+      }
     }
     #end
 
