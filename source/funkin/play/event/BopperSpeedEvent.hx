@@ -2,7 +2,6 @@ package funkin.play.event;
 
 // Data from the chart
 import funkin.play.character.BaseCharacter;
-import funkin.play.stage.StageProp;
 import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
@@ -49,11 +48,8 @@ class BopperSpeedEvent extends SongEvent
       if ((Std.isOfType(bopperProp, Bopper)) || (Std.isOfType(bopperProp, BaseCharacter)))
       {
         var bopper = cast(bopperProp, Bopper);
-        var initEveryBeat = bopper.danceEvery;
         trace('Setting $bopperName speed to $speed.');
         bopper.danceEvery = speed;
-        trace('Adding $bopperName to the list to reset the speed on restart.');
-        PlayState.instance.resetBoppers.set(bopper, initEveryBeat);
       }
     }
   }

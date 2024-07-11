@@ -23,6 +23,8 @@ import funkin.data.stage.StageData;
 import funkin.data.stage.StageData.StageDataCharacter;
 import funkin.data.stage.StageRegistry;
 import funkin.play.stage.StageProp;
+import funkin.play.character.CharacterData;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
 
@@ -105,39 +107,19 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   public function resetStage():Void
   {
     // Reset positions of characters.
-    if (getBoyfriend() != null)
-    {
-      getBoyfriend().resetCharacter(true);
+    for (id => character in characters) {
+      var char = getCharacter(id);
+
+      char.resetCharacter(true);
+
       // Reapply the camera offsets.
-      var stageCharData:StageDataCharacter = _data.characters.bf;
-      var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
-      getBoyfriend().setScale(finalScale);
-      getBoyfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
-      getBoyfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
-    }
-    else
-    {
-      trace('STAGE RESET: No boyfriend found.');
-    }
-    if (getGirlfriend() != null)
-    {
-      getGirlfriend().resetCharacter(true);
-      // Reapply the camera offsets.
-      var stageCharData:StageDataCharacter = _data.characters.gf;
-      var finalScale:Float = getGirlfriend().getBaseScale() * stageCharData.scale;
-      getGirlfriend().setScale(finalScale);
-      getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
-      getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
-    }
-    if (getDad() != null)
-    {
-      getDad().resetCharacter(true);
-      // Reapply the camera offsets.
-      var stageCharData:StageDataCharacter = _data.characters.dad;
-      var finalScale:Float = getDad().getBaseScale() * stageCharData.scale;
-      getDad().setScale(finalScale);
-      getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
-      getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+      var stageCharData:StageDataCharacter = Reflect.field(_data.characters, id);
+      var charData:CharacterData = CharacterDataParser.fetchCharacterData(character.characterId);
+      var finalScale:Float = char.getBaseScale() * stageCharData.scale;
+      char.setScale(finalScale);
+      char.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+      char.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+      char.danceEvery = charData.danceEvery;
     }
 
     // Reset positions of named props.
@@ -152,6 +134,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         prop.x = dataProp.position[0];
         prop.y = dataProp.position[1];
         prop.zIndex = dataProp.zIndex;
+        // Reset bop speed.
+        if (Std.isOfType(prop, Bopper))
+        {
+          var bopper = cast(prop, Bopper);
+          bopper.danceEvery = dataProp.danceEvery;
+        }
       }
     }
 

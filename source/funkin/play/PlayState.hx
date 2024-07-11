@@ -194,11 +194,6 @@ class PlayState extends MusicBeatSubState
   public var needsReset:Bool = false;
 
   /**
-   * Map of the boppers that will reset their bop speed once the restart occurs.
-   */
-  public var resetBoppers:Map<Bopper, Int> = new Map<Bopper, Int>();
-
-  /**
    * The current 'Blueball Counter' to display in the pause menu.
    * Resets when you beat a song or go back to the main menu.
    */
@@ -896,12 +891,6 @@ class PlayState extends MusicBeatSubState
 
       // Delete all notes and reset the arrays.
       regenNoteData();
-
-      if (resetBoppers.size() > 0) {
-        for (bopper => speed in resetBoppers) {
-          bopper.danceEvery = speed;
-        }
-      }
 
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
