@@ -1,17 +1,18 @@
 package funkin.ui.debug.charting.toolboxes;
 
+import haxe.ui.core.Component;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.TextField;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
+import haxe.ui.components.CheckBox;
 import haxe.ui.containers.Grid;
-import haxe.ui.core.Component;
+import haxe.ui.containers.Box;
+import haxe.ui.data.ArrayDataSource;
 import haxe.ui.events.UIEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.play.notes.notekind.NoteKindManager;
-import funkin.play.notes.notekind.NoteKind.NoteKindParam;
-import funkin.play.notes.notekind.NoteKind.NoteKindParamType;
-import funkin.data.song.SongData.NoteParamData;
+import funkin.data.notes.SongNoteSchema;
 
 /**
  * The toolbox which allows modifying information like Note Kind.
@@ -23,19 +24,15 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   // 100 is the height used in note-data.xml
   static final DIALOG_HEIGHT:Int = 100;
 
-  // toolboxNotesGrid.height + 45
-  // this is what i found out by printing this.height and grid.height
-  // and then seeing that this.height is 100 and grid.height is 55
-  static final HEIGHT_OFFSET:Int = 45;
-
   // minimizing creates a gray bar the bottom, which would obscure the components,
-  // which is why we use an extra offset of 20
-  static final MINIMIZE_FIX:Int = 20;
+  // which is why we use an extra offset of 30
+  static final MINIMIZE_FIX:Int = 30;
 
-  var toolboxNotesGrid:Grid;
+  var toolboxNoteParamsGrid:Grid;
   var toolboxNotesNoteKind:DropDown;
   var toolboxNotesCustomKind:TextField;
-  var toolboxNotesParams:Array<ToolboxNoteKindParam> = [];
+
+  var previousNoteKind:String = '';
 
   var _initializing:Bool = true;
 
@@ -76,7 +73,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
       }
 
-      createNoteKindParams(noteKind);
+      buildNoteParamsFormFromSchema(toolboxNoteParamsGrid);
 
       if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
       {
@@ -84,7 +81,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         {
           // Edit the note data of any selected notes.
           note.kind = chartEditorState.noteKindToPlace;
-          note.params = ChartEditorState.cloneNoteParams(chartEditorState.noteParamsToPlace);
+          note.params = Reflect.copy(chartEditorState.noteParamsToPlace);
 
           // update note sprites
           for (noteSprite in chartEditorState.renderedNotes.members)
@@ -140,7 +137,45 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
 
-    createNoteKindParams(chartEditorState.noteKindToPlace);
+    buildNoteParamsFormFromSchema(toolboxNoteParamsGrid);
+
+    if (chartEditorState.noteParamsToPlace == null)
+    {
+      return;
+    }
+
+    for (pair in chartEditorState.noteParamsToPlace.keyValueIterator())
+    {
+      var fieldId:String = pair.key;
+      var value:Null<Dynamic> = pair.value;
+
+      var field:Component = toolboxNoteParamsGrid.findComponent(fieldId);
+
+      if (field == null)
+      {
+        throw 'ChartEditorToolboxHandler.refresh() - Field "${fieldId}" does not exist in the event data form for kind ${previousNoteKind}.';
+      }
+      else
+      {
+        switch (field)
+        {
+          case Std.isOfType(_, NumberStepper) => true:
+            var numberStepper:NumberStepper = cast field;
+            numberStepper.value = value;
+          case Std.isOfType(_, CheckBox) => true:
+            var checkBox:CheckBox = cast field;
+            checkBox.selected = value;
+          case Std.isOfType(_, DropDown) => true:
+            var dropDown:DropDown = cast field;
+            dropDown.value = value;
+          case Std.isOfType(_, TextField) => true:
+            var textField:TextField = cast field;
+            textField.text = value;
+          default:
+            throw 'ChartEditorToolboxHandler.refresh() - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
+        }
+      }
+    }
   }
 
   function showCustom():Void
@@ -155,122 +190,140 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     toolboxNotesCustomKind.hidden = true;
   }
 
-  function createNoteKindParams(noteKind:Null<String>):Void
+  function buildNoteParamsFormFromSchema(target:Box):Void
   {
-    clearNoteKindParams();
-
-    var setParamsToPlace:Bool = false;
-    if (!_initializing)
+    if (chartEditorState.noteKindToPlace == previousNoteKind)
     {
-      for (note in chartEditorState.currentNoteSelection)
+      return;
+    }
+
+    trace('Building note params form from schema for note kind: ${chartEditorState.noteKindToPlace}');
+    // trace(schema);
+
+    previousNoteKind = chartEditorState.noteKindToPlace ?? '';
+
+    // Clear the frame.
+    target.removeAllComponents();
+
+    chartEditorState.noteParamsToPlace = {};
+
+    var schema:Null<SongNoteSchema> = NoteKindManager.getSchema(chartEditorState.noteKindToPlace);
+
+    if (schema == null)
+    {
+      this.height = Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT + toolboxNoteParamsGrid.height);
+      return;
+    }
+
+    for (field in schema)
+    {
+      if (field == null) continue;
+
+      // Add a label for the data field.
+      var label:Label = new Label();
+      label.text = field.title;
+      label.verticalAlign = "center";
+      target.addComponent(label);
+
+      // Add an input field for the data field.
+      var input:Component;
+      switch (field.type)
       {
-        if (note.kind == chartEditorState.noteKindToPlace)
+        case INTEGER | FLOAT:
+          var numberStepper:NumberStepper = new NumberStepper();
+          numberStepper.id = field.name;
+          numberStepper.step = field.step ?? 1.0;
+          numberStepper.min = field.min ?? 0.0;
+          numberStepper.max = field.max ?? 10.0;
+          numberStepper.precision = field.precision ?? 0;
+          if (field.defaultValue != null) numberStepper.value = field.defaultValue;
+          input = numberStepper;
+        case BOOL:
+          var checkBox:CheckBox = new CheckBox();
+          checkBox.id = field.name;
+          if (field.defaultValue != null) checkBox.selected = field.defaultValue;
+          input = checkBox;
+        case ENUM:
+          var dropDown:DropDown = new DropDown();
+          dropDown.id = field.name;
+          dropDown.width = 200.0;
+          dropDown.dropdownSize = 10;
+          dropDown.dropdownWidth = 300;
+          dropDown.searchable = true;
+          dropDown.dataSource = new ArrayDataSource();
+
+          if (field.keys == null) throw 'Field "${field.name}" is of Enum type but has no keys.';
+
+          // Add entries to the dropdown.
+
+          for (optionName in field.keys.keys())
+          {
+            var optionValue:Null<Dynamic> = field.keys.get(optionName);
+            // trace('$optionName : $optionValue');
+            dropDown.dataSource.add({value: optionValue, text: optionName});
+          }
+
+          dropDown.value = field.defaultValue;
+
+          // TODO: Add an option to customize sort.
+          dropDown.dataSource.sort('text', ASCENDING);
+
+          input = dropDown;
+        case STRING:
+          input = new TextField();
+          input.id = field.name;
+          if (field.defaultValue != null) input.text = field.defaultValue;
+        default:
+          // Unknown type. Display a label that proclaims the type so we can debug it.
+          input = new Label();
+          input.id = field.name;
+          input.text = field.type;
+      }
+
+      target.addComponent(input);
+
+      // Update the value of the event data.
+      input.onChange = function(event:UIEvent) {
+        var value = event.target.value;
+        if (field.type == ENUM)
         {
-          chartEditorState.noteParamsToPlace = ChartEditorState.cloneNoteParams(note.params);
-          setParamsToPlace = true;
-          break;
+          value = event.target.value.value;
+        }
+        else if (field.type == BOOL)
+        {
+          var chk:CheckBox = cast event.target;
+          value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
+        }
+
+        trace('ChartEditorToolboxHandler.buildNoteParamsFormFromSchema() - ${event.target.id} = ${value}');
+
+        // Edit the event data to place.
+        if (value == null)
+        {
+          chartEditorState.noteParamsToPlace.remove(event.target.id);
+        }
+        else
+        {
+          chartEditorState.noteParamsToPlace.set(event.target.id, value);
+        }
+
+        // Edit the note params of any selected notes.
+        if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
+        {
+          for (note in chartEditorState.currentNoteSelection)
+          {
+            note.kind = chartEditorState.noteKindToPlace;
+            note.params = Reflect.copy(chartEditorState.noteParamsToPlace);
+          }
+          chartEditorState.saveDataDirty = true;
+          chartEditorState.noteDisplayDirty = true;
+          chartEditorState.notePreviewDirty = true;
+          chartEditorState.noteTooltipsDirty = true;
         }
       }
     }
 
-    var noteKindParams:Array<NoteKindParam> = NoteKindManager.getParams(noteKind);
-
-    for (i in 0...noteKindParams.length)
-    {
-      var param:NoteKindParam = noteKindParams[i];
-
-      var paramLabel:Label = new Label();
-      paramLabel.value = param.description;
-      paramLabel.verticalAlign = "center";
-      paramLabel.horizontalAlign = "right";
-
-      var paramComponent:Component = null;
-
-      switch (param.type)
-      {
-        case NoteKindParamType.INT | NoteKindParamType.FLOAT:
-          var paramStepper:NumberStepper = new NumberStepper();
-          paramStepper.value = (setParamsToPlace ? chartEditorState.noteParamsToPlace[i].value : param.data?.defaultValue) ?? 0.0;
-          paramStepper.percentWidth = 100;
-          paramStepper.step = param.data?.step ?? 1;
-
-          // this check should be unnecessary but for some reason
-          // even when these are null it will set it to 0
-          if (param.data?.min != null)
-          {
-            paramStepper.min = param.data.min;
-          }
-          if (param.data?.max != null)
-          {
-            paramStepper.max = param.data.max;
-          }
-          if (param.data?.precision != null)
-          {
-            paramStepper.precision = param.data.precision;
-          }
-          paramComponent = paramStepper;
-
-        case NoteKindParamType.STRING:
-          var paramTextField:TextField = new TextField();
-          paramTextField.value = (setParamsToPlace ? chartEditorState.noteParamsToPlace[i].value : param.data?.defaultValue) ?? '';
-          paramTextField.percentWidth = 100;
-          paramComponent = paramTextField;
-      }
-
-      if (paramComponent == null)
-      {
-        continue;
-      }
-
-      paramComponent.onChange = function(event:UIEvent) {
-        chartEditorState.noteParamsToPlace[i].value = paramComponent.value;
-
-        for (note in chartEditorState.currentNoteSelection)
-        {
-          if (note.params.length != noteKindParams.length)
-          {
-            break;
-          }
-
-          if (note.params[i].name == param.name)
-          {
-            note.params[i].value = paramComponent.value;
-          }
-        }
-      }
-
-      addNoteKindParam(paramLabel, paramComponent);
-    }
-
-    if (!setParamsToPlace)
-    {
-      var noteParamData:Array<NoteParamData> = [];
-      for (i in 0...noteKindParams.length)
-      {
-        noteParamData.push(new NoteParamData(noteKindParams[i].name, toolboxNotesParams[i].component.value));
-      }
-      chartEditorState.noteParamsToPlace = noteParamData;
-    }
-  }
-
-  function addNoteKindParam(label:Label, component:Component):Void
-  {
-    toolboxNotesParams.push({label: label, component: component});
-    toolboxNotesGrid.addComponent(label);
-    toolboxNotesGrid.addComponent(component);
-
-    this.height = Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT - 30 + toolboxNotesParams.length * 30);
-  }
-
-  function clearNoteKindParams():Void
-  {
-    for (param in toolboxNotesParams)
-    {
-      toolboxNotesGrid.removeComponent(param.component);
-      toolboxNotesGrid.removeComponent(param.label);
-    }
-    toolboxNotesParams = [];
-    this.height = DIALOG_HEIGHT;
+    this.height = Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT + toolboxNoteParamsGrid.height);
   }
 
   override function update(elapsed:Float):Void
@@ -283,7 +336,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       return;
     }
 
-    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, toolboxNotesGrid.height + HEIGHT_OFFSET)) + MINIMIZE_FIX;
+    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT + toolboxNoteParamsGrid.height)) + MINIMIZE_FIX;
     if (this.height != heightToSet)
     {
       this.height = heightToSet;
@@ -294,10 +347,4 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   {
     return new ChartEditorNoteDataToolbox(chartEditorState);
   }
-}
-
-typedef ToolboxNoteKindParam =
-{
-  var label:Label;
-  var component:Component;
 }

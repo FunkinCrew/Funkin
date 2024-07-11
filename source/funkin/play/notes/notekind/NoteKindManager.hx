@@ -3,9 +3,9 @@ package funkin.play.notes.notekind;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.data.notes.SongNoteSchema;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.notes.notekind.NoteKind.NoteKindParam;
 
 class NoteKindManager
 {
@@ -24,7 +24,7 @@ class NoteKindManager
           var script:NoteKind = ScriptedNoteKind.init(scriptedClass, "unknown");
           trace(' Initialized scripted note kind: ${script.noteKind}');
           noteKinds.set(script.noteKind, script);
-          ChartEditorDropdowns.NOTE_KINDS.set(script.noteKind, script.description);
+          ChartEditorDropdowns.NOTE_KINDS.set(script.noteKind, script.title);
         }
         catch (e)
         {
@@ -103,18 +103,8 @@ class NoteKindManager
     return noteStyleId;
   }
 
-  /**
-   * Retrive custom params of the given note kind
-   * @param noteKind Name of the note kind
-   * @return Array<NoteKindParam>
-   */
-  public static function getParams(noteKind:Null<String>):Array<NoteKindParam>
+  public static function getSchema(noteKind:Null<String>):Null<SongNoteSchema>
   {
-    if (noteKind == null)
-    {
-      return [];
-    }
-
-    return noteKinds.get(noteKind)?.params ?? [];
+    return noteKinds.get(noteKind)?.schema;
   }
 }
