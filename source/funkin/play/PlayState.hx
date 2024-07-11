@@ -1321,18 +1321,50 @@ class PlayState extends MusicBeatSubState
 
     super.onFocus();
   }
+  #end
 
   /**
    * Function called when the game window loses focus.
    */
   public override function onFocusLost():Void
   {
+    #if discord_rpc
     if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
       currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+    #end
+
+    if (isInCountdown && mayPauseGame && !justUnpaused)
+    {
+      var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
+
+      dispatchEvent(event);
+
+      if (!event.eventCanceled)
+      {
+        // Pause updates while the substate is open, preventing the game state from advancing.
+        persistentUpdate = false;
+        // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
+        persistentDraw = true;
+
+        var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
+
+        // Prevent the game from crashing if Boyfriend isn't present.
+        if (currentStage != null && currentStage.getBoyfriend() != null)
+        {
+          boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
+        }
+
+        var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
+
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        pauseSubState.camera = camHUD;
+        openSubState(pauseSubState);
+      }
+    }
 
     super.onFocusLost();
   }
-  #end
 
   /**
    * Removes any references to the current stage, then clears the stage cache,
