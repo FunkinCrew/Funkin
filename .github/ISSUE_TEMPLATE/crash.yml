@@ -1,7 +1,7 @@
 name: Crash Report
 description: Report a crash that occurred while playing the game.
 labels: ["type: major bug", "status: pending triage"]
-title: "Crash: "
+title: "Crash Report: "
 body:
   - type: checkboxes
     attributes:
@@ -55,7 +55,7 @@ body:
 
   - type: textarea
     attributes:
-      label: Context (Provide images, videos, etc. of the crash happening)
+      label: Context (Provide screenshots or videos of the crash happening)
 
   - type: textarea
     attributes:
