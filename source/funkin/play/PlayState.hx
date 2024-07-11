@@ -1333,7 +1333,7 @@ class PlayState extends MusicBeatSubState
       currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
     #end
 
-    if (health > Constants.HEALTH_MIN && isInCountdown && mayPauseGame && !justUnpaused)
+    if (health >= Constants.HEALTH_MIN && !isPlayerDying && isInCountdown && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
