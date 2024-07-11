@@ -461,7 +461,6 @@ class BaseCharacter extends Bopper
       if (!currentAnimation.startsWith('dance') && !currentAnimation.startsWith('idle') && !isAnimationFinished()) return;
     }
 
-    trace('${characterId}: Actually dancing');
     // Otherwise, fallback to the super dance() method, which handles playing the idle animation.
     super.dance();
   }
