@@ -3,4 +3,4 @@
 
 ## Briefly describe the issue(s) fixed.
 
-## Screenshots/Videos
+## Include any relevant screenshots or videos.
