@@ -1,5 +1,5 @@
 name: Enhancement
-description: Suggest a new feature
+description: Suggest a new feature.
 labels: ["type: enhancement", "status: pending triage"]
 title: "Enhancement: "
 body:
