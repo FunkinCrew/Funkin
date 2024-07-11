@@ -28,13 +28,13 @@ The full credits can be found in-game, or wherever the credits.json file is.
 - [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
 - [Jenny Crowe](https://twitter.com/JennyCrowe) - Additional Programming
 - [hazel](https://twitter.com/hazel) - Additional Programming, Devops and Additional Internal Tooling
-- [Mike Welsh](https://twitter.com/Saharan) - Additional Programming
-- [Saharan](https://twitter.com/hazel) - Additional Programming
+- [Mike Welsh](https://twitter.com/MikeWelsh) - Additional Programming
+- [Saharan](https://twitter.com/Saharan) - Additional Programming
 - [Ian Harrigan](https://twitter.com/IanHarrigan) - Additional Programming
 - [Osaka Red LLC: Thomas J Webb](https://twitter.com/ThomasJWebb) - Additional Programming
 - [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
 - [Will Blanton](https://twitter.com/WillBlanton) - Additional Programming
-- [Cheemsandfriends](https://twitter.com/IanHarrigan) - FlxAnimate
+- [Cheemsandfriends](https://twitter.com/Cheemsandfriends) - FlxAnimate
 - Our contributors on GitHub
 
 ## Art / Animation / UI
