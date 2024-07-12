@@ -12,7 +12,7 @@
 - [Ian Harrigan](https://twitter.com/ianharrigan1982) - Additional Programming
 - [Osaka Red LLC: Thomas J Webb](https://haxe.social/@tjw) - Additional Programming
 - [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
-- [Will Blanton](https://twitter.com/WillBlanton) - Additional Programming
+- [Will Blanton](https://twitter.com/x01010111) - Additional Programming
 - [Cheemsandfriends](https://twitter.com/Cheemsandfriends) - FlxAnimate
 - Our contributors on GitHub
 
