@@ -7,7 +7,7 @@
 - [Jenny Crowe](https://twitter.com/JennyCrowe) - Additional Programming
 - [hazel](https://twitter.com/hazel) - Additional Programming, Devops and Additional Internal Tooling
 - [Mike Welsh](https://tilde.town/~herschel/) - Additional Programming
-- [Saharan](https://twitter.com/Saharan) - Additional Programming
+- [Saharan](https://twitter.com/shr_id) - Additional Programming
 - [Ian Harrigan](https://twitter.com/IanHarrigan) - Additional Programming
 - [Osaka Red LLC: Thomas J Webb](https://twitter.com/ThomasJWebb) - Additional Programming
 - [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
