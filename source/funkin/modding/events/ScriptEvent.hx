@@ -103,7 +103,7 @@ class NoteScriptEvent extends ScriptEvent
   public var comboCount(default, null):Int;
 
   /**
-   * Whether to play the record scratch sound (if this eventn type is `NOTE_MISS`).
+   * Whether to play the record scratch sound (if this event type is `NOTE_MISS`).
    */
   public var playSound(default, default):Bool;
 
@@ -223,6 +223,31 @@ class GhostMissNoteScriptEvent extends ScriptEvent
   public override function toString():String
   {
     return 'GhostMissNoteScriptEvent(dir=' + dir + ', hasPossibleNotes=' + hasPossibleNotes + ')';
+  }
+}
+
+class PostGameOverScriptEvent extends ScriptEvent
+{
+
+  /**
+   * Whether to play the game over music.
+   */
+  public var shouldPlayMusic(default, default):Bool;
+
+  /**
+   * How loud the game over music should play (unless it isn't due to shouldPlayMusic being `false`).
+   */
+  public var musicVolume(default, default):Float;
+
+  public function new(shouldPlayMusic:Bool, musicVolume:Float):Void {
+    super(POST_GAME_OVER, true);
+    this.shouldPlayMusic = shouldPlayMusic;
+    this.musicVolume = musicVolume;
+  }
+
+  public override function toString():String
+  {
+    return 'PostGameOverScriptEvent(shouldPlayMusic=' + shouldPlayMusic + ', musicVolume=' + musicVolume + ')';
   }
 }
 

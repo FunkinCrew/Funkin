@@ -874,6 +874,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onGameOver(event:ScriptEvent) {}
 
+  public function onPostGameOver(event:PostGameOverScriptEvent) {}
+
   public function onCountdownStart(event:CountdownScriptEvent) {}
 
   public function onCountdownStep(event:CountdownScriptEvent) {}
