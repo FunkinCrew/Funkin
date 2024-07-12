@@ -7,7 +7,6 @@ import funkin.data.IRegistryEntry;
 import funkin.graphics.FunkinSprite;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.util.assets.FlxAnimationUtil;
 
 using funkin.data.animation.AnimationData.AnimationDataUtil;
@@ -301,6 +300,33 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var data = _data?.assets?.holdNoteCover?.data;
     if (data == null) return fallback.isHoldNoteCoverEnabled();
     return data.enabled;
+  }
+
+  public function getRatingPath(raw:Bool = false):String
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data.assets.rating.assetPath;
+      if (rawPath == null) return fallback.getRatingPath(true);
+      return rawPath;
+    }
+
+    // library:path
+    var parts = getRatingPath(true).split(Constants.LIBRARY_SEPARATOR);
+    if (parts.length == 1) return getRatingPath(true);
+    return parts[1];
+  }
+
+  public function getRatingScale():Float
+  {
+    return _data.assets.rating.scale;
+  }
+
+  public function isRatingPixel():Bool
+  {
+    var data = _data?.assets?.rating;
+    if (data == null) return fallback.isRatingPixel();
+    return data.isPixel;
   }
 
   public function destroy():Void {}
