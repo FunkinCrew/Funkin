@@ -26,4 +26,4 @@ Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can act
 
 # Credits and Special Thanks
 
-Full credits can be found in-game or in the [CREDITS.md](/docs/CREDITS.md) file.
+Full credits can be found in-game or in the [credits.json](https://github.com/FunkinCrew/funkin.assets/blob/main/exclude/data/credits.json) file or in the [CREDITS.md](/docs/CREDITS.md) file.
