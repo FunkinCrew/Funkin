@@ -125,6 +125,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
 	<haxelib name="hxCodec" if="desktop" unless="hl" /> <!-- Video playback -->
+	<haxelib name="discord_rpc" if="desktop" unless="hl || debug || GITHUB_BUILD" /> <!-- Discord RPC -->
 	<haxelib name="funkin.vis"/>
 	<haxelib name="grig.audio" />
 
