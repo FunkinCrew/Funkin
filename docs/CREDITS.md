@@ -5,7 +5,7 @@
 - [EliteMasterEric](https://twitter.com/EliteMasterEric) - Programmer
 - [fabs](https://twitter.com/fabsthefabs) - Programmer
 - [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
-- [Jenny Crowe](https://twitter.com/JennyCrowe) - Additional Programming
+- [Jenny Crowe](https://twitter.com/jennyminer_biz) - Additional Programming
 - [hazel](https://ravy.org/) - Additional Programming, Devops and Additional Internal Tooling
 - [Mike Welsh](https://tilde.town/~herschel/) - Additional Programming
 - [Saharan](https://twitter.com/shr_id) - Additional Programming
