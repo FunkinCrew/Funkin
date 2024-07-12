@@ -97,7 +97,9 @@ class ChartEditorNoteSprite extends FlxSprite
 
   function fetchNoteStyle(noteStyleId:String):NoteStyle
   {
-    return NoteStyleRegistry.instance.fetchEntry(noteStyleId) ?? NoteStyleRegistry.instance.fetchDefault();
+    var result = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (result != null) return result;
+    return NoteStyleRegistry.instance.fetchDefault();
   }
 
   @:access(funkin.play.notes.notestyle.NoteStyle)
@@ -198,7 +200,12 @@ class ChartEditorNoteSprite extends FlxSprite
 
   function get_noteStyle():Null<String>
   {
-    return this.noteStyle ?? this.parentState.currentSongNoteStyle;
+    if (this.noteStyle == null)
+    {
+      var result = this.parentState.currentSongNoteStyle;
+      return result;
+    }
+    return this.noteStyle;
   }
 
   function set_noteStyle(value:Null<String>):Null<String>
@@ -218,6 +225,7 @@ class ChartEditorNoteSprite extends FlxSprite
 
     // Play the appropriate animation for the type, direction, and skin.
     var dirName:String = overrideData != null ? SongNoteData.buildDirectionName(overrideData) : this.noteData.getDirectionName();
+    var noteStyleSuffix:String = this.noteStyle?.toTitleCase() ?? Constants.DEFAULT_NOTE_STYLE.toTitleCase();
     var animationName:String = '${baseAnimationName}${dirName}${this.noteStyle.toTitleCase()}';
 
     this.animation.play(animationName);

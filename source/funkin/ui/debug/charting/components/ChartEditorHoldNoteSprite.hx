@@ -53,7 +53,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   @:nullSafety(Off)
   function updateHoldNoteGraphic():Void
   {
-    var bruhStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle);
+    var bruhStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyle);
+    if (bruhStyle == null) bruhStyle = NoteStyleRegistry.instance.fetchDefault();
     setupHoldNoteGraphic(bruhStyle);
   }
 
