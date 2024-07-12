@@ -53,7 +53,7 @@ Full credits can be found in-game, or [in the `credits.json` file](https://githu
 ## Music
 - [Kawaisprite](https://twitter.com/kawaisprite) - Lead Musician
 - [Saruky](https://twitter.com/Saruky__) - Musician
-- [SixImpala](https://twitter.com/SixImpala) - Musician
+- [SixImpala](https://twitter.com/siximpalasix) - Musician
 - [Saster](https://twitter,com/sub0ru) - Featured Guest Musician for "Thorns Erect"
 - [nuphory](https://twitter.com/nuphory) - Featured Guest Musician for "Results (Excellent)"
 - [MtH](https://twitter.com/emmnyaa) - Featured Guest Musician for "Breakfast (Week 6 Version)"
