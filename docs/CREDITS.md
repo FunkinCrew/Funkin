@@ -42,5 +42,5 @@
 ## Special Thanks
 - [Tom Fulp](https://twitter.com/tomfulp) - For being a great guy and for Newgrounds
 - [JohnnyUtah](https://twitter.com/JohnnyUtahNG/) - Voice of Tankman
-- [SrPelo](https://twitter.com/SrPelo) - Voice of Spooky Kids
+- [SrPelo](https://twitter.com/_srpelo_) - Voice of Spooky Kids
 - [L0Litsmonica](https://twitter.com/L0Litsmonica) - Voice of Mommy Mearest and Nene
