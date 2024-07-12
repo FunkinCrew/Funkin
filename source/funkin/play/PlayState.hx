@@ -1501,9 +1501,6 @@ class PlayState extends MusicBeatSubState
     if (playerStrumline != null) playerStrumline.onBeatHit();
     if (opponentStrumline != null) opponentStrumline.onBeatHit();
 
-    // Make the characters dance on the beat
-    //danceOnBeat();
-
     return true;
   }
 
@@ -1512,16 +1509,6 @@ class PlayState extends MusicBeatSubState
     performCleanup();
 
     super.destroy();
-  }
-
-  /**
-   * Handles characters dancing to the beat of the current song.
-   *
-   * TODO: Move some of this logic into `Bopper.hx`, or individual character scripts.
-   */
-  function danceOnBeat():Void
-  {
-    if (currentStage == null) return;
   }
 
   /**
