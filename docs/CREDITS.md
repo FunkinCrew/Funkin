@@ -1,5 +1,4 @@
 # Credits and Special Thanks
-Full credits can be found in-game, or wherever the credits.json file is.
 
 ## Programming
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer
