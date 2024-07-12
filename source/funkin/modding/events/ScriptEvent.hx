@@ -226,7 +226,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
   }
 }
 
-class PostGameOverScriptEvent extends ScriptEvent
+class GameOverLoopScriptEvent extends ScriptEvent
 {
 
   /**
@@ -240,14 +240,14 @@ class PostGameOverScriptEvent extends ScriptEvent
   public var musicVolume(default, default):Float;
 
   public function new(shouldPlayMusic:Bool, musicVolume:Float):Void {
-    super(POST_GAME_OVER, true);
+    super(GAME_OVER_LOOP, true);
     this.shouldPlayMusic = shouldPlayMusic;
     this.musicVolume = musicVolume;
   }
 
   public override function toString():String
   {
-    return 'PostGameOverScriptEvent(shouldPlayMusic=' + shouldPlayMusic + ', musicVolume=' + musicVolume + ')';
+    return 'GameOverLoopScriptEvent(shouldPlayMusic=' + shouldPlayMusic + ', musicVolume=' + musicVolume + ')';
   }
 }
 

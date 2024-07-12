@@ -286,7 +286,7 @@ class GameOverSubState extends MusicBeatSubState
         // Start music at normal volume once the initial death animation finishes.
         if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
         {
-          var event:PostGameOverScriptEvent = new PostGameOverScriptEvent(true, 1.0);
+          var event:GameOverLoopScriptEvent = new GameOverLoopScriptEvent(true, 1.0);
           dispatchEvent(event);
 
           if (!event.eventCanceled) {

@@ -124,7 +124,7 @@ interface IPlayStateScriptedClass extends INoteScriptedClass
   /**
    * Called as the player enters game over substate, but before the start of music.
    */
-  public function onPostGameOver(event:PostGameOverScriptEvent):Void;
+  public function onGameOverLoop(event:GameOverLoopScriptEvent):Void;
 
   /**
    * Called when the player restarts the song, either via pause menu or restarting after a game over.
