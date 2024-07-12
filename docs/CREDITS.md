@@ -9,7 +9,7 @@
 - [hazel](https://ravy.org/) - Additional Programming, Devops and Additional Internal Tooling
 - [Mike Welsh](https://tilde.town/~herschel/) - Additional Programming
 - [Saharan](https://twitter.com/shr_id) - Additional Programming
-- [Ian Harrigan](https://twitter.com/IanHarrigan) - Additional Programming
+- [Ian Harrigan](https://twitter.com/ianharrigan1982) - Additional Programming
 - [Osaka Red LLC: Thomas J Webb](https://haxe.social/@tjw) - Additional Programming
 - [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
 - [Will Blanton](https://twitter.com/WillBlanton) - Additional Programming
