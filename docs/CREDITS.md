@@ -24,7 +24,7 @@
 - [Figburn](https://twitter.com/Figburn) - Cutscene Animation
 - [Sade](https://twitter.com/sadewoo0) - Cutscene Animation
 - [Topium](https://twitter.com/topium_) - Cutscene Animation
-- [BlairTheUnseriousGuy](https://twitter.com/BlairTheUnseriousGuy) - Cutscene Animation
+- [BlairTheUnseriousGuy](https://twitter.com/unseriousguy) - Cutscene Animation
 - [PennilessRagamuffin](https://twitter.com/matchragamuffin) - Cutscene Animation
 - [Moawling](https://twitter.com/moawko) - Week 6 Pixel Art
 - [IvanAlmighty](https://twitter.com/IvanA1mighty) - Misc UI Design, Voice of Darnell
