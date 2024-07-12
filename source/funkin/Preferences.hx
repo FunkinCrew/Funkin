@@ -1,12 +1,70 @@
 package funkin;
 
+import haxe.ds.StringMap;
 import funkin.save.Save;
+
+/**
+ * An abstract class which behaves as a StringMap, caching all getters of options,
+ * while also providing a more versitile way of modders adding their own preference setters and getters,
+ * without requiring arbritrary Save instance calls or even null checking those instance calls.
+ *
+ * The reason for caching all the preferences into a StringMap, rather than just calling straight to Save data,
+ * is the use of the Reflect API. This caching aims to keep it's use of Reflection to a minimum.
+ */
+abstract PreferenceMap(StringMap<Any>)
+{
+  public function new()
+  {
+    this = new StringMap<Any>();
+  }
+
+  /**
+   * An operator overloading function, which returns either a cached instance of the current preference,
+   * or a Save instance call.
+   * @param key Alias for `key` in `StringMap#get(key)`.
+   * @return Any
+   */
+  @:op(a.b)
+  inline function fieldReadOverload(key:String):Any
+  {
+    // Previously, I did null condition the Save instance, but the getter for instance already does the null checking.
+    if (!this.exists(key)) this.set(key, Reflect.field(Save.instance.options, key));
+    return this.get(key);
+  }
+
+  /**
+   * An operator overloading function, which sets not only the Save data for the preference
+   * but also sets itself into this, as to not conflict with the getter.
+   * @param key Alias for `key` in `StringMap#set(key, value)`.
+   * @param value Alias for `value` in `StringMap#set(key, value)`.
+   * @return Any
+   */
+  @:op(a.b)
+  inline function fieldWriteOverload(key:String, value:Any):Any
+  {
+    Reflect.setField(Save.instance.options, key, value);
+    Save.instance.flush();
+    this.set(key, value);
+    return value;
+  }
+}
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
  */
 class Preferences
 {
+  static final PREFERENCE_MAP:PreferenceMap = new PreferenceMap();
+
+  /**
+   * Gets a abstracted StringMap, which acts as a wrapper for getting and setting Save option data.
+   * @return PreferenceMap
+   */
+  public static function get():PreferenceMap
+  {
+    return PREFERENCE_MAP;
+  }
+
   /**
    * Whether some particularly fowl language is displayed.
    * @default `true`
@@ -15,15 +73,12 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
-    return Save?.instance?.options?.naughtyness;
+    return get().naughtyness;
   }
 
   static function set_naughtyness(value:Bool):Bool
   {
-    var save:Save = Save.instance;
-    save.options.naughtyness = value;
-    save.flush();
-    return value;
+    return get().naughtyness = value;
   }
 
   /**
@@ -34,15 +89,12 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll;
+    return get().downscroll;
   }
 
   static function set_downscroll(value:Bool):Bool
   {
-    var save:Save = Save.instance;
-    save.options.downscroll = value;
-    save.flush();
-    return value;
+    return get().downscroll = value;
   }
 
   /**
@@ -53,15 +105,12 @@ class Preferences
 
   static function get_flashingLights():Bool
   {
-    return Save?.instance?.options?.flashingLights ?? true;
+    return get().flashingLights ?? true;
   }
 
   static function set_flashingLights(value:Bool):Bool
   {
-    var save:Save = Save.instance;
-    save.options.flashingLights = value;
-    save.flush();
-    return value;
+    return get().flashingLights = value;
   }
 
   /**
@@ -72,15 +121,12 @@ class Preferences
 
   static function get_zoomCamera():Bool
   {
-    return Save?.instance?.options?.zoomCamera;
+    return get().zoomCamera;
   }
 
   static function set_zoomCamera(value:Bool):Bool
   {
-    var save:Save = Save.instance;
-    save.options.zoomCamera = value;
-    save.flush();
-    return value;
+    return get().zoomCamera = value;
   }
 
   /**
@@ -91,20 +137,16 @@ class Preferences
 
   static function get_debugDisplay():Bool
   {
-    return Save?.instance?.options?.debugDisplay;
+    return get().debugDisplay;
   }
 
   static function set_debugDisplay(value:Bool):Bool
   {
-    if (value != Save.instance.options.debugDisplay)
+    if (value != get().debugDisplay)
     {
       toggleDebugDisplay(value);
     }
-
-    var save = Save.instance;
-    save.options.debugDisplay = value;
-    save.flush();
-    return value;
+    return get().debugDisplay = value;
   }
 
   /**
@@ -115,17 +157,13 @@ class Preferences
 
   static function get_autoPause():Bool
   {
-    return Save?.instance?.options?.autoPause ?? true;
+    return get().autoPause ?? true;
   }
 
   static function set_autoPause(value:Bool):Bool
   {
-    if (value != Save.instance.options.autoPause) FlxG.autoPause = value;
-
-    var save:Save = Save.instance;
-    save.options.autoPause = value;
-    save.flush();
-    return value;
+    if (value != get().autoPause) FlxG.autoPause = value;
+    return get().autoPause = value;
   }
 
   /**
