@@ -9,7 +9,7 @@
 - [Mike Welsh](https://tilde.town/~herschel/) - Additional Programming
 - [Saharan](https://twitter.com/shr_id) - Additional Programming
 - [Ian Harrigan](https://twitter.com/IanHarrigan) - Additional Programming
-- [Osaka Red LLC: Thomas J Webb](https://twitter.com/ThomasJWebb) - Additional Programming
+- [Osaka Red LLC: Thomas J Webb](https://haxe.social/@tjw) - Additional Programming
 - [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
 - [Will Blanton](https://twitter.com/WillBlanton) - Additional Programming
 - [Cheemsandfriends](https://twitter.com/Cheemsandfriends) - FlxAnimate
