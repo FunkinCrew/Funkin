@@ -20,7 +20,7 @@ Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can act
 
 # Credits and Special Thanks
 
-The full credits can be found in-game, or wherever the credits.json file is.
+Full credits can be found in-game, or [in the `credits.json` file](https://github.com/FunkinCrew/funkin.assets/blob/main/exclude/data/credits.json).
 
 ## Programming
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer
