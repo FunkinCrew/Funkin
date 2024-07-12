@@ -12,6 +12,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.util.MathUtil;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
 import funkin.ui.freeplay.FreeplayState;
@@ -450,10 +451,7 @@ class PauseSubState extends MusicBeatSubState
   function changeSelection(change:Int = 0):Void
   {
     var prevEntry:Int = currentEntry;
-    currentEntry += change;
-
-    if (currentEntry < 0) currentEntry = currentMenuEntries.length - 1;
-    if (currentEntry >= currentMenuEntries.length) currentEntry = 0;
+    currentEntry = FlxMath.wrap(currentEntry + change, 0, currentMenuEntries.length - 1);
 
     if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
