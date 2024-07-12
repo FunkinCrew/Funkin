@@ -283,6 +283,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final WELCOME_MUSIC_FADE_IN_DURATION:Float = 10.0;
 
   /**
+   * A map of the keys for every live input style.
+   */
+  public static final LIVE_INPUT_KEYS:Map<ChartEditorLiveInputStyle, Array<FlxKey>> = [
+    NumberKeys => [
+      FIVE, SIX, SEVEN, EIGHT,
+       ONE, TWO, THREE,  FOUR
+    ],
+    WASDKeys => [
+      LEFT, DOWN, UP, RIGHT,
+         A,    S,  W,     D
+    ],
+    None => []
+  ];
+
+  /**
    * INSTANCE DATA
    */
   // ==============================
@@ -5129,46 +5144,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handlePlayhead():Void
   {
     // Place notes at the playhead with the keyboard.
-    switch (currentLiveInputStyle)
+    for (note => key in LIVE_INPUT_KEYS[currentLiveInputStyle])
     {
-      case ChartEditorLiveInputStyle.WASDKeys:
-        if (FlxG.keys.justPressed.A) placeNoteAtPlayhead(4);
-        if (FlxG.keys.justReleased.A) finishPlaceNoteAtPlayhead(4);
-        if (FlxG.keys.justPressed.S) placeNoteAtPlayhead(5);
-        if (FlxG.keys.justReleased.S) finishPlaceNoteAtPlayhead(5);
-        if (FlxG.keys.justPressed.W) placeNoteAtPlayhead(6);
-        if (FlxG.keys.justReleased.W) finishPlaceNoteAtPlayhead(6);
-        if (FlxG.keys.justPressed.D) placeNoteAtPlayhead(7);
-        if (FlxG.keys.justReleased.D) finishPlaceNoteAtPlayhead(7);
-
-        if (FlxG.keys.justPressed.LEFT) placeNoteAtPlayhead(0);
-        if (FlxG.keys.justReleased.LEFT) finishPlaceNoteAtPlayhead(0);
-        if (FlxG.keys.justPressed.DOWN) placeNoteAtPlayhead(1);
-        if (FlxG.keys.justReleased.DOWN) finishPlaceNoteAtPlayhead(1);
-        if (FlxG.keys.justPressed.UP) placeNoteAtPlayhead(2);
-        if (FlxG.keys.justReleased.UP) finishPlaceNoteAtPlayhead(2);
-        if (FlxG.keys.justPressed.RIGHT) placeNoteAtPlayhead(3);
-        if (FlxG.keys.justReleased.RIGHT) finishPlaceNoteAtPlayhead(3);
-      case ChartEditorLiveInputStyle.NumberKeys:
-        // Flipped because Dad is on the left but represents data 0-3.
-        if (FlxG.keys.justPressed.ONE) placeNoteAtPlayhead(4);
-        if (FlxG.keys.justReleased.ONE) finishPlaceNoteAtPlayhead(4);
-        if (FlxG.keys.justPressed.TWO) placeNoteAtPlayhead(5);
-        if (FlxG.keys.justReleased.TWO) finishPlaceNoteAtPlayhead(5);
-        if (FlxG.keys.justPressed.THREE) placeNoteAtPlayhead(6);
-        if (FlxG.keys.justReleased.THREE) finishPlaceNoteAtPlayhead(6);
-        if (FlxG.keys.justPressed.FOUR) placeNoteAtPlayhead(7);
-        if (FlxG.keys.justReleased.FOUR) finishPlaceNoteAtPlayhead(7);
-
-        if (FlxG.keys.justPressed.FIVE) placeNoteAtPlayhead(0);
-        if (FlxG.keys.justReleased.FIVE) finishPlaceNoteAtPlayhead(0);
-        if (FlxG.keys.justPressed.SIX) placeNoteAtPlayhead(1);
-        if (FlxG.keys.justPressed.SEVEN) placeNoteAtPlayhead(2);
-        if (FlxG.keys.justReleased.SEVEN) finishPlaceNoteAtPlayhead(2);
-        if (FlxG.keys.justPressed.EIGHT) placeNoteAtPlayhead(3);
-        if (FlxG.keys.justReleased.EIGHT) finishPlaceNoteAtPlayhead(3);
-      case ChartEditorLiveInputStyle.None:
-        // Do nothing.
+      if (FlxG.keys.checkStatus(key, JUST_PRESSED)) placeNoteAtPlayhead(note)
+      else if (FlxG.keys.checkStatus(key, JUST_RELEASED)) finishPlaceNoteAtPlayhead(note);
     }
 
     // Place events at playhead.
