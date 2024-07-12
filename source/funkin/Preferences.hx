@@ -8,6 +8,63 @@ import funkin.save.Save;
 class Preferences
 {
   /**
+   * The sound that plays when a note is hit
+   * @default `"none"`
+   */
+  public static var noteHitSound(get, set):String;
+
+  static function get_noteHitSound():String
+  {
+    return Save?.instance?.options?.noteHitSound;
+  }
+
+  static function set_noteHitSound(value:String):String
+  {
+    var save:Save = Save.instance;
+    save.options.noteHitSound = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * The volume of the click sound that can play when a note is hit
+   * @default `100`
+   */
+  public static var noteHitSoundVolume(get, set):Int;
+
+  static function get_noteHitSoundVolume():Int
+  {
+    return Save?.instance?.options?.noteHitSoundVolume;
+  }
+
+  static function set_noteHitSoundVolume(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.noteHitSoundVolume = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * Whenever to display a splash animation when perfectly hitting a note
+   * @default `true`
+   */
+  public static var noteSplash(get, set):Bool;
+
+  static function get_noteSplash():Bool
+  {
+    return Save?.instance?.options?.noteSplash;
+  }
+
+  static function set_noteSplash(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.noteSplash = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * Whether some particularly fowl language is displayed.
    * @default `true`
    */
