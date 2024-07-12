@@ -195,11 +195,11 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry = lookupNoteKind('~CUSTOM');
+    var returnValue:DropDownEntry = lookupNoteKind('');
 
     for (noteKindId in NOTE_KINDS.keys())
     {
-      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Default';
+      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Unknown';
 
       var value:DropDownEntry = {id: noteKindId, text: noteKind};
       if (startingKindId == noteKindId) returnValue = value;
@@ -216,7 +216,7 @@ class ChartEditorDropdowns
   {
     if (noteKindId == null) return lookupNoteKind('');
     if (!NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
-    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Default'};
+    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Unknown'};
   }
 
   /**

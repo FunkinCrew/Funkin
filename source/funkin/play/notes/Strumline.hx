@@ -717,6 +717,7 @@ class Strumline extends FlxSpriteGroup
 
       noteSprite.x = this.x;
       noteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
+      noteSprite.x -= (noteSprite.width - Strumline.STRUMLINE_SIZE) / 2; // Center it
       noteSprite.x -= NUDGE;
       // noteSprite.x += INITIAL_OFFSET;
       noteSprite.y = -9999;

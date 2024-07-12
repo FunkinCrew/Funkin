@@ -91,7 +91,7 @@ class NoteSprite extends FunkinSprite
   {
     if (frames == null) return value;
 
-    animation.play(DIRECTION_COLORS[value] + 'Scroll');
+    playNoteAnimation(value);
 
     this.direction = value;
     return this.direction;
@@ -152,9 +152,6 @@ class NoteSprite extends FunkinSprite
     this.hsvShader = new HSVShader();
 
     setupNoteGraphic(noteStyle);
-
-    // Disables the update() function for performance.
-    this.active = false;
   }
 
   /**
@@ -165,10 +162,10 @@ class NoteSprite extends FunkinSprite
   {
     noteStyle.buildNoteSprite(this);
 
-    setGraphicSize(Strumline.STRUMLINE_SIZE);
-    updateHitbox();
-
     this.shader = hsvShader;
+
+    // `false` disables the update() function for performance.
+    this.active = noteStyle.isNoteAnimated();
   }
 
   /**
@@ -210,6 +207,11 @@ class NoteSprite extends FunkinSprite
     endDrawDebug(camera);
   }
   #end
+
+  function playNoteAnimation(value:Int):Void
+  {
+    animation.play(DIRECTION_COLORS[value] + 'Scroll');
+  }
 
   public function desaturate():Void
   {

@@ -283,7 +283,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       return;
     }
 
-    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, toolboxNotesGrid.height + HEIGHT_OFFSET)) + MINIMIZE_FIX;
+    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, (toolboxNotesGrid?.height ?? 50) + HEIGHT_OFFSET)) + MINIMIZE_FIX;
     if (this.height != heightToSet)
     {
       this.height = heightToSet;

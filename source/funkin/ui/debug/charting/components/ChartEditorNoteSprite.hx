@@ -107,6 +107,12 @@ class ChartEditorNoteSprite extends FlxSprite
     var prefix:String = noteStyle.id.toTitleCase();
 
     var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary());
+    if (frameCollection == null)
+    {
+      trace('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
+      FlxG.log.error('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
+      return;
+    }
     for (frame in frameCollection.frames)
     {
       // cloning the frame because else
@@ -221,9 +227,9 @@ class ChartEditorNoteSprite extends FlxSprite
     switch (baseAnimationName)
     {
       case 'tap':
-        this.setGraphicSize(0, ChartEditorState.GRID_SIZE);
+        this.setGraphicSize(ChartEditorState.GRID_SIZE, 0);
+        this.updateHitbox();
     }
-    this.updateHitbox();
 
     var bruhStyle:NoteStyle = fetchNoteStyle(this.noteStyle);
     this.antialiasing = !bruhStyle._data?.assets?.note?.isPixel ?? true;
