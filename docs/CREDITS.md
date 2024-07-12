@@ -6,7 +6,7 @@
 - [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
 - [Jenny Crowe](https://twitter.com/JennyCrowe) - Additional Programming
 - [hazel](https://twitter.com/hazel) - Additional Programming, Devops and Additional Internal Tooling
-- [Mike Welsh](https://twitter.com/MikeWelsh) - Additional Programming
+- [Mike Welsh](https://tilde.town/~herschel/) - Additional Programming
 - [Saharan](https://twitter.com/Saharan) - Additional Programming
 - [Ian Harrigan](https://twitter.com/IanHarrigan) - Additional Programming
 - [Osaka Red LLC: Thomas J Webb](https://twitter.com/ThomasJWebb) - Additional Programming
