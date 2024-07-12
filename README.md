@@ -6,10 +6,10 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 
 - [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
 - [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
-- [Visit our blog website!](https://funkin.me)
-- Check out our Social Media pages linked below to stay updated with game progress!
 
-# Social Media Pages
+# Blog and Social Media
+Check out these links for progress updates and other cool stuff!
+- [The Funkin' Crew Dev Blog](https://funkin.me)
 - [YouTube](https://youtube.com/@FNF_Developers)
 - [Twitter / X](https://x.com/@FNF_Developers)
 - [TikTok](https://tiktok.com/@fnf_developers)
