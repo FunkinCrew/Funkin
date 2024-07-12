@@ -24,7 +24,7 @@
 	<haxelib name="haxeui-flixel" /> <!-- Integrate HaxeUI with Flixel -->
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
-	<haxelib name="hxCodec" /> <!-- Video playback -->
+	<haxelib name="hxvlc" /> <!-- Video playback -->
 	<haxelib name="thx.semver" /> <!-- Semantic version handling -->
 	<haxelib name="json2object" /> <!-- JSON parsing -->
 

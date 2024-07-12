@@ -3,8 +3,8 @@ package funkin.ui.title;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
-#if hxCodec
-import hxcodec.flixel.FlxVideoSprite;
+#if hxvlc
+import hxvlc.flixel.FlxVideoSprite;
 #end
 import funkin.ui.MusicBeatState;
 
@@ -17,7 +17,13 @@ import funkin.ui.MusicBeatState;
  */
 class AttractState extends MusicBeatState
 {
+  #if html5
   static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('toyCommercial'));
+  #end
+
+  #if hxvlc
+  static final ATTRACT_VIDEO_PATH:String = Paths.videos('toyCommercial');
+  #end
 
   public override function create():Void
   {
@@ -33,7 +39,7 @@ class AttractState extends MusicBeatState
     playVideoHTML5(ATTRACT_VIDEO_PATH);
     #end
 
-    #if hxCodec
+    #if hxvlc
     trace('Playing native video ${ATTRACT_VIDEO_PATH}');
     playVideoNative(ATTRACT_VIDEO_PATH);
     #end
@@ -61,7 +67,7 @@ class AttractState extends MusicBeatState
   }
   #end
 
-  #if hxCodec
+  #if hxvlc
   var vid:FlxVideoSprite;
 
   function playVideoNative(filePath:String):Void
@@ -73,9 +79,10 @@ class AttractState extends MusicBeatState
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(onAttractEnd);
-
       add(vid);
-      vid.play(filePath, false);
+
+      if (vid.load(openfl.Assets.getBytes(filePath)))
+        vid.play();
     }
     else
     {
@@ -108,7 +115,7 @@ class AttractState extends MusicBeatState
     }
     #end
 
-    #if hxCodec
+    #if hxvlc
     if (vid != null)
     {
       vid.stop();
@@ -116,7 +123,7 @@ class AttractState extends MusicBeatState
     }
     #end
 
-    #if (html5 || hxCodec)
+    #if (html5 || hxvlc)
     vid.destroy();
     vid = null;
     #end
