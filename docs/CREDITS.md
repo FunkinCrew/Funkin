@@ -23,7 +23,7 @@
 - [Red Minus](https://twitter.com/RedMinus) - Additional Background Design
 - [Figburn](https://twitter.com/Figburn) - Cutscene Animation
 - [Sade](https://twitter.com/sadewoo0) - Cutscene Animation
-- [Topium](https://twitter.com/Topium) - Cutscene Animation
+- [Topium](https://twitter.com/topium_) - Cutscene Animation
 - [BlairTheUnseriousGuy](https://twitter.com/BlairTheUnseriousGuy) - Cutscene Animation
 - [PennilessRagamuffin](https://twitter.com/PennilessRagamuffin) - Cutscene Animation
 - [Moawling](https://twitter.com/moawko) - Week 6 Pixel Art
