@@ -23,15 +23,10 @@
     },
     {
       "name": "flixel-text-input",
-      "type": "haxelib",
-      "version": "1.1.0"
-    },
-    {
-      "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "d0afed7293c71ffdb1184751317fc709b44c9056",
-      "url": "https://github.com/HaxeFlixel/flixel-ui"
+      "ref": "951a0103a17bfa55eed86703ce50b4fb0d7590bc",
+      "url": "https://github.com/Starmapo/flixel-text-input"
     },
     {
       "name": "flxanimate",
