@@ -3,6 +3,7 @@
 ## Programming
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer
 - [EliteMasterEric](https://twitter.com/EliteMasterEric) - Programmer
+- [fabs](https://twitter.com/fabsthefabs) - Programmer
 - [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
 - [Jenny Crowe](https://twitter.com/JennyCrowe) - Additional Programming
 - [hazel](https://ravy.org/) - Additional Programming, Devops and Additional Internal Tooling
