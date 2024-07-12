@@ -78,9 +78,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     // Emergency exit button.
     if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
-
-    // This can now be used in EVERY STATE YAY!
-    if (FlxG.keys.justPressed.F5) debug_refreshModules();
   }
 
   override function update(elapsed:Float)
@@ -114,11 +111,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     ModuleHandler.callEvent(event);
   }
 
-  function debug_refreshModules()
+  function reloadAssets()
   {
     PolymodHandler.forceReloadAssets();
-
-    this.destroy();
 
     // Create a new instance of the current state, so old data is cleared.
     FlxG.resetState();
