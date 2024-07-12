@@ -1,0 +1,15 @@
+name: Enhancement
+description: Suggest a new feature.
+labels: ["type: enhancement", "status: pending triage"]
+title: "Enhancement: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      options:
+        - label: I have properly named the enhancement
+        - label: I have checked the issues/discussions pages to see if the enhancement has been previously suggested
+
+  - type: textarea
+    attributes:
+      label: What is your suggestion, and why should it be implemented?

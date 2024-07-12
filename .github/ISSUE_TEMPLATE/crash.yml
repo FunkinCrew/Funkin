@@ -1,0 +1,70 @@
+name: Crash Report
+description: Report a crash that occurred while playing the game.
+labels: ["type: major bug", "status: pending triage"]
+title: "Crash Report: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      options:
+        - label: I have properly named the issue
+        - label: I have checked the issues/discussions pages to see if the issue has been previously reported
+
+  - type: dropdown
+    attributes:
+      label: What platform are you using?
+      options:
+        - Newgrounds (Web)
+        - Itch.io (Web)
+        - Itch.io (Downloadable Build) - Windows
+        - Itch.io (Downloadable Build) - MacOS
+        - Itch.io (Downloadable Build) - Linux
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: If you are playing on a browser, which one are you using?
+      options:
+        - Google Chrome
+        - Microsoft Edge
+        - Firefox
+        - Opera
+        - Safari
+        - Other (Specify below)
+
+  - type: input
+    attributes:
+      label: Version
+      description: What version are you using?
+      placeholder: ex. 0.4.1
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "## Describe your issue."
+
+  - type: markdown
+    attributes:
+      value: "### Please do not report issues from other engines. These must be reported in their respective repositories."
+
+  - type: markdown
+    attributes:
+      value: "#### Provide as many details as you can."
+
+  - type: textarea
+    attributes:
+      label: Context (Provide screenshots or videos of the crash happening)
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Crash logs (can be found in the logs folder where Funkin.exe is)
+    validations:
+      required: true
