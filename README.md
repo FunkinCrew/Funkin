@@ -11,7 +11,7 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 
 # Social Media Pages
 - [YouTube](https://youtube.com/@FNF_Developers)
--  [Twitter / X](https://x.com/@FNF_Developers)
+- [Twitter / X](https://x.com/@FNF_Developers)
 - [TikTok](https://tiktok.com/@fnf_developers)
 
 # Getting Started
