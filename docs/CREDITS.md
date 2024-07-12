@@ -19,7 +19,7 @@
 ## Art / Animation / UI
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) - Artist and Animator
 - [Evilsk8r](https://twitter.com/evilsk8r) - Art
-- [beck](https://twitter.com/beck) - Art, Cutscene Cleanup, Cutscene Background Art
+- [beck](https://twitter.com/?????) - Art, Cutscene Cleanup, Cutscene Background Art, Merch Design
 - [Red Minus](https://twitter.com/RedMinus) - Additional Background Design
 - [Figburn](https://twitter.com/Figburn) - Cutscene Animation
 - [Sade](https://twitter.com/sadewoo0) - Cutscene Animation
