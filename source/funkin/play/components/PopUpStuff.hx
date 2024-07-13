@@ -8,25 +8,51 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import funkin.util.TimerUtil;
 import funkin.util.EaseUtil;
+import openfl.utils.Assets;
 
 class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 {
   public var offsets:Array<Int> = [0, 0];
+
+  /**
+   * Which alternate graphic on popup to use.
+   * You can set this via script.
+   * For example, in Week 6 it is `-pixel`.
+   */
+  public static var graphicSuffix:String = '';
 
   override public function new()
   {
     super();
   }
 
-  public function displayRating(daRating:String):Void
+  static function resolveGraphicPath(suffix:String, index:String):Null<String>
+  {
+    var folder:String;
+    if (suffix != '') folder = suffix.substring(0, suffix.indexOf("-")) + suffix.substring(suffix.indexOf("-") + 1);
+    else
+      folder = 'normal';
+    var basePath:String = 'gameplay/popup/$folder/$index';
+    var spritePath:String = basePath + suffix;
+    trace(spritePath);
+    while (!Assets.exists(Paths.image(spritePath)) && suffix.length > 0)
+    {
+      suffix = suffix.split('-').slice(0, -1).join('-');
+      spritePath = basePath + suffix;
+    }
+    if (!Assets.exists(Paths.image(spritePath))) return null;
+    return spritePath;
+  }
+
+  public function displayRating(daRating:String)
   {
     var perfStart:Float = TimerUtil.start();
 
     if (daRating == null) daRating = "good";
 
-    var ratingPath:String = daRating;
+    var ratingPath:String = resolveGraphicPath(graphicSuffix, daRating);
 
-    if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
+    // if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
     var rating:FunkinSprite = FunkinSprite.create(0, 0, ratingPath);
     rating.scrollFactor.set(0.2, 0.2);
@@ -43,7 +69,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     var fadeEase = null;
 
-    if (PlayState.instance.currentStageId.startsWith('school'))
+    if (graphicSuffix.toLowerCase().contains('pixel'))
     {
       rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
       rating.antialiasing = false;
@@ -80,15 +106,8 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     if (combo == null) combo = 0;
 
-    var pixelShitPart1:String = "";
-    var pixelShitPart2:String = '';
-
-    if (PlayState.instance.currentStageId.startsWith('school'))
-    {
-      pixelShitPart1 = 'weeb/pixelUI/';
-      pixelShitPart2 = '-pixel';
-    }
-    var comboSpr:FunkinSprite = FunkinSprite.create(pixelShitPart1 + 'combo' + pixelShitPart2);
+    var comboPath:String = resolveGraphicPath(graphicSuffix, Std.string(combo));
+    var comboSpr:FunkinSprite = FunkinSprite.create(comboPath);
     comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1];
     comboSpr.x = (FlxG.width * 0.507) + offsets[0];
     // comboSpr.x -= FlxG.camera.scroll.x * 0.2;
@@ -101,7 +120,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     var fadeEase = null;
 
-    if (PlayState.instance.currentStageId.startsWith('school'))
+    if (graphicSuffix.toLowerCase().contains('pixel'))
     {
       comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 1));
       comboSpr.antialiasing = false;
@@ -142,9 +161,9 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     var daLoop:Int = 1;
     for (i in seperatedScore)
     {
-      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2);
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, resolveGraphicPath(graphicSuffix, 'num' + Std.int(i)));
 
-      if (PlayState.instance.currentStageId.startsWith('school'))
+      if (graphicSuffix.toLowerCase().contains('pixel'))
       {
         numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 1));
         numScore.antialiasing = false;
@@ -181,5 +200,13 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     trace('displayCombo took: ${TimerUtil.seconds(perfStart)}');
 
     return combo;
+  }
+
+  /**
+   * Reset the popup configuration to the default.
+   */
+  public static function reset()
+  {
+    graphicSuffix = '';
   }
 }
