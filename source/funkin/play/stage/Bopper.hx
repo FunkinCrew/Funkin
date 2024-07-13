@@ -80,11 +80,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
 
-    var xDiff = globalOffsets[0] - value[0];
-    var yDiff = globalOffsets[1] - value[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
     return globalOffsets = value;
   }
 
@@ -315,14 +310,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   function applyAnimationOffsets(name:String):Void
   {
     var offsets = animationOffsets.get(name);
-    if (offsets != null && !(offsets[0] == 0 && offsets[1] == 0))
-    {
-      this.animOffsets = [offsets[0] + globalOffsets[0], offsets[1] + globalOffsets[1]];
-    }
-    else
-    {
-      this.animOffsets = globalOffsets;
-    }
+    this.animOffsets = offsets;
   }
 
   public function isAnimationFinished():Bool
@@ -350,8 +338,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
-    output.x -= animOffsets[0];
-    output.y -= animOffsets[1];
+    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
+    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
     return output;
   }
 
