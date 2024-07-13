@@ -45,8 +45,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var idleSuffix(default, set):String = '';
 
   /**
-   * If this bopper is rendered with pixel art,
-   * disable anti-aliasing and render at 6x scale.
+   * If this bopper is rendered with pixel art, disable anti-aliasing.
+   * @default `false`
    */
   public var isPixel(default, set):Bool = false;
 

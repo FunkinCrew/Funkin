@@ -5,6 +5,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.notekind.ScriptedNoteKind;
 import funkin.play.notes.notekind.NoteKind.NoteKindParam;
 
 class NoteKindManager
