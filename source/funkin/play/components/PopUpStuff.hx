@@ -34,7 +34,6 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
       folder = 'normal';
     var basePath:String = 'gameplay/popup/$folder/$index';
     var spritePath:String = basePath + suffix;
-    trace(spritePath);
     while (!Assets.exists(Paths.image(spritePath)) && suffix.length > 0)
     {
       suffix = suffix.split('-').slice(0, -1).join('-');
