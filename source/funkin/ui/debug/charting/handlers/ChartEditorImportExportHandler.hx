@@ -107,6 +107,8 @@ class ChartEditorImportExportHandler
 
     state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
 
+    state._selectedSongId = songId;
+
     trace('===============END');
   }
 

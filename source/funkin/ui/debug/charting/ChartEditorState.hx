@@ -1473,10 +1473,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   var currentSongId(get, never):String;
+  var _selectedSongId:Null<String> = null;
 
   function get_currentSongId():String
   {
-    return currentSongName.toLowerKebabCase().replace(' ', '-').sanitize();
+    return (_selectedSongId == null ? currentSongName.toLowerKebabCase().replace(' ', '-').sanitize() : _selectedSongId);
   }
 
   var currentSongArtist(get, set):String;
