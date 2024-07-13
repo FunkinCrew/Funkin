@@ -315,6 +315,8 @@ class ChartEditorImportExportHandler
 
     state.switchToCurrentInstrumental();
 
+    state._selectedSongId = songId;
+
     return warnings;
   }
 
