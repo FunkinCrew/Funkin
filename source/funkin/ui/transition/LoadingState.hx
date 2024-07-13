@@ -317,13 +317,20 @@ class LoadingState extends MusicBeatSubState
     FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
-    FunkinSprite.cacheTexture(Paths.image('ready', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('set', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('go', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('sick', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('good', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('bad', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('shit', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/ready', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/set', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/go', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/ready-pixel', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/set-pixel', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/go-pixel', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/normal/sick'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/normal/good'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/normal/bad'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/normal/shit'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/pixel/sick-pixel'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/pixel/good-pixel'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/pixel/bad-pixel'));
+    FunkinSprite.cacheTexture(Paths.image('gameplay/popup/pixel/shit-pixel'));
     FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: remove this
 
     // List all image assets in the level's library.
