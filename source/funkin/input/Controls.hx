@@ -1534,10 +1534,10 @@ enum Control
   NOTE_UP;
   NOTE_RIGHT;
   // UI
-  UI_UP;
   UI_LEFT;
-  UI_RIGHT;
   UI_DOWN;
+  UI_UP;
+  UI_RIGHT;
   RESET;
   ACCEPT;
   BACK;
