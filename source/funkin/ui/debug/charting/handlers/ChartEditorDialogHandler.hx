@@ -262,6 +262,7 @@ class ChartEditorDialogHandler
               state.currentWorkingFilePath = null; // Built from parts, so no .fnfc to save to.
               state.switchToCurrentInstrumental();
               state.postLoadInstrumental();
+              state._selectedSongId = null; // No existing song ID available.
             }
           }
           else
@@ -303,6 +304,7 @@ class ChartEditorDialogHandler
               state.currentWorkingFilePath = null; // New file, so no path.
               state.switchToCurrentInstrumental();
               state.postLoadInstrumental();
+              state._selectedSongId = null; // No existing song ID available.
             }
           }
           else
@@ -342,6 +344,7 @@ class ChartEditorDialogHandler
               state.currentWorkingFilePath = null; // New file, so no path.
               state.switchToCurrentInstrumental();
               state.postLoadInstrumental();
+              state._selectedSongId = null; // No existing song ID available.
             }
           }
           else
@@ -381,6 +384,7 @@ class ChartEditorDialogHandler
               state.currentWorkingFilePath = null; // New file, so no path.
               state.switchToCurrentInstrumental();
               state.postLoadInstrumental();
+              state._selectedSongId = null; // No existing song ID available.
             }
           }
           else
@@ -440,6 +444,7 @@ class ChartEditorDialogHandler
                         state.currentWorkingFilePath = null; // New file, so no path.
                         state.switchToCurrentInstrumental();
                         state.postLoadInstrumental();
+                        state._selectedSongId = null; // No existing song ID available.
                       }
                     }
                     else
@@ -808,8 +813,11 @@ class ChartEditorDialogHandler
         }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
         #if FILE_DROP_SUPPORTED
-        state.addDropHandler({component: songVariationMetadataEntry, handler: onDropFileMetadataVariation.bind(variation)
-          .bind(songVariationMetadataEntryLabel)});
+        state.addDropHandler(
+          {
+            component: songVariationMetadataEntry,
+            handler: onDropFileMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel)
+          });
         #end
         chartContainerB.addComponent(songVariationMetadataEntry);
 
