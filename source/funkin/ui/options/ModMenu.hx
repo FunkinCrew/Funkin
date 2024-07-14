@@ -160,9 +160,7 @@ class ModMenuItem extends FlxText
   {
     if (modEnabled) {
       alpha = 1;
-      grpMods.members[txt].color = FlxColor.WHITE;
     } else {
-      grpMods.members[txt].color = FlxColor.BLACK;
       alpha = 0.5;
     }
     super.update(elapsed);
