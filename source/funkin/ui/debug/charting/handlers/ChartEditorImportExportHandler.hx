@@ -315,7 +315,8 @@ class ChartEditorImportExportHandler
 
     state.switchToCurrentInstrumental();
 
-    state._selectedSongId = songId;
+    // Infer the song ID from the metadata song name to let the user edit the song ID
+    state._selectedSongId = null;
 
     return warnings;
   }
