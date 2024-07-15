@@ -382,11 +382,18 @@ class BaseCharacter extends Bopper
     // and Darnell (this keeps the flame on his lighter flickering).
     // Works for idle, singLEFT/RIGHT/UP/DOWN, alt singing animations, and anything else really.
 
-    if (!getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)
-      && hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)
-      && isAnimationFinished())
+    if (isAnimationFinished()
+      && !getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)
+      && hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX))
     {
       playAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX);
+    }
+    else
+    {
+      if (isAnimationFinished())
+      {
+        trace('Not playing hold (${getCurrentAnimation()}) (${isAnimationFinished()}, ${getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)}, ${hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)})');
+      }
     }
 
     // Handle character note hold time.
@@ -427,7 +434,7 @@ class BaseCharacter extends Bopper
         else
         {
           // Play the idle animation.
-          trace('${characterId}: attempting dance');
+          // trace('${characterId}: attempting dance');
           dance(true);
         }
       }
@@ -638,6 +645,7 @@ class BaseCharacter extends Bopper
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
     // restart even if already playing, because the character might sing the same note twice.
+    trace('Playing ${anim}...');
     playAnimation(anim, true);
   }
 
