@@ -60,7 +60,7 @@ class MultiSparrowCharacter extends BaseCharacter
       }
     }
 
-    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath, 'shared');
+    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath);
 
     if (texture == null)
     {
@@ -74,7 +74,7 @@ class MultiSparrowCharacter extends BaseCharacter
 
     for (asset in assetList)
     {
-      var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset, 'shared');
+      var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset);
       // If we don't do this, the unused textures will be removed as soon as they're loaded.
 
       if (subTexture == null)
