@@ -228,8 +228,8 @@ class Countdown
     var countdownSprite:FunkinSprite = FunkinSprite.create(spritePath);
     countdownSprite.scrollFactor.set(0, 0);
 
-    if (isGraphicPixel) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE));
-    else countdownSprite.setGraphicSize(Std.int(countdownSprite.width * 0.7));
+    if (isGraphicPixel) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE * 1.1));
+    else countdownSprite.setGraphicSize(Std.int(countdownSprite.width * 0.8));
 
     countdownSprite.antialiasing = !isGraphicPixel;
 
