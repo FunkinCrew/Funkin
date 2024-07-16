@@ -2154,6 +2154,9 @@ class FreeplaySongData
     if (!this.songDifficulties.contains(currentDifficulty) && currentDifficulty != Constants.DEFAULT_DIFFICULTY)
     {
       currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+      // This method gets called again by the setter-method,
+      // so there's no need to continue.
+      return;
     }
 
     var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, null, variations);
