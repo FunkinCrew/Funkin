@@ -9,6 +9,8 @@ import funkin.play.PlayState;
 import funkin.util.TimerUtil;
 import funkin.util.EaseUtil;
 import openfl.utils.Assets;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
 
 class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 {
@@ -16,30 +18,37 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
   /**
    * Which alternate graphic on popup to use.
-   * You can set this via script.
-   * For example, in Week 6 it is `-pixel`.
+   * This is set via the current notestyle.
+   * For example, in Week 6 it is `pixel`.
    */
-  public static var graphicSuffix:String = '';
+  static var noteStyle:NoteStyle;
+
+  static var isPixel:Bool = false;
 
   override public function new()
   {
     super();
+
+    var fetchedNoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(PlayState.instance.currentChart.noteStyle);
+    if (fetchedNoteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    else
+      noteStyle = fetchedNoteStyle;
+    if (noteStyle._data.assets.note.isPixel) isPixel = true;
   }
 
-  static function resolveGraphicPath(suffix:String, index:String):Null<String>
+  static function resolveGraphicPath(noteStyle:NoteStyle, index:String):Null<String>
   {
-    var folder:String;
-    if (suffix != '') folder = suffix.substring(0, suffix.indexOf("-")) + suffix.substring(suffix.indexOf("-") + 1);
-    else
-      folder = 'normal';
-    var basePath:String = 'gameplay/popup/$folder/$index';
-    var spritePath:String = basePath + suffix;
-    while (!Assets.exists(Paths.image(spritePath)) && suffix.length > 0)
+    var basePath:String = 'ui/popup/';
+
+    var spritePath:String = basePath + noteStyle.id + '/$index';
+    // If nothing is found, revert it to default notestyle skin
+    if (!Assets.exists(Paths.image(spritePath)))
     {
-      suffix = suffix.split('-').slice(0, -1).join('-');
-      spritePath = basePath + suffix;
+      if (!isPixel) spritePath = basePath + Constants.DEFAULT_NOTE_STYLE + '/$index';
+      else
+        spritePath = basePath + Constants.DEFAULT_PIXEL_NOTE_STYLE + '/$index';
     }
-    if (!Assets.exists(Paths.image(spritePath))) return null;
+
     return spritePath;
   }
 
@@ -49,7 +58,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     if (daRating == null) daRating = "good";
 
-    var ratingPath:String = resolveGraphicPath(graphicSuffix, daRating);
+    var ratingPath:String = resolveGraphicPath(noteStyle, daRating);
 
     // if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
@@ -68,7 +77,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     var fadeEase = null;
 
-    if (graphicSuffix.toLowerCase().contains('pixel'))
+    if (isPixel)
     {
       rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
       rating.antialiasing = false;
@@ -105,7 +114,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     if (combo == null) combo = 0;
 
-    var comboPath:String = resolveGraphicPath(graphicSuffix, Std.string(combo));
+    var comboPath:String = resolveGraphicPath(noteStyle, 'combo');
     var comboSpr:FunkinSprite = FunkinSprite.create(comboPath);
     comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1];
     comboSpr.x = (FlxG.width * 0.507) + offsets[0];
@@ -160,7 +169,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     var daLoop:Int = 1;
     for (i in seperatedScore)
     {
-      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, resolveGraphicPath(graphicSuffix, 'num' + Std.int(i)));
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, resolveGraphicPath(noteStyle, 'num' + Std.int(i)));
 
       if (graphicSuffix.toLowerCase().contains('pixel'))
       {
@@ -206,6 +215,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
    */
   public static function reset()
   {
-    graphicSuffix = '';
+    noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    isPixel = false;
   }
 }
