@@ -2150,8 +2150,11 @@ class FreeplaySongData
 
   function updateValues(variations:Array<String>):Void
   {
-    this.songDifficulties = song.listSuffixedDifficulties(variations, false, false);
-    if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+    this.songDifficulties = song.listDifficulties(null, variations, false, false);
+    if (!this.songDifficulties.contains(currentDifficulty) && currentDifficulty != Constants.DEFAULT_DIFFICULTY)
+    {
+      currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+    }
 
     var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, null, variations);
     if (songDifficulty == null) return;
