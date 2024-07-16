@@ -259,6 +259,11 @@ class Constants
   public static final DEFAULT_NOTE_STYLE:String = 'funkin';
 
   /**
+   * The default pixel note style for songs.
+   */
+  public static final DEFAULT_PIXEL_NOTE_STYLE:String = 'pixel';
+
+  /**
    * The default album for songs in Freeplay.
    */
   public static final DEFAULT_ALBUM_ID:String = 'volume1';
