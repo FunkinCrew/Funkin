@@ -23,24 +23,41 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
    */
   static var noteStyle:NoteStyle;
 
+  static var fallbackNoteStyle:Null<NoteStyle>;
+
   static var isPixel:Bool = false;
 
   override public function new()
   {
     super();
 
+    fetchNoteStyle();
+  }
+
+  static function fetchNoteStyle():Void
+  {
     var fetchedNoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(PlayState.instance.currentChart.noteStyle);
     if (fetchedNoteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
     else
       noteStyle = fetchedNoteStyle;
-    if (noteStyle._data.assets.note.isPixel) isPixel = true;
+    fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+    isPixel = false;
   }
 
   static function resolveGraphicPath(noteStyle:NoteStyle, index:String):Null<String>
   {
+    fetchNoteStyle();
     var basePath:String = 'ui/popup/';
-
     var spritePath:String = basePath + noteStyle.id + '/$index';
+
+    while (!Assets.exists(Paths.image(spritePath)) && fallbackNoteStyle != null)
+    {
+      noteStyle = fallbackNoteStyle;
+      fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+      spritePath = basePath + noteStyle.id + '/$index';
+    }
+    if (noteStyle.isHoldNotePixel()) isPixel = true;
+
     // If nothing is found, revert it to default notestyle skin
     if (!Assets.exists(Paths.image(spritePath)))
     {

@@ -72,7 +72,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
    * Get the note style ID of the parent note style.
    * @return The string ID, or `null` if there is no parent.
    */
-  function getFallbackID():Null<String>
+  public function getFallbackID():Null<String>
   {
     return _data.fallback;
   }
