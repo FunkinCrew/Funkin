@@ -2963,7 +2963,7 @@ class PlayState extends MusicBeatSubState
               {
                 targetSong: targetSong,
                 targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetVariation: currentVariation,
+                targetVariation: targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty),
                 cameraFollowPoint: cameraFollowPoint.getPosition(),
               });
           });
@@ -2975,7 +2975,7 @@ class PlayState extends MusicBeatSubState
             {
               targetSong: targetSong,
               targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetVariation: currentVariation,
+              targetVariation: targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty),
               cameraFollowPoint: cameraFollowPoint.getPosition(),
             });
         }
