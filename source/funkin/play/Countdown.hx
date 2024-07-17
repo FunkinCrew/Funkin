@@ -28,6 +28,8 @@ class Countdown
    */
   static var noteStyle:NoteStyle;
 
+  static var fallbackNoteStyle:Null<NoteStyle>;
+
   static var isPixel:Bool = false;
 
   /**
@@ -59,10 +61,7 @@ class Countdown
     // @:privateAccess
     // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
-    var fetchedNoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(PlayState.instance.currentChart.noteStyle);
-    if (fetchedNoteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
-    else noteStyle = fetchedNoteStyle;
-    if (noteStyle._data.assets.note.isPixel) isPixel = true;
+    fetchNoteStyle();
 
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
@@ -81,7 +80,7 @@ class Countdown
       // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
-      showCountdownGraphic(countdownStep, noteStyle, isPixel);
+      showCountdownGraphic(countdownStep, noteStyle);
 
       // Countdown sound.
       playCountdownSound(countdownStep, noteStyle);
@@ -201,10 +200,19 @@ class Countdown
     isPixel = false;
   }
 
+  static function fetchNoteStyle():Void
+  {
+    var fetchedNoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(PlayState.instance.currentChart.noteStyle);
+    if (fetchedNoteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    else noteStyle = fetchedNoteStyle;
+    fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+    isPixel = false;
+  }
+
   /**
    * Retrieves the graphic to use for this step of the countdown.
    */
-  public static function showCountdownGraphic(index:CountdownStep, noteStyle:NoteStyle, isGraphicPixel:Bool):Void
+  public static function showCountdownGraphic(index:CountdownStep, noteStyle:NoteStyle):Void
   {
     var indexString:String = null;
     switch (index)
@@ -228,15 +236,15 @@ class Countdown
     var countdownSprite:FunkinSprite = FunkinSprite.create(spritePath);
     countdownSprite.scrollFactor.set(0, 0);
 
-    if (isGraphicPixel) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE * 1.1));
+    if (isPixel) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE * 1.1));
     else countdownSprite.setGraphicSize(Std.int(countdownSprite.width * 0.8));
 
-    countdownSprite.antialiasing = !isGraphicPixel;
+    countdownSprite.antialiasing = !isPixel;
+
+    countdownSprite.cameras = [PlayState.instance.camHUD];
 
     countdownSprite.updateHitbox();
     countdownSprite.screenCenter();
-
-    countdownSprite.cameras = [PlayState.instance.camHUD];
 
     // Fade sprite in, then out, then destroy it.
     FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.instance.beatLengthMs / 1000,
@@ -252,10 +260,18 @@ class Countdown
 
   static function resolveGraphicPath(noteStyle:NoteStyle, index:String):Null<String>
   {
+    fetchNoteStyle();
     var basePath:String = 'ui/countdown/';
-
     var spritePath:String = basePath + noteStyle.id + '/$index';
-    // If nothing is found, revert it to default notestyle skin
+
+    while (!Assets.exists(Paths.image(spritePath)) && fallbackNoteStyle != null) {
+      noteStyle = fallbackNoteStyle;
+      fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+      spritePath = basePath + noteStyle.id + '/$index';
+    }
+    if (noteStyle.isHoldNotePixel()) isPixel = true;
+
+    // If ABSOLUTELY nothing is found, revert it to default notestyle skin
     if (!Assets.exists(Paths.image(spritePath)))
     {
       if (!isPixel) spritePath = basePath + Constants.DEFAULT_NOTE_STYLE + '/$index';
@@ -277,10 +293,19 @@ class Countdown
   static function resolveSoundPath(noteStyle:NoteStyle, step:CountdownStep):Null<String>
   {
     if (step == CountdownStep.BEFORE || step == CountdownStep.AFTER) return null;
+    fetchNoteStyle();
     var basePath:String = 'gameplay/countdown/';
-
     var soundPath:String = basePath + noteStyle.id + '/intro$step';
-    // If nothing is found, revert it to default notestyle sound
+
+    while (!Assets.exists(Paths.sound(soundPath)) && fallbackNoteStyle != null)
+    {
+      noteStyle = fallbackNoteStyle;
+      fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+      soundPath = basePath + noteStyle.id + '/intro$step';
+    }
+    if (noteStyle.isHoldNotePixel()) isPixel = true;
+
+    // If ABSOLUTELY nothing is found, revert it to default notestyle sound
     if (!Assets.exists(Paths.sound(soundPath)))
     {
       if (!isPixel) soundPath = basePath + Constants.DEFAULT_NOTE_STYLE + '/intro$step';
