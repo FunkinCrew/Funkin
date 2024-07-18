@@ -71,8 +71,6 @@ class Countdown
     // @:privateAccess
     // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
-    fetchNoteStyle();
-
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
@@ -90,10 +88,10 @@ class Countdown
       // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
-      showCountdownGraphic(countdownStep, noteStyle);
+      showCountdownGraphic(countdownStep);
 
       // Countdown sound.
-      playCountdownSound(countdownStep, noteStyle);
+      playCountdownSound(countdownStep);
 
       // Event handling bullshit.
       var cancelled:Bool = propagateCountdownEvent(countdownStep);
@@ -223,7 +221,7 @@ class Countdown
   /**
    * Retrieves the graphic to use for this step of the countdown.
    */
-  public static function showCountdownGraphic(index:CountdownStep, noteStyle:NoteStyle):Void
+  public static function showCountdownGraphic(index:CountdownStep):Void
   {
     var indexString:String = null;
     switch (index)
@@ -240,7 +238,7 @@ class Countdown
     if (indexString == null) return;
 
     var spritePath:String = null;
-    spritePath = resolveGraphicPath(noteStyle, indexString);
+    spritePath = resolveGraphicPath(indexString);
 
     if (spritePath == null) return;
 
@@ -259,26 +257,21 @@ class Countdown
     countdownSprite.cameras = [PlayState.instance.camHUD];
 
     countdownSprite.updateHitbox();
-    countdownSprite.screenCenter();
 
     // Fade sprite in, then out, then destroy it.
-    FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100}, Conductor.instance.beatLengthMs / 1000,
+    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000,
       {
-        ease: FlxEase.cubeInOut,
+        ease: fadeEase,
         onComplete: function(twn:FlxTween) {
           countdownSprite.destroy();
         }
       });
 
-    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000,
-      {
-        ease: fadeEase
-      });
-
     PlayState.instance.add(countdownSprite);
+    countdownSprite.screenCenter();
   }
 
-  static function resolveGraphicPath(noteStyle:NoteStyle, index:String):Null<String>
+  static function resolveGraphicPath(index:String):Null<String>
   {
     fetchNoteStyle();
     var basePath:String = 'ui/countdown/';
@@ -307,12 +300,12 @@ class Countdown
   /**
    * Retrieves the sound file to use for this step of the countdown.
    */
-  public static function playCountdownSound(step:CountdownStep, noteStyle:NoteStyle):Void
+  public static function playCountdownSound(step:CountdownStep):Void
   {
-    return FunkinSound.playOnce(Paths.sound(resolveSoundPath(noteStyle, step)), Constants.COUNTDOWN_VOLUME);
+    return FunkinSound.playOnce(Paths.sound(resolveSoundPath(step)), Constants.COUNTDOWN_VOLUME);
   }
 
-  static function resolveSoundPath(noteStyle:NoteStyle, step:CountdownStep):Null<String>
+  static function resolveSoundPath(step:CountdownStep):Null<String>
   {
     if (step == CountdownStep.BEFORE || step == CountdownStep.AFTER) return null;
     fetchNoteStyle();
