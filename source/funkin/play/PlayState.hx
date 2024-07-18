@@ -899,7 +899,7 @@ class PlayState extends MusicBeatSubState
       health = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
-      Countdown.performCountdown(currentStageId.startsWith('school'));
+      Countdown.performCountdown();
 
       needsReset = false;
     }
@@ -1920,7 +1920,7 @@ class PlayState extends MusicBeatSubState
   public function startCountdown():Void
   {
     // If Countdown.performCountdown returns false, then the countdown was canceled by a script.
-    var result:Bool = Countdown.performCountdown(currentStageId.startsWith('school'));
+    var result:Bool = Countdown.performCountdown();
     if (!result) return;
 
     isInCutscene = false;
@@ -3061,6 +3061,8 @@ class PlayState extends MusicBeatSubState
 
     GameOverSubState.reset();
     PauseSubState.reset();
+    Countdown.reset();
+    PopUpStuff.reset();
 
     // Clear the static reference to this state.
     instance = null;

@@ -10,6 +10,9 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import openfl.utils.Assets;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
 
 class Countdown
 {
@@ -17,6 +20,17 @@ class Countdown
    * The current step of the countdown.
    */
   public static var countdownStep(default, null):CountdownStep = BEFORE;
+
+  /**
+   * Which alternate graphic/sound on countdown to use.
+   * This is set via the current notestyle.
+   * For example, in Week 6 it is `pixel`.
+   */
+  static var noteStyle:NoteStyle;
+
+  static var fallbackNoteStyle:Null<NoteStyle>;
+
+  static var isPixel:Bool = false;
 
   /**
    * The currently running countdown. This will be null if there is no countdown running.
@@ -29,7 +43,7 @@ class Countdown
    * This will automatically stop and restart the countdown if it is already running.
    * @returns `false` if the countdown was cancelled by a script.
    */
-  public static function performCountdown(isPixelStyle:Bool):Bool
+  public static function performCountdown():Bool
   {
     countdownStep = BEFORE;
     var cancelled:Bool = propagateCountdownEvent(countdownStep);
@@ -64,10 +78,10 @@ class Countdown
       // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
-      showCountdownGraphic(countdownStep, isPixelStyle);
+      showCountdownGraphic(countdownStep);
 
       // Countdown sound.
-      playCountdownSound(countdownStep, isPixelStyle);
+      playCountdownSound(countdownStep);
 
       // Event handling bullshit.
       var cancelled:Bool = propagateCountdownEvent(countdownStep);
@@ -176,58 +190,61 @@ class Countdown
   }
 
   /**
-   * Retrieves the graphic to use for this step of the countdown.
-   * TODO: Make this less dumb. Unhardcode it? Use modules? Use notestyles?
-   *
-   * This is public so modules can do lol funny shit.
+   * Reset the countdown configuration to the default.
    */
-  public static function showCountdownGraphic(index:CountdownStep, isPixelStyle:Bool):Void
+  public static function reset()
   {
-    var spritePath:String = null;
+    noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    isPixel = false;
+  }
 
-    if (isPixelStyle)
+  static function fetchNoteStyle():Void
+  {
+    var fetchedNoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(PlayState.instance.currentChart.noteStyle);
+    if (fetchedNoteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    else noteStyle = fetchedNoteStyle;
+    fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+    isPixel = false;
+  }
+
+  /**
+   * Retrieves the graphic to use for this step of the countdown.
+   */
+  public static function showCountdownGraphic(index:CountdownStep):Void
+  {
+    var indexString:String = null;
+    switch (index)
     {
-      switch (index)
-      {
-        case TWO:
-          spritePath = 'weeb/pixelUI/ready-pixel';
-        case ONE:
-          spritePath = 'weeb/pixelUI/set-pixel';
-        case GO:
-          spritePath = 'weeb/pixelUI/date-pixel';
-        default:
-          // null
-      }
+      case TWO:
+        indexString = 'ready';
+      case ONE:
+        indexString = 'set';
+      case GO:
+        indexString = 'go';
+      default:
+        // null
     }
-    else
-    {
-      switch (index)
-      {
-        case TWO:
-          spritePath = 'ready';
-        case ONE:
-          spritePath = 'set';
-        case GO:
-          spritePath = 'go';
-        default:
-          // null
-      }
-    }
+    if (indexString == null) return;
+
+    var spritePath:String = null;
+    spritePath = resolveGraphicPath(indexString);
 
     if (spritePath == null) return;
 
     var countdownSprite:FunkinSprite = FunkinSprite.create(spritePath);
     countdownSprite.scrollFactor.set(0, 0);
 
-    if (isPixelStyle) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE));
+    if (isPixel) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE));
+    else countdownSprite.setGraphicSize(Std.int(countdownSprite.width * 0.7));
 
-    countdownSprite.antialiasing = !isPixelStyle;
+    countdownSprite.antialiasing = !isPixel;
+
+    countdownSprite.cameras = [PlayState.instance.camHUD];
 
     countdownSprite.updateHitbox();
-    countdownSprite.screenCenter();
 
     // Fade sprite in, then out, then destroy it.
-    FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.instance.beatLengthMs / 1000,
+    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000,
       {
         ease: FlxEase.cubeInOut,
         onComplete: function(twn:FlxTween) {
@@ -236,54 +253,65 @@ class Countdown
       });
 
     PlayState.instance.add(countdownSprite);
+    countdownSprite.screenCenter();
+  }
+
+  static function resolveGraphicPath(index:String):Null<String>
+  {
+    fetchNoteStyle();
+    var basePath:String = 'ui/countdown/';
+    var spritePath:String = basePath + noteStyle.id + '/$index';
+
+    while (!Assets.exists(Paths.image(spritePath)) && fallbackNoteStyle != null) {
+      noteStyle = fallbackNoteStyle;
+      fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+      spritePath = basePath + noteStyle.id + '/$index';
+    }
+    if (noteStyle.isHoldNotePixel()) isPixel = true;
+
+    // If ABSOLUTELY nothing is found, revert it to default notestyle skin
+    if (!Assets.exists(Paths.image(spritePath)))
+    {
+      if (!isPixel) spritePath = basePath + Constants.DEFAULT_NOTE_STYLE + '/$index';
+      else spritePath = basePath + Constants.DEFAULT_PIXEL_NOTE_STYLE + '/$index';
+    }
+
+    trace('Resolved sprite path: ' + Paths.image(spritePath));
+    return spritePath;
   }
 
   /**
    * Retrieves the sound file to use for this step of the countdown.
-   * TODO: Make this less dumb. Unhardcode it? Use modules? Use notestyles?
-   *
-   * This is public so modules can do lol funny shit.
    */
-  public static function playCountdownSound(index:CountdownStep, isPixelStyle:Bool):Void
+  public static function playCountdownSound(step:CountdownStep):Void
   {
-    var soundPath:String = null;
+    return FunkinSound.playOnce(Paths.sound(resolveSoundPath(step)), Constants.COUNTDOWN_VOLUME);
+  }
 
-    if (isPixelStyle)
+  static function resolveSoundPath(step:CountdownStep):Null<String>
+  {
+    if (step == CountdownStep.BEFORE || step == CountdownStep.AFTER) return null;
+    fetchNoteStyle();
+    var basePath:String = 'gameplay/countdown/';
+    var soundPath:String = basePath + noteStyle.id + '/intro$step';
+
+    while (!Assets.exists(Paths.sound(soundPath)) && fallbackNoteStyle != null)
     {
-      switch (index)
-      {
-        case THREE:
-          soundPath = 'intro3-pixel';
-        case TWO:
-          soundPath = 'intro2-pixel';
-        case ONE:
-          soundPath = 'intro1-pixel';
-        case GO:
-          soundPath = 'introGo-pixel';
-        default:
-          // null
-      }
+      noteStyle = fallbackNoteStyle;
+      fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+      soundPath = basePath + noteStyle.id + '/intro$step';
     }
-    else
+    if (noteStyle.isHoldNotePixel()) isPixel = true;
+
+    // If ABSOLUTELY nothing is found, revert it to default notestyle sound
+    if (!Assets.exists(Paths.sound(soundPath)))
     {
-      switch (index)
-      {
-        case THREE:
-          soundPath = 'intro3';
-        case TWO:
-          soundPath = 'intro2';
-        case ONE:
-          soundPath = 'intro1';
-        case GO:
-          soundPath = 'introGo';
-        default:
-          // null
-      }
+      if (!isPixel) soundPath = basePath + Constants.DEFAULT_NOTE_STYLE + '/intro$step';
+      else soundPath = basePath + Constants.DEFAULT_PIXEL_NOTE_STYLE + '/intro$step';
     }
 
-    if (soundPath == null) return;
-
-    FunkinSound.playOnce(Paths.sound(soundPath), Constants.COUNTDOWN_VOLUME);
+    trace('Resolved sound path: ' + soundPath);
+    return soundPath;
   }
 
   public static function decrement(step:CountdownStep):CountdownStep

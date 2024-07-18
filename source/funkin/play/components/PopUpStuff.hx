@@ -7,14 +7,61 @@ import flixel.util.FlxDirection;
 import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import funkin.util.TimerUtil;
+import openfl.utils.Assets;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
 
 class PopUpStuff extends FlxTypedGroup<FlxSprite>
 {
   public var offsets:Array<Int> = [0, 0];
 
+  /**
+   * Which alternate graphic on popup to use.
+   * This is set via the current notestyle.
+   * For example, in Week 6 it is `pixel`.
+   */
+  static var noteStyle:NoteStyle;
+
+  static var fallbackNoteStyle:Null<NoteStyle>;
+
+  static var isPixel:Bool = false;
+
   override public function new()
   {
     super();
+  }
+
+  static function fetchNoteStyle():Void
+  {
+    var fetchedNoteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(PlayState.instance.currentChart.noteStyle);
+    if (fetchedNoteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    else noteStyle = fetchedNoteStyle;
+    fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+    isPixel = false;
+  }
+
+  static function resolveGraphicPath(index:String):Null<String>
+  {
+    fetchNoteStyle();
+    var basePath:String = 'ui/popup/';
+    var spritePath:String = basePath + noteStyle.id + '/$index';
+
+    while (!Assets.exists(Paths.image(spritePath)) && fallbackNoteStyle != null)
+    {
+      noteStyle = fallbackNoteStyle;
+      fallbackNoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyle.getFallbackID());
+      spritePath = basePath + noteStyle.id + '/$index';
+    }
+    if (noteStyle.isHoldNotePixel()) isPixel = true;
+
+    // If nothing is found, revert it to default notestyle skin
+    if (!Assets.exists(Paths.image(spritePath)))
+    {
+      if (!isPixel) spritePath = basePath + Constants.DEFAULT_NOTE_STYLE + '/$index';
+      else spritePath = basePath + Constants.DEFAULT_PIXEL_NOTE_STYLE + '/$index';
+    }
+
+    return spritePath;
   }
 
   public function displayRating(daRating:String)
@@ -23,9 +70,9 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (daRating == null) daRating = "good";
 
-    var ratingPath:String = daRating;
+    var ratingPath:String = resolveGraphicPath(daRating);
 
-    if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
+    //if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
     var rating:FunkinSprite = FunkinSprite.create(0, 0, ratingPath);
     rating.scrollFactor.set(0.2, 0.2);
@@ -40,7 +87,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     add(rating);
 
-    if (PlayState.instance.currentStageId.startsWith('school'))
+    if (isPixel)
     {
       rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
       rating.antialiasing = false;
@@ -73,15 +120,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (combo == null) combo = 0;
 
-    var pixelShitPart1:String = "";
-    var pixelShitPart2:String = '';
-
-    if (PlayState.instance.currentStageId.startsWith('school'))
-    {
-      pixelShitPart1 = 'weeb/pixelUI/';
-      pixelShitPart2 = '-pixel';
-    }
-    var comboSpr:FunkinSprite = FunkinSprite.create(pixelShitPart1 + 'combo' + pixelShitPart2);
+    var comboPath:String = resolveGraphicPath('combo');
+    var comboSpr:FunkinSprite = FunkinSprite.create(comboPath);
     comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1];
     comboSpr.x = (FlxG.width * 0.507) + offsets[0];
     // comboSpr.x -= FlxG.camera.scroll.x * 0.2;
@@ -92,16 +132,10 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     // add(comboSpr);
 
-    if (PlayState.instance.currentStageId.startsWith('school'))
-    {
-      comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 0.7));
-      comboSpr.antialiasing = false;
-    }
-    else
-    {
-      comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-      comboSpr.antialiasing = true;
-    }
+    if (isPixel) comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 0.7));
+    else comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+
+    comboSpr.antialiasing = !isPixel;
     comboSpr.updateHitbox();
 
     FlxTween.tween(comboSpr, {alpha: 0}, 0.2,
@@ -129,18 +163,12 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     var daLoop:Int = 1;
     for (i in seperatedScore)
     {
-      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2);
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, resolveGraphicPath('num' + Std.int(i)));
 
-      if (PlayState.instance.currentStageId.startsWith('school'))
-      {
-        numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 0.7));
-        numScore.antialiasing = false;
-      }
-      else
-      {
-        numScore.setGraphicSize(Std.int(numScore.width * 0.45));
-        numScore.antialiasing = true;
-      }
+      if (isPixel) numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 0.7));
+      else numScore.setGraphicSize(Std.int(numScore.width * 0.45));
+
+      numScore.antialiasing = !isPixel;
       numScore.updateHitbox();
 
       numScore.x = comboSpr.x - (36 * daLoop) - 65; //- 90;
@@ -165,5 +193,14 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     trace('displayCombo took: ${TimerUtil.seconds(perfStart)}');
 
     return combo;
+  }
+
+  /**
+   * Reset the popup configuration to the default.
+   */
+  public static function reset()
+  {
+    noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    isPixel = false;
   }
 }
