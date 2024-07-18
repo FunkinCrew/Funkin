@@ -24,6 +24,8 @@ import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import flixel.util.FlxColor;
+import funkin.play.character.CharacterData;
+import funkin.play.character.CharacterData.CharacterDataParser;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -527,46 +529,24 @@ class SongMenuItem extends FlxSpriteGroup
    * @param char The character ID used by this song.
    *             If the character has no freeplay icon, a warning will be thrown and nothing will display.
    */
-  public function setCharacter(char:String):Void
+  public function setCharacter(charId:String):Void
   {
-    var charPath:String = "freeplay/icons/";
+    var charData:CharacterData = CharacterDataParser.fetchCharacterData(charId);
+    var charPath:String = CharacterDataParser.getCharacterPixelIcon(charData.freeplayIcon, charId);
 
-    // TODO: Put this in the character metadata where it belongs.
-    // TODO: Also, can use CharacterDataParser.getCharPixelIconAsset()
-    switch (char)
+    if (!openfl.utils.Assets.exists(charPath))
     {
-      case 'monster-christmas':
-        charPath += 'monsterpixel';
-      case 'mom-car':
-        charPath += 'mommypixel';
-      case 'dad':
-        charPath += 'daddypixel';
-      case 'darnell-blazin':
-        charPath += 'darnellpixel';
-      case 'senpai-angry':
-        charPath += 'senpaipixel';
-      default:
-        charPath += '${char}pixel';
-    }
-
-    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
-    {
-      trace('[WARN] Character ${char} has no freeplay icon.');
+      trace('[WARN] Character ${charId} has no freeplay icon.');
       return;
     }
 
-    pixelIcon.loadGraphic(Paths.image(charPath));
-    pixelIcon.scale.x = pixelIcon.scale.y = 2;
+    pixelIcon.loadGraphic(charPath);
+    pixelIcon.scale.x = pixelIcon.scale.y = charData.freeplayIcon.scale ?? 2.0;
 
-    switch (char)
-    {
-      case 'parents-christmas':
-        pixelIcon.origin.x = 140;
-      default:
-        pixelIcon.origin.x = 100;
-    }
-    // pixelIcon.origin.x = capsule.origin.x;
-    // pixelIcon.offset.x -= pixelIcon.origin.x;
+    pixelIcon.origin.x = charData.freeplayIcon.offsets[0] ?? 100.0;
+    pixelIcon.origin.y = charData.freeplayIcon.offsets[1] ?? 0.0;
+
+    pixelIcon.flipX = charData.freeplayIcon.flipX ?? false;
   }
 
   var frameInTicker:Float = 0;

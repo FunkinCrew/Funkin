@@ -283,36 +283,19 @@ class CharacterDataParser
   /**
    * TODO: Hardcode this.
    */
-  public static function getCharPixelIconAsset(char:String):String
+  public static function getCharacterPixelIcon(iconData:Null<FreeplayIconData>, ?charId:String):String
   {
-    var icon:String = char;
+    var basePath:String = 'freeplay/icons/';
+    var icon:String = iconData.name;
 
-    switch (icon)
-    {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
-        icon = "bf";
-      case "monster-christmas":
-        icon = "monster";
-      case "mom" | "mom-car":
-        icon = "mommy";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
-        icon = "pico";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
-        icon = "gf";
-      case "dad":
-        icon = "daddy";
-      case "darnell-blazin":
-        icon = "darnell";
-      case "senpai-angry":
-        icon = "senpai";
-      case "tankman" | "tankman-atlas":
-        icon = "tankmen";
-    }
+    var iconPath:String = Paths.image(basePath + icon);
+    if (Assets.exists(iconPath)) return iconPath;
 
-    var path = Paths.image("freeplay/icons/" + icon + "pixel");
-    if (Assets.exists(path)) return path;
+    // Trying to have a 'pixel' suffix due to how it was handled previously.
+    if (!Assets.exists(iconPath)) return Paths.image(basePath + charId + 'pixel');
 
-    // TODO: Hardcode some additional behavior or a fallback.
+    // TODO: make a pixel icon for 'unknown', so that we can have a fallback!
+    // return Paths.image(basePath + DEFAULT_CHAR_ID.toLowerCase() + 'pixel');
     return null;
   }
 
@@ -393,7 +376,7 @@ class CharacterDataParser
   static final DEFAULT_LOOP:Bool = false;
   static final DEFAULT_NAME:String = 'Untitled Character';
   static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
-  static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
+  static final DEFAULT_FREEPLAYICON_OFFSETS:Array<Float> = [100, 20];
   static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   static final DEFAULT_SCALE:Float = 1;
   static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -483,6 +466,37 @@ class CharacterDataParser
     if (input.healthIcon.offsets == null)
     {
       input.healthIcon.offsets = DEFAULT_OFFSETS;
+    }
+
+    if (input.freeplayIcon == null)
+    {
+      input.freeplayIcon =
+      {
+        name: null,
+        scale: null,
+        flipX: null,
+        offsets: null
+      }
+    }
+
+    if (input.freeplayIcon.name == null)
+    {
+      input.freeplayIcon.name = id;
+    }
+
+    if (input.freeplayIcon.scale == null)
+    {
+      input.freeplayIcon.scale = 2;
+    }
+
+    if (input.freeplayIcon.flipX == null)
+    {
+      input.freeplayIcon.flipX = DEFAULT_FLIPX;
+    }
+
+    if (input.freeplayIcon.offsets == null)
+    {
+      input.freeplayIcon.offsets = DEFAULT_FREEPLAYICON_OFFSETS;
     }
 
     if (input.startingAnimation == null)
@@ -641,6 +655,11 @@ typedef CharacterData =
    */
   var healthIcon:Null<HealthIconData>;
 
+  /**
+   * Optional data about the freeplay icon for the character.
+   */
+  var freeplayIcon:Null<FreeplayIconData>;
+
   var death:Null<DeathData>;
 
   /**
@@ -732,6 +751,34 @@ typedef HealthIconData =
   /**
    * The offset of the health icon, in pixels.
    * @default [0, 25]
+   */
+  var offsets:Null<Array<Float>>;
+}
+
+/**
+ * The JSON data schema used to define the freeplay icon for a character.
+ */
+typedef FreeplayIconData =
+{
+  /**
+   * The name to use for the freeplay icon.
+   * @default The character's ID
+   */
+  var name:Null<String>;
+
+  /**
+   * The scale of the freeplay icon.
+   */
+  var scale:Null<Float>;
+  /**
+   * Whether to flip the freeplay icon horizontally.
+   * @default false
+   */
+
+  var flipX:Null<Bool>;
+  /**
+   * The offset of the freeplay icon, in pixels.
+   * @default [100, 25]
    */
   var offsets:Null<Array<Float>>;
 }

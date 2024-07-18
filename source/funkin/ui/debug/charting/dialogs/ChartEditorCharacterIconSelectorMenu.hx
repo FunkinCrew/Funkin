@@ -95,7 +95,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       }
 
       var LIMIT = 6;
-      charButton.icon = CharacterDataParser.getCharPixelIconAsset(charId);
+      charButton.icon = CharacterDataParser.getCharacterPixelIcon(charData.freeplayIcon);
       charButton.text = charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}';
 
       charButton.onClick = _ -> {
