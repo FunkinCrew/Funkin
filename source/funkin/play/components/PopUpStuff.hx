@@ -29,8 +29,6 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
   override public function new()
   {
     super();
-
-    fetchNoteStyle();
   }
 
   static function fetchNoteStyle():Void
@@ -42,7 +40,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     isPixel = false;
   }
 
-  static function resolveGraphicPath(noteStyle:NoteStyle, index:String):Null<String>
+  static function resolveGraphicPath(index:String):Null<String>
   {
     fetchNoteStyle();
     var basePath:String = 'ui/popup/';
@@ -72,7 +70,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (daRating == null) daRating = "good";
 
-    var ratingPath:String = resolveGraphicPath(noteStyle, daRating);
+    var ratingPath:String = resolveGraphicPath(daRating);
 
     //if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
@@ -122,7 +120,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
     if (combo == null) combo = 0;
 
-    var comboPath:String = resolveGraphicPath(noteStyle, 'combo');
+    var comboPath:String = resolveGraphicPath('combo');
     var comboSpr:FunkinSprite = FunkinSprite.create(comboPath);
     comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1];
     comboSpr.x = (FlxG.width * 0.507) + offsets[0];
@@ -165,7 +163,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
     var daLoop:Int = 1;
     for (i in seperatedScore)
     {
-      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, resolveGraphicPath(noteStyle, 'num' + Std.int(i)));
+      var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y, resolveGraphicPath('num' + Std.int(i)));
 
       if (isPixel) numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 0.7));
       else numScore.setGraphicSize(Std.int(numScore.width * 0.45));
