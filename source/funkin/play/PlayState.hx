@@ -503,7 +503,7 @@ class PlayState extends MusicBeatSubState
   public var camGame:FlxCamera;
 
   /**
-   * The camera which contains, and controls visibility of, a video cutscene.
+   * The camera which contains, and controls visibility of, a video cutscene, dialogue, pause menu and sticker transition.
    */
   public var camCutscene:FlxCamera;
 
@@ -975,7 +975,7 @@ class PlayState extends MusicBeatSubState
 
           FlxTransitionableState.skipNextTransIn = true;
           FlxTransitionableState.skipNextTransOut = true;
-          pauseSubState.camera = camHUD;
+          pauseSubState.camera = camCutscene;
           openSubState(pauseSubState);
           // boyfriendPos.put(); // TODO: Why is this here?
         }
@@ -1348,64 +1348,13 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-   * Removes any references to the current stage, then clears the stage cache,
-   * then reloads all the stages.
-   *
-   * This is useful for when you want to edit a stage without reloading the whole game.
-   * Reloading works on both the JSON and the HXC, if applicable.
-   *
    * Call this by pressing F5 on a debug build.
    */
-  override function debug_refreshModules():Void
+  override function reloadAssets():Void
   {
-    // Prevent further gameplay updates, which will try to reference dead objects.
-    criticalFailure = true;
-
-    // Remove the current stage. If the stage gets deleted while it's still in use,
-    // it'll probably crash the game or something.
-    if (this.currentStage != null)
-    {
-      remove(currentStage);
-      var event:ScriptEvent = new ScriptEvent(DESTROY, false);
-      ScriptEventDispatcher.callEvent(currentStage, event);
-      currentStage = null;
-    }
-
-    if (!overrideMusic)
-    {
-      // Stop the instrumental.
-      if (FlxG.sound.music != null)
-      {
-        FlxG.sound.music.destroy();
-        FlxG.sound.music = null;
-      }
-
-      // Stop the vocals.
-      if (vocals != null && vocals.exists)
-      {
-        vocals.destroy();
-        vocals = null;
-      }
-    }
-    else
-    {
-      // Stop the instrumental.
-      if (FlxG.sound.music != null)
-      {
-        FlxG.sound.music.stop();
-      }
-
-      // Stop the vocals.
-      if (vocals != null && vocals.exists)
-      {
-        vocals.stop();
-      }
-    }
-
-    super.debug_refreshModules();
-
-    var event:ScriptEvent = new ScriptEvent(CREATE, false);
-    ScriptEventDispatcher.callEvent(currentSong, event);
+    funkin.modding.PolymodHandler.forceReloadAssets();
+    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
+    LoadingState.loadPlayState(lastParams);
   }
 
   override function stepHit():Bool
@@ -1911,7 +1860,6 @@ class PlayState extends MusicBeatSubState
     if (!result) return;
 
     isInCutscene = false;
-    camCutscene.visible = false;
 
     // TODO: Maybe tween in the camera after any cutscenes.
     camHUD.visible = true;
