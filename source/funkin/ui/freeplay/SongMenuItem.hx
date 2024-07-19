@@ -543,8 +543,11 @@ class SongMenuItem extends FlxSpriteGroup
     pixelIcon.loadGraphic(charPath);
     pixelIcon.scale.x = pixelIcon.scale.y = charData.freeplayIcon.scale ?? 2.0;
 
-    pixelIcon.origin.x = charData.freeplayIcon.offsets[0] ?? 100.0;
-    pixelIcon.origin.y = charData.freeplayIcon.offsets[1] ?? 0.0;
+    pixelIcon.origin.x = 100;
+    pixelIcon.origin.y = 25;
+
+    pixelIcon.origin.x += charData.freeplayIcon.offsets[0] ?? 0.0;
+    pixelIcon.origin.y += charData.freeplayIcon.offsets[1] ?? 0.0;
 
     pixelIcon.flipX = charData.freeplayIcon.flipX ?? false;
   }

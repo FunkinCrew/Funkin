@@ -376,7 +376,6 @@ class CharacterDataParser
   static final DEFAULT_LOOP:Bool = false;
   static final DEFAULT_NAME:String = 'Untitled Character';
   static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
-  static final DEFAULT_FREEPLAYICON_OFFSETS:Array<Float> = [100, 20];
   static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   static final DEFAULT_SCALE:Float = 1;
   static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -496,7 +495,7 @@ class CharacterDataParser
 
     if (input.freeplayIcon.offsets == null)
     {
-      input.freeplayIcon.offsets = DEFAULT_FREEPLAYICON_OFFSETS;
+      input.freeplayIcon.offsets = DEFAULT_OFFSETS;
     }
 
     if (input.startingAnimation == null)
@@ -770,12 +769,13 @@ typedef FreeplayIconData =
    * The scale of the freeplay icon.
    */
   var scale:Null<Float>;
+
   /**
    * Whether to flip the freeplay icon horizontally.
    * @default false
    */
-
   var flipX:Null<Bool>;
+
   /**
    * The offset of the freeplay icon, in pixels.
    * @default [100, 25]
