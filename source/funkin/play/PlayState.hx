@@ -578,7 +578,6 @@ class PlayState extends MusicBeatSubState
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
-  var perfectMode:Bool = false;
 
   static final BACKGROUND_COLOR:FlxColor = FlxColor.BLACK;
 
@@ -2535,12 +2534,6 @@ class PlayState extends MusicBeatSubState
    */
   function debugKeyShit():Void
   {
-    #if !debug
-    perfectMode = false;
-    #else
-    if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
-    #end
-
     #if CHART_EDITOR_SUPPORTED
     // Open the stage editor overlaying the current state.
     if (controls.DEBUG_STAGE)
@@ -2572,6 +2565,9 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if (debug || FORCE_DEBUG_VERSION)
+    // H: Hide the HUD.
+    if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
+
     // 1: End the song immediately.
     if (FlxG.keys.justPressed.ONE) endSong(true);
 

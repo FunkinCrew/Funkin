@@ -251,6 +251,10 @@ class PolymodHandler
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
 
+    // `Unserializer`
+    // Unserializerr.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
+    Polymod.blacklistImport('Unserializer');
+
     // `polymod.*`
     // You can probably unblacklist a module
     for (cls in ClassMacro.listClassesInPackage('polymod'))
