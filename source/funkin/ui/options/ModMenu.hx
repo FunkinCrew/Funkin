@@ -1,7 +1,6 @@
 package funkin.ui.options;
 
 import funkin.modding.PolymodHandler;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import polymod.Polymod;
@@ -9,78 +8,50 @@ import funkin.ui.options.OptionsState.Page;
 
 class ModMenu extends Page
 {
-  var grpMods:FlxTypedGroup<ModMenuItem>;
+  var renderedMods:TextMenuList;
   var enabledMods:Array<ModMetadata> = [];
   var detectedMods:Array<ModMetadata> = [];
-
-  var curSelected:Int = 0;
 
   public function new():Void
   {
     super();
 
-    grpMods = new FlxTypedGroup<ModMenuItem>();
-    add(grpMods);
+    renderedMods = new TextMenuList();
+    add(renderedMods);
 
     refreshModList();
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
-    if (FlxG.keys.justPressed.R) refreshModList();
-
-    selections();
-
-    if (controls.UI_UP_P) selections(-1);
-    if (controls.UI_DOWN_P) selections(1);
-
-    if (FlxG.keys.justPressed.SPACE) grpMods.members[curSelected].modEnabled = !grpMods.members[curSelected].modEnabled;
-
-    if (FlxG.keys.justPressed.I && curSelected != 0)
+    if (FlxG.keys.justPressed.R)
     {
-      var oldOne = grpMods.members[curSelected - 1];
-      grpMods.members[curSelected - 1] = grpMods.members[curSelected];
-      grpMods.members[curSelected] = oldOne;
-      selections(-1);
+      refreshModList();
     }
 
-    if (FlxG.keys.justPressed.K && curSelected < grpMods.members.length - 1)
-    {
-      var oldOne = grpMods.members[curSelected + 1];
-      grpMods.members[curSelected + 1] = grpMods.members[curSelected];
-      grpMods.members[curSelected] = oldOne;
-      selections(1);
-    }
+    // if (FlxG.keys.justPressed.I && curSelected != 0)
+    // {
+    //   var oldOne:ModMenuItem = grpMods.members[curSelected - 1];
+    //   grpMods.members[curSelected - 1] = grpMods.members[curSelected];
+    //   grpMods.members[curSelected] = oldOne;
+    //   changeSelection(-1);
+    // }
+
+    // if (FlxG.keys.justPressed.K && curSelected < grpMods.members.length - 1)
+    // {
+    //   var oldOne:ModMenuItem = grpMods.members[curSelected + 1];
+    //   grpMods.members[curSelected + 1] = grpMods.members[curSelected];
+    //   grpMods.members[curSelected] = oldOne;
+    //   changeSelection(1);
+    // }
 
     super.update(elapsed);
   }
 
-  function selections(change:Int = 0):Void
-  {
-    curSelected += change;
-
-    if (curSelected >= detectedMods.length) curSelected = 0;
-    if (curSelected < 0) curSelected = detectedMods.length - 1;
-
-    for (txt in 0...grpMods.length)
-    {
-      if (txt == curSelected)
-      {
-        grpMods.members[txt].color = FlxColor.YELLOW;
-      }
-      else
-        grpMods.members[txt].color = FlxColor.WHITE;
-    }
-
-    organizeByY();
-  }
-
   function refreshModList():Void
   {
-    while (grpMods.members.length > 0)
-    {
-      grpMods.remove(grpMods.members[0], true);
-    }
+    @:privateAccess
+    renderedMods.byName.clear();
 
     #if desktop
     detectedMods = PolymodHandler.getAllMods();
@@ -91,38 +62,18 @@ class ModMenu extends Page
     {
       var modMetadata:ModMetadata = detectedMods[index];
       var modName:String = modMetadata.title;
-      var txt:ModMenuItem = new ModMenuItem(0, 10 + (40 * index), 0, modName, 32);
-      txt.text = modName;
-      grpMods.add(txt);
+      renderedMods.createItem(0, 100 + renderedMods.length * 100, modName, BOLD, function() {
+        var mod:ModMetadata = detectedMods[renderedMods.selectedIndex];
+        if (enabledMods.contains(mod))
+        {
+          enabledMods.remove(mod);
+        }
+        else
+        {
+          enabledMods.push(mod);
+        }
+      });
     }
     #end
-  }
-
-  function organizeByY():Void
-  {
-    for (i in 0...grpMods.length)
-    {
-      grpMods.members[i].y = 10 + (40 * i);
-    }
-  }
-}
-
-class ModMenuItem extends FlxText
-{
-  public var modEnabled:Bool = false;
-  public var daMod:String;
-
-  public function new(x:Float, y:Float, w:Float, str:String, size:Int)
-  {
-    super(x, y, w, str, size);
-  }
-
-  override function update(elapsed:Float)
-  {
-    if (modEnabled) alpha = 1;
-    else
-      alpha = 0.5;
-
-    super.update(elapsed);
   }
 }
