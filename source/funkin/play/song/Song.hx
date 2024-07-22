@@ -515,6 +515,28 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * Return the list of available alternate instrumentals.
+   * Scripts can override this, fun.
+   * @param variationId
+   * @param difficultyId
+   */
+  public function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String>
+  {
+    var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
+    if (targetDifficulty == null) return [];
+
+    return targetDifficulty?.characters?.altInstrumentals ?? [];
+  }
+
+  public function getBaseInstrumentalId(difficultyId:String, variationId:String):String
+  {
+    var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
+    if (targetDifficulty == null) return '';
+
+    return targetDifficulty?.characters?.instrumental ?? '';
+  }
+
+  /**
    * Purge the cached chart data for each difficulty of this song.
    */
   public function clearCharts():Void

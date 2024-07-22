@@ -117,13 +117,7 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      openSubState(new FreeplayState(
-        {
-          #if debug
-          // If SHIFT is held, toggle the selected character, else use the remembered character
-          character: (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == Constants.DEFAULT_CHARACTER ? 'pico' : 'bf') : null,
-          #end
-        }));
+      openSubState(new FreeplayState());
     });
 
     #if CAN_OPEN_LINKS
