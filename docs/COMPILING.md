@@ -1,4 +1,4 @@
-# Compiling Friday Night Funkin' for Mobile
+# Compiling Friday Night Funkin'
 
 
  1. Setup
