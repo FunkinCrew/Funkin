@@ -8,6 +8,8 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.components.CheckBox;
 import haxe.ui.containers.Grid;
 import haxe.ui.containers.Box;
+import haxe.ui.containers.VBox;
+import haxe.ui.containers.Frame;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.events.UIEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
@@ -23,10 +25,6 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 {
   // 100 is the height used in note-data.xml
   static final DIALOG_HEIGHT:Int = 100;
-
-  // minimizing creates a gray bar the bottom, which would obscure the components,
-  // which is why we use an extra offset of 30
-  static final MINIMIZE_FIX:Int = 30;
 
   var toolboxNoteParamsGrid:Grid;
   var toolboxNotesNoteKind:DropDown;
@@ -211,7 +209,6 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
     if (schema == null)
     {
-      this.height = Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT + toolboxNoteParamsGrid.height);
       return;
     }
 
@@ -321,25 +318,6 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
           chartEditorState.noteTooltipsDirty = true;
         }
       }
-    }
-
-    this.height = Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT + toolboxNoteParamsGrid.height);
-  }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-
-    // current dialog is minimized, dont change the height
-    if (this.minimized)
-    {
-      return;
-    }
-
-    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, DIALOG_HEIGHT + toolboxNoteParamsGrid.height)) + MINIMIZE_FIX;
-    if (this.height != heightToSet)
-    {
-      this.height = heightToSet;
     }
   }
 
