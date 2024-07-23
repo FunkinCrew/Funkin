@@ -2959,11 +2959,16 @@ class PlayState extends MusicBeatSubState
           FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
+            var targetVariation:String = currentVariation;
+            if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
+            {
+              targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
+            }
             LoadingState.loadPlayState(
               {
                 targetSong: targetSong,
                 targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-                targetVariation: targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty),
+                targetVariation: targetVariation,
                 cameraFollowPoint: cameraFollowPoint.getPosition(),
               });
           });
@@ -2971,11 +2976,16 @@ class PlayState extends MusicBeatSubState
         else
         {
           var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
+          var targetVariation:String = currentVariation;
+          if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
+          {
+            targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
+          }
           LoadingState.loadPlayState(
             {
               targetSong: targetSong,
               targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-              targetVariation: targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty),
+              targetVariation: targetVariation,
               cameraFollowPoint: cameraFollowPoint.getPosition(),
             });
         }
