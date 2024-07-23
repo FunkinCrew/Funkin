@@ -29,21 +29,15 @@ class ModMenu extends Page
       refreshModList();
     }
 
-    // if (FlxG.keys.justPressed.I && curSelected != 0)
-    // {
-    //   var oldOne:ModMenuItem = grpMods.members[curSelected - 1];
-    //   grpMods.members[curSelected - 1] = grpMods.members[curSelected];
-    //   grpMods.members[curSelected] = oldOne;
-    //   changeSelection(-1);
-    // }
+    if (FlxG.keys.justPressed.I && renderedMods.selectedIndex != 0)
+    {
+      changeOrder(-1);
+    }
 
-    // if (FlxG.keys.justPressed.K && curSelected < grpMods.members.length - 1)
-    // {
-    //   var oldOne:ModMenuItem = grpMods.members[curSelected + 1];
-    //   grpMods.members[curSelected + 1] = grpMods.members[curSelected];
-    //   grpMods.members[curSelected] = oldOne;
-    //   changeSelection(1);
-    // }
+    if (FlxG.keys.justPressed.K && renderedMods.selectedIndex < renderedMods.length - 1)
+    {
+      changeOrder(1);
+    }
 
     super.update(elapsed);
   }
@@ -62,7 +56,7 @@ class ModMenu extends Page
     {
       var modMetadata:ModMetadata = detectedMods[index];
       var modName:String = modMetadata.title;
-      renderedMods.createItem(0, 100 + renderedMods.length * 100, modName, BOLD, function() {
+      renderedMods.createItem(10, 10 + renderedMods.length * 100, modName, BOLD, function() {
         var mod:ModMetadata = detectedMods[renderedMods.selectedIndex];
         if (enabledMods.contains(mod))
         {
@@ -75,5 +69,20 @@ class ModMenu extends Page
       });
     }
     #end
+  }
+
+  function changeOrder(change:Int):Void
+  {
+    var index = renderedMods.selectedIndex;
+    var oldOne = renderedMods.members[index + change];
+    var newOne = renderedMods.members[index];
+    var newY = newOne.y;
+
+    newOne.y = oldOne.y;
+    oldOne.y = newY;
+
+    renderedMods.members[index + change] = newOne;
+    renderedMods.members[index] = oldOne;
+    renderedMods.selectItem(index + change);
   }
 }
