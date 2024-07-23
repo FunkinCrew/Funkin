@@ -3,7 +3,9 @@ package funkin.data.song;
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
+import funkin.data.notes.SongNoteSchema;
 import funkin.data.song.SongRegistry;
+import funkin.play.notes.notekind.NoteKindManager;
 import thx.semver.Version;
 import funkin.util.tools.ICloneable;
 
@@ -951,12 +953,19 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return this.kind = value;
   }
 
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
+  @:alias("p")
+  @:optional
+  @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  public var params:Dynamic = null;
+
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Dynamic)
   {
     this.time = time;
     this.data = data;
     this.length = length;
     this.kind = kind;
+    this.params = params;
   }
 
   /**
@@ -1053,7 +1062,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind);
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, this.params);
   }
 
   public function toString():String
@@ -1069,9 +1078,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 @:forward
 abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 {
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Dynamic)
   {
-    this = new SongNoteDataRaw(time, data, length, kind);
+    this = new SongNoteDataRaw(time, data, length, kind, params);
   }
 
   public static function buildDirectionName(data:Int, strumlineSize:Int = 4):String
@@ -1099,6 +1108,100 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     return this.length > 0;
   }
 
+  public function paramsAsStruct(?defaultKey:String = "key"):Dynamic
+  {
+    if (this.params == null) return {};
+
+    if (Reflect.isObject(this.params))
+    {
+      // We enter this case if the params are a struct.
+      return cast this.params;
+    }
+    else
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.params);
+      return cast result;
+    }
+  }
+
+  public inline function getSchema():Null<SongNoteSchema>
+  {
+    return NoteKindManager.getSchema(this.kind);
+  }
+
+  public inline function getDynamic(key:String):Null<Dynamic>
+  {
+    return this.params == null ? null : Reflect.field(this.params, key);
+  }
+
+  public inline function getBool(key:String):Null<Bool>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public inline function getInt(key:String):Null<Int>
+  {
+    if (this.params == null) return null;
+    var result = Reflect.field(this.params, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Int)) return result;
+    if (Std.isOfType(result, String)) return Std.parseInt(cast result);
+    return cast result;
+  }
+
+  public inline function getFloat(key:String):Null<Float>
+  {
+    if (this.params == null) return null;
+    var result = Reflect.field(this.params, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Float)) return result;
+    if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
+    return cast result;
+  }
+
+  public inline function getString(key:String):String
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public inline function getArray(key:String):Array<Dynamic>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public inline function getBoolArray(key:String):Array<Bool>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  public function buildTooltip():Null<String>
+  {
+    var noteSchema = getSchema();
+
+    if (noteSchema == null) return null;
+
+    var result = '${this.kind}';
+
+    var defaultKey = noteSchema.getFirstField()?.name;
+    var paramsStruct:haxe.DynamicAccess<Dynamic> = paramsAsStruct(defaultKey);
+
+    for (pair in paramsStruct.keyValueIterator())
+    {
+      var key = pair.key;
+      var value = pair.value;
+
+      var title = noteSchema.getByName(key)?.title ?? 'UnknownField';
+
+      // if (noteSchema.stringifyFieldValue(key, value) != null) trace(noteSchema.stringifyFieldValue(key, value));
+      var valueStr = noteSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
+
+      result += '\n- ${title}: ${valueStr}';
+    }
+
+    return result;
+  }
+
   @:op(A == B)
   public function op_equals(other:SongNoteData):Bool
   {
@@ -1115,7 +1218,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       if (other.kind == '' || this.kind == null) return false;
     }
 
-    return this.time == other.time && this.data == other.data && this.length == other.length;
+    return this.time == other.time && this.data == other.data && this.length == other.length && this.params == other.params;
   }
 
   @:op(A != B)
@@ -1134,7 +1237,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       if (other.kind == '') return true;
     }
 
-    return this.time != other.time || this.data != other.data || this.length != other.length;
+    return this.time != other.time || this.data != other.data || this.length != other.length || this.params != other.params;
   }
 
   @:op(A > B)
@@ -1171,7 +1274,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 
   public function clone():SongNoteData
   {
-    return new SongNoteData(this.time, this.data, this.length, this.kind);
+    return new SongNoteData(this.time, this.data, this.length, this.kind, this.params);
   }
 
   /**
@@ -1181,5 +1284,32 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   {
     return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
       + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+  }
+}
+
+class NoteParamData implements ICloneable<NoteParamData>
+{
+  @:alias("n")
+  public var name:String;
+
+  @:alias("v")
+  @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  public var value:Dynamic;
+
+  public function new(name:String, value:Dynamic)
+  {
+    this.name = name;
+    this.value = value;
+  }
+
+  public function clone():NoteParamData
+  {
+    return new NoteParamData(this.name, this.value);
+  }
+
+  public function toString():String
+  {
+    return 'NoteParamData(${this.name}, ${this.value})';
   }
 }

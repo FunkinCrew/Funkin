@@ -135,6 +135,14 @@ class ChartEditorDropdowns
       var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
       if (noteStyle == null) continue;
 
+      // check if the note style has all necessary assets (strums, notes, holdNotes)
+      if (noteStyle._data?.assets?.noteStrumline == null
+        || noteStyle._data?.assets?.note == null
+        || noteStyle._data?.assets?.holdNote == null)
+      {
+        continue;
+      }
+
       var value = {id: noteStyleId, text: noteStyle.getName()};
       if (startingStyleId == noteStyleId) returnValue = value;
 
@@ -146,7 +154,7 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
-  static final NOTE_KINDS:Map<String, String> = [
+  public static final NOTE_KINDS:Map<String, String> = [
     // Base
     "" => "Default",
     "~CUSTOM~" => "Custom",
