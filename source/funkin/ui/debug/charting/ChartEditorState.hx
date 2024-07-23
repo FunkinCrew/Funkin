@@ -35,6 +35,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
+import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageData;
@@ -45,6 +46,7 @@ import funkin.input.TurboActionHandler;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -552,6 +554,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The note kind to use for notes being placed in the chart. Defaults to `null`.
    */
   var noteKindToPlace:Null<String> = null;
+
+  /**
+   * The note params to use for notes being placed in the chart. Defaults to `[]`.
+   */
+  var noteParamsToPlace:Array<NoteParamData> = [];
 
   /**
    * The event type to use for events being placed in the chart. Defaults to `''`.
@@ -1416,7 +1423,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_currentSongNoteStyle():String
   {
-    if (currentSongMetadata.playData.noteStyle == null)
+    if (currentSongMetadata.playData.noteStyle == null
+      || currentSongMetadata.playData.noteStyle == ''
+      || currentSongMetadata.playData.noteStyle == 'item')
     {
       // Initialize to the default value if not set.
       currentSongMetadata.playData.noteStyle = Constants.DEFAULT_NOTE_STYLE;
@@ -2451,7 +2460,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     gridGhostNote = new ChartEditorNoteSprite(this);
     gridGhostNote.alpha = 0.6;
-    gridGhostNote.noteData = new SongNoteData(0, 0, 0, "");
+    gridGhostNote.noteData = new SongNoteData(0, 0, 0, "", []);
     gridGhostNote.visible = false;
     add(gridGhostNote);
     gridGhostNote.zIndex = 11;
@@ -3599,6 +3608,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         // The note sprite handles animation playback and positioning.
         noteSprite.noteData = noteData;
+        noteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
         noteSprite.overrideStepTime = null;
         noteSprite.overrideData = null;
 
@@ -3621,6 +3631,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
 
           holdNoteSprite.setHeightDirectly(noteLengthPixels);
+
+          holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
 
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
 
@@ -3684,8 +3696,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         holdNoteSprite.noteData = noteData;
         holdNoteSprite.noteDirection = noteData.getDirection();
-
         holdNoteSprite.setHeightDirectly(noteLengthPixels);
+
+        holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
 
         holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
 
@@ -4584,7 +4597,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             gridGhostHoldNote.noteData = currentPlaceNoteData;
             gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
             gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
-
+            gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
             gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
           }
           else
@@ -4741,7 +4754,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                 else
                 {
                   // Create a note and place it in the chart.
-                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace);
+                  var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace,
+                    ChartEditorState.cloneNoteParams(noteParamsToPlace));
 
                   performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
 
@@ -4900,12 +4914,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
             if (gridGhostNote == null) throw "ERROR: Tried to handle cursor, but gridGhostNote is null! Check ChartEditorState.buildGrid()";
 
-            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, noteKindToPlace);
+            var noteData:SongNoteData = gridGhostNote.noteData != null ? gridGhostNote.noteData : new SongNoteData(cursorMs, cursorColumn, 0, noteKindToPlace,
+              ChartEditorState.cloneNoteParams(noteParamsToPlace));
 
-            if (cursorColumn != noteData.data || noteKindToPlace != noteData.kind)
+            if (cursorColumn != noteData.data || noteKindToPlace != noteData.kind || noteParamsToPlace != noteData.params)
             {
               noteData.kind = noteKindToPlace;
+              noteData.params = noteParamsToPlace;
               noteData.data = cursorColumn;
+              gridGhostNote.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
               gridGhostNote.playNoteAnimation();
             }
             noteData.time = cursorSnappedMs;
@@ -5175,7 +5192,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (notesAtPos.length == 0 && !removeNoteInstead)
     {
       trace('Placing note. ${column}');
-      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace);
+      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace, ChartEditorState.cloneNoteParams(noteParamsToPlace));
       performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
       currentLiveInputPlaceNoteData[column] = newNoteData;
     }
@@ -5261,6 +5278,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         ghostHold.visible = true;
         ghostHold.alpha = 0.6;
         ghostHold.setHeightDirectly(0);
+        ghostHold.noteStyle = NoteKindManager.getNoteStyleId(ghostHold.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
         ghostHold.updateHoldNotePosition(renderedHoldNotes);
       }
 
@@ -5627,6 +5645,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     FlxG.watch.addQuick('musicTime', audioInstTrack?.time ?? 0.0);
 
     FlxG.watch.addQuick('noteKindToPlace', noteKindToPlace);
+    FlxG.watch.addQuick('noteParamsToPlace', noteParamsToPlace);
     FlxG.watch.addQuick('eventKindToPlace', eventKindToPlace);
 
     FlxG.watch.addQuick('scrollPosInPixels', scrollPositionInPixels);
@@ -6489,6 +6508,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
     return input;
+  }
+
+  public static function cloneNoteParams(paramsToClone:Array<NoteParamData>):Array<NoteParamData>
+  {
+    var params:Array<NoteParamData> = [];
+    for (param in paramsToClone)
+    {
+      params.push(param.clone());
+    }
+    return params;
   }
 }
 
