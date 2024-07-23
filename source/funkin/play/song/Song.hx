@@ -813,7 +813,7 @@ class SongDifficulty
    * @param charId The player ID.
    * @return The generated vocal group.
    */
-  public function buildVocals():VoicesGroup
+  public function buildVocals(?instId:String = ''):VoicesGroup
   {
     var result:VoicesGroup = new VoicesGroup();
 
@@ -839,8 +839,8 @@ class SongDifficulty
       }
     }
 
-    result.playerVoicesOffset = offsets.getVocalOffset(characters.player);
-    result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent);
+    result.playerVoicesOffset = offsets.getVocalOffset(characters.player, instId);
+    result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent, instId);
 
     return result;
   }
