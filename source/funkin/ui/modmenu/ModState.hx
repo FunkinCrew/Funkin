@@ -1,9 +1,13 @@
 package funkin.ui.modmenu;
 
-import haxe.ui.backend.flixel.UIState;
+import funkin.ui.modmenu.components.ModBox;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
+import funkin.audio.FunkinSound;
 import funkin.input.Cursor;
+import haxe.ui.backend.flixel.UIState;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.FlxG;
 import flixel.FlxSprite;
 
 /**
@@ -13,12 +17,15 @@ import flixel.FlxSprite;
 class ModState extends UIState // UIState derives from MusicBeatState
 {
   var uiCamera:FunkinCamera;
+  var mods:Array<ModBox>;
 
   public function new()
   {
     super();
 
-    addComponent(new funkin.ui.modmenu.components.ModBox("Cool Mod", "Cool Mod Description"));
+    mods = [];
+
+    addMod("Cool Mod", "Cool Mod Description");
   }
 
   override function create():Void
@@ -41,5 +48,25 @@ class ModState extends UIState // UIState derives from MusicBeatState
     bg.zIndex = -100;
 
     this.refresh();
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    handleCursor();
+  }
+
+  function addMod(name:String, desc:String):Void
+  {
+    var mod:ModBox = new ModBox(name, desc);
+    mods.push(mod);
+    addComponent(mod);
+  }
+
+  function handleCursor():Void
+  {
+    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
+    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
   }
 }
