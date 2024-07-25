@@ -165,6 +165,9 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
   function quitModState():Void
   {
     saveMods();
+
+    PolymodHandler.forceReloadAssets();
+
     FlxG.switchState(() -> new MainMenuState());
   }
 }
