@@ -29,7 +29,10 @@ class ModState extends UIState // UIState derives from MusicBeatState
 
     mods = [];
 
-    addMod("Cool Mod", "Cool Mod Description");
+    for (i in 1...21)
+    {
+      addMod('Cool Mod $i', 'Cool Mod Description $i');
+    }
   }
 
   override function create():Void
@@ -40,18 +43,6 @@ class ModState extends UIState // UIState derives from MusicBeatState
 
     uiCamera = new FunkinCamera('modMenuUI');
     FlxG.cameras.reset(uiCamera);
-
-    // this.root.zIndex = 100;
-
-    // var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-    // add(bg);
-    // bg.setGraphicSize(Std.int(bg.width * 1.1));
-    // bg.updateHitbox();
-    // bg.screenCenter();
-    // bg.scrollFactor.set(0, 0);
-    // bg.zIndex = -100;
-
-    // this.refresh();
   }
 
   override function update(elapsed:Float):Void
@@ -65,15 +56,18 @@ class ModState extends UIState // UIState derives from MusicBeatState
   {
     var mod:ModBox = new ModBox(name, desc);
 
-    // mod.onDragStart = function(_) {
-    //   disabledModsBox.removeComponent(mod);
-    //   this.root.addComponent(mod);
-    // };
-
-    // mod.onDragEnd = function(_) {
-    //   this.root.removeComponent(mod);
-    //   disabledModsBox.addComponent(mod);
-    // };
+    mod.onClick = function(_) {
+      if (mod.parentComponent == disabledModsBox)
+      {
+        disabledModsBox.removeComponent(mod, false);
+        enabledModsBox.addComponentAt(mod, 0);
+      }
+      else
+      {
+        enabledModsBox.removeComponent(mod, false);
+        disabledModsBox.addComponentAt(mod, 0);
+      }
+    }
 
     mods.push(mod);
     disabledModsBox.addComponent(mod);
@@ -81,7 +75,14 @@ class ModState extends UIState // UIState derives from MusicBeatState
 
   function handleCursor():Void
   {
-    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+    if (FlxG.mouse.justPressed)
+    {
+      FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
+    }
+
+    if (FlxG.mouse.justReleased)
+    {
+      FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+    }
   }
 }

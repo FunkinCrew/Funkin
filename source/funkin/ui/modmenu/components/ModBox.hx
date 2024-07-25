@@ -23,7 +23,11 @@ class ModBox extends VBox implements Draggable
   {
     super();
 
-    this.draggable = true;
+    // this.draggable = true;
+    // TODO: Implement dragging, since that would be nicer
+    // but for now im just gonna do it in a simple way
+    // when we implement dragging we should probably remove the click event
+    this.draggable = false;
 
     this.modLabel.value = name;
     this.modDescription = desc;
@@ -56,6 +60,10 @@ class ModBoxEvents extends Events
     {
       registerEvent(MouseEvent.MOUSE_OUT, onMouseOut);
     }
+    if (!hasEvent(MouseEvent.CLICK, onClick))
+    {
+      registerEvent(MouseEvent.CLICK, onClick);
+    }
     if (!hasEvent(DragEvent.DRAG_START, onDragStart))
     {
       registerEvent(DragEvent.DRAG_START, onDragStart);
@@ -70,6 +78,7 @@ class ModBoxEvents extends Events
   {
     unregisterEvent(MouseEvent.MOUSE_OVER, onMouseOver);
     unregisterEvent(MouseEvent.MOUSE_OUT, onMouseOut);
+    unregisterEvent(MouseEvent.CLICK, onClick);
     unregisterEvent(DragEvent.DRAG_START, onDragStart);
     unregisterEvent(DragEvent.DRAG_END, onDragEnd);
   }
@@ -85,6 +94,12 @@ class ModBoxEvents extends Events
   }
 
   function onMouseOut(event:MouseEvent):Void
+  {
+    _modBox.removeClass(":hover", true, true);
+    _modBox.removeClass(":down", true, true);
+  }
+
+  function onClick(event:MouseEvent):Void
   {
     _modBox.removeClass(":hover", true, true);
     _modBox.removeClass(":down", true, true);
