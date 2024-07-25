@@ -3,17 +3,13 @@ package funkin.ui.debug.modding;
 import funkin.ui.debug.modding.components.ModBox;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.graphics.FunkinCamera;
-import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
 import funkin.save.Save;
-import polymod.Polymod;
 import haxe.ui.backend.flixel.UIState;
-import haxe.ui.containers.VBox;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import polymod.Polymod;
 import flixel.FlxG;
-import flixel.FlxSprite;
 
 /**
  * A state for enabling and reordering mods.
@@ -21,9 +17,6 @@ import flixel.FlxSprite;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/mod-menu/main-view.xml"))
 class ModMenuState extends UIState // UIState derives from MusicBeatState
 {
-  var disabledModsBox:VBox;
-  var enabledModsBox:VBox;
-
   var uiCamera:FunkinCamera;
   var mods:Array<ModBox>;
 
@@ -36,9 +29,7 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
       reloadMods();
     };
 
-    // we get a null object reference when quitting using the click
-    // the shortcut works
-    // menubarItemQuit.onClick = _ -> quitModState();
+    menubarItemQuit.onClick = _ -> quitModState();
   }
 
   override function create():Void
@@ -71,6 +62,13 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
     {
       quitModState();
     }
+  }
+
+  override function destroy():Void
+  {
+    super.destroy();
+
+    Cursor.hide();
   }
 
   function addMod(id:String, name:String, description:String, enabled:Bool):Void
@@ -154,7 +152,7 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
 
     for (enabledMod in enabledModsBox.childComponents)
     {
-      if (Std.is(enabledMod, ModBox))
+      if (Std.isOfType(enabledMod, ModBox))
       {
         var modBox:ModBox = cast(enabledMod, ModBox);
         enabledModIds.push(modBox.modId);
