@@ -10,7 +10,7 @@ import haxe.ui.events.DragEvent;
 /**
  * HaxeUI component for the mod menu
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/mod-menu/components/mod.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/mod-menu/components/modbox.xml"))
 @:composite(ModBoxEvents)
 class ModBox extends VBox implements Draggable
 {
