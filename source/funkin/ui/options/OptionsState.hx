@@ -43,18 +43,12 @@ class OptionsState extends MusicBeatState
     var options = addPage(Options, new OptionsMenu());
     var controls = addPage(Controls, new ControlsMenu());
     var preferences = addPage(Preferences, new PreferencesMenu());
-    #if desktop
-    var mods = addPage(Mods, new ModMenu());
-    #end
 
     if (options.hasMultipleOptions())
     {
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(switchPage.bind(Options));
-      #if desktop
-      mods.onExit.add(switchPage.bind(Options));
-      #end
     }
     else
     {
@@ -193,10 +187,6 @@ class OptionsMenu extends Page
     createItem("INPUT OFFSETS", function() {
       FlxG.state.openSubState(new LatencyState());
     });
-
-    #if desktop
-    createItem("MODS", function() switchPage(Mods));
-    #end
 
     #if newgrounds
     if (NGio.isLoggedIn) createItem("LOGOUT", selectLogout);
