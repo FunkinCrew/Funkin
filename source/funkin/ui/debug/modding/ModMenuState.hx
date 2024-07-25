@@ -166,6 +166,13 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
   {
     saveMods();
 
+    // stopping the music so that reloading the assets
+    // will use the overwritten music
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.stop();
+    }
+
     PolymodHandler.forceReloadAssets();
 
     FlxG.switchState(() -> new MainMenuState());
