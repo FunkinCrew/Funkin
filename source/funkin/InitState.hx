@@ -256,9 +256,6 @@ class InitState extends FlxState
    */
   function startGameNormally():Void
   {
-    FlxG.switchState(() -> new funkin.ui.modmenu.ModState());
-    return;
-
     var params:CLIParams = CLIUtil.processArgs();
     trace('Command line args: ${params}');
 

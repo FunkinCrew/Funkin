@@ -1,4 +1,4 @@
-package funkin.ui.modmenu.components;
+package funkin.ui.debug.modding.components;
 
 import haxe.ui.containers.VBox;
 import haxe.ui.components.Label;
@@ -17,9 +17,12 @@ class ModBox extends VBox implements Draggable
   var isDragging:Bool;
 
   var modLabel:Label;
-  var modDescription:String;
 
-  public function new(name:String, desc:String)
+  public var modId(default, null):String;
+  public var modName(default, null):String;
+  public var modDescription(default, null):String;
+
+  public function new(modId:String, modName:String, modDescription:String)
   {
     super();
 
@@ -29,17 +32,20 @@ class ModBox extends VBox implements Draggable
     // when we implement dragging we should probably remove the click event
     this.draggable = false;
 
-    this.modLabel.value = name;
-    this.modDescription = desc;
+    this.modLabel.value = modName;
 
     this.isDragging = false;
+
+    this.modId = modId;
+    this.modName = modName;
+    this.modDescription = modDescription;
   }
 }
 
 /**
  * Composite class for handling mouse events
  */
-@:access(funkin.ui.modmenu.components.ModBox)
+@:access(funkin.ui.debug.modding.components.ModBox)
 class ModBoxEvents extends Events
 {
   var _modBox:ModBox;
