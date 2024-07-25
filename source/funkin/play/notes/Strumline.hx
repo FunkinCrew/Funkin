@@ -104,6 +104,8 @@ class Strumline extends FlxSpriteGroup
 
   var heldKeys:Array<Bool> = [];
 
+  var ghostTapTimer:Float = 0.0;
+
   public function new(noteStyle:NoteStyle, isPlayer:Bool)
   {
     super();
@@ -179,6 +181,8 @@ class Strumline extends FlxSpriteGroup
     super.update(elapsed);
 
     updateNotes();
+
+    updateGhostTapTimer(elapsed);
   }
 
   /**
@@ -189,10 +193,22 @@ class Strumline extends FlxSpriteGroup
     // TODO: Refine this. Only querying "can be hit" is too tight but "is being rendered" is too loose.
     // Also, if you just hit a note, there should be a (short) period where this is off so you can't spam.
 
-    // If there are any notes on screen, we can't ghost tap.
-    return notes.members.filter(function(note:NoteSprite) {
-      return note != null && note.alive && !note.hasBeenHit;
-    }).length == 0;
+    // Any notes in range.
+    if (getNotesMayHit().length > 0)
+    {
+      return false;
+    }
+    // Any hold notes in range.
+    if (getHoldNotesHitOrMissed().length > 0)
+    {
+      return false;
+    }
+
+    // We hit a note recently.
+    if (ghostTapTimer > 0.0) return false;
+
+    // **yippee**
+    return true;
   }
 
   /**
@@ -203,6 +219,17 @@ class Strumline extends FlxSpriteGroup
   {
     return notes.members.filter(function(note:NoteSprite) {
       return note != null && note.alive && !note.hasBeenHit && note.mayHit;
+    });
+  }
+
+  /**
+   * Return notes that are within, or way after, `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `NoteSprite` objects.
+   */
+  public function getNotesOnScreen():Array<NoteSprite>
+  {
+    return notes.members.filter(function(note:NoteSprite) {
+      return note != null && note.alive && !note.hasBeenHit;
     });
   }
 
@@ -492,6 +519,22 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
+  function updateGhostTapTimer(elapsed:Float):Void
+  {
+    // Ignore logic if we aren't using it anyway.
+    if (!Constants.GHOST_TAPPING) return;
+
+    // If it's still our turn, don't update the ghost tap timer.
+    if (getNotesOnScreen().length > 0) return;
+
+    ghostTapTimer -= elapsed;
+
+    if (ghostTapTimer <= 0)
+    {
+      ghostTapTimer = 0;
+    }
+  }
+
   /**
    * Called when the PlayState skips a large amount of time forward or backward.
    */
@@ -563,6 +606,8 @@ class Strumline extends FlxSpriteGroup
       playStatic(dir);
     }
     resetScrollSpeed();
+
+    ghostTapTimer = 0;
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
@@ -602,6 +647,8 @@ class Strumline extends FlxSpriteGroup
 
       note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
     }
+
+    ghostTapTimer = Constants.GHOST_TAP_DELAY;
   }
 
   public function killNote(note:NoteSprite):Void
