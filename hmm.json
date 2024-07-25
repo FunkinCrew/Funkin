@@ -99,8 +99,10 @@
     },
     {
       "name": "hxcpp",
-      "type": "haxelib",
-      "version": "4.3.2"
+      "type": "git",
+      "dir": null,
+      "url": "https://github.com/HaxeFoundation/hxcpp",
+      "ref": "01cfee282a9a783e10c5a7774a3baaf547e6b0a7"
     },
     {
       "name": "hxcpp-debug-server",
