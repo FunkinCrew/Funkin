@@ -31,7 +31,10 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
   {
     super();
 
-    menubarItemReloadMods.onClick = _ -> reloadMods();
+    menubarItemReloadMods.onClick = _ -> {
+      saveMods();
+      reloadMods()
+    };
 
     // we get a null object reference when quitting using the click
     // the shortcut works
