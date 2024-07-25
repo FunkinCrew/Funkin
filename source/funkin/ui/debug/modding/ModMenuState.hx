@@ -124,6 +124,7 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
     #if desktop
     var detectedMods:Array<ModMetadata> = PolymodHandler.getAllMods();
     var enabledModIds:Array<String> = Save.instance.enabledModIds;
+    enabledModIds.reverse();
 
     // Sort detectedMods based on the order of enabledModIds
     detectedMods.sort((a, b) -> {
@@ -158,6 +159,8 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
         enabledModIds.push(modBox.modId);
       }
     }
+
+    enabledModIds.reverse();
 
     Save.instance.enabledModIds = enabledModIds;
   }
