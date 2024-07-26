@@ -127,7 +127,7 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
 
     #if desktop
     var detectedMods:Array<ModMetadata> = PolymodHandler.getAllMods();
-    var enabledModIds:Array<String> = Save.instance.enabledModIds;
+    var enabledModIds:Array<String> = Save.instance.enabledModIds.clone();
     enabledModIds.reverse();
 
     // Sort detectedMods based on the order of enabledModIds
