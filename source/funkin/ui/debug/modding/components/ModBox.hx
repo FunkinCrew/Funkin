@@ -1,33 +1,36 @@
 package funkin.ui.debug.modding.components;
 
-import haxe.ui.containers.VBox;
-import haxe.ui.components.Label;
+import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.Events;
+import flixel.graphics.frames.FlxFrame;
 
 /**
  * HaxeUI component for the mod menu
  */
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/mod-menu/components/modbox.xml"))
 @:composite(ModBoxEvents)
-class ModBox extends VBox
+class ModBox extends HBox
 {
-  var modLabel:Label;
-
   public var modId(default, null):String;
   public var modName(default, null):String;
   public var modDescription(default, null):String;
+  public var modIconFrame(default, null):FlxFrame;
 
-  public function new(modId:String, modName:String, modDescription:String)
+  public function new(modId:String, modName:String, modDescription:String, modIconFrame:FlxFrame)
   {
     super();
-
-    this.modLabel.value = modName;
-    this.modLabel.tooltip = modDescription;
 
     this.modId = modId;
     this.modName = modName;
     this.modDescription = modDescription;
+    this.modIconFrame = modIconFrame;
+
+    this.tooltip = modDescription;
+
+    this.modLabel.value = modName;
+
+    this.modIcon.resource = modIconFrame;
   }
 }
 

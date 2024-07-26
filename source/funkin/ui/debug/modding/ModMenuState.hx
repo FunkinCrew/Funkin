@@ -8,8 +8,12 @@ import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
 import funkin.save.Save;
 import haxe.ui.backend.flixel.UIState;
-import polymod.Polymod;
+import polymod.Polymod.ModMetadata;
+import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.FlxGraphic;
+import flixel.math.FlxRect;
 import flixel.FlxG;
+import openfl.display.BitmapData;
 
 /**
  * A state for enabling and reordering mods.
@@ -71,9 +75,9 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
     Cursor.hide();
   }
 
-  function addMod(id:String, name:String, description:String, enabled:Bool):Void
+  function addMod(id:String, name:String, description:String, icon:FlxFrame, enabled:Bool):Void
   {
-    var mod:ModBox = new ModBox(id, name, description);
+    var mod:ModBox = new ModBox(id, name, description, icon);
 
     mod.onClick = function(_) {
       if (mod.parentComponent == disabledModsBox)
@@ -142,7 +146,7 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
 
     for (mod in detectedMods)
     {
-      addMod(mod.id, mod.title, mod.description, enabledModIds.contains(mod.id));
+      addMod(mod.id, mod.title, mod.description, getModIcon(mod.iconPath), enabledModIds.contains(mod.id));
     }
     #end
   }
@@ -179,5 +183,30 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
     PolymodHandler.forceReloadAssets();
 
     FlxG.switchState(() -> new MainMenuState());
+  }
+
+  function getModIcon(iconPath:String):FlxFrame
+  {
+    if (iconPath == null || iconPath == "")
+    {
+      return null;
+    }
+
+    if (sys.FileSystem.exists(iconPath))
+    {
+      var iconBitmap:BitmapData = BitmapData.fromFile(iconPath);
+
+      var iconGraphic:FlxGraphic = FlxGraphic.fromBitmapData(iconBitmap, false, iconPath);
+
+      @:privateAccess
+      {
+        var frame:FlxFrame = new FlxFrame(iconGraphic);
+        frame.frame = new FlxRect(0, 0, iconGraphic.width, iconGraphic.height);
+        frame.sourceSize.set(iconGraphic.width, iconGraphic.height);
+        return frame;
+      }
+    }
+
+    return null;
   }
 }
