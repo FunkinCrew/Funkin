@@ -198,13 +198,7 @@ class ModMenuState extends UIState // UIState derives from MusicBeatState
 
       var iconGraphic:FlxGraphic = FlxGraphic.fromBitmapData(iconBitmap, false, iconPath);
 
-      @:privateAccess
-      {
-        var frame:FlxFrame = new FlxFrame(iconGraphic);
-        frame.frame = new FlxRect(0, 0, iconGraphic.width, iconGraphic.height);
-        frame.sourceSize.set(iconGraphic.width, iconGraphic.height);
-        return frame;
-      }
+      return iconGraphic.imageFrame.frame;
     }
 
     return null;
