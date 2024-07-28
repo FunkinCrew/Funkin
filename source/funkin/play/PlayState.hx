@@ -694,12 +694,7 @@ class PlayState extends MusicBeatSubState
       initMinimalMode();
     }
     initStrumlines();
-
-    // Initialize the judgements and combo meter.
-    comboPopUps = new PopUpStuff();
-    comboPopUps.zIndex = 900;
-    add(comboPopUps);
-    comboPopUps.cameras = [camHUD];
+    initPopups();
 
     #if discord_rpc
     // Initialize Discord Rich Presence.
@@ -1725,6 +1720,21 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.fadeInArrows();
     opponentStrumline.fadeInArrows();
+  }
+
+  /**
+   * Configures the judgement and combo popups.
+   */
+  function initPopups():Void
+  {
+    var noteStyleId:String = currentChart.noteStyle;
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    // Initialize the judgements and combo meter.
+    comboPopUps = new PopUpStuff(noteStyle);
+    comboPopUps.zIndex = 900;
+    add(comboPopUps);
+    comboPopUps.cameras = [camHUD];
   }
 
   /**
@@ -3005,7 +3015,6 @@ class PlayState extends MusicBeatSubState
     GameOverSubState.reset();
     PauseSubState.reset();
     Countdown.reset();
-    PopUpStuff.reset();
 
     // Clear the static reference to this state.
     instance = null;

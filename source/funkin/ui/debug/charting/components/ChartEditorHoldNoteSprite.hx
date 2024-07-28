@@ -60,7 +60,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
 
   override function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
   {
-    loadGraphic(noteStyle.getHoldNoteAssetPath());
+    var graphicPath = noteStyle.getHoldNoteAssetPath();
+    if (graphicPath == null) return;
+    loadGraphic(graphicPath);
 
     antialiasing = true;
 
