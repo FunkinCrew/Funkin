@@ -580,6 +580,8 @@ class PlayState extends MusicBeatSubState
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
 
+  var skipEndingTransition:Bool = false;
+
   static final BACKGROUND_COLOR:FlxColor = FlxColor.BLACK;
 
   /**
@@ -1926,7 +1928,9 @@ class PlayState extends MusicBeatSubState
       return;
     }
 
-    FlxG.sound.music.onComplete = endSong.bind(false);
+    FlxG.sound.music.onComplete = function() {
+      endSong(skipEndingTransition);
+    };
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
     FlxG.sound.music.play(true, startTimestamp - Conductor.instance.instrumentalOffset);
@@ -1965,7 +1969,7 @@ class PlayState extends MusicBeatSubState
     if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
-    if (!FlxG.sound.music.playing) return;
+    if (!(FlxG?.sound?.music?.playing ?? false)) return;
 
     vocals.pause();
 
