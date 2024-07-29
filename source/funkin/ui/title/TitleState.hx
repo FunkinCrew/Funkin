@@ -32,6 +32,7 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
+import haxe.Timer;
 
 #if desktop
 #end
@@ -59,6 +60,31 @@ class TitleState extends MusicBeatState
   {
     super.create();
     swagShader = new ColorSwap();
+
+    if (true)
+    {
+      var paths = [
+        "characters/BOYFRIEND",
+        "characters/bfCar",
+        "characters/daddyDearest",
+        "characters/gfCar",
+        "characters/darnell"
+      ];
+
+      {
+        var start = Timer.stamp();
+        for (rpath in paths)
+        {
+          var path = Paths.image(rpath, "shared");
+          var thread = funkin.util.assets.AsyncAssetLoader.loadGraphic(path);
+        }
+
+        funkin.util.assets.AsyncAssetLoader.waitForAssets();
+        var end = Timer.stamp();
+
+        trace('ASYNC TOOK ${end - start} seconds');
+      }
+    }
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
     FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
