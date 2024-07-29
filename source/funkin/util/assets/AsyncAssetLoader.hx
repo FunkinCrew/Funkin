@@ -14,8 +14,8 @@ class AsyncAssetLoader
 
     var thread:Thread = Thread.create(() -> {
       FlxG.bitmap.add(path);
-      remaining.decrement();
       trace('LOADED ASYNC: $path');
+      remaining.decrement();
     });
     return thread;
   }
