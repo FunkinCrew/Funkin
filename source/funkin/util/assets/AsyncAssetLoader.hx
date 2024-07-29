@@ -2,32 +2,68 @@ package funkin.util.assets;
 
 import flixel.FlxG;
 import sys.thread.Thread;
-import sys.thread.Lock;
+import sys.thread.Mutex;
 
 class AsyncAssetLoader
 {
-  static var workingThreads:Array<Thread> = [];
-  static var lock:Lock = new Lock();
+  static var remaining:AsyncRemaining = new AsyncRemaining();
 
   public static function loadGraphic(path:String):Thread
   {
-    var thread = Thread.create(() -> {
+    remaining.increment();
+
+    var thread:Thread = Thread.create(() -> {
       FlxG.bitmap.add(path);
+      remaining.decrement();
       trace('LOADED ASYNC: $path');
-      lock.release();
     });
-    workingThreads.push(thread);
     return thread;
   }
 
   public static function waitForAssets():Void
   {
     trace("WAITING FOR ASSETS");
-    for (_ in workingThreads)
+    while (true)
     {
-      lock.wait();
+      if (remaining.get() <= 0)
+      {
+        break;
+      }
     }
-    workingThreads = [];
     trace("FINISHED LOADING ASSETS");
+  }
+}
+
+private class AsyncRemaining
+{
+  public var mutex(default, null):Mutex;
+  public var remaining(default, null):Int;
+
+  public function new()
+  {
+    remaining = 0;
+    mutex = new Mutex();
+  }
+
+  public function increment():Void
+  {
+    mutex.acquire();
+    remaining++;
+    mutex.release();
+  }
+
+  public function decrement():Void
+  {
+    mutex.acquire();
+    remaining--;
+    mutex.release();
+  }
+
+  public function get():Int
+  {
+    mutex.acquire();
+    var rem:Int = remaining;
+    mutex.release();
+    return rem;
   }
 }
