@@ -76,7 +76,7 @@ class TitleState extends MusicBeatState
         for (rpath in paths)
         {
           var path = Paths.image(rpath, "shared");
-          var thread = funkin.util.assets.AsyncAssetLoader.loadGraphic(path);
+          funkin.util.assets.AsyncAssetLoader.loadGraphic(path);
         }
 
         funkin.util.assets.AsyncAssetLoader.waitForAssets();

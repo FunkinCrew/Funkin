@@ -6,18 +6,16 @@ import sys.thread.Mutex;
 
 class AsyncAssetLoader
 {
-  static var remaining:AsyncRemaining = new AsyncRemaining();
+  public static var remaining(default, null):AsyncRemaining = new AsyncRemaining();
 
-  public static function loadGraphic(path:String):Thread
+  public static function loadGraphic(path:String):Void
   {
     remaining.increment();
-
-    var thread:Thread = Thread.create(() -> {
+    Thread.create(() -> {
       FlxG.bitmap.add(path);
       trace('LOADED ASYNC: $path');
       remaining.decrement();
     });
-    return thread;
   }
 
   public static function waitForAssets():Void
