@@ -5759,6 +5759,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     });
   }
 
+  public override function onFocusLost():Void
+  {
+    // I don't think onFocusLost works in substates so this will do for now.
+    if (PlayState.instance != null)
+    {
+      PlayState.instance.onFocusLost();
+    }
+  }
+
   /**
    * COMMAND FUNCTIONS
    */
