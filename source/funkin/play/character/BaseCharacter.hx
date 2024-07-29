@@ -461,7 +461,6 @@ class BaseCharacter extends Bopper
       if (!currentAnimation.startsWith('dance') && !currentAnimation.startsWith('idle') && !isAnimationFinished()) return;
     }
 
-    trace('${characterId}: Actually dancing');
     // Otherwise, fallback to the super dance() method, which handles playing the idle animation.
     super.dance();
   }
@@ -522,6 +521,9 @@ class BaseCharacter extends Bopper
   {
     super.onNoteHit(event);
 
+    // If another script cancelled the event, don't do anything.
+    if (event.eventCanceled) return;
+
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
       // If the note is from the same strumline, play the sing animation.
@@ -553,6 +555,9 @@ class BaseCharacter extends Bopper
   public override function onNoteMiss(event:NoteScriptEvent)
   {
     super.onNoteMiss(event);
+
+    // If another script cancelled the event, don't do anything.
+    if (event.eventCanceled) return;
 
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {

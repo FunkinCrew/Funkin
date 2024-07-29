@@ -89,12 +89,14 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     target.frames = atlas;
 
-    target.scale.x = _data.assets.note.scale;
-    target.scale.y = _data.assets.note.scale;
     target.antialiasing = !_data.assets.note.isPixel;
 
     // Apply the animations.
     buildNoteAnimations(target);
+
+    // Set the scale.
+    target.setGraphicSize(Strumline.STRUMLINE_SIZE * getNoteScale());
+    target.updateHitbox();
   }
 
   var noteFrames:FlxAtlasFrames = null;
@@ -154,6 +156,16 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     target.animation.addByPrefix('greenScroll', upData.prefix, upData.frameRate, upData.looped, upData.flipX, upData.flipY);
     var rightData:AnimationData = fetchNoteAnimationData(RIGHT);
     target.animation.addByPrefix('redScroll', rightData.prefix, rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
+  }
+
+  public function isNoteAnimated():Bool
+  {
+    return _data.assets.note.animated;
+  }
+
+  public function getNoteScale():Float
+  {
+    return _data.assets.note.scale;
   }
 
   function fetchNoteAnimationData(dir:NoteDirection):AnimationData

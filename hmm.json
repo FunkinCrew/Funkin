@@ -11,14 +11,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "a7d8e3bad89a0a3506a4714121f73d8e34522c49",
+      "ref": "10c2a203c43a78ff1ff26b8368fd736576829d8d",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "a523c3b56622f0640933944171efed46929e360e",
+      "ref": "9c6fb47968e894eb36bf10e94725cd7640c49281",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -30,7 +30,7 @@
       "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "719b4f10d94186ed55f6fef1b6618d32abec8c15",
+      "ref": "d0afed7293c71ffdb1184751317fc709b44c9056",
       "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
@@ -99,8 +99,10 @@
     },
     {
       "name": "hxcpp",
-      "type": "haxelib",
-      "version": "4.3.2"
+      "type": "git",
+      "dir": null,
+      "url": "https://github.com/HaxeFoundation/hxcpp",
+      "ref": "01cfee282a9a783e10c5a7774a3baaf547e6b0a7"
     },
     {
       "name": "hxcpp-debug-server",
@@ -120,6 +122,20 @@
       "dir": null,
       "ref": "a8c26f18463c98da32f744c214fe02273e1823fa",
       "url": "https://github.com/FunkinCrew/json2object"
+    },
+    {
+      "name": "jsonpatch",
+      "type": "git",
+      "dir": null,
+      "ref": "f9b83215acd586dc28754b4ae7f69d4c06c3b4d3",
+      "url": "https://github.com/EliteMasterEric/jsonpatch"
+    },
+    {
+      "name": "jsonpath",
+      "type": "git",
+      "dir": null,
+      "ref": "7a24193717b36393458c15c0435bb7c4470ecdda",
+      "url": "https://github.com/EliteMasterEric/jsonpath"
     },
     {
       "name": "lime",
@@ -167,7 +183,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "bfbe30d81601b3543d80dce580108ad6b7e182c7",
+      "ref": "98945c6c7f5ecde01a32c4623d3515bf012a023a",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
