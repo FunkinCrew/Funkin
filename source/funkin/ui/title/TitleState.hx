@@ -82,7 +82,7 @@ class TitleState extends MusicBeatState
         funkin.util.assets.AsyncAssetLoader.waitForAssets();
         var end = Timer.stamp();
 
-        trace('ASYNC TOOK ${end - start} seconds');
+        trace('async load took ${end - start}s');
       }
     }
 

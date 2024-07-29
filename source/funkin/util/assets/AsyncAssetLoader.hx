@@ -13,14 +13,14 @@ class AsyncAssetLoader
     remaining.increment();
     Thread.create(() -> {
       FlxG.bitmap.add(path);
-      trace('LOADED ASYNC: $path');
+      trace('loaded async: $path');
       remaining.decrement();
     });
   }
 
   public static function waitForAssets():Void
   {
-    trace("WAITING FOR ASSETS");
+    trace("Waiting for assets");
     while (true)
     {
       if (remaining.get() <= 0)
@@ -28,7 +28,7 @@ class AsyncAssetLoader
         break;
       }
     }
-    trace("FINISHED LOADING ASSETS");
+    trace("finished loading assets");
   }
 }
 
