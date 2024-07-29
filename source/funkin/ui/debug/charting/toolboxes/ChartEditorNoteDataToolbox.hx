@@ -192,7 +192,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
           var paramStepper:NumberStepper = new NumberStepper();
           paramStepper.value = (setParamsToPlace ? chartEditorState.noteParamsToPlace[i].value : param.data?.defaultValue) ?? 0.0;
           paramStepper.percentWidth = 100;
-          paramStepper.step = param.data?.step ?? 1;
+          paramStepper.step = param.data?.step ?? 1.0;
 
           // this check should be unnecessary but for some reason
           // even when these are null it will set it to 0
@@ -283,7 +283,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       return;
     }
 
-    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, (toolboxNotesGrid?.height ?? 50) + HEIGHT_OFFSET)) + MINIMIZE_FIX;
+    var heightToSet:Int = Std.int(Math.max(DIALOG_HEIGHT, (toolboxNotesGrid?.height ?? 50.0) + HEIGHT_OFFSET)) + MINIMIZE_FIX;
     if (this.height != heightToSet)
     {
       this.height = heightToSet;
