@@ -1,67 +1,59 @@
 package funkin.util.assets;
 
-import flixel.FlxG;
 import sys.thread.Thread;
 import sys.thread.Mutex;
+import flixel.graphics.FlxGraphic;
+import flixel.FlxG;
 
+/**
+ * Helper class for preloading assets asynchronously
+ */
 class AsyncAssetLoader
 {
-  public static var remaining(default, null):AsyncRemaining = new AsyncRemaining();
+  /**
+   * The assets that still need to load
+   */
+  public static var remaining(default, null):Int = 0;
 
+  static var mutex:Mutex = new Mutex();
+
+  /**
+   * Loads a `FlxGraphic` asynchronously
+   * @param path The path to the image
+   */
   public static function loadGraphic(path:String):Void
-  {
-    remaining.increment();
-    Thread.create(() -> {
-      FlxG.bitmap.add(path);
-      trace('loaded async: $path');
-      remaining.decrement();
-    });
-  }
-
-  public static function waitForAssets():Void
-  {
-    trace("Waiting for assets");
-    while (true)
-    {
-      if (remaining.get() <= 0)
-      {
-        break;
-      }
-    }
-    trace("finished loading assets");
-  }
-}
-
-private class AsyncRemaining
-{
-  public var mutex(default, null):Mutex;
-  public var remaining(default, null):Int;
-
-  public function new()
-  {
-    remaining = 0;
-    mutex = new Mutex();
-  }
-
-  public function increment():Void
   {
     mutex.acquire();
     remaining++;
     mutex.release();
+
+    Thread.create(() -> {
+      // For thread safety we cache it ourselves
+      var graphic:FlxGraphic = FlxGraphic.fromAssetKey(path, false, null, false);
+
+      mutex.acquire();
+      FlxG.bitmap.addGraphic(graphic);
+      trace('Loaded async: $path');
+      remaining--;
+      mutex.release();
+    });
   }
 
-  public function decrement():Void
+  /**
+   * Halts the program until all assets finished loading
+   */
+  public static function waitForAssets():Void
   {
-    mutex.acquire();
-    remaining--;
-    mutex.release();
-  }
-
-  public function get():Int
-  {
-    mutex.acquire();
-    var rem:Int = remaining;
-    mutex.release();
-    return rem;
+    trace('Waiting for assets');
+    while (true)
+    {
+      mutex.acquire();
+      if (remaining <= 0)
+      {
+        break;
+      }
+      mutex.release();
+    }
+    trace('Finished loading assets');
   }
 }
