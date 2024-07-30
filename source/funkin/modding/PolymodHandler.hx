@@ -234,6 +234,8 @@ class PolymodHandler
     // NOTE: Scripted classes are automatically aliased to their parent class.
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
 
+    Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
@@ -251,6 +253,10 @@ class PolymodHandler
     // `cpp.Lib`
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
+
+    // `Unserializer`
+    // Unserializerr.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
+    Polymod.blacklistImport('Unserializer');
 
     // `polymod.*`
     // You can probably unblacklist a module

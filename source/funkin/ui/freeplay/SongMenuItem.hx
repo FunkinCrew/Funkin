@@ -162,7 +162,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     sparkle = new FlxSprite(ranking.x, ranking.y);
     sparkle.frames = Paths.getSparrowAtlas('freeplay/sparkle');
-    sparkle.animation.addByPrefix('sparkle', 'sparkle', 24, false);
+    sparkle.animation.addByPrefix('sparkle', 'sparkle Export0', 24, false);
     sparkle.animation.play('sparkle', true);
     sparkle.scale.set(0.8, 0.8);
     sparkle.blend = BlendMode.ADD;
@@ -522,7 +522,6 @@ class SongMenuItem extends FlxSpriteGroup
 
     checkWeek(songData?.songId);
   }
-
 
   var frameInTicker:Float = 0;
   var frameInTypeBeat:Int = 0;
