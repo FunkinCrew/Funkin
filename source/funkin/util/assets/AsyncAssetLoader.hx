@@ -13,7 +13,7 @@ class AsyncAssetLoader
   /**
    * The assets that still need to load
    */
-  public static var remaining(default, null):Int = 0;
+  public static var remaining(get, null):Int = 0;
 
   static var mutex:Mutex = new Mutex();
 
@@ -55,5 +55,13 @@ class AsyncAssetLoader
       mutex.release();
     }
     trace('Finished loading assets');
+  }
+
+  function get_remaining():Int
+  {
+    mutex.acquire();
+    var value:Int = remaining;
+    mutex.release();
+    return value;
   }
 }
