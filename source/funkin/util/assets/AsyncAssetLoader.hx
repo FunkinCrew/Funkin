@@ -2,6 +2,8 @@ package funkin.util.assets;
 
 import sys.thread.Thread;
 import sys.thread.Mutex;
+import openfl.media.Sound;
+import openfl.utils.Assets;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 
@@ -40,6 +42,34 @@ class AsyncAssetLoader
   }
 
   /**
+   * Loads a `Sound` asynchronously
+   * @param path The path to the sound
+   */
+  public static function loadSound(path:String):Void
+  {
+    if (!Assets.cache.enabled)
+    {
+      trace('Assets cache is disabled\nThere is no use preloading $path');
+      return;
+    }
+
+    mutex.acquire();
+    remaining++;
+    mutex.release();
+
+    Thread.create(() -> {
+      // For thread safety we cache it ourselves
+      var sound:Sound = Assets.getSound(path, false);
+
+      mutex.acquire();
+      Assets.cache.setSound(path, sound);
+      trace('Loaded async: $path');
+      remaining--;
+      mutex.release();
+    });
+  }
+
+  /**
    * Halts the program until all assets finished loading
    */
   public static function waitForAssets():Void
@@ -47,17 +77,15 @@ class AsyncAssetLoader
     trace('Waiting for assets');
     while (true)
     {
-      mutex.acquire();
       if (remaining <= 0)
       {
         break;
       }
-      mutex.release();
     }
     trace('Finished loading assets');
   }
 
-  function get_remaining():Int
+  static function get_remaining():Int
   {
     mutex.acquire();
     var value:Int = remaining;

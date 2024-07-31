@@ -86,6 +86,30 @@ class TitleState extends MusicBeatState
       }
     }
 
+    if (true)
+    {
+      var paths = [
+        "freakyMenu/freakyMenu",
+        "chartEditorLoop/chartEditorLoop",
+        "freeplayRandom/freeplayRandom",
+        "girlfriendsRingtone/girlfriendsRingtone",
+      ];
+
+      {
+        var start = Timer.stamp();
+        for (rpath in paths)
+        {
+          var path = Paths.music(rpath);
+          funkin.util.assets.AsyncAssetLoader.loadSound(path);
+        }
+
+        funkin.util.assets.AsyncAssetLoader.waitForAssets();
+        var end = Timer.stamp();
+
+        trace('async load took ${end - start}s');
+      }
+    }
+
     curWacky = FlxG.random.getObject(getIntroTextShit());
     FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
     FlxG.sound.cache(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
