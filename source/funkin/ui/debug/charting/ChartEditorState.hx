@@ -283,6 +283,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final WELCOME_MUSIC_FADE_IN_DURATION:Float = 10.0;
 
   /**
+	 * Hitsounds are played with a strange offset and this should not happen.
+	 */
+	public static final HITSOUND_OFFSET:Float = -13;
+
+  /**
    * INSTANCE DATA
    */
   // ==============================
@@ -6290,10 +6295,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Check for notes between the old and new song positions.
 
-      if (noteData.time < oldSongPosition) // Note is in the past.
+     if (noteData.time < (oldSongPosition - HITSOUND_OFFSET)) // Note is in the past.
         continue;
 
-      if (noteData.time > newSongPosition) // Note is in the future.
+    if (noteData.time > (newSongPosition - HITSOUND_OFFSET)) // Note is in the future.
         return; // Assume all notes are also in the future.
 
       // Note was just hit.
