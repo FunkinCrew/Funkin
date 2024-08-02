@@ -19,7 +19,7 @@ Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can act
 
 # Modding
 
-Feel free to start learning to mod the game by reading our [documentation](https://github.com/FunkinCrew/funkin-modding-docs) and guide to modding.
+Feel free to start learning to mod the game by reading our [documentation](https://funkincrew.github.io/funkin-modding-docs/) and guide to modding.
 
 # Credits and Special Thanks
 
