@@ -17,6 +17,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.notes.notekind.NoteKindManager;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -730,11 +731,15 @@ class Strumline extends FlxSpriteGroup
 
     if (noteSprite != null)
     {
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
+      noteSprite.setupNoteGraphic(noteKindStyle);
+
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
 
       noteSprite.x = this.x;
       noteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
+      noteSprite.x -= (noteSprite.width - Strumline.STRUMLINE_SIZE) / 2; // Center it
       noteSprite.x -= NUDGE;
       // noteSprite.x += INITIAL_OFFSET;
       noteSprite.y = -9999;
@@ -749,6 +754,9 @@ class Strumline extends FlxSpriteGroup
 
     if (holdNoteSprite != null)
     {
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
+      holdNoteSprite.setupHoldNoteGraphic(noteKindStyle);
+
       holdNoteSprite.parentStrumline = this;
       holdNoteSprite.noteData = note;
       holdNoteSprite.strumTime = note.time;
