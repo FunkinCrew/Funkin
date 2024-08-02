@@ -644,8 +644,8 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.3
       });
 
-    var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
-    var diffSelRight:DifficultySelector = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
+    var diffSelLeft:DifficultySelector = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls);
+    var diffSelRight:DifficultySelector = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls);
     diffSelLeft.visible = false;
     diffSelRight.visible = false;
     add(diffSelLeft);
@@ -821,7 +821,7 @@ class FreeplayState extends MusicBeatSubState
 
       funnyMenu.init(FlxG.width, 0, tempSong);
       funnyMenu.onConfirm = function() {
-        capsuleOnConfirmDefault(funnyMenu);
+        capsuleOnOpenDefault(funnyMenu);
       };
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.targetPos.x = funnyMenu.x;
@@ -1202,7 +1202,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * If true, disable interaction with the interface.
    */
-  var busy:Bool = false;
+  public var busy:Bool = false;
 
   var originalPos:FlxPoint = new FlxPoint();
 
@@ -1220,16 +1220,6 @@ class FreeplayState extends MusicBeatSubState
           songId: "tutorial",
           difficultyId: "hard"
         });
-    }
-
-    if (FlxG.keys.justPressed.P)
-    {
-      FlxG.switchState(FreeplayState.build(
-        {
-          {
-            character: currentCharacterId == "pico" ? Constants.DEFAULT_CHARACTER : "pico",
-          }
-        }));
     }
 
     // if (FlxG.keys.justPressed.H)
@@ -1495,7 +1485,7 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true);
     }
 
-    if (controls.BACK)
+    if (controls.BACK && !busy)
     {
       busy = true;
       FlxTween.globalManager.clear();
@@ -1748,7 +1738,86 @@ class FreeplayState extends MusicBeatSubState
     capsuleOnConfirmDefault(targetSong);
   }
 
-  function capsuleOnConfirmDefault(cap:SongMenuItem):Void
+  /**
+   * Called when hitting ENTER to open the instrumental list.
+   */
+  function capsuleOnOpenDefault(cap:SongMenuItem):Void
+  {
+    var targetSongId:String = cap?.songData?.songId ?? 'unknown';
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    if (targetSongNullable == null)
+    {
+      FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      return;
+    }
+    var targetSong:Song = targetSongNullable;
+    var targetDifficultyId:String = currentDifficulty;
+    var targetVariation:Null<String> = targetSong.getFirstValidVariation(targetDifficultyId, currentCharacter);
+    var targetLevelId:Null<String> = cap?.songData?.levelId;
+    PlayStatePlaylist.campaignId = targetLevelId ?? null;
+
+    var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(targetDifficultyId, targetVariation);
+    if (targetDifficulty == null)
+    {
+      FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      return;
+    }
+
+    trace('target difficulty: ${targetDifficultyId}');
+    trace('target variation: ${targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION}');
+
+    var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+    var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
+      targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+
+    if (altInstrumentalIds.length > 0)
+    {
+      var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
+      openInstrumentalList(cap, instrumentalIds);
+    }
+    else
+    {
+      trace('NO ALTS');
+      capsuleOnConfirmDefault(cap);
+    }
+  }
+
+  public function getControls():Controls
+  {
+    return controls;
+  }
+
+  function openInstrumentalList(cap:SongMenuItem, instrumentalIds:Array<String>):Void
+  {
+    busy = true;
+
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.x + 175, cap.y + 115, instrumentalIds);
+    capsuleOptionsMenu.cameras = [funnyCam];
+    capsuleOptionsMenu.zIndex = 10000;
+    add(capsuleOptionsMenu);
+
+    capsuleOptionsMenu.onConfirm = function(targetInstId:String) {
+      capsuleOnConfirmDefault(cap, targetInstId);
+    };
+  }
+
+  var capsuleOptionsMenu:Null<CapsuleOptionsMenu> = null;
+
+  public function cleanupCapsuleOptionsMenu():Void
+  {
+    this.busy = false;
+
+    if (capsuleOptionsMenu != null)
+    {
+      remove(capsuleOptionsMenu);
+      capsuleOptionsMenu = null;
+    }
+  }
+
+  /**
+   * Called when hitting ENTER to play the song.
+   */
+  function capsuleOnConfirmDefault(cap:SongMenuItem, ?targetInstId:String):Void
   {
     busy = true;
     letterSort.inputEnabled = false;
@@ -1775,18 +1844,11 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    var baseInstrumentalId:String = targetDifficulty?.characters?.instrumental ?? '';
-    var altInstrumentalIds:Array<String> = targetDifficulty?.characters?.altInstrumentals ?? [];
+    var baseInstrumentalId:String = targetSong?.getBaseInstrumentalId(targetDifficultyId, targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+    var altInstrumentalIds:Array<String> = targetSong?.listAltInstrumentalIds(targetDifficultyId,
+      targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
-    var targetInstId:String = baseInstrumentalId;
-
-    // TODO: Make this a UI element.
-    #if (debug || FORCE_DEBUG_VERSION)
-    if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
-    {
-      targetInstId = altInstrumentalIds[0];
-    }
-    #end
+    if (targetInstId == null) targetInstId = baseInstrumentalId;
 
     // Visual and audio effects.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
@@ -1941,10 +2003,12 @@ class FreeplayState extends MusicBeatSubState
       if (previewSongId == null) return;
 
       var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(previewSongId);
-      var songDifficulty = previewSong?.getDifficulty(currentDifficulty,
-        previewSong?.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST);
-      var baseInstrumentalId:String = songDifficulty?.characters?.instrumental ?? '';
-      var altInstrumentalIds:Array<String> = songDifficulty?.characters?.altInstrumentals ?? [];
+      var currentVariation = previewSong?.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
+      var songDifficulty = previewSong?.getDifficulty(currentDifficulty, currentVariation);
+
+      var baseInstrumentalId:String = previewSong?.getBaseInstrumentalId(currentDifficulty, songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+      var altInstrumentalIds:Array<String> = previewSong?.listAltInstrumentalIds(currentDifficulty,
+        songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
       var instSuffix:String = baseInstrumentalId;
 
@@ -2007,9 +2071,13 @@ class DifficultySelector extends FlxSprite
   var controls:Controls;
   var whiteShader:PureColor;
 
-  public function new(x:Float, y:Float, flipped:Bool, controls:Controls)
+  var parent:FreeplayState;
+
+  public function new(parent:FreeplayState, x:Float, y:Float, flipped:Bool, controls:Controls)
   {
     super(x, y);
+
+    this.parent = parent;
 
     this.controls = controls;
 
@@ -2026,8 +2094,8 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
-    if (flipX && controls.UI_RIGHT_P) moveShitDown();
-    if (!flipX && controls.UI_LEFT_P) moveShitDown();
+    if (flipX && controls.UI_RIGHT_P && !parent.busy) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P && !parent.busy) moveShitDown();
 
     super.update(elapsed);
   }
