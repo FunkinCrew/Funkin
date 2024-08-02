@@ -545,12 +545,26 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   @:default([])
   public var altInstrumentals:Array<String> = [];
 
-  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '')
+  @:optional
+  public var opponentVocals:Null<Array<String>> = null;
+
+  @:optional
+  public var playerVocals:Null<Array<String>> = null;
+
+  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>,
+      ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
   {
     this.player = player;
     this.girlfriend = girlfriend;
     this.opponent = opponent;
     this.instrumental = instrumental;
+
+    this.altInstrumentals = altInstrumentals;
+    this.opponentVocals = opponentVocals;
+    this.playerVocals = playerVocals;
+
+    if (opponentVocals == null) this.opponentVocals = [opponent];
+    if (playerVocals == null) this.playerVocals = [player];
   }
 
   public function clone():SongCharacterData
@@ -738,18 +752,6 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   {
     return new SongEventDataRaw(this.time, this.eventKind, this.value);
   }
-}
-
-/**
- * Wrap SongEventData in an abstract so we can overload operators.
- */
-@:forward(time, eventKind, value, activated, getStepTime, clone)
-abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
-{
-  public function new(time:Float, eventKind:String, value:Dynamic = null)
-  {
-    this = new SongEventDataRaw(time, eventKind, value);
-  }
 
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
@@ -773,27 +775,27 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     }
   }
 
-  public inline function getHandler():Null<SongEvent>
+  public function getHandler():Null<SongEvent>
   {
     return SongEventRegistry.getEvent(this.eventKind);
   }
 
-  public inline function getSchema():Null<SongEventSchema>
+  public function getSchema():Null<SongEventSchema>
   {
     return SongEventRegistry.getEventSchema(this.eventKind);
   }
 
-  public inline function getDynamic(key:String):Null<Dynamic>
+  public function getDynamic(key:String):Null<Dynamic>
   {
     return this.value == null ? null : Reflect.field(this.value, key);
   }
 
-  public inline function getBool(key:String):Null<Bool>
+  public function getBool(key:String):Null<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
-  public inline function getInt(key:String):Null<Int>
+  public function getInt(key:String):Null<Int>
   {
     if (this.value == null) return null;
     var result = Reflect.field(this.value, key);
@@ -803,7 +805,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     return cast result;
   }
 
-  public inline function getFloat(key:String):Null<Float>
+  public function getFloat(key:String):Null<Float>
   {
     if (this.value == null) return null;
     var result = Reflect.field(this.value, key);
@@ -813,17 +815,17 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     return cast result;
   }
 
-  public inline function getString(key:String):String
+  public function getString(key:String):String
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
-  public inline function getArray(key:String):Array<Dynamic>
+  public function getArray(key:String):Array<Dynamic>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
-  public inline function getBoolArray(key:String):Array<Bool>
+  public function getBoolArray(key:String):Array<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
@@ -854,6 +856,19 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     }
 
     return result;
+  }
+}
+
+/**
+ * Wrap SongEventData in an abstract so we can overload operators.
+ */
+@:forward(time, eventKind, value, activated, getStepTime, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray,
+  getBoolArray, buildTooltip, valueAsStruct)
+abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
+{
+  public function new(time:Float, eventKind:String, value:Dynamic = null)
+  {
+    this = new SongEventDataRaw(time, eventKind, value);
   }
 
   public function clone():SongEventData
