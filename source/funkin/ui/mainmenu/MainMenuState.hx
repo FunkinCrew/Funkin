@@ -119,7 +119,10 @@ class MainMenuState extends MusicBeatState
 
       openSubState(new FreeplayState(
         {
-          character: FlxG.keys.pressed.SHIFT ? 'pico' : 'bf',
+          #if debug
+          // If SHIFT is held, toggle the selected character, else use the remembered character
+          character: (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == Constants.DEFAULT_CHARACTER ? 'pico' : 'bf') : null,
+          #end
         }));
     });
 
