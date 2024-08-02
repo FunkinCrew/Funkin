@@ -70,6 +70,8 @@ class ResultState extends MusicBeatSubState
       delay:Float
     }> = [];
 
+  var playerCharacterId:Null<String>;
+
   var rankBg:FunkinSprite;
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;
@@ -164,7 +166,7 @@ class ResultState extends MusicBeatSubState
     add(soundSystem);
 
     // Fetch playable character data. Default to BF on the results screen if we can't find it.
-    var playerCharacterId:Null<String> = PlayerRegistry.instance.getCharacterOwnerId(params.characterId);
+    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId);
     var playerCharacter:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? 'bf');
 
     trace('Got playable character: ${playerCharacter?.getName()}');
@@ -189,7 +191,7 @@ class ResultState extends MusicBeatSubState
           if (!(animData.looped ?? true))
           {
             // Animation is not looped.
-            animation.onAnimationFinish.add((_name:String) -> {
+            animation.onAnimationComplete.add((_name:String) -> {
               if (animation != null)
               {
                 animation.anim.pause();
@@ -198,7 +200,7 @@ class ResultState extends MusicBeatSubState
           }
           else if (animData.loopFrameLabel != null)
           {
-            animation.onAnimationFinish.add((_name:String) -> {
+            animation.onAnimationComplete.add((_name:String) -> {
               if (animation != null)
               {
                 animation.playAnimation(animData.loopFrameLabel ?? ''); // unpauses this anim, since it's on PlayOnce!
@@ -207,7 +209,7 @@ class ResultState extends MusicBeatSubState
           }
           else if (animData.loopFrame != null)
           {
-            animation.onAnimationFinish.add((_name:String) -> {
+            animation.onAnimationComplete.add((_name:String) -> {
               if (animation != null)
               {
                 animation.anim.curFrame = animData.loopFrame ?? 0;
@@ -742,6 +744,7 @@ class ResultState extends MusicBeatSubState
                 FlxG.switchState(FreeplayState.build(
                   {
                     {
+                      character: playerCharacterId ?? "bf",
                       fromResults:
                         {
                           oldRank: Scoring.calculateRank(params?.prevScoreData),
@@ -799,8 +802,9 @@ typedef ResultsStateParams =
 
   /**
    * The character ID for the song we just played.
+   * @default `bf`
    */
-  var characterId:String;
+  var ?characterId:String;
 
   /**
    * Whether the displayed score is a new highscore

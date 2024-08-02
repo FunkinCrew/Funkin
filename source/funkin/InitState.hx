@@ -241,11 +241,11 @@ class InitState extends FlxState
                 totalNotesHit: 140,
                 totalNotes: 190
               }
-            // 2000 = loss
-            // 240 = good
-            // 230 = great
-            // 210 = excellent
-            // 190 = perfect
+            // 2400 total notes = 7% = LOSS
+            // 240 total notes = 79% = GOOD
+            // 230 total notes = 82% = GREAT
+            // 210 total notes = 91% = EXCELLENT
+            // 190 total notes = PERFECT
           },
       }));
     #elseif ANIMDEBUG
