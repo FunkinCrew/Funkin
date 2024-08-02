@@ -283,9 +283,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final WELCOME_MUSIC_FADE_IN_DURATION:Float = 10.0;
 
   /**
-	 * Hitsounds are played with a strange offset and this should not happen.
-	 */
-	public static final HITSOUND_OFFSET:Float = -13;
+   * Hitsounds are played with a strange offset and this should not happen.
+   */
+  public static final HITSOUND_OFFSET:Float = -60;
 
   /**
    * INSTANCE DATA
