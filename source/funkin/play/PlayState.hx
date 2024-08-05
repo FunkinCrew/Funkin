@@ -67,7 +67,7 @@ import lime.ui.Haptic;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.Lib;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import Discord.DiscordClient;
 #end
 
@@ -445,7 +445,7 @@ class PlayState extends MusicBeatSubState
    */
   public var vocals:VoicesGroup;
 
-  #if discord_rpc
+  #if FEATURE_DISCORD_RPC
   // Discord RPC variables
   var storyDifficultyText:String = '';
   var iconRPC:String = '';
@@ -698,7 +698,7 @@ class PlayState extends MusicBeatSubState
     initStrumlines();
     initPopups();
 
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
     initDiscord();
     #end
@@ -977,7 +977,7 @@ class PlayState extends MusicBeatSubState
           // boyfriendPos.put(); // TODO: Why is this here?
         }
 
-        #if discord_rpc
+        #if FEATURE_DISCORD_RPC
         DiscordClient.changePresence(detailsPausedText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
         #end
       }
@@ -1066,7 +1066,7 @@ class PlayState extends MusicBeatSubState
           moveToGameOver();
         }
 
-        #if discord_rpc
+        #if FEATURE_DISCORD_RPC
         // Game Over doesn't get his own variable because it's only used here
         DiscordClient.changePresence('Game Over - ' + detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
         #end
@@ -1278,7 +1278,7 @@ class PlayState extends MusicBeatSubState
       // Resume the countdown.
       Countdown.resumeCountdown();
 
-      #if discord_rpc
+      #if FEATURE_DISCORD_RPC
       if (startTimer.finished)
       {
         DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
@@ -1311,7 +1311,7 @@ class PlayState extends MusicBeatSubState
       VideoCutscene.resumeVideo();
     #end
 
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
     {
       if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
@@ -1337,7 +1337,7 @@ class PlayState extends MusicBeatSubState
     if (FlxG.autoPause) VideoCutscene.pauseVideo();
     #end
 
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
       currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
     #end
@@ -1744,7 +1744,7 @@ class PlayState extends MusicBeatSubState
    */
   function initDiscord():Void
   {
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     storyDifficultyText = difficultyString();
     iconRPC = currentSong.player2;
 
@@ -1957,7 +1957,7 @@ class PlayState extends MusicBeatSubState
     vocals.pitch = playbackRate;
     resyncVocals();
 
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
     DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
     #end

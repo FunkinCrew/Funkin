@@ -34,7 +34,7 @@ import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import Discord.DiscordClient;
 #end
 
@@ -123,7 +123,7 @@ class InitState extends FlxState
     //
     // DISCORD API SETUP
     //
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     DiscordClient.initialize();
 
     Application.current.onExit.add(function(exitCode) {
