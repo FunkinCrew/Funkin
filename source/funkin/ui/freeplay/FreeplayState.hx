@@ -1527,7 +1527,7 @@ class FreeplayState extends MusicBeatSubState
           var moveDataX = funnyMoveShit.x ?? spr.x;
           var moveDataY = funnyMoveShit.y ?? spr.y;
           var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
-          var moveDataWait = funnyMoveShit.wait ?? 0;
+          var moveDataWait = funnyMoveShit.wait ?? 0.0;
 
           FlxTween.tween(spr, {x: moveDataX, y: moveDataY}, moveDataSpeed, {ease: FlxEase.expoIn});
 

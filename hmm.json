@@ -23,8 +23,10 @@
     },
     {
       "name": "flixel-text-input",
-      "type": "haxelib",
-      "version": "1.1.0"
+      "type": "git",
+      "dir": null,
+      "ref": "951a0103a17bfa55eed86703ce50b4fb0d7590bc",
+      "url": "https://github.com/FunkinCrew/flixel-text-input"
     },
     {
       "name": "flixel-ui",
@@ -75,14 +77,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "5dc4c933bdc029f6139a47962e3b8c754060f210",
+      "ref": "22f7c5a8ffca90d4677cffd6e570f53761709fbc",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "57c1604d6b5174839d7e0e012a4dd5dcbfc129da",
+      "ref": "28bb710d0ae5d94b5108787593052165be43b980",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -141,7 +143,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "a393a54b6120bfa9a2f1db5a16fbf1137d41f257",
+      "ref": "f6153ffcb1ffcf733f91d531eac5fda4189e07f7",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -176,7 +178,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "228c1b5063911e2ad75cef6e3168ef0a4b9f9134",
+      "ref": "8306425c497766739510ab29e876059c96f77bd2",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
@@ -190,7 +192,7 @@
       "name": "thx.core",
       "type": "git",
       "dir": null,
-      "ref": "6240b6e136f7490d9298edbe8c1891374bd7cdf2",
+      "ref": "76d87418fadd92eb8e1b61f004cff27d656e53dd",
       "url": "https://github.com/fponticelli/thx.core"
     },
     {
