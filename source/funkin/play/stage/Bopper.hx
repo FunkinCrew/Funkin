@@ -175,10 +175,29 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
-    if (danceEvery > 0 && event.beat % danceEvery == 0)
+    if (danceEvery > 0 && event.beat % calculateDanceEvery() == 0)
     {
       dance(shouldBop);
     }
+  }
+
+  function calculateDanceEvery():Int
+  {
+    // return danceEvery;
+
+    if (danceEvery <= 0 || shouldAlternate || this.animation.getByName('idle') == null) return danceEvery;
+    else if (this.animation.curAnim.name == 'idle' && !this.animation.curAnim.finished) return 1;
+
+    var daIdle = this.animation.getByName('idle');
+    var calc:Float = (daIdle.numFrames / daIdle.frameRate) / (Conductor.instance.beatLengthMs / 1000);
+    var danceEveryNumBeats:Int = Math.ceil(calc);
+    var numeratorTweak:Int = (Conductor.instance.timeSignatureNumerator % 2 == 0) ? 2 : 3;
+    if (danceEveryNumBeats > numeratorTweak)
+    {
+      while (danceEveryNumBeats % numeratorTweak != 0)
+        danceEveryNumBeats++;
+    }
+    return Std.int(Math.max(danceEvery, danceEveryNumBeats));
   }
 
   /**
