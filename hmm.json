@@ -1,6 +1,13 @@
 {
   "dependencies": [
     {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
@@ -43,13 +50,6 @@
       "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
-      "name": "FlxPartialSound",
-      "type": "git",
-      "dir": null,
-      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
-    },
-    {
       "name": "format",
       "type": "haxelib",
       "version": "3.5.0"
@@ -89,8 +89,10 @@
     },
     {
       "name": "hscript",
-      "type": "haxelib",
-      "version": "2.5.0"
+      "type": "git",
+      "dir": null,
+      "ref": "master",
+      "url": "https://github.com/haxefoundation/hscript"
     },
     {
       "name": "hxCodec",
@@ -103,8 +105,8 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "url": "https://github.com/HaxeFoundation/hxcpp",
-      "ref": "01cfee282a9a783e10c5a7774a3baaf547e6b0a7"
+      "ref": "01cfee282a9a783e10c5a7774a3baaf547e6b0a7",
+      "url": "https://github.com/HaxeFoundation/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
