@@ -104,7 +104,7 @@
       "type": "git",
       "dir": null,
       "url": "https://github.com/HaxeFoundation/hxcpp",
-      "ref": "01cfee282a9a783e10c5a7774a3baaf547e6b0a7"
+      "ref": "8dc8020f8465027de6c2aaaed90718bc693651ed"
     },
     {
       "name": "hxcpp-debug-server",
