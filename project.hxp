@@ -474,37 +474,37 @@ class Project extends HXProject {
    */
   function configureCompileDefines() {
 		// Enable OpenFL's error handler. Required for the crash logger.
-    setCompileDefine("openfl-enable-handle-error");
+    setHaxedef("openfl-enable-handle-error");
 
 		// Enable stack trace tracking. Good for debugging but has a (minor) performance impact.
-		setCompileDefine("HXCPP_CHECK_POINTER");
-		setCompileDefine("HXCPP_STACK_LINE");
-		setCompileDefine("HXCPP_STACK_TRACE");
-		setCompileDefine("hscriptPos");
+		setHaxedef("HXCPP_CHECK_POINTER");
+		setHaxedef("HXCPP_STACK_LINE");
+		setHaxedef("HXCPP_STACK_TRACE");
+		setHaxedef("hscriptPos");
 
-		setCompileDefine("safeMode");
+		setHaxedef("safeMode");
 
 		// If we aren't using the Flixel debugger, strip it out.
 		if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this)) {
-			setCompileDefine("FLX_NO_DEBUG");
+			setHaxedef("FLX_NO_DEBUG");
 		}
 
 		// Disable the built in pause screen when unfocusing the game.
-		setCompileDefine("FLX_NO_FOCUS_LOST_SCREEN");
+		setHaxedef("FLX_NO_FOCUS_LOST_SCREEN");
 
 		// HaxeUI configuration.
-		setCompileDefine("haxeui_no_mouse_reset");
-		setCompileDefine("haxeui_focus_out_on_click"); // Unfocus a dialog when clicking out of it
-		setCompileDefine("haxeui_dont_impose_base_class"); // Suppress a macro error
+		setHaxedef("haxeui_no_mouse_reset");
+		setHaxedef("haxeui_focus_out_on_click"); // Unfocus a dialog when clicking out of it
+		setHaxedef("haxeui_dont_impose_base_class"); // Suppress a macro error
 
 		if (isRelease()) {
 			// Improve performance on Nape
 			// TODO: Do we even use Nape?
-			setCompileDefine("NAPE_RELEASE_BUILD");
+			setHaxedef("NAPE_RELEASE_BUILD");
 		}
 
 		// Cleaner looking compiler errors.
-		setCompileDefine("message.reporting", "pretty");
+		setHaxedef("message.reporting", "pretty");
   }
 
 	/**
@@ -553,23 +553,23 @@ class Project extends HXProject {
 
   function configurePolymod() {
 		// The file extension to use for script files.
-		setCompileDefine("POLYMOD_SCRIPT_EXT", ".hscript");
+		setHaxedef("POLYMOD_SCRIPT_EXT", ".hscript");
 		// Which asset library to use for scripts.
-		setCompileDefine("POLYMOD_SCRIPT_LIBRARY", "scripts");
+		setHaxedef("POLYMOD_SCRIPT_LIBRARY", "scripts");
 		// The base path from which scripts should be accessed.
-		setCompileDefine("POLYMOD_ROOT_PATH", "scripts/");
+		setHaxedef("POLYMOD_ROOT_PATH", "scripts/");
 		// Determines the subdirectory of the mod folder used for file appending.
-		setCompileDefine("POLYMOD_APPEND_FOLDER", "_append");
+		setHaxedef("POLYMOD_APPEND_FOLDER", "_append");
 		// Determines the subdirectory of the mod folder used for file merges.
-		setCompileDefine("POLYMOD_MERGE_FOLDER", "_merge");
+		setHaxedef("POLYMOD_MERGE_FOLDER", "_merge");
 		// Determines the file in the mod folder used for metadata.
-		setCompileDefine("POLYMOD_MOD_METADATA_FILE", "_polymod_meta.json");
+		setHaxedef("POLYMOD_MOD_METADATA_FILE", "_polymod_meta.json");
 		// Determines the file in the mod folder used for the icon.
-		setCompileDefine("POLYMOD_MOD_ICON_FILE", "_polymod_icon.png");
+		setHaxedef("POLYMOD_MOD_ICON_FILE", "_polymod_icon.png");
 
     if (isDebug()) {
 		  // Turns on additional debug logging.
-      setCompileDefine("POLYMOD_DEBUG");
+      setHaxedef("POLYMOD_DEBUG");
     }
   }
 
@@ -582,7 +582,7 @@ class Project extends HXProject {
 
     addHaxelib('flixel-addons'); // Additional utilities for Flixel
     addHaxelib('hscript'); // Scripting
-    addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
+    // addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
     addHaxelib('haxeui-core'); // UI framework
     addHaxelib('haxeui-flixel'); // Integrate HaxeUI with Flixel
     addHaxelib('flixel-text-input'); // Improved text field rendering for HaxeUI
@@ -774,22 +774,26 @@ class Project extends HXProject {
 		return !isDebug();
 	}
 
-  public function getCompileDefine(name:String):Null<Dynamic> {
+  public function getHaxedef(name:String):Null<Dynamic> {
     return this.haxedefs.get(name);
   }
 
-  public function setCompileDefine(name:String, ?value:String):Void {
+  public function setHaxedef(name:String, ?value:String):Void {
     if (value == null) value = "";
 
     this.haxedefs.set(name, value);
   }
 
-  public function unsetCompileDefine(name:String):Void {
+  public function unsetHaxedef(name:String):Void {
     this.haxedefs.remove(name);
   }
 
-	public function setCompileFlag(name:String, value:String) {
+	public function getDefine(name:String):Null<Dynamic> {
+		return this.defines.get(name);
+	}
 
+	public function hasDefine(name:String):Bool {
+		return this.defines.exists(name);
 	}
 
 	/**
@@ -977,7 +981,7 @@ class Project extends HXProject {
 		// CURSED: We have to disable info() log calls because of a bug.
 		// https://github.com/haxelime/lime-vscode-extension/issues/88
 
-		// Log.info('[INFO] ${message}');
+		Log.info('[INFO] ${message}');
 
 		// trace(message);
 		// Sys.println(message);
@@ -1012,16 +1016,20 @@ abstract FeatureFlag(String) {
 
 		if (isEnabled(project)) {
 			// If this flag was already enabled, disable the inverse.
+			project.info('Enabling feature flag ${this}');
 			getInverse().disable(project, false);
 		} else if (getInverse().isEnabled(project)) {
 			// If the inverse flag was already enabled, disable this flag.
-			enable(project, false);
+			project.info('Disabling feature flag ${this}');
+			disable(project, false);
 		} else {
 			if (enableByDefault) {
 				// Enable this flag if it was unset, and disable the inverse.
+				project.info('Enabling feature flag ${this}');
 				enable(project, true);
 			} else {
 				// Disable this flag if it was unset, and enable the inverse.
+				project.info('Disabling feature flag ${this}');
 				disable(project, true);
 			}
 		}
@@ -1034,7 +1042,7 @@ abstract FeatureFlag(String) {
 	 * @param andInverse Also disable the feature flag's inverse.
 	 */
 	public function enable(project:Project, andInverse:Bool = true) {
-		project.setCompileDefine(this, "");
+		project.setHaxedef(this, "");
 		if (andInverse) {
 			getInverse().disable(project, false);
 		}
@@ -1047,7 +1055,7 @@ abstract FeatureFlag(String) {
 	 * @param andInverse Also enable the feature flag's inverse.
 	 */
 	public function disable(project:Project, andInverse:Bool = true) {
-		project.unsetCompileDefine(this);
+		project.unsetHaxedef(this);
 		if (andInverse) {
 			getInverse().enable(project, false);
 		}
@@ -1058,7 +1066,8 @@ abstract FeatureFlag(String) {
 	 * @param project The project to query.
 	 */
 	public function isEnabled(project:Project):Bool {
-		return project.haxedefs.exists(this);
+		// Check both Haxedefs and Defines for this flag.
+		return project.haxedefs.exists(this) || project.defines.exists(this);
 	}
 
 	/**
