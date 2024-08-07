@@ -11,26 +11,28 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "a7d8e3bad89a0a3506a4714121f73d8e34522c49",
+      "ref": "10c2a203c43a78ff1ff26b8368fd736576829d8d",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "a523c3b56622f0640933944171efed46929e360e",
+      "ref": "9c6fb47968e894eb36bf10e94725cd7640c49281",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
       "name": "flixel-text-input",
-      "type": "haxelib",
-      "version": "1.1.0"
+      "type": "git",
+      "dir": null,
+      "ref": "951a0103a17bfa55eed86703ce50b4fb0d7590bc",
+      "url": "https://github.com/FunkinCrew/flixel-text-input"
     },
     {
       "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "719b4f10d94186ed55f6fef1b6618d32abec8c15",
+      "ref": "d0afed7293c71ffdb1184751317fc709b44c9056",
       "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
@@ -75,14 +77,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "5dc4c933bdc029f6139a47962e3b8c754060f210",
+      "ref": "22f7c5a8ffca90d4677cffd6e570f53761709fbc",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "57c1604d6b5174839d7e0e012a4dd5dcbfc129da",
+      "ref": "28bb710d0ae5d94b5108787593052165be43b980",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -99,8 +101,10 @@
     },
     {
       "name": "hxcpp",
-      "type": "haxelib",
-      "version": "4.3.2"
+      "type": "git",
+      "dir": null,
+      "url": "https://github.com/HaxeFoundation/hxcpp",
+      "ref": "8dc8020f8465027de6c2aaaed90718bc693651ed"
     },
     {
       "name": "hxcpp-debug-server",
@@ -122,10 +126,24 @@
       "url": "https://github.com/FunkinCrew/json2object"
     },
     {
+      "name": "jsonpatch",
+      "type": "git",
+      "dir": null,
+      "ref": "f9b83215acd586dc28754b4ae7f69d4c06c3b4d3",
+      "url": "https://github.com/EliteMasterEric/jsonpatch"
+    },
+    {
+      "name": "jsonpath",
+      "type": "git",
+      "dir": null,
+      "ref": "7a24193717b36393458c15c0435bb7c4470ecdda",
+      "url": "https://github.com/EliteMasterEric/jsonpath"
+    },
+    {
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "872ff6db2f2d27c0243d4ff76802121ded550dd7",
+      "ref": "f6153ffcb1ffcf733f91d531eac5fda4189e07f7",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -160,21 +178,21 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "228c1b5063911e2ad75cef6e3168ef0a4b9f9134",
+      "ref": "8306425c497766739510ab29e876059c96f77bd2",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "bfbe30d81601b3543d80dce580108ad6b7e182c7",
+      "ref": "98945c6c7f5ecde01a32c4623d3515bf012a023a",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
       "name": "thx.core",
       "type": "git",
       "dir": null,
-      "ref": "6240b6e136f7490d9298edbe8c1891374bd7cdf2",
+      "ref": "76d87418fadd92eb8e1b61f004cff27d656e53dd",
       "url": "https://github.com/fponticelli/thx.core"
     },
     {

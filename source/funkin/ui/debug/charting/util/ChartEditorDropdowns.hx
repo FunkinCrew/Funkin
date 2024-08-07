@@ -135,6 +135,14 @@ class ChartEditorDropdowns
       var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
       if (noteStyle == null) continue;
 
+      // check if the note style has all necessary assets (strums, notes, holdNotes)
+      if (noteStyle._data?.assets?.noteStrumline == null
+        || noteStyle._data?.assets?.note == null
+        || noteStyle._data?.assets?.holdNote == null)
+      {
+        continue;
+      }
+
       var value = {id: noteStyleId, text: noteStyle.getName()};
       if (startingStyleId == noteStyleId) returnValue = value;
 
@@ -146,7 +154,7 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
-  static final NOTE_KINDS:Map<String, String> = [
+  public static final NOTE_KINDS:Map<String, String> = [
     // Base
     "" => "Default",
     "~CUSTOM~" => "Custom",
@@ -187,11 +195,11 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry = lookupNoteKind('~CUSTOM');
+    var returnValue:DropDownEntry = lookupNoteKind('');
 
     for (noteKindId in NOTE_KINDS.keys())
     {
-      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Default';
+      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Unknown';
 
       var value:DropDownEntry = {id: noteKindId, text: noteKind};
       if (startingKindId == noteKindId) returnValue = value;
@@ -208,7 +216,7 @@ class ChartEditorDropdowns
   {
     if (noteKindId == null) return lookupNoteKind('');
     if (!NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
-    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Default'};
+    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Unknown'};
   }
 
   /**

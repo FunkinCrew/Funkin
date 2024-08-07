@@ -110,6 +110,14 @@ typedef NoteStyleAssetData<T> =
   var isPixel:Bool;
 
   /**
+   * If true, animations will be played on the graphic.
+   * @default `false` to save performance.
+   */
+  @:default(false)
+  @:optional
+  var animated:Bool;
+
+  /**
    * The structure of this data depends on the asset.
    */
   var data:T;
