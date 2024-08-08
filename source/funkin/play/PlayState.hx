@@ -928,6 +928,7 @@ class PlayState extends MusicBeatSubState
       Conductor.instance.update(); // Normal conductor update.
     }
 
+    var isPaused:Bool = false;
     var androidPause:Bool = false;
 
     #if android
@@ -943,6 +944,8 @@ class PlayState extends MusicBeatSubState
 
       if (!event.eventCanceled)
       {
+        isPaused = true;
+        
         // Pause updates while the substate is open, preventing the game state from advancing.
         persistentUpdate = false;
         // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
@@ -1079,15 +1082,18 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    processSongEvents();
+    if (!isPaused)
+    {
+      processSongEvents();
 
-    // Handle keybinds.
-    processInputQueue();
-    if (!isInCutscene && !disableKeys) debugKeyShit();
-    if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
+      // Handle keybinds.
+      processInputQueue();
+      if (!isInCutscene && !disableKeys) debugKeyShit();
+      if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
-    // Moving notes into position is now done by Strumline.update().
-    if (!isInCutscene) processNotes(elapsed);
+      // Moving notes into position is now done by Strumline.update().
+      if (!isInCutscene) processNotes(elapsed);
+    }
 
     justUnpaused = false;
   }
