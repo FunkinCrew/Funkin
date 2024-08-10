@@ -306,7 +306,7 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
-      metadataDifficulty.text += PlayState.instance.currentDifficulty.toTitleCase();
+      metadataDifficulty.text += PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
     }
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);

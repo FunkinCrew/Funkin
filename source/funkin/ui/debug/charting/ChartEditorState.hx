@@ -5701,11 +5701,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       case 'mainStage':
         PlayStatePlaylist.campaignId = 'week1';
-      case 'spookyMansion':
+      case 'spookyMansion' | 'spookyMansionErect':
         PlayStatePlaylist.campaignId = 'week2';
-      case 'phillyTrain':
+      case 'phillyTrain' | 'phillyTrainErect':
         PlayStatePlaylist.campaignId = 'week3';
-      case 'limoRide':
+      case 'limoRide' | 'limoRideErect':
         PlayStatePlaylist.campaignId = 'week4';
       case 'mallXmas' | 'mallEvil':
         PlayStatePlaylist.campaignId = 'week5';
