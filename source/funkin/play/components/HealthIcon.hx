@@ -150,13 +150,17 @@ class HealthIcon extends FunkinSprite
   {
     if (characterId == 'bf-old')
     {
+      isPixel = PlayState.instance.currentStage.getBoyfriend().isPixel;
       PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
     }
     else
     {
       characterId = 'bf-old';
+      isPixel = false;
       loadCharacter(characterId);
     }
+
+    lerpIconSize(true);
   }
 
   /**
@@ -200,29 +204,43 @@ class HealthIcon extends FunkinSprite
 
     if (bopEvery != 0)
     {
-      // Lerp the health icon back to its normal size,
-      // while maintaining aspect ratio.
-      if (this.width > this.height)
-      {
-        // Apply linear interpolation while accounting for frame rate.
-        var targetSize:Int = Std.int(MathUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
-
-        setGraphicSize(targetSize, 0);
-      }
-      else
-      {
-        var targetSize:Int = Std.int(MathUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
-
-        setGraphicSize(0, targetSize);
-      }
+      lerpIconSize();
 
       // Lerp the health icon back to its normal angle.
       this.angle = MathUtil.coolLerp(this.angle, 0, 0.15);
-
-      this.updateHitbox();
     }
 
     this.updatePosition();
+  }
+
+  /**
+   * Does the calculation to lerp the icon size. Usually called every frame, but can be forced to the target size.
+   * Mainly forced when changing to old icon to not have a weird lerp related to changing from pixel icon to non-pixel old icon
+   * @param force Force the icon immedialtely to be the target size. Defaults to false.
+   */
+  function lerpIconSize(force:Bool = false):Void
+  {
+    // Lerp the health icon back to its normal size,
+    // while maintaining aspect ratio.
+    if (this.width > this.height)
+    {
+      // Apply linear interpolation while accounting for frame rate.
+      var targetSize:Int = Std.int(MathUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
+
+      if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.x);
+
+      setGraphicSize(targetSize, 0);
+    }
+    else
+    {
+      var targetSize:Int = Std.int(MathUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
+
+      if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.y);
+
+      setGraphicSize(0, targetSize);
+    }
+
+    this.updateHitbox();
   }
 
   /**
@@ -411,6 +429,8 @@ class HealthIcon extends FunkinSprite
     }
 
     isLegacyStyle = !isNewSpritesheet(charId);
+
+    trace(' Loading health icon for character: $charId (legacy: $isLegacyStyle)');
 
     if (!isLegacyStyle)
     {
