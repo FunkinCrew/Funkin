@@ -145,6 +145,7 @@ class Project extends HXProject {
 	 * `-DFEATURE_DEBUG_FUNCTIONS`
 	 * If this flag is enabled, the game will have all playtester-only debugging functionality enabled.
 	 * This includes debug hotkeys like time travel in the Play State.
+	 * By default, enabled on debug builds or playtester builds and disabled on release builds.
 	 */
 	static final FEATURE_DEBUG_FUNCTIONS:FeatureFlag = "FEATURE_DEBUG_FUNCTIONS";
 
@@ -645,42 +646,42 @@ class Project extends HXProject {
 
 		// Shared asset libraries
 		addAssetLibrary("songs", shouldEmbed, shouldPreload);
-		addAssetPath("assets/songs", "assets/songs", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("shared", shouldEmbed, shouldPreload);
-		addAssetPath("assets/shared", "assets/shared", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed);
 		if (FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
 			var shouldEmbedVideos = false;
 			addAssetLibrary("videos", shouldEmbedVideos, shouldPreload);
-			addAssetPath("assets/videos", "assets/videos", ["*"], exclude, shouldEmbedVideos);
+			addAssetPath("assets/videos", "assets/videos", "videos", ["*"], exclude, shouldEmbedVideos);
 		}
 
 		// Level asset libraries
 		addAssetLibrary("tutorial", shouldEmbed, shouldPreload);
-		addAssetPath("assets/tutorial", "assets/tutorial", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/tutorial", "assets/tutorial", "tutorial", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("week1", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week1", "assets/week1", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("week2", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week2", "assets/week2", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/week2", "assets/week2", "week2", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("week3", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week3", "assets/week3", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/week3", "assets/week3", "week3", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("week4", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week4", "assets/week4", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/week4", "assets/week4", "week4", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("week5", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week5", "assets/week5", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/week5", "assets/week5", "week5", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("week6", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week6", "assets/week6", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/week6", "assets/week6", "week6", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("week7", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week7", "assets/week7", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed);
 		addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
-		addAssetPath("assets/weekend1", "assets/weekend1", ["*"], exclude, shouldEmbed);
+		addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed);
 
 		// Art asset library (where README and CHANGELOG pull from)
 		var shouldEmbedArt = false;
 		var shouldPreloadArt = false;
-		// addAssetLibrary("art", shouldEmbedArt, shouldPreloadArt);
-		addAsset("art/readme.txt", "do NOT readme.txt", shouldEmbedArt);
-		addAsset("LICENSE.md", "LICENSE.md", shouldEmbedArt);
-		addAsset("CHANGELOG.md", "CHANGELOG.md", shouldEmbedArt);
+		addAssetLibrary("art", shouldEmbedArt, shouldPreloadArt);
+		addAsset("art/readme.txt", "do NOT readme.txt", "art", shouldEmbedArt);
+		addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
+		addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
 	}
 
   /**
@@ -832,22 +833,29 @@ class Project extends HXProject {
 	 * Add an asset to the game build.
 	 * @param path The path the asset is located at.
 	 * @param rename The path the asset should be placed.
+	 * @param library The asset library to add the asset to. `null` = "preload"
 	 * @param embed Whether to embed the asset in the executable.
 	 */
-	public function addAsset(path:String, ?rename:String, embed:Bool = false):Void {
+	public function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false):Void {
 		// path, rename, type, embed, setDefaults
-		this.assets.push(new Asset(path, rename, null, embed, true));
+		var asset = new Asset(path, rename, null, embed, true);
+		@:nullSafety(Off)
+		{
+			asset.library = library;
+		}
+		this.assets.push(asset);
 	}
 
 	/**
 	 * Add an entire path of assets to the game build.
 	 * @param path The path the assets are located at.
 	 * @param rename The path the assets should be placed.
+	 * @param library The asset library to add the assets to. `null` = "preload"
 	 * @param include An optional array to include specific asset names.
 	 * @param exclude An optional array to exclude specific asset names.
 	 * @param embed Whether to embed the assets in the executable.
 	 */
-	public function addAssetPath(path:String, ?rename:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false):Void {
+	public function addAssetPath(path:String, ?rename:String, ?library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false):Void {
 		// Argument parsing.
 		if (path == "") return;
 
@@ -871,11 +879,11 @@ class Project extends HXProject {
 			if (sys.FileSystem.isDirectory('${path}/${file}')) {
 				// Attempt to recursively add all assets in the directory.
 				if (this.filter(file, ["*"], exclude)) {
-					addAssetPath('${path}/${file}', '${targetPath}${file}', include, exclude, embed);
+					addAssetPath('${path}/${file}', '${targetPath}${file}', library, include, exclude, embed);
 				}
 			} else {
 				if (this.filter(file, include, exclude)) {
-					addAsset('${path}/${file}', '${targetPath}${file}', embed);
+					addAsset('${path}/${file}', '${targetPath}${file}', library, embed);
 				}
 			}
 		}
@@ -981,7 +989,7 @@ class Project extends HXProject {
 		// CURSED: We have to disable info() log calls because of a bug.
 		// https://github.com/haxelime/lime-vscode-extension/issues/88
 
-		Log.info('[INFO] ${message}');
+		// Log.info('[INFO] ${message}');
 
 		// trace(message);
 		// Sys.println(message);
