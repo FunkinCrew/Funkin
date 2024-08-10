@@ -90,8 +90,6 @@ class MainMenuState extends MusicBeatState
     magenta.y = bg.y;
     magenta.visible = false;
 
-    // TODO: Why doesn't this line compile I'm going fucking feral
-
     if (Preferences.flashingLights) add(magenta);
 
     menuItems = new MenuTypedList<AtlasMenuItem>();
@@ -341,7 +339,7 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    #if (debug || FORCE_DEBUG_VERSION)
+    #if FEATURE_DEBUG_FUNCTIONS
     // Open the debug menu, defaults to ` / ~
     if (controls.DEBUG_MENU)
     {
