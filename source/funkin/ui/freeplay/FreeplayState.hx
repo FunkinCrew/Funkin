@@ -297,12 +297,6 @@ class FreeplayState extends MusicBeatSubState
     DiscordClient.changePresence('In the Menus', null);
     #end
 
-    var isDebug:Bool = false;
-
-    #if debug
-    isDebug = true;
-    #end
-
     if (prepForNewRank == false)
     {
       FunkinSound.playMusic('freakyMenu',
@@ -872,7 +866,7 @@ class FreeplayState extends MusicBeatSubState
           return str.songName.toLowerCase().startsWith(songFilter.filterData ?? '');
         });
       case ALL:
-      // no filter!
+        // no filter!
       case FAVORITE:
         songsToFilter = songsToFilter.filter(str -> {
           if (str == null) return true; // Random
@@ -1199,7 +1193,7 @@ class FreeplayState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.T)
     {
       rankAnimStart(fromResultsParams ??
@@ -1834,7 +1828,7 @@ class FreeplayState extends MusicBeatSubState
           practiceMode: false,
           minimalMode: false,
 
-          #if (debug || FORCE_DEBUG_VERSION)
+          #if FEATURE_DEBUG_FUNCTIONS
           botPlayMode: FlxG.keys.pressed.SHIFT,
           #else
           botPlayMode: false,
@@ -1943,7 +1937,7 @@ class FreeplayState extends MusicBeatSubState
       var instSuffix:String = baseInstrumentalId;
 
       // TODO: Make this a UI element.
-      #if (debug || FORCE_DEBUG_VERSION)
+      #if FEATURE_DEBUG_FUNCTIONS
       if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
       {
         instSuffix = altInstrumentalIds[0];
