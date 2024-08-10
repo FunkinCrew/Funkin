@@ -60,8 +60,8 @@ runs:
       haxelib --debug --never deleterepo || true
       haxelib --debug --never newrepo
       echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
-      haxelib --debug --never git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
-      haxelib --debug --global git hmm https://github.com/FunkinCrew/hmm funkin-patches
+      haxelib --debug --always --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
+      haxelib --debug --global --always git hmm https://github.com/FunkinCrew/hmm funkin-patches
       echo "TIMER_DEPS=$(date +%s)" >> "$GITHUB_ENV"
 
   - name: Restore cached dependencies
