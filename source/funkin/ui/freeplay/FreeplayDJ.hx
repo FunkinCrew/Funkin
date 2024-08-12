@@ -148,7 +148,7 @@ class FreeplayDJ extends FlxAtlasSprite
         // I shit myself.
     }
 
-    #if FEATURE_DEBUG_FUNCTIONS
+    #if FEATURE_DEBUG_CONTROLS
     if (FlxG.keys.pressed.CONTROL)
     {
       if (FlxG.keys.justPressed.LEFT)
@@ -176,200 +176,203 @@ class FreeplayDJ extends FlxAtlasSprite
         currentState = (currentState == Idle ? Cartoon : Idle);
       }
     }
-    } function onFinishAnim():Void
+    #end
+  }
 
+  function onFinishAnim():Void
+  {
+    var name = anim.curSymbol.name;
+
+    if (name == playableCharData.getAnimationPrefix('intro'))
     {
-      var name = anim.curSymbol.name;
-
-      if (name == playableCharData.getAnimationPrefix('intro'))
-      {
-        currentState = Idle;
-        onIntroDone.dispatch();
-      }
-      else if (name == playableCharData.getAnimationPrefix('idle'))
-      {
-        // trace('Finished idle');
-      }
-      else if (name == playableCharData.getAnimationPrefix('confirm'))
-      {
-        // trace('Finished confirm');
-      }
-      else if (name == playableCharData.getAnimationPrefix('fistPump'))
-      {
-        // trace('Finished fist pump');
-        currentState = Idle;
-      }
-      else if (name == playableCharData.getAnimationPrefix('idleEasterEgg'))
-      {
-        // trace('Finished spook');
-        currentState = Idle;
-      }
-      else if (name == playableCharData.getAnimationPrefix('loss'))
-      {
-        // trace('Finished loss reaction');
-        currentState = Idle;
-      }
-      else if (name == playableCharData.getAnimationPrefix('cartoon'))
-      {
-        // trace('Finished cartoon');
-
-        var frame:Int = FlxG.random.bool(33) ? playableCharData.getCartoonLoopBlinkFrame() : playableCharData.getCartoonLoopFrame();
-
-        // Character switches channels when the video ends, or at a 10% chance each time his idle loops.
-        if (FlxG.random.bool(5))
-        {
-          frame = playableCharData.getCartoonChannelChangeFrame();
-          // boyfriend switches channel code?
-          // runTvLogic();
-        }
-        trace('Replay idle: ${frame}');
-        anim.play(playableCharData.getAnimationPrefix('cartoon'), true, false, frame);
-        // trace('Finished confirm');
-      }
-      else
-      {
-        trace('Finished ${name}');
-      }
+      currentState = Idle;
+      onIntroDone.dispatch();
     }
-
-    public function resetAFKTimer():Void
+    else if (name == playableCharData.getAnimationPrefix('idle'))
     {
-      timeIdling = 0;
-      seenIdleEasterEgg = false;
+      // trace('Finished idle');
     }
-
-    var offsetX:Float = 0.0;
-    var offsetY:Float = 0.0;
-
-    var cartoonSnd:Null<FunkinSound> = null;
-
-    public var playingCartoon:Bool = false;
-
-    public function runTvLogic()
+    else if (name == playableCharData.getAnimationPrefix('confirm'))
     {
-      if (cartoonSnd == null)
-      {
-        // tv is OFF, but getting turned on
-        FunkinSound.playOnce(Paths.sound('tv_on'), 1.0, function() {
-          loadCartoon();
-        });
-      }
-      else
-      {
-        // plays it smidge after the click
-        FunkinSound.playOnce(Paths.sound('channel_switch'), 1.0, function() {
-          cartoonSnd.destroy();
-          loadCartoon();
-        });
-      }
-
-      // loadCartoon();
+      // trace('Finished confirm');
     }
-
-    function loadCartoon()
+    else if (name == playableCharData.getAnimationPrefix('fistPump'))
     {
-      cartoonSnd = FunkinSound.load(Paths.sound(getRandomFlashToon()), 1.0, false, true, true, function() {
-        anim.play("Boyfriend DJ watchin tv OG", true, false, 60);
+      // trace('Finished fist pump');
+      currentState = Idle;
+    }
+    else if (name == playableCharData.getAnimationPrefix('idleEasterEgg'))
+    {
+      // trace('Finished spook');
+      currentState = Idle;
+    }
+    else if (name == playableCharData.getAnimationPrefix('loss'))
+    {
+      // trace('Finished loss reaction');
+      currentState = Idle;
+    }
+    else if (name == playableCharData.getAnimationPrefix('cartoon'))
+    {
+      // trace('Finished cartoon');
+
+      var frame:Int = FlxG.random.bool(33) ? playableCharData.getCartoonLoopBlinkFrame() : playableCharData.getCartoonLoopFrame();
+
+      // Character switches channels when the video ends, or at a 10% chance each time his idle loops.
+      if (FlxG.random.bool(5))
+      {
+        frame = playableCharData.getCartoonChannelChangeFrame();
+        // boyfriend switches channel code?
+        // runTvLogic();
+      }
+      trace('Replay idle: ${frame}');
+      anim.play(playableCharData.getAnimationPrefix('cartoon'), true, false, frame);
+      // trace('Finished confirm');
+    }
+    else
+    {
+      trace('Finished ${name}');
+    }
+  }
+
+  public function resetAFKTimer():Void
+  {
+    timeIdling = 0;
+    seenIdleEasterEgg = false;
+  }
+
+  var offsetX:Float = 0.0;
+  var offsetY:Float = 0.0;
+
+  var cartoonSnd:Null<FunkinSound> = null;
+
+  public var playingCartoon:Bool = false;
+
+  public function runTvLogic()
+  {
+    if (cartoonSnd == null)
+    {
+      // tv is OFF, but getting turned on
+      FunkinSound.playOnce(Paths.sound('tv_on'), 1.0, function() {
+        loadCartoon();
       });
-
-      // Fade out music to 40% volume over 1 second.
-      // This helps make the TV a bit more audible.
-      FlxG.sound.music.fadeOut(1.0, 0.1);
-
-      // Play the cartoon at a random time between the start and 5 seconds from the end.
-      cartoonSnd.time = FlxG.random.float(0, Math.max(cartoonSnd.length - (5 * Constants.MS_PER_SEC), 0.0));
     }
-
-    final cartoonList:Array<String> = openfl.utils.Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
-
-    function getRandomFlashToon():String
+    else
     {
-      var randomFile = FlxG.random.getObject(cartoonList);
-
-      // Strip folder prefix
-      randomFile = randomFile.replace("assets/sounds/", "");
-      // Strip file extension
-      randomFile = randomFile.substring(0, randomFile.length - 4);
-
-      return randomFile;
-    }
-
-    public function confirm():Void
-    {
-      currentState = Confirm;
-    }
-
-    public function fistPump():Void
-    {
-      currentState = FistPumpIntro;
-    }
-
-    public function pumpFist():Void
-    {
-      currentState = FistPump;
-      anim.play("Boyfriend DJ fist pump", true, false, 4);
-    }
-
-    public function pumpFistBad():Void
-    {
-      currentState = FistPump;
-      anim.play("Boyfriend DJ loss reaction 1", true, false, 4);
-    }
-
-    override public function getCurrentAnimation():String
-    {
-      if (this.anim == null || this.anim.curSymbol == null) return "";
-      return this.anim.curSymbol.name;
-    }
-
-    public function playFlashAnimation(id:String, ?Force:Bool = false, ?Reverse:Bool = false, ?Frame:Int = 0):Void
-    {
-      anim.play(id, Force, Reverse, Frame);
-      applyAnimOffset();
-    }
-
-    function applyAnimOffset()
-    {
-      var AnimName = getCurrentAnimation();
-      var daOffset = playableCharData.getAnimationOffsetsByPrefix(AnimName);
-      if (daOffset != null)
-      {
-        var xValue = daOffset[0];
-        var yValue = daOffset[1];
-        if (AnimName == "Boyfriend DJ watchin tv OG")
-        {
-          xValue += offsetX;
-          yValue += offsetY;
-        }
-
-        trace('Successfully applied offset ($AnimName): ' + xValue + ', ' + yValue);
-        offset.set(xValue, yValue);
-      }
-      else
-      {
-        trace('No offset found ($AnimName), defaulting to: 0, 0');
-        offset.set(0, 0);
-      }
-    }
-
-    public override function destroy():Void
-    {
-      super.destroy();
-
-      if (cartoonSnd != null)
-      {
+      // plays it smidge after the click
+      FunkinSound.playOnce(Paths.sound('channel_switch'), 1.0, function() {
         cartoonSnd.destroy();
-        cartoonSnd = null;
-      }
+        loadCartoon();
+      });
     }
-    } enum DJBoyfriendState
 
+    // loadCartoon();
+  }
+
+  function loadCartoon()
+  {
+    cartoonSnd = FunkinSound.load(Paths.sound(getRandomFlashToon()), 1.0, false, true, true, function() {
+      anim.play("Boyfriend DJ watchin tv OG", true, false, 60);
+    });
+
+    // Fade out music to 40% volume over 1 second.
+    // This helps make the TV a bit more audible.
+    FlxG.sound.music.fadeOut(1.0, 0.1);
+
+    // Play the cartoon at a random time between the start and 5 seconds from the end.
+    cartoonSnd.time = FlxG.random.float(0, Math.max(cartoonSnd.length - (5 * Constants.MS_PER_SEC), 0.0));
+  }
+
+  final cartoonList:Array<String> = openfl.utils.Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
+
+  function getRandomFlashToon():String
+  {
+    var randomFile = FlxG.random.getObject(cartoonList);
+
+    // Strip folder prefix
+    randomFile = randomFile.replace("assets/sounds/", "");
+    // Strip file extension
+    randomFile = randomFile.substring(0, randomFile.length - 4);
+
+    return randomFile;
+  }
+
+  public function confirm():Void
+  {
+    currentState = Confirm;
+  }
+
+  public function fistPump():Void
+  {
+    currentState = FistPumpIntro;
+  }
+
+  public function pumpFist():Void
+  {
+    currentState = FistPump;
+    anim.play("Boyfriend DJ fist pump", true, false, 4);
+  }
+
+  public function pumpFistBad():Void
+  {
+    currentState = FistPump;
+    anim.play("Boyfriend DJ loss reaction 1", true, false, 4);
+  }
+
+  override public function getCurrentAnimation():String
+  {
+    if (this.anim == null || this.anim.curSymbol == null) return "";
+    return this.anim.curSymbol.name;
+  }
+
+  public function playFlashAnimation(id:String, ?Force:Bool = false, ?Reverse:Bool = false, ?Frame:Int = 0):Void
+  {
+    anim.play(id, Force, Reverse, Frame);
+    applyAnimOffset();
+  }
+
+  function applyAnimOffset()
+  {
+    var AnimName = getCurrentAnimation();
+    var daOffset = playableCharData.getAnimationOffsetsByPrefix(AnimName);
+    if (daOffset != null)
     {
-      Intro;
-      Idle;
-      Confirm;
-      FistPumpIntro;
-      FistPump;
-      IdleEasterEgg;
-      Cartoon;
+      var xValue = daOffset[0];
+      var yValue = daOffset[1];
+      if (AnimName == "Boyfriend DJ watchin tv OG")
+      {
+        xValue += offsetX;
+        yValue += offsetY;
+      }
+
+      trace('Successfully applied offset ($AnimName): ' + xValue + ', ' + yValue);
+      offset.set(xValue, yValue);
     }
+    else
+    {
+      trace('No offset found ($AnimName), defaulting to: 0, 0');
+      offset.set(0, 0);
+    }
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+
+    if (cartoonSnd != null)
+    {
+      cartoonSnd.destroy();
+      cartoonSnd = null;
+    }
+  }
+}
+
+enum DJBoyfriendState
+{
+  Intro;
+  Idle;
+  Confirm;
+  FistPumpIntro;
+  FistPump;
+  IdleEasterEgg;
+  Cartoon;
+}

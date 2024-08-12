@@ -583,7 +583,7 @@ class Project extends HXProject {
 
     addHaxelib('flixel-addons'); // Additional utilities for Flixel
     addHaxelib('hscript'); // Scripting
-    // addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
+    addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
     addHaxelib('haxeui-core'); // UI framework
     addHaxelib('haxeui-flixel'); // Integrate HaxeUI with Flixel
     addHaxelib('flixel-text-input'); // Improved text field rendering for HaxeUI
