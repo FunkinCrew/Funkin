@@ -277,7 +277,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       // If there are no difficulties in the metadata, there's a problem.
       if (metadata.playData.difficulties.length == 0)
       {
-        trace('[WARN] Song $id has no difficulties listed in metadata!');
+        trace('[SONG] Warning: Song $id (variation ${metadata.variation}) has no difficulties listed in metadata!');
+        continue;
       }
 
       // There may be more difficulties in the chart file than in the metadata,

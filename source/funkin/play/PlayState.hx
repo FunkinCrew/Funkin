@@ -696,12 +696,7 @@ class PlayState extends MusicBeatSubState
       initMinimalMode();
     }
     initStrumlines();
-
-    // Initialize the judgements and combo meter.
-    comboPopUps = new PopUpStuff();
-    comboPopUps.zIndex = 900;
-    add(comboPopUps);
-    comboPopUps.cameras = [camHUD];
+    initPopups();
 
     #if discord_rpc
     // Initialize Discord Rich Presence.
@@ -902,7 +897,7 @@ class PlayState extends MusicBeatSubState
       health = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
-      Countdown.performCountdown(currentStageId.startsWith('school'));
+      Countdown.performCountdown();
 
       needsReset = false;
     }
@@ -1730,6 +1725,21 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * Configures the judgement and combo popups.
+   */
+  function initPopups():Void
+  {
+    var noteStyleId:String = currentChart.noteStyle;
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    // Initialize the judgements and combo meter.
+    comboPopUps = new PopUpStuff(noteStyle);
+    comboPopUps.zIndex = 900;
+    add(comboPopUps);
+    comboPopUps.cameras = [camHUD];
+  }
+
+  /**
    * Initializes the Discord Rich Presence.
    */
   function initDiscord():Void
@@ -1859,7 +1869,7 @@ class PlayState extends MusicBeatSubState
   public function startCountdown():Void
   {
     // If Countdown.performCountdown returns false, then the countdown was canceled by a script.
-    var result:Bool = Countdown.performCountdown(currentStageId.startsWith('school'));
+    var result:Bool = Countdown.performCountdown();
     if (!result) return;
 
     isInCutscene = false;
@@ -3020,6 +3030,7 @@ class PlayState extends MusicBeatSubState
 
     GameOverSubState.reset();
     PauseSubState.reset();
+    Countdown.reset();
 
     // Clear the static reference to this state.
     instance = null;
