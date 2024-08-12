@@ -2552,7 +2552,7 @@ class PlayState extends MusicBeatSubState
      */
   function debugKeyShit():Void
   {
-    #if CHART_EDITOR_SUPPORTED
+    #if FEATURE_CHART_EDITOR
     // Open the stage editor overlaying the current state.
     if (controls.DEBUG_STAGE)
     {
