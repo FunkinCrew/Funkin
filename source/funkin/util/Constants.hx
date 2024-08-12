@@ -533,7 +533,12 @@ class Constants
    * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
    * This is the thing people have been begging for forever lolol.
    */
-  public static final GHOST_TAPPING:Bool = false;
+  public static final GHOST_TAPPING:Bool = true;
+
+  /**
+   * Duration, in seconds, after the player's section ends before the player can spam without penalty.
+   */
+  public static final GHOST_TAP_DELAY:Float = 3 / 8;
 
   /**
    * The maximum number of previous file paths for the Chart Editor to remember.
