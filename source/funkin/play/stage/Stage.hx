@@ -435,9 +435,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       // Start with the per-stage character position.
       // Subtracting the origin ensures characters are positioned relative to their feet.
-      // Subtracting the global offset allows positioning on a per-character basis.
-      character.x = stageCharData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
-      character.y = stageCharData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+      // We previously applied the global offset here but that is now done elsewhere.
+      character.x = stageCharData.position[0] - character.characterOrigin.x;
+      character.y = stageCharData.position[1] - character.characterOrigin.y;
 
       @:privateAccess(funkin.play.stage.Bopper)
       {

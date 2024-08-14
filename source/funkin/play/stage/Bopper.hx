@@ -315,7 +315,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public function isAnimationFinished():Bool
   {
-    return this.animation.finished;
+    return this.animation?.finished ?? false;
   }
 
   public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
@@ -338,6 +338,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
+    // Apply animation offsets and global offsets.
     output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
     output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
     return output;

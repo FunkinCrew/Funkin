@@ -543,9 +543,7 @@ class Strumline extends FlxSpriteGroup
 
   function updateGhostTapTimer(elapsed:Float):Void
   {
-    // Ignore logic if we aren't using it anyway.
-    if (!Constants.GHOST_TAPPING) return;
-
+    #if FEATURE_GHOST_TAPPING
     // If it's still our turn, don't update the ghost tap timer.
     if (getNotesOnScreen().length > 0) return;
 
@@ -555,6 +553,7 @@ class Strumline extends FlxSpriteGroup
     {
       ghostTapTimer = 0;
     }
+    #end
   }
 
   /**
@@ -670,7 +669,9 @@ class Strumline extends FlxSpriteGroup
       note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
     }
 
+    #if FEATURE_GHOST_TAPPING
     ghostTapTimer = Constants.GHOST_TAP_DELAY;
+    #end
   }
 
   public function killNote(note:NoteSprite):Void

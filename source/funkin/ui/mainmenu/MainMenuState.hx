@@ -96,14 +96,7 @@ class MainMenuState extends MusicBeatState
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
-      if (_.name == 'freeplay')
-      {
-        magenta.visible = true;
-      }
-      else
-      {
-        FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
-      }
+      FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
     });
 
     menuItems.enabled = true; // can move on intro

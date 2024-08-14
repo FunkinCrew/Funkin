@@ -218,6 +218,13 @@ class Project extends HXProject {
 	 */
 	static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
 
+	/**
+	 * `-DFEATURE_GHOST_TAPPING`
+	 * If this flag is enabled, misses will not be counted when it is not the player's turn.
+	 * Misses are still counted when the player has notes to hit.
+	 */
+	static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
+
 	//
 	// CONFIGURATION FUNCTIONS
 	//
@@ -435,6 +442,7 @@ class Project extends HXProject {
 		FEATURE_STAGE_EDITOR.apply(this, false);
 		FEATURE_NEWGROUNDS.apply(this, false);
 		EMBED_ASSETS.apply(this, false);
+		FEATURE_GHOST_TAPPING.apply(this, false);
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
@@ -583,7 +591,7 @@ class Project extends HXProject {
 
     addHaxelib('flixel-addons'); // Additional utilities for Flixel
     addHaxelib('hscript'); // Scripting
-    addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
+    // addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
     addHaxelib('haxeui-core'); // UI framework
     addHaxelib('haxeui-flixel'); // Integrate HaxeUI with Flixel
     addHaxelib('flixel-text-input'); // Improved text field rendering for HaxeUI
