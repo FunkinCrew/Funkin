@@ -32,7 +32,7 @@ class LevelProp extends Bopper
 
   public function playConfirm():Void
   {
-    playAnimation('confirm', true, true);
+    if (hasAnimation('confirm')) playAnimation('confirm', true, true);
   }
 
   function applyData():Void

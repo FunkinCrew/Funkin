@@ -4,6 +4,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import flxanimate.FlxAnimate;
 import flxanimate.FlxAnimate.Settings;
 import flxanimate.frames.FlxAnimateFrames;
+import haxe.extern.EitherType;
 import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import openfl.display.BitmapData;
@@ -178,10 +179,16 @@ class FlxAtlasSprite extends FlxAnimate
     if (ignoreOther) canPlayOtherAnims = false;
 
     // Move to the first frame of the animation.
-    // goToFrameLabel(id);
-    trace('Playing animation $id');
-    this.anim.play(id, restart, false, startFrame);
-    goToFrameLabel(id);
+    // trace('Playing animation $id');
+    // FlxG.log.notice('Playing animation $id');
+    if (this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
+    {
+      this.anim.play(id, restart, false, startFrame);
+    }
+    if (getFrameLabelNames().indexOf(id) != -1)
+    {
+      goToFrameLabel(id);
+    }
     this.currentAnimation = id;
   }
 
@@ -229,6 +236,18 @@ class FlxAtlasSprite extends FlxAnimate
   function goToFrameLabel(label:String):Void
   {
     this.anim.goToFrameLabel(label);
+  }
+
+  function getFrameLabelNames(?layer:EitherType<Int, String> = null)
+  {
+    var labels = this.anim.getFrameLabels(layer);
+    var array = [];
+    for (label in labels)
+    {
+      array.push(label.name);
+    }
+
+    return array;
   }
 
   function getNextFrameLabel(label:String):String

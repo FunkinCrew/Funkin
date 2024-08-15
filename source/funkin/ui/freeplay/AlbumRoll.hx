@@ -61,6 +61,8 @@ class AlbumRoll extends FlxSpriteGroup
     super();
 
     newAlbumArt = new FlxAtlasSprite(640, 350, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
+    trace('Album art animations: ' + newAlbumArt.listAnimations());
+
     newAlbumArt.visible = false;
     newAlbumArt.onAnimationComplete.add(onAlbumFinish);
 

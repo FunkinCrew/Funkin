@@ -95,7 +95,7 @@ typedef LevelPropData =
    * Supports up to 0.25 precision.
    * @default 0.0
    */
-  @:default(0.0)
+  @:default(1.0)
   @:optional
   var danceEvery:Float;
 
