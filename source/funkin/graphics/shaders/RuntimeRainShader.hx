@@ -32,6 +32,14 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return time = value;
   }
 
+  public var spriteMode(default, set):Bool = false;
+
+  function set_spriteMode(value:Bool):Bool
+  {
+    this.setBool('uSpriteMode', value);
+    return spriteMode = value;
+  }
+
   // The scale of the rain depends on the world coordinate system, so higher resolution makes
   // the raindrops smaller. This parameter can be used to adjust the total scale of the scene.
   // The size of the raindrops is proportional to the value of this parameter.

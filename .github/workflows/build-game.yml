@@ -45,7 +45,11 @@ jobs:
       uses: ./.github/actions/setup-haxe
       with:
         gh-token: ${{ steps.app_token.outputs.token }}
-
+    - name: Setup HXCPP dev commit
+      run: |
+        cd .haxelib/hxcpp/git/tools/hxcpp
+        haxe compile.hxml
+        cd ../../../../..
     - name: Build game
       if: ${{ matrix.target == 'windows' }}
       run: |

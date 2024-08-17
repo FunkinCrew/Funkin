@@ -412,8 +412,8 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       FlxG.switchState(() -> new TitleState());
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
   }
 }

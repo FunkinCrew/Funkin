@@ -7,6 +7,7 @@ import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.data.song.SongRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
@@ -233,6 +234,8 @@ class PolymodHandler
     // NOTE: Scripted classes are automatically aliased to their parent class.
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
 
+    Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
@@ -250,6 +253,10 @@ class PolymodHandler
     // `cpp.Lib`
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
+
+    // `Unserializer`
+    // Unserializerr.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
+    Polymod.blacklistImport('Unserializer');
 
     // `polymod.*`
     // You can probably unblacklist a module
@@ -383,6 +390,7 @@ class PolymodHandler
     StageRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    NoteKindManager.loadScripts();
     ModuleHandler.loadModuleCache();
   }
 }
