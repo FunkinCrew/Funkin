@@ -115,14 +115,15 @@ class LoadingState extends MusicBeatSubState
 
   function checkLibrary(library:String):Void
   {
-    trace(Assets.hasLibrary(library));
+    trace('Has library: ' + library + ' : ' + Assets.hasLibrary(library));
     if (Assets.getLibrary(library) == null)
     {
       @:privateAccess
       if (!LimeAssets.libraryPaths.exists(library)) throw 'Missing library: ' + library;
 
       var callback = callbacks.add('library:' + library);
-      Assets.loadLibrary(library).onComplete(function(_) {
+      trace('Loading library: ' + library);
+      Assets.loadLibrary(library).onComplete(function(assetLibrary:lime.utils.AssetLibrary) {
         callback();
       });
     }

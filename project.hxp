@@ -441,7 +441,6 @@ class Project extends HXProject {
 		GITHUB_BUILD.apply(this, false);
 		FEATURE_STAGE_EDITOR.apply(this, false);
 		FEATURE_NEWGROUNDS.apply(this, false);
-		EMBED_ASSETS.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
 
 		// Should be true unless explicitly requested.
@@ -456,7 +455,7 @@ class Project extends HXProject {
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
 		// Should default to true on workspace builds and false on release builds.
-		REDIRECT_ASSETS_FOLDER.apply(this, isDebug());
+		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
 
 		// Should be true on release, non-tester builds.
 		// We don't want testers to accidentally leak songs to their Discord friends!
@@ -466,8 +465,10 @@ class Project extends HXProject {
 		// Audio context issues only exist there.
 		TOUCH_HERE_TO_PLAY.apply(this, isWeb());
 
-		// Should be false only on web builds.
-		PRELOAD_ALL.apply(this, !isWeb());
+		// Should be true only on web builds.
+		// Enabling embedding and preloading is required to preload assets properly.
+		EMBED_ASSETS.apply(this, isWeb());
+		PRELOAD_ALL.apply(this, true);
 
 		// Should be true except on MacOS.
 		// File drop doesn't work there.
@@ -645,12 +646,13 @@ class Project extends HXProject {
 		}
 
 		// Default asset library
-		//addAssetLibrary("default")
-		addAssetPath("assets/preload", "assets", ["*"], exclude, shouldEmbed);
+		var shouldPreloadDefault = true;
+		addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
+		addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed);
 
 		// Font assets
 		var shouldEmbedFonts = true;
-		addAssetPath("assets/fonts", null, ["*"], exclude, shouldEmbedFonts);
+		addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts);
 
 		// Shared asset libraries
 		addAssetLibrary("songs", shouldEmbed, shouldPreload);
@@ -841,7 +843,7 @@ class Project extends HXProject {
 	 * Add an asset to the game build.
 	 * @param path The path the asset is located at.
 	 * @param rename The path the asset should be placed.
-	 * @param library The asset library to add the asset to. `null` = "preload"
+	 * @param library The asset library to add the asset to. `null` = "default"
 	 * @param embed Whether to embed the asset in the executable.
 	 */
 	public function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false):Void {
@@ -849,7 +851,7 @@ class Project extends HXProject {
 		var asset = new Asset(path, rename, null, embed, true);
 		@:nullSafety(Off)
 		{
-			asset.library = library;
+			asset.library = library ?? "default";
 		}
 		this.assets.push(asset);
 	}
@@ -858,12 +860,12 @@ class Project extends HXProject {
 	 * Add an entire path of assets to the game build.
 	 * @param path The path the assets are located at.
 	 * @param rename The path the assets should be placed.
-	 * @param library The asset library to add the assets to. `null` = "preload"
+	 * @param library The asset library to add the assets to. `null` = "default"
 	 * @param include An optional array to include specific asset names.
 	 * @param exclude An optional array to exclude specific asset names.
 	 * @param embed Whether to embed the assets in the executable.
 	 */
-	public function addAssetPath(path:String, ?rename:String, ?library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false):Void {
+	public function addAssetPath(path:String, ?rename:String, library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false):Void {
 		// Argument parsing.
 		if (path == "") return;
 
