@@ -45,7 +45,8 @@ class Scoring
       case WEEK7: scoreNoteWEEK7(msTiming);
       case PBOT1: scoreNotePBOT1(msTiming);
       default:
-        FlxG.log.error('Unknown scoring system: ${scoringSystem}');
+        FlxG.log.error('Unknown scoring system: ${scoringSystem}, reverting to Legacy.');
+        scoreNoteLEGACY(msTiming);
         0;
     }
   }
@@ -65,6 +66,7 @@ class Scoring
       case PBOT1: judgeNotePBOT1(msTiming);
       default:
         FlxG.log.error('Unknown scoring system: ${scoringSystem}');
+        judgeNoteLEGACY(msTiming);
         'miss';
     }
   }
