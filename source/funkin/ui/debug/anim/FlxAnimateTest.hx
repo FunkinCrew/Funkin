@@ -22,15 +22,18 @@ class FlxAnimateTest extends MusicBeatState
   {
     super.create();
 
-    sprite = new FlxAtlasSprite(0, 0, 'assets/images/freeplay/freeplay-boyfriend'); // I suppose a specific atlas to test should go in here
-    // Doesn't input anything, How does AtlasSprite work??? -Cheems
+    sprite = new FlxAtlasSprite(0, 0, 'assets/images/charSelect/maskTest');
     add(sprite);
-    camera.follow(sprite);
-    sprite.playAnimation(null);
+    sprite.playAnimation(null, false, false, true);
   }
 
   public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (FlxG.keys.justPressed.SPACE) ((sprite.anim.isPlaying) ? sprite.anim.pause() : sprite.playAnimation(null, false, false, true));
+
+    if (FlxG.keys.anyJustPressed([A, LEFT])) sprite.anim.curFrame--;
+    if (FlxG.keys.anyJustPressed([D, RIGHT])) sprite.anim.curFrame++;
   }
 }
