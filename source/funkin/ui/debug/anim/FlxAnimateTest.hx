@@ -23,9 +23,10 @@ class FlxAnimateTest extends MusicBeatState
     super.create();
 
     sprite = new FlxAtlasSprite(0, 0, 'assets/images/freeplay/freeplay-boyfriend'); // I suppose a specific atlas to test should go in here
-
+    // Doesn't input anything, How does AtlasSprite work??? -Cheems
     add(sprite);
-    sprite.anim.play("Boyfriend DJ");
+    camera.follow(sprite);
+    sprite.playAnimation(null);
   }
 
   public override function update(elapsed:Float):Void
