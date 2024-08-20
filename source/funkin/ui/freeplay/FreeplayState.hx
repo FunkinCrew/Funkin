@@ -1,7 +1,6 @@
 package funkin.ui.freeplay;
 
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
