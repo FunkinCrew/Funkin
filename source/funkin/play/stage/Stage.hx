@@ -762,6 +762,17 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   /**
+   * A function that gets called when the BPM of the song changes.
+   */
+  public function onBpmChange(event:SongTimeScriptEvent):Void
+  {
+    for (bopper in boppers)
+    {
+      ScriptEventDispatcher.callEvent(bopper, event);
+    }
+  }
+
+  /**
    * A function that gets called once per step in the song.
    * @param curStep The current step number.
    */

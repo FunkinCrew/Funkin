@@ -137,6 +137,11 @@ interface IPlayStateScriptedClass extends INoteScriptedClass
   public function onSongEvent(event:SongEventScriptEvent):Void;
 
   /**
+   * Called when the BPM changes.
+   */
+  public function onBpmChange(event:SongTimeScriptEvent):Void;
+
+  /**
    * Called once every step of the song.
    */
   public function onStepHit(event:SongTimeScriptEvent):Void;

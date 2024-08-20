@@ -76,6 +76,17 @@ class Conductor
   public var onStepHit(default, null):FlxSignal = new FlxSignal();
 
   /**
+   * Signal fired when the current Conductor instance changes BPM.
+   */
+  public static var bpmChange(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Signal fired when THIS Conductor instance changes BPM.
+   * TODO: This naming sucks but we can't make a static and instance field with the same name!
+   */
+  public var onBpmChange(default, null):FlxSignal = new FlxSignal();
+
+  /**
    * The list of time changes in the song.
    * There should be at least one time change (at the beginning of the song) to define the BPM.
    */
@@ -321,6 +332,11 @@ class Conductor
     Conductor.stepHit.dispatch();
   }
 
+  static function dispatchBpmChange():Void
+  {
+    Conductor.bpmChange.dispatch();
+  }
+
   static function setupSingleton(input:Conductor):Void
   {
     input.onMeasureHit.add(dispatchMeasureHit);
@@ -328,6 +344,8 @@ class Conductor
     input.onBeatHit.add(dispatchBeatHit);
 
     input.onStepHit.add(dispatchStepHit);
+
+    input.onBpmChange.add(dispatchBpmChange);
   }
 
   static function clearSingleton(input:Conductor):Void
@@ -337,6 +355,8 @@ class Conductor
     input.onBeatHit.remove(dispatchBeatHit);
 
     input.onStepHit.remove(dispatchStepHit);
+
+    input.onBpmChange.remove(dispatchBpmChange);
   }
 
   static function get_instance():Conductor
@@ -408,6 +428,7 @@ class Conductor
     var oldMeasure:Float = this.currentMeasure;
     var oldBeat:Float = this.currentBeat;
     var oldStep:Float = this.currentStep;
+    var oldBpm:Float = this.bpm;
 
     // Set the song position we are at (for purposes of calculating note positions, etc).
     this.songPosition = songPos;
@@ -430,7 +451,8 @@ class Conductor
     else if (currentTimeChange != null && this.songPosition > 0.0)
     {
       // roundDecimal prevents representing 8 as 7.9999999
-      this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT) + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
+      this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)
+        + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
       this.currentMeasureTime = currentStepTime / stepsPerMeasure;
       this.currentStep = Math.floor(currentStepTime);
@@ -449,6 +471,11 @@ class Conductor
     }
 
     // FlxSignals are really cool.
+    if (bpm != oldBpm)
+    {
+      this.onBpmChange.dispatch();
+    }
+
     if (currentStep != oldStep)
     {
       this.onStepHit.dispatch();

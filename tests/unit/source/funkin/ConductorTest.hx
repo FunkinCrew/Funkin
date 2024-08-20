@@ -475,6 +475,11 @@ class ConductorState extends FlxState
     super();
   }
 
+  function bpmChange()
+  {
+    // does nothing lol
+  }
+
   function beatHit():Void
   {
     beatsHit += 1;
@@ -490,6 +495,7 @@ class ConductorState extends FlxState
     super.create();
     Conductor.beatHit.add(this.beatHit);
     Conductor.stepHit.add(this.stepHit);
+    Conductor.bpmChange.add(this.bpmChange);
   }
 
   public override function destroy():Void
@@ -497,6 +503,7 @@ class ConductorState extends FlxState
     super.destroy();
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
+    Conductor.bpmChange.remove(this.bpmChange);
   }
 
   public override function update(elapsed:Float)
