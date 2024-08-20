@@ -20,7 +20,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * The bopper plays the dance animation once every `danceEvery` beats.
    * Set to 0 to disable idle animation.
    */
-  public var danceEvery:Int = 1;
+  public var danceEvery(default, set):Int = 1;
 
   /**
    * Whether the bopper should dance left and right.
@@ -58,14 +58,31 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * Whether this bopper should bop every beat. By default it's true, but when used
    * for characters/players, it should be false so it doesn't cut off their animations!!!!!
    */
-  public var shouldBop:Bool = true;
+  public var shouldBop(default, set):Bool = true;
+
+  function set_danceEvery(value:Int):Int
+  {
+    this.danceEvery = value;
+    this.update_danceEvery();
+    return value;
+  }
 
   function set_idleSuffix(value:String):String
   {
     this.idleSuffix = value;
+    this.update_danceEvery();
     this.dance();
     return value;
   }
+
+  function set_shouldBop(value:Bool):Bool
+  {
+    this.shouldBop = value;
+    this.update_danceEvery();
+    return value;
+  }
+
+  var _realDanceEvery:Int = 1;
 
   /**
    * The offset of the character relative to the position specified by the stage.
@@ -120,6 +137,13 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       this.animation.callback = this.onAnimationFrame;
       this.animation.finishCallback = this.onAnimationFinished;
     }
+    update_danceEvery();
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    update_danceEvery();
   }
 
   /**
@@ -171,22 +195,31 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   /**
+   * Called when the BPM of the song changes.
+   */
+  public function onBpmChange(event:SongTimeScriptEvent)
+  {
+    update_danceEvery();
+  }
+
+  /**
    * Called once every beat of the song.
    */
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
-    if (danceEvery > 0 && event.beat % calculateDanceEvery() == 0)
+    if ((_realDanceEvery > 0 && event.beat % _realDanceEvery == 0))
     {
       dance(shouldBop);
     }
   }
 
-  function calculateDanceEvery():Int
+  function update_danceEvery()
   {
-    // return danceEvery;
-
-    if (danceEvery <= 0 || shouldAlternate || this.animation.getByName('idle$idleSuffix') == null) return danceEvery;
-    else if (this.animation.curAnim.name == 'idle$idleSuffix' && !this.animation.curAnim.finished) return 1;
+    if (danceEvery <= 0 || shouldAlternate || this.animation.getByName('idle$idleSuffix') == null || shouldBop)
+    {
+      _realDanceEvery = danceEvery;
+      return;
+    }
 
     var daIdle = this.animation.getByName('idle$idleSuffix');
     var calc:Float = (daIdle.numFrames / daIdle.frameRate) / (Conductor.instance.beatLengthMs / 1000);
@@ -197,7 +230,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       while (danceEveryNumBeats % numeratorTweak != 0)
         danceEveryNumBeats++;
     }
-    return Std.int(Math.max(danceEvery, danceEveryNumBeats));
+    _realDanceEvery = Std.int(Math.max(danceEvery, danceEveryNumBeats));
   }
 
   /**
