@@ -5699,7 +5699,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
-      case 'mainStage':
+      case 'mainStage' | 'mainStageErect':
         PlayStatePlaylist.campaignId = 'week1';
       case 'spookyMansion' | 'spookyMansionErect':
         PlayStatePlaylist.campaignId = 'week2';
