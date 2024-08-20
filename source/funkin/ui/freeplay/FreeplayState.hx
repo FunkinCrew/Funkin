@@ -1795,7 +1795,7 @@ class FreeplayState extends MusicBeatSubState
     confirmGlow.visible = true;
     confirmGlow2.visible = true;
 
-    backingTextYeah.anim.play("BF back card confirm raw", false, false, 0);
+    backingTextYeah.playAnimation("BF back card confirm raw", false, false, false, 0);
     confirmGlow2.alpha = 0;
     confirmGlow.alpha = 0;
 

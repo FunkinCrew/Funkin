@@ -600,7 +600,7 @@ class CharSelectSubState extends MusicBeatSubState
     playerChill.visible = false;
     playerChillOut.visible = true;
     playerChillOut.anim.goToFrameLabel("slideout");
-    playerChillOut.anim.callback = (_, frame:Int) -> {
+    playerChillOut.onAnimationFrame.add((_, frame:Int) -> {
       if (frame == playerChillOut.anim.getFrameLabel("slideout").index + 1)
       {
         playerChill.visible = true;
@@ -612,7 +612,7 @@ class CharSelectSubState extends MusicBeatSubState
         playerChillOut.switchChar(value);
         playerChillOut.visible = false;
       }
-    };
+    });
     return value;
   }
 

@@ -58,8 +58,9 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
    * @param characterId The stage character ID.
    * @return The playable character.
    */
-  public function getCharacterOwnerId(characterId:String):Null<String>
+  public function getCharacterOwnerId(characterId:Null<String>):Null<String>
   {
+    if (characterId == null) return null;
     return ownedCharacterIds[characterId];
   }
 

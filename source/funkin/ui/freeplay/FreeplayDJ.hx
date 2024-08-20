@@ -43,7 +43,7 @@ class FreeplayDJ extends FlxAtlasSprite
 
     super(x, y, playableCharData.getAtlasPath());
 
-    anim.callback = function(name, number) {
+    onAnimationFrame.add(function(name, number) {
       if (name == playableCharData.getAnimationPrefix('cartoon'))
       {
         if (number == playableCharData.getCartoonSoundClickFrame())
@@ -55,12 +55,12 @@ class FreeplayDJ extends FlxAtlasSprite
           runTvLogic();
         }
       }
-    };
+    });
 
     FlxG.debugger.track(this);
     FlxG.console.registerObject("dj", this);
 
-    anim.onComplete = onFinishAnim;
+    onAnimationComplete.add(onFinishAnim);
 
     FlxG.console.registerFunction("freeplayCartoon", function() {
       currentState = Cartoon;
@@ -96,7 +96,7 @@ class FreeplayDJ extends FlxAtlasSprite
         var animPrefix = playableCharData.getAnimationPrefix('idle');
         if (getCurrentAnimation() != animPrefix)
         {
-          playFlashAnimation(animPrefix, true);
+          playFlashAnimation(animPrefix, true, false, true);
         }
 
         if (getCurrentAnimation() == animPrefix && this.isLoopFinished())
@@ -120,7 +120,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() != animPrefix) playFlashAnimation('Boyfriend DJ fist pump', false);
         if (getCurrentAnimation() == animPrefix && anim.curFrame >= 4)
         {
-          anim.play("Boyfriend DJ fist pump", true, false, 0);
+          playAnimation("Boyfriend DJ fist pump", true, false, false, 0);
         }
       case FistPump:
 
@@ -135,9 +135,12 @@ class FreeplayDJ extends FlxAtlasSprite
         timeIdling = 0;
       case Cartoon:
         var animPrefix = playableCharData.getAnimationPrefix('cartoon');
-        if (animPrefix == null) {
+        if (animPrefix == null)
+        {
           currentState = IdleEasterEgg;
-        } else {
+        }
+        else
+        {
           if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, true);
           timeIdling = 0;
         }
@@ -145,6 +148,7 @@ class FreeplayDJ extends FlxAtlasSprite
         // I shit myself.
     }
 
+    #if debug
     if (FlxG.keys.pressed.CONTROL)
     {
       if (FlxG.keys.justPressed.LEFT)
@@ -167,16 +171,17 @@ class FreeplayDJ extends FlxAtlasSprite
         this.offsetY += FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
       }
 
-      if (FlxG.keys.justPressed.SPACE)
+      if (FlxG.keys.justPressed.C)
       {
         currentState = (currentState == Idle ? Cartoon : Idle);
       }
     }
+    #end
   }
 
-  function onFinishAnim():Void
+  function onFinishAnim(name:String):Void
   {
-    var name = anim.curSymbol.name;
+    // var name = anim.curSymbol.name;
 
     if (name == playableCharData.getAnimationPrefix('intro'))
     {
@@ -220,7 +225,7 @@ class FreeplayDJ extends FlxAtlasSprite
         // runTvLogic();
       }
       trace('Replay idle: ${frame}');
-      anim.play(playableCharData.getAnimationPrefix('cartoon'), true, false, frame);
+      playAnimation(playableCharData.getAnimationPrefix('cartoon'), true, false, false, frame);
       // trace('Finished confirm');
     }
     else
@@ -266,7 +271,7 @@ class FreeplayDJ extends FlxAtlasSprite
   function loadCartoon()
   {
     cartoonSnd = FunkinSound.load(Paths.sound(getRandomFlashToon()), 1.0, false, true, true, function() {
-      anim.play("Boyfriend DJ watchin tv OG", true, false, 60);
+      playAnimation("Boyfriend DJ watchin tv OG", true, false, false, 60);
     });
 
     // Fade out music to 40% volume over 1 second.
@@ -304,13 +309,13 @@ class FreeplayDJ extends FlxAtlasSprite
   public function pumpFist():Void
   {
     currentState = FistPump;
-    anim.play("Boyfriend DJ fist pump", true, false, 4);
+    playAnimation("Boyfriend DJ fist pump", true, false, false, 4);
   }
 
   public function pumpFistBad():Void
   {
     currentState = FistPump;
-    anim.play("Boyfriend DJ loss reaction 1", true, false, 4);
+    playAnimation("Boyfriend DJ loss reaction 1", true, false, false, 4);
   }
 
   override public function getCurrentAnimation():String
@@ -319,9 +324,9 @@ class FreeplayDJ extends FlxAtlasSprite
     return this.anim.curSymbol.name;
   }
 
-  public function playFlashAnimation(id:String, ?Force:Bool = false, ?Reverse:Bool = false, ?Frame:Int = 0):Void
+  public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
   {
-    anim.play(id, Force, Reverse, Frame);
+    playAnimation(id, Force, Reverse, Loop, Frame);
     applyAnimOffset();
   }
 
