@@ -129,7 +129,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     trace('[ATLASCHAR] Loading sprite atlas for ${characterId}.');
 
-    var sprite:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas(_data.assetPath, 'shared'));
+    var sprite:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas(_data.assetPath));
 
     // sprite.onAnimationComplete.removeAll();
     sprite.onAnimationComplete.add(this.onAnimationFinished);
