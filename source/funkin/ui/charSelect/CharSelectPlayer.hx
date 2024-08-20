@@ -9,7 +9,7 @@ class CharSelectPlayer extends FlxAtlasSprite
   {
     super(x, y, Paths.animateAtlas("charSelect/bfChill"));
 
-    onAnimationFinish.add(function(animLabel:String) {
+    onAnimationComplete.add(function(animLabel:String) {
       switch (animLabel)
       {
         case "slidein":

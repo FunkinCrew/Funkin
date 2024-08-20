@@ -338,7 +338,7 @@ class FreeplayState extends MusicBeatSubState
         // Only display songs which actually have available difficulties for the current character.
         var displayedVariations = song.getVariationsByCharacter(currentCharacter);
         trace('Displayed Variations (${songId}): $displayedVariations');
-        var availableDifficultiesForSong:Array<String> = song.listDifficulties(displayedVariations, false);
+        var availableDifficultiesForSong:Array<String> = song.listSuffixedDifficulties(displayedVariations, false, false);
         trace('Available Difficulties: $availableDifficultiesForSong');
         if (availableDifficultiesForSong.length == 0) continue;
 
@@ -1119,7 +1119,7 @@ class FreeplayState extends MusicBeatSubState
 
               // NOW we can interact with the menu
               busy = false;
-              grpCapsules.members[curSelected].sparkle.alpha = 0.7;
+              capsule.sparkle.alpha = 0.7;
               playCurSongPreview(capsule);
             }, null);
 
@@ -1526,7 +1526,7 @@ class FreeplayState extends MusicBeatSubState
           var moveDataX = funnyMoveShit.x ?? spr.x;
           var moveDataY = funnyMoveShit.y ?? spr.y;
           var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
-          var moveDataWait = funnyMoveShit.wait ?? 0;
+          var moveDataWait = funnyMoveShit.wait ?? 0.0;
 
           FlxTween.tween(spr, {x: moveDataX, y: moveDataY}, moveDataSpeed, {ease: FlxEase.expoIn});
 
@@ -1673,6 +1673,9 @@ class FreeplayState extends MusicBeatSubState
           songCapsule.init(null, null, null);
         }
       }
+
+      // Reset the song preview in case we changed variations (normal->erect etc)
+      playCurSongPreview();
     }
 
     // Set the album graphic and play the animation if relevant.
@@ -1791,7 +1794,7 @@ class FreeplayState extends MusicBeatSubState
     confirmGlow.visible = true;
     confirmGlow2.visible = true;
 
-    backingTextYeah.anim.play("BF back card confirm raw", false, false, 0);
+    backingTextYeah.playAnimation("BF back card confirm raw", false, false, false, 0);
     confirmGlow2.alpha = 0;
     confirmGlow.alpha = 0;
 
@@ -1911,8 +1914,10 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  public function playCurSongPreview(daSongCapsule:SongMenuItem):Void
+  public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
   {
+    if (daSongCapsule == null) daSongCapsule = grpCapsules.members[curSelected];
+
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -2144,7 +2149,7 @@ class FreeplaySongData
 
   function updateValues(variations:Array<String>):Void
   {
-    this.songDifficulties = song.listDifficulties(null, variations, false, false);
+    this.songDifficulties = song.listSuffixedDifficulties(variations, false, false);
     if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
 
     var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, null, variations);
@@ -2206,15 +2211,26 @@ class DifficultySprite extends FlxSprite
 
     difficultyId = diffId;
 
-    if (Assets.exists(Paths.file('images/freeplay/freeplay${diffId}.xml')))
+    var assetDiffId:String = diffId;
+    while (!Assets.exists(Paths.image('freeplay/freeplay${assetDiffId}')))
     {
-      this.frames = Paths.getSparrowAtlas('freeplay/freeplay${diffId}');
+      // Remove the last suffix of the difficulty id until we find an asset or there are no more suffixes.
+      var assetDiffIdParts:Array<String> = assetDiffId.split('-');
+      assetDiffIdParts.pop();
+      if (assetDiffIdParts.length == 0) break;
+      assetDiffId = assetDiffIdParts.join('-');
+    }
+
+    // Check for an XML to use an animation instead of an image.
+    if (Assets.exists(Paths.file('images/freeplay/freeplay${assetDiffId}.xml')))
+    {
+      this.frames = Paths.getSparrowAtlas('freeplay/freeplay${assetDiffId}');
       this.animation.addByPrefix('idle', 'idle0', 24, true);
       if (Preferences.flashingLights) this.animation.play('idle');
     }
     else
     {
-      this.loadGraphic(Paths.image('freeplay/freeplay' + diffId));
+      this.loadGraphic(Paths.image('freeplay/freeplay' + assetDiffId));
     }
   }
 }

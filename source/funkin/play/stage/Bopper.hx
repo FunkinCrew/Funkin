@@ -1,6 +1,7 @@
 package funkin.play.stage;
 
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
@@ -45,8 +46,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var idleSuffix(default, set):String = '';
 
   /**
-   * If this bopper is rendered with pixel art,
-   * disable anti-aliasing and render at 6x scale.
+   * If this bopper is rendered with pixel art, disable anti-aliasing.
+   * @default `false`
    */
   public var isPixel(default, set):Bool = false;
 
@@ -79,11 +80,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
 
-    var xDiff = globalOffsets[0] - value[0];
-    var yDiff = globalOffsets[1] - value[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
     return globalOffsets = value;
   }
 
@@ -96,12 +92,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   {
     if (animOffsets == null) animOffsets = [0, 0];
     if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
-
-    var xDiff = animOffsets[0] - value[0];
-    var yDiff = animOffsets[1] - value[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
 
     return animOffsets = value;
   }
@@ -320,14 +310,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   function applyAnimationOffsets(name:String):Void
   {
     var offsets = animationOffsets.get(name);
-    if (offsets != null && !(offsets[0] == 0 && offsets[1] == 0))
-    {
-      this.animOffsets = [offsets[0] + globalOffsets[0], offsets[1] + globalOffsets[1]];
-    }
-    else
-    {
-      this.animOffsets = globalOffsets;
-    }
+    this.animOffsets = offsets;
   }
 
   public function isAnimationFinished():Bool
@@ -349,6 +332,15 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   {
     if (this.animation == null || this.animation.curAnim == null) return "";
     return this.animation.curAnim.name;
+  }
+
+  // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
+    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
+    return output;
   }
 
   public function onPause(event:PauseScriptEvent) {}
