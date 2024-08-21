@@ -89,8 +89,10 @@
     },
     {
       "name": "hscript",
-      "type": "haxelib",
-      "version": "2.5.0"
+      "type": "git",
+      "dir": null,
+      "ref": "59b33162e9dcd7e48b186a9f25ee81b6e47a4dd7",
+      "url": "https://github.com/haxefoundation/hscript"
     },
     {
       "name": "hxCodec",
