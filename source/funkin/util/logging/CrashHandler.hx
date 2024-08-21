@@ -280,8 +280,6 @@ class CrashHandler
       'ERROR ON QUERY RENDER METHOD: ${e}';
     }
 
-    if (outputStr == null) outputStr = 'UNKNOWN';
-
     return outputStr;
   }
 }
