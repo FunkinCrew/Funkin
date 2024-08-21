@@ -38,6 +38,13 @@ class PlayerData
   @:optional
   public var freeplayDJ:Null<PlayerFreeplayDJData> = null;
 
+  /**
+   * Data for displaying this character in the Character Select menu.
+   * If null, exclude from Character Select.
+   */
+  @:optional
+  public var charSelect:Null<PlayerCharSelectData> = null;
+
   public var results:Null<PlayerResultsData> = null;
 
   /**
@@ -226,6 +233,18 @@ class PlayerFreeplayDJData
   {
     return fistPump?.loopBadEndFrame ?? 0;
   }
+}
+
+class PlayerCharSelectData
+{
+  /**
+   * A zero-indexed number for the character's preferred position in the grid.
+   * 0 = top left, 4 = center, 8 = bottom right
+   * In the event of a conflict, the first character alphabetically gets it,
+   * and others get shifted over.
+   */
+  @:optional
+  public var position:Null<Int>;
 }
 
 typedef PlayerResultsData =

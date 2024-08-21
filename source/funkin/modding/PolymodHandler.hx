@@ -27,12 +27,10 @@ import polymod.Polymod;
 class PolymodHandler
 {
   /**
-   * The API version that mods should comply with.
-   * Format this with Semantic Versioning; <MAJOR>.<MINOR>.<PATCH>.
-   * Bug fixes increment the patch version, new features increment the minor version.
-   * Changes that break old mods increment the major version.
+   * Indicates which mods are compatible with this version of the game.
+   * Minor updates rarely impact mods but major versions often do.
    */
-  static final API_VERSION:String = '0.1.0';
+  static final API_VERSION:String = "0.5.0"; // Constants.VERSION;
 
   /**
    * Where relative to the executable that mods are located.
@@ -258,8 +256,20 @@ class PolymodHandler
     // Unserializerr.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('Unserializer');
 
+    // `lime.system.CFFI`
+    // Can load and execute compiled binaries.
+    Polymod.blacklistImport('lime.system.CFFI');
+
+    // `lime.system.JNI`
+    // Can load and execute compiled binaries.
+    Polymod.blacklistImport('lime.system.JNI');
+
+    // `lime.system.System`
+    // System.load() can load malicious DLLs
+    Polymod.blacklistImport('lime.system.System');
+
     // `polymod.*`
-    // You can probably unblacklist a module
+    // Contains functions which may allow for un-blacklisting other modules.
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
       if (cls == null) continue;
@@ -268,6 +278,7 @@ class PolymodHandler
     }
 
     // `sys.*`
+    // Access to system utilities such as the file system.
     for (cls in ClassMacro.listClassesInPackage('sys'))
     {
       if (cls == null) continue;

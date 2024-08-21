@@ -83,6 +83,11 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     return _data.freeplayDJ;
   }
 
+  public function getCharSelectData():PlayerCharSelectData
+  {
+    return _data.charSelect;
+  }
+
   public function getFreeplayDJText(index:Int):String
   {
     return _data.freeplayDJ.getFreeplayDJText(index);

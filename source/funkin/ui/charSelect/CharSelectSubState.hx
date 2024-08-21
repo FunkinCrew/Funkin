@@ -1,27 +1,30 @@
 package funkin.ui.charSelect;
 
-import funkin.ui.freeplay.FreeplayState;
-import flixel.text.FlxText;
-import funkin.ui.PixelatedIcon;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
-import flixel.math.FlxPoint;
-import flixel.tweens.FlxTween;
-import openfl.display.BlendMode;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
-import funkin.play.stage.Stage;
+import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
+import flixel.system.debug.watch.Tracker.TrackerProfile;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.data.freeplay.player.PlayerData;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.FlxObject;
-import openfl.display.BlendMode;
-import flixel.group.FlxGroup;
+import funkin.play.stage.Stage;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.PixelatedIcon;
 import funkin.util.MathUtil;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import flixel.sound.FlxSound;
-import funkin.audio.FunkinSound;
+import openfl.display.BlendMode;
+import openfl.display.BlendMode;
 
 class CharSelectSubState extends MusicBeatSubState
 {
@@ -67,8 +70,29 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super();
 
-    availableChars.set(4, "bf");
-    availableChars.set(3, "pico");
+    loadAvailableCharacters();
+  }
+
+  function loadAvailableCharacters():Void
+  {
+    var playerIds:Array<String> = PlayerRegistry.instance.listEntryIds();
+
+    for (playerId in playerIds)
+    {
+      var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerId);
+      if (player == null) continue;
+      var playerData = player.getCharSelectData();
+      if (playerData == null) continue;
+
+      var targetPosition:Int = playerData.position ?? 0;
+      while (availableChars.exists(targetPosition))
+      {
+        targetPosition += 1;
+      }
+
+      trace('Placing player ${playerId} at position ${targetPosition}');
+      availableChars.set(targetPosition, playerId);
+    }
   }
 
   override public function create():Void
@@ -192,7 +216,6 @@ class CharSelectSubState extends MusicBeatSubState
     // FlxG.debugger.track(bfChill, "bf chill");
     // FlxG.debugger.track(playerChill, "player");
     // FlxG.debugger.track(nametag, "nametag");
-    FlxG.debugger.track(selectSound, "selectSound");
     // FlxG.debugger.track(chooseDipshit, "choose dipshit");
     // FlxG.debugger.track(barthing, "barthing");
     // FlxG.debugger.track(fgBlur, "fgBlur");
@@ -263,7 +286,6 @@ class CharSelectSubState extends MusicBeatSubState
     add(temp);
     temp.alpha = 0.0;
     Conductor.stepHit.add(spamOnStep);
-    // FlxG.debugger.track(temp, "tempBG");
   }
 
   var grpIcons:FlxSpriteGroup;
@@ -487,6 +509,15 @@ class CharSelectSubState extends MusicBeatSubState
       }
     }
 
+    if (!pressedSelect && controls.BACK)
+    {
+      // Return to the Freeplay state without changing character.
+      FlxG.switchState(FreeplayState.build(
+        {
+          {}
+        }));
+    }
+
     updateLockAnims();
 
     camFollow.screenCenter();
@@ -507,6 +538,9 @@ class CharSelectSubState extends MusicBeatSubState
 
     cursorDarkBlue.x = MathUtil.coolLerp(cursorDarkBlue.x, cursorLocIntended.x, lerpAmnt * 0.2);
     cursorDarkBlue.y = MathUtil.coolLerp(cursorDarkBlue.y, cursorLocIntended.y, lerpAmnt * 0.2);
+
+    FlxG.watch.addQuick("charSelect-player-anim", playerChill.getCurrentAnimation());
+    FlxG.watch.addQuick("charSelect-gf-anim", gfChill.getCurrentAnimation());
   }
 
   function spamOnStep():Void
@@ -599,13 +633,19 @@ class CharSelectSubState extends MusicBeatSubState
     playerChillOut.visible = true;
     playerChillOut.anim.goToFrameLabel("slideout");
     playerChillOut.onAnimationFrame.add((_, frame:Int) -> {
-      if (frame == playerChillOut.anim.getFrameLabel("slideout").index + 1)
+      var targetIndex = playerChillOut?.anim?.getFrameLabel("slideout")?.index;
+      if (targetIndex == null) return;
+      if (frame == targetIndex)
+      {
+        playerChillOut.anim.pause();
+      }
+      if (frame == targetIndex + 1)
       {
         playerChill.visible = true;
         playerChill.switchChar(value);
         gfChill.switchGF(value);
       }
-      if (frame == playerChillOut.anim.getFrameLabel("slideout").index + 2)
+      if (frame == targetIndex + 2)
       {
         playerChillOut.switchChar(value);
         playerChillOut.visible = false;

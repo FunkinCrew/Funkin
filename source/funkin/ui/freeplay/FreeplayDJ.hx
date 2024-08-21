@@ -119,44 +119,50 @@ class FreeplayDJ extends FlxAtlasSprite
         var animPrefixA = playableCharData.getAnimationPrefix('fistPump');
         var animPrefixB = playableCharData.getAnimationPrefix('loss');
 
-        switch (getCurrentAnimation())
+        if (getCurrentAnimation() == animPrefixA)
         {
-          case animPrefixA:
-            var endFrame = playableCharData.getFistPumpIntroEndFrame();
-            if (endFrame > -1 && anim.curFrame >= endFrame)
-            {
-              playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpIntroStartFrame());
-            }
-          case animPrefixB:
-            var endFrame = playableCharData.getFistPumpIntroBadEndFrame();
-            if (endFrame > -1 && anim.curFrame >= endFrame)
-            {
-              playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
-            }
-          default:
-            FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
+          var endFrame = playableCharData.getFistPumpIntroEndFrame();
+          if (endFrame > -1 && anim.curFrame >= endFrame)
+          {
+            playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpIntroStartFrame());
+          }
+        }
+        else if (getCurrentAnimation() == animPrefixB)
+        {
+          var endFrame = playableCharData.getFistPumpIntroBadEndFrame();
+          if (endFrame > -1 && anim.curFrame >= endFrame)
+          {
+            playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
+          }
+        }
+        else
+        {
+          FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
         }
 
       case FistPump:
         var animPrefixA = playableCharData.getAnimationPrefix('fistPump');
         var animPrefixB = playableCharData.getAnimationPrefix('loss');
 
-        switch (getCurrentAnimation())
+        if (getCurrentAnimation() == animPrefixA)
         {
-          case animPrefixA:
-            var endFrame = playableCharData.getFistPumpLoopEndFrame();
-            if (endFrame > -1 && anim.curFrame >= endFrame)
-            {
-              playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpLoopStartFrame());
-            }
-          case animPrefixB:
-            var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
-            if (endFrame > -1 && anim.curFrame >= endFrame)
-            {
-              playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
-            }
-          default:
-            FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
+          var endFrame = playableCharData.getFistPumpLoopEndFrame();
+          if (endFrame > -1 && anim.curFrame >= endFrame)
+          {
+            playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpLoopStartFrame());
+          }
+        }
+        else if (getCurrentAnimation() == animPrefixB)
+        {
+          var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
+          if (endFrame > -1 && anim.curFrame >= endFrame)
+          {
+            playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
+          }
+        }
+        else
+        {
+          FlxG.log.warn("Unrecognized animation in FistPump: " + getCurrentAnimation());
         }
 
       case IdleEasterEgg:

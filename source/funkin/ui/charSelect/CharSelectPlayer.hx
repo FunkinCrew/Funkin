@@ -9,19 +9,38 @@ class CharSelectPlayer extends FlxAtlasSprite
   {
     super(x, y, Paths.animateAtlas("charSelect/bfChill"));
 
+    trace('Initialized CharSelectPlayer');
+
+    trace(listAnimations());
+
     onAnimationComplete.add(function(animLabel:String) {
+      trace('Completed CharSelectPlayer animation: ' + animLabel);
       switch (animLabel)
       {
         case "slidein":
-          if (hasAnimation("slidein idle point")) playAnimation("slidein idle point", true, false, false);
+          // Completed the slide-in.
+          if (hasAnimation("slidein idle point"))
+          {
+            // Play the idle animation from a specific spot.
+            playAnimation("slidein idle point", true, false, false);
+          }
           else
+          {
+            // Play the idle animation.
             playAnimation("idle", true, false, true);
+          }
         case "slidein idle point":
+          // Play the idle animation.
           playAnimation("idle", true, false, true);
         case "select":
+          trace('Pausing animation...');
+          // Pause the animation on the last frame (don't loop).
           anim.pause();
         case "deselect":
+          // Go to the deselect loop point.
           playAnimation("deselect loop start", true, false, true);
+        default:
+          // Do nothing.
       }
     });
   }
@@ -42,13 +61,14 @@ class CharSelectPlayer extends FlxAtlasSprite
 
   public function switchChar(str:String)
   {
-    switch str
+    switch (str)
     {
       default:
-        loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
+        loadAtlas(Paths.animateAtlas('charSelect/${str}Chill'));
     }
 
     anim.play("");
+
     playAnimation("slidein", true, false, false);
 
     updateHitbox();
