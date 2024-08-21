@@ -1237,7 +1237,31 @@ class FreeplayState extends MusicBeatSubState
 
     if (controls.FREEPLAY_CHAR_SELECT && !busy)
     {
-      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+      // Check if we have ACCESS to character select!
+      trace('Is Pico unlocked? ${PlayerRegistry.instance.fetchEntry('pico')?.isUnlocked()}');
+      trace('Number of characters: ${PlayerRegistry.instance.countUnlockedCharacters()}');
+
+      if (PlayerRegistry.instance.countUnlockedCharacters() > 1)
+      {
+        if (dj != null)
+        {
+          // Transition to character select after animation
+          dj.onCharSelectComplete = function() {
+            FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+          }
+          dj.toCharSelect();
+        }
+        else
+        {
+          // Transition to character select immediately
+          FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+        }
+      }
+      else
+      {
+        trace('Not enough characters unlocked to open character select!');
+        FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      }
     }
 
     if (controls.FREEPLAY_FAVORITE && !busy)
@@ -1330,6 +1354,8 @@ class FreeplayState extends MusicBeatSubState
     }
 
     handleInputs(elapsed);
+
+    if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
   }
 
   function handleInputs(elapsed:Float):Void

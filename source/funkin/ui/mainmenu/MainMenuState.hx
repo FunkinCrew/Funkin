@@ -363,6 +363,28 @@ class MainMenuState extends MusicBeatState
         });
     }
 
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    {
+      // Give the user a score of 0 points on Weekend 1 story mode.
+      // This makes the level count as uncleared and no longer displays the songs in Freeplay.
+      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
+        {
+          score: 1,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            }
+        });
+    }
+
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.R)
     {
       // Give the user a hypothetical overridden score,

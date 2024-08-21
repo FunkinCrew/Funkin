@@ -15,7 +15,7 @@ class FreeplayDJ extends FlxAtlasSprite
 {
   // Represents the sprite's current status.
   // Without state machines I would have driven myself crazy years ago.
-  public var currentState:DJBoyfriendState = Intro;
+  public var currentState:FreeplayDJState = Intro;
 
   // A callback activated when the intro animation finishes.
   public var onIntroDone:FlxSignal = new FlxSignal();
@@ -65,6 +65,8 @@ class FreeplayDJ extends FlxAtlasSprite
     FlxG.console.registerFunction("freeplayCartoon", function() {
       currentState = Cartoon;
     });
+
+    trace('Freeplay DJ animations: ${listAnimations()}');
   }
 
   override public function listAnimations():Array<String>
@@ -111,6 +113,15 @@ class FreeplayDJ extends FlxAtlasSprite
           }
         }
         timeIdling += elapsed;
+      case NewUnlock:
+        var animPrefix = playableCharData.getAnimationPrefix('newUnlock');
+        if (getCurrentAnimation() != animPrefix)
+        {
+          playFlashAnimation(animPrefix, true, false, true);
+        }
+
+      // No IdleEasterEgg or Cartoon here!
+
       case Confirm:
         var animPrefix = playableCharData.getAnimationPrefix('confirm');
         if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, false);
@@ -124,7 +135,7 @@ class FreeplayDJ extends FlxAtlasSprite
           var endFrame = playableCharData.getFistPumpIntroEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpIntroStartFrame());
+            playFlashAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpIntroStartFrame());
           }
         }
         else if (getCurrentAnimation() == animPrefixB)
@@ -132,7 +143,7 @@ class FreeplayDJ extends FlxAtlasSprite
           var endFrame = playableCharData.getFistPumpIntroBadEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
+            playFlashAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
           }
         }
         else
@@ -149,7 +160,7 @@ class FreeplayDJ extends FlxAtlasSprite
           var endFrame = playableCharData.getFistPumpLoopEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpLoopStartFrame());
+            playFlashAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpLoopStartFrame());
           }
         }
         else if (getCurrentAnimation() == animPrefixB)
@@ -157,7 +168,7 @@ class FreeplayDJ extends FlxAtlasSprite
           var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
+            playFlashAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
           }
         }
         else
@@ -226,7 +237,14 @@ class FreeplayDJ extends FlxAtlasSprite
 
     if (name == playableCharData.getAnimationPrefix('intro'))
     {
-      currentState = Idle;
+      if (PlayerRegistry.instance.hasNewCharacter())
+      {
+        currentState = NewUnlock;
+      }
+      else
+      {
+        currentState = Idle;
+      }
       onIntroDone.dispatch();
     }
     else if (name == playableCharData.getAnimationPrefix('idle'))
@@ -266,8 +284,16 @@ class FreeplayDJ extends FlxAtlasSprite
         // runTvLogic();
       }
       trace('Replay idle: ${frame}');
-      playAnimation(playableCharData.getAnimationPrefix('cartoon'), true, false, false, frame);
+      playFlashAnimation(playableCharData.getAnimationPrefix('cartoon'), true, false, false, frame);
       // trace('Finished confirm');
+    }
+    else if (name == playableCharData.getAnimationPrefix('newUnlock'))
+    {
+      // Animation should loop.
+    }
+    else if (name == playableCharData.getAnimationPrefix('charSelect'))
+    {
+      onCharSelectComplete();
     }
     else
     {
@@ -279,6 +305,15 @@ class FreeplayDJ extends FlxAtlasSprite
   {
     timeIdling = 0;
     seenIdleEasterEgg = false;
+  }
+
+  /**
+   * Dynamic function, it's actually a variable you can reassign!
+   * `dj.onCharSelectComplete = function() {};`
+   */
+  public dynamic function onCharSelectComplete():Void
+  {
+    trace('onCharSelectComplete()');
   }
 
   var offsetX:Float = 0.0;
@@ -312,7 +347,7 @@ class FreeplayDJ extends FlxAtlasSprite
   function loadCartoon()
   {
     cartoonSnd = FunkinSound.load(Paths.sound(getRandomFlashToon()), 1.0, false, true, true, function() {
-      playAnimation("Boyfriend DJ watchin tv OG", true, false, false, 60);
+      playFlashAnimation(playableCharData.getAnimationPrefix('cartoon'), true, false, false, 60);
     });
 
     // Fade out music to 40% volume over 1 second.
@@ -342,32 +377,39 @@ class FreeplayDJ extends FlxAtlasSprite
     currentState = Confirm;
   }
 
+  public function toCharSelect():Void
+  {
+    currentState = CharSelect;
+    var animPrefix = playableCharData.getAnimationPrefix('charSelect');
+    playFlashAnimation(animPrefix, true, false, false, 0);
+  }
+
   public function fistPumpIntro():Void
   {
     currentState = FistPumpIntro;
     var animPrefix = playableCharData.getAnimationPrefix('fistPump');
-    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroStartFrame());
+    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroStartFrame());
   }
 
   public function fistPump():Void
   {
     currentState = FistPump;
     var animPrefix = playableCharData.getAnimationPrefix('fistPump');
-    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopStartFrame());
+    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopStartFrame());
   }
 
   public function fistPumpLossIntro():Void
   {
     currentState = FistPumpIntro;
     var animPrefix = playableCharData.getAnimationPrefix('loss');
-    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
+    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
   }
 
   public function fistPumpLoss():Void
   {
     currentState = FistPump;
     var animPrefix = playableCharData.getAnimationPrefix('loss');
-    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
+    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
   }
 
   override public function getCurrentAnimation():String
@@ -390,11 +432,6 @@ class FreeplayDJ extends FlxAtlasSprite
     {
       var xValue = daOffset[0];
       var yValue = daOffset[1];
-      if (AnimName == "Boyfriend DJ watchin tv OG")
-      {
-        xValue += offsetX;
-        yValue += offsetY;
-      }
 
       trace('Successfully applied offset ($AnimName): ' + xValue + ', ' + yValue);
       offset.set(xValue, yValue);
@@ -418,13 +455,53 @@ class FreeplayDJ extends FlxAtlasSprite
   }
 }
 
-enum DJBoyfriendState
+enum FreeplayDJState
 {
+  /**
+   * Character enters the frame and transitions to Idle.
+   */
   Intro;
+
+  /**
+   * Character loops in idle.
+   */
   Idle;
-  Confirm;
-  FistPumpIntro;
-  FistPump;
+
+  /**
+   * Plays an easter egg animation after a period in Idle, then reverts to Idle.
+   */
   IdleEasterEgg;
+
+  /**
+   * Plays an elaborate easter egg animation. Does not revert until another animation is triggered.
+   */
   Cartoon;
+
+  /**
+   * Player has selected a song.
+   */
+  Confirm;
+
+  /**
+   * Character preps to play the fist pump animation; plays after the Results screen.
+   * The actual frame label that gets played may vary based on the player's success.
+   */
+  FistPumpIntro;
+
+  /**
+   * Character plays the fist pump animation.
+   * The actual frame label that gets played may vary based on the player's success.
+   */
+  FistPump;
+
+  /**
+   * Plays an animation to indicate that the player has a new unlock in Character Select.
+   * Overrides all idle animations as well as the fist pump. Only Confirm and CharSelect will override this.
+   */
+  NewUnlock;
+
+  /**
+   * Plays an animation to transition to the Character Select screen.
+   */
+  CharSelect;
 }
