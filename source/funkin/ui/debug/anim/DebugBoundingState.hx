@@ -5,29 +5,22 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.util.FlxSpriteUtil;
-import flixel.util.FlxTimer;
-import funkin.audio.FunkinSound;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.character.SparrowCharacter;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.MouseUtil;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import haxe.ui.components.DropDown;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
-import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
-import haxe.ui.events.ItemEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import lime.utils.Assets as LimeAssets;
@@ -36,9 +29,6 @@ import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
 import openfl.net.FileReference;
-import openfl.net.URLLoader;
-import openfl.net.URLRequest;
-import openfl.utils.ByteArray;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -164,64 +154,6 @@ class DebugBoundingState extends FlxState
     addInfo('Height', bf.height);
 
     spriteSheetView.add(swagOutlines);
-
-    FlxG.stage.window.onDropFile.add(function(path:String) {
-      // WACKY ASS TESTING SHIT FOR WEB FILE LOADING??
-      #if web
-      var swagList:FileList = cast path;
-
-      var objShit = js.html.URL.createObjectURL(swagList.item(0));
-      trace(objShit);
-
-      var funnysound = new FunkinSound().loadStream('https://cdn.discordapp.com/attachments/767500676166451231/817821618251759666/Flutter.mp3', false, false,
-        null, function() {
-          trace('LOADED SHIT??');
-      });
-
-      funnysound.volume = 1;
-      funnysound.play();
-
-      var urlShit = new URLLoader(new URLRequest(objShit));
-
-      new FlxTimer().start(3, function(tmr:FlxTimer) {
-        // music lol!
-        if (urlShit.dataFormat == BINARY)
-        {
-          // var daSwagBytes:ByteArray = urlShit.data;
-
-          // FlxG.sound.playMusic();
-
-          // trace('is binary!!');
-        }
-        trace(urlShit.dataFormat);
-      });
-
-      // remove(bf);
-      // FlxG.bitmap.removeByKey(Paths.image('characters/temp'));
-      // Assets.cache.clear();
-
-      // bf.loadGraphic(objShit);
-      // add(bf);
-
-      // trace(swagList.item(0).name);
-      // var urlShit = js.html.URL.createObjectURL(path);
-      #end
-
-      #if sys
-      trace("DROPPED FILE FROM: " + Std.string(path));
-      var newPath = "./" + Paths.image('characters/temp');
-      File.copy(path, newPath);
-
-      var swag = Paths.image('characters/temp');
-
-      if (bf != null) remove(bf);
-      FlxG.bitmap.removeByKey(Paths.image('characters/temp'));
-      Assets.cache.clear();
-
-      bf.loadGraphic(Paths.image('characters/temp'));
-      add(bf);
-      #end
-    });
   }
 
   function generateOutlines(frameShit:Array<FlxFrame>):Void

@@ -32,8 +32,8 @@
       "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "951a0103a17bfa55eed86703ce50b4fb0d7590bc",
-      "url": "https://github.com/Starmapo/flixel-text-input"
+      "ref": "27f1ba626f80a6282fa8a187115e79a4a2133dc2",
+      "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
       "name": "flxanimate",
