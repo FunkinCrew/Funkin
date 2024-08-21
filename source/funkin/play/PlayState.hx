@@ -1979,7 +1979,7 @@ class PlayState extends MusicBeatSubState
     if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
-    if (!FlxG.sound.music.playing) return;
+    if (!(FlxG.sound.music?.playing ?? false)) return;
     var timeToPlayAt:Float = Conductor.instance.songPosition - Conductor.instance.instrumentalOffset;
     FlxG.sound.music.pause();
     vocals.pause();

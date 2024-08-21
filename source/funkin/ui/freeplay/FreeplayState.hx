@@ -907,7 +907,15 @@ class FreeplayState extends MusicBeatSubState
     changeSelection();
     changeDiff();
 
-    if (dj != null) dj.fistPump();
+    if (fromResultsParams?.newRank == SHIT)
+    {
+      if (dj != null) dj.fistPumpLossIntro();
+    }
+    else
+    {
+      if (dj != null) dj.fistPumpIntro();
+    }
+
     // rankCamera.fade(FlxColor.BLACK, 0.5, true);
     rankCamera.fade(0xFF000000, 0.5, true, null, true);
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
@@ -1089,11 +1097,11 @@ class FreeplayState extends MusicBeatSubState
 
       if (fromResultsParams?.newRank == SHIT)
       {
-        if (dj != null) dj.pumpFistBad();
+        if (dj != null) dj.fistPumpLoss();
       }
       else
       {
-        if (dj != null) dj.pumpFist();
+        if (dj != null) dj.fistPump();
       }
 
       rankCamera.zoom = 0.8;

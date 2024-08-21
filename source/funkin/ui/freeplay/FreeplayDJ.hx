@@ -116,13 +116,48 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, false);
         timeIdling = 0;
       case FistPumpIntro:
-        var animPrefix = playableCharData.getAnimationPrefix('fistPump');
-        if (getCurrentAnimation() != animPrefix) playFlashAnimation('Boyfriend DJ fist pump', false);
-        if (getCurrentAnimation() == animPrefix && anim.curFrame >= 4)
+        var animPrefixA = playableCharData.getAnimationPrefix('fistPump');
+        var animPrefixB = playableCharData.getAnimationPrefix('loss');
+
+        switch (getCurrentAnimation())
         {
-          playAnimation("Boyfriend DJ fist pump", true, false, false, 0);
+          case animPrefixA:
+            var endFrame = playableCharData.getFistPumpIntroEndFrame();
+            if (endFrame > -1 && anim.curFrame >= endFrame)
+            {
+              playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpIntroStartFrame());
+            }
+          case animPrefixB:
+            var endFrame = playableCharData.getFistPumpIntroBadEndFrame();
+            if (endFrame > -1 && anim.curFrame >= endFrame)
+            {
+              playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
+            }
+          default:
+            FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
         }
+
       case FistPump:
+        var animPrefixA = playableCharData.getAnimationPrefix('fistPump');
+        var animPrefixB = playableCharData.getAnimationPrefix('loss');
+
+        switch (getCurrentAnimation())
+        {
+          case animPrefixA:
+            var endFrame = playableCharData.getFistPumpLoopEndFrame();
+            if (endFrame > -1 && anim.curFrame >= endFrame)
+            {
+              playAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpLoopStartFrame());
+            }
+          case animPrefixB:
+            var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
+            if (endFrame > -1 && anim.curFrame >= endFrame)
+            {
+              playAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
+            }
+          default:
+            FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
+        }
 
       case IdleEasterEgg:
         var animPrefix = playableCharData.getAnimationPrefix('idleEasterEgg');
@@ -301,21 +336,32 @@ class FreeplayDJ extends FlxAtlasSprite
     currentState = Confirm;
   }
 
-  public function fistPump():Void
+  public function fistPumpIntro():Void
   {
     currentState = FistPumpIntro;
+    var animPrefix = playableCharData.getAnimationPrefix('fistPump');
+    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroStartFrame());
   }
 
-  public function pumpFist():Void
+  public function fistPump():Void
   {
     currentState = FistPump;
-    playAnimation("Boyfriend DJ fist pump", true, false, false, 4);
+    var animPrefix = playableCharData.getAnimationPrefix('fistPump');
+    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopStartFrame());
   }
 
-  public function pumpFistBad():Void
+  public function fistPumpLossIntro():Void
+  {
+    currentState = FistPumpIntro;
+    var animPrefix = playableCharData.getAnimationPrefix('loss');
+    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
+  }
+
+  public function fistPumpLoss():Void
   {
     currentState = FistPump;
-    playAnimation("Boyfriend DJ loss reaction 1", true, false, false, 4);
+    var animPrefix = playableCharData.getAnimationPrefix('loss');
+    playAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
   }
 
   override public function getCurrentAnimation():String
