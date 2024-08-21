@@ -134,7 +134,7 @@ class FlxAtlasSprite extends FlxAnimate
   public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
   {
     // Skip if not allowed to play animations.
-    if ((!canPlayOtherAnims && !ignoreOther)) return;
+    if ((!canPlayOtherAnims && !ignoreOther) || (anim == null)) return;
 
     if (id == null || id == '') id = this.currentAnimation;
 
