@@ -182,6 +182,7 @@ class FlxAtlasSprite extends FlxAnimate
     trace('Playing animation $id');
     this.anim.play(id, restart, false, startFrame);
     goToFrameLabel(id);
+    anim.curFrame += startFrame;
     this.currentAnimation = id;
   }
 
@@ -301,7 +302,7 @@ class FlxAtlasSprite extends FlxAnimate
 
   public function getBasePosition():Null<FlxPoint>
   {
-    var stagePos = new FlxPoint(anim.stageInstance.matrix.tx, anim.stageInstance.matrix.ty);
+    // var stagePos = new FlxPoint(anim.stageInstance.matrix.tx, anim.stageInstance.matrix.ty);
     var instancePos = new FlxPoint(anim.curInstance.matrix.tx, anim.curInstance.matrix.ty);
     var firstElement = anim.curSymbol.timeline?.get(0)?.get(0)?.get(0);
     if (firstElement == null) return instancePos;

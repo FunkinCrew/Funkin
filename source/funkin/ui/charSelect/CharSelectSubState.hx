@@ -22,6 +22,8 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.sound.FlxSound;
 import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinCamera;
+import funkin.vis.dsp.SpectralAnalyzer;
 
 class CharSelectSubState extends MusicBeatSubState
 {
@@ -63,6 +65,10 @@ class CharSelectSubState extends MusicBeatSubState
   var selectTimer:FlxTimer = new FlxTimer();
   var selectSound:FunkinSound;
 
+  var charSelectCam:FunkinCamera;
+
+  var introM:FunkinSound = null;
+
   public function new()
   {
     super();
@@ -90,13 +96,21 @@ class CharSelectSubState extends MusicBeatSubState
         restartTrack: true
       });
     var introMusic:String = Paths.music('stayFunky/stayFunky-intro');
-    FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
+    introM = FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
       FunkinSound.playMusic('stayFunky',
         {
           startingVolume: 1,
           overrideExisting: true,
           restartTrack: true
         });
+      @:privateAccess
+      gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+      #if desktop
+      // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+      // So we want to manually change it!
+      @:privateAccess
+      gfChill.analyzer.fftN = 512;
+      #end
     });
 
     var bg:FlxSprite = new FlxSprite(-153, -140);
@@ -137,7 +151,7 @@ class CharSelectSubState extends MusicBeatSubState
     gfChill = new CharSelectGF();
     gfChill.switchGF("bf");
     add(gfChill);
-
+    @:privateAccess
     playerChill = new CharSelectPlayer(0, 0);
     playerChill.switchChar("bf");
     add(playerChill);
@@ -349,6 +363,17 @@ class CharSelectSubState extends MusicBeatSubState
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    @:privateAccess
+    if (introM != null && !introM.paused && gfChill.analyzer == null)
+    {
+      gfChill.analyzer = new SpectralAnalyzer(introM._channel.__audioSource, 7, 0.1);
+      #if desktop
+      // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+      // So we want to manually change it!
+      @:privateAccess
+      gfChill.analyzer.fftN = 512;
+      #end
+    }
 
     Conductor.instance.update();
 
@@ -449,6 +474,7 @@ class CharSelectSubState extends MusicBeatSubState
 
         FlxTween.tween(FlxG.sound.music, {pitch: 0.1}, 1.5, {ease: FlxEase.quadInOut});
         playerChill.playAnimation("select");
+        gfChill.playAnimation("confirm");
         pressedSelect = true;
         selectTimer.start(1.5, (_) -> {
           pressedSelect = false;
@@ -467,8 +493,20 @@ class CharSelectSubState extends MusicBeatSubState
         grpCursors.visible = true;
 
         FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1, {ease: FlxEase.quartInOut});
         playerChill.playAnimation("deselect");
+        gfChill.playAnimation("deselect");
+        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1,
+          {
+            ease: FlxEase.quartInOut,
+            onComplete: (_) -> {
+              var fr = playerChill.anim.getFrameLabel("deselect loop end");
+              if (fr != null) fr.removeCallbacks();
+              @:privateAccess
+              playerChill._addedCall = false;
+              playerChill.playAnimation("idle");
+              gfChill.playAnimation("idle");
+            }
+          });
         pressedSelect = false;
         selectTimer.cancel();
       }
@@ -572,6 +610,14 @@ class CharSelectSubState extends MusicBeatSubState
             memb.scale.set(2.6, 2.6);
 
             if (controls.ACCEPT) memb.animation.play("confirm");
+            if (controls.BACK)
+            {
+              memb.animation.play("confirm", false, true);
+              member.animation.finishCallback = (_) -> {
+                member.animation.play("idle");
+                member.animation.finishCallback = null;
+              };
+            }
           }
           else
           {

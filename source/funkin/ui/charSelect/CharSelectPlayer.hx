@@ -10,20 +10,74 @@ class CharSelectPlayer extends FlxAtlasSprite
     super(x, y, Paths.animateAtlas("charSelect/bfChill"));
 
     onAnimationComplete.add(function(animLabel:String) {
-      switch (animLabel)
-      {
-        case "slidein":
-          if (hasAnimation("slidein idle point")) playAnimation("slidein idle point", true, false, false);
-          else
-            playAnimation("idle", true, false, true);
-        case "slidein idle point":
-          playAnimation("idle", true, false, true);
-        case "select":
-          anim.pause();
-        case "deselect":
-          playAnimation("deselect loop start", true, false, true);
-      }
+      if (hasAnimation("slidein idle point")) playAnimation("slidein idle point", true, false, false);
+      else
+        playAnimation("idle");
     });
+  }
+
+  var _addedCall = false;
+
+  override public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
+  {
+    if (id == null || id == "") id = "idle";
+    switch (id)
+    {
+      case "idle", "slidein idle point":
+        if (!_addedCall)
+        {
+          var fr = anim.getFrameLabel("idle end");
+          if (fr != null) fr.add(() -> {
+            playAnimation("idle", true, false, false);
+          });
+        }
+        _addedCall = true;
+
+      case "select":
+        if (_addedCall)
+        {
+          anim.getFrameLabel("idle end").removeCallbacks();
+          _addedCall = false;
+        }
+
+        var fr = anim.getFrameLabel("deselect");
+
+        fr.add(() -> {
+          anim.pause();
+          anim.curFrame--;
+        });
+
+        _addedCall = true;
+
+      case "deselect":
+        var og = anim.getFrameLabel("deselect");
+        if (_addedCall)
+        {
+          og.removeCallbacks();
+          _addedCall = false;
+        }
+
+        var fr = anim.getFrameLabel("deselect loop end");
+
+        fr.removeCallbacks();
+        fr.add(() -> playAnimation("deselect loop start", true, false, false));
+
+        _addedCall = true;
+
+      case "slidein", "slideout":
+        if (_addedCall)
+        {
+          anim.getFrameLabel("deselect loop end").removeCallbacks();
+          _addedCall = false;
+        }
+      default:
+        if (_addedCall)
+        {
+          anim.getFrameLabel("idle end").removeCallbacks();
+          _addedCall = false;
+        }
+    }
+    super.playAnimation(id, restart, ignoreOther, loop, startFrame);
   }
 
   public function updatePosition(str:String)
@@ -48,7 +102,6 @@ class CharSelectPlayer extends FlxAtlasSprite
         loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
     }
 
-    anim.play("");
     playAnimation("slidein", true, false, false);
 
     updateHitbox();

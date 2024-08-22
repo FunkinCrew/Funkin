@@ -8,6 +8,7 @@ import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.util.FramesJSFLParser.FramesJSFLFrame;
 import flixel.math.FlxMath;
+import funkin.vis.dsp.SpectralAnalyzer;
 
 class CharSelectGF extends FlxAtlasSprite
 {
@@ -20,12 +21,45 @@ class CharSelectGF extends FlxAtlasSprite
 
   var intendedYPos:Float = 0;
   var intendedAlpha:Float = 0;
+  var list:Array<String> = [];
+  var char:String = "gf";
+
+  var analyzer:SpectralAnalyzer;
 
   public function new()
   {
     super(0, 0, Paths.animateAtlas("charSelect/gfChill"));
     anim.play("");
+    list = anim.curSymbol.getFrameLabelNames();
+
     switchGF("bf");
+  }
+
+  var _addedCallback:String = "";
+
+  override public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
+  {
+    if (id == null) id = "idle";
+    // var fr = anim.getFrameLabel("confirm");
+    // fr.removeCallbacks();
+    // fr.add(() -> trace("HEY"));
+
+    if (id != _addedCallback)
+    {
+      var next = list[list.indexOf(_addedCallback) + 1];
+      if (next != null) anim.getFrameLabel(next).removeCallbacks();
+
+      var index:Int = list.indexOf(id);
+
+      _addedCallback = list[index];
+      if (index != -1 && index + 1 < list.length)
+      {
+        var lb = anim.getFrameLabel(list[index + 1]);
+        @:privateAccess
+        lb.add(() -> playAnimation(list[index], true, false, false));
+      }
+    }
+    super.playAnimation(id, restart, ignoreOther, loop, startFrame);
   }
 
   override public function update(elapsed:Float)
@@ -56,6 +90,39 @@ class CharSelectGF extends FlxAtlasSprite
     {
       alpha = 0;
       fadingStatus = FADE_IN;
+    }
+  }
+
+  override public function draw()
+  {
+    if (analyzer != null) drawFFT();
+    super.draw();
+  }
+
+  function drawFFT()
+  {
+    if (char == "nene")
+    {
+      var levels = analyzer.getLevels();
+      var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
+      var elements = frame.getList();
+      var len:Int = cast Math.min(elements.length, 7);
+
+      for (i in 0...len)
+      {
+        var animFrame:Int = Math.round(levels[i].value * 12);
+
+        #if desktop
+        animFrame = Math.round(animFrame * FlxG.sound.volume);
+        #end
+
+        animFrame = Math.floor(Math.min(12, animFrame));
+        animFrame = Math.floor(Math.max(0, animFrame));
+
+        animFrame = Std.int(Math.abs(animFrame - 12)); // shitty dumbass flip, cuz dave got da shit backwards lol!
+
+        elements[i].symbol.firstFrame = animFrame;
+      }
     }
   }
 
@@ -113,6 +180,7 @@ class CharSelectGF extends FlxAtlasSprite
         "gf";
     }
 
+    char = str;
     switch str
     {
       default:
@@ -123,7 +191,8 @@ class CharSelectGF extends FlxAtlasSprite
     animOutInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + str + "AnimInfo/" + str + "Out.txt"));
 
     anim.play("");
-    playAnimation("idle", true, false, true);
+    playAnimation("idle", true, false, false);
+    addFrameCallback(getNextFrameLabel("idle"), () -> playAnimation("idle", true, false, false));
 
     updateHitbox();
   }
