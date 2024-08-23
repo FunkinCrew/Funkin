@@ -1,6 +1,13 @@
 {
   "dependencies": [
     {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
@@ -41,13 +48,6 @@
       "dir": null,
       "ref": "768740a56b26aa0c072720e0d1236b94afe68e3e",
       "url": "https://github.com/Dot-Stuff/flxanimate"
-    },
-    {
-      "name": "FlxPartialSound",
-      "type": "git",
-      "dir": null,
-      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "format",
