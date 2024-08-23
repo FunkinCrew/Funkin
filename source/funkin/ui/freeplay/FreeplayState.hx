@@ -1,5 +1,8 @@
 package funkin.ui.freeplay;
 
+import funkin.ui.freeplay.backcards.BackingCard;
+import funkin.ui.freeplay.backcards.BoyfriendCard;
+import funkin.ui.freeplay.backcards.PicoCard;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
 import flixel.FlxCamera;
@@ -30,7 +33,9 @@ import funkin.graphics.shaders.AngleMask;
 import funkin.graphics.shaders.GaussianBlurShader;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.PureColor;
+import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.StrokeShader;
+import openfl.filters.ShaderFilter;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.scoring.Scoring;
@@ -176,6 +181,8 @@ class FreeplayState extends MusicBeatSubState
   var letterSort:LetterSort;
   var exitMovers:ExitMoverData = new Map();
 
+  var exitMoversCharSel:ExitMoverData = new Map();
+
   var stickerSubState:Null<StickerSubState> = null;
 
   public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
@@ -186,23 +193,9 @@ class FreeplayState extends MusicBeatSubState
   var rankBg:FunkinSprite;
   var rankVignette:FlxSprite;
 
-  var backingTextYeah:FlxAtlasSprite;
-  var orangeBackShit:FunkinSprite;
-  var alsoOrangeLOL:FunkinSprite;
-  var pinkBack:FunkinSprite;
-  var confirmGlow:FlxSprite;
-  var confirmGlow2:FlxSprite;
-  var confirmTextGlow:FlxSprite;
+  var backingCard:Null<BackingCard> = null;
 
-  var moreWays:BGScrollingText;
-  var funnyScroll:BGScrollingText;
-  var txtNuts:BGScrollingText;
-  var funnyScroll2:BGScrollingText;
-  var moreWays2:BGScrollingText;
-  var funnyScroll3:BGScrollingText;
-
-  var bgDad:FlxSprite;
-  var cardGlow:FlxSprite;
+  public var bgDad:FlxSprite;
 
   var fromResultsParams:Null<FromResultsParams> = null;
 
@@ -232,48 +225,37 @@ class FreeplayState extends MusicBeatSubState
       stickerSubState = stickers;
     }
 
+    switch (currentCharacterId)
+    {
+      case 'bf':
+        backingCard = new BoyfriendCard(currentCharacter);
+      case 'pico':
+        backingCard = new PicoCard(currentCharacter);
+      default:
+        backingCard = new BackingCard(currentCharacter);
+    }
+
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
     albumRoll = new AlbumRoll();
     fp = new FreeplayScore(460, 60, 7, 100);
-    cardGlow = new FlxSprite(-30, -30).loadGraphic(Paths.image('freeplay/cardGlow'));
-    confirmGlow = new FlxSprite(-30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
-    confirmTextGlow = new FlxSprite(-8, 115).loadGraphic(Paths.image('freeplay/glowingText'));
     rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
-    funnyScroll = new BGScrollingText(0, 220, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, false, 60);
-    funnyScroll2 = new BGScrollingText(0, 335, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, false, 60);
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
     letterSort = new LetterSort(400, 75);
     grpSongs = new FlxTypedGroup<Alphabet>();
-    moreWays = new BGScrollingText(0, 160, currentCharacter.getFreeplayDJText(2), FlxG.width, true, 43);
-    moreWays2 = new BGScrollingText(0, 397, currentCharacter.getFreeplayDJText(2), FlxG.width, true, 43);
-    pinkBack = FunkinSprite.create('freeplay/pinkBack');
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
     sparks = new FlxSprite(0, 0);
     sparksADD = new FlxSprite(0, 0);
     txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
-    txtNuts = new BGScrollingText(0, 285, currentCharacter.getFreeplayDJText(3), FlxG.width / 2, true, 43);
 
     ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
 
-    orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
-
-    bgDad = new FlxSprite(pinkBack.width * 0.74, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
-    alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
-    confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('freeplay/confirmGlow2'));
-    funnyScroll3 = new BGScrollingText(0, orangeBackShit.y + 10, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, 60);
-    backingTextYeah = new FlxAtlasSprite(640, 370, Paths.animateAtlas("freeplay/backing-text-yeah"),
-      {
-        FrameRate: 24.0,
-        Reversed: false,
-        // ?OnComplete:Void -> Void,
-        ShowPivot: false,
-        Antialiasing: true,
-        ScrollFactor: new FlxPoint(1, 1),
-      });
+    bgDad = new FlxSprite(backingCard.pinkBack.width * 0.74, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
   }
+
+  var fadeShader:BlueFade = new BlueFade();
 
   override function create():Void
   {
@@ -282,6 +264,9 @@ class FreeplayState extends MusicBeatSubState
     FlxG.state.persistentUpdate = false;
 
     FlxTransitionableState.skipNextTransIn = true;
+
+    var fadeShaderFilter:ShaderFilter = new ShaderFilter(fadeShader);
+    funnyCam.setFilters([fadeShaderFilter]);
 
     if (stickerSubState != null)
     {
@@ -360,113 +345,12 @@ class FreeplayState extends MusicBeatSubState
     trace(FlxG.camera.initialZoom);
     trace(FlxCamera.defaultZoom);
 
-    pinkBack.color = 0xFFFFD4E9; // sets it to pink!
-    pinkBack.x -= pinkBack.width;
-
-    FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
-    add(pinkBack);
-
-    add(orangeBackShit);
-
-    add(alsoOrangeLOL);
-
-    exitMovers.set([pinkBack, orangeBackShit, alsoOrangeLOL],
-      {
-        x: -pinkBack.width,
-        y: pinkBack.y,
-        speed: 0.4,
-        wait: 0
-      });
-
-    FlxSpriteUtil.alphaMaskFlxSprite(orangeBackShit, pinkBack, orangeBackShit);
-    orangeBackShit.visible = false;
-    alsoOrangeLOL.visible = false;
-
-    confirmTextGlow.blend = BlendMode.ADD;
-    confirmTextGlow.visible = false;
-
-    confirmGlow.blend = BlendMode.ADD;
-
-    confirmGlow.visible = false;
-    confirmGlow2.visible = false;
-
-    add(confirmGlow2);
-    add(confirmGlow);
-
-    add(confirmTextGlow);
-
-    var grpTxtScrolls:FlxGroup = new FlxGroup();
-    add(grpTxtScrolls);
-    grpTxtScrolls.visible = false;
-
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(BGScrollingText, ['x', 'y', 'speed', 'size']));
-
-    moreWays.funnyColor = 0xFFFFF383;
-    moreWays.speed = 6.8;
-    grpTxtScrolls.add(moreWays);
-
-    exitMovers.set([moreWays],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4,
-      });
-
-    funnyScroll.funnyColor = 0xFFFF9963;
-    funnyScroll.speed = -3.8;
-    grpTxtScrolls.add(funnyScroll);
-
-    exitMovers.set([funnyScroll],
-      {
-        x: -funnyScroll.width * 2,
-        y: funnyScroll.y,
-        speed: 0.4,
-        wait: 0
-      });
-
-    txtNuts.speed = 3.5;
-    grpTxtScrolls.add(txtNuts);
-    exitMovers.set([txtNuts],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4,
-      });
-
-    funnyScroll2.funnyColor = 0xFFFF9963;
-    funnyScroll2.speed = -3.8;
-    grpTxtScrolls.add(funnyScroll2);
-
-    exitMovers.set([funnyScroll2],
-      {
-        x: -funnyScroll2.width * 2,
-        speed: 0.5,
-      });
-
-    moreWays2.funnyColor = 0xFFFFF383;
-    moreWays2.speed = 6.8;
-    grpTxtScrolls.add(moreWays2);
-
-    exitMovers.set([moreWays2],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4
-      });
-
-    funnyScroll3.funnyColor = 0xFFFEA400;
-    funnyScroll3.speed = -3.8;
-    grpTxtScrolls.add(funnyScroll3);
-
-    exitMovers.set([funnyScroll3],
-      {
-        x: -funnyScroll3.width * 2,
-        speed: 0.3
-      });
-
-    add(backingTextYeah);
-
-    cardGlow.blend = BlendMode.ADD;
-    cardGlow.visible = false;
-
-    add(cardGlow);
+    if (backingCard != null)
+    {
+      add(backingCard);
+      backingCard.init();
+      backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
+    }
 
     if (currentCharacter?.getFreeplayDJData() != null)
     {
@@ -477,6 +361,12 @@ class FreeplayState extends MusicBeatSubState
           speed: 0.5
         });
       add(dj);
+      exitMoversCharSel.set([dj],
+        {
+          y: -175,
+          speed: 0.8,
+          wait: 0.1
+        });
     }
 
     bgDad.shader = new AngleMask();
@@ -499,8 +389,16 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
+    exitMoversCharSel.set([blackOverlayBullshitLOLXD, bgDad],
+      {
+        y: -100,
+        speed: 0.8,
+        wait: 0.1
+      });
+
     add(bgDad);
-    FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.74}, 0.7, {ease: FlxEase.quintOut});
+    // backingCard.pinkBack.width * 0.74
+    FlxTween.tween(blackOverlayBullshitLOLXD, {x: 387.76}, 0.7, {ease: FlxEase.quintOut});
 
     blackOverlayBullshitLOLXD.shader = bgDad.shader;
 
@@ -518,6 +416,13 @@ class FreeplayState extends MusicBeatSubState
         x: -300,
         speed: 0.25,
         wait: 0
+      });
+
+    exitMoversCharSel.set([grpDifficulties],
+      {
+        y: -270,
+        speed: 0.8,
+        wait: 0.1
       });
 
     for (diffId in diffIdsTotal)
@@ -540,12 +445,12 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.albumId = null;
     add(albumRoll);
 
-    albumRoll.applyExitMovers(exitMovers);
+    albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
 
-    var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
+    var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 164, FlxColor.BLACK);
     overhangStuff.y -= overhangStuff.height;
-    add(overhangStuff);
-    FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
+
+    FlxTween.tween(overhangStuff, {y: -100}, 0.3, {ease: FlxEase.quartOut});
 
     var fnfFreeplay:FlxText = new FlxText(8, 8, 0, 'FREEPLAY', 48);
     fnfFreeplay.font = 'VCR OSD Mono';
@@ -563,11 +468,16 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
+    exitMoversCharSel.set([overhangStuff, fnfFreeplay, ostName],
+      {
+        y: -300,
+        speed: 0.8,
+        wait: 0.1
+      });
+
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
     ostName.shader = sillyStroke;
-    add(fnfFreeplay);
-    add(ostName);
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(860, 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
@@ -601,6 +511,13 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.3
       });
 
+    exitMoversCharSel.set([letterSort],
+      {
+        y: -270,
+        speed: 0.8,
+        wait: 0.1
+      });
+
     letterSort.changeSelectionCallback = (str) -> {
       switch (str)
       {
@@ -630,12 +547,24 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.3
       });
 
+    exitMoversCharSel.set([fp, txtCompletion, fnfHighscoreSpr, txtCompletion, clearBoxSprite],
+      {
+        y: -270,
+        speed: 0.8,
+        wait: 0.1
+      });
+
     var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
     var diffSelRight:DifficultySelector = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
     diffSelLeft.visible = false;
     diffSelRight.visible = false;
     add(diffSelLeft);
     add(diffSelRight);
+
+    // putting these here to fix the layering
+    add(overhangStuff);
+    add(fnfFreeplay);
+    add(ostName);
 
     // be careful not to "add()" things in here unless it's to a group that's already added to the state
     // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
@@ -656,6 +585,13 @@ class FreeplayState extends MusicBeatSubState
           speed: 0.26
         });
 
+      exitMoversCharSel.set([diffSelLeft, diffSelRight],
+        {
+          y: -270,
+          speed: 0.8,
+          wait: 0.1
+        });
+
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
         fnfFreeplay.visible = true;
@@ -674,17 +610,11 @@ class FreeplayState extends MusicBeatSubState
         });
       });
 
-      pinkBack.color = 0xFFFFD863;
       bgDad.visible = true;
-      orangeBackShit.visible = true;
-      alsoOrangeLOL.visible = true;
-      grpTxtScrolls.visible = true;
+      backingCard?.introDone();
 
       // render optimisation
       if (_parentState != null) _parentState.persistentDraw = false;
-
-      cardGlow.visible = true;
-      FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
 
       if (prepForNewRank && fromResultsParams != null)
       {
@@ -872,7 +802,7 @@ class FreeplayState extends MusicBeatSubState
           return str.songName.toLowerCase().startsWith(songFilter.filterData ?? '');
         });
       case ALL:
-      // no filter!
+        // no filter!
       case FAVORITE:
         songsToFilter = songsToFilter.filter(str -> {
           if (str == null) return true; // Random
@@ -1174,6 +1104,62 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
+  function goToCharSelect():Void
+  {
+    var transitionGradient = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
+    transitionGradient.scale.set(1280, 1);
+    transitionGradient.updateHitbox();
+    transitionGradient.cameras = [rankCamera];
+    exitMoversCharSel.set([transitionGradient],
+      {
+        y: -720,
+        speed: 0.8,
+        wait: 0.1
+      });
+    add(transitionGradient);
+    // busy = true;
+    for (index => capsule in grpCapsules.members)
+    {
+      var distFromSelected:Float = Math.abs(index - curSelected) - 1;
+      if (distFromSelected < 5)
+      {
+        capsule.doLerp = false;
+        exitMoversCharSel.set([capsule],
+          {
+            y: -250,
+            speed: 0.8,
+            wait: 0.1
+          });
+      }
+    }
+    fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
+    FlxG.sound.music.fadeOut(0.9, 0);
+    // FlxTween.tween(transitionGradient, {y: 0}, 1, {ease: FlxEase.expoOut, startDelay: 0.3});
+    new FlxTimer().start(0.9, _ -> {
+      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+    });
+    for (grpSpr in exitMoversCharSel.keys())
+    {
+      var moveData:Null<MoveData> = exitMoversCharSel.get(grpSpr);
+      if (moveData == null) continue;
+
+      for (spr in grpSpr)
+      {
+        if (spr == null) continue;
+
+        var funnyMoveShit:MoveData = moveData;
+
+        var moveDataX = funnyMoveShit.x ?? spr.x;
+        var moveDataY = funnyMoveShit.y ?? spr.y;
+        var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
+        var moveDataWait = funnyMoveShit.wait ?? 0.0;
+
+        FlxTween.tween(spr, {x: moveDataX, y: moveDataY + spr.y}, moveDataSpeed, {ease: FlxEase.backIn});
+        // longestTimer = Math.max(longestTimer, moveDataSpeed + moveDataWait);
+      }
+    }
+  }
+
   var touchY:Float = 0;
   var touchX:Float = 0;
   var dxTouch:Float = 0;
@@ -1199,16 +1185,9 @@ class FreeplayState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    #if debug
-    if (FlxG.keys.justPressed.T)
+    if (FlxG.keys.justPressed.G)
     {
-      rankAnimStart(fromResultsParams ??
-        {
-          playRankAnim: true,
-          newRank: PERFECT_GOLD,
-          songId: "tutorial",
-          difficultyId: "hard"
-        });
+      goToCharSelect();
     }
 
     if (FlxG.keys.justPressed.P)
@@ -1219,6 +1198,18 @@ class FreeplayState extends MusicBeatSubState
             character: currentCharacterId == "pico" ? "bf" : "pico",
           }
         }));
+    }
+
+    #if debug
+    if (FlxG.keys.justPressed.T)
+    {
+      rankAnimStart(fromResultsParams ??
+        {
+          playRankAnim: true,
+          newRank: PERFECT_GOLD,
+          songId: "tutorial",
+          difficultyId: "hard"
+        });
     }
 
     // if (FlxG.keys.justPressed.H)
@@ -1495,23 +1486,7 @@ class FreeplayState extends MusicBeatSubState
 
       var longestTimer:Float = 0;
 
-      // FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
-      FlxTween.color(pinkBack, 0.25, 0xFFFFD863, 0xFFFFD0D5, {ease: FlxEase.quadOut});
-
-      cardGlow.visible = true;
-      cardGlow.alpha = 1;
-      cardGlow.scale.set(1, 1);
-      FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
-
-      orangeBackShit.visible = false;
-      alsoOrangeLOL.visible = false;
-
-      moreWays.visible = false;
-      funnyScroll.visible = false;
-      txtNuts.visible = false;
-      funnyScroll2.visible = false;
-      moreWays2.visible = false;
-      funnyScroll3.visible = false;
+      backingCard?.disappear();
 
       for (grpSpr in exitMovers.keys())
       {
@@ -1787,39 +1762,7 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules.members[curSelected].forcePosition();
     grpCapsules.members[curSelected].confirm();
 
-    // FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
-    FlxTween.color(pinkBack, 0.33, 0xFFFFD0D5, 0xFF171831, {ease: FlxEase.quadOut});
-    orangeBackShit.visible = false;
-    alsoOrangeLOL.visible = false;
-
-    confirmGlow.visible = true;
-    confirmGlow2.visible = true;
-
-    backingTextYeah.playAnimation("BF back card confirm raw", false, false, false, 0);
-    confirmGlow2.alpha = 0;
-    confirmGlow.alpha = 0;
-
-    FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
-      {
-        ease: FlxEase.quadOut,
-        onComplete: function(_) {
-          confirmGlow2.alpha = 0.6;
-          confirmGlow.alpha = 1;
-          confirmTextGlow.visible = true;
-          confirmTextGlow.alpha = 1;
-          FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
-          FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
-        }
-      });
-
-    // confirmGlow
-
-    moreWays.visible = false;
-    funnyScroll.visible = false;
-    txtNuts.visible = false;
-    funnyScroll2.visible = false;
-    moreWays2.visible = false;
-    funnyScroll3.visible = false;
+    backingCard?.confirm();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
       FunkinSound.emptyPartialQueue();
