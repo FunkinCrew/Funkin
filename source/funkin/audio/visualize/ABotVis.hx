@@ -1,13 +1,9 @@
 package funkin.audio.visualize;
 
-import funkin.audio.visualize.dsp.FFT;
 import flixel.FlxSprite;
-import flixel.addons.plugin.taskManager.FlxTask;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
-import funkin.util.MathUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
 import funkin.vis.audioclip.frontends.LimeAudioClip;
 
@@ -58,8 +54,15 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function initAnalyzer()
   {
     @:privateAccess
-    analyzer = new SpectralAnalyzer(7, new LimeAudioClip(cast snd._channel.__source), 0.01, 30);
-    analyzer.maxDb = -35;
+    analyzer = new SpectralAnalyzer(snd._channel.__source, 7, 0.1, 40);
+
+    #if desktop
+    // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+    // So we want to manually change it!
+    analyzer.fftN = 256;
+    #end
+
+    // analyzer.maxDb = -35;
     // analyzer.fftN = 2048;
   }
 
@@ -83,9 +86,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   override function draw()
   {
-    #if web
     if (analyzer != null) drawFFT();
-    #end
     super.draw();
   }
 
@@ -94,11 +95,15 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
    */
   function drawFFT():Void
   {
-    var levels = analyzer.getLevels(false);
+    var levels = analyzer.getLevels();
 
     for (i in 0...min(group.members.length, levels.length))
     {
       var animFrame:Int = Math.round(levels[i].value * 5);
+
+      #if desktop
+      animFrame = Math.round(animFrame * FlxG.sound.volume);
+      #end
 
       animFrame = Math.floor(Math.min(5, animFrame));
       animFrame = Math.floor(Math.max(0, animFrame));

@@ -306,7 +306,7 @@ class StoryMenuState extends MusicBeatState
   {
     Conductor.instance.update();
 
-    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.5));
+    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.25));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
@@ -387,6 +387,7 @@ class StoryMenuState extends MusicBeatState
   function changeLevel(change:Int = 0):Void
   {
     var currentIndex:Int = levelList.indexOf(currentLevelId);
+    var prevIndex:Int = currentIndex;
 
     currentIndex += change;
 
@@ -417,7 +418,7 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     updateText();
     updateBackground(previousLevelId);
@@ -466,6 +467,9 @@ class StoryMenuState extends MusicBeatState
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
+
+    updateText();
+    refresh();
   }
 
   final FADE_OUT_TIME:Float = 1.5;

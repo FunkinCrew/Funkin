@@ -71,7 +71,7 @@ class GameOverSubState extends MusicBeatSubState
   var gameOverMusic:Null<FunkinSound> = null;
 
   /**
-   * Whether the player has confirmed and prepared to restart the level.
+   * Whether the player has confirmed and prepared to restart the level or to go back to the freeplay menu.
    * This means the animation and transition have already started.
    */
   var isEnding:Bool = false;
@@ -82,6 +82,8 @@ class GameOverSubState extends MusicBeatSubState
   var isStarting:Bool = true;
 
   var isChartingMode:Bool = false;
+
+  var mustNotExit:Bool = false;
 
   var transparent:Bool;
 
@@ -160,6 +162,8 @@ class GameOverSubState extends MusicBeatSubState
   @:nullSafety(Off)
   function setCameraTarget():Void
   {
+    if (PlayState.instance.isMinimalMode || boyfriend == null) return;
+
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
     cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
@@ -233,15 +237,16 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT && blueballed)
+    if (controls.ACCEPT && blueballed && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();
     }
 
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
-    if (controls.BACK)
+    if (controls.BACK && !mustNotExit && !isEnding)
     {
+      isEnding = true;
       blueballed = false;
       PlayState.instance.deathCounter = 0;
       // PlayState.seenCutscene = false; // old thing...
@@ -252,6 +257,7 @@ class GameOverSubState extends MusicBeatSubState
         this.close();
         if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
         PlayState.instance.close(); // This only works because PlayState is a substate!
+        return;
       }
       else if (PlayStatePlaylist.isStoryMode)
       {

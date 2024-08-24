@@ -1,0 +1,12 @@
+# Add Documentation tag to PR's changing markdown files, or anyhting in the docs folder
+Documentation:
+- changed-files:
+  - any-glob-to-any-file:
+  - any-glob-to-any-file:
+      - docs/*
+      - '**/*.md'
+
+# Adds Haxe tag to PR's changing haxe code files
+Haxe:
+- changed-files:
+  - any-glob-to-any-file: '**/*.hx'

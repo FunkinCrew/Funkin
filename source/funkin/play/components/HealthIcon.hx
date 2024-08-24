@@ -24,7 +24,7 @@ import funkin.util.MathUtil;
  *     - i.e. `PlayState.instance.iconP1.playAnimation("losing")`
  *   - Scripts can also utilize all functionality that a normal FlxSprite would have access to, such as adding supplimental animations.
  *     - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
- * @author MasterEric
+ * @author EliteMasterEric
  */
 @:nullSafety
 class HealthIcon extends FunkinSprite
@@ -53,8 +53,9 @@ class HealthIcon extends FunkinSprite
 
   /**
    * Apply the "bop" animation once every X steps.
+   * Defaults to once per beat.
    */
-  public var bopEvery:Int = 4;
+  public var bopEvery:Int = Constants.STEPS_PER_BEAT;
 
   /**
    * The amount, in degrees, to rotate the icon by when boping.
@@ -373,6 +374,10 @@ class HealthIcon extends FunkinSprite
     // Don't flip BF's icon here! That's done later.
     this.animation.add(Idle, [0], 0, false, false);
     this.animation.add(Losing, [1], 0, false, false);
+    if (animation.numFrames >= 3)
+    {
+      this.animation.add(Winning, [2], 0, false, false);
+    }
   }
 
   function correctCharacterId(charId:Null<String>):String

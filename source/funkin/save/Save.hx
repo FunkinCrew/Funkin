@@ -1,21 +1,23 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
-import funkin.save.migrator.SaveDataMigrator;
-import thx.semver.Version;
+import funkin.util.FileUtil;
 import funkin.input.Controls.Device;
+import funkin.play.scoring.Scoring;
+import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
+import funkin.save.migrator.SaveDataMigrator;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
-import thx.semver.Version;
 import funkin.util.SerializerUtil;
+import thx.semver.Version;
+import thx.semver.Version;
 
 @:nullSafety
 class Save
 {
-  // Version 2.0.2 adds attributes to `optionsChartEditor`, that should return default values if they are null.
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.3";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.5";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -53,7 +55,11 @@ class Save
   public function new(?data:RawSaveData)
   {
     if (data == null) this.data = Save.getDefault();
-    else this.data = data;
+    else
+      this.data = data;
+
+    // Make sure the verison number is up to date before we flush.
+    updateVersionToLatest();
   }
 
   public static function getDefault():RawSaveData
@@ -77,6 +83,9 @@ class Save
           levels: [],
           songs: [],
         },
+
+      favoriteSongs: [],
+
       options:
         {
           // Reasonable defaults.
@@ -489,8 +498,13 @@ class Save
     return song.get(difficultyId);
   }
 
+  public function getSongRank(songId:String, difficultyId:String = 'normal'):Null<ScoringRank>
+  {
+    return Scoring.calculateRank(getSongScore(songId, difficultyId));
+  }
+
   /**
-   * Apply the score the user achieved for a given song on a given difficulty.
+   * Directly set the score the user achieved for a given song on a given difficulty.
    */
   public function setSongScore(songId:String, difficultyId:String, score:SaveScoreData):Void
   {
@@ -501,6 +515,44 @@ class Save
       data.scores.songs.set(songId, song);
     }
     song.set(difficultyId, score);
+
+    flush();
+  }
+
+  /**
+   * Only replace the ranking data for the song, because the old score is still better.
+   */
+  public function applySongRank(songId:String, difficultyId:String, newScoreData:SaveScoreData):Void
+  {
+    var newRank = Scoring.calculateRank(newScoreData);
+    if (newScoreData == null || newRank == null) return;
+
+    var song = data.scores.songs.get(songId);
+    if (song == null)
+    {
+      song = [];
+      data.scores.songs.set(songId, song);
+    }
+
+    var previousScoreData = song.get(difficultyId);
+
+    var previousRank = Scoring.calculateRank(previousScoreData);
+
+    if (previousScoreData == null || previousRank == null)
+    {
+      // Directly set the highscore.
+      setSongScore(songId, difficultyId, newScoreData);
+      return;
+    }
+
+    // Set the high score and the high rank separately.
+    var newScore:SaveScoreData =
+      {
+        score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
+        tallies: (previousRank > newRank) ? previousScoreData.tallies : newScoreData.tallies
+      };
+
+    song.set(difficultyId, newScore);
 
     flush();
   }
@@ -531,6 +583,39 @@ class Save
   }
 
   /**
+   * Is the provided score data better than the current rank for the given song?
+   * @param songId The song ID to check.
+   * @param difficultyId The difficulty to check.
+   * @param score The score to check the rank for.
+   * @return Whether the score's rank is better than the current rank.
+   */
+  public function isSongHighRank(songId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
+  {
+    var newScoreRank = Scoring.calculateRank(score);
+    if (newScoreRank == null)
+    {
+      // The provided score is invalid.
+      return false;
+    }
+
+    var song = data.scores.songs.get(songId);
+    if (song == null)
+    {
+      song = [];
+      data.scores.songs.set(songId, song);
+    }
+    var currentScore = song.get(difficultyId);
+    var currentScoreRank = Scoring.calculateRank(currentScore);
+    if (currentScoreRank == null)
+    {
+      // There is no primary highscore for this song.
+      return true;
+    }
+
+    return newScoreRank > currentScoreRank;
+  }
+
+  /**
    * Has the provided song been beaten on one of the listed difficulties?
    * @param songId The song ID to check.
    * @param difficultyList The difficulties to check. Defaults to `easy`, `normal`, and `hard`.
@@ -552,6 +637,35 @@ class Save
       }
     }
     return false;
+  }
+
+  public function isSongFavorited(id:String):Bool
+  {
+    if (data.favoriteSongs == null)
+    {
+      data.favoriteSongs = [];
+      flush();
+    };
+
+    return data.favoriteSongs.contains(id);
+  }
+
+  public function favoriteSong(id:String):Void
+  {
+    if (!isSongFavorited(id))
+    {
+      data.favoriteSongs.push(id);
+      flush();
+    }
+  }
+
+  public function unfavoriteSong(id:String):Void
+  {
+    if (isSongFavorited(id))
+    {
+      data.favoriteSongs.remove(id);
+      flush();
+    }
   }
 
   public function getControls(playerId:Int, inputType:Device):Null<SaveControlsData>
@@ -674,7 +788,6 @@ class Save
       {
         trace('[SAVE] Found legacy save data, converting...');
         var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
-        @:privateAccess
         FlxG.save.mergeData(gameSave.data, true);
       }
       else
@@ -686,11 +799,92 @@ class Save
     }
     else
     {
-      trace('[SAVE] Loaded save data.');
-      @:privateAccess
+      trace('[SAVE] Found existing save data.');
       var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
       FlxG.save.mergeData(gameSave.data, true);
     }
+  }
+
+  public static function archiveBadSaveData(data:Dynamic):Int
+  {
+    // We want to save this somewhere so we can try to recover it for the user in the future!
+
+    final RECOVERY_SLOT_START = 1000;
+
+    return writeToAvailableSlot(RECOVERY_SLOT_START, data);
+  }
+
+  public static function debug_queryBadSaveData():Void
+  {
+    final RECOVERY_SLOT_START = 1000;
+    final RECOVERY_SLOT_END = 1100;
+    var firstBadSaveData = querySlotRange(RECOVERY_SLOT_START, RECOVERY_SLOT_END);
+    if (firstBadSaveData > 0)
+    {
+      trace('[SAVE] Found bad save data in slot ${firstBadSaveData}!');
+      trace('We should look into recovery...');
+
+      trace(haxe.Json.stringify(fetchFromSlotRaw(firstBadSaveData)));
+    }
+  }
+
+  static function fetchFromSlotRaw(slot:Int):Null<Dynamic>
+  {
+    var targetSaveData = new FlxSave();
+    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    if (targetSaveData.isEmpty()) return null;
+    return targetSaveData.data;
+  }
+
+  static function writeToAvailableSlot(slot:Int, data:Dynamic):Int
+  {
+    trace('[SAVE] Finding slot to write data to (starting with ${slot})...');
+
+    var targetSaveData = new FlxSave();
+    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    while (!targetSaveData.isEmpty())
+    {
+      // Keep trying to bind to slots until we find an empty slot.
+      trace('[SAVE] Slot ${slot} is taken, continuing...');
+      slot++;
+      targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    }
+
+    trace('[SAVE] Writing data to slot ${slot}...');
+    targetSaveData.mergeData(data, true);
+
+    trace('[SAVE] Data written to slot ${slot}!');
+    return slot;
+  }
+
+  /**
+   * Return true if the given save slot is not empty.
+   * @param slot The slot number to check.
+   * @return Whether the slot is not empty.
+   */
+  static function querySlot(slot:Int):Bool
+  {
+    var targetSaveData = new FlxSave();
+    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    return !targetSaveData.isEmpty();
+  }
+
+  /**
+   * Return true if any of the slots in the given range is not empty.
+   * @param start The starting slot number to check.
+   * @param end The ending slot number to check.
+   * @return The first slot in the range that is not empty, or `-1` if none are.
+   */
+  static function querySlotRange(start:Int, end:Int):Int
+  {
+    for (i in start...end)
+    {
+      if (querySlot(i))
+      {
+        return i;
+      }
+    }
+    return -1;
   }
 
   static function fetchLegacySaveData():Null<RawSaveData_v1_0_0>
@@ -710,10 +904,34 @@ class Save
       return cast legacySave.data;
     }
   }
+
+  /**
+   * Serialize this Save into a JSON string.
+   * @param pretty Whether the JSON should be big ol string (false),
+   * or formatted with tabs (true)
+   * @return The JSON string.
+   */
+  public function serialize(pretty:Bool = true):String
+  {
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
+    return writer.write(data, pretty ? '  ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.data.version = Save.SAVE_DATA_VERSION;
+  }
+
+  public function debug_dumpSave():Void
+  {
+    FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+  }
 }
 
 /**
  * An anonymous structure containingg all the user's save data.
+ * Isn't stored with JSON, stored with some sort of Haxe built-in serialization?
  */
 typedef RawSaveData =
 {
@@ -724,8 +942,6 @@ typedef RawSaveData =
   /**
    * A semantic versioning string for the save data format.
    */
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   var version:Version;
 
   var api:SaveApiData;
@@ -739,6 +955,12 @@ typedef RawSaveData =
    * The user's preferences.
    */
   var options:SaveDataOptions;
+
+  /**
+   * The user's favorited songs in the Freeplay menu,
+   * as a list of song IDs.
+   */
+  var favoriteSongs:Array<String>;
 
   var mods:SaveDataMods;
 
@@ -777,6 +999,9 @@ typedef SaveHighScoresData =
 typedef SaveDataMods =
 {
   var enabledMods:Array<String>;
+
+  // TODO: Make this not trip up the serializer when debugging.
+  @:jignored
   var modOptions:Map<String, Dynamic>;
 }
 
@@ -809,11 +1034,6 @@ typedef SaveScoreData =
    * The count of each judgement hit.
    */
   var tallies:SaveScoreTallyData;
-
-  /**
-   * The accuracy percentage.
-   */
-  var accuracy:Float;
 }
 
 typedef SaveScoreTallyData =

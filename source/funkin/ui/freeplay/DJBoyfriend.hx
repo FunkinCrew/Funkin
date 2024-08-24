@@ -27,8 +27,8 @@ class DJBoyfriend extends FlxAtlasSprite
 
   var gotSpooked:Bool = false;
 
-  static final SPOOK_PERIOD:Float = 120.0;
-  static final TV_PERIOD:Float = 180.0;
+  static final SPOOK_PERIOD:Float = 60.0;
+  static final TV_PERIOD:Float = 120.0;
 
   // Time since dad last SPOOKED you.
   var timeSinceSpook:Float = 0;
@@ -82,6 +82,8 @@ class DJBoyfriend extends FlxAtlasSprite
     return anims;
   }
 
+  var lowPumpLoopPoint:Int = 4;
+
   public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
@@ -114,6 +116,14 @@ class DJBoyfriend extends FlxAtlasSprite
       case Confirm:
         if (getCurrentAnimation() != 'Boyfriend DJ confirm') playFlashAnimation('Boyfriend DJ confirm', false);
         timeSinceSpook = 0;
+      case PumpIntro:
+        if (getCurrentAnimation() != 'Boyfriend DJ fist pump') playFlashAnimation('Boyfriend DJ fist pump', false);
+        if (getCurrentAnimation() == 'Boyfriend DJ fist pump' && anim.curFrame >= 4)
+        {
+          anim.play("Boyfriend DJ fist pump", true, false, 0);
+        }
+      case FistPump:
+
       case Spook:
         if (getCurrentAnimation() != 'bf dj afk')
         {
@@ -173,6 +183,12 @@ class DJBoyfriend extends FlxAtlasSprite
         // trace('Finished spook');
         currentState = Idle;
       case "Boyfriend DJ confirm":
+
+      case "Boyfriend DJ fist pump":
+        currentState = Idle;
+
+      case "Boyfriend DJ loss reaction 1":
+        currentState = Idle;
 
       case "Boyfriend DJ watchin tv OG":
         var frame:Int = FlxG.random.bool(33) ? 112 : 166;
@@ -250,7 +266,7 @@ class DJBoyfriend extends FlxAtlasSprite
 
     // Fade out music to 40% volume over 1 second.
     // This helps make the TV a bit more audible.
-    FlxG.sound.music.fadeOut(1.0, 0.4);
+    FlxG.sound.music.fadeOut(1.0, 0.1);
 
     // Play the cartoon at a random time between the start and 5 seconds from the end.
     cartoonSnd.time = FlxG.random.float(0, Math.max(cartoonSnd.length - (5 * Constants.MS_PER_SEC), 0.0));
@@ -273,6 +289,23 @@ class DJBoyfriend extends FlxAtlasSprite
   public function confirm():Void
   {
     currentState = Confirm;
+  }
+
+  public function fistPump():Void
+  {
+    currentState = PumpIntro;
+  }
+
+  public function pumpFist():Void
+  {
+    currentState = FistPump;
+    anim.play("Boyfriend DJ fist pump", true, false, 4);
+  }
+
+  public function pumpFistBad():Void
+  {
+    currentState = FistPump;
+    anim.play("Boyfriend DJ loss reaction 1", true, false, 4);
   }
 
   public inline function addOffset(name:String, x:Float = 0, y:Float = 0)
@@ -331,6 +364,8 @@ enum DJBoyfriendState
   Intro;
   Idle;
   Confirm;
+  PumpIntro;
+  FistPump;
   Spook;
   TV;
 }

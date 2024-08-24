@@ -42,6 +42,16 @@ class MainMenuState extends MusicBeatState
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
+  var overrideMusic:Bool = false;
+
+  static var rememberedSelectedIndex:Int = 0;
+
+  public function new(?_overrideMusic:Bool = false)
+  {
+    super();
+    overrideMusic = _overrideMusic;
+  }
+
   override function create():Void
   {
     #if discord_rpc
@@ -49,10 +59,12 @@ class MainMenuState extends MusicBeatState
     DiscordClient.changePresence("In the Menus", null);
     #end
 
+    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
+
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    playMenuMusic();
+    if (overrideMusic == false) playMenuMusic();
 
     // We want the state to always be able to begin with being able to accept inputs and show the anims of the menu items.
     persistentUpdate = true;
@@ -137,6 +149,8 @@ class MainMenuState extends MusicBeatState
       menuItem.scrollFactor.y = 0.4;
     }
 
+    menuItems.selectItem(rememberedSelectedIndex);
+
     resetCamStuff();
 
     subStateOpened.add(sub -> {
@@ -170,7 +184,6 @@ class MainMenuState extends MusicBeatState
 
   function resetCamStuff():Void
   {
-    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
     FlxG.camera.follow(camFollow, null, 0.06);
     FlxG.camera.snapToTarget();
   }
@@ -285,6 +298,8 @@ class MainMenuState extends MusicBeatState
   function startExitState(state:NextState):Void
   {
     menuItems.enabled = false; // disable for exit
+    rememberedSelectedIndex = menuItems.selectedIndex;
+
     var duration = 0.4;
     menuItems.forEach(function(item) {
       if (menuItems.selectedIndex != item.ID)
@@ -329,6 +344,8 @@ class MainMenuState extends MusicBeatState
       persistentUpdate = false;
 
       FlxG.state.openSubState(new DebugMenuSubState());
+      // reset camera when debug menu is closed
+      subStateClosed.addOnce(_ -> resetCamStuff());
     }
     #end
 
@@ -351,9 +368,35 @@ class MainMenuState extends MusicBeatState
               maxCombo: 0,
               totalNotesHit: 0,
               totalNotes: 0,
-            },
-          accuracy: 0,
+            }
         });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.R)
+    {
+      // Give the user a hypothetical overridden score,
+      // and see if we can maintain that golden P rank.
+      funkin.save.Save.instance.setSongScore('tutorial', 'easy',
+        {
+          score: 1234567,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 1,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 1,
+              totalNotes: 10,
+            }
+        });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.E)
+    {
+      funkin.save.Save.instance.debug_dumpSave();
     }
     #end
 
