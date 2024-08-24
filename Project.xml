@@ -289,13 +289,4 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<!-- Determines the file in the mod folder used for the icon. -->
 		<haxedef name="POLYMOD_MOD_ICON_FILE" value="_polymod_icon.png" />
 	</section>
-
-	<section if="hxvlc">
-		<source path="hxvlc" />
-		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.buildOpenFLVideo())', 'hxvlc.openfl.Video')" />
-		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.addPlayMethodParams())', 'hxvlc.openfl.Video')" />
-		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.addPlayMethodParams())', 'hxvlc.openfl.IVideo')" />
-		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.addPlayMethodParams())', 'hxvlc.flixel.FlxVideoSprite')" />
-		<haxeflag name="--macro" value="addMetadata('@:build(macros.HxvlcMacro.addPlayMethodParams())', 'hxvlc.flixel.IFlxVideoSprite')" />
-	</section>
 </project>
