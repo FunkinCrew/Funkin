@@ -17,7 +17,13 @@ import funkin.ui.MusicBeatState;
  */
 class AttractState extends MusicBeatState
 {
+  #if html5
   static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('toyCommercial'));
+  #end
+
+  #if hxvlc
+  static final ATTRACT_VIDEO_PATH:String = Paths.videos('toyCommercial');
+  #end
 
   public override function create():Void
   {
