@@ -386,7 +386,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   {
     if (character == null) return;
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     // Temporary marker that shows where the character's location is relative to.
     // Should display at the stage position of the character (before any offsets).
     // TODO: Make this a toggle? It's useful to turn on from time to time.
@@ -451,7 +451,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
 
-      #if debug
+      #if FEATURE_DEBUG_FUNCTIONS
       // Draw the debug icon at the character's feet.
       if (charType == BF || charType == DAD)
       {
@@ -468,7 +468,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     ScriptEventDispatcher.callEvent(character, new ScriptEvent(ADDED, false));
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     debugIconGroup.add(debugIcon);
     debugIconGroup.add(debugIcon2);
     #end
