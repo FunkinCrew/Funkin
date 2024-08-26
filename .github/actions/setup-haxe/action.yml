@@ -58,6 +58,7 @@ runs:
       echo "TIMER_HAXELIB=$(date +%s)" >> "$GITHUB_ENV"
       haxelib fixrepo --global || true
       haxelib --debug --never --global install haxelib 4.1.0
+      haxelib --debug --global set haxelib 4.1.0
       haxelib --global remove haxelib git || true
       haxelib --global remove hmm || true
       rm -rf .haxelib
