@@ -83,7 +83,7 @@ apt-fast install -y --no-install-recommends \
   libc6-dev libffi-dev \
   libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev \
   libgl-dev libgl1-mesa-dev \
-  libasound2-dev \
+  libasound2-dev libpulse-dev \
   libvlc-dev libvlccore-dev
 EOF
 

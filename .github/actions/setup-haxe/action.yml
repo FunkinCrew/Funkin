@@ -44,7 +44,7 @@ runs:
         g++ \
         libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev \
         libgl-dev libgl1-mesa-dev \
-        libasound2-dev
+        libasound2-dev libpulse-dev
       ln -s /usr/lib/x86_64-linux-gnu/libffi.so.8 /usr/lib/x86_64-linux-gnu/libffi.so.6 || true
   - name: Install linux-specific dependencies
     if: ${{ runner.os == 'Linux' && contains(inputs.targets, 'linux') }}
