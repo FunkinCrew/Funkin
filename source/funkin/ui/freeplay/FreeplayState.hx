@@ -1245,6 +1245,7 @@ class FreeplayState extends MusicBeatSubState
       {
         if (dj != null)
         {
+          busy = true;
           // Transition to character select after animation
           dj.onCharSelectComplete = function() {
             FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
