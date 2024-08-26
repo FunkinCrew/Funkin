@@ -104,6 +104,8 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super.create();
 
+    FlxG.cameras.reset(new FunkinCamera('charSelectCam'));
+
     selectSound = new FunkinSound();
     selectSound.loadEmbedded(Paths.sound('CS_select'));
     selectSound.pitch = 1;
@@ -506,6 +508,16 @@ class CharSelectSubState extends MusicBeatSubState
         });
       }
 
+      // Put this BEFORE the other check, because pressedStart will get turned off if it's on!
+      if (!pressedSelect && controls.BACK)
+      {
+        // Return to the Freeplay state without changing character.
+        FlxG.switchState(FreeplayState.build(
+          {
+            {}
+          }));
+      }
+
       if (pressedSelect && controls.BACK)
       {
         cursorConfirmed.visible = false;
@@ -544,15 +556,6 @@ class CharSelectSubState extends MusicBeatSubState
           cursorDenied.visible = false;
         };
       }
-    }
-
-    if (!pressedSelect && controls.BACK)
-    {
-      // Return to the Freeplay state without changing character.
-      FlxG.switchState(FreeplayState.build(
-        {
-          {}
-        }));
     }
 
     updateLockAnims();
