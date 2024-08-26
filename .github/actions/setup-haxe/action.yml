@@ -56,11 +56,14 @@ runs:
     shell: bash
     run: |
       echo "TIMER_HAXELIB=$(date +%s)" >> "$GITHUB_ENV"
-      haxelib --debug --always git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies --global
+      haxelib remove --global haxelib git
+      haxelib remove --global hmm git
       rm -rf .haxelib
+      git config -l --show-scope
+      haxelib --debug --never --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
+      haxelib --debug --never --global git hmm https://github.com/FunkinCrew/hmm funkin-patches
       haxelib --debug --never newrepo
       echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
-      haxelib --debug --global --always git hmm https://github.com/FunkinCrew/hmm funkin-patches
       echo "TIMER_DEPS=$(date +%s)" >> "$GITHUB_ENV"
 
   - name: Restore cached dependencies
