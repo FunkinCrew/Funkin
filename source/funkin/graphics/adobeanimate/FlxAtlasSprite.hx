@@ -106,23 +106,6 @@ class FlxAtlasSprite extends FlxAnimate
   }
 
   /**
-   * `anim.finished` always returns false on looping animations,
-   * but this function will return true if we are on the last frame of the looping animation.
-   */
-  public function isLoopFinished():Bool
-  {
-    if (this.anim == null) return false;
-    if (!this.anim.isPlaying) return false;
-
-    // Reverse animation finished.
-    if (this.anim.reversed && this.anim.curFrame == 0) return true;
-    // Forward animation finished.
-    if (!this.anim.reversed && this.anim.curFrame >= (this.anim.length - 1)) return true;
-
-    return false;
-  }
-
-  /**
    * Plays an animation.
    * @param id A string ID of the animation to play.
    * @param restart Whether to restart the animation if it is already playing.
@@ -213,6 +196,8 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function isLoopComplete():Bool
   {
+    if (this.anim == null) return false;
+    if (!this.anim.isPlaying) return false;
     return (anim.reversed && anim.curFrame == 0 || !(anim.reversed) && (anim.curFrame) >= (anim.length - 1));
   }
 

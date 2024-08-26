@@ -383,9 +383,18 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function toCharSelect():Void
   {
-    currentState = CharSelect;
-    var animPrefix = playableCharData.getAnimationPrefix('charSelect');
-    playFlashAnimation(animPrefix, true, false, false, 0);
+    if (hasAnimation('charSelect'))
+    {
+      currentState = CharSelect;
+      var animPrefix = playableCharData.getAnimationPrefix('charSelect');
+      playFlashAnimation(animPrefix, true, false, false, 0);
+    }
+    else
+    {
+      currentState = Confirm;
+      // Call this immediately; otherwise, we get locked out of Character Select.
+      onCharSelectComplete();
+    }
   }
 
   public function fistPumpIntro():Void
