@@ -56,10 +56,11 @@ runs:
     shell: bash
     run: |
       echo "TIMER_HAXELIB=$(date +%s)" >> "$GITHUB_ENV"
+      haxelib fixrepo --global
       haxelib --debug --never --global install haxelib 4.1.0
       haxelib --global set haxelib 4.1.0
       haxelib --global remove haxelib git
-      haxelib --global remove hmm git
+      haxelib --global remove hmm
       rm -rf .haxelib
       git config -l --show-scope
       haxelib --debug --never --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
