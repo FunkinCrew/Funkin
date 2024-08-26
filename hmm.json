@@ -1,6 +1,13 @@
 {
   "dependencies": [
     {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
@@ -32,7 +39,7 @@
       "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "d0afed7293c71ffdb1184751317fc709b44c9056",
+      "ref": "27f1ba626f80a6282fa8a187115e79a4a2133dc2",
       "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
@@ -41,13 +48,6 @@
       "dir": null,
       "ref": "768740a56b26aa0c072720e0d1236b94afe68e3e",
       "url": "https://github.com/Dot-Stuff/flxanimate"
-    },
-    {
-      "name": "FlxPartialSound",
-      "type": "git",
-      "dir": null,
-      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "format",
@@ -59,7 +59,7 @@
       "type": "git",
       "dir": null,
       "ref": "22b1ce089dd924f15cdc4632397ef3504d464e90",
-      "url": "https://github.com/MidyGamy/funkVis/"
+      "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
       "name": "grig.audio",
@@ -89,8 +89,10 @@
     },
     {
       "name": "hscript",
-      "type": "haxelib",
-      "version": "2.5.0"
+      "type": "git",
+      "dir": null,
+      "ref": "59b33162e9dcd7e48b186a9f25ee81b6e47a4dd7",
+      "url": "https://github.com/haxefoundation/hscript"
     },
     {
       "name": "hxCodec",
@@ -104,7 +106,7 @@
       "type": "git",
       "dir": null,
       "url": "https://github.com/HaxeFoundation/hxcpp",
-      "ref": "8dc8020f8465027de6c2aaaed90718bc693651ed"
+      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1"
     },
     {
       "name": "hxcpp-debug-server",
@@ -185,7 +187,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "98945c6c7f5ecde01a32c4623d3515bf012a023a",
+      "ref": "96cfc5fa693b017e47f7cb13b765cc68698fa6b6",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
