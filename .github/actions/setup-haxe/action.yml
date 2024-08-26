@@ -56,13 +56,16 @@ runs:
     shell: bash
     run: |
       echo "TIMER_HAXELIB=$(date +%s)" >> "$GITHUB_ENV"
-      haxelib remove --global haxelib git
-      haxelib remove --global hmm git
+      haxelib --debug --never --global install haxelib 4.1.0
+      haxelib --global set haxelib 4.1.0
+      haxelib --global remove haxelib git
+      haxelib --global remove hmm git
       rm -rf .haxelib
       git config -l --show-scope
       haxelib --debug --never --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
       haxelib --debug --never --global git hmm https://github.com/FunkinCrew/hmm funkin-patches
       haxelib --debug --never newrepo
+      haxelib version
       echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
       echo "TIMER_DEPS=$(date +%s)" >> "$GITHUB_ENV"
 
