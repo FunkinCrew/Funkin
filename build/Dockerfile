@@ -137,8 +137,8 @@ ENV PATH="$HAXEPATH:$PATH"
 RUN <<EOF
 HOME=/etc haxelib setup "$HAXEPATH/lib"
 haxelib --global --never install haxelib $haxelib_version
-haxelib --global --never git haxelib https://github.com/HaxeFoundation/haxelib.git master
-haxelib --global --never install hmm
+haxelib --global --never git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
+haxelib --global --never git hmm https://github.com/FunkinCrew/hmm funkin-patches
 EOF
 
 # hxcpp
