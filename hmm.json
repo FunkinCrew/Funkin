@@ -59,7 +59,7 @@
       "type": "git",
       "dir": null,
       "ref": "22b1ce089dd924f15cdc4632397ef3504d464e90",
-      "url": "https://github.com/MidyGamy/funkVis/"
+      "url": "https://github.com/FunkinCrew/funkVis/"
     },
     {
       "name": "grig.audio",
@@ -104,7 +104,7 @@
       "type": "git",
       "dir": null,
       "url": "https://github.com/HaxeFoundation/hxcpp",
-      "ref": "8dc8020f8465027de6c2aaaed90718bc693651ed"
+      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1"
     },
     {
       "name": "hxcpp-debug-server",
@@ -143,7 +143,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "f6153ffcb1ffcf733f91d531eac5fda4189e07f7",
+      "ref": "e0b2339e02fff91168789dbd1a0dd019ea3dda39",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
