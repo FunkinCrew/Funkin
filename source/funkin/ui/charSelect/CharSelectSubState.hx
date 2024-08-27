@@ -245,7 +245,7 @@ class CharSelectSubState extends MusicBeatSubState
     cursorBlue.scrollFactor.set();
     cursorDarkBlue.scrollFactor.set();
 
-    FlxTween.color(cursor, 0.2, 0xFFFFFF00, 0xFFFFCC00, {type: FlxTween.PINGPONG});
+    FlxTween.color(cursor, 0.2, 0xFFFFFF00, 0xFFFFCC00, {type: PINGPONG});
 
     // FlxG.debugger.track(cursor);
 
