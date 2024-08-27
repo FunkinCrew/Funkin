@@ -3327,7 +3327,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleTestKeybinds();
     handleHelpKeybinds();
 
-    #if (debug || FORCE_DEBUG_VERSION)
+    #if FEATURE_DEBUG_FUNCTIONS
     handleQuickWatch();
     #end
 

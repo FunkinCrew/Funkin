@@ -113,7 +113,7 @@ class Main extends Sprite
 
     addChild(game);
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     #end
 
