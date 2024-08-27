@@ -148,7 +148,7 @@ class FreeplayDJ extends FlxAtlasSprite
         // I shit myself.
     }
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.pressed.CONTROL)
     {
       if (FlxG.keys.justPressed.LEFT)

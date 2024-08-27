@@ -1,6 +1,13 @@
 {
   "dependencies": [
     {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
@@ -32,7 +39,7 @@
       "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "d0afed7293c71ffdb1184751317fc709b44c9056",
+      "ref": "27f1ba626f80a6282fa8a187115e79a4a2133dc2",
       "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
@@ -41,13 +48,6 @@
       "dir": null,
       "ref": "768740a56b26aa0c072720e0d1236b94afe68e3e",
       "url": "https://github.com/Dot-Stuff/flxanimate"
-    },
-    {
-      "name": "FlxPartialSound",
-      "type": "git",
-      "dir": null,
-      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "format",
@@ -59,7 +59,9 @@
       "type": "git",
       "dir": null,
       "ref": "22b1ce089dd924f15cdc4632397ef3504d464e90",
-      "url": "https://github.com/FunkinCrew/funkVis/"
+
+      "url": "https://github.com/FunkinCrew/funkVis"
+
     },
     {
       "name": "grig.audio",
@@ -89,8 +91,10 @@
     },
     {
       "name": "hscript",
-      "type": "haxelib",
-      "version": "2.5.0"
+      "type": "git",
+      "dir": null,
+      "ref": "12785398e2f07082f05034cb580682e5671442a2",
+      "url": "https://github.com/FunkinCrew/hscript"
     },
     {
       "name": "hxCodec",
@@ -185,7 +189,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "98945c6c7f5ecde01a32c4623d3515bf012a023a",
+      "ref": "96cfc5fa693b017e47f7cb13b765cc68698fa6b6",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

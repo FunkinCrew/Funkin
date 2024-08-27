@@ -27,7 +27,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import Discord.DiscordClient;
 #end
 #if newgrounds
@@ -54,7 +54,7 @@ class MainMenuState extends MusicBeatState
 
   override function create():Void
   {
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
     DiscordClient.changePresence("In the Menus", null);
     #end
@@ -344,7 +344,7 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    #if (debug || FORCE_DEBUG_VERSION)
+    #if FEATURE_DEBUG_FUNCTIONS
     // Open the debug menu, defaults to ` / ~
     if (controls.DEBUG_MENU)
     {

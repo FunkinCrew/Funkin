@@ -41,9 +41,9 @@ class Constants
    * A suffix to add to the game version.
    * Add a suffix to prototype builds and remove it for releases.
    */
-  public static final VERSION_SUFFIX:String = #if (DEBUG || FORCE_DEBUG_VERSION) ' PROTOTYPE' #else '' #end;
+  public static final VERSION_SUFFIX:String = #if FEATURE_DEBUG_FUNCTIONS ' PROTOTYPE' #else '' #end;
 
-  #if (debug || FORCE_DEBUG_VERSION)
+  #if FEATURE_DEBUG_FUNCTIONS
   static function get_VERSION():String
   {
     return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH}${GIT_HAS_LOCAL_CHANGES ? ' : MODIFIED' : ''})' + VERSION_SUFFIX;
@@ -384,11 +384,7 @@ class Constants
    * 1 = The preloader waits for 1 second before moving to the next step.
    *     The progress bare is automatically rescaled to match.
    */
-  #if debug
-  public static final PRELOADER_MIN_STAGE_TIME:Float = 0.0;
-  #else
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
-  #end
 
   /**
    * HEALTH VALUES

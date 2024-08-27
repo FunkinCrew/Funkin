@@ -34,7 +34,7 @@ import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import Discord.DiscordClient;
 #end
 
@@ -123,7 +123,7 @@ class InitState extends FlxState
     //
     // DISCORD API SETUP
     //
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     DiscordClient.initialize();
 
     Application.current.onExit.add(function(exitCode) {
@@ -144,7 +144,7 @@ class InitState extends FlxState
     // Plugins provide a useful interface for globally active Flixel objects,
     // that receive update events regardless of the current state.
     // TODO: Move scripted Module behavior to a Flixel plugin.
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     funkin.util.plugins.MemoryGCPlugin.initialize();
     #end
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
@@ -374,11 +374,16 @@ class InitState extends FlxState
     //
     // FLIXEL DEBUG SETUP
     //
-    #if (debug || FORCE_DEBUG_VERSION)
-    // Make errors and warnings less annoying.
-    // Forcing this always since I have never been happy to have the debugger to pop up
+    #if FEATURE_DEBUG_FUNCTIONS
+    trace('Initializing Flixel debugger...');
+
+    #if !debug
+    // Make errors less annoying on release builds.
     LogStyle.ERROR.openConsole = false;
     LogStyle.ERROR.errorSound = null;
+    #end
+
+    // Make errors and warnings less annoying.
     LogStyle.WARNING.openConsole = false;
     LogStyle.WARNING.errorSound = null;
 
