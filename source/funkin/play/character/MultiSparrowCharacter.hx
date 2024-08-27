@@ -67,6 +67,8 @@ class MultiSparrowCharacter extends BaseCharacter
     if (texture == null)
     {
       trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+      FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+      return;
     }
     else
     {

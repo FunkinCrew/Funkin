@@ -411,7 +411,6 @@ class BaseCharacter extends Bopper
         else
         {
           // Play the idle animation.
-          trace('${characterId}: attempting dance');
           dance(true);
         }
       }
@@ -633,7 +632,6 @@ class BaseCharacter extends Bopper
 
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
-    // FlxG.watch.addQuick('playAnim(${characterName})', name);
     super.playAnimation(name, restart, ignoreOther, reversed);
   }
 }
