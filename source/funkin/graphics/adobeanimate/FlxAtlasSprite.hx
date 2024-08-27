@@ -56,6 +56,12 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'Null path specified for FlxAtlasSprite!';
     }
 
+    // Validate asset path.
+    if (!Assets.exists('${path}/Animation.json'))
+    {
+      throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
+    }
+
     super(x, y, path, settings);
 
     if (this.anim.stageInstance == null)
