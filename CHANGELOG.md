@@ -6,12 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.0] - 2024-08-??
 ### Added
-- Added a new Character Select screen to switch between playable characters in Freeplay.
-  - Each playable character is defined via JSON data in the `data/players` folder. Modding isn't 100% there but we're working on it!
+- Added a new Character Select screen to switch between playable characters in Freeplay
+  - Modding isn't 100% there but we're working on it!
 - Added Pico as a playable character! Unlock him by completing Weekend 1 (if you haven't already done that)
   - The songs from Weekend 1 have moved; you must now switch to Pico in Freeplay to access them
 - Added ## new Pico remixes! Access them by selecting Pico from in the Character Select screen
-- Added 2 new Erect remixes! Access them by switching difficulty on the song.
+- Added 2 new Erect remixes! Access them by switching difficulty on the song
 - Implemented support for a new Instrumental Selector in Freeplay
   - Beating a Pico remix lets you use that instrumental when playing as Boyfriend
 - Added the first batch of Erect Stages! These graphical overhauls of the original stages will be used when playing Erect remixes and Pico remixes
@@ -59,7 +59,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue where character graphics could not be placed in week folders (community fix by 7oltan)
 - Fixed a crash issue when a Freeplay song has no `Normal` difficulty (community fix by Applehair and gamerbross)
 - Fixed an issue in Story Mode where a song that isn't valid for the current variation could be selected (community fix by Applehair)
-
 
 ## [0.4.1] - 2024-06-12
 ### Added

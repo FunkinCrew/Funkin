@@ -27,6 +27,7 @@ import polymod.Polymod;
 class PolymodHandler
 {
   /**
+   * The API version that mods should comply with.
    * Indicates which mods are compatible with this version of the game.
    * Minor updates rarely impact mods but major versions often do.
    */

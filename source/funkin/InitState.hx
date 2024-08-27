@@ -382,7 +382,8 @@ class InitState extends FlxState
     LogStyle.ERROR.openConsole = false;
     LogStyle.ERROR.errorSound = null;
     #end
-    // Make warnings less annoying on debug AND release builds.
+
+    // Make errors and warnings less annoying.
     LogStyle.WARNING.openConsole = false;
     LogStyle.WARNING.errorSound = null;
 

@@ -91,8 +91,8 @@
       "name": "hscript",
       "type": "git",
       "dir": null,
-      "ref": "59b33162e9dcd7e48b186a9f25ee81b6e47a4dd7",
-      "url": "https://github.com/haxefoundation/hscript"
+      "ref": "12785398e2f07082f05034cb580682e5671442a2",
+      "url": "https://github.com/FunkinCrew/hscript"
     },
     {
       "name": "hxCodec",

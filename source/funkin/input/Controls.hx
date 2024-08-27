@@ -356,9 +356,10 @@ class Controls extends FlxActionSet
 
   public function check(name:Action, trigger:FlxInputState = JUST_PRESSED, gamepadOnly:Bool = false):Bool
   {
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     if (!byName.exists(name)) throw 'Invalid name: $name';
     #end
+
     var action = byName[name];
     if (gamepadOnly) return action.checkFiltered(trigger, GAMEPAD);
     else
@@ -367,7 +368,7 @@ class Controls extends FlxActionSet
 
   public function getKeysForAction(name:Action):Array<FlxKey>
   {
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     if (!byName.exists(name)) throw 'Invalid name: $name';
     #end
 
@@ -382,7 +383,7 @@ class Controls extends FlxActionSet
 
   public function getButtonsForAction(name:Action):Array<FlxGamepadInputID>
   {
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     if (!byName.exists(name)) throw 'Invalid name: $name';
     #end
 

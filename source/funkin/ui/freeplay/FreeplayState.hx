@@ -311,6 +311,12 @@ class FreeplayState extends MusicBeatSubState
     DiscordClient.changePresence('In the Menus', null);
     #end
 
+    var isDebug:Bool = false;
+
+    #if FEATURE_DEBUG_FUNCTIONS
+    isDebug = true;
+    #end
+
     if (prepForNewRank == false)
     {
       FunkinSound.playMusic('freakyMenu',
