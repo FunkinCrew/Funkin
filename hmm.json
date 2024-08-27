@@ -59,7 +59,7 @@
       "type": "git",
       "dir": null,
       "ref": "22b1ce089dd924f15cdc4632397ef3504d464e90",
-      "url": "https://github.com/FunkinCrew/funkVis"
+      "url": "https://github.com/FunkinCrew/funkVis/"
     },
     {
       "name": "grig.audio",
@@ -145,7 +145,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "f6153ffcb1ffcf733f91d531eac5fda4189e07f7",
+      "ref": "e0b2339e02fff91168789dbd1a0dd019ea3dda39",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
