@@ -2323,19 +2323,13 @@ class PlayState extends MusicBeatSubState
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
-      if (!Constants.GHOST_TAPPING && notesInDirection.length == 0)
+      #if FEATURE_GHOST_TAPPING
+      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
+      #else
+      if (notesInDirection.length == 0)
+      #end
       {
         // Pressed a wrong key with no notes nearby.
-        // Perform a ghost miss (anti-spam).
-        ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
-
-        // Play the strumline animation.
-        playerStrumline.playPress(input.noteDirection);
-        trace('PENALTY Score: ${songScore}');
-      }
-      else if (Constants.GHOST_TAPPING && (!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
-      {
-        // Pressed a wrong key with notes visible on-screen.
         // Perform a ghost miss (anti-spam).
         ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
 
