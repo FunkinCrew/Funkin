@@ -88,6 +88,11 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     return _data.freeplayDJ.getFreeplayDJText(index);
   }
 
+  public function getCharSelectData():PlayerCharSelectData
+  {
+    return _data.charSelect;
+  }
+
   /**
    * @param rank Which rank to get info for
    * @return An array of animations. For example, BF Great has two animations, one for BF and one for GF

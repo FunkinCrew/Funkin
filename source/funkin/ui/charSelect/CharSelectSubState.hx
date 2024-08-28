@@ -67,8 +67,29 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super();
 
-    availableChars.set(4, "bf");
-    availableChars.set(3, "pico");
+    loadAvailableCharacters();
+  }
+
+  function loadAvailableCharacters():Void
+  {
+    var playerIds:Array<String> = PlayerRegistry.instance.listEntryIds();
+
+    for (playerId in playerIds)
+    {
+      var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerId);
+      if (player == null) continue;
+      var playerData = player.getCharSelectData();
+      if (playerData == null) continue;
+
+      var targetPosition:Int = playerData.position ?? 0;
+      while (availableChars.exists(targetPosition))
+      {
+        targetPosition += 1;
+      }
+
+      trace('Placing player ${playerId} at position ${targetPosition}');
+      availableChars.set(targetPosition, playerId);
+    }
   }
 
   override public function create():Void
