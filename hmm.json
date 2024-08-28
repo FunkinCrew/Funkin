@@ -18,7 +18,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "10c2a203c43a78ff1ff26b8368fd736576829d8d",
+      "ref": "599f38eeb502a8ba6439784036c2cfdc7b485260",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -59,9 +59,7 @@
       "type": "git",
       "dir": null,
       "ref": "22b1ce089dd924f15cdc4632397ef3504d464e90",
-
       "url": "https://github.com/FunkinCrew/funkVis"
-
     },
     {
       "name": "grig.audio",
@@ -107,8 +105,8 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "url": "https://github.com/HaxeFoundation/hxcpp",
-      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1"
+      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1",
+      "url": "https://github.com/HaxeFoundation/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
