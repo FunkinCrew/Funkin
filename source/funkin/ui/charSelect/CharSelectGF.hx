@@ -29,37 +29,10 @@ class CharSelectGF extends FlxAtlasSprite
   public function new()
   {
     super(0, 0, Paths.animateAtlas("charSelect/gfChill"));
-    anim.play("");
+
     list = anim.curSymbol.getFrameLabelNames();
 
     switchGF("bf");
-  }
-
-  var _addedCallback:String = "";
-
-  override public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
-  {
-    if (id == null) id = "idle";
-    // var fr = anim.getFrameLabel("confirm");
-    // fr.removeCallbacks();
-    // fr.add(() -> trace("HEY"));
-
-    if (id != _addedCallback)
-    {
-      var next = list[list.indexOf(_addedCallback) + 1];
-      if (next != null) anim.getFrameLabel(next).removeCallbacks();
-
-      var index:Int = list.indexOf(id);
-
-      _addedCallback = list[index];
-      if (index != -1 && index + 1 < list.length)
-      {
-        var lb = anim.getFrameLabel(list[index + 1]);
-        @:privateAccess
-        lb.add(() -> playAnimation(list[index], true, false, false));
-      }
-    }
-    super.playAnimation(id, restart, ignoreOther, loop, startFrame);
   }
 
   override public function update(elapsed:Float)
@@ -190,9 +163,8 @@ class CharSelectGF extends FlxAtlasSprite
     animInInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + str + "AnimInfo/" + str + "In.txt"));
     animOutInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + str + "AnimInfo/" + str + "Out.txt"));
 
-    anim.play("");
-    playAnimation("idle", true, false, false);
-    addFrameCallback(getNextFrameLabel("idle"), () -> playAnimation("idle", true, false, false));
+    playAnimation("idle", true, false, true);
+    // addFrameCallback(getNextFrameLabel("idle"), () -> playAnimation("idle", true, false, false));
 
     updateHitbox();
   }

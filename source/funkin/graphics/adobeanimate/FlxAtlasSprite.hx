@@ -9,6 +9,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
 import flixel.math.FlxPoint;
+import flxanimate.animate.FlxKeyFrame;
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
@@ -121,6 +122,12 @@ class FlxAtlasSprite extends FlxAnimate
     return false;
   }
 
+  var _completeAnim:Bool = false;
+
+  var fr:FlxKeyFrame = null;
+
+  var looping:Bool = false;
+
   /**
    * Plays an animation.
    * @param id A string ID of the animation to play.
@@ -174,6 +181,8 @@ class FlxAtlasSprite extends FlxAnimate
       }
     });
 
+    looping = loop;
+
     // Prevent other animations from playing if `ignoreOther` is true.
     if (ignoreOther) canPlayOtherAnims = false;
 
@@ -182,6 +191,9 @@ class FlxAtlasSprite extends FlxAnimate
     trace('Playing animation $id');
     this.anim.play(id, restart, false, startFrame);
     goToFrameLabel(id);
+
+    fr = anim.getFrameLabel(id);
+
     anim.curFrame += startFrame;
     this.currentAnimation = id;
   }
@@ -259,7 +271,21 @@ class FlxAtlasSprite extends FlxAnimate
     if (currentAnimation != null)
     {
       onAnimationFrame.dispatch(currentAnimation, frame);
-      if (isLoopComplete()) onAnimationLoopComplete.dispatch(currentAnimation);
+
+      if (fr != null && frame > (fr.index + fr.duration - 1) || isLoopFinished())
+      {
+        anim.pause();
+        _onAnimationComplete();
+        if (looping)
+        {
+          anim.curFrame = (fr != null) ? fr.index : 0;
+          anim.resume();
+        }
+        else
+        {
+          anim.curFrame--;
+        }
+      }
     }
   }
 
@@ -267,7 +293,9 @@ class FlxAtlasSprite extends FlxAnimate
   {
     if (currentAnimation != null)
     {
-      onAnimationComplete.dispatch(currentAnimation);
+      if (looping) onAnimationLoopComplete.dispatch(currentAnimation);
+      else
+        onAnimationComplete.dispatch(currentAnimation);
     }
   }
 

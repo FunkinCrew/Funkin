@@ -499,12 +499,8 @@ class CharSelectSubState extends MusicBeatSubState
           {
             ease: FlxEase.quartInOut,
             onComplete: (_) -> {
-              var fr = playerChill.anim.getFrameLabel("deselect loop end");
-              if (fr != null) fr.removeCallbacks();
-              @:privateAccess
-              playerChill._addedCall = false;
-              playerChill.playAnimation("idle");
-              gfChill.playAnimation("idle");
+              playerChill.playAnimation("idle", true, false, true);
+              gfChill.playAnimation("idle", true, false, true);
             }
           });
         pressedSelect = false;
@@ -645,20 +641,23 @@ class CharSelectSubState extends MusicBeatSubState
     nametag.switchChar(value);
     playerChill.visible = false;
     playerChillOut.visible = true;
-    playerChillOut.anim.goToFrameLabel("slideout");
+    playerChillOut.playAnimation("slideout");
+    var index = playerChillOut.anim.getFrameLabel("slideout").index;
     playerChillOut.onAnimationFrame.add((_, frame:Int) -> {
-      if (frame == playerChillOut.anim.getFrameLabel("slideout").index + 1)
+      if (frame == index + 1)
       {
         playerChill.visible = true;
         playerChill.switchChar(value);
         gfChill.switchGF(value);
       }
-      if (frame == playerChillOut.anim.getFrameLabel("slideout").index + 2)
+      if (frame == index + 2)
       {
         playerChillOut.switchChar(value);
         playerChillOut.visible = false;
+        playerChillOut.onAnimationFrame.removeAll();
       }
     });
+
     return value;
   }
 

@@ -643,6 +643,9 @@ class FreeplayState extends MusicBeatSubState
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
+      var daSong = grpCapsules.members[curSelected].songData;
+      albumRoll.albumId = daSong?.albumId;
+
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
