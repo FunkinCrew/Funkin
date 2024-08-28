@@ -98,14 +98,7 @@ class MainMenuState extends MusicBeatState
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
-      if (_.name == 'freeplay')
-      {
-        magenta.visible = true;
-      }
-      else
-      {
-        FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
-      }
+      FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
     });
 
     menuItems.enabled = true; // can move on intro
@@ -117,10 +110,7 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      openSubState(new FreeplayState(
-        {
-          character: FlxG.keys.pressed.SHIFT ? 'pico' : 'bf',
-        }));
+      openSubState(new FreeplayState());
     });
 
     #if CAN_OPEN_LINKS
@@ -357,6 +347,28 @@ class MainMenuState extends MusicBeatState
     {
       // Give the user a score of 1 point on Weekend 1 story mode.
       // This makes the level count as cleared and displays the songs in Freeplay.
+      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
+        {
+          score: 1,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            }
+        });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    {
+      // Give the user a score of 0 points on Weekend 1 story mode.
+      // This makes the level count as uncleared and no longer displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
         {
           score: 1,
