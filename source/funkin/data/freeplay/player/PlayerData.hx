@@ -38,6 +38,11 @@ class PlayerData
   @:optional
   public var freeplayDJ:Null<PlayerFreeplayDJData> = null;
 
+
+  /**
+   * Data for displaying this character in the results screen.
+   */
+  @:optional
   public var results:Null<PlayerResultsData> = null;
 
   /**
@@ -96,6 +101,9 @@ class PlayerFreeplayDJData
 
   @:optional
   var cartoon:Null<PlayerFreeplayDJCartoonData>;
+
+  @:optional
+  var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
   public function new()
   {
@@ -183,6 +191,46 @@ class PlayerFreeplayDJData
   {
     return cartoon?.channelChangeFrame ?? 60;
   }
+
+  public function getFistPumpIntroStartFrame():Int
+  {
+    return fistPump?.introStartFrame ?? 0;
+  }
+
+  public function getFistPumpIntroEndFrame():Int
+  {
+    return fistPump?.introEndFrame ?? 0;
+  }
+
+  public function getFistPumpLoopStartFrame():Int
+  {
+    return fistPump?.loopStartFrame ?? 0;
+  }
+
+  public function getFistPumpLoopEndFrame():Int
+  {
+    return fistPump?.loopEndFrame ?? 0;
+  }
+
+  public function getFistPumpIntroBadStartFrame():Int
+  {
+    return fistPump?.introBadStartFrame ?? 0;
+  }
+
+  public function getFistPumpIntroBadEndFrame():Int
+  {
+    return fistPump?.introBadEndFrame ?? 0;
+  }
+
+  public function getFistPumpLoopBadStartFrame():Int
+  {
+    return fistPump?.loopBadStartFrame ?? 0;
+  }
+
+  public function getFistPumpLoopBadEndFrame():Int
+  {
+    return fistPump?.loopBadEndFrame ?? 0;
+  }
 }
 
 typedef PlayerResultsData =
@@ -242,3 +290,30 @@ typedef PlayerFreeplayDJCartoonData =
   var loopFrame:Int;
   var channelChangeFrame:Int;
 }
+
+typedef PlayerFreeplayDJFistPumpData =
+{
+  @:default(0)
+  var introStartFrame:Int;
+
+  @:default(4)
+  var introEndFrame:Int;
+
+  @:default(4)
+  var loopStartFrame:Int;
+
+  @:default(-1)
+  var loopEndFrame:Int;
+
+  @:default(0)
+  var introBadStartFrame:Int;
+
+  @:default(4)
+  var introBadEndFrame:Int;
+
+  @:default(4)
+  var loopBadStartFrame:Int;
+
+  @:default(-1)
+  var loopBadEndFrame:Int;
+};

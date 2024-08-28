@@ -315,7 +315,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public function isAnimationFinished():Bool
   {
-    return this.animation.finished;
+    return this.animation?.finished ?? false;
   }
 
   public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void

@@ -644,8 +644,8 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.3
       });
 
-    var diffSelLeft:DifficultySelector = new DifficultySelector(20, grpDifficulties.y - 10, false, controls);
-    var diffSelRight:DifficultySelector = new DifficultySelector(325, grpDifficulties.y - 10, true, controls);
+    var diffSelLeft:DifficultySelector = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls);
+    var diffSelRight:DifficultySelector = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls);
     diffSelLeft.visible = false;
     diffSelRight.visible = false;
     add(diffSelLeft);
@@ -913,7 +913,15 @@ class FreeplayState extends MusicBeatSubState
     changeSelection();
     changeDiff();
 
-    if (dj != null) dj.fistPump();
+    if (fromResultsParams?.newRank == SHIT)
+    {
+      if (dj != null) dj.fistPumpLossIntro();
+    }
+    else
+    {
+      if (dj != null) dj.fistPumpIntro();
+    }
+
     // rankCamera.fade(FlxColor.BLACK, 0.5, true);
     rankCamera.fade(0xFF000000, 0.5, true, null, true);
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
@@ -1095,11 +1103,11 @@ class FreeplayState extends MusicBeatSubState
 
       if (fromResultsParams?.newRank == SHIT)
       {
-        if (dj != null) dj.pumpFistBad();
+        if (dj != null) dj.fistPumpLoss();
       }
       else
       {
-        if (dj != null) dj.pumpFist();
+        if (dj != null) dj.fistPump();
       }
 
       rankCamera.zoom = 0.8;
