@@ -314,25 +314,28 @@ class LoadingState extends MusicBeatSubState
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num7'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num8'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num9'));
+
     FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
+
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/ready', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/set', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/go', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/ready', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/set', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/go', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/normal/sick'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/normal/good'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/normal/bad'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/normal/shit'));
+
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/sick'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/good'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/bad'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/shit'));
+
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/sick'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/good'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/bad'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/shit'));
-    FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: remove this
 
     // List all image assets in the level's library.
     // This is crude and I want to remove it when we have a proper asset caching system.

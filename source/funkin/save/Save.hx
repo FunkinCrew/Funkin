@@ -121,6 +121,12 @@ class Save
           modOptions: [],
         },
 
+      unlocks:
+        {
+          // Default to having seen the default character.
+          charactersSeen: ["bf"],
+        },
+
       optionsChartEditor:
         {
           // Reasonable defaults.
@@ -393,6 +399,22 @@ class Save
     return data.optionsChartEditor.playbackSpeed;
   }
 
+  public var charactersSeen(get, never):Array<String>;
+
+  function get_charactersSeen():Array<String>
+  {
+    return data.unlocks.charactersSeen;
+  }
+
+  /**
+   * When we've seen a character unlock, add it to the list of characters seen.
+   * @param character
+   */
+  public function addCharacterSeen(character:String):Void
+  {
+    data.unlocks.charactersSeen.push(character);
+  }
+
   /**
    * Return the score the user achieved for a given level on a given difficulty.
    *
@@ -471,10 +493,18 @@ class Save
     for (difficulty in difficultyList)
     {
       var score:Null<SaveScoreData> = getLevelScore(levelId, difficulty);
-      // TODO: Do we need to check accuracy/score here?
       if (score != null)
       {
-        return true;
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          return false;
+        }
       }
     }
     return false;
@@ -630,10 +660,18 @@ class Save
     for (difficulty in difficultyList)
     {
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
-      // TODO: Do we need to check accuracy/score here?
       if (score != null)
       {
-        return true;
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          return false;
+        }
       }
     }
     return false;
@@ -956,6 +994,8 @@ typedef RawSaveData =
    */
   var options:SaveDataOptions;
 
+  var unlocks:SaveDataUnlocks;
+
   /**
    * The user's favorited songs in the Freeplay menu,
    * as a list of song IDs.
@@ -978,6 +1018,15 @@ typedef SaveApiData =
 typedef SaveApiNewgroundsData =
 {
   var sessionId:Null<String>;
+}
+
+typedef SaveDataUnlocks =
+{
+  /**
+   * Every time we see the unlock animation for a character,
+   * add it to this list so that we don't show it again.
+   */
+  var charactersSeen:Array<String>;
 }
 
 /**

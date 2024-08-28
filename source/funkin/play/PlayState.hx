@@ -1979,7 +1979,7 @@ class PlayState extends MusicBeatSubState
     if (vocals == null) return;
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
-    if (!FlxG.sound.music.playing) return;
+    if (!(FlxG.sound.music?.playing ?? false)) return;
     var timeToPlayAt:Float = Conductor.instance.songPosition - Conductor.instance.instrumentalOffset;
     FlxG.sound.music.pause();
     vocals.pause();
@@ -2221,10 +2221,14 @@ class PlayState extends MusicBeatSubState
         // Calling event.cancelEvent() skips all the other logic! Neat!
         if (event.eventCanceled) continue;
 
+        // Skip handling the miss in botplay!
+        if (!isBotPlayMode)
+        {
         // Judge the miss.
         // NOTE: This is what handles the scoring.
         trace('Missed note! ${note.noteData}');
         onNoteMiss(note, event.playSound, event.healthChange);
+        }
 
         note.handledMiss = true;
       }
@@ -2321,21 +2325,18 @@ class PlayState extends MusicBeatSubState
 
       playerStrumline.pressKey(input.noteDirection);
 
+      // Don't credit or penalize inputs in Bot Play.
+      if (isBotPlayMode) continue;
+
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
-      if (!Constants.GHOST_TAPPING && notesInDirection.length == 0)
+      #if FEATURE_GHOST_TAPPING
+      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
+      #else
+      if (notesInDirection.length == 0)
+      #end
       {
         // Pressed a wrong key with no notes nearby.
-        // Perform a ghost miss (anti-spam).
-        ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
-
-        // Play the strumline animation.
-        playerStrumline.playPress(input.noteDirection);
-        trace('PENALTY Score: ${songScore}');
-      }
-      else if (Constants.GHOST_TAPPING && (!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
-      {
-        // Pressed a wrong key with notes visible on-screen.
         // Perform a ghost miss (anti-spam).
         ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
 
