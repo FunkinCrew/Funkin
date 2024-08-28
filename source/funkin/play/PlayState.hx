@@ -2221,10 +2221,14 @@ class PlayState extends MusicBeatSubState
         // Calling event.cancelEvent() skips all the other logic! Neat!
         if (event.eventCanceled) continue;
 
+        // Skip handling the miss in botplay!
+        if (!isBotPlayMode)
+        {
         // Judge the miss.
         // NOTE: This is what handles the scoring.
         trace('Missed note! ${note.noteData}');
         onNoteMiss(note, event.playSound, event.healthChange);
+        }
 
         note.handledMiss = true;
       }
@@ -2320,6 +2324,9 @@ class PlayState extends MusicBeatSubState
       var input:PreciseInputEvent = inputPressQueue.shift();
 
       playerStrumline.pressKey(input.noteDirection);
+
+      // Don't credit or penalize inputs in Bot Play.
+      if (isBotPlayMode) continue;
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
