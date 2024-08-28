@@ -1,27 +1,31 @@
 package funkin.ui.charSelect;
 
-import funkin.ui.freeplay.FreeplayState;
-import flixel.text.FlxText;
-import funkin.ui.PixelatedIcon;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
-import flixel.math.FlxPoint;
-import flixel.tweens.FlxTween;
-import openfl.display.BlendMode;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
-import funkin.play.stage.Stage;
+import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
+import flixel.system.debug.watch.Tracker.TrackerProfile;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.data.freeplay.player.PlayerData;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinCamera;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.FlxObject;
-import openfl.display.BlendMode;
-import flixel.group.FlxGroup;
+import funkin.play.stage.Stage;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.PixelatedIcon;
 import funkin.util.MathUtil;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import flixel.sound.FlxSound;
-import funkin.audio.FunkinSound;
+import funkin.vis.dsp.SpectralAnalyzer;
+import openfl.display.BlendMode;
 
 class CharSelectSubState extends MusicBeatSubState
 {

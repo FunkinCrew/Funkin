@@ -345,6 +345,7 @@ class MainMenuState extends MusicBeatState
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
     {
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
       // Give the user a score of 1 point on Weekend 1 story mode.
       // This makes the level count as cleared and displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
@@ -367,6 +368,7 @@ class MainMenuState extends MusicBeatState
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
     {
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
       // Give the user a score of 0 points on Weekend 1 story mode.
       // This makes the level count as uncleared and no longer displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy',

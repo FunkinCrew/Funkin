@@ -15,7 +15,7 @@ class FreeplayDJ extends FlxAtlasSprite
 {
   // Represents the sprite's current status.
   // Without state machines I would have driven myself crazy years ago.
-  public var currentState:DJBoyfriendState = Intro;
+  public var currentState:FreeplayDJState = Intro;
 
   // A callback activated when the intro animation finishes.
   public var onIntroDone:FlxSignal = new FlxSignal();

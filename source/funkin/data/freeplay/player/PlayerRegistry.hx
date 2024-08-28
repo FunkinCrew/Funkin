@@ -3,6 +3,7 @@ package funkin.data.freeplay.player;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
+import funkin.save.Save;
 
 class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
 {
