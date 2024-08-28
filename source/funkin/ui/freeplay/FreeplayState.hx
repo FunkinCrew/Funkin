@@ -177,8 +177,21 @@ class FreeplayState extends MusicBeatSubState
 
   var stickerSubState:Null<StickerSubState> = null;
 
-  public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
+  /**
+   * The difficulty we were on when this menu was last accessed.
+   */
+  public static var rememberedDifficulty:String = Constants.DEFAULT_DIFFICULTY;
+
+  /**
+   * The song we were on when this menu was last accessed.
+   * NOTE: `null` if the last song was `Random`.
+   */
   public static var rememberedSongId:Null<String> = 'tutorial';
+
+  /**
+   * The character we were on when this menu was last accessed.
+   */
+  public static var rememberedCharacterId:String = Constants.DEFAULT_CHARACTER;
 
   var funnyCam:FunkinCamera;
   var rankCamera:FunkinCamera;
@@ -209,13 +222,15 @@ class FreeplayState extends MusicBeatSubState
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
-    currentCharacterId = params?.character ?? Constants.DEFAULT_CHARACTER;
+    currentCharacterId = params?.character ?? rememberedCharacterId;
     var fetchPlayableCharacter = function():PlayableCharacter {
-      var result = PlayerRegistry.instance.fetchEntry(params?.character ?? Constants.DEFAULT_CHARACTER);
+      var result = PlayerRegistry.instance.fetchEntry(params?.character ?? rememberedCharacterId);
       if (result == null) throw 'No valid playable character with id ${params?.character}';
       return result;
     };
     currentCharacter = fetchPlayableCharacter();
+
+    rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
 
     fromResultsParams = params?.fromResults;
 
@@ -743,10 +758,7 @@ class FreeplayState extends MusicBeatSubState
     var tempSongs:Array<Null<FreeplaySongData>> = songs;
 
     // Remember just the difficulty because it's important for song sorting.
-    if (rememberedDifficulty != null)
-    {
-      currentDifficulty = rememberedDifficulty;
-    }
+    currentDifficulty = rememberedDifficulty;
 
     if (filterStuff != null) tempSongs = sortSongs(tempSongs, filterStuff);
 
@@ -1190,7 +1202,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * If true, disable interaction with the interface.
    */
-  var busy:Bool = false;
+  public var busy:Bool = false;
 
   var originalPos:FlxPoint = new FlxPoint();
 
@@ -1326,6 +1338,8 @@ class FreeplayState extends MusicBeatSubState
     }
 
     handleInputs(elapsed);
+
+    if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
   }
 
   function handleInputs(elapsed:Float):Void
@@ -1483,7 +1497,7 @@ class FreeplayState extends MusicBeatSubState
       generateSongList(currentFilter, true);
     }
 
-    if (controls.BACK)
+    if (controls.BACK && !busy)
     {
       busy = true;
       FlxTween.globalManager.clear();
@@ -1891,7 +1905,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0.0;
       diffIdsCurrent = diffIdsTotal;
       rememberedSongId = null;
-      rememberedDifficulty = null;
+      rememberedDifficulty = Constants.DEFAULT_DIFFICULTY;
       albumRoll.albumId = null;
     }
 
@@ -2000,10 +2014,13 @@ class DifficultySelector extends FlxSprite
   var controls:Controls;
   var whiteShader:PureColor;
 
-  public function new(x:Float, y:Float, flipped:Bool, controls:Controls)
+  var parent:FreeplayState;
+
+  public function new(parent:FreeplayState, x:Float, y:Float, flipped:Bool, controls:Controls)
   {
     super(x, y);
 
+    this.parent = parent;
     this.controls = controls;
 
     frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
@@ -2019,8 +2036,8 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
-    if (flipX && controls.UI_RIGHT_P) moveShitDown();
-    if (!flipX && controls.UI_LEFT_P) moveShitDown();
+    if (flipX && controls.UI_RIGHT_P && !parent.busy) moveShitDown();
+    if (!flipX && controls.UI_LEFT_P && !parent.busy) moveShitDown();
 
     super.update(elapsed);
   }
