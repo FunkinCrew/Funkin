@@ -22,7 +22,6 @@ class CharSelectGF extends FlxAtlasSprite
   var intendedYPos:Float = 0;
   var intendedAlpha:Float = 0;
   var list:Array<String> = [];
-  var char:String = "gf";
 
   var analyzer:SpectralAnalyzer;
 
@@ -76,7 +75,7 @@ class CharSelectGF extends FlxAtlasSprite
 
   function drawFFT()
   {
-    if (char == "nene")
+    if (curGF == NENE)
     {
       var levels = analyzer.getLevels();
       var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);

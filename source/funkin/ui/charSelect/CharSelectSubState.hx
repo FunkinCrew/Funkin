@@ -309,7 +309,7 @@ class CharSelectSubState extends MusicBeatSubState
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
 
-  function initLocks()
+  function initLocks():Void
   {
     grpIcons = new FlxSpriteGroup();
     add(grpIcons);
