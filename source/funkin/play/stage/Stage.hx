@@ -386,7 +386,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   {
     if (character == null) return;
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     // Temporary marker that shows where the character's location is relative to.
     // Should display at the stage position of the character (before any offsets).
     // TODO: Make this a toggle? It's useful to turn on from time to time.
@@ -436,8 +436,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       // Start with the per-stage character position.
       // Subtracting the origin ensures characters are positioned relative to their feet.
       // Subtracting the global offset allows positioning on a per-character basis.
-      character.x = stageCharData.position[0] - character.characterOrigin.x + character.globalOffsets[0];
-      character.y = stageCharData.position[1] - character.characterOrigin.y + character.globalOffsets[1];
+      // We previously applied the global offset here but that is now done elsewhere.
+      character.x = stageCharData.position[0] - character.characterOrigin.x;
+      character.y = stageCharData.position[1] - character.characterOrigin.y;
 
       @:privateAccess(funkin.play.stage.Bopper)
       {
@@ -451,7 +452,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
 
-      #if debug
+      #if FEATURE_DEBUG_FUNCTIONS
       // Draw the debug icon at the character's feet.
       if (charType == BF || charType == DAD)
       {
@@ -468,7 +469,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     ScriptEventDispatcher.callEvent(character, new ScriptEvent(ADDED, false));
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     debugIconGroup.add(debugIcon);
     debugIconGroup.add(debugIcon2);
     #end
@@ -769,39 +770,15 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * A function that gets called once per step in the song.
    * @param curStep The current step number.
    */
-  public function onStepHit(event:SongTimeScriptEvent):Void
-  {
-    // Override me in your scripted stage to perform custom behavior!
-    // Make sure to call super.onStepHit(event) if you want to keep the boppers dancing.
-
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onStepHit(event:SongTimeScriptEvent):Void {}
 
   /**
    * A function that gets called once per beat in the song (once every four steps).
    * @param curStep The current beat number.
    */
-  public function onBeatHit(event:SongTimeScriptEvent):Void
-  {
-    // Override me in your scripted stage to perform custom behavior!
-    // Make sure to call super.onBeatHit(event) if you want to keep the boppers dancing.
+  public function onBeatHit(event:SongTimeScriptEvent):Void {}
 
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
-
-  public function onUpdate(event:UpdateScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onUpdate(event:UpdateScriptEvent) {}
 
   public override function kill()
   {
@@ -883,129 +860,41 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onScriptEvent(event:ScriptEvent)
   {
+    // Ensure all custom events get broadcast to the elements of the stage.
+    // If we do it here, we don't have to add a handler to EACH script event function.
     for (bopper in boppers)
     {
       ScriptEventDispatcher.callEvent(bopper, event);
     }
   }
 
-  public function onPause(event:PauseScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onPause(event:PauseScriptEvent) {}
 
-  public function onResume(event:ScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onResume(event:ScriptEvent) {}
 
-  public function onSongStart(event:ScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onSongStart(event:ScriptEvent) {}
 
-  public function onSongEnd(event:ScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onSongEnd(event:ScriptEvent) {}
 
-  public function onGameOver(event:ScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onGameOver(event:ScriptEvent) {}
 
-  public function onCountdownStart(event:CountdownScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onCountdownStart(event:CountdownScriptEvent) {}
 
-  public function onCountdownStep(event:CountdownScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onCountdownStep(event:CountdownScriptEvent) {}
 
-  public function onCountdownEnd(event:CountdownScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onCountdownEnd(event:CountdownScriptEvent) {}
 
-  public function onNoteIncoming(event:NoteScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onNoteIncoming(event:NoteScriptEvent) {}
 
-  public function onNoteHit(event:HitNoteScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
-  public function onNoteMiss(event:NoteScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onNoteMiss(event:NoteScriptEvent) {}
 
-  public function onSongEvent(event:SongEventScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onSongEvent(event:SongEventScriptEvent) {}
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
 
-  public function onSongLoaded(event:SongLoadScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onSongLoaded(event:SongLoadScriptEvent) {}
 
-  public function onSongRetry(event:ScriptEvent)
-  {
-    for (bopper in boppers)
-    {
-      ScriptEventDispatcher.callEvent(bopper, event);
-    }
-  }
+  public function onSongRetry(event:ScriptEvent) {}
 }

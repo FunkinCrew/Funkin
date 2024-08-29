@@ -1,6 +1,13 @@
 {
   "dependencies": [
     {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
       "name": "discord_rpc",
       "type": "git",
       "dir": null,
@@ -11,7 +18,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "10c2a203c43a78ff1ff26b8368fd736576829d8d",
+      "ref": "599f38eeb502a8ba6439784036c2cfdc7b485260",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -32,7 +39,7 @@
       "name": "flixel-ui",
       "type": "git",
       "dir": null,
-      "ref": "d0afed7293c71ffdb1184751317fc709b44c9056",
+      "ref": "27f1ba626f80a6282fa8a187115e79a4a2133dc2",
       "url": "https://github.com/HaxeFlixel/flixel-ui"
     },
     {
@@ -43,13 +50,6 @@
       "url": "https://github.com/Dot-Stuff/flxanimate"
     },
     {
-      "name": "FlxPartialSound",
-      "type": "git",
-      "dir": null,
-      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
-    },
-    {
       "name": "format",
       "type": "haxelib",
       "version": "3.5.0"
@@ -58,7 +58,7 @@
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "38261833590773cb1de34ac5d11e0825696fc340",
+      "ref": "22b1ce089dd924f15cdc4632397ef3504d464e90",
       "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
@@ -89,8 +89,10 @@
     },
     {
       "name": "hscript",
-      "type": "haxelib",
-      "version": "2.5.0"
+      "type": "git",
+      "dir": null,
+      "ref": "12785398e2f07082f05034cb580682e5671442a2",
+      "url": "https://github.com/FunkinCrew/hscript"
     },
     {
       "name": "hxCodec",
@@ -103,8 +105,8 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "url": "https://github.com/HaxeFoundation/hxcpp",
-      "ref": "8dc8020f8465027de6c2aaaed90718bc693651ed"
+      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1",
+      "url": "https://github.com/HaxeFoundation/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
@@ -143,7 +145,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "f6153ffcb1ffcf733f91d531eac5fda4189e07f7",
+      "ref": "e0b2339e02fff91168789dbd1a0dd019ea3dda39",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -185,7 +187,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "98945c6c7f5ecde01a32c4623d3515bf012a023a",
+      "ref": "96cfc5fa693b017e47f7cb13b765cc68698fa6b6",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

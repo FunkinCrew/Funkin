@@ -22,14 +22,26 @@ class PixelatedIcon extends FlxSprite
 
     switch (char)
     {
-      case 'monster-christmas':
-        charPath += 'monsterpixel';
-      case 'mom-car':
-        charPath += 'mommypixel';
-      case 'darnell-blazin':
-        charPath += 'darnellpixel';
-      case 'senpai-angry':
-        charPath += 'senpaipixel';
+      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
+        charPath += "bfpixel";
+      case "monster-christmas":
+        charPath += "monsterpixel";
+      case "mom" | "mom-car":
+        charPath += "mommypixel";
+      case "pico-blazin" | "pico-playable" | "pico-speaker":
+        charPath += "picopixel";
+      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
+        charPath += "gfpixel";
+      case "dad":
+        charPath += "dadpixel";
+      case "darnell-blazin":
+        charPath += "darnellpixel";
+      case "senpai-angry":
+        charPath += "senpaipixel";
+      case "spooky-dark":
+        charPath += "spookypixel";
+      case "tankman-atlas":
+        charPath += "tankmanpixel";
       default:
         charPath += '${char}pixel';
     }
