@@ -317,15 +317,6 @@ class FreeplayState extends MusicBeatSubState
     isDebug = true;
     #end
 
-    if (prepForNewRank == false)
-    {
-      FunkinSound.playMusic('freakyMenu',
-        {
-          overrideExisting: true,
-          restartTrack: false
-        });
-    }
-
     // Add a null entry that represents the RANDOM option
     songs.push(null);
 
@@ -2031,10 +2022,7 @@ class FreeplayState extends MusicBeatSubState
   public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
   {
     var result:MainMenuState;
-    if (params?.fromResults?.playRankAnim ?? false) result = new MainMenuState(true);
-    else
-      result = new MainMenuState(false);
-
+    result = new MainMenuState(true);
     result.openSubState(new FreeplayState(params, stickers));
     result.persistentUpdate = false;
     result.persistentDraw = true;
