@@ -21,6 +21,8 @@ class CharSelectGF extends FlxAtlasSprite
   var intendedYPos:Float = 0;
   var intendedAlpha:Float = 0;
 
+  var curGF:GFChar = GF;
+
   public function new()
   {
     super(0, 0, Paths.animateAtlas("charSelect/gfChill"));
@@ -28,7 +30,7 @@ class CharSelectGF extends FlxAtlasSprite
     switchGF("bf");
   }
 
-  override public function update(elapsed:Float)
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -63,7 +65,7 @@ class CharSelectGF extends FlxAtlasSprite
    * @param animInfo Should not be confused with animInInfo!
    *                 This is merely a local var for the function!
    */
-  function doFade(animInfo:FramesJSFLInfo)
+  function doFade(animInfo:FramesJSFLInfo):Void
   {
     fadeTimer += FlxG.elapsed;
     if (fadeTimer >= 1 / 24)
@@ -101,26 +103,30 @@ class CharSelectGF extends FlxAtlasSprite
     fadeAnimIndex = 0;
   }
 
-  public function switchGF(str:String)
+  /**
+   * For switching between "GFs" such as gf, nene, etc
+   * @param bf Which BF we are selecting, so that we know the accompyaning GF
+   */
+  public function switchGF(bf:String):Void
   {
-    str = switch (str)
+    var prevGF:GFChar = curGF;
+    switch (bf)
     {
       case "pico":
-        "nene";
+        curGF = NENE;
       case "bf":
-        "gf";
+        curGF = GF;
       default:
-        "gf";
+        curGF = GF;
     }
 
-    switch str
-    {
-      default:
-        loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
-    }
+    // We don't need to update any anims if we didn't change GF
+    if (prevGF == curGF) return;
 
-    animInInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + str + "AnimInfo/" + str + "In.txt"));
-    animOutInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + str + "AnimInfo/" + str + "Out.txt"));
+    loadAtlas(Paths.animateAtlas("charSelect/" + curGF + "Chill"));
+
+    animInInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + curGF + "AnimInfo/" + curGF + "In.txt"));
+    animOutInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + curGF + "AnimInfo/" + curGF + "Out.txt"));
 
     anim.play("");
     playAnimation("idle", true, false, true);
@@ -134,4 +140,10 @@ enum FadeStatus
   OFF;
   FADE_OUT;
   FADE_IN;
+}
+
+enum abstract GFChar(String) from String to String
+{
+  var GF = "gf";
+  var NENE = "nene";
 }
