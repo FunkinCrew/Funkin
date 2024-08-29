@@ -27,7 +27,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import Discord.DiscordClient;
 #end
 #if newgrounds
@@ -54,7 +54,7 @@ class MainMenuState extends MusicBeatState
 
   override function create():Void
   {
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
     DiscordClient.changePresence("In the Menus", null);
     #end
@@ -98,14 +98,7 @@ class MainMenuState extends MusicBeatState
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
-      if (_.name == 'freeplay')
-      {
-        magenta.visible = true;
-      }
-      else
-      {
-        FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
-      }
+      FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
     });
 
     menuItems.enabled = true; // can move on intro
@@ -117,13 +110,7 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      openSubState(new FreeplayState(
-        {
-          #if debug
-          // If SHIFT is held, toggle the selected character, else use the remembered character
-          character: (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == Constants.DEFAULT_CHARACTER ? 'pico' : 'bf') : null,
-          #end
-        }));
+      openSubState(new FreeplayState());
     });
 
     #if CAN_OPEN_LINKS
@@ -347,7 +334,7 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    #if (debug || FORCE_DEBUG_VERSION)
+    #if FEATURE_DEBUG_FUNCTIONS
     // Open the debug menu, defaults to ` / ~
     if (controls.DEBUG_MENU)
     {
@@ -358,8 +345,32 @@ class MainMenuState extends MusicBeatState
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
     {
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
       // Give the user a score of 1 point on Weekend 1 story mode.
       // This makes the level count as cleared and displays the songs in Freeplay.
+      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
+        {
+          score: 1,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            }
+        });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    {
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      // Give the user a score of 0 points on Weekend 1 story mode.
+      // This makes the level count as uncleared and no longer displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
         {
           score: 1,

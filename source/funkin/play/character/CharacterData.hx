@@ -305,6 +305,8 @@ class CharacterDataParser
         icon = "darnell";
       case "senpai-angry":
         icon = "senpai";
+      case "spooky-dark":
+        icon = "spooky";
       case "tankman-atlas":
         icon = "tankman";
     }

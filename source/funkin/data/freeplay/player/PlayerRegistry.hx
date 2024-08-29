@@ -3,6 +3,7 @@ package funkin.data.freeplay.player;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
+import funkin.save.Save;
 
 class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
 {
@@ -53,13 +54,49 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
     log('Loaded ${countEntries()} playable characters with ${ownedCharacterIds.size()} associations.');
   }
 
+  public function countUnlockedCharacters():Int
+  {
+    var count = 0;
+
+    for (charId in listEntryIds())
+    {
+      var player = fetchEntry(charId);
+      if (player == null) continue;
+
+      if (player.isUnlocked()) count++;
+    }
+
+    return count;
+  }
+
+  public function hasNewCharacter():Bool
+  {
+    var characters = Save.instance.charactersSeen.clone();
+
+    for (charId in listEntryIds())
+    {
+      var player = fetchEntry(charId);
+      if (player == null) continue;
+
+      if (!player.isUnlocked()) continue;
+      if (characters.contains(charId)) continue;
+
+      // This character is unlocked but we haven't seen them in Freeplay yet.
+      return true;
+    }
+
+    // Fallthrough case.
+    return false;
+  }
+
   /**
    * Get the playable character associated with a given stage character.
    * @param characterId The stage character ID.
    * @return The playable character.
    */
-  public function getCharacterOwnerId(characterId:String):Null<String>
+  public function getCharacterOwnerId(characterId:Null<String>):Null<String>
   {
+    if (characterId == null) return null;
     return ownedCharacterIds[characterId];
   }
 

@@ -7,6 +7,7 @@ import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.data.song.SongRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
@@ -27,11 +28,10 @@ class PolymodHandler
 {
   /**
    * The API version that mods should comply with.
-   * Format this with Semantic Versioning; <MAJOR>.<MINOR>.<PATCH>.
-   * Bug fixes increment the patch version, new features increment the minor version.
-   * Changes that break old mods increment the major version.
+   * Indicates which mods are compatible with this version of the game.
+   * Minor updates rarely impact mods but major versions often do.
    */
-  static final API_VERSION:String = '0.1.0';
+  static final API_VERSION:String = "0.5.0"; // Constants.VERSION;
 
   /**
    * Where relative to the executable that mods are located.
@@ -177,7 +177,7 @@ class PolymodHandler
       loadedModIds.push(mod.id);
     }
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     var fileList:Array<String> = Polymod.listModFiles(PolymodAssetType.IMAGE);
     trace('Installed mods have replaced ${fileList.length} images.');
     for (item in fileList)
@@ -233,6 +233,8 @@ class PolymodHandler
     // NOTE: Scripted classes are automatically aliased to their parent class.
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
 
+    Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
@@ -251,8 +253,33 @@ class PolymodHandler
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
 
+    // `Unserializer`
+    // Unserializerr.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
+    Polymod.blacklistImport('Unserializer');
+
+    // `lime.system.CFFI`
+    // Can load and execute compiled binaries.
+    Polymod.blacklistImport('lime.system.CFFI');
+
+    // `lime.system.JNI`
+    // Can load and execute compiled binaries.
+    Polymod.blacklistImport('lime.system.JNI');
+
+    // `lime.system.System`
+    // System.load() can load malicious DLLs
+    Polymod.blacklistImport('lime.system.System');
+
+    // `lime.utils.Assets`
+    // Literally just has a private `resolveClass` function for some reason?
+    Polymod.blacklistImport('lime.utils.Assets');
+    Polymod.blacklistImport('openfl.utils.Assets');
+
+    // `openfl.desktop.NativeProcess`
+    // Can load native processes on the host operating system.
+    Polymod.blacklistImport('openfl.desktop.NativeProcess');
+
     // `polymod.*`
-    // You can probably unblacklist a module
+    // Contains functions which may allow for un-blacklisting other modules.
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
       if (cls == null) continue;
@@ -261,6 +288,7 @@ class PolymodHandler
     }
 
     // `sys.*`
+    // Access to system utilities such as the file system.
     for (cls in ClassMacro.listClassesInPackage('sys'))
     {
       if (cls == null) continue;
@@ -383,6 +411,7 @@ class PolymodHandler
     StageRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    NoteKindManager.loadScripts();
     ModuleHandler.loadModuleCache();
   }
 }

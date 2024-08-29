@@ -199,6 +199,8 @@ class FNFLegacyImporter
       {
         // Handle the dumb logic for mustHitSection.
         var noteData = note.data;
+        if (noteData < 0) continue; // Exclude Psych event notes.
+        if (noteData > (STRUMLINE_SIZE * 2)) noteData = noteData % (2 * STRUMLINE_SIZE); // Handle other engine event notes.
 
         // Flip notes if mustHitSection is FALSE (not true lol).
         if (!mustHitSection)

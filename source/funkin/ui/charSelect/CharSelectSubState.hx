@@ -1,27 +1,31 @@
 package funkin.ui.charSelect;
 
-import funkin.ui.freeplay.FreeplayState;
-import flixel.text.FlxText;
-import funkin.ui.PixelatedIcon;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
-import flixel.math.FlxPoint;
-import flixel.tweens.FlxTween;
-import openfl.display.BlendMode;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
-import funkin.play.stage.Stage;
+import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
+import flixel.system.debug.watch.Tracker.TrackerProfile;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.data.freeplay.player.PlayerData;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinCamera;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.FlxObject;
-import openfl.display.BlendMode;
-import flixel.group.FlxGroup;
+import funkin.play.stage.Stage;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.PixelatedIcon;
 import funkin.util.MathUtil;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import flixel.sound.FlxSound;
-import funkin.audio.FunkinSound;
+import funkin.vis.dsp.SpectralAnalyzer;
+import openfl.display.BlendMode;
 
 class CharSelectSubState extends MusicBeatSubState
 {
@@ -67,8 +71,29 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super();
 
-    availableChars.set(4, "bf");
-    availableChars.set(3, "pico");
+    loadAvailableCharacters();
+  }
+
+  function loadAvailableCharacters():Void
+  {
+    var playerIds:Array<String> = PlayerRegistry.instance.listEntryIds();
+
+    for (playerId in playerIds)
+    {
+      var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerId);
+      if (player == null) continue;
+      var playerData = player.getCharSelectData();
+      if (playerData == null) continue;
+
+      var targetPosition:Int = playerData.position ?? 0;
+      while (availableChars.exists(targetPosition))
+      {
+        targetPosition += 1;
+      }
+
+      trace('Placing player ${playerId} at position ${targetPosition}');
+      availableChars.set(targetPosition, playerId);
+    }
   }
 
   override public function create():Void
@@ -245,7 +270,7 @@ class CharSelectSubState extends MusicBeatSubState
     cursorBlue.scrollFactor.set();
     cursorDarkBlue.scrollFactor.set();
 
-    FlxTween.color(cursor, 0.2, 0xFFFFFF00, 0xFFFFCC00, {type: FlxTween.PINGPONG});
+    FlxTween.color(cursor, 0.2, 0xFFFFFF00, 0xFFFFCC00, {type: PINGPONG});
 
     // FlxG.debugger.track(cursor);
 
@@ -269,7 +294,6 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var grpIcons:FlxSpriteGroup;
-
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
 
@@ -600,7 +624,7 @@ class CharSelectSubState extends MusicBeatSubState
     playerChill.visible = false;
     playerChillOut.visible = true;
     playerChillOut.anim.goToFrameLabel("slideout");
-    playerChillOut.anim.callback = (_, frame:Int) -> {
+    playerChillOut.onAnimationFrame.add((_, frame:Int) -> {
       if (frame == playerChillOut.anim.getFrameLabel("slideout").index + 1)
       {
         playerChill.visible = true;
@@ -612,7 +636,7 @@ class CharSelectSubState extends MusicBeatSubState
         playerChillOut.switchChar(value);
         playerChillOut.visible = false;
       }
-    };
+    });
     return value;
   }
 

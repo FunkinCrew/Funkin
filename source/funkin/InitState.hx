@@ -27,13 +27,14 @@ import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.modding.module.ModuleHandler;
 import funkin.ui.title.TitleState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import Discord.DiscordClient;
 #end
 
@@ -122,7 +123,7 @@ class InitState extends FlxState
     //
     // DISCORD API SETUP
     //
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     DiscordClient.initialize();
 
     Application.current.onExit.add(function(exitCode) {
@@ -143,7 +144,7 @@ class InitState extends FlxState
     // Plugins provide a useful interface for globally active Flixel objects,
     // that receive update events regardless of the current state.
     // TODO: Move scripted Module behavior to a Flixel plugin.
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     funkin.util.plugins.MemoryGCPlugin.initialize();
     #end
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
@@ -175,6 +176,8 @@ class InitState extends FlxState
     // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.
     CharacterDataParser.loadCharacterCache();
+
+    NoteKindManager.loadScripts();
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
@@ -241,11 +244,11 @@ class InitState extends FlxState
                 totalNotesHit: 140,
                 totalNotes: 190
               }
-            // 2000 = loss
-            // 240 = good
-            // 230 = great
-            // 210 = excellent
-            // 190 = perfect
+            // 2400 total notes = 7% = LOSS
+            // 240 total notes = 79% = GOOD
+            // 230 total notes = 82% = GREAT
+            // 210 total notes = 91% = EXCELLENT
+            // 190 total notes = PERFECT
           },
       }));
     #elseif ANIMDEBUG
@@ -371,11 +374,16 @@ class InitState extends FlxState
     //
     // FLIXEL DEBUG SETUP
     //
-    #if (debug || FORCE_DEBUG_VERSION)
-    // Make errors and warnings less annoying.
-    // Forcing this always since I have never been happy to have the debugger to pop up
+    #if FEATURE_DEBUG_FUNCTIONS
+    trace('Initializing Flixel debugger...');
+
+    #if !debug
+    // Make errors less annoying on release builds.
     LogStyle.ERROR.openConsole = false;
     LogStyle.ERROR.errorSound = null;
+    #end
+
+    // Make errors and warnings less annoying.
     LogStyle.WARNING.openConsole = false;
     LogStyle.WARNING.errorSound = null;
 
