@@ -391,9 +391,15 @@ class CharSelectSubState extends MusicBeatSubState
     }
   }
 
-  function testLol():Void
+  function goToFreeplay():Void
   {
     autoFollow = false;
+
+    FlxTween.tween(cursor, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
+    FlxTween.tween(cursorBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
+    FlxTween.tween(cursorDarkBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
+    FlxTween.tween(cursorConfirmed, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
+
     FlxTween.tween(barthing, {y: barthing.y + 80}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y + 210}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(chooseDipshit, {y: chooseDipshit.y + 200}, 0.8, {ease: FlxEase.backIn});
@@ -413,7 +419,8 @@ class CharSelectSubState extends MusicBeatSubState
           FlxG.switchState(FreeplayState.build(
             {
               {
-                character: curChar
+                character: curChar,
+                fromCharSelect: true
               }
             }));
         }
@@ -542,7 +549,7 @@ class CharSelectSubState extends MusicBeatSubState
           //       character: curChar
           //     }
           //   }));
-          testLol();
+          goToFreeplay();
         });
       }
 
