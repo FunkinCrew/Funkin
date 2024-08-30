@@ -238,7 +238,7 @@ class FreeplayState extends MusicBeatSubState
     switch (currentCharacterId)
     {
       case 'bf':
-        backingCard = new NewCharacterCard(currentCharacter);
+        backingCard = new BoyfriendCard(currentCharacter);
       case 'pico':
         backingCard = new PicoCard(currentCharacter);
       default:
