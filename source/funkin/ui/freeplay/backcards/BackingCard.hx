@@ -39,9 +39,13 @@ class BackingCard extends FlxSpriteGroup
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
   var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
 
-  public function new(currentCharacter:PlayableCharacter)
+  public var instance:FreeplayState;
+
+  public function new(currentCharacter:PlayableCharacter, ?_instance:FreeplayState)
   {
     super();
+
+    if (_instance != null) instance = _instance;
 
     cardGlow = new FlxSprite(-30, -30).loadGraphic(Paths.image('freeplay/cardGlow'));
     confirmGlow = new FlxSprite(-30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
@@ -116,6 +120,16 @@ class BackingCard extends FlxSpriteGroup
   }
 
   /**
+   * Helper function to snap the back of the card to its final position.
+   * Used when returning from character select, as we dont want to play the full animation of everything sliding in.
+   */
+  public function skipIntroTween():Void
+  {
+    FlxTween.cancelTweensOf(pinkBack);
+    pinkBack.x = 0;
+  }
+
+  /**
    * Called in create. Adds sprites and tweens.
    */
   public function init():Void
@@ -153,11 +167,6 @@ class BackingCard extends FlxSpriteGroup
   }
 
   /**
-   * Override parts of Freeplay depending on the card class.
-   */
-  public function applyStyle(_freeplayState:FreeplayState):Void {}
-
-  /**
    * Called after the dj finishes their start animation.
    */
   public function introDone():Void
@@ -181,10 +190,16 @@ class BackingCard extends FlxSpriteGroup
     confirmGlow.visible = true;
     confirmGlow2.visible = true;
 
-    backingTextYeah.playAnimation("BF back card confirm raw", false, false, false, 0);
+    backingTextYeah.anim.play("");
     confirmGlow2.alpha = 0;
     confirmGlow.alpha = 0;
 
+    FlxTween.color(instance.bgDad, 0.5, 0xFFA8A8A8, 0xFF646464,
+      {
+        onUpdate: function(_) {
+          instance.angleMaskShader.extraColor = instance.bgDad.color;
+        }
+      });
     FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
       {
         ease: FlxEase.quadOut,
@@ -195,12 +210,29 @@ class BackingCard extends FlxSpriteGroup
           confirmTextGlow.alpha = 1;
           FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
           FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
+          FlxTween.color(instance.bgDad, 2, 0xFFCDCDCD, 0xFF555555,
+            {
+              ease: FlxEase.expoOut,
+              onUpdate: function(_) {
+                instance.angleMaskShader.extraColor = instance.bgDad.color;
+              }
+            });
         }
       });
   }
 
   /**
-   * Called when exiting the freeplay menu
+   * Called when entering character select, does nothing by default.
+   */
+  public function enterCharSel():Void {}
+
+  /**
+   * Called on each beat in freeplay state.
+   */
+  public function beatHit():Void {}
+
+  /**
+   * Called when exiting the freeplay menu.
    */
   public function disappear():Void
   {
