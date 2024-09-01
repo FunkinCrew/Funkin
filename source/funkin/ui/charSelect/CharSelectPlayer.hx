@@ -3,8 +3,10 @@ package funkin.ui.charSelect;
 import flixel.FlxSprite;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flxanimate.animate.FlxKeyFrame;
+import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
-class CharSelectPlayer extends FlxAtlasSprite
+class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
   var desLp:FlxKeyFrame = null;
 
@@ -18,11 +20,20 @@ class CharSelectPlayer extends FlxAtlasSprite
       switch (animLabel)
       {
         case "slidein":
-          if (hasAnimation("slidein idle point")) playAnimation("slidein idle point", true, false, false);
+          if (hasAnimation("slidein idle point"))
+          {
+            playAnimation("slidein idle point", true, false, false);
+          }
           else
-            playAnimation("idle", true, false, true);
+          {
+            // Handled by onBeatHit now
+            playAnimation("idle", true, false, false);
+          }
         case "slidein idle point":
-          playAnimation("idle", true, false, true);
+          // Handled by onBeatHit now
+          playAnimation("idle", true, false, false);
+        case "idle":
+          trace('Waiting for onBeatHit');
       }
     });
 
@@ -30,6 +41,22 @@ class CharSelectPlayer extends FlxAtlasSprite
       if (animLabel == "deselect" && desLp != null && frame >= desLp.index) playAnimation("deselect loop start", true, false, true);
     });
   }
+
+  public function onStepHit(event:SongTimeScriptEvent):Void {}
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    // TODO: There's a minor visual bug where there's a little stutter.
+    // This happens because the animation is getting restarted while it's already playing.
+    // I tried make this not interrupt an existing idle,
+    // but isAnimationFinished() and isLoopComplete() both don't work! What the hell?
+    // danceEvery isn't necessary if that gets fixed.
+    if (getCurrentAnimation() == "idle")
+    {
+      trace('Player beat hit');
+      playAnimation("idle", true, false, false);
+    }
+  };
 
   public function updatePosition(str:String)
   {
@@ -61,4 +88,12 @@ class CharSelectPlayer extends FlxAtlasSprite
 
     updatePosition(str);
   }
+
+  public function onScriptEvent(event:ScriptEvent):Void {};
+
+  public function onCreate(event:ScriptEvent):Void {};
+
+  public function onDestroy(event:ScriptEvent):Void {};
+
+  public function onUpdate(event:UpdateScriptEvent):Void {};
 }

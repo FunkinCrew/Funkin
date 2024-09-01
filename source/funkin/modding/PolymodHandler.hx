@@ -235,6 +235,10 @@ class PolymodHandler
 
     Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
 
+    // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
+    Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
+    Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
@@ -268,11 +272,6 @@ class PolymodHandler
     // `lime.system.System`
     // System.load() can load malicious DLLs
     Polymod.blacklistImport('lime.system.System');
-
-    // `lime.utils.Assets`
-    // Literally just has a private `resolveClass` function for some reason?
-    Polymod.blacklistImport('lime.utils.Assets');
-    Polymod.blacklistImport('openfl.utils.Assets');
 
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.

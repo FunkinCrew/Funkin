@@ -148,7 +148,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     var stageSpr:FlxSprite = new FlxSprite(-40, 391);
     stageSpr.frames = Paths.getSparrowAtlas("charSelect/charSelectStage");
-    stageSpr.animation.addByPrefix("idle", "stage", 24, true);
+    stageSpr.animation.addByPrefix("idle", "stage full instance 1", 24, true);
     stageSpr.animation.play("idle");
     add(stageSpr);
 
@@ -195,14 +195,14 @@ class CharSelectSubState extends MusicBeatSubState
 
     var dipshitBlur:FlxSprite = new FlxSprite(419, -65);
     dipshitBlur.frames = Paths.getSparrowAtlas("charSelect/dipshitBlur");
-    dipshitBlur.animation.addByPrefix('idle', "CHOOSE vertical", 24, true);
+    dipshitBlur.animation.addByPrefix('idle', "CHOOSE vertical offset instance 1", 24, true);
     dipshitBlur.blend = BlendMode.ADD;
     dipshitBlur.animation.play("idle");
     add(dipshitBlur);
 
     var dipshitBacking:FlxSprite = new FlxSprite(423, -17);
     dipshitBacking.frames = Paths.getSparrowAtlas("charSelect/dipshitBacking");
-    dipshitBacking.animation.addByPrefix('idle', "CHOOSE horizontal", 24, true);
+    dipshitBacking.animation.addByPrefix('idle', "CHOOSE horizontal offset instance 1", 24, true);
     dipshitBacking.blend = BlendMode.ADD;
     dipshitBacking.animation.play("idle");
     add(dipshitBacking);
@@ -261,14 +261,14 @@ class CharSelectSubState extends MusicBeatSubState
     cursorConfirmed = new FlxSprite(0, 0);
     cursorConfirmed.scrollFactor.set();
     cursorConfirmed.frames = Paths.getSparrowAtlas("charSelect/charSelectorConfirm");
-    cursorConfirmed.animation.addByPrefix("idle", "cursor ACCEPTED", 24, true);
+    cursorConfirmed.animation.addByPrefix("idle", "cursor ACCEPTED instance 1", 24, true);
     cursorConfirmed.visible = false;
     add(cursorConfirmed);
 
     cursorDenied = new FlxSprite(0, 0);
     cursorDenied.scrollFactor.set();
     cursorDenied.frames = Paths.getSparrowAtlas("charSelect/charSelectorDenied");
-    cursorDenied.animation.addByPrefix("idle", "cursor DENIED", 24, false);
+    cursorDenied.animation.addByPrefix("idle", "cursor DENIED instance 1", 24, false);
     cursorDenied.visible = false;
     add(cursorDenied);
 
@@ -288,8 +288,6 @@ class CharSelectSubState extends MusicBeatSubState
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(CharSelectSubState, ["curChar", "grpXSpread", "grpYSpread"]));
     FlxG.debugger.track(this);
-
-    FlxG.sound.playMusic(Paths.music('charSelect/charSelectMusic'));
 
     camFollow = new FlxObject(0, 0, 1, 1);
     add(camFollow);
@@ -565,6 +563,16 @@ class CharSelectSubState extends MusicBeatSubState
 
     cursorDarkBlue.x = MathUtil.coolLerp(cursorDarkBlue.x, cursorLocIntended.x, lerpAmnt * 0.2);
     cursorDarkBlue.y = MathUtil.coolLerp(cursorDarkBlue.y, cursorLocIntended.y, lerpAmnt * 0.2);
+  }
+
+  public override function dispatchEvent(event:ScriptEvent):Void
+  {
+    // super.dispatchEvent(event) dispatches event to module scripts.
+    super.dispatchEvent(event);
+
+    // Dispatch events (like onBeatHit) to props
+    ScriptEventDispatcher.callEvent(playerChill, event);
+    ScriptEventDispatcher.callEvent(gfChill, event);
   }
 
   function spamOnStep():Void

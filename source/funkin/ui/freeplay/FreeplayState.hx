@@ -224,12 +224,14 @@ class FreeplayState extends MusicBeatSubState
   {
     currentCharacterId = params?.character ?? rememberedCharacterId;
     var fetchPlayableCharacter = function():PlayableCharacter {
-      var result = PlayerRegistry.instance.fetchEntry(params?.character ?? rememberedCharacterId);
-      if (result == null) throw 'No valid playable character with id ${params?.character}';
+      var targetCharId = params?.character ?? rememberedCharacterId;
+      var result = PlayerRegistry.instance.fetchEntry(targetCharId);
+      if (result == null) throw 'No valid playable character with id ${targetCharId}';
       return result;
     };
     currentCharacter = fetchPlayableCharacter();
 
+    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacter.getFreeplayStyleID());
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
 
     fromResultsParams = params?.fromResults;
@@ -316,6 +318,9 @@ class FreeplayState extends MusicBeatSubState
     #if FEATURE_DEBUG_FUNCTIONS
     isDebug = true;
     #end
+
+    // Block input until the intro finishes.
+    busy = true;
 
     // Add a null entry that represents the RANDOM option
     songs.push(null);
@@ -645,12 +650,13 @@ class FreeplayState extends MusicBeatSubState
     // be careful not to "add()" things in here unless it's to a group that's already added to the state
     // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
     var onDJIntroDone = function() {
+      busy = false;
+
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
       var daSong = grpCapsules.members[curSelected].songData;
       albumRoll.albumId = daSong?.albumId;
-
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
@@ -1187,6 +1193,158 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
+  function tryOpenCharSelect():Void
+  {
+    // Check if we have ACCESS to character select!
+    trace('Is Pico unlocked? ${PlayerRegistry.instance.fetchEntry('pico')?.isUnlocked()}');
+    trace('Number of characters: ${PlayerRegistry.instance.countUnlockedCharacters()}');
+
+    if (PlayerRegistry.instance.countUnlockedCharacters() > 1)
+    {
+      trace('Opening character select!');
+    }
+    else
+    {
+      trace('Not enough characters unlocked to open character select!');
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      return;
+    }
+
+    busy = true;
+
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+
+    if (dj != null)
+    {
+      dj.toCharSelect();
+    }
+
+    // Get this character's transition delay, with a reasonable default.
+    var transitionDelay:Float = currentCharacter.getFreeplayDJData()?.getCharSelectTransitionDelay() ?? 0.25;
+
+    new FlxTimer().start(transitionDelay, _ -> {
+      transitionToCharSelect();
+    });
+  }
+
+  function transitionToCharSelect():Void
+  {
+    var transitionGradient = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
+    transitionGradient.scale.set(1280, 1);
+    transitionGradient.updateHitbox();
+    transitionGradient.cameras = [rankCamera];
+    exitMoversCharSel.set([transitionGradient],
+      {
+        y: -720,
+        speed: 0.8,
+        wait: 0.1
+      });
+    add(transitionGradient);
+    for (index => capsule in grpCapsules.members)
+    {
+      var distFromSelected:Float = Math.abs(index - curSelected) - 1;
+      if (distFromSelected < 5)
+      {
+        capsule.doLerp = false;
+        exitMoversCharSel.set([capsule],
+          {
+            y: -250,
+            speed: 0.8,
+            wait: 0.1
+          });
+      }
+    }
+    fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
+    FlxG.sound.music.fadeOut(0.9, 0);
+    new FlxTimer().start(0.9, _ -> {
+      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+    });
+    for (grpSpr in exitMoversCharSel.keys())
+    {
+      var moveData:Null<MoveData> = exitMoversCharSel.get(grpSpr);
+      if (moveData == null) continue;
+
+      for (spr in grpSpr)
+      {
+        if (spr == null) continue;
+
+        var funnyMoveShit:MoveData = moveData;
+
+        var moveDataY = funnyMoveShit.y ?? spr.y;
+        var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
+        var moveDataWait = funnyMoveShit.wait ?? 0.0;
+
+        FlxTween.tween(spr, {y: moveDataY + spr.y}, moveDataSpeed, {ease: FlxEase.backIn});
+      }
+    }
+    backingCard?.enterCharSel();
+  }
+
+  function enterFromCharSel():Void
+  {
+    busy = true;
+    if (_parentState != null) _parentState.persistentDraw = false;
+
+    var transitionGradient = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
+    transitionGradient.scale.set(1280, 1);
+    transitionGradient.updateHitbox();
+    transitionGradient.cameras = [rankCamera];
+    exitMoversCharSel.set([transitionGradient],
+      {
+        y: -720,
+        speed: 1.5,
+        wait: 0.1
+      });
+    add(transitionGradient);
+    // FlxTween.tween(transitionGradient, {alpha: 0}, 1, {ease: FlxEase.circIn});
+    // for (index => capsule in grpCapsules.members)
+    // {
+    //   var distFromSelected:Float = Math.abs(index - curSelected) - 1;
+    //   if (distFromSelected < 5)
+    //   {
+    //     capsule.doLerp = false;
+    //     exitMoversCharSel.set([capsule],
+    //       {
+    //         y: -250,
+    //         speed: 0.8,
+    //         wait: 0.1
+    //       });
+    //   }
+    // }
+    fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn});
+    for (grpSpr in exitMoversCharSel.keys())
+    {
+      var moveData:Null<MoveData> = exitMoversCharSel.get(grpSpr);
+      if (moveData == null) continue;
+
+      for (spr in grpSpr)
+      {
+        if (spr == null) continue;
+
+        var funnyMoveShit:MoveData = moveData;
+
+        var moveDataY = funnyMoveShit.y ?? spr.y;
+        var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
+        var moveDataWait = funnyMoveShit.wait ?? 0.0;
+
+        spr.y += moveDataY;
+        FlxTween.tween(spr, {y: spr.y - moveDataY}, moveDataSpeed * 1.2,
+          {
+            ease: FlxEase.expoOut,
+            onComplete: function(_) {
+              for (index => capsule in grpCapsules.members)
+              {
+                capsule.doLerp = true;
+                fromCharSelect = false;
+                busy = false;
+                albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
+              }
+            }
+          });
+      }
+    }
+  }
+
   var touchY:Float = 0;
   var touchX:Float = 0;
   var dxTouch:Float = 0;
@@ -1247,32 +1405,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (controls.FREEPLAY_CHAR_SELECT && !busy)
     {
-      // Check if we have ACCESS to character select!
-      trace('Is Pico unlocked? ${PlayerRegistry.instance.fetchEntry('pico')?.isUnlocked()}');
-      trace('Number of characters: ${PlayerRegistry.instance.countUnlockedCharacters()}');
-
-      if (PlayerRegistry.instance.countUnlockedCharacters() > 1)
-      {
-        if (dj != null)
-        {
-          busy = true;
-          // Transition to character select after animation
-          dj.onCharSelectComplete = function() {
-            FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
-          }
-          dj.toCharSelect();
-        }
-        else
-        {
-          // Transition to character select immediately
-          FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
-        }
-      }
-      else
-      {
-        trace('Not enough characters unlocked to open character select!');
-        FunkinSound.playOnce(Paths.sound('cancelMenu'));
-      }
+      tryOpenCharSelect();
     }
 
     if (controls.FREEPLAY_FAVORITE && !busy)

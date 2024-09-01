@@ -264,11 +264,20 @@ class SongOffsets implements ICloneable<SongOffsets>
   @:default([])
   public var vocals:Map<String, Float>;
 
-  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>)
+  /**
+   * The offset, in milliseconds, to apply to the songs vocals, relative to each alternate instrumental.
+   * This is useful for the circumstance where, for example, an alt instrumental has a few seconds of lead in before the song starts.
+   */
+  @:optional
+  @:default([])
+  public var altVocals:Map<String, Map<String, Float>>;
+
+  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>, ?altVocals:Map<String, Map<String, Float>>)
   {
     this.instrumental = instrumental;
     this.altInstrumentals = altInstrumentals == null ? new Map<String, Float>() : altInstrumentals;
     this.vocals = vocals == null ? new Map<String, Float>() : vocals;
+    this.altVocals = altVocals == null ? new Map<String, Map<String, Float>>() : altVocals;
   }
 
   public function getInstrumentalOffset(?instrumental:String):Float

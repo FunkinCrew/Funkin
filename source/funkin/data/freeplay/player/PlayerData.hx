@@ -32,6 +32,13 @@ class PlayerData
   public var showUnownedChars:Bool = false;
 
   /**
+   * Which freeplay style to use for this character.
+   */
+  @:optional
+  @:default("bf")
+  public var freeplayStyle:String = Constants.DEFAULT_FREEPLAY_STYLE;
+
+  /**
    * Data for displaying this character in the Freeplay menu.
    * If null, display no DJ.
    */
@@ -104,6 +111,9 @@ class PlayerFreeplayDJData
 
   @:jignored
   var prefixToOffsetsMap:Map<String, Array<Float>>;
+
+  @:optional
+  var charSelect:Null<PlayerFreeplayDJCharSelectData>;
 
   @:optional
   var cartoon:Null<PlayerFreeplayDJCartoonData>;
@@ -237,6 +247,11 @@ class PlayerFreeplayDJData
   {
     return fistPump?.loopBadEndFrame ?? 0;
   }
+
+  public function getCharSelectTransitionDelay():Float
+  {
+    return charSelect?.transitionDelay ?? 0.25;
+  }
 }
 
 class PlayerCharSelectData
@@ -299,6 +314,11 @@ typedef PlayerResultsAnimationData =
   @:optional
   var loopFrameLabel:Null<String>;
 };
+
+typedef PlayerFreeplayDJCharSelectData =
+{
+  var transitionDelay:Float;
+}
 
 typedef PlayerFreeplayDJCartoonData =
 {
