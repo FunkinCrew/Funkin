@@ -5713,7 +5713,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         PlayStatePlaylist.campaignId = 'week6';
       case 'tankmanBattlefield':
         PlayStatePlaylist.campaignId = 'week7';
-      case 'phillyStreets' | 'phillyBlazin' | 'phillyBlazin2':
+      case 'phillyStreets' | 'phillyStreetsErect' | 'phillyBlazin' | 'phillyBlazin2':
         PlayStatePlaylist.campaignId = 'weekend1';
     }
     Paths.setCurrentLevel(PlayStatePlaylist.campaignId);

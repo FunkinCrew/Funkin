@@ -94,7 +94,7 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
   {
     return [
       "mainStage", "mainStageErect", "spookyMansion", "phillyTrain", "phillyTrainErect", "limoRide", "limoRideErect", "mallXmas", "mallEvil", "school",
-      "schoolEvil", "tankmanBattlefield", "phillyStreets", "phillyBlazin",
+      "schoolEvil", "tankmanBattlefield", "phillyStreets", "phillyStreetsErect", "phillyBlazin",
     ];
   }
 
