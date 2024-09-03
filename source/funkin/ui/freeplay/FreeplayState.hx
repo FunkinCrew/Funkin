@@ -789,7 +789,7 @@ class FreeplayState extends MusicBeatSubState
 
       funnyMenu.init(FlxG.width, 0, tempSong, styleData);
       funnyMenu.onConfirm = function() {
-        capsuleOnConfirmDefault(funnyMenu);
+        capsuleOnOpenDefault(funnyMenu);
       };
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.targetPos.x = funnyMenu.x;
@@ -1864,7 +1864,86 @@ class FreeplayState extends MusicBeatSubState
     capsuleOnConfirmDefault(targetSong);
   }
 
-  function capsuleOnConfirmDefault(cap:SongMenuItem):Void
+  /**
+   * Called when hitting ENTER to open the instrumental list.
+   */
+  function capsuleOnOpenDefault(cap:SongMenuItem):Void
+  {
+    var targetSongId:String = cap?.songData?.songId ?? 'unknown';
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    if (targetSongNullable == null)
+    {
+      FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      return;
+    }
+    var targetSong:Song = targetSongNullable;
+    var targetDifficultyId:String = currentDifficulty;
+    var targetVariation:Null<String> = targetSong.getFirstValidVariation(targetDifficultyId, currentCharacter);
+    var targetLevelId:Null<String> = cap?.songData?.levelId;
+    PlayStatePlaylist.campaignId = targetLevelId ?? null;
+
+    var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(targetDifficultyId, targetVariation);
+    if (targetDifficulty == null)
+    {
+      FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      return;
+    }
+
+    trace('target difficulty: ${targetDifficultyId}');
+    trace('target variation: ${targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION}');
+
+    var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+    var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
+      targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+
+    if (altInstrumentalIds.length > 0)
+    {
+      var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
+      openInstrumentalList(cap, instrumentalIds);
+    }
+    else
+    {
+      trace('NO ALTS');
+      capsuleOnConfirmDefault(cap);
+    }
+  }
+
+  public function getControls():Controls
+  {
+    return controls;
+  }
+
+  function openInstrumentalList(cap:SongMenuItem, instrumentalIds:Array<String>):Void
+  {
+    busy = true;
+
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.x + 175, cap.y + 115, instrumentalIds);
+    capsuleOptionsMenu.cameras = [funnyCam];
+    capsuleOptionsMenu.zIndex = 10000;
+    add(capsuleOptionsMenu);
+
+    capsuleOptionsMenu.onConfirm = function(targetInstId:String) {
+      capsuleOnConfirmDefault(cap, targetInstId);
+    };
+  }
+
+  var capsuleOptionsMenu:Null<CapsuleOptionsMenu> = null;
+
+  public function cleanupCapsuleOptionsMenu():Void
+  {
+    this.busy = false;
+
+    if (capsuleOptionsMenu != null)
+    {
+      remove(capsuleOptionsMenu);
+      capsuleOptionsMenu = null;
+    }
+  }
+
+  /**
+   * Called when hitting ENTER to play the song.
+   */
+  function capsuleOnConfirmDefault(cap:SongMenuItem, ?targetInstId:String):Void
   {
     busy = true;
     letterSort.inputEnabled = false;
@@ -1891,8 +1970,9 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    var baseInstrumentalId:String = targetDifficulty?.characters?.instrumental ?? '';
-    var altInstrumentalIds:Array<String> = targetDifficulty?.characters?.altInstrumentals ?? [];
+    var baseInstrumentalId:String = targetSong?.getBaseInstrumentalId(targetDifficultyId, targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+    var altInstrumentalIds:Array<String> = targetSong?.listAltInstrumentalIds(targetDifficultyId,
+      targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
     var targetInstId:String = baseInstrumentalId;
 
@@ -1902,6 +1982,8 @@ class FreeplayState extends MusicBeatSubState
     {
       targetInstId = altInstrumentalIds[0];
     }
+
+    if (targetInstId == null) targetInstId = baseInstrumentalId;
     #end
 
     // Visual and audio effects.
@@ -2027,10 +2109,13 @@ class FreeplayState extends MusicBeatSubState
       if (previewSongId == null) return;
 
       var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(previewSongId);
+      var currentVariation = previewSong?.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
       var songDifficulty:Null<SongDifficulty> = previewSong?.getDifficulty(currentDifficulty,
         previewSong?.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST);
-      var baseInstrumentalId:String = songDifficulty?.characters?.instrumental ?? '';
-      var altInstrumentalIds:Array<String> = songDifficulty?.characters?.altInstrumentals ?? [];
+
+      var baseInstrumentalId:String = previewSong?.getBaseInstrumentalId(currentDifficulty, songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+      var altInstrumentalIds:Array<String> = previewSong?.listAltInstrumentalIds(currentDifficulty,
+        songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
       var instSuffix:String = baseInstrumentalId;
 
