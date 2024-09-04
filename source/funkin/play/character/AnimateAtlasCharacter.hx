@@ -122,7 +122,7 @@ class AnimateAtlasCharacter extends BaseCharacter
    */
   public override function isAnimationFinished():Bool
   {
-    return mainSprite.isAnimationFinished();
+    return mainSprite?.isAnimationFinished() ?? false;
   }
 
   function loadAtlasSprite():FlxAtlasSprite
