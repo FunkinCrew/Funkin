@@ -26,6 +26,11 @@ class Assets
     return openfl.utils.Assets.getBytes(path);
   }
 
+  public static function exists(path:String, ?type:openfl.utils.AssetType):Bool
+  {
+    return openfl.utils.Assets.exists(path, type);
+  }
+
   public static function list(type:openfl.utils.AssetType):Array<String>
   {
     return openfl.utils.Assets.list(type);

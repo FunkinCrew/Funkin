@@ -126,6 +126,27 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     }
   }
 
+  public function getResultsMusicPath(rank:ScoringRank):String
+  {
+    switch (rank)
+    {
+      case PERFECT_GOLD:
+        return _data?.results?.music?.PERFECT_GOLD ?? "resultsPERFECT";
+      case PERFECT:
+        return _data?.results?.music?.PERFECT ?? "resultsPERFECT";
+      case EXCELLENT:
+        return _data?.results?.music?.EXCELLENT ?? "resultsEXCELLENT";
+      case GREAT:
+        return _data?.results?.music?.GREAT ?? "resultsNORMAL";
+      case GOOD:
+        return _data?.results?.music?.GOOD ?? "resultsNORMAL";
+      case SHIT:
+        return _data?.results?.music?.SHIT ?? "resultsSHIT";
+      default:
+        return _data?.results?.music?.GOOD ?? "resultsNORMAL";
+    }
+  }
+
   /**
    * Returns whether this character is unlocked.
    */
