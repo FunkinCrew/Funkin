@@ -387,21 +387,8 @@ class CharSelectSubState extends MusicBeatSubState
       }
       else
       {
-        var temp:FlxSprite = new FlxSprite();
+        var temp:Lock = new Lock(0, 0, i);
         temp.ID = 1;
-        temp.frames = Paths.getSparrowAtlas("charSelect/locks");
-
-        var lockIndex:Int = i + 1;
-
-        if (i == 3) lockIndex = 3;
-
-        if (i >= 4) lockIndex = i - 2;
-
-        temp.animation.addByIndices("idle", "LOCK FULL " + lockIndex + " instance 1", [0], "", 24);
-        temp.animation.addByIndices("selected", "LOCK FULL " + lockIndex + " instance 1", [3, 4, 5], "", 24, false);
-        temp.animation.addByIndices("clicked", "LOCK FULL " + lockIndex + " instance 1", [9, 10, 11, 12, 13, 14, 15], "", 24, false);
-
-        temp.animation.play("idle");
 
         grpIcons.add(temp);
       }
@@ -677,6 +664,11 @@ class CharSelectSubState extends MusicBeatSubState
 
   function spamOnStep():Void
   {
+    if (FlxG.keys.justPressed.B)
+    {
+      cursorY = 3;
+      cursorX = 3;
+    }
     if (spamUp || spamDown || spamLeft || spamRight)
     {
       // selectSound.changePitchBySemitone(1);
@@ -713,19 +705,20 @@ class CharSelectSubState extends MusicBeatSubState
       switch (member.ID)
       {
         case 1:
+          var lock:Lock = cast member;
           if (index == getCurrentSelected())
           {
-            switch (member.animation.curAnim.name)
+            switch (lock.getCurrentAnimation())
             {
               case "idle":
-                member.animation.play("selected");
+                lock.playAnimation("selected");
               case "selected" | "clicked":
-                if (controls.ACCEPT) member.animation.play("clicked", true);
+                if (controls.ACCEPT) lock.playAnimation((FlxG.keys.pressed.CONTROL) ? "unlock" : "clicked", true);
             }
           }
           else
           {
-            member.animation.play("idle");
+            lock.playAnimation("idle");
           }
         case 0:
           var memb:PixelatedIcon = cast member;
