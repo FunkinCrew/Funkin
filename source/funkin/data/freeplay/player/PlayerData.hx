@@ -253,12 +253,35 @@ class PlayerCharSelectData
 
 typedef PlayerResultsData =
 {
+  var music:PlayerResultsMusicData;
+
   var perfect:Array<PlayerResultsAnimationData>;
   var excellent:Array<PlayerResultsAnimationData>;
   var great:Array<PlayerResultsAnimationData>;
   var good:Array<PlayerResultsAnimationData>;
   var loss:Array<PlayerResultsAnimationData>;
 };
+
+typedef PlayerResultsMusicData =
+{
+  @:optional
+  var PERFECT_GOLD:String;
+
+  @:optional
+  var PERFECT:String;
+
+  @:optional
+  var EXCELLENT:String;
+
+  @:optional
+  var GREAT:String;
+
+  @:optional
+  var GOOD:String;
+
+  @:optional
+  var SHIT:String;
+}
 
 typedef PlayerResultsAnimationData =
 {

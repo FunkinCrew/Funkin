@@ -556,40 +556,6 @@ enum abstract ScoringRank(String)
     }
   }
 
-  public function getMusicPath():String
-  {
-    switch (abstract)
-    {
-      case PERFECT_GOLD:
-        return 'resultsPERFECT';
-      case PERFECT:
-        return 'resultsPERFECT';
-      case EXCELLENT:
-        return 'resultsEXCELLENT';
-      case GREAT:
-        return 'resultsNORMAL';
-      case GOOD:
-        return 'resultsNORMAL';
-      case SHIT:
-        return 'resultsSHIT';
-      default:
-        return 'resultsNORMAL';
-    }
-  }
-
-  public function hasMusicIntro():Bool
-  {
-    switch (abstract)
-    {
-      case EXCELLENT:
-        return true;
-      case SHIT:
-        return true;
-      default:
-        return false;
-    }
-  }
-
   public function getFreeplayRankIconAsset():String
   {
     switch (abstract)

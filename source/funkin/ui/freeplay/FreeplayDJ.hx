@@ -386,6 +386,7 @@ class FreeplayDJ extends FlxAtlasSprite
     }
     else
     {
+      FlxG.log.warn("Freeplay character does not have 'charSelect' animation!");
       currentState = Confirm;
       // Call this immediately; otherwise, we get locked out of Character Select.
       onCharSelectComplete();

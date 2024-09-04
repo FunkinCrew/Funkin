@@ -4,14 +4,28 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5.0] - 2024-08-??
+## [0.5.0] - 2024-09-12
 ### Added
 - Added a new Character Select screen to switch between playable characters in Freeplay
   - Modding isn't 100% there but we're working on it!
 - Added Pico as a playable character! Unlock him by completing Weekend 1 (if you haven't already done that)
   - The songs from Weekend 1 have moved; you must now switch to Pico in Freeplay to access them
-- Added ## new Pico remixes! Access them by selecting Pico from in the Character Select screen
+- Added 10 new Pico remixes! Access them by selecting Pico from in the Character Select screen
+  - Bopeebo (Pico Mix)
+  - Fresh (Pico Mix)
+  - DadBattle (Pico Mix)
+  - Spookeez (Pico Mix)
+  - South (Pico Mix)
+  - Philly Nice (Pico Mix)
+  - Blammed  (Pico Mix)
+  - Eggnog (Pico Mix)
+  - Ugh (Pico Mix)
+  - Guns (Pico Mix)
+- Added 1 new Boyfriend remix! Access it by selecting Pico from in the Character Select screen
+  - Darnell (BF Mix)
 - Added 2 new Erect remixes! Access them by switching difficulty on the song
+  - Cocoa Erect
+  - Ugh Erect
 - Implemented support for a new Instrumental Selector in Freeplay
   - Beating a Pico remix lets you use that instrumental when playing as Boyfriend
 - Added the first batch of Erect Stages! These graphical overhauls of the original stages will be used when playing Erect remixes and Pico remixes
