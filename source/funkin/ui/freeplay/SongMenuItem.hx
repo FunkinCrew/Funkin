@@ -88,7 +88,7 @@ class SongMenuItem extends FlxSpriteGroup
     super(x, y);
 
     capsule = new FlxSprite();
-    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule');
+    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/capsule/freeplayCapsule');
     capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
     capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
     // capsule.animation
@@ -500,11 +500,22 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>):Void
+  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
   {
     if (x != null) this.x = x;
     if (y != null) this.y = y;
     this.songData = songData;
+
+    // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
+    // if thats possible someone Please change the new function to be something like
+    // capsule.frames = Paths.getSparrowAtlas(styleData == null ? 'freeplay/freeplayCapsule/capsule/freeplayCapsule' : styleData.getCapsuleAssetKey()); thank u luv u
+    if (styleData != null)
+    {
+      capsule.frames = Paths.getSparrowAtlas(styleData.getCapsuleAssetKey());
+      capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
+      capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
+      songText.applyStyle(styleData);
+    }
 
     // Update capsule text.
     songText.text = songData?.songName ?? 'Random';
@@ -727,7 +738,7 @@ class FreeplayRank extends FlxSprite
       switch (val)
       {
         case SHIT:
-        // offset.x -= 1;
+          // offset.x -= 1;
         case GOOD:
           // offset.x -= 1;
           offset.y -= 8;
@@ -735,11 +746,11 @@ class FreeplayRank extends FlxSprite
           // offset.x -= 1;
           offset.y -= 8;
         case EXCELLENT:
-        // offset.y += 5;
+          // offset.y += 5;
         case PERFECT:
-        // offset.y += 5;
+          // offset.y += 5;
         case PERFECT_GOLD:
-        // offset.y += 5;
+          // offset.y += 5;
         default:
           centerOffsets(false);
           this.visible = false;
@@ -796,9 +807,9 @@ class CapsuleNumber extends FlxSprite
       case 6:
 
       case 4:
-      // offset.y += 5;
+        // offset.y += 5;
       case 9:
-      // offset.y += 5;
+        // offset.y += 5;
       default:
         centerOffsets(false);
     }

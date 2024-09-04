@@ -534,6 +534,28 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * Return the list of available alternate instrumentals.
+   * Scripts can override this, fun.
+   * @param variationId
+   * @param difficultyId
+   */
+  public function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String>
+  {
+    var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
+    if (targetDifficulty == null) return [];
+
+    return targetDifficulty?.characters?.altInstrumentals ?? [];
+  }
+
+  public function getBaseInstrumentalId(difficultyId:String, variationId:String):String
+  {
+    var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
+    if (targetDifficulty == null) return '';
+
+    return targetDifficulty?.characters?.instrumental ?? '';
+  }
+
+  /**
    * Purge the cached chart data for each difficulty of this song.
    */
   public function clearCharts():Void
@@ -851,7 +873,7 @@ class SongDifficulty
    * @param charId The player ID.
    * @return The generated vocal group.
    */
-  public function buildVocals():VoicesGroup
+  public function buildVocals(?instId:String = ''):VoicesGroup
   {
     var result:VoicesGroup = new VoicesGroup();
 
@@ -870,8 +892,8 @@ class SongDifficulty
       result.addOpponentVoice(FunkinSound.load(opponentVoice));
     }
 
-    result.playerVoicesOffset = offsets.getVocalOffset(characters.player);
-    result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent);
+    result.playerVoicesOffset = offsets.getVocalOffset(characters.player, instId);
+    result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent, instId);
 
     return result;
   }

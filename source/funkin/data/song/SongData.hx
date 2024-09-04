@@ -257,7 +257,7 @@ class SongOffsets implements ICloneable<SongOffsets>
   public var altInstrumentals:Map<String, Float>;
 
   /**
-   * The offset, in milliseconds, to apply to the song's vocals, relative to the chart.
+   * The offset, in milliseconds, to apply to the song's vocals, relative to the song's base instrumental.
    * These are applied ON TOP OF the instrumental offset.
    */
   @:optional
@@ -302,11 +302,19 @@ class SongOffsets implements ICloneable<SongOffsets>
     return value;
   }
 
-  public function getVocalOffset(charId:String):Float
+  public function getVocalOffset(charId:String, ?instrumental:String):Float
   {
-    if (!this.vocals.exists(charId)) return 0.0;
-
-    return this.vocals.get(charId);
+    if (instrumental == null)
+    {
+      if (!this.vocals.exists(charId)) return 0.0;
+      return this.vocals.get(charId);
+    }
+    else
+    {
+      if (!this.altVocals.exists(instrumental)) return 0.0;
+      if (!this.altVocals.get(instrumental).exists(charId)) return 0.0;
+      return this.altVocals.get(instrumental).get(charId);
+    }
   }
 
   public function setVocalOffset(charId:String, value:Float):Float
@@ -329,7 +337,7 @@ class SongOffsets implements ICloneable<SongOffsets>
    */
   public function toString():String
   {
-    return 'SongOffsets(${this.instrumental}ms, ${this.altInstrumentals}, ${this.vocals})';
+    return 'SongOffsets(${this.instrumental}ms, ${this.altInstrumentals}, ${this.vocals}, ${this.altVocals})';
   }
 }
 
