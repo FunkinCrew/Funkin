@@ -259,6 +259,11 @@ class Constants
   public static final DEFAULT_NOTE_STYLE:String = 'funkin';
 
   /**
+   * The default freeplay style for characters.
+   */
+  public static final DEFAULT_FREEPLAY_STYLE:String = 'bf';
+
+  /**
    * The default pixel note style for songs.
    */
   public static final DEFAULT_PIXEL_NOTE_STYLE:String = 'pixel';

@@ -7,10 +7,12 @@ import flixel.math.FlxMath;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.util.FramesJSFLParser.FramesJSFLFrame;
+import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import flixel.math.FlxMath;
+import funkin.modding.events.ScriptEvent;
 import funkin.vis.dsp.SpectralAnalyzer;
 
-class CharSelectGF extends FlxAtlasSprite
+class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
   var fadeTimer:Float = 0;
   var fadingStatus:FadeStatus = OFF;
@@ -54,6 +56,7 @@ class CharSelectGF extends FlxAtlasSprite
       default:
     }
 
+    #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.J)
     {
       alpha = 1;
@@ -65,7 +68,26 @@ class CharSelectGF extends FlxAtlasSprite
       alpha = 0;
       fadingStatus = FADE_IN;
     }
+    #end
   }
+
+  public function onStepHit(event:SongTimeScriptEvent):Void {}
+
+  var danceEvery:Int = 2;
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    // TODO: There's a minor visual bug where there's a little stutter.
+    // This happens because the animation is getting restarted while it's already playing.
+    // I tried make this not interrupt an existing idle,
+    // but isAnimationFinished() and isLoopComplete() both don't work! What the hell?
+    // danceEvery isn't necessary if that gets fixed.
+    if (getCurrentAnimation() == "idle" && (event.beat % danceEvery == 0))
+    {
+      trace('GF beat hit');
+      playAnimation("idle", true, false, false);
+    }
+  };
 
   override public function draw()
   {
@@ -160,18 +182,27 @@ class CharSelectGF extends FlxAtlasSprite
     }
 
     // We don't need to update any anims if we didn't change GF
-    if (prevGF == curGF) return;
+    if (prevGF != curGF)
+    {
+      loadAtlas(Paths.animateAtlas("charSelect/" + curGF + "Chill"));
 
-    loadAtlas(Paths.animateAtlas("charSelect/" + curGF + "Chill"));
+      animInInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + curGF + "AnimInfo/" + curGF + "In.txt"));
+      animOutInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + curGF + "AnimInfo/" + curGF + "Out.txt"));
+    }
 
-    animInInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + curGF + "AnimInfo/" + curGF + "In.txt"));
-    animOutInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/" + curGF + "AnimInfo/" + curGF + "Out.txt"));
-
-    playAnimation("idle", true, false, true);
+    playAnimation("idle", true, false, false);
     // addFrameCallback(getNextFrameLabel("idle"), () -> playAnimation("idle", true, false, false));
 
     updateHitbox();
   }
+
+  public function onScriptEvent(event:ScriptEvent):Void {};
+
+  public function onCreate(event:ScriptEvent):Void {};
+
+  public function onDestroy(event:ScriptEvent):Void {};
+
+  public function onUpdate(event:UpdateScriptEvent):Void {};
 }
 
 enum FadeStatus

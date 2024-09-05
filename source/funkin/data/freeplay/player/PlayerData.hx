@@ -32,6 +32,13 @@ class PlayerData
   public var showUnownedChars:Bool = false;
 
   /**
+   * Which freeplay style to use for this character.
+   */
+  @:optional
+  @:default("bf")
+  public var freeplayStyle:String = Constants.DEFAULT_FREEPLAY_STYLE;
+
+  /**
    * Data for displaying this character in the Freeplay menu.
    * If null, display no DJ.
    */
@@ -104,6 +111,9 @@ class PlayerFreeplayDJData
 
   @:jignored
   var prefixToOffsetsMap:Map<String, Array<Float>>;
+
+  @:optional
+  var charSelect:Null<PlayerFreeplayDJCharSelectData>;
 
   @:optional
   var cartoon:Null<PlayerFreeplayDJCartoonData>;
@@ -237,6 +247,11 @@ class PlayerFreeplayDJData
   {
     return fistPump?.loopBadEndFrame ?? 0;
   }
+
+  public function getCharSelectTransitionDelay():Float
+  {
+    return charSelect?.transitionDelay ?? 0.25;
+  }
 }
 
 class PlayerCharSelectData
@@ -253,12 +268,35 @@ class PlayerCharSelectData
 
 typedef PlayerResultsData =
 {
+  var music:PlayerResultsMusicData;
+
   var perfect:Array<PlayerResultsAnimationData>;
   var excellent:Array<PlayerResultsAnimationData>;
   var great:Array<PlayerResultsAnimationData>;
   var good:Array<PlayerResultsAnimationData>;
   var loss:Array<PlayerResultsAnimationData>;
 };
+
+typedef PlayerResultsMusicData =
+{
+  @:optional
+  var PERFECT_GOLD:String;
+
+  @:optional
+  var PERFECT:String;
+
+  @:optional
+  var EXCELLENT:String;
+
+  @:optional
+  var GREAT:String;
+
+  @:optional
+  var GOOD:String;
+
+  @:optional
+  var SHIT:String;
+}
 
 typedef PlayerResultsAnimationData =
 {
@@ -299,6 +337,11 @@ typedef PlayerResultsAnimationData =
   @:optional
   var loopFrameLabel:Null<String>;
 };
+
+typedef PlayerFreeplayDJCharSelectData =
+{
+  var transitionDelay:Float;
+}
 
 typedef PlayerFreeplayDJCartoonData =
 {

@@ -19,6 +19,7 @@ import funkin.play.PlayStatePlaylist;
 import openfl.display.BitmapData;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.dialogue.conversation.ConversationRegistry;
@@ -170,6 +171,7 @@ class InitState extends FlxState
     ConversationRegistry.instance.loadEntries();
     DialogueBoxRegistry.instance.loadEntries();
     SpeakerRegistry.instance.loadEntries();
+    FreeplayStyleRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
