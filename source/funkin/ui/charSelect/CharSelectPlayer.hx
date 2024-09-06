@@ -26,12 +26,10 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
           }
           else
           {
-            // Handled by onBeatHit now
-            playAnimation("idle", true, false, false);
+            playAnimation("idle", true, false, true);
           }
-        case "slidein idle point":
-          // Handled by onBeatHit now
-          playAnimation("idle", true, false, false);
+        case "slidein idle point", "cannot select", "unlock":
+          playAnimation("idle", true, false, true);
         case "idle":
           trace('Waiting for onBeatHit');
       }

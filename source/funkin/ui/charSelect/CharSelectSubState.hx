@@ -17,20 +17,17 @@ import funkin.data.freeplay.player.PlayerData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinCamera;
+import funkin.graphics.shaders.BlueFade;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.stage.Stage;
+import funkin.save.Save;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.PixelatedIcon;
 import funkin.util.MathUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
 import openfl.display.BlendMode;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import flixel.sound.FlxSound;
-import funkin.audio.FunkinSound;
-import funkin.graphics.shaders.BlueFade;
 import openfl.filters.ShaderFilter;
 
 class CharSelectSubState extends MusicBeatSubState
@@ -82,8 +79,6 @@ class CharSelectSubState extends MusicBeatSubState
 
   var charSelectCam:FunkinCamera;
 
-  var introM:FunkinSound = null;
-
   public function new()
   {
     super();
@@ -102,6 +97,8 @@ class CharSelectSubState extends MusicBeatSubState
       var playerData = player.getCharSelectData();
       if (playerData == null) continue;
 
+      trace(player.isUnlocked());
+
       var targetPosition:Int = playerData.position ?? 0;
       while (availableChars.exists(targetPosition))
       {
@@ -118,43 +115,6 @@ class CharSelectSubState extends MusicBeatSubState
   override public function create():Void
   {
     super.create();
-
-    autoFollow = false;
-
-    var fadeShaderFilter:ShaderFilter = new ShaderFilter(fadeShader);
-    FlxG.camera.filters = [fadeShaderFilter];
-
-    selectSound = new FunkinSound();
-    selectSound.loadEmbedded(Paths.sound('CS_select'));
-    selectSound.pitch = 1;
-    selectSound.volume = 0.7;
-    FlxG.sound.defaultSoundGroup.add(selectSound);
-
-    // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
-    // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
-    FunkinSound.playMusic('stayFunky',
-      {
-        startingVolume: 0,
-        overrideExisting: true,
-        restartTrack: true
-      });
-    var introMusic:String = Paths.music('stayFunky/stayFunky-intro');
-    introM = FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
-      FunkinSound.playMusic('stayFunky',
-        {
-          startingVolume: 1,
-          overrideExisting: true,
-          restartTrack: true
-        });
-      @:privateAccess
-      gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-      #if desktop
-      // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-      // So we want to manually change it!
-      @:privateAccess
-      gfChill.analyzer.fftN = 512;
-      #end
-    });
 
     var bg:FlxSprite = new FlxSprite(-153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
@@ -197,14 +157,14 @@ class CharSelectSubState extends MusicBeatSubState
     gfChill = new CharSelectGF();
     gfChill.switchGF("bf");
     add(gfChill);
-    @:privateAccess
-    playerChill = new CharSelectPlayer(0, 0);
-    playerChill.switchChar("bf");
-    add(playerChill);
 
     playerChillOut = new CharSelectPlayer(0, 0);
     playerChillOut.switchChar("bf");
     add(playerChillOut);
+
+    playerChill = new CharSelectPlayer(0, 0);
+    playerChill.switchChar("bf");
+    add(playerChill);
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
@@ -338,6 +298,14 @@ class CharSelectSubState extends MusicBeatSubState
     temp.loadGraphic(Paths.image('charSelect/placement'));
     add(temp);
     temp.alpha = 0.0;
+
+    selectSound = new FunkinSound();
+    selectSound.loadEmbedded(Paths.sound('CS_select'));
+    selectSound.pitch = 1;
+    selectSound.volume = 0.7;
+
+    FlxG.sound.defaultSoundGroup.add(selectSound);
+
     Conductor.stepHit.add(spamOnStep);
     // FlxG.debugger.track(temp, "tempBG");
 
@@ -365,6 +333,8 @@ class CharSelectSubState extends MusicBeatSubState
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
 
+  var nonLocks = [];
+
   function initLocks():Void
   {
     grpIcons = new FlxSpriteGroup();
@@ -375,7 +345,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     for (i in 0...9)
     {
-      if (availableChars.exists(i))
+      if (availableChars.exists(i) && Save.instance.charactersSeen.contains(availableChars[i]))
       {
         var path:String = availableChars.get(i);
         var temp:PixelatedIcon = new PixelatedIcon(0, 0);
@@ -387,8 +357,14 @@ class CharSelectSubState extends MusicBeatSubState
       }
       else
       {
+        if (availableChars.exists(i)) nonLocks.push(i);
+
         var temp:Lock = new Lock(0, 0, i);
         temp.ID = 1;
+
+        temp.onAnimationComplete.add(function(anim) {
+          if (anim == "unlock") playerChill.playAnimation("unlock", true);
+        });
 
         grpIcons.add(temp);
       }
@@ -397,6 +373,78 @@ class CharSelectSubState extends MusicBeatSubState
     updateIconPositions();
 
     grpIcons.scrollFactor.set();
+
+    // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
+    // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
+    FunkinSound.playMusic('stayFunky',
+      {
+        startingVolume: 0,
+        overrideExisting: true,
+        restartTrack: true,
+      });
+
+    unLock();
+  }
+
+  function unLock()
+  {
+    var index = nonLocks[0];
+
+    var copy = 3;
+
+    var yThing = 0;
+
+    while (index > copy)
+    {
+      yThing++;
+      copy += 3;
+    }
+
+    var xThing = copy - index - 1;
+
+    cursorY = 3 - yThing;
+    cursorX = 3 - xThing;
+
+    selectTimer.start(1, function(_) {
+      var lock:Lock = cast grpIcons.group.members[index];
+
+      lock.playAnimation("unlock");
+
+      playerChill.visible = false;
+      playerChill.switchChar(availableChars[index]);
+
+      playerChillOut.visible = true;
+      playerChillOut.playAnimation("death");
+      playerChillOut.onAnimationComplete.addOnce((_) -> if (_ == "death")
+      {
+        playerChill.playAnimation("unlock");
+        playerChill.onAnimationComplete.addOnce(function(_) {
+          nonLocks.shift();
+
+          if (nonLocks.length > 0) unLock();
+          else
+          {
+            FunkinSound.playMusic('stayFunky',
+              {
+                startingVolume: 1,
+                overrideExisting: true,
+                restartTrack: true,
+                onLoad: function() {
+                  @:privateAccess
+                  gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+                  #if desktop
+                  // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+                  // So we want to manually change it!
+                  @:privateAccess
+                  gfChill.analyzer.fftN = 512;
+                  #end
+                }
+              });
+          }
+        });
+        playerChill.visible = true;
+      });
+    });
   }
 
   function updateIconPositions()
@@ -464,17 +512,6 @@ class CharSelectSubState extends MusicBeatSubState
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    @:privateAccess
-    if (introM != null && !introM.paused && gfChill.analyzer == null)
-    {
-      gfChill.analyzer = new SpectralAnalyzer(introM._channel.__audioSource, 7, 0.1);
-      #if desktop
-      // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-      // So we want to manually change it!
-      @:privateAccess
-      gfChill.analyzer.fftN = 512;
-      #end
-    }
 
     Conductor.instance.update();
 
@@ -518,6 +555,8 @@ class CharSelectSubState extends MusicBeatSubState
     if (controls.UI_UP_P)
     {
       cursorY -= 1;
+      cursorDenied.visible = false;
+
       holdTmrUp = 0;
 
       selectSound.play(true);
@@ -525,18 +564,22 @@ class CharSelectSubState extends MusicBeatSubState
     if (controls.UI_DOWN_P)
     {
       cursorY += 1;
+      cursorDenied.visible = false;
       holdTmrDown = 0;
       selectSound.play(true);
     }
     if (controls.UI_LEFT_P)
     {
       cursorX -= 1;
+      cursorDenied.visible = false;
+
       holdTmrLeft = 0;
       selectSound.play(true);
     }
     if (controls.UI_RIGHT_P)
     {
       cursorX += 1;
+      cursorDenied.visible = false;
       holdTmrRight = 0;
       selectSound.play(true);
     }
@@ -558,7 +601,7 @@ class CharSelectSubState extends MusicBeatSubState
       cursorY = -1;
     }
 
-    if (availableChars.exists(getCurrentSelected()))
+    if (availableChars.exists(getCurrentSelected()) && Save.instance.charactersSeen.contains(availableChars[getCurrentSelected()]))
     {
       curChar = availableChars.get(getCurrentSelected());
 
@@ -675,6 +718,8 @@ class CharSelectSubState extends MusicBeatSubState
       if (selectSound.pitch > 5) selectSound.pitch = 5;
       selectSound.play(true);
 
+      cursorDenied.visible = false;
+
       if (spamUp)
       {
         cursorY -= 1;
@@ -729,7 +774,7 @@ class CharSelectSubState extends MusicBeatSubState
             memb.scale.set(2.6, 2.6);
 
             if (controls.ACCEPT) memb.animation.play("confirm");
-            if (controls.BACK)
+            if (memb.animation.curAnim.name == "confirm" && controls.BACK)
             {
               memb.animation.play("confirm", false, true);
               member.animation.finishCallback = (_) -> {
