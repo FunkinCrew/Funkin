@@ -71,7 +71,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
 
   public function hasNewCharacter():Bool
   {
-    var characters = Save.instance.charactersSeen.clone();
+    var charactersSeen = Save.instance.charactersSeen.clone();
 
     for (charId in listEntryIds())
     {
@@ -79,7 +79,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
       if (player == null) continue;
 
       if (!player.isUnlocked()) continue;
-      if (characters.contains(charId)) continue;
+      if (charactersSeen.contains(charId)) continue;
 
       // This character is unlocked but we haven't seen them in Freeplay yet.
       return true;
@@ -87,6 +87,26 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
 
     // Fallthrough case.
     return false;
+  }
+
+  public function listNewCharacters():Array<String>
+  {
+    var charactersSeen = Save.instance.charactersSeen.clone();
+    var result = [];
+
+    for (charId in listEntryIds())
+    {
+      var player = fetchEntry(charId);
+      if (player == null) continue;
+
+      if (!player.isUnlocked()) continue;
+      if (charactersSeen.contains(charId)) continue;
+
+      // This character is unlocked but we haven't seen them in Freeplay yet.
+      result.push(charId);
+    }
+
+    return result;
   }
 
   /**
