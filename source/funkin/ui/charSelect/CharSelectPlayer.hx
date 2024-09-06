@@ -21,7 +21,7 @@ class CharSelectPlayer extends FlxAtlasSprite
           if (hasAnimation("slidein idle point")) playAnimation("slidein idle point", true, false, false);
           else
             playAnimation("idle", true, false, true);
-        case "slidein idle point":
+        case "slidein idle point", "cannot select", "unlock":
           playAnimation("idle", true, false, true);
       }
     });
