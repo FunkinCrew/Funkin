@@ -16,6 +16,7 @@ import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import openfl.filters.DropShadowFilter;
 import funkin.graphics.FunkinCamera;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -672,6 +673,7 @@ class CharSelectSubState extends MusicBeatSubState
           if (index == getCurrentSelected())
           {
             // memb.pixels = memb.withDropShadow.clone();
+            if (memb.scale.x != 2.6) memb.filters = [new DropShadowFilter()];
             memb.scale.set(2.6, 2.6);
 
             if (controls.ACCEPT) memb.animation.play("confirm");
@@ -687,6 +689,7 @@ class CharSelectSubState extends MusicBeatSubState
           else
           {
             // memb.pixels = memb.noDropShadow.clone();
+            if (memb.scale.x == 2) memb.filters = [];
             memb.scale.set(2, 2);
           }
       }
