@@ -344,13 +344,25 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    #if FEATURE_DEBUG_FUNCTIONS
     // Open the debug menu, defaults to ` / ~
+    // This includes stuff like the Chart Editor, so it should be present on all builds.
     if (controls.DEBUG_MENU)
     {
       persistentUpdate = false;
 
       FlxG.state.openSubState(new DebugMenuSubState());
+    }
+
+    #if FEATURE_DEBUG_FUNCTIONS
+    // Ctrl+Alt+Shift+P = Character Unlock screen
+    // Ctrl+Alt+Shift+W = Meet requirements for Pico Unlock
+    // Ctrl+Alt+Shift+L = Revoke requirements for Pico Unlock
+    // Ctrl+Alt+Shift+R = Score/Rank conflict test
+    // Ctrl+Alt+Shift+E = Dump save data
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.P)
+    {
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState('pico'));
     }
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
