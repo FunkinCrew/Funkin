@@ -21,6 +21,12 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
    */
   var noteStyle:NoteStyle;
 
+  /**
+   * Offsets that are applied to all elements, independent of the note style.
+   * Used to allow scripts to reposition the elements.
+   */
+  var offsets:Array<Int> = [0, 0];
+
   override public function new(noteStyle:NoteStyle)
   {
     super();
@@ -42,9 +48,11 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     rating.y = (FlxG.camera.height * 0.45 - 60);
     rating.y -= rating.height / 2;
 
-    var offsets = noteStyle.getJudgementSpriteOffsets(daRating);
     rating.x += offsets[0];
     rating.y += offsets[1];
+    var styleOffsets = noteStyle.getJudgementSpriteOffsets(daRating);
+    rating.x += styleOffsets[0];
+    rating.y += styleOffsets[1];
 
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
@@ -90,9 +98,11 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
       trace('numScore($daLoop) = ${numScore.x}');
       numScore.y = (FlxG.camera.height * 0.44);
 
-      var offsets = noteStyle.getComboNumSpriteOffsets(digit);
       numScore.x += offsets[0];
       numScore.y += offsets[1];
+      var styleOffsets = noteStyle.getComboNumSpriteOffsets(digit);
+      numScore.x += styleOffsets[0];
+      numScore.y += styleOffsets[1];
 
       numScore.acceleration.y = FlxG.random.int(250, 300);
       numScore.velocity.y -= FlxG.random.int(130, 150);

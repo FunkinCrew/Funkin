@@ -110,7 +110,17 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      openSubState(new FreeplayState());
+      #if FEATURE_DEBUG_FUNCTIONS
+      // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
+      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
+      #else
+      var targetCharacter:Null<String> = null;
+      #end
+
+      openSubState(new FreeplayState(
+        {
+          character: targetCharacter
+        }));
     });
 
     #if CAN_OPEN_LINKS

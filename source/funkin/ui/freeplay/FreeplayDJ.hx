@@ -15,7 +15,9 @@ class FreeplayDJ extends FlxAtlasSprite
 {
   // Represents the sprite's current status.
   // Without state machines I would have driven myself crazy years ago.
-  public var currentState:FreeplayDJState = Intro;
+  // Made this PRIVATE so we can keep track of everything that can alter the state!
+  //   Add a function to this class if you want to edit this value from outside.
+  private var currentState:FreeplayDJState = Intro;
 
   // A callback activated when the intro animation finishes.
   public var onIntroDone:FlxSignal = new FlxSignal();
@@ -378,7 +380,7 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function toCharSelect():Void
   {
-    if (hasAnimation('charSelect'))
+    if (hasAnimation(playableCharData.getAnimationPrefix('charSelect')))
     {
       currentState = CharSelect;
       var animPrefix = playableCharData.getAnimationPrefix('charSelect');
@@ -386,6 +388,7 @@ class FreeplayDJ extends FlxAtlasSprite
     }
     else
     {
+      FlxG.log.warn("Freeplay character does not have 'charSelect' animation!");
       currentState = Confirm;
       // Call this immediately; otherwise, we get locked out of Character Select.
       onCharSelectComplete();

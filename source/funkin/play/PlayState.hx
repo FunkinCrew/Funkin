@@ -668,7 +668,7 @@ class PlayState extends MusicBeatSubState
     // Prepare the current song's instrumental and vocals to be played.
     if (!overrideMusic && currentChart != null)
     {
-      currentChart.cacheInst();
+      currentChart.cacheInst(currentInstrumental);
       currentChart.cacheVocals();
     }
 
@@ -677,7 +677,7 @@ class PlayState extends MusicBeatSubState
 
     if (currentChart.offsets != null)
     {
-      Conductor.instance.instrumentalOffset = currentChart.offsets.getInstrumentalOffset();
+      Conductor.instance.instrumentalOffset = currentChart.offsets.getInstrumentalOffset(currentInstrumental);
     }
 
     Conductor.instance.mapTimeChanges(currentChart.timeChanges);
@@ -860,7 +860,7 @@ class PlayState extends MusicBeatSubState
       {
         // Stop the vocals if they already exist.
         if (vocals != null) vocals.stop();
-        vocals = currentChart.buildVocals();
+        vocals = currentChart.buildVocals(currentInstrumental);
 
         if (vocals.members.length == 0)
         {
@@ -1791,7 +1791,7 @@ class PlayState extends MusicBeatSubState
     {
       // Stop the vocals if they already exist.
       if (vocals != null) vocals.stop();
-      vocals = currentChart.buildVocals();
+      vocals = currentChart.buildVocals(currentInstrumental);
 
       if (vocals.members.length == 0)
       {

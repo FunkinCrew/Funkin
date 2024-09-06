@@ -404,12 +404,12 @@ class ResultState extends MusicBeatSubState
     // }
 
     new FlxTimer().start(rank.getMusicDelay(), _ -> {
-      if (rank.hasMusicIntro())
+      var introMusic:String = Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank) + '-intro');
+      if (Assets.exists(introMusic))
       {
         // Play the intro music.
-        var introMusic:String = Paths.music(rank.getMusicPath() + '/' + rank.getMusicPath() + '-intro');
         FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
-          FunkinSound.playMusic(rank.getMusicPath(),
+          FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
             {
               startingVolume: 1.0,
               overrideExisting: true,
@@ -420,7 +420,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        FunkinSound.playMusic(rank.getMusicPath(),
+        FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
           {
             startingVolume: 1.0,
             overrideExisting: true,
@@ -439,6 +439,11 @@ class ResultState extends MusicBeatSubState
     refresh();
 
     super.create();
+  }
+
+  function getMusicPath(playerCharacter:Null<PlayableCharacter>, rank:ScoringRank):String
+  {
+    return playerCharacter?.getResultsMusicPath(rank) ?? 'resultsNORMAL';
   }
 
   var rankTallyTimer:Null<FlxTimer> = null;

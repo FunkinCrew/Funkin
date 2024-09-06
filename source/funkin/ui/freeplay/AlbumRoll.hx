@@ -41,6 +41,7 @@ class AlbumRoll extends FlxSpriteGroup
 
   var difficultyStars:DifficultyStars;
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
+  var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
 
   var albumData:Album;
 
@@ -128,7 +129,7 @@ class AlbumRoll extends FlxSpriteGroup
    * Apply exit movers for the album roll.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     if (exitMovers == null)
     {
@@ -141,11 +142,29 @@ class AlbumRoll extends FlxSpriteGroup
 
     if (exitMovers == null) return;
 
+    if (exitMoversCharSel == null)
+    {
+      exitMoversCharSel = _exitMoversCharSel;
+    }
+    else
+    {
+      _exitMoversCharSel = exitMoversCharSel;
+    }
+
+    if (exitMoversCharSel == null) return;
+
     exitMovers.set([newAlbumArt, difficultyStars],
       {
         x: FlxG.width,
         speed: 0.4,
         wait: 0
+      });
+
+    exitMoversCharSel.set([newAlbumArt, difficultyStars],
+      {
+        y: -175,
+        speed: 0.8,
+        wait: 0.1
       });
   }
 
@@ -206,6 +225,13 @@ class AlbumRoll extends FlxSpriteGroup
         x: FlxG.width,
         speed: 0.4,
         wait: 0
+      });
+
+    if (_exitMoversCharSel != null) _exitMoversCharSel.set([albumTitle],
+      {
+        y: -190,
+        speed: 0.8,
+        wait: 0.1
       });
   }
 

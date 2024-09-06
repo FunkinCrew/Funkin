@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - If the value isn't present, it will use the `playData.characters.opponent`, but if it is present, it will be used (even if it's empty, in which case no vocals will be used for the opponent)
 - Added `playData.characters.playerVocals` to specify which vocal track(s) to play for the player.
   - If the value isn't present, it will use the `playData.characters.player`, but if it is present, it will be used (even if it's empty, in which case no vocals will be used for the player)
+- Added `offsets.altVocals` field to apply vocal offsets when alternate instrumentals are used.
+
 
 ## [2.2.3]
 ### Added

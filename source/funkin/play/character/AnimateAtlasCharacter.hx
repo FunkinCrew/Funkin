@@ -122,14 +122,18 @@ class AnimateAtlasCharacter extends BaseCharacter
    */
   public override function isAnimationFinished():Bool
   {
-    return mainSprite.isAnimationFinished();
+    return mainSprite?.isAnimationFinished() ?? false;
   }
 
   function loadAtlasSprite():FlxAtlasSprite
   {
     trace('[ATLASCHAR] Loading sprite atlas for ${characterId}.');
 
-    var sprite:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas(_data.assetPath));
+    var animLibrary:String = Paths.getLibrary(_data.assetPath);
+    var animPath:String = Paths.stripLibrary(_data.assetPath);
+    var assetPath:String = Paths.animateAtlas(animPath, animLibrary);
+
+    var sprite:FlxAtlasSprite = new FlxAtlasSprite(0, 0, assetPath);
 
     // sprite.onAnimationComplete.removeAll();
     sprite.onAnimationComplete.add(this.onAnimationFinished);
