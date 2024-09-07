@@ -504,6 +504,12 @@ class PlayState extends MusicBeatSubState
   public var camGame:FlxCamera;
 
   /**
+   * Simple helper debug variable, to be able to move the camera around for debug purposes
+   * without worrying about the camera tweening back to the follow point.
+   */
+  public var debugUnbindCameraZoom:Bool = false;
+
+  /**
    * The camera which contains, and controls visibility of, a video cutscene, dialogue, pause menu and sticker transition.
    */
   public var camCutscene:FlxCamera;
@@ -992,7 +998,7 @@ class PlayState extends MusicBeatSubState
     {
       cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
       var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
-      FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
+      if (!debugUnbindCameraZoom) FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
 
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
@@ -1457,6 +1463,13 @@ class PlayState extends MusicBeatSubState
 
     super.destroy();
   }
+
+  public override function initConsoleHelpers():Void
+  {
+    FlxG.console.registerFunction("debugUnbindCameraZoom", () -> {
+      debugUnbindCameraZoom = !debugUnbindCameraZoom;
+    });
+  };
 
   /**
      * Initializes the game and HUD cameras.
@@ -2224,10 +2237,10 @@ class PlayState extends MusicBeatSubState
         // Skip handling the miss in botplay!
         if (!isBotPlayMode)
         {
-        // Judge the miss.
-        // NOTE: This is what handles the scoring.
-        trace('Missed note! ${note.noteData}');
-        onNoteMiss(note, event.playSound, event.healthChange);
+          // Judge the miss.
+          // NOTE: This is what handles the scoring.
+          trace('Missed note! ${note.noteData}');
+          onNoteMiss(note, event.playSound, event.healthChange);
         }
 
         note.handledMiss = true;
@@ -2344,31 +2357,31 @@ class PlayState extends MusicBeatSubState
         playerStrumline.playPress(input.noteDirection);
         trace('PENALTY Score: ${songScore}');
       }
-      else if (notesInDirection.length == 0)
-      {
-        // Press a key with no penalty.
+    else if (notesInDirection.length == 0)
+    {
+      // Press a key with no penalty.
 
-        // Play the strumline animation.
-        playerStrumline.playPress(input.noteDirection);
-        trace('NO PENALTY Score: ${songScore}');
-      }
-      else
-      {
-        // Choose the first note, deprioritizing low priority notes.
-        var targetNote:Null<NoteSprite> = notesInDirection.find((note) -> !note.lowPriority);
-        if (targetNote == null) targetNote = notesInDirection[0];
-        if (targetNote == null) continue;
+      // Play the strumline animation.
+      playerStrumline.playPress(input.noteDirection);
+      trace('NO PENALTY Score: ${songScore}');
+    }
+    else
+    {
+      // Choose the first note, deprioritizing low priority notes.
+      var targetNote:Null<NoteSprite> = notesInDirection.find((note) -> !note.lowPriority);
+      if (targetNote == null) targetNote = notesInDirection[0];
+      if (targetNote == null) continue;
 
-        // Judge and hit the note.
-        trace('Hit note! ${targetNote.noteData}');
-        goodNoteHit(targetNote, input);
-        trace('Score: ${songScore}');
+      // Judge and hit the note.
+      trace('Hit note! ${targetNote.noteData}');
+      goodNoteHit(targetNote, input);
+      trace('Score: ${songScore}');
 
-        notesInDirection.remove(targetNote);
+      notesInDirection.remove(targetNote);
 
-        // Play the strumline animation.
-        playerStrumline.playConfirm(input.noteDirection);
-      }
+      // Play the strumline animation.
+      playerStrumline.playConfirm(input.noteDirection);
+    }
     }
 
     while (inputReleaseQueue.length > 0)

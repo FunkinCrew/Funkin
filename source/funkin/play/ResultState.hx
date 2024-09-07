@@ -731,42 +731,59 @@ class ResultState extends MusicBeatSubState
             }
           });
       }
+
+      // Determining the target state(s) to go to.
+      // Default to main menu because that's better than `null`.
+      var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var shouldTween = false;
+
       if (params.storyMode)
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
+        if (PlayerRegistry.instance.hasNewCharacter())
+        {
+          targetState = new StoryMenuState(null);
+
+          var newCharacters = PlayerRegistry.instance.listNewCharacters();
+
+          for (charId in newCharacters)
+          {
+            shouldTween = true;
+            // This works recursively, ehe!
+            targetState = new funkin.ui.charSelect.CharacterUnlockState(charId, targetState);
+          }
+        }
+        else
+        {
+          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker));
+        }
       }
       else
       {
-        var rigged:Bool = true;
-        if (rank > Scoring.calculateRank(params?.prevScoreData)) // if (rigged)
+        if (rank > Scoring.calculateRank(params?.prevScoreData))
         {
           trace('THE RANK IS Higher.....');
 
-          FlxTween.tween(rankBg, {alpha: 1}, 0.5,
+          shouldTween = true;
+          targetState = FreeplayState.build(
             {
-              ease: FlxEase.expoOut,
-              onComplete: function(_) {
-                FlxG.switchState(FreeplayState.build(
+              {
+                character: playerCharacterId ?? "bf",
+                fromResults:
                   {
-                    {
-                      character: playerCharacterId ?? "bf",
-                      fromResults:
-                        {
-                          oldRank: Scoring.calculateRank(params?.prevScoreData),
-                          newRank: rank,
-                          songId: params.songId,
-                          difficultyId: params.difficultyId,
-                          playRankAnim: true
-                        }
-                    }
-                  }));
+                    oldRank: Scoring.calculateRank(params?.prevScoreData),
+                    newRank: rank,
+                    songId: params.songId,
+                    difficultyId: params.difficultyId,
+                    playRankAnim: true
+                  }
               }
             });
         }
         else
         {
           trace('rank is lower...... and/or equal');
-          openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
+
+          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
             {
               {
                 fromResults:
@@ -778,8 +795,23 @@ class ResultState extends MusicBeatSubState
                     difficultyId: params.difficultyId
                   }
               }
-            }, sticker)));
+            }, sticker));
         }
+      }
+
+      if (shouldTween)
+      {
+        FlxTween.tween(rankBg, {alpha: 1}, 0.5,
+          {
+            ease: FlxEase.expoOut,
+            onComplete: function(_) {
+              FlxG.switchState(targetState);
+            }
+          });
+      }
+      else
+      {
+        FlxG.switchState(targetState);
       }
     }
 

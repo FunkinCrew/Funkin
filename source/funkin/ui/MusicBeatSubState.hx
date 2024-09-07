@@ -56,6 +56,8 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     Conductor.beatHit.add(this.beatHit);
     Conductor.stepHit.add(this.stepHit);
+
+    initConsoleHelpers();
   }
 
   public override function destroy():Void
@@ -78,6 +80,8 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
+
+  public function initConsoleHelpers():Void {}
 
   function reloadAssets()
   {
