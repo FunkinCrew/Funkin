@@ -20,7 +20,6 @@ class Lock extends FlxAtlasSprite
 
     var arr:Array<String> = ["lock", "lock top 1", "lock top 2", "lock top 3", "lock base fuck it"];
 
-    onAnimationComplete.add((_) -> if (_ == "unlock") playAnimation("idle"));
     var func = function(name) {
       var symbol = anim.symbolDictionary[name];
       if (symbol != null && symbol.timeline.get("color") != null) symbol.timeline.get("color").get(0).colorEffect = tint;

@@ -78,6 +78,7 @@ class CharSelectSubState extends MusicBeatSubState
 
   var selectTimer:FlxTimer = new FlxTimer();
   var selectSound:FunkinSound;
+  var unlockSound:FunkinSound;
 
   var charSelectCam:FunkinCamera;
 
@@ -270,6 +271,20 @@ class CharSelectSubState extends MusicBeatSubState
     grpCursors.add(cursorBlue);
     grpCursors.add(cursor);
 
+    selectSound = new FunkinSound();
+    selectSound.loadEmbedded(Paths.sound('CS_select'));
+    selectSound.pitch = 1;
+    selectSound.volume = 0.7;
+
+    FlxG.sound.defaultSoundGroup.add(selectSound);
+
+    unlockSound = new FunkinSound();
+    unlockSound.loadEmbedded(Paths.sound('CS_unlock'));
+    unlockSound.pitch = 1;
+    unlockSound.volume = 0.7;
+
+    FlxG.sound.defaultSoundGroup.add(unlockSound);
+
     initLocks();
 
     for (index => member in grpIcons.members)
@@ -300,13 +315,6 @@ class CharSelectSubState extends MusicBeatSubState
     temp.loadGraphic(Paths.image('charSelect/placement'));
     add(temp);
     temp.alpha = 0.0;
-
-    selectSound = new FunkinSound();
-    selectSound.loadEmbedded(Paths.sound('CS_select'));
-    selectSound.pitch = 1;
-    selectSound.volume = 0.7;
-
-    FlxG.sound.defaultSoundGroup.add(selectSound);
 
     Conductor.stepHit.add(spamOnStep);
     // FlxG.debugger.track(temp, "tempBG");
@@ -394,58 +402,66 @@ class CharSelectSubState extends MusicBeatSubState
 
     var copy = 3;
 
-    var yThing = 0;
+    var yThing = -1;
 
-    while (index > copy)
+    while ((index + 1) > copy)
     {
       yThing++;
       copy += 3;
     }
 
-    var xThing = copy - index - 1;
+    var xThing = (copy - index - 2) * -1;
+    // Look, I'd write better code but I had better aneurysms, my bad - Cheems
+    cursorY = yThing;
+    cursorX = xThing;
 
-    cursorY = 3 - yThing;
-    cursorX = 3 - xThing;
+    selectSound.play(true);
+
+    nonLocks.shift();
 
     selectTimer.start(1, function(_) {
       var lock:Lock = cast grpIcons.group.members[index];
 
+      lock.anim.getFrameLabel("unlockAnim").add(function() {
+        playerChillOut.playAnimation("death");
+      });
+
       lock.playAnimation("unlock");
+
+      unlockSound.play(true);
+
+      lock.onAnimationComplete.addOnce(function(_) {
+        camera.flash(0xFFFFFFFF, 0.1);
+        playerChill.playAnimation("unlock");
+        playerChill.visible = true;
+
+        if (nonLocks.length == 0)
+        {
+          FunkinSound.playMusic('stayFunky',
+            {
+              startingVolume: 1,
+              overrideExisting: true,
+              restartTrack: true,
+              onLoad: function() {
+                @:privateAccess
+                gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+                #if desktop
+                // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+                // So we want to manually change it!
+                @:privateAccess
+                gfChill.analyzer.fftN = 512;
+                #end
+              }
+            });
+        }
+        else
+          playerChill.onAnimationComplete.addOnce((_) -> unLock());
+      });
 
       playerChill.visible = false;
       playerChill.switchChar(availableChars[index]);
 
       playerChillOut.visible = true;
-      playerChillOut.playAnimation("death");
-      playerChillOut.onAnimationComplete.addOnce((_) -> if (_ == "death")
-      {
-        playerChill.playAnimation("unlock");
-        playerChill.onAnimationComplete.addOnce(function(_) {
-          nonLocks.shift();
-
-          if (nonLocks.length > 0) unLock();
-          else
-          {
-            FunkinSound.playMusic('stayFunky',
-              {
-                startingVolume: 1,
-                overrideExisting: true,
-                restartTrack: true,
-                onLoad: function() {
-                  @:privateAccess
-                  gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-                  #if desktop
-                  // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-                  // So we want to manually change it!
-                  @:privateAccess
-                  gfChill.analyzer.fftN = 512;
-                  #end
-                }
-              });
-          }
-        });
-        playerChill.visible = true;
-      });
     });
   }
 

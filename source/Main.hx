@@ -22,7 +22,7 @@ class Main extends Sprite
   var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
   var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
   var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-  #if web
+  #if (web || CHEEMS)
   var framerate:Int = 60; // How many frames per second the game should run at.
   #else
   // TODO: This should probably be in the options menu?
