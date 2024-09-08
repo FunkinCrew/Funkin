@@ -116,6 +116,13 @@
       "url": "https://github.com/FunkinCrew/hxcpp-debugger"
     },
     {
+      "name": "hxjsonast",
+      "type": "git",
+      "dir": null,
+      "ref": "20e72cc68c823496359775ac1f06500e67f189d5",
+      "url": "https://github.com/nadako/hxjsonast/"
+    },
+    {
       "name": "hxp",
       "type": "haxelib",
       "version": "1.3.0"
