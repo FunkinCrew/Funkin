@@ -38,11 +38,6 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public var onAnimationComplete:FlxTypedSignal<String->Void> = new FlxTypedSignal();
 
-  /**
-   * Signal dispatched when a looping animation finishes playing
-   */
-  public var onAnimationLoopComplete:FlxTypedSignal<String->Void> = new FlxTypedSignal();
-
   var currentAnimation:String;
 
   var canPlayOtherAnims:Bool = true;
@@ -162,7 +157,6 @@ class FlxAtlasSprite extends FlxAnimate
     anim.onComplete.add(function() {
       if (loop)
       {
-        onAnimationLoopComplete.dispatch(id);
         this.anim.play(id, restart, false, startFrame);
         this.currentAnimation = id;
       }
@@ -307,9 +301,7 @@ class FlxAtlasSprite extends FlxAnimate
   {
     if (currentAnimation != null)
     {
-      if (looping) onAnimationLoopComplete.dispatch(currentAnimation);
-      else
-        onAnimationComplete.dispatch(currentAnimation);
+      onAnimationComplete.dispatch(currentAnimation);
     }
   }
 
