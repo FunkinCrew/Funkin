@@ -25,9 +25,22 @@ class FramesJSFLParser
 
       var x:Float = Std.parseFloat(frameInfo[0]);
       var y:Float = Std.parseFloat(frameInfo[1]);
-      var alpha:Float = Std.parseFloat(frameInfo[2]);
+      var alpha:Float = (frameInfo[2] != "undefined") ? Std.parseFloat(frameInfo[2]) : 100;
 
-      var shit:FramesJSFLFrame = {x: x, y: y, alpha: alpha};
+      var scaleX:Float = 1;
+      var scaleY:Float = 1;
+
+      if (frameInfo[3] != null) scaleX = Std.parseFloat(frameInfo[4]);
+      if (frameInfo[4] != null) scaleX = Std.parseFloat(frameInfo[4]);
+
+      var shit:FramesJSFLFrame =
+        {
+          x: x,
+          y: y,
+          alpha: alpha,
+          scaleX: scaleX,
+          scaleY: scaleY
+        };
       output.frames.push(shit);
     }
 
@@ -45,4 +58,6 @@ typedef FramesJSFLFrame =
   var x:Float;
   var y:Float;
   var alpha:Float;
+  var scaleX:Float;
+  var scaleY:Float;
 }

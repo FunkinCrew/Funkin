@@ -32,6 +32,7 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
+import funkin.save.Save;
 
 #if desktop
 #end
@@ -271,6 +272,8 @@ class TitleState extends MusicBeatState
       Sys.exit(0);
     }
     #end
+
+    if (Save.instance.charactersSeen.contains("pico")) Save.instance.charactersSeen.remove("pico");
 
     Conductor.instance.update();
 

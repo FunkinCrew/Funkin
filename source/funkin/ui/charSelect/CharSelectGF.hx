@@ -133,7 +133,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     fadeTimer += FlxG.elapsed;
     if (fadeTimer >= 1 / 24)
     {
-      fadeTimer = 0;
+      fadeTimer -= FlxG.elapsed;
       // only inc the index for the first frame, used for reference of where to "start"
       if (fadeAnimIndex == 0)
       {

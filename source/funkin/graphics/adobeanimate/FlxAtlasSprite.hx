@@ -217,6 +217,9 @@ class FlxAtlasSprite extends FlxAnimate
   {
     if (this.anim == null) return false;
     if (!this.anim.isPlaying) return false;
+
+    if (fr != null) return (anim.reversed && anim.curFrame < fr.index || !anim.reversed && anim.curFrame >= (fr.index + fr.duration));
+
     return (anim.reversed && anim.curFrame == 0 || !(anim.reversed) && (anim.curFrame) >= (anim.length - 1));
   }
 
@@ -283,7 +286,7 @@ class FlxAtlasSprite extends FlxAnimate
     {
       onAnimationFrame.dispatch(currentAnimation, frame);
 
-      if (fr != null && frame > (fr.index + fr.duration - 1) || isLoopComplete())
+      if (isLoopComplete())
       {
         anim.pause();
         _onAnimationComplete();

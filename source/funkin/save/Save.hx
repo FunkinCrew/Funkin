@@ -412,7 +412,7 @@ class Save
    */
   public function addCharacterSeen(character:String):Void
   {
-    data.unlocks.charactersSeen.push(character);
+    if (!data.unlocks.charactersSeen.contains(character)) data.unlocks.charactersSeen.push(character);
   }
 
   /**

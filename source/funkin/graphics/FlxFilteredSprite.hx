@@ -37,7 +37,6 @@ import openfl.display._internal.CairoGraphics as GfxRenderer;
 /**
  * A modified `FlxSprite` that supports filters.
  * The name's pretty much self-explanatory.
- * @author CheemsAndFriends
  */
 @:access(openfl.geom.Rectangle)
 @:access(openfl.filters.BitmapFilter)
@@ -146,7 +145,7 @@ class FlxFilteredSprite extends FlxSprite
       _matrix.ty = Math.floor(_matrix.ty);
     }
 
-    camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
+    camera.drawPixels((filtered) ? _blankFrame : _frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
   }
 
   @:noCompletion
@@ -154,7 +153,6 @@ class FlxFilteredSprite extends FlxSprite
   {
     filterDirty = false;
     _filterMatrix.identity();
-    var filteredFrame = (filtered) ? _frame : null;
 
     if (filters != null && filters.length > 0)
     {
@@ -195,6 +193,7 @@ class FlxFilteredSprite extends FlxSprite
     }
     else
     {
+      trace("GAGAGA");
       resetFrame();
       filtered = false;
     }
@@ -214,6 +213,11 @@ class FlxFilteredSprite extends FlxSprite
     if (value != frame) filterDirty = true;
 
     return super.set_frame(value);
+  }
+
+  override public function destroy()
+  {
+    super.destroy();
   }
 }
 
@@ -338,6 +342,15 @@ class FlxAnimateFilterRenderer
     }
     if (target1 == null) bitmap2.dispose();
     if (target2 == null) bitmap3.dispose();
+
+    // var gl = renderer.__gl;
+
+    // var renderBuffer = bitmap.getTexture(renderer.__context3D);
+    // @:privateAccess
+    // gl.readPixels(0, 0, bitmap.width, bitmap.height, renderBuffer.__format, gl.UNSIGNED_BYTE, bitmap.image.data);
+    // bitmap.image.version = 0;
+    // @:privateAccess
+    // bitmap.__textureVersion = -1;
 
     return bitmap;
   }

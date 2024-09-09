@@ -26,18 +26,16 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
           }
           else
           {
-            playAnimation("idle", true, false, true);
+            playAnimation("idle", true, false, false);
           }
+        case "deselect":
+          playAnimation("deselect loop start", true, false, true);
 
         case "slidein idle point", "cannot select", "unlock":
-          playAnimation("idle", true, false, true);
+          playAnimation("idle", true, false, false);
         case "idle":
           trace('Waiting for onBeatHit');
       }
-    });
-
-    onAnimationFrame.add(function(animLabel:String, frame:Int) {
-      if (animLabel == "deselect" && desLp != null && frame >= desLp.index) playAnimation("deselect loop start", true, false, true);
     });
   }
 
@@ -50,6 +48,7 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     // I tried make this not interrupt an existing idle,
     // but isAnimationFinished() and isLoopComplete() both don't work! What the hell?
     // danceEvery isn't necessary if that gets fixed.
+    //
     if (getCurrentAnimation() == "idle")
     {
       trace('Player beat hit');
