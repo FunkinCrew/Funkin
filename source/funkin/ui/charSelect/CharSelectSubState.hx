@@ -110,8 +110,6 @@ class CharSelectSubState extends MusicBeatSubState
       var playerData = player.getCharSelectData();
       if (playerData == null) continue;
 
-      trace(player.isUnlocked());
-
       var targetPosition:Int = playerData.position ?? 0;
       while (availableChars.exists(targetPosition))
       {
@@ -487,7 +485,10 @@ class CharSelectSubState extends MusicBeatSubState
 
         if (nonLocks.length == 0)
         {
-          playerChillOut.onAnimationComplete.addOnce((_) -> playerChillOut.switchChar(char));
+          playerChillOut.onAnimationComplete.addOnce((_) -> {
+            playerChillOut.visible = false;
+            playerChillOut.switchChar(char);
+          });
           @:bypassAccessor curChar = char;
           Save.instance.addCharacterSeen(char);
           FunkinSound.playMusic('stayFunky',
@@ -796,8 +797,6 @@ class CharSelectSubState extends MusicBeatSubState
       var refFrame = bopInfo.frames[bopInfo.frames.length - 1];
       var curFrame = bopInfo.frames[bopFr];
 
-      var xDiff:Float = curFrame.x - refFrame.x;
-      var yDiff:Float = curFrame.y - refFrame.y;
       var scaleXDiff:Float = curFrame.scaleX - refFrame.scaleX;
       var scaleYDiff:Float = curFrame.scaleY - refFrame.scaleY;
 
