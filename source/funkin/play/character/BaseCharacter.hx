@@ -376,7 +376,7 @@ class BaseCharacter extends Bopper
     {
       if (isAnimationFinished())
       {
-        trace('Not playing hold (${getCurrentAnimation()}) (${isAnimationFinished()}, ${getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)}, ${hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)})');
+        // trace('Not playing hold (${getCurrentAnimation()}) (${isAnimationFinished()}, ${getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)}, ${hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)})');
       }
     }
 
