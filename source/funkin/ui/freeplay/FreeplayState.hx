@@ -2377,7 +2377,7 @@ class FreeplaySongData
 
     this.scoringRank = Save.instance.getSongRank(songId, suffixedDifficulty);
 
-    this.isNew = song.isSongNew(currentDifficulty);
+    this.isNew = song.isSongNew(suffixedDifficulty);
   }
 }
 
